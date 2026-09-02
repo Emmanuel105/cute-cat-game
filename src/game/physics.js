@@ -1,6 +1,6 @@
 // Platform collision and ground-height resolution.
 import { cat } from './cat.js';
-import { platforms } from './world.js';
+import { platforms } from './worlds.js';
 
 export function resolvePlatformCollision(nextX, nextZ) {
   for (const p of platforms) {

@@ -1,10 +1,22 @@
 # 🐱 Cute Cat Game
 
-A 3D cat adventure game built with [Three.js](https://threejs.org/). Explore a little world, collect fish and yarn, chase a mouse, jump between platforms, and watch the day turn to night.
+A 3D adventure game built with [Three.js](https://threejs.org/). Pick your character, explore four worlds, collect treats, chase a mouse, and unlock magic portals!
 
-## Play
+**Play it here → https://emmanuel105.github.io/cute-cat-game/**
 
-- **Game:** `index.html` — the full game (tank controls, collectibles, day/night cycle, 5 cat skins, 3 camera modes)
+## Features
+
+- **3 characters**: 🐱 Cat (balanced) · 🐰 Bunny (super jumps) · 🐶 Dog (super speed)
+- **4 worlds** connected by magic portals (collect score to unlock them):
+  1. 🌳 **Sunny Meadow** — grass, flowers, a cozy house, and a day/night cycle
+  2. ❄️ **Snowy Peaks** — snowmen, frozen ponds, ice platforms, and falling snow
+  3. 🌙 **Moon Base** — low gravity, glowing crystals, craters, and Earth in the sky
+  4. 🍭 **Candy Kingdom** — lollipop trees, gumdrops, a chocolate river, and bouncy jumps
+- **5 skins**, 3 camera modes (3rd person / 1st person / cinematic), and a saved high score
+
+## Pages
+
+- **Game:** `index.html` — the full game
 - **Viewer:** `viewer.html` — a simple 3D cat you can orbit and poke
 
 ### Controls

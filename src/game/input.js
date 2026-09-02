@@ -2,7 +2,7 @@
 import * as THREE from 'three';
 import { keys, state } from './state.js';
 import { canvas } from './scene.js';
-import { cat, setSkin } from './cat.js';
+import { cat, setSkin, setCharacter, CHARACTERS } from './cat.js';
 import { emitParticles } from './particles.js';
 import { startGame, toggleCam } from './ui.js';
 
@@ -47,8 +47,30 @@ export function setupInput() {
       document.querySelectorAll('.skin-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       setSkin(btn.dataset.s);
+      localStorage.setItem('ccg-skin', btn.dataset.s);
     });
   });
+
+  document.querySelectorAll('.char-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.char-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      setCharacter(btn.dataset.c);
+      localStorage.setItem('ccg-char', btn.dataset.c);
+    });
+  });
+
+  // Restore saved character and skin from previous visits
+  const savedChar = localStorage.getItem('ccg-char');
+  if (savedChar && CHARACTERS[savedChar]) {
+    setCharacter(savedChar);
+    document.querySelectorAll('.char-btn').forEach(b => b.classList.toggle('active', b.dataset.c === savedChar));
+  }
+  const savedSkin = localStorage.getItem('ccg-skin');
+  if (savedSkin && document.querySelector(`.skin-btn[data-s="${savedSkin}"]`)) {
+    setSkin(savedSkin);
+    document.querySelectorAll('.skin-btn').forEach(b => b.classList.toggle('active', b.dataset.s === savedSkin));
+  }
 
   document.getElementById('cam-btn').addEventListener('click', toggleCam);
   document.getElementById('start-btn').addEventListener('click', startGame);

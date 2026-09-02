@@ -47,3 +47,15 @@ chaseMouse.position.set(8, 0.12, 8);
 scene.add(chaseMouse);
 
 export const chase = { active: false };
+
+// Move the collectibles and chase mouse to a world's item spots.
+export function layoutItems(spots) {
+  items.forEach((it, i) => {
+    const [, x, z] = spots[i % spots.length];
+    it.mesh.position.set(x, it.baseY, z);
+    it.collected = false;
+    if (!it.mesh.parent) scene.add(it.mesh);
+  });
+  chase.active = false;
+  chaseMouse.position.set(8, 0.12, 8);
+}

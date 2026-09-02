@@ -25,6 +25,11 @@ export function toggleCam() {
 }
 
 export function updateHUD() {
+  if (state.score > state.highScore) {
+    state.highScore = state.score;
+    localStorage.setItem('ccg-highscore', String(state.highScore));
+  }
+  document.getElementById('highscore-val').textContent = state.highScore;
   document.getElementById('score-val').textContent = state.score;
   document.getElementById('health-bar').style.width = state.health + '%';
   document.getElementById('energy-bar').style.width = Math.min(100, state.energy) + '%';
@@ -35,4 +40,8 @@ export function updateHUD() {
 
 export function setTimeIndicator(text) {
   document.getElementById('time-ind').textContent = text;
+}
+
+export function setWorldLabel(text) {
+  document.getElementById('world-ind').textContent = text;
 }

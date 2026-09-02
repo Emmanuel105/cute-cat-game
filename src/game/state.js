@@ -23,4 +23,8 @@ export const state = {
   prevMX: 0,
   dayTime: 0.25,
   gameStarted: false,
+  worldIndex: 0,
+  portalCooldown: 0,
+  portalMsgT: 0,
+  highScore: Number(localStorage.getItem('ccg-highscore') || 0),
 };

@@ -1,18 +1,36 @@
 // Entry point: wires all modules together and runs the game loop.
 import * as THREE from 'three';
 import { scene, camera, renderer } from './game/scene.js';
-import './game/world.js';
-import { cat, parts } from './game/cat.js';
-import { items, chaseMouse, chase } from './game/collectibles.js';
+import { WORLDS, PORTAL_COST, portal, loadWorld, currentWorld, animatePortal } from './game/worlds.js';
+import { cat, parts, getCharacter } from './game/cat.js';
+import { items, chaseMouse, chase, layoutItems } from './game/collectibles.js';
 import { emitParticles, updateParticles } from './game/particles.js';
 import { keys, state } from './game/state.js';
 import { setupInput } from './game/input.js';
 import { updateDayNight } from './game/daynight.js';
 import { resolvePlatformCollision, getGroundHeight } from './game/physics.js';
-import { showMsg, updateHUD } from './game/ui.js';
+import { showMsg, updateHUD, setWorldLabel } from './game/ui.js';
 
 scene.add(cat);
 setupInput();
+
+function travelTo(index) {
+  const w = loadWorld(index);
+  layoutItems(w.itemSpots);
+  cat.position.set(0, 0, 0);
+  cat.rotation.y = 0;
+  state.portalCooldown = 2;
+  setWorldLabel(`${w.emoji} ${w.name}`);
+  showMsg(`${w.emoji} Welcome to ${w.name}!`);
+  emitParticles(cat.position.clone().add(new THREE.Vector3(0, 1, 0)), 0x9b5cff, 16, 'sparkle');
+}
+
+const firstWorld = loadWorld(0);
+layoutItems(firstWorld.itemSpots);
+setWorldLabel(`${firstWorld.emoji} ${firstWorld.name}`);
+
+// Small hook for automated testing (harmless in production)
+window.__game = { state, travelTo, cat };
 
 function animate() {
   requestAnimationFrame(animate);
@@ -20,11 +38,14 @@ function animate() {
   updateDayNight();
   if (!state.gameStarted) { renderer.render(scene, camera); return; }
 
-  // Tank movement
+  const world = currentWorld();
+  const character = getCharacter();
+
+  // Tank movement (character affects speed)
   let target = 0;
   let moving = false;
-  if (keys.w) { target = keys.shift && state.energy > 0 ? 7 : 3.5; moving = true; }
-  if (keys.s) { target = keys.shift && state.energy > 0 ? -3.5 : -2; moving = true; }
+  if (keys.w) { target = (keys.shift && state.energy > 0 ? 7 : 3.5) * character.speedMul; moving = true; }
+  if (keys.s) { target = (keys.shift && state.energy > 0 ? -3.5 : -2) * character.speedMul; moving = true; }
   if (keys.shift && moving && state.energy > 0) { state.energy -= 0.2; }
   else if (state.energy < 100) { state.energy += 0.1; }
 
@@ -47,10 +68,11 @@ function animate() {
 
   const groundY = getGroundHeight();
 
+  // Jump height scales with character and world (Moon = low gravity, floaty air time)
   let yOff = 0;
   if (state.isJump) {
-    state.jumpT += 0.04;
-    yOff = Math.sin(state.jumpT * Math.PI) * 1.6;
+    state.jumpT += 0.04 / world.airTime;
+    yOff = Math.sin(state.jumpT * Math.PI) * 1.6 * character.jumpMul * world.jumpMul;
     cat.rotation.x = -Math.sin(state.jumpT * Math.PI) * 0.18;
     if (state.jumpT >= 1) { state.isJump = false; cat.rotation.x = 0; }
   }
@@ -59,7 +81,7 @@ function animate() {
 
   if (!state.isJump) {
     if (cat.position.y > groundY + 0.05) {
-      cat.position.y -= 0.12;
+      cat.position.y -= 0.12 / world.airTime;
       if (cat.position.y < groundY) cat.position.y = groundY;
     }
     if (Math.abs(cat.position.y - groundY) < 0.05) {
@@ -115,8 +137,9 @@ function animate() {
   state.earT += 0.016;
   if (state.earT >= state.nextEar) {
     const tp = (state.earT - state.nextEar) / 0.2;
-    if (tp <= 1) { const t = Math.sin(tp * Math.PI) * 0.18; if (parts.earL) parts.earL.rotation.z = -0.3 + t * (Math.random() > 0.5 ? 1 : -1); if (parts.earR) parts.earR.rotation.z = 0.3 + t * (Math.random() > 0.5 ? -1 : 1); }
-    else { if (parts.earL) parts.earL.rotation.z = -0.3; if (parts.earR) parts.earR.rotation.z = 0.3; state.earT = 0; state.nextEar = 0.8 + Math.random() * 3; }
+    const earBase = parts.earBaseZ ?? 0.3;
+    if (tp <= 1) { const t = Math.sin(tp * Math.PI) * 0.18; if (parts.earL) parts.earL.rotation.z = -earBase + t * (Math.random() > 0.5 ? 1 : -1); if (parts.earR) parts.earR.rotation.z = earBase + t * (Math.random() > 0.5 ? -1 : 1); }
+    else { if (parts.earL) parts.earL.rotation.z = -earBase; if (parts.earR) parts.earR.rotation.z = earBase; state.earT = 0; state.nextEar = 0.8 + Math.random() * 3; }
   }
 
   // Collectibles
@@ -152,6 +175,21 @@ function animate() {
     chaseMouse.position.z = Math.max(-40, Math.min(40, chaseMouse.position.z));
     chaseMouse.rotation.y = Math.atan2(runDir.x, runDir.z);
   } else { chaseMouse.position.y = 0.5 + Math.sin(state.time * 10) * 0.3; chaseMouse.rotation.y += 0.2; }
+
+  // Portal travel
+  animatePortal(state.time);
+  if (state.portalCooldown > 0) state.portalCooldown -= 0.016;
+  if (state.portalMsgT > 0) state.portalMsgT -= 0.016;
+  const portalDist = Math.hypot(cat.position.x - portal.position.x, cat.position.z - portal.position.z);
+  if (portalDist < 1.6 && state.portalCooldown <= 0) {
+    const need = PORTAL_COST * (state.worldIndex + 1);
+    if (state.score >= need) {
+      travelTo((state.worldIndex + 1) % WORLDS.length);
+    } else if (state.portalMsgT <= 0) {
+      showMsg(`🔒 Need ${need} score to enter the portal!`);
+      state.portalMsgT = 2;
+    }
+  }
 
   updateParticles();
 

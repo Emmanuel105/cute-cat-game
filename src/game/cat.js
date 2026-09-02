@@ -9,13 +9,30 @@ export const SKINS = {
   tuxedo: { fur: 0x222222, belly: 0xffffff, nose: 0xff69b4, innerEar: 0xffaaaa, paws: 0xffffff }
 };
 
+export const CHARACTERS = {
+  cat: { name: 'Cat', emoji: '🐱', speedMul: 1, jumpMul: 1 },
+  bunny: { name: 'Bunny', emoji: '🐰', speedMul: 0.9, jumpMul: 1.4 },
+  dog: { name: 'Dog', emoji: '🐶', speedMul: 1.3, jumpMul: 0.85 },
+};
+
 let skin = SKINS.orange;
+let characterKey = 'cat';
 export const cat = new THREE.Group();
 export const parts = {};
 
 export function setSkin(name) {
   skin = SKINS[name];
   buildCat();
+}
+
+export function setCharacter(name) {
+  if (!CHARACTERS[name]) return;
+  characterKey = name;
+  buildCat();
+}
+
+export function getCharacter() {
+  return CHARACTERS[characterKey];
 }
 
 export function buildCat() {
@@ -114,35 +131,78 @@ export function buildCat() {
   headG.add(eyelidR);
   parts.eyelids.push(eyelidR);
 
-  // Ears — round triangles, soft
-  const earGeo = new THREE.ConeGeometry(0.18, 0.35, 4);
-  const earL = new THREE.Mesh(earGeo, furM);
-  earL.position.set(0.28, 0.52, -0.02);
-  earL.rotation.z = -0.3;
-  earL.rotation.y = 0.1;
-  earL.castShadow = true;
-  headG.add(earL);
-  parts.earL = earL;
-  const earR = new THREE.Mesh(earGeo, furM);
-  earR.position.set(-0.28, 0.52, -0.02);
-  earR.rotation.z = 0.3;
-  earR.rotation.y = -0.1;
-  earR.castShadow = true;
-  headG.add(earR);
-  parts.earR = earR;
+  // Ears — shape depends on the character
+  if (characterKey === 'bunny') {
+    // Long upright bunny ears
+    const earGeo = new THREE.CapsuleGeometry(0.09, 0.55, 4, 8);
+    const earL = new THREE.Mesh(earGeo, furM);
+    earL.position.set(0.18, 0.85, -0.05);
+    earL.rotation.z = -0.15;
+    earL.castShadow = true;
+    headG.add(earL);
+    parts.earL = earL;
+    const earR = new THREE.Mesh(earGeo, furM);
+    earR.position.set(-0.18, 0.85, -0.05);
+    earR.rotation.z = 0.15;
+    earR.castShadow = true;
+    headG.add(earR);
+    parts.earR = earR;
+    const iEarGeo = new THREE.CapsuleGeometry(0.045, 0.4, 4, 8);
+    const iEarL = new THREE.Mesh(iEarGeo, innerM);
+    iEarL.position.set(0.18, 0.85, 0.02);
+    iEarL.rotation.z = -0.15;
+    headG.add(iEarL);
+    const iEarR = new THREE.Mesh(iEarGeo, innerM);
+    iEarR.position.set(-0.18, 0.85, 0.02);
+    iEarR.rotation.z = 0.15;
+    headG.add(iEarR);
+  } else if (characterKey === 'dog') {
+    // Floppy dog ears hanging at the sides
+    const earGeo = new THREE.SphereGeometry(0.16, 10, 10);
+    const earL = new THREE.Mesh(earGeo, furM);
+    earL.position.set(0.5, 0.25, -0.02);
+    earL.scale.set(0.5, 1.4, 0.8);
+    earL.rotation.z = -0.4;
+    earL.castShadow = true;
+    headG.add(earL);
+    parts.earL = earL;
+    const earR = new THREE.Mesh(earGeo, furM);
+    earR.position.set(-0.5, 0.25, -0.02);
+    earR.scale.set(0.5, 1.4, 0.8);
+    earR.rotation.z = 0.4;
+    earR.castShadow = true;
+    headG.add(earR);
+    parts.earR = earR;
+  } else {
+    // Cat ears — round triangles, soft
+    const earGeo = new THREE.ConeGeometry(0.18, 0.35, 4);
+    const earL = new THREE.Mesh(earGeo, furM);
+    earL.position.set(0.28, 0.52, -0.02);
+    earL.rotation.z = -0.3;
+    earL.rotation.y = 0.1;
+    earL.castShadow = true;
+    headG.add(earL);
+    parts.earL = earL;
+    const earR = new THREE.Mesh(earGeo, furM);
+    earR.position.set(-0.28, 0.52, -0.02);
+    earR.rotation.z = 0.3;
+    earR.rotation.y = -0.1;
+    earR.castShadow = true;
+    headG.add(earR);
+    parts.earR = earR;
 
-  // Inner ears
-  const iEarGeo = new THREE.ConeGeometry(0.1, 0.22, 4);
-  const iEarL = new THREE.Mesh(iEarGeo, innerM);
-  iEarL.position.set(0.28, 0.48, 0.02);
-  iEarL.rotation.z = -0.3;
-  iEarL.rotation.y = 0.1;
-  headG.add(iEarL);
-  const iEarR = new THREE.Mesh(iEarGeo, innerM);
-  iEarR.position.set(-0.28, 0.48, 0.02);
-  iEarR.rotation.z = 0.3;
-  iEarR.rotation.y = -0.1;
-  headG.add(iEarR);
+    const iEarGeo = new THREE.ConeGeometry(0.1, 0.22, 4);
+    const iEarL = new THREE.Mesh(iEarGeo, innerM);
+    iEarL.position.set(0.28, 0.48, 0.02);
+    iEarL.rotation.z = -0.3;
+    iEarL.rotation.y = 0.1;
+    headG.add(iEarL);
+    const iEarR = new THREE.Mesh(iEarGeo, innerM);
+    iEarR.position.set(-0.28, 0.48, 0.02);
+    iEarR.rotation.z = 0.3;
+    iEarR.rotation.y = -0.1;
+    headG.add(iEarR);
+  }
 
   // Whiskers
   for (let i = -1; i <= 1; i++) {
@@ -170,15 +230,37 @@ export function buildCat() {
   parts.legBL = leg(0.24, -0.38);
   parts.legBR = leg(-0.24, -0.38);
 
-  // Tail — fluffy, curved up
-  for (let i = 0; i < 8; i++) {
-    const sg = new THREE.SphereGeometry(0.1 - i * 0.008, 8, 8);
-    const sm = new THREE.MeshStandardMaterial({ color: i > 6 ? skin.paws : skin.fur, roughness: 0.5 });
-    const seg = new THREE.Mesh(sg, sm);
-    seg.position.set(Math.sin(i * 0.3) * 0.08, 1.0 + i * 0.15, -0.5 - i * 0.12);
-    seg.castShadow = true;
-    cat.add(seg);
-    parts.tailSegs.push(seg);
+  // Remember each character's resting ear angle so twitches return to it
+  parts.earBaseZ = characterKey === 'bunny' ? 0.15 : characterKey === 'dog' ? 0.4 : 0.3;
+
+  // Tail — per character
+  if (characterKey === 'bunny') {
+    // Round puff tail
+    const puff = new THREE.Mesh(new THREE.SphereGeometry(0.16, 10, 10), pawM);
+    puff.position.set(0, 0.95, -0.62);
+    puff.castShadow = true;
+    cat.add(puff);
+    parts.tailSegs.push(puff);
+  } else if (characterKey === 'dog') {
+    // Short happy tail sticking up
+    for (let i = 0; i < 5; i++) {
+      const seg = new THREE.Mesh(new THREE.SphereGeometry(0.09 - i * 0.008, 8, 8), new THREE.MeshStandardMaterial({ color: i > 3 ? skin.paws : skin.fur, roughness: 0.5 }));
+      seg.position.set(0, 1.05 + i * 0.13, -0.55 - i * 0.05);
+      seg.castShadow = true;
+      cat.add(seg);
+      parts.tailSegs.push(seg);
+    }
+  } else {
+    // Cat tail — fluffy, curved up
+    for (let i = 0; i < 8; i++) {
+      const sg = new THREE.SphereGeometry(0.1 - i * 0.008, 8, 8);
+      const sm = new THREE.MeshStandardMaterial({ color: i > 6 ? skin.paws : skin.fur, roughness: 0.5 });
+      const seg = new THREE.Mesh(sg, sm);
+      seg.position.set(Math.sin(i * 0.3) * 0.08, 1.0 + i * 0.15, -0.5 - i * 0.12);
+      seg.castShadow = true;
+      cat.add(seg);
+      parts.tailSegs.push(seg);
+    }
   }
 }
 
