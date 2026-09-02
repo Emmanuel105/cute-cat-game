@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cute 3D Cat Game</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:#0a0a1a;overflow:hidden;font-family:'Segoe UI',system-ui,sans-serif;user-select:none}
+  #game-container{width:100vw;height:100vh;position:relative}
+  canvas{display:block;width:100%;height:100%}
+  .ui-overlay{position:absolute;top:14px;left:14px;color:#fff;pointer-events:none;z-index:10;text-shadow:0 2px 6px rgba(0,0,0,.7)}
+  .ui-overlay h1{font-size:18px;margin-bottom:3px}
+  .ui-overlay .sub{font-size:11px;opacity:.85;line-height:1.5}
+  .ui-overlay .sub kbd{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);border-radius:3px;padding:1px 4px;font-family:monospace;font-size:10px}
+  .hud-right{position:absolute;top:14px;right:14px;display:flex;flex-direction:column;align-items:flex-end;gap:6px;z-index:10;pointer-events:none}
+  .hud-bar{background:rgba(0,0,0,.55);backdrop-filter:blur(6px);border-radius:6px;padding:5px 10px;color:#fff;font-size:12px;min-width:120px;text-align:right;border:1px solid rgba(255,255,255,.1)}
+  .hud-bar .label{font-size:9px;opacity:.7;text-transform:uppercase;letter-spacing:1px}
+  .hud-bar .value{font-size:15px;font-weight:700}
+  .bar-track{width:100%;height:5px;background:rgba(255,255,255,.15);border-radius:3px;margin-top:3px;overflow:hidden}
+  .bar-fill{height:100%;border-radius:3px;transition:width .2s}
+  .health-fill{background:#ff4444}
+  .energy-fill{background:#44ff88}
+  .boost-fill{background:#ffd700}
+  .skin-panel{position:absolute;top:48px;right:14px;display:flex;gap:5px;z-index:10}
+  .skin-btn{width:28px;height:28px;border-radius:50%;border:2px solid rgba(255,255,255,.3);cursor:pointer;transition:.2s;box-shadow:0 2px 5px rgba(0,0,0,.4);pointer-events:auto}
+  .skin-btn:hover{transform:scale(1.15);border-color:#fff}
+  .skin-btn.active{border-color:#ffd700;transform:scale(1.15);box-shadow:0 0 6px #ffd700}
+  #msg{position:absolute;bottom:55px;left:50%;transform:translateX(-50%);color:#ffd700;font-size:24px;font-weight:800;opacity:0;transition:opacity .3s;pointer-events:none;z-index:10;text-shadow:0 2px 10px rgba(255,215,0,.5);white-space:nowrap}
+  #start-screen{position:absolute;inset:0;background:linear-gradient(135deg,#1a1a3e 0%,#0f0f2a 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:200;color:#fff;text-align:center}
+  #start-screen h1{font-size:44px;margin-bottom:10px;background:linear-gradient(90deg,#ffd700,#ff69b4);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  #start-screen p{font-size:15px;opacity:.8;margin-bottom:28px;max-width:480px;line-height:1.6;padding:0 20px}
+  #start-btn{background:linear-gradient(90deg,#ff69b4,#ffd700);border:none;padding:14px 44px;font-size:17px;font-weight:700;color:#1a1a3e;border-radius:50px;cursor:pointer;transition:transform .2s,box-shadow .2s;box-shadow:0 4px 18px rgba(255,105,180,.4);pointer-events:auto}
+  #start-btn:hover{transform:scale(1.06);box-shadow:0 6px 26px rgba(255,105,180,.6)}
+  .mode-toggle{position:absolute;bottom:14px;right:14px;z-index:10}
+  .mode-btn{background:rgba(0,0,0,.5);border:1px solid rgba(255,255,255,.2);color:#fff;padding:5px 12px;border-radius:18px;cursor:pointer;font-size:11px;transition:.2s;pointer-events:auto}
+  .mode-btn:hover{background:rgba(255,255,255,.15)}
+  .crosshair{position:absolute;top:50%;left:50%;width:10px;height:10px;border:2px solid rgba(255,255,255,.5);border-radius:50%;transform:translate(-50%,-50%);pointer-events:none;z-index:5;opacity:0;transition:opacity .3s}
+  .time-ind{position:absolute;bottom:14px;left:14px;color:#fff;font-size:11px;opacity:.7;pointer-events:none;z-index:10}
+</style>
+</head>
+<body>
+<div id="game-container">
+  <div id="start-screen">
+    <h1>🐱 Cute Cat Game</h1>
+    <p>Tank controls: W/S = forward/back, A/D = turn. Explore, collect, and jump! Press Space or Click to start.</p>
+    <button id="start-btn">▶ Click or Press Space to Start</button>
+  </div>
+  <canvas id="c"></canvas>
+  <div class="ui-overlay" id="hud" style="display:none">
+    <h1>🐱 Cute Cat</h1>
+    <div class="sub">
+      <kbd>W</kbd><kbd>S</kbd> Move &nbsp;
+      <kbd>A</kbd><kbd>D</kbd> Turn &nbsp;
+      <kbd>Shift</kbd> Run &nbsp;
+      <kbd>Space</kbd> Jump &nbsp;
+      <kbd>C</kbd> Cam
+    </div>
+  </div>
+  <div class="hud-right" id="hud-right" style="display:none">
+    <div class="hud-bar"><div class="label">Score</div><div class="value" id="score-val">0</div></div>
+    <div class="hud-bar"><div class="label">Health</div><div class="bar-track"><div class="bar-fill health-fill" id="health-bar" style="width:100%"></div></div></div>
+    <div class="hud-bar"><div class="label">Energy</div><div class="bar-track"><div class="bar-fill energy-fill" id="energy-bar" style="width:100%"></div></div></div>
+    <div class="hud-bar" id="boost-box" style="opacity:0"><div class="label">Boost</div><div class="bar-track"><div class="bar-fill boost-fill" id="boost-bar" style="width:100%"></div></div></div>
+  </div>
+  <div class="skin-panel" id="skin-panel" style="display:none">
+    <div class="skin-btn active" style="background:#ffa500" data-s="orange"></div>
+    <div class="skin-btn" style="background:#222" data-s="black"></div>
+    <div class="skin-btn" style="background:#f0f0f0" data-s="white"></div>
+    <div class="skin-btn" style="background:#8B4513" data-s="brown"></div>
+    <div class="skin-btn" style="background:linear-gradient(135deg,#222 50%,#fff 50%)" data-s="tuxedo"></div>
+  </div>
+  <div id="msg"></div>
+  <div class="crosshair" id="crosshair"></div>
+  <div class="mode-toggle" id="mode-toggle" style="display:none">
+    <button class="mode-btn" id="cam-btn">🎥 3rd Person</button>
+  </div>
+  <div class="time-ind" id="time-ind">☀️ Day</div>
+</div>
+
+<script type="importmap">
+{"imports":{"three":"https://unpkg.com/three@0.160.0/build/three.module.js"}}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+
+// ========== SETUP ==========
+const canvas = document.getElementById('c');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x87CEEB);
+scene.fog = new THREE.Fog(0x87CEEB, 40, 140);
+
+const camera = new THREE.PerspectiveCamera(60, innerWidth / innerHeight, 0.1, 300);
+camera.position.set(0, 5, 10);
+
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setSize(innerWidth, innerHeight);
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
+renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+
+// ========== LIGHTS ==========
+const ambient = new THREE.AmbientLight(0xffffff, 0.6);
+scene.add(ambient);
+
+const sun = new THREE.DirectionalLight(0xfffaed, 1.4);
+sun.position.set(15, 25, 10);
+sun.castShadow = true;
+sun.shadow.mapSize.set(4096, 4096);
+const d = 40;
+sun.shadow.camera.left = -d; sun.shadow.camera.right = d;
+sun.shadow.camera.top = d; sun.shadow.camera.bottom = -d;
+sun.shadow.camera.near = 0.5; sun.shadow.camera.far = 80;
+scene.add(sun);
+
+const moon = new THREE.DirectionalLight(0x8899ff, 0.3);
+moon.position.set(-15, 20, -10);
+scene.add(moon);
+
+const hemi = new THREE.HemisphereLight(0x87CEEB, 0x2d5a1e, 0.5);
+scene.add(hemi);
+
+// ========== SKY ==========
+const skyGeo = new THREE.SphereGeometry(120, 32, 32);
+const skyMat = new THREE.MeshBasicMaterial({ color: 0x87CEEB, side: THREE.BackSide });
+const sky = new THREE.Mesh(skyGeo, skyMat);
+scene.add(sky);
+
+const sunMesh = new THREE.Mesh(new THREE.SphereGeometry(3, 16, 16), new THREE.MeshBasicMaterial({ color: 0xffdd44 }));
+sunMesh.position.copy(sun.position).normalize().multiplyScalar(80);
+scene.add(sunMesh);
+
+const moonMesh = new THREE.Mesh(new THREE.SphereGeometry(2, 16, 16), new THREE.MeshBasicMaterial({ color: 0xddddff }));
+moonMesh.position.copy(moon.position).normalize().multiplyScalar(80);
+scene.add(moonMesh);
+
+const starsGeo = new THREE.BufferGeometry();
+const starPos = [];
+for (let i = 0; i < 800; i++) {
+  const v = new THREE.Vector3(Math.random() * 2 - 1, Math.random() * 2 - 1, Math.random() * 2 - 1).normalize().multiplyScalar(90);
+  starPos.push(v.x, v.y, v.z);
+}
+starsGeo.setAttribute('position', new THREE.Float32BufferAttribute(starPos, 3));
+const starsMat = new THREE.PointsMaterial({ color: 0xffffff, size: 0.4, transparent: true, opacity: 0 });
+const stars = new THREE.Points(starsGeo, starsMat);
+scene.add(stars);
+
+// ========== GROUND ==========
+const ground = new THREE.Mesh(new THREE.PlaneGeometry(200, 200), new THREE.MeshStandardMaterial({ color: 0x4a7c3f, roughness: 0.95 }));
+ground.rotation.x = -Math.PI / 2;
+ground.receiveShadow = true;
+scene.add(ground);
+
+// Grass
+for (let i = 0; i < 400; i++) {
+  const h = 0.1 + Math.random() * 0.3;
+  const g = new THREE.Mesh(new THREE.ConeGeometry(0.04, h, 3), new THREE.MeshStandardMaterial({ color: new THREE.Color().setHSL(0.25 + Math.random() * 0.08, 0.55, 0.25 + Math.random() * 0.2) }));
+  const r = 2 + Math.random() * 45, th = Math.random() * Math.PI * 2;
+  g.position.set(Math.cos(th) * r, h / 2, Math.sin(th) * r);
+  scene.add(g);
+}
+// Flowers
+for (let i = 0; i < 60; i++) {
+  const f = new THREE.Mesh(new THREE.SphereGeometry(0.07, 6, 6), new THREE.MeshStandardMaterial({ color: new THREE.Color().setHSL(Math.random(), 0.75, 0.55) }));
+  const r = 3 + Math.random() * 30, th = Math.random() * Math.PI * 2;
+  f.position.set(Math.cos(th) * r, 0.07, Math.sin(th) * r);
+  scene.add(f);
+}
+// Trees
+function tree(x, z, s = 1) {
+  const g = new THREE.Group();
+  const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.25 * s, 0.35 * s, 2 * s, 6), new THREE.MeshStandardMaterial({ color: 0x5c3a1e, roughness: 0.9 }));
+  trunk.position.y = 1 * s; trunk.castShadow = true; g.add(trunk);
+  const l1 = new THREE.Mesh(new THREE.ConeGeometry(1.4 * s, 3 * s, 8), new THREE.MeshStandardMaterial({ color: 0x2d5a1e, roughness: 0.8 }));
+  l1.position.y = 3 * s; l1.castShadow = true; g.add(l1);
+  const l2 = l1.clone(); l2.scale.set(0.75, 0.75, 0.75); l2.position.y = 4.3 * s; g.add(l2);
+  g.position.set(x, 0, z); scene.add(g);
+}
+for (let i = 0; i < 18; i++) { const r = 12 + Math.random() * 35, th = Math.random() * Math.PI * 2; tree(Math.cos(th) * r, Math.sin(th) * r, 0.8 + Math.random() * 0.5); }
+// Rocks
+for (let i = 0; i < 12; i++) {
+  const rock = new THREE.Mesh(new THREE.DodecahedronGeometry(0.3 + Math.random() * 0.5, 0), new THREE.MeshStandardMaterial({ color: 0x777777, roughness: 0.9 }));
+  const r = 5 + Math.random() * 30, th = Math.random() * Math.PI * 2;
+  rock.position.set(Math.cos(th) * r, 0.2, Math.sin(th) * r); rock.castShadow = true; rock.receiveShadow = true; scene.add(rock);
+}
+
+// Water
+const water = new THREE.Mesh(new THREE.CircleGeometry(2, 32), new THREE.MeshStandardMaterial({ color: 0x4488ff, roughness: 0.05, metalness: 0.8, transparent: true, opacity: 0.7 }));
+water.rotation.x = -Math.PI / 2; water.position.set(6, 0.02, 6); scene.add(water);
+
+// ========== HOUSE ==========
+const house = new THREE.Group();
+const walls = new THREE.Mesh(new THREE.BoxGeometry(6, 4, 5), new THREE.MeshStandardMaterial({ color: 0xf5f5dc, roughness: 0.8 }));
+walls.position.y = 2; walls.castShadow = true; walls.receiveShadow = true; house.add(walls);
+const roof = new THREE.Mesh(new THREE.ConeGeometry(4.5, 2.5, 4), new THREE.MeshStandardMaterial({ color: 0x8B0000, roughness: 0.7 }));
+roof.position.y = 5.25; roof.rotation.y = Math.PI / 4; roof.castShadow = true; house.add(roof);
+const door = new THREE.Mesh(new THREE.BoxGeometry(1.2, 2.2, 0.1), new THREE.MeshStandardMaterial({ color: 0x5c3a1e }));
+door.position.set(0, 1.1, 2.51); house.add(door);
+const winMat = new THREE.MeshStandardMaterial({ color: 0x87CEEB, emissive: 0x223344, emissiveIntensity: 0.3, transparent: true, opacity: 0.7 });
+const w1 = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.2, 0.1), winMat); w1.position.set(-1.8, 2.5, 2.51); house.add(w1);
+const w2 = new THREE.Mesh(new THREE.BoxGeometry(1.2, 1.2, 0.1), winMat); w2.position.set(1.8, 2.5, 2.51); house.add(w2);
+house.position.set(-10, 0, -8); scene.add(house);
+
+// ========== PLATFORMS ==========
+const platforms = [];
+function platform(x, y, z, sx, sz) {
+  const g = new THREE.Group();
+  const top = new THREE.Mesh(new THREE.BoxGeometry(sx, 0.2, sz), new THREE.MeshStandardMaterial({ color: 0x999999, roughness: 0.6 }));
+  top.position.y = y; top.castShadow = true; top.receiveShadow = true; g.add(top);
+  const pillar = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.1, y, 6), new THREE.MeshStandardMaterial({ color: 0x666666, roughness: 0.8 }));
+  pillar.position.y = y / 2; g.add(pillar);
+  g.position.set(x, 0, z); scene.add(g);
+  platforms.push({ x, z, topY: y + 0.1, halfW: sx / 2, halfD: sz / 2 });
+}
+platform(3, 0.5, 3, 2, 2);
+platform(6, 1.0, 5, 1.8, 1.8);
+platform(9, 1.5, 3, 1.6, 1.6);
+platform(11, 1.5, 6, 1.4, 1.4);
+
+// ========== CUTE CAT ==========
+const SKINS = {
+  orange: { fur: 0xffa500, belly: 0xffeebb, nose: 0xff69b4, innerEar: 0xffaaaa, paws: 0xffffff },
+  black: { fur: 0x222222, belly: 0x333333, nose: 0xff69b4, innerEar: 0x444444, paws: 0x222222 },
+  white: { fur: 0xf5f5f5, belly: 0xffffff, nose: 0xff9999, innerEar: 0xffcccc, paws: 0xffffff },
+  brown: { fur: 0x8B4513, belly: 0xcd853f, nose: 0xff69b4, innerEar: 0xd2691e, paws: 0xffffff },
+  tuxedo: { fur: 0x222222, belly: 0xffffff, nose: 0xff69b4, innerEar: 0xffaaaa, paws: 0xffffff }
+};
+let skin = SKINS.orange;
+const cat = new THREE.Group();
+const parts = {};
+
+function buildCat() {
+  while (cat.children.length) cat.remove(cat.children[0]);
+  parts.eyelids = []; parts.tailSegs = [];
+  const furM = new THREE.MeshStandardMaterial({ color: skin.fur, roughness: 0.5 });
+  const bellyM = new THREE.MeshStandardMaterial({ color: skin.belly, roughness: 0.5 });
+  const noseM = new THREE.MeshStandardMaterial({ color: skin.nose, roughness: 0.3 });
+  const innerM = new THREE.MeshStandardMaterial({ color: skin.innerEar, roughness: 0.4 });
+  const pawM = new THREE.MeshStandardMaterial({ color: skin.paws, roughness: 0.5 });
+  const whiskM = new THREE.LineBasicMaterial({ color: 0xdddddd, transparent: true, opacity: 0.7 });
+
+  // Body — chubby round capsule
+  const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.55, 1.0, 4, 10), furM);
+  body.position.y = 0.9;
+  body.rotation.x = Math.PI / 2;
+  body.castShadow = true;
+  cat.add(body);
+  parts.body = body;
+
+  // Belly patch
+  const belly = new THREE.Mesh(new THREE.CapsuleGeometry(0.42, 0.9, 4, 10), bellyM);
+  belly.position.set(0, 0.9, 0.06);
+  belly.rotation.x = Math.PI / 2;
+  cat.add(belly);
+
+  // HEAD — big and round (chibi proportions)
+  const headG = new THREE.Group();
+  headG.position.set(0, 1.35, 0.75);
+  cat.add(headG);
+  parts.headG = headG;
+
+  // Main head sphere
+  const head = new THREE.Mesh(new THREE.SphereGeometry(0.6, 20, 20), furM);
+  head.castShadow = true;
+  headG.add(head);
+
+  // Snout — small cute bump
+  const snout = new THREE.Mesh(new THREE.SphereGeometry(0.2, 12, 12), new THREE.MeshStandardMaterial({ color: skin.belly, roughness: 0.5 }));
+  snout.position.set(0, -0.08, 0.48);
+  snout.scale.set(1.1, 0.8, 0.9);
+  headG.add(snout);
+
+  // Nose — tiny pink triangle
+  const nose = new THREE.Mesh(new THREE.ConeGeometry(0.04, 0.05, 3), noseM);
+  nose.position.set(0, -0.02, 0.58);
+  nose.rotation.x = Math.PI / 2;
+  headG.add(nose);
+
+  // Mouth — tiny smile
+  const mouthCurve = new THREE.QuadraticBezierCurve3(
+    new THREE.Vector3(-0.06, -0.1, 0.55),
+    new THREE.Vector3(0, -0.13, 0.57),
+    new THREE.Vector3(0.06, -0.1, 0.55)
+  );
+  const mouthPts = mouthCurve.getPoints(10);
+  headG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(mouthPts), new THREE.LineBasicMaterial({ color: 0x333333 })));
+
+  // EYES — large, round, cute (hemispheres flush with face)
+  const eyeWhiteMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.2 });
+  const pupilMat = new THREE.MeshStandardMaterial({ color: 0x222222, roughness: 0.1, metalness: 0.3 });
+
+  // Left eye
+  const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.14, 12, 12), eyeWhiteMat);
+  eyeL.position.set(0.2, 0.1, 0.45);
+  eyeL.scale.set(1, 1.15, 0.6); // flatten slightly into face
+  headG.add(eyeL);
+  const pupilL = new THREE.Mesh(new THREE.SphereGeometry(0.09, 12, 12), pupilMat);
+  pupilL.position.set(0.2, 0.1, 0.52);
+  headG.add(pupilL);
+  const shineL = new THREE.Mesh(new THREE.SphereGeometry(0.03, 6, 6), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+  shineL.position.set(0.23, 0.14, 0.55);
+  headG.add(shineL);
+
+  // Right eye
+  const eyeR = new THREE.Mesh(new THREE.SphereGeometry(0.14, 12, 12), eyeWhiteMat);
+  eyeR.position.set(-0.2, 0.1, 0.45);
+  eyeR.scale.set(1, 1.15, 0.6);
+  headG.add(eyeR);
+  const pupilR = new THREE.Mesh(new THREE.SphereGeometry(0.09, 12, 12), pupilMat);
+  pupilR.position.set(-0.2, 0.1, 0.52);
+  headG.add(pupilR);
+  const shineR = new THREE.Mesh(new THREE.SphereGeometry(0.03, 6, 6), new THREE.MeshBasicMaterial({ color: 0xffffff }));
+  shineR.position.set(-0.17, 0.14, 0.55);
+  headG.add(shineR);
+
+  // Eyelids (for blinking)
+  const eyelidGeo = new THREE.SphereGeometry(0.15, 10, 10, 0, Math.PI * 2, 0, Math.PI / 2);
+  const eyelidL = new THREE.Mesh(eyelidGeo, furM);
+  eyelidL.position.set(0.2, 0.1, 0.45);
+  eyelidL.rotation.x = -Math.PI / 2;
+  eyelidL.scale.set(1, 0, 1);
+  headG.add(eyelidL);
+  parts.eyelids.push(eyelidL);
+  const eyelidR = new THREE.Mesh(eyelidGeo, furM);
+  eyelidR.position.set(-0.2, 0.1, 0.45);
+  eyelidR.rotation.x = -Math.PI / 2;
+  eyelidR.scale.set(1, 0, 1);
+  headG.add(eyelidR);
+  parts.eyelids.push(eyelidR);
+
+  // Ears — round triangles, soft
+  const earGeo = new THREE.ConeGeometry(0.18, 0.35, 4);
+  const earL = new THREE.Mesh(earGeo, furM);
+  earL.position.set(0.28, 0.52, -0.02);
+  earL.rotation.z = -0.3;
+  earL.rotation.y = 0.1;
+  earL.castShadow = true;
+  headG.add(earL);
+  parts.earL = earL;
+  const earR = new THREE.Mesh(earGeo, furM);
+  earR.position.set(-0.28, 0.52, -0.02);
+  earR.rotation.z = 0.3;
+  earR.rotation.y = -0.1;
+  earR.castShadow = true;
+  headG.add(earR);
+  parts.earR = earR;
+
+  // Inner ears
+  const iEarGeo = new THREE.ConeGeometry(0.1, 0.22, 4);
+  const iEarL = new THREE.Mesh(iEarGeo, innerM);
+  iEarL.position.set(0.28, 0.48, 0.02);
+  iEarL.rotation.z = -0.3;
+  iEarL.rotation.y = 0.1;
+  headG.add(iEarL);
+  const iEarR = new THREE.Mesh(iEarGeo, innerM);
+  iEarR.position.set(-0.28, 0.48, 0.02);
+  iEarR.rotation.z = 0.3;
+  iEarR.rotation.y = -0.1;
+  headG.add(iEarR);
+
+  // Whiskers
+  for (let i = -1; i <= 1; i++) {
+    const pL = [new THREE.Vector3(0.05 * i, -0.06, 0.5), new THREE.Vector3(0.12 * i + 0.1, -0.02 + i * 0.02, 0.75)];
+    headG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pL), whiskM));
+    const pR = [new THREE.Vector3(0.05 * i, -0.06, 0.5), new THREE.Vector3(0.12 * i - 0.1, -0.02 + i * 0.02, 0.75)];
+    headG.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pR), whiskM));
+  }
+
+  // Legs — short and stubby (cute)
+  function leg(x, z) {
+    const g = new THREE.Group();
+    g.position.set(x, 0.5, z);
+    const up = new THREE.Mesh(new THREE.CapsuleGeometry(0.1, 0.3, 4, 8), furM);
+    up.position.y = 0.15; up.castShadow = true; g.add(up);
+    const low = new THREE.Mesh(new THREE.CapsuleGeometry(0.07, 0.25, 4, 8), furM);
+    low.position.y = -0.12; low.castShadow = true; g.add(low);
+    const paw = new THREE.Mesh(new THREE.SphereGeometry(0.11, 8, 8), pawM);
+    paw.position.y = -0.32; paw.scale.set(1.05, 0.65, 1.1); g.add(paw);
+    cat.add(g);
+    return g;
+  }
+  parts.legFL = leg(0.24, 0.38);
+  parts.legFR = leg(-0.24, 0.38);
+  parts.legBL = leg(0.24, -0.38);
+  parts.legBR = leg(-0.24, -0.38);
+
+  // Tail — fluffy, curved up
+  for (let i = 0; i < 8; i++) {
+    const sg = new THREE.SphereGeometry(0.1 - i * 0.008, 8, 8);
+    const sm = new THREE.MeshStandardMaterial({ color: i > 6 ? skin.paws : skin.fur, roughness: 0.5 });
+    const seg = new THREE.Mesh(sg, sm);
+    // Curved tail going up and back
+    seg.position.set(Math.sin(i * 0.3) * 0.08, 1.0 + i * 0.15, -0.5 - i * 0.12);
+    seg.castShadow = true;
+    cat.add(seg);
+    parts.tailSegs.push(seg);
+  }
+}
+buildCat();
+scene.add(cat);
+
+// ========== COLLECTIBLES ==========
+const items = [];
+function spawnItem(type, x, z) {
+  const g = new THREE.Group();
+  g.position.set(x, 0.6, z);
+  if (type === 'fish') {
+    const b = new THREE.Mesh(new THREE.SphereGeometry(0.22, 10, 10), new THREE.MeshStandardMaterial({ color: 0x87ceeb, emissive: 0x0044aa, emissiveIntensity: 0.35 }));
+    b.scale.set(0.45, 0.65, 1.4); g.add(b);
+    const t = new THREE.Mesh(new THREE.ConeGeometry(0.1, 0.22, 3), new THREE.MeshStandardMaterial({ color: 0x87ceeb }));
+    t.position.set(0, 0, -0.32); t.rotation.x = Math.PI / 2; g.add(t);
+  } else if (type === 'yarn') {
+    g.add(new THREE.Mesh(new THREE.IcosahedronGeometry(0.32, 2), new THREE.MeshStandardMaterial({ color: 0xff3366, wireframe: true })));
+  } else if (type === 'mouse') {
+    const b = new THREE.Mesh(new THREE.SphereGeometry(0.16, 8, 8), new THREE.MeshStandardMaterial({ color: 0x888888 }));
+    b.scale.set(0.88, 0.78, 1.3); g.add(b);
+    const e = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.1, 4), new THREE.MeshStandardMaterial({ color: 0xffaaaa }));
+    e.position.set(0.06, 0.12, 0.1); g.add(e);
+    const e2 = e.clone(); e2.position.set(-0.06, 0.12, 0.1); g.add(e2);
+  } else if (type === 'boost') {
+    g.add(new THREE.Mesh(new THREE.OctahedronGeometry(0.25, 0), new THREE.MeshStandardMaterial({ color: 0xffd700, emissive: 0xffaa00, emissiveIntensity: 0.6, metalness: 0.8, roughness: 0.2 })));
+    const ring = new THREE.Mesh(new THREE.TorusGeometry(0.35, 0.03, 8, 16), new THREE.MeshBasicMaterial({ color: 0xffd700, transparent: true, opacity: 0.6 }));
+    ring.rotation.x = Math.PI / 2; g.add(ring);
+  }
+  scene.add(g);
+  items.push({ mesh: g, type, baseY: 0.6, collected: false });
+}
+spawnItem('fish', 5, 4);
+spawnItem('yarn', -4, 6);
+spawnItem('mouse', 6, -5);
+spawnItem('fish', -6, -4);
+spawnItem('yarn', 3, 8);
+spawnItem('boost', 0, 8);
+
+// ========== CHASE MOUSE ==========
+const chaseMouse = new THREE.Group();
+const cmBody = new THREE.Mesh(new THREE.SphereGeometry(0.14, 8, 8), new THREE.MeshStandardMaterial({ color: 0x666666 }));
+cmBody.scale.set(0.85, 0.75, 1.3); chaseMouse.add(cmBody);
+const cmEar = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.1, 4), new THREE.MeshStandardMaterial({ color: 0xff9999 }));
+cmEar.position.set(0.05, 0.12, 0.1); chaseMouse.add(cmEar);
+const cmEar2 = cmEar.clone(); cmEar2.position.set(-0.05, 0.12, 0.1); chaseMouse.add(cmEar2);
+chaseMouse.position.set(8, 0.12, 8);
+scene.add(chaseMouse);
+let chaseActive = false;
+
+// ========== PARTICLES ==========
+const particles = [];
+function emitParticles(pos, color, count = 8, type = 'dust') {
+  for (let i = 0; i < count; i++) {
+    const p = new THREE.Mesh(new THREE.SphereGeometry(type === 'sparkle' ? 0.06 : 0.04, 4, 4), new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 1 }));
+    p.position.copy(pos);
+    p.userData = { vel: new THREE.Vector3((Math.random() - 0.5) * 3, (Math.random() * 2 + 1) * (type === 'jump' ? 2 : 1), (Math.random() - 0.5) * 3), life: 1, type };
+    scene.add(p);
+    particles.push(p);
+  }
+}
+
+// ========== GAME STATE ==========
+const keys = { w: false, a: false, s: false, d: false, shift: false, space: false };
+let speed = 0, health = 100, energy = 100, boostTime = 0, score = 0;
+let isJump = false, jumpT = 0, onGround = true;
+let time = 0, blinkT = 0, nextBlink = 2 + Math.random() * 4, earT = 0, nextEar = 1 + Math.random() * 3;
+let camMode = 'third';
+let camAngle = 0, camH = 4, camR = 7;
+let isDrag = false, prevMX = 0;
+let dayTime = 0.25;
+let gameStarted = false;
+
+// ========== INPUT ==========
+window.addEventListener('keydown', e => {
+  const k = e.key.toLowerCase();
+  if (k === 'w' || k === 'arrowup') keys.w = true;
+  if (k === 'a' || k === 'arrowleft') keys.a = true;
+  if (k === 's' || k === 'arrowdown') keys.s = true;
+  if (k === 'd' || k === 'arrowright') keys.d = true;
+  if (e.key === 'Shift') keys.shift = true;
+  if (e.code === 'Space') {
+    if (!keys.space && !isJump && onGround && gameStarted) {
+      isJump = true; jumpT = 0; onGround = false;
+      emitParticles(cat.position.clone().add(new THREE.Vector3(0, 0.1, 0)), 0xdddddd, 6, 'jump');
+    }
+    keys.space = true;
+  }
+  if (k === 'c' && gameStarted) toggleCam();
+  if (!gameStarted && (k === 'w' || k === 'a' || k === 's' || k === 'd' || k === ' ')) startGame();
+});
+window.addEventListener('keyup', e => {
+  const k = e.key.toLowerCase();
+  if (k === 'w' || k === 'arrowup') keys.w = false;
+  if (k === 'a' || k === 'arrowleft') keys.a = false;
+  if (k === 's' || k === 'arrowdown') keys.s = false;
+  if (k === 'd' || k === 'arrowright') keys.d = false;
+  if (e.key === 'Shift') keys.shift = false;
+  if (e.code === 'Space') keys.space = false;
+});
+canvas.addEventListener('mousedown', e => { isDrag = true; prevMX = e.clientX; });
+window.addEventListener('mouseup', () => isDrag = false);
+window.addEventListener('mousemove', e => { if (isDrag && gameStarted) { camAngle -= (e.clientX - prevMX) * 0.008; prevMX = e.clientX; } });
+canvas.addEventListener('wheel', e => { if (gameStarted) camR = Math.max(3, Math.min(16, camR + e.deltaY * 0.01)); });
+
+document.querySelectorAll('.skin-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.skin-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    skin = SKINS[btn.dataset.s];
+    buildCat();
+  });
+});
+
+function toggleCam() {
+  if (camMode === 'third') { camMode = 'first'; document.getElementById('cam-btn').textContent = '👁️ 1st Person'; document.getElementById('crosshair').style.opacity = '1'; }
+  else if (camMode === 'first') { camMode = 'cinematic'; document.getElementById('cam-btn').textContent = '🎬 Cinematic'; document.getElementById('crosshair').style.opacity = '0'; }
+  else { camMode = 'third'; document.getElementById('cam-btn').textContent = '🎥 3rd Person'; document.getElementById('crosshair').style.opacity = '0'; }
+}
+document.getElementById('cam-btn').addEventListener('click', toggleCam);
+
+function showMsg(txt) {
+  const el = document.getElementById('msg');
+  el.textContent = txt; el.style.opacity = '1';
+  setTimeout(() => el.style.opacity = '0', 1200);
+}
+
+function startGame() {
+  if (gameStarted) return;
+  gameStarted = true;
+  document.getElementById('start-screen').style.opacity = '0';
+  setTimeout(() => { document.getElementById('start-screen').style.display = 'none'; }, 500);
+  document.getElementById('hud').style.display = 'block';
+  document.getElementById('hud-right').style.display = 'flex';
+  document.getElementById('skin-panel').style.display = 'flex';
+  document.getElementById('mode-toggle').style.display = 'block';
+}
+document.getElementById('start-btn').addEventListener('click', startGame);
+
+// ========== DAY/NIGHT (SLOW) ==========
+function updateDayNight() {
+  dayTime = (dayTime + 0.000008) % 1;
+  const sunAngle = dayTime * Math.PI * 2;
+  sun.position.set(Math.cos(sunAngle) * 25, Math.sin(sunAngle) * 25, 10);
+  sunMesh.position.copy(sun.position).normalize().multiplyScalar(80);
+  moon.position.set(Math.cos(sunAngle + Math.PI) * 25, Math.sin(sunAngle + Math.PI) * 25, 10);
+  moonMesh.position.copy(moon.position).normalize().multiplyScalar(80);
+  let skyColor, ambientInt, sunInt;
+  if (dayTime < 0.2 || dayTime > 0.8) {
+    skyColor = new THREE.Color(0x0a0a2e); ambientInt = 0.2; sunInt = 0;
+    starsMat.opacity = Math.min(1, (dayTime < 0.2 ? 0.2 - dayTime : dayTime - 0.8) * 10);
+    moon.intensity = 0.6; hemi.groundColor.setHex(0x111133);
+  } else if (dayTime < 0.25 || dayTime > 0.75) {
+    skyColor = new THREE.Color(0xff8844); ambientInt = 0.4; sunInt = 0.6;
+    starsMat.opacity = 0; moon.intensity = 0.1; hemi.groundColor.setHex(0x5a3a1e);
+  } else {
+    skyColor = new THREE.Color(0x87CEEB); ambientInt = 0.55; sunInt = 1.3;
+    starsMat.opacity = 0; moon.intensity = 0; hemi.groundColor.setHex(0x2d5a1e);
+  }
+  scene.background = skyColor; scene.fog.color = skyColor; skyMat.color = skyColor;
+  ambient.intensity = ambientInt; sun.intensity = sunInt;
+  document.getElementById('time-ind').textContent = dayTime < 0.2 || dayTime > 0.8 ? '🌙 Night' : dayTime < 0.25 || dayTime > 0.75 ? '🌅 Twilight' : '☀️ Day';
+}
+
+// ========== PLATFORM COLLISION ==========
+function resolvePlatformCollision(nextX, nextZ) {
+  for (const p of platforms) {
+    const halfW = p.halfW + 0.2;
+    const halfD = p.halfD + 0.2;
+    const dx = nextX - p.x;
+    const dz = nextZ - p.z;
+    if (Math.abs(dx) < halfW && Math.abs(dz) < halfD) {
+      if (cat.position.y + 0.5 < p.topY) {
+        const overlapX = halfW - Math.abs(dx);
+        const overlapZ = halfD - Math.abs(dz);
+        if (overlapX < overlapZ) {
+          return { x: nextX + (dx > 0 ? overlapX : -overlapX), z: nextZ };
+        } else {
+          return { x: nextX, z: nextZ + (dz > 0 ? overlapZ : -overlapZ) };
+        }
+      }
+    }
+  }
+  return { x: nextX, z: nextZ };
+}
+
+function getGroundHeight() {
+  let bestY = 0;
+  for (const p of platforms) {
+    const dx = Math.abs(cat.position.x - p.x);
+    const dz = Math.abs(cat.position.z - p.z);
+    if (dx < p.halfW - 0.1 && dz < p.halfD - 0.1) {
+      if (cat.position.y >= p.topY - 0.3) {
+        bestY = Math.max(bestY, p.topY);
+      }
+    }
+  }
+  return bestY;
+}
+
+// ========== MAIN LOOP ==========
+function animate() {
+  requestAnimationFrame(animate);
+  time += 0.016;
+  updateDayNight();
+  if (!gameStarted) { renderer.render(scene, camera); return; }
+
+  // Tank movement
+  let target = 0;
+  let moving = false;
+  if (keys.w) { target = keys.shift && energy > 0 ? 7 : 3.5; moving = true; }
+  if (keys.s) { target = keys.shift && energy > 0 ? -3.5 : -2; moving = true; }
+  if (keys.shift && moving && energy > 0) { energy -= 0.2; }
+  else if (energy < 100) { energy += 0.1; }
+
+  speed += (target - speed) * 0.1;
+  if (Math.abs(speed) < 0.05) speed = 0;
+
+  if (keys.a) cat.rotation.y += 2.0 * 0.016;
+  if (keys.d) cat.rotation.y -= 2.0 * 0.016;
+
+  if (speed !== 0) {
+    const nextX = cat.position.x + Math.sin(cat.rotation.y) * speed * 0.016;
+    const nextZ = cat.position.z + Math.cos(cat.rotation.y) * speed * 0.016;
+    const resolved = resolvePlatformCollision(nextX, nextZ);
+    cat.position.x = resolved.x;
+    cat.position.z = resolved.z;
+  }
+
+  cat.position.x = Math.max(-45, Math.min(45, cat.position.x));
+  cat.position.z = Math.max(-45, Math.min(45, cat.position.z));
+
+  let groundY = getGroundHeight();
+
+  let yOff = 0;
+  if (isJump) {
+    jumpT += 0.04;
+    yOff = Math.sin(jumpT * Math.PI) * 1.6;
+    cat.rotation.x = -Math.sin(jumpT * Math.PI) * 0.18;
+    if (jumpT >= 1) { isJump = false; cat.rotation.x = 0; }
+  }
+
+  cat.position.y = Math.max(groundY, groundY + yOff);
+
+  if (!isJump) {
+    if (cat.position.y > groundY + 0.05) {
+      cat.position.y -= 0.12;
+      if (cat.position.y < groundY) cat.position.y = groundY;
+    }
+    if (Math.abs(cat.position.y - groundY) < 0.05) {
+      cat.position.y = groundY;
+      onGround = true;
+    } else {
+      onGround = false;
+    }
+  } else {
+    onGround = false;
+  }
+
+  if (moving && Math.abs(speed) > 1.5 && onGround && Math.random() < 0.1) {
+    emitParticles(cat.position.clone().add(new THREE.Vector3(0, 0.05, 0)), 0x8B4513, 2, 'dust');
+  }
+
+  // Body bounce (LOCAL)
+  const bounce = moving ? Math.sin(time * (keys.shift ? 16 : 9)) * 0.07 : Math.sin(time * 2.2) * 0.02;
+  if (parts.body) parts.body.position.y = 0.9 + bounce;
+  if (parts.headG) parts.headG.position.y = 1.35 + bounce * 0.5;
+
+  // Legs
+  const ls = moving ? (keys.shift ? 16 : 9) : 0;
+  const la = moving ? (keys.shift ? 0.35 : 0.22) : 0;
+  if (parts.legFL) {
+    parts.legFL.rotation.x = moving ? Math.sin(time * ls) * la : 0;
+    parts.legFR.rotation.x = moving ? Math.sin(time * ls + Math.PI) * la : 0;
+    parts.legBL.rotation.x = moving ? Math.sin(time * ls + Math.PI) * la : 0;
+    parts.legBR.rotation.x = moving ? Math.sin(time * ls) * la : 0;
+  }
+
+  // Tail (LOCAL)
+  if (parts.tailSegs) {
+    parts.tailSegs.forEach((seg, i) => {
+      const w = Math.sin(time * 3.5 + i * 0.5) * (0.08 + i * 0.03);
+      const ex = moving ? Math.sin(time * 8 + i * 0.35) * 0.12 : 0;
+      seg.position.x = w + ex;
+    });
+  }
+
+  // Head
+  if (parts.headG) { parts.headG.rotation.z = Math.sin(time * 1.6) * 0.03; parts.headG.rotation.x = Math.sin(time * 0.8) * 0.04; }
+
+  // Blink
+  blinkT += 0.016;
+  if (blinkT >= nextBlink) {
+    const bp = (blinkT - nextBlink) / 0.15;
+    if (bp <= 1) { const s = Math.sin(bp * Math.PI); parts.eyelids.forEach(l => l.scale.y = s); }
+    else { parts.eyelids.forEach(l => l.scale.y = 0); blinkT = 0; nextBlink = 2 + Math.random() * 4; }
+  }
+
+  // Ear twitch
+  earT += 0.016;
+  if (earT >= nextEar) {
+    const tp = (earT - nextEar) / 0.2;
+    if (tp <= 1) { const t = Math.sin(tp * Math.PI) * 0.18; if (parts.earL) parts.earL.rotation.z = -0.3 + t * (Math.random() > 0.5 ? 1 : -1); if (parts.earR) parts.earR.rotation.z = 0.3 + t * (Math.random() > 0.5 ? -1 : 1); }
+    else { if (parts.earL) parts.earL.rotation.z = -0.3; if (parts.earR) parts.earR.rotation.z = 0.3; earT = 0; nextEar = 0.8 + Math.random() * 3; }
+  }
+
+  // Collectibles
+  items.forEach(it => {
+    if (it.collected) return;
+    it.mesh.position.y = it.baseY + Math.sin(time * 2.2 + it.mesh.position.x) * 0.18;
+    it.mesh.rotation.y = time;
+    if (cat.position.distanceTo(it.mesh.position) < 1.1) {
+      it.collected = true; scene.remove(it.mesh);
+      if (it.type === 'boost') { boostTime = 3; showMsg('⚡ Speed Boost!'); }
+      else { score++; showMsg(`+1 ${it.type.charAt(0).toUpperCase() + it.type.slice(1)}! Score: ${score}`); }
+      emitParticles(it.mesh.position, it.type === 'boost' ? 0xffd700 : 0x44ff88, 10, 'sparkle');
+      setTimeout(() => { it.collected = false; scene.add(it.mesh); }, 8000);
+    }
+  });
+
+  // Boost
+  let currentSpeed = speed;
+  if (boostTime > 0) {
+    currentSpeed *= 1.5;
+    boostTime -= 0.016;
+  }
+
+  // Chase mouse
+  const distToMouse = cat.position.distanceTo(chaseMouse.position);
+  if (distToMouse < 1.2 && !chaseActive) {
+    chaseActive = true; score += 3; showMsg(`🐭 Caught! +3 Score: ${score}`);
+    emitParticles(chaseMouse.position, 0xff9999, 12, 'sparkle');
+    setTimeout(() => { chaseActive = false; const r = 8 + Math.random() * 20, th = Math.random() * Math.PI * 2; chaseMouse.position.set(Math.cos(th) * r, 0.12, Math.sin(th) * r); }, 2000);
+  }
+  if (!chaseActive) {
+    const runDir = chaseMouse.position.clone().sub(cat.position).normalize().multiplyScalar(0.035);
+    chaseMouse.position.add(runDir);
+    chaseMouse.position.x = Math.max(-40, Math.min(40, chaseMouse.position.x));
+    chaseMouse.position.z = Math.max(-40, Math.min(40, chaseMouse.position.z));
+    chaseMouse.rotation.y = Math.atan2(runDir.x, runDir.z);
+  } else { chaseMouse.position.y = 0.5 + Math.sin(time * 10) * 0.3; chaseMouse.rotation.y += 0.2; }
+
+  // Particles
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i];
+    p.position.add(p.userData.vel.clone().multiplyScalar(0.016));
+    p.userData.vel.y -= p.userData.type === 'jump' ? 5 : 2;
+    p.userData.life -= 0.02;
+    p.material.opacity = p.userData.life;
+    if (p.userData.life <= 0) { scene.remove(p); particles.splice(i, 1); }
+  }
+
+  // Health
+  if (cat.position.y < -5) { health -= 20; cat.position.set(0, 0, 0); showMsg('💔 Ouch! Respawned'); }
+  if (health <= 0) { health = 100; score = Math.max(0, score - 5); cat.position.set(0, 0, 0); showMsg('💀 Game Over! -5 Score'); }
+
+  // UI
+  document.getElementById('score-val').textContent = score;
+  document.getElementById('health-bar').style.width = health + '%';
+  document.getElementById('energy-bar').style.width = Math.min(100, energy) + '%';
+  const bb = document.getElementById('boost-box');
+  if (boostTime > 0) { bb.style.opacity = '1'; document.getElementById('boost-bar').style.width = (boostTime / 3 * 100) + '%'; }
+  else { bb.style.opacity = '0'; }
+
+  // Camera
+  if (camMode === 'first') {
+    cat.visible = false;
+    camera.position.set(
+      cat.position.x + Math.sin(cat.rotation.y) * 0.3,
+      cat.position.y + 1.3,
+      cat.position.z + Math.cos(cat.rotation.y) * 0.3
+    );
+    camera.lookAt(
+      cat.position.x + Math.sin(cat.rotation.y) * 10,
+      cat.position.y + 1.1,
+      cat.position.z + Math.cos(cat.rotation.y) * 10
+    );
+  } else {
+    cat.visible = true;
+    if (camMode === 'third') {
+      const cx = cat.position.x - Math.sin(cat.rotation.y + camAngle) * camR;
+      const cz = cat.position.z - Math.cos(cat.rotation.y + camAngle) * camR;
+      camera.position.x += (cx - camera.position.x) * 0.06;
+      camera.position.z += (cz - camera.position.z) * 0.06;
+      camera.position.y = camH + cat.position.y;
+      camera.lookAt(cat.position.x, cat.position.y + 1.2, cat.position.z);
+    } else {
+      const cx = cat.position.x + Math.sin(time * 0.25) * 14;
+      const cz = cat.position.z + Math.cos(time * 0.25) * 14;
+      camera.position.x += (cx - camera.position.x) * 0.015;
+      camera.position.z += (cz - camera.position.z) * 0.015;
+      camera.position.y = 7 + cat.position.y;
+      camera.lookAt(cat.position.x, cat.position.y + 1, cat.position.z);
+    }
+  }
+
+  renderer.render(scene, camera);
+}
+
+window.addEventListener('resize', () => { camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); renderer.setSize(innerWidth, innerHeight); });
+animate();
+</script>
+</body>
+</html>
