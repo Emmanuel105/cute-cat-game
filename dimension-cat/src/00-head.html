@@ -1,0 +1,188 @@
+<title>Dimension Cat</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700&display=swap">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🐱</text></svg>">
+<style>
+  :root { --gold:#ffd36a; --pink:#ff6fb5; --sky:#7fd3ff; --display:'Fredoka', 'Segoe UI', system-ui, sans-serif; --body:'Nunito', 'Segoe UI', system-ui, -apple-system, sans-serif; }
+  html, body { height:100%; }
+  body { margin:0; background:#07070f; overflow:hidden; font-family:var(--body); user-select:none; -webkit-user-select:none; color:#fff; }
+  #game { position:fixed; inset:0; background:#07070f; }
+  #c { display:block; width:100%; height:100%; outline:none; touch-action:none; cursor:grab; }
+  #c.dragging { cursor:grabbing; }
+
+  /* ---- start screen ---- */
+  #start { position:absolute; inset:0; z-index:60; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center;
+    background: radial-gradient(1200px 700px at 50% 110%, #2a1240 0%, #12081f 45%, #07070f 100%); transition:opacity .9s ease; }
+  #start::before { content:""; position:absolute; inset:0; background:
+    radial-gradient(2px 2px at 12% 22%, #fff9 50%, transparent 51%), radial-gradient(2px 2px at 28% 68%, #fff7 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 44% 14%, #fff8 50%, transparent 51%), radial-gradient(2px 2px at 61% 41%, #fff6 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 73% 78%, #fff8 50%, transparent 51%), radial-gradient(2px 2px at 86% 26%, #fff7 50%, transparent 51%),
+    radial-gradient(1.5px 1.5px at 92% 62%, #fff6 50%, transparent 51%), radial-gradient(2px 2px at 8% 84%, #fff5 50%, transparent 51%);
+    animation: twinkle 4s ease-in-out infinite alternate; pointer-events:none; }
+  @keyframes twinkle { from { opacity:.35 } to { opacity:1 } }
+  #start h1 { position:relative; font-family:var(--display); font-size:clamp(46px, 9vw, 88px); letter-spacing:0; margin:0 0 10px; font-weight:700; line-height:1;
+    background:linear-gradient(90deg, var(--gold), var(--pink) 50%, var(--sky)); -webkit-background-clip:text; background-clip:text; color:transparent;
+    filter: drop-shadow(0 6px 30px rgba(255,111,181,.35)); }
+  #start .sub { position:relative; font-size:clamp(13px, 2vw, 17px); letter-spacing:5px; text-transform:uppercase; opacity:.55; margin-bottom:44px; }
+  #enter { position:relative; font-family:var(--display); border:0; padding:16px 60px; border-radius:999px; font-size:19px; font-weight:600; letter-spacing:3px; color:#1a0a2e; cursor:pointer;
+    background:linear-gradient(90deg, var(--pink), var(--gold)); box-shadow:0 8px 34px rgba(255,111,181,.45); transition:transform .25s, box-shadow .25s, opacity .3s; }
+  #enter:hover:not(:disabled) { transform:translateY(-2px) scale(1.05); box-shadow:0 12px 44px rgba(255,111,181,.6); }
+  #enter:disabled { opacity:.45; cursor:default; }
+  #continue-info { position:relative; margin-top:14px; font-size:12px; letter-spacing:1.5px; text-transform:uppercase; opacity:.6; min-height:14px; }
+  #new-game { display:none; position:relative; margin-top:10px; background:none; border:1px solid rgba(255,255,255,.25); color:#fff; border-radius:999px; padding:8px 22px; font-family:var(--body); font-size:12px; letter-spacing:2px; text-transform:uppercase; cursor:pointer; opacity:.7; }
+  #new-game:hover { opacity:1; border-color:rgba(255,255,255,.6); }
+  #status { position:relative; margin-top:22px; font-size:12px; letter-spacing:2px; text-transform:uppercase; opacity:.5; min-height:16px; }
+  #status.err { opacity:1; color:#ff8a8a; text-transform:none; letter-spacing:0; }
+
+  /* ---- HUD ---- */
+  .hud { position:absolute; z-index:20; pointer-events:none; opacity:0; transition:opacity .8s; text-shadow:0 2px 8px rgba(0,0,0,.85); }
+  .hud.on { opacity:1; }
+  #hud-left { top:16px; left:18px; }
+  #hud-left .name { font-family:var(--display); font-size:21px; font-weight:600; }
+  #hud-left .world { font-size:11px; letter-spacing:2.5px; text-transform:uppercase; color:var(--gold); opacity:.85; margin-top:2px; }
+  #hud-right { top:16px; right:18px; display:flex; flex-direction:column; gap:6px; align-items:flex-end; }
+  .pill { background:rgba(8,8,16,.55); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,.1); border-radius:10px; padding:6px 12px; min-width:118px; text-align:right; }
+  .pill .k { font-size:9px; letter-spacing:1.6px; text-transform:uppercase; opacity:.55; }
+  .pill .v { font-family:var(--display); font-size:18px; font-weight:600; line-height:1.2; font-variant-numeric:tabular-nums; }
+  .pill .v.pop { animation: pop .35s ease; }
+  @keyframes pop { 0%{transform:scale(1)} 40%{transform:scale(1.25); color:var(--gold)} 100%{transform:scale(1)} }
+
+  #prompt { position:absolute; z-index:20; left:50%; bottom:72px; transform:translateX(-50%); pointer-events:none; opacity:0; transition:opacity .2s;
+    background:rgba(8,8,16,.6); border:1px solid rgba(255,255,255,.14); padding:8px 18px; border-radius:999px; font-size:13px; letter-spacing:.5px; white-space:nowrap; }
+  #prompt b { display:inline-block; background:#fff; color:#111; border-radius:5px; padding:1px 7px; margin-right:8px; font-size:12px; }
+  #prompt.on { opacity:1; }
+  #msg { position:absolute; z-index:20; left:50%; bottom:118px; transform:translateX(-50%); pointer-events:none; opacity:0; transition:opacity .25s, transform .25s;
+    font-family:var(--display); color:var(--gold); font-size:22px; font-weight:600; text-shadow:0 2px 12px rgba(0,0,0,.9); white-space:nowrap; text-align:center; }
+  #msg.on { opacity:1; transform:translateX(-50%) translateY(-6px); }
+
+  #fade { position:absolute; inset:0; z-index:40; background:#000; opacity:0; pointer-events:none; transition:opacity .45s ease; }
+  #card { position:absolute; z-index:41; inset:0; display:flex; align-items:center; justify-content:center; pointer-events:none; opacity:0; transition:opacity .6s; }
+  #card { flex-direction:column; }
+  #card #card-text { font-family:var(--display); font-size:clamp(30px, 6vw, 60px); font-weight:700; letter-spacing:2px; text-shadow:0 4px 30px rgba(0,0,0,.8); }
+  #card #card-sub { margin-top:8px; font-size:clamp(13px, 1.8vw, 18px); letter-spacing:3px; text-transform:uppercase; opacity:.8; text-shadow:0 2px 12px rgba(0,0,0,.9); }
+
+  #help-btn { position:absolute; z-index:30; right:18px; bottom:18px; width:36px; height:36px; border-radius:50%; border:1px solid rgba(255,255,255,.2); background:rgba(8,8,16,.55); color:#fff; font-weight:800; cursor:pointer; opacity:0; transition:opacity .8s; pointer-events:none; }
+  #help-btn.on { opacity:.75; pointer-events:auto; }
+  #help-btn:hover { opacity:1; }
+  #mute-btn { position:absolute; z-index:30; right:62px; bottom:18px; width:36px; height:36px; border-radius:50%; border:1px solid rgba(255,255,255,.2); background:rgba(8,8,16,.55); color:#fff; cursor:pointer; opacity:0; transition:opacity .8s; pointer-events:none; font-size:15px; }
+  #mute-btn.on { opacity:.75; pointer-events:auto; }
+  #photo-btn { position:absolute; z-index:30; right:106px; bottom:18px; width:36px; height:36px; border-radius:50%; border:1px solid rgba(255,255,255,.2); background:rgba(8,8,16,.55); color:#fff; cursor:pointer; opacity:0; transition:opacity .8s; pointer-events:none; font-size:15px; }
+  #photo-btn.on { opacity:.75; pointer-events:auto; }
+  #photo-bar { position:absolute; z-index:35; top:16px; left:50%; transform:translateX(-50%); display:none; align-items:center; gap:10px; background:rgba(8,8,16,.6); border:1px solid rgba(255,255,255,.14); border-radius:999px; padding:6px 8px 6px 16px; font-size:12px; letter-spacing:.5px; white-space:nowrap; }
+  #photo-bar kbd { display:inline-block; background:#fff; color:#111; border-radius:4px; padding:0 6px; font-family:inherit; font-size:11px; font-weight:700; }
+  #photo-bar button { border:0; border-radius:999px; padding:6px 14px; font-family:var(--display); font-size:13px; font-weight:600; cursor:pointer; color:#1a0a2e; background:linear-gradient(90deg, var(--pink), var(--gold)); }
+  #photo-bar button.ghost { background:rgba(255,255,255,.12); color:#fff; }
+  #game.photo #photo-bar { display:flex; }
+  #game.photo .hud, #game.photo #prompt, #game.photo #map, #game.photo #hint, #game.photo #help-btn, #game.photo #mute-btn, #game.photo #photo-btn, #game.photo #msg, #game.photo #stick, #game.photo #tbtns { opacity:0; pointer-events:none; }
+  #flash { position:absolute; inset:0; z-index:50; background:#fff; opacity:0; pointer-events:none; }
+  #flash.on { animation: flash .5s ease-out; }
+  @keyframes flash { 0%{opacity:.9} 100%{opacity:0} }
+
+  /* ---- touch controls (shown on coarse-pointer devices once the game starts) ---- */
+  #touch { position:absolute; inset:0; z-index:25; pointer-events:none; display:none; }
+  #touch.on { display:block; }
+  #stick { position:absolute; left:24px; bottom:24px; width:132px; height:132px; border-radius:50%; background:rgba(8,8,16,.35); border:2px solid rgba(255,255,255,.2); pointer-events:auto; touch-action:none; backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); }
+  #knob { position:absolute; left:50%; top:50%; width:58px; height:58px; margin:-29px 0 0 -29px; border-radius:50%; background:rgba(255,255,255,.6); box-shadow:0 2px 10px rgba(0,0,0,.4); pointer-events:none; }
+  #tbtns { position:absolute; right:22px; bottom:22px; display:grid; grid-template-columns:repeat(2, 66px); grid-auto-rows:66px; gap:12px; pointer-events:auto; }
+  #tbtns button { border-radius:50%; border:2px solid rgba(255,255,255,.22); background:rgba(8,8,16,.45); color:#fff; font-size:24px; touch-action:none; -webkit-tap-highlight-color:transparent; backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px); }
+  #tbtns button:active { background:rgba(255,255,255,.35); }
+  #tbtns button.on { background:rgba(255,211,106,.55); border-color:var(--gold); }
+  #tbtns button.ready { background:rgba(55,229,160,.55); border-color:#37e5a0; }
+  #tbtns button span { display:block; font-size:9px; letter-spacing:1px; text-transform:uppercase; opacity:.7; margin-top:-2px; }
+  #game.touch #map { left:18px; top:74px; bottom:auto; width:110px; height:110px; }
+  #game.touch #help-btn, #game.touch #mute-btn, #game.touch #photo-btn { bottom:auto; top:52px; right:auto; }
+  #game.touch #photo-btn { left:calc(50% - 62px); } #game.touch #mute-btn { left:calc(50% - 18px); } #game.touch #help-btn { left:calc(50% + 26px); }
+  #game.touch #prompt { bottom:190px; } #game.touch #prompt b { display:none; }
+  #game.touch #msg { bottom:236px; font-size:18px; }
+  #help { position:absolute; z-index:45; inset:0; display:none; align-items:center; justify-content:center; background:rgba(4,4,10,.72); backdrop-filter:blur(6px); }
+  #help.on { display:flex; }
+  #help .box { background:rgba(16,14,28,.95); border:1px solid rgba(255,255,255,.12); border-radius:16px; padding:26px 34px; min-width:300px; max-width:92vw; }
+  #help h2 { font-family:var(--display); margin:0 0 14px; font-size:19px; letter-spacing:2px; text-transform:uppercase; color:var(--gold); }
+  #help table { border-collapse:collapse; font-size:14px; }
+  #help td { padding:5px 10px 5px 0; opacity:.9; }
+  #help kbd { display:inline-block; background:#fff; color:#111; border-radius:5px; padding:1px 8px; font-family:inherit; font-size:12px; font-weight:700; margin-right:2px; }
+  #help .close { margin-top:14px; font-size:12px; opacity:.5; }
+  #toggles { top:14px; left:50%; transform:translateX(-50%); display:flex; gap:8px; pointer-events:none; }
+  #toggles button { pointer-events:auto; background:rgba(8,8,16,.55); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px); border:1px solid rgba(255,255,255,.14); border-radius:999px; color:#fff; font-family:var(--body); font-weight:700; font-size:12px; letter-spacing:.3px; padding:7px 14px; cursor:pointer; white-space:nowrap; transition:background .2s, transform .15s; }
+  #toggles button:hover { background:rgba(255,255,255,.16); transform:translateY(-1px); }
+  #toggles button:active { transform:scale(.96); }
+  #game.photo #toggles { opacity:0; pointer-events:none; }
+  #game.touch #toggles { top:10px; }
+  #game.touch #toggles button { font-size:11px; padding:6px 10px; }
+  #map { position:absolute; z-index:20; left:18px; bottom:18px; width:190px; height:190px; border-radius:50%; border:2px solid rgba(255,255,255,.18); background:rgba(8,8,16,.45); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); pointer-events:none; opacity:0; transition:opacity .8s; box-shadow:0 4px 18px rgba(0,0,0,.45); }
+  #map.on { opacity:.9; }
+  #hint { position:absolute; z-index:20; left:50%; bottom:22px; transform:translateX(-50%); font-size:12px; letter-spacing:1.5px; text-transform:uppercase; opacity:0; transition:opacity 1s; pointer-events:none; text-shadow:0 2px 8px #000; }
+  #hint.on { opacity:.55; }
+</style>
+
+<div id="game">
+  <canvas id="c" tabindex="0"></canvas>
+
+  <div id="hud-left" class="hud">
+    <div class="name">🐱 <span id="cat-name">Tabby</span></div>
+    <div class="world" id="world-name">Neighborhood</div>
+  </div>
+  <div id="hud-right" class="hud">
+    <div class="pill"><div class="k">Score</div><div class="v" id="score">0</div></div>
+    <div class="pill"><div class="k">Collected</div><div class="v" id="items">0 / 0</div></div>
+  </div>
+  <div id="toggles" class="hud">
+    <button id="tg-form" title="Change shape (F, or 1–6)">🐱 Cat</button>
+    <button id="tg-skin" title="Change cat colour (K)">🎨 Midnight</button>
+    <button id="tg-time" title="Time of day (T)">🔄 Time</button>
+  </div>
+
+  <canvas id="map" width="300" height="300"></canvas>
+  <div id="prompt"><b>E</b><span id="prompt-text"></span></div>
+  <div id="msg"></div>
+  <div id="hint">Press ? for controls</div>
+  <button id="photo-btn" title="Photo mode (P)">📷</button>
+  <button id="mute-btn" title="Mute">🔊</button>
+  <button id="help-btn" title="Controls">?</button>
+  <div id="photo-bar">📷 Photo mode &middot; drag to look &middot; wheel to zoom <button id="photo-save">Save PNG</button><button id="photo-exit" class="ghost">Exit</button></div>
+  <div id="flash"></div>
+
+  <div id="touch">
+    <div id="stick"><div id="knob"></div></div>
+    <div id="tbtns">
+      <button id="t-run" title="Run">🏃<span>run</span></button>
+      <button id="t-jump" title="Jump">⤒<span>jump</span></button>
+      <button id="t-meow" title="Meow">🐱<span>meow</span></button>
+      <button id="t-use" title="Interact">🐾<span>use</span></button>
+    </div>
+  </div>
+
+  <div id="help">
+    <div class="box">
+      <h2>Controls</h2>
+      <table>
+        <tr><td><kbd>W</kbd> / <kbd>&uarr;</kbd></td><td>walk forward</td></tr>
+        <tr><td><kbd>S</kbd> / <kbd>&darr;</kbd></td><td>u-turn and walk back</td></tr>
+        <tr><td><kbd>A</kbd> <kbd>D</kbd></td><td>strafe left / right</td></tr>
+        <tr><td><kbd>&larr;</kbd> <kbd>&rarr;</kbd></td><td>swing the camera around the cat</td></tr>
+        <tr><td><kbd>Shift</kbd></td><td>run</td></tr>
+        <tr><td><kbd>Space</kbd></td><td>jump</td></tr>
+        <tr><td><kbd>E</kbd> / click</td><td>interact (doors, portals, squirrels)</td></tr>
+        <tr><td><kbd>M</kbd></td><td>meow</td></tr>
+        <tr><td>drag / wheel</td><td>orbit / zoom camera</td></tr>
+        <tr><td><kbd>Tab</kbd></td><td>show / hide the map</td></tr>
+        <tr><td><kbd>F</kbd> / <kbd>1</kbd>–<kbd>6</kbd></td><td>change shape: cat, human, frog, butterfly, squirrel, worm (butterfly: hold Space to fly)</td></tr>
+        <tr><td><kbd>K</kbd></td><td>change cat colour</td></tr>
+        <tr><td><kbd>T</kbd></td><td>time of day: auto, day, dusk, night</td></tr>
+        <tr><td><kbd>P</kbd></td><td>photo mode (Enter saves a PNG)</td></tr>
+      </table>
+      <div class="close">press ? or Esc to close</div>
+    </div>
+  </div>
+
+  <div id="fade"></div>
+  <div id="card"><div id="card-text"></div><div id="card-sub"></div></div>
+
+  <div id="start">
+    <h1>Dimension Cat</h1>
+    <div class="sub">Seven worlds &middot; one cat</div>
+    <button id="enter" disabled>ENTER</button>
+    <div id="continue-info"></div>
+    <button id="new-game">Start over</button>
+    <div id="status">summoning the engine&hellip;</div>
+  </div>
+</div>
