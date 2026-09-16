@@ -70,7 +70,7 @@ function makeGrass(game, spots, r = rnd, o = {}) {
   const pts = scatterPoints(game, spots, r, o.pad ?? 0.3);
   const total = pts.length;
   if (!total) return null;
-  const hue = o.hue ?? [0.22, 0.3], light = o.light ?? [0.26, 0.4], tall = o.tall ?? 0.72, wide = o.wide ?? 0.7;
+  const hue = o.hue ?? [0.22, 0.3], light = o.light ?? [0.27, 0.42], tall = o.tall ?? 0.8, wide = o.wide ?? 1.15;
   const im = new THREE.InstancedMesh(G.blade(), mat(0xffffff, { roughness: 1, side: THREE.DoubleSide }), total * 3);
   const M = new THREE.Matrix4(), Q = new THREE.Quaternion(), S = new THREE.Vector3(), Pv = new THREE.Vector3(), E = new THREE.Euler(), C = new THREE.Color();
   let i = 0;
@@ -122,12 +122,21 @@ function makeHorizon(game, r, o = {}) {
   // peaks
   const rock = mat(o.rock ?? 0x4f6b4a, { roughness: 1 }), rock2 = mat(o.rock2 ?? 0x5e6f78, { roughness: 1 }), snow = mat(o.snow ?? 0xf4f7fb, { roughness: 0.9 });
   const peaks = o.peaks ?? 26, snowLine = o.snowLine ?? 42;
+  /** One mountain: a main cone with a couple of lower shoulders leaning on it, capped if it is tall enough. */
+  const massif = (x, z, h, w, y0) => {
+    const parts = [[0, 0, 1, 1]];
+    for (let k = 0, n = r.int(1, 3); k < n; k++) { const a2 = r() * TAU, off = r.range(0.4, 0.75); parts.push([cos(a2) * w * off, sin(a2) * w * off, r.range(0.45, 0.78), r.range(0.4, 0.7)]); }
+    parts.forEach(([dx, dz, hk, wk], k) => {
+      const hh = h * hk, ww = w * wk, ry = r() * TAU;
+      mesh(G.cone(1, 1, r.int(6, 8)), (k + floor(abs(x))) % 3 ? rock : rock2, { x: x + dx, y: y0 + hh / 2 - 3, z: z + dz, sx: ww, sy: hh, sz: ww, ry, shadow: 'none', parent: W });
+      if (hh > snowLine) mesh(G.cone(1, 1, 7), snow, { x: x + dx, y: y0 + hh - 3 - hh * 0.16, z: z + dz, sx: ww * 0.34, sy: hh * 0.32, sz: ww * 0.34, ry, shadow: 'none', parent: W });
+    });
+  };
   for (let i = 0; i < peaks; i++) {
     const a = i / peaks * TAU + r.range(-0.09, 0.09), d = clear * r.range(1.35, 1.8), h = r.range(o.peakH ? o.peakH[0] : 34, o.peakH ? o.peakH[1] : 78), w = r.range(26, 54);
-    const x = cos(a) * d, z = sin(a) * d, ry = r() * TAU, y0 = ground(x, z);
+    const x = cos(a) * d, z = sin(a) * d;
     if (!keep(x, z)) continue;
-    mesh(G.cone(1, 1, 7), i % 3 ? rock : rock2, { x, y: y0 + h / 2 - 3, z, sx: w, sy: h, sz: w, ry, shadow: 'none', parent: W });
-    if (h > snowLine) mesh(G.cone(1, 1, 7), snow, { x, y: y0 + h - 3 - h * 0.15, z, sx: w * 0.32, sy: h * 0.3, sz: w * 0.32, ry, shadow: 'none', parent: W });
+    massif(x, z, h, w, ground(x, z));
   }
   // rolling hills, each pushed far enough out that its own radius still clears the town
   if (o.hills !== false) {
