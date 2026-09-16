@@ -76,7 +76,7 @@ check(Array.isArray(game.homeMarker) && game.homeMarker[0] === 0 && game.homeMar
 {
   let beacon = null;
   game.world.traverse((o) => { if (o.userData && o.userData.beaconHome) beacon = o; });
-  check(!!beacon && beacon.position.y > 8, `a marker floats over the roof (y=${beacon ? beacon.position.y.toFixed(1) : 'none'})`);
+  check(!!beacon && beacon.position.y > 12, `a marker floats over the roof (y=${beacon ? beacon.position.y.toFixed(1) : 'none'})`);
 }
 const start = pos().clone();
 elements.get('enter').listeners.click[0]();

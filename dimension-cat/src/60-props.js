@@ -403,12 +403,15 @@ function makeMailbox(color) {
  * A floating marker that hangs high above the cat's own house so it can be found from anywhere in the
  * neighbourhood: a badge, a soft halo and a bobbing arrow pointing straight down at the roof.
  */
-function makeHomeBeacon(game, x, z, y = 10.6, emoji = '\u{1F3E0}') {
+function makeHomeBeacon(game, x, z, y = 14, emoji = '\u{1F3E0}') {
   const g = group(x, y, z, game.world);
   const sm = new THREE.SpriteMaterial({ map: TEX.badge(emoji), transparent: true, depthWrite: false, sizeAttenuation: true });
   worldBag.track(sm);
-  const badge = new THREE.Sprite(sm); badge.scale.set(2.3, 2.3, 1); g.add(badge);
-  const halo = glowSprite(0xffd36a, 6.5, 0.4, g);
+  const badge = new THREE.Sprite(sm); badge.scale.set(3, 3, 1); g.add(badge);
+  const halo = glowSprite(0xffd36a, 8, 0.4, g);
+  // a soft column of light down to the roof, so the marker still reads from across the neighbourhood
+  const beamM = basic(0xffd36a, { transparent: true, opacity: 0.16, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
+  mesh(G.cyl(0.5, 0.9, 16, 10), beamM, { y: -9, shadow: 'none', parent: g });
   const gold = glowMat(0xffd36a, 1.8, { roughness: 0.4, metalness: 0.2 });
   const arrow = mesh(G.cone(0.42, 0.95, 4), gold, { y: -1.9, rx: PI, ry: PI / 4, shadow: 'none', parent: g });
   const stem = mesh(G.cyl(0.09, 0.09, 0.9, 6), gold, { y: -1.1, shadow: 'none', parent: g });
