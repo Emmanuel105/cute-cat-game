@@ -45,6 +45,13 @@ function addBush(game, x, z, r, color) {
   game.physics.addBox(at[0], game.physics.ground0(at[0], at[1]) + 0.4, at[1], 1, 0.8, 0.8, { cam: false });
   return b;
 }
+/** A copy of a cached ground texture, re-tiled so one tile still covers `metres` on the ground. */
+function groundMap(tex, w, h, metres) { const m = tex.clone(); m.needsUpdate = true; m.repeat.set(w / metres, h / metres); worldBag.track(m); return m; }
+/** A round patch of ground — a paved town centre fading into open country reads better than a square one. */
+function flatDisc(game, rad, m, x, z, y = 0.01) {
+  const g = new THREE.CircleGeometry(rad, 64); worldBag.track(g); g.rotateX(-PI / 2);
+  const p = new THREE.Mesh(g, m); p.position.set(x, y, z); p.receiveShadow = true; game.world.add(p); return p;
+}
 function flatPlane(game, w, h, m, x, z, ry = 0, y = 0.01) { const p = mesh(G.plane(w, h), m, { x, y, z, rx: -PI / 2, shadow: 'receive', parent: game.world }); p.rotation.z = ry; return p; }
 
 // ---------------------------------------------------------------- 1. NEIGHBORHOOD
@@ -240,7 +247,7 @@ function buildCandyLand(game, entry) {
   P.setLimit(CANDY_LIMIT);
   game.applySky({ top: 0xe86fc4, horizon: 0xffd9ea, bottom: 0xffb3d1, sun: [-0.3, 0.55, 0.5], sunColor: 0xfff6d5, sunSize: 500, halo: 0.5 });
   game.setLighting({ ambient: [0xffd6ea, 0.4], hemi: [0xffe0f0, 0xff9ecf, 0.5], sun: [0xfff4e0, 2.3, -30, 55, 40], fog: [0xffdbe9, 85, 430], exposure: 1.05 });
-  flatPlane(game, 1000, 1000, mat(0xffb3d1, { roughness: 0.9, map: TEX.candyGround() }), 0, 0, 0, 0);
+  flatPlane(game, 1000, 1000, mat(0xffb3d1, { roughness: 0.9, map: groundMap(TEX.candyGround(), 1000, 1000, 10) }), 0, 0, 0, 0);
   game.zones.addSpan(-500, -22, 500, -14);   // the chocolate river
 
   // chocolate river (blocks) + wafer bridge (walkable)
@@ -311,7 +318,7 @@ function buildRobotCity(game, entry) {
   P.setLimit(ROBOT_LIMIT);
   game.applySky({ top: 0x05060f, horizon: 0x1a1f3d, bottom: 0x05060a, sun: [-0.4, 0.7, -0.4], sunColor: 0x8fa8ff, sunSize: 3000, halo: 0.08, stars: 1, moon: [-180, 230, -260] });
   game.setLighting({ ambient: [0x3a4a8a, 0.7], hemi: [0x5a6ad0, 0x1a1a28, 0.9], sun: [0x9fb4ff, 1.6, -30, 55, -25], fog: [0x0a0e1e, 60, 400], exposure: 1.05 });
-  const floorM = mat(0x8a929e, { roughness: 0.55, metalness: 0.25, map: TEX.metalFloor(), emissiveMap: TEX.metalGlow(), emissive: 0x00e5ff, emissiveIntensity: 0.9 });
+  const floorM = mat(0x8a929e, { roughness: 0.55, metalness: 0.25, map: groundMap(TEX.metalFloor(), 1000, 1000, 10), emissiveMap: groundMap(TEX.metalGlow(), 1000, 1000, 10), emissive: 0x00e5ff, emissiveIntensity: 0.9 });
   flatPlane(game, 1000, 1000, floorM, 0, 0, 0, 0);
 
   // skyline
@@ -367,7 +374,9 @@ function buildVictorian(game, entry) {
   P.setLimit(VICTORIAN_LIMIT);
   game.applySky({ top: 0x121a44, horizon: 0xf08a5a, bottom: 0x2b2436, sun: [-0.85, 0.16, 0.45], sunColor: 0xffb070, sunSize: 900, halo: 0.6, stars: 0.6, moon: [220, 190, -150] });
   game.setLighting({ ambient: [0x5a5f9a, 0.8], hemi: [0x7a8ad8, 0x4a3020, 0.9], sun: [0xffa860, 1.5, -60, 34, 32], fog: [0x3a2e48, 55, 350], exposure: 1.05 });
-  flatPlane(game, 1000, 1000, mat(0xb0a89e, { roughness: 1, map: TEX.cobble() }), 0, 0, 0, 0);
+  // green country all the way out, with the cobbled town laid on top of the middle of it
+  flatPlane(game, 1100, 1100, mat(0x5a6b46, { roughness: 1, map: groundMap(TEX.grass(), 1100, 1100, 9) }), 0, 0, 0, -0.02);
+  flatDisc(game, 145, mat(0xb0a89e, { roughness: 1, map: groundMap(TEX.cobble(), 290, 290, 8) }), 0, 0, 0);
   const pave = mat(0xa8a29a, { roughness: 1, map: TEX.sidewalk().clone() }); pave.map.needsUpdate = true; pave.map.repeat.set(40, 1); worldBag.track(pave.map);
   flatPlane(game, 140, 2.2, pave, 0, -5.6, 0, 0.02); flatPlane(game, 140, 2.2, pave, 0, 5.6, 0, 0.02);
   flatPlane(game, 2.2, 60, pave, -1.2, -30, 0, 0.02);   // lane north to the market square

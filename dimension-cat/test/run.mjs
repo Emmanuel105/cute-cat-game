@@ -160,6 +160,18 @@ for (const [idx, entry] of [[1, 'from-prev'], [2, 'from-prev'], [3, 'from-prev']
   // walk in each direction for a bit and make sure nothing explodes
   for (const k of ['w', 'a', 's', 'd']) { key(k); frames(90); key(k, false); }
   check(finite(pos()) && Math.abs(pos().x) <= game.physics.limit && Math.abs(pos().z) <= game.physics.limit, `world ${idx}: walked around, still inside the world (limit ${game.physics.limit})`);
+  // A big world is only big if you can walk about in it: sample a grid and count the free ground.
+  {
+    const L = game.physics.limit, step = L / 14;
+    let free = 0, total = 0;
+    for (let x = -L + step; x < L; x += step) for (let z = -L + step; z < L; z += step) {
+      total++;
+      const g = game.physics.ground0(x, z);
+      if (!game.physics.blocked(x, z, 0.3, null, g, 0.34, 0.7)) free++;
+    }
+    const pct = Math.round(free / total * 100);
+    check(pct >= 80, `world ${idx}: ${pct}% of the ground is walkable`);
+  }
   await sleep(520);
 }
 // save / restore round trip

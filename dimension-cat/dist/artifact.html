@@ -3615,7 +3615,7 @@ function makeMushroom(size = 1, hue = 0, r = rnd, glow = false) {
 function makeFerns(game, spots, r) {
   const pts = scatterPoints(game, spots, r, 0.4), total = pts.length;
   if (!total) return null;
-  const im = new THREE.InstancedMesh(G.cone(0.02, 0.6, 3), mat(0x3f8a3a, { roughness: 1, side: THREE.DoubleSide }), total * 5);
+  const im = new THREE.InstancedMesh(G.cone(0.055, 0.6, 3), mat(0x3f8a3a, { roughness: 1, side: THREE.DoubleSide }), total * 5);
   const M = new THREE.Matrix4(), Q = new THREE.Quaternion(), S = new THREE.Vector3(), Pv = new THREE.Vector3(), E = new THREE.Euler(), C = new THREE.Color();
   let i = 0;
   for (const [x, z] of pts) {
@@ -3810,7 +3810,7 @@ class Collectibles {
  * { w, build(game, r, x, z) }; every cluster claims a keep-out circle, so they never grow into each
  * other, into a road, or into the hand-built middle of the world.
  */
-function fillRing(game, r, { inner, outer, count, kinds, pad = 7, skip = null, chunk = 64, range = 230 }) {
+function fillRing(game, r, { inner, outer, count, kinds, pad = 7, claim = null, skip = null, chunk = 64, range = 230 }) {
   const W = game.world, total = kinds.reduce((a, k) => a + (k.w ?? 1), 0), i2 = (inner / outer) ** 2;
   const chunks = new Map();
   const chunkFor = (x, z) => {
@@ -3819,19 +3819,21 @@ function fillRing(game, r, { inner, outer, count, kinds, pad = 7, skip = null, c
     if (!c) { c = new THREE.Group(); c.userData.cx = cx * chunk; c.userData.cz = cz * chunk; W.add(c); chunks.set(key, c); }
     return c;
   };
+  let placed = 0;
   for (let i = 0; i < count; i++) {
     const a = r() * TAU, d = sqrt(lerp(i2, 1, r())) * outer, x = cos(a) * d, z = sin(a) * d;
     if (skip && skip(x, z)) continue;
     if (game.zones.blocked(x, z, pad)) continue;
     const c = chunkFor(x, z), before = W.children.length;
     let pick = r() * total;
-    for (const k of kinds) { pick -= (k.w ?? 1); if (pick <= 0) { k.build(game, r, x, z); break; } }
+    for (const k of kinds) { pick -= (k.w ?? 1); if (pick <= 0) { k.build(game, r, x, z); placed++; break; } }
     // props add themselves straight to the world; sweep the new ones into this cluster's chunk so the
     // whole chunk can be switched off in one go when it is too far away to matter
     for (let j = W.children.length - 1; j >= before; j--) c.add(W.children[j]);
-    game.zones.addCircle(x, z, pad);
+    game.zones.addCircle(x, z, claim ?? pad);
   }
   const list = [...chunks.values()], far = (range + chunk) * (range + chunk);
+  fillRing.lastPlaced = placed;
   return (dt, t) => { const p = game.cat.group.position; for (const c of list) c.visible = dist2(p.x, p.z, c.userData.cx, c.userData.cz) < far; };
 }
 /** Scatters `n` points in a blob of radius `rad` around (x,z) and calls `f` for each. */
@@ -3874,7 +3876,7 @@ function makeChocolatePool(game, x, z, rad, r) {
 }
 function candyRegion(game, U, r, inner, outer) {
   const W = game.world;
-  U.push(fillRing(game, r, { inner, outer, count: 190, pad: 16, range: 230, skip: (x, z) => abs(z + 18) < 9, kinds: [
+  U.push(fillRing(game, r, { inner, outer, count: 900, pad: 12, claim: 7, range: 230, skip: (x, z) => abs(z + 18) < 9, kinds: [
     { w: 4, build: (g, r, x, z) => blob(r, x, z, 7, r.int(5, 9), (cx, cz) => { const h = r.range(2.6, 4.6), c = makeCandyCane(h); c.position.set(cx, 0, cz); c.rotation.y = r() * TAU; W.add(c); g.physics.addBox(cx, h / 2, cz, 0.5, h, 0.5, { cam: false }); }) },
     { w: 3, build: (g, r, x, z) => blob(r, x, z, 8, r.int(3, 6), (cx, cz) => { const s = r.range(1.1, 2.0), l = makeLollipop(s, r.pick([330, 0, 200, 50, 280, 120]), r.range(2.6, 4.4)); l.position.set(cx, 0, cz); l.rotation.y = r() * TAU; W.add(l); g.physics.addBox(cx, 1.5, cz, 0.4, 3, 0.4, { cam: false }); }) },
     { w: 3, build: (g, r, x, z) => blob(r, x, z, 7, r.int(4, 8), (cx, cz) => { const b = makeMarshmallowBush(r); b.position.set(cx, 0, cz); W.add(b); g.physics.addBox(cx, 0.5, cz, 1.2, 1, 1.2, { cam: false }); }) },
@@ -3897,7 +3899,7 @@ function robotRegion(game, U, r, inner, outer) {
   const W = game.world, P = game.physics;
   const pipe = mat(0x5a6470, { metalness: 0.8, roughness: 0.35 });
   const lampPost = (x, z) => { mesh(G.cyl(0.1, 0.14, 6, 8), pipe, { x, y: 3, z, parent: W }); mesh(G.box(0.6, 0.3, 0.4), glowMat(0xe8f4ff, 2), { x, y: 6, z, shadow: 'none', parent: W }); pointLight(0xcfe6ff, 40, 20, x, 5.6, z, W); P.addBox(x, 3, z, 0.3, 6, 0.3, { cam: false }); };
-  U.push(fillRing(game, r, { inner, outer, count: 150, pad: 22, range: 240, kinds: [
+  U.push(fillRing(game, r, { inner, outer, count: 700, pad: 16, claim: 9, range: 240, kinds: [
     { w: 5, build: (g, r, x, z) => blob(r, x, z, 12, r.int(2, 4), (cx, cz, i) => { const w = r.range(7, 15), h = r.range(16, 58), b = makeSkyscraper(w, h, w * r.range(0.8, 1.2), floor(abs(cx + cz) + i)); b.position.set(cx, 0, cz); W.add(b); if (b.userData.update) U.push(b.userData.update); P.addBox(cx, h / 2, cz, w, h, w); }) },
     { w: 2, build: (g, r, x, z) => { flatPlane(g, 20, 20, mat(0x2a2f38, { roughness: 0.6, metalness: 0.4 }), x, z, 0, 0.015); U.push(makeConveyor(g, x, z, 12, r.chance(0.5) ? 1 : -1).userData.update); U.push(makeRobotArm(g, x + 6, z + 5).userData.update); lampPost(x - 7, z - 6); } },
     { w: 2, build: (g, r, x, z) => { const crateM = mat(0x8a6a3a, { roughness: 0.9, map: TEX.planks(30, 34) }); blob(r, x, z, 6, r.int(5, 10), (cx, cz) => { const s = r.range(0.8, 1.4); mesh(G.box(s, s, s), crateM, { x: cx, y: s / 2, z: cz, ry: r() * 0.6, parent: W }); P.addBox(cx, s / 2, cz, s, s, s, { cam: false }); }); lampPost(x + 6, z); } },
@@ -3914,12 +3916,34 @@ function robotRegion(game, U, r, inner, outer) {
 }
 
 // ---------------------------------------------------------------- Victorian
+/**
+ * A ploughed field with a hedge round it: two draw calls and a strip of instanced bushes. Farmland is
+ * what keeps the country outside a Victorian town from reading as an empty parade ground.
+ */
+function makeField(game, x, z, r) {
+  const w = r.range(26, 48), d = r.range(26, 48), ry = r() * TAU;
+  const crop = r.pick([0x6f7f3e, 0x8a8a3a, 0x5f7a40, 0x9a8a4a, 0x76853f]);
+  const p = flatPlane(game, w, d, mat(crop, { roughness: 1, map: groundMap(TEX.grass(), w, d, 3.2) }), x, z, ry, 0.012);
+  const n = 90, hedge = new THREE.InstancedMesh(G.sphere(1, 7, 5), mat(0x2f4a28, { roughness: 1 }), n);
+  const M = new THREE.Matrix4(), Q = new THREE.Quaternion(), S = new THREE.Vector3(), Pv = new THREE.Vector3(), C = new THREE.Color();
+  const ca = cos(ry), sa = sin(ry);
+  for (let i = 0; i < n; i++) {
+    const k = i / n * 4, side = floor(k), t = (k - side) - 0.5;
+    const lx = side % 2 === 0 ? t * w : (side === 1 ? w / 2 : -w / 2), lz = side % 2 === 0 ? (side === 0 ? -d / 2 : d / 2) : t * d;
+    const px = x + lx * ca - lz * sa, pz = z + lx * sa + lz * ca;
+    M.compose(Pv.set(px, 0.5, pz), Q, S.set(r.range(0.7, 1.1), r.range(0.5, 0.8), r.range(0.7, 1.1))); hedge.setMatrixAt(i, M);
+    hedge.setColorAt(i, C.setHSL(r.range(0.24, 0.32), 0.4, r.range(0.16, 0.26)));
+  }
+  hedge.instanceColor.needsUpdate = true; hedge.castShadow = false; hedge.receiveShadow = true; game.world.add(hedge); worldBag.track(hedge);
+  return p;
+}
 function victorianRegion(game, U, r, inner, outer) {
   const W = game.world, P = game.physics;
   const pave = mat(0xa8a29a, { roughness: 1, map: TEX.sidewalk() });
   const hues = [12, 8, 18, 6, 14, 10, 16, 4];
-  U.push(fillRing(game, r, { inner, outer, count: 105, pad: 26, range: 200, kinds: [
-    { w: 5, build: (g, r, x, z) => {   // a terrace: three or four houses shoulder to shoulder behind railings
+  U.push(fillRing(game, r, { inner, outer, count: 800, pad: 17, claim: 9, range: 190, kinds: [
+    { w: 8, build: (g, r, x, z) => makeField(g, x, z, r) },
+    { w: 4, build: (g, r, x, z) => {   // a terrace: three or four houses shoulder to shoulder behind railings
       const ry = r.pick([0, PI / 2, PI, -PI / 2]), n = r.int(3, 4), front = 1;
       for (let i = 0; i < n; i++) {
         const off = (i - (n - 1) / 2) * 8, hx = x + cos(ry) * off, hz = z - sin(ry) * off;
@@ -3929,6 +3953,8 @@ function victorianRegion(game, U, r, inner, outer) {
         U.push(((cx, cz, top) => (dt) => { const p = g.cat.group.position; if (dist2(p.x, p.z, cx, cz) < 3600 && r.chance(0.3 * dt * 4)) g.fx.emit(cx, top, cz, { count: 1, color: 0x8a8a9a, speed: 0.2, up: 0.9, life: 3, gravity: -0.1, spread: 0.2 }); })(hx, hz, h + 3.2));
       }
       const fx2 = x + sin(ry) * 6 * front, fz2 = z + cos(ry) * 6 * front;
+      const px = x + sin(ry) * 8.4 * front, pz = z + cos(ry) * 8.4 * front;
+      const road = flatPlane(g, n * 8 + 6, 5, pave, px, pz, 0, 0.012); road.rotation.z = ry;   // a pavement in front of the row
       const f = makeIronFence(n * 8); f.position.set(fx2, 0, fz2); f.rotation.y = ry; W.add(f);
       const lamp = makeLamp('victorian'); lamp.position.set(x + sin(ry) * 8, 0, z + cos(ry) * 8); W.add(lamp); if (lamp.userData.update) U.push(lamp.userData.update);
       P.addBox(x + sin(ry) * 8, 2, z + cos(ry) * 8, 0.4, 4, 0.4, { cam: false });
@@ -3964,7 +3990,7 @@ function beachRegion(game, U, r, inner, outer) {
   const W = game.world;
   // everything stays on the sand, west of the waterline
   const skip = (x, z) => x > 12;
-  U.push(fillRing(game, r, { inner, outer, count: 260, pad: 12, range: 220, skip, kinds: [
+  U.push(fillRing(game, r, { inner, outer, count: 900, pad: 11, claim: 6, range: 220, skip, kinds: [
     { w: 5, build: (g, r, x, z) => blob(r, x, z, 8, r.int(3, 7), (cx, cz) => { const p = makePalm(r, r.range(3.6, 6.2)); placeT(g, U, p, cx, cz, 0); boxT(g, cx, cz, 0.5, 5, 0.5, { cam: false }); }) },
     { w: 3, build: (g, r, x, z) => makeGrass(g, [[x, z, 13, 130]], r, { hue: [0.13, 0.21], light: [0.4, 0.56], tall: 1.2, wide: 0.85, pad: 0.2 }) },
     { w: 2, build: (g, r, x, z) => blob(r, x, z, 7, r.int(3, 6), (cx, cz) => placeT(g, U, makeRock(r, 0x8a857a, r.range(0.8, 2.2)), cx, cz, 0)) },
@@ -3985,7 +4011,7 @@ function beachRegion(game, U, r, inner, outer) {
 // ---------------------------------------------------------------- Frosty Peak
 function snowRegion(game, U, r, inner, outer) {
   const W = game.world;
-  U.push(fillRing(game, r, { inner, outer, count: 220, pad: 14, range: 180, kinds: [
+  U.push(fillRing(game, r, { inner, outer, count: 900, pad: 11, claim: 6, range: 180, kinds: [
     { w: 7, build: (g, r, x, z) => blob(r, x, z, 10, r.int(4, 9), (cx, cz) => { const p = makeSnowPine(r); placeT(g, U, p, cx, cz, 0); boxT(g, cx, cz, 1.2 * p.scale.x, 5, 1.2 * p.scale.x, { cam: false }); }) },
     { w: 2, build: (g, r, x, z) => { for (let i = 0; i < r.int(2, 3); i++) { const cx = x + r.range(-7, 7), cz = z + r.range(-7, 7); const c = makeCabin({ wall: r.pick([0x8a5a32, 0x7a4a28, 0x9a6a3a, 0x6a4a2a]), roof: r.pick([0x4a3a30, 0x3a4a5a, 0x5a3a30]), w: r.range(4.5, 5.5), d: r.range(4, 5) }, r); placeT(g, U, c, cx, cz, r() * TAU); const [w, h, d] = c.userData.size; boxT(g, cx, cz, max(w, d) * 0.85, h, max(w, d) * 0.85); } U.push(makeCampfire(g, x, z).userData.update); } },
     { w: 2, build: (g, r, x, z) => { placeT(g, U, makeIgloo(), x, z, r() * TAU); boxT(g, x, z, 3.4, 1.8, 3.4); blob(r, x, z, 7, 2, (cx, cz) => { placeT(g, U, makeSnowman(r), cx, cz, r() * TAU); boxT(g, cx, cz, 1.0, 2.4, 1.0, { cam: false }); }); } },
@@ -4005,7 +4031,7 @@ function snowRegion(game, U, r, inner, outer) {
 function forestRegion(game, U, r, inner, outer) {
   const W = game.world;
   const bigTree = (g, x, z, o) => { const t = makeBigTree(r, o); placeT(g, U, t, x, z, 0); const [w] = t.userData.col; boxT(g, x, z, w * 0.7, 9, w * 0.7, { cam: false }); return t; };
-  U.push(fillRing(game, r, { inner, outer, count: 250, pad: 12, range: 170, kinds: [
+  U.push(fillRing(game, r, { inner, outer, count: 1100, pad: 9, claim: 5, range: 170, kinds: [
     { w: 8, build: (g, r, x, z) => blob(r, x, z, 11, r.int(3, 7), (cx, cz) => bigTree(g, cx, cz, { simple: r.chance(0.6), lanterns: r.chance(0.12) })) },
     { w: 3, build: (g, r, x, z) => blob(r, x, z, 8, r.int(4, 9), (cx, cz) => { const s = r.range(0.4, 2.6); const m = makeMushroom(s, r.pick([0, 20, 200, 300, 40]), r, r.chance(0.5)); placeT(g, U, m, cx, cz, 0); if (m.userData.update) U.push(m.userData.update); if (s > 1.4) boxT(g, cx, cz, 0.5 * s, 1.3 * s, 0.5 * s, { cam: false }); }) },
     { w: 3, build: (g, r, x, z) => makeFerns(g, [[x, z, 14, 40]], r) },
@@ -4070,6 +4096,13 @@ function addBush(game, x, z, r, color) {
   b.position.set(at[0], game.physics.ground0(at[0], at[1]), at[1]); game.world.add(b);
   game.physics.addBox(at[0], game.physics.ground0(at[0], at[1]) + 0.4, at[1], 1, 0.8, 0.8, { cam: false });
   return b;
+}
+/** A copy of a cached ground texture, re-tiled so one tile still covers `metres` on the ground. */
+function groundMap(tex, w, h, metres) { const m = tex.clone(); m.needsUpdate = true; m.repeat.set(w / metres, h / metres); worldBag.track(m); return m; }
+/** A round patch of ground — a paved town centre fading into open country reads better than a square one. */
+function flatDisc(game, rad, m, x, z, y = 0.01) {
+  const g = new THREE.CircleGeometry(rad, 64); worldBag.track(g); g.rotateX(-PI / 2);
+  const p = new THREE.Mesh(g, m); p.position.set(x, y, z); p.receiveShadow = true; game.world.add(p); return p;
 }
 function flatPlane(game, w, h, m, x, z, ry = 0, y = 0.01) { const p = mesh(G.plane(w, h), m, { x, y, z, rx: -PI / 2, shadow: 'receive', parent: game.world }); p.rotation.z = ry; return p; }
 
@@ -4266,7 +4299,7 @@ function buildCandyLand(game, entry) {
   P.setLimit(CANDY_LIMIT);
   game.applySky({ top: 0xe86fc4, horizon: 0xffd9ea, bottom: 0xffb3d1, sun: [-0.3, 0.55, 0.5], sunColor: 0xfff6d5, sunSize: 500, halo: 0.5 });
   game.setLighting({ ambient: [0xffd6ea, 0.4], hemi: [0xffe0f0, 0xff9ecf, 0.5], sun: [0xfff4e0, 2.3, -30, 55, 40], fog: [0xffdbe9, 85, 430], exposure: 1.05 });
-  flatPlane(game, 1000, 1000, mat(0xffb3d1, { roughness: 0.9, map: TEX.candyGround() }), 0, 0, 0, 0);
+  flatPlane(game, 1000, 1000, mat(0xffb3d1, { roughness: 0.9, map: groundMap(TEX.candyGround(), 1000, 1000, 10) }), 0, 0, 0, 0);
   game.zones.addSpan(-500, -22, 500, -14);   // the chocolate river
 
   // chocolate river (blocks) + wafer bridge (walkable)
@@ -4337,7 +4370,7 @@ function buildRobotCity(game, entry) {
   P.setLimit(ROBOT_LIMIT);
   game.applySky({ top: 0x05060f, horizon: 0x1a1f3d, bottom: 0x05060a, sun: [-0.4, 0.7, -0.4], sunColor: 0x8fa8ff, sunSize: 3000, halo: 0.08, stars: 1, moon: [-180, 230, -260] });
   game.setLighting({ ambient: [0x3a4a8a, 0.7], hemi: [0x5a6ad0, 0x1a1a28, 0.9], sun: [0x9fb4ff, 1.6, -30, 55, -25], fog: [0x0a0e1e, 60, 400], exposure: 1.05 });
-  const floorM = mat(0x8a929e, { roughness: 0.55, metalness: 0.25, map: TEX.metalFloor(), emissiveMap: TEX.metalGlow(), emissive: 0x00e5ff, emissiveIntensity: 0.9 });
+  const floorM = mat(0x8a929e, { roughness: 0.55, metalness: 0.25, map: groundMap(TEX.metalFloor(), 1000, 1000, 10), emissiveMap: groundMap(TEX.metalGlow(), 1000, 1000, 10), emissive: 0x00e5ff, emissiveIntensity: 0.9 });
   flatPlane(game, 1000, 1000, floorM, 0, 0, 0, 0);
 
   // skyline
@@ -4393,7 +4426,9 @@ function buildVictorian(game, entry) {
   P.setLimit(VICTORIAN_LIMIT);
   game.applySky({ top: 0x121a44, horizon: 0xf08a5a, bottom: 0x2b2436, sun: [-0.85, 0.16, 0.45], sunColor: 0xffb070, sunSize: 900, halo: 0.6, stars: 0.6, moon: [220, 190, -150] });
   game.setLighting({ ambient: [0x5a5f9a, 0.8], hemi: [0x7a8ad8, 0x4a3020, 0.9], sun: [0xffa860, 1.5, -60, 34, 32], fog: [0x3a2e48, 55, 350], exposure: 1.05 });
-  flatPlane(game, 1000, 1000, mat(0xb0a89e, { roughness: 1, map: TEX.cobble() }), 0, 0, 0, 0);
+  // green country all the way out, with the cobbled town laid on top of the middle of it
+  flatPlane(game, 1100, 1100, mat(0x5a6b46, { roughness: 1, map: groundMap(TEX.grass(), 1100, 1100, 9) }), 0, 0, 0, -0.02);
+  flatDisc(game, 145, mat(0xb0a89e, { roughness: 1, map: groundMap(TEX.cobble(), 290, 290, 8) }), 0, 0, 0);
   const pave = mat(0xa8a29a, { roughness: 1, map: TEX.sidewalk().clone() }); pave.map.needsUpdate = true; pave.map.repeat.set(40, 1); worldBag.track(pave.map);
   flatPlane(game, 140, 2.2, pave, 0, -5.6, 0, 0.02); flatPlane(game, 140, 2.2, pave, 0, 5.6, 0, 0.02);
   flatPlane(game, 2.2, 60, pave, -1.2, -30, 0, 0.02);   // lane north to the market square

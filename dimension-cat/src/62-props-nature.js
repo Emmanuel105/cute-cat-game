@@ -423,7 +423,7 @@ function makeMushroom(size = 1, hue = 0, r = rnd, glow = false) {
 function makeFerns(game, spots, r) {
   const pts = scatterPoints(game, spots, r, 0.4), total = pts.length;
   if (!total) return null;
-  const im = new THREE.InstancedMesh(G.cone(0.02, 0.6, 3), mat(0x3f8a3a, { roughness: 1, side: THREE.DoubleSide }), total * 5);
+  const im = new THREE.InstancedMesh(G.cone(0.055, 0.6, 3), mat(0x3f8a3a, { roughness: 1, side: THREE.DoubleSide }), total * 5);
   const M = new THREE.Matrix4(), Q = new THREE.Quaternion(), S = new THREE.Vector3(), Pv = new THREE.Vector3(), E = new THREE.Euler(), C = new THREE.Color();
   let i = 0;
   for (const [x, z] of pts) {
