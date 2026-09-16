@@ -207,7 +207,7 @@ class Game {
     const saved = this.savedGame = store.get();
     $('enter').disabled = false;
     if (saved && saved.v === 1) {
-      $('enter').textContent = 'CONTINUE'; $('continue-info').textContent = `${WORLDS[saved.world] ? WORLDS[saved.world].icon + ' ' + WORLDS[saved.world].name : ''} · score ${saved.score | 0} · ${(saved.squirrels || []).length} squirrel friends`;
+      $('enter').textContent = 'CONTINUE'; $('continue-info').textContent = `${WORLDS[saved.world] ? WORLDS[saved.world].icon + ' ' + WORLDS[saved.world].name : ''} · score ${saved.score | 0} · ${(saved.collected || []).length} treasures found`;
       $('new-game').style.display = 'inline-block';
     }
     $('enter').addEventListener('click', () => this.start(this.savedGame ? 'continue' : 'new'));

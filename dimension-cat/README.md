@@ -51,7 +51,12 @@ The HUD has a round mini-map (bottom-left, `Tab` toggles it): north is up, the p
   - `80-game.js` renderer, camera, input, HUD, transitions, main loop
 - `build.py` — `python3 build.py` writes `dist/dimension_cat.html` (and `dist/artifact.html`, body-only for hosting).
 - `test/run.mjs` — `node test/run.mjs` runs the whole game headless against a stub three.js: movement, collision, doors, collectibles, squirrel quest, save/restore, touch joystick, photo mode, every world transition and the ending, plus the keep-out rules, the gem count and the camera keys (190+ checks).
-- `../qa/run7.mjs` — `node qa/run7.mjs` (from the repo root) drives the built file in a headless Chromium via Playwright: new game → save → Continue → Start over, photo mode PNG download, and a phone-sized touch context with the joystick and buttons (26 checks, screenshots in `qa/r7/`). It points at the Chromium shell in `~/Library/Caches/ms-playwright`.
+- `../qa/` — Playwright scripts that drive the built file in a headless Chromium (pass `--use-angle=metal` for the real GPU; SwiftShader also works but is far slower):
+  - `qa/shot.mjs <outdir> [hood|people|worlds|all]` a screenshot tour with a frame-rate reading per world
+  - `qa/sweep.mjs <outdir>` every world, day and night, looking in four directions from the spawn
+  - `qa/tour.mjs <outdir>` walks out from the middle of each world to its edge, reporting draw calls and frame rate
+  - `qa/portraits.mjs <outdir>` lines the townsfolk up in front of the camera for a close look at faces and clothes
+  - `qa/run7.mjs` predates the current save format and no longer runs.
 
 ## Controls
 
@@ -63,7 +68,7 @@ The cat sits after a few seconds idle, loafs after eight, and stretches when it 
 
 ## Quest
 
-Befriend the squirrels (walk up slowly, press E). With four friends, the ginger boy in the Victorian street steps aside from the time door, which takes you home and completes the journey (+1000). Befriending all seven earns a +500 bonus, before or after the ending. Collect fish, yarn, mice and stars for score; the yarn on the couch needs a jump.
+Find the time door in the Victorian street and step through it: it takes you home and completes the journey (+1000). Collect fish, yarn, mice and stars for score; the yarn on the couch needs a jump. There is a squirrel to pet in every world.
 
 ## Save game
 
