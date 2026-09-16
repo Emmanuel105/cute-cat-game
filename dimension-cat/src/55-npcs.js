@@ -10,7 +10,7 @@ const HAIR_STYLES = ['short', 'crop', 'bob', 'long', 'pony', 'bun', 'braids', 'c
 const LONG_STYLES = ['bob', 'long', 'pony', 'bun', 'braids', 'curls'];
 
 /** Head radius for every human rig; every face and hat measurement is a multiple of it. */
-const HEAD_R = 0.15;
+const HEAD_R = 0.163;
 
 /**
  * A cartoon face on a head group of radius R: big white eyes with dark irises and a catch-light,
@@ -43,6 +43,7 @@ function makeHair(head, R, hairM, style) {
   if (style === 'bald') return;
   mesh(G.dome(R * 1.05, 16, 10), hairM, { y: R * 0.2, sy: 0.95, parent: head });    // skull cap, sits above the brows
   mesh(G.sphere(R * 0.85, 12, 10), hairM, { y: R * 0.1, z: -R * 0.42, sz: 0.85, parent: head });   // back of the head
+  mesh(G.sphere(R * 0.62, 12, 9), hairM, { y: R * 0.42, z: R * 0.6, sx: 1.35, sy: 0.6, sz: 0.55, parent: head });   // a fringe, so the hairline is not a bare rim
   if (style === 'crop') return;
   const curtain = (len, drop) => { for (const side of [1, -1]) mesh(G.capsule(R * 0.3, len * R, 8), hairM, { x: side * R * 0.82, y: -drop * R, z: -R * 0.22, sx: 0.8, sz: 0.75, parent: head }); };
   if (style === 'short') { mesh(G.sphere(R * 0.62, 10, 8), hairM, { y: R * 0.32, z: -R * 0.55, parent: head }); return; }
@@ -94,7 +95,7 @@ function makeHuman(o = {}) {
     rig.arms.push({ sh, el });
   }
   mesh(G.cyl(0.05, 0.055, 0.12, 8), skinM, { y: 1.58, parent: body });
-  const head = group(0, 1.7, 0, body); rig.head = head;
+  const head = group(0, 1.685, 0, body); rig.head = head;
   mesh(G.sphere(R, 20, 16), skinM, { sy: 1.02, sz: 0.94, parent: head });
   rig.eyes = makeFace(head, R, skinM, hairM, { lip: female ? 0xd05a70 : 0xb5544f }).eyes;
   const style = o.hairStyle ?? (female ? 'long' : 'short');

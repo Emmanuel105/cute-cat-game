@@ -45,6 +45,39 @@ check(game.physics.boxes.length > 50, `colliders registered (${game.physics.boxe
 check(game.interactables.length >= 3, `interactables (${game.interactables.length})`);
 check(['Sunny Shore', 'Frosty Peak', 'hollow oak'].every((n) => game.interactables.some((i) => (i.label() || '').includes(n))), 'neighborhood has the three hub portals');
 check(game.collectibles.items.length === 8, `collectibles placed (${game.collectibles.items.length})`);
+
+// Nothing may be planted on a road, pavement, garden path or boardwalk: walk the middle of each one
+// and make sure no static collider (a tree trunk, a bush, a lamp post) is standing in the way.
+const solidAt = (x, z, r = 0.5) => game.physics.boxes.some((b) => {
+  if (b.maxY <= 0.4 || b.minY >= 1.6) return false;           // under foot or overhead: fine
+  const cx = Math.max(b.minX, Math.min(x, b.maxX)), cz = Math.max(b.minZ, Math.min(z, b.maxZ));
+  return (x - cx) ** 2 + (z - cz) ** 2 < r * r;
+});
+const walkable = (label, x0, z0, x1, z1, steps = 120) => {
+  const blocked = [];
+  for (let i = 0; i <= steps; i++) { const k = i / steps, x = x0 + (x1 - x0) * k, z = z0 + (z1 - z0) * k; if (solidAt(x, z)) blocked.push(`${x.toFixed(1)},${z.toFixed(1)}`); }
+  check(blocked.length === 0, `${label} is clear end to end${blocked.length ? ' — blocked at ' + blocked.slice(0, 4).join(' / ') : ''}`);
+};
+walkable('the main street', -92, 14, 92, 14);
+walkable('the north pavement', -92, 17.6, 92, 17.6);
+walkable('the south pavement', -92, 10.4, 92, 10.4);
+walkable('the side road', 44, -60, 44, 60);
+walkable('the boardwalk', 46, 22, 74, 22);
+walkable('the park path', -12, 36, 12, 36);
+walkable('the path to the portal', 0, 36, 0, 48);
+const PORTAL_GEMS = globalThis.window.DC_PORTAL_GEMS;
+check(PORTAL_GEMS === 7, `the portal carries ${PORTAL_GEMS} gems`);
+{
+  let gems = 0;
+  game.world.traverse((o) => { if (o.userData && o.userData.gem) gems++; });
+  check(gems === PORTAL_GEMS, `the neighbourhood hides the same number of gems (${gems})`);
+}
+check(Array.isArray(game.homeMarker) && game.homeMarker[0] === 0 && game.homeMarker[1] === 0, 'the mini-map knows where home is');
+{
+  let beacon = null;
+  game.world.traverse((o) => { if (o.userData && o.userData.beaconHome) beacon = o; });
+  check(!!beacon && beacon.position.y > 8, `a marker floats over the roof (y=${beacon ? beacon.position.y.toFixed(1) : 'none'})`);
+}
 const start = pos().clone();
 elements.get('enter').listeners.click[0]();
 check(game.started, 'game started');
@@ -57,6 +90,17 @@ check(pos().z < 4.0, `stopped by the furniture / front wall (z=${pos().z.toFixed
 // strafe: A should move screen-left = -X when camera yaw = 0 … screen right = (-cos yaw, sin yaw) = (-1, 0) so A → +X
 const before = pos().x; key('a'); frames(60); key('a', false);
 check(pos().x > before + 0.3, `A strafes to screen-left (+X at yaw 0): x ${before.toFixed(2)} → ${pos().x.toFixed(2)}`);
+// ← and → swing the camera rather than strafing
+{
+  const yaw0 = game.cam.yaw, x0 = pos().x, z0 = pos().z;
+  key('ArrowLeft'); frames(30); key('ArrowLeft', false);
+  check(game.cam.yaw > yaw0 + 0.4, `left arrow swings the camera (yaw ${yaw0.toFixed(2)} → ${game.cam.yaw.toFixed(2)})`);
+  check(Math.abs(pos().x - x0) < 0.05 && Math.abs(pos().z - z0) < 0.05, 'left arrow does not move the cat');
+  const yaw1 = game.cam.yaw;
+  key('ArrowRight'); frames(30); key('ArrowRight', false);
+  check(game.cam.yaw < yaw1 - 0.4, `right arrow swings the camera back (yaw ${yaw1.toFixed(2)} → ${game.cam.yaw.toFixed(2)})`);
+}
+
 check(Math.abs(Math.sin(game.cat.group.rotation.y) - 1) < 0.2, `cat faces the strafe direction (rot.y=${game.cat.group.rotation.y.toFixed(2)})`);
 // find the door interactable and open it
 pos().set(0.9, 0.16, 3.4); frames(5);

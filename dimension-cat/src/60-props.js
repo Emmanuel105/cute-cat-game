@@ -70,7 +70,7 @@ function makeGrass(game, spots, r = rnd, o = {}) {
   const pts = scatterPoints(game, spots, r, o.pad ?? 0.3);
   const total = pts.length;
   if (!total) return null;
-  const hue = o.hue ?? [0.22, 0.3], light = o.light ?? [0.32, 0.46], tall = o.tall ?? 0.9, wide = o.wide ?? 0.62;
+  const hue = o.hue ?? [0.22, 0.3], light = o.light ?? [0.26, 0.4], tall = o.tall ?? 0.72, wide = o.wide ?? 0.7;
   const im = new THREE.InstancedMesh(G.blade(), mat(0xffffff, { roughness: 1, side: THREE.DoubleSide }), total * 3);
   const M = new THREE.Matrix4(), Q = new THREE.Quaternion(), S = new THREE.Vector3(), Pv = new THREE.Vector3(), E = new THREE.Euler(), C = new THREE.Color();
   let i = 0;
@@ -90,17 +90,19 @@ function makeFlowers(game, spots, r = rnd, ground = null) {
   const parent = game.world, pts = scatterPoints(game, spots, r, 0.4);
   const total = pts.length;
   if (!total) return;
-  const stem = new THREE.InstancedMesh(G.cyl(0.012, 0.014, 0.26, 4), mat(0x3d8a2a, { roughness: 1 }), total);
-  const head = new THREE.InstancedMesh(G.rosette(5, 0.075, 0.035), mat(0xffffff, { roughness: 0.7, side: THREE.DoubleSide }), total);
-  const centre = new THREE.InstancedMesh(G.sphere(0.022, 7, 5), mat(0xffd54a, { roughness: 0.6, emissive: 0xffb300, emissiveIntensity: 0.25 }), total);
-  const leafy = new THREE.InstancedMesh(G.sphere(0.06, 6, 5), mat(0x4caf50, { roughness: 1 }), total);
+  // Thin parts come out solid black once the ink pass has drawn both of their edges, so flowers are
+  // built chunky: a stem you can see, a wide head and a fat middle.
+  const stem = new THREE.InstancedMesh(G.cyl(0.022, 0.026, 0.26, 5), mat(0x3d8a2a, { roughness: 1 }), total);
+  const head = new THREE.InstancedMesh(G.rosette(5, 0.115, 0.05), mat(0xffffff, { roughness: 0.7, side: THREE.DoubleSide }), total);
+  const centre = new THREE.InstancedMesh(G.sphere(0.036, 8, 6), mat(0xffd54a, { roughness: 0.6, emissive: 0xffb300, emissiveIntensity: 0.25 }), total);
+  const leafy = new THREE.InstancedMesh(G.sphere(0.075, 7, 6), mat(0x4caf50, { roughness: 1 }), total);
   const M = new THREE.Matrix4(), Q = new THREE.Quaternion(), S = new THREE.Vector3(), Pv = new THREE.Vector3(), C = new THREE.Color(), E = new THREE.Euler(), Q0 = new THREE.Quaternion();
   let i = 0;
   for (const [x, z] of pts) {
     const y0 = ground ? ground(x, z) : game.physics.ground0(x, z), h = r.range(0.18, 0.36), s = r.range(0.75, 1.3);
     M.compose(Pv.set(x, y0 + h / 2, z), Q0, S.set(1, h / 0.26, 1)); stem.setMatrixAt(i, M);
     Q.setFromEuler(E.set(r.range(-0.3, 0.3), r() * TAU, r.range(-0.3, 0.3)));
-    M.compose(Pv.set(x, y0 + h, z), Q, S.set(s, s, s)); head.setMatrixAt(i, M); centre.setMatrixAt(i, M.compose(Pv.set(x, y0 + h + 0.012 * s, z), Q, S.set(s, s, s)));
+    M.compose(Pv.set(x, y0 + h, z), Q, S.set(s, s, s)); head.setMatrixAt(i, M); centre.setMatrixAt(i, M.compose(Pv.set(x, y0 + h + 0.018 * s, z), Q, S.set(s, s, s)));
     head.setColorAt(i, C.setHSL(r.pick([0.0, 0.05, 0.1, 0.14, 0.58, 0.72, 0.8, 0.9, 0.96]), 0.85, r.range(0.55, 0.72)));
     M.compose(Pv.set(x + 0.04, y0 + h * 0.4, z), Q0, S.set(1.5, 0.6, 1)); leafy.setMatrixAt(i, M);
     i++;

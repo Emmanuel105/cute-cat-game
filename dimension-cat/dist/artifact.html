@@ -1623,7 +1623,7 @@ const HAIR_STYLES = ['short', 'crop', 'bob', 'long', 'pony', 'bun', 'braids', 'c
 const LONG_STYLES = ['bob', 'long', 'pony', 'bun', 'braids', 'curls'];
 
 /** Head radius for every human rig; every face and hat measurement is a multiple of it. */
-const HEAD_R = 0.15;
+const HEAD_R = 0.163;
 
 /**
  * A cartoon face on a head group of radius R: big white eyes with dark irises and a catch-light,
@@ -1656,6 +1656,7 @@ function makeHair(head, R, hairM, style) {
   if (style === 'bald') return;
   mesh(G.dome(R * 1.05, 16, 10), hairM, { y: R * 0.2, sy: 0.95, parent: head });    // skull cap, sits above the brows
   mesh(G.sphere(R * 0.85, 12, 10), hairM, { y: R * 0.1, z: -R * 0.42, sz: 0.85, parent: head });   // back of the head
+  mesh(G.sphere(R * 0.62, 12, 9), hairM, { y: R * 0.42, z: R * 0.6, sx: 1.35, sy: 0.6, sz: 0.55, parent: head });   // a fringe, so the hairline is not a bare rim
   if (style === 'crop') return;
   const curtain = (len, drop) => { for (const side of [1, -1]) mesh(G.capsule(R * 0.3, len * R, 8), hairM, { x: side * R * 0.82, y: -drop * R, z: -R * 0.22, sx: 0.8, sz: 0.75, parent: head }); };
   if (style === 'short') { mesh(G.sphere(R * 0.62, 10, 8), hairM, { y: R * 0.32, z: -R * 0.55, parent: head }); return; }
@@ -1707,7 +1708,7 @@ function makeHuman(o = {}) {
     rig.arms.push({ sh, el });
   }
   mesh(G.cyl(0.05, 0.055, 0.12, 8), skinM, { y: 1.58, parent: body });
-  const head = group(0, 1.7, 0, body); rig.head = head;
+  const head = group(0, 1.685, 0, body); rig.head = head;
   mesh(G.sphere(R, 20, 16), skinM, { sy: 1.02, sz: 0.94, parent: head });
   rig.eyes = makeFace(head, R, skinM, hairM, { lip: female ? 0xd05a70 : 0xb5544f }).eyes;
   const style = o.hairStyle ?? (female ? 'long' : 'short');
@@ -2535,7 +2536,7 @@ function makeGrass(game, spots, r = rnd, o = {}) {
   const pts = scatterPoints(game, spots, r, o.pad ?? 0.3);
   const total = pts.length;
   if (!total) return null;
-  const hue = o.hue ?? [0.22, 0.3], light = o.light ?? [0.32, 0.46], tall = o.tall ?? 0.9, wide = o.wide ?? 0.62;
+  const hue = o.hue ?? [0.22, 0.3], light = o.light ?? [0.26, 0.4], tall = o.tall ?? 0.72, wide = o.wide ?? 0.7;
   const im = new THREE.InstancedMesh(G.blade(), mat(0xffffff, { roughness: 1, side: THREE.DoubleSide }), total * 3);
   const M = new THREE.Matrix4(), Q = new THREE.Quaternion(), S = new THREE.Vector3(), Pv = new THREE.Vector3(), E = new THREE.Euler(), C = new THREE.Color();
   let i = 0;
@@ -2555,17 +2556,19 @@ function makeFlowers(game, spots, r = rnd, ground = null) {
   const parent = game.world, pts = scatterPoints(game, spots, r, 0.4);
   const total = pts.length;
   if (!total) return;
-  const stem = new THREE.InstancedMesh(G.cyl(0.012, 0.014, 0.26, 4), mat(0x3d8a2a, { roughness: 1 }), total);
-  const head = new THREE.InstancedMesh(G.rosette(5, 0.075, 0.035), mat(0xffffff, { roughness: 0.7, side: THREE.DoubleSide }), total);
-  const centre = new THREE.InstancedMesh(G.sphere(0.022, 7, 5), mat(0xffd54a, { roughness: 0.6, emissive: 0xffb300, emissiveIntensity: 0.25 }), total);
-  const leafy = new THREE.InstancedMesh(G.sphere(0.06, 6, 5), mat(0x4caf50, { roughness: 1 }), total);
+  // Thin parts come out solid black once the ink pass has drawn both of their edges, so flowers are
+  // built chunky: a stem you can see, a wide head and a fat middle.
+  const stem = new THREE.InstancedMesh(G.cyl(0.022, 0.026, 0.26, 5), mat(0x3d8a2a, { roughness: 1 }), total);
+  const head = new THREE.InstancedMesh(G.rosette(5, 0.115, 0.05), mat(0xffffff, { roughness: 0.7, side: THREE.DoubleSide }), total);
+  const centre = new THREE.InstancedMesh(G.sphere(0.036, 8, 6), mat(0xffd54a, { roughness: 0.6, emissive: 0xffb300, emissiveIntensity: 0.25 }), total);
+  const leafy = new THREE.InstancedMesh(G.sphere(0.075, 7, 6), mat(0x4caf50, { roughness: 1 }), total);
   const M = new THREE.Matrix4(), Q = new THREE.Quaternion(), S = new THREE.Vector3(), Pv = new THREE.Vector3(), C = new THREE.Color(), E = new THREE.Euler(), Q0 = new THREE.Quaternion();
   let i = 0;
   for (const [x, z] of pts) {
     const y0 = ground ? ground(x, z) : game.physics.ground0(x, z), h = r.range(0.18, 0.36), s = r.range(0.75, 1.3);
     M.compose(Pv.set(x, y0 + h / 2, z), Q0, S.set(1, h / 0.26, 1)); stem.setMatrixAt(i, M);
     Q.setFromEuler(E.set(r.range(-0.3, 0.3), r() * TAU, r.range(-0.3, 0.3)));
-    M.compose(Pv.set(x, y0 + h, z), Q, S.set(s, s, s)); head.setMatrixAt(i, M); centre.setMatrixAt(i, M.compose(Pv.set(x, y0 + h + 0.012 * s, z), Q, S.set(s, s, s)));
+    M.compose(Pv.set(x, y0 + h, z), Q, S.set(s, s, s)); head.setMatrixAt(i, M); centre.setMatrixAt(i, M.compose(Pv.set(x, y0 + h + 0.018 * s, z), Q, S.set(s, s, s)));
     head.setColorAt(i, C.setHSL(r.pick([0.0, 0.05, 0.1, 0.14, 0.58, 0.72, 0.8, 0.9, 0.96]), 0.85, r.range(0.55, 0.72)));
     M.compose(Pv.set(x + 0.04, y0 + h * 0.4, z), Q0, S.set(1.5, 0.6, 1)); leafy.setMatrixAt(i, M);
     i++;
@@ -4112,7 +4115,7 @@ function buildNeighborhood(game, entry) {
   for (const [x, z] of [[-6.6, 3.6], [6.6, 3.4], [-6.6, -1.5], [-3.9, 6.4], [4.6, 6.4]]) addBush(game, x, z, r);
   // neighbours
   const palette = [[0xdfe9f5, 0x3f5573], [0xf7e4c1, 0x8b3a2a], [0xe8f3d8, 0x4a6a3a], [0xf5dcd2, 0x6b3a3a], [0xfff3d6, 0x2f4f6f], [0xe5e0f5, 0x5a4a7a], [0xf3f0e6, 0x7a4a2a], [0xd9efe9, 0x3a6a6a], [0xf9e6e0, 0x4a4a6a], [0xe6f0f9, 0x8a3a2a], [0xf4f1dc, 0x3a5a3a], [0xe9e2f4, 0x6b3a5a]];
-  const lots = [[-18, 0, 0], [18, 0, 0], [-36, 0, 0], [36, 0, 0], [-27, 28, PI], [-9, 28, PI], [9, 28, PI], [27, 28, PI], [-54, 0, 0], [54, 0, 0], [-72, 0, 0], [72, 0, 0], [-45, 28, PI], [45, 28, PI], [-63, 28, PI], [63, 28, PI]];
+  const lots = [[-18, 0, 0], [18, 0, 0], [-36, 0, 0], [36, 0, 0], [-27, 28, PI], [-9, 28, PI], [9, 28, PI], [27, 28, PI], [-54, 0, 0], [54, 0, 0], [-72, 0, 0], [72, 0, 0], [-45, 28, PI], [-81, 28, PI], [-63, 28, PI], [63, 28, PI]];
   for (const [x, z, ry] of lots) { const front = ry === 0 ? 1 : -1; Z.add(x, z, 7.8, 6.8); Z.add(x, z + front * 4.4, 3.6, 2.6); Z.add(x, z + front * 6.9, 1.4, 6.4); }   // house, porch, front path
   lots.forEach(([x, z, ry], i) => {
     const [wall, roof] = palette[i % palette.length], storeys = i % 3 === 1 ? 2 : 1, h = makeHouse({ wall, roof, doorRight: i % 2 === 1, lit: i % 3 === 0, roofH: 2 + (i % 3) * 0.4, storeys, shutter: r.pick([0x3f5573, 0x2f4f2f, 0x5a3a3a, 0xffffff]) }, r);
@@ -4173,7 +4176,7 @@ function buildNeighborhood(game, entry) {
   makeLanternPath(game, -50, -12, -66, -36, 6);
   const hollow = makeHollowOak(game, 40, 78, PI, () => game.travel(WORLD_INDEX('forest'), 'from-hub')); U.push(hollow.userData.update);
   for (let i = 0; i < 10; i++) { const z = 56 + i * 2.2, x = 8 + i * 3.0 + sin(i) * 0.8; mesh(G.cyl(0.55, 0.6, 0.1, 9), mat(0x8a8a80, { roughness: 1 }), { x, y: 0.05, z, ry: r() * TAU, shadow: 'receive', parent: W }); }   // stepping stones to the oak
-  place(game, U, makeSignpost([['Park & portal', 0, 50], ['Sunny Shore', 78, 22], ['Frosty Peak', -72, -40], ['Whisper Woods', 40, 78]], -4.4, 9.9), -4.4, 9.9, 0); P.addBox(-4.4, 1.2, 9.9, 0.3, 2.4, 0.3, { cam: false });
+  place(game, U, makeSignpost([['Park & portal', 0, 50], ['Sunny Shore', 78, 22], ['Frosty Peak', -72, -40], ['Whisper Woods', 40, 78]], -4.4, 8.9), -4.4, 8.9, 0); P.addBox(-4.4, 1.2, 8.9, 0.3, 2.4, 0.3, { cam: false });
   // collectibles + the gems by the squirrel
   const C = game.collectibles;
   C.add('yarn', -3.0, 0.1, 0.6); C.add('fish', -8, 5); C.add('mouse', -6.5, -6); C.add('star', 14, 50); C.add('fish', -14, 41); C.add('yarn', 21, 3); C.add('star', 40, 20); C.add('mouse', -30, 34);
@@ -5157,6 +5160,6 @@ class Game {
 }
 
 const game = new Game();
-window.DC = game; window.DC_WORLDS = WORLDS;
+window.DC = game; window.DC_WORLDS = WORLDS; window.DC_PORTAL_GEMS = PORTAL_GEMS;
 
 </script>
