@@ -1062,16 +1062,25 @@ float viewDepth(vec2 uv) {
 /** Inverse depth. Across any flat surface, however steeply it leans away, this is linear in screen space. */
 float invDepth(vec2 uv) { return 1.0 / max(0.02, viewDepth(uv)); }
 
+/**
+ * Curvature of inverse depth around uv, n whole texels out. Inverse depth is exactly linear across
+ * a plane at any angle, so this is zero on floors and walls and spikes at a silhouette; dividing by
+ * the pixel's own inverse depth makes the test read the same at every distance.
+ * Whole texels only — a half-texel offset with a nearest-filtered depth buffer aliases into stripes.
+ */
+float edgeAt(vec2 uv, float n, float wc) {
+  vec2 o = uTexel * n;
+  float wl = invDepth(uv - vec2(o.x, 0.0)), wr = invDepth(uv + vec2(o.x, 0.0));
+  float wu = invDepth(uv + vec2(0.0, o.y)), wd = invDepth(uv - vec2(0.0, o.y));
+  return (abs(wl + wr - 2.0 * wc) + abs(wu + wd - 2.0 * wc)) / (n * n);
+}
+
 void main() {
   vec4 base = texture2D(tDiffuse, vUv);
-  vec2 o = uTexel;                               // exactly one texel: half-texel offsets alias into stripes
   float c = viewDepth(vUv);
   float wc = invDepth(vUv);
-  float wl = invDepth(vUv - vec2(o.x, 0.0)), wr = invDepth(vUv + vec2(o.x, 0.0));
-  float wu = invDepth(vUv + vec2(0.0, o.y)), wd = invDepth(vUv - vec2(0.0, o.y));
-  // Curvature of inverse depth: exactly zero on a plane at any angle, large at a silhouette.
-  // Dividing by the pixel's own inverse depth makes the test the same at every distance.
-  float curve = abs(wl + wr - 2.0 * wc) + abs(wu + wd - 2.0 * wc);
+  // two widths, so the ink is a few pixels thick rather than a hairline
+  float curve = max(edgeAt(vUv, 1.0, wc), edgeAt(vUv, 2.0, wc));
   float edge = smoothstep(uBias, uBias * 2.6, curve / max(wc, 1.0 / uFadeFar));
   // The depth buffer gets coarse a long way out; stop inking before the noise there turns into scribble.
   edge *= 1.0 - smoothstep(uFadeNear, uFadeFar, c);
@@ -1088,11 +1097,11 @@ class ToonOutline {
       tDiffuse: { value: null }, tDepth: { value: null },
       uTexel: { value: new THREE.Vector2(0.001, 0.001) },
       uNear: { value: 0.2 }, uFar: { value: 700 },
-      uColor: { value: new THREE.Color(o.color ?? 0x241a2e) },
+      uColor: { value: new THREE.Color(o.color ?? 0x1c1326) },
       uStrength: { value: o.strength ?? 1.0 },
-      uBias: { value: o.bias ?? 0.035 },
-      uFadeNear: { value: o.fadeNear ?? 90 },
-      uFadeFar: { value: o.fadeFar ?? 170 },
+      uBias: { value: o.bias ?? 0.022 },
+      uFadeNear: { value: o.fadeNear ?? 55 },
+      uFadeFar: { value: o.fadeFar ?? 115 },
     };
     this.material = new THREE.ShaderMaterial({ uniforms: this.uniforms, vertexShader: OUTLINE_VS, fragmentShader: OUTLINE_FS, depthTest: false, depthWrite: false });
     this.material.toneMapped = false;
@@ -4004,7 +4013,7 @@ function beachRegion(game, U, r, inner, outer) {
   const skip = (x, z) => x > 12;
   U.push(fillRing(game, r, { inner, outer, count: 900, pad: 11, claim: 6, range: 220, skip, kinds: [
     { w: 5, build: (g, r, x, z) => blob(r, x, z, 8, r.int(3, 7), (cx, cz) => { const p = makePalm(r, r.range(3.6, 6.2)); placeT(g, U, p, cx, cz, 0); boxT(g, cx, cz, 0.5, 5, 0.5, { cam: false }); }) },
-    { w: 3, build: (g, r, x, z) => makeGrass(g, [[x, z, 13, 130]], r, { hue: [0.13, 0.21], light: [0.4, 0.56], tall: 1.2, wide: 0.85, pad: 0.2 }) },
+    { w: 3, build: (g, r, x, z) => makeGrass(g, [[x, z, 13, 130]], r, { hue: [0.13, 0.21], light: [0.4, 0.56], tall: 1.15, wide: 1.45, pad: 0.2 }) },
     { w: 2, build: (g, r, x, z) => blob(r, x, z, 7, r.int(3, 6), (cx, cz) => placeT(g, U, makeRock(r, 0x8a857a, r.range(0.8, 2.2)), cx, cz, 0)) },
     { w: 2, build: (g, r, x, z) => { for (let i = 0; i < r.int(2, 4); i++) { const hx = x + i * 7, hz = z + r.range(-2, 2); placeT(g, U, boxAround(g, makeBeachHut(r.pick([0xff8a65, 0x4fc3f7, 0xfff176, 0x81c784, 0xf48fb1]), r), hx, hz, 2.8, 2.8, 2.8), hx, hz, PI / 2); } } },
     { w: 2, build: (g, r, x, z) => { placeT(g, U, makeUmbrella(r.pick([0, 200, 50, 320, 120])), x, z, 0); boxT(g, x, z, 0.2, 2.2, 0.2, { cam: false }); placeT(g, U, makeTowel(r.pick([0x2f6fd6, 0xff7043, 0x8e24aa, 0x2e9e6e])), x + 1.4, z + 0.8, r() * 0.6); } },
@@ -4561,7 +4570,7 @@ function buildBeach(game, entry) {
   // dunes: palms, grass tufts, driftwood
   const palmSpots = [[-20, 6], [-24, 16], [-18, 28], [-30, 30], [-34, -4], [-28, -14], [-38, 12], [-22, -32], [-36, -28], [-44, 2], [-42, 22], [-16, 40], [-30, 44], [-46, -18], [-12, 48], [-6, 34], [-4, -34], [-40, 40]];
   for (const [x, z] of palmSpots) { const p = makePalm(r, r.range(3.8, 5.6)); placeT(game, U, p, x, z, 0); boxT(game, x, z, 0.5, 5, 0.5, { cam: false }); }
-  makeGrass(game, [[-26, 0, 22, 150], [-14, 30, 12, 70], [-40, -30, 12, 70]], r, { hue: [0.13, 0.21], light: [0.4, 0.56], tall: 1.2, wide: 0.85, pad: 0.2 });
+  makeGrass(game, [[-26, 0, 22, 150], [-14, 30, 12, 70], [-40, -30, 12, 70]], r, { hue: [0.13, 0.21], light: [0.4, 0.56], tall: 1.15, wide: 1.45, pad: 0.2 });
   makeScatter(game, [[10, 0, 12, 60], [6, 28, 10, 40], [8, -26, 10, 40]], G.sphere(0.06, 6, 5), [0xfff1dc, 0xffd9c2, 0xf3e3c8, 0xd9a3a3, 0xe8c9a0], r, [0.6, 1.4], 0.02);  // shells
   for (const [x, z, ry] of [[-14, 36, 0.4], [4, -30, 1.2], [-6, 12, 2.4]]) { const log = makeHollowLog(r); log.scale.setScalar(0.7); placeT(game, U, log, x, z, ry); }
   // sunbathers' corner: umbrellas, towels, sandcastle, beach ball

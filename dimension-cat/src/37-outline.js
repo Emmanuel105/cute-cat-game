@@ -30,16 +30,25 @@ float viewDepth(vec2 uv) {
 /** Inverse depth. Across any flat surface, however steeply it leans away, this is linear in screen space. */
 float invDepth(vec2 uv) { return 1.0 / max(0.02, viewDepth(uv)); }
 
+/**
+ * Curvature of inverse depth around uv, n whole texels out. Inverse depth is exactly linear across
+ * a plane at any angle, so this is zero on floors and walls and spikes at a silhouette; dividing by
+ * the pixel's own inverse depth makes the test read the same at every distance.
+ * Whole texels only — a half-texel offset with a nearest-filtered depth buffer aliases into stripes.
+ */
+float edgeAt(vec2 uv, float n, float wc) {
+  vec2 o = uTexel * n;
+  float wl = invDepth(uv - vec2(o.x, 0.0)), wr = invDepth(uv + vec2(o.x, 0.0));
+  float wu = invDepth(uv + vec2(0.0, o.y)), wd = invDepth(uv - vec2(0.0, o.y));
+  return (abs(wl + wr - 2.0 * wc) + abs(wu + wd - 2.0 * wc)) / (n * n);
+}
+
 void main() {
   vec4 base = texture2D(tDiffuse, vUv);
-  vec2 o = uTexel;                               // exactly one texel: half-texel offsets alias into stripes
   float c = viewDepth(vUv);
   float wc = invDepth(vUv);
-  float wl = invDepth(vUv - vec2(o.x, 0.0)), wr = invDepth(vUv + vec2(o.x, 0.0));
-  float wu = invDepth(vUv + vec2(0.0, o.y)), wd = invDepth(vUv - vec2(0.0, o.y));
-  // Curvature of inverse depth: exactly zero on a plane at any angle, large at a silhouette.
-  // Dividing by the pixel's own inverse depth makes the test the same at every distance.
-  float curve = abs(wl + wr - 2.0 * wc) + abs(wu + wd - 2.0 * wc);
+  // two widths, so the ink is a few pixels thick rather than a hairline
+  float curve = max(edgeAt(vUv, 1.0, wc), edgeAt(vUv, 2.0, wc));
   float edge = smoothstep(uBias, uBias * 2.6, curve / max(wc, 1.0 / uFadeFar));
   // The depth buffer gets coarse a long way out; stop inking before the noise there turns into scribble.
   edge *= 1.0 - smoothstep(uFadeNear, uFadeFar, c);
@@ -56,11 +65,11 @@ class ToonOutline {
       tDiffuse: { value: null }, tDepth: { value: null },
       uTexel: { value: new THREE.Vector2(0.001, 0.001) },
       uNear: { value: 0.2 }, uFar: { value: 700 },
-      uColor: { value: new THREE.Color(o.color ?? 0x241a2e) },
+      uColor: { value: new THREE.Color(o.color ?? 0x1c1326) },
       uStrength: { value: o.strength ?? 1.0 },
-      uBias: { value: o.bias ?? 0.035 },
-      uFadeNear: { value: o.fadeNear ?? 90 },
-      uFadeFar: { value: o.fadeFar ?? 170 },
+      uBias: { value: o.bias ?? 0.022 },
+      uFadeNear: { value: o.fadeNear ?? 55 },
+      uFadeFar: { value: o.fadeFar ?? 115 },
     };
     this.material = new THREE.ShaderMaterial({ uniforms: this.uniforms, vertexShader: OUTLINE_VS, fragmentShader: OUTLINE_FS, depthTest: false, depthWrite: false });
     this.material.toneMapped = false;

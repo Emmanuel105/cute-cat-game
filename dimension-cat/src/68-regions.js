@@ -192,7 +192,7 @@ function beachRegion(game, U, r, inner, outer) {
   const skip = (x, z) => x > 12;
   U.push(fillRing(game, r, { inner, outer, count: 900, pad: 11, claim: 6, range: 220, skip, kinds: [
     { w: 5, build: (g, r, x, z) => blob(r, x, z, 8, r.int(3, 7), (cx, cz) => { const p = makePalm(r, r.range(3.6, 6.2)); placeT(g, U, p, cx, cz, 0); boxT(g, cx, cz, 0.5, 5, 0.5, { cam: false }); }) },
-    { w: 3, build: (g, r, x, z) => makeGrass(g, [[x, z, 13, 130]], r, { hue: [0.13, 0.21], light: [0.4, 0.56], tall: 1.2, wide: 0.85, pad: 0.2 }) },
+    { w: 3, build: (g, r, x, z) => makeGrass(g, [[x, z, 13, 130]], r, { hue: [0.13, 0.21], light: [0.4, 0.56], tall: 1.15, wide: 1.45, pad: 0.2 }) },
     { w: 2, build: (g, r, x, z) => blob(r, x, z, 7, r.int(3, 6), (cx, cz) => placeT(g, U, makeRock(r, 0x8a857a, r.range(0.8, 2.2)), cx, cz, 0)) },
     { w: 2, build: (g, r, x, z) => { for (let i = 0; i < r.int(2, 4); i++) { const hx = x + i * 7, hz = z + r.range(-2, 2); placeT(g, U, boxAround(g, makeBeachHut(r.pick([0xff8a65, 0x4fc3f7, 0xfff176, 0x81c784, 0xf48fb1]), r), hx, hz, 2.8, 2.8, 2.8), hx, hz, PI / 2); } } },
     { w: 2, build: (g, r, x, z) => { placeT(g, U, makeUmbrella(r.pick([0, 200, 50, 320, 120])), x, z, 0); boxT(g, x, z, 0.2, 2.2, 0.2, { cam: false }); placeT(g, U, makeTowel(r.pick([0x2f6fd6, 0xff7043, 0x8e24aa, 0x2e9e6e])), x + 1.4, z + 0.8, r() * 0.6); } },
