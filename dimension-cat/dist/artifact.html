@@ -401,6 +401,13 @@ function mesh(geometry, material, o = {}) {
   if (o.parent) o.parent.add(m);
   return m;
 }
+/**
+ * Keep a thin thing (a cable, a wire, a string) out of the ink pass. The outline is found in the depth
+ * buffer, and anything a pixel or two wide gets inked on both edges and comes out as a solid line
+ * across the sky. Not writing depth means no silhouette; drawing after everything else keeps the
+ * depth *test*, so it still hides behind whatever stands in front of it.
+ */
+function noInk(m) { m.material.depthWrite = false; m.renderOrder = 1; return m; }
 function group(x = 0, y = 0, z = 0, parent = null) {
   const g = new THREE.Group(); g.position.set(x, y, z); if (parent) parent.add(g); return g;
 }
@@ -1739,7 +1746,7 @@ function makeHuman(o = {}) {
   const skinM = mat(o.skin ?? 0xe0ac69, { roughness: 0.8 }), shirtM = mat(o.shirt ?? 0x3f6fd6), pantsM = mat(o.pants ?? 0x2c3140), shoeM = mat(o.shoes ?? 0x1e1a18);
   const hairM = mat(o.hair ?? 0x2b1b12), hatM = mat(o.hatColor ?? 0x111111, { roughness: 0.5 });
   const jacketM = o.jacket ? mat(o.jacket) : null;
-  const rig = { group: g, legs: [], arms: [], hands: [], k };
+  const rig = { group: g, legs: [], arms: [], hands: [], k, look: o };   // `look` is kept for the tests and QA line-ups
   const body = group(0, 0, 0, g); rig.body = body;
   body.scale.setScalar(k);
   // a child is not a scaled-down adult: the head keeps more of its size and the limbs lose some
@@ -2144,6 +2151,12 @@ class Wanderer {
     if (dx * dx + dz * dz < 42) { const a = wrapAngle(atan2(dx, dz) - this.rig.group.rotation.y); if (abs(a) < 1.6) { target = a; w = 1; } }
     this.lookW = damp(this.lookW, w, 5, dt); this.look = damp(this.look, target, 6, dt);
     head.rotation.y = lerp(head.rotation.y, this.look, this.lookW);
+    // people give the cat a wave the first time it comes up to them; gentlemen tip their hat instead
+    if (this.rig.gesture !== undefined && !this.rig.hat) {
+      const d2 = dx * dx + dz * dz;
+      if (w && d2 < 12 && !this.waved && this.state === 'idle') { this.waved = true; this.rig.gesture = 'wave'; this.rig.gT = 0; this.timer = max(this.timer, 2); }
+      if (d2 > 40) this.waved = false;
+    }
     // gentlemen tip their top hat once per approach
     if (this.rig.hat) {
       const d2 = dx * dx + dz * dz;
@@ -3596,7 +3609,7 @@ function makeGondolaStation(game, x, z, ry, onEnter, prompt = 'Ride the gondola 
   // cable up into the sky with two cabins riding it
   const cableLen = 110, pitch = 0.47;
   const cableG = group(0, 4.0, -0.8, g); cableG.rotation.x = -pitch;
-  for (const sx of [-0.35, 0.35]) mesh(G.cyl(0.028, 0.028, cableLen, 5), mat(0x2b2f36, { metalness: 0.7, roughness: 0.5 }), { x: sx, z: -cableLen / 2, rx: PI / 2, parent: cableG });
+  for (const sx of [-0.35, 0.35]) noInk(mesh(G.cyl(0.028, 0.028, cableLen, 5), mat(0x2b2f36, { metalness: 0.7, roughness: 0.5 }), { x: sx, z: -cableLen / 2, rx: PI / 2, parent: cableG }));
   const riders = [0.18, 0.62].map((k, i) => { const c = group(0, 0, 0, cableG); mesh(G.cyl(0.03, 0.03, 1.0, 6), steel, { y: -0.5, parent: c }); mesh(G.box(1.3, 1.2, 1.3), i ? mat(0x2f6fd6, { roughness: 0.5, metalness: 0.2 }) : red, { y: -1.6, parent: c }); mesh(G.box(1.32, 0.5, 1.32), glass, { y: -1.45, shadow: 'none', parent: c }); c.userData.k = k; c.userData.dir = i ? -1 : 1; return c; });
   // waiting cabin
   const cabin = group(0, 2.4, 0.4, g);
@@ -3875,7 +3888,7 @@ function makeZipline(game, U, ax, az, bx, bz, r = rnd) {
   // cable: a thin cylinder from A to B
   const A = V3(ax, ay + 1.0, az), B = V3(bx, by, bz), Lc = A.distanceTo(B), mid = A.clone().add(B).multiplyScalar(0.5);
   const cableG = group(mid.x, mid.y, mid.z, game.world); cableG.lookAt(B);
-  mesh(G.cyl(0.025, 0.025, Lc, 5), steel, { rx: PI / 2, parent: cableG });
+  noInk(mesh(G.cyl(0.025, 0.025, Lc, 5), steel, { rx: PI / 2, parent: cableG }));
   // trolley + rider
   const trolley = group(0, 0, 0, game.world);
   mesh(G.cyl(0.12, 0.12, 0.08, 12), steel, { rz: PI / 2, parent: trolley }); mesh(G.box(0.12, 0.6, 0.06), steel, { y: -0.3, parent: trolley }); mesh(G.cyl(0.03, 0.03, 0.7, 6), dark, { y: -0.6, rz: PI / 2, parent: trolley });
@@ -3913,7 +3926,7 @@ function makeLanternString(game, ax, az, bx, bz, n = 7, y = 3.2) {
   const W = game.world, ya = game.physics.ground0(ax, az) + y, yb = game.physics.ground0(bx, bz) + y;
   const pts = []; for (let i = 0; i <= 12; i++) { const k = i / 12; pts.push(V3(lerp(ax, bx, k), lerp(ya, yb, k) - sin(k * PI) * 0.6, lerp(az, bz, k))); }
   const rope = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 12, 0.015, 4, false); worldBag.track(rope);
-  W.add(new THREE.Mesh(rope, mat(0x3a2a1a)));
+  W.add(noInk(new THREE.Mesh(rope, mat(0x3a2a1a))));
   const lanterns = [], cap = mat(0x2b2b2b, { roughness: 0.8 });
   for (let i = 1; i < n; i++) { const k = i / n, x = lerp(ax, bx, k), z = lerp(az, bz, k), yy = lerp(ya, yb, k) - sin(k * PI) * 0.6 - 0.32; const c = rnd.pick([0xffd54a, 0xff8a65, 0xff6fb5, 0x9dff6a, 0x7fd7ff]);
     const l = group(x, yy, z, W);                                                                                  // paper lantern: string, capped cylinder, glow

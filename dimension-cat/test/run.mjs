@@ -143,6 +143,26 @@ check(sunNight < 1 && sunDay > 2, `time toggle drives the sun (night ${sunNight.
 frames(600);
 check(game.npcs.every((n) => finite(n.rig.group.position)), 'all NPC positions finite after 10s');
 check(game.npcs.filter((n) => n instanceof Object && n.constructor.name === 'Wanderer').some((n) => Math.hypot(n.x - n.hx, n.z - n.hz) > 0.5), 'wanderers actually wander');
+// people: the wardrobe spreads clothes, children are children, and someone waves at the cat
+{
+  const people = game.npcs.filter((n) => n.rig && n.rig.look && n.rig.legs && n.rig.legs.length === 2);
+  check(people.length >= 9, `neighborhood has ${people.length} people`);
+  const shirts = people.map((n) => n.rig.look.shirt);
+  check(new Set(shirts).size === shirts.length, `no two neighbours wear the same shirt (${new Set(shirts).size} colours for ${shirts.length} people)`);
+  check(people.some((n) => n.rig.look.child) && people.filter((n) => n.rig.look.child).every((n) => n.rig.look.height < 1.4), 'the neighbourhood has children, and they are small');
+  check(people.every((n) => n.rig.hands.length === 2 && n.rig.legs.every((L) => L.ankle)), 'every person has two hands and ankles');
+  // walk the cat right up to an idle neighbour, facing them: they should give a wave
+  const p = people.find((n) => !n.rig.hat) || people[0];
+  const before = pos().clone();
+  p.state = 'idle'; p.timer = 30; p.rig.gesture = null; p.rig.idleT = 99; p.waved = false;
+  const a = p.rig.group.rotation.y;
+  pos().set(p.x + Math.sin(a) * 1.4, game.physics.ground0(p.x + Math.sin(a) * 1.4, p.z + Math.cos(a) * 1.4), p.z + Math.cos(a) * 1.4);
+  let waved = false; for (let i = 0; i < 120 && !waved; i++) { game.loop(); if (p.rig.gesture === 'wave') waved = true; }
+  check(waved, 'a neighbour waves when the cat walks up to them');
+  const armUp = p.rig.arms[0].sh.rotation.x;
+  frames(30); check(p.rig.arms[0].sh.rotation.x < -0.8, `the wave lifts the arm (shoulder ${p.rig.arms[0].sh.rotation.x.toFixed(2)}, was ${armUp.toFixed(2)})`);
+  pos().copy(before);
+}
 // travel through all worlds
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 for (const [idx, entry] of [[1, 'from-prev'], [2, 'from-prev'], [3, 'from-prev'], [2, 'from-next'], [1, 'from-next'], [0, 'from-next'], [4, 'from-hub'], [0, 'from-beach'], [5, 'from-hub'], [0, 'from-snow'], [6, 'from-hub'], [0, 'from-forest']]) {

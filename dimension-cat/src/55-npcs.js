@@ -104,7 +104,7 @@ function makeHuman(o = {}) {
   const skinM = mat(o.skin ?? 0xe0ac69, { roughness: 0.8 }), shirtM = mat(o.shirt ?? 0x3f6fd6), pantsM = mat(o.pants ?? 0x2c3140), shoeM = mat(o.shoes ?? 0x1e1a18);
   const hairM = mat(o.hair ?? 0x2b1b12), hatM = mat(o.hatColor ?? 0x111111, { roughness: 0.5 });
   const jacketM = o.jacket ? mat(o.jacket) : null;
-  const rig = { group: g, legs: [], arms: [], hands: [], k };
+  const rig = { group: g, legs: [], arms: [], hands: [], k, look: o };   // `look` is kept for the tests and QA line-ups
   const body = group(0, 0, 0, g); rig.body = body;
   body.scale.setScalar(k);
   // a child is not a scaled-down adult: the head keeps more of its size and the limbs lose some
@@ -509,6 +509,12 @@ class Wanderer {
     if (dx * dx + dz * dz < 42) { const a = wrapAngle(atan2(dx, dz) - this.rig.group.rotation.y); if (abs(a) < 1.6) { target = a; w = 1; } }
     this.lookW = damp(this.lookW, w, 5, dt); this.look = damp(this.look, target, 6, dt);
     head.rotation.y = lerp(head.rotation.y, this.look, this.lookW);
+    // people give the cat a wave the first time it comes up to them; gentlemen tip their hat instead
+    if (this.rig.gesture !== undefined && !this.rig.hat) {
+      const d2 = dx * dx + dz * dz;
+      if (w && d2 < 12 && !this.waved && this.state === 'idle') { this.waved = true; this.rig.gesture = 'wave'; this.rig.gT = 0; this.timer = max(this.timer, 2); }
+      if (d2 > 40) this.waved = false;
+    }
     // gentlemen tip their top hat once per approach
     if (this.rig.hat) {
       const d2 = dx * dx + dz * dz;

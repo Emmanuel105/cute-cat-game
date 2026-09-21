@@ -182,6 +182,13 @@ function mesh(geometry, material, o = {}) {
   if (o.parent) o.parent.add(m);
   return m;
 }
+/**
+ * Keep a thin thing (a cable, a wire, a string) out of the ink pass. The outline is found in the depth
+ * buffer, and anything a pixel or two wide gets inked on both edges and comes out as a solid line
+ * across the sky. Not writing depth means no silhouette; drawing after everything else keeps the
+ * depth *test*, so it still hides behind whatever stands in front of it.
+ */
+function noInk(m) { m.material.depthWrite = false; m.renderOrder = 1; return m; }
 function group(x = 0, y = 0, z = 0, parent = null) {
   const g = new THREE.Group(); g.position.set(x, y, z); if (parent) parent.add(g); return g;
 }

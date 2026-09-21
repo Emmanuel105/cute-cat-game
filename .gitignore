@@ -4,3 +4,6 @@ node_modules/
 *.log
 qa/*/
 .playwright-mcp/
+qa/*.jpg
+qa/*.png
+qa/*.json

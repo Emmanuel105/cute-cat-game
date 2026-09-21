@@ -207,7 +207,7 @@ function makeGondolaStation(game, x, z, ry, onEnter, prompt = 'Ride the gondola 
   // cable up into the sky with two cabins riding it
   const cableLen = 110, pitch = 0.47;
   const cableG = group(0, 4.0, -0.8, g); cableG.rotation.x = -pitch;
-  for (const sx of [-0.35, 0.35]) mesh(G.cyl(0.028, 0.028, cableLen, 5), mat(0x2b2f36, { metalness: 0.7, roughness: 0.5 }), { x: sx, z: -cableLen / 2, rx: PI / 2, parent: cableG });
+  for (const sx of [-0.35, 0.35]) noInk(mesh(G.cyl(0.028, 0.028, cableLen, 5), mat(0x2b2f36, { metalness: 0.7, roughness: 0.5 }), { x: sx, z: -cableLen / 2, rx: PI / 2, parent: cableG }));
   const riders = [0.18, 0.62].map((k, i) => { const c = group(0, 0, 0, cableG); mesh(G.cyl(0.03, 0.03, 1.0, 6), steel, { y: -0.5, parent: c }); mesh(G.box(1.3, 1.2, 1.3), i ? mat(0x2f6fd6, { roughness: 0.5, metalness: 0.2 }) : red, { y: -1.6, parent: c }); mesh(G.box(1.32, 0.5, 1.32), glass, { y: -1.45, shadow: 'none', parent: c }); c.userData.k = k; c.userData.dir = i ? -1 : 1; return c; });
   // waiting cabin
   const cabin = group(0, 2.4, 0.4, g);
@@ -486,7 +486,7 @@ function makeZipline(game, U, ax, az, bx, bz, r = rnd) {
   // cable: a thin cylinder from A to B
   const A = V3(ax, ay + 1.0, az), B = V3(bx, by, bz), Lc = A.distanceTo(B), mid = A.clone().add(B).multiplyScalar(0.5);
   const cableG = group(mid.x, mid.y, mid.z, game.world); cableG.lookAt(B);
-  mesh(G.cyl(0.025, 0.025, Lc, 5), steel, { rx: PI / 2, parent: cableG });
+  noInk(mesh(G.cyl(0.025, 0.025, Lc, 5), steel, { rx: PI / 2, parent: cableG }));
   // trolley + rider
   const trolley = group(0, 0, 0, game.world);
   mesh(G.cyl(0.12, 0.12, 0.08, 12), steel, { rz: PI / 2, parent: trolley }); mesh(G.box(0.12, 0.6, 0.06), steel, { y: -0.3, parent: trolley }); mesh(G.cyl(0.03, 0.03, 0.7, 6), dark, { y: -0.6, rz: PI / 2, parent: trolley });
@@ -524,7 +524,7 @@ function makeLanternString(game, ax, az, bx, bz, n = 7, y = 3.2) {
   const W = game.world, ya = game.physics.ground0(ax, az) + y, yb = game.physics.ground0(bx, bz) + y;
   const pts = []; for (let i = 0; i <= 12; i++) { const k = i / 12; pts.push(V3(lerp(ax, bx, k), lerp(ya, yb, k) - sin(k * PI) * 0.6, lerp(az, bz, k))); }
   const rope = new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 12, 0.015, 4, false); worldBag.track(rope);
-  W.add(new THREE.Mesh(rope, mat(0x3a2a1a)));
+  W.add(noInk(new THREE.Mesh(rope, mat(0x3a2a1a))));
   const lanterns = [], cap = mat(0x2b2b2b, { roughness: 0.8 });
   for (let i = 1; i < n; i++) { const k = i / n, x = lerp(ax, bx, k), z = lerp(az, bz, k), yy = lerp(ya, yb, k) - sin(k * PI) * 0.6 - 0.32; const c = rnd.pick([0xffd54a, 0xff8a65, 0xff6fb5, 0x9dff6a, 0x7fd7ff]);
     const l = group(x, yy, z, W);                                                                                  // paper lantern: string, capped cylinder, glow
