@@ -180,6 +180,13 @@ check(game.npcs.filter((n) => n instanceof Object && n.constructor.name === 'Wan
     const s1 = game.state.score; game.befriend('candy:0');
     check(game.state.everyone === true && game.state.score === s1 + 505, `meeting the last person anywhere is the grand finale (+505, score ${game.state.score})`);
     game.state.friends = keep; game.state.friendTotals = totals0; game.state.everyone = false; }
+  // photo mode: the nearest stroller turns to the camera and holds a pose; leaving photo mode clears it
+  { const q = people.find((n) => n.constructor.name === 'Wanderer'); const there = pos().clone();
+    pos().set(q.x + 2, game.physics.ground0(q.x + 2, q.z), q.z); game.togglePhoto(true); frames(90);
+    const toCam = Math.atan2(game.camera.position.x - q.x, game.camera.position.z - q.z), off = Math.abs(((q.rig.group.rotation.y - toCam + Math.PI) % (2 * Math.PI) + 2 * Math.PI) % (2 * Math.PI) - Math.PI);
+    check(q.rig.gesture === 'pose' && q.rig.arms[0].sh.rotation.x < -1.5 && off < 0.3, `in photo mode a neighbour faces the camera and poses (off by ${off.toFixed(2)} rad, arm ${q.rig.arms[0].sh.rotation.x.toFixed(2)})`);
+    game.togglePhoto(false); frames(5); check(q.rig.gesture !== 'pose', 'the pose ends with photo mode');
+    pos().copy(there); }
   // nobody strolls onto the asphalt
   const strollers = game.npcs.filter((n) => n.constructor.name === 'Wanderer' && n.avoid);
   check(strollers.length >= 7 && strollers.every((n) => !n.avoid(n.x, n.z)), `${strollers.length} strollers, none standing in the road`);

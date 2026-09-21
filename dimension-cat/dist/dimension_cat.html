@@ -1979,13 +1979,14 @@ function makeHuman(o = {}) {
       const u = rig.gT / (rig.gesture === 'throw' ? 0.9 : rig.gesture === 'chop' ? 1.1 : 1.6);   // a throw or a chop is quick; every other gesture runs for 1.6s
       const swell = sin(clamp(u, 0, 1) * PI);       // eases in and back out
       if (rig.gesture === 'wave') { waveArm = swell; turn = swell * 0.18; }
+      else if (rig.gesture === 'pose') { waveArm = min(1, rig.gT * 3); turn = 0; }   // for a photo: the hand up and held, no time-out
       else if (rig.gesture === 'throw') { throwArm = u < 0.3 ? 1.3 : u < 0.6 ? -2.6 : 0; lean = u < 0.3 ? -0.08 : u < 0.6 ? 0.1 : 0; }
       else if (rig.gesture === 'reach' || rig.gesture === 'post') { waveArm = swell; turn = 0; }
       else if (rig.gesture === 'chop') { chop = u; lean = u < 0.55 ? -0.12 : 0.28; }   // reach: the arm straight up and held there; post: out in front, into a letterbox
       else if (rig.gesture === 'look') turn = sin(rig.gT * 2.2) * swell * 0.7;
       else if (rig.gesture === 'nod') nod = sin(rig.gT * 5.5) * swell * 0.22;
       else if (rig.gesture === 'shift') lean = swell * 0.05;
-      if (u >= 1) rig.gesture = null;
+      if (u >= 1 && rig.gesture !== 'pose') rig.gesture = null;
     }
     for (let i = 0; i < 2; i++) {
       const p = ph + i * PI, L = rig.legs[i], A = rig.arms[i];
@@ -2009,9 +2010,9 @@ function makeHuman(o = {}) {
         L.ankle.rotation.x = damp(L.ankle.rotation.x, 0, 8, dt);
         // the raised arm waves; the other one rests
         const waving = waveArm > 0 && i === 0, caning = o.cane && i === 1;
-        const reaching = rig.gesture === 'reach', posting = rig.gesture === 'post';
-        A.sh.rotation.x = damp(A.sh.rotation.x, waving ? (reaching ? -2.9 : posting ? -1.15 : -2.5) * waveArm : caning ? -0.5 : 0, 8, dt);
-        A.el.rotation.x = damp(A.el.rotation.x, waving ? (reaching ? -0.15 : posting ? -0.2 : -0.5 - sin(rig.gT * 11) * 0.35) : caning ? -0.1 : -restArm, 10, dt);
+        const reaching = rig.gesture === 'reach', posting = rig.gesture === 'post', posing = rig.gesture === 'pose';
+        A.sh.rotation.x = damp(A.sh.rotation.x, waving ? (reaching ? -2.9 : posting ? -1.15 : posing ? -2.2 : -2.5) * waveArm : caning ? -0.5 : 0, 8, dt);
+        A.el.rotation.x = damp(A.el.rotation.x, waving ? (reaching ? -0.15 : posting ? -0.2 : posing ? -0.7 : -0.5 - sin(rig.gT * 11) * 0.35) : caning ? -0.1 : -restArm, 10, dt);
       }
       // arms hang a little away from the body, more so on a stouter build
       A.sh.rotation.z = chop !== null ? (i ? -1 : 1) * 0.1 : (i ? -1 : 1) * (0.19 + stout * 0.1 + (waveArm > 0 && i === 0 ? waveArm * (rig.gesture === 'reach' || rig.gesture === 'post' ? 0.05 : 0.5) : 0));
@@ -2298,6 +2299,14 @@ class Wanderer {
     const head = this.rig.head; if (!head) return;
     const cat = this.game.cat.group.position, dx = cat.x - this.x, dz = cat.z - this.z;
     let target = 0, w = 0;
+    // photo mode: anyone within ten metres turns to the camera, stops, and holds a pose until it is over
+    const rig = this.rig, cam = this.game.camera.position, posing = this.game.photo && rig.look && dist2(this.x, this.z, cat.x, cat.z) < 100;
+    if (posing) {
+      if (rig.gesture !== 'pose') { rig.gesture = 'pose'; rig.gT = 0; }
+      if (this.state !== undefined && this.state === 'walk') { this.state = 'idle'; this.timer = 1; } if (this.state === 'idle' && this.timer !== undefined) this.timer = max(this.timer, 1);
+      if (this.constructor === Wanderer || this.constructor === Patroller) rig.group.rotation.y = dampAngle(rig.group.rotation.y, atan2(cam.x - this.x, cam.z - this.z), 6, dt);
+      const a = wrapAngle(atan2(cam.x - this.x, cam.z - this.z) - rig.group.rotation.y); this.lookW = damp(this.lookW, 1, 5, dt); this.look = damp(this.look, clamp(a, -1.2, 1.2), 6, dt); head.rotation.y = lerp(head.rotation.y, this.look, this.lookW); return;
+    } else if (rig.gesture === 'pose') rig.gesture = null;
     if (dx * dx + dz * dz < 42) { const a = wrapAngle(atan2(dx, dz) - this.rig.group.rotation.y); if (abs(a) < 1.6) { target = a; w = 1; } }
     this.lookW = damp(this.lookW, w, 5, dt); this.look = damp(this.look, target, 6, dt);
     head.rotation.y = lerp(head.rotation.y, this.look, this.lookW);

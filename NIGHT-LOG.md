@@ -201,3 +201,8 @@ woods. Where there is nobody, the Friends pill hides.
 Meet everyone in every dimension and there is a **grand finale**: a fanfare, a burst of hearts and
 confetti around the cat, and 500 points. The game remembers how many people each world has once
 you have visited it, so the finale can only happen after you have been everywhere.
+
+## Round 26 — say cheese
+
+Switch on **photo mode** and anyone within ten metres stops what they are doing, turns to face the
+camera and holds a hand up for the picture. Switch it off and they go back to their business.

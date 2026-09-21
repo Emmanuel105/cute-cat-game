@@ -22,6 +22,7 @@ await page.evaluate(([x, z, yaw, dist, pitch]) => {
   const g = window.DC; g.cat.group.position.set(x, g.physics.ground0(x, z), z); g.cat.vy = 0; g.cat.group.rotation.y = yaw;
   g.cam.yaw = yaw; g.cam.pitch = pitch; g.cam.dist = dist; g.cam.curDist = dist; g.updateCamera(0, true);
 }, [+x, +z, +yaw, +dist, +pitch]);
+if (action === 'photo') { await page.evaluate(() => window.DC.togglePhoto(true)); await settle(page, 1.5); }   // photo mode: people nearby turn to the camera and pose
 if (action === 'interact') { await settle(page, 0.3); const label = await page.evaluate(() => { const g = window.DC; g.interact(); return g.nearest && g.nearest._label; }); console.log('interacted:', label); }   // press E on whatever is in reach
 for (let i = 0; i < +frames; i++) { await settle(page, i ? +gap : 0.6); await shot(page, `f${i}`); }
 console.log('errors', errs.slice(0, 4));
