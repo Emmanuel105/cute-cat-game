@@ -978,6 +978,8 @@ class SoundKit {
   roar() { this.tone({ freq: 140, slide: 90, type: 'sawtooth', dur: 0.7, vol: 0.12, attack: 0.08, filter: 420, q: 3, vib: 10 }); this.noise({ dur: 0.6, vol: 0.06, filter: 500 }); }
   wave() { this.noise({ dur: 1.6, vol: 0.05, filter: 300, slide: 1200, type: 'lowpass' }); }
   twinkle() { [1319, 1568, 2093].forEach((f, i) => this.tone({ freq: f, type: 'sine', dur: 0.18, vol: 0.06, delay: i * 0.06 })); }
+  /** A bicycle bell: two quick bright pings. */
+  bell() { for (let i = 0; i < 2; i++) this.tone({ freq: 2093, type: 'sine', dur: 0.14, vol: 0.09, delay: i * 0.13, release: 0.1 }); }
   /** A beach ball landing in someone's hands, or on someone's head. */
   bounce() { this.tone({ freq: 520, type: 'sine', dur: 0.12, vol: 0.1, slide: 240 }); }
   /** "Got you!" — a quick rising giggle when one child tags the other. */
@@ -2761,9 +2763,9 @@ class RoboDog {
 
 // ---------------------------------------------------------------- vehicle controller (cars on a straight road)
 class Vehicle {
-  constructor(game, rig, { z, dir, speed, x, length = 4, limit = 78 }) {
+  constructor(game, rig, { z, dir, speed, x, length = 4, limit = 78, horn = null }) {
     this.game = game; this.rig = rig; this.z = z; this.dir = dir; this.speed = speed; this.x = x; this.limit = limit; this.length = length;
-    this.stopped = false; this.honkT = 0; this.v = speed;
+    this.stopped = false; this.honkT = 0; this.v = speed; this.horn = horn ?? (() => SFX.honk());
     this.cf = game.physics.addCircle(this, x, z, 1.0); this.cb = game.physics.addCircle(this, x, z, 1.0);
     rig.group.rotation.y = dir > 0 ? PI / 2 : -PI / 2;
   }
@@ -2774,7 +2776,7 @@ class Vehicle {
     if (inLane(cat.x, cat.z)) mustStop = true;
     else for (const c of this.game.physics.circles) { if (c.ref !== this && !c.off && inLane(c.x, c.z)) { mustStop = true; break; } }
     this.honkT -= dt;
-    if (mustStop && !this.stopped && this.honkT <= 0) { SFX.honk(); this.honkT = 3; }
+    if (mustStop && !this.stopped && this.honkT <= 0) { this.horn(); this.honkT = 3; }
     this.stopped = mustStop;
     this.v = damp(this.v, mustStop ? 0 : this.speed, 3, dt);
     this.x += this.dir * this.v * dt;
@@ -2784,6 +2786,28 @@ class Vehicle {
     for (const w of this.rig.wheels) w.rotation.x += this.v * dt * 2.2;
   }
 }
+
+// ---------------------------------------------------------------- cyclist: a rider on a bike, pedalling along a lane like the cars, ringing a bell for the cat
+class Cyclist extends Vehicle {
+  constructor(game, rider, bike, o) {
+    super(game, bike, { ...o, length: 1.6, horn: () => SFX.bell() });
+    this.rider = rider; this.bike = bike; this.t = rnd() * 10;
+    // seated: hips on the saddle, leaning forward to the bars
+    rider.group.position.set(0, 1.0 - 0.9 * rider.k, -0.2); bike.group.add(rider.group);
+    this.cf.r = 0.5; this.cb.r = 0.5;
+  }
+  update(dt) {
+    super.update(dt);
+    this.t += dt; const rig = this.rider, ph = this.bike.wheels[0].rotation.x * 1.15;   // the pedals turn with the wheels
+    this.bike.crank.rotation.x = ph;
+    rig.animate(0, false, dt, this.t);
+    rig.legs.forEach((L, i) => { const p = ph + i * PI; L.hip.rotation.x = -1.0 + sin(p) * 0.45; L.knee.rotation.x = 1.0 + cos(p) * 0.5; L.ankle.rotation.x = 0.3; });
+    if (!rig.gesture) for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -1.05, 8, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.3, 8, dt); A.sh.rotation.z = (A === rig.arms[0] ? 1 : -1) * 0.25; }
+    rig.spine.rotation.x = damp(rig.spine.rotation.x, 0.32, 6, dt); rig.head.rotation.x = damp(rig.head.rotation.x, -0.25, 6, dt); rig.body.position.y = 0;
+    this.rig.group.rotation.z = damp(this.rig.group.rotation.z, this.v > 0.5 ? sin(ph * 0.5) * 0.02 : 0, 6, dt);
+  }
+}
+
 
 
 // ============================================================================
@@ -3652,6 +3676,24 @@ function makeBalloonBunch(colors) {
   colors.forEach((c, i) => { const a = i / colors.length * TAU, b = makeBalloon(c, { x: cos(a) * 0.32, y: 1.25 + (i % 2) * 0.3, z: sin(a) * 0.32 }); g.add(b); parts.push(b); });
   g.userData.update = (dt, t) => { for (const b of parts) b.userData.update(dt, t); };
   return g;
+}
+/** A bicycle: two wheels, a frame, handlebars, a saddle and a crank. Faces +z; `wheels` and `crank` turn. */
+function makeBike(color = 0xd62839) {
+  const g = new THREE.Group(), frame = mat(color, { roughness: 0.4, metalness: 0.3 }), dark = mat(0x1e1a18, { roughness: 0.8 }), rim = mat(0xc8ccd2, { metalness: 0.6, roughness: 0.4 });
+  const wheels = [];
+  for (const z of [0.56, -0.56]) { const w = group(0, 0.34, z, g); mesh(G.torus(0.3, 0.045, 6, 22), dark, { ry: PI / 2, parent: w }); mesh(G.cyl(0.27, 0.27, 0.02, 12), rim, { rz: PI / 2, shadow: 'none', parent: w }); for (let i = 0; i < 3; i++) mesh(G.box(0.012, 0.54, 0.012), rim, { rx: i * PI / 3, shadow: 'none', parent: w }); wheels.push(w); }
+  const tube = (x1, y1, z1, x2, y2, z2, r = 0.022) => { const L = Math.hypot(x2 - x1, y2 - y1, z2 - z1), t = group((x1 + x2) / 2, (y1 + y2) / 2, (z1 + z2) / 2, g); t.lookAt(x2, y2, z2); mesh(G.cyl(r, r, L, 6), frame, { rx: PI / 2, parent: t }); };
+  tube(0, 0.34, -0.56, 0, 0.98, -0.2);   // seat tube, from the back axle
+  tube(0, 0.98, -0.2, 0, 0.92, 0.4);     // top tube
+  tube(0, 0.36, -0.05, 0, 0.92, 0.4);    // down tube, from the crank
+  tube(0, 0.36, -0.05, 0, 0.34, -0.56);  // chain stay
+  tube(0, 0.36, -0.05, 0, 0.98, -0.2);   // back to the seat
+  tube(0, 0.92, 0.4, 0, 0.34, 0.56);     // fork
+  mesh(G.box(0.24, 0.05, 0.16), dark, { y: 1.0, z: -0.2, parent: g });                        // saddle
+  mesh(G.cyl(0.018, 0.018, 0.5, 6), rim, { y: 1.02, z: 0.42, rz: PI / 2, parent: g });          // handlebars
+  const crank = group(0, 0.36, -0.05, g); for (const s of [1, -1]) { mesh(G.box(0.03, 0.17, 0.03), rim, { x: s * 0.1, y: s * 0.07, parent: crank }); mesh(G.box(0.1, 0.03, 0.06), dark, { x: s * 0.16, y: s * 0.14, parent: crank }); }
+  g.userData.crank = crank;
+  return { group: g, wheels, crank };
 }
 function makeMailbox(color) {
   const g = new THREE.Group();
@@ -5039,6 +5081,9 @@ function buildNeighborhood(game, entry) {
       game.toast(game.balloon && c !== BALLOONS[0] ? '\ud83c\udf88 A new colour!' : '\ud83c\udf88 A balloon! It follows you everywhere \u2014 even through the portals.', 3200); } }); }
   // two children playing tag on the east lawn
   game.npcs.push(new Playmates(game, person({ child: true, female: false }), person({ child: true, female: true }), { cx: 10, cz: 46, leash: 5.5 }));
+  // a cyclist in the westbound lane, ringing her bell for anyone in the way
+  { const bike = makeBike(0x2e9e6e); W.add(bike.group);
+    game.npcs.push(new Cyclist(game, person({ female: true, child: false, elder: false, hat: 'cap', hatColor: 0xf2c744, hairStyle: 'pony', skirt: null, jacket: null }), bike, { z: 15.4, dir: -1, speed: 3.6, x: -55 })); }
   for (const [color, dir, x, lane] of [[0xd62839, 1, -30, 12.6], [0x2e63d8, -1, 20, 15.4], [0xf3f3f3, 1, 40, 12.6]]) {
     const car = makeCar(color); W.add(car.group); game.npcs.push(new Vehicle(game, car, { z: lane, dir, speed: r.range(5, 7), x }));
   }

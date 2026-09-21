@@ -1013,9 +1013,9 @@ class RoboDog {
 
 // ---------------------------------------------------------------- vehicle controller (cars on a straight road)
 class Vehicle {
-  constructor(game, rig, { z, dir, speed, x, length = 4, limit = 78 }) {
+  constructor(game, rig, { z, dir, speed, x, length = 4, limit = 78, horn = null }) {
     this.game = game; this.rig = rig; this.z = z; this.dir = dir; this.speed = speed; this.x = x; this.limit = limit; this.length = length;
-    this.stopped = false; this.honkT = 0; this.v = speed;
+    this.stopped = false; this.honkT = 0; this.v = speed; this.horn = horn ?? (() => SFX.honk());
     this.cf = game.physics.addCircle(this, x, z, 1.0); this.cb = game.physics.addCircle(this, x, z, 1.0);
     rig.group.rotation.y = dir > 0 ? PI / 2 : -PI / 2;
   }
@@ -1026,7 +1026,7 @@ class Vehicle {
     if (inLane(cat.x, cat.z)) mustStop = true;
     else for (const c of this.game.physics.circles) { if (c.ref !== this && !c.off && inLane(c.x, c.z)) { mustStop = true; break; } }
     this.honkT -= dt;
-    if (mustStop && !this.stopped && this.honkT <= 0) { SFX.honk(); this.honkT = 3; }
+    if (mustStop && !this.stopped && this.honkT <= 0) { this.horn(); this.honkT = 3; }
     this.stopped = mustStop;
     this.v = damp(this.v, mustStop ? 0 : this.speed, 3, dt);
     this.x += this.dir * this.v * dt;
@@ -1036,3 +1036,25 @@ class Vehicle {
     for (const w of this.rig.wheels) w.rotation.x += this.v * dt * 2.2;
   }
 }
+
+// ---------------------------------------------------------------- cyclist: a rider on a bike, pedalling along a lane like the cars, ringing a bell for the cat
+class Cyclist extends Vehicle {
+  constructor(game, rider, bike, o) {
+    super(game, bike, { ...o, length: 1.6, horn: () => SFX.bell() });
+    this.rider = rider; this.bike = bike; this.t = rnd() * 10;
+    // seated: hips on the saddle, leaning forward to the bars
+    rider.group.position.set(0, 1.0 - 0.9 * rider.k, -0.2); bike.group.add(rider.group);
+    this.cf.r = 0.5; this.cb.r = 0.5;
+  }
+  update(dt) {
+    super.update(dt);
+    this.t += dt; const rig = this.rider, ph = this.bike.wheels[0].rotation.x * 1.15;   // the pedals turn with the wheels
+    this.bike.crank.rotation.x = ph;
+    rig.animate(0, false, dt, this.t);
+    rig.legs.forEach((L, i) => { const p = ph + i * PI; L.hip.rotation.x = -1.0 + sin(p) * 0.45; L.knee.rotation.x = 1.0 + cos(p) * 0.5; L.ankle.rotation.x = 0.3; });
+    if (!rig.gesture) for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -1.05, 8, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.3, 8, dt); A.sh.rotation.z = (A === rig.arms[0] ? 1 : -1) * 0.25; }
+    rig.spine.rotation.x = damp(rig.spine.rotation.x, 0.32, 6, dt); rig.head.rotation.x = damp(rig.head.rotation.x, -0.25, 6, dt); rig.body.position.y = 0;
+    this.rig.group.rotation.z = damp(this.rig.group.rotation.z, this.v > 0.5 ? sin(ph * 0.5) * 0.02 : 0, 6, dt);
+  }
+}
+

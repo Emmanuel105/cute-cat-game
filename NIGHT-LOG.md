@@ -144,3 +144,9 @@ balloons!"
 A **postie** with a satchel does the round of every mailbox on the main street — the south side
 east, the north side west, then round again — stopping at each to post the letters. "Letter for
 number twelve!"
+
+## Round 16 — a cyclist
+
+A woman in a yellow cap **rides a green bicycle** round and round the main street in the westbound
+lane, pedalling, leaning into the bars. Like the cars she stops for the cat — but rings her bell
+instead of honking.

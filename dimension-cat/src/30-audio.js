@@ -71,6 +71,8 @@ class SoundKit {
   roar() { this.tone({ freq: 140, slide: 90, type: 'sawtooth', dur: 0.7, vol: 0.12, attack: 0.08, filter: 420, q: 3, vib: 10 }); this.noise({ dur: 0.6, vol: 0.06, filter: 500 }); }
   wave() { this.noise({ dur: 1.6, vol: 0.05, filter: 300, slide: 1200, type: 'lowpass' }); }
   twinkle() { [1319, 1568, 2093].forEach((f, i) => this.tone({ freq: f, type: 'sine', dur: 0.18, vol: 0.06, delay: i * 0.06 })); }
+  /** A bicycle bell: two quick bright pings. */
+  bell() { for (let i = 0; i < 2; i++) this.tone({ freq: 2093, type: 'sine', dur: 0.14, vol: 0.09, delay: i * 0.13, release: 0.1 }); }
   /** A beach ball landing in someone's hands, or on someone's head. */
   bounce() { this.tone({ freq: 520, type: 'sine', dur: 0.12, vol: 0.1, slide: 240 }); }
   /** "Got you!" — a quick rising giggle when one child tags the other. */

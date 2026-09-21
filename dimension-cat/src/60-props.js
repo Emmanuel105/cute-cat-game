@@ -442,6 +442,24 @@ function makeBalloonBunch(colors) {
   g.userData.update = (dt, t) => { for (const b of parts) b.userData.update(dt, t); };
   return g;
 }
+/** A bicycle: two wheels, a frame, handlebars, a saddle and a crank. Faces +z; `wheels` and `crank` turn. */
+function makeBike(color = 0xd62839) {
+  const g = new THREE.Group(), frame = mat(color, { roughness: 0.4, metalness: 0.3 }), dark = mat(0x1e1a18, { roughness: 0.8 }), rim = mat(0xc8ccd2, { metalness: 0.6, roughness: 0.4 });
+  const wheels = [];
+  for (const z of [0.56, -0.56]) { const w = group(0, 0.34, z, g); mesh(G.torus(0.3, 0.045, 6, 22), dark, { ry: PI / 2, parent: w }); mesh(G.cyl(0.27, 0.27, 0.02, 12), rim, { rz: PI / 2, shadow: 'none', parent: w }); for (let i = 0; i < 3; i++) mesh(G.box(0.012, 0.54, 0.012), rim, { rx: i * PI / 3, shadow: 'none', parent: w }); wheels.push(w); }
+  const tube = (x1, y1, z1, x2, y2, z2, r = 0.022) => { const L = Math.hypot(x2 - x1, y2 - y1, z2 - z1), t = group((x1 + x2) / 2, (y1 + y2) / 2, (z1 + z2) / 2, g); t.lookAt(x2, y2, z2); mesh(G.cyl(r, r, L, 6), frame, { rx: PI / 2, parent: t }); };
+  tube(0, 0.34, -0.56, 0, 0.98, -0.2);   // seat tube, from the back axle
+  tube(0, 0.98, -0.2, 0, 0.92, 0.4);     // top tube
+  tube(0, 0.36, -0.05, 0, 0.92, 0.4);    // down tube, from the crank
+  tube(0, 0.36, -0.05, 0, 0.34, -0.56);  // chain stay
+  tube(0, 0.36, -0.05, 0, 0.98, -0.2);   // back to the seat
+  tube(0, 0.92, 0.4, 0, 0.34, 0.56);     // fork
+  mesh(G.box(0.24, 0.05, 0.16), dark, { y: 1.0, z: -0.2, parent: g });                        // saddle
+  mesh(G.cyl(0.018, 0.018, 0.5, 6), rim, { y: 1.02, z: 0.42, rz: PI / 2, parent: g });          // handlebars
+  const crank = group(0, 0.36, -0.05, g); for (const s of [1, -1]) { mesh(G.box(0.03, 0.17, 0.03), rim, { x: s * 0.1, y: s * 0.07, parent: crank }); mesh(G.box(0.1, 0.03, 0.06), dark, { x: s * 0.16, y: s * 0.14, parent: crank }); }
+  g.userData.crank = crank;
+  return { group: g, wheels, crank };
+}
 function makeMailbox(color) {
   const g = new THREE.Group();
   mesh(G.box(0.08, 1.1, 0.08), mat(0x5a3b22), { y: 0.55, parent: g });
