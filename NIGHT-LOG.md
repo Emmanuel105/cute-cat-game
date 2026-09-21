@@ -1,5 +1,11 @@
 # Night log — 21 September 2026
 
+**In the morning:** open `dimension_cat.html` at the repo root (or `npm run dev` and visit
+`/dimension_cat.html`). Everything below is committed, one commit per round; `git log` has the
+detail. Screenshots from every round are in `qa/` (folders `l6`, `sf1`, `ll1`, `bs3`, `cy1`, `hc3`,
+`sl1`, `fr2`, `tk2`, `pa2`…). `node dimension-cat/test/run.mjs` runs the 270-odd checks;
+`node qa/bench.mjs` measures draw calls and frame rate per world.
+
 What Claude did to Dimension Cat while you slept. Newest at the bottom. Every round is a commit;
 `git log` has the detail, `qa/` has the screenshots each round was checked against.
 
