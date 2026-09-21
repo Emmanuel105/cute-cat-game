@@ -49,7 +49,7 @@ class Game {
     this.fx = new Particles(this.scene, { max: 800, size: 0.22, keep: true });
     this.heartGeo = G.heart(0.22, 0.05);
 
-    this.state = { score: 0, collected: new Set(), completed: false, friends: new Set() };   // friends: ids of everyone the cat has said hello to
+    this.state = { score: 0, collected: new Set(), completed: false, friends: new Set(), friendTotals: {}, everyone: false };   // friends: ids of everyone the cat has said hello to; friendTotals: how many there are to meet, per world seen
     this.friendSeq = 0; this.friendTotal = 0;
     this.form = 'cat'; this.skinMode = 'black'; this.timeMode = 'auto'; this.holdJump = false;
     this.touch = { x: 0, y: 0, active: false, run: false, jump: false };
@@ -101,6 +101,7 @@ class Game {
     this.worldIndex = index; this.friendSeq = 0; this.friendTotal = 0;
     const def = WORLDS[index];
     this.worldCtl = def.build(this, entry);
+    this.state.friendTotals[def.key] = this.friendTotal;
     const s = this.worldCtl.spawn;
     this.cat.build(this.skinFor(def.key)); this.cat.buildForms(); this.cat.setForm(this.form);
     this.cat.group.position.set(s.x, s.y, s.z); this.cat.group.rotation.y = s.yaw; this.cat.vy = 0; this.cat.onGround = true; this.cat.speed = 0; this.cat.idleTime = 0; this.cat.loaf = 0;
@@ -160,13 +161,13 @@ class Game {
   save() {
     if (!this.started || this.freshLoad) return;
     const p = this.cat.group.position;
-    store.set({ v: 1, score: this.state.score, collected: [...this.state.collected], completed: this.state.completed, friends: [...this.state.friends], form: this.form, skin: this.skinMode, time: this.timeMode,
+    store.set({ v: 1, score: this.state.score, collected: [...this.state.collected], completed: this.state.completed, friends: [...this.state.friends], friendTotals: this.state.friendTotals, everyone: this.state.everyone, form: this.form, skin: this.skinMode, time: this.timeMode,
       world: this.worldIndex, pos: [+p.x.toFixed(2), +p.y.toFixed(2), +p.z.toFixed(2)], yaw: +this.cat.group.rotation.y.toFixed(3), camYaw: +this.cam.yaw.toFixed(3), at: Date.now() });
   }
   /** Rebuilds the game from a save object (see save()). Returns false if the data is unusable. */
   restore(d) {
     if (!d || d.v !== 1 || !Number.isInteger(d.world) || d.world < 0 || d.world >= WORLDS.length) return false;
-    this.state.score = d.score | 0; this.state.collected = new Set(d.collected || []); this.state.completed = !!d.completed; this.state.friends = new Set(d.friends || []);
+    this.state.score = d.score | 0; this.state.collected = new Set(d.collected || []); this.state.completed = !!d.completed; this.state.friends = new Set(d.friends || []); this.state.friendTotals = d.friendTotals || {}; this.state.everyone = !!d.everyone;
     if (FORMS[d.form]) { this.form = d.form; } if (SKIN_ORDER.includes(d.skin)) this.skinMode = d.skin; if (TIME_ORDER.includes(d.time)) this.timeMode = d.time;
     this.load(d.world, ENTRY_FOR_INDEX(d.world));
     if (Array.isArray(d.pos) && d.pos.length === 3 && d.pos.every(Number.isFinite)) {
@@ -215,6 +216,12 @@ class Game {
     const key = WORLDS[this.worldIndex].key, here = [...this.state.friends].filter((f) => f.startsWith(key + ':')).length;
     if (here >= this.friendTotal && this.friendTotal > 0) { this.addScore(50); SFX.fanfare(); this.pendingToast = `\ud83c\udf89 Everyone in ${WORLDS[this.worldIndex].name} knows you now! +50`; setTimeout(() => { this.toast(this.pendingToast, 3200); this.pendingToast = null; }, 2700); }
     else { SFX.twinkle(); setTimeout(() => this.toast(`\ud83e\udd1d New friend! ${here} of ${this.friendTotal} in ${WORLDS[this.worldIndex].name}  +5`, 2400), 2700); }
+    // and once every world has been seen and everyone in all of them met: the grand finale
+    const totals = Object.values(this.state.friendTotals);
+    if (!this.state.everyone && totals.length >= WORLDS.length && this.state.friends.size >= totals.reduce((a, b) => a + b, 0)) {
+      this.state.everyone = true; this.addScore(500);
+      setTimeout(() => { SFX.fanfare(); const c = this.cat.group.position; this.hearts(c.x, c.y + 0.8, c.z, 14); this.fx.emit(c.x, c.y + 0.6, c.z, { count: 60, colors: [0xff6fb5, 0xffd54a, 0x7fd7ff, 0xa8ff9a], speed: 2.4, up: 3, life: 1.6, gravity: 2 }); this.toast('\ud83c\udf0d Friends with everyone in every dimension! +500', 5000); }, 5600);
+    }
     this.updateHud(); this.save();
   }
   addScore(n) { this.state.score += n; const v = $('score'); v.textContent = this.state.score; v.classList.remove('pop'); void v.offsetWidth; v.classList.add('pop'); }

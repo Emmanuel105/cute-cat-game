@@ -195,3 +195,9 @@ men ("Hee hee! Mind my icing!"); both hop for joy. The yeti, the Candy Queen and
 friends when you say hi or pet them. Every world now has people to meet: 12 in the Neighborhood, 18
 in Candy Land, 21 in Robot City, 24 in the Victorian town, 8 on the shore, 4 on the peak, 2 in the
 woods. Where there is nobody, the Friends pill hides.
+
+## Round 25 — the grand finale
+
+Meet everyone in every dimension and there is a **grand finale**: a fanfare, a burst of hearts and
+confetti around the cat, and 500 points. The game remembers how many people each world has once
+you have visited it, so the finale can only happen after you have been everywhere.

@@ -173,6 +173,13 @@ check(game.npcs.filter((n) => n instanceof Object && n.constructor.name === 'Wan
     check(game.friendTotal >= 11, `the Neighborhood has ${game.friendTotal} people to meet`);
     check(elements.get('friends').textContent === `1 / ${game.friendTotal}`, `the HUD shows friends: ${elements.get('friends').textContent}`);
     pos().copy(before2); }
+  // the grand finale: every world seen and everyone in all of them met
+  { const keep = new Set(game.state.friends), totals0 = { ...game.state.friendTotals };
+    game.state.friendTotals = { neighborhood: game.friendTotal, candy: 1, robot: 1, victorian: 1, beach: 1, snow: 1, forest: 1 };
+    const need = game.friendTotal + 6 - 1 - game.state.friends.size; for (let i = 0; i < need; i++) game.state.friends.add('x:' + i);
+    const s1 = game.state.score; game.befriend('candy:0');
+    check(game.state.everyone === true && game.state.score === s1 + 505, `meeting the last person anywhere is the grand finale (+505, score ${game.state.score})`);
+    game.state.friends = keep; game.state.friendTotals = totals0; game.state.everyone = false; }
   // nobody strolls onto the asphalt
   const strollers = game.npcs.filter((n) => n.constructor.name === 'Wanderer' && n.avoid);
   check(strollers.length >= 7 && strollers.every((n) => !n.avoid(n.x, n.z)), `${strollers.length} strollers, none standing in the road`);
