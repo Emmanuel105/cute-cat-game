@@ -2722,7 +2722,7 @@ class KiteFlyer {
     // the kite swoops in a lazy figure of eight, high and downwind
     const g = this.game.physics.ground0(this.x, this.z), swing = sin(t * 0.7) * 3.2, lift = sin(t * 1.1) * 1.4 + cos(t * 0.45) * 0.8;
     const side = [-this.wz, this.wx];
-    this.kite.position.set(this.x + this.wx * 7.5 + side[0] * swing, g + 9.5 + lift, this.z + this.wz * 7.5 + side[1] * swing);
+    this.kite.position.set(this.x + this.wx * 6 + side[0] * swing, g + 7 + lift, this.z + this.wz * 6 + side[1] * swing);
     this.kite.rotation.set(-0.35 + sin(t * 1.1) * 0.15, atan2(this.wx, this.wz) + PI, sin(t * 0.7) * 0.45);
     this.kite.userData.tail.rotation.z = sin(t * 2.3) * 0.35; this.kite.userData.tail.rotation.x = cos(t * 1.7) * 0.25;
     rig.hands[0].getWorldPosition(this.hand);
