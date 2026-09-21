@@ -46,12 +46,11 @@ function buildSnowVillage(game, entry) {
   const snowWard = makeWardrobe(r, { shirts: [0xd62839, 0x2f6fd6, 0x2e9e6e, 0xff8f00, 0x8a5acf, 0x00acc1], pants: [0x1e2a44, 0x3a3a3a, 0x4a3a2a], shoes: [0x2a2018, 0x1e1a18] });
   const beanieBag = bag(r, [0xd62839, 0x2f6fd6, 0xffd54a, 0x2e9e6e, 0xef7d2f]);
   const scarfBag = bag(r, [0xd62839, 0xffd54a, 0x2e9e6e, 0x8a5acf, 0xffffff]);
-  for (let i = 0; i < 4; i++) {
-    const rig = makeHuman({ ...randomPerson(r, { female: i === 1 || i === 3, child: true, wardrobe: snowWard }),
-      hat: 'beanie', hatColor: beanieBag(), coat: true, scarf: scarfBag(), cuffs: r.pick([0xffffff, 0x3a3a3a]),
-      height: r.range(1.2, 1.45) });
-    W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x: -7 + i * 5, z: 6, speed: r.range(0.9, 1.3), leash: 10, height: 1.5 }));
-  }
+  const kid = (female) => { const rig = makeHuman({ ...randomPerson(r, { female, child: true, wardrobe: snowWard }),
+      hat: 'beanie', hatColor: beanieBag(), coat: true, scarf: scarfBag(), cuffs: r.pick([0xffffff, 0x3a3a3a]), height: r.range(1.2, 1.45) }); W.add(rig.group); return rig; };
+  for (let i = 0; i < 2; i++) game.npcs.push(new Wanderer(game, kid(i === 1), { x: 5 + i * 5, z: 6, speed: r.range(0.9, 1.3), leash: 10, height: 1.5 }));
+  // two of them are having a snowball fight across the square
+  game.npcs.push(new SnowballFight(game, kid(false), kid(true), { cx: -3.5, cz: 6, gap: 5 }));
   // the yeti's cave: a long tunnel north into the mountain, lit by gems, with the yeti in its den at the far end
   const cave = makeCave(game, U, 0, -29, 27, r);
   for (const [x, z] of [[-9, -24], [9, -25]]) { const p = makeSnowPine(r); placeT(game, U, p, x, z, 0); boxT(game, x, z, 1.2 * p.scale.x, 5, 1.2 * p.scale.x, { cam: false }); }

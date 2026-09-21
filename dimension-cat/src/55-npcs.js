@@ -213,12 +213,13 @@ function makeHuman(o = {}) {
       rig.idleT -= dt;
       if (rig.idleT <= 0 && !rig.gesture) { rig.gesture = rnd.pick(['wave', 'look', 'nod', 'shift', 'shift']); rig.gT = 0; rig.idleT = rnd.range(5, 14); }
     } else if (rig.gesture !== 'wave') rig.gesture = null;
-    let waveArm = 0, nod = 0, turn = 0, lean = 0;
+    let waveArm = 0, nod = 0, turn = 0, lean = 0, throwArm = null;
     if (rig.gesture) {
       rig.gT += dt;
-      const u = rig.gT / 1.6;                       // every gesture runs for 1.6s
+      const u = rig.gT / (rig.gesture === 'throw' ? 0.9 : 1.6);   // a throw is quick; every other gesture runs for 1.6s
       const swell = sin(clamp(u, 0, 1) * PI);       // eases in and back out
       if (rig.gesture === 'wave') { waveArm = swell; turn = swell * 0.18; }
+      else if (rig.gesture === 'throw') { throwArm = u < 0.3 ? 1.3 : u < 0.6 ? -2.6 : 0; lean = u < 0.3 ? -0.08 : u < 0.6 ? 0.1 : 0; }
       else if (rig.gesture === 'look') turn = sin(rig.gT * 2.2) * swell * 0.7;
       else if (rig.gesture === 'nod') nod = sin(rig.gT * 5.5) * swell * 0.22;
       else if (rig.gesture === 'shift') lean = swell * 0.05;
@@ -230,8 +231,11 @@ function makeHuman(o = {}) {
         L.hip.rotation.x = -sin(p) * 0.5 * legSwing;
         L.knee.rotation.x = max(0, cos(p)) * 0.95 * legSwing;
         L.ankle.rotation.x = -L.knee.rotation.x * 0.45 + sin(p) * 0.12;      // the foot stays level as the knee bends
-        A.sh.rotation.x = sin(p) * 0.42;
-        A.el.rotation.x = -restArm - max(0, sin(p)) * 0.25;
+        if (throwArm !== null && i === 0) { A.sh.rotation.x = damp(A.sh.rotation.x, throwArm, 16, dt); A.el.rotation.x = damp(A.el.rotation.x, throwArm > 0 ? -1.6 : -0.3, 16, dt); }
+        else { A.sh.rotation.x = sin(p) * 0.42; A.el.rotation.x = -restArm - max(0, sin(p)) * 0.25; }
+      } else if (throwArm !== null && i === 0) {
+        L.hip.rotation.x = damp(L.hip.rotation.x, 0, 8, dt); L.knee.rotation.x = damp(L.knee.rotation.x, 0, 8, dt); L.ankle.rotation.x = damp(L.ankle.rotation.x, 0, 8, dt);
+        A.sh.rotation.x = damp(A.sh.rotation.x, throwArm, 16, dt); A.el.rotation.x = damp(A.el.rotation.x, throwArm > 0 ? -1.6 : -0.3, 16, dt);
       } else {
         L.hip.rotation.x = damp(L.hip.rotation.x, 0, 8, dt);
         L.knee.rotation.x = damp(L.knee.rotation.x, 0, 8, dt);
@@ -628,6 +632,61 @@ class Playmates {
     this.hops(dt);
   }
   hops(dt) { for (const k of this.kids) if (k.hop > 0) { k.hop = max(0, k.hop - dt); k.rig.group.position.y = this.game.physics.ground0(k.x, k.z) + sin(k.hop / 0.35 * PI) * 0.22; } }
+}
+
+// ---------------------------------------------------------------- snowball fight: two children pelting each other across the square
+class SnowballFight {
+  constructor(game, rigA, rigB, { cx, cz, gap = 5 }) {
+    this.game = game; this.cx = cx; this.cz = cz; this.t = 0; this.thrower = 0; this.nextT = 1.5; this.throws = 0; this.catHit = false;
+    this.kids = [rigA, rigB].map((rig, i) => {
+      const x = cx + (i ? gap / 2 : -gap / 2), z = cz;
+      rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = i ? -PI / 2 : PI / 2;   // facing each other along x
+      return { rig, x, z, hz: z, circle: game.physics.addCircle(this, x, z, 0.25), phase: rnd() * TAU, flinch: 0, t: rnd() * 3 };
+    });
+    this.rig = rigA;
+    this.balls = [];
+    for (let i = 0; i < 3; i++) { const m = mesh(G.sphere(0.11, 8, 6), mat(0xffffff, { roughness: 1 }), { parent: game.world }); m.visible = false; this.balls.push({ m, t: -1, wait: 0, dur: 0.75, from: V3(), to: V3() }); }
+  }
+  throwAt(k, tx, ty, tz) {
+    const b = this.balls.find((b) => b.t < 0); if (!b) return;
+    k.rig.gesture = 'throw'; k.rig.gT = 0; this.throws++;
+    b.t = 0; b.wait = 0.28; b.from.set(k.x, 0.95 * k.rig.k + 0.35, k.z); b.to.set(tx, ty, tz); b.m.position.copy(b.from); b.m.visible = true;
+  }
+  update(dt) {
+    this.t += dt; this.nextT -= dt;
+    const cat = this.game.cat.group.position, P = this.game.physics;
+    for (const k of this.kids) {
+      // shuffle sideways, always squared up to the other one
+      k.t += dt; const other = this.kids[k === this.kids[0] ? 1 : 0];
+      k.z = k.hz + sin(k.t * 0.9) * 1.6; k.circle.z = k.z;
+      k.rig.group.position.set(k.x, P.ground0(k.x, k.z), k.z);
+      k.rig.group.rotation.y = dampAngle(k.rig.group.rotation.y, atan2(other.x - k.x, other.z - k.z), 6, dt);
+      const stepping = abs(cos(k.t * 0.9)) > 0.35; if (stepping) k.phase += dt * 4;
+      k.rig.animate(k.phase, stepping, dt, this.t);
+      if (k.flinch > 0) { k.flinch -= dt; k.rig.body.rotation.z += sin(k.flinch * 14) * 0.14; k.rig.body.position.y -= 0.07 * k.rig.k * sin(clamp(k.flinch / 0.5, 0, 1) * PI); }
+    }
+    // take turns; a cat that comes too close gets one thrown at it (once per visit)
+    if (this.nextT <= 0) {
+      const k = this.kids[this.thrower], o = this.kids[1 - this.thrower];
+      if (!this.catHit && dist2(k.x, k.z, cat.x, cat.z) < 20) { this.throwAt(k, cat.x, cat.y + 0.35, cat.z); this.catHit = true; }
+      else this.throwAt(k, o.x, 0.9 * o.rig.k, o.z);
+      this.thrower = 1 - this.thrower; this.nextT = rnd.range(1.4, 2.6);
+    }
+    if (this.catHit && this.kids.every((k) => dist2(k.x, k.z, cat.x, cat.z) > 60)) this.catHit = false;
+    for (const b of this.balls) {
+      if (b.t < 0) continue;
+      if (b.wait > 0) { b.wait -= dt; continue; }             // the arm winds up first
+      b.t += dt; const u = min(1, b.t / b.dur);
+      b.m.position.copy(b.from).lerp(b.to, u); b.m.position.y += sin(u * PI) * 1.3;
+      if (u >= 1) {
+        b.t = -1; b.m.visible = false;
+        this.game.fx.emit(b.to.x, b.to.y, b.to.z, { count: 14, colors: [0xffffff, 0xeaf4ff], speed: 1.6, up: 1.2, life: 0.6, gravity: 3 });
+        const hit = this.kids.find((k) => dist2(k.x, k.z, b.to.x, b.to.z) < 1.5);
+        if (hit) hit.flinch = 0.5;
+        else if (dist2(cat.x, cat.z, b.to.x, b.to.z) < 2.5) { SFX.tag(); this.game.toast('\u2603\ufe0f "Got you, kitty!"'); }
+      }
+    }
+  }
 }
 
 // ---------------------------------------------------------------- squirrel controller: stays on its spot, fidgets, watches the cat

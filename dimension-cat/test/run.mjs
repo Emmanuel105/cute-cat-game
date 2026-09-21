@@ -185,6 +185,7 @@ for (const [idx, entry] of [[1, 'from-prev'], [2, 'from-prev'], [3, 'from-prev']
   check(game.npcs.every((n) => finite(n.rig.group.position)), `world ${idx}: NPCs finite`);
   check(game.collectibles.items.length >= 6, `world ${idx}: ${game.collectibles.items.length} collectibles`);
   check(game.squirrels.length === 1, `world ${idx}: has its squirrel`);
+  if (idx === 5) { const f = game.npcs.find((n) => n.constructor.name === 'SnowballFight'); check(f && f.throws >= 2 && f.kids.every((k) => Number.isFinite(k.rig.group.position.y)), `Frosty Peak: the children are throwing snowballs (${f ? f.throws : 0} throws in 5 s)`); }
   game.setTime('night'); frames(3); const sN = game.sun.intensity; game.setTime('auto'); frames(3); check(sN < 1.5 && Number.isFinite(sN), `world ${idx}: night toggle dims the sun (${sN.toFixed(2)})`);
   check(Math.abs(pos().y - game.physics.groundAt(pos().x, pos().z, pos().y)) < 0.05, `world ${idx}: cat rests on the ground (y=${pos().y.toFixed(2)})`);
   check(game.interactables.some((i) => /return|home|neighborhood|portal|airlock|door|oak|gondola/i.test(i.label() || '')), `world ${idx}: has a way onward`);
