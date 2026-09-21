@@ -176,6 +176,7 @@ function makeHuman(o = {}) {
     mesh(G.capsule(0.019, 0.024, 6), skinM, { x: side * 0.04, y: 0.012, z: 0.016, rz: side * 0.8, shadow: 'none', parent: hand });   // thumb
     rig.hands.push(hand);
     if (o.cane && side === -1) mesh(G.cyl(0.013, 0.013, 0.86, 6), mat(0x3a2718), { y: -0.3, z: 0.08, parent: hand });
+    if (o.axe && side === 1) { mesh(G.cyl(0.018, 0.022, 0.8, 6), mat(0x6a4a2a, { roughness: 0.9 }), { y: 0.3, z: 0.02, parent: hand }); mesh(G.box(0.05, 0.22, 0.14), mat(0x9aa3ad, { metalness: 0.7, roughness: 0.35 }), { y: 0.66, z: 0.06, parent: hand }); }   // a woodcutter's axe
     if (o.pole && side === 1) { mesh(G.cyl(0.012, 0.014, 1.7, 6), mat(0x4a3a2a), { y: 0.55, z: 0.03, parent: hand }); mesh(G.sphere(0.035, 8, 6), glowMat(0xffb060, 1.4), { y: 1.42, z: 0.03, shadow: 'none', parent: hand }); }   // a lamplighter's pole, lit at the tip
     rig.arms.push({ sh, el });
   }
@@ -217,14 +218,15 @@ function makeHuman(o = {}) {
       rig.idleT -= dt;
       if (rig.idleT <= 0 && !rig.gesture) { rig.gesture = rnd.pick(['wave', 'look', 'nod', 'shift', 'shift']); rig.gT = 0; rig.idleT = rnd.range(5, 14); }
     } else if (rig.gesture !== 'wave') rig.gesture = null;
-    let waveArm = 0, nod = 0, turn = 0, lean = 0, throwArm = null;
+    let waveArm = 0, nod = 0, turn = 0, lean = 0, throwArm = null, chop = null;
     if (rig.gesture) {
       rig.gT += dt;
-      const u = rig.gT / (rig.gesture === 'throw' ? 0.9 : 1.6);   // a throw is quick; every other gesture runs for 1.6s
+      const u = rig.gT / (rig.gesture === 'throw' ? 0.9 : rig.gesture === 'chop' ? 1.1 : 1.6);   // a throw or a chop is quick; every other gesture runs for 1.6s
       const swell = sin(clamp(u, 0, 1) * PI);       // eases in and back out
       if (rig.gesture === 'wave') { waveArm = swell; turn = swell * 0.18; }
       else if (rig.gesture === 'throw') { throwArm = u < 0.3 ? 1.3 : u < 0.6 ? -2.6 : 0; lean = u < 0.3 ? -0.08 : u < 0.6 ? 0.1 : 0; }
-      else if (rig.gesture === 'reach' || rig.gesture === 'post') { waveArm = swell; turn = 0; }   // reach: the arm straight up and held there; post: out in front, into a letterbox
+      else if (rig.gesture === 'reach' || rig.gesture === 'post') { waveArm = swell; turn = 0; }
+      else if (rig.gesture === 'chop') { chop = u; lean = u < 0.55 ? -0.12 : 0.28; }   // reach: the arm straight up and held there; post: out in front, into a letterbox
       else if (rig.gesture === 'look') turn = sin(rig.gT * 2.2) * swell * 0.7;
       else if (rig.gesture === 'nod') nod = sin(rig.gT * 5.5) * swell * 0.22;
       else if (rig.gesture === 'shift') lean = swell * 0.05;
@@ -239,6 +241,10 @@ function makeHuman(o = {}) {
         if (throwArm !== null && i === 0) { A.sh.rotation.x = damp(A.sh.rotation.x, throwArm, 16, dt); A.el.rotation.x = damp(A.el.rotation.x, throwArm > 0 ? -1.6 : -0.3, 16, dt); }
         else if (o.cane && i === 1) { A.sh.rotation.x = damp(A.sh.rotation.x, -0.5 + sin(p) * 0.08, 10, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.1, 10, dt); }   // the cane hand stays planted ahead
         else { A.sh.rotation.x = sin(p) * (0.42 + skip * 0.25); A.el.rotation.x = -restArm - max(0, sin(p)) * (0.25 + skip * 0.3); }
+      } else if (chop !== null) {
+        L.hip.rotation.x = damp(L.hip.rotation.x, 0, 8, dt); L.knee.rotation.x = damp(L.knee.rotation.x, 0, 8, dt); L.ankle.rotation.x = damp(L.ankle.rotation.x, 0, 8, dt);
+        const up = chop < 0.55;   // both hands: slowly up over the head, then down hard
+        A.sh.rotation.x = damp(A.sh.rotation.x, up ? -2.8 : -0.55, up ? 5 : 22, dt); A.el.rotation.x = damp(A.el.rotation.x, up ? -0.5 : -0.1, up ? 5 : 22, dt);
       } else if (throwArm !== null && i === 0) {
         L.hip.rotation.x = damp(L.hip.rotation.x, 0, 8, dt); L.knee.rotation.x = damp(L.knee.rotation.x, 0, 8, dt); L.ankle.rotation.x = damp(L.ankle.rotation.x, 0, 8, dt);
         A.sh.rotation.x = damp(A.sh.rotation.x, throwArm, 16, dt); A.el.rotation.x = damp(A.el.rotation.x, throwArm > 0 ? -1.6 : -0.3, 16, dt);
@@ -253,7 +259,7 @@ function makeHuman(o = {}) {
         A.el.rotation.x = damp(A.el.rotation.x, waving ? (reaching ? -0.15 : posting ? -0.2 : -0.5 - sin(rig.gT * 11) * 0.35) : caning ? -0.1 : -restArm, 10, dt);
       }
       // arms hang a little away from the body, more so on a stouter build
-      A.sh.rotation.z = (i ? -1 : 1) * (0.19 + stout * 0.1 + (waveArm > 0 && i === 0 ? waveArm * (rig.gesture === 'reach' || rig.gesture === 'post' ? 0.05 : 0.5) : 0));
+      A.sh.rotation.z = chop !== null ? (i ? -1 : 1) * 0.1 : (i ? -1 : 1) * (0.19 + stout * 0.1 + (waveArm > 0 && i === 0 ? waveArm * (rig.gesture === 'reach' || rig.gesture === 'post' ? 0.05 : 0.5) : 0));
       A.el.rotation.z = (i ? 1 : -1) * 0.1;      // forearms angle back in toward the hips
     }
     // blink: both eyes squash flat for a moment, every few seconds
@@ -275,8 +281,8 @@ function makeHuman(o = {}) {
       rig.sway += dt * 0.7;
       body.position.y = damp(body.position.y, sin(rig.sway) * 0.006 * k, 6, dt);
       body.rotation.z = damp(body.rotation.z, 0, 6, dt);
-      spine.rotation.z = damp(spine.rotation.z, lean, 6, dt);
-      spine.rotation.x = damp(spine.rotation.x, stoop + (rig.gesture === 'nod' ? nod * 0.3 : 0), 6, dt);
+      spine.rotation.z = damp(spine.rotation.z, chop !== null ? 0 : lean, 6, dt);
+      spine.rotation.x = damp(spine.rotation.x, stoop + (rig.gesture === 'nod' ? nod * 0.3 : 0) + (chop !== null ? lean : 0), chop !== null && chop >= 0.55 ? 18 : 6, dt);
       head.rotation.y = damp(head.rotation.y, turn + sin(rig.sway * 0.35) * 0.3, 5, dt);
       head.rotation.x = damp(head.rotation.x, nod - stoop * 0.7, 12, dt);
       head.rotation.z = damp(head.rotation.z, lean * 0.5, 6, dt);
@@ -1022,6 +1028,50 @@ class Sledder {
       this.rope.scale.set(1, 1, max(0.01, Math.hypot(this.hand.x - sx, this.hand.y - sy - 0.3, this.hand.z - sz)));
     }
     Wanderer.prototype.lookAtCat.call(this, dt);
+  }
+}
+
+// ---------------------------------------------------------------- chopper: stands over a log with an axe and splits it, again and again
+class Chopper {
+  constructor(game, rig, { x, z, ry = 0, cries = null }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10; this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false;
+    this.state = 'idle'; this.timer = 0; this.cries = cries; this.cryIcon = '\ud83e\ude93'; this.cryT = rnd.range(4, 9); this.chopT = rnd.range(1, 2); this.chops = 0; this.struck = false;
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    this.circle = game.physics.addCircle(this, x, z, 0.35);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig;
+    if (!rig.gesture) { this.chopT -= dt; if (this.chopT <= 0) { rig.gesture = 'chop'; rig.gT = 0; this.struck = false; this.chopT = rnd.range(2.2, 3.6); } }
+    if (rig.gesture === 'chop' && !this.struck && rig.gT / 1.1 >= 0.55) {   // the blade lands
+      this.struck = true; this.chops++; SFX.thunk();
+      const a = rig.group.rotation.y, p = rig.group.position;
+      this.game.fx.emit(p.x + sin(a) * 0.7, p.y + 0.5, p.z + cos(a) * 0.7, { count: 7, colors: [0xd9b27a, 0x8a5a32], speed: 1.6, up: 1.8, life: 0.7, gravity: 4 });
+    }
+    rig.animate(0, false, dt, this.t);
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
+// ---------------------------------------------------------------- marchers: a column following a leader, all in step
+class Marchers {
+  constructor(game, rigs, o) {
+    this.game = game; this.rigs = rigs; this.gap = o.gap ?? 1.2;
+    this.lead = new Patroller(game, rigs[0], o); this.rig = rigs[0];
+    this.circles = rigs.slice(1).map((rig) => game.physics.addCircle(this, this.lead.x, this.lead.z, o.r ?? 0.32));
+    this.update(0);
+  }
+  get x() { return this.lead.x; } get z() { return this.lead.z; }
+  update(dt) {
+    this.lead.update(dt);
+    const L = this.lead, a = L.rig.group.rotation.y, moving = L.state === 'walk', P = this.game.physics;
+    this.rigs.slice(1).forEach((rig, i) => {
+      const d = (i + 1) * this.gap, x = L.x - sin(a) * d, z = L.z - cos(a) * d;
+      rig.group.position.set(x, P.ground0(x, z), z); rig.group.rotation.y = a;
+      this.circles[i].x = x; this.circles[i].z = z;
+      rig.animate(L.phase, moving, dt, L.t);
+    });
   }
 }
 

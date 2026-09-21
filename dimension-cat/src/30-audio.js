@@ -71,6 +71,8 @@ class SoundKit {
   roar() { this.tone({ freq: 140, slide: 90, type: 'sawtooth', dur: 0.7, vol: 0.12, attack: 0.08, filter: 420, q: 3, vib: 10 }); this.noise({ dur: 0.6, vol: 0.06, filter: 500 }); }
   wave() { this.noise({ dur: 1.6, vol: 0.05, filter: 300, slide: 1200, type: 'lowpass' }); }
   twinkle() { [1319, 1568, 2093].forEach((f, i) => this.tone({ freq: f, type: 'sine', dur: 0.18, vol: 0.06, delay: i * 0.06 })); }
+  /** An axe into a log. */
+  thunk() { this.noise({ dur: 0.07, vol: 0.2, filter: 380, type: 'lowpass' }); this.tone({ freq: 140, slide: 80, type: 'triangle', dur: 0.09, vol: 0.12 }); }
   /** Hooves on cobbles: a pair of hollow knocks. */
   clop() { this.noise({ dur: 0.05, vol: 0.13, filter: 700, type: 'bandpass' }); this.noise({ dur: 0.05, vol: 0.09, filter: 520, type: 'bandpass', delay: 0.13 }); }
   /** A bicycle bell: two quick bright pings. */

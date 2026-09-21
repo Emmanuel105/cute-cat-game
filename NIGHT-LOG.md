@@ -167,3 +167,10 @@ eight ten metres up, tail streaming, on a line from his hands. "Higher than the 
 On the flank of the west peak a girl **sleds down a twelve-metre drop**, arms in the air —
 "Wheeeee!" — skids to a stop in a puff of snow, then trudges back up dragging the sled behind her
 on a rope, and goes again.
+
+## Round 21 — a woodcutter, and the Queen's guard
+
+- A stout, bearded **woodcutter** stands at the stump by the forest glade splitting logs: the axe
+  goes up over his head and comes down with a thunk and a spray of chips. "Mind the chips, puss."
+- **Three gingerbread guards** march in step back and forth in front of the Candy Queen: "Hup, two,
+  three, four!" — "Halt! ...who goes there? Oh, a kitty."

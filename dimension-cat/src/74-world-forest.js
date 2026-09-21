@@ -38,6 +38,10 @@ function buildForest(game, entry) {
   let hootT = 6; U.push((dt) => { hootT -= dt; if (hootT <= 0) { SFX.hoot(); hootT = rnd.range(8, 16); } });
   for (let i = 0; i < 5; i++) { const rig = makeFairy(r.pick([0xa8ff9a, 0xffd1ff, 0x9fe8ff, 0xfff3a0])); game.npcs.push(new Flyer(game, rig, { cx: r.range(-16, 16), cz: r.range(-14, 18), r: r.range(2.5, 5), h: r.range(1.2, 2.4), speed: r.range(1.2, 2), bob: 0.5, wobble: 1, cw: i % 2 === 0 })); }
   for (let i = 0; i < 12; i++) { const rig = makeButterfly(r.pick([300, 40, 200, 20, 260])); game.npcs.push(new Flyer(game, rig, { cx: r.range(-30, 30), cz: r.range(-30, 30), r: r.range(1.5, 4), h: r.range(0.7, 2), speed: r.range(0.8, 1.6), bob: 0.3, wobble: 0.8, cw: i % 2 === 0 })); }
+  // a woodcutter at the stump by the glade, splitting logs
+  { const cutter = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: false }), shirt: 0xb5485f, stripes: 0x1e1e24, pants: 0x3c4a5a, shoes: 0x3a2a1e, axe: true, beard: true, build: 'stout', hat: null, glasses: false });
+    W.add(cutter.group);
+    game.npcs.push(new Chopper(game, cutter, { x: -6, z: 3.6, ry: PI, cries: ['Mind the chips, puss.', 'Timber! ...just kidding.', 'Good dry oak, this.'] })); }
   // a hiker walks the stepping stones from the hollow oak down to the glade and back
   { const hiker = makeHuman({ ...randomPerson(r, { female: r.chance(0.5) }), shirt: 0xef7d2f, pants: 0x4c6b3c, shoes: 0x5a4030, backpack: 0x2f6fd6, hat: 'cap', hatColor: 0x2e4a3a, scarf: null, jacket: null });
     W.add(hiker.group);
