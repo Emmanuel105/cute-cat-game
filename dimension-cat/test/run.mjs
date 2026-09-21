@@ -176,6 +176,13 @@ check(game.npcs.filter((n) => n instanceof Object && n.constructor.name === 'Wan
   const sw = game.npcs.find((n) => n.constructor.name === 'Swinger');
   const r0 = sw.pivot.rotation.x; frames(45); const r1 = sw.pivot.rotation.x;
   check(sw && Math.abs(r1 - r0) > 0.05 && Math.abs(r1) < 0.7, `a child is swinging in the park (${r0.toFixed(2)} → ${r1.toFixed(2)} rad)`);
+  // the balloon seller: take a balloon, and it follows the cat — even into the next world
+  { const v = game.npcs.find((n) => n.constructor.name === 'Vendor'); check(!!v && v.held.children.length === 6, 'a balloon seller stands in the park with six balloons');
+    const there = pos().clone(); pos().set(v.x + Math.sin(v.rig.group.rotation.y) * 1.2, game.physics.ground0(v.x, v.z), v.z + Math.cos(v.rig.group.rotation.y) * 1.2); frames(5);
+    check(game.nearest && /balloon/i.test(game.nearest._label), `balloon prompt shown: ${game.nearest && game.nearest._label}`);
+    game.interact(); frames(120);
+    const b = game.balloon; check(!!b && Math.hypot(b.group.position.x - pos().x, b.group.position.z - pos().z) < 1 && b.group.position.y > pos().y + 1.2, `the balloon floats over the cat (${b ? b.group.position.y.toFixed(2) : '-'} m up)`);
+    pos().copy(there); }
   sw.boost = 1; let peak = 0; for (let i = 0; i < 200; i++) { game.loop(); peak = Math.max(peak, Math.abs(sw.pivot.rotation.x)); } check(peak > 0.8, `pushed, the swing goes higher (peak ${peak.toFixed(2)} rad)`); sw.boost = 0;
 }
 // travel through all worlds
@@ -183,6 +190,7 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 for (const [idx, entry] of [[1, 'from-prev'], [2, 'from-prev'], [3, 'from-prev'], [2, 'from-next'], [1, 'from-next'], [0, 'from-next'], [4, 'from-hub'], [0, 'from-beach'], [5, 'from-hub'], [0, 'from-snow'], [6, 'from-hub'], [0, 'from-forest']]) {
   game.travel(idx, entry); await sleep(560);
   check(game.worldIndex === idx, `travelled to world ${idx} (${entry})`);
+  if (idx === 1 && game.balloon) { frames(30); check(game.scene.children.includes(game.balloon.group) && Math.hypot(game.balloon.group.position.x - pos().x, game.balloon.group.position.z - pos().z) < 2, 'the balloon came through the portal with the cat'); }
   if (idx !== 0) { const q = game.squirrels[0], dq = Math.hypot(pos().x - q.x, pos().z - q.z); check(dq < 2.5, `world ${idx}: spawned next to the squirrel (${dq.toFixed(1)} m)`); }
   frames(300);
   check(finite(pos()) && finite(game.camera.position), `world ${idx}: finite positions after 5s`);

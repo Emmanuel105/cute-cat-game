@@ -931,6 +931,25 @@ class Kneeler {
   }
 }
 
+// ---------------------------------------------------------------- vendor: stands on their pitch holding something up in the left hand, and calls their wares
+class Vendor {
+  constructor(game, rig, held, { x, z, ry = 0, cries = null, cryIcon = '\ud83c\udf88' }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10; this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false;
+    this.state = 'idle'; this.timer = 0; this.cries = cries; this.cryIcon = cryIcon; this.cryT = rnd.range(3, 7); this.held = held;
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    rig.hands[1].add(held);
+    this.circle = game.physics.addCircle(this, x, z, 0.35);   // no greetable(): the world gives the vendor its own prompt
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig;
+    rig.animate(0, false, dt, this.t);
+    const A = rig.arms[1]; A.sh.rotation.x = damp(A.sh.rotation.x, -0.9, 8, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.5, 8, dt);   // the bunch held up and out
+    if (this.held.userData.update) this.held.userData.update(dt, this.t);
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- squirrel controller: stays on its spot, fidgets, watches the cat
 class Squirrel {
   constructor(game, x, z, id) {

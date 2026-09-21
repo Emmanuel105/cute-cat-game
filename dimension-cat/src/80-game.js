@@ -179,6 +179,28 @@ class Game {
   wipeSave() { store.clear(); }
 
   // ------------------------------------------------------------------ HUD
+  /** Tie a balloon to the cat. It lives in the scene, not the world, so it comes along through every portal. */
+  giveBalloon(color) {
+    if (this.balloon) { this.scene.remove(this.balloon.group); }
+    const g = makeBalloon(color, { y: 0 }, true); this.scene.add(g);
+    const p = this.cat.group.position; g.position.set(p.x, p.y + 1.7, p.z);
+    this.balloon = { group: g, color, t: 0, v: V3() };
+  }
+  updateBalloon(dt) {
+    const b = this.balloon, c = this.cat.group.position, g = b.group; b.t += dt;
+    // floats above and a little behind the cat, drifting after it rather than stuck to it
+    const yaw = this.cat.group.rotation.y, tx = c.x - sin(yaw) * 0.35, tz = c.z - cos(yaw) * 0.35, ty = c.y + 1.75 + sin(b.t * 1.1) * 0.06;
+    if (dist2(g.position.x, g.position.z, tx, tz) > 400) g.position.set(tx, ty, tz);   // a portal jump: snap
+    g.position.x = damp(g.position.x, tx, 4, dt); g.position.y = damp(g.position.y, ty, 5, dt); g.position.z = damp(g.position.z, tz, 4, dt);
+    g.rotation.z = damp(g.rotation.z, (tx - g.position.x) * 0.6, 4, dt); g.rotation.x = damp(g.rotation.x, -(tz - g.position.z) * 0.6, 4, dt);
+    // the string runs from the collar up to the balloon, in the balloon group's own space
+    const bal = g.userData.balloon, str = g.children[1];
+    bal.position.set(sin(b.t * 0.9) * 0.04, sin(b.t * 1.3) * 0.04, cos(b.t * 0.7) * 0.04);
+    const cx = c.x - g.position.x, cy = c.y + 0.5 - g.position.y, cz = c.z - g.position.z;
+    str.position.set(cx / 2, (cy + bal.position.y - 0.3) / 2, cz / 2);
+    str.lookAt(g.position.x + bal.position.x, g.position.y + bal.position.y - 0.3, g.position.z + bal.position.z);
+    str.scale.set(1, 1, max(0.01, Math.hypot(cx, cy - bal.position.y + 0.3, cz)));
+  }
   toast(text, dur = 2200) {
     const el = $('msg'); el.textContent = text; el.classList.add('on');
     clearTimeout(this.msgTimer); this.msgTimer = setTimeout(() => el.classList.remove('on'), dur);
@@ -356,6 +378,7 @@ class Game {
     // --- world
     cat.update(dt, this.time);
     for (const n of this.npcs) n.update(dt);
+    if (this.balloon) this.updateBalloon(dt);
     for (const sq of this.squirrels) sq.update(dt);
     this.collectibles.update(dt, this.time);
     this.worldCtl.update(dt, this.time);

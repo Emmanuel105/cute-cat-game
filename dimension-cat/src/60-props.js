@@ -413,6 +413,35 @@ function makeSwingSet(o = {}) {
   g.userData.seatY = H - L;   // seat height above the ground when hanging straight
   return g;
 }
+/**
+ * One balloon on a string: the string is a unit cylinder along z from the group's origin, stretched
+ * to the balloon each frame by `update`, and the balloon bobs. `keep` puts the materials in the
+ * global bag, for a balloon that travels between worlds with the cat.
+ */
+function makeBalloon(color, o = {}, keep = false) {
+  const g = new THREE.Group(), balloon = group(o.x ?? 0, o.y ?? 1.4, o.z ?? 0, g);
+  const m = mat(color, { roughness: 0.35 }, keep);
+  mesh(G.sphere(0.22, 14, 12), m, { sy: 1.15, parent: balloon });
+  mesh(G.cone(0.05, 0.08, 6), m, { y: -0.26, rx: PI, shadow: 'none', parent: balloon });   // the knot
+  const string = group(0, 0, 0, g); noInk(mesh(G.cyl(0.006, 0.006, 1, 4), mat(0xf0ece4, { roughness: 1 }, keep), { rx: PI / 2, shadow: 'none', parent: string }));
+  const rest = balloon.position.clone(), ph = rnd() * TAU, tip = V3(), w = V3();
+  g.userData.balloon = balloon;
+  g.userData.update = (dt, t) => {
+    balloon.position.set(rest.x + sin(t * 0.9 + ph) * 0.06, rest.y + sin(t * 1.3 + ph) * 0.05, rest.z + cos(t * 0.7 + ph) * 0.06);
+    balloon.rotation.z = sin(t * 0.8 + ph) * 0.08;
+    tip.copy(balloon.position); tip.y -= 0.3;
+    w.copy(tip); if (g.localToWorld) g.localToWorld(w); string.lookAt(w);   // lookAt wants world space, and the bunch may hang from a hand
+    string.scale.set(1, 1, max(0.01, tip.length())); string.position.copy(tip).multiplyScalar(0.5);
+  };
+  return g;
+}
+/** A bunch of balloons for a seller to hold: several makeBalloon()s fanned out above one point. */
+function makeBalloonBunch(colors) {
+  const g = new THREE.Group(), parts = [];
+  colors.forEach((c, i) => { const a = i / colors.length * TAU, b = makeBalloon(c, { x: cos(a) * 0.32, y: 1.25 + (i % 2) * 0.3, z: sin(a) * 0.32 }); g.add(b); parts.push(b); });
+  g.userData.update = (dt, t) => { for (const b of parts) b.userData.update(dt, t); };
+  return g;
+}
 function makeMailbox(color) {
   const g = new THREE.Group();
   mesh(G.box(0.08, 1.1, 0.08), mat(0x5a3b22), { y: 0.55, parent: g });

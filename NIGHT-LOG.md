@@ -125,3 +125,16 @@ Neighborhood can now be petted, like the one on the beach.
   Every static prop out there is now baked into a single mesh as it is placed: Candy Land draws 866
   calls where it drew 1455, Frosty Peak 1911 instead of 2605, the woods 1551 instead of 2342. It
   looks the same.
+
+## Round 13 — sunbathers, a sandcastle, and a push
+
+- Two **sunbathers** lie flat out on the beach towels in dark glasses, hands behind their heads.
+- A **child kneels at the sandcastle**, patting the sand, bucket at hand.
+- Walk up to the park swing and press **E: "Push the swing"** — she goes higher for a while.
+
+## Round 14 — a balloon of your own
+
+A **balloon seller** stands just south of the park path with a bunch of six. Press **E: "Take a
+balloon"** and one is tied to the cat: it floats above and a little behind, drifting after you, and it
+comes with you **through every portal**. Press E again to swap colours. "Balloons! Get your
+balloons!"
