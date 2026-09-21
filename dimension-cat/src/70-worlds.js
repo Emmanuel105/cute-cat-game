@@ -140,19 +140,23 @@ function buildNeighborhood(game, entry) {
   const ward = makeWardrobe(r);
   const skirtBag = bag(r, [0x8a5acf, 0xd6455c, 0x2f6fd6, 0x2e9e6e, 0xf2c744, 0xef7d2f]);
   const jacketBag = bag(r, [0x3a4a5e, 0x6b4a2b, 0x2e4a3a, 0x5a3a4a]);
-  const spots = [[-20, 10.4], [12, 17.6], [30, 10.4], [-8, 17.6], [4, 44], [-16, 40], [40, 24], [-4, 12], [24, 40]];
-  spots.forEach(([sx, sz], i) => {
-    const female = i % 2 === 1, child = i === 7 || i === 8;
-    const rig = makeHuman({ ...randomPerson(r, { female, child, wardrobe: ward }),
-      skirt: female && r.chance(0.5) ? skirtBag() : null,
-      jacket: !child && r.chance(0.3) ? jacketBag() : null,
-      scarf: r.chance(0.18) ? r.pick([0xd6455c, 0x2e9e6e, 0xf2c744]) : null,
-      bag: female && r.chance(0.35) ? r.pick([0x6b4a2b, 0x8a3a5a, 0x2f4f6f]) : null,
-      backpack: child ? r.pick([0xe0503c, 0x2f6fd6, 0x2e9e6e]) : null,
-      hat: !female && !child && r.chance(0.35) ? 'cap' : null });
-    W.add(rig.group);
-    game.npcs.push(new Wanderer(game, rig, { x: sx, z: sz, speed: child ? r.range(1.1, 1.6) : r.range(0.8, 1.3), leash: child ? 10 : 16 }));
+  const person = (o) => { const rig = makeHuman({ ...randomPerson(r, { wardrobe: ward, ...o }),
+    skirt: o.female && r.chance(0.5) ? skirtBag() : null,
+    jacket: !o.child && r.chance(0.3) ? jacketBag() : null,
+    scarf: r.chance(0.18) ? r.pick([0xd6455c, 0x2e9e6e, 0xf2c744]) : null,
+    bag: o.female && r.chance(0.35) ? r.pick([0x6b4a2b, 0x8a3a5a, 0x2f4f6f]) : null,
+    backpack: o.child ? r.pick([0xe0503c, 0x2f6fd6, 0x2e9e6e]) : null,
+    hat: !o.female && !o.child && r.chance(0.35) ? 'cap' : null, ...o }); W.add(rig.group); return rig; };
+  // strollers on the pavements and in the park — never on the asphalt of either road
+  const offRoad = (x, z) => (z > 11.2 && z < 16.8) || abs(x - 44) < 2.6;
+  [[-20, 10.4], [12, 17.6], [30, 10.4], [-8, 17.6], [4, 44], [-16, 40], [40, 24]].forEach(([sx, sz], i) => {
+    game.npcs.push(new Wanderer(game, person({ female: i % 2 === 1 }), { x: sx, z: sz, speed: r.range(0.8, 1.3), leash: 16, avoid: offRoad }));
   });
+  // two on the park bench, half-turned toward each other
+  game.npcs.push(new Sitter(game, person({ female: false, build: 'stout', beard: true, glasses: true }), { x: 6.45, z: 40.1, ry: PI, side: 1 }));
+  game.npcs.push(new Sitter(game, person({ female: true, hairStyle: 'bun', hair: 0xd8d8d8 }), { x: 5.55, z: 40.1, ry: PI, side: -1 }));
+  // two children playing tag on the east lawn
+  game.npcs.push(new Playmates(game, person({ child: true, female: false }), person({ child: true, female: true }), { cx: 10, cz: 46, leash: 5.5 }));
   for (const [color, dir, x, lane] of [[0xd62839, 1, -30, 12.6], [0x2e63d8, -1, 20, 15.4], [0xf3f3f3, 1, 40, 12.6]]) {
     const car = makeCar(color); W.add(car.group); game.npcs.push(new Vehicle(game, car, { z: lane, dir, speed: r.range(5, 7), x }));
   }

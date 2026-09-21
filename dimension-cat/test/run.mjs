@@ -162,6 +162,17 @@ check(game.npcs.filter((n) => n instanceof Object && n.constructor.name === 'Wan
   const armUp = p.rig.arms[0].sh.rotation.x;
   frames(30); check(p.rig.arms[0].sh.rotation.x < -0.8, `the wave lifts the arm (shoulder ${p.rig.arms[0].sh.rotation.x.toFixed(2)}, was ${armUp.toFixed(2)})`);
   pos().copy(before);
+  // nobody strolls onto the asphalt
+  const strollers = game.npcs.filter((n) => n.constructor.name === 'Wanderer' && n.avoid);
+  check(strollers.length >= 7 && strollers.every((n) => !n.avoid(n.x, n.z)), `${strollers.length} strollers, none standing in the road`);
+  // the bench: two sitters with bent hips; the lawn: two children playing tag who swap who is "it"
+  const sitters = game.npcs.filter((n) => n.constructor.name === 'Sitter');
+  check(sitters.length === 2 && sitters.every((s) => s.rig.legs[0].hip.rotation.x < -1.2 && s.rig.legs[0].knee.rotation.x > 1.2), 'two people sit on the park bench with their knees bent');
+  const play = game.npcs.find((n) => n.constructor.name === 'Playmates');
+  let swaps = 0, last = play.chaser; for (let i = 0; i < 1200; i++) { game.loop(); if (play.chaser !== last) { swaps++; last = play.chaser; } }
+  check(swaps >= 1, `the children tag each other (${swaps} swaps in 20 s)`);
+  check(play.kids.every((k) => Math.hypot(k.x - play.cx, k.z - play.cz) <= play.leash + 0.01), 'the children stay on their lawn');
+  check(play.kids.every((k) => Number.isFinite(k.rig.group.position.y)), 'the children keep their feet');
 }
 // travel through all worlds
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));

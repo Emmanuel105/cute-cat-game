@@ -931,6 +931,8 @@ class SoundKit {
   roar() { this.tone({ freq: 140, slide: 90, type: 'sawtooth', dur: 0.7, vol: 0.12, attack: 0.08, filter: 420, q: 3, vib: 10 }); this.noise({ dur: 0.6, vol: 0.06, filter: 500 }); }
   wave() { this.noise({ dur: 1.6, vol: 0.05, filter: 300, slide: 1200, type: 'lowpass' }); }
   twinkle() { [1319, 1568, 2093].forEach((f, i) => this.tone({ freq: f, type: 'sine', dur: 0.18, vol: 0.06, delay: i * 0.06 })); }
+  /** "Got you!" — a quick rising giggle when one child tags the other. */
+  tag() { [880, 1175, 1480].forEach((f, i) => this.tone({ freq: f, type: 'triangle', dur: 0.07, vol: 0.05, delay: i * 0.055, slide: f * 1.2 })); }
   /** Footstep: soft pad on grass/sand/snow, tap on cobble/metal/planks. */
   step(kind = 'soft', run = false) {
     const v = run ? 0.09 : 0.06;
@@ -2199,6 +2201,7 @@ class Wanderer {
     this.game = game; this.rig = rig; this.x = o.x; this.z = o.z; this.hx = o.x; this.hz = o.z;
     this.speed = o.speed ?? 0.9; this.leash = o.leash ?? 10; this.r = o.r ?? 0.35; this.height = o.height ?? 1.8; this.step = o.step ?? 0.22;
     this.idleRange = o.idle ?? [1.5, 4]; this.walkRange = o.walk ?? [3, 8];
+    this.avoid = o.avoid ?? null;      // (x, z) => true where this wanderer must not step (the road, say)
     this.angle = o.angle ?? rnd() * TAU; this.phase = rnd() * TAU; this.state = 'idle'; this.timer = rnd.range(0, 2); this.t = rnd() * 10;
     this.circle = game.physics.addCircle(this, o.x, o.z, this.r);
     rig.group.position.set(o.x, game.physics.ground0(o.x, o.z), o.z); rig.group.rotation.y = this.angle;
@@ -2238,7 +2241,7 @@ class Wanderer {
     const nx = this.x + sin(this.angle) * this.speed * dt, nz = this.z + cos(this.angle) * this.speed * dt;
     const outside = dist2(nx, nz, this.hx, this.hz) > this.leash * this.leash;
     const nearCat = dist2(nx, nz, cat.x, cat.z) < (this.r + CAT_RADIUS + 0.15) ** 2;
-    if (outside || nearCat || this.game.physics.blocked(nx, nz, this.r, this, this.game.physics.ground0(nx, nz), this.step, this.height)) {
+    if (outside || nearCat || (this.avoid && this.avoid(nx, nz)) || this.game.physics.blocked(nx, nz, this.r, this, this.game.physics.ground0(nx, nz), this.step, this.height)) {
       this.angle = outside ? wrapAngle(atan2(this.hx - this.x, this.hz - this.z) + rnd.range(-0.5, 0.5)) : wrapAngle(this.angle + rnd.range(PI * 0.5, PI * 1.5));
       this.state = 'idle'; this.timer = nearCat ? rnd.range(0.8, 2) : rnd.range(0.2, 0.6);
       this.rig.animate(this.phase, false, dt, this.t); return;
@@ -2249,6 +2252,65 @@ class Wanderer {
     if (this.timer <= 0) { this.state = 'idle'; this.timer = rnd.range(...this.idleRange); }
     this.rig.animate(this.phase, true, dt, this.t);
   }
+}
+
+// ---------------------------------------------------------------- sitter: parked on a bench, watching the world go by
+class Sitter {
+  /** `seat` is the bench's seat height; the rig is lowered so its hips land on it and its shins hang down in front. */
+  constructor(game, rig, { x, z, ry, seat = 0.48, side = 0 }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10; this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false;
+    this.state = 'idle'; this.timer = 0; this.side = side;
+    rig.group.position.set(x, game.physics.ground0(x, z) + seat - 0.9 * rig.k + 0.02, z); rig.group.rotation.y = ry;
+    this.circle = game.physics.addCircle(this, x, z, 0.3);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig;
+    rig.animate(0, false, dt, this.t);
+    for (const L of rig.legs) { L.hip.rotation.x = -PI / 2 + 0.12; L.knee.rotation.x = PI / 2 - 0.2; L.ankle.rotation.x = 0.1; }
+    if (!rig.gesture) for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -0.45, 8, dt); A.el.rotation.x = damp(A.el.rotation.x, -1.0, 8, dt); }   // hands in the lap
+    rig.body.position.y = 0;
+    // half-turned toward whoever is on the bench beside them
+    if (this.side) rig.head.rotation.y += this.side * 0.35 * (1 - this.lookW);
+    Wanderer.prototype.lookAtCat.call(this, dt);
+  }
+}
+
+// ---------------------------------------------------------------- playmates: two children playing tag on a lawn
+class Playmates {
+  constructor(game, rigA, rigB, { cx, cz, leash = 6, speed = 2.1 }) {
+    this.game = game; this.cx = cx; this.cz = cz; this.leash = leash; this.speed = speed;
+    this.kids = [rigA, rigB].map((rig, i) => {
+      const x = cx + (i ? 2.5 : -2.5), z = cz + (i ? 1 : -1);
+      rig.group.position.set(x, game.physics.ground0(x, z), z);
+      return { rig, x, z, angle: rnd() * TAU, phase: rnd() * TAU, circle: game.physics.addCircle(this, x, z, 0.25), hop: 0 };
+    });
+    this.rig = rigA;      // the world's sanity checks look at npc.rig
+    this.chaser = 0; this.swapT = 0; this.t = 0; this.pauseT = 0; this.headStart = 0;
+  }
+  update(dt) {
+    this.t += dt; this.swapT += dt;
+    const ch = this.kids[this.chaser], run = this.kids[1 - this.chaser], P = this.game.physics;
+    if (this.pauseT > 0) { this.pauseT -= dt; for (const k of this.kids) k.rig.animate(k.phase, false, dt, this.t); this.hops(dt); return; }
+    // caught: freeze for a beat, swap roles, and the one who was tagged hops off with a head start
+    if (Math.hypot(run.x - ch.x, run.z - ch.z) < 0.8 && this.swapT > 3) { this.chaser = 1 - this.chaser; this.swapT = 0; this.pauseT = 0.45; this.headStart = 1.3; run.hop = 0.35; SFX.tag(); return; }
+    this.headStart -= dt;
+    for (const k of this.kids) {
+      const other = k === ch ? run : ch;
+      if (k === ch && this.headStart > 0) { k.rig.group.rotation.y = dampAngle(k.rig.group.rotation.y, atan2(other.x - k.x, other.z - k.z), 6, dt); k.rig.animate(k.phase, false, dt, this.t); continue; }   // "it" counts to three
+      let want = k === ch ? atan2(other.x - k.x, other.z - k.z) : atan2(k.x - other.x, k.z - other.z) + sin(this.t * 1.7 + (k === ch ? 2 : 0)) * 0.9;
+      // keep to the lawn: near the edge, bend the heading back toward the middle
+      if (Math.hypot(k.x - this.cx, k.z - this.cz) > this.leash * 0.8) { const back = atan2(this.cx - k.x, this.cz - k.z); want = wrapAngle(back + wrapAngle(want - back) * 0.3); }
+      k.angle = dampAngle(k.angle, want, k === ch ? 6 : 4, dt);
+      const sp = this.speed * (k === ch ? 1.06 : 1), nx = k.x + sin(k.angle) * sp * dt, nz = k.z + cos(k.angle) * sp * dt;
+      if (P.blocked(nx, nz, 0.25, this, P.ground0(nx, nz), 0.25, 1.3) || Math.hypot(nx - this.cx, nz - this.cz) > this.leash) k.angle = wrapAngle(k.angle + PI * 0.6);
+      else { k.x = nx; k.z = nz; }
+      k.circle.x = k.x; k.circle.z = k.z; k.phase += dt * sp * 4.4;
+      k.rig.group.position.set(k.x, P.ground0(k.x, k.z), k.z); k.rig.group.rotation.y = dampAngle(k.rig.group.rotation.y, k.angle, 8, dt);
+      k.rig.animate(k.phase, true, dt, this.t);
+    }
+    this.hops(dt);
+  }
+  hops(dt) { for (const k of this.kids) if (k.hop > 0) { k.hop = max(0, k.hop - dt); k.rig.group.position.y = this.game.physics.ground0(k.x, k.z) + sin(k.hop / 0.35 * PI) * 0.22; } }
 }
 
 // ---------------------------------------------------------------- squirrel controller: stays on its spot, fidgets, watches the cat
@@ -4479,19 +4541,23 @@ function buildNeighborhood(game, entry) {
   const ward = makeWardrobe(r);
   const skirtBag = bag(r, [0x8a5acf, 0xd6455c, 0x2f6fd6, 0x2e9e6e, 0xf2c744, 0xef7d2f]);
   const jacketBag = bag(r, [0x3a4a5e, 0x6b4a2b, 0x2e4a3a, 0x5a3a4a]);
-  const spots = [[-20, 10.4], [12, 17.6], [30, 10.4], [-8, 17.6], [4, 44], [-16, 40], [40, 24], [-4, 12], [24, 40]];
-  spots.forEach(([sx, sz], i) => {
-    const female = i % 2 === 1, child = i === 7 || i === 8;
-    const rig = makeHuman({ ...randomPerson(r, { female, child, wardrobe: ward }),
-      skirt: female && r.chance(0.5) ? skirtBag() : null,
-      jacket: !child && r.chance(0.3) ? jacketBag() : null,
-      scarf: r.chance(0.18) ? r.pick([0xd6455c, 0x2e9e6e, 0xf2c744]) : null,
-      bag: female && r.chance(0.35) ? r.pick([0x6b4a2b, 0x8a3a5a, 0x2f4f6f]) : null,
-      backpack: child ? r.pick([0xe0503c, 0x2f6fd6, 0x2e9e6e]) : null,
-      hat: !female && !child && r.chance(0.35) ? 'cap' : null });
-    W.add(rig.group);
-    game.npcs.push(new Wanderer(game, rig, { x: sx, z: sz, speed: child ? r.range(1.1, 1.6) : r.range(0.8, 1.3), leash: child ? 10 : 16 }));
+  const person = (o) => { const rig = makeHuman({ ...randomPerson(r, { wardrobe: ward, ...o }),
+    skirt: o.female && r.chance(0.5) ? skirtBag() : null,
+    jacket: !o.child && r.chance(0.3) ? jacketBag() : null,
+    scarf: r.chance(0.18) ? r.pick([0xd6455c, 0x2e9e6e, 0xf2c744]) : null,
+    bag: o.female && r.chance(0.35) ? r.pick([0x6b4a2b, 0x8a3a5a, 0x2f4f6f]) : null,
+    backpack: o.child ? r.pick([0xe0503c, 0x2f6fd6, 0x2e9e6e]) : null,
+    hat: !o.female && !o.child && r.chance(0.35) ? 'cap' : null, ...o }); W.add(rig.group); return rig; };
+  // strollers on the pavements and in the park — never on the asphalt of either road
+  const offRoad = (x, z) => (z > 11.2 && z < 16.8) || abs(x - 44) < 2.6;
+  [[-20, 10.4], [12, 17.6], [30, 10.4], [-8, 17.6], [4, 44], [-16, 40], [40, 24]].forEach(([sx, sz], i) => {
+    game.npcs.push(new Wanderer(game, person({ female: i % 2 === 1 }), { x: sx, z: sz, speed: r.range(0.8, 1.3), leash: 16, avoid: offRoad }));
   });
+  // two on the park bench, half-turned toward each other
+  game.npcs.push(new Sitter(game, person({ female: false, build: 'stout', beard: true, glasses: true }), { x: 6.45, z: 40.1, ry: PI, side: 1 }));
+  game.npcs.push(new Sitter(game, person({ female: true, hairStyle: 'bun', hair: 0xd8d8d8 }), { x: 5.55, z: 40.1, ry: PI, side: -1 }));
+  // two children playing tag on the east lawn
+  game.npcs.push(new Playmates(game, person({ child: true, female: false }), person({ child: true, female: true }), { cx: 10, cz: 46, leash: 5.5 }));
   for (const [color, dir, x, lane] of [[0xd62839, 1, -30, 12.6], [0x2e63d8, -1, 20, 15.4], [0xf3f3f3, 1, 40, 12.6]]) {
     const car = makeCar(color); W.add(car.group); game.npcs.push(new Vehicle(game, car, { z: lane, dir, speed: r.range(5, 7), x }));
   }

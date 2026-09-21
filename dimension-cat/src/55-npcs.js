@@ -502,6 +502,7 @@ class Wanderer {
     this.game = game; this.rig = rig; this.x = o.x; this.z = o.z; this.hx = o.x; this.hz = o.z;
     this.speed = o.speed ?? 0.9; this.leash = o.leash ?? 10; this.r = o.r ?? 0.35; this.height = o.height ?? 1.8; this.step = o.step ?? 0.22;
     this.idleRange = o.idle ?? [1.5, 4]; this.walkRange = o.walk ?? [3, 8];
+    this.avoid = o.avoid ?? null;      // (x, z) => true where this wanderer must not step (the road, say)
     this.angle = o.angle ?? rnd() * TAU; this.phase = rnd() * TAU; this.state = 'idle'; this.timer = rnd.range(0, 2); this.t = rnd() * 10;
     this.circle = game.physics.addCircle(this, o.x, o.z, this.r);
     rig.group.position.set(o.x, game.physics.ground0(o.x, o.z), o.z); rig.group.rotation.y = this.angle;
@@ -541,7 +542,7 @@ class Wanderer {
     const nx = this.x + sin(this.angle) * this.speed * dt, nz = this.z + cos(this.angle) * this.speed * dt;
     const outside = dist2(nx, nz, this.hx, this.hz) > this.leash * this.leash;
     const nearCat = dist2(nx, nz, cat.x, cat.z) < (this.r + CAT_RADIUS + 0.15) ** 2;
-    if (outside || nearCat || this.game.physics.blocked(nx, nz, this.r, this, this.game.physics.ground0(nx, nz), this.step, this.height)) {
+    if (outside || nearCat || (this.avoid && this.avoid(nx, nz)) || this.game.physics.blocked(nx, nz, this.r, this, this.game.physics.ground0(nx, nz), this.step, this.height)) {
       this.angle = outside ? wrapAngle(atan2(this.hx - this.x, this.hz - this.z) + rnd.range(-0.5, 0.5)) : wrapAngle(this.angle + rnd.range(PI * 0.5, PI * 1.5));
       this.state = 'idle'; this.timer = nearCat ? rnd.range(0.8, 2) : rnd.range(0.2, 0.6);
       this.rig.animate(this.phase, false, dt, this.t); return;
@@ -552,6 +553,65 @@ class Wanderer {
     if (this.timer <= 0) { this.state = 'idle'; this.timer = rnd.range(...this.idleRange); }
     this.rig.animate(this.phase, true, dt, this.t);
   }
+}
+
+// ---------------------------------------------------------------- sitter: parked on a bench, watching the world go by
+class Sitter {
+  /** `seat` is the bench's seat height; the rig is lowered so its hips land on it and its shins hang down in front. */
+  constructor(game, rig, { x, z, ry, seat = 0.48, side = 0 }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10; this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false;
+    this.state = 'idle'; this.timer = 0; this.side = side;
+    rig.group.position.set(x, game.physics.ground0(x, z) + seat - 0.9 * rig.k + 0.02, z); rig.group.rotation.y = ry;
+    this.circle = game.physics.addCircle(this, x, z, 0.3);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig;
+    rig.animate(0, false, dt, this.t);
+    for (const L of rig.legs) { L.hip.rotation.x = -PI / 2 + 0.12; L.knee.rotation.x = PI / 2 - 0.2; L.ankle.rotation.x = 0.1; }
+    if (!rig.gesture) for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -0.45, 8, dt); A.el.rotation.x = damp(A.el.rotation.x, -1.0, 8, dt); }   // hands in the lap
+    rig.body.position.y = 0;
+    // half-turned toward whoever is on the bench beside them
+    if (this.side) rig.head.rotation.y += this.side * 0.35 * (1 - this.lookW);
+    Wanderer.prototype.lookAtCat.call(this, dt);
+  }
+}
+
+// ---------------------------------------------------------------- playmates: two children playing tag on a lawn
+class Playmates {
+  constructor(game, rigA, rigB, { cx, cz, leash = 6, speed = 2.1 }) {
+    this.game = game; this.cx = cx; this.cz = cz; this.leash = leash; this.speed = speed;
+    this.kids = [rigA, rigB].map((rig, i) => {
+      const x = cx + (i ? 2.5 : -2.5), z = cz + (i ? 1 : -1);
+      rig.group.position.set(x, game.physics.ground0(x, z), z);
+      return { rig, x, z, angle: rnd() * TAU, phase: rnd() * TAU, circle: game.physics.addCircle(this, x, z, 0.25), hop: 0 };
+    });
+    this.rig = rigA;      // the world's sanity checks look at npc.rig
+    this.chaser = 0; this.swapT = 0; this.t = 0; this.pauseT = 0; this.headStart = 0;
+  }
+  update(dt) {
+    this.t += dt; this.swapT += dt;
+    const ch = this.kids[this.chaser], run = this.kids[1 - this.chaser], P = this.game.physics;
+    if (this.pauseT > 0) { this.pauseT -= dt; for (const k of this.kids) k.rig.animate(k.phase, false, dt, this.t); this.hops(dt); return; }
+    // caught: freeze for a beat, swap roles, and the one who was tagged hops off with a head start
+    if (Math.hypot(run.x - ch.x, run.z - ch.z) < 0.8 && this.swapT > 3) { this.chaser = 1 - this.chaser; this.swapT = 0; this.pauseT = 0.45; this.headStart = 1.3; run.hop = 0.35; SFX.tag(); return; }
+    this.headStart -= dt;
+    for (const k of this.kids) {
+      const other = k === ch ? run : ch;
+      if (k === ch && this.headStart > 0) { k.rig.group.rotation.y = dampAngle(k.rig.group.rotation.y, atan2(other.x - k.x, other.z - k.z), 6, dt); k.rig.animate(k.phase, false, dt, this.t); continue; }   // "it" counts to three
+      let want = k === ch ? atan2(other.x - k.x, other.z - k.z) : atan2(k.x - other.x, k.z - other.z) + sin(this.t * 1.7 + (k === ch ? 2 : 0)) * 0.9;
+      // keep to the lawn: near the edge, bend the heading back toward the middle
+      if (Math.hypot(k.x - this.cx, k.z - this.cz) > this.leash * 0.8) { const back = atan2(this.cx - k.x, this.cz - k.z); want = wrapAngle(back + wrapAngle(want - back) * 0.3); }
+      k.angle = dampAngle(k.angle, want, k === ch ? 6 : 4, dt);
+      const sp = this.speed * (k === ch ? 1.06 : 1), nx = k.x + sin(k.angle) * sp * dt, nz = k.z + cos(k.angle) * sp * dt;
+      if (P.blocked(nx, nz, 0.25, this, P.ground0(nx, nz), 0.25, 1.3) || Math.hypot(nx - this.cx, nz - this.cz) > this.leash) k.angle = wrapAngle(k.angle + PI * 0.6);
+      else { k.x = nx; k.z = nz; }
+      k.circle.x = k.x; k.circle.z = k.z; k.phase += dt * sp * 4.4;
+      k.rig.group.position.set(k.x, P.ground0(k.x, k.z), k.z); k.rig.group.rotation.y = dampAngle(k.rig.group.rotation.y, k.angle, 8, dt);
+      k.rig.animate(k.phase, true, dt, this.t);
+    }
+    this.hops(dt);
+  }
+  hops(dt) { for (const k of this.kids) if (k.hop > 0) { k.hop = max(0, k.hop - dt); k.rig.group.position.y = this.game.physics.ground0(k.x, k.z) + sin(k.hop / 0.35 * PI) * 0.22; } }
 }
 
 // ---------------------------------------------------------------- squirrel controller: stays on its spot, fidgets, watches the cat
