@@ -161,3 +161,9 @@ road. The balloon now floats at the right height whatever shape you are in.
 
 A boy on the dunes of Sunny Shore **flies a red and yellow kite**: it swoops in a lazy figure of
 eight ten metres up, tail streaming, on a line from his hands. "Higher than the lighthouse!"
+
+## Round 19 — a sled run
+
+On the flank of the west peak a girl **sleds down a twelve-metre drop**, arms in the air —
+"Wheeeee!" — skids to a stop in a puff of snow, then trudges back up dragging the sled behind her
+on a rope, and goes again.

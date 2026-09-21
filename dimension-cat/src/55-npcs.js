@@ -980,6 +980,51 @@ class KiteFlyer {
   }
 }
 
+// ---------------------------------------------------------------- sledder: down the slope on a sled, a moment at the bottom, then back up dragging it
+class Sledder {
+  constructor(game, rig, sled, { top, bottom, speed = 4.5, climb = 1.0 }) {
+    this.game = game; this.rig = rig; this.sled = sled; this.top = top; this.bottom = bottom; this.speed = speed; this.climb = climb;
+    this.state = 'ready'; this.k = 0; this.wait = 1; this.t = rnd() * 10; this.phase = 0; this.runs = 0;
+    this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false; this.timer = 0;
+    game.world.add(sled); sled.rotation.order = 'YXZ'; rig.group.rotation.order = 'YXZ';
+    this.rope = group(0, 0, 0, game.world); noInk(mesh(G.cyl(0.01, 0.01, 1, 4), mat(0x6a4a2a, { roughness: 1 }), { rx: PI / 2, shadow: 'none', parent: this.rope }));
+    this.hand = V3(); this.x = top[0]; this.z = top[1]; this.circle = game.physics.addCircle(this, this.x, this.z, 0.4);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const P = this.game.physics, rig = this.rig, [tx, tz] = this.top, [bx, bz] = this.bottom, dx = bx - tx, dz = bz - tz, L = Math.hypot(dx, dz);
+    if (this.state === 'ready') { this.wait -= dt; if (this.wait <= 0) { this.state = 'slide'; this.k = 0; SFX.slide(); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) this.game.toast('\ud83d\udef7 "Wheeeee!"', 1600); } }
+    if (this.state === 'slide') { this.k += dt * (this.speed + this.k * 3) / L; if (this.k >= 1) { this.k = 1; this.state = 'stop'; this.wait = 1.2; this.runs++; this.game.fx.emit(this.x, P.ground0(this.x, this.z) + 0.3, this.z, { count: 16, colors: [0xffffff, 0xeaf4ff], speed: 1.8, up: 1.4, life: 0.7, gravity: 3 }); } }
+    else if (this.state === 'stop') { this.wait -= dt; if (this.wait <= 0) this.state = 'climb'; }
+    else if (this.state === 'climb') { this.k -= dt * this.climb / L; if (this.k <= 0) { this.k = 0; this.state = 'ready'; this.wait = rnd.range(1.5, 3); } }
+    const x = tx + dx * this.k, z = tz + dz * this.k, y = P.ground0(x, z);
+    this.x = x; this.z = z; this.circle.x = x; this.circle.z = z;
+    const heading = this.state === 'climb' ? atan2(-dx, -dz) : atan2(dx, dz);
+    if (this.state !== 'climb') {
+      // on the sled: it follows the slope, the rider sits on it, arms up on the way down
+      const ahead = P.ground0(x + dx / L * 0.8, z + dz / L * 0.8), behind = P.ground0(x - dx / L * 0.8, z - dz / L * 0.8), tilt = -atan2(ahead - behind, 1.6);
+      this.sled.position.set(x, y + 0.02, z); this.sled.rotation.set(tilt, heading, 0);
+      rig.group.position.set(x, y + 0.34 - 0.9 * rig.k + 0.04, z); rig.group.rotation.set(tilt, heading, 0);
+      rig.animate(0, false, dt, this.t);
+      for (const Lg of rig.legs) { Lg.hip.rotation.x = -1.25; Lg.knee.rotation.x = 0.95; Lg.ankle.rotation.x = 0.3; }
+      if (!rig.gesture) for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, this.state === 'slide' ? -2.4 : -0.7, 8, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.5, 8, dt); A.sh.rotation.z = (A === rig.arms[0] ? 1 : -1) * 0.35; }
+      rig.spine.rotation.x = damp(rig.spine.rotation.x, this.state === 'slide' ? -0.15 : 0.15, 6, dt); rig.body.position.y = 0;
+      this.rope.visible = false;
+    } else {
+      // walking back up, the sled dragged along behind on a rope
+      this.phase += dt * this.climb * 4.4;
+      rig.group.position.set(x, y, z); rig.group.rotation.set(0, dampAngle(rig.group.rotation.y, heading, 6, dt), 0);
+      rig.animate(this.phase, true, dt, this.t);
+      const sx = x + dx / L * 1.5, sz = z + dz / L * 1.5, sy = P.ground0(sx, sz);
+      this.sled.position.set(sx, sy + 0.02, sz); this.sled.rotation.set(0, heading, 0);
+      rig.hands[1].getWorldPosition(this.hand); this.rope.visible = true;
+      this.rope.position.set((this.hand.x + sx) / 2, (this.hand.y + sy + 0.3) / 2, (this.hand.z + sz) / 2); this.rope.lookAt(sx, sy + 0.3, sz);
+      this.rope.scale.set(1, 1, max(0.01, Math.hypot(this.hand.x - sx, this.hand.y - sy - 0.3, this.hand.z - sz)));
+    }
+    Wanderer.prototype.lookAtCat.call(this, dt);
+  }
+}
+
 // ---------------------------------------------------------------- squirrel controller: stays on its spot, fidgets, watches the cat
 class Squirrel {
   constructor(game, x, z, id) {
