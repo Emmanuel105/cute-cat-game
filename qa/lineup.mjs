@@ -50,6 +50,28 @@ const ROWS = {
     { female: false, coat: true, hat: 'top', shirt: 0x1e2f3f, beard: true },
   ],
 };
+// every other creature, wide and close, so a change to the shared rig code can be checked on all of them
+await page.evaluate(() => {
+  const g = window.DC, R = window.DC_RIGS;
+  if (g.__lineup) for (const grp of g.__lineup) grp.parent?.remove(grp);
+  g.__lineup = [];
+  const makers = ['makeGingerbread', 'makeRobot', 'makeSquirrel', 'makeCandyCat', 'makeCrab', 'makeSeagull', 'makeTurtle', 'makePenguin', 'makeYeti', 'makeFrog', 'makeOwl', 'makeFairy', 'makeButterfly'];
+  const cx = 0, cz = 40;
+  makers.forEach((m, i) => {
+    const rig = R[m]();
+    const x = cx - 6 + i * 1.0, z = cz + 4 + (i % 2) * 1.2;
+    rig.group.position.set(x, g.physics.ground0(x, z) + (m === 'makeSeagull' || m === 'makeFairy' || m === 'makeButterfly' ? 1.2 : 0), z); rig.group.rotation.y = Math.PI;
+    g.world.add(rig.group); g.__lineup.push(rig.group);
+    for (let k = 0; k < 30; k++) rig.animate?.(0, false, 0.05, k * 0.05);
+  });
+  g.cat.group.position.set(cx, g.physics.ground0(cx, cz), cz); g.cat.vy = 0; g.cat.group.rotation.y = 0;
+  g.cam.yaw = 0; g.cam.pitch = 0.05; g.cam.dist = 5.5; g.cam.curDist = 5.5; g.updateCamera(0, true);
+});
+await settle(page, 0.5); await shot(page, 'creatures');
+for (let i = 0; i < 3; i++) {
+  await page.evaluate((i) => { const g = window.DC; g.cat.group.position.x = -6 + i * 4.5 + 1.5; g.cam.dist = 2.4; g.cam.curDist = 2.4; g.cam.pitch = -0.02; g.updateCamera(0, true); }, i);
+  await settle(page, 0.3); await shot(page, `creatures-close${i}`);
+}
 for (const [name, specs] of Object.entries(ROWS)) {
   await page.evaluate(([specs]) => {
     const g = window.DC, R = window.DC_RIGS, r = R.seeded(7);

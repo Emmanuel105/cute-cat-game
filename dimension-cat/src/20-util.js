@@ -203,7 +203,8 @@ const bakedMat = () => BAKED_MAT || (BAKED_MAT = globalBag.track(new THREE.MeshT
  * flat-coloured toon mesh — glow, glass, textures, the unlit eye whites — is kept exactly as it was.
  */
 function bakeStatic(node) {
-  const plain = (m) => m.isMesh && m.material && m.material.isMeshToonMaterial && !m.material.map && !m.material.transparent && !m.material.vertexColors
+  // `userData.keep` marks a mesh a rig animates on its own (a scaled torso, a snapping claw tip)
+  const plain = (m) => m.isMesh && !m.userData.keep && m.material && m.material.isMeshToonMaterial && !m.material.map && !m.material.transparent && !m.material.vertexColors
     && !(m.material.emissive && m.material.emissive.getHex() !== 0) && m.geometry && m.geometry.attributes && m.geometry.attributes.position && (m.material.side ?? 0) === 0;
   const parts = node.children.filter(plain);
   if (parts.length < 2) return;

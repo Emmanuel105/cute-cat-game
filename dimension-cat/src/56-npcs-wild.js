@@ -17,6 +17,7 @@ function makeCrab(color = 0xe8492b) {
     const pincer = group(0, 0, 0.13, claw);
     mesh(G.sphere(0.055, 8, 6), shell, { sz: 1.3, parent: pincer });
     const tip = mesh(G.cone(0.03, 0.09, 5), shell, { y: 0.03, z: 0.09, rx: PI / 2 + 0.6, shadow: 'none', parent: pincer });
+    tip.userData.keep = true;   // the pincer tip snaps on its own
     rig['claw' + side] = { claw, tip };
     for (let i = 0; i < 4; i++) {
       const leg = group(side * 0.17, 0.0, -0.1 + i * 0.07, body); leg.rotation.z = side * 0.9;
@@ -31,6 +32,7 @@ function makeCrab(color = 0xe8492b) {
     for (const side of [1, -1]) { const c = rig['claw' + side]; c.tip.rotation.x = damp(c.tip.rotation.x, PI / 2 + 0.6 - snap, 10, dt); c.claw.rotation.z = side * sin(t * 1.3 + side) * 0.15; }
     body.position.y = 0.16 + (moving ? abs(sin(ph * 2)) * 0.02 : 0);
   };
+  bakeRig(g);
   return rig;
 }
 
@@ -55,6 +57,7 @@ function makeSeagull(o = {}) {
     for (const W of rig.wings) { const a = glide ? 0.12 : flap * 0.6; W.w.rotation.z = W.side * -a; W.tipW.rotation.z = W.side * -a * 0.8; }
     body.rotation.z = sin(t * 0.8) * 0.15;
   };
+  bakeRig(g);
   return rig;
 }
 
@@ -76,6 +79,7 @@ function makeTurtle() {
     for (const F of rig.fins) F.f.rotation.y = moving ? sin(ph + (F.front ? 0 : PI)) * 0.4 * F.side : damp(F.f.rotation.y, 0, 5, dt);
     head.rotation.y = moving ? 0 : sin(t * 0.6) * 0.3; head.position.z = 0.42 + (moving ? 0 : sin(t * 0.4) * 0.03);
   };
+  bakeRig(g);
   return rig;
 }
 
@@ -121,6 +125,7 @@ function makeQuadruped(o) {
     head.rotation.x = damp(head.rotation.x, graze ? 0.9 : (moving ? 0.1 : 0), 3, dt);
     head.rotation.y = moving ? 0 : sin(t * 0.7) * 0.25 * (1 - graze);
   };
+  bakeRig(g);
   return rig;
 }
 const makeDog = (color = 0xc8925a) => makeQuadruped({ color, color2: 0xf3e3c8, belly: 0xf3e3c8, ears: 'floppy', tail: 'curl', wag: 7, bodyY: 0.42, length: 0.6, scale: 0.95 });
@@ -149,6 +154,7 @@ function makePenguin(o = {}) {
     for (const F of rig.flippers) F.f.rotation.z = F.side * (moving ? 0.4 + sin(ph * 2) * 0.25 : 0.1 + sin(t * 1.5) * 0.05);
     head.rotation.y = moving ? 0 : sin(t * 0.8) * 0.4; head.rotation.z = moving ? -body.rotation.z * 0.5 : 0;
   };
+  bakeRig(g);
   return rig;
 }
 
@@ -231,6 +237,7 @@ function makeYeti() {
     head.rotation.y = moving ? 0 : sin(t * 0.5) * 0.4;
     head.rotation.x = moving ? 0.05 : sin(t * 0.8) * 0.05;
   };
+  bakeRig(g);
   return rig;
 }
 
@@ -254,6 +261,7 @@ function makeFrog(color = 0x4caf50) {
     body.rotation.x = moving ? -0.4 : 0;
     for (const side of [1, -1]) rig['thigh' + side].rotation.x = moving ? -0.9 : 0;
   };
+  bakeRig(g);
   return rig;
 }
 
@@ -269,6 +277,7 @@ function makeOwl() {
   for (const side of [1, -1]) {
     mesh(G.sphere(0.07, 10, 8), cream, { x: side * 0.06, y: 0.01, z: 0.09, sz: 0.5, shadow: 'none', parent: head });
     rig['eye' + side] = mesh(G.sphere(0.04, 10, 8), amber, { x: side * 0.06, y: 0.01, z: 0.115, sz: 0.5, shadow: 'none', parent: head });
+    rig['eye' + side].userData.keep = true;   // blinks by scale, so it stays its own mesh
     mesh(G.sphere(0.018, 6, 6), dark, { x: side * 0.06, y: 0.01, z: 0.135, shadow: 'none', parent: head });
     mesh(G.earCone(0.035, 0.1), brown, { x: side * 0.09, y: 0.13, rz: side * -0.4, parent: head });
     mesh(G.box(0.05, 0.22, 0.1), brown, { x: side * 0.14, y: 0.25, rz: side * 0.15, parent: body });
@@ -280,6 +289,7 @@ function makeOwl() {
     const blink = (sin(t * 1.9) > 0.97) ? 0.1 : 1; rig.eye1.scale.y = damp(rig.eye1.scale.y, blink, 20, dt); rig['eye-1'].scale.y = rig.eye1.scale.y;
     body.scale.y = 1 + sin(t * 1.2) * 0.015;
   };
+  bakeRig(g);
   return rig;
 }
 
@@ -294,6 +304,7 @@ function makeFairy(color = 0xa8ff9a) {
   glowSprite(color, 0.7, 0.7, body);
   rig.light = pointLight(color, 3, 4, 0, 0, 0, body);
   rig.animate = (ph, moving, dt, t = 0) => { for (const W of rig.wings) W.w.rotation.y = W.side * (0.3 + sin(t * 22) * 0.5); body.position.y = sin(t * 3) * 0.05; rig.light.intensity = 2.5 + sin(t * 9) * 1; };
+  bakeRig(g);
   return rig;
 }
 function makeButterfly(hue = 300) {
@@ -304,6 +315,7 @@ function makeButterfly(hue = 300) {
   const wingM = new THREE.MeshBasicMaterial({ map: TEX.wing(hue), transparent: true, side: THREE.DoubleSide, depthWrite: false, alphaTest: 0.2 }); worldBag.track(wingM);
   rig.wings = [1, -1].map((side) => { const w = group(0, 0, 0, body); const m = mesh(G.plane(0.12, 0.12), wingM, { x: side * 0.06, rx: -PI / 2, shadow: 'none', parent: w }); if (side < 0) m.scale.x = -1; return { w, side }; });
   rig.animate = (ph, moving, dt, t = 0) => { for (const W of rig.wings) W.w.rotation.z = W.side * sin(t * 14 + (rig.phase ?? 0)) * 0.9; };
+  bakeRig(g);
   return rig;
 }
 

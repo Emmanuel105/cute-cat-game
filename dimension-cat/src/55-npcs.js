@@ -340,6 +340,7 @@ function makeGingerbread() {
     for (let i = 0; i < 2; i++) { rig.legs[i].rotation.x = moving ? sin(ph + i * PI) * 0.45 : damp(rig.legs[i].rotation.x, 0, 8, dt); rig.arms[i].rotation.x = moving ? sin(ph + i * PI + PI) * 0.3 : damp(rig.arms[i].rotation.x, 0, 6, dt); }
     head.rotation.z = moving ? -sin(ph) * 0.08 : sin(ph * 0.2) * 0.1;
   };
+  bakeRig(g);
   return rig;
 }
 
@@ -380,6 +381,7 @@ function makeRobot() {
     rig.antenna.material.emissiveIntensity = blink; rig.light.material.emissiveIntensity = 3 - blink;
     head.rotation.y = moving ? 0 : sin(ph * 0.11) * 0.7;
   };
+  bakeRig(g);
   return rig;
 }
 
@@ -408,6 +410,7 @@ function makeRoboDog() {
     body.position.y = moving ? abs(sin(ph)) * 0.04 : 0;
     head.rotation.x = moving ? sin(ph * 2) * 0.04 : sin(ph * 0.3) * 0.08;
   };
+  bakeRig(g);
   return rig;
 }
 
@@ -443,6 +446,7 @@ function makeSquirrel() {
     body.rotation.x = moving ? -0.35 : nibble * 0.12;
     body.scale.y = 1 + sin(t * 4.2) * 0.012;                       // breathing
   };
+  bakeRig(g);
   return rig;
 }
 
@@ -453,6 +457,7 @@ function makeCandyCat() {
   const gold = mat(0xffd54a, { metalness: 0.9, roughness: 0.2 }), red = glowMat(0xff1a1a, 1.6);
   const body = group(0, 0, 0, g); rig.body = body;
   rig.torso = mesh(G.bodySphere(), pink, { y: 1.15, sx: 0.85, sy: 0.8, sz: 1.35, parent: body });
+  rig.torso.userData.keep = true;   // breathes by scale
   mesh(G.bodySphere(), lightPink, { y: 1.07, z: 0.05, sx: 0.79, sy: 0.74, sz: 1.31, shadow: 'none', parent: body });   // pale tummy, tucked inside the torso so it reads as fur, not a lump
   mesh(G.bodySphere(), pink, { y: 1.3, z: 1.05, sx: 0.5, sy: 0.45, sz: 0.5, parent: body });
   const head = group(0, 1.8, 1.4, body); rig.head = head;
@@ -487,6 +492,7 @@ function makeCandyCat() {
     head.rotation.y = damp(head.rotation.y, near ? 0 : sin(t * 0.5) * 0.3, 4, dt);
     head.rotation.x = near ? -0.12 : 0;
   };
+  bakeRig(g);
   return rig;
 }
 
