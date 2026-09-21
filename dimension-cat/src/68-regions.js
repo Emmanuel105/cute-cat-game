@@ -28,8 +28,9 @@ function fillRing(game, r, { inner, outer, count, kinds, pad = 7, claim = null, 
     let pick = r() * total;
     for (const k of kinds) { pick -= (k.w ?? 1); if (pick <= 0) { k.build(game, r, x, z); placed++; break; } }
     // props add themselves straight to the world; sweep the new ones into this cluster's chunk so the
-    // whole chunk can be switched off in one go when it is too far away to matter
-    for (let j = W.children.length - 1; j >= before; j--) c.add(W.children[j]);
+    // whole chunk can be switched off in one go when it is too far away to matter — and baked: each new prop that
+    // does not animate becomes a single mesh (see bakeDeep), which is most of what the outer country costs to draw
+    for (let j = W.children.length - 1; j >= before; j--) { const child = W.children[j]; c.add(child); if (!child.userData.update) bakeDeep(child); }
     game.zones.addCircle(x, z, claim ?? pad);
   }
   const list = [...chunks.values()], far = (range + chunk) * (range + chunk);

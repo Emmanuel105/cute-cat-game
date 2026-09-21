@@ -525,6 +525,7 @@ class Wanderer {
     this.circle = game.physics.addCircle(this, o.x, o.z, this.r);
     rig.group.position.set(o.x, game.physics.ground0(o.x, o.z), o.z); rig.group.rotation.y = this.angle;
     this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false;
+    greetable(game, this);
   }
   update(dt) {
     this.move(dt); this.lookAtCat(dt);
@@ -584,6 +585,15 @@ const GREETINGS = {
   snow: ["Brr! Aren't you cold, kitty?", "Have you seen the yeti? He's lovely.", 'Careful on the ice!', 'Come and warm up by the fire!'],
   child: ['Kitty! Kitty!', 'Can we keep it?', 'Hi, cat!', 'Look, a cat!', 'Are you lost, kitty?'],
 };
+/** Let the cat greet this person on purpose (E): they wave, say their line, and hearts go up. */
+function greetable(game, ctl) {
+  const rig = ctl.rig; if (!rig || !rig.look) return;
+  game.addInteractable({ obj: rig.group, radius: 2.1, label: () => rig.look.child ? 'Say hi' : 'Say hello', onUse: () => {
+    if (rig.hat && ctl.tipT !== undefined) { ctl.tipped = true; ctl.tipT = 1.3; } else { rig.gesture = 'wave'; rig.gT = 0; }
+    if (ctl.timer !== undefined) ctl.timer = max(ctl.timer ?? 0, 2); if (ctl.state !== undefined) ctl.state = 'idle';
+    game.lastGreet = -99; greet(game, rig); const p = rig.group.position; game.hearts(p.x, 1.9 * rig.k, p.z, 2);
+  } });
+}
 /** One line of greeting on the HUD, no more often than every few seconds however many people are about. */
 function greet(game, rig) {
   if ((game.lastGreet ?? -99) > game.time - 6) return;
@@ -600,6 +610,7 @@ class Sitter {
     this.state = 'idle'; this.timer = 0; this.side = side;
     rig.group.position.set(x, game.physics.ground0(x, z) + seat - 0.9 * rig.k + 0.02, z); rig.group.rotation.y = ry;
     this.circle = game.physics.addCircle(this, x, z, 0.3);
+    greetable(game, this);
   }
   update(dt) {
     this.t += dt; const rig = this.rig;
@@ -808,6 +819,7 @@ class Patroller {
     this.cries = cries; this.cryIcon = cryIcon; this.cryT = rnd.range(5, 10);
     this.circle = game.physics.addCircle(this, this.x, this.z, r);
     rig.group.position.set(this.x, game.physics.ground0(this.x, this.z), this.z);
+    greetable(game, this);
   }
   update(dt) {
     this.t += dt; const P = this.game.physics;

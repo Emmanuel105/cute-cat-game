@@ -237,8 +237,55 @@ function bakeStatic(node) {
   const baked = new THREE.Mesh(geo, bakedMat()); baked.castShadow = cast; baked.receiveShadow = false;
   node.add(baked);
 }
+/**
+ * Bake a whole static prop: every plain toon mesh anywhere under `root` — however deep — becomes one
+ * mesh at the root, in the root's own space. Anything under a node with userData.update or
+ * userData.keep is left alone, as is anything glowing, transparent, textured, double-sided, instanced
+ * or kept out of the ink pass. For scenery that never moves, this is the difference between a
+ * cupcake costing sixty draw calls and costing one.
+ */
+function bakeDeep(root) {
+  if (root.userData.rig || !root.matrixWorld || !root.matrixWorld.invert) return 0;   // never a creature; nothing to do in the Node stub
+  root.updateMatrixWorld(true);
+  const inv = new THREE.Matrix4().copy(root.matrixWorld).invert();
+  const frozen = (m) => { for (let o = m; o && o !== root; o = o.parent) if (o.userData.update || o.userData.keep) return true; return false; };
+  const plain = (m) => m.isMesh && !m.isInstancedMesh && m.material && m.material.isMeshToonMaterial && !m.material.map && !m.material.transparent && !m.material.vertexColors
+    && m.material.depthWrite !== false && !(m.material.emissive && m.material.emissive.getHex() !== 0) && m.geometry && m.geometry.attributes && m.geometry.attributes.position && (m.material.side ?? 0) === 0;
+  const parts = [];
+  root.traverse((m) => { if (m !== root && plain(m) && !frozen(m)) parts.push(m); });
+  if (parts.length < 2) return 0;
+  let nV = 0, nI = 0;
+  for (const m of parts) { const g = m.geometry; nV += g.attributes.position.count; nI += g.index ? g.index.count : g.attributes.position.count; }
+  const pos = new Float32Array(nV * 3), nor = new Float32Array(nV * 3), col = new Float32Array(nV * 3), idx = new Uint32Array(nI);
+  const M4 = new THREE.Matrix4(), N3 = new THREE.Matrix3(), P = new THREE.Vector3(), N = new THREE.Vector3();
+  let v = 0, ii = 0, cast = false, receive = false;
+  for (const m of parts) {
+    M4.multiplyMatrices(inv, m.matrixWorld); N3.getNormalMatrix(M4);
+    const g = m.geometry, p = g.attributes.position, n = g.attributes.normal, c = m.material.color;
+    for (let i = 0; i < p.count; i++) {
+      const k = (v + i) * 3;
+      P.fromBufferAttribute(p, i).applyMatrix4(M4); pos[k] = P.x; pos[k + 1] = P.y; pos[k + 2] = P.z;
+      if (n) N.fromBufferAttribute(n, i).applyMatrix3(N3).normalize(); else N.set(0, 1, 0);
+      nor[k] = N.x; nor[k + 1] = N.y; nor[k + 2] = N.z;
+      col[k] = c.r; col[k + 1] = c.g; col[k + 2] = c.b;
+    }
+    if (g.index) { for (let i = 0; i < g.index.count; i++) idx[ii + i] = g.index.getX(i) + v; ii += g.index.count; }
+    else { for (let i = 0; i < p.count; i++) idx[ii + i] = v + i; ii += p.count; }
+    v += p.count; cast = cast || m.castShadow; receive = receive || m.receiveShadow;
+    m.parent.remove(m);
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
+  geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  geo.setIndex(new THREE.BufferAttribute(idx, 1));
+  worldBag.track(geo);
+  const baked = new THREE.Mesh(geo, bakedMat()); baked.castShadow = cast; baked.receiveShadow = receive;
+  root.add(baked);
+  return parts.length;
+}
 /** Bake every joint of a rig (see bakeStatic). Call it once the rig is fully built. */
-function bakeRig(root) { const nodes = []; root.traverse((o) => { if (!o.isMesh) nodes.push(o); }); for (const n of nodes) bakeStatic(n); return root; }
+function bakeRig(root) { root.userData.rig = true; const nodes = []; root.traverse((o) => { if (!o.isMesh) nodes.push(o); }); for (const n of nodes) bakeStatic(n); return root; }
 
 /** Simple tween list, ticked from the main loop. */
 const tweens = [];

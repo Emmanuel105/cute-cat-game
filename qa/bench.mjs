@@ -21,7 +21,12 @@ const measure = (name) => page.evaluate(async (name) => {
   const t0 = performance.now(); let k = 0;
   await new Promise((r) => { const tick = () => { k++; if (performance.now() - t0 < 2000) requestAnimationFrame(tick); else r(); }; requestAnimationFrame(tick); });
   const fps = +(k / ((performance.now() - t0) / 1000)).toFixed(0);
-  return { name, calls, tris, fps };
+  // the same view with the outer-region chunks hidden: how much of the cost is the generated country
+  const chunks = g.world.children.filter((c) => c.userData && c.userData.cx !== undefined);
+  for (const c of chunks) c.visible = false;
+  g.outline.enabled = false; g.render(); const core = g.renderer.info.render.calls; g.outline.enabled = true;
+  for (const c of chunks) c.visible = true;
+  return { name, calls, tris, fps, core };
 }, name);
 
 // one person's mesh cost, measured on a real townsperson
@@ -49,6 +54,6 @@ for (const [i, e, n, x, z, yaw] of [[1, 'from-hub', 'candy', 0, 0, 0], [3, 'from
   await page.waitForTimeout(2400); await stand(x, z, yaw); await settle(page, 0.8);
   rows.push(await measure(n));
 }
-for (const r of rows) console.log(`${r.name.padEnd(20)} calls ${String(r.calls).padStart(5)}  tris ${String(r.tris).padStart(8)}  fps ${r.fps}`);
+for (const r of rows) console.log(`${r.name.padEnd(20)} calls ${String(r.calls).padStart(5)}  (${String(r.calls - r.core).padStart(4)} of them the outer country)  tris ${String(r.tris).padStart(8)}  fps ${r.fps}`);
 console.log('errors', errs.length, errs.slice(0, 3));
 await b.close();

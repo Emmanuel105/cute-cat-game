@@ -85,3 +85,43 @@ They shuffle about between throws. Walk the cat up close and one of them will th
   Ha'penny!" — called out now and then when the cat is within earshot.
 - Every greeting and cry now has a little **talk blip** with it; the beach ball has a soft bounce.
 - `qa/bench.mjs` covers Frosty Peak too. All six worlds sit at 300–2900 draw calls and ~90 fps.
+
+## Round 8 — elders, skipping children, and a cane
+
+People now bend from the waist rather than tipping over whole: there is a spine joint at the hips.
+About one adult in six is an **elder** — grey or white hair, more often in glasses, a little stooped,
+a shade shorter. The two on the park bench are elders now and lean back into it. **Children skip**
+when they walk, a hop on every step. Anyone with a **cane** keeps it planted ahead, takes shorter
+steps and sways; the Victorian gentlemen with canes go slower, and the paper boy runs.
+
+## Round 9 — a swing, and a ring dance
+
+- A blue **swing set** stands in the park west of the path, and a girl swings on it, kicking her
+  legs out at the top of each arc. "Wheee!" when the cat is near.
+- In Candy Land four **gingerbread men dance a ring** round the big green lollipop, hand in hand,
+  turning about every nine seconds.
+
+## Round 10 — robots at work, a hiker, a bobby
+
+- In Robot City a **loader robot** stands at the end of each conveyor and lifts every crate off as it
+  arrives, with a beep, next to the stack it has already unloaded.
+- A **hiker** with a backpack walks the stepping stones in Whisper Woods, from the hollow oak to the
+  glade and back, and tells you the fairies come out at dusk.
+- A **bobby** in a tall helmet patrols the Victorian street, up one side and down the other:
+  "'Ello 'ello, what's all this then?"
+
+## Round 11 — the lamplighter
+
+An old **lamplighter** in a flat cap works his way along the Victorian street, lamp to lamp, zig-
+zagging across the cobbles. At each one he stops, raises his glowing pole and the lamp flares
+brighter for a moment. "Another one lit. Only forty to go." The dog on the lead in the
+Neighborhood can now be petted, like the one on the beach.
+
+## Round 12 — "Say hello", and the country baked
+
+- Walk up to anyone and press **E: "Say hello"** (or "Say hi" to a child). They wave — a gentleman
+  tips his hat — say their line, and hearts go up.
+- The generated country outside each world's centre was 70–80% of what the game drew each frame.
+  Every static prop out there is now baked into a single mesh as it is placed: Candy Land draws 866
+  calls where it drew 1455, Frosty Peak 1911 instead of 2605, the woods 1551 instead of 2342. It
+  looks the same.
