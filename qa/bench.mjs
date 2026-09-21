@@ -36,12 +36,17 @@ const people = await page.evaluate(() => {
 console.log('one person:', JSON.stringify(people));
 
 const rows = [];
+// Every reading is taken from the same spot, facing the same way, at noon, so runs are comparable.
+const stand = (x, z, yaw) => page.evaluate(([x, z, yaw]) => {
+  const g = window.DC; g.setTime('day');
+  g.cat.group.position.set(x, g.physics.ground0(x, z), z); g.cat.vy = 0; g.cat.group.rotation.y = yaw;
+  g.cam.yaw = yaw; g.cam.pitch = 0.12; g.cam.dist = 7; g.cam.curDist = 7; g.updateCamera(0, true);
+}, [x, z, yaw]);
 // stand among the neighbours, which is where people cost the most
-await page.evaluate(() => { const g = window.DC; g.cat.group.position.set(0, g.physics.ground0(0, 40), 40); g.cam.dist = 6; g.cam.curDist = 6; g.updateCamera(0, true); });
-await settle(page, 0.6); rows.push(await measure('hood-among-people'));
-for (const [i, e, n] of [[1, 'from-hub', 'candy'], [3, 'from-prev', 'victorian'], [4, 'from-hub', 'beach'], [6, 'from-hub', 'forest']]) {
+await stand(0, 40, 0); await settle(page, 0.6); rows.push(await measure('hood-among-people'));
+for (const [i, e, n, x, z, yaw] of [[1, 'from-hub', 'candy', 0, 0, 0], [3, 'from-prev', 'victorian', 0, 0, 0], [4, 'from-hub', 'beach', 0, 0, Math.PI / 2], [6, 'from-hub', 'forest', 0, 0, 0]]) {
   await page.evaluate(([i, e]) => window.DC.travel(i, e), [i, e]);
-  await page.waitForTimeout(2400); await settle(page, 0.8);
+  await page.waitForTimeout(2400); await stand(x, z, yaw); await settle(page, 0.8);
   rows.push(await measure(n));
 }
 for (const r of rows) console.log(`${r.name.padEnd(20)} calls ${String(r.calls).padStart(5)}  tris ${String(r.tris).padStart(8)}  fps ${r.fps}`);

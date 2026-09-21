@@ -27,7 +27,7 @@ const HEAD_R = 0.163;
  */
 function makeFace(head, R, skinM, hairM, o = {}) {
   const white = basic(0xffffff), iris = mat(o.eye ?? 0x2a1a12, { roughness: 0.3 }), spark = basic(0xffffff);
-  const lipM = mat(o.lip ?? 0xc25b62, { roughness: 0.6 }), blushM = mat(0xff8f9e, { roughness: 1, transparent: true, opacity: 0.5 });
+  const lipM = mat(o.lip ?? 0xc25b62, { roughness: 0.6 }), blushM = mat(skinM.color.clone().lerp(new THREE.Color(0xff8f9e), 0.5).getHex(), { roughness: 1 });
   const eyeR = R * (o.eyeSize ?? 0.25), gap = R * (o.eyeGap ?? 0.36), browTilt = o.brow ?? 0.16;
   const eyes = [];
   for (const side of [1, -1]) {
@@ -266,6 +266,7 @@ function makeHuman(o = {}) {
       head.rotation.z = damp(head.rotation.z, lean * 0.5, 6, dt);
     }
   };
+  bakeRig(g);   // 51 meshes → about 20: every joint's static parts become one vertex-coloured mesh
   return rig;
 }
 

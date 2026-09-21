@@ -411,6 +411,53 @@ function noInk(m) { m.material.depthWrite = false; m.renderOrder = 1; return m; 
 function group(x = 0, y = 0, z = 0, parent = null) {
   const g = new THREE.Group(); g.position.set(x, y, z); if (parent) parent.add(g); return g;
 }
+// ---------------------------------------------------------------- baking
+/** One shared toon material for every baked mesh: the colour comes from the vertices. */
+let BAKED_MAT = null;
+const bakedMat = () => BAKED_MAT || (BAKED_MAT = globalBag.track(new THREE.MeshToonMaterial({ color: 0xffffff, vertexColors: true, gradientMap: toonRamp() })));
+/**
+ * Merge the plain toon meshes sitting directly under `node` into one mesh with vertex colours — one
+ * draw call in place of a dozen. Groups underneath are left alone (in a rig they are the joints that
+ * animate), so bakeRig() walks a whole rig and does every joint in turn. Anything that is not a plain
+ * flat-coloured toon mesh — glow, glass, textures, the unlit eye whites — is kept exactly as it was.
+ */
+function bakeStatic(node) {
+  const plain = (m) => m.isMesh && m.material && m.material.isMeshToonMaterial && !m.material.map && !m.material.transparent && !m.material.vertexColors
+    && !(m.material.emissive && m.material.emissive.getHex() !== 0) && m.geometry && m.geometry.attributes && m.geometry.attributes.position && (m.material.side ?? 0) === 0;
+  const parts = node.children.filter(plain);
+  if (parts.length < 2) return;
+  let nV = 0, nI = 0;
+  for (const m of parts) { const g = m.geometry; nV += g.attributes.position.count; nI += g.index ? g.index.count : g.attributes.position.count; }
+  const pos = new Float32Array(nV * 3), nor = new Float32Array(nV * 3), col = new Float32Array(nV * 3), idx = new Uint32Array(nI);
+  const M4 = new THREE.Matrix4(), N3 = new THREE.Matrix3(), P = new THREE.Vector3(), N = new THREE.Vector3();
+  let v = 0, ii = 0, cast = false;
+  for (const m of parts) {
+    m.updateMatrix(); M4.copy(m.matrix); N3.getNormalMatrix(M4);
+    const g = m.geometry, p = g.attributes.position, n = g.attributes.normal, c = m.material.color;
+    for (let i = 0; i < p.count; i++) {
+      const k = (v + i) * 3;
+      P.fromBufferAttribute(p, i).applyMatrix4(M4); pos[k] = P.x; pos[k + 1] = P.y; pos[k + 2] = P.z;
+      if (n) N.fromBufferAttribute(n, i).applyMatrix3(N3).normalize(); else N.set(0, 1, 0);
+      nor[k] = N.x; nor[k + 1] = N.y; nor[k + 2] = N.z;
+      col[k] = c.r; col[k + 1] = c.g; col[k + 2] = c.b;
+    }
+    if (g.index) { for (let i = 0; i < g.index.count; i++) idx[ii + i] = g.index.getX(i) + v; ii += g.index.count; }
+    else { for (let i = 0; i < p.count; i++) idx[ii + i] = v + i; ii += p.count; }
+    v += p.count; cast = cast || m.castShadow;
+    node.remove(m);
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute('normal', new THREE.BufferAttribute(nor, 3));
+  geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
+  geo.setIndex(new THREE.BufferAttribute(idx, 1));
+  worldBag.track(geo);
+  const baked = new THREE.Mesh(geo, bakedMat()); baked.castShadow = cast; baked.receiveShadow = false;
+  node.add(baked);
+}
+/** Bake every joint of a rig (see bakeStatic). Call it once the rig is fully built. */
+function bakeRig(root) { const nodes = []; root.traverse((o) => { if (!o.isMesh) nodes.push(o); }); for (const n of nodes) bakeStatic(n); return root; }
+
 /** Simple tween list, ticked from the main loop. */
 const tweens = [];
 function tween(duration, onUpdate, onDone, ease = (t) => t * t * (3 - 2 * t)) {
@@ -1669,7 +1716,7 @@ const HEAD_R = 0.163;
  */
 function makeFace(head, R, skinM, hairM, o = {}) {
   const white = basic(0xffffff), iris = mat(o.eye ?? 0x2a1a12, { roughness: 0.3 }), spark = basic(0xffffff);
-  const lipM = mat(o.lip ?? 0xc25b62, { roughness: 0.6 }), blushM = mat(0xff8f9e, { roughness: 1, transparent: true, opacity: 0.5 });
+  const lipM = mat(o.lip ?? 0xc25b62, { roughness: 0.6 }), blushM = mat(skinM.color.clone().lerp(new THREE.Color(0xff8f9e), 0.5).getHex(), { roughness: 1 });
   const eyeR = R * (o.eyeSize ?? 0.25), gap = R * (o.eyeGap ?? 0.36), browTilt = o.brow ?? 0.16;
   const eyes = [];
   for (const side of [1, -1]) {
@@ -1908,6 +1955,7 @@ function makeHuman(o = {}) {
       head.rotation.z = damp(head.rotation.z, lean * 0.5, 6, dt);
     }
   };
+  bakeRig(g);   // 51 meshes → about 20: every joint's static parts become one vertex-coloured mesh
   return rig;
 }
 
