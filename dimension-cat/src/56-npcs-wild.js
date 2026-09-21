@@ -389,7 +389,7 @@ class DogWalker {
     this.lead = group(0, 0, 0, game.world);
     noInk(mesh(G.cyl(0.012, 0.012, 1, 4), mat(0x8a2f2f, { roughness: 0.9 }), { rx: PI / 2, shadow: 'none', parent: this.lead }));
     this.hand = V3(); this.collar = V3();
-    game.addInteractable({ obj: dog.group, radius: 2.2, label: () => 'Pet the dog', onUse: () => { SFX.woof(); game.hearts(dog.group.position.x, 0.8, dog.group.position.z, 4); game.toast('\ud83d\udc15 *happy tail wag*'); } });
+    const did = game.namedFriend('dog'); game.addInteractable({ obj: dog.group, radius: 2.2, label: () => 'Pet the dog', onUse: () => { game.befriend(did); SFX.woof(); game.hearts(dog.group.position.x, 0.8, dog.group.position.z, 4); game.toast('\ud83d\udc15 *happy tail wag*'); } });
   }
   update(dt) {
     this.walker.update(dt); this.follow.update(dt);

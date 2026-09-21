@@ -187,3 +187,11 @@ changes to "Say hello again" for people you already know.
 A **Friends** counter sits under Collected ("1 / 11"). On the mini-map the amber dots are people
 still to meet; anyone already greeted fades to grey. A few seconds after you start, a one-time hint
 says to walk up to anyone and press E.
+
+## Round 24 — everyone counts
+
+Robots can be greeted too ("Beep hello" — "BEEP BOOP. HELLO, SMALL CAT."), and so can the gingerbread
+men ("Hee hee! Mind my icing!"); both hop for joy. The yeti, the Candy Queen and the two dogs count as
+friends when you say hi or pet them. Every world now has people to meet: 12 in the Neighborhood, 18
+in Candy Land, 21 in Robot City, 24 in the Victorian town, 8 on the shore, 4 on the peak, 2 in the
+woods. Where there is nobody, the Friends pill hides.

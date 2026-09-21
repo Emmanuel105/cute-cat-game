@@ -332,7 +332,7 @@ function makeWardrobe(r, o = {}) {
 
 // ---------------------------------------------------------------- gingerbread rig: a flat cookie with piped icing outlines
 function makeGingerbread() {
-  const g = new THREE.Group(), rig = { group: g, legs: [], arms: [] };
+  const g = new THREE.Group(), rig = { group: g, legs: [], arms: [], cookie: true };
   const dough = mat(0xc27b3a, { roughness: 0.95 }), icing = mat(0xfffdf7, { roughness: 0.35 });
   const gum = (c) => glowMat(c, 0.45, { roughness: 0.3 });
   const body = group(0, 0, 0, g); rig.body = body;
@@ -369,7 +369,7 @@ function makeGingerbread() {
 
 // ---------------------------------------------------------------- robot rig
 function makeRobot() {
-  const g = new THREE.Group(), rig = { group: g, legs: [], arms: [] };
+  const g = new THREE.Group(), rig = { group: g, legs: [], arms: [], robot: true };
   const steel = mat(0x9aa3ad, { metalness: 0.85, roughness: 0.3 }), dark = mat(0x3a3f47, { metalness: 0.8, roughness: 0.4 }), cyan = glowMat(0x00e5ff, 1.6);
   const body = group(0, 0, 0, g); rig.body = body;
   for (const side of [1, -1]) {
@@ -535,6 +535,7 @@ class Wanderer {
   }
   update(dt) {
     this.move(dt); this.lookAtCat(dt);
+    if (this.rig.joy > 0) { this.rig.joy -= dt; this.rig.group.position.y = this.game.physics.ground0(this.x, this.z) + sin(clamp(this.rig.joy / 0.8, 0, 1) * PI) * 0.35; }
     if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
   }
   /** Turn the head toward the cat when it is close and roughly in front. Applied after animate() so it wins. */
@@ -593,13 +594,17 @@ const GREETINGS = {
 };
 /** Let the cat greet this person on purpose (E): they wave, say their line, and hearts go up. */
 function greetable(game, ctl) {
-  const rig = ctl.rig; if (!rig || !rig.look) return;
+  const rig = ctl.rig; if (!rig || !(rig.look || rig.robot || rig.cookie)) return;
   // a stable id: people are made in the same order every time a world is built
   const id = WORLDS[game.worldIndex].key + ':' + (game.friendSeq++); game.friendTotal++;
-  game.addInteractable({ obj: rig.group, radius: 2.1, label: () => (game.state.friends.has(id) ? 'Say hello again' : rig.look.child ? 'Say hi' : 'Say hello'), onUse: () => {
-    if (rig.hat && ctl.tipT !== undefined) { ctl.tipped = true; ctl.tipT = 1.3; } else { rig.gesture = 'wave'; rig.gT = 0; }
+  const first = rig.robot ? 'Beep hello' : rig.look && rig.look.child ? 'Say hi' : 'Say hello';
+  game.addInteractable({ obj: rig.group, radius: 2.1, label: () => (game.state.friends.has(id) ? first + ' again' : first), onUse: () => {
+    if (rig.look) {
+      if (rig.hat && ctl.tipT !== undefined) { ctl.tipped = true; ctl.tipT = 1.3; } else { rig.gesture = 'wave'; rig.gT = 0; }
+      game.lastGreet = -99; greet(game, rig);
+    } else { rig.joy = 0.8; if (rig.robot) { SFX.beep(); game.toast('\ud83e\udd16 "BEEP BOOP. HELLO, SMALL CAT."', 2200); } else { SFX.tag(); game.toast('\ud83c\udf6a "Hee hee! Mind my icing!"', 2200); } }   // robots and cookies hop for joy
     if (ctl.timer !== undefined) ctl.timer = max(ctl.timer ?? 0, 2); if (ctl.state !== undefined) ctl.state = 'idle';
-    game.lastGreet = -99; greet(game, rig); const p = rig.group.position; game.hearts(p.x, 1.9 * rig.k, p.z, 2);
+    const p = rig.group.position; game.hearts(p.x, 1.9 * (rig.k ?? 0.8), p.z, 2);
     game.befriend(id);
   } });
 }

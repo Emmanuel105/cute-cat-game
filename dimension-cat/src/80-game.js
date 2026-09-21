@@ -206,6 +206,8 @@ class Game {
     const el = $('msg'); el.textContent = text; el.classList.add('on');
     clearTimeout(this.msgTimer); this.msgTimer = setTimeout(() => el.classList.remove('on'), dur);
   }
+  /** A named character (the yeti, the Candy Queen, a dog) that counts as someone to meet in this world; returns its friend id. */
+  namedFriend(name) { this.friendTotal++; return WORLDS[this.worldIndex].key + ':' + name; }
   /** The cat said hello to someone new: a friend, five points, and a fanfare once everyone in the world has been met. */
   befriend(id) {
     if (this.state.friends.has(id)) return;
@@ -219,7 +221,7 @@ class Game {
   updateHud() {
     $('score').textContent = this.state.score;
     if (this.collectibles) $('items').textContent = `${this.collectibles.collectedHere} / ${this.collectibles.total}`;
-    { const key = WORLDS[this.worldIndex].key; $('friends').textContent = `${[...this.state.friends].filter((f) => f.startsWith(key + ':')).length} / ${this.friendTotal}`; }
+    { const key = WORLDS[this.worldIndex].key, el = $('friends'); el.textContent = `${[...this.state.friends].filter((f) => f.startsWith(key + ':')).length} / ${this.friendTotal}`; if (el.parentElement) el.parentElement.style.display = this.friendTotal ? '' : 'none'; }
     const F = FORMS[this.form], skin = SKINS[this.skinFor(WORLDS[this.worldIndex].key)];
     $('cat-name').textContent = this.form === 'cat' ? skin.name : `${skin.name} the ${F.name.toLowerCase()}`;
     $('tg-form').textContent = `${F.icon} ${F.name}`; $('tg-skin').textContent = `🎨 ${skin.name}`; $('tg-time').textContent = `${TIME_ICON[this.timeMode]} ${this.timeMode === 'auto' ? 'Time' : this.timeMode[0].toUpperCase() + this.timeMode.slice(1)}`;

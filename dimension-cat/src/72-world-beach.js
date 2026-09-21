@@ -72,7 +72,7 @@ function buildBeach(game, entry) {
   // the beach dog keeps to its own patch of sand — it does not follow the cat
   const dog = makeDog(0xc8925a); W.add(dog.group); game.npcs.push(new Wanderer(game, dog, { x: -2, z: 28, speed: 1.1, leash: 7, r: 0.35, height: 0.9, step: 0.3, idle: [1.5, 4], walk: [2, 5] }));
   let woofT = rnd.range(6, 12); U.push((dt) => { woofT -= dt; if (woofT <= 0) { SFX.woof(); woofT = rnd.range(10, 20); } });
-  game.addInteractable({ obj: dog.group, radius: 2.4, label: () => 'Pet the dog', onUse: () => { SFX.woof(); game.hearts(dog.group.position.x, 0.8, dog.group.position.z, 4); game.toast('🐕 *happy tail wag*'); } });
+  { const did = game.namedFriend('dog'); game.addInteractable({ obj: dog.group, radius: 2.4, label: () => 'Pet the dog', onUse: () => { game.befriend(did); SFX.woof(); game.hearts(dog.group.position.x, 0.8, dog.group.position.z, 4); game.toast('🐕 *happy tail wag*'); } }); }
   const sq = new Squirrel(game, -22, 8, 'sq-beach'); game.squirrels.push(sq);
   makeGemCluster(game, U, 16.5, -41, 7, [0x7fe0ff, 0xffd54a, 0xa8ff9a], r, 1.6); makeGemCluster(game, U, -29, 31, 5, [0xff6fb5, 0x7fe0ff, 0xc8a2ff], r, 1.2);
   // gull cries + waves near the shore
