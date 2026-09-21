@@ -176,6 +176,7 @@ check(game.npcs.filter((n) => n instanceof Object && n.constructor.name === 'Wan
   const sw = game.npcs.find((n) => n.constructor.name === 'Swinger');
   const r0 = sw.pivot.rotation.x; frames(45); const r1 = sw.pivot.rotation.x;
   check(sw && Math.abs(r1 - r0) > 0.05 && Math.abs(r1) < 0.7, `a child is swinging in the park (${r0.toFixed(2)} → ${r1.toFixed(2)} rad)`);
+  sw.boost = 1; let peak = 0; for (let i = 0; i < 200; i++) { game.loop(); peak = Math.max(peak, Math.abs(sw.pivot.rotation.x)); } check(peak > 0.8, `pushed, the swing goes higher (peak ${peak.toFixed(2)} rad)`); sw.boost = 0;
 }
 // travel through all worlds
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -192,6 +193,7 @@ for (const [idx, entry] of [[1, 'from-prev'], [2, 'from-prev'], [3, 'from-prev']
   if (idx === 3) { const ll = game.npcs.find((n) => n.constructor.name === 'Lamplighter'); const lit0 = ll.lit; frames(2400); check(ll && ll.lit > lit0 && ll.lamps.length >= 8 && Number.isFinite(ll.rig.group.position.y), `Victorian: the lamplighter has attended to ${ll.lit - lit0} lamps in 40 s`); }
   if (idx === 3 || idx === 6) { const pt = game.npcs.find((n) => n.constructor.name === 'Patroller'); const p0 = [pt.x, pt.z]; frames(240); check(pt && Math.hypot(pt.x - p0[0], pt.z - p0[1]) > 1 && Number.isFinite(pt.rig.group.position.y), `world ${idx}: the patroller is on the move`); }
   if (idx === 1) { const rd = game.npcs.find((n) => n.constructor.name === 'RingDance'); const d0 = rd.dancers.map((d) => [d.circle.x, d.circle.z]); frames(60); check(rd.dancers.every((d, i) => Math.hypot(d.circle.x - d0[i][0], d.circle.z - d0[i][1]) > 0.5 && Math.abs(Math.hypot(d.circle.x - rd.cx, d.circle.z - rd.cz) - rd.r) < 0.01), 'Candy Land: the gingerbread men dance round the lollipop'); }
+  if (idx === 4) { const sb = game.npcs.filter((n) => n.constructor.name === 'Sunbather'), kn = game.npcs.find((n) => n.constructor.name === 'Kneeler'); check(sb.length === 2 && sb.every((n) => Math.abs(n.rig.group.rotation.x + Math.PI / 2) < 0.01) && kn && kn.rig.legs[0].knee.rotation.x > 1.5, 'Sunny Shore: two sunbathers lie on their towels and a child kneels at the sandcastle'); }
   if (idx === 4) { const b = game.npcs.find((n) => n.constructor.name === 'BallGame'); check(b && b.passes >= 2 && Number.isFinite(b.ball.position.y) && b.ball.position.y > 0, `Sunny Shore: the beach ball is being passed (${b ? b.passes : 0} passes in 5 s)`); }
   if (idx === 5) { const f = game.npcs.find((n) => n.constructor.name === 'SnowballFight'); check(f && f.throws >= 2 && f.kids.every((k) => Number.isFinite(k.rig.group.position.y)), `Frosty Peak: the children are throwing snowballs (${f ? f.throws : 0} throws in 5 s)`); }
   game.setTime('night'); frames(3); const sN = game.sun.intensity; game.setTime('auto'); frames(3); check(sN < 1.5 && Number.isFinite(sN), `world ${idx}: night toggle dims the sun (${sN.toFixed(2)})`);

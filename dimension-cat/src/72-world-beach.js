@@ -36,7 +36,8 @@ function buildBeach(game, entry) {
   makeScatter(game, [[10, 0, 12, 60], [6, 28, 10, 40], [8, -26, 10, 40]], G.sphere(0.06, 6, 5), [0xfff1dc, 0xffd9c2, 0xf3e3c8, 0xd9a3a3, 0xe8c9a0], r, [0.6, 1.4], 0.02);  // shells
   for (const [x, z, ry] of [[-14, 36, 0.4], [4, -30, 1.2], [-6, 12, 2.4]]) { const log = makeHollowLog(r); log.scale.setScalar(0.7); placeT(game, U, log, x, z, ry); }
   // sunbathers' corner: umbrellas, towels, sandcastle, beach ball
-  for (const [x, z, hue, tc] of [[6, 4, 0, 0x2f6fd6], [10, 12, 200, 0xff7043], [4, 18, 50, 0x8e24aa], [9, -20, 320, 0x2e9e6e]]) { placeT(game, U, makeUmbrella(hue), x, z, 0); boxT(game, x, z, 0.2, 2.2, 0.2, { cam: false }); placeT(game, U, makeTowel(tc), x + 1.2, z + 0.6, r() * 0.6); }
+  const towels = [];
+  for (const [x, z, hue, tc] of [[6, 4, 0, 0x2f6fd6], [10, 12, 200, 0xff7043], [4, 18, 50, 0x8e24aa], [9, -20, 320, 0x2e9e6e]]) { placeT(game, U, makeUmbrella(hue), x, z, 0); boxT(game, x, z, 0.2, 2.2, 0.2, { cam: false }); const ry = r() * 0.6; placeT(game, U, makeTowel(tc), x + 1.2, z + 0.6, ry); towels.push([x + 1.2, z + 0.6, ry]); }
   placeT(game, U, makeSandcastle(), 7, -4, 0.3); boxT(game, 7, -4, 1.6, 1.4, 1.6, { cam: false });
   const ball = mesh(G.sphere(0.32, 14, 10), mat(0xffffff, { roughness: 0.5 }), { parent: W }); mesh(G.sphere(0.322, 14, 10), mat(0xd62839, { roughness: 0.5 }), { sx: 0.5, parent: ball }); mesh(G.sphere(0.322, 14, 10), mat(0x2f6fd6, { roughness: 0.5 }), { sz: 0.5, parent: ball });
   const ballY = P.ground0(3, 8); ball.position.set(3, ballY + 0.32, 8);
@@ -60,6 +61,10 @@ function buildBeach(game, entry) {
       glasses: r.chance(0.45), glassColor: 0x203040,
       hat: child ? 'cap' : lady ? 'sunhat' : (r.chance(0.5) ? 'cap' : null), hatColor: lady ? 0xfff3d6 : 0x2f4f4f }); W.add(rig.group); return rig; };
   for (const [i, z] of [[0, -12], [1, 21], [2, 32]]) { const child = i === 2; game.npcs.push(new Wanderer(game, beachPerson(i === 1, child), { x: 0 + r.range(-6, 6), z, speed: child ? r.range(1.2, 1.6) : r.range(0.7, 1.1), leash: 12 })); }
+  // two sunbathers flat out on their towels in dark glasses, and a child patting the sandcastle
+  for (const i of [0, 3]) { const [tx, tz, ry] = towels[i]; game.npcs.push(new Sunbather(game, beachPerson(i === 0, false), { x: tx, z: tz + 0.55, ry })); }
+  game.npcs.push(new Kneeler(game, beachPerson(false, true), { x: 7, z: -2.7, ry: PI }));
+  { const bucket = mat(0xd62839, { roughness: 0.6 }); mesh(G.cyl(0.16, 0.13, 0.26, 10), bucket, { x: 7.9, y: P.ground0(7.9, -2.4) + 0.13, z: -2.4, parent: W }); mesh(G.torus(0.16, 0.012, 5, 12), mat(0xffd54a), { x: 7.9, y: P.ground0(7.9, -2.4) + 0.27, z: -2.4, rx: PI / 2, shadow: 'none', parent: W }); }
   // two of them are keeping the beach ball in the air
   game.npcs.push(new BallGame(game, beachPerson(false, false), beachPerson(true, false), ball, { cx: 4, cz: 10, gap: 5.5 }));
   // the beach dog keeps to its own patch of sand — it does not follow the cat

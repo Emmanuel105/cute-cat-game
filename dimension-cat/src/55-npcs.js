@@ -762,7 +762,7 @@ class BallGame {
 class Swinger {
   constructor(game, rig, swingSet, { x, z, ry = 0 }) {
     this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 3; this.cryT = rnd.range(4, 8);
-    this.pivot = swingSet.userData.pivot;
+    this.pivot = swingSet.userData.pivot; this.boost = 0;   // boost: pushed by the cat, fades over ten seconds or so
     // seated on the seat: hips at seat height, so the rig's origin goes 0.9 k below it
     rig.group.position.set(0, -(swingSet.userData.pivot.position.y - swingSet.userData.seatY) - 0.9 * rig.k + 0.04, 0.02);
     this.pivot.add(rig.group);
@@ -770,7 +770,8 @@ class Swinger {
   }
   update(dt) {
     this.t += dt; const rig = this.rig, ph = this.t * 2.1;   // a three-second swing
-    this.pivot.rotation.x = -sin(ph) * 0.62;   // positive fwd is the way the child faces
+    this.boost = max(0, this.boost - dt / 12);
+    this.pivot.rotation.x = -sin(ph) * (0.62 + this.boost * 0.4);   // positive fwd is the way the child faces
     rig.animate(0, false, dt, this.t);
     const fwd = clamp(sin(ph), -1, 1);      // +1 at the front of the arc
     for (const L of rig.legs) { L.hip.rotation.x = -PI / 2 + 0.15; L.knee.rotation.x = clamp(1.35 - fwd * 1.3, 0.05, 2.6); L.ankle.rotation.x = 0.2; }   // legs kick out going forward, tuck coming back
@@ -890,6 +891,43 @@ class Lamplighter extends Patroller {
       this.flare.traverse((o) => { if (o.material && o.material.emissiveIntensity !== undefined && o.material.emissive && o.material.emissive.getHex && o.material.emissive.getHex() === 0xffc46a) o.material.emissiveIntensity = 1.6 + k * 2.2; });
       if (this.flareT <= 0) { if (light) light.intensity = 42; this.flare = null; }
     }
+  }
+}
+
+// ---------------------------------------------------------------- sunbather: flat on their back on a towel, hands behind the head
+class Sunbather {
+  constructor(game, rig, { x, z, ry = 0 }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10;
+    rig.group.rotation.order = 'YXZ'; rig.group.rotation.y = ry; rig.group.rotation.x = -PI / 2;   // lying face up, head away from the origin
+    rig.group.position.set(x, game.physics.ground0(x, z) + 0.15, z);
+    this.circle = game.physics.addCircle(this, x, z, 0.5);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig;
+    rig.animate(0, false, dt, this.t);
+    rig.head.rotation.y = 0; rig.head.rotation.x = damp(rig.head.rotation.x, 0.1, 6, dt); rig.spine.rotation.x = 0; rig.spine.rotation.z = 0; rig.body.position.y = 0; rig.body.rotation.z = 0;
+    for (const L of rig.legs) { L.hip.rotation.x = damp(L.hip.rotation.x, 0.05, 6, dt); L.knee.rotation.x = damp(L.knee.rotation.x, 0.02, 6, dt); L.ankle.rotation.x = -0.4; }
+    if (!rig.gesture) for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -2.7, 6, dt); A.el.rotation.x = damp(A.el.rotation.x, -1.9, 6, dt); A.sh.rotation.z = (A === rig.arms[0] ? 1 : -1) * 0.45; }   // hands behind the head
+  }
+}
+
+// ---------------------------------------------------------------- kneeler: a child on their knees, patting a sandcastle
+class Kneeler {
+  constructor(game, rig, { x, z, ry = 0 }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10;
+    rig.group.rotation.y = ry;
+    rig.group.position.set(x, game.physics.ground0(x, z) - 0.4 * rig.k + 0.05, z);   // shins flat on the sand, hips a shin's length lower than standing
+    this.circle = game.physics.addCircle(this, x, z, 0.35);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig;
+    rig.animate(0, false, dt, this.t);
+    for (const L of rig.legs) { L.hip.rotation.x = damp(L.hip.rotation.x, -0.05, 6, dt); L.knee.rotation.x = PI / 2 + 0.05; L.ankle.rotation.x = 0.9; }
+    rig.spine.rotation.x = damp(rig.spine.rotation.x, 0.45, 6, dt); rig.body.position.y = 0;
+    rig.head.rotation.x = damp(rig.head.rotation.x, 0.2, 6, dt);
+    if (!rig.gesture) { const pat = max(0, sin(this.t * 4.2)); for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -0.55 - pat * 0.35, 14, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.9 + pat * 0.35, 14, dt); A.sh.rotation.z = (A === rig.arms[0] ? 1 : -1) * 0.22; } }   // patting the sand
   }
 }
 
