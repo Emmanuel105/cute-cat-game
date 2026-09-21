@@ -138,3 +138,9 @@ A **balloon seller** stands just south of the park path with a bunch of six. Pre
 balloon"** and one is tied to the cat: it floats above and a little behind, drifting after you, and it
 comes with you **through every portal**. Press E again to swap colours. "Balloons! Get your
 balloons!"
+
+## Round 15 — the post
+
+A **postie** with a satchel does the round of every mailbox on the main street — the south side
+east, the north side west, then round again — stopping at each to post the letters. "Letter for
+number twelve!"

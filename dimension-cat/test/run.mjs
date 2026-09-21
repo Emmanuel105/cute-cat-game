@@ -176,6 +176,7 @@ check(game.npcs.filter((n) => n instanceof Object && n.constructor.name === 'Wan
   const sw = game.npcs.find((n) => n.constructor.name === 'Swinger');
   const r0 = sw.pivot.rotation.x; frames(45); const r1 = sw.pivot.rotation.x;
   check(sw && Math.abs(r1 - r0) > 0.05 && Math.abs(r1) < 0.7, `a child is swinging in the park (${r0.toFixed(2)} → ${r1.toFixed(2)} rad)`);
+  { const pt = game.npcs.find((n) => n.constructor.name === 'Patroller' && n.delivered !== undefined); const d0 = pt.delivered; frames(2400); check(pt && pt.delivered > d0 && pt.points.length === 16, `the postie has delivered to ${pt.delivered - d0} mailboxes in 40 s`); }
   // the balloon seller: take a balloon, and it follows the cat — even into the next world
   { const v = game.npcs.find((n) => n.constructor.name === 'Vendor'); check(!!v && v.held.children.length === 6, 'a balloon seller stands in the park with six balloons');
     const there = pos().clone(); pos().set(v.x + Math.sin(v.rig.group.rotation.y) * 1.2, game.physics.ground0(v.x, v.z), v.z + Math.cos(v.rig.group.rotation.y) * 1.2); frames(5);

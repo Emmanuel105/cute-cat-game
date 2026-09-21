@@ -224,7 +224,7 @@ function makeHuman(o = {}) {
       const swell = sin(clamp(u, 0, 1) * PI);       // eases in and back out
       if (rig.gesture === 'wave') { waveArm = swell; turn = swell * 0.18; }
       else if (rig.gesture === 'throw') { throwArm = u < 0.3 ? 1.3 : u < 0.6 ? -2.6 : 0; lean = u < 0.3 ? -0.08 : u < 0.6 ? 0.1 : 0; }
-      else if (rig.gesture === 'reach') { waveArm = swell; turn = 0; }   // the arm goes straight up and holds there
+      else if (rig.gesture === 'reach' || rig.gesture === 'post') { waveArm = swell; turn = 0; }   // reach: the arm straight up and held there; post: out in front, into a letterbox
       else if (rig.gesture === 'look') turn = sin(rig.gT * 2.2) * swell * 0.7;
       else if (rig.gesture === 'nod') nod = sin(rig.gT * 5.5) * swell * 0.22;
       else if (rig.gesture === 'shift') lean = swell * 0.05;
@@ -248,12 +248,12 @@ function makeHuman(o = {}) {
         L.ankle.rotation.x = damp(L.ankle.rotation.x, 0, 8, dt);
         // the raised arm waves; the other one rests
         const waving = waveArm > 0 && i === 0, caning = o.cane && i === 1;
-        const reaching = rig.gesture === 'reach';
-        A.sh.rotation.x = damp(A.sh.rotation.x, waving ? (reaching ? -2.9 : -2.5) * waveArm : caning ? -0.5 : 0, 8, dt);
-        A.el.rotation.x = damp(A.el.rotation.x, waving ? (reaching ? -0.15 : -0.5 - sin(rig.gT * 11) * 0.35) : caning ? -0.1 : -restArm, 10, dt);
+        const reaching = rig.gesture === 'reach', posting = rig.gesture === 'post';
+        A.sh.rotation.x = damp(A.sh.rotation.x, waving ? (reaching ? -2.9 : posting ? -1.15 : -2.5) * waveArm : caning ? -0.5 : 0, 8, dt);
+        A.el.rotation.x = damp(A.el.rotation.x, waving ? (reaching ? -0.15 : posting ? -0.2 : -0.5 - sin(rig.gT * 11) * 0.35) : caning ? -0.1 : -restArm, 10, dt);
       }
       // arms hang a little away from the body, more so on a stouter build
-      A.sh.rotation.z = (i ? -1 : 1) * (0.19 + stout * 0.1 + (waveArm > 0 && i === 0 ? waveArm * (rig.gesture === 'reach' ? 0.1 : 0.5) : 0));
+      A.sh.rotation.z = (i ? -1 : 1) * (0.19 + stout * 0.1 + (waveArm > 0 && i === 0 ? waveArm * (rig.gesture === 'reach' || rig.gesture === 'post' ? 0.05 : 0.5) : 0));
       A.el.rotation.z = (i ? 1 : -1) * 0.1;      // forearms angle back in toward the hips
     }
     // blink: both eyes squash flat for a moment, every few seconds
