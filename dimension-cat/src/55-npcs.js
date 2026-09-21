@@ -126,46 +126,47 @@ function makeHuman(o = {}) {
     rig.legs.push({ hip, knee, ankle });
   }
   // ---- pelvis + torso: a chest that tapers to a waist, not a slab
+  const spine = group(0, 0.9, 0, body); rig.spine = spine;   // the upper body pivots here: leaning, stooping, bowing
   mesh(G.capsule(0.13 * girth, 0.1, 12), o.skirt ? mat(o.skirt) : pantsM, { y: 0.97, sz: 0.62, rz: PI / 2, parent: body });
   if (o.dress) {
     mesh(G.cyl(0.23 * girth, 0.44, 0.92, 16), mat(o.dress), { y: 0.56, parent: body });
     mesh(G.cyl(0.455, 0.44, 0.06, 16), mat(o.dress, { roughness: 1 }), { y: 0.12, shadow: 'none', parent: body });      // hem
-    if (o.sash) mesh(G.torus(0.2, 0.028, 6, 18), mat(o.sash), { y: 1.02, rx: PI / 2, sz: 0.66, shadow: 'none', parent: body });
+    if (o.sash) mesh(G.torus(0.2, 0.028, 6, 18), mat(o.sash), { y: 0.12, rx: PI / 2, sz: 0.66, shadow: 'none', parent: spine });
   } else if (o.skirt) mesh(G.cyl(0.18 * girth, 0.31, 0.36, 16), mat(o.skirt), { y: 0.9, parent: body });
   const torsoM = jacketM ?? shirtM;
-  mesh(G.capsule(0.152 * girth, o.coat ? 0.34 : 0.2, 14), torsoM, { y: o.coat ? 1.14 : 1.2, sx: female ? 1.02 : 1.16, sz: 0.66, parent: body });
-  mesh(G.capsule(0.125 * girth, 0.1, 12), torsoM, { y: 1.4, sx: 1.55, sz: 0.68, rz: PI / 2, parent: body });            // shoulder yoke
+  mesh(G.capsule(0.152 * girth, o.coat ? 0.34 : 0.2, 14), torsoM, { y: o.coat ? 0.24 : 0.3, sx: female ? 1.02 : 1.16, sz: 0.66, parent: spine });
+  mesh(G.capsule(0.125 * girth, 0.1, 12), torsoM, { y: 0.5, sx: 1.55, sz: 0.68, rz: PI / 2, parent: spine });            // shoulder yoke
   if (jacketM) {   // an open jacket: two front panels with the shirt showing between them
-    for (const side of [1, -1]) mesh(G.box(0.1, 0.4, 0.04), jacketM, { x: side * 0.1, y: 1.18, z: 0.115 * girth, rz: side * 0.04, parent: body });
-    mesh(G.capsule(0.08, 0.26, 10), shirtM, { y: 1.19, sx: 1.0, sz: 0.45, z: 0.09, shadow: 'none', parent: body });
+    for (const side of [1, -1]) mesh(G.box(0.1, 0.4, 0.04), jacketM, { x: side * 0.1, y: 0.28, z: 0.115 * girth, rz: side * 0.04, parent: spine });
+    mesh(G.capsule(0.08, 0.26, 10), shirtM, { y: 0.29, sx: 1.0, sz: 0.45, z: 0.09, shadow: 'none', parent: spine });
   }
   if (o.stripes) {   // a striped top: three bands round the chest
     const bandM = mat(o.stripes, { roughness: 0.9 });
-    for (let i = 0; i < 3; i++) mesh(G.capsule(0.153 * girth, 0.028, 12), bandM, { y: 1.08 + i * 0.11, sx: female ? 1.02 : 1.16, sz: 0.665, shadow: 'none', parent: body });
+    for (let i = 0; i < 3; i++) mesh(G.capsule(0.153 * girth, 0.028, 12), bandM, { y: 0.18 + i * 0.11, sx: female ? 1.02 : 1.16, sz: 0.665, shadow: 'none', parent: spine });
   }
   if (o.apron) {
-    mesh(G.box(0.24, 0.42, 0.03), mat(o.apron), { y: 1.02, z: 0.11 * girth, parent: body });
-    mesh(G.box(0.3, 0.04, 0.03), mat(o.apron), { y: 1.22, z: 0.115 * girth, shadow: 'none', parent: body });
+    mesh(G.box(0.24, 0.42, 0.03), mat(o.apron), { y: 0.12, z: 0.11 * girth, parent: spine });
+    mesh(G.box(0.3, 0.04, 0.03), mat(o.apron), { y: 0.32, z: 0.115 * girth, shadow: 'none', parent: spine });
   }
-  if (o.belt) mesh(G.capsule(0.14 * girth, 0.09, 12), mat(o.belt, { roughness: 0.5 }), { y: 1.06, sx: 1.06, sz: 0.68, rz: PI / 2, shadow: 'none', parent: body });
-  if (o.buttons) { const bm = mat(o.buttons, { roughness: 0.4 }); for (let i = 0; i < 3; i++) mesh(G.sphere(0.017, 6, 5), bm, { y: 1.07 + i * 0.12, z: 0.108 * girth, sz: 0.5, shadow: 'none', parent: body }); }
+  if (o.belt) mesh(G.capsule(0.14 * girth, 0.09, 12), mat(o.belt, { roughness: 0.5 }), { y: 0.16, sx: 1.06, sz: 0.68, rz: PI / 2, shadow: 'none', parent: spine });
+  if (o.buttons) { const bm = mat(o.buttons, { roughness: 0.4 }); for (let i = 0; i < 3; i++) mesh(G.sphere(0.017, 6, 5), bm, { y: 0.17 + i * 0.12, z: 0.108 * girth, sz: 0.5, shadow: 'none', parent: spine }); }
   // collar, so the shirt does not simply stop at the neck
-  mesh(G.torus(0.07, 0.024, 5, 14), torsoM, { y: 1.5, rx: PI / 2, sz: 0.8, shadow: 'none', parent: body });
+  mesh(G.torus(0.07, 0.024, 5, 14), torsoM, { y: 0.6, rx: PI / 2, sz: 0.8, shadow: 'none', parent: spine });
   if (o.scarf) {
     const sc = mat(o.scarf, { roughness: 0.95 });
-    mesh(G.torus(0.082, 0.04, 6, 16), sc, { y: 1.565, rx: PI / 2, sz: 0.85, parent: body });
-    mesh(G.box(0.07, 0.24, 0.035), sc, { x: 0.05, y: 1.38, z: 0.1, rz: 0.12, parent: body });
+    mesh(G.torus(0.082, 0.04, 6, 16), sc, { y: 0.665, rx: PI / 2, sz: 0.85, parent: spine });
+    mesh(G.box(0.07, 0.24, 0.035), sc, { x: 0.05, y: 0.48, z: 0.1, rz: 0.12, parent: spine });
   }
   if (o.bag) {   // a satchel on a strap across the chest
     const bg = mat(o.bag, { roughness: 0.85 });
-    mesh(G.box(0.035, 0.4, 0.02), bg, { x: -0.03, y: 1.24, z: 0.1, rz: -0.42, shadow: 'none', parent: body });
-    mesh(G.box(0.2, 0.17, 0.09), bg, { x: 0.19, y: 1.04, z: 0.02, parent: body });
+    mesh(G.box(0.035, 0.4, 0.02), bg, { x: -0.03, y: 0.34, z: 0.1, rz: -0.42, shadow: 'none', parent: spine });
+    mesh(G.box(0.2, 0.17, 0.09), bg, { x: 0.19, y: 0.14, z: 0.02, parent: spine });
   }
-  if (o.backpack) { const bp = mat(o.backpack, { roughness: 0.9 }); mesh(G.box(0.26, 0.3, 0.14), bp, { y: 1.2, z: -0.15 * girth, parent: body }); mesh(G.box(0.2, 0.04, 0.03), bp, { y: 1.28, z: -0.225 * girth, shadow: 'none', parent: body }); }
+  if (o.backpack) { const bp = mat(o.backpack, { roughness: 0.9 }); mesh(G.box(0.26, 0.3, 0.14), bp, { y: 0.3, z: -0.15 * girth, parent: spine }); mesh(G.box(0.2, 0.04, 0.03), bp, { y: 0.38, z: -0.225 * girth, shadow: 'none', parent: spine }); }
   // ---- arms: sleeve, forearm, and a mitten hand with a thumb
   const sleeveM = o.dress && !o.coat ? mat(o.dress) : (jacketM ?? shirtM);
   for (const side of [1, -1]) {
-    const sh = group(side * shW, 1.41, 0, body);
+    const sh = group(side * shW, 0.51, 0, spine);
     mesh(G.capsule(0.052 * girth, 0.2), sleeveM, { y: -0.14, parent: sh });
     const el = group(0, -0.29, 0, sh);
     mesh(G.capsule(0.046 * girth, 0.18), o.coat || o.sleeves ? sleeveM : skinM, { y: -0.12, parent: el });
@@ -177,8 +178,8 @@ function makeHuman(o = {}) {
     if (o.cane && side === -1) mesh(G.cyl(0.013, 0.013, 0.86, 6), mat(0x3a2718), { y: -0.3, z: 0.08, parent: hand });
     rig.arms.push({ sh, el });
   }
-  mesh(G.cyl(0.05, 0.058, 0.14, 8), skinM, { y: 1.53, parent: body });            // neck: 5 cm of it shows between the collar and the chin
-  const head = group(0, 1.735, 0, body); rig.head = head;
+  mesh(G.cyl(0.05, 0.058, 0.14, 8), skinM, { y: 0.63, parent: spine });            // neck: 5 cm of it shows between the collar and the chin
+  const head = group(0, 0.835, 0, spine); rig.head = head;
   head.scale.setScalar(1 + childish * 0.2);
   mesh(G.sphere(R, 18, 14), skinM, { sy: 1.02, sz: 0.94, parent: head });
   rig.eyes = makeFace(head, R, skinM, hairM, {
@@ -202,8 +203,9 @@ function makeHuman(o = {}) {
   }
   // ---- animation. Walk swings the limbs; standing still, people shift their weight, glance
   // around and occasionally wave, which is most of what stops a crowd looking like mannequins.
-  const legSwing = o.dress ? 0.32 : 1;
+  const legSwing = (o.dress ? 0.32 : 1) * (o.cane ? 0.7 : 1);
   const restArm = 0.34;      // elbows are never locked straight
+  const stoop = o.elder ? 0.17 : 0, skip = o.child ? 1 : 0;   // elders stoop from the hips; children bounce when they walk
   rig.blinkT = rnd.range(1, 5);
   rig.idleT = rnd.range(3, 11);
   rig.gesture = null; rig.gT = 0; rig.sway = rnd.range(0, TAU);
@@ -232,7 +234,8 @@ function makeHuman(o = {}) {
         L.knee.rotation.x = max(0, cos(p)) * 0.95 * legSwing;
         L.ankle.rotation.x = -L.knee.rotation.x * 0.45 + sin(p) * 0.12;      // the foot stays level as the knee bends
         if (throwArm !== null && i === 0) { A.sh.rotation.x = damp(A.sh.rotation.x, throwArm, 16, dt); A.el.rotation.x = damp(A.el.rotation.x, throwArm > 0 ? -1.6 : -0.3, 16, dt); }
-        else { A.sh.rotation.x = sin(p) * 0.42; A.el.rotation.x = -restArm - max(0, sin(p)) * 0.25; }
+        else if (o.cane && i === 1) { A.sh.rotation.x = damp(A.sh.rotation.x, -0.5 + sin(p) * 0.08, 10, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.1, 10, dt); }   // the cane hand stays planted ahead
+        else { A.sh.rotation.x = sin(p) * (0.42 + skip * 0.25); A.el.rotation.x = -restArm - max(0, sin(p)) * (0.25 + skip * 0.3); }
       } else if (throwArm !== null && i === 0) {
         L.hip.rotation.x = damp(L.hip.rotation.x, 0, 8, dt); L.knee.rotation.x = damp(L.knee.rotation.x, 0, 8, dt); L.ankle.rotation.x = damp(L.ankle.rotation.x, 0, 8, dt);
         A.sh.rotation.x = damp(A.sh.rotation.x, throwArm, 16, dt); A.el.rotation.x = damp(A.el.rotation.x, throwArm > 0 ? -1.6 : -0.3, 16, dt);
@@ -241,9 +244,9 @@ function makeHuman(o = {}) {
         L.knee.rotation.x = damp(L.knee.rotation.x, 0, 8, dt);
         L.ankle.rotation.x = damp(L.ankle.rotation.x, 0, 8, dt);
         // the raised arm waves; the other one rests
-        const waving = waveArm > 0 && i === 0;
-        A.sh.rotation.x = damp(A.sh.rotation.x, waving ? -2.5 * waveArm : 0, 8, dt);
-        A.el.rotation.x = damp(A.el.rotation.x, waving ? -0.5 - sin(rig.gT * 11) * 0.35 : -restArm, 10, dt);
+        const waving = waveArm > 0 && i === 0, caning = o.cane && i === 1;
+        A.sh.rotation.x = damp(A.sh.rotation.x, waving ? -2.5 * waveArm : caning ? -0.5 : 0, 8, dt);
+        A.el.rotation.x = damp(A.el.rotation.x, waving ? -0.5 - sin(rig.gT * 11) * 0.35 : caning ? -0.1 : -restArm, 10, dt);
       }
       // arms hang a little away from the body, more so on a stouter build
       A.sh.rotation.z = (i ? -1 : 1) * (0.19 + stout * 0.1 + (waveArm > 0 && i === 0 ? waveArm * 0.5 : 0));
@@ -255,18 +258,23 @@ function makeHuman(o = {}) {
     if (rig.blinkT < -0.12) rig.blinkT = rnd.range(1.8, 6);
     for (const e of rig.eyes) e.scale.y = damp(e.scale.y, shut, 30, dt);
     if (moving) {
-      body.position.y = abs(sin(ph)) * 0.035 * k;
-      body.rotation.z = damp(body.rotation.z, 0, 8, dt);
+      // the bob of a walk; a child's is a skip, with a hop on every step
+      body.position.y = (abs(sin(ph)) * 0.035 + skip * abs(sin(ph)) ** 6 * 0.12) * k;
+      body.rotation.z = damp(body.rotation.z, o.cane ? sin(ph) * 0.03 : 0, 8, dt);
+      spine.rotation.z = damp(spine.rotation.z, 0, 8, dt);
+      spine.rotation.x = damp(spine.rotation.x, stoop + (o.cane ? 0.06 : 0), 6, dt);
       head.rotation.y = damp(head.rotation.y, 0, 8, dt);
-      head.rotation.x = damp(head.rotation.x, 0, 8, dt);
+      head.rotation.x = damp(head.rotation.x, -stoop * 0.7, 8, dt);
       head.rotation.z = sin(ph) * 0.03;
     } else {
       // a slow breathing sway, so nobody is ever perfectly still
       rig.sway += dt * 0.7;
       body.position.y = damp(body.position.y, sin(rig.sway) * 0.006 * k, 6, dt);
-      body.rotation.z = damp(body.rotation.z, lean, 6, dt);
+      body.rotation.z = damp(body.rotation.z, 0, 6, dt);
+      spine.rotation.z = damp(spine.rotation.z, lean, 6, dt);
+      spine.rotation.x = damp(spine.rotation.x, stoop + (rig.gesture === 'nod' ? nod * 0.3 : 0), 6, dt);
       head.rotation.y = damp(head.rotation.y, turn + sin(rig.sway * 0.35) * 0.3, 5, dt);
-      head.rotation.x = damp(head.rotation.x, nod, 12, dt);
+      head.rotation.x = damp(head.rotation.x, nod - stoop * 0.7, 12, dt);
       head.rotation.z = damp(head.rotation.z, lean * 0.5, 6, dt);
     }
   };
@@ -283,11 +291,12 @@ function randomPerson(r, o = {}) {
   const female = o.female ?? r.chance(0.5);
   const w = o.wardrobe;
   const child = o.child ?? false;
+  const elder = o.elder ?? (!child && r.chance(0.16));   // grey, a little stooped, and more likely in glasses
   return {
-    female,
-    skin: r.pick(SKIN_TONES), hair: r.pick(HAIR_COLORS),
-    hairStyle: female ? r.pick(LONG_STYLES) : r.pick(['short', 'short', 'crop', 'curls', 'bun']),
-    height: child ? r.range(1.05, 1.35) : female ? r.range(1.58, 1.74) : r.range(1.66, 1.88),
+    female, child, elder,
+    skin: r.pick(SKIN_TONES), hair: elder ? r.pick([0x8a8a8a, 0xd8d8d8, 0xb5b5b5, 0xe8e8e8]) : r.pick(HAIR_COLORS),
+    hairStyle: female ? r.pick(elder ? ['bun', 'bob', 'curls'] : LONG_STYLES) : r.pick(elder ? ['crop', 'bald', 'short'] : ['short', 'short', 'crop', 'curls', 'bun']),
+    height: child ? r.range(1.05, 1.35) : (female ? r.range(1.58, 1.74) : r.range(1.66, 1.88)) - (elder ? 0.05 : 0),
     build: r.pick(['average', 'average', 'average', 'slim', 'stout']),
     shirt: w ? w.shirt() : r.pick(SHIRT_COLORS),
     pants: w ? w.pants() : r.pick(PANTS_COLORS),
@@ -295,8 +304,8 @@ function randomPerson(r, o = {}) {
     mouth: r.pick(MOUTH_SHAPES),
     eyeGap: r.range(0.33, 0.4), eyeSize: r.range(0.23, 0.28), brow: r.range(0.08, 0.24),
     freckles: r.chance(0.22),
-    glasses: r.chance(0.2),
-    beard: !female && !child && r.chance(0.16),
+    glasses: r.chance(elder ? 0.6 : 0.2),
+    beard: !female && !child && r.chance(elder ? 0.3 : 0.16),
     moustache: !female && !child && r.chance(0.12),
     ...o,
   };
@@ -593,7 +602,7 @@ class Sitter {
     rig.animate(0, false, dt, this.t);
     for (const L of rig.legs) { L.hip.rotation.x = -PI / 2 + 0.12; L.knee.rotation.x = PI / 2 - 0.2; L.ankle.rotation.x = 0.1; }
     if (!rig.gesture) for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -0.45, 8, dt); A.el.rotation.x = damp(A.el.rotation.x, -1.0, 8, dt); }   // hands in the lap
-    rig.body.position.y = 0;
+    rig.body.position.y = 0; rig.spine.rotation.x = damp(rig.spine.rotation.x, -0.1 + (rig.look.elder ? 0.12 : 0), 6, dt);   // settled back into the bench
     // half-turned toward whoever is on the bench beside them
     if (this.side) rig.head.rotation.y += this.side * 0.35 * (1 - this.lookW);
     Wanderer.prototype.lookAtCat.call(this, dt);

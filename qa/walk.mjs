@@ -19,10 +19,10 @@ await page.evaluate(() => {
   const g = window.DC, R = window.DC_RIGS, r = R.seeded(11);
   const cx = 0, cz = 40;
   g.__walk = [];
-  const specs = [{ shirt: 0xe0503c }, { female: true, shirt: 0x2e9e6e, skirt: 0xf2c744 }, { child: true, height: 1.15, shirt: 0x3f6fd6, backpack: 0xe0503c }, { shirt: 0x8a5acf, jacket: 0x3a4a5e }];
+  const specs = [{ shirt: 0xe0503c }, { female: true, shirt: 0x2e9e6e, skirt: 0xf2c744 }, { child: true, height: 1.15, shirt: 0x3f6fd6, backpack: 0xe0503c }, { elder: true, cane: true, coat: true, hat: 'top', shirt: 0x2f2f3a, pants: 0x1e1e24 }];
   specs.forEach((spec, i) => {
     const rig = R.makeHuman({ ...R.randomPerson(r, spec), ...spec });
-    const x = cx - 3 + i * 2, z = cz + 4;
+    const x = cx - 3.6 + i * 2.4, z = cz + 4;
     rig.group.position.set(x, g.physics.ground0(x, z), z); rig.group.rotation.y = Math.PI / 2;   // side-on, facing +x
     g.world.add(rig.group); g.__walk.push(rig);
   });
