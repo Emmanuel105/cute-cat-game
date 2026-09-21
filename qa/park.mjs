@@ -23,6 +23,15 @@ await look(6, 38.4, 0, 3.4, 0.06); await settle(page, 0.6); await shot(page, 'be
 // the lawn: cat on the path looking east across the grass, four frames over twelve seconds
 await look(1.5, 46, Math.PI / 2, 6, 0.18);
 for (let i = 0; i < 4; i++) { await settle(page, i ? 4 : 0.6); await shot(page, `tag-${i}`); }
+// the dog walker on the north pavement: find them, stand a few metres off, and watch for six seconds
+const dw = await page.evaluate(() => { const d = window.DC.npcs.find((n) => n.constructor.name === 'DogWalker'); return d ? [d.x, d.z] : null; });
+if (dw) {
+  // the cat a few metres east of them, looking west along the pavement
+  await look(dw[0] + 3.2, dw[1], -Math.PI / 2, 4, 0.08);
+  for (let i = 0; i < 3; i++) { await settle(page, i ? 3 : 0.6); await shot(page, `dog-${i}`); }
+  const d = await page.evaluate(() => { const w = window.DC.npcs.find((n) => n.constructor.name === 'DogWalker'); const p = w.dog.group.position; return { walker: [+w.x.toFixed(1), +w.z.toFixed(1)], dog: [+p.x.toFixed(1), +p.z.toFixed(1)], lead: +w.lead.scale.z.toFixed(2) }; });
+  console.log('dog walker', JSON.stringify(d));
+}
 const state = await page.evaluate(() => { const p = window.DC.npcs.find((n) => n.constructor.name === 'Playmates'); return p ? { chaser: p.chaser, kids: p.kids.map((k) => [+k.x.toFixed(1), +k.z.toFixed(1)]) } : null; });
 console.log('tag', JSON.stringify(state));
 console.log('errors', errs.slice(0, 4));

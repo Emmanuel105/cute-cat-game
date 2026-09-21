@@ -520,7 +520,7 @@ class Wanderer {
     // people give the cat a wave the first time it comes up to them; gentlemen tip their hat instead
     if (this.rig.gesture !== undefined && !this.rig.hat) {
       const d2 = dx * dx + dz * dz;
-      if (w && d2 < 12 && !this.waved && this.state === 'idle') { this.waved = true; this.rig.gesture = 'wave'; this.rig.gT = 0; this.timer = max(this.timer, 2); }
+      if (w && d2 < 12 && !this.waved && this.state === 'idle') { this.waved = true; this.rig.gesture = 'wave'; this.rig.gT = 0; this.timer = max(this.timer, 2); greet(this.game, this.rig); }
       if (d2 > 40) this.waved = false;
     }
     // gentlemen tip their top hat once per approach
@@ -553,6 +553,22 @@ class Wanderer {
     if (this.timer <= 0) { this.state = 'idle'; this.timer = rnd.range(...this.idleRange); }
     this.rig.animate(this.phase, true, dt, this.t);
   }
+}
+
+/** What people say when the cat comes up to them, by world. Children have their own lines everywhere. */
+const GREETINGS = {
+  neighborhood: ['Hello, kitty!', "Aww, who's a good cat?", 'Off on an adventure?', 'Lovely day for a wander!', 'Mind the road, puss!', 'Have you seen the squirrel? Cheeky thing.'],
+  victorian: ['Good day to you, puss.', 'A cat about town! How very modern.', 'Mind the cobbles, little one.', 'Fine whiskers, sir.', 'Have you come far?'],
+  beach: ["Careful, the sand's hot!", 'Fancy a paddle, kitty?', 'Watch out for the crabs!', 'Lovely day for it!', 'The turtles are out today.'],
+  snow: ["Brr! Aren't you cold, kitty?", "Have you seen the yeti? He's lovely.", 'Careful on the ice!', 'Come and warm up by the fire!'],
+  child: ['Kitty! Kitty!', 'Can we keep it?', 'Hi, cat!', 'Look, a cat!', 'Are you lost, kitty?'],
+};
+/** One line of greeting on the HUD, no more often than every few seconds however many people are about. */
+function greet(game, rig) {
+  if ((game.lastGreet ?? -99) > game.time - 6) return;
+  const lines = rig.look?.child ? GREETINGS.child : GREETINGS[WORLDS[game.worldIndex]?.key];
+  if (!lines) return;
+  game.lastGreet = game.time; game.toast('💬 "' + rnd.pick(lines) + '"', 2600);
 }
 
 // ---------------------------------------------------------------- sitter: parked on a bench, watching the world go by

@@ -376,14 +376,39 @@ class Hopper {
 }
 
 // ---------------------------------------------------------------- Follower controller: a friendly animal that trots after the cat when close
+// ---------------------------------------------------------------- dog walker: a stroller with a dog trotting behind on a lead
+class DogWalker {
+  constructor(game, person, dog, o) {
+    this.game = game; this.rig = person; this.dog = dog; this.x = o.x; this.z = o.z;
+    game.world.add(dog.group);
+    this.walker = new Wanderer(game, person, { ...o, idle: [1.5, 4], walk: [4, 9] });
+    this.follow = new Follower(game, dog, { x: o.x + 1, z: o.z + 0.6, r: 0.3, speed: (o.speed ?? 1) * 1.6, range: 99, keep: 1.2, leash: 99, height: 0.9, step: 0.3,
+      target: () => this.walker, sfx: () => { if (rnd.chance(0.3)) SFX.woof(); } });
+    // the lead: a unit cylinder along z, stretched from the hand to the collar every frame
+    this.lead = group(0, 0, 0, game.world);
+    noInk(mesh(G.cyl(0.012, 0.012, 1, 4), mat(0x8a2f2f, { roughness: 0.9 }), { rx: PI / 2, shadow: 'none', parent: this.lead }));
+    this.hand = V3(); this.collar = V3();
+  }
+  update(dt) {
+    this.walker.update(dt); this.follow.update(dt);
+    this.x = this.walker.x; this.z = this.walker.z;
+    this.rig.hands[1].getWorldPosition(this.hand);
+    const d = this.dog.group;
+    this.collar.set(d.position.x + sin(d.rotation.y) * 0.22, d.position.y + 0.5, d.position.z + cos(d.rotation.y) * 0.22);
+    this.lead.position.copy(this.hand).lerp(this.collar, 0.5); this.lead.lookAt(this.collar);
+    this.lead.scale.set(1, 1, max(0.01, this.hand.distanceTo(this.collar)));
+  }
+}
+
 class Follower {
   constructor(game, rig, o) {
     this.game = game; this.rig = rig; this.x = o.x; this.z = o.z; this.r = o.r ?? 0.35; this.speed = o.speed ?? 2.4; this.range = o.range ?? 9; this.keep = o.keep ?? 1.6;
+    this.target = o.target ?? null;    // () => {x, z}; the cat when not given
     this.phase = 0; this.t = rnd() * 10; this.wander = new Wanderer(game, rig, { ...o, r: this.r });
     this.circle = this.wander.circle; this.barkT = 0; this.sfx = o.sfx || null; this.happy = false;
   }
   update(dt) {
-    this.t += dt; const cat = this.game.cat.group.position, w = this.wander, d2 = dist2(w.x, w.z, cat.x, cat.z);
+    this.t += dt; const cat = this.target ? this.target() : this.game.cat.group.position, w = this.wander, d2 = dist2(w.x, w.z, cat.x, cat.z);
     if (d2 > this.range * this.range || d2 < this.keep * this.keep) { if (d2 < this.keep * this.keep) { w.state = 'idle'; w.timer = max(w.timer, 0.3); } this.happy = d2 < this.keep * this.keep; w.update(dt); return; }
     const ang = atan2(cat.x - w.x, cat.z - w.z), nx = w.x + sin(ang) * this.speed * dt, nz = w.z + cos(ang) * this.speed * dt;
     if (!this.game.physics.blocked(nx, nz, this.r, w, this.game.physics.ground0(nx, nz), 0.3, 1.2)) { w.x = nx; w.z = nz; w.circle.x = nx; w.circle.z = nz; w.angle = ang; }

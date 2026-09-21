@@ -2219,7 +2219,7 @@ class Wanderer {
     // people give the cat a wave the first time it comes up to them; gentlemen tip their hat instead
     if (this.rig.gesture !== undefined && !this.rig.hat) {
       const d2 = dx * dx + dz * dz;
-      if (w && d2 < 12 && !this.waved && this.state === 'idle') { this.waved = true; this.rig.gesture = 'wave'; this.rig.gT = 0; this.timer = max(this.timer, 2); }
+      if (w && d2 < 12 && !this.waved && this.state === 'idle') { this.waved = true; this.rig.gesture = 'wave'; this.rig.gT = 0; this.timer = max(this.timer, 2); greet(this.game, this.rig); }
       if (d2 > 40) this.waved = false;
     }
     // gentlemen tip their top hat once per approach
@@ -2252,6 +2252,22 @@ class Wanderer {
     if (this.timer <= 0) { this.state = 'idle'; this.timer = rnd.range(...this.idleRange); }
     this.rig.animate(this.phase, true, dt, this.t);
   }
+}
+
+/** What people say when the cat comes up to them, by world. Children have their own lines everywhere. */
+const GREETINGS = {
+  neighborhood: ['Hello, kitty!', "Aww, who's a good cat?", 'Off on an adventure?', 'Lovely day for a wander!', 'Mind the road, puss!', 'Have you seen the squirrel? Cheeky thing.'],
+  victorian: ['Good day to you, puss.', 'A cat about town! How very modern.', 'Mind the cobbles, little one.', 'Fine whiskers, sir.', 'Have you come far?'],
+  beach: ["Careful, the sand's hot!", 'Fancy a paddle, kitty?', 'Watch out for the crabs!', 'Lovely day for it!', 'The turtles are out today.'],
+  snow: ["Brr! Aren't you cold, kitty?", "Have you seen the yeti? He's lovely.", 'Careful on the ice!', 'Come and warm up by the fire!'],
+  child: ['Kitty! Kitty!', 'Can we keep it?', 'Hi, cat!', 'Look, a cat!', 'Are you lost, kitty?'],
+};
+/** One line of greeting on the HUD, no more often than every few seconds however many people are about. */
+function greet(game, rig) {
+  if ((game.lastGreet ?? -99) > game.time - 6) return;
+  const lines = rig.look?.child ? GREETINGS.child : GREETINGS[WORLDS[game.worldIndex]?.key];
+  if (!lines) return;
+  game.lastGreet = game.time; game.toast('💬 "' + rnd.pick(lines) + '"', 2600);
 }
 
 // ---------------------------------------------------------------- sitter: parked on a bench, watching the world go by
@@ -2779,14 +2795,39 @@ class Hopper {
 }
 
 // ---------------------------------------------------------------- Follower controller: a friendly animal that trots after the cat when close
+// ---------------------------------------------------------------- dog walker: a stroller with a dog trotting behind on a lead
+class DogWalker {
+  constructor(game, person, dog, o) {
+    this.game = game; this.rig = person; this.dog = dog; this.x = o.x; this.z = o.z;
+    game.world.add(dog.group);
+    this.walker = new Wanderer(game, person, { ...o, idle: [1.5, 4], walk: [4, 9] });
+    this.follow = new Follower(game, dog, { x: o.x + 1, z: o.z + 0.6, r: 0.3, speed: (o.speed ?? 1) * 1.6, range: 99, keep: 1.2, leash: 99, height: 0.9, step: 0.3,
+      target: () => this.walker, sfx: () => { if (rnd.chance(0.3)) SFX.woof(); } });
+    // the lead: a unit cylinder along z, stretched from the hand to the collar every frame
+    this.lead = group(0, 0, 0, game.world);
+    noInk(mesh(G.cyl(0.012, 0.012, 1, 4), mat(0x8a2f2f, { roughness: 0.9 }), { rx: PI / 2, shadow: 'none', parent: this.lead }));
+    this.hand = V3(); this.collar = V3();
+  }
+  update(dt) {
+    this.walker.update(dt); this.follow.update(dt);
+    this.x = this.walker.x; this.z = this.walker.z;
+    this.rig.hands[1].getWorldPosition(this.hand);
+    const d = this.dog.group;
+    this.collar.set(d.position.x + sin(d.rotation.y) * 0.22, d.position.y + 0.5, d.position.z + cos(d.rotation.y) * 0.22);
+    this.lead.position.copy(this.hand).lerp(this.collar, 0.5); this.lead.lookAt(this.collar);
+    this.lead.scale.set(1, 1, max(0.01, this.hand.distanceTo(this.collar)));
+  }
+}
+
 class Follower {
   constructor(game, rig, o) {
     this.game = game; this.rig = rig; this.x = o.x; this.z = o.z; this.r = o.r ?? 0.35; this.speed = o.speed ?? 2.4; this.range = o.range ?? 9; this.keep = o.keep ?? 1.6;
+    this.target = o.target ?? null;    // () => {x, z}; the cat when not given
     this.phase = 0; this.t = rnd() * 10; this.wander = new Wanderer(game, rig, { ...o, r: this.r });
     this.circle = this.wander.circle; this.barkT = 0; this.sfx = o.sfx || null; this.happy = false;
   }
   update(dt) {
-    this.t += dt; const cat = this.game.cat.group.position, w = this.wander, d2 = dist2(w.x, w.z, cat.x, cat.z);
+    this.t += dt; const cat = this.target ? this.target() : this.game.cat.group.position, w = this.wander, d2 = dist2(w.x, w.z, cat.x, cat.z);
     if (d2 > this.range * this.range || d2 < this.keep * this.keep) { if (d2 < this.keep * this.keep) { w.state = 'idle'; w.timer = max(w.timer, 0.3); } this.happy = d2 < this.keep * this.keep; w.update(dt); return; }
     const ang = atan2(cat.x - w.x, cat.z - w.z), nx = w.x + sin(ang) * this.speed * dt, nz = w.z + cos(ang) * this.speed * dt;
     if (!this.game.physics.blocked(nx, nz, this.r, w, this.game.physics.ground0(nx, nz), 0.3, 1.2)) { w.x = nx; w.z = nz; w.circle.x = nx; w.circle.z = nz; w.angle = ang; }
@@ -4556,6 +4597,8 @@ function buildNeighborhood(game, entry) {
   // two on the park bench, half-turned toward each other
   game.npcs.push(new Sitter(game, person({ female: false, build: 'stout', beard: true, glasses: true }), { x: 6.45, z: 40.1, ry: PI, side: 1 }));
   game.npcs.push(new Sitter(game, person({ female: true, hairStyle: 'bun', hair: 0xd8d8d8 }), { x: 5.55, z: 40.1, ry: PI, side: -1 }));
+  // someone walking the dog along the north pavement
+  game.npcs.push(new DogWalker(game, person({ female: true, hairStyle: 'pony', hat: null }), makeDog(0x5a4030), { x: -30, z: 17.6, speed: 1.0, leash: 24, avoid: (x, z) => offRoad(x, z) || z < 16.8 || z > 19.6 }));   // the pavement and its verge, nobody's garden
   // two children playing tag on the east lawn
   game.npcs.push(new Playmates(game, person({ child: true, female: false }), person({ child: true, female: true }), { cx: 10, cz: 46, leash: 5.5 }));
   for (const [color, dir, x, lane] of [[0xd62839, 1, -30, 12.6], [0x2e63d8, -1, 20, 15.4], [0xf3f3f3, 1, 40, 12.6]]) {

@@ -59,3 +59,12 @@ same was done for all sixteen creatures. Victorian went from 3013 draw calls (af
 
 Tests: none of the strollers is standing in the road, the sitters' knees are bent, and the children
 swap roles (four times in twenty seconds) without leaving the lawn. `node qa/park.mjs` shoots it.
+
+## Round 5 — hellos, and a dog on a lead
+
+- When someone waves at the cat they now **say something** on the HUD: the Neighborhood has its own
+  lines ("Aww, who's a good cat?"), so do the Victorian town ("A cat about town! How very modern."),
+  the shore ("Careful, the sand's hot!") and the peak ("Have you seen the yeti? He's lovely."), and
+  children have theirs everywhere ("Can we keep it?"). Never more than one line every six seconds.
+- **A woman walks her dog** up and down the north pavement. The dog trots at her heel on a lead that
+  stretches from her hand to its collar, and woofs now and then.
