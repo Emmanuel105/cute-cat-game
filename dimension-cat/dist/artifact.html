@@ -924,6 +924,8 @@ class SoundKit {
   roar() { this.tone({ freq: 140, slide: 90, type: 'sawtooth', dur: 0.7, vol: 0.12, attack: 0.08, filter: 420, q: 3, vib: 10 }); this.noise({ dur: 0.6, vol: 0.06, filter: 500 }); }
   wave() { this.noise({ dur: 1.6, vol: 0.05, filter: 300, slide: 1200, type: 'lowpass' }); }
   twinkle() { [1319, 1568, 2093].forEach((f, i) => this.tone({ freq: f, type: 'sine', dur: 0.18, vol: 0.06, delay: i * 0.06 })); }
+  /** A beach ball landing in someone's hands, or on someone's head. */
+  bounce() { this.tone({ freq: 520, type: 'sine', dur: 0.12, vol: 0.1, slide: 240 }); }
   /** "Got you!" — a quick rising giggle when one child tags the other. */
   tag() { [880, 1175, 1480].forEach((f, i) => this.tone({ freq: f, type: 'triangle', dur: 0.07, vol: 0.05, delay: i * 0.055, slide: f * 1.2 })); }
   /** Footstep: soft pad on grass/sand/snow, tap on cobble/metal/planks. */
@@ -2199,12 +2201,16 @@ class Wanderer {
     this.speed = o.speed ?? 0.9; this.leash = o.leash ?? 10; this.r = o.r ?? 0.35; this.height = o.height ?? 1.8; this.step = o.step ?? 0.22;
     this.idleRange = o.idle ?? [1.5, 4]; this.walkRange = o.walk ?? [3, 8];
     this.avoid = o.avoid ?? null;      // (x, z) => true where this wanderer must not step (the road, say)
+    this.cries = o.cries ?? null; this.cryIcon = o.cryIcon ?? '💬'; this.cryT = rnd.range(4, 9);   // lines called out now and then when the cat is within earshot
     this.angle = o.angle ?? rnd() * TAU; this.phase = rnd() * TAU; this.state = 'idle'; this.timer = rnd.range(0, 2); this.t = rnd() * 10;
     this.circle = game.physics.addCircle(this, o.x, o.z, this.r);
     rig.group.position.set(o.x, game.physics.ground0(o.x, o.z), o.z); rig.group.rotation.y = this.angle;
     this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false;
   }
-  update(dt) { this.move(dt); this.lookAtCat(dt); }
+  update(dt) {
+    this.move(dt); this.lookAtCat(dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
   /** Turn the head toward the cat when it is close and roughly in front. Applied after animate() so it wins. */
   lookAtCat(dt) {
     const head = this.rig.head; if (!head) return;
@@ -2264,7 +2270,7 @@ function greet(game, rig) {
   if ((game.lastGreet ?? -99) > game.time - 6) return;
   const lines = rig.look?.child ? GREETINGS.child : GREETINGS[WORLDS[game.worldIndex]?.key];
   if (!lines) return;
-  game.lastGreet = game.time; game.toast('💬 "' + rnd.pick(lines) + '"', 2600);
+  game.lastGreet = game.time; game.toast('💬 "' + rnd.pick(lines) + '"', 2600); SFX.talk();
 }
 
 // ---------------------------------------------------------------- sitter: parked on a bench, watching the world go by
@@ -2378,6 +2384,47 @@ class SnowballFight {
         else if (dist2(cat.x, cat.z, b.to.x, b.to.z) < 2.5) { SFX.tag(); this.game.toast('\u2603\ufe0f "Got you, kitty!"'); }
       }
     }
+  }
+}
+
+// ---------------------------------------------------------------- ball game: two people patting a beach ball back and forth
+class BallGame {
+  constructor(game, rigA, rigB, ball, { cx, cz, gap = 5.5 }) {
+    this.game = game; this.ball = ball; this.t = 0; this.holder = 0; this.holdT = 0.8; this.flight = -1; this.dur = 1.1; this.passes = 0; this.boinged = false;
+    this.players = [rigA, rigB].map((rig, i) => {
+      const x = cx, z = cz + (i ? gap / 2 : -gap / 2);
+      rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = i ? PI : 0;   // facing each other along z
+      return { rig, x, z, hx: x, circle: game.physics.addCircle(this, x, z, 0.3), t: rnd() * 5, phase: 0 };
+    });
+    this.rig = rigA; this.from = V3(); this.to = V3();
+  }
+  hands(p, v) { return v.set(p.x, this.game.physics.ground0(p.x, p.z) + 0.95 * p.rig.k + 0.3, p.z); }
+  update(dt) {
+    this.t += dt; const P = this.game.physics, cat = this.game.cat.group.position;
+    for (const p of this.players) {
+      p.t += dt; const other = this.players[p === this.players[0] ? 1 : 0];
+      p.x = p.hx + sin(p.t * 0.7) * 1.2; p.circle.x = p.x;
+      p.rig.group.position.set(p.x, P.ground0(p.x, p.z), p.z);
+      p.rig.group.rotation.y = dampAngle(p.rig.group.rotation.y, atan2(other.x - p.x, other.z - p.z), 6, dt);
+      const stepping = abs(cos(p.t * 0.7)) > 0.4; if (stepping) p.phase += dt * 3.5;
+      p.rig.animate(p.phase, stepping, dt, this.t);
+    }
+    const h = this.players[this.holder], o = this.players[1 - this.holder];
+    if (this.flight < 0) {   // held for a moment, then sent over
+      this.holdT -= dt; this.hands(h, this.ball.position); this.ball.position.z += (this.holder ? -1 : 1) * 0.3;
+      if (this.holdT <= 0) { this.flight = 0; this.from.copy(this.ball.position); this.hands(o, this.to); this.dur = 1.1; h.rig.gesture = 'throw'; h.rig.gT = 0.22; this.passes++; this.boinged = false; }
+      return;
+    }
+    this.flight += dt; const u = min(1, this.flight / this.dur);
+    this.ball.position.copy(this.from).lerp(this.to, u); this.ball.position.y += sin(u * PI) * 2.2;
+    this.ball.rotation.x += dt * 3; this.ball.rotation.z += dt * 1.5;
+    // a cat standing under the end of its flight gets it off the head, and it hops on to the catcher
+    if (!this.boinged && u > 0.5 && dist2(this.ball.position.x, this.ball.position.z, cat.x, cat.z) < 1.6 && this.ball.position.y < cat.y + 1.3) {
+      this.boinged = true; SFX.bounce(); this.game.toast("\ud83c\udfd0 Boing! Off the cat's head!");
+      this.from.copy(this.ball.position); this.from.y = cat.y + 0.9; this.flight = 0; this.dur = 0.9;
+      return;
+    }
+    if (u >= 1) { this.flight = -1; this.holder = 1 - this.holder; this.holdT = rnd.range(0.5, 1.1); SFX.bounce(); }
   }
 }
 
@@ -4965,7 +5012,8 @@ function buildVictorian(game, entry) {
       buttons: !lady && !urchin ? 0xc8b878 : null, glasses: r.chance(0.25),
       cane: !lady && !urchin && r.chance(0.6) });
     W.add(rig.group);
-    game.npcs.push(new Wanderer(game, rig, { x, z, speed: r.range(0.6, 1.0), leash: 12 }));
+    game.npcs.push(new Wanderer(game, rig, { x, z, speed: r.range(0.6, 1.0), leash: 12,
+      cries: urchin ? ['Extra! Extra! Cat seen in town!', "Paper, guv'nor? Ha'penny!", 'Read all about it!', 'Late edition! Squirrel at large!'] : null, cryIcon: '\ud83d\udcf0' }));
   });
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
@@ -5019,7 +5067,7 @@ function buildBeach(game, entry) {
   placeT(game, U, makeSandcastle(), 7, -4, 0.3); boxT(game, 7, -4, 1.6, 1.4, 1.6, { cam: false });
   const ball = mesh(G.sphere(0.32, 14, 10), mat(0xffffff, { roughness: 0.5 }), { parent: W }); mesh(G.sphere(0.322, 14, 10), mat(0xd62839, { roughness: 0.5 }), { sx: 0.5, parent: ball }); mesh(G.sphere(0.322, 14, 10), mat(0x2f6fd6, { roughness: 0.5 }), { sz: 0.5, parent: ball });
   const ballY = P.ground0(3, 8); ball.position.set(3, ballY + 0.32, 8);
-  U.push((dt, t) => { ball.position.y = ballY + 0.32 + abs(sin(t * 2.4)) * 0.9; ball.rotation.y = t; ball.rotation.x = sin(t * 0.7) * 0.4; });
+  // the ball is in play: see BallGame below, once the sunbathers are made
   // sea props: buoys, sailboat
   for (const [x, z, c] of [[38, -26, 0xd62839], [42, 6, 0xffd54a], [36, 30, 0xd62839]]) { const b = makeBuoy(c); b.userData.y0 = 0; place(game, U, b, x, z, 0, 0); }
   const boat = makeBoat(0x3f6fd6); boat.userData.y0 = 0.05; place(game, U, boat, 46, 16, -0.6, 0.05);
@@ -5034,14 +5082,13 @@ function buildBeach(game, entry) {
     pants: [0x2f6fd6, 0xd62839, 0x2e9e6e, 0xff8fab, 0xffb74d],
     shoes: [0xefe7d8, 0xd7a86e, 0x8d6e63],
   });
-  for (let i = 0; i < 5; i++) {
-    const lady = i % 2 === 1, child = i === 4;
-    const rig = makeHuman({ ...randomPerson(r, { female: lady, child, wardrobe: beachWard }),
+  const beachPerson = (lady, child) => { const rig = makeHuman({ ...randomPerson(r, { female: lady, child, wardrobe: beachWard }),
       shorts: true, stripes: r.chance(0.35) ? 0xffffff : null,
       glasses: r.chance(0.45), glassColor: 0x203040,
-      hat: child ? 'cap' : lady ? 'sunhat' : (r.chance(0.5) ? 'cap' : null), hatColor: lady ? 0xfff3d6 : 0x2f4f4f });
-    W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x: 0 + r.range(-6, 6), z: -12 + i * 11, speed: child ? r.range(1.2, 1.6) : r.range(0.7, 1.1), leash: 12 }));
-  }
+      hat: child ? 'cap' : lady ? 'sunhat' : (r.chance(0.5) ? 'cap' : null), hatColor: lady ? 0xfff3d6 : 0x2f4f4f }); W.add(rig.group); return rig; };
+  for (const [i, z] of [[0, -12], [1, 21], [2, 32]]) { const child = i === 2; game.npcs.push(new Wanderer(game, beachPerson(i === 1, child), { x: 0 + r.range(-6, 6), z, speed: child ? r.range(1.2, 1.6) : r.range(0.7, 1.1), leash: 12 })); }
+  // two of them are keeping the beach ball in the air
+  game.npcs.push(new BallGame(game, beachPerson(false, false), beachPerson(true, false), ball, { cx: 4, cz: 10, gap: 5.5 }));
   // the beach dog keeps to its own patch of sand — it does not follow the cat
   const dog = makeDog(0xc8925a); W.add(dog.group); game.npcs.push(new Wanderer(game, dog, { x: -2, z: 28, speed: 1.1, leash: 7, r: 0.35, height: 0.9, step: 0.3, idle: [1.5, 4], walk: [2, 5] }));
   let woofT = rnd.range(6, 12); U.push((dt) => { woofT -= dt; if (woofT <= 0) { SFX.woof(); woofT = rnd.range(10, 20); } });

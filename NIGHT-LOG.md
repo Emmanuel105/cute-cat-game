@@ -68,3 +68,20 @@ swap roles (four times in twenty seconds) without leaving the lawn. `node qa/par
   children have theirs everywhere ("Can we keep it?"). Never more than one line every six seconds.
 - **A woman walks her dog** up and down the north pavement. The dog trots at her heel on a lead that
   stretches from her hand to its collar, and woofs now and then.
+
+## Round 6 — a snowball fight
+
+Two of the children on Frosty Peak are having a **snowball fight** across the village square: they
+wind up, throw, the snowball arcs over and bursts in a puff of snow, and whoever it hits flinches.
+They shuffle about between throws. Walk the cat up close and one of them will throw one at *you* —
+"Got you, kitty!" — once per visit.
+
+## Round 7 — a beach ball, a paper boy, and voices
+
+- On Sunny Shore **two of the sunbathers keep the beach ball up**: held a moment, thrown in a high
+  arc, caught, thrown back. Stand right next to the catcher and it comes down off the cat's head with
+  a "Boing!" and hops on to them.
+- The Victorian **urchin sells papers**: "Extra! Extra! Cat seen in town!", "Paper, guv'nor?
+  Ha'penny!" — called out now and then when the cat is within earshot.
+- Every greeting and cry now has a little **talk blip** with it; the beach ball has a soft bounce.
+- `qa/bench.mjs` covers Frosty Peak too. All six worlds sit at 300–2900 draw calls and ~90 fps.

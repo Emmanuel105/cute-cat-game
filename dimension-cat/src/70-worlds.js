@@ -471,7 +471,8 @@ function buildVictorian(game, entry) {
       buttons: !lady && !urchin ? 0xc8b878 : null, glasses: r.chance(0.25),
       cane: !lady && !urchin && r.chance(0.6) });
     W.add(rig.group);
-    game.npcs.push(new Wanderer(game, rig, { x, z, speed: r.range(0.6, 1.0), leash: 12 }));
+    game.npcs.push(new Wanderer(game, rig, { x, z, speed: r.range(0.6, 1.0), leash: 12,
+      cries: urchin ? ['Extra! Extra! Cat seen in town!', "Paper, guv'nor? Ha'penny!", 'Read all about it!', 'Late edition! Squirrel at large!'] : null, cryIcon: '\ud83d\udcf0' }));
   });
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;

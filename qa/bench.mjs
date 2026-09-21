@@ -44,7 +44,7 @@ const stand = (x, z, yaw) => page.evaluate(([x, z, yaw]) => {
 }, [x, z, yaw]);
 // stand among the neighbours, which is where people cost the most
 await stand(0, 40, 0); await settle(page, 0.6); rows.push(await measure('hood-among-people'));
-for (const [i, e, n, x, z, yaw] of [[1, 'from-hub', 'candy', 0, 0, 0], [3, 'from-prev', 'victorian', 0, 0, 0], [4, 'from-hub', 'beach', 0, 0, Math.PI / 2], [6, 'from-hub', 'forest', 0, 0, 0]]) {
+for (const [i, e, n, x, z, yaw] of [[1, 'from-hub', 'candy', 0, 0, 0], [3, 'from-prev', 'victorian', 0, 0, 0], [4, 'from-hub', 'beach', 0, 0, Math.PI / 2], [5, 'from-hub', 'snow', 0, 12, Math.PI], [6, 'from-hub', 'forest', 0, 0, 0]]) {
   await page.evaluate(([i, e]) => window.DC.travel(i, e), [i, e]);
   await page.waitForTimeout(2400); await stand(x, z, yaw); await settle(page, 0.8);
   rows.push(await measure(n));

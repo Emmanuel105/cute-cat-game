@@ -40,7 +40,7 @@ function buildBeach(game, entry) {
   placeT(game, U, makeSandcastle(), 7, -4, 0.3); boxT(game, 7, -4, 1.6, 1.4, 1.6, { cam: false });
   const ball = mesh(G.sphere(0.32, 14, 10), mat(0xffffff, { roughness: 0.5 }), { parent: W }); mesh(G.sphere(0.322, 14, 10), mat(0xd62839, { roughness: 0.5 }), { sx: 0.5, parent: ball }); mesh(G.sphere(0.322, 14, 10), mat(0x2f6fd6, { roughness: 0.5 }), { sz: 0.5, parent: ball });
   const ballY = P.ground0(3, 8); ball.position.set(3, ballY + 0.32, 8);
-  U.push((dt, t) => { ball.position.y = ballY + 0.32 + abs(sin(t * 2.4)) * 0.9; ball.rotation.y = t; ball.rotation.x = sin(t * 0.7) * 0.4; });
+  // the ball is in play: see BallGame below, once the sunbathers are made
   // sea props: buoys, sailboat
   for (const [x, z, c] of [[38, -26, 0xd62839], [42, 6, 0xffd54a], [36, 30, 0xd62839]]) { const b = makeBuoy(c); b.userData.y0 = 0; place(game, U, b, x, z, 0, 0); }
   const boat = makeBoat(0x3f6fd6); boat.userData.y0 = 0.05; place(game, U, boat, 46, 16, -0.6, 0.05);
@@ -55,14 +55,13 @@ function buildBeach(game, entry) {
     pants: [0x2f6fd6, 0xd62839, 0x2e9e6e, 0xff8fab, 0xffb74d],
     shoes: [0xefe7d8, 0xd7a86e, 0x8d6e63],
   });
-  for (let i = 0; i < 5; i++) {
-    const lady = i % 2 === 1, child = i === 4;
-    const rig = makeHuman({ ...randomPerson(r, { female: lady, child, wardrobe: beachWard }),
+  const beachPerson = (lady, child) => { const rig = makeHuman({ ...randomPerson(r, { female: lady, child, wardrobe: beachWard }),
       shorts: true, stripes: r.chance(0.35) ? 0xffffff : null,
       glasses: r.chance(0.45), glassColor: 0x203040,
-      hat: child ? 'cap' : lady ? 'sunhat' : (r.chance(0.5) ? 'cap' : null), hatColor: lady ? 0xfff3d6 : 0x2f4f4f });
-    W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x: 0 + r.range(-6, 6), z: -12 + i * 11, speed: child ? r.range(1.2, 1.6) : r.range(0.7, 1.1), leash: 12 }));
-  }
+      hat: child ? 'cap' : lady ? 'sunhat' : (r.chance(0.5) ? 'cap' : null), hatColor: lady ? 0xfff3d6 : 0x2f4f4f }); W.add(rig.group); return rig; };
+  for (const [i, z] of [[0, -12], [1, 21], [2, 32]]) { const child = i === 2; game.npcs.push(new Wanderer(game, beachPerson(i === 1, child), { x: 0 + r.range(-6, 6), z, speed: child ? r.range(1.2, 1.6) : r.range(0.7, 1.1), leash: 12 })); }
+  // two of them are keeping the beach ball in the air
+  game.npcs.push(new BallGame(game, beachPerson(false, false), beachPerson(true, false), ball, { cx: 4, cz: 10, gap: 5.5 }));
   // the beach dog keeps to its own patch of sand — it does not follow the cat
   const dog = makeDog(0xc8925a); W.add(dog.group); game.npcs.push(new Wanderer(game, dog, { x: -2, z: 28, speed: 1.1, leash: 7, r: 0.35, height: 0.9, step: 0.3, idle: [1.5, 4], walk: [2, 5] }));
   let woofT = rnd.range(6, 12); U.push((dt) => { woofT -= dt; if (woofT <= 0) { SFX.woof(); woofT = rnd.range(10, 20); } });

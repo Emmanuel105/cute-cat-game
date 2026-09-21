@@ -507,12 +507,16 @@ class Wanderer {
     this.speed = o.speed ?? 0.9; this.leash = o.leash ?? 10; this.r = o.r ?? 0.35; this.height = o.height ?? 1.8; this.step = o.step ?? 0.22;
     this.idleRange = o.idle ?? [1.5, 4]; this.walkRange = o.walk ?? [3, 8];
     this.avoid = o.avoid ?? null;      // (x, z) => true where this wanderer must not step (the road, say)
+    this.cries = o.cries ?? null; this.cryIcon = o.cryIcon ?? '💬'; this.cryT = rnd.range(4, 9);   // lines called out now and then when the cat is within earshot
     this.angle = o.angle ?? rnd() * TAU; this.phase = rnd() * TAU; this.state = 'idle'; this.timer = rnd.range(0, 2); this.t = rnd() * 10;
     this.circle = game.physics.addCircle(this, o.x, o.z, this.r);
     rig.group.position.set(o.x, game.physics.ground0(o.x, o.z), o.z); rig.group.rotation.y = this.angle;
     this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false;
   }
-  update(dt) { this.move(dt); this.lookAtCat(dt); }
+  update(dt) {
+    this.move(dt); this.lookAtCat(dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
   /** Turn the head toward the cat when it is close and roughly in front. Applied after animate() so it wins. */
   lookAtCat(dt) {
     const head = this.rig.head; if (!head) return;
@@ -572,7 +576,7 @@ function greet(game, rig) {
   if ((game.lastGreet ?? -99) > game.time - 6) return;
   const lines = rig.look?.child ? GREETINGS.child : GREETINGS[WORLDS[game.worldIndex]?.key];
   if (!lines) return;
-  game.lastGreet = game.time; game.toast('💬 "' + rnd.pick(lines) + '"', 2600);
+  game.lastGreet = game.time; game.toast('💬 "' + rnd.pick(lines) + '"', 2600); SFX.talk();
 }
 
 // ---------------------------------------------------------------- sitter: parked on a bench, watching the world go by
@@ -686,6 +690,47 @@ class SnowballFight {
         else if (dist2(cat.x, cat.z, b.to.x, b.to.z) < 2.5) { SFX.tag(); this.game.toast('\u2603\ufe0f "Got you, kitty!"'); }
       }
     }
+  }
+}
+
+// ---------------------------------------------------------------- ball game: two people patting a beach ball back and forth
+class BallGame {
+  constructor(game, rigA, rigB, ball, { cx, cz, gap = 5.5 }) {
+    this.game = game; this.ball = ball; this.t = 0; this.holder = 0; this.holdT = 0.8; this.flight = -1; this.dur = 1.1; this.passes = 0; this.boinged = false;
+    this.players = [rigA, rigB].map((rig, i) => {
+      const x = cx, z = cz + (i ? gap / 2 : -gap / 2);
+      rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = i ? PI : 0;   // facing each other along z
+      return { rig, x, z, hx: x, circle: game.physics.addCircle(this, x, z, 0.3), t: rnd() * 5, phase: 0 };
+    });
+    this.rig = rigA; this.from = V3(); this.to = V3();
+  }
+  hands(p, v) { return v.set(p.x, this.game.physics.ground0(p.x, p.z) + 0.95 * p.rig.k + 0.3, p.z); }
+  update(dt) {
+    this.t += dt; const P = this.game.physics, cat = this.game.cat.group.position;
+    for (const p of this.players) {
+      p.t += dt; const other = this.players[p === this.players[0] ? 1 : 0];
+      p.x = p.hx + sin(p.t * 0.7) * 1.2; p.circle.x = p.x;
+      p.rig.group.position.set(p.x, P.ground0(p.x, p.z), p.z);
+      p.rig.group.rotation.y = dampAngle(p.rig.group.rotation.y, atan2(other.x - p.x, other.z - p.z), 6, dt);
+      const stepping = abs(cos(p.t * 0.7)) > 0.4; if (stepping) p.phase += dt * 3.5;
+      p.rig.animate(p.phase, stepping, dt, this.t);
+    }
+    const h = this.players[this.holder], o = this.players[1 - this.holder];
+    if (this.flight < 0) {   // held for a moment, then sent over
+      this.holdT -= dt; this.hands(h, this.ball.position); this.ball.position.z += (this.holder ? -1 : 1) * 0.3;
+      if (this.holdT <= 0) { this.flight = 0; this.from.copy(this.ball.position); this.hands(o, this.to); this.dur = 1.1; h.rig.gesture = 'throw'; h.rig.gT = 0.22; this.passes++; this.boinged = false; }
+      return;
+    }
+    this.flight += dt; const u = min(1, this.flight / this.dur);
+    this.ball.position.copy(this.from).lerp(this.to, u); this.ball.position.y += sin(u * PI) * 2.2;
+    this.ball.rotation.x += dt * 3; this.ball.rotation.z += dt * 1.5;
+    // a cat standing under the end of its flight gets it off the head, and it hops on to the catcher
+    if (!this.boinged && u > 0.5 && dist2(this.ball.position.x, this.ball.position.z, cat.x, cat.z) < 1.6 && this.ball.position.y < cat.y + 1.3) {
+      this.boinged = true; SFX.bounce(); this.game.toast("\ud83c\udfd0 Boing! Off the cat's head!");
+      this.from.copy(this.ball.position); this.from.y = cat.y + 0.9; this.flight = 0; this.dur = 0.9;
+      return;
+    }
+    if (u >= 1) { this.flight = -1; this.holder = 1 - this.holder; this.holdT = rnd.range(0.5, 1.1); SFX.bounce(); }
   }
 }
 
