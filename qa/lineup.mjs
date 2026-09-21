@@ -47,7 +47,7 @@ const ROWS = {
     { child: true, height: 1.15, hat: 'flatcap', hatColor: 0x4a4036, shirt: 0x3a3327, pants: 0x1e1e24 },
     { female: false, coat: true, hat: 'top', hatBand: 0x2a2a3a, shirt: 0x43303a, moustache: true, glasses: true },
     { female: true, dress: 0x2f4f6f, hat: 'bonnet', hatColor: 0x2f4f6f, sleeves: true, glasses: true },
-    { female: false, coat: true, hat: 'top', shirt: 0x1e2f3f, beard: true },
+    { female: false, coat: true, hat: 'helmet', shirt: 0x1e2436, pants: 0x1e2436, buttons: 0xd8d8d8, belt: 0x0c0c0c, hatColor: 0x1e2436, moustache: true, build: 'stout' },
   ],
 };
 // every other creature, wide and close, so a change to the shared rig code can be checked on all of them

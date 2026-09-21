@@ -4,7 +4,7 @@
 import { chromium } from '/Users/emmanuelmkandawire/.npm/_npx/9833c18b2d85bc59/node_modules/playwright/index.mjs';
 import fs from 'node:fs'; import path from 'node:path'; import { fileURLToPath } from 'node:url';
 const here = path.dirname(fileURLToPath(import.meta.url));
-const [outName, world, x, z, yaw, dist = 6, pitch = 0.12, frames = 4, gap = 2, time = 'day'] = process.argv.slice(2);
+const [outName, world, x, z, yaw, dist = 6, pitch = 0.12, frames = 4, gap = 2, time = 'day', form = ''] = process.argv.slice(2);
 const out = path.join(here, outName || 'scene'); fs.mkdirSync(out, { recursive: true });
 const URL = 'file://' + path.join(here, '..', 'dimension-cat', 'dist', 'dimension_cat.html');
 const shot = (page, n) => page.screenshot({ path: path.join(out, n + '.jpg'), type: 'jpeg', quality: 88 });
@@ -17,6 +17,7 @@ await page.click('#enter'); await settle(page, 1);
 const w = +world;
 if (w) { await page.evaluate(([i]) => window.DC.travel(i, i === 4 || i === 5 || i === 6 ? 'from-hub' : 'from-prev'), [w]); await page.waitForTimeout(2400); await settle(page, 0.8); }
 await page.evaluate((t) => window.DC.setTime(t), time); await settle(page, 0.4);
+if (form) { await page.evaluate((f) => window.DC.setForm(f), form); await settle(page, 0.4); }   // e.g. human, frog, squirrel
 await page.evaluate(([x, z, yaw, dist, pitch]) => {
   const g = window.DC; g.cat.group.position.set(x, g.physics.ground0(x, z), z); g.cat.vy = 0; g.cat.group.rotation.y = yaw;
   g.cam.yaw = yaw; g.cam.pitch = pitch; g.cam.dist = dist; g.cam.curDist = dist; g.updateCamera(0, true);

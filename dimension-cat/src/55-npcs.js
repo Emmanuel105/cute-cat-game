@@ -176,6 +176,7 @@ function makeHuman(o = {}) {
     mesh(G.capsule(0.019, 0.024, 6), skinM, { x: side * 0.04, y: 0.012, z: 0.016, rz: side * 0.8, shadow: 'none', parent: hand });   // thumb
     rig.hands.push(hand);
     if (o.cane && side === -1) mesh(G.cyl(0.013, 0.013, 0.86, 6), mat(0x3a2718), { y: -0.3, z: 0.08, parent: hand });
+    if (o.pole && side === 1) { mesh(G.cyl(0.012, 0.014, 1.7, 6), mat(0x4a3a2a), { y: 0.55, z: 0.03, parent: hand }); mesh(G.sphere(0.035, 8, 6), glowMat(0xffb060, 1.4), { y: 1.42, z: 0.03, shadow: 'none', parent: hand }); }   // a lamplighter's pole, lit at the tip
     rig.arms.push({ sh, el });
   }
   mesh(G.cyl(0.05, 0.058, 0.14, 8), skinM, { y: 0.63, parent: spine });            // neck: 5 cm of it shows between the collar and the chin
@@ -223,6 +224,7 @@ function makeHuman(o = {}) {
       const swell = sin(clamp(u, 0, 1) * PI);       // eases in and back out
       if (rig.gesture === 'wave') { waveArm = swell; turn = swell * 0.18; }
       else if (rig.gesture === 'throw') { throwArm = u < 0.3 ? 1.3 : u < 0.6 ? -2.6 : 0; lean = u < 0.3 ? -0.08 : u < 0.6 ? 0.1 : 0; }
+      else if (rig.gesture === 'reach') { waveArm = swell; turn = 0; }   // the arm goes straight up and holds there
       else if (rig.gesture === 'look') turn = sin(rig.gT * 2.2) * swell * 0.7;
       else if (rig.gesture === 'nod') nod = sin(rig.gT * 5.5) * swell * 0.22;
       else if (rig.gesture === 'shift') lean = swell * 0.05;
@@ -246,11 +248,12 @@ function makeHuman(o = {}) {
         L.ankle.rotation.x = damp(L.ankle.rotation.x, 0, 8, dt);
         // the raised arm waves; the other one rests
         const waving = waveArm > 0 && i === 0, caning = o.cane && i === 1;
-        A.sh.rotation.x = damp(A.sh.rotation.x, waving ? -2.5 * waveArm : caning ? -0.5 : 0, 8, dt);
-        A.el.rotation.x = damp(A.el.rotation.x, waving ? -0.5 - sin(rig.gT * 11) * 0.35 : caning ? -0.1 : -restArm, 10, dt);
+        const reaching = rig.gesture === 'reach';
+        A.sh.rotation.x = damp(A.sh.rotation.x, waving ? (reaching ? -2.9 : -2.5) * waveArm : caning ? -0.5 : 0, 8, dt);
+        A.el.rotation.x = damp(A.el.rotation.x, waving ? (reaching ? -0.15 : -0.5 - sin(rig.gT * 11) * 0.35) : caning ? -0.1 : -restArm, 10, dt);
       }
       // arms hang a little away from the body, more so on a stouter build
-      A.sh.rotation.z = (i ? -1 : 1) * (0.19 + stout * 0.1 + (waveArm > 0 && i === 0 ? waveArm * 0.5 : 0));
+      A.sh.rotation.z = (i ? -1 : 1) * (0.19 + stout * 0.1 + (waveArm > 0 && i === 0 ? waveArm * (rig.gesture === 'reach' ? 0.1 : 0.5) : 0));
       A.el.rotation.z = (i ? 1 : -1) * 0.1;      // forearms angle back in toward the hips
     }
     // blink: both eyes squash flat for a moment, every few seconds
@@ -797,8 +800,9 @@ class RingDance {
 
 // ---------------------------------------------------------------- patroller: walks a fixed route there and back, pausing at the ends
 class Patroller {
-  constructor(game, rig, { points, speed = 0.9, pause = [1.5, 4], r = 0.32, height = 1.8, cries = null, cryIcon = '\ud83d\udcac' }) {
+  constructor(game, rig, { points, speed = 0.9, pause = [1.5, 4], r = 0.32, height = 1.8, cries = null, cryIcon = '\ud83d\udcac', pauseAll = false, loop = false, onArrive = null }) {
     this.game = game; this.rig = rig; this.points = points; this.speed = speed; this.pauseRange = pause; this.r = r; this.height = height;
+    this.pauseAll = pauseAll; this.loop = loop; this.onArrive = onArrive;   // pauseAll: stop at every point, not just the ends; loop: go round rather than back
     this.i = 0; this.dir = 1; this.x = points[0][0]; this.z = points[0][1]; this.phase = rnd() * TAU; this.t = rnd() * 10; this.wait = 0;
     this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false; this.state = 'walk'; this.timer = 0;
     this.cries = cries; this.cryIcon = cryIcon; this.cryT = rnd.range(5, 10);
@@ -810,8 +814,15 @@ class Patroller {
     if (this.wait > 0) { this.wait -= dt; this.state = 'idle'; this.timer = this.wait; this.rig.animate(this.phase, false, dt, this.t); }
     else {
       this.state = 'walk';
-      const [tx, tz] = this.points[this.i + this.dir], dx = tx - this.x, dz = tz - this.z, d = Math.hypot(dx, dz);
-      if (d < 0.25) { this.i += this.dir; if (this.i === 0 || this.i === this.points.length - 1) { this.dir = -this.dir; this.wait = rnd.range(...this.pauseRange); } }
+      const n = this.points.length, next = this.loop ? (this.i + 1) % n : this.i + this.dir;
+      const [tx, tz] = this.points[next], dx = tx - this.x, dz = tz - this.z, d = Math.hypot(dx, dz);
+      if (d < 0.25) {
+        this.i = next;
+        const atEnd = !this.loop && (this.i === 0 || this.i === n - 1);
+        if (atEnd) this.dir = -this.dir;
+        if (atEnd || this.pauseAll) this.wait = rnd.range(...this.pauseRange);
+        if (this.onArrive) this.onArrive(this.i, this);
+      }
       else {
         const ang = atan2(dx, dz), step = min(d, this.speed * dt), nx = this.x + sin(ang) * step, nz = this.z + cos(ang) * step;
         const cat = this.game.cat.group.position;
@@ -847,6 +858,26 @@ class Loader {
     for (const A of this.rig.arms) { A.sh.rotation.x = -0.25 - this.lift * 1.35; A.el.rotation.x = -0.4 - this.lift * 0.6; }   // arms come up to take the crate
     this.rig.body.rotation.x = this.lift * 0.12;
     if (this.rig.head) this.rig.head.rotation.x = this.lift * 0.35 - 0.1;
+  }
+}
+
+// ---------------------------------------------------------------- lamplighter: round the gas lamps with a pole, giving each a flare as he passes
+class Lamplighter extends Patroller {
+  constructor(game, rig, lamps, o = {}) {
+    // stand a step in from each lamp, on the pavement side of it
+    const pts = lamps.map((l) => [l.position.x + (l.position.z > 0 ? 0 : 0), l.position.z + (l.position.z > 0 ? -1.1 : 1.1)]);
+    super(game, rig, { points: pts, speed: o.speed ?? 0.8, pause: [1.8, 2.4], pauseAll: true, loop: false, cries: o.cries ?? null, cryIcon: '\ud83d\udd6f\ufe0f',
+      onArrive: (i) => { this.lit++; this.rig.gesture = 'reach'; this.rig.gT = 0; this.flare = lamps[i]; this.flareT = 1.6; } });
+    this.lamps = lamps; this.lit = 0; this.flare = null; this.flareT = 0;
+  }
+  update(dt) {
+    super.update(dt);
+    if (this.flare) {
+      this.flareT -= dt; const k = sin(clamp(1 - this.flareT / 1.6, 0, 1) * PI);   // up and back down over the pause
+      const light = this.flare.userData.light; if (light) light.intensity = 42 + k * 60;
+      this.flare.traverse((o) => { if (o.material && o.material.emissiveIntensity !== undefined && o.material.emissive && o.material.emissive.getHex && o.material.emissive.getHex() === 0xffc46a) o.material.emissiveIntensity = 1.6 + k * 2.2; });
+      if (this.flareT <= 0) { if (light) light.intensity = 42; this.flare = null; }
+    }
   }
 }
 
