@@ -206,3 +206,12 @@ you have visited it, so the finale can only happen after you have been everywher
 
 Switch on **photo mode** and anyone within ten metres stops what they are doing, turns to face the
 camera and holds a hand up for the picture. Switch it off and they go back to their business.
+
+## Round 27 — chatting, and a painter
+
+- **Two neighbours stand chatting** on the south pavement, facing each other and taking turns:
+  the speaker's hands go, the listener nods along. "...and then the cat just walked straight in!"
+  Two Victorian ladies in gowns gossip by the square too ("A cat in the square! Whatever next.").
+- A **painter** at her easel by the park pond, brush in one hand and palette in the other, dabbing
+  at the canvas and stepping back to look. The picture fills in as you watch: sky, hill, and a
+  black cat. "Hold still, kitty... perfect."

@@ -12,7 +12,7 @@ const LONG_STYLES = ['bob', 'long', 'pony', 'bun', 'braids', 'curls'];
  * The wardrobe. Worlds draw from these through `bag()`, so a street full of people wears a street
  * full of different clothes instead of whatever an unlucky run of the dice hands out.
  */
-const SHIRT_COLORS = [0x3f6fd6, 0xe0503c, 0x2e9e6e, 0xf2c744, 0x8a5acf, 0xf7f3ec, 0xff8fab, 0x35b4c4, 0xef7d2f, 0x6b7fd7, 0xb5485f, 0x4c6b3c, 0x9b6b3a, 0x5aa0d8, 0xd9b86a];
+const SHIRT_COLORS = [0x3f6fd6, 0xe0503c, 0x2e9e6e, 0xf2c744, 0x8a5acf, 0xf7f3ec, 0xff8fab, 0x35b4c4, 0xef7d2f, 0x6b7fd7, 0xb5485f, 0x4c6b3c, 0x9b6b3a, 0x5aa0d8, 0xd9b86a, 0x3a3a4a, 0xc86a8a, 0x7fb56a];
 const PANTS_COLORS = [0x2c3140, 0x5a4634, 0x8899aa, 0x1e2a44, 0x6b5b4a, 0x3c4a5a, 0x7a6a58, 0x2f3b33];
 const SHOE_COLORS = [0x1e1a18, 0x3a2a1e, 0x5a4030, 0xefe7d8, 0x8a2f2f, 0x27354a];
 const MOUTH_SHAPES = ['smile', 'smile', 'smile', 'grin', 'small', 'open'];
@@ -1089,6 +1089,67 @@ class Marchers {
       this.circles[i].x = x; this.circles[i].z = z;
       rig.animate(L.phase, moving, dt, L.t);
     });
+  }
+}
+
+// ---------------------------------------------------------------- talkers: two people stood chatting, taking turns, hands going
+class Talkers {
+  constructor(game, rigA, rigB, { x, z, ry = 0, lines = null }) {
+    this.game = game; this.rigs = [rigA, rigB]; this.x = x; this.z = z; this.t = rnd() * 10; this.speaker = 0; this.turnT = rnd.range(2, 5); this.lines = lines; this.cryT = rnd.range(3, 8);
+    this.ctls = this.rigs.map((rig, i) => {
+      const side = i ? 1 : -1, px = x + sin(ry + PI / 2) * side * 0.65, pz = z + cos(ry + PI / 2) * side * 0.65;
+      rig.group.position.set(px, game.physics.ground0(px, pz), pz); rig.group.rotation.y = atan2(x - px, z - pz);   // facing each other
+      const ctl = { game, rig, x: px, z: pz, look: 0, lookW: 0, tipT: 0, tipped: false, state: 'idle', timer: 0, circle: game.physics.addCircle(this, px, pz, 0.3) };
+      greetable(game, ctl); return ctl;
+    });
+    this.rig = rigA;
+  }
+  update(dt) {
+    this.t += dt; this.turnT -= dt;
+    if (this.turnT <= 0) { this.speaker = 1 - this.speaker; this.turnT = rnd.range(2.5, 6); }
+    this.rigs.forEach((rig, i) => {
+      rig.animate(0, false, dt, this.t);
+      const talking = i === this.speaker && !rig.gesture;
+      if (talking) {   // hands up and going, a nod now and then
+        const A = rig.arms[0], B = rig.arms[1], k = sin(this.t * 3.1 + i) * 0.5 + 0.5;
+        A.sh.rotation.x = damp(A.sh.rotation.x, -0.9 - k * 0.5, 10, dt); A.el.rotation.x = damp(A.el.rotation.x, -1.3 + k * 0.5, 10, dt); A.sh.rotation.z = 0.35;
+        B.sh.rotation.x = damp(B.sh.rotation.x, -0.5 - (1 - k) * 0.3, 10, dt); B.el.rotation.x = damp(B.el.rotation.x, -1.1, 10, dt); B.sh.rotation.z = -0.3;
+        rig.head.rotation.x = sin(this.t * 4.7) * 0.06;
+      } else if (!rig.gesture) { rig.head.rotation.x = damp(rig.head.rotation.x, sin(this.t * 1.3 + i * 2) > 0.7 ? 0.15 : 0, 8, dt); }   // the listener nods along
+      Wanderer.prototype.lookAtCat.call(this.ctls[i], dt);
+    });
+    if (this.lines) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(8, 14); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 64) { this.game.toast('\ud83d\udcac "' + rnd.pick(this.lines) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
+// ---------------------------------------------------------------- painter: at an easel, brush in one hand, palette in the other, the picture filling in as the cat watches
+class Painter {
+  constructor(game, rig, easel, { x, z, ry = 0, cries = null }) {
+    this.game = game; this.rig = rig; this.easel = easel; this.x = x; this.z = z; this.t = rnd() * 10; this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false; this.state = 'idle'; this.timer = 0;
+    this.cries = cries; this.cryIcon = '\ud83c\udfa8'; this.cryT = rnd.range(4, 9); this.progress = 0; this.done = 0;
+    easel.position.set(x + sin(ry) * 0.9, game.physics.ground0(x + sin(ry) * 0.9, z + cos(ry) * 0.9), z + cos(ry) * 0.9); easel.rotation.y = ry + PI; game.world.add(easel);
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    mesh(G.cyl(0.012, 0.012, 0.3, 5), mat(0x5a3a1a), { y: 0.1, z: 0.04, rx: 0.5, parent: rig.hands[0] });                    // the brush
+    mesh(G.cyl(0.14, 0.14, 0.015, 12), mat(0xd9c9a8, { roughness: 1 }), { y: -0.02, z: 0.02, rx: PI / 2 - 0.5, parent: rig.hands[1] });   // the palette
+    for (const [i, c] of [0xd62839, 0xf2c744, 0x2f6fd6, 0x5d9a44].entries()) mesh(G.sphere(0.02, 6, 5), mat(c), { x: cos(i * 1.3) * 0.08, y: 0, z: 0.02 + sin(i * 1.3) * 0.08, sy: 0.4, shadow: 'none', parent: rig.hands[1] });
+    this.circle = game.physics.addCircle(this, x, z, 0.35); game.physics.addBox(easel.position.x, 0.8, easel.position.z, 0.7, 1.6, 0.5, { cam: false });
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig, dab = max(0, sin(this.t * 2.6)), stepBack = sin(this.t * 0.35) > 0.85;
+    rig.animate(0, false, dt, this.t);
+    if (!rig.gesture) {
+      const A = rig.arms[0], B = rig.arms[1];
+      A.sh.rotation.x = damp(A.sh.rotation.x, stepBack ? -0.6 : -1.35 - dab * 0.15, 12, dt); A.el.rotation.x = damp(A.el.rotation.x, stepBack ? -0.9 : -0.25 + dab * 0.2, 12, dt); A.sh.rotation.z = 0.25;
+      B.sh.rotation.x = damp(B.sh.rotation.x, -0.9, 8, dt); B.el.rotation.x = damp(B.el.rotation.x, -1.5, 8, dt); B.sh.rotation.z = -0.45;
+      rig.spine.rotation.x = damp(rig.spine.rotation.x, stepBack ? -0.08 : 0.06, 6, dt);
+      rig.head.rotation.x = damp(rig.head.rotation.x, stepBack ? -0.1 : 0.12, 6, dt);
+    }
+    // the painting fills in, one daub every twenty seconds, then starts over
+    this.progress += dt; const daubs = this.easel.userData.daubs, n = min(daubs.length, floor(this.progress / 20));
+    daubs.forEach((d, i) => { d.visible = i < n; }); if (this.progress > 20 * (daubs.length + 1)) { this.progress = 0; this.done++; }
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
   }
 }
 

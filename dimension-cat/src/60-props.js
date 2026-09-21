@@ -485,6 +485,19 @@ function makeKite(color = 0xd62839, color2 = 0xf2c744) {
   noInk(mesh(G.cyl(0.006, 0.006, 1.3, 4), spar, { y: -0.7, shadow: 'none', parent: tail }));
   return g;
 }
+/** A painter's easel with a canvas on it, facing +z. `userData.canvas` is the board, for daubing on. */
+function makeEasel() {
+  const g = new THREE.Group(), wood = mat(0x8a6a3a, { roughness: 0.9 });
+  for (const sx of [-0.28, 0.28]) mesh(G.cyl(0.02, 0.025, 1.7, 6), wood, { x: sx, y: 0.85, z: 0.06, rz: -sx * 0.32, parent: g });
+  mesh(G.cyl(0.02, 0.025, 1.6, 6), wood, { y: 0.8, z: -0.3, rx: 0.4, parent: g });
+  mesh(G.box(0.62, 0.03, 0.08), wood, { y: 0.62, z: 0.1, parent: g });
+  const canvas = mesh(G.box(0.56, 0.7, 0.02), mat(0xf7f3ec, { roughness: 1 }), { y: 1.0, z: 0.1, parent: g }); g.userData.canvas = canvas;
+  // what is on it: a sky, a hill and a black cat, dabbed on as the painting progresses
+  const daubs = [];
+  for (const [x, y, w, h, c] of [[0, 0.16, 0.5, 0.26, 0x9ec9ff], [0, -0.14, 0.5, 0.3, 0x5d9a44], [-0.06, -0.08, 0.14, 0.1, 0x1a1a22], [0.05, -0.02, 0.07, 0.07, 0x1a1a22]]) { const d = mesh(G.box(w, h, 0.005), mat(c, { roughness: 1 }), { x, y: 1.0 + y, z: 0.125, shadow: 'none', parent: g }); d.visible = false; daubs.push(d); }
+  g.userData.daubs = daubs;
+  return g;
+}
 function makeMailbox(color) {
   const g = new THREE.Group();
   mesh(G.box(0.08, 1.1, 0.08), mat(0x5a3b22), { y: 0.55, parent: g });
