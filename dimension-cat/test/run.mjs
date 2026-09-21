@@ -171,6 +171,7 @@ check(game.npcs.filter((n) => n instanceof Object && n.constructor.name === 'Wan
     frames(5); check(game.nearest && /again/.test(game.nearest._label), `the prompt now says: ${game.nearest && game.nearest._label}`);
     game.interact(); frames(10); check(game.state.friends.size === f0 + 1 && game.state.score === s0 + 5, 'saying hello again makes no second friend');
     check(game.friendTotal >= 11, `the Neighborhood has ${game.friendTotal} people to meet`);
+    check(elements.get('friends').textContent === `1 / ${game.friendTotal}`, `the HUD shows friends: ${elements.get('friends').textContent}`);
     pos().copy(before2); }
   // nobody strolls onto the asphalt
   const strollers = game.npcs.filter((n) => n.constructor.name === 'Wanderer' && n.avoid);

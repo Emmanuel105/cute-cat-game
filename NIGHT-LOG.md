@@ -181,3 +181,9 @@ Every "Say hello" to someone new makes a **friend**: five points, a chime, and "
 in Neighborhood". Meet everyone in a world and there is a fanfare and fifty more. Friends are
 remembered in the save — the Continue line on the start screen shows how many — and the prompt
 changes to "Say hello again" for people you already know.
+
+## Round 23 — friends on the HUD and the map
+
+A **Friends** counter sits under Collected ("1 / 11"). On the mini-map the amber dots are people
+still to meet; anyone already greeted fades to grey. A few seconds after you start, a one-time hint
+says to walk up to anyone and press E.
