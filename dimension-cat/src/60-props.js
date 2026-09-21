@@ -659,6 +659,7 @@ function makeConveyor(game, x, z, len, dir = 1) {
   const crates = [];
   for (let i = 0; i < 3; i++) { const c = group(0, 1.06, -len / 2 + i * len / 3, g); mesh(G.box(0.7, 0.7, 0.7), crateM, { parent: c }); mesh(G.box(0.72, 0.1, 0.72), stripeM, { shadow: 'none', parent: c }); crates.push(c); }
   g.userData.update = (dt) => { for (const c of crates) { c.position.z += dir * 0.9 * dt; if (dir > 0 && c.position.z > len / 2 - 0.4) c.position.z = -len / 2 + 0.4; if (dir < 0 && c.position.z < -len / 2 + 0.4) c.position.z = len / 2 - 0.4; } };
+  g.userData.crates = crates; g.userData.len = len; g.userData.dir = dir;   // for a Loader robot at the end
   return g;
 }
 function makeRobotArm(game, x, z) {

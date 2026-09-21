@@ -199,6 +199,7 @@ function makeHuman(o = {}) {
     if (o.hat === 'cap') { mesh(G.dome(R * 1.1, 14, 9), hatM, { y: R * 0.14, parent: head }); mesh(G.box(R * 1.2, R * 0.13, R * 0.75), hatM, { y: R * 0.28, z: R * 0.98, rx: -0.12, parent: head }); }
     if (o.hat === 'beanie') { mesh(G.dome(R * 1.12, 14, 9), hatM, { y: R * 0.02, sy: 1.15, parent: head }); mesh(G.torus(R * 1.08, R * 0.16, 6, 18), hatM, { y: R * 0.06, rx: PI / 2, shadow: 'none', parent: head }); mesh(G.sphere(R * 0.3, 8, 6), mat(0xffffff, { roughness: 1 }), { y: R * 1.2, shadow: 'none', parent: head }); }
     if (o.hat === 'sunhat') { mesh(G.dome(R * 1.12, 14, 9), hatM, { y: R * 0.14, parent: head }); mesh(G.cyl(R * 2.1, R * 2.1, R * 0.12, 18), hatM, { y: R * 0.2, parent: head }); mesh(G.torus(R * 1.05, R * 0.13, 6, 18), mat(0xd62839), { y: R * 0.34, rx: PI / 2, shadow: 'none', parent: head }); }
+    if (o.hat === 'helmet') { mesh(G.dome(R * 1.1, 14, 10), hatM, { y: R * 0.1, sy: 1.75, parent: head }); mesh(G.torus(R * 1.12, R * 0.08, 6, 18), hatM, { y: R * 0.12, rx: PI / 2, shadow: 'none', parent: head }); mesh(G.sphere(R * 0.16, 8, 6), mat(0xd8d8d8, { roughness: 0.4 }), { y: R * 0.75, z: R * 1.02, shadow: 'none', parent: head }); mesh(G.sphere(R * 0.1, 8, 6), mat(0xd8d8d8, { roughness: 0.4 }), { y: R * 2.0, shadow: 'none', parent: head }); }   // a bobby's helmet: tall dome, badge, a knob on top
     if (o.hat === 'flatcap') { mesh(G.dome(R * 1.12, 14, 9), hatM, { y: R * 0.1, sy: 0.72, parent: head }); mesh(G.box(R * 1.15, R * 0.1, R * 0.62), hatM, { y: R * 0.2, z: R * 0.95, rx: -0.2, parent: head }); }
   }
   // ---- animation. Walk swings the limbs; standing still, people shift their weight, glance
@@ -791,6 +792,61 @@ class RingDance {
     if (this.turnT <= 0) { this.dir = -this.dir; this.turnT = this.turnEvery; }
     this.a += this.dir * this.speed * dt;
     this.place(dt);
+  }
+}
+
+// ---------------------------------------------------------------- patroller: walks a fixed route there and back, pausing at the ends
+class Patroller {
+  constructor(game, rig, { points, speed = 0.9, pause = [1.5, 4], r = 0.32, height = 1.8, cries = null, cryIcon = '\ud83d\udcac' }) {
+    this.game = game; this.rig = rig; this.points = points; this.speed = speed; this.pauseRange = pause; this.r = r; this.height = height;
+    this.i = 0; this.dir = 1; this.x = points[0][0]; this.z = points[0][1]; this.phase = rnd() * TAU; this.t = rnd() * 10; this.wait = 0;
+    this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false; this.state = 'walk'; this.timer = 0;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = rnd.range(5, 10);
+    this.circle = game.physics.addCircle(this, this.x, this.z, r);
+    rig.group.position.set(this.x, game.physics.ground0(this.x, this.z), this.z);
+  }
+  update(dt) {
+    this.t += dt; const P = this.game.physics;
+    if (this.wait > 0) { this.wait -= dt; this.state = 'idle'; this.timer = this.wait; this.rig.animate(this.phase, false, dt, this.t); }
+    else {
+      this.state = 'walk';
+      const [tx, tz] = this.points[this.i + this.dir], dx = tx - this.x, dz = tz - this.z, d = Math.hypot(dx, dz);
+      if (d < 0.25) { this.i += this.dir; if (this.i === 0 || this.i === this.points.length - 1) { this.dir = -this.dir; this.wait = rnd.range(...this.pauseRange); } }
+      else {
+        const ang = atan2(dx, dz), step = min(d, this.speed * dt), nx = this.x + sin(ang) * step, nz = this.z + cos(ang) * step;
+        const cat = this.game.cat.group.position;
+        if (dist2(nx, nz, cat.x, cat.z) < (this.r + CAT_RADIUS + 0.2) ** 2) { this.rig.animate(this.phase, false, dt, this.t); }   // let the cat pass
+        else { this.x = nx; this.z = nz; this.circle.x = nx; this.circle.z = nz; this.phase += dt * this.speed * 4.4; this.rig.group.rotation.y = dampAngle(this.rig.group.rotation.y, ang, 7, dt); this.rig.animate(this.phase, true, dt, this.t); }
+        this.rig.group.position.set(this.x, P.ground0(this.x, this.z), this.z);
+      }
+    }
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
+// ---------------------------------------------------------------- loader: a robot at the end of a conveyor, lifting each crate off as it arrives
+class Loader {
+  constructor(game, rig, conveyor) {
+    this.game = game; this.rig = rig; this.conv = conveyor; this.t = rnd() * 10; this.lift = 0; this.lifted = new Set();
+    const d = conveyor.userData.dir, len = conveyor.userData.len;
+    this.x = conveyor.position.x; this.z = conveyor.position.z + d * (len / 2 + 1.1);
+    rig.group.position.set(this.x, game.physics.ground0(this.x, this.z), this.z); rig.group.rotation.y = d > 0 ? PI : 0;   // facing back up the belt
+    this.circle = game.physics.addCircle(this, this.x, this.z, 0.4);
+  }
+  update(dt) {
+    this.t += dt; const d = this.conv.userData.dir, end = d * this.conv.userData.len / 2;
+    // the crate nearest the end of the belt, and how close it is
+    let near = 9, nearest = null;
+    for (const c of this.conv.userData.crates) { const gap = abs(end - c.position.z); if (gap < near) { near = gap; nearest = c; } }
+    const arriving = near < 1.6;
+    if (arriving && nearest && !this.lifted.has(nearest)) { this.lifted.add(nearest); SFX.beep(); }
+    if (!arriving) this.lifted.clear();
+    this.lift = damp(this.lift, arriving ? 1 : 0, 10, dt);
+    this.rig.animate(0, false, dt, this.t);
+    for (const A of this.rig.arms) { A.sh.rotation.x = -0.25 - this.lift * 1.35; A.el.rotation.x = -0.4 - this.lift * 0.6; }   // arms come up to take the crate
+    this.rig.body.rotation.x = this.lift * 0.12;
+    if (this.rig.head) this.rig.head.rotation.x = this.lift * 0.35 - 0.1;
   }
 }
 

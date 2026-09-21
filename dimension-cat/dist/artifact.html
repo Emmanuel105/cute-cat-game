@@ -1893,6 +1893,7 @@ function makeHuman(o = {}) {
     if (o.hat === 'cap') { mesh(G.dome(R * 1.1, 14, 9), hatM, { y: R * 0.14, parent: head }); mesh(G.box(R * 1.2, R * 0.13, R * 0.75), hatM, { y: R * 0.28, z: R * 0.98, rx: -0.12, parent: head }); }
     if (o.hat === 'beanie') { mesh(G.dome(R * 1.12, 14, 9), hatM, { y: R * 0.02, sy: 1.15, parent: head }); mesh(G.torus(R * 1.08, R * 0.16, 6, 18), hatM, { y: R * 0.06, rx: PI / 2, shadow: 'none', parent: head }); mesh(G.sphere(R * 0.3, 8, 6), mat(0xffffff, { roughness: 1 }), { y: R * 1.2, shadow: 'none', parent: head }); }
     if (o.hat === 'sunhat') { mesh(G.dome(R * 1.12, 14, 9), hatM, { y: R * 0.14, parent: head }); mesh(G.cyl(R * 2.1, R * 2.1, R * 0.12, 18), hatM, { y: R * 0.2, parent: head }); mesh(G.torus(R * 1.05, R * 0.13, 6, 18), mat(0xd62839), { y: R * 0.34, rx: PI / 2, shadow: 'none', parent: head }); }
+    if (o.hat === 'helmet') { mesh(G.dome(R * 1.1, 14, 10), hatM, { y: R * 0.1, sy: 1.75, parent: head }); mesh(G.torus(R * 1.12, R * 0.08, 6, 18), hatM, { y: R * 0.12, rx: PI / 2, shadow: 'none', parent: head }); mesh(G.sphere(R * 0.16, 8, 6), mat(0xd8d8d8, { roughness: 0.4 }), { y: R * 0.75, z: R * 1.02, shadow: 'none', parent: head }); mesh(G.sphere(R * 0.1, 8, 6), mat(0xd8d8d8, { roughness: 0.4 }), { y: R * 2.0, shadow: 'none', parent: head }); }   // a bobby's helmet: tall dome, badge, a knob on top
     if (o.hat === 'flatcap') { mesh(G.dome(R * 1.12, 14, 9), hatM, { y: R * 0.1, sy: 0.72, parent: head }); mesh(G.box(R * 1.15, R * 0.1, R * 0.62), hatM, { y: R * 0.2, z: R * 0.95, rx: -0.2, parent: head }); }
   }
   // ---- animation. Walk swings the limbs; standing still, people shift their weight, glance
@@ -2485,6 +2486,61 @@ class RingDance {
     if (this.turnT <= 0) { this.dir = -this.dir; this.turnT = this.turnEvery; }
     this.a += this.dir * this.speed * dt;
     this.place(dt);
+  }
+}
+
+// ---------------------------------------------------------------- patroller: walks a fixed route there and back, pausing at the ends
+class Patroller {
+  constructor(game, rig, { points, speed = 0.9, pause = [1.5, 4], r = 0.32, height = 1.8, cries = null, cryIcon = '\ud83d\udcac' }) {
+    this.game = game; this.rig = rig; this.points = points; this.speed = speed; this.pauseRange = pause; this.r = r; this.height = height;
+    this.i = 0; this.dir = 1; this.x = points[0][0]; this.z = points[0][1]; this.phase = rnd() * TAU; this.t = rnd() * 10; this.wait = 0;
+    this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false; this.state = 'walk'; this.timer = 0;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = rnd.range(5, 10);
+    this.circle = game.physics.addCircle(this, this.x, this.z, r);
+    rig.group.position.set(this.x, game.physics.ground0(this.x, this.z), this.z);
+  }
+  update(dt) {
+    this.t += dt; const P = this.game.physics;
+    if (this.wait > 0) { this.wait -= dt; this.state = 'idle'; this.timer = this.wait; this.rig.animate(this.phase, false, dt, this.t); }
+    else {
+      this.state = 'walk';
+      const [tx, tz] = this.points[this.i + this.dir], dx = tx - this.x, dz = tz - this.z, d = Math.hypot(dx, dz);
+      if (d < 0.25) { this.i += this.dir; if (this.i === 0 || this.i === this.points.length - 1) { this.dir = -this.dir; this.wait = rnd.range(...this.pauseRange); } }
+      else {
+        const ang = atan2(dx, dz), step = min(d, this.speed * dt), nx = this.x + sin(ang) * step, nz = this.z + cos(ang) * step;
+        const cat = this.game.cat.group.position;
+        if (dist2(nx, nz, cat.x, cat.z) < (this.r + CAT_RADIUS + 0.2) ** 2) { this.rig.animate(this.phase, false, dt, this.t); }   // let the cat pass
+        else { this.x = nx; this.z = nz; this.circle.x = nx; this.circle.z = nz; this.phase += dt * this.speed * 4.4; this.rig.group.rotation.y = dampAngle(this.rig.group.rotation.y, ang, 7, dt); this.rig.animate(this.phase, true, dt, this.t); }
+        this.rig.group.position.set(this.x, P.ground0(this.x, this.z), this.z);
+      }
+    }
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
+// ---------------------------------------------------------------- loader: a robot at the end of a conveyor, lifting each crate off as it arrives
+class Loader {
+  constructor(game, rig, conveyor) {
+    this.game = game; this.rig = rig; this.conv = conveyor; this.t = rnd() * 10; this.lift = 0; this.lifted = new Set();
+    const d = conveyor.userData.dir, len = conveyor.userData.len;
+    this.x = conveyor.position.x; this.z = conveyor.position.z + d * (len / 2 + 1.1);
+    rig.group.position.set(this.x, game.physics.ground0(this.x, this.z), this.z); rig.group.rotation.y = d > 0 ? PI : 0;   // facing back up the belt
+    this.circle = game.physics.addCircle(this, this.x, this.z, 0.4);
+  }
+  update(dt) {
+    this.t += dt; const d = this.conv.userData.dir, end = d * this.conv.userData.len / 2;
+    // the crate nearest the end of the belt, and how close it is
+    let near = 9, nearest = null;
+    for (const c of this.conv.userData.crates) { const gap = abs(end - c.position.z); if (gap < near) { near = gap; nearest = c; } }
+    const arriving = near < 1.6;
+    if (arriving && nearest && !this.lifted.has(nearest)) { this.lifted.add(nearest); SFX.beep(); }
+    if (!arriving) this.lifted.clear();
+    this.lift = damp(this.lift, arriving ? 1 : 0, 10, dt);
+    this.rig.animate(0, false, dt, this.t);
+    for (const A of this.rig.arms) { A.sh.rotation.x = -0.25 - this.lift * 1.35; A.el.rotation.x = -0.4 - this.lift * 0.6; }   // arms come up to take the crate
+    this.rig.body.rotation.x = this.lift * 0.12;
+    if (this.rig.head) this.rig.head.rotation.x = this.lift * 0.35 - 0.1;
   }
 }
 
@@ -3659,6 +3715,7 @@ function makeConveyor(game, x, z, len, dir = 1) {
   const crates = [];
   for (let i = 0; i < 3; i++) { const c = group(0, 1.06, -len / 2 + i * len / 3, g); mesh(G.box(0.7, 0.7, 0.7), crateM, { parent: c }); mesh(G.box(0.72, 0.1, 0.72), stripeM, { shadow: 'none', parent: c }); crates.push(c); }
   g.userData.update = (dt) => { for (const c of crates) { c.position.z += dir * 0.9 * dt; if (dir > 0 && c.position.z > len / 2 - 0.4) c.position.z = -len / 2 + 0.4; if (dir < 0 && c.position.z < -len / 2 + 0.4) c.position.z = len / 2 - 0.4; } };
+  g.userData.crates = crates; g.userData.len = len; g.userData.dir = dir;   // for a Loader robot at the end
   return g;
 }
 function makeRobotArm(game, x, z) {
@@ -4970,7 +5027,12 @@ function buildRobotCity(game, entry) {
   for (const [x, z] of [[-24, 40], [30, 44], [-52, -10], [58, -18]]) { const rig = makeRobot(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x, z, speed: r.range(0.5, 0.8), leash: 12, r: 0.42, height: 1.9, idle: [1.5, 4] })); }
   for (const [x, z] of [[-46, 34], [40, 36], [54, -30], [-40, -40]]) { mesh(G.cyl(0.5, 0.5, 1.2, 14), mat(0x2f6f9f, { metalness: 0.6, roughness: 0.4 }), { x, y: 0.6, z, parent: W }); P.addBox(x, 0.6, z, 1, 1.2, 1, { cam: false }); }
   // factory floor
-  U.push(makeConveyor(game, -12, -6, 14, 1).userData.update, makeConveyor(game, 12, -6, 14, -1).userData.update);
+  { const cA = makeConveyor(game, -12, -6, 14, 1), cB = makeConveyor(game, 12, -6, 14, -1); U.push(cA.userData.update, cB.userData.update);
+    // a loader robot at the end of each belt, and the crates it has already stacked beside it
+    for (const conv of [cA, cB]) { const rig = makeRobot(); W.add(rig.group); const L = new Loader(game, rig, conv); game.npcs.push(L);
+      const crateM = mat(0x8a6a3a, { roughness: 0.9, map: TEX.planks(30, 34) }), sx = conv === cA ? -1.5 : 1.5;
+      for (const [dx, dy, dz] of [[0, 0.35, 0], [0.75, 0.35, 0], [0.37, 1.05, 0]]) mesh(G.box(0.7, 0.7, 0.7), crateM, { x: L.x + sx + dx, y: dy, z: L.z + dz, parent: W });
+      P.addBox(L.x + sx + 0.37, 0.7, L.z, 1.5, 1.4, 0.8, { cam: false }); P.addBox(L.x, 0.9, L.z, 0.8, 1.8, 0.8, { cam: false }); } }
   const arm = makeRobotArm(game, -5, -16); U.push(arm.userData.update);
   const furnace = makeFurnace(game, 9, -17, 0); U.push(furnace.userData.update);
   const pipe = mat(0x5a6470, { metalness: 0.8, roughness: 0.35 });
@@ -5096,6 +5158,11 @@ function buildVictorian(game, entry) {
     game.npcs.push(new Wanderer(game, rig, { x, z, speed: rig.look.cane ? r.range(0.45, 0.6) : urchin ? r.range(1.1, 1.5) : r.range(0.6, 1.0), leash: 12,
       cries: urchin ? ['Extra! Extra! Cat seen in town!', "Paper, guv'nor? Ha'penny!", 'Read all about it!', 'Late edition! Squirrel at large!'] : null, cryIcon: '\ud83d\udcf0' }));
   });
+  // a bobby on the beat: up one side of the street and down the other
+  { const bobby = makeHuman({ ...randomPerson(r, { female: false, elder: false, child: false }), shirt: 0x1e2436, pants: 0x1e2436, shoes: 0x0c0c0c, coat: true, buttons: 0xd8d8d8, belt: 0x0c0c0c, hat: 'helmet', hatColor: 0x1e2436, moustache: true, build: 'stout', beard: false, glasses: false });
+    W.add(bobby.group);
+    game.npcs.push(new Patroller(game, bobby, { points: [[-30, 5.2], [30, 5.2], [30, -5.2], [-30, -5.2]], speed: 0.75, pause: [2, 4],
+      cries: ["Evening, all.", 'Move along now, nothing to see.', "'Ello 'ello, what's all this then?", 'Mind how you go, puss.'], cryIcon: '\ud83d\udc6e' })); }
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
@@ -5327,6 +5394,11 @@ function buildForest(game, entry) {
   let hootT = 6; U.push((dt) => { hootT -= dt; if (hootT <= 0) { SFX.hoot(); hootT = rnd.range(8, 16); } });
   for (let i = 0; i < 5; i++) { const rig = makeFairy(r.pick([0xa8ff9a, 0xffd1ff, 0x9fe8ff, 0xfff3a0])); game.npcs.push(new Flyer(game, rig, { cx: r.range(-16, 16), cz: r.range(-14, 18), r: r.range(2.5, 5), h: r.range(1.2, 2.4), speed: r.range(1.2, 2), bob: 0.5, wobble: 1, cw: i % 2 === 0 })); }
   for (let i = 0; i < 12; i++) { const rig = makeButterfly(r.pick([300, 40, 200, 20, 260])); game.npcs.push(new Flyer(game, rig, { cx: r.range(-30, 30), cz: r.range(-30, 30), r: r.range(1.5, 4), h: r.range(0.7, 2), speed: r.range(0.8, 1.6), bob: 0.3, wobble: 0.8, cw: i % 2 === 0 })); }
+  // a hiker walks the stepping stones from the hollow oak down to the glade and back
+  { const hiker = makeHuman({ ...randomPerson(r, { female: r.chance(0.5) }), shirt: 0xef7d2f, pants: 0x4c6b3c, shoes: 0x5a4030, backpack: 0x2f6fd6, hat: 'cap', hatColor: 0x2e4a3a, scarf: null, jacket: null });
+    W.add(hiker.group);
+    game.npcs.push(new Patroller(game, hiker, { points: [[0.6, 44], [sin(4 * 0.7) * 1.6, 40 - 4 * 2.6], [sin(9 * 0.7) * 1.6, 40 - 9 * 2.6], [3, 2], [8.5, -2]], speed: 0.85, pause: [2, 5],
+      cries: ['What a walk! Have you seen the treehouse?', 'Mind the frogs by the pond.', 'The fairies come out at dusk, you know.'], cryIcon: '\ud83c\udf32' })); }
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
 
