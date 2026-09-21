@@ -398,6 +398,21 @@ function makeBench() {
   for (const x of [-0.8, 0.8]) { mesh(G.box(0.06, 0.48, 0.5), iron, { x, y: 0.24, parent: g }); mesh(G.box(0.06, 0.5, 0.06), iron, { x, y: 0.7, z: -0.33, rx: 0.2, parent: g }); }
   return g;
 }
+/**
+ * A swing set: two A-frames, a top bar, and one seat on two ropes. `userData.pivot` is the group the
+ * seat hangs from — rotate it about x to swing. The ropes stay out of the ink pass.
+ */
+function makeSwingSet(o = {}) {
+  const g = new THREE.Group(), frame = mat(o.color ?? 0xd62839, { roughness: 0.6, metalness: 0.2 }), rope = mat(0x8a7a5a, { roughness: 1 }), seat = mat(0x3a2a1e, { roughness: 0.9 });
+  const H = 2.6, W2 = 1.3, L = 2.05;
+  for (const sx of [-W2, W2]) for (const sz of [-0.7, 0.7]) mesh(G.cyl(0.05, 0.06, H + 0.2, 8), frame, { x: sx, y: H / 2, z: sz * 0.62, rx: -sz * 0.36, parent: g });
+  mesh(G.cyl(0.055, 0.055, W2 * 2 + 0.3, 8), frame, { y: H, rz: PI / 2, parent: g });
+  const pivot = group(0, H, 0, g); g.userData.pivot = pivot;
+  for (const sx of [-0.28, 0.28]) noInk(mesh(G.cyl(0.014, 0.014, L, 4), rope, { x: sx, y: -L / 2, parent: pivot }));
+  mesh(G.box(0.7, 0.05, 0.28), seat, { y: -L, parent: pivot });
+  g.userData.seatY = H - L;   // seat height above the ground when hanging straight
+  return g;
+}
 function makeMailbox(color) {
   const g = new THREE.Group();
   mesh(G.box(0.08, 1.1, 0.08), mat(0x5a3b22), { y: 0.55, parent: g });

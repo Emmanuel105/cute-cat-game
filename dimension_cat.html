@@ -1713,7 +1713,7 @@ const LONG_STYLES = ['bob', 'long', 'pony', 'bun', 'braids', 'curls'];
  * The wardrobe. Worlds draw from these through `bag()`, so a street full of people wears a street
  * full of different clothes instead of whatever an unlucky run of the dice hands out.
  */
-const SHIRT_COLORS = [0x3f6fd6, 0xe0503c, 0x2e9e6e, 0xf2c744, 0x8a5acf, 0xf7f3ec, 0xff8fab, 0x35b4c4, 0xef7d2f, 0x6b7fd7, 0xb5485f, 0x4c6b3c];
+const SHIRT_COLORS = [0x3f6fd6, 0xe0503c, 0x2e9e6e, 0xf2c744, 0x8a5acf, 0xf7f3ec, 0xff8fab, 0x35b4c4, 0xef7d2f, 0x6b7fd7, 0xb5485f, 0x4c6b3c, 0x9b6b3a, 0x5aa0d8, 0xd9b86a];
 const PANTS_COLORS = [0x2c3140, 0x5a4634, 0x8899aa, 0x1e2a44, 0x6b5b4a, 0x3c4a5a, 0x7a6a58, 0x2f3b33];
 const SHOE_COLORS = [0x1e1a18, 0x3a2a1e, 0x5a4030, 0xefe7d8, 0x8a2f2f, 0x27354a];
 const MOUTH_SHAPES = ['smile', 'smile', 'smile', 'grin', 'small', 'open'];
@@ -2441,6 +2441,57 @@ class BallGame {
       return;
     }
     if (u >= 1) { this.flight = -1; this.holder = 1 - this.holder; this.holdT = rnd.range(0.5, 1.1); SFX.bounce(); }
+  }
+}
+
+// ---------------------------------------------------------------- swinger: a child on the park swing, legs kicking at the top of each arc
+class Swinger {
+  constructor(game, rig, swingSet, { x, z, ry = 0 }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 3; this.cryT = rnd.range(4, 8);
+    this.pivot = swingSet.userData.pivot;
+    // seated on the seat: hips at seat height, so the rig's origin goes 0.9 k below it
+    rig.group.position.set(0, -(swingSet.userData.pivot.position.y - swingSet.userData.seatY) - 0.9 * rig.k + 0.04, 0.02);
+    this.pivot.add(rig.group);
+    this.circle = game.physics.addCircle(this, x, z, 0.4);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig, ph = this.t * 2.1;   // a three-second swing
+    this.pivot.rotation.x = -sin(ph) * 0.62;   // positive fwd is the way the child faces
+    rig.animate(0, false, dt, this.t);
+    const fwd = clamp(sin(ph), -1, 1);      // +1 at the front of the arc
+    for (const L of rig.legs) { L.hip.rotation.x = -PI / 2 + 0.15; L.knee.rotation.x = clamp(1.35 - fwd * 1.3, 0.05, 2.6); L.ankle.rotation.x = 0.2; }   // legs kick out going forward, tuck coming back
+    if (!rig.gesture) for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -1.15, 8, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.9, 8, dt); A.sh.rotation.z = (A === rig.arms[0] ? 1 : -1) * 0.32; }   // holding the ropes
+    rig.spine.rotation.x = damp(rig.spine.rotation.x, -fwd * 0.18, 6, dt); rig.body.position.y = 0;
+    rig.head.rotation.x = damp(rig.head.rotation.x, fwd * 0.1, 6, dt);
+    // "Wheee!" now and then, when the cat is near enough to hear
+    this.cryT -= dt; const c = this.game.cat.group.position;
+    if (this.cryT <= 0) { this.cryT = rnd.range(7, 14); if (dist2(this.x, this.z, c.x, c.z) < 150) { this.game.toast('\ud83c\udfa0 "Wheee!"', 1800); SFX.talk(); } }
+  }
+}
+
+// ---------------------------------------------------------------- ring dance: a circle of dancers going round, hand in hand
+class RingDance {
+  constructor(game, rigs, { cx, cz, r = 2.4, speed = 0.55, turnEvery = 9 }) {
+    this.game = game; this.cx = cx; this.cz = cz; this.r = r; this.speed = speed; this.turnEvery = turnEvery; this.t = 0; this.dir = 1; this.turnT = turnEvery; this.a = 0;
+    this.dancers = rigs.map((rig, i) => ({ rig, off: i / rigs.length * TAU, phase: rnd() * TAU, circle: game.physics.addCircle(this, cx, cz, 0.3) }));
+    this.rig = rigs[0]; this.place(0);
+  }
+  place(dt) {
+    for (const d of this.dancers) {
+      const a = this.a + d.off, x = this.cx + cos(a) * this.r, z = this.cz + sin(a) * this.r;
+      d.circle.x = x; d.circle.z = z;
+      d.rig.group.position.set(x, this.game.physics.ground0(x, z), z);
+      // facing along the ring, the way they are going
+      d.rig.group.rotation.y = atan2(-sin(a) * this.dir, cos(a) * this.dir);
+      d.phase += dt * 3.6;
+      d.rig.animate(d.phase, true, dt, this.t);
+    }
+  }
+  update(dt) {
+    this.t += dt; this.turnT -= dt;
+    if (this.turnT <= 0) { this.dir = -this.dir; this.turnT = this.turnEvery; }
+    this.a += this.dir * this.speed * dt;
+    this.place(dt);
   }
 }
 
@@ -3352,6 +3403,21 @@ function makeBench() {
   for (let i = 0; i < 3; i++) mesh(G.box(1.8, 0.05, 0.12), wood, { y: 0.48, z: -0.14 + i * 0.14, parent: g });
   for (let i = 0; i < 2; i++) mesh(G.box(1.8, 0.05, 0.12), wood, { y: 0.72 + i * 0.16, z: -0.32, rx: 0.2, parent: g });
   for (const x of [-0.8, 0.8]) { mesh(G.box(0.06, 0.48, 0.5), iron, { x, y: 0.24, parent: g }); mesh(G.box(0.06, 0.5, 0.06), iron, { x, y: 0.7, z: -0.33, rx: 0.2, parent: g }); }
+  return g;
+}
+/**
+ * A swing set: two A-frames, a top bar, and one seat on two ropes. `userData.pivot` is the group the
+ * seat hangs from — rotate it about x to swing. The ropes stay out of the ink pass.
+ */
+function makeSwingSet(o = {}) {
+  const g = new THREE.Group(), frame = mat(o.color ?? 0xd62839, { roughness: 0.6, metalness: 0.2 }), rope = mat(0x8a7a5a, { roughness: 1 }), seat = mat(0x3a2a1e, { roughness: 0.9 });
+  const H = 2.6, W2 = 1.3, L = 2.05;
+  for (const sx of [-W2, W2]) for (const sz of [-0.7, 0.7]) mesh(G.cyl(0.05, 0.06, H + 0.2, 8), frame, { x: sx, y: H / 2, z: sz * 0.62, rx: -sz * 0.36, parent: g });
+  mesh(G.cyl(0.055, 0.055, W2 * 2 + 0.3, 8), frame, { y: H, rz: PI / 2, parent: g });
+  const pivot = group(0, H, 0, g); g.userData.pivot = pivot;
+  for (const sx of [-0.28, 0.28]) noInk(mesh(G.cyl(0.014, 0.014, L, 4), rope, { x: sx, y: -L / 2, parent: pivot }));
+  mesh(G.box(0.7, 0.05, 0.28), seat, { y: -L, parent: pivot });
+  g.userData.seatY = H - L;   // seat height above the ground when hanging straight
   return g;
 }
 function makeMailbox(color) {
@@ -4681,6 +4747,8 @@ function buildNeighborhood(game, entry) {
   makePond(W, -12, 46, 3.2, r);
   const bench = makeBench(); place(game, U, bench, 6, 40, PI); P.addBox(6, 0.4, 40, 1.9, 0.8, 0.6, { cam: false });
   place(game, U, makeLamp('modern'), -4, 38, PI / 2); P.addBox(-4, 2, 38, 0.3, 4, 0.3, { cam: false });
+  const swingSet = makeSwingSet({ color: 0x2e63d8 }); place(game, U, swingSet, -7, 42.5, PI); Z.add(-7, 42.5, 3.4, 3.2);
+  for (const sx of [-1.3, 1.3]) P.addBox(-7 + sx, 1.4, 42.5, 0.4, 2.8, 1.3, { cam: false });
   for (const [x, z, ry] of [[-32, 9.6, PI], [-12, 9.6, PI], [8, 9.6, PI], [28, 9.6, PI], [-22, 18.4, 0], [18, 18.4, 0], [47.9, 30, PI / 2], [-52, 9.6, PI], [-72, 9.6, PI], [48, 9.6, PI], [68, 9.6, PI], [-58, 18.4, 0], [58, 18.4, 0], [-36, 18.4, 0], [36, 18.4, 0]]) { place(game, U, makeLamp('modern'), x, z, ry); P.addBox(x, 2, z, 0.3, 4, 0.3, { cam: false }); }
   makeFlowers(game, [[-3.6, 6.2, 1.3, 40], [4.8, 6.4, 1.2, 36], [-18, 6, 2, 50], [18, 6, 2, 50], [8, 46, 3, 90], [-6, 52, 2.5, 60], [-36, 6, 2, 40], [36, 6, 2, 40], [-9, 34, 1.5, 30], [14, 36, 1.5, 30], [-54, 6, 2, 40], [54, 6, 2, 40], [-72, 6, 2, 40], [72, 6, 2, 40], [-45, 22, 2, 40], [51.5, 17, 2.5, 40], [-16, 46, 3, 70], [24, 48, 2.5, 60]], r);
   makeGrass(game, [[0, -6, 8, 120], [-18, -6, 5, 60], [18, -6, 5, 60], [-36, -6, 5, 50], [36, -6, 5, 50], [-54, -6, 5, 50], [54, -6, 5, 50], [-72, -6, 5, 50], [72, -6, 5, 50], [8, 44, 11, 200], [-12, 40, 8, 120], [-27, 34, 5, 60], [27, 34, 5, 60], [-45, 34, 5, 60], [45, 34, 5, 60], [-34, -34, 10, 110], [60, -40, 14, 160], [-70, 60, 12, 120], [40, 70, 10, 100], [66, 50, 12, 90]], r);
@@ -4714,6 +4782,8 @@ function buildNeighborhood(game, entry) {
   game.npcs.push(new Sitter(game, person({ female: true, elder: true, hairStyle: 'bun', hair: 0xd8d8d8 }), { x: 5.55, z: 40.1, ry: PI, side: -1 }));
   // someone walking the dog along the north pavement
   game.npcs.push(new DogWalker(game, person({ female: true, hairStyle: 'pony', hat: null }), makeDog(0x5a4030), { x: -30, z: 17.6, speed: 1.0, leash: 24, avoid: (x, z) => offRoad(x, z) || z < 16.8 || z > 19.6 }));   // the pavement and its verge, nobody's garden
+  // a child on the swing
+  game.npcs.push(new Swinger(game, person({ child: true, female: true, hairStyle: 'pony' }), swingSet, { x: -7, z: 42.5 }));
   // two children playing tag on the east lawn
   game.npcs.push(new Playmates(game, person({ child: true, female: false }), person({ child: true, female: true }), { cx: 10, cz: 46, leash: 5.5 }));
   for (const [color, dir, x, lane] of [[0xd62839, 1, -30, 12.6], [0x2e63d8, -1, 20, 15.4], [0xf3f3f3, 1, 40, 12.6]]) {
@@ -4863,7 +4933,9 @@ function buildCandyLand(game, entry) {
   U.push((dt) => { for (const c of puffs) { c.position.x += c.userData.drift * dt * 0.6; if (c.position.x > 150) c.position.x = -150; } });
 
   // gingerbread men
-  for (const [x, z] of [[-10, 4], [12, 8], [-18, 14], [20, -4], [6, 26], [-4, -56], [-46, 34], [48, 32]]) { const rig = makeGingerbread(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x, z, speed: r.range(0.6, 0.9), leash: 10, r: 0.4, height: 1.4, idle: [1, 3] })); }
+  for (const [x, z] of [[-10, 4], [-18, 14], [6, 26], [-4, -56], [-46, 34], [48, 32]]) { const rig = makeGingerbread(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x, z, speed: r.range(0.6, 0.9), leash: 10, r: 0.4, height: 1.4, idle: [1, 3] })); }
+  // four more dance a ring round the big lollipop, hand in hand, turning about every nine seconds
+  game.npcs.push(new RingDance(game, [0, 1, 2, 3].map(() => { const rig = makeGingerbread(); W.add(rig.group); return rig; }), { cx: 14, cz: 10, r: 2.6 }));
   // the Candy Queen (giant cat) guarding the airlock
   const boss = makeCandyCat(); place(game, U, boss.group, -4.5, -31, 0.35);
   P.addBox(-4.5, 1.2, -31, 2.4, 2.4, 3.2);

@@ -12,7 +12,7 @@ const LONG_STYLES = ['bob', 'long', 'pony', 'bun', 'braids', 'curls'];
  * The wardrobe. Worlds draw from these through `bag()`, so a street full of people wears a street
  * full of different clothes instead of whatever an unlucky run of the dice hands out.
  */
-const SHIRT_COLORS = [0x3f6fd6, 0xe0503c, 0x2e9e6e, 0xf2c744, 0x8a5acf, 0xf7f3ec, 0xff8fab, 0x35b4c4, 0xef7d2f, 0x6b7fd7, 0xb5485f, 0x4c6b3c];
+const SHIRT_COLORS = [0x3f6fd6, 0xe0503c, 0x2e9e6e, 0xf2c744, 0x8a5acf, 0xf7f3ec, 0xff8fab, 0x35b4c4, 0xef7d2f, 0x6b7fd7, 0xb5485f, 0x4c6b3c, 0x9b6b3a, 0x5aa0d8, 0xd9b86a];
 const PANTS_COLORS = [0x2c3140, 0x5a4634, 0x8899aa, 0x1e2a44, 0x6b5b4a, 0x3c4a5a, 0x7a6a58, 0x2f3b33];
 const SHOE_COLORS = [0x1e1a18, 0x3a2a1e, 0x5a4030, 0xefe7d8, 0x8a2f2f, 0x27354a];
 const MOUTH_SHAPES = ['smile', 'smile', 'smile', 'grin', 'small', 'open'];
@@ -740,6 +740,57 @@ class BallGame {
       return;
     }
     if (u >= 1) { this.flight = -1; this.holder = 1 - this.holder; this.holdT = rnd.range(0.5, 1.1); SFX.bounce(); }
+  }
+}
+
+// ---------------------------------------------------------------- swinger: a child on the park swing, legs kicking at the top of each arc
+class Swinger {
+  constructor(game, rig, swingSet, { x, z, ry = 0 }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 3; this.cryT = rnd.range(4, 8);
+    this.pivot = swingSet.userData.pivot;
+    // seated on the seat: hips at seat height, so the rig's origin goes 0.9 k below it
+    rig.group.position.set(0, -(swingSet.userData.pivot.position.y - swingSet.userData.seatY) - 0.9 * rig.k + 0.04, 0.02);
+    this.pivot.add(rig.group);
+    this.circle = game.physics.addCircle(this, x, z, 0.4);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig, ph = this.t * 2.1;   // a three-second swing
+    this.pivot.rotation.x = -sin(ph) * 0.62;   // positive fwd is the way the child faces
+    rig.animate(0, false, dt, this.t);
+    const fwd = clamp(sin(ph), -1, 1);      // +1 at the front of the arc
+    for (const L of rig.legs) { L.hip.rotation.x = -PI / 2 + 0.15; L.knee.rotation.x = clamp(1.35 - fwd * 1.3, 0.05, 2.6); L.ankle.rotation.x = 0.2; }   // legs kick out going forward, tuck coming back
+    if (!rig.gesture) for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -1.15, 8, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.9, 8, dt); A.sh.rotation.z = (A === rig.arms[0] ? 1 : -1) * 0.32; }   // holding the ropes
+    rig.spine.rotation.x = damp(rig.spine.rotation.x, -fwd * 0.18, 6, dt); rig.body.position.y = 0;
+    rig.head.rotation.x = damp(rig.head.rotation.x, fwd * 0.1, 6, dt);
+    // "Wheee!" now and then, when the cat is near enough to hear
+    this.cryT -= dt; const c = this.game.cat.group.position;
+    if (this.cryT <= 0) { this.cryT = rnd.range(7, 14); if (dist2(this.x, this.z, c.x, c.z) < 150) { this.game.toast('\ud83c\udfa0 "Wheee!"', 1800); SFX.talk(); } }
+  }
+}
+
+// ---------------------------------------------------------------- ring dance: a circle of dancers going round, hand in hand
+class RingDance {
+  constructor(game, rigs, { cx, cz, r = 2.4, speed = 0.55, turnEvery = 9 }) {
+    this.game = game; this.cx = cx; this.cz = cz; this.r = r; this.speed = speed; this.turnEvery = turnEvery; this.t = 0; this.dir = 1; this.turnT = turnEvery; this.a = 0;
+    this.dancers = rigs.map((rig, i) => ({ rig, off: i / rigs.length * TAU, phase: rnd() * TAU, circle: game.physics.addCircle(this, cx, cz, 0.3) }));
+    this.rig = rigs[0]; this.place(0);
+  }
+  place(dt) {
+    for (const d of this.dancers) {
+      const a = this.a + d.off, x = this.cx + cos(a) * this.r, z = this.cz + sin(a) * this.r;
+      d.circle.x = x; d.circle.z = z;
+      d.rig.group.position.set(x, this.game.physics.ground0(x, z), z);
+      // facing along the ring, the way they are going
+      d.rig.group.rotation.y = atan2(-sin(a) * this.dir, cos(a) * this.dir);
+      d.phase += dt * 3.6;
+      d.rig.animate(d.phase, true, dt, this.t);
+    }
+  }
+  update(dt) {
+    this.t += dt; this.turnT -= dt;
+    if (this.turnT <= 0) { this.dir = -this.dir; this.turnT = this.turnEvery; }
+    this.a += this.dir * this.speed * dt;
+    this.place(dt);
   }
 }
 

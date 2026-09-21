@@ -173,6 +173,9 @@ check(game.npcs.filter((n) => n instanceof Object && n.constructor.name === 'Wan
   check(swaps >= 1, `the children tag each other (${swaps} swaps in 20 s)`);
   check(play.kids.every((k) => Math.hypot(k.x - play.cx, k.z - play.cz) <= play.leash + 0.01), 'the children stay on their lawn');
   check(play.kids.every((k) => Number.isFinite(k.rig.group.position.y)), 'the children keep their feet');
+  const sw = game.npcs.find((n) => n.constructor.name === 'Swinger');
+  const r0 = sw.pivot.rotation.x; frames(45); const r1 = sw.pivot.rotation.x;
+  check(sw && Math.abs(r1 - r0) > 0.05 && Math.abs(r1) < 0.7, `a child is swinging in the park (${r0.toFixed(2)} → ${r1.toFixed(2)} rad)`);
 }
 // travel through all worlds
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -185,6 +188,7 @@ for (const [idx, entry] of [[1, 'from-prev'], [2, 'from-prev'], [3, 'from-prev']
   check(game.npcs.every((n) => finite(n.rig.group.position)), `world ${idx}: NPCs finite`);
   check(game.collectibles.items.length >= 6, `world ${idx}: ${game.collectibles.items.length} collectibles`);
   check(game.squirrels.length === 1, `world ${idx}: has its squirrel`);
+  if (idx === 1) { const rd = game.npcs.find((n) => n.constructor.name === 'RingDance'); const d0 = rd.dancers.map((d) => [d.circle.x, d.circle.z]); frames(60); check(rd.dancers.every((d, i) => Math.hypot(d.circle.x - d0[i][0], d.circle.z - d0[i][1]) > 0.5 && Math.abs(Math.hypot(d.circle.x - rd.cx, d.circle.z - rd.cz) - rd.r) < 0.01), 'Candy Land: the gingerbread men dance round the lollipop'); }
   if (idx === 4) { const b = game.npcs.find((n) => n.constructor.name === 'BallGame'); check(b && b.passes >= 2 && Number.isFinite(b.ball.position.y) && b.ball.position.y > 0, `Sunny Shore: the beach ball is being passed (${b ? b.passes : 0} passes in 5 s)`); }
   if (idx === 5) { const f = game.npcs.find((n) => n.constructor.name === 'SnowballFight'); check(f && f.throws >= 2 && f.kids.every((k) => Number.isFinite(k.rig.group.position.y)), `Frosty Peak: the children are throwing snowballs (${f ? f.throws : 0} throws in 5 s)`); }
   game.setTime('night'); frames(3); const sN = game.sun.intensity; game.setTime('auto'); frames(3); check(sN < 1.5 && Number.isFinite(sN), `world ${idx}: night toggle dims the sun (${sN.toFixed(2)})`);
