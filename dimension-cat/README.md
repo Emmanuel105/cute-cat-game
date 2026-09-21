@@ -88,6 +88,10 @@ Nothing is scattered blind. `game.zones` holds the keep-out rectangles for a wor
 
 `window.DC` is the game. Useful in DevTools: `DC.travel(4, 'from-hub')` jump to a world (0–6; use `'from-prev'` for 1–3, `'from-hub'` for 4–6), `DC.cat.group.position.set(x, y, z)` teleport, `DC.state`, `DC.save()` / `DC.wipeSave()`, `DC.togglePhoto()`.
 
+## Friends
+
+Every person, robot and gingerbread man that can be greeted (`greetable()` in `55-npcs.js`) gets a stable id — the world key plus the order it was made in, which is the same every time a world is built — and the yeti, the Candy Queen and the dogs are registered by hand with `game.namedFriend()`. The first hello to each is a new friend: five points, a chime, and a toast with the running count; meeting everyone in a world is worth a fanfare and fifty; meeting everyone in every world (the game remembers each world's total once it has been visited) is the grand finale, five hundred and confetti. Friends, totals and the finale flag are saved. The HUD's Friends pill shows this world's count (hidden where there is nobody), the mini-map fades people already met to grey, and the Continue line on the start screen counts them.
+
 ## People
 
 `makeHuman()` in `55-npcs.js` builds every townsperson from the same rig: hip → knee → ankle legs with the soles flat on the ground, a chest that tapers to a waist under a shoulder yoke, a visible neck, and mitten hands with a thumb. Clothes are layered on that body — `shirt`, then any of `jacket`, `dress` (+ `sash`), `skirt`, `shorts`, `stripes`, `apron`, `belt`, `buttons`, `cuffs`, `scarf`, `bag`, `backpack`, `coat`, `cane` and a `hat` (`cap`, `flatcap`, `beanie`, `sunhat`, `top`, `bonnet`). Faces vary in eye size and spacing, brow angle and mouth (`smile`, `grin`, `small`, `open`), and can carry `glasses`, `freckles`, a `beard` or a `moustache`. `build` is `slim`, `average` or `stout`; anyone under about 1.6 m gets a child's proportions (larger head, shorter limbs).
