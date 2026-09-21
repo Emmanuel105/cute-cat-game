@@ -460,6 +460,19 @@ function makeBike(color = 0xd62839) {
   g.userData.crank = crank;
   return { group: g, wheels, crank };
 }
+/** A carriage as a rig for the road: body, roof, box seat, lanterns, shafts forward, and four wheels that turn. Faces +z. */
+function makeCarriageRig() {
+  const g = new THREE.Group(), wood = mat(0x2b1d14, { roughness: 0.7 }), red = mat(0x7a1f1f, { roughness: 0.6 }), iron = mat(0x1e2426, { metalness: 0.6, roughness: 0.5 }), gold = mat(0xd4af37, { metalness: 0.9, roughness: 0.3 });
+  mesh(G.box(1.8, 1.4, 2.4), wood, { y: 1.55, parent: g }); mesh(G.box(1.9, 0.12, 2.5), red, { y: 2.3, parent: g });
+  for (const sx of [-0.92, 0.92]) for (const z of [-0.5, 0.5]) mesh(G.box(0.02, 0.5, 0.6), glowMat(0xffe082, 0.35), { x: sx, y: 1.7, z, shadow: 'none', parent: g });   // windows
+  mesh(G.box(1.6, 0.1, 0.7), wood, { y: 2.05, z: 1.35, parent: g }); mesh(G.box(1.6, 0.6, 0.08), wood, { y: 1.75, z: 1.72, rx: 0.25, parent: g });                    // box seat + footboard
+  for (const sx of [-0.85, 0.85]) { mesh(G.box(0.14, 0.24, 0.14), gold, { x: sx, y: 2.0, z: 1.3, shadow: 'none', parent: g }); glowSprite(0xffb85a, 0.9, 0.3, g).position.set(sx, 2.0, 1.3); }   // lanterns
+  for (const sx of [-0.38, 0.38]) mesh(G.cyl(0.03, 0.03, 2.2, 6), wood, { x: sx, y: 0.85, z: 2.3, rx: PI / 2, parent: g });   // shafts to the horse
+  mesh(G.box(2.0, 0.08, 0.2), iron, { y: 0.5, z: 0.9, parent: g }); mesh(G.box(2.0, 0.08, 0.2), iron, { y: 0.5, z: -0.9, parent: g });   // axles
+  const wheels = [];
+  for (const sx of [-1.0, 1.0]) for (const z of [0.9, -0.9]) { const w = group(sx, 0.5, z, g); mesh(G.torus(0.44, 0.05, 6, 20), iron, { ry: PI / 2, parent: w }); for (let i = 0; i < 6; i++) mesh(G.box(0.03, 0.86, 0.03), wood, { rx: i * PI / 6, shadow: 'none', parent: w }); wheels.push(w); }
+  return { group: g, wheels };
+}
 function makeMailbox(color) {
   const g = new THREE.Group();
   mesh(G.box(0.08, 1.1, 0.08), mat(0x5a3b22), { y: 0.55, parent: g });

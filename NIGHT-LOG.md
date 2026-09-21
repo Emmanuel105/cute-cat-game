@@ -150,3 +150,9 @@ number twelve!"
 A woman in a yellow cap **rides a green bicycle** round and round the main street in the westbound
 lane, pedalling, leaning into the bars. Like the cars she stops for the cat — but rings her bell
 instead of honking.
+
+## Round 17 — a horse and carriage
+
+A **horse and carriage** clip-clops east along the Victorian street and round again, lanterns lit,
+a top-hatted driver on the box with the reins. It stops for the cat like everything else on the
+road. The balloon now floats at the right height whatever shape you are in.

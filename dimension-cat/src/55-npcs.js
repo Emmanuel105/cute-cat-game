@@ -1013,8 +1013,8 @@ class RoboDog {
 
 // ---------------------------------------------------------------- vehicle controller (cars on a straight road)
 class Vehicle {
-  constructor(game, rig, { z, dir, speed, x, length = 4, limit = 78, horn = null }) {
-    this.game = game; this.rig = rig; this.z = z; this.dir = dir; this.speed = speed; this.x = x; this.limit = limit; this.length = length;
+  constructor(game, rig, { z, dir, speed, x, length = 4, limit = 78, horn = null, laneW = 1.7 }) {
+    this.game = game; this.rig = rig; this.z = z; this.dir = dir; this.speed = speed; this.x = x; this.limit = limit; this.length = length; this.laneW = laneW;   // laneW: how far either side of the lane counts as "in the way"
     this.stopped = false; this.honkT = 0; this.v = speed; this.horn = horn ?? (() => SFX.honk());
     this.cf = game.physics.addCircle(this, x, z, 1.0); this.cb = game.physics.addCircle(this, x, z, 1.0);
     rig.group.rotation.y = dir > 0 ? PI / 2 : -PI / 2;
@@ -1022,7 +1022,7 @@ class Vehicle {
   update(dt) {
     const cat = this.game.cat.group.position;
     let mustStop = false;
-    const inLane = (x, z) => { const ahead = (x - this.x) * this.dir; return abs(z - this.z) < 1.7 && ahead > 0 && ahead < 6; };
+    const inLane = (x, z) => { const ahead = (x - this.x) * this.dir; return abs(z - this.z) < this.laneW && ahead > 0 && ahead < 6; };
     if (inLane(cat.x, cat.z)) mustStop = true;
     else for (const c of this.game.physics.circles) { if (c.ref !== this && !c.off && inLane(c.x, c.z)) { mustStop = true; break; } }
     this.honkT -= dt;
@@ -1034,6 +1034,28 @@ class Vehicle {
     this.rig.group.position.x = this.x; this.rig.group.position.z = this.z;
     this.cf.x = this.x + this.dir * this.length * 0.28; this.cf.z = this.z; this.cb.x = this.x - this.dir * this.length * 0.28; this.cb.z = this.z;
     for (const w of this.rig.wheels) w.rotation.x += this.v * dt * 2.2;
+  }
+}
+
+// ---------------------------------------------------------------- horse and carriage: clip-clopping along the street, a driver on the box with the reins
+class HorseCarriage extends Vehicle {
+  constructor(game, driver, o) {
+    const carriage = makeCarriageRig(), horse = makeHorse();
+    const g = new THREE.Group(); g.add(carriage.group); horse.group.position.set(0, 0, 3.4); g.add(horse.group); game.world.add(g);
+    super(game, { group: g, wheels: carriage.wheels }, { ...o, length: 8.5, horn: () => SFX.clop() });
+    this.horse = horse; this.driver = driver; this.phase = rnd() * TAU; this.t = rnd() * 10; this.clopT = 0;
+    driver.group.position.set(0, 2.05 - 0.9 * driver.k + 0.02, 1.25); g.add(driver.group);
+    this.cf.r = 1.2; this.cb.r = 1.1;
+  }
+  update(dt) {
+    super.update(dt);
+    this.t += dt; const moving = this.v > 0.3;
+    if (moving) { this.phase += dt * this.v * 2.0; this.clopT -= dt * this.v; if (this.clopT <= 0) { SFX.clop(); this.clopT = 0.9; } }
+    this.horse.animate(this.phase, moving, dt, this.t);
+    const rig = this.driver; rig.animate(0, false, dt, this.t);
+    for (const L of rig.legs) { L.hip.rotation.x = -PI / 2 + 0.2; L.knee.rotation.x = PI / 2 - 0.3; L.ankle.rotation.x = 0.2; }
+    if (!rig.gesture) for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -0.85, 8, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.55, 8, dt); A.sh.rotation.z = (A === rig.arms[0] ? 1 : -1) * 0.2; }   // holding the reins
+    rig.spine.rotation.x = damp(rig.spine.rotation.x, 0.1, 6, dt); rig.body.position.y = 0;
   }
 }
 

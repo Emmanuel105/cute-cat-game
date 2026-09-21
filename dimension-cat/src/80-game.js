@@ -189,7 +189,7 @@ class Game {
   updateBalloon(dt) {
     const b = this.balloon, c = this.cat.group.position, g = b.group; b.t += dt;
     // floats above and a little behind the cat, drifting after it rather than stuck to it
-    const yaw = this.cat.group.rotation.y, tx = c.x - sin(yaw) * 0.35, tz = c.z - cos(yaw) * 0.35, ty = c.y + 1.75 + sin(b.t * 1.1) * 0.06;
+    const yaw = this.cat.group.rotation.y, tx = c.x - sin(yaw) * 0.35, tz = c.z - cos(yaw) * 0.35, ty = c.y + FORMS[this.form].height + 1.05 + sin(b.t * 1.1) * 0.06;   // clear of whatever shape the player is in
     if (dist2(g.position.x, g.position.z, tx, tz) > 400) g.position.set(tx, ty, tz);   // a portal jump: snap
     g.position.x = damp(g.position.x, tx, 4, dt); g.position.y = damp(g.position.y, ty, 5, dt); g.position.z = damp(g.position.z, tz, 4, dt);
     g.rotation.z = damp(g.rotation.z, (tx - g.position.x) * 0.6, 4, dt); g.rotation.x = damp(g.rotation.x, -(tz - g.position.z) * 0.6, 4, dt);
