@@ -473,6 +473,18 @@ function makeCarriageRig() {
   for (const sx of [-1.0, 1.0]) for (const z of [0.9, -0.9]) { const w = group(sx, 0.5, z, g); mesh(G.torus(0.44, 0.05, 6, 20), iron, { ry: PI / 2, parent: w }); for (let i = 0; i < 6; i++) mesh(G.box(0.03, 0.86, 0.03), wood, { rx: i * PI / 6, shadow: 'none', parent: w }); wheels.push(w); }
   return { group: g, wheels };
 }
+/** A kite: a diamond with a cross-spar and a tail of bows. Faces +z; hangs from its bottom corner at the origin. */
+function makeKite(color = 0xd62839, color2 = 0xf2c744) {
+  const g = new THREE.Group(), sail = mat(color, { roughness: 0.7, side: THREE.DoubleSide }), sail2 = mat(color2, { roughness: 0.7, side: THREE.DoubleSide }), spar = mat(0x8a6a3a, { roughness: 0.9 });
+  const body = group(0, 0.75, 0, g); g.userData.body = body;
+  mesh(G.box(0.7, 0.7, 0.02), sail, { rz: PI / 4, sy: 1.5, parent: body });        // the diamond: a square on its corner, taller than wide
+  mesh(G.box(0.5, 0.5, 0.025), sail2, { rz: PI / 4, sy: 1.5, sx: 0.6, parent: body });
+  mesh(G.box(0.98, 0.03, 0.03), spar, { y: 0.12, parent: body }); mesh(G.box(0.03, 1.5, 0.03), spar, { parent: body });
+  const tail = group(0, -0.75, 0, body); g.userData.tail = tail;
+  for (let i = 0; i < 4; i++) mesh(G.box(0.18, 0.06, 0.02), i % 2 ? sail : sail2, { y: -0.25 - i * 0.28, rz: (i % 2 ? 1 : -1) * 0.4, shadow: 'none', parent: tail });
+  noInk(mesh(G.cyl(0.006, 0.006, 1.3, 4), spar, { y: -0.7, shadow: 'none', parent: tail }));
+  return g;
+}
 function makeMailbox(color) {
   const g = new THREE.Group();
   mesh(G.box(0.08, 1.1, 0.08), mat(0x5a3b22), { y: 0.55, parent: g });

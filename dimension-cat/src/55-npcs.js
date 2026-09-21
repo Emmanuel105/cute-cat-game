@@ -950,6 +950,36 @@ class Vendor {
   }
 }
 
+// ---------------------------------------------------------------- kite flyer: stands with both hands on the line while the kite swoops about overhead
+class KiteFlyer {
+  constructor(game, rig, kite, { x, z, wind = [0.6, 0.8], cries = null }) {
+    this.game = game; this.rig = rig; this.kite = kite; this.x = x; this.z = z; this.t = rnd() * 10; this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false;
+    this.state = 'idle'; this.timer = 0; this.cries = cries; this.cryIcon = '\ud83e\ude81'; this.cryT = rnd.range(4, 9);
+    const wl = Math.hypot(wind[0], wind[1]) || 1; this.wx = wind[0] / wl; this.wz = wind[1] / wl;
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = atan2(this.wx, this.wz);   // facing downwind, where the kite is
+    game.world.add(kite);
+    this.line = group(0, 0, 0, game.world); noInk(mesh(G.cyl(0.006, 0.006, 1, 4), mat(0xf0ece4, { roughness: 1 }), { rx: PI / 2, shadow: 'none', parent: this.line }));
+    this.hand = V3(); this.circle = game.physics.addCircle(this, x, z, 0.35);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig, t = this.t;
+    rig.animate(0, false, dt, t);
+    if (!rig.gesture) for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -1.5, 8, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.5, 8, dt); A.sh.rotation.z = (A === rig.arms[0] ? 1 : -1) * 0.12; }   // both hands up on the line
+    rig.head.rotation.x = damp(rig.head.rotation.x, -0.55, 6, dt);   // looking up at it
+    // the kite swoops in a lazy figure of eight, high and downwind
+    const g = this.game.physics.ground0(this.x, this.z), swing = sin(t * 0.7) * 3.2, lift = sin(t * 1.1) * 1.4 + cos(t * 0.45) * 0.8;
+    const side = [-this.wz, this.wx];
+    this.kite.position.set(this.x + this.wx * 7.5 + side[0] * swing, g + 9.5 + lift, this.z + this.wz * 7.5 + side[1] * swing);
+    this.kite.rotation.set(-0.35 + sin(t * 1.1) * 0.15, atan2(this.wx, this.wz) + PI, sin(t * 0.7) * 0.45);
+    this.kite.userData.tail.rotation.z = sin(t * 2.3) * 0.35; this.kite.userData.tail.rotation.x = cos(t * 1.7) * 0.25;
+    rig.hands[0].getWorldPosition(this.hand);
+    this.line.position.copy(this.hand).lerp(this.kite.position, 0.5); this.line.lookAt(this.kite.position); this.line.scale.set(1, 1, max(0.01, this.hand.distanceTo(this.kite.position)));
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- squirrel controller: stays on its spot, fidgets, watches the cat
 class Squirrel {
   constructor(game, x, z, id) {

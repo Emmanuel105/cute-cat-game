@@ -156,3 +156,8 @@ instead of honking.
 A **horse and carriage** clip-clops east along the Victorian street and round again, lanterns lit,
 a top-hatted driver on the box with the reins. It stops for the cat like everything else on the
 road. The balloon now floats at the right height whatever shape you are in.
+
+## Round 18 — a kite
+
+A boy on the dunes of Sunny Shore **flies a red and yellow kite**: it swoops in a lazy figure of
+eight ten metres up, tail streaming, on a line from his hands. "Higher than the lighthouse!"
