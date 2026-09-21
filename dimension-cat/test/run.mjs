@@ -162,6 +162,16 @@ check(game.npcs.filter((n) => n instanceof Object && n.constructor.name === 'Wan
   const armUp = p.rig.arms[0].sh.rotation.x;
   frames(30); check(p.rig.arms[0].sh.rotation.x < -0.8, `the wave lifts the arm (shoulder ${p.rig.arms[0].sh.rotation.x.toFixed(2)}, was ${armUp.toFixed(2)})`);
   pos().copy(before);
+  // saying hello makes a friend once, worth five points; the world knows how many there are to make
+  { const s0 = game.state.score, f0 = game.state.friends.size, before2 = pos().clone();
+    const q = people.find((n) => n.constructor.name === 'Wanderer'); const a2 = q.rig.group.rotation.y;
+    pos().set(q.x + Math.sin(a2) * 1.2, game.physics.ground0(q.x, q.z), q.z + Math.cos(a2) * 1.2); frames(5);
+    check(game.nearest && /Say hello|Say hi/.test(game.nearest._label), `greeting prompt: ${game.nearest && game.nearest._label}`);
+    game.interact(); frames(10); check(game.state.friends.size === f0 + 1 && game.state.score === s0 + 5, `a new friend is worth five points (${game.state.friends.size} friends, score ${game.state.score})`);
+    frames(5); check(game.nearest && /again/.test(game.nearest._label), `the prompt now says: ${game.nearest && game.nearest._label}`);
+    game.interact(); frames(10); check(game.state.friends.size === f0 + 1 && game.state.score === s0 + 5, 'saying hello again makes no second friend');
+    check(game.friendTotal >= 11, `the Neighborhood has ${game.friendTotal} people to meet`);
+    pos().copy(before2); }
   // nobody strolls onto the asphalt
   const strollers = game.npcs.filter((n) => n.constructor.name === 'Wanderer' && n.avoid);
   check(strollers.length >= 7 && strollers.every((n) => !n.avoid(n.x, n.z)), `${strollers.length} strollers, none standing in the road`);

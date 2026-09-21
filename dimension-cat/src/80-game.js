@@ -49,7 +49,8 @@ class Game {
     this.fx = new Particles(this.scene, { max: 800, size: 0.22, keep: true });
     this.heartGeo = G.heart(0.22, 0.05);
 
-    this.state = { score: 0, collected: new Set(), completed: false };
+    this.state = { score: 0, collected: new Set(), completed: false, friends: new Set() };   // friends: ids of everyone the cat has said hello to
+    this.friendSeq = 0; this.friendTotal = 0;
     this.form = 'cat'; this.skinMode = 'black'; this.timeMode = 'auto'; this.holdJump = false;
     this.touch = { x: 0, y: 0, active: false, run: false, jump: false };
     this.photo = false; this.photoCount = 0;
@@ -97,7 +98,7 @@ class Game {
     this.physics.clear(); this.interactables = []; this.npcs = []; this.squirrels = []; this.fx.clear(); tweens.length = 0;
     this.lights.reset();
     this.collectibles = new Collectibles(this); this.homeMarker = null; this.zones = new Zones();
-    this.worldIndex = index;
+    this.worldIndex = index; this.friendSeq = 0; this.friendTotal = 0;
     const def = WORLDS[index];
     this.worldCtl = def.build(this, entry);
     const s = this.worldCtl.spawn;
@@ -159,13 +160,13 @@ class Game {
   save() {
     if (!this.started || this.freshLoad) return;
     const p = this.cat.group.position;
-    store.set({ v: 1, score: this.state.score, collected: [...this.state.collected], completed: this.state.completed, form: this.form, skin: this.skinMode, time: this.timeMode,
+    store.set({ v: 1, score: this.state.score, collected: [...this.state.collected], completed: this.state.completed, friends: [...this.state.friends], form: this.form, skin: this.skinMode, time: this.timeMode,
       world: this.worldIndex, pos: [+p.x.toFixed(2), +p.y.toFixed(2), +p.z.toFixed(2)], yaw: +this.cat.group.rotation.y.toFixed(3), camYaw: +this.cam.yaw.toFixed(3), at: Date.now() });
   }
   /** Rebuilds the game from a save object (see save()). Returns false if the data is unusable. */
   restore(d) {
     if (!d || d.v !== 1 || !Number.isInteger(d.world) || d.world < 0 || d.world >= WORLDS.length) return false;
-    this.state.score = d.score | 0; this.state.collected = new Set(d.collected || []); this.state.completed = !!d.completed;
+    this.state.score = d.score | 0; this.state.collected = new Set(d.collected || []); this.state.completed = !!d.completed; this.state.friends = new Set(d.friends || []);
     if (FORMS[d.form]) { this.form = d.form; } if (SKIN_ORDER.includes(d.skin)) this.skinMode = d.skin; if (TIME_ORDER.includes(d.time)) this.timeMode = d.time;
     this.load(d.world, ENTRY_FOR_INDEX(d.world));
     if (Array.isArray(d.pos) && d.pos.length === 3 && d.pos.every(Number.isFinite)) {
@@ -205,6 +206,15 @@ class Game {
     const el = $('msg'); el.textContent = text; el.classList.add('on');
     clearTimeout(this.msgTimer); this.msgTimer = setTimeout(() => el.classList.remove('on'), dur);
   }
+  /** The cat said hello to someone new: a friend, five points, and a fanfare once everyone in the world has been met. */
+  befriend(id) {
+    if (this.state.friends.has(id)) return;
+    this.state.friends.add(id); this.addScore(5);
+    const key = WORLDS[this.worldIndex].key, here = [...this.state.friends].filter((f) => f.startsWith(key + ':')).length;
+    if (here >= this.friendTotal && this.friendTotal > 0) { this.addScore(50); SFX.fanfare(); this.pendingToast = `\ud83c\udf89 Everyone in ${WORLDS[this.worldIndex].name} knows you now! +50`; setTimeout(() => { this.toast(this.pendingToast, 3200); this.pendingToast = null; }, 2700); }
+    else { SFX.twinkle(); setTimeout(() => this.toast(`\ud83e\udd1d New friend! ${here} of ${this.friendTotal} in ${WORLDS[this.worldIndex].name}  +5`, 2400), 2700); }
+    this.save();
+  }
   addScore(n) { this.state.score += n; const v = $('score'); v.textContent = this.state.score; v.classList.remove('pop'); void v.offsetWidth; v.classList.add('pop'); }
   updateHud() {
     $('score').textContent = this.state.score;
@@ -229,7 +239,7 @@ class Game {
     const saved = this.savedGame = store.get();
     $('enter').disabled = false;
     if (saved && saved.v === 1) {
-      $('enter').textContent = 'CONTINUE'; $('continue-info').textContent = `${WORLDS[saved.world] ? WORLDS[saved.world].icon + ' ' + WORLDS[saved.world].name : ''} · score ${saved.score | 0} · ${(saved.collected || []).length} treasures found`;
+      $('enter').textContent = 'CONTINUE'; $('continue-info').textContent = `${WORLDS[saved.world] ? WORLDS[saved.world].icon + ' ' + WORLDS[saved.world].name : ''} · score ${saved.score | 0} · ${(saved.friends || []).length} friends · ${(saved.collected || []).length} treasures found`;
       $('new-game').style.display = 'inline-block';
     }
     $('enter').addEventListener('click', () => this.start(this.savedGame ? 'continue' : 'new'));

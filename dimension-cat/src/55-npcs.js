@@ -594,10 +594,13 @@ const GREETINGS = {
 /** Let the cat greet this person on purpose (E): they wave, say their line, and hearts go up. */
 function greetable(game, ctl) {
   const rig = ctl.rig; if (!rig || !rig.look) return;
-  game.addInteractable({ obj: rig.group, radius: 2.1, label: () => rig.look.child ? 'Say hi' : 'Say hello', onUse: () => {
+  // a stable id: people are made in the same order every time a world is built
+  const id = WORLDS[game.worldIndex].key + ':' + (game.friendSeq++); game.friendTotal++;
+  game.addInteractable({ obj: rig.group, radius: 2.1, label: () => (game.state.friends.has(id) ? 'Say hello again' : rig.look.child ? 'Say hi' : 'Say hello'), onUse: () => {
     if (rig.hat && ctl.tipT !== undefined) { ctl.tipped = true; ctl.tipT = 1.3; } else { rig.gesture = 'wave'; rig.gT = 0; }
     if (ctl.timer !== undefined) ctl.timer = max(ctl.timer ?? 0, 2); if (ctl.state !== undefined) ctl.state = 'idle';
     game.lastGreet = -99; greet(game, rig); const p = rig.group.position; game.hearts(p.x, 1.9 * rig.k, p.z, 2);
+    game.befriend(id);
   } });
 }
 /** One line of greeting on the HUD, no more often than every few seconds however many people are about. */

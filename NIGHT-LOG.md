@@ -174,3 +174,10 @@ on a rope, and goes again.
   goes up over his head and comes down with a thunk and a spray of chips. "Mind the chips, puss."
 - **Three gingerbread guards** march in step back and forth in front of the Candy Queen: "Hup, two,
   three, four!" — "Halt! ...who goes there? Oh, a kitty."
+
+## Round 22 — making friends counts
+
+Every "Say hello" to someone new makes a **friend**: five points, a chime, and "New friend! 3 of 11
+in Neighborhood". Meet everyone in a world and there is a fanfare and fifty more. Friends are
+remembered in the save — the Continue line on the start screen shows how many — and the prompt
+changes to "Say hello again" for people you already know.
