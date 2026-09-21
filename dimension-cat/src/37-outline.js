@@ -47,8 +47,8 @@ void main() {
   vec4 base = texture2D(tDiffuse, vUv);
   float c = viewDepth(vUv);
   float wc = invDepth(vUv);
-  // two widths, so the ink is a few pixels thick rather than a hairline
-  float curve = max(edgeAt(vUv, 1.0, wc), edgeAt(vUv, 2.0, wc));
+  // one texel out: a fine line. (Sampling two texels out as well makes it a few pixels thick.)
+  float curve = edgeAt(vUv, 1.0, wc);
   float edge = smoothstep(uBias, uBias * 2.6, curve / max(wc, 1.0 / uFadeFar));
   // The depth buffer gets coarse a long way out; stop inking before the noise there turns into scribble.
   edge *= 1.0 - smoothstep(uFadeNear, uFadeFar, c);
@@ -65,7 +65,7 @@ class ToonOutline {
       tDiffuse: { value: null }, tDepth: { value: null },
       uTexel: { value: new THREE.Vector2(0.001, 0.001) },
       uNear: { value: 0.2 }, uFar: { value: 700 },
-      uColor: { value: new THREE.Color(o.color ?? 0x1c1326) },
+      uColor: { value: new THREE.Color(o.color ?? 0xffffff) },      // white ink: a chalk-on-paper line rather than a pen one
       uStrength: { value: o.strength ?? 1.0 },
       uBias: { value: o.bias ?? 0.022 },
       uFadeNear: { value: o.fadeNear ?? 55 },

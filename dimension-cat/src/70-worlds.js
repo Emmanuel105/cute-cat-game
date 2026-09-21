@@ -135,16 +135,24 @@ function buildNeighborhood(game, entry) {
   const clouds = []; for (let i = 0; i < 14; i++) clouds.push(makeCloud(W, r.range(-140, 140), r.range(34, 58), r.range(-150, 150), r.range(1.4, 2.6), 0xffffff, r));
   U.push((dt) => { for (const c of clouds) { c.position.x += c.userData.drift * dt; if (c.position.x > 170) c.position.x = -170; } });
   // people, cars, squirrel
-  for (let i = 0; i < 7; i++) {
-    const female = i % 2 === 1;
-    const rig = makeHuman({ ...randomPerson(r, { female }),
-      shirt: r.pick([0x3f6fd6, 0xe0503c, 0x2e9e6e, 0xf2c744, 0x8a5acf, 0xffffff, 0xff8fab]), pants: r.pick([0x2c3140, 0x5a4634, 0x8899aa, 0x1e2a44]),
-      skirt: female && r.chance(0.55) ? r.pick([0x8a5acf, 0xd6455c, 0x2f6fd6, 0x2e9e6e, 0xf2c744]) : null,
-      hat: !female && r.chance(0.35) ? 'cap' : null });
+  // A mixed street: adults and two children, every one of them in different clothes (the wardrobe
+  // is a shuffled bag, so nobody matches the person they are standing next to).
+  const ward = makeWardrobe(r);
+  const skirtBag = bag(r, [0x8a5acf, 0xd6455c, 0x2f6fd6, 0x2e9e6e, 0xf2c744, 0xef7d2f]);
+  const jacketBag = bag(r, [0x3a4a5e, 0x6b4a2b, 0x2e4a3a, 0x5a3a4a]);
+  const spots = [[-20, 10.4], [12, 17.6], [30, 10.4], [-8, 17.6], [4, 44], [-16, 40], [40, 24], [-4, 12], [24, 40]];
+  spots.forEach(([sx, sz], i) => {
+    const female = i % 2 === 1, child = i === 7 || i === 8;
+    const rig = makeHuman({ ...randomPerson(r, { female, child, wardrobe: ward }),
+      skirt: female && r.chance(0.5) ? skirtBag() : null,
+      jacket: !child && r.chance(0.3) ? jacketBag() : null,
+      scarf: r.chance(0.18) ? r.pick([0xd6455c, 0x2e9e6e, 0xf2c744]) : null,
+      bag: female && r.chance(0.35) ? r.pick([0x6b4a2b, 0x8a3a5a, 0x2f4f6f]) : null,
+      backpack: child ? r.pick([0xe0503c, 0x2f6fd6, 0x2e9e6e]) : null,
+      hat: !female && !child && r.chance(0.35) ? 'cap' : null });
     W.add(rig.group);
-    const spots = [[-20, 10.4], [12, 17.6], [30, 10.4], [-8, 17.6], [4, 44], [-16, 40], [40, 24]];
-    game.npcs.push(new Wanderer(game, rig, { x: spots[i][0], z: spots[i][1], speed: r.range(0.8, 1.3), leash: 16 }));
-  }
+    game.npcs.push(new Wanderer(game, rig, { x: sx, z: sz, speed: child ? r.range(1.1, 1.6) : r.range(0.8, 1.3), leash: child ? 10 : 16 }));
+  });
   for (const [color, dir, x, lane] of [[0xd62839, 1, -30, 12.6], [0x2e63d8, -1, 20, 15.4], [0xf3f3f3, 1, 40, 12.6]]) {
     const car = makeCar(color); W.add(car.group); game.npcs.push(new Vehicle(game, car, { z: lane, dir, speed: r.range(5, 7), x }));
   }
@@ -444,12 +452,18 @@ function buildVictorian(game, entry) {
   makeHorizon(game, r, { clear: VICTORIAN_LIMIT + 10, hills: true, hill: 0x3f4a38, rock: 0x3a3f4a, rock2: 0x4a4a58, snow: 0xcfd6e2, woodHue: [0.16, 0.26], woodLight: [0.1, 0.2], trunk: 0x3a2a1e, peaks: 30, woodCount: 420 });
   // people
   const vicSpots = [[-24, 3], [-15, -3], [-6, 3], [3, -3], [12, 3], [21, -3], [-8, -34], [8, -36], [-50, 3], [46, -3], [-1, 22], [30, 22]];
+  const vicWard = makeWardrobe(r, { shirts: [0x2f2f3a, 0x3d2b4a, 0x4a2b2b, 0x1e2f3f, 0x3a3327, 0x43303a], pants: [0x1e1e24], shoes: [0x181410, 0x2a1e16] });
+  const gownBag = bag(r, [0x6a3f8a, 0x8a3a3a, 0x2f4f6f, 0x3a5a3a, 0x7a4a2a, 0x4a3a6a]);
+  const bonnetBag = bag(r, [0x6a3f8a, 0x8a3a3a, 0x2f4f6f, 0x5a4a2a]);
   vicSpots.forEach(([x, z], i) => {
-    const lady = i % 2 === 1;
-    const rig = makeHuman({ ...randomPerson(r, { female: lady }),
-      shirt: r.pick([0x2f2f3a, 0x3d2b4a, 0x4a2b2b, 0x1e2f3f]), pants: 0x1e1e24,
-      hat: lady ? 'bonnet' : 'top', hatColor: lady ? r.pick([0x6a3f8a, 0x8a3a3a, 0x2f4f6f]) : 0x0c0c0c,
-      coat: !lady, sleeves: lady, dress: lady ? r.pick([0x6a3f8a, 0x8a3a3a, 0x2f4f6f, 0x3a5a3a]) : null, cane: !lady && r.chance(0.6) });
+    const lady = i % 2 === 1, urchin = i === 6;
+    const rig = makeHuman({ ...randomPerson(r, { female: lady, child: urchin, wardrobe: vicWard }),
+      pants: 0x1e1e24,
+      hat: urchin ? 'flatcap' : lady ? 'bonnet' : 'top', hatColor: urchin ? 0x4a4036 : lady ? bonnetBag() : 0x0c0c0c,
+      hatBand: !lady && r.chance(0.5) ? 0x2a2a3a : 0x8b1a1a,
+      coat: !lady, sleeves: lady, dress: lady ? gownBag() : null, sash: lady && r.chance(0.5) ? 0xd8c8a8 : null,
+      buttons: !lady && !urchin ? 0xc8b878 : null, glasses: r.chance(0.25),
+      cane: !lady && !urchin && r.chance(0.6) });
     W.add(rig.group);
     game.npcs.push(new Wanderer(game, rig, { x, z, speed: r.range(0.6, 1.0), leash: 12 }));
   });

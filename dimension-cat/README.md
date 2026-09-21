@@ -41,7 +41,7 @@ The HUD has a round mini-map (bottom-left, `Tab` toggles it): north is up, the p
   - `40-physics.js` AABB + circle collision, step-up, terrain height, camera ray
   - `45-particles.js` particle systems (bursts + ambient: sparkles, fireflies, snowfall)
   - `50-cat.js` / `52-cat-skins.js` the rigged cat and its seven skins
-  - `55-npcs.js` humans, gingerbread men, robots, robot dog, squirrels, candy cat + AI controllers
+  - `55-npcs.js` humans (see *People* below), gingerbread men, robots, robot dog, squirrels, candy cat + AI controllers
   - `56-npcs-wild.js` crab, seagull, turtle, dog, deer, fox, penguin, yeti, frog, owl, fairy, butterfly + Flyer / Hopper / Follower controllers
   - `60-props.js` houses, the furnished home, fences, cars, lamps, portals, doors, candy, city, victorian props
   - `62-props-nature.js` terrain + animated sea, palms, huts, lighthouse, pier, cabins, igloos, campfire, aurora, big trees, mushrooms, treehouse, hub portals, signpost
@@ -56,6 +56,8 @@ The HUD has a round mini-map (bottom-left, `Tab` toggles it): north is up, the p
   - `qa/sweep.mjs <outdir>` every world, day and night, looking in four directions from the spawn
   - `qa/tour.mjs <outdir>` walks out from the middle of each world to its edge, reporting draw calls and frame rate
   - `qa/portraits.mjs <outdir>` lines the townsfolk up in front of the camera for a close look at faces and clothes
+  - `qa/lineup.mjs <outdir>` hand-picked people (beards, glasses, children, every kind of clothing) in a row, wide and close
+  - `qa/bench.mjs` draw calls, triangles and frame rate per world, plus the mesh cost of one person — run it before and after a change
   - `qa/run7.mjs` predates the current save format and no longer runs.
 
 ## Controls
@@ -76,10 +78,18 @@ Progress (score, collectibles, squirrel friends, world and position) is saved to
 
 ## How it looks
 
-Everything is cel-shaded: `mat()` builds `MeshToonMaterial` against a four-band light ramp, and anything genuinely shiny (metal, chrome) asks for `pbr: true` or a metalness of 0.35 or more and keeps its highlights. The ink line comes from `37-outline.js`, which renders the world into an offscreen buffer and then runs one full-screen pass that inks wherever the *curvature of inverse depth* spikes. Inverse depth is exactly linear across any flat surface at any angle, so floors and hillsides stay clean while silhouettes get drawn. Two consequences worth knowing when adding props: anything thinner than a couple of pixels comes out solid ink (flowers, grass and ferns are all built chunky for this reason), and terrain has to be smooth in its *second* derivative or its facets show as contour lines.
+Everything is cel-shaded: `mat()` builds `MeshToonMaterial` against a four-band light ramp, and anything genuinely shiny (metal, chrome) asks for `pbr: true` or a metalness of 0.35 or more and keeps its highlights. The ink line comes from `37-outline.js`, which renders the world into an offscreen buffer and then runs one full-screen pass that inks wherever the *curvature of inverse depth* spikes. The line is white and one texel wide — chalk on paper rather than pen — which reads well against the flat toon colours and simply vanishes against snow and sky. Inverse depth is exactly linear across any flat surface at any angle, so floors and hillsides stay clean while silhouettes get drawn. Two consequences worth knowing when adding props: anything thinner than a couple of pixels comes out solid ink (flowers, grass and ferns are all built chunky for this reason), and terrain has to be smooth in its *second* derivative or its facets show as contour lines.
 
 Nothing is scattered blind. `game.zones` holds the keep-out rectangles for a world — roads, pavements, garden paths, building footprints, water — and trees, bushes, flowers, grass and the region clusters all ask it first. `test/run.mjs` walks the middle of every road, pavement and path end to end and fails if anything is standing in the way.
 
 ## Debug hooks
 
 `window.DC` is the game. Useful in DevTools: `DC.travel(4, 'from-hub')` jump to a world (0–6; use `'from-prev'` for 1–3, `'from-hub'` for 4–6), `DC.cat.group.position.set(x, y, z)` teleport, `DC.state`, `DC.save()` / `DC.wipeSave()`, `DC.togglePhoto()`.
+
+## People
+
+`makeHuman()` in `55-npcs.js` builds every townsperson from the same rig: hip → knee → ankle legs with the soles flat on the ground, a chest that tapers to a waist under a shoulder yoke, a visible neck, and mitten hands with a thumb. Clothes are layered on that body — `shirt`, then any of `jacket`, `dress` (+ `sash`), `skirt`, `shorts`, `stripes`, `apron`, `belt`, `buttons`, `cuffs`, `scarf`, `bag`, `backpack`, `coat`, `cane` and a `hat` (`cap`, `flatcap`, `beanie`, `sunhat`, `top`, `bonnet`). Faces vary in eye size and spacing, brow angle and mouth (`smile`, `grin`, `small`, `open`), and can carry `glasses`, `freckles`, a `beard` or a `moustache`. `build` is `slim`, `average` or `stout`; anyone under about 1.6 m gets a child's proportions (larger head, shorter limbs).
+
+`randomPerson(r, o)` rolls a coherent person. Pass it a `wardrobe` from `makeWardrobe(r)` and its clothes come out of shuffled bags (`bag()` in `20-util.js`), so a street of seven people wears seven different shirts — independent dice rolls were handing out five red ones in a row.
+
+Standing still, people breathe, shift their weight, glance around and now and then wave at nothing in particular; walking, the ankles keep the feet level as the knees bend.

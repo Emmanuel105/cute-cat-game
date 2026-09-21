@@ -35,6 +35,19 @@ function seeded(seed) {
 const rnd = seeded(1337);           // general purpose (animation jitter etc.)
 
 /**
+ * Draws from a shuffled bag: every item is handed out once before any repeats. Independent picks
+ * clump — seven people rolling a shirt colour each can easily come out five-sevenths red — so
+ * anything where the *spread* is the point (a crowd's clothes) draws from here instead.
+ */
+function bag(r, items) {
+  let pool = [];
+  return () => {
+    if (!pool.length) { pool = items.slice(); for (let i = pool.length - 1; i > 0; i--) { const j = r.int(0, i); const t = pool[i]; pool[i] = pool[j]; pool[j] = t; } }
+    return pool.pop();
+  };
+}
+
+/**
  * Keep-out rectangles for a world: roads, pavements, garden paths, building footprints, water.
  * Anything scattered (trees, bushes, flowers, grass, rocks) asks here first, so nothing ends up
  * standing in the middle of the road or growing through a wall.

@@ -42,7 +42,16 @@ function buildSnowVillage(game, entry) {
   // life: penguins, reindeer, kids, the yeti, the squirrel
   for (let i = 0; i < 6; i++) { const rig = makePenguin({ scarf: i === 0 ? 0xd62839 : (i === 3 ? 0x2f6fd6 : null), scale: r.range(0.8, 1.05) }); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x: 18 + r.range(-6, 6), z: 8 + r.range(-6, 6), speed: r.range(0.5, 0.8), leash: 9, r: 0.3, height: 0.9, step: 0.25, idle: [1, 3] })); }
   for (const [x, z] of [[-22, 6], [-18, -12], [24, 20]]) { const rig = makeDeer(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x, z, speed: 0.6, leash: 8, r: 0.45, height: 1.4, step: 0.3, idle: [3, 7], walk: [2, 5] })); }
-  for (let i = 0; i < 3; i++) { const rig = makeHuman({ ...randomPerson(r, { female: i === 1 }), shirt: r.pick([0xd62839, 0x2f6fd6, 0x2e9e6e, 0xff8f00]), pants: r.pick([0x1e2a44, 0x3a3a3a]), hat: 'beanie', hatColor: r.pick([0xd62839, 0x2f6fd6, 0xffd54a]), coat: true, height: r.range(1.2, 1.45) }); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x: -6 + i * 6, z: 6, speed: r.range(0.9, 1.3), leash: 10, height: 1.5 })); }
+  // kids in beanies: wrapped up in coats, scarves and mittens, no two the same colour
+  const snowWard = makeWardrobe(r, { shirts: [0xd62839, 0x2f6fd6, 0x2e9e6e, 0xff8f00, 0x8a5acf, 0x00acc1], pants: [0x1e2a44, 0x3a3a3a, 0x4a3a2a], shoes: [0x2a2018, 0x1e1a18] });
+  const beanieBag = bag(r, [0xd62839, 0x2f6fd6, 0xffd54a, 0x2e9e6e, 0xef7d2f]);
+  const scarfBag = bag(r, [0xd62839, 0xffd54a, 0x2e9e6e, 0x8a5acf, 0xffffff]);
+  for (let i = 0; i < 4; i++) {
+    const rig = makeHuman({ ...randomPerson(r, { female: i === 1 || i === 3, child: true, wardrobe: snowWard }),
+      hat: 'beanie', hatColor: beanieBag(), coat: true, scarf: scarfBag(), cuffs: r.pick([0xffffff, 0x3a3a3a]),
+      height: r.range(1.2, 1.45) });
+    W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x: -7 + i * 5, z: 6, speed: r.range(0.9, 1.3), leash: 10, height: 1.5 }));
+  }
   // the yeti's cave: a long tunnel north into the mountain, lit by gems, with the yeti in its den at the far end
   const cave = makeCave(game, U, 0, -29, 27, r);
   for (const [x, z] of [[-9, -24], [9, -25]]) { const p = makeSnowPine(r); placeT(game, U, p, x, z, 0); boxT(game, x, z, 1.2 * p.scale.x, 5, 1.2 * p.scale.x, { cam: false }); }

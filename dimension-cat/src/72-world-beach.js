@@ -50,12 +50,18 @@ function buildBeach(game, entry) {
   for (const [x, z] of [[16, -30], [18, 2], [15, 14], [19, 24], [14, -18], [17, 36]]) { const rig = makeCrab(r.pick([0xe8492b, 0xff7043, 0xc62828])); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x, z, speed: r.range(0.9, 1.4), leash: 5, r: 0.25, height: 0.5, step: 0.25, idle: [0.5, 2], walk: [1, 3] })); }
   for (let i = 0; i < 7; i++) { const rig = makeSeagull({ phase: i * 1.3 }); game.npcs.push(new Flyer(game, rig, { cx: 14 + r.range(-8, 8), cz: r.range(-30, 30), r: r.range(9, 18), h: r.range(5, 11), speed: r.range(3.5, 5), bob: 1.2, wobble: 3, cw: i % 2 === 0, phase: i })); }
   for (const [x, z] of [[22, -2], [24, 20]]) { const rig = makeTurtle(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x, z, speed: 0.35, leash: 5, r: 0.45, height: 0.5, step: 0.25, idle: [2, 5], walk: [3, 7] })); }
-  for (let i = 0; i < 4; i++) {
-    const lady = i % 2 === 1;
-    const rig = makeHuman({ ...randomPerson(r, { female: lady }),
-      shirt: r.pick([0xff7043, 0x4fc3f7, 0xfff176, 0xf48fb1]), pants: r.pick([0x2f6fd6, 0xd62839, 0x2e9e6e, 0xff8fab]), shorts: true,
-      hat: lady ? 'sunhat' : (r.chance(0.5) ? 'cap' : null), hatColor: lady ? 0xfff3d6 : 0x2f4f4f });
-    W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x: 0 + r.range(-6, 6), z: -12 + i * 12, speed: r.range(0.7, 1.1), leash: 12 }));
+  const beachWard = makeWardrobe(r, {
+    shirts: [0xff7043, 0x4fc3f7, 0xfff176, 0xf48fb1, 0xffffff, 0x80deea, 0xaed581],
+    pants: [0x2f6fd6, 0xd62839, 0x2e9e6e, 0xff8fab, 0xffb74d],
+    shoes: [0xefe7d8, 0xd7a86e, 0x8d6e63],
+  });
+  for (let i = 0; i < 5; i++) {
+    const lady = i % 2 === 1, child = i === 4;
+    const rig = makeHuman({ ...randomPerson(r, { female: lady, child, wardrobe: beachWard }),
+      shorts: true, stripes: r.chance(0.35) ? 0xffffff : null,
+      glasses: r.chance(0.45), glassColor: 0x203040,
+      hat: child ? 'cap' : lady ? 'sunhat' : (r.chance(0.5) ? 'cap' : null), hatColor: lady ? 0xfff3d6 : 0x2f4f4f });
+    W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x: 0 + r.range(-6, 6), z: -12 + i * 11, speed: child ? r.range(1.2, 1.6) : r.range(0.7, 1.1), leash: 12 }));
   }
   // the beach dog keeps to its own patch of sand — it does not follow the cat
   const dog = makeDog(0xc8925a); W.add(dog.group); game.npcs.push(new Wanderer(game, dog, { x: -2, z: 28, speed: 1.1, leash: 7, r: 0.35, height: 0.9, step: 0.3, idle: [1.5, 4], walk: [2, 5] }));

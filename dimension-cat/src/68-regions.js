@@ -175,11 +175,14 @@ function victorianRegion(game, U, r, inner, outer) {
     { w: 1, build: (g, r, x, z) => { makeCarriage(g, x, z, r() * TAU); } },
     { w: 1, build: (g, r, x, z) => { for (const dz of [-5, 5]) { const lamp = makeLamp('victorian'); lamp.position.set(x, 0, z + dz); W.add(lamp); if (lamp.userData.update) U.push(lamp.userData.update); P.addBox(x, 2, z + dz, 0.4, 4, 0.4, { cam: false }); } flatPlane(g, 4, 16, pave, x, z, 0, 0.015); } },
   ] }));
+  const outWard = makeWardrobe(r, { shirts: [0x2f2f3a, 0x3d2b4a, 0x4a2b2b, 0x1e2f3f, 0x3a3327, 0x43303a], pants: [0x1e1e24], shoes: [0x181410, 0x2a1e16] });
+  const outGown = bag(r, [0x6a3f8a, 0x8a3a3a, 0x2f4f6f, 0x3a5a3a, 0x7a4a2a, 0x4a3a6a]);
+  const outBonnet = bag(r, [0x6a3f8a, 0x8a3a3a, 0x2f4f6f, 0x5a4a2a]);
   for (let i = 0; i < 10; i++) {
     const a = r() * TAU, d = r.range(inner, outer * 0.8), x = cos(a) * d, z = sin(a) * d, lady = i % 2 === 1;
-    const rig = makeHuman({ ...randomPerson(r, { female: lady }), shirt: r.pick([0x2f2f3a, 0x3d2b4a, 0x4a2b2b, 0x1e2f3f]), pants: 0x1e1e24,
-      hat: lady ? 'bonnet' : 'top', hatColor: lady ? r.pick([0x6a3f8a, 0x8a3a3a, 0x2f4f6f]) : 0x0c0c0c,
-      coat: !lady, sleeves: lady, dress: lady ? r.pick([0x6a3f8a, 0x8a3a3a, 0x2f4f6f, 0x3a5a3a]) : null, cane: !lady && r.chance(0.6) });
+    const rig = makeHuman({ ...randomPerson(r, { female: lady, wardrobe: outWard }), pants: 0x1e1e24,
+      hat: lady ? 'bonnet' : 'top', hatColor: lady ? outBonnet() : 0x0c0c0c,
+      coat: !lady, sleeves: lady, dress: lady ? outGown() : null, cane: !lady && r.chance(0.6) });
     W.add(rig.group);
     game.npcs.push(new Wanderer(game, rig, { x, z, speed: r.range(0.6, 1.0), leash: 14 }));
   }

@@ -453,3 +453,4 @@ class Game {
 
 const game = new Game();
 window.DC = game; window.DC_WORLDS = WORLDS; window.DC_PORTAL_GEMS = PORTAL_GEMS;
+window.DC_RIGS = { makeHuman, randomPerson, makeWardrobe, seeded };   // for the QA line-ups in ../qa
