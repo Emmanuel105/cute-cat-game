@@ -1123,6 +1123,37 @@ class Mechanic {
   }
 }
 
+// ---------------------------------------------------------------- forager: kneels by the mushroom patch, reaching down to pick and lifting each one up before tucking it away
+class Forager {
+  constructor(game, rig, { x, z, ry = 0, cries = null }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10; this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false;
+    this.state = 'idle'; this.timer = 0; this.cries = cries; this.cryIcon = '🍄'; this.cryT = rnd.range(4, 9); this.pickT = rnd.range(1.4, 2.2); this.picked = false; this.reach = 0;
+    rig.group.rotation.y = ry;
+    rig.group.position.set(x, game.physics.ground0(x, z) - 0.4 * rig.k + 0.05, z);   // kneeling: hips a shin's length lower than standing
+    this.circle = game.physics.addCircle(this, x, z, 0.35);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig;
+    rig.animate(0, false, dt, this.t);
+    for (const L of rig.legs) { L.hip.rotation.x = damp(L.hip.rotation.x, -0.05, 6, dt); L.knee.rotation.x = PI / 2 + 0.05; L.ankle.rotation.x = 0.9; }
+    rig.spine.rotation.x = damp(rig.spine.rotation.x, 0.4, 6, dt); rig.body.position.y = 0;
+    rig.head.rotation.x = damp(rig.head.rotation.x, 0.25, 6, dt);
+    if (!rig.gesture) {
+      this.pickT -= dt; const down = this.pickT < 0.5;
+      this.reach = damp(this.reach, down ? 1 : 0, 10, dt);
+      for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -0.25 - this.reach * 1.15, 14, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.35 - this.reach * 1.35, 14, dt); A.sh.rotation.z = (A === rig.arms[0] ? 1 : -1) * 0.22; }
+      if (down && this.pickT < 0.18 && !this.picked) {   // the mushroom comes free
+        this.picked = true; SFX.tag();
+        const p = rig.group.position; this.game.fx.emit(p.x, p.y + 0.35, p.z, { count: 6, colors: [0xd9b27a, 0xfff3a0], speed: 1.0, up: 1.2, life: 0.6, gravity: 3 });
+      }
+      if (this.pickT <= 0) { this.pickT = rnd.range(1.6, 2.6); this.picked = false; }
+    }
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- marchers: a column following a leader, all in step
 class Marchers {
   constructor(game, rigs, o) {

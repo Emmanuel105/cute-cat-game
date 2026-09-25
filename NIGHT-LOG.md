@@ -274,3 +274,18 @@ times** — a deep bell, felt rather than seen, since the door is clear across t
 **Offer the robot dog a toy mouse** — mid-chase or not, corner it or just walk up — and it drops
 the chase for good, wags, and counts as a friend. Once won over it never goes on alert again,
 though it still gives a happy beep now and then when the cat's nearby.
+
+## Round 34 — a forager in Whisper Woods
+
+Whisper Woods only had two people to meet (the woodcutter and the hiker), which felt thin next to
+the other worlds. A **mushroom forager** now kneels by one of the glade's patches, reaching down
+to pick and lifting each find up before tucking it away — a little chime and a scatter of sparkles
+mark every pick. "Chanterelles today — lovely with butter." "Mind the fairy rings, puss." Woods now
+has 3 to meet instead of 2.
+
+Also fixed a **flaky end-of-quest test**: stepping through the time door back to the Neighborhood
+was timed too tightly against the world-transition chain (1100 ms of slack against ~1020 ms of
+real transition time), so on a loaded machine the check could fire before the travel had actually
+started, failing "time door → neighborhood" and "save records completion" even with no code change.
+Confirmed this reproduced on the unmodified tree too, tracked it to the transition timing margin,
+and gave it more headroom (2200 ms) rather than touching any game logic.

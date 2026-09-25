@@ -279,7 +279,7 @@ check(saved() && saved().world === 0 && Array.isArray(saved().pos), `save writte
   check(game.restore(snap), 'restore back to the real save'); game.state.score = scoreBefore; game.updateHud();
 }
 // the time door is open (no quest yet): the boy chats, the door goes home
-game.travel(3, 'from-prev'); await sleep(1100); frames(10);
+game.travel(3, 'from-prev'); await sleep(2200); frames(10);
 const child = game.interactables.find((i) => /boy/.test(i.label())); check(!!child, 'child interactable exists');
 child.onUse(); frames(20);
 const door = game.interactables.find((i) => /time/i.test(i.label()));
