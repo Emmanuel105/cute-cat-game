@@ -6250,6 +6250,11 @@ function buildForest(game, entry) {
     W.add(birder.group);
     game.npcs.push(new Birder(game, birder, { x: 35, z: 27, ry: -2.4,
       cries: ["There! ...no, just a leaf.", 'Ssh - a woodpecker, three trees over.', "That owl's been in the same tree all week."] })); }
+  // an artist sets up an easel among the giant mushrooms, painting the glade
+  { const artist = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: false }), shirt: 0x6b7a5a, pants: 0x4a4030, shoes: 0x3a2a1e, apron: 0xd9c9a8, hat: null, scarf: null, jacket: null, bag: null, glasses: false });
+    W.add(artist.group);
+    game.npcs.push(new Painter(game, artist, makeEasel(), { x: 6, z: 20, ry: -2.0,
+      cries: ['The light here is far too good to waste.', "I swear that mushroom moved when I wasn't looking.", 'Nearly got the whiskers right, this time.'] })); }
 
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });

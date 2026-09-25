@@ -327,3 +327,11 @@ scanning the canopy. Every few seconds the glasses come up and the head tilts ba
 look, then lower again while the watching goes on — "There! ...no, just a leaf." "Ssh — a
 woodpecker, three trees over." "That owl's been in the same tree all week." Whisper Woods now has
 4 people to meet instead of 3.
+
+## Round 39 — an artist among the mushrooms
+
+Whisper Woods was still the world with fewest people to meet. An **artist** now sets up an easel
+near the glade's giant mushrooms, dabbing at a canvas and stepping back to look — reusing the same
+painter rig as the Neighborhood's pond-side painter, in a new spot and clothes, with his own lines.
+"The light here is far too good to waste." "I swear that mushroom moved when I wasn't looking."
+"Nearly got the whiskers right, this time." Whisper Woods now has 5 people to meet instead of 4.
