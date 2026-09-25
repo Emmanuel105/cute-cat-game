@@ -51,6 +51,11 @@ function buildForest(game, entry) {
   { const forager = makeHuman({ ...randomPerson(r, { female: true, elder: true, child: false, hairStyle: 'bun' }), shirt: 0x6b4f8a, apron: 0xd9c9a8, skirt: 0x4a3a5a, shoes: 0x3a2a1e, hat: 'bonnet', hatColor: 0x6b4f8a, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
     W.add(forager.group);
     game.npcs.push(new Forager(game, forager, { x: -9, z: -24, ry: 1.1, cries: ['Chanterelles today - lovely with butter.', 'Mind the fairy rings, puss.', 'These woods feed a body well, if you know where to look.'] })); }
+  // a birdwatcher stands near the owls' tree, binoculars raised every few seconds
+  { const birder = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }), shirt: 0x5a7a4a, jacket: 0x3a4a2e, pants: 0x4a4030, shoes: 0x3a2a1e, hat: 'cap', hatColor: 0x3a4a2e, scarf: null, bag: null, glasses: true });
+    W.add(birder.group);
+    game.npcs.push(new Birder(game, birder, { x: 35, z: 27, ry: -2.4,
+      cries: ["There! ...no, just a leaf.", 'Ssh - a woodpecker, three trees over.', "That owl's been in the same tree all week."] })); }
 
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });

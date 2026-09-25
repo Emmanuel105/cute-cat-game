@@ -1154,6 +1154,33 @@ class Forager {
   }
 }
 
+// ---------------------------------------------------------------- birder: binoculars in hand, watching the trees, glasses raised every so often
+class Birder {
+  constructor(game, rig, { x, z, ry = 0, cries = null }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10; this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false;
+    this.state = 'idle'; this.timer = 0; this.cries = cries; this.cryIcon = '🦉'; this.cryT = rnd.range(4, 9); this.raised = false; this.raiseT = rnd.range(3, 6); this.reach = 0;
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    const black = mat(0x2a2a2a, { roughness: 0.6 });
+    const bino = group(0, 0.16, 0.1, rig.hands[0]); bino.rotation.x = -0.3;
+    mesh(G.cyl(0.045, 0.05, 0.13, 10), black, { x: -0.06, rz: PI / 2, parent: bino });
+    mesh(G.cyl(0.045, 0.05, 0.13, 10), black, { x: 0.06, rz: PI / 2, parent: bino });
+    mesh(G.box(0.12, 0.03, 0.03), black, { parent: bino });
+    this.circle = game.physics.addCircle(this, x, z, 0.35);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig;
+    rig.animate(0, false, dt, this.t);
+    this.raiseT -= dt;
+    if (this.raiseT <= 0) { this.raised = !this.raised; this.raiseT = this.raised ? rnd.range(2.4, 3.6) : rnd.range(4, 8); }
+    this.reach = damp(this.reach, this.raised ? 1 : 0, 8, dt);
+    if (!rig.gesture) for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -0.3 - this.reach * 1.55, 14, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.2 - this.reach * 1.7, 14, dt); A.sh.rotation.z = (A === rig.arms[0] ? 1 : -1) * (0.25 - this.reach * 0.1); }
+    rig.head.rotation.x = damp(rig.head.rotation.x, this.raised ? -0.5 : 0.05, 6, dt);
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- ice fisher: sits by the hole, rod dipping, and strikes every so often
 // (also used for a pier fisherman over open water — pass `seatY` when the seat isn't at ground0)
 class IceFisher {

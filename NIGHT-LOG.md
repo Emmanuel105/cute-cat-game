@@ -318,3 +318,12 @@ and the Candy Queen are: the first chat befriends him, with hearts and a line of
 **"You stopped! Everyone else just dashes through the door. I'm glad you didn't."** — and only
 after that does he fall back to his usual lines about the door, the future and the fog. Victorian
 now has 27 people to meet instead of 26.
+
+## Round 38 — a birdwatcher in Whisper Woods
+
+Whisper Woods was still the thinnest world to meet people in, even after the forager. A
+**birdwatcher** now stands near the owls' tree at the edge of the glade, binoculars in hand,
+scanning the canopy. Every few seconds the glasses come up and the head tilts back for a good
+look, then lower again while the watching goes on — "There! ...no, just a leaf." "Ssh — a
+woodpecker, three trees over." "That owl's been in the same tree all week." Whisper Woods now has
+4 people to meet instead of 3.
