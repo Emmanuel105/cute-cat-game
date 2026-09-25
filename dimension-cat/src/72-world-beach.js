@@ -27,6 +27,13 @@ function buildBeach(game, entry) {
   // pier + lighthouse + huts
   makePier(game, 17, -10, 15, PI / 2);
   const lighthouse = makeLighthouse(game, 12, -46); U.push(lighthouse.userData.update);
+  // a fisherman on a stool near the end of the pier, rod out over the open water
+  { const pierWard = makeWardrobe(r, { shirts: [0x4a6a7a, 0x5a5a4a, 0x3a5a4a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018, 0x1e2020] });
+    const angler = makeHuman({ ...randomPerson(r, { female: false, elder: true, child: false, wardrobe: pierWard }),
+      hat: 'cap', hatColor: 0x2e4a3a, coat: true, scarf: null, jacket: null });
+    W.add(angler.group);
+    game.npcs.push(new IceFisher(game, angler, makeIceStool(), { x: 30, z: -10, ry: PI / 2, seatY: 0.6, holeX: 34, holeZ: -10, holeY: 0.05,
+      cries: ['Not a nibble all morning.', "Careful, puss, you'll spook them.", 'Best spot on the whole pier, this.'] })); }
   for (let i = 0; i < 12; i++) { const a = r() * TAU, d = r.range(2.6, 6); placeT(game, U, makeRock(r, 0x8a857a, r.range(0.8, 1.8)), 12 + cos(a) * d, -46 + sin(a) * d, 0); }
   for (let i = 0; i < 5; i++) placeT(game, U, boxAround(game, makeBeachHut(r.pick([0xff8a65, 0x4fc3f7, 0xfff176, 0x81c784, 0xf48fb1]), r), -10, -24 + i * 9, 2.8, 2.8, 2.8), -10, -24 + i * 9, PI / 2);
   // dunes: palms, grass tufts, driftwood

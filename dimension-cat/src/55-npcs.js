@@ -1155,13 +1155,15 @@ class Forager {
 }
 
 // ---------------------------------------------------------------- ice fisher: sits by the hole, rod dipping, and strikes every so often
+// (also used for a pier fisherman over open water — pass `seatY` when the seat isn't at ground0)
 class IceFisher {
-  constructor(game, rig, stool, { x, z, ry = 0, holeX, holeZ, holeY, cries = null }) {
+  constructor(game, rig, stool, { x, z, ry = 0, seatY, holeX, holeZ, holeY, cries = null }) {
     this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10; this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false;
     this.state = 'idle'; this.timer = 0; this.cries = cries; this.cryIcon = '🎣'; this.cryT = rnd.range(5, 10);
     this.holeX = holeX; this.holeZ = holeZ; this.biteT = rnd.range(6, 11); this.bite = 0; this.caught = 0;
-    stool.position.set(x, game.physics.ground0(x, z), z); stool.rotation.y = ry; game.world.add(stool);
-    rig.group.position.set(x, game.physics.ground0(x, z) + 0.3 - 0.9 * rig.k + 0.02, z); rig.group.rotation.y = ry;
+    const groundY = seatY ?? game.physics.ground0(x, z);
+    stool.position.set(x, groundY, z); stool.rotation.y = ry; game.world.add(stool);
+    rig.group.position.set(x, groundY + 0.3 - 0.9 * rig.k + 0.02, z); rig.group.rotation.y = ry;
     const rodPivot = group(0, 0.02, 0.03, rig.hands[0]); rodPivot.rotation.x = -1.15;
     mesh(G.cyl(0.014, 0.022, 1.1, 6), mat(0x5a3a22, { roughness: 0.9 }), { y: 0.55, parent: rodPivot });
     this.tip = group(0, 1.08, 0, rodPivot); this.tipWorld = V3();

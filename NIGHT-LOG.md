@@ -298,3 +298,12 @@ frozen pond, rod dipped into a hole cut in the ice, line trailing down. Most of 
 a slow jiggle, but every 7–13 seconds he gets a bite: the rod dips hard, a scatter of ice and water
 flies up out of the hole, and a chime marks the catch — "Got one!" "Not a bite in an hour..."
 "Careful, puss, don't scare them off." Frosty Peak now has 5 people to meet instead of 4.
+
+## Round 36 — a fisherman on the pier
+
+Sunny Shore had a whole pier out over the water with nobody on it. A **fisherman** now sits on a
+stool near its end, rod cast out past the tip, line trailing down to the water — the same rig as
+Frosty Peak's ice angler, given a seat that isn't tied to the ground so it can sit up on the pier
+deck over open water instead of down on the pond ice. Every so often the rod dips and a splash of
+spray marks a catch — "Not a nibble all morning." "Best spot on the whole pier, this." Sunny Shore
+now has 9 people to meet instead of 8.
