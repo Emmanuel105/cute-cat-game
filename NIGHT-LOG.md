@@ -335,3 +335,19 @@ near the glade's giant mushrooms, dabbing at a canvas and stepping back to look 
 painter rig as the Neighborhood's pond-side painter, in a new spot and clothes, with his own lines.
 "The light here is far too good to waste." "I swear that mushroom moved when I wasn't looking."
 "Nearly got the whiskers right, this time." Whisper Woods now has 5 people to meet instead of 4.
+
+## Round 40 — an old-timer by the fire on Frosty Peak
+
+The campfire in the middle of the snow village has always had three log seats round it, and nobody
+ever sat on them. An **old-timer** now perches on one, come in from the cold to warm her hands,
+turning to watch the cat go by same as anyone else — "Best seat on the mountain, this." "Come and
+warm your paws, puss." "Cold enough to freeze a yeti's nose, out there." Frosty Peak now has 6
+people to meet instead of 5.
+
+Along the way, gave the `Sitter` controller (already used for the Neighborhood's bench pair)
+optional spoken lines, the same way `Wanderer` and `Vendor` already have them — the bench sitters
+themselves stay silent since they're built without any. First pass wired up `cryT` unconditionally,
+which drew an extra tick off the shared `rnd()` sequence for every `Sitter` regardless of whether
+it talks, silently shifting the timing of everything built after it in the Neighborhood and
+breaking the two-neighbours-chatting test; fixed by only drawing that tick when the sitter actually
+has lines to say.

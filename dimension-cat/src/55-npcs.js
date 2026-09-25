@@ -628,9 +628,9 @@ function greet(game, rig) {
 // ---------------------------------------------------------------- sitter: parked on a bench, watching the world go by
 class Sitter {
   /** `seat` is the bench's seat height; the rig is lowered so its hips land on it and its shins hang down in front. */
-  constructor(game, rig, { x, z, ry, seat = 0.48, side = 0 }) {
+  constructor(game, rig, { x, z, ry, seat = 0.48, side = 0, cries = null, cryIcon = '💬' }) {
     this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10; this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false;
-    this.state = 'idle'; this.timer = 0; this.side = side;
+    this.state = 'idle'; this.timer = 0; this.side = side; this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
     rig.group.position.set(x, game.physics.ground0(x, z) + seat - 0.9 * rig.k + 0.02, z); rig.group.rotation.y = ry;
     this.circle = game.physics.addCircle(this, x, z, 0.3);
     greetable(game, this);
@@ -644,6 +644,7 @@ class Sitter {
     // half-turned toward whoever is on the bench beside them
     if (this.side) rig.head.rotation.y += this.side * 0.35 * (1 - this.lookW);
     Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
   }
 }
 

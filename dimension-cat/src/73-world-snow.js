@@ -24,6 +24,13 @@ function buildSnowVillage(game, entry) {
 
   // village: cabins around a campfire, igloos, a frozen pond, snowmen, sleds
   const fire = makeCampfire(game, 0, 0); U.push(fire.userData.update);
+  // an old-timer on one of the fire's log seats, come in from the cold to warm her hands
+  { const a = 2.5, lx = cos(a) * 1.7, lz = sin(a) * 1.7;
+    const fireWard = makeWardrobe(r, { shirts: [0x7a4a3a, 0x5a4a6a, 0x6a5a4a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const granny = makeHuman({ ...randomPerson(r, { female: true, elder: true, child: false, wardrobe: fireWard, hairStyle: 'bun' }),
+      hat: 'beanie', hatColor: 0x8a5acf, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a }); W.add(granny.group);
+    game.npcs.push(new Sitter(game, granny, { x: lx, z: lz, ry: atan2(-lx, -lz), seat: 0.3,
+      cries: ['Best seat on the mountain, this.', 'Come and warm your paws, puss.', "Cold enough to freeze a yeti's nose, out there."] })); }
   for (const [x, z, ry, wall, roof] of [[-11, -6, PI / 2 - 0.3, 0x8a5a32, 0x4a3a30], [11, -5, -PI / 2 + 0.2, 0x7a4a28, 0x3a4a5a], [-4, 12, PI + 0.2, 0x9a6a3a, 0x4a3a30], [9, 11, PI - 0.4, 0x6a4a2a, 0x5a3a30]]) {
     const c = makeCabin({ wall, roof, w: r.range(4.5, 5.5), d: r.range(4, 5) }, r); placeT(game, U, c, x, z, ry); const [w, h, d] = c.userData.size; boxT(game, x, z, max(w, d) * 0.85, h, max(w, d) * 0.85);
     const ch = c.userData.chimney, y0 = P.ground0(x, z);
