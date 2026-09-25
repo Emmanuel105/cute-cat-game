@@ -688,47 +688,55 @@ class Playmates {
 // ---------------------------------------------------------------- snowball fight: two children pelting each other across the square
 class SnowballFight {
   constructor(game, rigA, rigB, { cx, cz, gap = 5 }) {
-    this.game = game; this.cx = cx; this.cz = cz; this.t = 0; this.thrower = 0; this.nextT = 1.5; this.throws = 0; this.catHit = false;
+    this.game = game; this.cx = cx; this.cz = cz; this.t = 0; this.thrower = 0; this.nextT = 1.1; this.throws = 0; this.catHit = false;
     this.kids = [rigA, rigB].map((rig, i) => {
       const x = cx + (i ? gap / 2 : -gap / 2), z = cz;
       rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = i ? -PI / 2 : PI / 2;   // facing each other along x
-      return { rig, x, z, hz: z, circle: game.physics.addCircle(this, x, z, 0.25), phase: rnd() * TAU, flinch: 0, t: rnd() * 3 };
+      return { rig, x, z, hz: z, circle: game.physics.addCircle(this, x, z, 0.25), flinch: 0, t: rnd() * 3 };
     });
     this.rig = rigA;
     this.balls = [];
-    for (let i = 0; i < 3; i++) { const m = mesh(G.sphere(0.11, 8, 6), mat(0xffffff, { roughness: 1 }), { parent: game.world }); m.visible = false; this.balls.push({ m, t: -1, wait: 0, dur: 0.75, from: V3(), to: V3() }); }
+    for (let i = 0; i < 3; i++) { const m = mesh(G.sphere(0.11, 8, 6), mat(0xffffff, { roughness: 1 }), { parent: game.world }); m.visible = false; this.balls.push({ m, t: -1, wait: 0, dur: 0.55, from: V3(), to: V3() }); }
   }
   throwAt(k, tx, ty, tz) {
     const b = this.balls.find((b) => b.t < 0); if (!b) return;
     k.rig.gesture = 'throw'; k.rig.gT = 0; this.throws++;
-    b.t = 0; b.wait = 0.28; b.from.set(k.x, 0.95 * k.rig.k + 0.35, k.z); b.to.set(tx, ty, tz); b.m.position.copy(b.from); b.m.visible = true;
+    b.t = 0; b.wait = 0.2; b.from.set(k.x, 0.7 * k.rig.k + 0.35, k.z); b.to.set(tx, ty, tz); b.m.position.copy(b.from); b.m.visible = true;
   }
   update(dt) {
     this.t += dt; this.nextT -= dt;
     const cat = this.game.cat.group.position, P = this.game.physics;
     for (const k of this.kids) {
-      // shuffle sideways, always squared up to the other one
+      // a crouched scuffle, not a stroll: a quick side-hop dodge, squared up to the other one, packing snow between throws
       k.t += dt; const other = this.kids[k === this.kids[0] ? 1 : 0];
-      k.z = k.hz + sin(k.t * 0.9) * 1.6; k.circle.z = k.z;
-      k.rig.group.position.set(k.x, P.ground0(k.x, k.z), k.z);
-      k.rig.group.rotation.y = dampAngle(k.rig.group.rotation.y, atan2(other.x - k.x, other.z - k.z), 6, dt);
-      const stepping = abs(cos(k.t * 0.9)) > 0.35; if (stepping) k.phase += dt * 4;
-      k.rig.animate(k.phase, stepping, dt, this.t);
+      const hop = max(0, sin(k.t * 3.1));
+      k.z = k.hz + sin(k.t * 1.7) * 0.9; k.circle.z = k.z;
+      k.rig.group.rotation.y = dampAngle(k.rig.group.rotation.y, atan2(other.x - k.x, other.z - k.z), 9, dt);
+      k.rig.animate(0, false, dt, this.t);   // never a walking stride here \u2014 always crouched and squared up
+      const crouching = k.rig.gesture !== 'throw';
+      k.rig.group.position.set(k.x, P.ground0(k.x, k.z) - (crouching ? (0.22 + hop * 0.05) * k.rig.k : 0), k.z);
+      if (crouching) {   // knees bent, hands low, scooping and packing snow while waiting for the next throw
+        const pack = sin(k.t * 6) * 0.5 + 0.5;
+        k.rig.spine.rotation.x = damp(k.rig.spine.rotation.x, 0.4, 12, dt);
+        k.rig.arms[0].sh.rotation.x = damp(k.rig.arms[0].sh.rotation.x, -0.85 - pack * 0.2, 14, dt); k.rig.arms[0].el.rotation.x = damp(k.rig.arms[0].el.rotation.x, -1.3, 14, dt); k.rig.arms[0].sh.rotation.z = 0.22;
+        k.rig.arms[1].sh.rotation.x = damp(k.rig.arms[1].sh.rotation.x, -0.85 + pack * 0.2, 14, dt); k.rig.arms[1].el.rotation.x = damp(k.rig.arms[1].el.rotation.x, -1.3, 14, dt); k.rig.arms[1].sh.rotation.z = -0.22;
+        for (const L of k.rig.legs) { L.hip.rotation.x = damp(L.hip.rotation.x, -0.15, 12, dt); L.knee.rotation.x = damp(L.knee.rotation.x, 0.6, 12, dt); }
+      }
       if (k.flinch > 0) { k.flinch -= dt; k.rig.body.rotation.z += sin(k.flinch * 14) * 0.14; k.rig.body.position.y -= 0.07 * k.rig.k * sin(clamp(k.flinch / 0.5, 0, 1) * PI); }
     }
     // take turns; a cat that comes too close gets one thrown at it (once per visit)
     if (this.nextT <= 0) {
       const k = this.kids[this.thrower], o = this.kids[1 - this.thrower];
       if (!this.catHit && dist2(k.x, k.z, cat.x, cat.z) < 20) { this.throwAt(k, cat.x, cat.y + 0.35, cat.z); this.catHit = true; }
-      else this.throwAt(k, o.x, 0.9 * o.rig.k, o.z);
-      this.thrower = 1 - this.thrower; this.nextT = rnd.range(1.4, 2.6);
+      else this.throwAt(k, o.x, 0.55 * o.rig.k, o.z);
+      this.thrower = 1 - this.thrower; this.nextT = rnd.range(1.0, 1.9);
     }
     if (this.catHit && this.kids.every((k) => dist2(k.x, k.z, cat.x, cat.z) > 60)) this.catHit = false;
     for (const b of this.balls) {
       if (b.t < 0) continue;
       if (b.wait > 0) { b.wait -= dt; continue; }             // the arm winds up first
       b.t += dt; const u = min(1, b.t / b.dur);
-      b.m.position.copy(b.from).lerp(b.to, u); b.m.position.y += sin(u * PI) * 1.3;
+      b.m.position.copy(b.from).lerp(b.to, u); b.m.position.y += sin(u * PI) * 1.1;
       if (u >= 1) {
         b.t = -1; b.m.visible = false;
         this.game.fx.emit(b.to.x, b.to.y, b.to.z, { count: 14, colors: [0xffffff, 0xeaf4ff], speed: 1.6, up: 1.2, life: 0.6, gravity: 3 });
@@ -1066,6 +1074,50 @@ class Chopper {
       this.game.fx.emit(p.x + sin(a) * 0.7, p.y + 0.5, p.z + cos(a) * 0.7, { count: 7, colors: [0xd9b27a, 0x8a5a32], speed: 1.6, up: 1.8, life: 0.7, gravity: 4 });
     }
     rig.animate(0, false, dt, this.t);
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
+// ---------------------------------------------------------------- mechanic: kneels by a wonky robot, wrench in hand — every bolt tightened sparks, and the robot perks upright and beeps before slumping again
+class Mechanic {
+  constructor(game, rig, robot, { x, z, ry = 0, cries = null }) {
+    this.game = game; this.rig = rig; this.robot = robot; this.x = x; this.z = z; this.t = rnd() * 10; this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false;
+    this.state = 'idle'; this.timer = 0; this.cries = cries; this.cryIcon = '🔧'; this.cryT = rnd.range(4, 9); this.turnT = rnd.range(2.6, 4); this.struck = false; this.perk = 0;
+    rig.group.rotation.y = ry;
+    rig.group.position.set(x, game.physics.ground0(x, z) - 0.4 * rig.k + 0.05, z);   // kneeling: hips a shin's length lower than standing
+    const steel = mat(0x9aa3ad, { metalness: 0.8, roughness: 0.3 });
+    mesh(G.box(0.05, 0.05, 0.24), steel, { y: 0.14, z: 0.1, rx: 0.7, parent: rig.hands[0] });   // the wrench's handle
+    mesh(G.box(0.11, 0.11, 0.04), steel, { y: 0.25, z: 0.14, rx: 0.7, parent: rig.hands[0] });   // its jaw
+    const rx = x + sin(ry) * 0.85, rz = z + cos(ry) * 0.85;
+    robot.group.position.set(rx, game.physics.ground0(rx, rz), rz); robot.group.rotation.y = ry + PI; game.world.add(robot.group);
+    game.physics.addBox(rx, 0.7, rz, 0.6, 1.4, 0.6, { cam: false });
+    this.circle = game.physics.addCircle(this, x, z, 0.4);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig, robot = this.robot;
+    if (!rig.gesture) { this.turnT -= dt; if (this.turnT <= 0) { rig.gesture = 'chop'; rig.gT = 0; this.struck = false; this.turnT = rnd.range(3, 4.6); } }
+    if (rig.gesture === 'chop' && !this.struck && rig.gT / 1.1 >= 0.55) {   // the wrench bites
+      this.struck = true; this.perk = 1.4; SFX.clang();
+      const a = rig.group.rotation.y, p = rig.group.position;
+      this.game.fx.emit(p.x + sin(a) * 0.75, p.y + 0.55, p.z + cos(a) * 0.75, { count: 8, colors: [0xffe066, 0xffffff, 0x9fe8ff], speed: 2.4, up: 1.6, life: 0.35, gravity: 8 });
+    }
+    rig.animate(0, false, dt, this.t);
+    for (const L of rig.legs) { L.hip.rotation.x = damp(L.hip.rotation.x, -0.05, 6, dt); L.knee.rotation.x = PI / 2 + 0.05; L.ankle.rotation.x = 0.9; }
+    rig.body.position.y = 0;
+    if (rig.gesture !== 'chop') {   // between strikes: leant over the work, wrench held to the joint
+      rig.spine.rotation.x = damp(rig.spine.rotation.x, 0.45, 6, dt);
+      const fid = max(0, sin(this.t * 2.1));
+      rig.arms[0].sh.rotation.x = damp(rig.arms[0].sh.rotation.x, -0.55 - fid * 0.15, 10, dt); rig.arms[0].el.rotation.x = damp(rig.arms[0].el.rotation.x, -1.1, 10, dt); rig.arms[0].sh.rotation.z = 0.3;
+      rig.arms[1].sh.rotation.x = damp(rig.arms[1].sh.rotation.x, -0.65, 10, dt); rig.arms[1].el.rotation.x = damp(rig.arms[1].el.rotation.x, -1.0, 10, dt); rig.arms[1].sh.rotation.z = -0.35;
+    }
+    robot.animate(0, false, dt, this.t);
+    if (this.perk > 0) {
+      const wasFresh = this.perk > 0.9; this.perk -= dt;
+      robot.body.rotation.z = damp(robot.body.rotation.z, 0, 9, dt); robot.head.rotation.x = damp(robot.head.rotation.x, -0.12, 8, dt);
+      if (wasFresh && this.perk <= 0.9) { SFX.beep(); const c = this.game.cat.group.position; if (dist2(robot.group.position.x, robot.group.position.z, c.x, c.z) < 100) this.game.toast('🤖 "SYSTEMS... NOMINAL?"', 1800); }
+    } else { robot.body.rotation.z = damp(robot.body.rotation.z, 0.55, 2.2, dt); robot.head.rotation.x = damp(robot.head.rotation.x, 0.4, 3.5, dt); }
     Wanderer.prototype.lookAtCat.call(this, dt);
     if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
   }

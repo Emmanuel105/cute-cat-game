@@ -982,6 +982,8 @@ class SoundKit {
   bounce() { this.tone({ freq: 520, type: 'sine', dur: 0.12, vol: 0.1, slide: 240 }); }
   /** "Got you!" — a quick rising giggle when one child tags the other. */
   tag() { [880, 1175, 1480].forEach((f, i) => this.tone({ freq: f, type: 'triangle', dur: 0.07, vol: 0.05, delay: i * 0.055, slide: f * 1.2 })); }
+  /** A wrench striking metal. */
+  clang() { this.noise({ dur: 0.05, vol: 0.16, filter: 2200, type: 'bandpass' }); this.tone({ freq: 880, slide: 600, type: 'square', dur: 0.06, vol: 0.08, filter: 3000 }); }
   /** Footstep: soft pad on grass/sand/snow, tap on cobble/metal/planks. */
   step(kind = 'soft', run = false) {
     const v = run ? 0.09 : 0.06;
@@ -2436,47 +2438,55 @@ class Playmates {
 // ---------------------------------------------------------------- snowball fight: two children pelting each other across the square
 class SnowballFight {
   constructor(game, rigA, rigB, { cx, cz, gap = 5 }) {
-    this.game = game; this.cx = cx; this.cz = cz; this.t = 0; this.thrower = 0; this.nextT = 1.5; this.throws = 0; this.catHit = false;
+    this.game = game; this.cx = cx; this.cz = cz; this.t = 0; this.thrower = 0; this.nextT = 1.1; this.throws = 0; this.catHit = false;
     this.kids = [rigA, rigB].map((rig, i) => {
       const x = cx + (i ? gap / 2 : -gap / 2), z = cz;
       rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = i ? -PI / 2 : PI / 2;   // facing each other along x
-      return { rig, x, z, hz: z, circle: game.physics.addCircle(this, x, z, 0.25), phase: rnd() * TAU, flinch: 0, t: rnd() * 3 };
+      return { rig, x, z, hz: z, circle: game.physics.addCircle(this, x, z, 0.25), flinch: 0, t: rnd() * 3 };
     });
     this.rig = rigA;
     this.balls = [];
-    for (let i = 0; i < 3; i++) { const m = mesh(G.sphere(0.11, 8, 6), mat(0xffffff, { roughness: 1 }), { parent: game.world }); m.visible = false; this.balls.push({ m, t: -1, wait: 0, dur: 0.75, from: V3(), to: V3() }); }
+    for (let i = 0; i < 3; i++) { const m = mesh(G.sphere(0.11, 8, 6), mat(0xffffff, { roughness: 1 }), { parent: game.world }); m.visible = false; this.balls.push({ m, t: -1, wait: 0, dur: 0.55, from: V3(), to: V3() }); }
   }
   throwAt(k, tx, ty, tz) {
     const b = this.balls.find((b) => b.t < 0); if (!b) return;
     k.rig.gesture = 'throw'; k.rig.gT = 0; this.throws++;
-    b.t = 0; b.wait = 0.28; b.from.set(k.x, 0.95 * k.rig.k + 0.35, k.z); b.to.set(tx, ty, tz); b.m.position.copy(b.from); b.m.visible = true;
+    b.t = 0; b.wait = 0.2; b.from.set(k.x, 0.7 * k.rig.k + 0.35, k.z); b.to.set(tx, ty, tz); b.m.position.copy(b.from); b.m.visible = true;
   }
   update(dt) {
     this.t += dt; this.nextT -= dt;
     const cat = this.game.cat.group.position, P = this.game.physics;
     for (const k of this.kids) {
-      // shuffle sideways, always squared up to the other one
+      // a crouched scuffle, not a stroll: a quick side-hop dodge, squared up to the other one, packing snow between throws
       k.t += dt; const other = this.kids[k === this.kids[0] ? 1 : 0];
-      k.z = k.hz + sin(k.t * 0.9) * 1.6; k.circle.z = k.z;
-      k.rig.group.position.set(k.x, P.ground0(k.x, k.z), k.z);
-      k.rig.group.rotation.y = dampAngle(k.rig.group.rotation.y, atan2(other.x - k.x, other.z - k.z), 6, dt);
-      const stepping = abs(cos(k.t * 0.9)) > 0.35; if (stepping) k.phase += dt * 4;
-      k.rig.animate(k.phase, stepping, dt, this.t);
+      const hop = max(0, sin(k.t * 3.1));
+      k.z = k.hz + sin(k.t * 1.7) * 0.9; k.circle.z = k.z;
+      k.rig.group.rotation.y = dampAngle(k.rig.group.rotation.y, atan2(other.x - k.x, other.z - k.z), 9, dt);
+      k.rig.animate(0, false, dt, this.t);   // never a walking stride here \u2014 always crouched and squared up
+      const crouching = k.rig.gesture !== 'throw';
+      k.rig.group.position.set(k.x, P.ground0(k.x, k.z) - (crouching ? (0.22 + hop * 0.05) * k.rig.k : 0), k.z);
+      if (crouching) {   // knees bent, hands low, scooping and packing snow while waiting for the next throw
+        const pack = sin(k.t * 6) * 0.5 + 0.5;
+        k.rig.spine.rotation.x = damp(k.rig.spine.rotation.x, 0.4, 12, dt);
+        k.rig.arms[0].sh.rotation.x = damp(k.rig.arms[0].sh.rotation.x, -0.85 - pack * 0.2, 14, dt); k.rig.arms[0].el.rotation.x = damp(k.rig.arms[0].el.rotation.x, -1.3, 14, dt); k.rig.arms[0].sh.rotation.z = 0.22;
+        k.rig.arms[1].sh.rotation.x = damp(k.rig.arms[1].sh.rotation.x, -0.85 + pack * 0.2, 14, dt); k.rig.arms[1].el.rotation.x = damp(k.rig.arms[1].el.rotation.x, -1.3, 14, dt); k.rig.arms[1].sh.rotation.z = -0.22;
+        for (const L of k.rig.legs) { L.hip.rotation.x = damp(L.hip.rotation.x, -0.15, 12, dt); L.knee.rotation.x = damp(L.knee.rotation.x, 0.6, 12, dt); }
+      }
       if (k.flinch > 0) { k.flinch -= dt; k.rig.body.rotation.z += sin(k.flinch * 14) * 0.14; k.rig.body.position.y -= 0.07 * k.rig.k * sin(clamp(k.flinch / 0.5, 0, 1) * PI); }
     }
     // take turns; a cat that comes too close gets one thrown at it (once per visit)
     if (this.nextT <= 0) {
       const k = this.kids[this.thrower], o = this.kids[1 - this.thrower];
       if (!this.catHit && dist2(k.x, k.z, cat.x, cat.z) < 20) { this.throwAt(k, cat.x, cat.y + 0.35, cat.z); this.catHit = true; }
-      else this.throwAt(k, o.x, 0.9 * o.rig.k, o.z);
-      this.thrower = 1 - this.thrower; this.nextT = rnd.range(1.4, 2.6);
+      else this.throwAt(k, o.x, 0.55 * o.rig.k, o.z);
+      this.thrower = 1 - this.thrower; this.nextT = rnd.range(1.0, 1.9);
     }
     if (this.catHit && this.kids.every((k) => dist2(k.x, k.z, cat.x, cat.z) > 60)) this.catHit = false;
     for (const b of this.balls) {
       if (b.t < 0) continue;
       if (b.wait > 0) { b.wait -= dt; continue; }             // the arm winds up first
       b.t += dt; const u = min(1, b.t / b.dur);
-      b.m.position.copy(b.from).lerp(b.to, u); b.m.position.y += sin(u * PI) * 1.3;
+      b.m.position.copy(b.from).lerp(b.to, u); b.m.position.y += sin(u * PI) * 1.1;
       if (u >= 1) {
         b.t = -1; b.m.visible = false;
         this.game.fx.emit(b.to.x, b.to.y, b.to.z, { count: 14, colors: [0xffffff, 0xeaf4ff], speed: 1.6, up: 1.2, life: 0.6, gravity: 3 });
@@ -2814,6 +2824,50 @@ class Chopper {
       this.game.fx.emit(p.x + sin(a) * 0.7, p.y + 0.5, p.z + cos(a) * 0.7, { count: 7, colors: [0xd9b27a, 0x8a5a32], speed: 1.6, up: 1.8, life: 0.7, gravity: 4 });
     }
     rig.animate(0, false, dt, this.t);
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
+// ---------------------------------------------------------------- mechanic: kneels by a wonky robot, wrench in hand — every bolt tightened sparks, and the robot perks upright and beeps before slumping again
+class Mechanic {
+  constructor(game, rig, robot, { x, z, ry = 0, cries = null }) {
+    this.game = game; this.rig = rig; this.robot = robot; this.x = x; this.z = z; this.t = rnd() * 10; this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false;
+    this.state = 'idle'; this.timer = 0; this.cries = cries; this.cryIcon = '🔧'; this.cryT = rnd.range(4, 9); this.turnT = rnd.range(2.6, 4); this.struck = false; this.perk = 0;
+    rig.group.rotation.y = ry;
+    rig.group.position.set(x, game.physics.ground0(x, z) - 0.4 * rig.k + 0.05, z);   // kneeling: hips a shin's length lower than standing
+    const steel = mat(0x9aa3ad, { metalness: 0.8, roughness: 0.3 });
+    mesh(G.box(0.05, 0.05, 0.24), steel, { y: 0.14, z: 0.1, rx: 0.7, parent: rig.hands[0] });   // the wrench's handle
+    mesh(G.box(0.11, 0.11, 0.04), steel, { y: 0.25, z: 0.14, rx: 0.7, parent: rig.hands[0] });   // its jaw
+    const rx = x + sin(ry) * 0.85, rz = z + cos(ry) * 0.85;
+    robot.group.position.set(rx, game.physics.ground0(rx, rz), rz); robot.group.rotation.y = ry + PI; game.world.add(robot.group);
+    game.physics.addBox(rx, 0.7, rz, 0.6, 1.4, 0.6, { cam: false });
+    this.circle = game.physics.addCircle(this, x, z, 0.4);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig, robot = this.robot;
+    if (!rig.gesture) { this.turnT -= dt; if (this.turnT <= 0) { rig.gesture = 'chop'; rig.gT = 0; this.struck = false; this.turnT = rnd.range(3, 4.6); } }
+    if (rig.gesture === 'chop' && !this.struck && rig.gT / 1.1 >= 0.55) {   // the wrench bites
+      this.struck = true; this.perk = 1.4; SFX.clang();
+      const a = rig.group.rotation.y, p = rig.group.position;
+      this.game.fx.emit(p.x + sin(a) * 0.75, p.y + 0.55, p.z + cos(a) * 0.75, { count: 8, colors: [0xffe066, 0xffffff, 0x9fe8ff], speed: 2.4, up: 1.6, life: 0.35, gravity: 8 });
+    }
+    rig.animate(0, false, dt, this.t);
+    for (const L of rig.legs) { L.hip.rotation.x = damp(L.hip.rotation.x, -0.05, 6, dt); L.knee.rotation.x = PI / 2 + 0.05; L.ankle.rotation.x = 0.9; }
+    rig.body.position.y = 0;
+    if (rig.gesture !== 'chop') {   // between strikes: leant over the work, wrench held to the joint
+      rig.spine.rotation.x = damp(rig.spine.rotation.x, 0.45, 6, dt);
+      const fid = max(0, sin(this.t * 2.1));
+      rig.arms[0].sh.rotation.x = damp(rig.arms[0].sh.rotation.x, -0.55 - fid * 0.15, 10, dt); rig.arms[0].el.rotation.x = damp(rig.arms[0].el.rotation.x, -1.1, 10, dt); rig.arms[0].sh.rotation.z = 0.3;
+      rig.arms[1].sh.rotation.x = damp(rig.arms[1].sh.rotation.x, -0.65, 10, dt); rig.arms[1].el.rotation.x = damp(rig.arms[1].el.rotation.x, -1.0, 10, dt); rig.arms[1].sh.rotation.z = -0.35;
+    }
+    robot.animate(0, false, dt, this.t);
+    if (this.perk > 0) {
+      const wasFresh = this.perk > 0.9; this.perk -= dt;
+      robot.body.rotation.z = damp(robot.body.rotation.z, 0, 9, dt); robot.head.rotation.x = damp(robot.head.rotation.x, -0.12, 8, dt);
+      if (wasFresh && this.perk <= 0.9) { SFX.beep(); const c = this.game.cat.group.position; if (dist2(robot.group.position.x, robot.group.position.z, c.x, c.z) < 100) this.game.toast('🤖 "SYSTEMS... NOMINAL?"', 1800); }
+    } else { robot.body.rotation.z = damp(robot.body.rotation.z, 0.55, 2.2, dt); robot.head.rotation.x = damp(robot.head.rotation.x, 0.4, 3.5, dt); }
     Wanderer.prototype.lookAtCat.call(this, dt);
     if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
   }
@@ -4502,9 +4556,10 @@ function makeGondolaStation(game, x, z, ry, onEnter, prompt = 'Ride the gondola 
   for (let i = 0; i < 12; i++) mesh(G.cone(0.14, 0.3, 3), mat([0xd62839, 0x2f6fd6, 0xffd54a, 0x2e9e6e][i % 4], { roughness: 0.9, side: THREE.DoubleSide }), { x: -2.4 + i * 0.44, y: 4.55, z: 1.85, rx: PI, shadow: 'none', parent: g });   // bunting
   mesh(G.box(1.6, 0.06, 0.5), timber, { x: -1.6, y: 0.95, z: -1.4, parent: g }); for (const bx of [-2.3, -0.9]) mesh(G.box(0.08, 0.45, 0.45), steel, { x: bx, y: 0.72, z: -1.4, parent: g });   // bench
   mesh(G.cyl(0.14, 0.14, 3.0, 8), steel, { y: 4.0, z: -0.8, rx: PI / 2, parent: g }); mesh(G.cyl(0.6, 0.6, 0.24, 18), steel, { y: 4.0, z: -0.8, rz: PI / 2, parent: g });   // drive wheel
-  // cable up into the sky with two cabins riding it
-  const cableLen = 110, pitch = 0.47;
-  const cableG = group(0, 4.0, -0.8, g); cableG.rotation.x = -pitch;
+  // cable up into the sky with two cabins riding it — short and steep, so it climbs clear of the ground and fades into the sky
+  // well short of the decorative mountain ring (those start at 1.35x the world's "clear" radius: keep this cable's reach inside that)
+  const cableLen = 42, pitch = 0.85;
+  const cableG = group(0, 4.0, -0.8, g); cableG.rotation.x = pitch;   // positive: the far end climbs into the sky, not down through the ground
   for (const sx of [-0.35, 0.35]) noInk(mesh(G.cyl(0.028, 0.028, cableLen, 5), mat(0x2b2f36, { metalness: 0.7, roughness: 0.5 }), { x: sx, z: -cableLen / 2, rx: PI / 2, parent: cableG }));
   const riders = [0.18, 0.62].map((k, i) => { const c = group(0, 0, 0, cableG); mesh(G.cyl(0.03, 0.03, 1.0, 6), steel, { y: -0.5, parent: c }); mesh(G.box(1.3, 1.2, 1.3), i ? mat(0x2f6fd6, { roughness: 0.5, metalness: 0.2 }) : red, { y: -1.6, parent: c }); mesh(G.box(1.32, 0.5, 1.32), glass, { y: -1.45, shadow: 'none', parent: c }); c.userData.k = k; c.userData.dir = i ? -1 : 1; return c; });
   // waiting cabin
@@ -4981,6 +5036,74 @@ function makeChocolatePool(game, x, z, rad, r) {
   game.physics.addBox(x, 1.5, z, rad * 1.9, 3, rad * 1.9, { walk: false, cam: false });
   return g;
 }
+/** A small candy house: bright icing-coloured round walls, a swirl roof, a candy window over the door — gaudier and simpler than the gingerbread cottage. */
+function makeCandyHouse(game, x, z, ry, r, hue) {
+  const g = group(x, 0, z, game.world); g.rotation.y = ry;
+  const wall = mat(new THREE.Color().setHSL(hue / 360, 0.62, 0.78).getHex(), { roughness: 0.7 });
+  const icing = mat(0xffffff, { roughness: 0.35 }), roofC = mat(new THREE.Color().setHSL(((hue + 40) % 360) / 360, 0.8, 0.6).getHex(), { roughness: 0.45 });
+  mesh(G.cyl(2.6, 2.9, 3.2, 16), wall, { y: 1.6, shadow: 'both', parent: g });                            // round candy-tin walls
+  mesh(G.cyl(3.22, 3.22, 0.18, 16), icing, { y: 3.24, shadow: 'none', parent: g });                        // icing drip line where roof meets wall
+  for (let i = 0; i < 10; i++) mesh(G.sphere(0.16, 8, 6), icing, { x: cos(i / 10 * TAU) * 3.15, y: 3.14 + (i % 2) * 0.1, z: sin(i / 10 * TAU) * 3.15, shadow: 'none', parent: g });   // dollops
+  mesh(G.cone(3.2, 2.6, 16), roofC, { y: 4.6, shadow: 'both', parent: g });                                 // roof
+  mesh(G.sphere(0.32, 10, 8), mat(0xffd54a, { metalness: 0.3, roughness: 0.3 }), { y: 5.95, shadow: 'none', parent: g });   // finial
+  mesh(G.box(1.0, 1.8, 0.12), mat(0x3a2a1e, { roughness: 0.6 }), { y: 0.9, z: 2.58, shadow: 'none', parent: g });           // door
+  mesh(G.torus(0.32, 0.05, 6, 14), icing, { y: 1.55, z: 2.62, shadow: 'none', parent: g });                                  // round window over the door
+  mesh(G.cyl(0.28, 0.28, 0.05, 14), mat(0xbfe7ff, { roughness: 0.2, transparent: true, opacity: 0.6 }), { y: 1.55, z: 2.64, rx: PI / 2, shadow: 'none', parent: g });
+  addRotBox(game, x, 1.6, z, 5.6, 3.2, 5.6, ry);
+  return g;
+}
+/** A houmoungous candy castle: striped corner towers and a grand gate you can walk straight through, into one huge throne hall. */
+function makeCandyCastle(game, x, z, ry, r) {
+  const g = group(x, 0, z, game.world); g.rotation.y = ry;
+  const P = game.physics;
+  const stone = mat(0xffe9f4, { roughness: 0.75 }), trim = mat(0xffffff, { roughness: 0.35 }), cane = mat(0xffffff, { roughness: 0.3, map: TEX.candyCane() });
+  const HW = 17, HD = 15, WALL_H = 11, GATE = 6;
+  const wallX = (cx, cz, len) => {
+    mesh(G.box(len, WALL_H, 1.6), stone, { x: cx, y: WALL_H / 2, z: cz, shadow: 'both', parent: g });
+    const [wx, wz] = localXZ(x, z, cx, cz, ry); addRotBox(game, wx, WALL_H / 2, wz, len, WALL_H, 1.6, ry);
+    for (let i = 0, n = floor(len / 2.4); i < n; i++) mesh(G.box(1.1, 0.9, 1.6), trim, { x: cx - len / 2 + 1.2 + i * 2.4, y: WALL_H + 0.55, z: cz, shadow: 'none', parent: g });
+  };
+  const wallZ = (cx, cz, len) => {
+    mesh(G.box(1.6, WALL_H, len), stone, { x: cx, y: WALL_H / 2, z: cz, shadow: 'both', parent: g });
+    const [wx, wz] = localXZ(x, z, cx, cz, ry); addRotBox(game, wx, WALL_H / 2, wz, 1.6, WALL_H, len, ry);
+    for (let i = 0, n = floor(len / 2.4); i < n; i++) mesh(G.box(1.6, 0.9, 1.1), trim, { x: cx, y: WALL_H + 0.55, z: cz - len / 2 + 1.2 + i * 2.4, shadow: 'none', parent: g });
+  };
+  wallX(-10, HD, 14); wallX(10, HD, 14);         // front, either side of the gate
+  wallX(0, -HD, HW * 2);                          // back
+  wallZ(-HW, 0, HD * 2); wallZ(HW, 0, HD * 2);    // sides
+  const tower = (tx, tz, rad, h, roofH) => {
+    mesh(G.cyl(rad, rad, h, 16), cane, { x: tx, y: h / 2, z: tz, shadow: 'both', parent: g });
+    mesh(G.cyl(rad + 0.35, rad + 0.35, 0.3, 16), trim, { x: tx, y: h + 0.1, z: tz, shadow: 'both', parent: g });
+    mesh(G.cone(rad + 0.35, roofH, 16), mat(0xff5c8a, { roughness: 0.5 }), { x: tx, y: h + 0.15 + roofH / 2, z: tz, shadow: 'none', parent: g });
+    mesh(G.sphere(0.35, 10, 8), mat(0xffd54a, { metalness: 0.3, roughness: 0.3 }), { x: tx, y: h + roofH + 0.5, z: tz, shadow: 'none', parent: g });
+    const [wx, wz] = localXZ(x, z, tx, tz, ry); P.addBox(wx, h / 2, wz, rad * 2, h, rad * 2, { walk: false });
+  };
+  for (const [tx, tz] of [[-HW, -HD], [HW, -HD], [-HW, HD], [HW, HD]]) tower(tx, tz, 3.1, 15, 6.6);
+  for (const tx of [-(GATE / 2 + 1.3), GATE / 2 + 1.3]) tower(tx, HD, 2.3, 13, 5.4);
+  mesh(G.box(GATE + 1.4, 1.4, 1.6), trim, { y: 7.4, z: HD, shadow: 'none', parent: g });                       // arch lintel over the gate
+  mesh(G.torus(GATE / 2, 0.3, 8, 20, PI), cane, { y: 6.7, z: HD, shadow: 'none', parent: g });
+  mesh(G.box(HW * 2 + 1, 0.7, HD * 2 + 1), trim, { y: WALL_H + 1.6, shadow: 'both', parent: g });               // roof cap over the whole hall
+  { const [wx, wz] = localXZ(x, z, 0, 0, ry); P.addBox(wx, WALL_H + 1.6, wz, HW * 2 + 1, 0.7, HD * 2 + 1, { walk: false, cam: false }); }
+  for (let ix = -3; ix < 3; ix++) for (let iz = -2; iz < 2; iz++)   // checkerboard floor
+    mesh(G.box(HW * 2 / 6 - 0.05, 0.05, HD * 2 / 4 - 0.05), mat((ix + iz) % 2 ? 0xffd7ea : 0xfff6fb, { roughness: 0.5 }), { x: ix * (HW * 2 / 6) + HW / 6, y: 0.025, z: iz * (HD * 2 / 4) + HD / 4, shadow: 'receive', parent: g });
+  for (const [px, pz] of [[-9, -8], [9, -8], [-9, 6], [9, 6]]) {   // candy-cane pillars holding the roof up
+    mesh(G.cyl(0.55, 0.55, WALL_H + 1, 14), cane, { x: px, y: (WALL_H + 1) / 2, z: pz, shadow: 'both', parent: g });
+    const [wx, wz] = localXZ(x, z, px, pz, ry); P.addBox(wx, (WALL_H + 1) / 2, wz, 1.1, WALL_H + 1, 1.1, { cam: false });
+  }
+  for (const wx0 of [-6, 6]) for (const s of [-1, 1])   // tall stained-glass windows, lollipop-coloured
+    mesh(G.cyl(1.5, 1.5, 0.1, 24), glowMat(new THREE.Color().setHSL(r.pick([330, 200, 50]) / 360, 0.9, 0.6).getHex(), 0.6), { x: wx0, y: 6.5, z: s * HW - s * 0.05, ry: PI / 2, shadow: 'none', parent: g });
+  // the throne, up on a dais at the back
+  const TZ = -HD + 3.6;
+  mesh(G.box(7, 0.3, 4.4), trim, { y: 0.15, z: TZ, shadow: 'both', parent: g });
+  const throne = group(0, 0.3, TZ, g);
+  mesh(G.box(2.6, 0.55, 2.0), mat(0xff6fb5, { roughness: 0.4 }), { y: 0.9, parent: throne });                    // seat
+  mesh(G.sphere(2.3, 20, 14), mat(0xffd7ea, { roughness: 0.4 }), { y: 3.1, z: -0.9, sz: 0.25, parent: throne }); // fan-shaped back
+  mesh(G.torus(2.3, 0.16, 8, 28), cane, { y: 3.1, z: -0.72, shadow: 'none', parent: throne });                    // striped rim around the back
+  for (const s of [-1, 1]) mesh(G.cyl(0.16, 0.16, 1.0, 8), mat(0xffd54a, { metalness: 0.6, roughness: 0.3 }), { x: s * 1.5, y: 1.35, z: 0.3, parent: throne });   // armrests
+  mesh(G.sphere(0.4, 12, 8), mat(0xd62839, { roughness: 0.4 }), { y: 5.3, z: -0.9, parent: throne });               // cherry on top
+  { const [dwx, dwz] = localXZ(x, z, 0, TZ, ry); P.addBox(dwx, 0.15, dwz, 7, 0.3, 4.4, { cam: false }); addRotBox(game, dwx, 1.6, dwz, 2.8, 3.2, 2.2, ry, { cam: false }); }
+  return { group: g, throneGroup: throne, gate: localXZ(x, z, 0, HD, ry), throne: localXZ(x, z, 0, TZ, ry) };
+}
 function candyRegion(game, U, r, inner, outer) {
   const W = game.world;
   U.push(fillRing(game, r, { inner, outer, count: 900, pad: 12, claim: 7, range: 230, skip: (x, z) => abs(z + 18) < 9, kinds: [
@@ -5177,7 +5300,7 @@ const WORLD_INDEX = (key) => WORLDS.findIndex((w) => w.key === key);
  * How far each world reaches from the origin. The Neighborhood stays a walkable village; every other
  * world is ten times its area (about 3.2x as wide), with the extra ground filled in by 68-regions.js.
  */
-const CANDY_LIMIT = 269, ROBOT_LIMIT = 269, VICTORIAN_LIMIT = 237, SHORE_LIMIT = 196, PEAK_LIMIT = 196, WOODS_LIMIT = 196;
+const CANDY_LIMIT = 480, ROBOT_LIMIT = 480, VICTORIAN_LIMIT = 420, SHORE_LIMIT = 196, PEAK_LIMIT = 196, WOODS_LIMIT = 196;
 /** Every world except the Neighborhood starts you next to its squirrel. */
 function spawnBySquirrel(game, sq, yawOffset = 0) {
   const a = sq.restHeading + PI + yawOffset, x = sq.x + sin(a) * 1.6, z = sq.z + cos(a) * 1.6;
@@ -5493,6 +5616,13 @@ function buildCandyLand(game, entry) {
   for (const [x, z] of [[-40, 44], [44, 46], [-56, -10], [58, -14], [-14, -56], [22, -58], [-66, 16], [68, 4]]) { const s = r.range(1.2, 1.9), l = makeLollipop(s, r.pick([330, 0, 200, 50, 280, 120]), r.range(3, 4.5)); l.position.set(x, 0, z); l.rotation.y = r() * TAU; W.add(l); P.addBox(x, 1.5, z, 0.4, 3, 0.4, { cam: false }); }
   for (const [x, z] of [[-48, 30], [50, 28], [-36, -48], [38, -50], [-10, 46], [12, 48], [-60, -2], [62, -4]]) { const b = makeMarshmallowBush(r); b.position.set(x, 0, z); W.add(b); P.addBox(x, 0.5, z, 1.2, 1, 1.2, { cam: false }); }
   makeCandyHills(W, r, CANDY_LIMIT + 8);
+  // the Candy Queen's castle, up the lane to the north — houmoungous, and you can walk right in — with a little candy village on the approach
+  game.zones.addCircle(0, 150, 27);
+  for (const [hx, hz] of [[-16, 95], [16, 97], [-24, 112], [24, 114], [0, 80]]) game.zones.addCircle(hx, hz, 5);
+  const castle = makeCandyCastle(game, 0, 150, PI, r);
+  for (const [hx, hz, hue] of [[-16, 95, 330], [16, 97, 200], [-24, 112, 50], [24, 114, 120], [0, 80, 280]]) makeCandyHouse(game, hx, hz, r() * TAU, r, hue);
+  for (const s of [-1, 1]) { const rig = makeGingerbread(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x: castle.throne[0] + s * 2.6, z: castle.throne[1] + 1.4, speed: 0.3, leash: 1.2, r: 0.4, height: 1.4, idle: [2, 5] })); }
+  game.addInteractable({ obj: castle.throneGroup, radius: 3.4, label: () => 'Approach the throne', onUse: () => { SFX.talk(); game.toast('👑 "A comfy-looking throne. Built for someone rather bigger than a cat."', 3000); } });
   candyRegion(game, U, r, 92, CANDY_LIMIT - 8);
   for (const [x, z] of [[-14, 18], [18, 16], [-8, -10], [10, -12], [-28, 8], [30, 4], [-22, 30], [22, 32], [-34, -32], [34, -36], [2, -30]]) { const b = makeMarshmallowBush(r); b.position.set(x, 0, z); W.add(b); P.addBox(x, 0.5, z, 1.2, 1, 1.2, { cam: false }); }
   for (const [x, z, ry, c] of [[-16, 8, 0.3, 0xff6fb5], [20, -8, -0.8, 0x7fd7ff], [0, 26, 1.5, 0xffd54a]]) { const d = makeDonut(c); d.position.set(x, 0, z); d.rotation.y = ry; W.add(d); addRotBox(game, x, 1.2, z, 0.6, 2.4, 3.4, ry, { cam: false }); }
@@ -5573,6 +5703,11 @@ function buildRobotCity(game, entry) {
   // robots, dog, door
   for (const [x, z] of [[-8, 4], [8, 2], [-16, -2], [18, 8], [2, -12]]) { const rig = makeRobot(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x, z, speed: r.range(0.5, 0.8), leash: 9, r: 0.42, height: 1.9, idle: [1.5, 4] })); }
   game.npcs.push(new RoboDog(game, [[14, 6], [14, -4], [24, -4], [24, 6]]));
+  // a mechanic kneels over a wonky robot on the open floor, wrench in hand — a tightened bolt sparks and the patient sits bolt upright for a moment
+  { const mech = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }), shirt: 0x3a4a6a, stripes: null, pants: 0x232c44, shoes: 0x1a1a20, hat: 'cap', hatColor: 0x3a4a6a, jacket: null, scarf: null, bag: null, build: 'stout', glasses: false });
+    W.add(mech.group);
+    game.npcs.push(new Mechanic(game, mech, makeRobot(), { x: 2, z: 18, ry: PI,
+      cries: ['Nearly got it...', "It's just a squeaky bearing.", 'Hold still, you overgrown toaster.', 'There! ...no. Not quite.'] })); }
   makeWoodenDoor(game, 19, -15, 0, () => game.travel(3, 'from-prev'));
   const back = makeRingPortal(0xff5fd2, { frame: 0x3a4048 }); place(game, U, back, -10, 12, 0); P.addBox(-11.4, 1.3, 12, 0.5, 2.6, 0.6); P.addBox(-8.6, 1.3, 12, 0.5, 2.6, 0.6);
   game.addInteractable({ obj: back, radius: 2.4, label: () => 'Return to Candy Land', onUse: () => game.travel(1, 'from-next') });

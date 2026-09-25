@@ -221,3 +221,32 @@ camera and holds a hand up for the picture. Switch it off and they go back to th
 - A **painter** at her easel by the park pond, brush in one hand and palette in the other, dabbing
   at the canvas and stepping back to look. The picture fills in as you watch: sky, hill, and a
   black cat. "Hold still, kitty... perfect."
+
+## Round 28 — a mechanic, and a wonky robot
+
+A **mechanic** kneels over a **wonky robot** on the open floor of Robot City, wrench in hand.
+Every so often the wrench bites, sparks fly, and the patient sits bolt upright and beeps —
+"SYSTEMS... NOMINAL?" — before slumping back down, unconvinced. "Nearly got it... It's just a
+squeaky bearing."
+
+## Round 29 — the snowball fight for real, a gondola that climbs, and the Candy Queen's castle
+
+**Before:** the two kids in Frosty Peak "having a snowball fight" just walked a lazy stroll past
+each other — no crouch, no read of a fight at all. The Neighborhood gondola's cable, fixed once
+already, still ended up either underground (like a cave) or buried in the decorative mountains
+beyond it, depending on which way the bug ran.
+
+- **The snowball fight now reads as one.** Between throws the two kids crouch, knees bent, hands
+  low, packing snow — not strolling. The moment it's their turn they square up, wind back and
+  throw; hit snowballs are visibly in flight, not just a toast when one lands.
+- **The gondola cable climbs cleanly into the sky** instead of diving through the ground or
+  disappearing into a mountain — short, steep, and clear of the decorative peaks beyond it.
+- **Candy Land, Robot City and the Victorian town are all a great deal bigger** — walkable radius
+  up from ~270 (~240 for Victorian) to 480 (420), with the distant skyline, hills and mountains
+  pushed out to match, so the walk to the edge of the map is now much longer and the horizon much
+  further away.
+- **The Candy Queen has a castle.** Striped candy-cane corner towers with pink roofs, a grand
+  gate flanked by two smaller towers, and one huge throne hall inside — checkerboard floor,
+  candy-cane pillars, lollipop-coloured stained glass, and a fan-backed throne with a cherry on
+  top, guarded by two gingerbread men. A little candy village — five brightly-iced round houses —
+  lines the lane up to the gate.

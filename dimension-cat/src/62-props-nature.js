@@ -204,9 +204,10 @@ function makeGondolaStation(game, x, z, ry, onEnter, prompt = 'Ride the gondola 
   for (let i = 0; i < 12; i++) mesh(G.cone(0.14, 0.3, 3), mat([0xd62839, 0x2f6fd6, 0xffd54a, 0x2e9e6e][i % 4], { roughness: 0.9, side: THREE.DoubleSide }), { x: -2.4 + i * 0.44, y: 4.55, z: 1.85, rx: PI, shadow: 'none', parent: g });   // bunting
   mesh(G.box(1.6, 0.06, 0.5), timber, { x: -1.6, y: 0.95, z: -1.4, parent: g }); for (const bx of [-2.3, -0.9]) mesh(G.box(0.08, 0.45, 0.45), steel, { x: bx, y: 0.72, z: -1.4, parent: g });   // bench
   mesh(G.cyl(0.14, 0.14, 3.0, 8), steel, { y: 4.0, z: -0.8, rx: PI / 2, parent: g }); mesh(G.cyl(0.6, 0.6, 0.24, 18), steel, { y: 4.0, z: -0.8, rz: PI / 2, parent: g });   // drive wheel
-  // cable up into the sky with two cabins riding it
-  const cableLen = 110, pitch = 0.47;
-  const cableG = group(0, 4.0, -0.8, g); cableG.rotation.x = -pitch;
+  // cable up into the sky with two cabins riding it — short and steep, so it climbs clear of the ground and fades into the sky
+  // well short of the decorative mountain ring (those start at 1.35x the world's "clear" radius: keep this cable's reach inside that)
+  const cableLen = 42, pitch = 0.85;
+  const cableG = group(0, 4.0, -0.8, g); cableG.rotation.x = pitch;   // positive: the far end climbs into the sky, not down through the ground
   for (const sx of [-0.35, 0.35]) noInk(mesh(G.cyl(0.028, 0.028, cableLen, 5), mat(0x2b2f36, { metalness: 0.7, roughness: 0.5 }), { x: sx, z: -cableLen / 2, rx: PI / 2, parent: cableG }));
   const riders = [0.18, 0.62].map((k, i) => { const c = group(0, 0, 0, cableG); mesh(G.cyl(0.03, 0.03, 1.0, 6), steel, { y: -0.5, parent: c }); mesh(G.box(1.3, 1.2, 1.3), i ? mat(0x2f6fd6, { roughness: 0.5, metalness: 0.2 }) : red, { y: -1.6, parent: c }); mesh(G.box(1.32, 0.5, 1.32), glass, { y: -1.45, shadow: 'none', parent: c }); c.userData.k = k; c.userData.dir = i ? -1 : 1; return c; });
   // waiting cabin

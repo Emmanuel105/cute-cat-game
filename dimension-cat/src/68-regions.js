@@ -75,6 +75,74 @@ function makeChocolatePool(game, x, z, rad, r) {
   game.physics.addBox(x, 1.5, z, rad * 1.9, 3, rad * 1.9, { walk: false, cam: false });
   return g;
 }
+/** A small candy house: bright icing-coloured round walls, a swirl roof, a candy window over the door — gaudier and simpler than the gingerbread cottage. */
+function makeCandyHouse(game, x, z, ry, r, hue) {
+  const g = group(x, 0, z, game.world); g.rotation.y = ry;
+  const wall = mat(new THREE.Color().setHSL(hue / 360, 0.62, 0.78).getHex(), { roughness: 0.7 });
+  const icing = mat(0xffffff, { roughness: 0.35 }), roofC = mat(new THREE.Color().setHSL(((hue + 40) % 360) / 360, 0.8, 0.6).getHex(), { roughness: 0.45 });
+  mesh(G.cyl(2.6, 2.9, 3.2, 16), wall, { y: 1.6, shadow: 'both', parent: g });                            // round candy-tin walls
+  mesh(G.cyl(3.22, 3.22, 0.18, 16), icing, { y: 3.24, shadow: 'none', parent: g });                        // icing drip line where roof meets wall
+  for (let i = 0; i < 10; i++) mesh(G.sphere(0.16, 8, 6), icing, { x: cos(i / 10 * TAU) * 3.15, y: 3.14 + (i % 2) * 0.1, z: sin(i / 10 * TAU) * 3.15, shadow: 'none', parent: g });   // dollops
+  mesh(G.cone(3.2, 2.6, 16), roofC, { y: 4.6, shadow: 'both', parent: g });                                 // roof
+  mesh(G.sphere(0.32, 10, 8), mat(0xffd54a, { metalness: 0.3, roughness: 0.3 }), { y: 5.95, shadow: 'none', parent: g });   // finial
+  mesh(G.box(1.0, 1.8, 0.12), mat(0x3a2a1e, { roughness: 0.6 }), { y: 0.9, z: 2.58, shadow: 'none', parent: g });           // door
+  mesh(G.torus(0.32, 0.05, 6, 14), icing, { y: 1.55, z: 2.62, shadow: 'none', parent: g });                                  // round window over the door
+  mesh(G.cyl(0.28, 0.28, 0.05, 14), mat(0xbfe7ff, { roughness: 0.2, transparent: true, opacity: 0.6 }), { y: 1.55, z: 2.64, rx: PI / 2, shadow: 'none', parent: g });
+  addRotBox(game, x, 1.6, z, 5.6, 3.2, 5.6, ry);
+  return g;
+}
+/** A houmoungous candy castle: striped corner towers and a grand gate you can walk straight through, into one huge throne hall. */
+function makeCandyCastle(game, x, z, ry, r) {
+  const g = group(x, 0, z, game.world); g.rotation.y = ry;
+  const P = game.physics;
+  const stone = mat(0xffe9f4, { roughness: 0.75 }), trim = mat(0xffffff, { roughness: 0.35 }), cane = mat(0xffffff, { roughness: 0.3, map: TEX.candyCane() });
+  const HW = 17, HD = 15, WALL_H = 11, GATE = 6;
+  const wallX = (cx, cz, len) => {
+    mesh(G.box(len, WALL_H, 1.6), stone, { x: cx, y: WALL_H / 2, z: cz, shadow: 'both', parent: g });
+    const [wx, wz] = localXZ(x, z, cx, cz, ry); addRotBox(game, wx, WALL_H / 2, wz, len, WALL_H, 1.6, ry);
+    for (let i = 0, n = floor(len / 2.4); i < n; i++) mesh(G.box(1.1, 0.9, 1.6), trim, { x: cx - len / 2 + 1.2 + i * 2.4, y: WALL_H + 0.55, z: cz, shadow: 'none', parent: g });
+  };
+  const wallZ = (cx, cz, len) => {
+    mesh(G.box(1.6, WALL_H, len), stone, { x: cx, y: WALL_H / 2, z: cz, shadow: 'both', parent: g });
+    const [wx, wz] = localXZ(x, z, cx, cz, ry); addRotBox(game, wx, WALL_H / 2, wz, 1.6, WALL_H, len, ry);
+    for (let i = 0, n = floor(len / 2.4); i < n; i++) mesh(G.box(1.6, 0.9, 1.1), trim, { x: cx, y: WALL_H + 0.55, z: cz - len / 2 + 1.2 + i * 2.4, shadow: 'none', parent: g });
+  };
+  wallX(-10, HD, 14); wallX(10, HD, 14);         // front, either side of the gate
+  wallX(0, -HD, HW * 2);                          // back
+  wallZ(-HW, 0, HD * 2); wallZ(HW, 0, HD * 2);    // sides
+  const tower = (tx, tz, rad, h, roofH) => {
+    mesh(G.cyl(rad, rad, h, 16), cane, { x: tx, y: h / 2, z: tz, shadow: 'both', parent: g });
+    mesh(G.cyl(rad + 0.35, rad + 0.35, 0.3, 16), trim, { x: tx, y: h + 0.1, z: tz, shadow: 'both', parent: g });
+    mesh(G.cone(rad + 0.35, roofH, 16), mat(0xff5c8a, { roughness: 0.5 }), { x: tx, y: h + 0.15 + roofH / 2, z: tz, shadow: 'none', parent: g });
+    mesh(G.sphere(0.35, 10, 8), mat(0xffd54a, { metalness: 0.3, roughness: 0.3 }), { x: tx, y: h + roofH + 0.5, z: tz, shadow: 'none', parent: g });
+    const [wx, wz] = localXZ(x, z, tx, tz, ry); P.addBox(wx, h / 2, wz, rad * 2, h, rad * 2, { walk: false });
+  };
+  for (const [tx, tz] of [[-HW, -HD], [HW, -HD], [-HW, HD], [HW, HD]]) tower(tx, tz, 3.1, 15, 6.6);
+  for (const tx of [-(GATE / 2 + 1.3), GATE / 2 + 1.3]) tower(tx, HD, 2.3, 13, 5.4);
+  mesh(G.box(GATE + 1.4, 1.4, 1.6), trim, { y: 7.4, z: HD, shadow: 'none', parent: g });                       // arch lintel over the gate
+  mesh(G.torus(GATE / 2, 0.3, 8, 20, PI), cane, { y: 6.7, z: HD, shadow: 'none', parent: g });
+  mesh(G.box(HW * 2 + 1, 0.7, HD * 2 + 1), trim, { y: WALL_H + 1.6, shadow: 'both', parent: g });               // roof cap over the whole hall
+  { const [wx, wz] = localXZ(x, z, 0, 0, ry); P.addBox(wx, WALL_H + 1.6, wz, HW * 2 + 1, 0.7, HD * 2 + 1, { walk: false, cam: false }); }
+  for (let ix = -3; ix < 3; ix++) for (let iz = -2; iz < 2; iz++)   // checkerboard floor
+    mesh(G.box(HW * 2 / 6 - 0.05, 0.05, HD * 2 / 4 - 0.05), mat((ix + iz) % 2 ? 0xffd7ea : 0xfff6fb, { roughness: 0.5 }), { x: ix * (HW * 2 / 6) + HW / 6, y: 0.025, z: iz * (HD * 2 / 4) + HD / 4, shadow: 'receive', parent: g });
+  for (const [px, pz] of [[-9, -8], [9, -8], [-9, 6], [9, 6]]) {   // candy-cane pillars holding the roof up
+    mesh(G.cyl(0.55, 0.55, WALL_H + 1, 14), cane, { x: px, y: (WALL_H + 1) / 2, z: pz, shadow: 'both', parent: g });
+    const [wx, wz] = localXZ(x, z, px, pz, ry); P.addBox(wx, (WALL_H + 1) / 2, wz, 1.1, WALL_H + 1, 1.1, { cam: false });
+  }
+  for (const wx0 of [-6, 6]) for (const s of [-1, 1])   // tall stained-glass windows, lollipop-coloured
+    mesh(G.cyl(1.5, 1.5, 0.1, 24), glowMat(new THREE.Color().setHSL(r.pick([330, 200, 50]) / 360, 0.9, 0.6).getHex(), 0.6), { x: wx0, y: 6.5, z: s * HW - s * 0.05, ry: PI / 2, shadow: 'none', parent: g });
+  // the throne, up on a dais at the back
+  const TZ = -HD + 3.6;
+  mesh(G.box(7, 0.3, 4.4), trim, { y: 0.15, z: TZ, shadow: 'both', parent: g });
+  const throne = group(0, 0.3, TZ, g);
+  mesh(G.box(2.6, 0.55, 2.0), mat(0xff6fb5, { roughness: 0.4 }), { y: 0.9, parent: throne });                    // seat
+  mesh(G.sphere(2.3, 20, 14), mat(0xffd7ea, { roughness: 0.4 }), { y: 3.1, z: -0.9, sz: 0.25, parent: throne }); // fan-shaped back
+  mesh(G.torus(2.3, 0.16, 8, 28), cane, { y: 3.1, z: -0.72, shadow: 'none', parent: throne });                    // striped rim around the back
+  for (const s of [-1, 1]) mesh(G.cyl(0.16, 0.16, 1.0, 8), mat(0xffd54a, { metalness: 0.6, roughness: 0.3 }), { x: s * 1.5, y: 1.35, z: 0.3, parent: throne });   // armrests
+  mesh(G.sphere(0.4, 12, 8), mat(0xd62839, { roughness: 0.4 }), { y: 5.3, z: -0.9, parent: throne });               // cherry on top
+  { const [dwx, dwz] = localXZ(x, z, 0, TZ, ry); P.addBox(dwx, 0.15, dwz, 7, 0.3, 4.4, { cam: false }); addRotBox(game, dwx, 1.6, dwz, 2.8, 3.2, 2.2, ry, { cam: false }); }
+  return { group: g, throneGroup: throne, gate: localXZ(x, z, 0, HD, ry), throne: localXZ(x, z, 0, TZ, ry) };
+}
 function candyRegion(game, U, r, inner, outer) {
   const W = game.world;
   U.push(fillRing(game, r, { inner, outer, count: 900, pad: 12, claim: 7, range: 230, skip: (x, z) => abs(z + 18) < 9, kinds: [

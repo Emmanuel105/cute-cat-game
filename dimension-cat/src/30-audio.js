@@ -81,6 +81,8 @@ class SoundKit {
   bounce() { this.tone({ freq: 520, type: 'sine', dur: 0.12, vol: 0.1, slide: 240 }); }
   /** "Got you!" — a quick rising giggle when one child tags the other. */
   tag() { [880, 1175, 1480].forEach((f, i) => this.tone({ freq: f, type: 'triangle', dur: 0.07, vol: 0.05, delay: i * 0.055, slide: f * 1.2 })); }
+  /** A wrench striking metal. */
+  clang() { this.noise({ dur: 0.05, vol: 0.16, filter: 2200, type: 'bandpass' }); this.tone({ freq: 880, slide: 600, type: 'square', dur: 0.06, vol: 0.08, filter: 3000 }); }
   /** Footstep: soft pad on grass/sand/snow, tap on cobble/metal/planks. */
   step(kind = 'soft', run = false) {
     const v = run ? 0.09 : 0.06;
