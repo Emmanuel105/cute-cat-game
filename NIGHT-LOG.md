@@ -256,3 +256,10 @@ beyond it, depending on which way the bug ran.
 Sit still long enough and the cat **grooms itself**: head ducked down, turned aside to the flank,
 with a quick bobbing lick, for a couple of seconds before it settles back to its usual idle
 look-around. Left side or right side, whichever way it fancies.
+
+## Round 31 — the squirrel climbs
+
+Pet a squirrel and it **scampers straight up out of reach**, chattering away for a few seconds —
+still turned to look down at the cat — before coming back down. It's a plain rise-in-place, not a
+climb along any particular trunk, but most squirrels already sit near something tall enough (a
+tree, or in Candy Land a lollipop) that it reads as climbing it.

@@ -1210,6 +1210,7 @@ class Squirrel {
   constructor(game, x, z, id) {
     this.game = game; this.id = id; this.rig = makeSquirrel(); this.x = x; this.z = z;
     this.t = rnd() * 10; this.heading = rnd() * TAU; this.restHeading = this.heading; this.petT = 0;
+    this.climb = 0; this.climbState = 'down'; this.perchT = 0; this.chatterT = 0;
     this.circle = game.physics.addCircle(this, x, z, 0.18);
     this.rig.group.position.set(x, game.physics.ground0(x, z), z); this.rig.group.rotation.y = this.heading;
     game.world.add(this.rig.group);
@@ -1219,13 +1220,21 @@ class Squirrel {
     const g = this.game;
     g.hearts(this.x, 0.45, this.z, 4); SFX.chitter(); g.toast(rnd.pick(['🐿️ *happy chitter*', '🐿️ The squirrel nuzzles your paw.', '🐿️ *offers you an acorn*']));
     this.petT = 1.6;
+    if (this.climbState === 'down') { this.climbState = 'up'; this.perchT = rnd.range(3, 5); this.chatterT = rnd.range(0.5, 1); }   // scampers up the nearest tree to chatter about it
   }
   update(dt) {
     this.t += dt; this.petT = max(0, this.petT - dt);
     const cat = this.game.cat.group.position, d2 = dist2(this.x, this.z, cat.x, cat.z);
-    // face the cat when it comes close, otherwise drift back to the resting heading
+    if (this.climbState === 'up') { this.climb = min(1, this.climb + dt / 0.9); if (this.climb >= 1) this.climbState = 'perch'; }
+    else if (this.climbState === 'perch') {
+      this.perchT -= dt; this.chatterT -= dt;
+      if (this.chatterT <= 0) { this.chatterT = rnd.range(1, 2); SFX.chitter(); }
+      if (this.perchT <= 0) this.climbState = 'down';
+    } else if (this.climbState === 'down') this.climb = max(0, this.climb - dt / 1.4);
+    // face the cat when it comes close — including from up the tree, chattering down at it — otherwise drift back to the resting heading
     this.heading = d2 < 16 ? atan2(cat.x - this.x, cat.z - this.z) : this.restHeading;
-    this.rig.group.position.y = this.game.physics.ground0(this.x, this.z) + (this.petT > 0 ? abs(sin(this.petT * 12)) * 0.08 : 0);
+    const climbY = this.climb * 2.4;
+    this.rig.group.position.set(this.x, this.game.physics.ground0(this.x, this.z) + climbY + (this.petT > 0 && this.climbState === 'down' ? abs(sin(this.petT * 12)) * 0.08 : 0), this.z);
     this.rig.animate(0, false, dt, this.t);
     this.rig.group.rotation.y = dampAngle(this.rig.group.rotation.y, this.heading, 6, dt);
   }
