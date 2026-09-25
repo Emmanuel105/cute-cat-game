@@ -370,6 +370,13 @@ function makeIcePond(game, x, z, rad, r = rnd) {
   for (let i = 0; i < 16; i++) { const a = i / 16 * TAU; mesh(G.sphere(1, 7, 5), mat(0xdfe8f0, { roughness: 1 }), { x: cos(a) * (rad + 0.4), y: 0.05, z: sin(a) * (rad + 0.4), sx: r.range(0.2, 0.35), sy: r.range(0.15, 0.25), sz: r.range(0.2, 0.35), parent: g }); }
   return g;
 }
+/** A low three-legged stool, just tall enough to sit a fisherman beside an ice hole. */
+function makeIceStool() {
+  const g = new THREE.Group(), wood = mat(0x5a3a22, { roughness: 0.9, map: TEX.planks(24, 20) });
+  mesh(G.cyl(0.22, 0.22, 0.05, 10), wood, { y: 0.3, parent: g });
+  for (let i = 0; i < 3; i++) { const a = i / 3 * TAU; mesh(G.cyl(0.02, 0.02, 0.3, 5), wood, { x: cos(a) * 0.16, y: 0.15, z: sin(a) * 0.16, rx: sin(a) * 0.25, rz: -cos(a) * 0.25, parent: g }); }
+  return g;
+}
 function makeIceCrystal(r = rnd, color = 0x9fe8ff) {
   const g = new THREE.Group(), m = glowMat(color, 0.8, { transparent: true, opacity: 0.85, roughness: 0.1 });
   const n = r.int(3, 5); for (let i = 0; i < n; i++) { const a = r() * TAU; mesh(G.cone(0.18, r.range(0.8, 1.8), 6), m, { x: cos(a) * 0.25, y: 0.4, z: sin(a) * 0.25, rx: r.range(-0.3, 0.3), rz: r.range(-0.3, 0.3), ry: a, shadow: 'none', parent: g }); }

@@ -1154,6 +1154,46 @@ class Forager {
   }
 }
 
+// ---------------------------------------------------------------- ice fisher: sits by the hole, rod dipping, and strikes every so often
+class IceFisher {
+  constructor(game, rig, stool, { x, z, ry = 0, holeX, holeZ, holeY, cries = null }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10; this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false;
+    this.state = 'idle'; this.timer = 0; this.cries = cries; this.cryIcon = '🎣'; this.cryT = rnd.range(5, 10);
+    this.holeX = holeX; this.holeZ = holeZ; this.biteT = rnd.range(6, 11); this.bite = 0; this.caught = 0;
+    stool.position.set(x, game.physics.ground0(x, z), z); stool.rotation.y = ry; game.world.add(stool);
+    rig.group.position.set(x, game.physics.ground0(x, z) + 0.3 - 0.9 * rig.k + 0.02, z); rig.group.rotation.y = ry;
+    const rodPivot = group(0, 0.02, 0.03, rig.hands[0]); rodPivot.rotation.x = -1.15;
+    mesh(G.cyl(0.014, 0.022, 1.1, 6), mat(0x5a3a22, { roughness: 0.9 }), { y: 0.55, parent: rodPivot });
+    this.tip = group(0, 1.08, 0, rodPivot); this.tipWorld = V3();
+    this.holeWorld = V3(holeX, holeY ?? game.physics.ground0(holeX, holeZ) + 0.06, holeZ);
+    this.line = group(0, 0, 0, game.world); noInk(mesh(G.cyl(0.005, 0.005, 1, 4), mat(0xe8eef4, { roughness: 1 }), { rx: PI / 2, shadow: 'none', parent: this.line }));
+    this.circle = game.physics.addCircle(this, x, z, 0.4);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig;
+    rig.animate(0, false, dt, this.t);
+    for (const L of rig.legs) { L.hip.rotation.x = -PI / 2 + 0.15; L.knee.rotation.x = PI / 2 - 0.15; L.ankle.rotation.x = 0.15; }
+    rig.body.position.y = 0; rig.spine.rotation.x = damp(rig.spine.rotation.x, -0.04, 6, dt);
+    this.bite -= dt; const bite = this.bite > 0.35 ? 1 : this.bite > 0 ? this.bite / 0.35 : 0;
+    if (!rig.gesture) {
+      const A = rig.arms[0], B = rig.arms[1];
+      A.sh.rotation.x = damp(A.sh.rotation.x, -0.85 - bite * 0.7 + sin(this.t * 1.3) * 0.04, 10, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.55 + bite * 0.55, 10, dt); A.sh.rotation.z = 0.12;
+      B.sh.rotation.x = damp(B.sh.rotation.x, -0.55, 8, dt); B.el.rotation.x = damp(B.el.rotation.x, -1.15, 8, dt); B.sh.rotation.z = -0.1;
+    }
+    this.biteT -= dt;
+    if (this.biteT <= 0 && this.bite <= 0) {
+      this.bite = 0.55; this.biteT = rnd.range(7, 13); this.caught++; SFX.tag();
+      this.game.fx.emit(this.holeWorld.x, this.holeWorld.y, this.holeWorld.z, { count: 8, colors: [0xcfe9f8, 0xffffff], speed: 1.1, up: 1.2, life: 0.6, gravity: 3 });
+      const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) this.game.toast('🎣 "Got one!"', 1800);
+    }
+    this.tip.getWorldPosition(this.tipWorld);
+    this.line.position.copy(this.tipWorld).lerp(this.holeWorld, 0.5); this.line.lookAt(this.holeWorld); this.line.scale.set(1, 1, max(0.01, this.tipWorld.distanceTo(this.holeWorld)));
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- marchers: a column following a leader, all in step
 class Marchers {
   constructor(game, rigs, o) {

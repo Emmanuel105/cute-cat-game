@@ -289,3 +289,12 @@ real transition time), so on a loaded machine the check could fire before the tr
 started, failing "time door → neighborhood" and "save records completion" even with no code change.
 Confirmed this reproduced on the unmodified tree too, tracked it to the transition timing margin,
 and gave it more headroom (2200 ms) rather than touching any game logic.
+
+## Round 35 — an ice fisherman on Frosty Peak
+
+Frosty Peak had plenty of wildlife and the yeti, but not one grown-up to say hello to — every
+greetable person there was a child. An **ice fisherman** now sits on a stool at the edge of the
+frozen pond, rod dipped into a hole cut in the ice, line trailing down. Most of the time it's just
+a slow jiggle, but every 7–13 seconds he gets a bite: the rod dips hard, a scatter of ice and water
+flies up out of the hole, and a chime marks the catch — "Got one!" "Not a bite in an hour..."
+"Careful, puss, don't scare them off." Frosty Peak now has 5 people to meet instead of 4.

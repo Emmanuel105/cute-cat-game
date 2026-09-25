@@ -31,6 +31,14 @@ function buildSnowVillage(game, entry) {
   }
   for (const [x, z, ry] of [[-16, 10, 0.6], [15, -14, -2.2]]) { placeT(game, U, makeIgloo(), x, z, ry); boxT(game, x, z, 3.4, 1.8, 3.4); }
   makeIcePond(game, 18, 8, 5, r);
+  // an ice fisherman on a stool at the pond's edge, rod dipped into a hole cut in the ice, the odd bite
+  { const holeY = P.ground0(18, 8) + 0.06;
+    mesh(G.cyl(0.55, 0.55, 0.03, 16), mat(0x274050, { roughness: 0.3, transparent: true, opacity: 0.9 }), { x: 18, y: holeY, z: 11.5, shadow: 'none', parent: W });
+    const anglerWard = makeWardrobe(r, { shirts: [0x8a6a4a, 0x5a6a4a, 0x6a5a4a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const angler = makeHuman({ ...randomPerson(r, { female: false, elder: true, child: false, wardrobe: anglerWard }),
+      hat: 'beanie', hatColor: 0x3a4a5a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a }); W.add(angler.group);
+    game.npcs.push(new IceFisher(game, angler, makeIceStool(), { x: 18, z: 14.3, ry: PI, holeX: 18, holeZ: 11.5, holeY,
+      cries: ['Not a bite in an hour...', "Careful, puss, don't scare them off.", 'Best fishing hole on the mountain, this.'] })); }
   for (const [x, z] of [[-6, -14], [7, 18], [-20, -2], [22, -4]]) { placeT(game, U, makeSnowman(r), x, z, r() * TAU); boxT(game, x, z, 1.0, 2.4, 1.0, { cam: false }); }
   for (const [x, z, ry, c] of [[-8, 6, 0.4, 0xd62839], [4, -9, 2.0, 0x2f6fd6]]) placeT(game, U, makeSled(c), x, z, ry);
   for (const [x, z] of [[-24, 18], [26, 16], [-26, -18], [24, -24], [0, -26], [-2, 28], [30, 0], [-32, 2]]) { const c = makeIceCrystal(r, r.pick([0x9fe8ff, 0xbfa8ff, 0xa8ffe8])); placeT(game, U, c, x, z, 0); boxT(game, x, z, 0.6, 1.6, 0.6, { cam: false }); }
