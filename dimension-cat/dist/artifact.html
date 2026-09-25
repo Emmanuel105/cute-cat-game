@@ -5887,14 +5887,19 @@ function buildVictorian(game, entry) {
   makeCarriage(game, 16, 3.4, PI / 2);
   const timeDoor = makeTimeDoor(game, -38, 0, PI / 2); U.push(timeDoor.userData.update);
   mesh(G.box(1.2, 0.3, 4), mat(0x6b6660, { roughness: 0.9 }), { x: -38, y: 0.15, z: 0, parent: W }); P.addBox(-38, 0.15, 0, 1.2, 0.3, 4, { cam: false });
-  // the ginger boy keeps the time door company (the story that goes with him is still to come)
+  // the ginger boy keeps the time door company
   const child = makeHuman({ skin: 0xffdbac, hair: 0xd9541e, hairStyle: 'crop', shirt: 0x6b4a2b, pants: 0x3a3a3a, hat: null, height: 1.2 });
   place(game, U, child.group, -37.3, 2.6, PI / 2); P.addCircle(child, -37.3, 2.6, 0.42);
   const childState = { t: r() * 10 };
   U.push((dt) => { childState.t += dt; child.animate(childState.t * 2, false, dt); });
   timeDoor.userData.activate();
-  game.addInteractable({ obj: child.group, radius: 2.6, label: () => 'Talk to the boy', onUse: () => {
-    SFX.talk(); game.toast(r.pick(['👦 "The time door goes home, you know. I\'ve never dared."', '👦 "Nice whiskers! Are you from the future?"', '👦 "Mind the horses. And the fog. And the clock."']), 3200);
+  const boyId = game.namedFriend('boy');
+  game.addInteractable({ obj: child.group, radius: 2.6, label: () => (game.state.friends.has(boyId) ? 'Talk to the boy again' : 'Talk to the boy'), onUse: () => {
+    SFX.talk();
+    if (!game.state.friends.has(boyId)) {
+      game.befriend(boyId); game.hearts(-37.3, 1.9 * (child.k ?? 0.8), 2.6, 2);
+      game.toast('👦 "You stopped! Everyone else just dashes through the door. I\'m glad you didn\'t."', 3200);
+    } else game.toast(r.pick(['👦 "The time door goes home, you know. I\'ve never dared."', '👦 "Nice whiskers! Are you from the future?"', '👦 "Mind the horses. And the fog. And the clock."']), 3200);
   } });
   game.addInteractable({ obj: timeDoor, radius: 2.8, label: () => 'Step through time', onUse: () => game.completeJourney() });
   // portal back through the alley

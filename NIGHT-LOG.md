@@ -307,3 +307,14 @@ Frosty Peak's ice angler, given a seat that isn't tied to the ground so it can s
 deck over open water instead of down on the pond ice. Every so often the rod dips and a splash of
 spray marks a catch — "Not a nibble all morning." "Best spot on the whole pier, this." Sunny Shore
 now has 9 people to meet instead of 8.
+
+## Round 37 — the ginger boy gets his due
+
+The comment next to the ginger boy by the Victorian time door had read "the story that goes with
+him is still to come" since the day he was built — he's had lines for ages, but talking to him
+never actually made him a friend, so he didn't count toward Victorian's total and never triggered
+the new-friend chime. He's now wired up properly with `game.namedFriend()`, the same way the yeti
+and the Candy Queen are: the first chat befriends him, with hearts and a line of his own —
+**"You stopped! Everyone else just dashes through the door. I'm glad you didn't."** — and only
+after that does he fall back to his usual lines about the door, the future and the fog. Victorian
+now has 27 people to meet instead of 26.
