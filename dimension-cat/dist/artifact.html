@@ -1457,6 +1457,7 @@ class Cat {
     // fidgets
     this.blinkT = 0; this.nextBlink = 3; this.blinkDur = 0.18; this.earT = 0; this.nextEar = 2; this.earSide = 0;
     this.lookT = 0; this.lookYaw = 0; this.lookPitch = 0; this.lookTargetYaw = 0; this.lookTargetPitch = 0;
+    this.groom = 0; this.groomT = 8; this.groomSide = 1;   // fixed, not rnd: the cat is built once at startup, and a draw here would shift every later call on the shared global rnd()
   }
 
   build(skinKey) {
@@ -1657,7 +1658,13 @@ class Cat {
     if (this.lookT <= 0) { this.lookT = rnd.range(1.5, 4.5); this.lookTargetYaw = moving ? 0 : rnd.range(-0.55, 0.55); this.lookTargetPitch = moving ? 0 : rnd.range(-0.12, 0.2); }
     if (moving) { this.lookTargetYaw = 0; this.lookTargetPitch = -0.05; }
     this.lookYaw = damp(this.lookYaw, this.lookTargetYaw, 4, dt); this.lookPitch = damp(this.lookPitch, this.lookTargetPitch, 4, dt);
-    P.head.rotation.set(this.lookPitch - L * 0.12 + S * 0.22 - ST * 0.5 + (moving ? sin(this.walkPhase * 2) * 0.02 : 0), this.lookYaw, sin(t * 1.1) * 0.015);
+    // grooming: sat still a while, every so often a lick at the flank — a duck of the head, turned aside, with a quick bobbing tongue
+    this.groomT -= dt;
+    if (!moving && S > 0.7 && this.groom <= 0 && this.groomT <= 0) { this.groom = 1; this.groomSide = rnd.chance(0.5) ? 1 : -1; this.groomT = rnd.range(9, 18); }
+    if (this.groom > 0) this.groom = moving ? 0 : max(0, this.groom - dt / 2.2); else this.groom = 0;
+    const G = sin(min(1, this.groom) * PI) * (this.groom > 0 ? 1 : 0);
+    const headYaw = lerp(this.lookYaw, this.groomSide * 0.85, G), headPitch = lerp(this.lookPitch - L * 0.12 + S * 0.22 - ST * 0.5 + (moving ? sin(this.walkPhase * 2) * 0.02 : 0), 0.8 + sin(t * 13) * 0.08, G);
+    P.head.rotation.set(headPitch, headYaw, sin(t * 1.1) * 0.015 * (1 - G));
     P.head.position.y = 0.565 - L * 0.06 + S * 0.03;
 
     // blink

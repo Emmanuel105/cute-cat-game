@@ -250,3 +250,9 @@ beyond it, depending on which way the bug ran.
   candy-cane pillars, lollipop-coloured stained glass, and a fan-backed throne with a cherry on
   top, guarded by two gingerbread men. A little candy village — five brightly-iced round houses —
   lines the lane up to the gate.
+
+## Round 30 — a wash and brush-up
+
+Sit still long enough and the cat **grooms itself**: head ducked down, turned aside to the flank,
+with a quick bobbing lick, for a couple of seconds before it settles back to its usual idle
+look-around. Left side or right side, whichever way it fancies.
