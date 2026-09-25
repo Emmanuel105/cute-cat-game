@@ -153,7 +153,7 @@ class Game {
     if (this.transitioning) return;
     if (!this.state.completed) { this.state.completed = true; this.addScore(1000); this.pendingToast = `🎉 Through the time door and home! +1000 (score ${this.state.score})`; }
     else this.pendingToast = '🎉 Home again. The cat is pleased.';
-    SFX.fanfare();
+    SFX.fanfare(); SFX.chime();   // the clock tower strikes as the time door opens
     this.travel(0, 'from-next');
   }
 

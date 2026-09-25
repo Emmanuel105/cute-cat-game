@@ -263,3 +263,8 @@ Pet a squirrel and it **scampers straight up out of reach**, chattering away for
 still turned to look down at the cat — before coming back down. It's a plain rise-in-place, not a
 climb along any particular trunk, but most squirrels already sit near something tall enough (a
 tree, or in Candy Land a lollipop) that it reads as climbing it.
+
+## Round 32 — the clock strikes
+
+Step through the time door and, under the fanfare, the **Victorian clock tower tolls three
+times** — a deep bell, felt rather than seen, since the door is clear across town from it.
