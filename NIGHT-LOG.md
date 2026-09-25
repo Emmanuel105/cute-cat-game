@@ -268,3 +268,9 @@ tree, or in Candy Land a lollipop) that it reads as climbing it.
 
 Step through the time door and, under the fanfare, the **Victorian clock tower tolls three
 times** — a deep bell, felt rather than seen, since the door is clear across town from it.
+
+## Round 33 — a toy mouse for the robot dog
+
+**Offer the robot dog a toy mouse** — mid-chase or not, corner it or just walk up — and it drops
+the chase for good, wags, and counts as a friend. Once won over it never goes on alert again,
+though it still gives a happy beep now and then when the cat's nearby.

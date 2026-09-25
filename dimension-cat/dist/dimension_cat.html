@@ -3011,14 +3011,22 @@ class RoboDog {
   constructor(game, path) {
     this.game = game; this.rig = makeRoboDog(); this.path = path; this.i = 0; this.x = path[0][0]; this.z = path[0][1];
     this.mode = 'patrol'; this.chaseT = 0; this.barkT = 0; this.phase = 0; this.heading = 0; this.t = 0;
+    this.friend = false; this.friendId = game.namedFriend('robodog'); this.cryT = rnd.range(9, 16);
     this.circle = game.physics.addCircle(this, this.x, this.z, 0.5);
     this.rig.group.position.set(this.x, 0, this.z); game.world.add(this.rig.group);
+    // corner it, or just walk up — either way, a toy mouse buys its loyalty for good
+    game.addInteractable({ obj: this.rig.group, radius: 2.6, label: () => (this.friend ? 'Good boy' : 'Offer a toy mouse'), onUse: () => {
+      if (this.friend) { game.hearts(this.x, 0.7, this.z, 2); SFX.beep(); return; }
+      this.friend = true; this.mode = 'patrol'; this.chaseT = 0; this.barkT = 0;
+      game.befriend(this.friendId); SFX.beep(); SFX.woof();
+      game.hearts(this.x, 0.7, this.z, 3); game.toast('🤖🐕 *drops the chase, sniffs the toy mouse* WOOF-BEEP! Friend detected!');
+    } });
   }
   update(dt) {
     this.t += dt; const cat = this.game.cat.group.position, d2 = dist2(this.x, this.z, cat.x, cat.z);
     let tx, tz, speed;
     if (this.mode === 'patrol') {
-      if (d2 < 49 && this.game.cat.onGround) { this.mode = 'chase'; this.chaseT = 7; this.barkT = 0; this.game.toast('🤖🐕 WOOF-BEEP! Intruder detected!'); }
+      if (!this.friend && d2 < 49 && this.game.cat.onGround) { this.mode = 'chase'; this.chaseT = 7; this.barkT = 0; this.game.toast('🤖🐕 WOOF-BEEP! Intruder detected!'); }
       [tx, tz] = this.path[this.i]; speed = 1.6;
       if (dist2(this.x, this.z, tx, tz) < 0.3) this.i = (this.i + 1) % this.path.length;
     } else {
@@ -3038,6 +3046,7 @@ class RoboDog {
     this.rig.animate(this.phase, moving, dt);
     const pulse = this.mode === 'chase' ? 2 + sin(this.t * 14) * 1.5 : 1.2 + sin(this.t * 3) * 0.6;
     this.rig.antenna.material.emissiveIntensity = pulse; this.rig.eye1.material.emissiveIntensity = pulse;
+    if (this.friend) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(10, 18); if (dist2(this.x, this.z, cat.x, cat.z) < 100) { SFX.woof(); this.game.toast('🤖🐕 *happy beeping*', 1800); } } }
   }
 }
 
