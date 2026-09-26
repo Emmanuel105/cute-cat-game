@@ -404,6 +404,15 @@ function makeCocoaMug() {
   g.userData.update = (dt, t) => { for (const w of wisps) { const k = (sin(t * 0.6 + w.ph) + 1) / 2; w.s.position.set(sin(t * 0.9 + w.ph) * 0.02, w.y0 + k * 0.1, 0); w.s.material.opacity = 0.35 * (1 - k); } };
   return g;
 }
+/** A two-scoop ice cream cone for a vendor to hold up: waffle cone, two scoops, a cherry on top. */
+function makeIceCreamCone() {
+  const g = new THREE.Group(), waffle = mat(0xd9a366, { roughness: 0.9 });
+  mesh(G.cone(0.09, 0.22, 8), waffle, { y: 0.11, rx: PI, parent: g });
+  mesh(G.sphere(0.1, 10, 8), mat(0xfff3d6, { roughness: 0.7 }), { y: 0.3, parent: g });
+  mesh(G.sphere(0.085, 10, 8), mat(0xf49ac2, { roughness: 0.7 }), { y: 0.42, parent: g });
+  mesh(G.sphere(0.022, 6, 5), mat(0xd62839, { roughness: 0.5 }), { y: 0.525, shadow: 'none', parent: g });
+  return g;
+}
 function makeIceCrystal(r = rnd, color = 0x9fe8ff) {
   const g = new THREE.Group(), m = glowMat(color, 0.8, { transparent: true, opacity: 0.85, roughness: 0.1 });
   const n = r.int(3, 5); for (let i = 0; i < n; i++) { const a = r() * TAU; mesh(G.cone(0.18, r.range(0.8, 1.8), 6), m, { x: cos(a) * 0.25, y: 0.4, z: sin(a) * 0.25, rx: r.range(-0.3, 0.3), rz: r.range(-0.3, 0.3), ry: a, shadow: 'none', parent: g }); }

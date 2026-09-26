@@ -44,6 +44,15 @@ function buildBeach(game, entry) {
       cries: ['Swim between the flags, please!', 'Not a cloud in the sky today.', "Mind that current, puss — respect the sea."] })); }
   for (let i = 0; i < 12; i++) { const a = r() * TAU, d = r.range(2.6, 6); placeT(game, U, makeRock(r, 0x8a857a, r.range(0.8, 1.8)), 12 + cos(a) * d, -46 + sin(a) * d, 0); }
   for (let i = 0; i < 5; i++) placeT(game, U, boxAround(game, makeBeachHut(r.pick([0xff8a65, 0x4fc3f7, 0xfff176, 0x81c784, 0xf48fb1]), r), -10, -24 + i * 9, 2.8, 2.8, 2.8), -10, -24 + i * 9, PI / 2);
+  // an ice-cream vendor on the open sand between the huts and the sunbathing crowd
+  { const cx = -4, cz = -6; game.zones.addCircle(cx, cz, 1.4);
+    const scoopWard = makeWardrobe(r, { shirts: [0xffffff, 0xf7f3ec], pants: [0x2f6fd6, 0x2a2a2a], shoes: [0xefe7d8, 0x8d6e63] });
+    const scoopSeller = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: scoopWard }),
+      apron: 0xf5f2ea, hat: 'cap', hatColor: 0xff7043, jacket: null, scarf: null });
+    W.add(scoopSeller.group);
+    const v = new Vendor(game, scoopSeller, makeIceCreamCone(), { x: cx, z: cz, ry: PI / 2, cryIcon: '🍦',
+      cries: ['Ice cream! Cold as the sea!', "Melts fast in this sun — best hurry!", 'One scoop or two, puss?'] });
+    game.npcs.push(v); greetable(game, v); }
   // dunes: palms, grass tufts, driftwood
   const palmSpots = [[-20, 6], [-24, 16], [-18, 28], [-30, 30], [-34, -4], [-28, -14], [-38, 12], [-22, -32], [-36, -28], [-44, 2], [-42, 22], [-16, 40], [-30, 44], [-46, -18], [-12, 48], [-6, 34], [-4, -34], [-40, 40]];
   for (const [x, z] of palmSpots) { const p = makePalm(r, r.range(3.8, 5.6)); placeT(game, U, p, x, z, 0); boxT(game, x, z, 0.5, 5, 0.5, { cam: false }); }

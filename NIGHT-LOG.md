@@ -560,3 +560,20 @@ there." "No ladder for us, my knees say." Whisper Woods now has 12 people to mee
 Checked local `main` against `origin/main` on arrival: `origin/main` had already gathered the
 19 commits through round 52 that a stale local ref made look unpushed, so `git fetch` plus a
 `git checkout main && git merge --ff-only` confirmed nothing was missing before starting.
+
+## Round 54 — an ice-cream vendor on Sunny Shore
+
+The round-47/49/52/53 trick (`game.load` per world, reading `game.friendTotal`) showed Sunny
+Shore and Frosty Peak tied at eleven, once round 53's campers pushed Whisper Woods ahead to
+twelve. Sunny Shore's row of five beach huts had plenty of colour but nobody selling anything
+from them. An **ice-cream vendor** now stands on the open sand just east of the huts, cone held
+up in one hand — the same `Vendor` controller as the Neighborhood's balloon seller and Frosty
+Peak's cocoa vendor, with a new `makeIceCreamCone()` prop (a waffle cone, two scoops, a cherry on
+top) and greeted the plain way the cocoa vendor is, rather than given a special interact prompt
+like the balloons: "Ice cream! Cold as the sea!" "Melts fast in this sun — best hurry!" "One scoop
+or two, puss?" Sunny Shore now has 12 people to meet instead of 11, level with Whisper Woods.
+
+Checked local `main` against `origin/main` on arrival, per the running rounds 43-53 warning:
+`HEAD` was detached and 20 commits ahead of a stale local `main`, but matched `origin/main`
+exactly, so `git checkout main && git merge --ff-only origin/main` brought it forward with
+nothing lost before starting this round's work.
