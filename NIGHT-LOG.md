@@ -593,3 +593,22 @@ with Sunny Shore and Whisper Woods.
 Checked local `main` against `origin/main` on arrival, per the running rounds 43-54 warning:
 `HEAD` was detached and matched `origin/main` exactly, so `git checkout main && git merge
 --ff-only origin/main` brought it forward with nothing lost before starting this round's work.
+
+## Round 56 — the beach ball players get a hello
+
+The round-47/49/52/53/54/55 trick (`game.load`/`game.travel` per world, reading `game.friendTotal`,
+this time with a long enough sleep between travels — a first pass with only 560 ms between calls
+under-counted every other world, since `travel()` ignores a new call while `this.transitioning` is
+still true from the last one, which does not clear until about a second after it was set) showed
+Sunny Shore tied with Frosty Peak and Whisper Woods at twelve. Digging into why turned up something
+that wasn't a new character but an old oversight: the two people **keeping the beach ball in the
+air** have been fully modelled, animated townsfolk since round 7, standing right there on the sand
+next to sunbathers, a kneeling child and a kite-flying boy who all count as friends — but `BallGame`
+never called `greetable()`, so pressing E on either of them did nothing and neither was ever counted
+towards the world's total. Both are **now greetable** ("Say hello", a wave, hearts, the usual Sunny
+Shore lines) the same way every other beachgoer already is. Sunny Shore now has 14 people to meet
+instead of 12, ahead of Frosty Peak and Whisper Woods (still at 12).
+
+Checked local `main` against `origin/main` on arrival, per the running rounds 43-55 warning: `HEAD`
+was attached to `main` and already level with `origin/main`, so nothing needed fast-forwarding
+before starting this round's work.

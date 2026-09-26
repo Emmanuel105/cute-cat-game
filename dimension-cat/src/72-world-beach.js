@@ -94,8 +94,10 @@ function buildBeach(game, entry) {
   { const bucket = mat(0xd62839, { roughness: 0.6 }); mesh(G.cyl(0.16, 0.13, 0.26, 10), bucket, { x: 7.9, y: P.ground0(7.9, -2.4) + 0.13, z: -2.4, parent: W }); mesh(G.torus(0.16, 0.012, 5, 12), mat(0xffd54a), { x: 7.9, y: P.ground0(7.9, -2.4) + 0.27, z: -2.4, rx: PI / 2, shadow: 'none', parent: W }); }
   // a boy flying a kite on the dunes, the wind off the sea carrying it inland and up
   game.npcs.push(new KiteFlyer(game, beachPerson(false, true), makeKite(0xd62839, 0xf2c744), { x: -4, z: 40, wind: [-0.55, 0.85], cries: ['Look at it go!', "The wind's just right today.", 'Higher than the lighthouse!'] }));
-  // two of them are keeping the beach ball in the air
-  game.npcs.push(new BallGame(game, beachPerson(false, false), beachPerson(true, false), ball, { cx: 4, cz: 10, gap: 5.5 }));
+  // two of them are keeping the beach ball in the air — greetable too, like everyone else on the sand
+  { const ballA = beachPerson(false, false), ballB = beachPerson(true, false);
+    game.npcs.push(new BallGame(game, ballA, ballB, ball, { cx: 4, cz: 10, gap: 5.5 }));
+    greetable(game, { rig: ballA }); greetable(game, { rig: ballB }); }
   // the beach dog keeps to its own patch of sand — it does not follow the cat
   const dog = makeDog(0xc8925a); W.add(dog.group); game.npcs.push(new Wanderer(game, dog, { x: -2, z: 28, speed: 1.1, leash: 7, r: 0.35, height: 0.9, step: 0.3, idle: [1.5, 4], walk: [2, 5] }));
   let woofT = rnd.range(6, 12); U.push((dt) => { woofT -= dt; if (woofT <= 0) { SFX.woof(); woofT = rnd.range(10, 20); } });
