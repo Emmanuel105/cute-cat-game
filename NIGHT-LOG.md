@@ -757,3 +757,34 @@ Confirmed with a headless check after building: the crab's rig lands in the scen
 
 Checked local `main` against `origin/main` on arrival: already up to date, no fast-forward needed
 before starting this round's work.
+
+## Round 64 — the owl answers back
+
+Ran the same headless tally the last few rounds used and it told a different story than expected:
+Sunny Shore, Frosty Peak, Whisper Woods and the Neighborhood are indeed all level at fifteen, but
+Candy Land, Robot City and Victorian are nowhere near it — 24, 24 and 27 respectively, because their
+gingerbread men, robots and top-hatted crowds were built in batches from the start rather than added
+one at a time. Worth writing down plainly since a few recent rounds described "all seven worlds
+level," which was only ever true of the four worlds that get hand-placed vignettes; the other three
+were never thin to begin with.
+
+With Whisper Woods, Sunny Shore and Frosty Peak all freshly stocked with a wildlife `Follower` apiece
+over the last three rounds, and none of the three hub worlds safe to touch for the `rnd()`-sequence
+reasons round 60 dug into (nearly every controller draws from the shared global `rnd()` in its
+constructor, not just `IceFisher`, `Wanderer` and `Chopper` — a quick grep found the same pattern in
+`Sitter`, `Kneeler`, `Vendor`, `Painter`, `Talkers` and most everything else in `55-npcs.js`, so it's
+really a blanket rule for those four worlds, not a one-off), **the three owls perched in Whisper
+Woods' trees have sat purely decorative since whichever round first hooted them into existence** —
+background scenery with a hoot timer, no way to say hello. The westernmost one, at the foot of the
+stepping-stone path near (-30, -10), now answers: walk up and press E and it blinks down at you —
+`"Who? Oh - just you."` — the same `game.namedFriend()` + `befriend()` pattern the yeti and the beach
+dog already use, since an owl thirty feet up a tree has no rig to run `greetable()`'s marker checks
+against. Whisper Woods goes from fifteen friends to sixteen. The other two owls stay silent for now;
+picking one was plenty for a single round, and the remaining pair are still worth a look later.
+
+Checked with a headless run before building: walked the cat to the owl's position, pressed E, and
+watched `game.state.friends` go from empty to holding an `owl` id — the interactable actually works,
+not just compiles. Full suite ran clean after.
+
+On arrival, `HEAD` was detached from `main` at the exact commit `origin/main` was already at (the same
+stale-ref situation round 62 hit) — moved the `main` ref up and checked it out before starting.
