@@ -650,3 +650,22 @@ closer to Sunny Shore (14) and Whisper Woods (15).
 Checked local `main` against `origin/main` on arrival: `HEAD` was detached but matched `origin/main`
 exactly, so `git checkout main && git pull origin main` fast-forwarded the local branch onto it with
 nothing lost before starting this round's work.
+
+## Round 59 — two friends weigh up the ice on Frosty Peak
+
+A quick headless tally (`game.load`/`game.travel` per world, reading `game.friendTotal`) showed
+Frosty Peak was the thinnest world again at thirteen, once round 58's igloo-patching child pushed
+it up from twelve but left it behind Sunny Shore and Whisper Woods (both fourteen/fifteen). The
+frozen pond already had an ice fisherman on its near bank, so **two friends now stand on the far
+bank**, working up the nerve to skate — the `Talkers` controller (already doing duty for the
+gossiping neighbours, the Victorian ladies and the mushroom-glade pair in the woods), reusing its
+built-in face-each-other placement and hand gestures with no new geometry needed: "Think it'll
+hold, out there?" "The fisherman swears by it." "I'm not going first." "One good crack and I'm off
+home." The spot (23.5, 5) was checked against every hand-placed prop and NPC wander leash in the
+build function to keep it clear of the pond edge, the cabins, the reindeer herd and the two
+wandering kids nearby. Frosty Peak now has 15 people to meet instead of 13, level with the
+Neighborhood and Whisper Woods.
+
+Checked local `main` against `origin/main` on arrival: `HEAD` was attached to `main` and already
+level with `origin/main` after a `git fetch` and `git merge --ff-only`, so nothing needed
+fast-forwarding before starting this round's work.
