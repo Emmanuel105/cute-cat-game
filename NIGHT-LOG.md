@@ -494,3 +494,19 @@ origin/main` brought local `main` forward with nothing lost, before starting thi
 the round-47 trick of calling `game.load(i, 'from-prev')` in a scratch script and reading
 `game.friendTotal` per world to confirm Whisper Woods and Frosty Peak were tied at 9 before picking
 which one to extend.
+
+## Round 50 — a woodcutter behind the northern cabin
+
+Frosty Peak had dropped back to fewest people to meet, at nine, once Whisper Woods' daisy-chain
+girl pushed it ahead. A **woodcutter** now splits logs on a stump tucked behind the northern
+cabin — reusing the `Chopper` controller and `makeStump` prop that Whisper Woods' woodcutter
+already uses, just given a beanie, coat and scarf to suit the mountain and moved to open snow
+clear of every path, cabin and prop in the village. "Good dry wood, this — burns all night."
+"Mind the chips, puss." "Every cabin wants a full woodpile before dark." Frosty Peak now has
+10 people to meet instead of 9, level again with Whisper Woods.
+
+Checked local `main` against `origin/main` on arrival, per the running rounds 43-49 warning:
+`HEAD` was detached and 16 commits behind, matching `origin/main` exactly, so `git checkout main
+&& git merge --ff-only origin/main` brought it forward with nothing lost before starting. Used the
+round-47/49 trick of loading each world and reading `game.friendTotal` to confirm Frosty Peak
+was the thinnest world before picking it.
