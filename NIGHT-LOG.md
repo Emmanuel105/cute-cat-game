@@ -739,3 +739,21 @@ Checked local `main` against `origin/main` on arrival: `HEAD` was detached but s
 commit `origin/main` was already at (a stale local branch ref left over from a previous session, not
 a divergence), so moving the `main` ref up to it and checking it out lost nothing before starting
 this round's work.
+
+## Round 63 — a bolder crab on Sunny Shore
+
+A headless tally (`game.load`/`game.travel` per world, reading `game.friendTotal`) found all seven
+worlds still level at fifteen people to meet, same as the last two rounds left off. Followed round
+60 and 62's lead again and gave a third world's wildlife its own `Follower`: Sunny Shore's six plain
+`Wanderer` crabs get a seventh, **a bolder crab that minds its own business until the cat wanders
+close, then scuttles over for a look**, claws clicking (`SFX.click()`), before skittering back to its
+patch of sand once the cat moves on. Placed at (17, -6), a gap in the existing crab line that's clear
+of the sandcastle, umbrellas and towels to the south and the fisherman's pier to the north. Like the
+fox and the penguin before it, it isn't greetable, so Sunny Shore's friend count stays at fifteen —
+just one more bit of shoreline that notices you.
+
+Confirmed with a headless check after building: the crab's rig lands in the scene graph and
+`friendTotal` for Sunny Shore is unchanged at 15, then ran the full suite clean before building.
+
+Checked local `main` against `origin/main` on arrival: already up to date, no fast-forward needed
+before starting this round's work.
