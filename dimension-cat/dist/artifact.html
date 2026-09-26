@@ -4873,6 +4873,17 @@ function makeIceStool() {
   for (let i = 0; i < 3; i++) { const a = i / 3 * TAU; mesh(G.cyl(0.02, 0.02, 0.3, 5), wood, { x: cos(a) * 0.16, y: 0.15, z: sin(a) * 0.16, rx: sin(a) * 0.25, rz: -cos(a) * 0.25, parent: g }); }
   return g;
 }
+/** A steaming mug of cocoa for a vendor to hold up, small and close to the hand it sits in. Two wisps of steam drift and fade. */
+function makeCocoaMug() {
+  const g = new THREE.Group(), china = mat(0xf7f3ec, { roughness: 0.5 }), cocoa = mat(0x4a2c1a, { roughness: 0.6 });
+  mesh(G.cyl(0.09, 0.08, 0.14, 12), china, { y: 0.07, parent: g });
+  mesh(G.torus(0.05, 0.016, 6, 10), china, { x: 0.1, y: 0.06, ry: PI / 2, parent: g });
+  mesh(G.cyl(0.075, 0.075, 0.02, 12), cocoa, { y: 0.15, shadow: 'none', parent: g });
+  for (const [sx, sz] of [[-0.02, 0.01], [0.025, -0.015]]) mesh(G.sphere(0.018, 6, 5), mat(0xfff8ea, { roughness: 0.8 }), { x: sx, y: 0.165, z: sz, shadow: 'none', parent: g });
+  const wisps = [0.2, 0.28].map((y0) => { const s = glowSprite(0xeef4fa, 0.14, 0.35, g); s.position.set(0, y0, 0); return { s, y0, ph: rnd() * TAU }; });
+  g.userData.update = (dt, t) => { for (const w of wisps) { const k = (sin(t * 0.6 + w.ph) + 1) / 2; w.s.position.set(sin(t * 0.9 + w.ph) * 0.02, w.y0 + k * 0.1, 0); w.s.material.opacity = 0.35 * (1 - k); } };
+  return g;
+}
 function makeIceCrystal(r = rnd, color = 0x9fe8ff) {
   const g = new THREE.Group(), m = glowMat(color, 0.8, { transparent: true, opacity: 0.85, roughness: 0.1 });
   const n = r.int(3, 5); for (let i = 0; i < n; i++) { const a = r() * TAU; mesh(G.cone(0.18, r.range(0.8, 1.8), 6), m, { x: cos(a) * 0.25, y: 0.4, z: sin(a) * 0.25, rx: r.range(-0.3, 0.3), rz: r.range(-0.3, 0.3), ry: a, shadow: 'none', parent: g }); }
@@ -6143,6 +6154,14 @@ function buildSnowVillage(game, entry) {
       hat: 'beanie', hatColor: 0x8a5acf, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a }); W.add(granny.group);
     game.npcs.push(new Sitter(game, granny, { x: lx, z: lz, ry: atan2(-lx, -lz), seat: 0.3,
       cries: ['Best seat on the mountain, this.', 'Come and warm your paws, puss.', "Cold enough to freeze a yeti's nose, out there."] })); }
+  // a cocoa vendor stands near the fire, mug held up and steaming, happy to say hello
+  { const cx = 3.6, cz = -3.0;
+    const cocoaWard = makeWardrobe(r, { shirts: [0x8a3a3a, 0x5a6a4a, 0x6a5a4a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const vendor = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: cocoaWard }),
+      hat: 'beanie', hatColor: 0xd62839, coat: true, scarf: 0xf7f3ec, cuffs: 0x3a3a3a }); W.add(vendor.group);
+    const v = new Vendor(game, vendor, makeCocoaMug(), { x: cx, z: cz, ry: atan2(-cx, -cz), cryIcon: '☕',
+      cries: ['Hot cocoa! Warms you right through.', 'Marshmallows or none, your choice.', "Careful, puss — it's steaming!"] });
+    game.npcs.push(v); greetable(game, v); }
   for (const [x, z, ry, wall, roof] of [[-11, -6, PI / 2 - 0.3, 0x8a5a32, 0x4a3a30], [11, -5, -PI / 2 + 0.2, 0x7a4a28, 0x3a4a5a], [-4, 12, PI + 0.2, 0x9a6a3a, 0x4a3a30], [9, 11, PI - 0.4, 0x6a4a2a, 0x5a3a30]]) {
     const c = makeCabin({ wall, roof, w: r.range(4.5, 5.5), d: r.range(4, 5) }, r); placeT(game, U, c, x, z, ry); const [w, h, d] = c.userData.size; boxT(game, x, z, max(w, d) * 0.85, h, max(w, d) * 0.85);
     const ch = c.userData.chimney, y0 = P.ground0(x, z);

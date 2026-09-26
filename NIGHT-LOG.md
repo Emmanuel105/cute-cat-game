@@ -417,3 +417,17 @@ detached tip and `origin/main` agreed, so the "behind" reading was just a stale 
 pointer from a previous container, fast-forwarded and pushed with nothing lost. Small reassurance
 that the round-43 warning is being heeded — worth still checking every time, since it costs nothing
 and the one time it matters is expensive to get wrong.
+
+## Round 45 — a cocoa vendor by the Frosty Peak fire
+
+Frosty Peak and Whisper Woods were tied for fewest people to meet, at seven. A **hot cocoa
+vendor** now stands a few steps from the campfire, a steaming mug held up in one mittened hand —
+built with the same `Vendor` controller as the Neighborhood's balloon seller, but simplified: no
+item to give, just a greeting and a call across the square. "Hot cocoa! Warms you right through."
+"Marshmallows or none, your choice." "Careful, puss — it's steaming!" A new `makeCocoaMug()` prop
+(a china mug, a dab of cocoa, two marshmallows, and a pair of steam wisps that drift up and fade)
+sits in the vendor's hand. Frosty Peak now has 8 people to meet instead of 7.
+
+Checked local `main` against `origin/main` on arrival, per the round-43/44 warning: this time they
+were genuinely identical (`HEAD` was not detached), so nothing needed fast-forwarding before
+starting.

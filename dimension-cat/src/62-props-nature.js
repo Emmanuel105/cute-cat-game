@@ -393,6 +393,17 @@ function makeIceStool() {
   for (let i = 0; i < 3; i++) { const a = i / 3 * TAU; mesh(G.cyl(0.02, 0.02, 0.3, 5), wood, { x: cos(a) * 0.16, y: 0.15, z: sin(a) * 0.16, rx: sin(a) * 0.25, rz: -cos(a) * 0.25, parent: g }); }
   return g;
 }
+/** A steaming mug of cocoa for a vendor to hold up, small and close to the hand it sits in. Two wisps of steam drift and fade. */
+function makeCocoaMug() {
+  const g = new THREE.Group(), china = mat(0xf7f3ec, { roughness: 0.5 }), cocoa = mat(0x4a2c1a, { roughness: 0.6 });
+  mesh(G.cyl(0.09, 0.08, 0.14, 12), china, { y: 0.07, parent: g });
+  mesh(G.torus(0.05, 0.016, 6, 10), china, { x: 0.1, y: 0.06, ry: PI / 2, parent: g });
+  mesh(G.cyl(0.075, 0.075, 0.02, 12), cocoa, { y: 0.15, shadow: 'none', parent: g });
+  for (const [sx, sz] of [[-0.02, 0.01], [0.025, -0.015]]) mesh(G.sphere(0.018, 6, 5), mat(0xfff8ea, { roughness: 0.8 }), { x: sx, y: 0.165, z: sz, shadow: 'none', parent: g });
+  const wisps = [0.2, 0.28].map((y0) => { const s = glowSprite(0xeef4fa, 0.14, 0.35, g); s.position.set(0, y0, 0); return { s, y0, ph: rnd() * TAU }; });
+  g.userData.update = (dt, t) => { for (const w of wisps) { const k = (sin(t * 0.6 + w.ph) + 1) / 2; w.s.position.set(sin(t * 0.9 + w.ph) * 0.02, w.y0 + k * 0.1, 0); w.s.material.opacity = 0.35 * (1 - k); } };
+  return g;
+}
 function makeIceCrystal(r = rnd, color = 0x9fe8ff) {
   const g = new THREE.Group(), m = glowMat(color, 0.8, { transparent: true, opacity: 0.85, roughness: 0.1 });
   const n = r.int(3, 5); for (let i = 0; i < n; i++) { const a = r() * TAU; mesh(G.cone(0.18, r.range(0.8, 1.8), 6), m, { x: cos(a) * 0.25, y: 0.4, z: sin(a) * 0.25, rx: r.range(-0.3, 0.3), rz: r.range(-0.3, 0.3), ry: a, shadow: 'none', parent: g }); }
