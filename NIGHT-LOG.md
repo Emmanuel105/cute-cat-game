@@ -703,3 +703,19 @@ rather than patch around it, and moved the idea's target to a world where it's s
 
 Checked local `main` against `origin/main` on arrival: `HEAD` was attached to `main` and already
 level with `origin/main`, so nothing needed fast-forwarding before starting this round's work.
+
+## Round 61 — a beachcomber on Sunny Shore
+
+A headless tally (`game.load`/`game.travel` per world, reading `game.friendTotal`) showed Sunny
+Shore had slipped to the thinnest world at fourteen, one behind the other six, which round 60 had
+just brought level at fifteen. **A beachcomber now kneels further down the sand**, sorting shells
+into a little pile right where the game's own shell-scatter decoration is thickest (`makeScatter`'s
+third patch, centred near (8, -26)) — reusing `Kneeler`, the same controller already doing duty for
+the sandcastle-patting kid on this same beach and the igloo-patching child on Frosty Peak: "Found a
+whole conch, look!" "This one still has its shine." "One more and I'll call it a collection." The
+spot (5, -32) was checked against the rock scatter by the lighthouse, the nearby crab wander circles,
+the gem cluster and every beach hut, umbrella and towel already placed, with clear margin on all
+sides. Sunny Shore now has 15 people to meet instead of 14, level with the rest.
+
+Checked local `main` against `origin/main` on arrival: `HEAD` was attached to `main` and already
+level with `origin/main`, so nothing needed fast-forwarding before starting this round's work.

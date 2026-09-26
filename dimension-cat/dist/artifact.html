@@ -6117,6 +6117,10 @@ function buildBeach(game, entry) {
     cries: ["Sunbathing is a science, apparently.", 'Same page as an hour ago.', "Wake me if the tide comes in."] })); }
   game.npcs.push(new Kneeler(game, beachPerson(false, true), { x: 7, z: -2.7, ry: PI }));
   { const bucket = mat(0xd62839, { roughness: 0.6 }); mesh(G.cyl(0.16, 0.13, 0.26, 10), bucket, { x: 7.9, y: P.ground0(7.9, -2.4) + 0.13, z: -2.4, parent: W }); mesh(G.torus(0.16, 0.012, 5, 12), mat(0xffd54a), { x: 7.9, y: P.ground0(7.9, -2.4) + 0.27, z: -2.4, rx: PI / 2, shadow: 'none', parent: W }); }
+  // a beachcomber crouched further south, sorting shells into a little pile where the shell scatter is thickest
+  { const cx = 5, cz = -32;
+    game.npcs.push(new Kneeler(game, beachPerson(r.chance(0.5), false), { x: cx, z: cz, ry: 1.9,
+      cries: ['Found a whole conch, look!', 'This one still has its shine.', "One more and I'll call it a collection."] })); }
   // a boy flying a kite on the dunes, the wind off the sea carrying it inland and up
   game.npcs.push(new KiteFlyer(game, beachPerson(false, true), makeKite(0xd62839, 0xf2c744), { x: -4, z: 40, wind: [-0.55, 0.85], cries: ['Look at it go!', "The wind's just right today.", 'Higher than the lighthouse!'] }));
   // two of them are keeping the beach ball in the air — greetable too, like everyone else on the sand
