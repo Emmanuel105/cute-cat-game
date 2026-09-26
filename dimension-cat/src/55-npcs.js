@@ -818,9 +818,11 @@ class Swinger {
 
 // ---------------------------------------------------------------- ring dance: a circle of dancers going round, hand in hand
 class RingDance {
-  constructor(game, rigs, { cx, cz, r = 2.4, speed = 0.55, turnEvery = 9 }) {
+  constructor(game, rigs, { cx, cz, r = 2.4, speed = 0.55, turnEvery = 9, cries = null, cryIcon = '💬' }) {
     this.game = game; this.cx = cx; this.cz = cz; this.r = r; this.speed = speed; this.turnEvery = turnEvery; this.t = 0; this.dir = 1; this.turnT = turnEvery; this.a = 0;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
     this.dancers = rigs.map((rig, i) => ({ rig, off: i / rigs.length * TAU, phase: rnd() * TAU, circle: game.physics.addCircle(this, cx, cz, 0.3) }));
+    for (const d of this.dancers) greetable(game, d);
     this.rig = rigs[0]; this.place(0);
   }
   place(dt) {
@@ -839,6 +841,7 @@ class RingDance {
     if (this.turnT <= 0) { this.dir = -this.dir; this.turnT = this.turnEvery; }
     this.a += this.dir * this.speed * dt;
     this.place(dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.cx, this.cz, c.x, c.z) < 200) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
   }
 }
 

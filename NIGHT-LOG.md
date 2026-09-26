@@ -612,3 +612,23 @@ instead of 12, ahead of Frosty Peak and Whisper Woods (still at 12).
 Checked local `main` against `origin/main` on arrival, per the running rounds 43-55 warning: `HEAD`
 was attached to `main` and already level with `origin/main`, so nothing needed fast-forwarding
 before starting this round's work.
+
+## Round 57 — a fairy-ring dance in Whisper Woods
+
+The round-47-through-56 trick (`game.load`/`game.travel` per world, reading `game.friendTotal`)
+showed Frosty Peak and Whisper Woods tied at twelve, the thinnest worlds now that round 56 pushed
+Sunny Shore to fourteen. Whisper Woods already has a fairy-ring superstition baked into its lore —
+real fairies flit around the glade — but `RingDance`, the controller that walks a circle of rigs
+hand in hand round a point, had been sitting unused in `55-npcs.js` since whenever it was written;
+nothing in any world ever called it. **Three children now dance in a ring** in a clearing east of
+the glade, off the stepping-stone path, spinning one way and then reversing every few seconds:
+"Round and round, three times for a wish!" "Don't stop 'til the ring says so!" "Faster - before
+the fairies notice!" `RingDance` gained the same optional `cries`/`cryIcon` support most other
+controllers already have, plus a `greetable()` call for each dancer so all three count as friends
+to meet — a scripted headless scan of `game.physics`'s boxes and circles after building the world
+found the clearing at (21, 0), clear of every tree, rock, stump and hollow log already placed
+there. Whisper Woods now has 15 people to meet instead of 12, ahead of every other world.
+
+Checked local `main` against `origin/main` on arrival: `HEAD` was detached, sitting on the same
+commit `origin/main` was already at, so `git checkout main && git pull origin main` fast-forwarded
+the local branch onto it with nothing lost before starting this round's work.

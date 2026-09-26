@@ -2584,9 +2584,11 @@ class Swinger {
 
 // ---------------------------------------------------------------- ring dance: a circle of dancers going round, hand in hand
 class RingDance {
-  constructor(game, rigs, { cx, cz, r = 2.4, speed = 0.55, turnEvery = 9 }) {
+  constructor(game, rigs, { cx, cz, r = 2.4, speed = 0.55, turnEvery = 9, cries = null, cryIcon = '💬' }) {
     this.game = game; this.cx = cx; this.cz = cz; this.r = r; this.speed = speed; this.turnEvery = turnEvery; this.t = 0; this.dir = 1; this.turnT = turnEvery; this.a = 0;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
     this.dancers = rigs.map((rig, i) => ({ rig, off: i / rigs.length * TAU, phase: rnd() * TAU, circle: game.physics.addCircle(this, cx, cz, 0.3) }));
+    for (const d of this.dancers) greetable(game, d);
     this.rig = rigs[0]; this.place(0);
   }
   place(dt) {
@@ -2605,6 +2607,7 @@ class RingDance {
     if (this.turnT <= 0) { this.dir = -this.dir; this.turnT = this.turnEvery; }
     this.a += this.dir * this.speed * dt;
     this.place(dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.cx, this.cz, c.x, c.z) < 200) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
   }
 }
 
@@ -6399,6 +6402,12 @@ function buildForest(game, entry) {
     W.add(a.group); W.add(b.group);
     game.npcs.push(new Talkers(game, a, b, { x: -19, z: 8.5, ry: 0,
       lines: ['Wonder who built that treehouse.', "Best view in the woods, I'd wager.", "Careful - you'll wake whoever lives up there.", 'No ladder for us, my knees say.'] })); }
+
+  // three children ring-dance in a clearing east of the glade — everyone knows three turns of the fairy ring earns a wish
+  { const ringWard = makeWardrobe(r, { shirts: [0xef7d2f, 0x5a8a6a, 0x2f6fd6], pants: [0x2e4a3a, 0x3a3a3a, 0x4a3a2a], shoes: [0x3a2a1e, 0x2a2018] });
+    const dancers = [true, false, true].map((female) => { const rig = makeHuman({ ...randomPerson(r, { female, child: true, wardrobe: ringWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false }); W.add(rig.group); return rig; });
+    game.npcs.push(new RingDance(game, dancers, { cx: 21, cz: 0, r: 1.8, speed: 0.6, turnEvery: 8, cryIcon: '🧚',
+      cries: ['Round and round, three times for a wish!', "Don't stop 'til the ring says so!", 'Faster - before the fairies notice!'] })); }
 
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
