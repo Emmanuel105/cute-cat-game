@@ -544,3 +544,19 @@ Checked local `main` against `origin/main` on arrival, per the running rounds 43
 `HEAD` was detached but matched `origin/main` exactly (18 commits ahead of the old local `main`),
 so `git checkout main && git merge --ff-only origin/main` brought it forward with nothing lost
 before starting this round's work.
+
+## Round 53 — two campers at the foot of the treehouse
+
+The round-47/49/52 trick (`game.load`/`game.travel` per world, reading `game.friendTotal`)
+showed Whisper Woods had slipped to the thinnest world at ten, once round 52's pinecone
+gatherer pushed Frosty Peak to eleven. The treehouse north-west of the glade has stood empty
+since it was built — nobody at ground level ever remarked on it. **Two campers now rest at the
+foot of its rope ladder**, reusing the `Talkers` controller (already doing duty for gossiping
+neighbours and Victorian ladies) so both count as separate friends to meet: "Wonder who built
+that treehouse." "Best view in the woods, I'd wager." "Careful - you'll wake whoever lives up
+there." "No ladder for us, my knees say." Whisper Woods now has 12 people to meet instead of
+10, ahead of every other world.
+
+Checked local `main` against `origin/main` on arrival: `origin/main` had already gathered the
+19 commits through round 52 that a stale local ref made look unpushed, so `git fetch` plus a
+`git checkout main && git merge --ff-only` confirmed nothing was missing before starting.

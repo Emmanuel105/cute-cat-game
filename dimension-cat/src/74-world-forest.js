@@ -88,6 +88,13 @@ function buildForest(game, entry) {
     W.add(weaver.group);
     game.npcs.push(new Sitter(game, weaver, { x: 4, z: -16, ry: 2.6, seat: 0.72,
       cries: ['One for luck, one for love.', "Sit if you like - there's room enough.", 'Lost count again. No matter.'] })); }
+  // two campers rest at the foot of the treehouse's rope ladder, swapping theories about who lives up there
+  { const wardA = makeWardrobe(r, { shirts: [0x3a6a8a, 0x4a7a5a], pants: [0x2e3a4a, 0x3a4a3a], shoes: [0x2a2018, 0x1e2020] });
+    const a = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: false, wardrobe: wardA }), backpack: 0x2f6fd6, hat: 'cap', hatColor: 0x2a4a3a, scarf: null, jacket: null, bag: null, glasses: false });
+    const b = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: false }), backpack: 0xd2691e, hat: null, scarf: null, jacket: null, bag: null, glasses: false });
+    W.add(a.group); W.add(b.group);
+    game.npcs.push(new Talkers(game, a, b, { x: -19, z: 8.5, ry: 0,
+      lines: ['Wonder who built that treehouse.', "Best view in the woods, I'd wager.", "Careful - you'll wake whoever lives up there.", 'No ladder for us, my knees say.'] })); }
 
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
