@@ -379,3 +379,21 @@ needed) so it doubles as the world's first *child* greeting: Whisper Woods has n
 child pulls from the separate `GREETINGS.child` lines instead, so this is also the first character
 in the woods who actually has something to say back. Whisper Woods now has 6 people to meet
 instead of 5.
+
+## Round 43 — an artist paints the aurora on Frosty Peak
+
+Frosty Peak was tied with Whisper Woods for the fewest people to meet, at six. An **artist** now
+sets up an easel on the open snowfield east of the village, easel propped up and dabbing away
+while the aurora ripples overhead — reusing the same `Painter` controller as the Neighborhood's
+pond-side artist and Whisper Woods' mushroom painter, in warmer clothes for the cold. "The sky
+does all the work, up here." "Try painting that shimmer, if you can." "Best canvas in the sky,
+tonight." Frosty Peak now has 7 people to meet instead of 6.
+
+Also found and fixed something left over from earlier containers: on arrival, this session's `HEAD`
+was detached and sitting nine commits ahead of both the local and remote `main` — rounds 34 through
+42 (forager through fireflies) had all been committed but never fast-forwarded onto `main` or
+pushed to `origin`. This is despite round 41's log entry saying its own check of the same situation
+was "a false alarm" with origin already caught up to round 40 — it wasn't; `origin/main` was still
+sitting at round 33 (the robot dog's toy mouse) until this round fast-forwarded local `main` to the
+detached tip and pushed it. Worth taking this check seriously every round: fetch `origin/main` and
+compare it against `HEAD` with `git log --oneline origin/main..HEAD`, not just a glance at appearances.

@@ -16,7 +16,7 @@ A seven-world third-person cat adventure in a single HTML file (three.js r160, e
 | 2 | 🤖 Robot City | airlock behind the Queen | robot workers, the robot dog |
 | 3 | 🎩 Victorian | little wooden door in the factory | top-hats and bonnets, the ginger boy at the time door |
 | 4 | 🏖️ Sunny Shore | boardwalk arch east of the road | crabs, seagulls, turtles, sunbathers, a fisherman on the pier, a lifeguard on a raised chair, a dog on its own patch of sand |
-| 5 | ❄️ Frosty Peak | gondola station west of the road | penguins, reindeer, kids in beanies, an ice fisherman, an old-timer by the fire, a friendly yeti |
+| 5 | ❄️ Frosty Peak | gondola station west of the road | penguins, reindeer, kids in beanies, an ice fisherman, an old-timer by the fire, an artist painting the aurora, a friendly yeti |
 | 6 | 🍄 Whisper Woods | hollow oak south-east of the park | deer, foxes, frogs, owls, fairies, butterflies |
 
 A signpost at the front gate points the way. Each world has a squirrel to befriend and eight collectibles. The Neighborhood runs a four-minute day/night cycle: porch lights, windows and street lamps come on at dusk.
