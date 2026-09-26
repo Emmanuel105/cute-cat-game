@@ -669,3 +669,37 @@ Neighborhood and Whisper Woods.
 Checked local `main` against `origin/main` on arrival: `HEAD` was attached to `main` and already
 level with `origin/main` after a `git fetch` and `git merge --ff-only`, so nothing needed
 fast-forwarding before starting this round's work.
+
+## Round 60 — a bolder fox in Whisper Woods
+
+A headless tally (`game.load`/`game.travel` per world, reading `game.friendTotal`) found all seven
+worlds level at fifteen people to meet for the first time — nothing left thinnest. Rather than force
+a sixteenth greeting somewhere, went looking for an unused piece of the game instead, and found
+`Follower`: a whole controller class for a creature that minds its own business until the cat wanders
+close, then trots over and keeps a shy distance, sitting unused in `55-npcs.js` since whenever it was
+written. Whisper Woods already had two plain-wandering foxes; **a third fox now uses `Follower`**
+near the eastern tree line, ignoring the cat until it's within about 13 m, then closing the gap to a
+polite two metres with an occasional yip, and drifting back to its own patch once the cat moves off.
+It isn't greetable (animal rigs don't carry the `.look`/`.robot`/`.cookie` marker `greetable()` checks
+for), so it doesn't change any world's friend count — just a small bit of wildlife that reacts to you.
+
+First tried something else — an old-timer fishing off the neighbourhood lake's long-unused jetty,
+reusing `IceFisher` the way the Sunny Shore and Frosty Peak pier/pond anglers already do. It built and
+looked right, but broke two tests reliably every run: "two neighbours chat" (world 0) and "the horse
+and carriage" (Victorian). Chased it down rather than shrugging it off as flakiness — confirmed with
+`git stash` that the unmodified tree passed clean five times running, so the tests themselves weren't
+flaky, the change was. The cause: `IceFisher` draws from the shared global `rnd()` in its constructor
+(`this.t = rnd() * 10`), same as `Wanderer`, `Chopper` and friends. That's normally fine — the test's
+own comment says per-world NPC construction draws are OK — but the Neighborhood is *world 0*, built
+once at boot before any other world exists, and the test travels through Candy Land, Robot City and
+Victorian (in that order) right after. One extra global draw during the Neighborhood's build shifts
+every subsequent construction-time draw everywhere downstream, including the exact animation phases
+two tightly-timed frame-count checks depend on. Frosty Peak, Sunny Shore and Whisper Woods sit at the
+*end* of the test's travel order instead, so thirty-odd rounds of additions there have never had
+anything left to cascade into — which is probably no accident, and worth remembering next time
+Neighborhood, Candy Land, Robot City or Victorian look like they need something: extra `rnd()` draws
+at construction there are the risky kind the test's own comment doesn't cover. Reverted that attempt
+rather than patch around it, and moved the idea's target to a world where it's safe.
+
+Checked local `main` against `origin/main` on arrival: `HEAD` was attached to `main` and already
+level with `origin/main`, so nothing needed fast-forwarding before starting this round's work.
