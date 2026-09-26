@@ -66,6 +66,11 @@ function buildForest(game, entry) {
     W.add(chaser.group);
     game.npcs.push(new Wanderer(game, chaser, { x: -10, z: -8, speed: 1.1, leash: 7, height: 1.3, r: 0.3, idle: [1, 3], walk: [1.5, 4],
       cries: ['Nearly caught one!', 'They twinkle if you creep up slow.', "Don't tell my mum I'm still out."], cryIcon: '✨' })); }
+  // an old whittler sits on the eastern stump, carving away at a block of wood
+  { const whittler = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: true }), shirt: 0x8a6a4a, pants: 0x4a4030, shoes: 0x3a2a1e, apron: 0xc9a86a, hat: 'flatcap', hatColor: 0x4a4030, scarf: null, jacket: null, bag: null, glasses: false, beard: true });
+    W.add(whittler.group);
+    game.npcs.push(new Sitter(game, whittler, { x: 18, z: 24, ry: -2.5, seat: 0.72,
+      cries: ['Carving a mouse, for luck.', "Sit a while - the stump's plenty wide.", 'Whittled worse things than a cat, in my time.'] })); }
 
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });

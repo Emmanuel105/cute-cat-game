@@ -397,3 +397,23 @@ was "a false alarm" with origin already caught up to round 40 — it wasn't; `or
 sitting at round 33 (the robot dog's toy mouse) until this round fast-forwarded local `main` to the
 detached tip and pushed it. Worth taking this check seriously every round: fetch `origin/main` and
 compare it against `HEAD` with `git log --oneline origin/main..HEAD`, not just a glance at appearances.
+
+## Round 44 — a whittler on the eastern stump
+
+Whisper Woods was still the thinnest world to meet people in, at six, with the woodcutter, the
+hiker, the forager, the birdwatcher, the artist and the firefly-chasing child. An **old whittler**
+now sits on one of the four decorative stumps already scattered through the woods (the one east of
+the glade, near the owls' tree), carving away at a block of wood — just the plain `Sitter`
+controller already used for the Neighborhood's bench pair, Frosty Peak's old-timer and Sunny
+Shore's lifeguard, seated a little higher to match the stump's height, with no new geometry needed
+since the stump was already there. "Carving a mouse, for luck." "Sit a while — the stump's plenty
+wide." "Whittled worse things than a cat, in my time." Whisper Woods now has 7 people to meet
+instead of 6, level with Frosty Peak.
+
+This round also found local `main` sitting behind a detached `HEAD` again on arrival, same as
+rounds 41 and 42 — but this time a proper check (`git fetch origin main` then
+`git log --oneline origin/main..HEAD`) showed the two were already identical once fetched; the
+detached tip and `origin/main` agreed, so the "behind" reading was just a stale local branch
+pointer from a previous container, fast-forwarded and pushed with nothing lost. Small reassurance
+that the round-43 warning is being heeded — worth still checking every time, since it costs nothing
+and the one time it matters is expensive to get wrong.
