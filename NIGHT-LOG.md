@@ -526,3 +526,21 @@ two sunbathers by name, so that check now expects three.
 Checked local `main` against `origin/main` on arrival, per the running rounds 43-50 warning:
 `HEAD` was attached to `main` and already level with `origin/main` after round 50's own
 fast-forward, so nothing needed doing before starting this round's work.
+
+## Round 52 — a pinecone gatherer on the fringe of the pines
+
+The round-47/49 trick (`game.load(i, 'from-prev'/'from-hub')` then read `game.friendTotal`)
+showed Frosty Peak and Whisper Woods tied again at ten, once round 51's third sunbather pushed
+Sunny Shore ahead. A **woman now gathers pinecones for kindling** north-east of the Frosty Peak
+square, at the fringe where the hand-built village gives way to the pine ring — reusing the
+`Forager` controller Whisper Woods' mushroom-picker already uses, just kneeling under pines
+instead of beside mushrooms. `Forager`'s cry icon was hardcoded to a mushroom, so it now takes an
+optional `cryIcon` the way most other controllers already do, and Frosty Peak passes a pine tree
+instead: "Pinecones catch quicker than logs." "Every cabin wants kindling before the wood runs
+low." "Mind your paws, puss - sticky with sap." Frosty Peak now has 11 people to meet instead of
+10, ahead of Whisper Woods (still at 10).
+
+Checked local `main` against `origin/main` on arrival, per the running rounds 43-50 warning:
+`HEAD` was detached but matched `origin/main` exactly (18 commits ahead of the old local `main`),
+so `git checkout main && git merge --ff-only origin/main` brought it forward with nothing lost
+before starting this round's work.

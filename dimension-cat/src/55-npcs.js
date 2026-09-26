@@ -1130,9 +1130,9 @@ class Mechanic {
 
 // ---------------------------------------------------------------- forager: kneels by the mushroom patch, reaching down to pick and lifting each one up before tucking it away
 class Forager {
-  constructor(game, rig, { x, z, ry = 0, cries = null }) {
+  constructor(game, rig, { x, z, ry = 0, cries = null, cryIcon = '🍄' }) {
     this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10; this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false;
-    this.state = 'idle'; this.timer = 0; this.cries = cries; this.cryIcon = '🍄'; this.cryT = rnd.range(4, 9); this.pickT = rnd.range(1.4, 2.2); this.picked = false; this.reach = 0;
+    this.state = 'idle'; this.timer = 0; this.cries = cries; this.cryIcon = cryIcon; this.cryT = rnd.range(4, 9); this.pickT = rnd.range(1.4, 2.2); this.picked = false; this.reach = 0;
     rig.group.rotation.y = ry;
     rig.group.position.set(x, game.physics.ground0(x, z) - 0.4 * rig.k + 0.05, z);   // kneeling: hips a shin's length lower than standing
     this.circle = game.physics.addCircle(this, x, z, 0.35);

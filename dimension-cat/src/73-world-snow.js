@@ -86,6 +86,12 @@ function buildSnowVillage(game, entry) {
       hat: 'beanie', hatColor: 0x3a5a3a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a, axe: true, beard: true }); W.add(cutter.group);
     game.npcs.push(new Chopper(game, cutter, { x: cx, z: cz, ry: atan2(sx - cx, sz - cz),
       cries: ['Good dry wood, this — burns all night.', 'Mind the chips, puss.', 'Every cabin wants a full woodpile before dark.'] })); }
+  // a woman gathers pinecones for kindling at the fringe of the pines, north-east of the square
+  { const pineWard = makeWardrobe(r, { shirts: [0x4a6a3a, 0x6a5a4a, 0x5a4a6a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const gatherer = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: false, wardrobe: pineWard }),
+      hat: 'beanie', hatColor: 0x5a6a3a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a }); W.add(gatherer.group);
+    game.npcs.push(new Forager(game, gatherer, { x: 14, z: 27, ry: -0.6, cryIcon: '🌲',
+      cries: ['Pinecones catch quicker than logs.', 'Every cabin wants kindling before the wood runs low.', 'Mind your paws, puss - sticky with sap.'] })); }
   // the yeti's cave: a long tunnel north into the mountain, lit by gems, with the yeti in its den at the far end
   const cave = makeCave(game, U, 0, -29, 27, r);
   for (const [x, z] of [[-9, -24], [9, -25]]) { const p = makeSnowPine(r); placeT(game, U, p, x, z, 0); boxT(game, x, z, 1.2 * p.scale.x, 5, 1.2 * p.scale.x, { cam: false }); }
