@@ -577,3 +577,19 @@ Checked local `main` against `origin/main` on arrival, per the running rounds 43
 `HEAD` was detached and 20 commits ahead of a stale local `main`, but matched `origin/main`
 exactly, so `git checkout main && git merge --ff-only origin/main` brought it forward with
 nothing lost before starting this round's work.
+
+## Round 55 — a reindeer keeper on Frosty Peak
+
+The round-47/49/52/53/54 trick (`game.load` per world, reading `game.friendTotal`) showed Frosty
+Peak had slipped back to the thinnest world at eleven, once round 54's ice-cream vendor pushed
+Sunny Shore ahead to twelve. The three reindeer wandering the village have always just been
+scenery. A **reindeer keeper now kneels by the herd's middle spot**, checking harness bells before
+the next run — the same `Kneeler` controller already used for the sandcastle kid and the
+snowman-packing child, given an adult body for the first time instead of a child's, with no new
+geometry needed. "Bells all present and correct." "Mind the antlers, puss — they don't mean it."
+"Copper's the friendliest of the lot." Frosty Peak now has 12 people to meet instead of 11, level
+with Sunny Shore and Whisper Woods.
+
+Checked local `main` against `origin/main` on arrival, per the running rounds 43-54 warning:
+`HEAD` was detached and matched `origin/main` exactly, so `git checkout main && git merge
+--ff-only origin/main` brought it forward with nothing lost before starting this round's work.

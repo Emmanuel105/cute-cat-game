@@ -6213,6 +6213,13 @@ function buildSnowVillage(game, entry) {
   // life: penguins, reindeer, kids, the yeti, the squirrel
   for (let i = 0; i < 6; i++) { const rig = makePenguin({ scarf: i === 0 ? 0xd62839 : (i === 3 ? 0x2f6fd6 : null), scale: r.range(0.8, 1.05) }); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x: 18 + r.range(-6, 6), z: 8 + r.range(-6, 6), speed: r.range(0.5, 0.8), leash: 9, r: 0.3, height: 0.9, step: 0.25, idle: [1, 3] })); }
   for (const [x, z] of [[-22, 6], [-18, -12], [24, 20]]) { const rig = makeDeer(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x, z, speed: 0.6, leash: 8, r: 0.45, height: 1.4, step: 0.3, idle: [3, 7], walk: [2, 5] })); }
+  // a reindeer keeper kneels by the herd's middle spot, checking harness bells before the next run
+  { const dx = -18, dz = -12, kx = dx + 2.1, kz = dz + 0.4;
+    const keeperWard = makeWardrobe(r, { shirts: [0x5a4a3a, 0x3a5a4a, 0x4a3a5a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const keeper = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: false, wardrobe: keeperWard }),
+      hat: 'beanie', hatColor: 0x6a4a2a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a }); W.add(keeper.group);
+    game.npcs.push(new Kneeler(game, keeper, { x: kx, z: kz, ry: atan2(dx - kx, dz - kz),
+      cries: ['Bells all present and correct.', "Mind the antlers, puss — they don't mean it.", "Copper's the friendliest of the lot."] })); }
   // kids in beanies: wrapped up in coats, scarves and mittens, no two the same colour
   const snowWard = makeWardrobe(r, { shirts: [0xd62839, 0x2f6fd6, 0x2e9e6e, 0xff8f00, 0x8a5acf, 0x00acc1], pants: [0x1e2a44, 0x3a3a3a, 0x4a3a2a], shoes: [0x2a2018, 0x1e1a18] });
   const beanieBag = bag(r, [0xd62839, 0x2f6fd6, 0xffd54a, 0x2e9e6e, 0xef7d2f]);
