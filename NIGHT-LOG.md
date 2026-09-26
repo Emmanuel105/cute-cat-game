@@ -478,3 +478,19 @@ Checked local `main` against `origin/main` on arrival: local `main` was 14 commi
 `HEAD` that matched `origin/main` exactly, so `git checkout main && git merge --ff-only origin/main`
 brought it forward with nothing to lose, per the running warning from rounds 43/44/46/47 about
 checking this every time.
+
+## Round 49 — a girl weaves a daisy chain on the last stump
+
+Whisper Woods has four decorative stumps; two were already sat on (the whittler to the east, the
+knitter to the west), leaving two bare. A **young woman** now sits on one of the remaining two,
+threading a daisy chain and in no hurry to finish it — the same plain `Sitter` controller as her
+stump-mates, no new geometry, just the fourth seat put to use. "One for luck, one for love."
+"Sit if you like - there's room enough." "Lost count again. No matter." Whisper Woods now has 10
+people to meet instead of 9, ahead of Frosty Peak (still at 9) for the first time in a few rounds.
+
+Checked local `main` against `origin/main` on arrival, per the running rounds 43-48 warning: `HEAD`
+was detached but matched `origin/main` exactly, so `git checkout main && git merge --ff-only
+origin/main` brought local `main` forward with nothing lost, before starting this round's work. Used
+the round-47 trick of calling `game.load(i, 'from-prev')` in a scratch script and reading
+`game.friendTotal` per world to confirm Whisper Woods and Frosty Peak were tied at 9 before picking
+which one to extend.

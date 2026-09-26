@@ -83,6 +83,11 @@ function buildForest(game, entry) {
     W.add(knitter.group);
     game.npcs.push(new Sitter(game, knitter, { x: -26, z: -22, ry: 0.8, seat: 0.72,
       cries: ['Knit one, purl one - mind your claws.', 'This scarf is nearly done, if the light holds.', 'Sit a spell, if you like; the wool keeps me busy.'] })); }
+  // a girl rests on the last of the four stumps, threading a daisy chain, in no hurry to finish it
+  { const weaver = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: false }), shirt: 0x5a8a6a, pants: 0x3a4a3a, shoes: 0x3a2a1e, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(weaver.group);
+    game.npcs.push(new Sitter(game, weaver, { x: 4, z: -16, ry: 2.6, seat: 0.72,
+      cries: ['One for luck, one for love.', "Sit if you like - there's room enough.", 'Lost count again. No matter.'] })); }
 
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
