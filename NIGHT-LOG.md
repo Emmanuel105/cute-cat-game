@@ -446,3 +446,21 @@ now has 8 people to meet instead of 7, level again with Frosty Peak.
 Local `main` was found detached and one commit behind `origin/main` on arrival (round 45's tip
 hadn't been fast-forwarded) — fixed with `git branch -f main origin/main` before starting, per the
 round-43/44 warning about checking this every time.
+
+## Round 47 — a knitter on the western stump
+
+Frosty Peak and Whisper Woods were tied for fewest people to meet again, at eight. Whisper Woods
+has four decorative stumps scattered through the woods but only one of them was ever sat on — the
+whittler's, on the east side. An **old woman** now sits on the western stump with a ball of wool
+in her lap, the whittler's quiet counterpart — plain `Sitter` controller again, no new geometry,
+just a second stump put to use. "Knit one, purl one — mind your claws." "This scarf is nearly
+done, if the light holds." "Sit a spell, if you like; the wool keeps me busy." Whisper Woods now
+has 9 people to meet instead of 8, ahead of Frosty Peak.
+
+Checked local `main` against `origin/main` on arrival (fetch, then `git log --oneline
+origin/main..HEAD` and the reverse): `HEAD` was detached but the two were identical, so a plain
+`git checkout main && git merge --ff-only origin/main` brought local `main` forward with nothing
+to lose. To get an actual per-world friend count (grepping "new Wanderer(" etc. undercounts
+anything built in a loop) this round called `game.load(i, 'from-prev')` directly against the
+bundled game in a scratch script and read `game.friendTotal` for each world index — worth
+remembering as a faster way to check "which world is thinnest" than counting source lines by eye.
