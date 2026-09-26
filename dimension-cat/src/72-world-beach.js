@@ -34,6 +34,14 @@ function buildBeach(game, entry) {
     W.add(angler.group);
     game.npcs.push(new IceFisher(game, angler, makeIceStool(), { x: 30, z: -10, ry: PI / 2, seatY: 0.6, holeX: 34, holeZ: -10, holeY: 0.05,
       cries: ['Not a nibble all morning.', "Careful, puss, you'll spook them.", 'Best spot on the whole pier, this.'] })); }
+  // a lifeguard up on a raised chair north of the swimming crowd, watching the water
+  { game.zones.addCircle(13, 24, 2);
+    const guard = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
+      shirt: 0xd62839, pants: 0xf5f2ea, shorts: true, stripes: null, hat: 'cap', hatColor: 0xf5f2ea, glasses: true, glassColor: 0x203040, jacket: null, scarf: null, bag: null });
+    W.add(guard.group);
+    placeT(game, U, boxAround(game, makeLifeguardChair(), 13, 24, 1.3, 1.9, 1.1), 13, 24, PI / 2);
+    game.npcs.push(new Sitter(game, guard, { x: 13, z: 24, ry: PI / 2, seat: 1.87, cryIcon: '🛟',
+      cries: ['Swim between the flags, please!', 'Not a cloud in the sky today.', "Mind that current, puss — respect the sea."] })); }
   for (let i = 0; i < 12; i++) { const a = r() * TAU, d = r.range(2.6, 6); placeT(game, U, makeRock(r, 0x8a857a, r.range(0.8, 1.8)), 12 + cos(a) * d, -46 + sin(a) * d, 0); }
   for (let i = 0; i < 5; i++) placeT(game, U, boxAround(game, makeBeachHut(r.pick([0xff8a65, 0x4fc3f7, 0xfff176, 0x81c784, 0xf48fb1]), r), -10, -24 + i * 9, 2.8, 2.8, 2.8), -10, -24 + i * 9, PI / 2);
   // dunes: palms, grass tufts, driftwood

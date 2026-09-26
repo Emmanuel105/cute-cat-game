@@ -104,6 +104,22 @@ function makeUmbrella(hue = 0) {
   mesh(G.sphere(0.06, 8, 6), pole, { y: 0.28, shadow: 'none', parent: top });
   return g;
 }
+/** A raised wooden lifeguard chair: A-frame legs, a small platform, a seat and backrest, a ladder up the back, and a ring buoy hung on one leg. */
+function makeLifeguardChair() {
+  const g = new THREE.Group(), wood = mat(0xf3ede0, { roughness: 0.85, map: TEX.planks(24, 40) }), trim = mat(0xd62839, { roughness: 0.7 });
+  const legH = 1.7;
+  for (const [sx, sz] of [[-0.5, -0.45], [0.5, -0.45], [-0.5, 0.45], [0.5, 0.45]]) mesh(G.cyl(0.06, 0.085, legH, 8), wood, { x: sx * 1.05, y: legH / 2, z: sz * 1.05, rx: -sz * 0.16, rz: sx * 0.16, parent: g });
+  for (const sz of [-0.45, 0.45]) mesh(G.box(1.9, 0.05, 0.05), wood, { y: legH * 0.55, z: sz * 0.99, parent: g });
+  for (const sx of [-0.5, 0.5]) mesh(G.box(0.05, 0.05, 0.85), wood, { x: sx * 1.05, y: legH * 0.4, parent: g });
+  mesh(G.box(1.3, 0.08, 1.0), wood, { y: legH + 0.04, shadow: 'both', parent: g });
+  mesh(G.box(1.0, 0.06, 0.7), wood, { y: legH + 0.14, z: -0.1, parent: g });
+  mesh(G.box(1.0, 0.55, 0.06), wood, { y: legH + 0.4, z: -0.44, rx: -0.12, parent: g });
+  mesh(G.box(1.1, 0.06, 0.1), trim, { y: legH + 0.66, z: -0.48, rx: -0.12, parent: g });
+  for (let i = 0; i < 5; i++) mesh(G.cyl(0.02, 0.02, 0.55, 6), wood, { y: 0.3 + i * 0.32, z: 0.62, rx: PI / 2, parent: g });
+  for (const sx of [-0.24, 0.24]) mesh(G.cyl(0.025, 0.025, legH + 0.1, 6), wood, { x: sx, y: (legH + 0.1) / 2, z: 0.62, parent: g });
+  mesh(G.torus(0.22, 0.045, 8, 16), trim, { x: -0.58, y: legH * 0.62, z: -0.5, ry: PI / 2, parent: g });
+  return g;
+}
 function makeTowel(color) { const g = new THREE.Group(); mesh(G.box(1.0, 0.03, 1.8), mat(color, { roughness: 1 }), { y: 0.015, shadow: 'receive', parent: g }); for (let i = 0; i < 4; i++) mesh(G.box(1.0, 0.032, 0.12), mat(0xffffff, { roughness: 1 }), { y: 0.016, z: -0.7 + i * 0.47, shadow: 'none', parent: g }); return g; }
 function makeSandcastle() {
   const g = new THREE.Group(), sand = mat(0xdcbf85, { roughness: 1, map: TEX.sand().clone() }); sand.map.needsUpdate = true; sand.map.repeat.set(1, 1); worldBag.track(sand.map);

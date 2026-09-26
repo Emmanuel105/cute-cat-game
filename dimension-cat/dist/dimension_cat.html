@@ -4591,6 +4591,22 @@ function makeUmbrella(hue = 0) {
   mesh(G.sphere(0.06, 8, 6), pole, { y: 0.28, shadow: 'none', parent: top });
   return g;
 }
+/** A raised wooden lifeguard chair: A-frame legs, a small platform, a seat and backrest, a ladder up the back, and a ring buoy hung on one leg. */
+function makeLifeguardChair() {
+  const g = new THREE.Group(), wood = mat(0xf3ede0, { roughness: 0.85, map: TEX.planks(24, 40) }), trim = mat(0xd62839, { roughness: 0.7 });
+  const legH = 1.7;
+  for (const [sx, sz] of [[-0.5, -0.45], [0.5, -0.45], [-0.5, 0.45], [0.5, 0.45]]) mesh(G.cyl(0.06, 0.085, legH, 8), wood, { x: sx * 1.05, y: legH / 2, z: sz * 1.05, rx: -sz * 0.16, rz: sx * 0.16, parent: g });
+  for (const sz of [-0.45, 0.45]) mesh(G.box(1.9, 0.05, 0.05), wood, { y: legH * 0.55, z: sz * 0.99, parent: g });
+  for (const sx of [-0.5, 0.5]) mesh(G.box(0.05, 0.05, 0.85), wood, { x: sx * 1.05, y: legH * 0.4, parent: g });
+  mesh(G.box(1.3, 0.08, 1.0), wood, { y: legH + 0.04, shadow: 'both', parent: g });
+  mesh(G.box(1.0, 0.06, 0.7), wood, { y: legH + 0.14, z: -0.1, parent: g });
+  mesh(G.box(1.0, 0.55, 0.06), wood, { y: legH + 0.4, z: -0.44, rx: -0.12, parent: g });
+  mesh(G.box(1.1, 0.06, 0.1), trim, { y: legH + 0.66, z: -0.48, rx: -0.12, parent: g });
+  for (let i = 0; i < 5; i++) mesh(G.cyl(0.02, 0.02, 0.55, 6), wood, { y: 0.3 + i * 0.32, z: 0.62, rx: PI / 2, parent: g });
+  for (const sx of [-0.24, 0.24]) mesh(G.cyl(0.025, 0.025, legH + 0.1, 6), wood, { x: sx, y: (legH + 0.1) / 2, z: 0.62, parent: g });
+  mesh(G.torus(0.22, 0.045, 8, 16), trim, { x: -0.58, y: legH * 0.62, z: -0.5, ry: PI / 2, parent: g });
+  return g;
+}
 function makeTowel(color) { const g = new THREE.Group(); mesh(G.box(1.0, 0.03, 1.8), mat(color, { roughness: 1 }), { y: 0.015, shadow: 'receive', parent: g }); for (let i = 0; i < 4; i++) mesh(G.box(1.0, 0.032, 0.12), mat(0xffffff, { roughness: 1 }), { y: 0.016, z: -0.7 + i * 0.47, shadow: 'none', parent: g }); return g; }
 function makeSandcastle() {
   const g = new THREE.Group(), sand = mat(0xdcbf85, { roughness: 1, map: TEX.sand().clone() }); sand.map.needsUpdate = true; sand.map.repeat.set(1, 1); worldBag.track(sand.map);
@@ -6023,6 +6039,14 @@ function buildBeach(game, entry) {
     W.add(angler.group);
     game.npcs.push(new IceFisher(game, angler, makeIceStool(), { x: 30, z: -10, ry: PI / 2, seatY: 0.6, holeX: 34, holeZ: -10, holeY: 0.05,
       cries: ['Not a nibble all morning.', "Careful, puss, you'll spook them.", 'Best spot on the whole pier, this.'] })); }
+  // a lifeguard up on a raised chair north of the swimming crowd, watching the water
+  { game.zones.addCircle(13, 24, 2);
+    const guard = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
+      shirt: 0xd62839, pants: 0xf5f2ea, shorts: true, stripes: null, hat: 'cap', hatColor: 0xf5f2ea, glasses: true, glassColor: 0x203040, jacket: null, scarf: null, bag: null });
+    W.add(guard.group);
+    placeT(game, U, boxAround(game, makeLifeguardChair(), 13, 24, 1.3, 1.9, 1.1), 13, 24, PI / 2);
+    game.npcs.push(new Sitter(game, guard, { x: 13, z: 24, ry: PI / 2, seat: 1.87, cryIcon: '🛟',
+      cries: ['Swim between the flags, please!', 'Not a cloud in the sky today.', "Mind that current, puss — respect the sea."] })); }
   for (let i = 0; i < 12; i++) { const a = r() * TAU, d = r.range(2.6, 6); placeT(game, U, makeRock(r, 0x8a857a, r.range(0.8, 1.8)), 12 + cos(a) * d, -46 + sin(a) * d, 0); }
   for (let i = 0; i < 5; i++) placeT(game, U, boxAround(game, makeBeachHut(r.pick([0xff8a65, 0x4fc3f7, 0xfff176, 0x81c784, 0xf48fb1]), r), -10, -24 + i * 9, 2.8, 2.8, 2.8), -10, -24 + i * 9, PI / 2);
   // dunes: palms, grass tufts, driftwood

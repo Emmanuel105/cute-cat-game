@@ -351,3 +351,19 @@ which drew an extra tick off the shared `rnd()` sequence for every `Sitter` rega
 it talks, silently shifting the timing of everything built after it in the Neighborhood and
 breaking the two-neighbours-chatting test; fixed by only drawing that tick when the sitter actually
 has lines to say.
+
+## Round 41 — a lifeguard on Sunny Shore
+
+The beach had a fisherman on the pier and a whole sunbathing crowd, but nobody watching the water.
+A **lifeguard** now sits up on a new raised wooden chair — A-frame legs, a ladder up the back, a
+ring buoy hung off one side — planted on open sand north of the towels, facing out to sea. Reuses
+the `Sitter` controller (same one as the Neighborhood's bench pair and Frosty Peak's old-timer),
+just with a taller seat height to match the chair. "Swim between the flags, please!" "Mind that
+current, puss — respect the sea." Sunny Shore now has 10 people to meet instead of 9.
+
+While orienting for this round, found that the previous 7 rounds (34–40) had been committed onto a
+detached `HEAD` in this container rather than fast-forwarded onto `main`, so `origin/main` looked
+stuck at round 33 from a stale local view — turned out to be a false alarm (a fetch showed origin
+already had round 40), but worth a mention in case a future round finds `main` genuinely behind a
+detached tip again: fast-forward it before doing anything else, since unpushed work here is lost
+when the container goes away.
