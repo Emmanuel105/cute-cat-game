@@ -71,6 +71,13 @@ function buildForest(game, entry) {
     W.add(whittler.group);
     game.npcs.push(new Sitter(game, whittler, { x: 18, z: 24, ry: -2.5, seat: 0.72,
       cries: ['Carving a mouse, for luck.', "Sit a while - the stump's plenty wide.", 'Whittled worse things than a cat, in my time.'] })); }
+  // an angler sits at the glowing pond's edge, rod dipped in, the odd bite
+  { const anglerWard = makeWardrobe(r, { shirts: [0x4a6a5a, 0x5a5a4a, 0x3a5a6a], pants: [0x3a3a3a, 0x2a2a2a], shoes: [0x2a2018, 0x1e2020] });
+    const angler = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), elder: true, child: false, wardrobe: anglerWard }),
+      hat: 'cap', hatColor: 0x3a4a3a, coat: true, scarf: null, jacket: null });
+    W.add(angler.group);
+    game.npcs.push(new IceFisher(game, angler, makeIceStool(), { x: 8, z: -1, ry: PI, holeX: 8, holeZ: -3, holeY: P.ground0(8, -6) + 0.06,
+      cries: ['Something bites in that glow, I swear.', "Careful, puss - don't spook them.", 'Caught one shaped like a star, once.'] })); }
 
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });

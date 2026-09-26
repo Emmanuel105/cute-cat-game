@@ -431,3 +431,18 @@ sits in the vendor's hand. Frosty Peak now has 8 people to meet instead of 7.
 Checked local `main` against `origin/main` on arrival, per the round-43/44 warning: this time they
 were genuinely identical (`HEAD` was not detached), so nothing needed fast-forwarding before
 starting.
+
+## Round 46 — an angler at the glowing pond
+
+Whisper Woods was back to being the thinnest world to meet people in, at seven, once Frosty Peak's
+cocoa vendor pushed it ahead to eight. An **old angler** now sits on a stool at the edge of the
+glowing pond in the glade, rod dipped into the water, line trailing down among the lily pads —
+reusing the same `IceFisher` controller as Frosty Peak's ice fisherman and Sunny Shore's pier
+fisherman (it already worked for open water, not just ice, since the beach one sits over the sea).
+Every so often the rod dips and a burst of spray marks a catch — "Something bites in that glow, I
+swear." "Careful, puss — don't spook them." "Caught one shaped like a star, once." Whisper Woods
+now has 8 people to meet instead of 7, level again with Frosty Peak.
+
+Local `main` was found detached and one commit behind `origin/main` on arrival (round 45's tip
+hadn't been fast-forwarded) — fixed with `git branch -f main origin/main` before starting, per the
+round-43/44 warning about checking this every time.
