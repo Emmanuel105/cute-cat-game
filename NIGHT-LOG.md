@@ -719,3 +719,23 @@ sides. Sunny Shore now has 15 people to meet instead of 14, level with the rest.
 
 Checked local `main` against `origin/main` on arrival: `HEAD` was attached to `main` and already
 level with `origin/main`, so nothing needed fast-forwarding before starting this round's work.
+
+## Round 62 — a bolder penguin on Frosty Peak
+
+A headless tally (`game.load`/`game.travel` per world, reading `game.friendTotal`) found all seven
+worlds level at fifteen people to meet, same as when round 61 left off — nothing thinnest to fix.
+Followed round 60's lead instead and looked for an idle piece of the game: `Follower`, the
+controller that lets a wild creature mind its own business until the cat wanders close, then trots
+over and keeps a shy distance, had only ever been given to a fox in Whisper Woods. **A seventh
+penguin, wearing a yellow scarf, now peels off from the pond-side flock** near (26, 2) and waddles
+over for a look whenever the cat comes within about 11 m, stopping short at a polite 1.8 m with an
+occasional squawk, then drifting back to its own patch once the cat moves on. Like the fox, it isn't
+greetable — animal rigs don't carry the marker `greetable()` checks for — so Frosty Peak's friend
+count stays at fifteen; this is just one more bit of wildlife that notices you. Placed it clear of
+the pond, the ice fisherman's hole and stool, the skating pair, and every cabin and crystal nearby,
+since it has no static collider of its own (only a wander circle, same as any other animal here).
+
+Checked local `main` against `origin/main` on arrival: `HEAD` was detached but sitting on the exact
+commit `origin/main` was already at (a stale local branch ref left over from a previous session, not
+a divergence), so moving the `main` ref up to it and checking it out lost nothing before starting
+this round's work.

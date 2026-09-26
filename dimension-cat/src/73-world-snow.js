@@ -72,6 +72,9 @@ function buildSnowVillage(game, entry) {
 
   // life: penguins, reindeer, kids, the yeti, the squirrel
   for (let i = 0; i < 6; i++) { const rig = makePenguin({ scarf: i === 0 ? 0xd62839 : (i === 3 ? 0x2f6fd6 : null), scale: r.range(0.8, 1.05) }); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x: 18 + r.range(-6, 6), z: 8 + r.range(-6, 6), speed: r.range(0.5, 0.8), leash: 9, r: 0.3, height: 0.9, step: 0.25, idle: [1, 3] })); }
+  // a bolder penguin peels off from the flock to waddle over and investigate the cat, then hurries back
+  { const rig = makePenguin({ scarf: 0xffd54a, scale: 0.95 }); W.add(rig.group);
+    game.npcs.push(new Follower(game, rig, { x: 26, z: 2, r: 0.3, height: 0.9, step: 0.25, idle: [1, 3], walk: [2, 4], leash: 6, speed: 0.9, range: 11, keep: 1.8, sfx: () => SFX.squawk() })); }
   for (const [x, z] of [[-22, 6], [-18, -12], [24, 20]]) { const rig = makeDeer(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x, z, speed: 0.6, leash: 8, r: 0.45, height: 1.4, step: 0.3, idle: [3, 7], walk: [2, 5] })); }
   // a reindeer keeper kneels by the herd's middle spot, checking harness bells before the next run
   { const dx = -18, dz = -12, kx = dx + 2.1, kz = dz + 0.4;
