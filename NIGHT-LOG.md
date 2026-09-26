@@ -632,3 +632,21 @@ there. Whisper Woods now has 15 people to meet instead of 12, ahead of every oth
 Checked local `main` against `origin/main` on arrival: `HEAD` was detached, sitting on the same
 commit `origin/main` was already at, so `git checkout main && git pull origin main` fast-forwarded
 the local branch onto it with nothing lost before starting this round's work.
+
+## Round 58 — a child patches the igloo before nightfall
+
+The round-47-through-57 trick (`game.load`/`game.travel` per world, reading `game.friendTotal`)
+showed Frosty Peak had slipped to the thinnest world at twelve, once round 57's fairy-ring dance
+pushed Whisper Woods to fifteen. The village's two igloos have stood since round 16 as pure scenery
+— nobody ever remarked on them or was seen near either one. A **child now kneels just outside the
+near igloo's tunnel mouth**, patting fresh snow into a gap in the wall, reusing the `Kneeler`
+controller (already doing duty for the snowman-packer and the reindeer keeper) with its built-in
+"patting the sand or snow" animation: "Nearly sealed — just this gap left." "Keeps the wind out,
+packed in tight." "Snug as an igloo, once it's finished." The kneeling spot was worked out from the
+igloo's placement angle so it sits just clear of the igloo's own collider box, with nothing else
+nearby. Frosty Peak now has 13 people to meet instead of 12, still the thinnest world but a step
+closer to Sunny Shore (14) and Whisper Woods (15).
+
+Checked local `main` against `origin/main` on arrival: `HEAD` was detached but matched `origin/main`
+exactly, so `git checkout main && git pull origin main` fast-forwarded the local branch onto it with
+nothing lost before starting this round's work.
