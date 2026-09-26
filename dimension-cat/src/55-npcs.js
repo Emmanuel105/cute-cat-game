@@ -928,8 +928,9 @@ class Lamplighter extends Patroller {
 
 // ---------------------------------------------------------------- sunbather: flat on their back on a towel, hands behind the head
 class Sunbather {
-  constructor(game, rig, { x, z, ry = 0 }) {
+  constructor(game, rig, { x, z, ry = 0, cries = null, cryIcon = '💬' }) {
     this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
     rig.group.rotation.order = 'YXZ'; rig.group.rotation.y = ry; rig.group.rotation.x = -PI / 2;   // lying face up, head away from the origin
     rig.group.position.set(x, game.physics.ground0(x, z) + 0.15, z);
     this.circle = game.physics.addCircle(this, x, z, 0.5);
@@ -941,6 +942,7 @@ class Sunbather {
     rig.head.rotation.y = 0; rig.head.rotation.x = damp(rig.head.rotation.x, 0.1, 6, dt); rig.spine.rotation.x = 0; rig.spine.rotation.z = 0; rig.body.position.y = 0; rig.body.rotation.z = 0;
     for (const L of rig.legs) { L.hip.rotation.x = damp(L.hip.rotation.x, 0.05, 6, dt); L.knee.rotation.x = damp(L.knee.rotation.x, 0.02, 6, dt); L.ankle.rotation.x = -0.4; }
     if (!rig.gesture) for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -2.7, 6, dt); A.el.rotation.x = damp(A.el.rotation.x, -1.9, 6, dt); A.sh.rotation.z = (A === rig.arms[0] ? 1 : -1) * 0.45; }   // hands behind the head
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
   }
 }
 

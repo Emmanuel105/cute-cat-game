@@ -78,6 +78,9 @@ function buildBeach(game, entry) {
   for (const [i, z] of [[0, -12], [1, 21], [2, 32]]) { const child = i === 2; game.npcs.push(new Wanderer(game, beachPerson(i === 1, child), { x: 0 + r.range(-6, 6), z, speed: child ? r.range(1.2, 1.6) : r.range(0.7, 1.1), leash: 12 })); }
   // two sunbathers flat out on their towels in dark glasses, and a child patting the sandcastle
   for (const i of [0, 3]) { const [tx, tz, ry] = towels[i]; game.npcs.push(new Sunbather(game, beachPerson(i === 0, false), { x: tx, z: tz + 0.55, ry })); }
+  // a third sunbather on the spare towel, a paperback going nowhere fast
+  { const [tx, tz, ry] = towels[1]; game.npcs.push(new Sunbather(game, beachPerson(r.chance(0.5), false), { x: tx, z: tz + 0.55, ry,
+    cries: ["Sunbathing is a science, apparently.", 'Same page as an hour ago.', "Wake me if the tide comes in."] })); }
   game.npcs.push(new Kneeler(game, beachPerson(false, true), { x: 7, z: -2.7, ry: PI }));
   { const bucket = mat(0xd62839, { roughness: 0.6 }); mesh(G.cyl(0.16, 0.13, 0.26, 10), bucket, { x: 7.9, y: P.ground0(7.9, -2.4) + 0.13, z: -2.4, parent: W }); mesh(G.torus(0.16, 0.012, 5, 12), mat(0xffd54a), { x: 7.9, y: P.ground0(7.9, -2.4) + 0.27, z: -2.4, rx: PI / 2, shadow: 'none', parent: W }); }
   // a boy flying a kite on the dunes, the wind off the sea carrying it inland and up

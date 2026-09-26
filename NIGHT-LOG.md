@@ -510,3 +510,19 @@ Checked local `main` against `origin/main` on arrival, per the running rounds 43
 && git merge --ff-only origin/main` brought it forward with nothing lost before starting. Used the
 round-47/49 trick of loading each world and reading `game.friendTotal` to confirm Frosty Peak
 was the thinnest world before picking it.
+
+## Round 51 — a third sunbather with a book that isn't getting read
+
+Checking `game.friendTotal` per world (the round-47/49 trick) after round 50's woodcutter showed
+Sunny Shore had quietly become the thinnest world at ten, tied with Frosty Peak and Whisper Woods.
+Sunny Shore's sunbathers' corner has four umbrella-and-towel spots but only ever seated two people
+on them — the other two towels sat empty. A **third sunbather** now lies on one of the spare
+towels, and `Sunbather` gained the same optional spoken-line support `Kneeler` picked up in round
+48, so she can talk back without opening her eyes: "Sunbathing is a science, apparently." "Same
+page as an hour ago." "Wake me if the tide comes in." Sunny Shore now has 11 people to meet instead
+of 10, ahead of Frosty Peak and Whisper Woods (both still at 10). `test/run.mjs` expected exactly
+two sunbathers by name, so that check now expects three.
+
+Checked local `main` against `origin/main` on arrival, per the running rounds 43-50 warning:
+`HEAD` was attached to `main` and already level with `origin/main` after round 50's own
+fast-forward, so nothing needed doing before starting this round's work.

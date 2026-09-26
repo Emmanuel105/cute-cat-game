@@ -2687,8 +2687,9 @@ class Lamplighter extends Patroller {
 
 // ---------------------------------------------------------------- sunbather: flat on their back on a towel, hands behind the head
 class Sunbather {
-  constructor(game, rig, { x, z, ry = 0 }) {
+  constructor(game, rig, { x, z, ry = 0, cries = null, cryIcon = '💬' }) {
     this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
     rig.group.rotation.order = 'YXZ'; rig.group.rotation.y = ry; rig.group.rotation.x = -PI / 2;   // lying face up, head away from the origin
     rig.group.position.set(x, game.physics.ground0(x, z) + 0.15, z);
     this.circle = game.physics.addCircle(this, x, z, 0.5);
@@ -2700,6 +2701,7 @@ class Sunbather {
     rig.head.rotation.y = 0; rig.head.rotation.x = damp(rig.head.rotation.x, 0.1, 6, dt); rig.spine.rotation.x = 0; rig.spine.rotation.z = 0; rig.body.position.y = 0; rig.body.rotation.z = 0;
     for (const L of rig.legs) { L.hip.rotation.x = damp(L.hip.rotation.x, 0.05, 6, dt); L.knee.rotation.x = damp(L.knee.rotation.x, 0.02, 6, dt); L.ankle.rotation.x = -0.4; }
     if (!rig.gesture) for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -2.7, 6, dt); A.el.rotation.x = damp(A.el.rotation.x, -1.9, 6, dt); A.sh.rotation.z = (A === rig.arms[0] ? 1 : -1) * 0.45; }   // hands behind the head
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
   }
 }
 
@@ -6089,6 +6091,9 @@ function buildBeach(game, entry) {
   for (const [i, z] of [[0, -12], [1, 21], [2, 32]]) { const child = i === 2; game.npcs.push(new Wanderer(game, beachPerson(i === 1, child), { x: 0 + r.range(-6, 6), z, speed: child ? r.range(1.2, 1.6) : r.range(0.7, 1.1), leash: 12 })); }
   // two sunbathers flat out on their towels in dark glasses, and a child patting the sandcastle
   for (const i of [0, 3]) { const [tx, tz, ry] = towels[i]; game.npcs.push(new Sunbather(game, beachPerson(i === 0, false), { x: tx, z: tz + 0.55, ry })); }
+  // a third sunbather on the spare towel, a paperback going nowhere fast
+  { const [tx, tz, ry] = towels[1]; game.npcs.push(new Sunbather(game, beachPerson(r.chance(0.5), false), { x: tx, z: tz + 0.55, ry,
+    cries: ["Sunbathing is a science, apparently.", 'Same page as an hour ago.', "Wake me if the tide comes in."] })); }
   game.npcs.push(new Kneeler(game, beachPerson(false, true), { x: 7, z: -2.7, ry: PI }));
   { const bucket = mat(0xd62839, { roughness: 0.6 }); mesh(G.cyl(0.16, 0.13, 0.26, 10), bucket, { x: 7.9, y: P.ground0(7.9, -2.4) + 0.13, z: -2.4, parent: W }); mesh(G.torus(0.16, 0.012, 5, 12), mat(0xffd54a), { x: 7.9, y: P.ground0(7.9, -2.4) + 0.27, z: -2.4, rx: PI / 2, shadow: 'none', parent: W }); }
   // a boy flying a kite on the dunes, the wind off the sea carrying it inland and up
