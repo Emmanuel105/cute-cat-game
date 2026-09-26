@@ -367,3 +367,15 @@ stuck at round 33 from a stale local view — turned out to be a false alarm (a 
 already had round 40), but worth a mention in case a future round finds `main` genuinely behind a
 detached tip again: fast-forward it before doing anything else, since unpushed work here is lost
 when the container goes away.
+
+## Round 42 — a child chases fireflies in Whisper Woods
+
+Whisper Woods was still the world with fewest people to meet, even after the birdwatcher and the
+artist. A **child** now wanders the glade with a jam-jar, chasing the ambient fireflies that were
+already drifting there and never quite catching one — "Nearly caught one!" "They twinkle if you
+creep up slow." "Don't tell my mum I'm still out." Built as a plain `Wanderer` (no new controller
+needed) so it doubles as the world's first *child* greeting: Whisper Woods has no entry in the
+`GREETINGS` table, so every grown-up there has always waved and gone quiet on a "say hello" — a
+child pulls from the separate `GREETINGS.child` lines instead, so this is also the first character
+in the woods who actually has something to say back. Whisper Woods now has 6 people to meet
+instead of 5.
