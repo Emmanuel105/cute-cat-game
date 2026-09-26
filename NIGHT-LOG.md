@@ -464,3 +464,17 @@ to lose. To get an actual per-world friend count (grepping "new Wanderer(" etc. 
 anything built in a loop) this round called `game.load(i, 'from-prev')` directly against the
 bundled game in a scratch script and read `game.friendTotal` for each world index — worth
 remembering as a faster way to check "which world is thinnest" than counting source lines by eye.
+
+## Round 48 — a snowman gets a second pair of hands
+
+Frosty Peak had gone back to being tied for fewest people to meet, at eight, once Whisper Woods'
+knitter pushed ahead. A **child now kneels beside the first snowman**, packing on a fresh layer of
+snow — the same `Kneeler` controller already used for the sandcastle kid on Sunny Shore, given
+`Sitter`-style optional spoken lines (it had none before) so it can talk back: "Nearly got his arms
+right." "Don't melt yet, mister snowman." "He needs a nose. A carrot would do." Frosty Peak now has
+9 people to meet instead of 8, level again with Whisper Woods.
+
+Checked local `main` against `origin/main` on arrival: local `main` was 14 commits behind a detached
+`HEAD` that matched `origin/main` exactly, so `git checkout main && git merge --ff-only origin/main`
+brought it forward with nothing to lose, per the running warning from rounds 43/44/46/47 about
+checking this every time.

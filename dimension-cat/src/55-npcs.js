@@ -944,12 +944,13 @@ class Sunbather {
   }
 }
 
-// ---------------------------------------------------------------- kneeler: a child on their knees, patting a sandcastle
+// ---------------------------------------------------------------- kneeler: a child on their knees, patting a sandcastle (or packing snow)
 class Kneeler {
-  constructor(game, rig, { x, z, ry = 0 }) {
+  constructor(game, rig, { x, z, ry = 0, cries = null, cryIcon = '💬' }) {
     this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
     rig.group.rotation.y = ry;
-    rig.group.position.set(x, game.physics.ground0(x, z) - 0.4 * rig.k + 0.05, z);   // shins flat on the sand, hips a shin's length lower than standing
+    rig.group.position.set(x, game.physics.ground0(x, z) - 0.4 * rig.k + 0.05, z);   // shins flat on the ground, hips a shin's length lower than standing
     this.circle = game.physics.addCircle(this, x, z, 0.35);
     greetable(game, this);
   }
@@ -959,7 +960,8 @@ class Kneeler {
     for (const L of rig.legs) { L.hip.rotation.x = damp(L.hip.rotation.x, -0.05, 6, dt); L.knee.rotation.x = PI / 2 + 0.05; L.ankle.rotation.x = 0.9; }
     rig.spine.rotation.x = damp(rig.spine.rotation.x, 0.45, 6, dt); rig.body.position.y = 0;
     rig.head.rotation.x = damp(rig.head.rotation.x, 0.2, 6, dt);
-    if (!rig.gesture) { const pat = max(0, sin(this.t * 4.2)); for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -0.55 - pat * 0.35, 14, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.9 + pat * 0.35, 14, dt); A.sh.rotation.z = (A === rig.arms[0] ? 1 : -1) * 0.22; } }   // patting the sand
+    if (!rig.gesture) { const pat = max(0, sin(this.t * 4.2)); for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -0.55 - pat * 0.35, 14, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.9 + pat * 0.35, 14, dt); A.sh.rotation.z = (A === rig.arms[0] ? 1 : -1) * 0.22; } }   // patting the sand or snow
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
   }
 }
 

@@ -74,6 +74,10 @@ function buildSnowVillage(game, entry) {
   for (let i = 0; i < 2; i++) game.npcs.push(new Wanderer(game, kid(i === 1), { x: 5 + i * 5, z: 6, speed: r.range(0.9, 1.3), leash: 10, height: 1.5 }));
   // two of them are having a snowball fight across the square
   game.npcs.push(new SnowballFight(game, kid(false), kid(true), { cx: -3.5, cz: 6, gap: 5 }));
+  // another kneels by the first snowman, packing on a fresh layer of snow
+  { const sx = -6, sz = -14, kx = sx, kz = sz + 1.3;
+    game.npcs.push(new Kneeler(game, kid(false), { x: kx, z: kz, ry: atan2(sx - kx, sz - kz),
+      cries: ['Nearly got his arms right.', "Don't melt yet, mister snowman.", 'He needs a nose. A carrot would do.'] })); }
   // the yeti's cave: a long tunnel north into the mountain, lit by gems, with the yeti in its den at the far end
   const cave = makeCave(game, U, 0, -29, 27, r);
   for (const [x, z] of [[-9, -24], [9, -25]]) { const p = makeSnowPine(r); placeT(game, U, p, x, z, 0); boxT(game, x, z, 1.2 * p.scale.x, 5, 1.2 * p.scale.x, { cam: false }); }

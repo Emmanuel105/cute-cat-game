@@ -2710,12 +2710,13 @@ class Sunbather {
   }
 }
 
-// ---------------------------------------------------------------- kneeler: a child on their knees, patting a sandcastle
+// ---------------------------------------------------------------- kneeler: a child on their knees, patting a sandcastle (or packing snow)
 class Kneeler {
-  constructor(game, rig, { x, z, ry = 0 }) {
+  constructor(game, rig, { x, z, ry = 0, cries = null, cryIcon = '💬' }) {
     this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
     rig.group.rotation.y = ry;
-    rig.group.position.set(x, game.physics.ground0(x, z) - 0.4 * rig.k + 0.05, z);   // shins flat on the sand, hips a shin's length lower than standing
+    rig.group.position.set(x, game.physics.ground0(x, z) - 0.4 * rig.k + 0.05, z);   // shins flat on the ground, hips a shin's length lower than standing
     this.circle = game.physics.addCircle(this, x, z, 0.35);
     greetable(game, this);
   }
@@ -2725,7 +2726,8 @@ class Kneeler {
     for (const L of rig.legs) { L.hip.rotation.x = damp(L.hip.rotation.x, -0.05, 6, dt); L.knee.rotation.x = PI / 2 + 0.05; L.ankle.rotation.x = 0.9; }
     rig.spine.rotation.x = damp(rig.spine.rotation.x, 0.45, 6, dt); rig.body.position.y = 0;
     rig.head.rotation.x = damp(rig.head.rotation.x, 0.2, 6, dt);
-    if (!rig.gesture) { const pat = max(0, sin(this.t * 4.2)); for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -0.55 - pat * 0.35, 14, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.9 + pat * 0.35, 14, dt); A.sh.rotation.z = (A === rig.arms[0] ? 1 : -1) * 0.22; } }   // patting the sand
+    if (!rig.gesture) { const pat = max(0, sin(this.t * 4.2)); for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -0.55 - pat * 0.35, 14, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.9 + pat * 0.35, 14, dt); A.sh.rotation.z = (A === rig.arms[0] ? 1 : -1) * 0.22; } }   // patting the sand or snow
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
   }
 }
 
@@ -6204,6 +6206,10 @@ function buildSnowVillage(game, entry) {
   for (let i = 0; i < 2; i++) game.npcs.push(new Wanderer(game, kid(i === 1), { x: 5 + i * 5, z: 6, speed: r.range(0.9, 1.3), leash: 10, height: 1.5 }));
   // two of them are having a snowball fight across the square
   game.npcs.push(new SnowballFight(game, kid(false), kid(true), { cx: -3.5, cz: 6, gap: 5 }));
+  // another kneels by the first snowman, packing on a fresh layer of snow
+  { const sx = -6, sz = -14, kx = sx, kz = sz + 1.3;
+    game.npcs.push(new Kneeler(game, kid(false), { x: kx, z: kz, ry: atan2(sx - kx, sz - kz),
+      cries: ['Nearly got his arms right.', "Don't melt yet, mister snowman.", 'He needs a nose. A carrot would do.'] })); }
   // the yeti's cave: a long tunnel north into the mountain, lit by gems, with the yeti in its den at the far end
   const cave = makeCave(game, U, 0, -29, 27, r);
   for (const [x, z] of [[-9, -24], [9, -25]]) { const p = makeSnowPine(r); placeT(game, U, p, x, z, 0); boxT(game, x, z, 1.2 * p.scale.x, 5, 1.2 * p.scale.x, { cam: false }); }
