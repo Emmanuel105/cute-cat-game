@@ -442,6 +442,13 @@ function makeBalloonBunch(colors) {
   g.userData.update = (dt, t) => { for (const b of parts) b.userData.update(dt, t); };
   return g;
 }
+/** A wicker basket of fruit for a market stall keeper to hold up. */
+function makeFruitBasket() {
+  const g = new THREE.Group(), wicker = mat(0xb8894a, { roughness: 0.95 });
+  mesh(G.cyl(0.1, 0.08, 0.11, 12), wicker, { y: 0.055, parent: g });
+  for (const [c, x, z, s] of [[0xd62839, -0.04, 0.02, 1], [0xf2c744, 0.03, -0.03, 0.9], [0x8bc34a, 0.0, 0.04, 1], [0xd62839, 0.045, 0.02, 0.85]]) mesh(G.sphere(0.045 * s, 8, 6), mat(c, { roughness: 0.6 }), { x, y: 0.12, z, shadow: 'none', parent: g });
+  return g;
+}
 /** A bicycle: two wheels, a frame, handlebars, a saddle and a crank. Faces +z; `wheels` and `crank` turn. */
 function makeBike(color = 0xd62839) {
   const g = new THREE.Group(), frame = mat(color, { roughness: 0.4, metalness: 0.3 }), dark = mat(0x1e1a18, { roughness: 0.8 }), rim = mat(0xc8ccd2, { metalness: 0.6, roughness: 0.4 });

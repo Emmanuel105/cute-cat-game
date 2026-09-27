@@ -983,3 +983,33 @@ unchanged.
 On arrival, `HEAD` was on `main`, 37 commits behind `origin/main` — a plain fast-forward
 (`git fetch origin main && git checkout main && git merge --ff-only origin/main`) brought it level
 before starting.
+
+## Round 72 — a costermonger takes the empty market stall
+
+Rounds 69–71 had brought the Neighborhood, Sunny Shore, Frosty Peak and Whisper Woods level with each
+other at seventeen friends apiece, so this round looked past the friend tally at what a world was
+missing instead. Candy Land, Robot City and Victorian haven't had a new vignette since rounds 28–37 and
+are all comfortably ahead on friend count (24, 23 and 27), so a straight headcount chase wasn't the
+point here. Reading through Victorian's market square in `70-world` found four striped stalls, each
+already piled with five apples and pears on the counter — and not one of them had anybody standing
+behind it. Decorative fruit stalls with no keeper, in a town that otherwise has a lamplighter, two
+gossiping ladies, a bobby on the beat and a horse and carriage.
+
+**A costermonger now works the south-west stall**, using the `Vendor` controller (the same one behind
+the snow world's cocoa seller) holding up a new prop, `makeFruitBasket()` — a small wicker basket with
+four fruit — and calling out over the plaza: `"Apples, ripe apples!"`, `"Best pears in the market
+square!"`, `"Mind you don't nick one, puss!"`. Vendor doesn't call `greetable()` itself (the world is
+expected to opt in), so she's wired up the same way the cocoa vendor is: `game.npcs.push(v);
+greetable(game, v);` right after, so she counts as a proper friend rather than just scenery. She stands
+behind the counter, 1.3 m back from the stall's own physics box, clear of the two market-square
+wanderers and the tent's support poles.
+
+Verified beyond the test suite's own checks: a headless script started the game for real (the "enter"
+button's click listener — `game.started` is otherwise false and the interaction loop never runs),
+travelled to Victorian, found the new `Vendor` by its held prop, confirmed both her rig and the fruit
+basket are in the scene graph, teleported the cat to face her and confirmed `game.nearest.label()`
+reads "Say hello" and `game.interact()` takes `game.state.friends` from 0 to 1. Full suite (293 checks)
+ran clean before and after: `world 3: 28 to meet` (up from 27), `world 3: every NPC is in the scene
+graph`, and `world 3: 94% of the ground is walkable` unchanged from before the change.
+
+On arrival, `HEAD` was already on `main` in sync with `origin/main` — no cleanup needed.
