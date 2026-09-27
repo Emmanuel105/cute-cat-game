@@ -1139,3 +1139,30 @@ is walkable` (was 94% — one more small counter footprint in a 420 m world, not
 suite walks).
 
 On arrival, `HEAD` was already on `main` in sync with `origin/main` — no cleanup needed.
+
+## Round 77 — a cheesemonger takes the last empty market stall
+
+Round 76's log named the candidate directly: the purple-striped pitch at (10,-42) in the Victorian
+market square was the last of the four stalls left empty, after the costermonger (round 72), flower
+seller (round 73) and pieman (round 76) filled the other three.
+
+**A cheesemonger now works the purple stall**, holding up a small new prop, `makeCheeseWheel()` — three
+wax-rinded wheels of different sizes stacked on a board, each with a pale cut face showing — and calling:
+`"Cheese! Fine ripe cheese!"`, `"A wedge for your supper?"`, `"None of this for cats, either."` He's
+built with the same `Vendor` controller as the other three, standing at (10, -43.3), directly across the
+lane from the costermonger's green stall and mirroring the pieman's -1.3 offset behind the counter.
+
+Checked against the physics: the stall's own counter box is centred on (10,-43.3) with half-extents
+(1.6, 0.8) in x/z, and the vendor sits well inside it. The market square floor is flat and open there,
+away from the fountain, the other three stalls, and the lamps at (-14,-34), (14,-34) and (0,-46) — no
+road or path the test suite walks passes anywhere near it.
+
+Verified beyond the test suite's own checks: a headless script started the game for real, travelled to
+Victorian, found the new `Vendor` by its cry icon (🧀), confirmed the rig is in the scene graph and sits
+inside the stall's counter box, teleported the cat in front of him and confirmed `game.interact()` takes
+`game.state.friends` from 0 to 1, then ran 120 more frames and confirmed his position stayed finite. Full
+suite (295 checks, all `ok`, 0 console warnings) ran clean three times before and after building:
+`world 3: 31 to meet` (up from 30), every NPC still in the scene graph, and `world 3: 93% of the ground
+is walkable` unchanged from round 76.
+
+On arrival, `HEAD` was already on `main` in sync with `origin/main` — no cleanup needed.

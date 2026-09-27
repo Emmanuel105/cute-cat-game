@@ -468,6 +468,16 @@ function makePieTray() {
   }
   return g;
 }
+/** A stack of cheese wheels on a board, waxed rinds cut to show the pale flesh inside, for a market stall keeper to hold up. */
+function makeCheeseWheel() {
+  const g = new THREE.Group(), board = mat(0x8a5a32, { roughness: 0.9, map: TEX.planks(24, 24) });
+  mesh(G.box(0.24, 0.02, 0.16), board, { y: 0.01, parent: g });
+  for (const [x, z, r, h, rind, y] of [[-0.06, 0, 0.08, 0.05, 0xd68a3a, 0.045], [0.06, -0.02, 0.06, 0.04, 0xc9b040, 0.04], [0.02, 0.045, 0.05, 0.035, 0xd68a3a, 0.0375]]) {
+    mesh(G.cyl(r, r, h, 16), mat(rind, { roughness: 0.7 }), { x, y, z, parent: g });
+    mesh(G.cyl(r * 0.94, r * 0.94, h * 0.35, 16), mat(0xf2e2a8, { roughness: 0.85 }), { x, y: y + h / 2 - h * 0.35 / 2, z, parent: g });
+  }
+  return g;
+}
 /** A bicycle: two wheels, a frame, handlebars, a saddle and a crank. Faces +z; `wheels` and `crank` turn. */
 function makeBike(color = 0xd62839) {
   const g = new THREE.Group(), frame = mat(color, { roughness: 0.4, metalness: 0.3 }), dark = mat(0x1e1a18, { roughness: 0.8 }), rim = mat(0xc8ccd2, { metalness: 0.6, roughness: 0.4 });
