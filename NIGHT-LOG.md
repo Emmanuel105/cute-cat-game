@@ -1049,3 +1049,35 @@ check rather than anything this round changed.
 On arrival, `HEAD` was behind `origin/main` by 39 commits — a plain fast-forward
 (`git fetch origin main && git checkout main && git merge --ff-only origin/main`) brought it level
 before starting.
+
+
+## Round 74 — a sentry robot patrols Robot City's empty back lot
+
+Robot City hadn't had a new vignette since round 68's mechanic — the last several rounds all went to
+Victorian's market stalls instead. With those both filled now, this round looked elsewhere: the whole
+hand-built factory floor is busy (conveyors, a furnace, crates, wanderers, the mechanic), but the stretch
+of bare concrete south of it, between roughly z=-30 and z=-45, had nothing on it at all — no props, no
+NPCs, just floor.
+
+**A sentry robot now walks the perimeter of that lot**, using the same `Patroller` controller behind the
+Victorian bobby and the Whisper Woods hiker — a plain `makeRobot()` rig on a four-corner loop
+(`[-15,-35] → [15,-35] → [15,-45] → [-15,-45]`, looping, pausing at each corner), muttering as it goes:
+`"Perimeter secure."`, `"No unauthorized felines detected."`, `"Scanning. Scanning. Still scanning."`,
+`"This job would be easier with hands."` `Patroller` calls `greetable()` itself, so it needed no extra
+wiring — greeting a robot already falls through to the existing "BEEP BOOP. HELLO, SMALL CAT." line,
+the same as every other robot in the city.
+
+Checked the route against every hand-placed prop in the core (skyscraper clusters at x≈±30, the
+furnace, conveyors, pipes, crates and barrels): the rectangle sits comfortably clear of all of them,
+inside `P.setLimit(480)` and well short of `robotRegion`'s outer-ring props, which only start past
+radius 98.
+
+Verified beyond the test suite's own checks: a headless script started the game for real, travelled to
+Robot City, found the new `Patroller` by its robot rig, confirmed it's in the scene graph, watched it
+cover 2.1 m over 3 simulated seconds, then teleported the cat in front of it and confirmed
+`game.nearest.label()` reads "Beep hello" and `onUse()` takes `game.state.friends` from 0 to 1. Full
+suite (293 checks, all `ok`, 0 console warnings) ran clean before and after building: `world 2: 24 to
+meet` (up from 23), every NPC still in the scene graph, and `world 2: 88% of the ground is walkable`
+unchanged.
+
+On arrival, `HEAD` was already on `main` in sync with `origin/main` — no cleanup needed.
