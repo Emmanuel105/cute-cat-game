@@ -3072,6 +3072,30 @@ class Painter {
   }
 }
 
+// ---------------------------------------------------------------- washer: stands beside the parked car, sponge in hand, working a slow side-to-side scrub
+class Washer {
+  constructor(game, rig, { x, z, ry = 0, cries = null }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10; this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false; this.state = 'idle'; this.timer = 0;
+    this.cries = cries; this.cryIcon = '🧽'; this.cryT = rnd.range(4, 9);
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    mesh(G.box(0.1, 0.07, 0.1), mat(0xf2c744, { roughness: 0.9 }), { y: 0.05, z: 0.07, parent: rig.hands[0] });   // the sponge
+    this.circle = game.physics.addCircle(this, x, z, 0.35);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig, swipe = sin(this.t * 2.0);
+    rig.animate(0, false, dt, this.t);
+    if (!rig.gesture) {
+      const A = rig.arms[0], B = rig.arms[1];
+      A.sh.rotation.x = damp(A.sh.rotation.x, -0.95, 10, dt); A.sh.rotation.z = damp(A.sh.rotation.z, 0.15 + swipe * 0.35, 10, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.55, 10, dt);
+      B.sh.rotation.x = damp(B.sh.rotation.x, -0.25, 8, dt); B.el.rotation.x = damp(B.el.rotation.x, -1.05, 8, dt);
+      rig.spine.rotation.x = damp(rig.spine.rotation.x, 0.14, 8, dt);
+    }
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- juggler: stands on the spot, three balls looping hand to hand, never dropped
 class Juggler {
   constructor(game, rig, colors, { x, z, ry = 0, cries = null, cryIcon = '🤹' }) {
@@ -5755,6 +5779,16 @@ function buildNeighborhood(game, entry) {
     const car = makeCar(color); W.add(car.group); game.npcs.push(new Vehicle(game, car, { z: lane, dir, speed: r.range(5, 7), x }));
   }
   const parked = makeCar(0x2e9e6e); place(game, U, parked.group, 21.5, 6.5, PI / 2 + 0.06); P.addBox(21.5, 0.6, 6.5, 4.2, 1.2, 2, { cam: false });
+  // its owner washes it in the yard, bucket at their feet, a sponge going side to side over the wing
+  { const washWard = makeWardrobe(r, { shirts: [0xffffff, 0xf2c744, 0x81c784], pants: [0x4a4a4a, 0x2f6fd6], shoes: [0xefe7d8, 0x8d6e63] });
+    const washer = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: washWard }),
+      shorts: true, hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.3) }); W.add(washer.group);
+    const bx = 20.6, bz = 4.5;
+    mesh(G.cyl(0.2, 0.24, 0.32, 12), mat(0x2f6fd6, { roughness: 0.6 }), { x: bx, y: 0.16, z: bz, parent: W });
+    mesh(G.cyl(0.19, 0.19, 0.02, 12), mat(0x9fd8ff, { roughness: 0.3, transparent: true, opacity: 0.85 }), { x: bx, y: 0.3, z: bz, shadow: 'none', parent: W });
+    P.addBox(bx, 0.16, bz, 0.5, 0.32, 0.5, { cam: false });
+    game.npcs.push(new Washer(game, washer, { x: 21.5, z: 4.6, ry: 0,
+      cries: ['Nearly got the wing mirror shiny.', "Careful, puss - wet paint, this bit.", "She'll gleam like new by lunchtime."] })); }
   game.squirrels.push(new Squirrel(game, 9, 47, 'sq-neighborhood'));
   // three more ways out of the neighborhood: beach boardwalk (east), gondola to the peak (west), hollow oak to the woods (south-east)
   const beachGate = makeBeachGate(game, 78, 22, PI / 2, () => game.travel(WORLD_INDEX('beach'), 'from-hub')); U.push(beachGate.userData.update);

@@ -1306,3 +1306,37 @@ flake class noted in Round 79's log.
 On arrival, the repo was exactly as Round 80 left it (`origin/main` at the baker commit); a stale local
 `main` ref pointed 47 commits behind until `git fetch` + `checkout -B main origin/main` sorted it, no other
 cleanup needed.
+
+## Round 82 — the green car's owner gives it a wash
+
+The Neighborhood's one parked car — the green one tucked in its owner's yard south of the road at
+(21.5, 6.5) — has sat there since it was first placed, never once acknowledged by anyone on the street.
+Every other named prop in the village (the mailbox, the swing, the balloon seller's pitch) has a person
+attached to it by now; the car was the odd one out.
+
+**Its owner is now out in the yard washing it**, sponge in hand, working a slow side-to-side scrub over the
+wing while a bucket of suds sits at their feet: `"Nearly got the wing mirror shiny."`, `"Careful, puss -
+wet paint, this bit."`, `"She'll gleam like new by lunchtime."` This needed a new `Washer` controller —
+close kin to the existing `Painter` (same idle-arm-damping shape, a held prop in one hand, the other braced),
+but the working arm sweeps on a plain `sin` loop instead of dabbing at a canvas, and there's no easel to
+manage. The bucket is two stacked cylinders (a blue plastic body, a paler translucent disc for the suds)
+built inline, since nothing else in the game needs a bucket model. Built with `makeWardrobe`/`randomPerson`
+plus `greetable(game, this)` in the constructor, same as every other kneeling/standing vignette.
+
+Checked against the physics: the washer stands at (21.5, 4.6), 0.9 m south of the car's own collider box
+(which spans z 5.5–7.5) — clear by 0.55 m once the washer's own 0.35 m physics circle is subtracted. The
+bucket sits at (20.6, 4.5), just west of the washer and clear of the house box (z ends at 3.2), the
+mailbox (19.6, 1.3), and the yard fence (z 7.9–8.1, well north of both). None of it comes near any of the
+seven roads/paths the test suite walks end to end (all at z ≥ 9.6 or along x = 44).
+
+Verified beyond the test suite's own checks: a headless script started the game for real, found the new
+`Washer` in the scene graph at (21.5, 4.6), confirmed the "Say hello" prompt appears and `game.interact()`
+takes friends from 0 to 1, then ran 200 more frames and confirmed both the washer and the cat stayed at
+finite positions, and read back the car's own collider box to confirm the 0.9 m clearance by hand. Full
+suite (273 `ok` lines, all passing, 0 console warnings, exit 0) ran clean three times before and after
+building: `world 0: 19 to meet` (up from 18, `neighborhood has 20 people`, up from 19), every NPC still in
+the scene graph, and `world 0: 96% of the ground is walkable` unchanged.
+
+On arrival, the repo was exactly as Round 81 left it (`HEAD` detached at the tip of `origin/main`, local
+`main` 48 commits behind); fast-forwarded local `main` to `origin/main` and checked it out before starting,
+no other cleanup needed.
