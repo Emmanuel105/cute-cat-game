@@ -6229,6 +6229,13 @@ function buildSnowVillage(game, entry) {
   for (const [x, z] of [[-6, -14], [7, 18], [-20, -2], [22, -4]]) { placeT(game, U, makeSnowman(r), x, z, r() * TAU); boxT(game, x, z, 1.0, 2.4, 1.0, { cam: false }); }
   for (const [x, z, ry, c] of [[-8, 6, 0.4, 0xd62839], [4, -9, 2.0, 0x2f6fd6]]) placeT(game, U, makeSled(c), x, z, ry);
   for (const [x, z] of [[-24, 18], [26, 16], [-26, -18], [24, -24], [0, -26], [-2, 28], [30, 0], [-32, 2]]) { const c = makeIceCrystal(r, r.pick([0x9fe8ff, 0xbfa8ff, 0xa8ffe8])); placeT(game, U, c, x, z, 0); boxT(game, x, z, 0.6, 1.6, 0.6, { cam: false }); }
+  // an ice sculptor kneels by the outlying crystal cluster, chisel in hand, working the last facet
+  { const cx = -24, cz = 18, kx = cx - 1.8, kz = cz - 1.0;
+    const sculptWard = makeWardrobe(r, { shirts: [0x5a5a6a, 0x4a5a6a, 0x6a5a4a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const sculptor = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: true, wardrobe: sculptWard }),
+      hat: 'beanie', hatColor: 0x5a5a6a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a }); W.add(sculptor.group);
+    game.npcs.push(new Kneeler(game, sculptor, { x: kx, z: kz, ry: atan2(cx - kx, cz - kz),
+      cries: ['One more facet and it catches the light just right.', "Careful, puss — sharp edges, this close.", "Ice this clear doesn't come along every winter."] })); }
   // forest ring + scattered pines
   for (let i = 0; i < 44; i++) { const a = i / 44 * TAU, d = r.range(34, 50), x = cos(a) * d, z = sin(a) * d; if (abs(x) < 7 && z < -26) continue; if (abs(z) < 5 && x < -30) continue; const p = makeSnowPine(r); placeT(game, U, p, x, z, 0); boxT(game, x, z, 1.2 * p.scale.x, 5, 1.2 * p.scale.x, { cam: false }); }
   for (const [x, z] of [[-14, -20], [16, 22], [-28, 12], [28, -10], [6, -22], [-10, 24], [30, 26], [-30, -28]]) { const p = makeSnowPine(r); placeT(game, U, p, x, z, 0); boxT(game, x, z, 1.2 * p.scale.x, 5, 1.2 * p.scale.x, { cam: false }); }

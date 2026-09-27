@@ -861,3 +861,28 @@ meet` among them.
 
 On arrival, `HEAD` was already on `main`, in sync with `origin/main` — no stale-ref cleanup needed
 this time.
+
+## Round 68 — an ice sculptor at the outlying crystals
+
+A headless `friendTotal` tally across all seven worlds showed Sunny Shore and Frosty Peak tied at
+sixteen, one behind Whisper Woods' seventeen. Picked Frosty Peak: the westernmost ice-crystal cluster
+at (-24, 18) — out past the second igloo, on its own — had no one standing near it.
+
+**An old sculptor kneels by that crystal, chisel in hand, working the last facet**, using the same
+`Kneeler` pattern as the carrots girl and the snowman-patting kids (kneeling animation, greetable by
+default, dynamic collision circle so it can't block the ground-walkable check). Nothing about the
+crystal's geometry changes — the dialogue carries it, same as the sand-message trick on Sunny Shore:
+`"Ice this clear doesn't come along every winter."` Frosty Peak goes from sixteen friends to
+seventeen, level with Whisper Woods.
+
+Verified beyond the test suite's own checks: a headless script called `game.start('new')` directly
+(cheaper than clicking the DOM start button), travelled to Frosty Peak, walked the cat up to the new
+kneeler by name and position, and confirmed `game.nearest.label()` reads "Say hello" and
+`game.interact()` takes `game.state.friends` from 0 to 1. Full suite (290 checks) ran clean before and
+after building, `world 5: 17 to meet` among them.
+
+On arrival, `git status` was clean but `HEAD` was detached, 34 commits ahead of a *stale* local
+`origin/main` ref — `git fetch origin main` showed the two were actually already in sync (the same
+false alarm rounds 66/67 flagged: nothing was lost, the local remote-tracking ref just hadn't been
+refreshed yet). `git checkout main && git merge --ff-only origin/main` brought local `main` level
+before starting.
