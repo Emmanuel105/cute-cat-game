@@ -788,3 +788,23 @@ not just compiles. Full suite ran clean after.
 
 On arrival, `HEAD` was detached from `main` at the exact commit `origin/main` was already at (the same
 stale-ref situation round 62 hit) — moved the `main` ref up and checked it out before starting.
+
+## Round 65 — a second owl answers back
+
+Round 64 left two of Whisper Woods' three perched owls silent, saying the remaining pair were "still
+worth a look later." Picked the middle one up: the owl at (30, 22), perched right by the tree the
+birdwatcher keeps squinting at — her third line is "That owl's been in the same tree all week," so
+the two were already sitting side by side without knowing it. **That owl now answers a hello too**,
+with its own `game.namedFriend('owl2')` id (distinct from the western owl's `owl`, both scoped under
+the `forest:` world key so there's no collision) and its own line: `"Not a woodpecker. Never was."`
+— a wink back at the birdwatcher mistaking it for one. Whisper Woods goes from sixteen friends to
+seventeen. The third owl, at (12, 32), is still just scenery.
+
+Verified with a headless script beyond the test suite's own checks: travelled to Whisper Woods,
+found both owl interactables by label, walked the cat to each and called `onUse()`, and watched
+`game.state.friends` come back holding both `forest:owl` and `forest:owl2`. Full suite (273 checks)
+ran clean afterward, `world 6: 17 to meet` among them.
+
+`HEAD` was detached on arrival, sitting on the exact commit `origin/main` was already at — the same
+stale local ref this log has now hit three rounds running — moved `main` up to it and checked it out
+before starting.
