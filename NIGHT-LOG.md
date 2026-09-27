@@ -948,3 +948,38 @@ colours for 17 people)` / `the Neighborhood has 16 people to meet` all passing, 
 the ground is walkable` unchanged from before the change.
 
 On arrival, `HEAD` was already on `main` in sync with `origin/main` — no cleanup needed.
+
+## Round 71 — a boy flies a kite in the park
+
+A headless `friendTotal` tally across all seven worlds showed the Neighborhood still trailing the
+three hub worlds (Sunny Shore, Frosty Peak, Whisper Woods, all at seventeen since round 69) at
+sixteen — round 70's gardener had only closed half the gap. Rather than another kneeling vignette,
+this round reused `KiteFlyer`, a controller `55-npcs.js` already had (built for the beach's kite boy)
+but that no one had ever pointed at the Neighborhood: greetable, standing with both hands on the line
+while the kite loops lazily overhead on a figure-eight.
+
+**A boy stands on the open lawn in the park's north-east corner (22, 52), flying a blue-and-white
+kite** — clear of the park's paths, the swing set, the painter, the balloon seller and the two kids
+playing tag on the east lawn. `"Don't let it snag a tree!"` The Neighborhood goes from sixteen
+friends to seventeen, level with the three hub worlds.
+
+Building him hit the same wardrobe ceiling round 70 flagged: the test checks that *every* human-rigged
+NPC in the scene has a distinct shirt colour, and the Neighborhood was already at 17 people using 16
+of the 18 `SHIRT_COLORS` plus the gardener's one custom shade — no headroom left in the shared `ward`
+bag. Ran a quick headless dump of every NPC's `rig.look.shirt` before touching anything, found three
+colours nobody was wearing (`0xe0503c`, `0x2e9e6e`, `0x7fb56a`), and built the kite boy by hand with
+`makeHuman()` + `randomPerson()` and a fixed `0xe0503c`, bypassing `ward` entirely — same trick as the
+gardener, just picked with the actual current palette in hand instead of a guess.
+
+Verified beyond the test suite's own checks: a headless script called `game.start('new')` directly,
+found the new `KiteFlyer` in `game.npcs`, confirmed both the boy's rig and the kite mesh are in the
+scene graph, ran 120 frames and watched the kite's height oscillate (0.00 → 7.56 m, the figure-eight
+lift working), then teleported the cat next to him and confirmed `game.nearest._label` reads "Say hi"
+and `game.interact()` takes `game.state.friends` from 0 to 1. Full suite (293 checks) ran clean before
+and after: `neighborhood has 18 people` / `no two neighbours wear the same shirt (18 colours for 18
+people)` / `the Neighborhood has 17 people to meet` / `world 0: 96% of the ground is walkable`
+unchanged.
+
+On arrival, `HEAD` was on `main`, 37 commits behind `origin/main` — a plain fast-forward
+(`git fetch origin main && git checkout main && git merge --ff-only origin/main`) brought it level
+before starting.
