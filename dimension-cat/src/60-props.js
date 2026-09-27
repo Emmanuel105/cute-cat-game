@@ -457,6 +457,17 @@ function makeFlowerBouquet() {
   for (const [hue, x, z, h] of [[0.0, 0, 0, 0.32], [0.14, -0.045, 0.03, 0.28], [0.58, 0.04, -0.02, 0.30], [0.9, -0.02, -0.045, 0.26], [0.08, 0.045, 0.03, 0.29]]) mesh(G.sphere(0.045, 8, 6), mat(new THREE.Color().setHSL(hue, 0.75, 0.6), { roughness: 0.65 }), { x, y: h, z, shadow: 'none', parent: g });
   return g;
 }
+/** A wooden tray of meat pies, golden-domed with a lattice top, for a market stall keeper to hold up. */
+function makePieTray() {
+  const g = new THREE.Group(), wood = mat(0x8a5a32, { roughness: 0.9, map: TEX.planks(24, 24) }), crust = mat(0xc98a3f, { roughness: 0.75 });
+  mesh(G.box(0.24, 0.02, 0.16), wood, { y: 0.01, parent: g });
+  for (const [x, z] of [[-0.07, -0.035], [0.07, -0.035], [0, 0.04]]) {
+    mesh(G.cyl(0.05, 0.055, 0.03, 12), crust, { x, y: 0.035, z, parent: g });
+    mesh(G.sphere(0.05, 10, 7), crust, { x, y: 0.055, z, sy: 0.55, shadow: 'none', parent: g });
+    for (const [dx, dz] of [[-0.02, 0], [0.02, 0], [0, -0.02], [0, 0.02]]) mesh(G.box(0.008, 0.01, 0.045), mat(0xa8722f, { roughness: 0.8 }), { x: x + dx, y: 0.07, z: z + dz, ry: dx ? PI / 2 : 0, shadow: 'none', parent: g });
+  }
+  return g;
+}
 /** A bicycle: two wheels, a frame, handlebars, a saddle and a crank. Faces +z; `wheels` and `crank` turn. */
 function makeBike(color = 0xd62839) {
   const g = new THREE.Group(), frame = mat(color, { roughness: 0.4, metalness: 0.3 }), dark = mat(0x1e1a18, { roughness: 0.8 }), rim = mat(0xc8ccd2, { metalness: 0.6, roughness: 0.4 });

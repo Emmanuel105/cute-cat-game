@@ -1117,3 +1117,25 @@ all `ok`, 0 console warnings) ran clean three times before and after building: `
 from 17), every NPC still in the scene graph, and `world 0: 96% of the ground is walkable` unchanged.
 
 On arrival, `HEAD` was already on `main` in sync with `origin/main` — no cleanup needed.
+
+
+## Round 76 — a pieman takes the third empty market stall
+
+Rounds 72 and 73 gave the Victorian market square's costermonger and flower seller two of its four
+striped pitches (the green stall at (-10,-42) and the blue one at (10,-28)); the red stall at (-10,-28)
+and the purple one at (10,-42) have stood empty behind their counters ever since. This round took the
+red one, mirroring the flower seller's spot across the lane.
+
+**A pieman now works the red-striped pitch**, holding up a tray of golden-crusted meat pies — a small
+new prop, `makePieTray()`, three lattice-topped domes on a wooden board — and calling: `"Hot pies! Get
+your hot pies!"`, `"Best meat pies in the square!"`, `"Not for cats, sorry, puss."` He's built with the
+same `Vendor` controller as the other two stallholders and stands at (-10, -29.3), the same -1.3 offset
+behind his counter that the flower seller uses at hers, just mirrored in x. The purple stall at
+(10,-42) is still nobody's — a candidate for a future round.
+
+Full suite (295 checks, all `ok`, 0 console warnings) ran clean three times before and after building:
+`world 3: 30 to meet` (up from 29), every NPC still in the scene graph, and `world 3: 93% of the ground
+is walkable` (was 94% — one more small counter footprint in a 420 m world, not a road or path the test
+suite walks).
+
+On arrival, `HEAD` was already on `main` in sync with `origin/main` — no cleanup needed.

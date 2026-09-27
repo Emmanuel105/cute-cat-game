@@ -4112,6 +4112,17 @@ function makeFlowerBouquet() {
   for (const [hue, x, z, h] of [[0.0, 0, 0, 0.32], [0.14, -0.045, 0.03, 0.28], [0.58, 0.04, -0.02, 0.30], [0.9, -0.02, -0.045, 0.26], [0.08, 0.045, 0.03, 0.29]]) mesh(G.sphere(0.045, 8, 6), mat(new THREE.Color().setHSL(hue, 0.75, 0.6), { roughness: 0.65 }), { x, y: h, z, shadow: 'none', parent: g });
   return g;
 }
+/** A wooden tray of meat pies, golden-domed with a lattice top, for a market stall keeper to hold up. */
+function makePieTray() {
+  const g = new THREE.Group(), wood = mat(0x8a5a32, { roughness: 0.9, map: TEX.planks(24, 24) }), crust = mat(0xc98a3f, { roughness: 0.75 });
+  mesh(G.box(0.24, 0.02, 0.16), wood, { y: 0.01, parent: g });
+  for (const [x, z] of [[-0.07, -0.035], [0.07, -0.035], [0, 0.04]]) {
+    mesh(G.cyl(0.05, 0.055, 0.03, 12), crust, { x, y: 0.035, z, parent: g });
+    mesh(G.sphere(0.05, 10, 7), crust, { x, y: 0.055, z, sy: 0.55, shadow: 'none', parent: g });
+    for (const [dx, dz] of [[-0.02, 0], [0.02, 0], [0, -0.02], [0, 0.02]]) mesh(G.box(0.008, 0.01, 0.045), mat(0xa8722f, { roughness: 0.8 }), { x: x + dx, y: 0.07, z: z + dz, ry: dx ? PI / 2 : 0, shadow: 'none', parent: g });
+  }
+  return g;
+}
 /** A bicycle: two wheels, a frame, handlebars, a saddle and a crank. Faces +z; `wheels` and `crank` turn. */
 function makeBike(color = 0xd62839) {
   const g = new THREE.Group(), frame = mat(color, { roughness: 0.4, metalness: 0.3 }), dark = mat(0x1e1a18, { roughness: 0.8 }), rim = mat(0xc8ccd2, { metalness: 0.6, roughness: 0.4 });
@@ -5992,6 +6003,14 @@ function buildVictorian(game, entry) {
     const v2 = new Vendor(game, flowerSeller, makeFlowerBouquet(), { x: 10, z: -29.3, ry: 0, cryIcon: '💐',
       cries: ['Flowers, fresh flowers!', 'Roses, tuppence a bunch!', 'Something pretty for the windowsill?'] });
     game.npcs.push(v2); greetable(game, v2); }
+  // a third: a pieman on the red-striped pitch, tray of meat pies held up
+  { const pieWard = makeWardrobe(r, { shirts: [0x6a4a3a, 0x5a3a2a, 0x7a5a3a], pants: [0x2a2420], shoes: [0x2a2018] });
+    const pieman = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: r.chance(0.35), wardrobe: pieWard }),
+      pants: 0x2a2420, apron: 0x8a7a5a, hat: 'flatcap', hatColor: 0x3a3327, bag: null, jacket: null, scarf: null });
+    W.add(pieman.group);
+    const v3 = new Vendor(game, pieman, makePieTray(), { x: -10, z: -29.3, ry: 0, cryIcon: '🥧',
+      cries: ['Hot pies! Get your hot pies!', 'Best meat pies in the square!', "Not for cats, sorry, puss."] });
+    game.npcs.push(v3); greetable(game, v3); }
   for (const [x, z] of [[-14, -34], [14, -34], [0, -46]]) { place(game, U, makeLamp('victorian'), x, z, 0); P.addBox(x, 2, z, 0.4, 4, 0.4, { cam: false }); }
   { const CL = VICTORIAN_LIMIT * 2 + 20;   // the canal runs the whole width of the town
     const water = flatPlane(game, CL, 8, mat(0x1f4f6a, { roughness: 0.15, metalness: 0.2, transparent: true, opacity: 0.85, emissive: 0x0a2a3a, emissiveIntensity: 0.3, map: TEX.water() }), 0, 30, 0, -0.35); U.push((dt) => { water.material.map.offset.x += dt * 0.01; });
