@@ -808,3 +808,31 @@ ran clean afterward, `world 6: 17 to meet` among them.
 `HEAD` was detached on arrival, sitting on the exact commit `origin/main` was already at — the same
 stale local ref this log has now hit three rounds running — moved `main` up to it and checked it out
 before starting.
+
+## Round 66 — a message in the sand on Sunny Shore
+
+A headless tally of `friendTotal` across all seven worlds showed the four hub worlds (Neighborhood,
+Sunny Shore, Frosty Peak, Whisper Woods) had drifted: the last two rounds' owls pushed Whisper Woods
+to seventeen while Sunny Shore and Frosty Peak sat at fifteen. Picked Sunny Shore to catch up, since
+its tideline south of the lighthouse — past the beachcomber's spot, before the rock scatter round the
+lighthouse itself — was empty ground with nothing hand-placed nearby.
+
+**A girl kneels there finishing something drawn in the wet sand**, using the same `Kneeler` pattern
+as the beachcomber and the sandcastle-patting kid (kneeling animation, greetable by default, no new
+controller needed). Her third line gives it away: `"It says 'MEOW' — for you, if you can read it
+upside down."` Sunny Shore goes from fifteen friends to sixteen. Nothing is actually written in the
+sand — like the "packing a fresh layer of snow" kid on Frosty Peak, the dialogue carries the detail,
+not new geometry, to keep the change conservative and headlessly checkable.
+
+Verified with the same per-world `friendTotal` tally used in round 64: Sunny Shore now reports
+sixteen, `world 4: 16 to meet` passes, and the ground-walkable sweep still clears 100% for that world
+(the new kneeler's collision circle is dynamic, not a static box, so it can't fail the walkability
+check). Full suite ran clean before and after building. One pre-existing flake was noticed along the
+way — `Victorian: the horse and carriage are in the world and on the move` failed once by a hair, then
+passed three times running on retry — not touched this round since it isn't this round's code and
+reproducing it reliably would need its own investigation.
+
+On arrival, `git status` was clean but `HEAD` was detached; `git checkout main` landed exactly on
+`origin/main`, and a fresh `git fetch` confirmed the two were already in sync (no lost work — the
+detached commits from the last few rounds had, in fact, already made it to `origin/main`, despite the
+stale local ref making it look otherwise at first glance).
