@@ -886,3 +886,28 @@ On arrival, `git status` was clean but `HEAD` was detached, 34 commits ahead of 
 false alarm rounds 66/67 flagged: nothing was lost, the local remote-tracking ref just hadn't been
 refreshed yet). `git checkout main && git merge --ff-only origin/main` brought local `main` level
 before starting.
+
+## Round 69 — digging for sand crabs on Sunny Shore
+
+A headless `friendTotal` tally across all seven worlds showed Sunny Shore at sixteen, one behind
+Frosty Peak and Whisper Woods' seventeen apiece — round 68's ice sculptor had put Frosty Peak level
+with Whisper Woods and left Sunny Shore trailing by one. Went looking for open dry sand away from
+every hand-placed prop and every wandering crab's leash range: a hollow in the dune grass south-west
+of the beach huts, around (-24, -22), had nothing within six units of it.
+
+**A boy kneels there, digging for sand crabs with a toy shovel**, using the same `Kneeler` pattern as
+the beachcomber and the sand-message girl (kneeling animation, greetable by default, dynamic
+collision circle so it can't block the ground-walkable check). Distinct from the beach's other
+kneeling vignettes — shell-sorting, sand-writing — this one's just missing its quarry every time:
+`"Sh-h, you'll scare them off, puss."` Sunny Shore goes from sixteen friends to seventeen, level with
+Frosty Peak and Whisper Woods.
+
+Verified beyond the test suite's own checks: a headless script called `game.start('new')` directly,
+travelled to Sunny Shore, walked the cat up to the new kneeler by position, and confirmed
+`game.nearest._label` reads "Say hi" and `game.interact()` takes `game.state.friends` from 0 to 1.
+Full suite (290 checks) ran clean before and after building, `world 4: 17 to meet` among them, and the
+ground-walkable sweep for that world held at 99%.
+
+On arrival, `HEAD` was on `main`, 35 commits behind `origin/main` — a plain fast-forward
+(`git checkout main && git merge --ff-only origin/main`) brought it level before starting; no stale-ref
+false alarm this time, just an honestly out-of-date local branch.
