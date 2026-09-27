@@ -1166,3 +1166,33 @@ suite (295 checks, all `ok`, 0 console warnings) ran clean three times before an
 is walkable` unchanged from round 76.
 
 On arrival, `HEAD` was already on `main` in sync with `origin/main` — no cleanup needed.
+
+## Round 78 — Robot City gets its painter
+
+Neighborhood, Frosty Peak and Whisper Woods each have an artist at an easel; Robot City and Candy Land
+never did. Robot City had an obvious spare corner for one: the open concrete south of the giant robot
+statue and its neon `CHARGE` sign, nine metres from the mechanic's vignette and clear of every skyscraper
+footprint, crate, barrel and wandering robot's leash in the build function.
+
+**A painter now sets up an easel on that open floor**, facing the statue and its glow across the plaza,
+grumbling: `"Trying to get the neon just right."`, `"Nobody paints chrome. Someone should."`,
+`"That statue holds still, at least - unlike some cats."` Built with the same generic `Painter`
+controller as the other three (it wires up its own easel, physics box and `greetable()` — no extra
+plumbing needed), in a small grey-blue wardrobe of its own so it doesn't match the mechanic nearby.
+
+Checked against the physics: the mechanic's vignette sits at (2,18), the painter at (0,27) — 9.2 m
+apart — and Robot City's build function has no `game.zones` keep-out spans at all (it relies purely on
+physics boxes), so the only real risk was the hand-placed crates, barrels, poles and skyscraper
+footprints; none of them land within several metres of (0,27).
+
+Verified beyond the test suite's own checks: a headless script started the game for real, travelled to
+Robot City, found the new `Painter` in the scene graph sitting at the intended spot, confirmed it doesn't
+overlap the mechanic, walked the cat up to it and confirmed the "Say hello" prompt appears and
+`game.interact()` takes `game.state.friends` from 0 to 1, then ran 200 more frames and confirmed both the
+painter's rig and its easel stayed at finite positions. Full suite (273 `ok` lines, all passing, 0
+console warnings) ran clean before and after building: `world 2: 25 to meet` (up from 24), every NPC
+still in the scene graph, and `world 2: 88% of the ground is walkable` unchanged.
+
+On arrival, local `main` was 44 commits behind `origin/main` (a stale branch pointer left over from a
+previous detached-HEAD session) — fast-forwarded to `origin/main` before starting, no other cleanup
+needed.
