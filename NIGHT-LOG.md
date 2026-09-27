@@ -1081,3 +1081,39 @@ meet` (up from 23), every NPC still in the scene graph, and `world 2: 88% of the
 unchanged.
 
 On arrival, `HEAD` was already on `main` in sync with `origin/main` — no cleanup needed.
+
+
+## Round 75 — a fisherman takes the empty jetty
+
+The Neighborhood, Sunny Shore, Frosty Peak and Whisper Woods have sat level at seventeen friends apiece
+since round 71, so this round looked past the headcount at what the world itself was missing — the
+same approach that found the empty market stalls in rounds 72–73. The lake in the Neighborhood's
+north-west corner has had a proper jetty since early on: five planks, four posts, its own physics box —
+and nobody has ever stood on it. A decorative jetty with nobody fishing off it, in a street that
+otherwise has a postie, a painter, a balloon seller, two gossiping neighbours on a bench and a girl
+watering wildflowers.
+
+**An old fisherman now works the end of that jetty**, reusing the `IceFisher` controller (the same one
+behind Whisper Woods' angler at the glowing pond — nothing to do with ice, it's really just "sit by a
+hole in the water and dangle a line in it") holding a `makeIceStool()` under him, dipping his line into
+open water a few metres out from the last plank, muttering: `"Not a bite all morning."`, `"Mind you
+don't join them in the drink, puss."`, `"Quietest spot on the lake, this."`. His own small wardrobe
+(muted greens and browns, not the street's shared `ward` bag) keeps him from matching anyone else on the
+street. `IceFisher` calls `greetable()` itself, so no extra wiring was needed. A `seatY` override
+(`0.41`, the jetty deck's top surface) keeps him sitting on the planks rather than at the world's flat
+ground level, which the controller would otherwise assume.
+
+Checked against the physics: the jetty's own box spans x −32 to −27 at z −48 to −47.5, and the
+fisherman sits at (−31, −48), well inside it and clear of the four corner posts (which have no physics
+of their own). The jetty was never one of the roads/paths the test suite walks in a straight line
+(main street, both pavements, side road, boardwalk, park path, portal path), so there was no risk there.
+
+Verified beyond the test suite's own checks: a headless script started the game for real, found the new
+`IceFisher` by its constructor name, confirmed his rig is in the scene graph and sitting on the deck
+(not sunk to ground level), teleported the cat behind him and confirmed `game.nearest.label()` reads
+"Say hello" and `game.interact()` takes `game.state.friends` from 0 to 1, then ran 300 more frames and
+confirmed his fishing line stayed a finite, sensible length (~3.5 m) throughout. Full suite (294 checks,
+all `ok`, 0 console warnings) ran clean three times before and after building: `world 0: 18 to meet` (up
+from 17), every NPC still in the scene graph, and `world 0: 96% of the ground is walkable` unchanged.
+
+On arrival, `HEAD` was already on `main` in sync with `origin/main` — no cleanup needed.
