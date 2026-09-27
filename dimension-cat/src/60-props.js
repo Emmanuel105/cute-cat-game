@@ -478,6 +478,17 @@ function makeCheeseWheel() {
   }
   return g;
 }
+/** A glass jar of striped peppermints with a red lid, for a candy stall keeper to hold up. */
+function makeCandyJar() {
+  const g = new THREE.Group(), glass = mat(0xf0f8ff, { roughness: 0.15, transparent: true, opacity: 0.35 });
+  mesh(G.cyl(0.09, 0.1, 0.2, 14), glass, { y: 0.1, parent: g });
+  const drops = [[0xff3355, 0.03, 0.03, 0.05], [0xffffff, -0.04, 0.02, 0.08], [0xff8fab, 0.02, -0.045, 0.11], [0xffd54a, -0.02, 0.04, 0.06], [0xffffff, 0.045, -0.01, 0.09],
+    [0xff3355, -0.045, -0.02, 0.13], [0xffd54a, 0.01, 0.05, 0.14], [0xff8fab, -0.01, -0.05, 0.16], [0xffffff, 0.04, 0.03, 0.15], [0xff3355, -0.03, -0.03, 0.10]];
+  for (const [c, x, z, y] of drops) mesh(G.sphere(0.028, 8, 6), mat(c, { roughness: 0.5 }), { x, y, z, shadow: 'none', parent: g });
+  mesh(G.cyl(0.1, 0.1, 0.03, 14), mat(0xd62839, { roughness: 0.5 }), { y: 0.215, parent: g });
+  mesh(G.sphere(0.025, 8, 6), mat(0xd62839, { roughness: 0.5 }), { y: 0.25, shadow: 'none', parent: g });
+  return g;
+}
 /** A bicycle: two wheels, a frame, handlebars, a saddle and a crank. Faces +z; `wheels` and `crank` turn. */
 function makeBike(color = 0xd62839) {
   const g = new THREE.Group(), frame = mat(color, { roughness: 0.4, metalness: 0.3 }), dark = mat(0x1e1a18, { roughness: 0.8 }), rim = mat(0xc8ccd2, { metalness: 0.6, roughness: 0.4 });

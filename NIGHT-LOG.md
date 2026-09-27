@@ -1196,3 +1196,42 @@ still in the scene graph, and `world 2: 88% of the ground is walkable` unchanged
 On arrival, local `main` was 44 commits behind `origin/main` (a stale branch pointer left over from a
 previous detached-HEAD session) — fast-forwarded to `origin/main` before starting, no other cleanup
 needed.
+
+## Round 79 — Candy Land gets its first stall keeper
+
+Every other world had at least one market stall, cart or roadside vendor except Candy Land, which — for
+all its lollipop groves, gumdrop clusters and gingerbread villagers — never had anyone actually selling
+sweets. The open floor east of the candy-cane forest, between the far lollipop groves and the cupcake
+hills, had nothing hand-placed on it at all.
+
+**A sweet-stall keeper now stands there holding up a jar of peppermints**, calling: `"Peppermints, fresh
+peppermints!"`, `"A sweet for the journey, puss?"`, `"One a day keeps the toothache away - or so they
+say."` She's a human — following the precedent set by Robot City's mechanic and painter, who are human too
+even though their world is full of robots — built with the same `Vendor` controller as the ice-cream and
+cocoa vendors, holding a new prop, `makeCandyJar()` (a glass jar of striped peppermints under a red lid,
+fully deterministic — no random draws, matching `makeCheeseWheel`/`makeFruitBasket`). No new stall
+furniture was built; like the ice-cream and cocoa vendors she just stands on the open floor with a
+`game.zones.addCircle` marking her spot, which was simpler and lower-risk than modelling a counter.
+
+Checked against the physics: she stands at (45,-28), inside the hand-placed inner disc (radius ~53 from
+centre) and well clear of `candyRegion`'s procedural fill, which only starts at radius 92. The nearest
+hard-coded obstacles — a candy cane at (34,-20), a marshmallow bush at (34,-36), a big lollipop at
+(58,-14) — are all 13+ metres away. The new code was inserted as the very last thing in the world's build
+function to touch its seeded RNG (after the candy queen, airlock and portal, none of which draw from it),
+so it couldn't shift any earlier procedural layout — only the squirrel and literal collectible coordinates
+follow it, and neither uses the RNG.
+
+Verified beyond the test suite's own checks: a headless script started the game for real (including the
+"press enter to start" gate that `this.started` requires — a step I'd missed on the first pass, which
+silently made `game.interact()` a no-op), travelled to Candy Land, found the new `Vendor` by its cry icon
+(🍬), confirmed she's in the scene graph and unblocked, walked the cat to her, confirmed `game.interact()`
+takes `game.state.friends` from empty to `{'candy:23'}`, then ran 200 more frames and confirmed her
+position stayed finite. Full suite (295 checks, all `ok`, 0 console warnings) ran clean four times before
+and after building: `world 1: 25 to meet` (up from 24), every NPC still in the scene graph, and
+`world 1: 92% of the ground is walkable` (comfortably above the 80% floor). One unrelated timing check —
+the Victorian horse and carriage's distance-travelled assertion — flaked once across a dozen runs; it
+touches no file this round changed and passed cleanly on every other run, so it looks like a pre-existing
+flake rather than a regression.
+
+On arrival, `HEAD` was detached at the tip of `origin/main`, with local `main` 45 commits behind — fast-
+forwarded local `main` to `origin/main` and checked it out before starting, no other cleanup needed.
