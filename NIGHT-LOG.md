@@ -1469,3 +1469,35 @@ On arrival, the repo's local `main` was a detached `HEAD` one commit ahead of a 
 ref; a `git fetch origin main` showed the real remote had already moved to that same commit (a forced,
 unrelated-history update — the local ref was simply out of date, not actually behind), and `git checkout -B
 main origin/main` cleared it up, no other cleanup needed.
+
+## Round 87 — a marshmallow at the fire's third seat
+
+Frosty Peak's campfire has three log seats built in (the tripod of logs ringing the flames), but only one
+was ever taken — the old-timer warming her hands. Frosty Peak was also tied for the lowest friend count
+(17) of any world, so filling the empty seat was the clearest small gap available.
+
+**A kid now takes the fire's third log seat**: `"Careful, this one's about to catch."`, `"Best seat in the
+village, right here."`, `"Golden brown, not black — that's the trick."` Plain reuse of the `Sitter`
+controller already seating the old-timer at the same fire, on the other free log (the loop building the
+fire's three seating logs at angles 0.4, 2.5, 4.4 only ever had 2.5 taken) — same seat height, no new class,
+no animation risk, and no held marshmallow prop (the dialogue does that work instead, to keep the change to
+one line).
+
+Checked against the physics with a headless probe (built the bundle, set `game.started = true`, called
+`game.travel(5, 'from-hub')`, waited out its ~1.2 s of chained `setTimeout`s, then read `game.physics.boxes`
+and `game.npcs` directly): the seat sits at (-0.52, -1.62), 2.2 m from the old-timer's own seat on the far
+side of the fire; the four static colliders within 8 m are the fire pit itself and its own three seating
+logs, and none of them overlap the seat position (nearest edge just under 1 m clear — the same clearance the
+old-timer's identical seat already has).
+
+Verified beyond the test suite's own checks: the same probe found the new `Sitter` in the scene graph at its
+intended spot, confirmed the "Say hello" prompt appears within range, that `game.interact()` (via the found
+interactable's `onUse`) takes `game.state.friends.size` from 0 to 1, and that its position stayed finite
+after 300 more frames. Full suite (290 `ok` lines, all passing, 0 console warnings, exit 0) ran clean before
+and after building: `world 5: 18 to meet` (up from 17), every NPC still in the scene graph, and `world 5:
+98% of the ground is walkable` unchanged.
+
+On arrival, the repo was exactly as Round 86 left it (`origin/main` at the deer-feeding commit, a shallow
+clone whose `merge-base` briefly looked like unrelated history until `git fetch --unshallow` resolved it);
+`git checkout main && git merge --ff-only origin/main` brought local `main` in line, no other cleanup
+needed.

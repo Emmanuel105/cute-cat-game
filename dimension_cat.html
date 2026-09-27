@@ -6542,6 +6542,10 @@ function buildSnowVillage(game, entry) {
   { const dx = 24, dz = 20, kx = dx - 2.4, kz = dz - 1.0;
     game.npcs.push(new Kneeler(game, kid(true), { x: kx, z: kz, ry: atan2(dx - kx, dz - kz),
       cries: ['Left a few carrots on the rock.', "Copper's not the only one who likes them.", 'They come round eventually, if you wait quiet.'] })); }
+  // a kid takes the fire's third log seat, toasting a marshmallow on a stick held out toward the flames
+  { const a = 4.4, lx = cos(a) * 1.7, lz = sin(a) * 1.7;
+    game.npcs.push(new Sitter(game, kid(r.chance(0.5)), { x: lx, z: lz, ry: atan2(-lx, -lz), seat: 0.3,
+      cries: ["Careful, this one's about to catch.", 'Best seat in the village, right here.', "Golden brown, not black — that's the trick."] })); }
   // a woodcutter splits logs on a stump behind the northern cabin, keeping its stove fed
   { const sx = -4, sz = 18, cx = -4, cz = 19.3;
     placeT(game, U, makeStump(r), sx, sz, r() * TAU); boxT(game, sx, sz, 1.0, 0.75, 1.0, { cam: false });
