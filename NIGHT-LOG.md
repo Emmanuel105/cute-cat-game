@@ -1235,3 +1235,35 @@ flake rather than a regression.
 
 On arrival, `HEAD` was detached at the tip of `origin/main`, with local `main` 45 commits behind — fast-
 forwarded local `main` to `origin/main` and checked it out before starting, no other cleanup needed.
+
+## Round 80 — a baker for the gingerbread cottage
+
+The gingerbread cottage south of the chocolate river has stood empty since it was built: icing windows lit,
+smoke curling from the chimney, cookie path leading right up to the door — and nobody home. Every other
+world's bakery-adjacent landmark (Frosty Peak's fire, Whisper Woods' four stumps) had picked up a Sitter or
+Kneeler vignette by now; Candy Land's only human besides the sweet-stall keeper was that one lone vendor.
+
+**A baker now kneels beside the cottage, icing a fresh tray of cookies while they're still warm**, calling:
+`"Icing while they're warm - best trick there is."`, `"Careful, puss - sugar everywhere."`, `"One more tray
+and the cottage smells like heaven."` The tray is new geometry — a plank board with three round cookies
+(the same dough/icing colours as the gingerbread men) topped with a piped icing ring — built inline rather
+than as a shared prop, since nothing else needs it. She uses the same generic `Kneeler` controller as the
+Neighborhood's gardener and Frosty Peak's reindeer keeper (kneeling + patting animation, its own physics
+circle, `greetable()` wired up automatically) — no new plumbing.
+
+Checked against the physics: baker at (3.5,-56.5), tray box at (3.5,-57.8) — 1.3 m north, clear of her own
+kneeling circle by 0.45 m. The cottage's own collider ends at z=-58.8, the tray box starts at z=-58.3, a
+0.5 m gap. Nearest hand-placed obstacles — the cookie-path tiles (decorative only, no collider) and a
+gumdrop cluster centred (10,-50) with a 6 m radius — sit 2+ m and 10+ m away respectively; the sweet-stall
+vendor from Round 79 is 50 m off on the other side of the map.
+
+Verified beyond the test suite's own checks: a headless script started the game for real, travelled to
+Candy Land, found the new `Kneeler` in the scene graph at its intended spot, confirmed `game.interact()`
+takes `game.state.friends` from empty to one, then ran 200 more frames and confirmed both the baker and the
+cat stayed at finite positions. Full suite (three runs, all `ok`, 0 console warnings, exit 0) ran clean
+before and after building: `world 1: 26 to meet` (up from 25), every NPC still in the scene graph, and
+`world 1: 92% of the ground is walkable` unchanged.
+
+On arrival, `HEAD` was detached 47 commits ahead of the local `main` branch pointer (itself just a stale
+ref — a `git fetch` showed `origin/main` already matched `HEAD`, so no work was actually at risk); reset
+local `main` to `origin/main`'s real tip and checked it out before starting, no other cleanup needed.
