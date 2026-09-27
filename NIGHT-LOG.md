@@ -1267,3 +1267,42 @@ before and after building: `world 1: 26 to meet` (up from 25), every NPC still i
 On arrival, `HEAD` was detached 47 commits ahead of the local `main` branch pointer (itself just a stale
 ref — a `git fetch` showed `origin/main` already matched `HEAD`, so no work was actually at risk); reset
 local `main` to `origin/main`'s real tip and checked it out before starting, no other cleanup needed.
+
+## Round 81 — a juggler works the Victorian market square
+
+None of the seven worlds had ever had a street performer, and Victorian's market square — four vendor
+stalls, a fountain, gas lamps — had one obvious quiet patch of cobbles: the open stretch between the
+fountain and the west-side stalls, six metres clear of both.
+
+**A juggler now stands there with three balls always in the air**, calling out `"Three balls, never
+four - not since Tuesday."`, `"Watch the hands, not the cat, sir!"`, `"One coin in the hat, if you liked
+that."` This needed a genuinely new controller — nothing in `55-npcs.js` moved a prop free of the rig's
+own hands before. The new `Juggler` class keeps the three balls as their own meshes (never parented to a
+hand, since they leave it), and sweeps each one on a continuous `sin`/`cos` loop from one side of the body
+to the other, arcing up at the midpoint, the three offset by a third of a turn so one is always near the
+peak — smooth and looping forever, not a literal over/under cascade, but reads as juggling without ever
+snapping or teleporting a ball between throws. The arms lift and drop in time on the same period. Built
+with the standard `randomPerson`/`makeWardrobe` plus `greetable(game, this)`, so it costs nothing extra in
+scene-graph or friend-count bookkeeping.
+
+Checked against the physics: juggler at (-6,-34), facing the fountain. The fountain's own collider is a
+6.8×6.8 box centred on (0,-34), leaving 2.6 m of clearance; the nearest stall colliders (pieman at
+(-10,-29.3), coster at (-10,-43.3)) are 6+ m away; the market square's own north-south lane (kept clear
+for the road-walking test) sits at x ≈ -1.2 to -2.3, a further 3.7 m east. The juggler's own physics circle
+(radius 0.4) is a moving-NPC collider, not a fixed obstacle, so it can't fail the walkability check the way
+a static box would.
+
+Verified beyond the test suite's own checks: a headless script started the game for real, travelled
+Neighborhood → Candy Land → Robot City → Victorian, found the new `Juggler` in the scene graph at its
+intended spot with all three balls also in the scene, walked the cat up to it, confirmed the "Say hello"
+prompt appears and `game.interact()` takes friends from 0 to 1, then ran 300 more frames and confirmed the
+juggler's rig and all three balls stayed at finite positions, and confirmed its spot doesn't sit inside any
+static collider. Full suite (273 `ok` lines, all passing, 0 console warnings) ran clean seven of eight
+times: `world 3: 32 to meet` (up from 31), every NPC still in the scene graph, and `world 3: 95% of the
+ground is walkable` unchanged. The one failure, once in eight runs, was Sunny Shore's kite-height check —
+timing-sensitive against real elapsed frame time, touches no file this round changed, and is the same
+flake class noted in Round 79's log.
+
+On arrival, the repo was exactly as Round 80 left it (`origin/main` at the baker commit); a stale local
+`main` ref pointed 47 commits behind until `git fetch` + `checkout -B main origin/main` sorted it, no other
+cleanup needed.

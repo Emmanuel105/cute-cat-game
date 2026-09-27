@@ -1313,6 +1313,37 @@ class Painter {
   }
 }
 
+// ---------------------------------------------------------------- juggler: stands on the spot, three balls looping hand to hand, never dropped
+class Juggler {
+  constructor(game, rig, colors, { x, z, ry = 0, cries = null, cryIcon = '🤹' }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10; this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false; this.state = 'idle'; this.timer = 0;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    // the balls fly free of the hands, so they are their own meshes, not children of the rig
+    this.balls = colors.map((c) => { const b = mesh(G.sphere(0.09, 10, 8), mat(c, { roughness: 0.5 })); game.world.add(b); return b; });
+    this.circle = game.physics.addCircle(this, x, z, 0.4);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig, P = this.game.physics, ry = rig.group.rotation.y;
+    rig.animate(0, false, dt, this.t);
+    // a smooth continuous loop, not a real cascade: each ball sweeps hand to hand, arcing up at the midpoint,
+    // the three offset by a third of a turn so one is always near the peak
+    const rx = cos(ry), rz = -sin(ry), fx = sin(ry) * 0.16, fz = cos(ry) * 0.16, W = TAU / 0.8, baseY = P.ground0(this.x, this.z) + 0.95 * rig.k;
+    this.balls.forEach((ball, i) => {
+      const phase = this.t * W + i * TAU / 3, s = sin(phase), arc = cos(phase);
+      ball.position.set(this.x + fx + rx * s * 0.26, baseY + arc * arc * 0.6, this.z + fz + rz * s * 0.26);
+      ball.rotation.x += dt * 4;
+    });
+    if (!rig.gesture) {
+      const lift = 0.1 * sin(this.t * W * 1.5);
+      for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -1.1 - lift, 10, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.7, 10, dt); A.sh.rotation.z = (A === rig.arms[0] ? 1 : -1) * 0.4; }
+    }
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- squirrel controller: stays on its spot, fidgets, watches the cat
 class Squirrel {
   constructor(game, x, z, id) {

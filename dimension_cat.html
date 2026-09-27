@@ -3079,6 +3079,37 @@ class Painter {
   }
 }
 
+// ---------------------------------------------------------------- juggler: stands on the spot, three balls looping hand to hand, never dropped
+class Juggler {
+  constructor(game, rig, colors, { x, z, ry = 0, cries = null, cryIcon = '🤹' }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10; this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false; this.state = 'idle'; this.timer = 0;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    // the balls fly free of the hands, so they are their own meshes, not children of the rig
+    this.balls = colors.map((c) => { const b = mesh(G.sphere(0.09, 10, 8), mat(c, { roughness: 0.5 })); game.world.add(b); return b; });
+    this.circle = game.physics.addCircle(this, x, z, 0.4);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig, P = this.game.physics, ry = rig.group.rotation.y;
+    rig.animate(0, false, dt, this.t);
+    // a smooth continuous loop, not a real cascade: each ball sweeps hand to hand, arcing up at the midpoint,
+    // the three offset by a third of a turn so one is always near the peak
+    const rx = cos(ry), rz = -sin(ry), fx = sin(ry) * 0.16, fz = cos(ry) * 0.16, W = TAU / 0.8, baseY = P.ground0(this.x, this.z) + 0.95 * rig.k;
+    this.balls.forEach((ball, i) => {
+      const phase = this.t * W + i * TAU / 3, s = sin(phase), arc = cos(phase);
+      ball.position.set(this.x + fx + rx * s * 0.26, baseY + arc * arc * 0.6, this.z + fz + rz * s * 0.26);
+      ball.rotation.x += dt * 4;
+    });
+    if (!rig.gesture) {
+      const lift = 0.1 * sin(this.t * W * 1.5);
+      for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -1.1 - lift, 10, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.7, 10, dt); A.sh.rotation.z = (A === rig.arms[0] ? 1 : -1) * 0.4; }
+    }
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- squirrel controller: stays on its spot, fidgets, watches the cat
 class Squirrel {
   constructor(game, x, z, id) {
@@ -6072,6 +6103,13 @@ function buildVictorian(game, entry) {
     const v4 = new Vendor(game, cheeseMonger, makeCheeseWheel(), { x: 10, z: -43.3, ry: 0, cryIcon: '🧀',
       cries: ['Cheese! Fine ripe cheese!', 'A wedge for your supper?', "None of this for cats, either."] });
     game.npcs.push(v4); greetable(game, v4); }
+  // a juggler works the open cobbles between the fountain and the west-side stalls, three balls always in the air
+  { const jx = -6, jz = -34;
+    const juggler = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
+      shirt: 0xd62839, stripes: 0xffd54a, pants: 0x2f6fd6, shoes: 0x2a2018, hat: null, scarf: null, jacket: null, bag: null, glasses: false });
+    W.add(juggler.group);
+    game.npcs.push(new Juggler(game, juggler, [0xffd54a, 0x2e9e6e, 0xf7f3ec], { x: jx, z: jz, ry: atan2(0 - jx, -34 - jz),
+      cries: ['Three balls, never four - not since Tuesday.', "Watch the hands, not the cat, sir!", "One coin in the hat, if you liked that."] })); }
   for (const [x, z] of [[-14, -34], [14, -34], [0, -46]]) { place(game, U, makeLamp('victorian'), x, z, 0); P.addBox(x, 2, z, 0.4, 4, 0.4, { cam: false }); }
   { const CL = VICTORIAN_LIMIT * 2 + 20;   // the canal runs the whole width of the town
     const water = flatPlane(game, CL, 8, mat(0x1f4f6a, { roughness: 0.15, metalness: 0.2, transparent: true, opacity: 0.85, emissive: 0x0a2a3a, emissiveIntensity: 0.3, map: TEX.water() }), 0, 30, 0, -0.35); U.push((dt) => { water.material.map.offset.x += dt * 0.01; });
