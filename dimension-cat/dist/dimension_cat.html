@@ -4104,6 +4104,14 @@ function makeFruitBasket() {
   for (const [c, x, z, s] of [[0xd62839, -0.04, 0.02, 1], [0xf2c744, 0.03, -0.03, 0.9], [0x8bc34a, 0.0, 0.04, 1], [0xd62839, 0.045, 0.02, 0.85]]) mesh(G.sphere(0.045 * s, 8, 6), mat(c, { roughness: 0.6 }), { x, y: 0.12, z, shadow: 'none', parent: g });
   return g;
 }
+/** A tied bunch of flowers, paper-wrapped, for a market stall keeper to hold up. */
+function makeFlowerBouquet() {
+  const g = new THREE.Group(), wrap = mat(0xd9c9a8, { roughness: 0.9 });
+  mesh(G.cyl(0.05, 0.075, 0.2, 10), wrap, { y: 0.1, parent: g });
+  mesh(G.torus(0.06, 0.012, 5, 12), mat(0x8a3a3a, { roughness: 0.7 }), { y: 0.16, rx: PI / 2, shadow: 'none', parent: g });
+  for (const [hue, x, z, h] of [[0.0, 0, 0, 0.32], [0.14, -0.045, 0.03, 0.28], [0.58, 0.04, -0.02, 0.30], [0.9, -0.02, -0.045, 0.26], [0.08, 0.045, 0.03, 0.29]]) mesh(G.sphere(0.045, 8, 6), mat(new THREE.Color().setHSL(hue, 0.75, 0.6), { roughness: 0.65 }), { x, y: h, z, shadow: 'none', parent: g });
+  return g;
+}
 /** A bicycle: two wheels, a frame, handlebars, a saddle and a crank. Faces +z; `wheels` and `crank` turn. */
 function makeBike(color = 0xd62839) {
   const g = new THREE.Group(), frame = mat(color, { roughness: 0.4, metalness: 0.3 }), dark = mat(0x1e1a18, { roughness: 0.8 }), rim = mat(0xc8ccd2, { metalness: 0.6, roughness: 0.4 });
@@ -5965,6 +5973,14 @@ function buildVictorian(game, entry) {
     const v = new Vendor(game, coster, makeFruitBasket(), { x: -10, z: -43.3, ry: 0, cryIcon: '🍎',
       cries: ['Apples, ripe apples!', 'Best pears in the market square!', "Mind you don't nick one, puss!"] });
     game.npcs.push(v); greetable(game, v); }
+  // a second empty stall gets a keeper too: a flower seller on the blue-striped pitch
+  { const flowerWard = makeWardrobe(r, { shirts: [0x5a7a4a, 0x4a6a8a, 0x8a5a6a], pants: [0x2a2420], shoes: [0x2a2018] });
+    const flowerSeller = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: r.chance(0.35), wardrobe: flowerWard }),
+      pants: 0x2a2420, apron: 0x3a5a3a, hat: 'bonnet', hatColor: 0x4a5a3a, bag: null, jacket: null, scarf: null });
+    W.add(flowerSeller.group);
+    const v2 = new Vendor(game, flowerSeller, makeFlowerBouquet(), { x: 10, z: -29.3, ry: 0, cryIcon: '💐',
+      cries: ['Flowers, fresh flowers!', 'Roses, tuppence a bunch!', 'Something pretty for the windowsill?'] });
+    game.npcs.push(v2); greetable(game, v2); }
   for (const [x, z] of [[-14, -34], [14, -34], [0, -46]]) { place(game, U, makeLamp('victorian'), x, z, 0); P.addBox(x, 2, z, 0.4, 4, 0.4, { cam: false }); }
   { const CL = VICTORIAN_LIMIT * 2 + 20;   // the canal runs the whole width of the town
     const water = flatPlane(game, CL, 8, mat(0x1f4f6a, { roughness: 0.15, metalness: 0.2, transparent: true, opacity: 0.85, emissive: 0x0a2a3a, emissiveIntensity: 0.3, map: TEX.water() }), 0, 30, 0, -0.35); U.push((dt) => { water.material.map.offset.x += dt * 0.01; });

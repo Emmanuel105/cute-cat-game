@@ -449,6 +449,14 @@ function makeFruitBasket() {
   for (const [c, x, z, s] of [[0xd62839, -0.04, 0.02, 1], [0xf2c744, 0.03, -0.03, 0.9], [0x8bc34a, 0.0, 0.04, 1], [0xd62839, 0.045, 0.02, 0.85]]) mesh(G.sphere(0.045 * s, 8, 6), mat(c, { roughness: 0.6 }), { x, y: 0.12, z, shadow: 'none', parent: g });
   return g;
 }
+/** A tied bunch of flowers, paper-wrapped, for a market stall keeper to hold up. */
+function makeFlowerBouquet() {
+  const g = new THREE.Group(), wrap = mat(0xd9c9a8, { roughness: 0.9 });
+  mesh(G.cyl(0.05, 0.075, 0.2, 10), wrap, { y: 0.1, parent: g });
+  mesh(G.torus(0.06, 0.012, 5, 12), mat(0x8a3a3a, { roughness: 0.7 }), { y: 0.16, rx: PI / 2, shadow: 'none', parent: g });
+  for (const [hue, x, z, h] of [[0.0, 0, 0, 0.32], [0.14, -0.045, 0.03, 0.28], [0.58, 0.04, -0.02, 0.30], [0.9, -0.02, -0.045, 0.26], [0.08, 0.045, 0.03, 0.29]]) mesh(G.sphere(0.045, 8, 6), mat(new THREE.Color().setHSL(hue, 0.75, 0.6), { roughness: 0.65 }), { x, y: h, z, shadow: 'none', parent: g });
+  return g;
+}
 /** A bicycle: two wheels, a frame, handlebars, a saddle and a crank. Faces +z; `wheels` and `crank` turn. */
 function makeBike(color = 0xd62839) {
   const g = new THREE.Group(), frame = mat(color, { roughness: 0.4, metalness: 0.3 }), dark = mat(0x1e1a18, { roughness: 0.8 }), rim = mat(0xc8ccd2, { metalness: 0.6, roughness: 0.4 });

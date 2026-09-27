@@ -1013,3 +1013,39 @@ ran clean before and after: `world 3: 28 to meet` (up from 27), `world 3: every 
 graph`, and `world 3: 94% of the ground is walkable` unchanged from before the change.
 
 On arrival, `HEAD` was already on `main` in sync with `origin/main` — no cleanup needed.
+
+
+## Round 73 — a flower seller takes the second empty stall
+
+Round 72 left three of the market square's four striped stalls still without a keeper. Rather than
+chase another world's friend count (Neighborhood, Sunny Shore, Frosty Peak and Whisper Woods are all
+still level at seventeen since round 71 — nothing there needs catching up this round), this round
+finished the job round 72 started: a decorative set piece with no one standing behind it is a small,
+well-scoped fix the same `Vendor` controller already handles.
+
+**A flower seller now works the blue-striped pitch**, holding up a new prop, `makeFlowerBouquet()` — a
+small paper-wrapped bunch, five coloured heads over a ribbon-tied wrap — and calling out: `"Flowers,
+fresh flowers!"`, `"Roses, tuppence a bunch!"`, `"Something pretty for the windowsill?"`. Built the same
+way the costermonger was: her own small wardrobe (not the shared street `vicWard` bag, which is
+Victorian's gentlemen-and-ladies palette, not fresh greens and pinks), standing 1.3 m back from the
+stall's own physics box on the same south side as every other stallholder in this square. Wired up the
+same way too — `Vendor` doesn't call `greetable()` itself, so `game.npcs.push(v); greetable(game, v);`
+right after makes her a proper friend rather than scenery.
+
+Verified beyond the test suite's own checks: a headless script started the game for real, travelled to
+Victorian, found the new `Vendor` by its `cryIcon`, confirmed both her rig and the bouquet are in the
+scene graph, teleported the cat to face her and confirmed `game.nearest.label()` reads "Say hello" and
+`game.nearest.onUse()` takes `game.state.friends` from 0 to 1 (an earlier pass through `game.interact()`
+came back a no-op, until it turned up that the cat had been dropped in still inside the portal fade
+from travelling — `game.interact()` no-ops while `game.transitioning` is true, exactly as the main test
+suite waits it out before touching anything). Full suite (293 checks, all `ok`, 0 console warnings) ran
+clean before and after building: `world 3: 29 to meet` (up from 28), `world 3: every NPC is in the scene
+graph`, and `world 3: 94% of the ground is walkable` unchanged. One run out of twelve threw a stray
+`FAIL` on the horse-and-carriage's "in the world and on the move" check (a real-wall-clock-timed test
+of metres travelled in two seconds); three clean runs on unmodified `HEAD` and eleven more clean runs
+with this change applied, both before and after, point to pre-existing timing flakiness in that one
+check rather than anything this round changed.
+
+On arrival, `HEAD` was behind `origin/main` by 39 commits — a plain fast-forward
+(`git fetch origin main && git checkout main && git merge --ff-only origin/main`) brought it level
+before starting.
