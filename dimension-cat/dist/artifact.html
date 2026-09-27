@@ -6205,6 +6205,13 @@ function buildVictorian(game, entry) {
   makeClockTower(game, 42, 0);
   flatPlane(game, 16, 16, pave, 42, 0, 0, 0.015);
   makeCarriage(game, 16, 3.4, PI / 2);
+  // the parked carriage had no one minding it; a coachman now waits up on the driver's bench, watch in hand
+  { const cx = 16, cz = 3.4, ry = PI / 2, sx = cx + 1.9 * sin(ry), sz = cz + 1.9 * cos(ry);
+    const coachman = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: r.chance(0.4) }),
+      pants: 0x1e1e24, coat: true, hat: 'top', hatColor: 0x1e2436, buttons: 0xc8b878, beard: false, moustache: true, glasses: false });
+    W.add(coachman.group);
+    game.npcs.push(new Sitter(game, coachman, { x: sx, z: sz, ry, seat: 2.0,
+      cries: ["Right on time, or so the clock says.", "The fare's been in that shop twenty minutes. Some things never change.", 'Careful of the wheels, puss.'] })); }
   const timeDoor = makeTimeDoor(game, -38, 0, PI / 2); U.push(timeDoor.userData.update);
   mesh(G.box(1.2, 0.3, 4), mat(0x6b6660, { roughness: 0.9 }), { x: -38, y: 0.15, z: 0, parent: W }); P.addBox(-38, 0.15, 0, 1.2, 0.3, 4, { cam: false });
   // the ginger boy keeps the time door company

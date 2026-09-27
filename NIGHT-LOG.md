@@ -1501,3 +1501,34 @@ On arrival, the repo was exactly as Round 86 left it (`origin/main` at the deer-
 clone whose `merge-base` briefly looked like unrelated history until `git fetch --unshallow` resolved it);
 `git checkout main && git merge --ff-only origin/main` brought local `main` in line, no other cleanup
 needed.
+
+## Round 88 — a coachman waits by the clock tower
+
+The Victorian street has a parked carriage near the clock tower (`makeCarriage`, built long ago) that has
+sat there empty this whole time — no driver, no horse, nobody minding it, right next to the one working
+clock in the game. That felt like the clearest gap in a world already busy with vendors, a juggler, a
+lamplighter, a bobby and a moving horse-and-carriage of its own.
+
+**A coachman now sits up on the parked carriage's driver's bench, watch in hand**: `"Right on time, or so
+the clock says."`, `"The fare's been in that shop twenty minutes. Some things never change."`, `"Careful of
+the wheels, puss."` Plain reuse of the `Sitter` controller (the same one seating the fire-side old-timer and
+the stump-sitters in the woods) — no new class, no held prop, the dialogue does the "pocket watch" work
+instead.
+
+Worked out the driver's bench position by hand from the carriage's own geometry: the bench mesh sits at
+local `(0, 2.0, 1.9)` inside the carriage's rotated group (`ry = PI/2`), which works out to world `(17.9,
+3.4)` once the local `z` offset is rotated into world `x`. Checked against the physics with a headless
+probe (built the bundle, called `game.travel(3, 'from-prev')`, waited out its ~1.3 s of chained
+`setTimeout`s, then read `game.physics.boxes` and `game.npcs` directly): the only static collider touching
+that spot is the carriage's own body box (it works out that he's sitting on the thing, as intended); the
+nearest unrelated colliders — two terrace houses and their fences — sit a clear 6+ m off.
+
+Verified beyond the test suite's own checks: the same probe found the coachman in the scene graph at his
+intended spot, confirmed the "Say hello" prompt exists and that using it takes `game.state.friends.size`
+from 0 to 1, and that his position stayed finite after 300 more frames. Full suite (290 `ok` lines, all
+passing, 0 console warnings, exit 0) ran clean before and after building: `world 3: 33 to meet` (up from
+32), every NPC still in the scene graph, and `world 3: 94% of the ground is walkable` unchanged.
+
+On arrival, the repo's local `main` was a detached `HEAD` sitting at the same commit as `origin/main` (a
+stale branch ref underneath it, 45 ahead / 50 behind); `git checkout -B main origin/main` reset it cleanly,
+no other cleanup needed.
