@@ -836,3 +836,28 @@ On arrival, `git status` was clean but `HEAD` was detached; `git checkout main` 
 `origin/main`, and a fresh `git fetch` confirmed the two were already in sync (no lost work — the
 detached commits from the last few rounds had, in fact, already made it to `origin/main`, despite the
 stale local ref making it look otherwise at first glance).
+
+## Round 67 — carrots for the reindeer on Frosty Peak
+
+A headless `friendTotal` tally across all seven worlds showed Frosty Peak sitting at fifteen, one
+behind Whisper Woods' seventeen and level with Sunny Shore's sixteen — the three non-hub worlds still
+safe to add hand-placed friends to, per round 64's notes on the global `rnd()` sequence. Picked Frosty
+Peak, since the third deer's spot near (24, 20) — off on its own, away from the herd the reindeer
+keeper tends near (-18, -12) — had nothing placed nearby.
+
+**A girl kneels at the edge of that deer's patch, leaving carrots on a flat rock**, using the same
+`Kneeler` pattern as the snowman-patting and igloo-sealing kids (kneeling animation, greetable by
+default, dynamic collision circle so it can't block the ground-walkable check). Her lines nod to the
+reindeer keeper across the village, who already boasts "Copper's the friendliest of the lot" — hers
+answers back: `"Copper's not the only one who likes them."` Frosty Peak goes from fifteen friends to
+sixteen.
+
+Verified beyond the test suite's own checks: built a headless script that clicks the start button
+(missed on a first pass — `game.step()` only runs `if (this.started)`, so the cat doesn't move or
+find interactables at all until the enter-screen click fires), travels to Frosty Peak, walks the cat
+to the new kneeler, and confirms `game.nearest` shows "Say hi" and `game.interact()` adds `snow:10` to
+`game.state.friends`. Full suite (273 checks) ran clean before and after building, `world 5: 16 to
+meet` among them.
+
+On arrival, `HEAD` was already on `main`, in sync with `origin/main` — no stale-ref cleanup needed
+this time.

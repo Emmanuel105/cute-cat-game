@@ -6264,6 +6264,10 @@ function buildSnowVillage(game, entry) {
   { const ix = -16, iz = 10, iry = 0.6, mx = ix + 2.3 * sin(iry), mz = iz + 2.3 * cos(iry), kx = -14, kz = 13;
     game.npcs.push(new Kneeler(game, kid(true), { x: kx, z: kz, ry: atan2(mx - kx, mz - kz),
       cries: ['Nearly sealed — just this gap left.', 'Keeps the wind out, packed in tight.', "Snug as an igloo, once it's finished."] })); }
+  // a girl kneels at the edge of the reindeer's patch, leaving carrots on a flat rock
+  { const dx = 24, dz = 20, kx = dx - 2.4, kz = dz - 1.0;
+    game.npcs.push(new Kneeler(game, kid(true), { x: kx, z: kz, ry: atan2(dx - kx, dz - kz),
+      cries: ['Left a few carrots on the rock.', "Copper's not the only one who likes them.", 'They come round eventually, if you wait quiet.'] })); }
   // a woodcutter splits logs on a stump behind the northern cabin, keeping its stove fed
   { const sx = -4, sz = 18, cx = -4, cz = 19.3;
     placeT(game, U, makeStump(r), sx, sz, r() * TAU); boxT(game, sx, sz, 1.0, 0.75, 1.0, { cam: false });
