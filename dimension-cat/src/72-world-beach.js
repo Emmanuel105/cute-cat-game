@@ -103,6 +103,13 @@ function buildBeach(game, entry) {
   { const cx = 21, cz = -36;
     game.npcs.push(new Kneeler(game, beachPerson(true, true), { x: cx, z: cz, ry: 2.0,
       cries: ["Nearly got the last letter right.", "Tide will take it in an hour, but that's alright.", "It says 'MEOW' — for you, if you can read it upside down."] })); }
+  // a birdwatcher stands on the open sand south of the huts, binoculars trained on the gulls wheeling over the water
+  { const birdWard = makeWardrobe(r, { shirts: [0x5a7a4a, 0x4a6a7a, 0x6a5a4a], pants: [0x3a3a3a, 0x2a2a2a], shoes: [0xefe7d8, 0x8d6e63] });
+    const birder = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: birdWard }),
+      hat: 'cap', hatColor: 0x2f4f4f, glasses: true, glassColor: 0x203040, jacket: null, scarf: null, bag: null });
+    W.add(birder.group);
+    game.npcs.push(new Birder(game, birder, { x: -8, z: -36, ry: 1.3,
+      cries: ["There's one - no, gone again.", "Fifty-two species this year, if I've counted right.", "Gulls mostly. Still counts."] })); }
   // a boy kneels in the dune grass south-west of the beach huts, digging for sand crabs with a toy shovel
   { const kx = -24, kz = -22, hx = kx + 1.6, hz = kz - 0.6;
     game.npcs.push(new Kneeler(game, beachPerson(false, true), { x: kx, z: kz, ry: atan2(hx - kx, hz - kz),

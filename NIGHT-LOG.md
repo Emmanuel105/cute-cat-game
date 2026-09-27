@@ -1407,3 +1407,33 @@ unchanged.
 
 On arrival, the repo was exactly as Round 83 left it (`origin/main` at the charging-robot commit); local
 `main` was stale and was fast-forwarded with `git checkout -B main origin/main`, no other cleanup needed.
+
+## Round 85 — a birdwatcher on Sunny Shore
+
+Sunny Shore had a whole flock of seagulls wheeling over the water and, after 84 rounds, still nobody on the
+sand paying them any mind — every other world with circling wildlife (Whisper Woods' owls, Frosty Peak's
+aurora) had already earned someone watching it. Sunny Shore, Frosty Peak and Whisper Woods were tied at the
+bottom of the friend count (17 each) going into this round, so any of the three was fair game; the gulls
+were the clearest gap.
+
+**A birdwatcher now stands on the open sand south of the beach huts, binoculars raised to the wheeling
+gulls**: `"There's one - no, gone again."`, `"Fifty-two species this year, if I've counted right."`, `"Gulls
+mostly. Still counts."` This is a straight reuse of the `Birder` controller already doing exactly this job
+for Whisper Woods' owls — same binoculars prop, same raise-and-lower gesture — just relocated to the beach
+with a beachier wardrobe (no coat, sunglasses instead of none). No new class, no animation risk.
+
+Checked against the physics with a headless probe (built the bundle, called `game.travel(4, 'from-hub')`,
+waited out its ~1.1 s of chained `setTimeout`s, then read `game.physics.boxes`/`circles` and `game.npcs`
+directly): placed at (-8, -36), a stretch of bare sand south-west of the hut row — zero static colliders
+within 8 m in any direction, the nearest other NPC a passing seagull `Flyer` 7 m off (no collider, flies
+over), and the nearest grounded neighbour (the beachcomber at (5, -32)) a clear 14 m away.
+
+Verified beyond the test suite's own checks: the same probe found the birdwatcher in the scene graph at its
+intended spot, confirmed the "Say hello" prompt appears within its 2.1 m greet radius, that `game.interact()`
+takes friends from 0 to 1, and that its position stayed finite after 300 more frames. Full suite (273 `ok`
+lines, all passing, 0 console warnings, exit 0) ran clean before and after building: `world 4: 18 to meet`
+(up from 17), every NPC still in the scene graph, and `world 4: 99% of the ground is walkable` unchanged.
+
+On arrival, the repo was exactly as Round 84 left it (`origin/main` at the quality-inspector commit); local
+`main` was stale (behind and holding old history) and was reset to it with `git checkout -B main
+origin/main`, no other cleanup needed.
