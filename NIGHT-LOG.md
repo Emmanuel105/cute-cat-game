@@ -911,3 +911,40 @@ ground-walkable sweep for that world held at 99%.
 On arrival, `HEAD` was on `main`, 35 commits behind `origin/main` — a plain fast-forward
 (`git checkout main && git merge --ff-only origin/main`) brought it level before starting; no stale-ref
 false alarm this time, just an honestly out-of-date local branch.
+
+## Round 70 — a gardener waters the wildflowers
+
+A headless `friendTotal` tally across all seven worlds showed the Neighborhood at fifteen, two behind
+the three hub worlds (Sunny Shore, Frosty Peak, Whisper Woods), which rounds 66–69 had brought level
+with each other at seventeen apiece. The Neighborhood hadn't had a new hand-placed friend in a while,
+so it had quietly fallen behind the pack it's supposed to keep pace with. Went looking for open ground
+away from every lot, road and hand-placed prop: the wildflower patch at the south-west corner
+(-56, -60), planted by `makeFlowers` but with nobody standing in it, fit.
+
+**A girl kneels there watering the blooms with a little can**, using the same `Kneeler` pattern as the
+beach and snow vignettes (kneeling animation, greetable by default, dynamic collision circle so it
+can't block the ground-walkable check). Three lines cycle while the cat's nearby: `"Careful not to
+drown them!"`, `"Every flower gets a turn."`, `"There — whole patch done for today."` The Neighborhood
+goes from fifteen friends to sixteen.
+
+This one had a real snag worth recording: the Neighborhood's street NPCs all share one `makeWardrobe()`
+shuffle-bag of eighteen shirt colours (`ward`, built once at the top of `buildNeighborhood`), and the
+street was already drawing nineteen colours from it — one over capacity — before this round. It got
+away with it because the nineteenth draw (a hidden or excluded rig) never showed up in the test's
+visible-people list. Building the new gardener through the shared `person()` helper as a first attempt
+pushed a twentieth draw into the mix and immediately surfaced a real collision: `node test/run.mjs`
+failed `no two neighbours wear the same shirt` (16 colours for 17 people). The fix was to build her
+by hand with `makeHuman()` + `randomPerson()` and a fixed, explicit shirt colour (`0xf4a340`, not in
+`SHIRT_COLORS`) instead of routing through the shared bag at all — the same trick the beach and snow
+worlds use for their own one-off characters, just taken one step further here since even a dedicated
+small wardrobe built from `SHIRT_COLORS` entries risked echoing a colour the shared bag had already
+drawn.
+
+Verified beyond the test suite's own checks: a headless script called `game.start('new')` directly,
+teleported the cat straight to the gardener's spot, and confirmed `game.nearest.label()` reads "Say
+hi" and `game.interact()` takes `game.state.friends` from 0 to 1. Full suite (293 checks) ran clean
+before and after building, `neighborhood has 17 people` / `no two neighbours wear the same shirt (17
+colours for 17 people)` / `the Neighborhood has 16 people to meet` all passing, and `world 0: 96% of
+the ground is walkable` unchanged from before the change.
+
+On arrival, `HEAD` was already on `main` in sync with `origin/main` — no cleanup needed.

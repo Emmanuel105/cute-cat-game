@@ -5651,6 +5651,13 @@ function buildNeighborhood(game, entry) {
       game.toast(game.balloon && c !== BALLOONS[0] ? '\ud83c\udf88 A new colour!' : '\ud83c\udf88 A balloon! It follows you everywhere \u2014 even through the portals.', 3200); } }); }
   // two children playing tag on the east lawn
   game.npcs.push(new Playmates(game, person({ child: true, female: false }), person({ child: true, female: true }), { cx: 10, cz: 46, leash: 5.5 }));
+  // a girl kneels in the wildflower patch at the south-west corner, watering the blooms with a little can
+  // (a fixed shirt colour outside SHIRT_COLORS, not drawn from the street's shared `ward` bag — that pool
+  // is already fully subscribed by the rest of the street and any further draw risks a repeat)
+  { const fx = -56, fz = -60, kx = fx, kz = fz - 2;
+    const gardener = makeHuman({ ...randomPerson(r, { female: true, child: true }), hairStyle: 'pony', shirt: 0xf4a340, backpack: null }); W.add(gardener.group);
+    game.npcs.push(new Kneeler(game, gardener, { x: kx, z: kz, ry: atan2(fx - kx, fz - kz),
+      cries: ['Careful not to drown them!', 'Every flower gets a turn.', "There — whole patch done for today."] })); }
   // a cyclist in the westbound lane, ringing her bell for anyone in the way
   { const bike = makeBike(0x2e9e6e); W.add(bike.group);
     game.npcs.push(new Cyclist(game, person({ female: true, child: false, elder: false, hat: 'cap', hatColor: 0xf2c744, hairStyle: 'pony', skirt: null, jacket: null }), bike, { z: 15.4, dir: -1, speed: 3.6, x: -55 })); }
