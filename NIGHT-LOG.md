@@ -1375,3 +1375,35 @@ passing, 0 console warnings, exit 0) ran clean before and after building: `world
 On arrival, the repo was exactly as Round 82 left it (`origin/main` at the car-wash commit); a detached
 `HEAD` on that same commit with local `main` 49 behind was fixed with `git checkout -B main origin/main`,
 no other cleanup needed.
+
+## Round 84 — Sector 8's belt gets a quality inspector
+
+Robot City's second conveyor line, out in the east yard under the "SECTOR 8" neon sign, had run for every
+round since it was built with nobody watching it — a good half of the factory floor's own pair of belts had
+a loader robot at the end; this one never did.
+
+**A human quality inspector now kneels by the stack of crates already off the belt**, clipboard in hand,
+looking them over: `"Every crate off Sector 8 gets a look before it leaves."`, `"Careful, puss — don't dent
+the paperwork."`, `"Line's running smooth today, for once."` The first instinct was to give this belt a
+second `Loader` robot to match the factory floor's pair — but the test suite hardcodes `ld.length === 2` for
+Robot City's loaders (a real assertion that two, and only two, Loader robots lift crates), so a third would
+have failed it outright. A human `Kneeler` beside the same kind of crate stack tells the same "someone
+finally minds this belt" story without touching that invariant, and it's a plain reuse of an existing,
+well-tested controller — no new class, no animation risk.
+
+Checked against the physics with a headless probe (built the bundle, clicked the on-screen start button so
+`game.started` is true and the interactable-scanning half of the game loop actually runs — the first probe
+attempt skipped that and got a false "nothing to interact with" reading before this was caught — then
+`game.travel(2, 'from-prev')`, waited out its real ~1.1 s of chained `setTimeout`s): the crate stack sits at
+(45.5–46.6, 19.1), the inspector kneels at (47.6, 19.1), and the only static colliders within 8 m are the
+conveyor's own box, the crate stack's own box, and a light pole 7 m off at (44, 26) — no skyscraper from
+either ring of the skyline landed nearby. Confirmed the "Say hello" prompt appears within range, that
+`game.interact()` takes friends from 0 to 1, and that the inspector and crates stay at finite positions
+after 300 more frames.
+
+Full suite (290 `ok` lines, all passing, 0 console warnings, exit 0) ran clean three times: `world 2: 27 to
+meet` (up from 26), every NPC still in the scene graph, and `world 2: 88% of the ground is walkable`
+unchanged.
+
+On arrival, the repo was exactly as Round 83 left it (`origin/main` at the charging-robot commit); local
+`main` was stale and was fast-forwarded with `git checkout -B main origin/main`, no other cleanup needed.
