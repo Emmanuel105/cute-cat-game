@@ -1437,3 +1437,35 @@ lines, all passing, 0 console warnings, exit 0) ran clean before and after build
 On arrival, the repo was exactly as Round 84 left it (`origin/main` at the quality-inspector commit); local
 `main` was stale (behind and holding old history) and was reset to it with `git checkout -B main
 origin/main`, no other cleanup needed.
+
+## Round 86 — someone feeds Whisper Woods' deer
+
+Frosty Peak has a reindeer keeper checking harness bells and a girl leaving carrots on a rock for its herd;
+Whisper Woods has had three wandering deer since the world was built and nobody paying them any mind at
+all — the woods' friend count (17) was tied for lowest with Frosty Peak, and this was the clearest gap
+between the two.
+
+**A woman now kneels at the fringe of the trees by the western deer's home spot, scattering acorns**:
+`"Acorns bring them close, if you're quiet."`, `"Careful, puss — you'll scare them off."`, `"That one always
+comes first."` Plain reuse of the `Kneeler` controller already doing this job all over the game (the
+sculptor, the reindeer keeper, both snowman/igloo kids) — no new class, no animation risk.
+
+Checked against the physics with a headless probe (built the bundle, called `game.travel(6, 'from-hub')`,
+waited out its real ~1.1 s of chained `setTimeout`s before reading `game.physics.boxes` and `game.npcs`
+directly — the first attempt filtered boxes with `Array.filter`'s index argument standing in for a default
+radius parameter and reported half the world as "nearby"; fixed by wrapping the filter in an explicit
+one-arg lambda): placed at (-21.8, 3.0), 2.2 m off the deer's own home spot, the same offset the Frosty Peak
+reindeer keeper already uses safely. Only one static collider sits within 8 m — a giant mushroom at (-20, 0)
+— and its nearest edge is still 3.4 m clear; the nearest other NPC (the deer itself, roaming its 8 m leash)
+settled 3.8 m away after 300 more frames.
+
+Verified beyond the test suite's own checks: the same probe found the kneeler in the scene graph at its
+intended spot, confirmed a "Say hello" prompt exists, and confirmed its position stayed finite after those
+300 frames. Full suite (273 `ok` lines, all passing, 0 console warnings, exit 0) ran clean before and after
+building: `world 6: 18 to meet` (up from 17), every NPC still in the scene graph, and `world 6: 98% of the
+ground is walkable` (down 1 point from the new collider, still comfortably above the suite's 80% floor).
+
+On arrival, the repo's local `main` was a detached `HEAD` one commit ahead of a stale cached `origin/main`
+ref; a `git fetch origin main` showed the real remote had already moved to that same commit (a forced,
+unrelated-history update — the local ref was simply out of date, not actually behind), and `git checkout -B
+main origin/main` cleared it up, no other cleanup needed.
