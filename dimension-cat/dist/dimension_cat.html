@@ -2736,6 +2736,21 @@ class Kneeler {
   }
 }
 
+// ---------------------------------------------------------------- charger: stands put, plugged into something, its rig's own idle pose doing all the work
+class Charger {
+  constructor(game, rig, { x, z, ry = 0, cries = null, cryIcon = '🔌' }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    this.circle = game.physics.addCircle(this, x, z, 0.35);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; this.rig.animate(0, false, dt, this.t);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- vendor: stands on their pitch holding something up in the left hand, and calls their wares
 class Vendor {
   constructor(game, rig, held, { x, z, ry = 0, cries = null, cryIcon = '\ud83c\udf88' }) {
@@ -6060,6 +6075,23 @@ function buildRobotCity(game, entry) {
     W.add(painter.group);
     game.npcs.push(new Painter(game, painter, makeEasel(), { x: 0, z: 27, ry: -1.68,
       cries: ['Trying to get the neon just right.', 'Nobody paints chrome. Someone should.', "That statue holds still, at least - unlike some cats."] })); }
+  // a worker robot recharges at a pylon on the quiet side of the statue plaza — the "CHARGE" sign never had a customer until now
+  { const px = -36, pz = 12, rx = -37, rz = 12;
+    const steel = mat(0x5a6470, { metalness: 0.75, roughness: 0.35 });
+    const pylon = group(px, 0, pz, W);
+    mesh(G.cyl(0.28, 0.32, 1.1, 12), steel, { y: 0.55, parent: pylon });
+    mesh(G.box(0.5, 0.1, 0.5), mat(0x2a2f38, { roughness: 0.7 }), { y: 1.08, parent: pylon });
+    const bulb = mesh(G.sphere(0.13, 12, 10), glowMat(0x4ade80, 1.5), { y: 1.28, shadow: 'none', parent: pylon });
+    P.addBox(px, 0.55, pz, 0.6, 1.1, 0.6, { cam: false });
+    const pl = pointLight(0x4ade80, 30, 7, px, 1.3, pz, W);
+    U.push((dt, t) => { const k = 1.3 + sin(t * 2.2) * 1.1; bulb.material.emissiveIntensity = k; pl.intensity = 18 + k * 8; });
+    const chargeRobot = makeRobot(); W.add(chargeRobot.group);
+    const cableGroup = group(0, 0, 0, W);
+    noInk(mesh(G.cyl(0.03, 0.03, 1, 6), mat(0x1a1a20, { roughness: 0.9 }), { rx: PI / 2, shadow: 'none', parent: cableGroup }));
+    const p0 = V3(px, 1.2, pz), p1 = V3(rx + 0.32, 1.05, rz);
+    cableGroup.position.copy(p0).lerp(p1, 0.5); cableGroup.lookAt(p1); cableGroup.scale.set(1, 1, p0.distanceTo(p1));
+    game.npcs.push(new Charger(game, chargeRobot, { x: rx, z: rz, ry: atan2(px - rx, pz - rz),
+      cries: ['Charge at 74%... 75%...', 'Do not unplug. Please do not unplug.', 'Almost full. Almost.', 'Beep. Recharging. Beep.'] })); }
   makeWoodenDoor(game, 19, -15, 0, () => game.travel(3, 'from-prev'));
   const back = makeRingPortal(0xff5fd2, { frame: 0x3a4048 }); place(game, U, back, -10, 12, 0); P.addBox(-11.4, 1.3, 12, 0.5, 2.6, 0.6); P.addBox(-8.6, 1.3, 12, 0.5, 2.6, 0.6);
   game.addInteractable({ obj: back, radius: 2.4, label: () => 'Return to Candy Land', onUse: () => game.travel(1, 'from-next') });

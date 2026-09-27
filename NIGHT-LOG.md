@@ -1340,3 +1340,38 @@ the scene graph, and `world 0: 96% of the ground is walkable` unchanged.
 On arrival, the repo was exactly as Round 81 left it (`HEAD` detached at the tip of `origin/main`, local
 `main` 48 commits behind); fast-forwarded local `main` to `origin/main` and checked it out before starting,
 no other cleanup needed.
+
+## Round 83 — a robot recharges by the statue plaza
+
+Robot City's west statue plaza has flown a green neon "CHARGE" sign since the world was first built, but
+nothing there had ever actually been charging — a decoration nobody could read as anything but scenery.
+
+**A worker robot now stands plugged into a charging pylon on the plaza's quiet south side**, a cable
+running from its side to the pylon's glowing head, which breathes brighter and dimmer on a slow sine
+(paired with a matching point light so the glow actually lights the concrete, not just its own bulb). No
+new geometry beyond the pylon itself (a steel post, a dark cap, a glowing green sphere) and the cable — the
+robot is the same `makeRobot()` used everywhere else in the city. It needed a new controller, though:
+nothing existing left a rig standing put while still reachable and chatty. `Charger` is `Kneeler` stripped
+down to the parts that make sense for a robot (no legs to re-pose — the rig's own idle animation already
+handles that) — greetable, with its own cries: `"Charge at 74%... 75%..."`, `"Do not unplug. Please do not
+unplug."`, `"Beep. Recharging. Beep."` The cable itself is built exactly like the fishing line in
+`IceFisher`: a rotated cylinder in a wrapper group, then one `lookAt` + `scale.set(1,1,dist)` at
+construction time — no per-frame update needed, since neither end ever moves.
+
+Checked against the physics with a headless probe script (built the bundle, called `game.travel(2,
+'from-prev')`, waited out its real 600ms `setTimeout` before reading `game.physics.boxes`) rather than
+guessing coordinates: the robot and pylon sit at (-37, 12) and (-36, 12), a stretch of bare concrete with
+zero colliders and zero `game.zones` entries within several metres in every direction — the nearest things
+are a lamp post 7 m off, the statue's own collider 9 m off, and two skyscraper footprints 8-9 m off. Hand-placed
+props and the ring portal back to Candy Land (at x=-10) are 27 m clear.
+
+Verified beyond the test suite's own checks: the same headless approach found the new `Charger` in the
+scene graph at its intended spot, confirmed a "Beep hello" prompt appears and `game.interact()` takes
+friends from 0 to 1, ran 300 more frames and confirmed both the robot and the cat stayed at finite
+positions, and confirmed the spot isn't embedded in any static collider. Full suite (273 `ok` lines, all
+passing, 0 console warnings, exit 0) ran clean before and after building: `world 2: 26 to meet` (up from
+25), every NPC still in the scene graph, and `world 2: 88% of the ground is walkable` unchanged.
+
+On arrival, the repo was exactly as Round 82 left it (`origin/main` at the car-wash commit); a detached
+`HEAD` on that same commit with local `main` 49 behind was fixed with `git checkout -B main origin/main`,
+no other cleanup needed.
