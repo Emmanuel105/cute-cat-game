@@ -6931,6 +6931,17 @@ function buildForest(game, entry) {
     game.npcs.push(new RingDance(game, dancers, { cx: 21, cz: 0, r: 1.8, speed: 0.6, turnEvery: 8, cryIcon: '🧚',
       cries: ['Round and round, three times for a wish!', "Don't stop 'til the ring says so!", 'Faster - before the fairies notice!'] })); }
 
+  // a reader sits on the grass south of the glade with a book — the clearest ground left in the whole wood by a headless probe (18.9 m from the nearest neighbour)
+  { const reader = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.4) }), shirt: 0x6a5a8a, pants: 0x3a3a4a, shoes: 0x3a2a1e, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: r.chance(0.5) });
+    W.add(reader.group);
+    const book = group(0, -0.02, 0.14, reader.hands[1]); book.rotation.x = -1.35; book.rotation.z = 0.15;
+    mesh(G.box(0.26, 0.02, 0.19), mat(0xe8dcc0, { roughness: 1 }), { parent: book });
+    mesh(G.box(0.27, 0.008, 0.2), mat(0x8a4a3a, { roughness: 0.8 }), { y: -0.012, parent: book });
+    const flap = group(0.13, 0.011, 0, book); mesh(G.box(0.13, 0.006, 0.19), mat(0xf2ead6, { roughness: 1 }), { x: 0.065, parent: flap });
+    let pageT = r() * 6.5; U.push((dt) => { pageT += dt; const ft = pageT % 6.5, a = ft < 0.5 ? smoothstep(0, 0.5, ft) : ft < 1.0 ? 1 - smoothstep(0.5, 1.0, ft) : 0; flap.rotation.y = -a * 2.6; });
+    game.npcs.push(new Sitter(game, reader, { x: 14, z: -32, ry: atan2(8 - 14, -6 - (-32)), seat: 0.1,
+      cries: ['Just one more chapter.', 'Mind your paws — that page is thin.', "I've lost my place again."] })); }
+
   // an attendant waits at the foot of the zipline's start tower, checking the cable before sending the next rider off — though the only rider today is the squirrel
   { const attendant = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }), shirt: 0x3a5a6a, pants: 0x3a3a3a, shoes: 0x2a2018, backpack: 0x8a5a2a, hat: 'cap', hatColor: 0x2a3a4a, scarf: null, jacket: null, bag: null, glasses: false });
     W.add(attendant.group);

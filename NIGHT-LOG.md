@@ -2157,3 +2157,34 @@ rig is parented into the scene (`game.world.traverse` finds it), walked the cat 
 `game.nearest.label()` reads "Say hi" and `game.interact()` takes `friends.size` from 0 to 1. Full
 suite: `world 4: 23 to meet` (up from 22), 99% of Sunny Shore's ground still walkable (unchanged),
 every NPC still in the scene graph, 0 console warnings, exit 0.
+
+## Round 110 — a reader in the grass, and a second stale-history recovery
+
+This sandbox started out on a `main` frozen 76 rounds behind this log — the exact
+`round34-attempt-on-old-main` scenario round 97 already named and shelved as a known failure mode.
+Built and committed a whole round (a fisherman on Sunny Shore's pier) against that stale base before
+noticing anything was wrong; partway through, `origin/main` was force-pushed to the real, 109-round
+history by another concurrent run, and the push came back rejected as non-fast-forward. Checked what
+had actually landed on `origin` before touching anything: it was the genuine, far more advanced
+line, not an abandoned branch. The stale attempt was worthless anyway — by this point in the real
+history every world already has its own angler or ice-fisher sitting over open water — so it was
+parked on a local-only branch (`backup-round34-stale-base`, never pushed) and `main` was reset to
+match `origin/main` before starting this round over for real.
+
+**A reader now sits in the grass well south of Whisper Woods' glade, book open in their lap, a page
+turning every so often.** A headless probe (build the world, collect every NPC's and interactable's
+position, sweep the walkable ground for the point farthest from all of them) found (14, -32) — 18.9 m
+from its nearest neighbour, the clearest spot left in a wood this dense. Reuses the `Sitter`
+controller already doing duty for the whittler, knitter and daisy-chain weaver, at ground height
+instead of a stump, holding a small two-tone book (new geometry — no book prop existed before) with
+a hinged page that flips over and back roughly every six and a half seconds. Lines: *"Just one more
+chapter."* / *"Mind your paws — that page is thin."* / *"I've lost my place again."* Whisper Woods
+goes from 22 to 23 to meet, level with Sunny Shore and the Neighborhood.
+
+Verified: full suite green four runs in a row after the change (`world 6: 23 to meet`, up from 22;
+every NPC still in the scene graph; 0 console warnings; `exit 0`) before rebuilding
+`dist/dimension_cat.html` and the root copy. Worth noting: the very first run after the change did
+fail, on an unrelated pre-existing flake (`time door → neighborhood`, `completeJourney()` finding
+`transitioning` still stuck true from an earlier world's fade) — reproduced independently on a clean
+checkout of `main` with none of this round's changes applied (2 failures in 4 runs there too), so
+it isn't this round's doing and wasn't this round's job to chase down.
