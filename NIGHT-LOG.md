@@ -1614,3 +1614,29 @@ passing, 0 console warnings, exit 0) ran clean before and after building; Whispe
 On arrival, local `main` was a stale detached `HEAD` sitting behind `origin/main` (a force-updated
 branch ref underneath it); `git checkout -B main origin/main` reset it cleanly, no other cleanup
 needed.
+
+## Round 92 — the third owl answers back
+
+A headless tally of `game.friendTotal` per world (built the bundle, called `game.load(i, ...)` for
+each) found the four hub worlds (Neighborhood, Sunny Shore, Frosty Peak, Whisper Woods) tied at
+nineteen apiece — nothing thinnest to chase this time. Went looking for an unfinished thread
+instead: round 64 wired up the westernmost of Whisper Woods' three perched owls to answer a hello,
+round 65 did the same for the middle one, and both logs named the third — at (12, 32), by the
+lantern string running out to the treehouse — as "still just scenery," never picked back up since.
+
+**That owl now answers too.** Same `game.namedFriend()` + `befriend()` pattern as its two
+tree-mates (an owl thirty feet up has no rig for `greetable()`'s marker checks), its own id
+(`owl3`, alongside `owl` and `owl2`, all scoped under Whisper Woods' `forest:` key) and its own
+line: `"Hoo? ...Hoo. That's the whole conversation, really."` Whisper Woods goes from nineteen
+friends to twenty, ahead of the other three hub worlds.
+
+Verified beyond the test suite's own checks: a headless script started the game for real, travelled
+to Whisper Woods, found the third owl's interactable by position, teleported the cat to it, confirmed
+`game.nearest.label()` reads "Say hello to the owl" and `game.interact()` takes `game.state.friends`
+from empty to holding `forest:owl3`, then ran 300 more frames and confirmed the owl's position stayed
+finite. Full suite ran clean before and after building: `world 6: 20 to meet` (up from 19), every NPC
+still in the scene graph, 0 console warnings, exit 0.
+
+On arrival, local `main` was a stale ref sitting well behind a detached `HEAD` that matched
+`origin/main` exactly (the same "forced update" pattern several recent rounds have hit) —
+`git checkout -B main origin/main` reset it cleanly before starting, no other cleanup needed.
