@@ -1865,3 +1865,35 @@ both and `game.interact()` takes `game.state.friends` from 0 to 2, then ran 400 
 confirmed both rigs' positions stayed finite. Full suite ran clean before and after building:
 `world 2: 29 to meet` (up from 27), every NPC still in the scene graph, 88% of Robot City's ground
 still walkable, 0 console warnings, exit 0.
+
+## Round 100 — a tracker follows paw prints toward the cave
+
+Local `main` had drifted into a detached HEAD again (the same stale-checkout pattern noted in the
+last couple of rounds, not an actual divergence), so this round started with a `git fetch` and
+`git checkout -B main origin/main` before touching anything.
+
+Counted world names across the last twenty-odd log entries to find the least-visited one: Frosty
+Peak had come up only twice recently, against three or more for everything else, even though it's
+one of the busiest hand-built worlds already (39 NPCs before this round).
+
+**A tracker now kneels on the open snow south of the village, studying a line of paw prints that
+lead toward the yeti's cave.** Built with the existing `Kneeler` controller — the same one already
+doing the ice sculptor, the reindeer keeper and four separate kids — so no new animation code was
+needed, just a new person and a new reason to be down on one knee. Lines: *"Prints this big? Has to
+be the yeti."*, *"Careful, puss — don't smudge them."*, *"Heading straight for the cave, these
+are."*
+
+Found the spot with a headless probe rather than eyeballing it: built the world for real, collected
+every NPC's position, then swept a grid checking `game.physics.boxes` the same way the test suite's
+own road-walker does, ranking clear ground by distance to the nearest existing NPC. The top hits
+all fell inside the cave's own flattened entrance strip (`zones.addSpan(-7, -62, 7, -24)`) and had
+to be thrown out by hand; landed on (6, −20), just outside that strip and 14 m from anything else,
+confirmed clear at a generous 0.8 m radius.
+
+Verified beyond the test suite's own checks: drove `game.start('new')` for real, travelled to
+Frosty Peak, found the new `Kneeler` in `game.npcs` with its rig parented into the scene, walked the
+cat up to it, confirmed `game.nearest.label()` reads "Say hello" and `game.interact()` takes
+`game.state.friends` from 0 to 1, then ran 300 more frames and confirmed the rig's position stayed
+finite. Full suite ran clean before and after building: `world 5: 20 to meet` (up from 19), every
+NPC still in the scene graph, 98% of Frosty Peak's ground still walkable, 0 console warnings,
+exit 0.

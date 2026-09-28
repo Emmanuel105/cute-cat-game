@@ -6653,6 +6653,13 @@ function buildSnowVillage(game, entry) {
       hat: 'beanie', hatColor: 0x5a6a3a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a }); W.add(gatherer.group);
     game.npcs.push(new Forager(game, gatherer, { x: 14, z: 27, ry: -0.6, cryIcon: '🌲',
       cries: ['Pinecones catch quicker than logs.', 'Every cabin wants kindling before the wood runs low.', 'Mind your paws, puss - sticky with sap.'] })); }
+  // a tracker kneels on the open ground south of the square, studying a line of paw prints heading toward the cave
+  { const tx = 6, tz = -20;
+    const trackWard = makeWardrobe(r, { shirts: [0x4a5a4a, 0x5a4a3a, 0x3a4a5a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const tracker = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: trackWard }),
+      hat: 'beanie', hatColor: 0x3a4a5a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a }); W.add(tracker.group);
+    game.npcs.push(new Kneeler(game, tracker, { x: tx, z: tz, ry: atan2(0 - tx, -29 - tz), cryIcon: '🐾',
+      cries: ['Prints this big? Has to be the yeti.', "Careful, puss — don't smudge them.", 'Heading straight for the cave, these are.'] })); }
   // the yeti's cave: a long tunnel north into the mountain, lit by gems, with the yeti in its den at the far end
   const cave = makeCave(game, U, 0, -29, 27, r);
   for (const [x, z] of [[-9, -24], [9, -25]]) { const p = makeSnowPine(r); placeT(game, U, p, x, z, 0); boxT(game, x, z, 1.2 * p.scale.x, 5, 1.2 * p.scale.x, { cam: false }); }
