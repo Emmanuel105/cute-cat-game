@@ -6894,6 +6894,13 @@ function buildForest(game, entry) {
     game.npcs.push(new Kneeler(game, hunter, { x: kx, z: kz, ry: atan2(lx - kx, lz - kz),
       cries: ["It's in there, I heard it snuffle.", 'Shh - you\'ll frighten it further in.', 'There! ...no. Gone again.'] })); }
 
+  // a naturalist kneels by the log up near the stepping stones — the only one of the five hollow logs nobody had stopped at yet — noting the moss along its bark
+  { const lx = 12, lz = 14, lry = 0.6, off = 1.5, kx = lx + off * sin(lry), kz = lz + off * cos(lry);
+    const naturalist = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }), shirt: 0x5a6a4a, pants: 0x4a4030, shoes: 0x3a2a1e, bag: 0x8a6a4a, hat: 'cap', hatColor: 0x3a4a2e, scarf: null, jacket: null, backpack: null, glasses: true });
+    W.add(naturalist.group);
+    game.npcs.push(new Kneeler(game, naturalist, { x: kx, z: kz, ry: atan2(lx - kx, lz - kz),
+      cries: ['This moss only grows on the north side, you know.', 'Careful, puss — mind the notebook.', "Species forty, if I've counted right."] })); }
+
   // three children ring-dance in a clearing east of the glade — everyone knows three turns of the fairy ring earns a wish
   { const ringWard = makeWardrobe(r, { shirts: [0xef7d2f, 0x5a8a6a, 0x2f6fd6], pants: [0x2e4a3a, 0x3a3a3a, 0x4a3a2a], shoes: [0x3a2a1e, 0x2a2018] });
     const dancers = [true, false, true].map((female) => { const rig = makeHuman({ ...randomPerson(r, { female, child: true, wardrobe: ringWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false }); W.add(rig.group); return rig; });

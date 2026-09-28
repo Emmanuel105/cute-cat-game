@@ -2047,3 +2047,26 @@ the cat up to each in turn and confirmed `game.interact()` takes `friends.size` 
 (ids `beach:16`, `beach:17`) and the score from 0 to 10, same as any other greeting. Full suite:
 `world 4: 22 to meet` (up from 20), 99% of Sunny Shore's ground still walkable, every NPC still in
 the scene graph, 0 console warnings, exit 0.
+
+## Round 106 — a naturalist notes the moss on the fifth log
+
+Neighborhood, Frosty Peak and Whisper Woods were tied lowest at 21 people to meet. Whisper Woods
+plants five hollow logs (round 91's list: `(12,14)`, `(-8,-18)`, `(22,-14)`, `(-22,-6)`, `(2,12)`),
+but only one — the eastern log where a child hunts for a hedgehog — had ever got a person. The
+other four, including the one up near the stepping-stones path at (12, 14), had sat empty since
+they were first placed.
+
+**A naturalist now kneels beside that log, examining the moss growing along its bark** — the same
+`Kneeler` controller as the hedgehog-hunting child and a dozen others in this world, just with a
+different reason to be there (studying the log rather than something living inside it), standing
+1.5 m off the log's own axis-aligned collider box, perpendicular to the log's rotation rather than
+at either end. Lines: *"This moss only grows on the north side, you know."*, *"Careful, puss — mind
+the notebook."*, *"Species forty, if I've counted right."*
+
+Verified beyond the test suite's own checks: built world 6 headless, confirmed the log's physics box
+sits at (12, 14) with a 0.7 m half-extent, confirmed the naturalist's kneel spot (12.85, 15.24)
+clears it with room to spare and the nearest other NPC is 8.3 m away, confirmed the rig is parented
+into the scene, and — with `game.start('new')` called first — walked the cat up and confirmed
+`game.nearest.label()` reads "Say hello" and `game.interact()` takes `friends.size` from 0 to 1
+(id `forest:14`). Full suite: `world 6: 22 to meet` (up from 21), 98% of Whisper Woods' ground still
+walkable (was 99%), every NPC still in the scene graph, 0 console warnings, exit 0.
