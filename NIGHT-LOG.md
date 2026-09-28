@@ -1724,3 +1724,34 @@ hello", confirmed `game.interact()` takes `game.state.friends` from empty to one
 frames and confirmed the rig's position stayed finite throughout. Full suite ran clean before and
 after building: `world 0: 20 to meet` (up from 19), every NPC still in the scene graph, 96% of the
 Neighborhood's ground still walkable, 0 console warnings, exit 0.
+
+## Round 96 — a zipline attendant for Whisper Woods
+
+Checked the friend count across worlds and Frosty Peak was lowest at 19, but its build function
+is already dense with kneelers, sitters and vendors (as recent rounds have noted), so rather than
+crowd it further, looked for a genuinely empty spot elsewhere. Whisper Woods' zipline — a start
+tower at (-30, 30) with a squirrel riding the trolley down to a landing post — had never had anyone
+near it, despite the woods otherwise being full of people.
+
+**An attendant now stands at the foot of the tower, checking the cable before sending the next
+rider off.** Built with the `Charger` controller (stand-in-place, greetable, periodic cries), since
+nobody actually climbs the tower or rides the line — it's decorative, same as before. Lines:
+*"Cable's tight, harness checked - all set."*, *"Only ever the squirrel gets a turn, mind."*,
+*"Mind the posts, puss - they don't budge."* — a nod to the fact that the only rider is, and
+always has been, the squirrel on the trolley.
+
+Placed at (-33, 28), 3.6 m from the tower's own 2×2 m physics box and clear of every other prop
+in the file (inner trees, hollow logs, rock piles, the ring-dance clearing) — confirmed empty with
+`game.physics.blocked()` in a headless probe before writing the change, since the spot sits well
+outside anything the test suite's own road/path walker checks. Added the block after the ring-dance
+NPCs, at the end of the world's people, so it only appends new `r()` draws rather than reshuffling
+earlier ones (the mistake Round 95 hit and fixed).
+
+Verified beyond the test suite's own checks: a headless script started the game for real (clicking
+the actual start button), travelled to Whisper Woods, waited out the real portal-fade timer,
+found the new `Charger` in `game.npcs` with its rig parented into the scene, teleported the cat
+alongside it, confirmed `game.nearest._label` reads "Say hello", confirmed `game.interact()` takes
+`game.state.friends` from empty to one, then ran 300 more frames and confirmed the rig's position
+stayed finite throughout. Full suite (273 checks) ran clean before and after building: `world 6: 21
+to meet` (up from 20), every NPC still in the scene graph, 99% of Whisper Woods' ground still
+walkable, 0 console warnings, exit 0.
