@@ -2126,3 +2126,34 @@ beekeeper, confirmed `game.nearest.label()` reads "Say hello" and `game.interact
 `friends.size` from 0 to 1 and score from 0 to 5. Full suite: `the Neighborhood has 22 people to
 meet` (up from 21), `no two neighbours wear the same shirt (23 colours for 23 people)`, 96% of the
 Neighborhood's ground still walkable, every NPC still in the scene graph, 0 console warnings, exit 0.
+
+## Round 109 — a sand copy of the beach hut
+
+With the Neighborhood bumped to 22 last round, four worlds were tied at the bottom of the to-meet
+tally: Neighborhood, Sunny Shore, Frosty Peak and Whisper Woods, all at 22. Frosty Peak and Whisper
+Woods had both just been touched (rounds 106 and 107), so Sunny Shore — last added to back in round
+105 — got this one.
+
+**A kid now kneels in the sand right beside the yellow beach hut's steps, patting together a
+lopsided miniature copy of the hut itself.** Same `Kneeler` controller as the sandcastle child, the
+beachcomber, the tideline sand-writer and the sand-crab digger already scattered around this beach —
+a fifth kneeling vignette, but the only one that riffs on a prop already standing right next to it
+rather than the open sand. Lines: *"Nearly as tall as the real one!"* / *"It needs a door — hang
+on."* / *"Careful, puss, that's the chimney."*
+
+Finding an actually empty spot on a beach this dense took a headless probe rather than eyeballing
+the coordinate lists: built world 4, collected every existing NPC's position, then swept a 1 m grid
+across the open sand scoring each free (non-`physics.blocked`) cell by distance to its nearest
+neighbour. The winner, (-6, -22), sat 13+ m from anything else and turned out to be a few metres
+east of the westernmost beach hut — closer to that hut than to any person, hence the sand-hut idea
+instead of another shell or sandcastle riff. Placed it after the sandcastle child's own `Kneeler`
+push in the build order on purpose: `test/run.mjs` finds *that* one by `game.npcs.find(... Kneeler)`
+for its "a child kneels at the sandcastle" check, and `find` always returns the first match, so a new
+Kneeler is only safe added later in the list, never earlier.
+
+Verified beyond the test suite's own checks: built world 4 headless with a real `game.travel(4,
+'from-hub')` and a full transition wait, found the new `Kneeler` at exactly (-6, -22), confirmed its
+rig is parented into the scene (`game.world.traverse` finds it), walked the cat up and confirmed
+`game.nearest.label()` reads "Say hi" and `game.interact()` takes `friends.size` from 0 to 1. Full
+suite: `world 4: 23 to meet` (up from 22), 99% of Sunny Shore's ground still walkable (unchanged),
+every NPC still in the scene graph, 0 console warnings, exit 0.

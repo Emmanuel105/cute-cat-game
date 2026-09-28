@@ -122,6 +122,10 @@ function buildBeach(game, entry) {
   { const kx = -24, kz = -22, hx = kx + 1.6, hz = kz - 0.6;
     game.npcs.push(new Kneeler(game, beachPerson(false, true), { x: kx, z: kz, ry: atan2(hx - kx, hz - kz),
       cries: ['Nearly got one that time!', "They're faster than they look.", "Sh-h, you'll scare them off, puss."] })); }
+  // a kid kneels by the yellow beach hut's steps, patting together a lopsided sand copy of the hut itself
+  { const kx = -6, kz = -22, hutX = -10, hutZ = -24;
+    game.npcs.push(new Kneeler(game, beachPerson(r.chance(0.5), true), { x: kx, z: kz, ry: atan2(hutX - kx, hutZ - kz),
+      cries: ['Nearly as tall as the real one!', 'It needs a door - hang on.', "Careful, puss, that's the chimney."] })); }
   // a metal detectorist sweeps the open sand between the ice-cream cart and the sunbathers, coil beeping onto a find every so often
   { const detWard = makeWardrobe(r, { shirts: [0xc9a86a, 0x8a9a6a, 0xa8926a], pants: [0x4a4a3a, 0x3a4a4a], shoes: [0x5a4030, 0x3a2a1e] });
     const hunter = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: detWard }),
