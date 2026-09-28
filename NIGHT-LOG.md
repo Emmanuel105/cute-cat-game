@@ -2070,3 +2070,23 @@ into the scene, and — with `game.start('new')` called first — walked the cat
 `game.nearest.label()` reads "Say hello" and `game.interact()` takes `friends.size` from 0 to 1
 (id `forest:14`). Full suite: `world 6: 22 to meet` (up from 21), 98% of Whisper Woods' ground still
 walkable (was 99%), every NPC still in the scene graph, 0 console warnings, exit 0.
+
+## Round 107 — a trapper takes the fire's last empty log seat
+
+Frosty Peak and the Neighborhood were tied lowest at 21 people to meet. The campfire at the heart of
+Frosty Peak's village has three log seats built into it (round 87's tripod ringing the flames), but
+only two were ever taken — the old-timer warming her hands and the marshmallow-toasting kid from
+round 87 itself. The third log, at the front of the fire, had sat empty since the campfire was built.
+
+**A grizzled trapper now settles onto that last log, boots stretched toward the flames after checking
+an empty line of traps** — the same `Sitter` controller already seating the old-timer and the kid at
+the same fire, just parked on the one log nobody had used yet. Lines: *"Lines were empty again
+today."*, *"This fire's worth the whole climb down."*, *"Sit close, puss — you'll thaw quicker."*
+
+Verified beyond the test suite's own checks: built world 5 headless with a real `game.start('new')`
+and a full portal-transition wait (both the world-index switch and the fade-lock timer), found the
+new `Sitter` parked at (1.57, 0.66) — exactly the fire's third log position — confirmed its rig is
+parented into the scene, walked the cat onto the seat and confirmed `game.nearest.label()` reads
+"Say hello" and `game.interact()` takes `friends.size` from 0 to 1 (id `snow:1`). Full suite:
+`world 5: 22 to meet` (up from 21), 99% of Frosty Peak's ground still walkable, every NPC still in
+the scene graph, 0 console warnings, exit 0.

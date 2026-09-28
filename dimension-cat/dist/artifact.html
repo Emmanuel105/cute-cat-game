@@ -6604,6 +6604,13 @@ function buildSnowVillage(game, entry) {
       hat: 'beanie', hatColor: 0x8a5acf, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a }); W.add(granny.group);
     game.npcs.push(new Sitter(game, granny, { x: lx, z: lz, ry: atan2(-lx, -lz), seat: 0.3,
       cries: ['Best seat on the mountain, this.', 'Come and warm your paws, puss.', "Cold enough to freeze a yeti's nose, out there."] })); }
+  // a trapper takes the fire's last empty log seat, boots stretched toward the flames after checking his lines
+  { const a = 0.4, lx = cos(a) * 1.7, lz = sin(a) * 1.7;
+    const trapWard = makeWardrobe(r, { shirts: [0x5a4a3a, 0x4a5a4a, 0x6a4a3a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const trapper = makeHuman({ ...randomPerson(r, { female: false, elder: true, child: false, wardrobe: trapWard, build: 'stout' }),
+      hat: 'beanie', hatColor: 0x5a4a3a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a, beard: true }); W.add(trapper.group);
+    game.npcs.push(new Sitter(game, trapper, { x: lx, z: lz, ry: atan2(-lx, -lz), seat: 0.3,
+      cries: ['Lines were empty again today.', "This fire's worth the whole climb down.", 'Sit close, puss — you\'ll thaw quicker.'] })); }
   // a cocoa vendor stands near the fire, mug held up and steaming, happy to say hello
   { const cx = 3.6, cz = -3.0;
     const cocoaWard = makeWardrobe(r, { shirts: [0x8a3a3a, 0x5a6a4a, 0x6a5a4a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
