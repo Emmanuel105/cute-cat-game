@@ -1691,3 +1691,36 @@ the castle's own `gate`/`throne` anchor points (the castle's rotation is fixed a
 village houses' random door-facing, so the position math was safe to work out by hand). Full suite
 (273 checks) ran clean after the change: `world 1: 27 to meet` (up from 26), every NPC still in
 the scene graph, 91% of Candy Land's ground still walkable, 0 console warnings, exit 0.
+
+## Round 95 — an orchard hand for the Neighborhood's empty apple rows
+
+The Neighborhood and Frosty Peak were tied at the bottom of the friend count (19 apiece). Frosty
+Peak's build function is already dense with kneelers, sitters and vendors packed around the fire
+and pond, so instead of crowding it further, went looking at the Neighborhood's own quiet corner:
+the four-by-four orchard grid in the south-east, planted back in an earlier round, had never had
+anyone working it — sixteen apple trees and not a soul among them.
+
+**An orchard hand now kneels between the rows, sorting a wooden crate of fallen apples.** Built
+with the `Kneeler` controller (the same kneel-and-pat animation used for the ice sculptor and the
+snowman-builders), facing a hand-built crate of four apple-coloured spheres. Lines: *"Best crop in
+years, this lot."*, *"Mind the wasps, puss — they love a bruised one."*, *"Every crate goes down to
+market by Friday."*
+
+First attempt placed the new code right after the orchard's tree-planting loop, which shifted every
+`r()` draw for the rest of the Neighborhood's build (house colours, hats, the shared street
+wardrobe) and broke two unrelated tests — a duplicate shirt colour among the street's people, and
+the wrong NPC getting picked for the "walks up and waves" check, since the front-loaded insertion
+reordered `game.npcs`. Moved the block to the end of the build function instead, alongside the
+other one-off street characters (the postie, the car-washer, the balloon seller), which only
+appends new draws rather than reshuffling earlier ones — same pattern those existing characters
+already use. Picked the crate's position at the dead centre of four trees (safe clearance from
+every trunk's collision box) and gave the kneeling spot its own thirteen-metre gap from the nearest
+road, well outside anything the test suite's road-walking checks touch.
+
+Verified beyond the test suite's own checks: a headless script started the game for real (clicking
+the actual start button), found the new Kneeler in `game.npcs` and confirmed its rig is parented
+into the scene, teleported the cat alongside it, confirmed `game.nearest.label()` reads "Say
+hello", confirmed `game.interact()` takes `game.state.friends` from empty to one, then ran 300 more
+frames and confirmed the rig's position stayed finite throughout. Full suite ran clean before and
+after building: `world 0: 20 to meet` (up from 19), every NPC still in the scene graph, 96% of the
+Neighborhood's ground still walkable, 0 console warnings, exit 0.
