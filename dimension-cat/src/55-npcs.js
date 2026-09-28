@@ -1352,6 +1352,36 @@ class Washer {
   }
 }
 
+// ---------------------------------------------------------------- detectorist: sweeps a metal detector over the sand, and it beeps onto something every so often
+class Detectorist {
+  constructor(game, rig, { x, z, ry = 0, cries = null }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10; this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false; this.state = 'idle'; this.timer = 0;
+    this.cries = cries; this.cryIcon = '🔍'; this.cryT = rnd.range(4, 9); this.findT = rnd.range(9, 15);
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    const shaft = group(0, 0.02, 0.1, rig.hands[0]); shaft.rotation.x = -1.15;
+    mesh(G.cyl(0.016, 0.02, 0.8, 6), mat(0x8a8a8a, { metalness: 0.7, roughness: 0.35 }), { y: 0.4, parent: shaft });
+    mesh(G.torus(0.1, 0.018, 6, 14), mat(0x2a2a2a, { roughness: 0.6 }), { y: 0.8, rx: PI / 2, parent: shaft });
+    this.head = group(0, 0.8, 0, shaft); this.headWorld = V3();
+    this.circle = game.physics.addCircle(this, x, z, 0.35);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig, sweep = sin(this.t * 1.1) * 0.55;
+    rig.animate(0, false, dt, this.t);
+    if (!rig.gesture) {
+      const A = rig.arms[0], B = rig.arms[1];
+      A.sh.rotation.x = damp(A.sh.rotation.x, -0.85, 10, dt); A.sh.rotation.z = damp(A.sh.rotation.z, 0.35 + sweep, 10, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.35, 10, dt);
+      B.sh.rotation.x = damp(B.sh.rotation.x, -0.15, 8, dt); B.el.rotation.x = damp(B.el.rotation.x, -0.2, 8, dt);
+      rig.spine.rotation.x = damp(rig.spine.rotation.x, 0.12, 6, dt); rig.head.rotation.x = damp(rig.head.rotation.x, 0.3, 6, dt);
+    }
+    this.findT -= dt;
+    if (this.findT <= 0) { this.findT = rnd.range(11, 18); SFX.beep(); this.head.getWorldPosition(this.headWorld);
+      this.game.fx.emit(this.headWorld.x, this.headWorld.y, this.headWorld.z, { count: 8, colors: [0xffd54a, 0xfff3a0], speed: 1.0, up: 1.4, life: 0.7, gravity: 3 }); }
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- juggler: stands on the spot, three balls looping hand to hand, never dropped
 class Juggler {
   constructor(game, rig, colors, { x, z, ry = 0, cries = null, cryIcon = '🤹' }) {

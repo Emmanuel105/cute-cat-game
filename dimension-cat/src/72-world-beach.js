@@ -114,6 +114,13 @@ function buildBeach(game, entry) {
   { const kx = -24, kz = -22, hx = kx + 1.6, hz = kz - 0.6;
     game.npcs.push(new Kneeler(game, beachPerson(false, true), { x: kx, z: kz, ry: atan2(hx - kx, hz - kz),
       cries: ['Nearly got one that time!', "They're faster than they look.", "Sh-h, you'll scare them off, puss."] })); }
+  // a metal detectorist sweeps the open sand between the ice-cream cart and the sunbathers, coil beeping onto a find every so often
+  { const detWard = makeWardrobe(r, { shirts: [0xc9a86a, 0x8a9a6a, 0xa8926a], pants: [0x4a4a3a, 0x3a4a4a], shoes: [0x5a4030, 0x3a2a1e] });
+    const hunter = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: detWard }),
+      hat: 'cap', hatColor: 0x5a6a4a, shorts: true, bag: 0x8a6a4a, jacket: null, scarf: null, glasses: r.chance(0.4) });
+    W.add(hunter.group);
+    game.npcs.push(new Detectorist(game, hunter, { x: -6, z: 18, ry: -1.6,
+      cries: ['Found a bottle cap. Progress.', "Careful, puss, you'll set it off.", "One day it'll be real treasure."] })); }
   // a boy flying a kite on the dunes, the wind off the sea carrying it inland and up
   game.npcs.push(new KiteFlyer(game, beachPerson(false, true), makeKite(0xd62839, 0xf2c744), { x: -4, z: 40, wind: [-0.55, 0.85], cries: ['Look at it go!', "The wind's just right today.", 'Higher than the lighthouse!'] }));
   // two of them are keeping the beach ball in the air — greetable too, like everyone else on the sand

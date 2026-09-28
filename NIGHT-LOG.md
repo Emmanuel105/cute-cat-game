@@ -1560,3 +1560,28 @@ building.
 On arrival, local `main` was already level with `origin/main` (checked with `git fetch origin main`
 and `git log --oneline` both ways), so nothing needed fast-forwarding before starting this round's
 work.
+
+## Round 90 — a metal detectorist on Sunny Shore
+
+A headless tally of `game.friendTotal` per world (built the bundle, called `game.load(i, ...)` for
+each) found Sunny Shore and Whisper Woods tied at eighteen, the thinnest worlds now that round 89's
+second snowman pushed Frosty Peak to nineteen.
+
+**A metal detectorist now sweeps the open sand** between the ice-cream cart and the sunbathers'
+corner, coil swinging side to side, arm and head dipped toward the ground. Every eleven to eighteen
+seconds it beeps and throws a little shower of sparks where the coil is pointed — a "find" that never
+actually leaves the sand. Three lines when the cat comes close: `"Found a bottle cap. Progress."`
+`"Careful, puss, you'll set it off."` `"One day it'll be real treasure."` New `Detectorist` controller
+in `55-npcs.js` (built on the same standing-and-swinging-arm shape as `Washer` and `Vendor`, with a
+held prop — a pole and a coil — made the same way `Birder`'s binoculars are: two primitives parented
+straight onto the rig's hand). Sunny Shore now has 19 people to meet, level with Frosty Peak and ahead
+of Whisper Woods.
+
+Checked the spot with a headless probe (built the bundle, called `game.load(4, 'from-hub')`, read
+`game.physics.boxes` and `game.npcs` directly): the detectorist's chosen spot (-6, 18) sits 5.3 m clear
+of the nearest static collider (a beach hut wall), confirmed it's in the scene graph, that "Say hello"
+exists and takes `game.state.friends.size` from 0 to 1, that its position stays finite after 300 more
+frames of update, and that the find-timer actually fires and resets to a new multi-second wait rather
+than getting stuck. Full suite (273 `ok` lines, all passing, 0 FAIL, 0 console warnings, exit 0) ran
+clean before and after building; Sunny Shore also reads as 100% walkable on the grid sample, same as
+before the change.
