@@ -110,6 +110,13 @@ function buildForest(game, entry) {
     game.npcs.push(new Talkers(game, a, b, { x: -19, z: 8.5, ry: 0,
       lines: ['Wonder who built that treehouse.', "Best view in the woods, I'd wager.", "Careful - you'll wake whoever lives up there.", 'No ladder for us, my knees say.'] })); }
 
+  // a child kneels at the mouth of the eastern hollow log, sure a hedgehog is still in there — the log itself (22, -14) has stood empty since it was first placed
+  { const lx = 22, lz = -14, lry = 1.1, off = 2.5, kx = lx - off * cos(lry), kz = lz + off * sin(lry);
+    const hunter = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true }), shirt: 0xd9a23a, pants: 0x3a4a3a, shoes: 0x3a2a1e, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(hunter.group);
+    game.npcs.push(new Kneeler(game, hunter, { x: kx, z: kz, ry: atan2(lx - kx, lz - kz),
+      cries: ["It's in there, I heard it snuffle.", 'Shh - you\'ll frighten it further in.', 'There! ...no. Gone again.'] })); }
+
   // three children ring-dance in a clearing east of the glade — everyone knows three turns of the fairy ring earns a wish
   { const ringWard = makeWardrobe(r, { shirts: [0xef7d2f, 0x5a8a6a, 0x2f6fd6], pants: [0x2e4a3a, 0x3a3a3a, 0x4a3a2a], shoes: [0x3a2a1e, 0x2a2018] });
     const dancers = [true, false, true].map((female) => { const rig = makeHuman({ ...randomPerson(r, { female, child: true, wardrobe: ringWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false }); W.add(rig.group); return rig; });

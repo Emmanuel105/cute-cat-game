@@ -1585,3 +1585,32 @@ frames of update, and that the find-timer actually fires and resets to a new mul
 than getting stuck. Full suite (273 `ok` lines, all passing, 0 FAIL, 0 console warnings, exit 0) ran
 clean before and after building; Sunny Shore also reads as 100% walkable on the grid sample, same as
 before the change.
+
+## Round 91 — a hedgehog hunt at the hollow log
+
+A headless tally of `game.friendTotal` per world (built the bundle, called `game.load(i, ...)` for
+each) found Whisper Woods the thinnest at eighteen, a step behind Sunny Shore and Frosty Peak at
+nineteen. Whisper Woods has five fallen hollow logs scattered through the trees (moss, mushrooms, sawn
+ends showing growth rings) but not one of them had ever had anyone paying attention to it — pure
+scenery since whichever round first placed them.
+
+**A child now kneels at the mouth of the eastern hollow log**, convinced there's a hedgehog just out
+of reach inside it: `"It's in there, I heard it snuffle."` `"Shh - you'll frighten it further in."`
+`"There! ...no. Gone again."` Plain reuse of the `Kneeler` controller (the same one used for the deer
+feeder and both snowmen-carrot kids) — no new class, no new geometry, just a bare log put to use.
+Whisper Woods now has 19 people to meet, level with the other two.
+
+Worked the kneeling spot out from the log's own geometry: the log is 3.4 long, radius 0.62, built
+along its local x-axis before the world places it at (22, -14) with `ry = 1.1`; the child kneels 2.5 m
+out from the log's centre along that rotated axis (past the log's own open end), facing back in.
+Checked with a headless probe (built the bundle, called `game.load(6, 'from-hub')`, read
+`game.physics.boxes` and `game.npcs` directly): the only collider within 3 m of the kneeling spot is
+the log's own box, and the kneel point sits a further 1.6 m clear of it. The same probe found the
+child in the scene graph, confirmed the greet interactable exists and takes `game.state.friends.size`
+from 0 to 1, and that its position stayed finite after 300 more frames. Full suite (273 `ok` lines, all
+passing, 0 console warnings, exit 0) ran clean before and after building; Whisper Woods still reads as
+98% walkable, unchanged.
+
+On arrival, local `main` was a stale detached `HEAD` sitting behind `origin/main` (a force-updated
+branch ref underneath it); `git checkout -B main origin/main` reset it cleanly, no other cleanup
+needed.
