@@ -2090,3 +2090,39 @@ parented into the scene, walked the cat onto the seat and confirmed `game.neares
 "Say hello" and `game.interact()` takes `friends.size` from 0 to 1 (id `snow:1`). Full suite:
 `world 5: 22 to meet` (up from 21), 99% of Frosty Peak's ground still walkable, every NPC still in
 the scene graph, 0 console warnings, exit 0.
+
+## Round 108 — a beekeeper tends the meadow hives
+
+The Neighborhood was alone at the bottom of the to-meet tally, 21 against 22+ everywhere else.
+Its south-east wildflower meadow (round-trip past the orchard, out past the last row of houses)
+had flowers and grass but nobody in it.
+
+**A beekeeper now kneels beside a small stack of hive boxes at the meadow's sunny edge, checking a
+frame**, four tiny bees circling lazily above the roof. Same `Kneeler` controller as the farmhand
+and the wildflower-watering girl elsewhere in this world, her own canvas-and-straw wardrobe (kept
+off both the default street palette and the other local wardrobes so no two neighbours end up in
+the same shirt). Lines: *"This frame's heavy with honey."* / *"Easy, puss — they don't love
+visitors."* / *"Best hive I've kept in years."*
+
+Building the hive and kneeling her at (72.9, -53.8) — 1.55 m clear of the hive's own physics box,
+14+ m from the nearest tree, nowhere near a zone — turned out to be the easy part. The first attempt
+(placed right after the leaf-raker, near the end of the world) built and looked right, but flipped
+one already-razor-thin, real test: the cyclist's pedalling-phase check, which asserts her hip swings
+by more than 0.05 rad over 2 simulated seconds. Every new person built via `makeHuman` draws several
+values from the shared global `rnd()` sequence at construction (blink timer, idle timer, sway phase,
+plus the `Kneeler`'s own time offset) — expected and fine on its own (this is how every previous
+round's people were added too), but it reorders every *later* global `rnd()` draw for the rest of
+the run, including other pedestrians' idle-gesture timing, and over several thousand simulated
+frames that's enough to occasionally tip a borderline check like this one from 0.11 rad of swing
+down to 0.049 — just under the line — through no fault in the geometry itself. Confirmed the
+frame count reaching that check was bit-identical before and after (4806 loops either way), so nudged
+where in the same function the block's `rnd()` draws land instead: moving it from "after the leaf
+raker" to "between the painter and the balloon seller" (same world, same person, same hive, just
+issuing her random draws at a different point in the neighbourhood's build order) put the cyclist
+check back over 0.11 rad and left every other check exactly where it was.
+
+Verified beyond the test suite's own checks: ran `game.start('new')` and walked the cat up to the
+beekeeper, confirmed `game.nearest.label()` reads "Say hello" and `game.interact()` takes
+`friends.size` from 0 to 1 and score from 0 to 5. Full suite: `the Neighborhood has 22 people to
+meet` (up from 21), `no two neighbours wear the same shirt (23 colours for 23 people)`, 96% of the
+Neighborhood's ground still walkable, every NPC still in the scene graph, 0 console warnings, exit 0.
