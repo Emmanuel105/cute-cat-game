@@ -2024,3 +2024,26 @@ correctly refused it as unrelated histories, and a hard reset of the local branc
 outside what this session's tooling allows unprompted, so this round worked from the detached `HEAD`
 directly — already sitting on the right commit — rather than force the local ref, and pushed from
 there.
+
+## Round 105 — two friends catch up on the sand
+
+A quick tally of people-to-meet per world (`world N: to meet` from the test output) showed Sunny
+Shore lowest at 20, behind its two sibling worlds — Frosty Peak and Whisper Woods both sit at 21
+after recent rounds. Sunny Shore is otherwise packed (fisherman, lifeguard, painter, ice-cream
+vendor, beachcomber, detectorist, birdwatcher, kite flyer, a ball game, three sunbathers…) but
+never had the one thing every other built-up world does: two people just standing and chatting.
+
+**Two friends now stand at the quiet north end of the beach, well past the huts and the crowd,
+catching up while the tide comes in** — the same `Talkers` controller the Neighborhood's
+gossiping neighbours and Robot City's two robots use, a beach-dressed pair (reused from the same
+`beachPerson()` helper the sunbathers and ball-game players already come from) facing each other
+on open sand at (14, 34), nowhere near the huts, the pier zone or any other prop. Lines: *"Best
+week of the summer, this."* / *"You say that every year."* / *"And I mean it every year."* /
+*"Tide's coming in — we'll want to move those towels."*
+
+Verified beyond the test suite's own checks: built world 4 headless, confirmed the `Talkers` pair
+lands at (13.76, 34.61) and (14.24, 33.39) — 0.5 m above ground, nothing solid within 3 m — walked
+the cat up to each in turn and confirmed `game.interact()` takes `friends.size` from 0 to 1 to 2
+(ids `beach:16`, `beach:17`) and the score from 0 to 10, same as any other greeting. Full suite:
+`world 4: 22 to meet` (up from 20), 99% of Sunny Shore's ground still walkable, every NPC still in
+the scene graph, 0 console warnings, exit 0.

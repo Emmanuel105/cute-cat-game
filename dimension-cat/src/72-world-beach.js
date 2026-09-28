@@ -129,6 +129,10 @@ function buildBeach(game, entry) {
     W.add(hunter.group);
     game.npcs.push(new Detectorist(game, hunter, { x: -6, z: 18, ry: -1.6,
       cries: ['Found a bottle cap. Progress.', "Careful, puss, you'll set it off.", "One day it'll be real treasure."] })); }
+  // two friends chatting on the quiet sand at the north end, well clear of the crowd by the huts
+  { const talkA = beachPerson(false, false), talkB = beachPerson(true, false);
+    game.npcs.push(new Talkers(game, talkA, talkB, { x: 14, z: 34, ry: 1.2,
+      lines: ["Best week of the summer, this.", 'You say that every year.', 'And I mean it every year.', "Tide's coming in - we'll want to move those towels."] })); }
   // a boy flying a kite on the dunes, the wind off the sea carrying it inland and up
   game.npcs.push(new KiteFlyer(game, beachPerson(false, true), makeKite(0xd62839, 0xf2c744), { x: -4, z: 40, wind: [-0.55, 0.85], cries: ['Look at it go!', "The wind's just right today.", 'Higher than the lighthouse!'] }));
   // two of them are keeping the beach ball in the air — greetable too, like everyone else on the sand
