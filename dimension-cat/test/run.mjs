@@ -220,7 +220,7 @@ check(game.npcs.filter((n) => n instanceof Object && n.constructor.name === 'Wan
 // travel through all worlds
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 for (const [idx, entry] of [[1, 'from-prev'], [2, 'from-prev'], [3, 'from-prev'], [2, 'from-next'], [1, 'from-next'], [0, 'from-next'], [4, 'from-hub'], [0, 'from-beach'], [5, 'from-hub'], [0, 'from-snow'], [6, 'from-hub'], [0, 'from-forest']]) {
-  game.travel(idx, entry); await sleep(560);
+  game.travel(idx, entry); while (game.worldIndex !== idx) { await sleep(40); frames(2); }   // the portal fade ends on a real timer, not a frame count
   check(game.worldIndex === idx, `travelled to world ${idx} (${entry})`);
   if (idx === 1 && game.balloon) { frames(30); check(game.scene.children.includes(game.balloon.group) && Math.hypot(game.balloon.group.position.x - pos().x, game.balloon.group.position.z - pos().z) < 2, 'the balloon came through the portal with the cat'); }
   if (idx !== 0) { const q = game.squirrels[0], dq = Math.hypot(pos().x - q.x, pos().z - q.z); check(dq < 2.5, `world ${idx}: spawned next to the squirrel (${dq.toFixed(1)} m)`); }
@@ -279,12 +279,12 @@ check(saved() && saved().world === 0 && Array.isArray(saved().pos), `save writte
   check(game.restore(snap), 'restore back to the real save'); game.state.score = scoreBefore; game.updateHud();
 }
 // the time door is open (no quest yet): the boy chats, the door goes home
-game.travel(3, 'from-prev'); await sleep(1100); frames(10);
+game.travel(3, 'from-prev'); while (game.transitioning) { await sleep(60); frames(4); } frames(10);   // wait out both the load and the fade-lock timers, not a fixed guess
 const child = game.interactables.find((i) => /boy/.test(i.label())); check(!!child, 'child interactable exists');
 child.onUse(); frames(20);
 const door = game.interactables.find((i) => /time/i.test(i.label()));
 check(door && /Step through/.test(door.label()), `time door is open: ${door && door.label()}`);
-door.onUse(); await sleep(600); frames(30);
+door.onUse(); while (game.transitioning) { await sleep(60); frames(4); } frames(30);   // the portal fade ends on a real timer, same as the per-world loop above
 check(game.worldIndex === 0 && game.state.completed, `time door → neighborhood (score=${game.state.score})`);
 check(saved() && saved().completed === true && saved().form === 'cat' && saved().skin === 'black', 'save records completion, form and skin');
 await sleep(500);

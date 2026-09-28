@@ -47,6 +47,11 @@ function buildForest(game, entry) {
     W.add(hiker.group);
     game.npcs.push(new Patroller(game, hiker, { points: [[0.6, 44], [sin(4 * 0.7) * 1.6, 40 - 4 * 2.6], [sin(9 * 0.7) * 1.6, 40 - 9 * 2.6], [3, 2], [8.5, -2]], speed: 0.85, pause: [2, 5],
       cries: ['What a walk! Have you seen the treehouse?', 'Mind the frogs by the pond.', 'The fairies come out at dusk, you know.'], cryIcon: '\ud83c\udf32' })); }
+  // a forager kneels by the purple mushroom patch, filling her basket
+  { const forager = makeHuman({ ...randomPerson(r, { female: true }), shirt: 0xe8d8c0, pants: 0x5a6b3a, shoes: 0x4a3020, apron: 0x3c6b3a, bag: 0x6b4a2a, hat: null, jacket: null, scarf: null });
+    W.add(forager.group);
+    game.npcs.push(new Kneeler(game, forager, { x: 24, z: -6.5, ry: 0,
+      cries: ['These purple ones make a fine stew.', 'Mind the ring, puss - best not to dance in it.', 'The woods give plenty, if you know where to look.'], cryIcon: '\ud83c\udf44' })); }
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
 

@@ -274,3 +274,41 @@ times** — a deep bell, felt rather than seen, since the door is clear across t
 **Offer the robot dog a toy mouse** — mid-chase or not, corner it or just walk up — and it drops
 the chase for good, wags, and counts as a friend. Once won over it never goes on alert again,
 though it still gives a happy beep now and then when the cat's nearby.
+
+## Round 34 — a mushroom forager in Whisper Woods, and a genuine flake fixed
+
+Whisper Woods had the fewest people to meet of any world (2 — a woodcutter by the glade, a hiker
+on the stepping stones), so went looking for somewhere in that world with nobody in it. The purple
+mushroom patch out at (24, -4) — one of eight scattered clusters — had never had anyone near it.
+
+**A forager now kneels beside the purple mushrooms, filling her basket.** Built with the `Kneeler`
+controller (already used for the sandcastle child on Sunny Shore), which only ever patted the sand
+in silence before — gave it the same `cries` support `Chopper` and `Mechanic` already have, so she
+can talk: *"These purple ones make a fine stew."*, *"Mind the ring, puss - best not to dance in
+it."*, *"The woods give plenty, if you know where to look."* Whisper Woods is up to 3 to meet.
+
+**Also fixed a real, pre-existing flake** in `test/run.mjs`, found while checking this round's build
+was solid: three spots waited out the portal fade with a fixed real-time `sleep()` instead of
+polling `game.transitioning` — one had as little as 40ms of margin over the timers it was actually
+waiting on. Under load (more geometry to build, a slower box, GC pauses — nothing to do with which
+world runs first) the wait could end before the fade's chain of `setTimeout`s had actually finished,
+and once one `travel()` was swallowed by the `transitioning` guard while it still thought a fade was
+running, the cat never made it home through the time door and the suite failed two checks near the
+end for reasons that had nothing to do with them. Traced it by temporarily logging every `load()`
+call with its caller and the physics box count, confirmed the exact failure (a `travel(0)` call from
+`completeJourney()` silently dropped because `transitioning` hadn't cleared yet), and swapped those
+three fixed sleeps for the same `while (game.transitioning) { await sleep(60); frames(4); }` polling
+loop the suite already uses everywhere else. Ran the full suite more than twenty times after the fix
+with zero failures (it had been failing roughly one run in three before).
+
+**Also recovered 63 rounds of orphaned work.** This sandbox's git history had a `main` branch frozen
+at Round 33, but a *second*, completely disconnected line of commits — no common ancestor at all —
+sitting on a detached `HEAD` up to a "Round 96". It was never on any branch and never pushed, so it
+would have been silently discarded when this container was recycled. Pushed it to
+`origin/recovered-round-96` so nothing is lost; it needs a human to look at and decide how (or
+whether) to reconcile it with `main` — the two histories tell very different stories about how far
+this project got.
+
+Verified: full suite green (`world 6: 3 to meet`, up from 2; 273 checks; 0 console warnings;
+`exit 0`), repeated well past the point needed to trust the flake fix, then rebuilt
+`dist/dimension_cat.html` and the root copy.
