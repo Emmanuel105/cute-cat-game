@@ -103,6 +103,10 @@ function buildSnowVillage(game, entry) {
   { const sx = -6, sz = -14, kx = sx, kz = sz + 1.3;
     game.npcs.push(new Kneeler(game, kid(false), { x: kx, z: kz, ry: atan2(sx - kx, sz - kz),
       cries: ['Nearly got his arms right.', "Don't melt yet, mister snowman.", 'He needs a nose. A carrot would do.'] })); }
+  // a second child kneels by the far snowman, pressing a carrot into its face for a nose
+  { const sx = 7, sz = 18, kx = sx, kz = sz + 1.3;
+    game.npcs.push(new Kneeler(game, kid(true), { x: kx, z: kz, ry: atan2(sx - kx, sz - kz),
+      cries: ["Found him a carrot, look!", "Straight in the middle, that's the trick.", "Don't sneeze on it, puss - it took ages to find."] })); }
   // a child kneels outside the near igloo's tunnel mouth, patting fresh snow into a gap before nightfall
   { const ix = -16, iz = 10, iry = 0.6, mx = ix + 2.3 * sin(iry), mz = iz + 2.3 * cos(iry), kx = -14, kz = 13;
     game.npcs.push(new Kneeler(game, kid(true), { x: kx, z: kz, ry: atan2(mx - kx, mz - kz),

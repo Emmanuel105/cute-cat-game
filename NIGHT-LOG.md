@@ -1532,3 +1532,31 @@ passing, 0 console warnings, exit 0) ran clean before and after building: `world
 On arrival, the repo's local `main` was a detached `HEAD` sitting at the same commit as `origin/main` (a
 stale branch ref underneath it, 45 ahead / 50 behind); `git checkout -B main origin/main` reset it cleanly,
 no other cleanup needed.
+
+## Round 89 — a carrot nose for the far snowman
+
+A headless tally (`game.load(i, 'from-prev'/'from-hub')` per world, reading `game.friendTotal`) found
+Sunny Shore, Frosty Peak and Whisper Woods tied at eighteen, the thinnest worlds now that round 88's
+coachman pushed Victorian ahead. Frosty Peak's village has four snowmen, but only the first of them
+(built round 48) ever got a child fussing over it — the other three have stood bare since whichever
+round first piled them up.
+
+**A second child now kneels by the far snowman**, pressing a carrot into its face for a nose:
+`"Found him a carrot, look!"` `"Straight in the middle, that's the trick."` `"Don't sneeze on it, puss
+- it took ages to find."` Plain reuse of the `Kneeler` controller and the exact pattern round 48 already
+used for the first snowman (and the igloo, the reindeer, the sandcastle) — no new class, no new
+geometry, just the same "patting the snow" animation and a second bare snowman put to use. Frosty
+Peak now has 19 people to meet instead of 18, ahead of Sunny Shore and Whisper Woods (both still 18).
+
+Checked the spot with a headless probe (built the bundle, called `game.load(5, 'from-hub')`, read
+`game.physics.boxes` and `game.npcs` directly): the kneeling spot (7, 19.3) sits 0.8 m clear of the
+snowman's own collider box (the only static collider within 3 m) and well clear of the nearest cabin
+(8.5 m away) and pine tree (9.4 m away). The same probe found the new `Kneeler` in the scene graph at
+its intended spot, confirmed the nearest interactable there is "Say hi" at distance 0, that using it
+takes `game.state.friends.size` from 0 to 1, and that its position stayed finite after 300 more frames.
+Full suite (273 `ok` lines, all passing, 0 FAIL, 0 console warnings, exit 0) ran clean before and after
+building.
+
+On arrival, local `main` was already level with `origin/main` (checked with `git fetch origin main`
+and `git log --oneline` both ways), so nothing needed fast-forwarding before starting this round's
+work.
