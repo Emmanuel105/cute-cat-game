@@ -6117,6 +6117,10 @@ function buildRobotCity(game, entry) {
   // robots, dog, door
   for (const [x, z] of [[-8, 4], [8, 2], [-16, -2], [18, 8], [2, -12]]) { const rig = makeRobot(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x, z, speed: r.range(0.5, 0.8), leash: 9, r: 0.42, height: 1.9, idle: [1.5, 4] })); }
   game.npcs.push(new RoboDog(game, [[14, 6], [14, -4], [24, -4], [24, 6]]));
+  // a patch of open floor south-east of RoboDog's patrol, between the belts and the perimeter, had nothing on it; two off-shift robots pause there to swap gossip
+  { const botA = makeRobot(), botB = makeRobot(); W.add(botA.group); W.add(botB.group);
+    game.npcs.push(new Talkers(game, botA, botB, { x: 24, z: -9, ry: 0,
+      lines: ['Sector 8 got a new inspector, I hear.', "Mine's still squeaking. Yours?", 'The furnace hums off-key today.', "Don't tell the mechanic, but I like the squeak."] })); }
   // the stretch of bare concrete south of the factory floor had nothing on it; a sentry robot now walks the perimeter there
   { const sentry = makeRobot(); W.add(sentry.group);
     game.npcs.push(new Patroller(game, sentry, { points: [[-15, -35], [15, -35], [15, -45], [-15, -45]], speed: 0.7, pause: [1.5, 3], pauseAll: true, loop: true, r: 0.42, height: 1.9,

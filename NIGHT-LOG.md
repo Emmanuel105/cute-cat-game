@@ -1831,3 +1831,37 @@ takes `game.state.friends` from empty to one, then ran 300 more frames and confi
 position stayed finite throughout. Full suite ran clean before and after building: `world 3: 34 to
 meet` (up from 33), every NPC still in the scene graph, 94% of Victorian's ground still walkable, 0
 console warnings, exit 0.
+
+## Round 99 — two robots on their break
+
+Local `main` had drifted from `origin/main` again (a stale ref left over from a previous session,
+not an actual divergence — `git fetch` cleared it up in one command, no history was ever at risk),
+so this round started by re-syncing before touching anything.
+
+Went looking for the world with the fewest mentions in recent rounds this time, rather than eyeball
+it: counted world names across the last dozen-odd entries in this log. Robot City came up twice,
+the least of any of the seven, even though it still had plenty of bare factory floor.
+
+**Two robots now pause south-east of RoboDog's patrol loop, on the empty stretch of floor between
+the conveyor belts and the perimeter fence, to swap gossip.** Built with the existing `Talkers`
+controller — until now only ever given a pair of human rigs (the two Victorian ladies, the
+neighbours by the pond) — paired with two plain `makeRobot()` rigs instead; robots already share
+every field `Talkers` and its `lookAtCat` helper touch (`head`, `arms[].sh/el`, `group`, `animate`),
+since `Wanderer` has used robot rigs the same way for rounds. Lines: *"Sector 8 got a new inspector,
+I hear."*, *"Mine's still squeaking. Yours?"*, *"The furnace hums off-key today."*, *"Don't tell the
+mechanic, but I like the squeak."*
+
+Found the spot with a small headless probe rather than guessing: sampled a grid across the hand-built
+core with `game.physics.blocked()` (the same call the cat's own movement uses) and ranked what came
+back clear by distance to the nearest existing NPC or interactable, the same technique last round
+used for Candy Land. Landed on (24, −9); confirmed both robots' exact stand positions (±0.65 either
+side of it) are unblocked at their real 0.3 m circle radius before committing to it.
+
+Verified beyond the test suite's own checks: drove `game.start('new')` for real, travelled to Robot
+City the same way the suite does (polling `worldIndex` and `transitioning` rather than guessing a
+frame count), found the new pair in `game.npcs` as a `Talkers` instance with both rigs parented into
+the scene, walked the cat up to each in turn, confirmed `game.nearest.label()` reads "Beep hello" for
+both and `game.interact()` takes `game.state.friends` from 0 to 2, then ran 400 more frames and
+confirmed both rigs' positions stayed finite. Full suite ran clean before and after building:
+`world 2: 29 to meet` (up from 27), every NPC still in the scene graph, 88% of Robot City's ground
+still walkable, 0 console warnings, exit 0.
