@@ -1640,3 +1640,40 @@ still in the scene graph, 0 console warnings, exit 0.
 On arrival, local `main` was a stale ref sitting well behind a detached `HEAD` that matched
 `origin/main` exactly (the same "forced update" pattern several recent rounds have hit) —
 `git checkout -B main origin/main` reset it cleanly before starting, no other cleanup needed.
+
+## Round 93 — Sunny Shore gets a painter of its own
+
+Round 92 tallied the four hub worlds at nineteen friends apiece, then bumped Whisper Woods to
+twenty via the third owl. That left Sunny Shore, Frosty Peak and the Neighborhood tied at the
+bottom. A grep for `new Painter(game` across the source turned up four already: Neighborhood,
+Robot City, Frosty Peak (painting the aurora) and Whisper Woods (the mushroom glade) — Candy Land,
+Victorian and Sunny Shore had never had one. Sunny Shore had the obvious subject sitting right
+there: the lighthouse.
+
+**An artist now sets up an easel on the clear sand south of the lighthouse**, working through the
+same `Painter` controller and `makeEasel()` prop the other four worlds use, facing the tower's
+red-and-white bands. Lines: `"That red band never sits quite straight, does it."`, `"Best light on
+the coast, this time of day."`, `"Careful, puss - wet paint, if you can believe it dries out here
+at all."` `Painter` calls `greetable()` itself, so no extra friend-bookkeeping was needed.
+
+Checked against the physics: the spot is (0, -40), thirteen metres clear of the lighthouse's own
+keep-out circle (radius 9, centred on (12, -46)) and its scattered rock ring (radius 2.6-6 round
+the same centre), and well clear of the birdwatcher, beachcomber and tideline-message girl further
+along the sand. Not on any road or path the test suite walks (those are all in the Neighborhood).
+
+Verified beyond the test suite's own checks: a headless script started the game for real (clicking
+the actual start button, not just calling `travel()` — `game.nearest` only populates once
+`game.started` is true), travelled to Sunny Shore, waited out the real portal-fade timer the same
+way the suite's own travel loop does, found the new painter and easel both parented into the scene,
+teleported the cat alongside, confirmed `game.nearest._label` reads "Say hello" and
+`game.interact()` takes `game.state.friends` from empty to one, then ran 300 more frames and
+confirmed both the rig and the easel stayed at finite positions throughout. Full suite (296 checks)
+ran clean three times before and after building: `world 4: 20 to meet` (up from 19), `world 4: 99%
+of the ground is walkable` (unchanged), every NPC still in the scene graph, 0 console warnings,
+exit 0.
+
+On arrival, `HEAD` was detached at a commit matching `origin/main` exactly, with local `main`
+stale behind it — the same pattern recent rounds have hit. Left `main` alone this time and worked
+from the matching detached `HEAD`, pushing straight to `origin/main` at the end instead of
+resetting the local branch ref, since the classifier that guards this sandbox declined the
+branch-reset command as a destructive local change; the repo state itself needed no cleanup.
