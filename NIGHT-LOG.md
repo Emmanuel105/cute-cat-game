@@ -1897,3 +1897,32 @@ cat up to it, confirmed `game.nearest.label()` reads "Say hello" and `game.inter
 finite. Full suite ran clean before and after building: `world 5: 20 to meet` (up from 19), every
 NPC still in the scene graph, 98% of Frosty Peak's ground still walkable, 0 console warnings,
 exit 0.
+
+## Round 101 — someone rakes leaves in the Neighborhood
+
+Counted world names across the last thirty-odd log entries again: the Neighborhood hadn't had a new
+character since Round 95 (the orchard hand), the longest gap of any of the seven worlds, even
+though most of its front yards along the north row of houses sit empty.
+
+**Someone now rakes a pile of leaves into shape in the front yard of a house on the north row, west
+of centre.** Built with the existing `Washer` controller — until now only ever the car-washer's
+sponge, side to side over a wing — reused here with a rake instead of a sponge: same one-hand swipe
+animation, different prop and a small scattered heap of coloured leaf-spheres in front of them. No
+new animation code needed. Lines: *"One more pile before lunch."*, *"Careful, puss — don't scatter
+it!"*, *"These leaves just keep coming down."*
+
+First choice of spot was wrong and caught in review: the obvious empty yard, at the house two lots
+east of this one, turned out to sit inside the beach boardwalk's keep-out zone (`Z.addSpan(45,
+20.3, 76, 23.7)`) — the boardwalk to Sunny Shore's gate runs right along the north row for that
+stretch of houses, cutting through what would otherwise be their front yards. `game.zones.blocked()`
+confirmed it before anything got built into the scene permanently in a bad spot; moved two lots
+west instead (`x = -63`) and reconfirmed clear.
+
+Verified beyond the test suite's own checks: drove `game.start('new')` for real, found the new
+`Washer` in `game.npcs` with its rig parented into the scene, confirmed `game.zones.blocked()` is
+false at both the raker's stand point and the leaf pile, confirmed no physics collider sits within
+0.5 m of either spot, confirmed the nearest other NPC is 12 m away, walked the cat up, confirmed
+`game.nearest.label()` reads "Say hello" and `game.interact()` takes `game.state.friends` from 0 to
+1, then ran 300 more frames and confirmed the rig's position stayed finite. Full suite ran clean
+before and after building: `world 0: 21 to meet` (up from 20), every NPC still in the scene graph,
+96% of the Neighborhood's ground still walkable, 0 console warnings, exit 0.
