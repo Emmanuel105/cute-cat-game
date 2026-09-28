@@ -1794,3 +1794,40 @@ road-walker uses. Lines: *"Three more and it's a bracelet."*, *"Mind the string,
 Verified: full suite green repeatedly (`world 1: 28 to meet`, up from 27; 91% of Candy Land's
 ground still walkable; 0 console warnings; `exit 0`), then rebuilt `dist/dimension_cat.html` and the
 root copy.
+
+## Round 98 — a fiddler at the foot of the clock tower
+
+Started this round by finding local `main` in a detached-HEAD state, one branch pointer still stuck
+63 rounds back at an old commit while `origin/main` (and the actual checked-out `HEAD`) already had
+last round's recovery on it. Reset the local `main` branch to match `origin/main` before touching
+anything, so this round builds on the real history rather than reopening the same scare.
+
+Went looking for the least-visited world by scanning the log for how often each world's name comes
+up in recent rounds: Victorian and Robot City had had the fewest mentions in ages, even though
+Victorian already has the most people of any world (33). The clock tower plaza (east end of the
+street) had the tower, a carriage with its coachman, and nothing else — a big empty square of
+cobbles around a landmark everybody walks straight past.
+
+**A fiddler now rests at the tower's foot, violin and bow in hand, between tunes, with an open
+case and a few coins at his feet.** Built as a `Charger` (stand in place, greetable, periodic
+cries) with a small violin (body, neck, scroll) held in one hand and a bow — kept out of the ink
+pass, being thin — in the other; both are static props rather than an animated playing motion,
+since `Charger` doesn't repose the arms each frame. Lines: *"Tuppence for a tune, if you fancy
+one."*, *"Squirrel stole my rosin, you know."*, *"Wind me up and I'll play Greensleeves."*
+
+Placed at (39, 6): outside the clock tower's own 7.5×18×7.5 physics box, inside the tower's 16×16
+paved plaza, and inside the same keep-out circle (`zones.addCircle(42, 0, 11)`) that already stops
+the procedural country from scattering clutter there, so nothing else could have been sharing the
+spot. Checked its distance from the side road the test suite walks end to end (`x = 44`, the whole
+length of the street) before committing to the position — a full metre of clearance either side of
+the test's own 0.5 m probe radius.
+
+Verified beyond the test suite's own checks: a headless script called `game.start('new')` for real
+(the click-driven path never fires `started = true` in a stub DOM, which silently disables the
+whole nearest-interactable/step loop — worth remembering for future headless checks), travelled to
+Victorian, found the new `Charger` in `game.npcs` with its rig parented into the scene, teleported
+the cat alongside it, confirmed `game.nearest.label()` reads "Say hello", confirmed `game.interact()`
+takes `game.state.friends` from empty to one, then ran 300 more frames and confirmed the rig's
+position stayed finite throughout. Full suite ran clean before and after building: `world 3: 34 to
+meet` (up from 33), every NPC still in the scene graph, 94% of Victorian's ground still walkable, 0
+console warnings, exit 0.
