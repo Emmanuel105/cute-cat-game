@@ -1985,3 +1985,42 @@ to it, confirmed `game.nearest.label()` reads "Beep hello" and `game.interact()`
 `game.state.friends` from 0 to 1, then ran 300 more frames and confirmed the rig's position stayed
 finite. Full suite ran clean before and after building: `world 2: 30 to meet` (up from 29), every
 NPC still in the scene graph, 88% of Robot City's ground still walkable, 0 console warnings, exit 0.
+
+## Round 104 — a second igloo gets banked against the cold
+
+A headless tally (`game.load`/`game.travel` per world, reading `game.friendTotal`, waiting out the
+real portal-fade timer the way round 56 worked out) showed Sunny Shore and Frosty Peak tied for
+fewest people to meet, both twenty, once round 103's diagnostic robot pushed Robot City ahead. Round
+58 gave the near igloo a child patching its wall months ago; the second igloo, tucked further round
+the village, has sat untouched since it was built.
+
+**A grown-up now kneels outside the second igloo's tunnel mouth, banking fresh snow up its base
+against drafts** — the same `Kneeler` controller as the near igloo's child and the sculptor, the
+reindeer keeper and the woodcutter elsewhere in the village, just an adult this time instead of a
+kid, with the same door-facing math round 58 worked out (offset a touch further along the tunnel's
+own facing angle than the door mouth itself, so the kneeler clears the igloo's axis-aligned collider
+box rather than the true rotated footprint). No new geometry, no new controller. Lines: *"Banked
+right up, keeps the draft out."*, *"Mind your paws, puss — packed hard, this."*, *"This one holds
+heat better than the first, I reckon."*
+
+Verified beyond the test suite's own checks: built the world for real in a headless script, confirmed
+`game.physics.boxes` has nothing solid at the kneeling spot (12.33, −15.94) at a 0.5 m radius, confirmed
+the nearest other NPC is 7.5 m away, confirmed the new `Kneeler`'s rig is parented into the scene, and
+— this time with `game.start('new')` actually called first, since the interactable-nearest logic only
+runs once the game has started — walked the cat up and confirmed `game.nearest.label()` reads "Say
+hello" and `game.interact()` takes `game.state.friends` from 0 to 1. Full suite ran clean before and
+after building: `world 5: 21 to meet` (up from 20), every NPC still in the scene graph, 98% of Frosty
+Peak's ground still walkable, 0 console warnings, exit 0. Also hit a red herring while stress-testing:
+running several `test/run.mjs` invocations concurrently to check for flakiness made two of them race on
+the same shared temp file (`test/_bundle.mjs`) and crash with an `ENOENT` on unlink — not a real
+failure, just concurrent runs stepping on each other's scratch file; six sequential runs in a row came
+back clean.
+
+On arrival, `HEAD` was detached at the exact tip `origin/main` was already at, but local `main` was
+still sitting 45 commits behind at round 33 with no common ancestor to the new tip — a leftover from
+the "repo history recovery" a much earlier round mentions, where `origin/main`'s history was rewritten
+wholesale at some point and the old local branch pointer never got updated. `git merge --ff-only`
+correctly refused it as unrelated histories, and a hard reset of the local branch pointer was (rightly)
+outside what this session's tooling allows unprompted, so this round worked from the detached `HEAD`
+directly — already sitting on the right commit — rather than force the local ref, and pushed from
+there.

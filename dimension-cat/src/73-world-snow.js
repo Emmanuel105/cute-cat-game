@@ -111,6 +111,13 @@ function buildSnowVillage(game, entry) {
   { const ix = -16, iz = 10, iry = 0.6, mx = ix + 2.3 * sin(iry), mz = iz + 2.3 * cos(iry), kx = -14, kz = 13;
     game.npcs.push(new Kneeler(game, kid(true), { x: kx, z: kz, ry: atan2(mx - kx, mz - kz),
       cries: ['Nearly sealed — just this gap left.', 'Keeps the wind out, packed in tight.', "Snug as an igloo, once it's finished."] })); }
+  // a grown-up kneels outside the second igloo's tunnel mouth, banking fresh snow up its base against drafts
+  { const ix = 15, iz = -14, iry = -2.2, mx = ix + 2.3 * sin(iry), mz = iz + 2.3 * cos(iry), kx = ix + 3.3 * sin(iry), kz = iz + 3.3 * cos(iry);
+    const bankWard = makeWardrobe(r, { shirts: [0x5a4a6a, 0x4a5a6a, 0x6a5a4a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const banker = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: bankWard }),
+      hat: 'beanie', hatColor: 0x4a5a6a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a }); W.add(banker.group);
+    game.npcs.push(new Kneeler(game, banker, { x: kx, z: kz, ry: atan2(mx - kx, mz - kz),
+      cries: ['Banked right up, keeps the draft out.', "Mind your paws, puss — packed hard, this.", 'This one holds heat better than the first, I reckon.'] })); }
   // a girl kneels at the edge of the reindeer's patch, leaving carrots on a flat rock
   { const dx = 24, dz = 20, kx = dx - 2.4, kz = dz - 1.0;
     game.npcs.push(new Kneeler(game, kid(true), { x: kx, z: kz, ry: atan2(dx - kx, dz - kz),
