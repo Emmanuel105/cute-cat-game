@@ -1926,3 +1926,34 @@ false at both the raker's stand point and the leaf pile, confirmed no physics co
 1, then ran 300 more frames and confirmed the rig's position stayed finite. Full suite ran clean
 before and after building: `world 0: 21 to meet` (up from 20), every NPC still in the scene graph,
 96% of the Neighborhood's ground still walkable, 0 console warnings, exit 0.
+
+## Round 102 — someone sweeps the doorstep in Candy Land's village lane
+
+Counted world names across the last thirty-odd log entries: Candy Land had the fewest mentions of
+the seven (six, against nine or more for everything else), even though the little candy-house
+village on the lane up to the Queen's castle — five houses between the bridge and the throne room —
+had never had a single resident. Plenty of gingerbread men wander the wider forest, but nobody lived
+in the houses themselves.
+
+**Someone now sweeps sugar dust off the nearest candy house's doorstep, into a little pile of
+pastel crumbs.** Built with the existing `Washer` controller (already reused for the car-wash sponge
+and, last round, a leaf rake) with a broom in place of either — same one-hand swipe, a new prop and a
+small scattered heap of white/pink/lemon/blue sugar-grain spheres in front of them. No new animation
+code needed. Lines: *"Sugar gets everywhere this time of year."*, *"Careful, puss — don't track it
+in."*, *"Clean stoop, happy house."*
+
+Finding the spot took an extra step this time: the house's collision box turned out to be an
+axis-aligned square around its centre regardless of which way its door actually faces (`addRotBox`
+bounds the rotated shape with its AABB, not the true rotated footprint), so a spot placed by eye
+using the door's facing angle landed inside that square and came back `physics.blocked() === true`.
+Built the game for real, read the house's actual `rotation.y` off the scene graph, and swept the
+sweeper and the dust pile further out along that same facing direction until both cleared the square
+with margin — confirmed with `game.physics.blocked()` before writing the coordinates into source.
+
+Verified beyond the test suite's own checks: drove `game.start('new')` for real, travelled to Candy
+Land, found the new `Washer` in `game.npcs` with its rig parented into the scene, walked the cat up
+to it, confirmed `game.nearest.label()` reads "Say hello" and `game.interact()` takes
+`game.state.friends` from 0 to 1 (id `candy:27`), then ran 300 more frames and confirmed the rig's
+position stayed finite. Full suite ran clean before and after building: `world 1: 29 to meet` (up
+from 28), every NPC still in the scene graph, 91% of Candy Land's ground still walkable, 0 console
+warnings, exit 0.
