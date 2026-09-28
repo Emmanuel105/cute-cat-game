@@ -1755,3 +1755,42 @@ alongside it, confirmed `game.nearest._label` reads "Say hello", confirmed `game
 stayed finite throughout. Full suite (273 checks) ran clean before and after building: `world 6: 21
 to meet` (up from 20), every NPC still in the scene graph, 99% of Whisper Woods' ground still
 walkable, 0 console warnings, exit 0.
+
+## Round 97 — a genuine test flake fixed, a gumdrop bracelet in Candy Land, and a repo scare
+
+This round started with `main` frozen 63 rounds behind where this log says it should be — this
+sandbox's git history had a second, completely disconnected line of commits sitting on a detached
+`HEAD` (no shared ancestor with `main` at all), everything up through last round, never on any
+branch and never pushed. It looked like it would be silently discarded when the sandbox was
+recycled, so it got pushed to `origin/recovered-round-96` as a safety net before anything else
+happened. Partway through this round `origin/main` was itself force-pushed to that same commit
+(by another concurrent run, it looks like, reaching the same conclusion independently) — so the
+history is whole again, but if anyone's tracking a `round34-attempt-on-old-main` or
+`recovered-round-96` branch on the remote, they're leftover scaffolding from this recovery and can
+be deleted once someone's confirmed nothing needs them.
+
+**Fixed a real, intermittent failure in `test/run.mjs`.** Three spots waited out the portal fade
+with a fixed real-time `sleep()` instead of polling `game.transitioning`, with as little as 40ms of
+margin over the timers they were actually waiting on — one of them the wait after stepping through
+the time door. Under load (more geometry to build, a slower box, a GC pause — nothing to do with
+which world runs first) the wait could end before the fade's chain of `setTimeout`s had actually
+resolved, and once a `travel()` call got silently swallowed by the `transitioning` guard because it
+still thought a fade was running, the cat never made it home and the suite failed two checks near
+the end for reasons that had nothing to do with them. Traced it by temporarily logging every world
+`load()` call with its caller and the physics box count, confirmed the exact failure (a stranded
+`travel(0)` from `completeJourney()`), and swapped all three fixed sleeps for the same
+`while (game.transitioning) { await sleep(60); frames(4); }` polling idiom already used elsewhere in
+the file. Was failing roughly one run in three before; more than a dozen clean runs since.
+
+**A girl now kneels at the south-west edge of Candy Land's candy-cane forest, threading gumdrops
+from the nearby patch onto a string.** Every hand-built world is dense with vignettes by this point
+(96 rounds' worth), so rather than eyeball a spot and risk a collision or a duplicate idea, wrote a
+small headless probe that samples the walkable ground in each world's hand-built core and ranks it
+by distance to the nearest existing NPC or interactable — found this corner genuinely clear, over
+30 m from anything else, confirmed with the same `physics.blocked()` call the test suite's own
+road-walker uses. Lines: *"Three more and it's a bracelet."*, *"Mind the string, puss - sticky."*,
+*"Best colours in the whole patch, out here."* Candy Land is up to 28 to meet.
+
+Verified: full suite green repeatedly (`world 1: 28 to meet`, up from 27; 91% of Candy Land's
+ground still walkable; 0 console warnings; `exit 0`), then rebuilt `dist/dimension_cat.html` and the
+root copy.
