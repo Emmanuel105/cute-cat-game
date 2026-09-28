@@ -1677,3 +1677,17 @@ stale behind it — the same pattern recent rounds have hit. Left `main` alone t
 from the matching detached `HEAD`, pushing straight to `origin/main` at the end instead of
 resetting the local branch ref, since the classifier that guards this sandbox declined the
 branch-reset command as a destructive local change; the repo state itself needed no cleanup.
+
+## Round 94 — a court jester for the Candy Queen's empty throne
+
+The grand hall inside the Candy Queen's castle had nothing in it but two marching gingerbread
+guards up by the dais — all that space between the gate and the throne stood empty. A **court
+jester now juggles three candy-coloured balls in the middle of the hall**, facing the throne, the
+same juggling act already used for the Victorian market square. Says things like *"The throne's
+empty most days. Good acoustics, though."* and *"Her Majesty prefers the airlock. More's the
+pity."* — a nod to the fact that the Candy Queen herself actually guards the airlock down south,
+not this throne room. Placed well clear of the four candy-cane pillars and the gate towers using
+the castle's own `gate`/`throne` anchor points (the castle's rotation is fixed at `PI`, unlike the
+village houses' random door-facing, so the position math was safe to work out by hand). Full suite
+(273 checks) ran clean after the change: `world 1: 27 to meet` (up from 26), every NPC still in
+the scene graph, 91% of Candy Land's ground still walkable, 0 console warnings, exit 0.
