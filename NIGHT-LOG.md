@@ -2188,3 +2188,38 @@ fail, on an unrelated pre-existing flake (`time door → neighborhood`, `complet
 `transitioning` still stuck true from an earlier world's fade) — reproduced independently on a clean
 checkout of `main` with none of this round's changes applied (2 failures in 4 runs there too), so
 it isn't this round's doing and wasn't this round's job to chase down.
+
+## Round 111 — a third stale-history recovery, and a bell hunt at Frosty Peak
+
+This sandbox's `git checkout main` landed on yet another disconnected history: a 45-commit line
+ending at round 33, no common ancestor at all with the real 110-round line — not even the "frozen
+N rounds behind" shape rounds 97 and 110 already named, but a genuinely separate root. Mid-diagnosis,
+`git fetch` force-updated `origin/main` to the real history anyway (another concurrent run landing
+its own push), so the fix was just to check out a fresh branch from the now-correct `origin/main`
+rather than touch the stale local `main` ref at all — `git reset --hard` is blocked by this
+environment's own safety policy, and routing around a blocked action isn't the move; working from
+`origin/main` directly sidesteps the need for it entirely.
+
+Neighborhood and Frosty Peak were tied at the bottom of the to-meet tally, 22 apiece; Frosty Peak's
+last touch (round 106) was further back than the Neighborhood's (round 108), so it got this one.
+
+**A searcher now sweeps a metal detector over the open snow west of the reindeer patch, hunting a
+bell shaken loose off a harness** — a nod to the reindeer keeper's own line elsewhere in the village
+("Copper's the friendliest of the lot"). Reuses the `Detectorist` controller already doing duty for
+the beachcomber on Sunny Shore, unmodified. Lines: *"One of Copper's bells came loose out here
+somewhere."* / *"Careful, puss, don't step on it first."* / *"This thing beeps at every buckle-sized
+rock."*
+
+Found the spot with a headless probe rather than eyeballing coordinates: built world 5, collected
+every existing NPC's position, then swept the open snow (excluding anything `physics.blocked` or
+inside a `zones`-marked span) scoring each free cell by distance to its nearest neighbour. Picked
+(-30, -9) — flat ground, 12+ m clear of the nearest reindeer and double that from everything else,
+confirmed empty in an 8×8 m box around it, not just the exact point.
+
+Verified beyond the test suite's own checks: a real `game.start('new')` and `game.travel(5,
+'from-hub')`, waited out the fade lock, walked the cat up to the new searcher, confirmed
+`game.nearest.label()` reads "Say hello" and `game.interact()` takes `friends.size` from 0 to 1 and
+score from 0 to 5 (this also caught that `game.nearest` only populates once `game.started` is true —
+an easy thing to miss testing headless without calling `game.start()` first). Full suite: `world 5:
+23 to meet` (up from 22), 98% of Frosty Peak's ground still walkable (was 99%), every NPC still in
+the scene graph, 0 console warnings, exit 0, stable across three repeat runs.
