@@ -1957,3 +1957,31 @@ to it, confirmed `game.nearest.label()` reads "Say hello" and `game.interact()` 
 position stayed finite. Full suite ran clean before and after building: `world 1: 29 to meet` (up
 from 28), every NPC still in the scene graph, 91% of Candy Land's ground still walkable, 0 console
 warnings, exit 0.
+
+## Round 103 — a robot runs its own self-diagnostic in Robot City
+
+Counted world names across the log again: Robot City had gone three rounds without a new face (last
+was Round 99's two robots on break) and sat second-lowest overall, behind only Candy Land, which had
+just been given one. The bare concrete south of Sector 7's pipe run, past the crates and barrels, had
+nothing on it.
+
+**A robot now pauses there, plugged into a small portable diagnostic cart, running through a
+self-check.** Built with the `Charger` controller — already proven robot-safe at the "CHARGE" pylon
+by the statue plaza — reused here for a second, distinct fixture: a low steel cart with a glowing
+green readout screen instead of the pylon's charging bulb, linked to the robot by the same kind of
+sagging cable. No new animation code needed, just new geometry for the cart and a screen that
+flickers on its own timer. Lines: *"Self-diagnostic: nominal."*, *"Bolt torque within spec."*,
+*"Recalibrating left knee actuator."*, *"No faults found. Suspicious."*
+
+Found the spot with a headless probe rather than eyeballing it: built the world for real in the test
+harness, collected every existing NPC's position, then swept a grid checking `game.physics.boxes`
+for anything solid at each cell — the same way the test suite's own road-walker checks a path. Landed
+on (−30, −19): clear of every collider at a generous 0.9 m radius and over 20 m from the nearest
+other NPC, comfortably inside the pipe corridor's open floor.
+
+Verified beyond the test suite's own checks: drove `game.start('new')` for real, travelled to Robot
+City, found the new `Charger` in `game.npcs` with its rig parented into the scene, walked the cat up
+to it, confirmed `game.nearest.label()` reads "Beep hello" and `game.interact()` takes
+`game.state.friends` from 0 to 1, then ran 300 more frames and confirmed the rig's position stayed
+finite. Full suite ran clean before and after building: `world 2: 30 to meet` (up from 29), every
+NPC still in the scene graph, 88% of Robot City's ground still walkable, 0 console warnings, exit 0.
