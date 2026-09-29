@@ -69,6 +69,12 @@ function buildSnowVillage(game, entry) {
       hat: 'beanie', hatColor: 0x8a5acf, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a }); W.add(skaterB.group);
     game.npcs.push(new Talkers(game, skaterA, skaterB, { x: 23.5, z: 5, ry: PI / 2,
       lines: ["Think it'll hold, out there?", 'The fisherman swears by it.', "I'm not going first.", "One good crack and I'm off home."] })); }
+  // a birdwatcher stands on a clear rise east of the pond, binoculars trained on the penguin colony below
+  { const birdWard = makeWardrobe(r, { shirts: [0x4a6a5a, 0x5a5a7a, 0x6a5a4a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const birder = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: birdWard }),
+      hat: 'beanie', hatColor: 0x3a5a4a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a }); W.add(birder.group);
+    game.npcs.push(new Birder(game, birder, { x: 30, z: 10, ry: atan2(18 - 30, 8 - 10),
+      cries: ["That one's the show-off, always waddling over.", 'Careful, puss — you\'ll spook the whole colony.', 'Counted thirty-one out there today, give or take.'] })); }
   for (const [x, z] of [[-6, -14], [7, 18], [-20, -2], [22, -4]]) { placeT(game, U, makeSnowman(r), x, z, r() * TAU); boxT(game, x, z, 1.0, 2.4, 1.0, { cam: false }); }
   for (const [x, z, ry, c] of [[-8, 6, 0.4, 0xd62839], [4, -9, 2.0, 0x2f6fd6]]) placeT(game, U, makeSled(c), x, z, ry);
   for (const [x, z] of [[-24, 18], [26, 16], [-26, -18], [24, -24], [0, -26], [-2, 28], [30, 0], [-32, 2]]) { const c = makeIceCrystal(r, r.pick([0x9fe8ff, 0xbfa8ff, 0xa8ffe8])); placeT(game, U, c, x, z, 0); boxT(game, x, z, 0.6, 1.6, 0.6, { cam: false }); }

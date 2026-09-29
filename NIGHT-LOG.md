@@ -2317,3 +2317,31 @@ walked the cat up to the seller, confirmed `game.nearest.label()` reads "Say hel
 to meet` (up from 23), 99% of Whisper Woods' ground still walkable, every NPC still in the scene
 graph, 0 console warnings, exit 0, stable across three repeat runs, before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 115 — a birdwatcher for Frosty Peak's penguin colony
+
+Neighborhood and Frosty Peak were tied at the bottom of the to-meet tally, 23 apiece. Neighborhood
+had round 112, Frosty Peak's last touch (round 111) was older, so it got this one.
+
+**A birdwatcher now stands on a clear rise east of the ice pond, binoculars trained on Frosty
+Peak's own penguin colony.** Every other world already had a `Birder` (Neighborhood's sparrows,
+Sunny Shore's gulls, Whisper Woods' songbirds) but they all watch generic wildlife that isn't
+actually a scene object; this one is the first to watch something the world really has — the
+flock of wandering penguins down by the pond. Lines: *"That one's the show-off, always waddling
+over."* / *"Careful, puss — you'll spook the whole colony."* / *"Counted thirty-one out there
+today, give or take."* Reuses the `Birder` controller unmodified.
+
+Found the spot with a headless probe: built world 5 with `game.load` (the async fade means a bare
+`game.travel` doesn't actually swap worlds inside a synchronous script — the first pass of this
+probe kept finding Neighborhood NPCs by mistake), then swept for cells clear of `physics.boxes`
+and outside the pond's own decorative ice ring (padded to 6 m from its centre) while staying close
+enough to the penguins to read as watching them. Picked (30, 10): about 12 m from the pond centre,
+7.8 m from the nearest other NPC (the two would-be skaters), facing back toward the flock.
+
+Verified beyond the test suite's own checks: a real `game.start('new')` and `game.load(5,
+'from-hub')`, walked the cat up to the birdwatcher, confirmed `game.nearest.label()` reads "Say
+hello" and `game.interact()` takes `friends.size` from 0 to 1 and score from 0 to 5. Full suite:
+`world 5: 24 to meet` (up from 23), 97% of Frosty Peak's ground still walkable (down 1 point from
+98%, the new NPC's own collision circle), every NPC still in the scene graph, 0 console warnings,
+exit 0, stable across three repeat runs, before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
