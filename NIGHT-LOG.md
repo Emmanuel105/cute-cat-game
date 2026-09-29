@@ -2948,3 +2948,35 @@ cat to each and firing its interactable read "Beep hello", and using both took `
 to 2 and `score` from 0 to 10. Full suite: `world 2: 32 to meet` (up from 30), 88% of Robot City's
 ground still walkable, every NPC still in the scene graph, all checks `ok`, 0 console warnings, exit 0,
 before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 134 — an angler on the Victorian canal bank
+
+Scanned the log for the world with the longest gap since its last new face: Victorian hadn't had one
+since round 98 (the fiddler), 35 rounds back, by far the stalest of the seven — even though its canal
+already has rowing boats drifting past and nobody on the bank minding a line. `IceFisher` (the sit,
+dip-a-rod, strike-every-so-often controller already doing duty at the Neighborhood's lake jetty, the
+Frosty Peak ice hole, Sunny Shore's pier and Whisper Woods) had never made it to Victorian.
+
+**An old-timer now sits on the north bank between two of the canal's gas lamps, rod dipped into the
+water, waiting for a bite that comes every 7–13 seconds** with a little splash and a "Got one!" toast.
+Own small wardrobe (muted greens, browns, a flatcap) rather than the street's shared one, same as the
+other three anglers. Lines: *"Not a bite in this canal all week."*, *"Caught a boot once. Best catch
+all month."*, *"Mind the towpath, puss."* Victorian goes from 34 to 35 to meet.
+
+Placed at (15, 24.4), facing south into the canal with the hole at (15, 28.6, -0.3) — just above the
+water plane, matching the height the canal's boats float at. The spot sits on the dry strip between
+the water's own blocking box (which starts at z=26) and the lamp row at z=25.3, clear of the nearest
+lamp post (8 m and 9 m either side), the nearest tree (an oak at (36, 22), 21 m off), the nearest
+boat (the one at x=20, ~7 m away, on the water rather than the bank) and the nearest other person (a
+Wanderer, 10.9 m off) — no need to touch `game.zones`, since hand-placed props check the physics
+boxes directly rather than the region-filler's keep-out rectangles.
+
+Verified beyond the test suite's own checks: a headless harness built Victorian directly
+(`game.load(3, 'from-hub')`), found the new `IceFisher` by its canal-specific cries, confirmed its rig
+was parented into the scene, ran 200 frames and found its position still finite, then teleported the
+cat alongside it — `game.nearest.label()` read "Say hello" and using it took `friends.size` from 0 to
+1. A further 1200 frames (20 more simulated seconds) landed two bites without the rig's position ever
+going non-finite. A physics-box scan of a 1 m radius around the seat came back empty. Full suite:
+`world 3: 35 to meet` (up from 34), 94% of Victorian's ground still walkable (unchanged), every NPC
+still in the scene graph, all checks `ok`, 0 console warnings, exit 0, before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
