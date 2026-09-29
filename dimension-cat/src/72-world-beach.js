@@ -42,6 +42,8 @@ function buildBeach(game, entry) {
     placeT(game, U, boxAround(game, makeLifeguardChair(), 13, 24, 1.3, 1.9, 1.1), 13, 24, PI / 2);
     game.npcs.push(new Sitter(game, guard, { x: 13, z: 24, ry: PI / 2, seat: 1.87, cryIcon: '🛟',
       cries: ['Swim between the flags, please!', 'Not a cloud in the sky today.', "Mind that current, puss — respect the sea."] })); }
+  // the guard's own flags marking the swim zone, one either side of the chair — she names them, but they never actually stood there before
+  for (const [fx, fz, ph] of [[13, 18, 0], [13, 30, 2.1]]) { placeT(game, U, makeSwimFlag(ph), fx, fz, 0); boxT(game, fx, fz, 0.3, 2.3, 0.3, { cam: false }); }
   for (let i = 0; i < 12; i++) { const a = r() * TAU, d = r.range(2.6, 6); placeT(game, U, makeRock(r, 0x8a857a, r.range(0.8, 1.8)), 12 + cos(a) * d, -46 + sin(a) * d, 0); }
   // an artist sets up an easel on the clear sand south of the lighthouse, painting its red-and-white bands — Sunny Shore never had one
   { const px = 0, pz = -40, ry = atan2(12 - px, -46 - pz);

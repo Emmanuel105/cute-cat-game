@@ -3021,3 +3021,40 @@ going non-finite. A physics-box scan of a 1 m radius around the stump, excluding
 collider, came back empty. Full suite: `world 0: 28 to meet` (up from 27), 96% of the Neighborhood's
 ground still walkable (unchanged), every NPC still in the scene graph, all checks `ok`, 0 console
 warnings, exit 0, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 136 — a sixth stale-history recovery, and swim flags for Sunny Shore's lifeguard
+
+`git checkout main` landed on a detached HEAD sitting on round 135 (the woodcutter); local `main`
+and its cached `origin/main` were both still pointing at a much older, unrelated 45-commit line from
+several days earlier. A `git fetch origin main` confirmed the real `origin/main` had already moved to
+round 135 in the meantime, so no work was lost — reset local `main` straight onto it (working tree was
+clean, nothing local to lose) before starting the round for real, the same recovery rounds 110, 111,
+121 and 122 already describe.
+
+Sunny Shore had gone the longest without a new face — round 129 (the game of tag), seven rounds back,
+against gaps of 1–6 for the other six worlds — but the beach is already dense with people, so this
+round is a static prop instead: the lifeguard's own line, *"Swim between the flags, please!"*, has been
+in the game since round 90-ish with no flags anywhere in the world to back it up.
+
+**Two red-over-yellow patrol flags now stand either side of the lifeguard chair, six metres north and
+south, marking the swim zone the guard keeps calling out.** `makeSwimFlag()` in `62-props-nature.js`
+is a plain pole with a small two-tone box for the flag, given a gentle sinusoidal yaw-and-roll sway
+(matching the style already used for the sea-buoys' bob and the sailboat's sail) so the pair flutter
+out of phase with each other. Not a new friend to meet — Sunny Shore stays at 29 to meet — just a prop
+that closes a small gap between what a character says and what stands in the world.
+
+Placed at (13, 18) and (13, 30), flanking the guard's chair at (13, 24): a headless probe scanning
+every physics box within 1.5 m of several candidate spots found this pair clear of the chair's own
+collider, the nearby chatting couple, the crabs' roam circles and the sunbather's towel, while sitting
+right where the "swim between the flags" line already implies they should be. Zones report those
+points as "blocked" (they're inside the beach's own wet-sand keep-out span, which only stops the
+region filler from planting trees there), which is expected and doesn't affect hand-placed props or
+the walkability check, which only cares about physics colliders.
+
+Verified beyond the test suite's own checks: a headless harness built Sunny Shore directly, walked
+the scene graph and found both flag groups exactly where placed, each carrying its own `userData.update`
+so the sway survives baking, each backed by exactly one physics collider and no others; ran 300 frames
+(5 simulated seconds) with the cat's position staying finite throughout. Full suite: `world 4: 29 to
+meet` (unchanged), 100% of Sunny Shore's ground still walkable (unchanged), every NPC still in the
+scene graph, all checks `ok`, 0 console warnings, exit 0, before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

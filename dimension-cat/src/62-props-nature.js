@@ -120,6 +120,16 @@ function makeLifeguardChair() {
   mesh(G.torus(0.22, 0.045, 8, 16), trim, { x: -0.58, y: legH * 0.62, z: -0.5, ry: PI / 2, parent: g });
   return g;
 }
+/** A swim flag on a pole — a red-over-yellow patrol flag that flutters in the wind. `phase` staggers a pair so they don't flap in lockstep. */
+function makeSwimFlag(phase = 0) {
+  const g = new THREE.Group(), pole = mat(0xe8e2d4, { roughness: 0.6 });
+  mesh(G.cyl(0.022, 0.028, 2.3, 6), pole, { y: 1.15, parent: g });
+  const flag = group(0, 2.05, 0, g);
+  mesh(G.box(0.44, 0.15, 0.02), mat(0xd62839, { roughness: 0.85 }), { x: 0.23, y: 0.08, parent: flag });
+  mesh(G.box(0.44, 0.15, 0.02), mat(0xffd54a, { roughness: 0.85 }), { x: 0.23, y: -0.08, parent: flag });
+  g.userData.update = (dt, t) => { flag.rotation.y = 0.45 + sin(t * 2.6 + phase) * 0.22; flag.rotation.z = sin(t * 1.9 + phase) * 0.05; };
+  return g;
+}
 function makeTowel(color) { const g = new THREE.Group(); mesh(G.box(1.0, 0.03, 1.8), mat(color, { roughness: 1 }), { y: 0.015, shadow: 'receive', parent: g }); for (let i = 0; i < 4; i++) mesh(G.box(1.0, 0.032, 0.12), mat(0xffffff, { roughness: 1 }), { y: 0.016, z: -0.7 + i * 0.47, shadow: 'none', parent: g }); return g; }
 function makeSandcastle() {
   const g = new THREE.Group(), sand = mat(0xdcbf85, { roughness: 1, map: TEX.sand().clone() }); sand.map.needsUpdate = true; sand.map.repeat.set(1, 1); worldBag.track(sand.map);

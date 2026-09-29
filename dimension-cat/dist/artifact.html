@@ -4754,6 +4754,16 @@ function makeLifeguardChair() {
   mesh(G.torus(0.22, 0.045, 8, 16), trim, { x: -0.58, y: legH * 0.62, z: -0.5, ry: PI / 2, parent: g });
   return g;
 }
+/** A swim flag on a pole — a red-over-yellow patrol flag that flutters in the wind. `phase` staggers a pair so they don't flap in lockstep. */
+function makeSwimFlag(phase = 0) {
+  const g = new THREE.Group(), pole = mat(0xe8e2d4, { roughness: 0.6 });
+  mesh(G.cyl(0.022, 0.028, 2.3, 6), pole, { y: 1.15, parent: g });
+  const flag = group(0, 2.05, 0, g);
+  mesh(G.box(0.44, 0.15, 0.02), mat(0xd62839, { roughness: 0.85 }), { x: 0.23, y: 0.08, parent: flag });
+  mesh(G.box(0.44, 0.15, 0.02), mat(0xffd54a, { roughness: 0.85 }), { x: 0.23, y: -0.08, parent: flag });
+  g.userData.update = (dt, t) => { flag.rotation.y = 0.45 + sin(t * 2.6 + phase) * 0.22; flag.rotation.z = sin(t * 1.9 + phase) * 0.05; };
+  return g;
+}
 function makeTowel(color) { const g = new THREE.Group(); mesh(G.box(1.0, 0.03, 1.8), mat(color, { roughness: 1 }), { y: 0.015, shadow: 'receive', parent: g }); for (let i = 0; i < 4; i++) mesh(G.box(1.0, 0.032, 0.12), mat(0xffffff, { roughness: 1 }), { y: 0.016, z: -0.7 + i * 0.47, shadow: 'none', parent: g }); return g; }
 function makeSandcastle() {
   const g = new THREE.Group(), sand = mat(0xdcbf85, { roughness: 1, map: TEX.sand().clone() }); sand.map.needsUpdate = true; sand.map.repeat.set(1, 1); worldBag.track(sand.map);
@@ -6590,6 +6600,8 @@ function buildBeach(game, entry) {
     placeT(game, U, boxAround(game, makeLifeguardChair(), 13, 24, 1.3, 1.9, 1.1), 13, 24, PI / 2);
     game.npcs.push(new Sitter(game, guard, { x: 13, z: 24, ry: PI / 2, seat: 1.87, cryIcon: '🛟',
       cries: ['Swim between the flags, please!', 'Not a cloud in the sky today.', "Mind that current, puss — respect the sea."] })); }
+  // the guard's own flags marking the swim zone, one either side of the chair — she names them, but they never actually stood there before
+  for (const [fx, fz, ph] of [[13, 18, 0], [13, 30, 2.1]]) { placeT(game, U, makeSwimFlag(ph), fx, fz, 0); boxT(game, fx, fz, 0.3, 2.3, 0.3, { cam: false }); }
   for (let i = 0; i < 12; i++) { const a = r() * TAU, d = r.range(2.6, 6); placeT(game, U, makeRock(r, 0x8a857a, r.range(0.8, 1.8)), 12 + cos(a) * d, -46 + sin(a) * d, 0); }
   // an artist sets up an easel on the clear sand south of the lighthouse, painting its red-and-white bands — Sunny Shore never had one
   { const px = 0, pz = -40, ry = atan2(12 - px, -46 - pz);
