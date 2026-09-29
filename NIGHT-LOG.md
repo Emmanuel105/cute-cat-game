@@ -2618,3 +2618,42 @@ approach reads "Say hello again" with no further change. Full suite: `world 5: 2
 25), 97% of Frosty Peak's ground still walkable (was also 97%), every NPC still in the scene graph,
 0 FAILs, 0 console warnings, exit 0, stable across repeat runs, before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 124 — a council electrician does the rounds on the Neighborhood's south pavement
+
+This round started on a detached HEAD sitting on round 123, with the local `main` branch pointing
+at an older, unrelated 45-commit line — the same fork-and-recover situation earlier rounds have
+logged. `origin/main` matched the detached HEAD exactly, so this round built on that (the real
+124-round history) without touching the stale local `main` ref at all.
+
+Neighborhood was the sole lowest world on the to-meet tally (25, versus 26 apiece for Sunny Shore,
+Frosty Peak and Whisper Woods, all bumped in rounds 121–123), and its last dedicated touch was
+round 120, so it got this one.
+
+**A council electrician now walks the south pavement lamp to lamp with a test pole, checking every
+bulb in turn.** Reuses `Lamplighter` (already doing the same job on the Victorian gas lamps, its
+first outing in the Neighborhood) on the eight modern street lamps south of the main road — the
+existing lamp-placement loop needed a small change first, to keep a reference to each lamp object
+instead of just planting it, so the controller has something to patrol between. Sorted west to
+east, the walker never has to cross the road to reach a lamp on the north pavement. Lines: *"Bulb's
+good on this one."* / *"Careful, puss — mind the pole."* / *"Every lamp on the street, one by
+one."* Neighborhood goes from 25 to 26 to meet.
+
+First attempt gave the electrician a two-colour wardrobe pulled from the same 18-colour palette the
+street's shared `ward` bag already draws from — the Neighborhood's other 18 pedestrians use that
+whole palette between them, so any custom pick from it is a guaranteed shirt-colour collision, and
+the test caught it immediately (`no two neighbours wear the same shirt (26 colours for 27
+people)`). Fixed by giving the electrician one explicit off-palette shirt colour instead, the same
+pattern the kite-flying kid and the flower-watering girl already use.
+
+Verified beyond the test suite's own checks: a standalone headless harness called `game.start()`
+(the one thing missing from an early draft of the probe, which is why it first reported no
+greeting prompt at all — `step()`, where the nearest-interactable prompt is computed, only runs
+once the game has started) then walked the cat up to the electrician, confirmed
+`game.nearest.label()` reads "Say hello", `game.interact()` takes `friends.size` from 0 to 1 and
+`score` from 0 to 5, a second approach reads "Say hello again" with no further change, and ten
+seconds of patrol carries it about a third of the way to its next lamp without leaving the ground
+or producing a non-finite position. Full suite: `the Neighborhood has 26 people to meet` (up from
+25), 96% of the Neighborhood's ground still walkable (unchanged), every NPC still in the scene
+graph, 0 FAILs, 0 console warnings, exit 0, stable across three repeat runs, before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
