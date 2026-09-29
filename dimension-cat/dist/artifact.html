@@ -4763,6 +4763,14 @@ function makeSandcastle() {
   mesh(G.box(0.02, 0.2, 0.3), mat(0xffd54a), { x: 0.16, y: 1.6, parent: g }); mesh(G.cyl(0.012, 0.012, 0.5, 4), mat(0x3a2a1a), { y: 1.55, parent: g });
   return g;
 }
+/** A surfboard stood nose-down in the sand: the same flattened capsule and racing stripe the boardwalk arch already wears, life-sized and on its own, with a single fin. */
+function makeSurfboard(color) {
+  const g = new THREE.Group();
+  mesh(G.capsule(0.28, 1.2, 10), mat(color, { roughness: 0.4 }), { y: 0.7, sz: 0.22, parent: g });
+  mesh(G.box(0.07, 1.5, 0.03), mat(0xffffff, { roughness: 0.6 }), { y: 0.7, z: 0.065, shadow: 'none', parent: g });
+  mesh(G.cone(0.09, 0.16, 8), mat(0x1e1e1e, { roughness: 0.7 }), { y: 0.05, z: -0.09, rx: -PI / 2, shadow: 'none', parent: g });
+  return g;
+}
 function makeBuoy(color = 0xd62839) {
   const g = new THREE.Group();
   mesh(G.cyl(0.35, 0.45, 0.5, 12), mat(color, { roughness: 0.5 }), { y: 0.2, parent: g }); mesh(G.cyl(0.45, 0.45, 0.1, 12), mat(0xffffff, { roughness: 0.5 }), { y: 0.5, parent: g });
@@ -6631,6 +6639,17 @@ function buildBeach(game, entry) {
     placeT(game, U, makeIceStool(), nx, nz, ry);
     game.npcs.push(new Sitter(game, mender, { x: nx, z: nz, ry, seat: 0.3,
       cries: ["Salt gets in every knot, out here.", 'Careful, puss — this line still has hooks on it.', "Boats won't mend themselves, will they."] })); }
+  // nobody at Sunny Shore had ever come to actually surf; one waxes their board on the quiet sand near the net-mender, board planted nose-down beside them
+  { const sx = 2, sz = 45, ry = PI / 2, bx = 2, bz = 44;
+    const surfWard = makeWardrobe(r, { shirts: [0x2e9e6e, 0xff7043, 0x2f6fd6], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0xefe7d8, 0x8d6e63] });
+    const surfer = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: surfWard }),
+      shorts: true, hat: null, jacket: null, scarf: null, bag: null, glasses: r.chance(0.3) });
+    W.add(surfer.group);
+    mesh(G.box(0.09, 0.05, 0.14), mat(0xf7f3ec, { roughness: 0.95 }), { y: 0.05, z: 0.07, parent: surfer.hands[0] });   // the wax block
+    placeT(game, U, makeSurfboard(r.pick([0xff7043, 0x2f6fd6, 0xffd54a, 0x2e9e6e])), bx, bz, ry);
+    boxT(game, bx, bz, 0.6, 1.5, 0.4, { cam: false });
+    game.npcs.push(new Washer(game, surfer, { x: sx, z: sz, ry,
+      cries: ["Wax while it's warm, that's the trick.", 'Careful, puss — sticky hands.', "Flat today, but you never know."] })); }
   // the beach dog keeps to its own patch of sand — it does not follow the cat
   const dog = makeDog(0xc8925a); W.add(dog.group); game.npcs.push(new Wanderer(game, dog, { x: -2, z: 28, speed: 1.1, leash: 7, r: 0.35, height: 0.9, step: 0.3, idle: [1.5, 4], walk: [2, 5] }));
   let woofT = rnd.range(6, 12); U.push((dt) => { woofT -= dt; if (woofT <= 0) { SFX.woof(); woofT = rnd.range(10, 20); } });

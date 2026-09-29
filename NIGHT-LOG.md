@@ -2657,3 +2657,35 @@ or producing a non-finite position. Full suite: `the Neighborhood has 26 people 
 25), 96% of the Neighborhood's ground still walkable (unchanged), every NPC still in the scene
 graph, 0 FAILs, 0 console warnings, exit 0, stable across three repeat runs, before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 125 — a surfer waxes their board on Sunny Shore's quiet north sand
+
+Four worlds were tied at the bottom of the to-meet tally (26 apiece: Neighborhood, Sunny Shore,
+Frosty Peak, Whisper Woods), all bumped in rounds 121–124. Ranked by last dedicated touch, Sunny
+Shore's (round 121) was the oldest of the four, so it got this one.
+
+**A surfer now stands on the sand near the net-mender, working a bar of wax over a board planted
+nose-down beside them.** New prop, `makeSurfboard()` — a flattened capsule with a racing stripe and
+a single fin, built the same way the decorative boards over the boardwalk arch already are, just
+standalone and life-sized. Reuses `Washer` (already scrubbing a car, raking leaves, sweeping a
+doorstep and shovelling snow elsewhere) for the person, with a small wax block clipped to their
+hand instead of a sponge. Lines: *"Wax while it's warm, that's the trick."* / *"Careful, puss —
+sticky hands."* / *"Flat today, but you never know."* Sunny Shore goes from 26 to 27 to meet.
+
+Placed at (2, 45) with the board at (2, 44): the quiet north end past the beach crowd, where the
+kite flyer, the two chatting friends and the net-mender already have the place mostly to themselves
+— checked against every hand-placed coordinate in the build function (palms, huts, grass patches,
+crabs, turtles, the sunbathing corner, umbrellas) to make sure nothing else was within several
+metres. Sits inside `x < 12`, the dry side of the wet-sand/sea keep-out zone, so it never risked
+blocking vegetation placement either.
+
+Verified beyond the test suite's own checks: a standalone headless harness called `game.start()`,
+travelled to world 4 (waiting on real timers for `game.transitioning` to clear, since `travel()`
+uses `setTimeout` rather than anything `game.loop()` drives), found the new NPC by its dialogue,
+teleported the cat to face it, and confirmed `game.nearest.label()` reads "Say hello",
+`game.interact()` takes `friends.size` from 0 to 1 and `score` from 0 to 5, a second approach reads
+"Say hello again" with no further change, and five simulated seconds afterward still leave the
+surfer's position finite. Full suite: `world 4: 27 to meet` (up from 26), 100% of Sunny Shore's
+ground still walkable (was 97% two rounds ago, unaffected by this change), every NPC still in the
+scene graph, 273 checks all `ok`, 0 console warnings, exit 0, stable across repeat runs, before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

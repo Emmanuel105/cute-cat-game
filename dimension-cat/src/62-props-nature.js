@@ -129,6 +129,14 @@ function makeSandcastle() {
   mesh(G.box(0.02, 0.2, 0.3), mat(0xffd54a), { x: 0.16, y: 1.6, parent: g }); mesh(G.cyl(0.012, 0.012, 0.5, 4), mat(0x3a2a1a), { y: 1.55, parent: g });
   return g;
 }
+/** A surfboard stood nose-down in the sand: the same flattened capsule and racing stripe the boardwalk arch already wears, life-sized and on its own, with a single fin. */
+function makeSurfboard(color) {
+  const g = new THREE.Group();
+  mesh(G.capsule(0.28, 1.2, 10), mat(color, { roughness: 0.4 }), { y: 0.7, sz: 0.22, parent: g });
+  mesh(G.box(0.07, 1.5, 0.03), mat(0xffffff, { roughness: 0.6 }), { y: 0.7, z: 0.065, shadow: 'none', parent: g });
+  mesh(G.cone(0.09, 0.16, 8), mat(0x1e1e1e, { roughness: 0.7 }), { y: 0.05, z: -0.09, rx: -PI / 2, shadow: 'none', parent: g });
+  return g;
+}
 function makeBuoy(color = 0xd62839) {
   const g = new THREE.Group();
   mesh(G.cyl(0.35, 0.45, 0.5, 12), mat(color, { roughness: 0.5 }), { y: 0.2, parent: g }); mesh(G.cyl(0.45, 0.45, 0.1, 12), mat(0xffffff, { roughness: 0.5 }), { y: 0.5, parent: g });
