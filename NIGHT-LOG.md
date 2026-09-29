@@ -2257,3 +2257,33 @@ Verified: `node test/run.mjs` exit 0 five times in a row at the working insertio
 to meet`, up from 22; 96% of the Neighborhood's ground still walkable, unchanged; every NPC still in
 the scene graph; 0 console warnings) before rebuilding `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 113 — a juggler works the crowd on Sunny Shore
+
+Neighborhood, Sunny Shore, Frosty Peak and Whisper Woods were tied at the bottom of the to-meet
+tally, 23 apiece. Neighborhood and Frosty Peak had each had a round in the last two (112 and 111);
+of the remaining two, Sunny Shore's last touch (round 109) was older than Whisper Woods' (round
+110), so it got this one.
+
+**A juggler now works the open sand between the sunbathers' towels and the lifeguard chair, three
+balls — white, red, blue, the same colours as the beach ball already in play nearby — looping
+steadily over their own head.** Lines: *"Three's easy - four's where it gets interesting."* /
+*"Careful, puss, I don't want you underfoot."* / *"Ask nicely and I'll teach you the trick."* Reuses
+the `Juggler` controller (already doing duty twice in Candy Land, for the court jester and the town
+juggler) unmodified — its first outing on Sunny Shore. Sunny Shore goes from 23 to 24 to meet.
+
+Found the spot with a headless probe: built world 4, collected every NPC's live position, then swept
+the sand for cells clear of `physics.blocked` near the sunbathing crowd, scoring each by distance to
+its nearest neighbour. Picked (3, 16) — about 8.5 m clear of the nearest sunbather, within sight of
+both the towels and the lifeguard's chair, so it reads as part of the same beach scene rather than
+off on its own.
+
+Verified beyond the test suite's own checks: a real `game.start('new')` and `game.travel(4,
+'from-hub')`, waited out the fade lock, walked the cat up to the new juggler, confirmed
+`game.nearest.label()` reads "Say hello" and `game.interact()` takes `friends.size` from 0 to 1 and
+score from 0 to 5. Full suite: `world 4: 24 to meet` (up from 23), 99% of Sunny Shore's ground still
+walkable (unchanged), every NPC still in the scene graph, 0 console warnings, exit 0, stable across
+three repeat runs (the exact cat-rest height on later worlds shifts a little run to run, as round
+112 already noted — a new construction earlier in the shared `rnd()` sequence reshuffling a later
+spawn roll, not a bug) before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.

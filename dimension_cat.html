@@ -6534,6 +6534,13 @@ function buildBeach(game, entry) {
   // a third sunbather on the spare towel, a paperback going nowhere fast
   { const [tx, tz, ry] = towels[1]; game.npcs.push(new Sunbather(game, beachPerson(r.chance(0.5), false), { x: tx, z: tz + 0.55, ry,
     cries: ["Sunbathing is a science, apparently.", 'Same page as an hour ago.', "Wake me if the tide comes in."] })); }
+  // a juggler works the open sand between the towels and the lifeguard chair, three balls in a steady loop over their own head
+  { const jx = 3, jz = 16, jugWard = makeWardrobe(r, { shirts: [0xffd54a, 0x2e9e6e, 0xf7f3ec], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0xefe7d8, 0x8d6e63] });
+    const juggler = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: jugWard }),
+      glasses: r.chance(0.3), hat: null, jacket: null, scarf: null, bag: null });
+    W.add(juggler.group);
+    game.npcs.push(new Juggler(game, juggler, [0xffffff, 0xd62839, 0x2f6fd6], { x: jx, z: jz, ry: atan2(8 - jx, 10 - jz),
+      cries: ["Three's easy - four's where it gets interesting.", "Careful, puss, I don't want you underfoot.", "Ask nicely and I'll teach you the trick."] })); }
   game.npcs.push(new Kneeler(game, beachPerson(false, true), { x: 7, z: -2.7, ry: PI }));
   { const bucket = mat(0xd62839, { roughness: 0.6 }); mesh(G.cyl(0.16, 0.13, 0.26, 10), bucket, { x: 7.9, y: P.ground0(7.9, -2.4) + 0.13, z: -2.4, parent: W }); mesh(G.torus(0.16, 0.012, 5, 12), mat(0xffd54a), { x: 7.9, y: P.ground0(7.9, -2.4) + 0.27, z: -2.4, rx: PI / 2, shadow: 'none', parent: W }); }
   // a beachcomber crouched further south, sorting shells into a little pile where the shell scatter is thickest
