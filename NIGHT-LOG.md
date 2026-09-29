@@ -2416,3 +2416,32 @@ Verified beyond the test suite's own checks: a real `game.start('new')` and `gam
 Full suite: `world 4: 25 to meet` (up from 24), 100% of Sunny Shore's ground still walkable, every
 NPC still in the scene graph, 0 console warnings, exit 0, stable across three repeat runs, before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 118 — an offering at Whisper Woods' last hollow log
+
+Neighborhood, Frosty Peak and Whisper Woods were tied at the bottom of the to-meet tally, 24 apiece.
+Whisper Woods' last touch (round 114, the berry seller) was the oldest of the three.
+
+**An old woman now kneels at one of Whisper Woods' five hollow logs — the one at (2, 12), still empty
+after every earlier round — leaving an acorn on the ground in front of it, same as she always does.**
+Round 91 gave the eastern log (22, -14) a child hunting a hedgehog, and round 106 gave the log up by
+the stepping stones (12, 14) a naturalist noting the moss; two logs, (-8, -18) and (-22, -6), are
+still empty and worth a visit some other round. Reuses the `Kneeler` controller (patting motion
+reads fine as setting something down), positioned with the exact same offset formula as the
+naturalist's log so it sits half in the log's own mouth, same as every other kneeler-at-a-log in this
+file. Lines: *"One acorn, every visit. Old habit."* / *"Careful, puss — that offering isn't yours."*
+/ *"Can't say what takes them. Just that they go."* — deliberately non-committal about what, if
+anything, is actually in there; the woods already have a fairy ring and a jam-jar-chasing kid two
+sentences apart, so this leans on suggestion rather than adding a fourth confirmed magical thing.
+Whisper Woods goes from 24 to 25 to meet.
+
+Verified beyond the test suite's own checks: a standalone headless harness built the same way as
+`test/run.mjs` (stub DOM + stub three.js), a real `game.start('new')` and `game.travel(6,
+'from-hub')`, found the new `Kneeler` at exactly (3.478, 12.255) — 1.5 m from the log along its
+facing, matching the formula by hand — walked the cat up to it, confirmed `game.nearest.label()`
+reads "Say hello", `game.interact()` takes `friends.size` from 0 to 1 and `score` from 0 to 5, and a
+second approach reads "Say hello again" with no further change. Full suite: `world 6: 25 to meet`
+(up from 24), 99% of Whisper Woods' ground still walkable, every NPC still in the scene graph, 0
+console warnings, exit 0, stable across three repeat runs (only the usual non-deterministic timing
+numbers — kite height, snowball counts, idle rest height — differ between runs), before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -126,6 +126,13 @@ function buildForest(game, entry) {
     game.npcs.push(new Kneeler(game, naturalist, { x: kx, z: kz, ry: atan2(lx - kx, lz - kz),
       cries: ['This moss only grows on the north side, you know.', 'Careful, puss — mind the notebook.', "Species forty, if I've counted right."] })); }
 
+  // an old woman kneels at the last of the five hollow logs, the one at (2, 12) everyone else has always walked past — she leaves an acorn there, same as always
+  { const lx = 2, lz = 12, lry = 1.4, off = 1.5, kx = lx + off * sin(lry), kz = lz + off * cos(lry);
+    const keeper = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: true, hairStyle: 'bun' }), shirt: 0x4a5a6a, pants: 0x3a3a4a, shoes: 0x3a2a1e, hat: 'bonnet', hatColor: 0x4a5a6a, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(keeper.group);
+    game.npcs.push(new Kneeler(game, keeper, { x: kx, z: kz, ry: atan2(lx - kx, lz - kz),
+      cries: ['One acorn, every visit. Old habit.', "Careful, puss — that offering isn't yours.", "Can't say what takes them. Just that they go."] })); }
+
   // three children ring-dance in a clearing east of the glade — everyone knows three turns of the fairy ring earns a wish
   { const ringWard = makeWardrobe(r, { shirts: [0xef7d2f, 0x5a8a6a, 0x2f6fd6], pants: [0x2e4a3a, 0x3a3a3a, 0x4a3a2a], shoes: [0x3a2a1e, 0x2a2018] });
     const dancers = [true, false, true].map((female) => { const rig = makeHuman({ ...randomPerson(r, { female, child: true, wardrobe: ringWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false }); W.add(rig.group); return rig; });
