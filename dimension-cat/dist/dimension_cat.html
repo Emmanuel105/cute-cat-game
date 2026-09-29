@@ -6708,6 +6708,18 @@ function buildSnowVillage(game, entry) {
     const ch = c.userData.chimney, y0 = P.ground0(x, z);
     U.push((dt) => { if (rnd.chance(dt * 3)) game.fx.emit(x + ch[0] * cos(ry) + ch[2] * sin(ry), y0 + ch[1], z - ch[0] * sin(ry) + ch[2] * cos(ry), { count: 1, color: 0xcfd6e0, speed: 0.15, up: 0.8, life: 3.5, gravity: -0.1, spread: 0.2 }); });
   }
+  // someone shovels fresh snow off the first cabin's doorstep, banking it into a little heap beside the step
+  { const cx = -11, cz = -6, cry = PI / 2 - 0.3, sx = cx + sin(cry) * 3.6, sz = cz + cos(cry) * 3.6, px = cx + sin(cry) * 2.9, pz = cz + cos(cry) * 2.9;
+    const shovelWard = makeWardrobe(r, { shirts: [0x6a4a3a, 0x4a5a6a, 0x5a6a4a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const shoveler = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: shovelWard }),
+      hat: 'beanie', hatColor: 0x6a4a3a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a }); W.add(shoveler.group);
+    const shaft = group(0, 0.02, 0.1, shoveler.hands[0]); shaft.rotation.x = -0.95;
+    mesh(G.cyl(0.02, 0.024, 0.85, 6), mat(0x8a5a32, { roughness: 0.9 }), { y: 0.42, parent: shaft });
+    const blade = group(0, 0.85, 0, shaft); mesh(G.box(0.26, 0.22, 0.04), mat(0xd0451f, { roughness: 0.6 }), { parent: blade });
+    for (let i = 0; i < 9; i++) { const a = r() * TAU, d = r.range(0, 0.3);
+      mesh(G.sphere(r.range(0.05, 0.09), 6, 5), mat(0xf6f9fc, { roughness: 1 }), { x: px + cos(a) * d, y: 0.04, z: pz + sin(a) * d, shadow: 'none', parent: W }); }
+    game.npcs.push(new Washer(game, shoveler, { x: sx, z: sz, ry: atan2(px - sx, pz - sz),
+      cries: ["Fresh snow every morning, this time of year.", "Careful, puss — mind where it's packed down.", "Nearly clear. Just this last drift."] })); }
   for (const [x, z, ry] of [[-16, 10, 0.6], [15, -14, -2.2]]) { placeT(game, U, makeIgloo(), x, z, ry); boxT(game, x, z, 3.4, 1.8, 3.4); }
   makeIcePond(game, 18, 8, 5, r);
   // an ice fisherman on a stool at the pond's edge, rod dipped into a hole cut in the ice, the odd bite

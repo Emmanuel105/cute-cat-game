@@ -2588,3 +2588,33 @@ now-abandoned attempt made to the real test file) walked the cat up to the searc
 suite: `world 6: 26 to meet` (up from 25), 99% of Whisper Woods' ground still walkable (was also
 99%), every NPC still in the scene graph, 0 FAILs, 0 console warnings, exit 0, stable across four
 repeat runs, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 123 — a shoveler clears the first cabin's doorstep
+
+Neighborhood and Frosty Peak were tied at the bottom of the to-meet tally, 25 apiece; Frosty Peak's
+last dedicated touch (round 119) was older than the Neighborhood's (round 120), so it got this one.
+
+**A villager now shovels fresh snow off the westernmost cabin's front step, banking it into a small
+heap beside the door.** Reuses `Washer` (already doing duty as the leaf-raker in the Neighborhood
+and the doorstep-sweeper in Candy Land) with a snow shovel built the same way that sweeper's broom
+was — a handle and a red blade clipped to the near hand — plus a little cluster of packed-snow
+spheres piled where the shovel's been working. Lines: *"Fresh snow every morning, this time of
+year."* / *"Careful, puss — mind where it's packed down."* / *"Nearly clear. Just this last
+drift."* Frosty Peak goes from 25 to 26 to meet.
+
+Found the spot with a headless probe that replicated the test suite's own travel path exactly
+(world 0 → 1 → 2 → 3 → 2 → 1 → 0 → 4 → 0 → 5) before sampling, since the four hand-built cabins get
+baked into merged static geometry and lose their `userData` — so their door-front position had to
+be computed from the same `(x, z, ry)` triples the build function itself uses (`sin(ry)`/`cos(ry)`
+offsets from cabin centre) rather than read back off the scene. The very first offset tried (2.5 m
+out from the door) came back blocked by the cabin's own collision box; stepping out to 2.9 m for
+the snow pile and 3.6 m for the shoveler's stance cleared it, with the nearest other NPC (a Kneeler)
+7.9 m away.
+
+Verified beyond the test suite's own checks: a standalone headless harness replayed that exact
+travel sequence, walked the cat up to the shoveler, confirmed `game.nearest.label()` reads "Say
+hello", `game.interact()` takes `friends.size` from 0 to 1 and `score` from 0 to 5, and a second
+approach reads "Say hello again" with no further change. Full suite: `world 5: 26 to meet` (up from
+25), 97% of Frosty Peak's ground still walkable (was also 97%), every NPC still in the scene graph,
+0 FAILs, 0 console warnings, exit 0, stable across repeat runs, before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
