@@ -2921,3 +2921,30 @@ from 0 to 1 and `score` from 0 to 5. Full suite: `world 1: 30 to meet` (up from 
 Land's ground still walkable (unchanged), every NPC still in the scene graph, all checks `ok`, 0
 console warnings, exit 0, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 133 — a game of tag for Robot City, robots standing in for children
+
+Robot City hadn't had a new face since round 103 (the self-diagnostic robot), the longest gap of any
+world, and it was the one place the game-of-tag trick — already given to Sunny Shore, Frosty Peak and
+Whisper Woods — hadn't reached, on the theory that robots don't play. They do now.
+
+**Two small robots chase each other round the open concrete east of the sentry's beat**, reusing
+`Playmates` exactly as the other three worlds' kids do, just with `makeRobot()` rigs standing in for
+the children — the class only ever moves a group and calls `rig.animate(phase, moving, dt, t)`, which
+every robot in the city already answers to via `Wanderer`. `greetable()` already knows what to do with
+a robot rig (`rig.robot`), so no custom dialogue was needed: saying hello gets the usual "BEEP BOOP.
+HELLO, SMALL CAT." Robot City goes from 30 to 32 to meet.
+
+Placed at (28, -40) — a headless probe built the city (`game.load(2, 'from-hub')`) and swept a 6.5 m
+disk against every one of its 1159 physics boxes, rejecting any centre where a skyscraper, crate,
+pipe or existing robot's collider intruded. The spot is dead clear out to that radius, in the gap
+between the sentry's patrol rectangle and the nearest mid-ring skyscraper, with the nearest other soul
+(the sentry itself) over 30 m off — comfortably outside either one's leash or patrol box.
+
+Verified beyond the test suite's own checks: a standalone headless harness built Robot City directly
+and ran the game 3000 frames (~50 simulated seconds) — the two robots swapped "it" nine times, stayed
+within 4.86 m of the anchor (inside the 5.5 m leash), and kept finite positions throughout. Walking the
+cat to each and firing its interactable read "Beep hello", and using both took `friends.size` from 0
+to 2 and `score` from 0 to 10. Full suite: `world 2: 32 to meet` (up from 30), 88% of Robot City's
+ground still walkable, every NPC still in the scene graph, all checks `ok`, 0 console warnings, exit 0,
+before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
