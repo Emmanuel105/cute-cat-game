@@ -2547,3 +2547,44 @@ approach reads "Say hello again" with no further change, and the seated knee ang
 ground still walkable (was 100%, the usual small cost of one more seated collider), every NPC still
 in the scene graph, 0 FAILs, 0 console warnings, exit 0, stable across three repeat runs, before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 122 — a fifth stale-history recovery, and a ring-hunter for Whisper Woods
+
+This round started the same way round 121 did: `git checkout main` landed on a detached HEAD
+sitting on round 121 (the net-mender), but `origin/main` had been force-pushed back to a much
+shorter, unrelated 33-round line in the meantime by another concurrent run — no common ancestor
+with round 121 at all. Built a whole round on that stale 33-round base first (a timing fix for a
+flaky check in the test suite itself — real, and probably worth resurrecting if that line ever
+resurfaces, but not this line's problem) and only found the fork when the push came back rejected
+as non-fast-forward. Fetched, confirmed `origin/main` had been force-pushed to the *real* 121-round
+history in the meantime, shelved the stale attempt on a local-only branch
+(`backup-round34-stale`, never pushed, gone with this container) and reset `main` to match
+`origin/main` before starting over for real.
+
+Neighborhood, Frosty Peak and Whisper Woods were tied at the bottom of the to-meet tally, 25
+apiece; last-touch rounds were 120, 119 and 118 respectively, so Whisper Woods (the oldest) got
+this one.
+
+**A searcher now sweeps a metal detector over the leaf litter just off the stepping stones, hunting
+a ring somebody lost in the woods.** Reuses `Detectorist` (already doing duty for the beachcomber
+on Sunny Shore and the bell-hunter at Frosty Peak), which also gave the glade a bit of standing,
+sweeping motion next to its four seated/kneeling regulars. Lines: *"Someone's ring is out here
+somewhere."* / *"Careful, puss — mind the leaf litter, it's slippery."* / *"Every beep's a bottle
+cap so far."* Whisper Woods goes from 25 to 26 to meet.
+
+Found the spot with a headless probe: built world 6, listed every hand-placed NPC's position, then
+swept the hand-built glade (roughly the inner 42×42 area — the procedural outer-country fill starts
+past radius 58 and wasn't worth searching) for points clear of `physics.blocked` and
+`zones.blocked`, ranked by distance to the nearest existing NPC. The very clearest spots were all
+tucked in the map's far corners past the tree ring; picked the most central point with a
+comfortable 8+ m clearance instead — (-4, 18), about 4.5 m off the stepping-stone path a few steps
+south of the glade, facing east toward the path.
+
+Verified beyond the test suite's own checks: a standalone headless harness (built world 6, waited
+out `game.transitioning` rather than guessing a fixed delay — the same fix round 34's shelved,
+now-abandoned attempt made to the real test file) walked the cat up to the searcher, confirmed
+`game.nearest.label()` reads "Say hello", `game.interact()` takes `friends.size` from 0 to 1 and
+`score` from 0 to 5, and a second approach reads "Say hello again" with no further change. Full
+suite: `world 6: 26 to meet` (up from 25), 99% of Whisper Woods' ground still walkable (was also
+99%), every NPC still in the scene graph, 0 FAILs, 0 console warnings, exit 0, stable across four
+repeat runs, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

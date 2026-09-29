@@ -166,6 +166,13 @@ function buildForest(game, entry) {
       cries: ['Wild berries, picked this morning!', 'Careful, puss - these aren\'t for cats.', 'Sweetest ones grow where the moss is thickest.'] });
     game.npcs.push(v); greetable(game, v); }
 
+  // a searcher sweeps a metal detector over the leaf litter just off the stepping stones, hunting a lost ring
+  { const dx = -4, dz = 18;
+    const searcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }), shirt: 0x4a6a5a, pants: 0x3a3a3a, shoes: 0x2a2018, bag: null, hat: 'cap', hatColor: 0x3a4a3a, scarf: null, jacket: null, backpack: null, glasses: false });
+    W.add(searcher.group);
+    game.npcs.push(new Detectorist(game, searcher, { x: dx, z: dz, ry: PI / 2,   // facing east, toward the stepping-stone path
+      cries: ["Someone's ring is out here somewhere.", 'Careful, puss - mind the leaf litter, it\'s slippery.', "Every beep's a bottle cap so far."] })); }
+
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
 
