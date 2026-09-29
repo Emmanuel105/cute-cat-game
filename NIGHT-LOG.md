@@ -2689,3 +2689,38 @@ surfer's position finite. Full suite: `world 4: 27 to meet` (up from 26), 100% o
 ground still walkable (was 97% two rounds ago, unaffected by this change), every NPC still in the
 scene graph, 273 checks all `ok`, 0 console warnings, exit 0, stable across repeat runs, before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 126 — a juggler for Whisper Woods, the one world that never had one
+
+Three worlds were tied at the bottom of the to-meet tally (26 apiece: Neighborhood, Frosty Peak,
+Whisper Woods), all bumped between rounds 122 and 124. Ranked by last dedicated touch, Whisper
+Woods' (round 122) was the oldest of the three, so it got this one. It was also the only one of the
+seven worlds that had never had a juggler — Neighborhood, Candy Land, Robot City's Victorian
+neighbour, Sunny Shore and Frosty Peak all reuse the `Juggler` controller already — so that's what
+it got.
+
+**A wandering performer now practises in a quiet clearing east of the hollow-log cluster, three
+balls looping over their own head, no audience but the butterflies.** Reuses `Juggler` (already
+doing the same trick in five other worlds) with a forest-green shirt and juggling balls in the same
+three colours as the glade's fairies — a small, cheap nod to the world's magic rather than a
+plain palette pick. Lines: *"Fairies keep stealing my rhythm, I swear."* / *"Careful, puss — mind
+the balls!"* / *"Three's easy. It's the owls that put me off."* Whisper Woods goes from 26 to 27 to
+meet.
+
+Placed at (28, -8) with a headless probe that built the world, travelled to it, and read back every
+NPC's position plus a direct `game.physics.blocked()` check at the candidate spot and its four
+neighbours: nearest thing was a passing butterfly 5.6 m away, well clear of the pond's and glade's
+keep-out circles and every hand-placed tree, rock, stump and hollow log.
+
+Verified beyond the test suite's own checks: a standalone headless harness called `game.start()`,
+travelled to world 6, and — after learning the hard way that `travel()` chains a 520 ms fade-out
+setTimeout into a further 500 ms setTimeout before `transitioning` clears, so a 600 ms real-time
+wait wasn't enough and the first attempt's `game.interact()` silently no-opped — waited the full
+~1.1 s, then teleported the cat to face the juggler and confirmed `game.nearest.label()` reads "Say
+hello", `game.interact()` takes `state.friends.size` from 0 to 1 and `state.score` from 0 to 5, a
+second approach reads "Say hello again" with no further change, and five simulated seconds
+afterward still leave the juggler's position finite. Full suite: `world 6: 27 to meet` (up from
+26), 99% of Whisper Woods' ground still walkable (was 97% two rounds ago, unaffected by this
+change), every NPC still in the scene graph, 273 checks all `ok`, 0 console warnings, exit 0,
+stable across repeat runs, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.

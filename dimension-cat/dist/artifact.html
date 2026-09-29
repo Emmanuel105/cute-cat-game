@@ -7087,6 +7087,17 @@ function buildForest(game, entry) {
     game.npcs.push(new Detectorist(game, searcher, { x: dx, z: dz, ry: PI / 2,   // facing east, toward the stepping-stone path
       cries: ["Someone's ring is out here somewhere.", 'Careful, puss - mind the leaf litter, it\'s slippery.', "Every beep's a bottle cap so far."] })); }
 
+  // Whisper Woods had never had a juggler, unlike every other world; one practices in a quiet clearing
+  // east of the hollow-log cluster, three balls in the air, an audience of nobody but the butterflies —
+  // a headless probe found (28, -8) clear: 5.6 m from the nearest neighbour (a passing butterfly), well
+  // outside the pond's and the glade's keep-out circles and clear of every hand-placed tree, rock and stump
+  { const jx = 28, jz = -8;
+    const juggler = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
+      shirt: 0x2e6b4a, stripes: 0xffd54a, pants: 0x3a2a1e, shoes: 0x3a2a1e, hat: null, scarf: null, jacket: null, bag: null, glasses: false });
+    W.add(juggler.group);
+    game.npcs.push(new Juggler(game, juggler, [0xa8ff9a, 0xffd1ff, 0x9fe8ff], { x: jx, z: jz, ry: atan2(8 - jx, -6 - jz),
+      cries: ["Fairies keep stealing my rhythm, I swear.", 'Careful, puss — mind the balls!', "Three's easy. It's the owls that put me off."] })); }
+
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
 
