@@ -2223,3 +2223,37 @@ score from 0 to 5 (this also caught that `game.nearest` only populates once `gam
 an easy thing to miss testing headless without calling `game.start()` first). Full suite: `world 5:
 23 to meet` (up from 22), 98% of Frosty Peak's ground still walkable (was 99%), every NPC still in
 the scene graph, 0 console warnings, exit 0, stable across three repeat runs.
+
+## Round 112 — a birdwatcher for the Neighborhood, and a note on where in the file a new NPC goes
+
+Neighborhood and Frosty Peak were tied at the bottom of the to-meet tally again, 22 apiece; Frosty
+Peak got the last one (round 111), so this one went to the Neighborhood, untouched since round 108.
+
+**A birdwatcher now stands alone in the open field far south of the street, binoculars raised to
+the sky.** A headless probe (every NPC's, interactable's and squirrel's position, swept against the
+physics boxes and zones) found (19, -75) the clearest spot in the whole neighbourhood — 56 m from
+its nearest neighbour, in a village of 24 people. Reuses the `Birder` controller already doing duty
+on Sunny Shore (gulls) and in Whisper Woods (an owl and a woodpecker), unmodified, with garden birds
+instead: *"That's a robin, I'd swear to it."* / *"Careful, puss — you'll scatter the sparrows."* /
+*"Quietest corner in the whole neighbourhood for it."* The Neighborhood goes from 22 to 23 to meet.
+
+Where this one bit: the first two placements tried (right after the raker, and right after the
+pond-side painter) both built and ran clean on their own, but broke an *existing* test — first the
+painter's own "two daubs in, arm down" check, then (a different placement) a "no two neighbours
+wear the same shirt" collision between two unrelated existing characters. Neither is really about
+this NPC: every person's rig draws blink/idle/sway timing from the same global `rnd()` sequence on
+construction, and idle NPCs occasionally roll a wave/look/nod/shift gesture from that same sequence
+while standing around — so adding any new person anywhere in the Neighborhood's build order reshuffles
+every other person's future idle-gesture rolls and can, by bad luck, land the pond painter's own idle
+gesture exactly on the two-frame window the test inspects, or shift someone else's wardrobe bag draw
+into a repeat. Not a bug in this round's code or in the ones it collided with — just where in a long,
+deterministic sequence a new draw happens to land. Fixed by trying a few insertion points (after the
+car-wash, before the orchard hand) until the whole suite came back clean; if a future round hits the
+same kind of collision, moving the new construction a few lines earlier or later in its world's build
+function — not touching whatever it collided with — is the fix, confirmed here by five repeat runs
+all green before touching `dist/`.
+
+Verified: `node test/run.mjs` exit 0 five times in a row at the working insertion point (`world 0: 23
+to meet`, up from 22; 96% of the Neighborhood's ground still walkable, unchanged; every NPC still in
+the scene graph; 0 console warnings) before rebuilding `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.

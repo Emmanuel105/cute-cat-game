@@ -237,6 +237,15 @@ function buildNeighborhood(game, entry) {
     P.addBox(bx, 0.16, bz, 0.5, 0.32, 0.5, { cam: false });
     game.npcs.push(new Washer(game, washer, { x: 21.5, z: 4.6, ry: 0,
       cries: ['Nearly got the wing mirror shiny.', "Careful, puss - wet paint, this bit.", "She'll gleam like new by lunchtime."] })); }
+  // a birdwatcher stands alone in the quiet open field far south of the street, binoculars raised to the sky
+  // (a headless probe over the built world — every NPC, interactable and squirrel position, swept against
+  // the physics boxes and zones — found (19, -75) the clearest spot left in the whole neighbourhood, 56 m
+  // from its nearest neighbour)
+  { const birdWard = makeWardrobe(r, { shirts: [0x6a7a4a, 0x4a5a6a, 0x7a6a4a], pants: [0x3a3a3a, 0x2f3a2a], shoes: [0x5a4030, 0x3a2a1e] });
+    const birder = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: birdWard }),
+      hat: 'cap', hatColor: 0x3a4a2e, glasses: true, glassColor: 0x2a2a2a, jacket: null, scarf: null, bag: null, backpack: null }); W.add(birder.group);
+    game.npcs.push(new Birder(game, birder, { x: 19, z: -75, ry: 2.4,
+      cries: ["That's a robin, I'd swear to it.", "Careful, puss — you'll scatter the sparrows.", 'Quietest corner in the whole neighbourhood for it.'] })); }
   // an orchard hand kneels between the apple rows, sorting a crate of fallen fruit
   { const cx = 55.5, cz = 47.5, kx = cx - 1.3, kz = cz;
     const farmWard = makeWardrobe(r, { shirts: [0x8a6a3a, 0x5a6a4a, 0x6b4a2b], pants: [0x4a3a2a, 0x3a3a3a], shoes: [0x5a4530, 0x2a2018] });
