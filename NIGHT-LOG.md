@@ -2724,3 +2724,29 @@ afterward still leave the juggler's position finite. Full suite: `world 6: 27 to
 change), every NPC still in the scene graph, 273 checks all `ok`, 0 console warnings, exit 0,
 stable across repeat runs, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 127 — a kite flyer on Frosty Peak's open snowfield
+
+Neighborhood and Frosty Peak were tied at the bottom of the to-meet tally (26 apiece). Frosty
+Peak's last dedicated touch (round 124, the doorstep shoveler) was older than Neighborhood's
+(round 125, the council electrician), so it got this one.
+
+**A kite flyer now works the open snow well east of the village, an orange-and-ice-blue kite
+looping in a lazy figure-eight high over the peak.** Reuses `KiteFlyer` (already doing the same
+trick on Sunny Shore's dunes) and `makeKite()`, with a bundled-up figure in a blue beanie holding
+the line. Lines: *"Mountain wind's the best kind for it."* / *"Careful, puss — mind the line!"* /
+*"Higher than the gondola, today."* Frosty Peak goes from 26 to 27 to meet.
+
+Placed at (46, 44) — well past the pine ring, clear of the village circle, the cave and path zones,
+and the zipline span — found with a headless probe that built the world and checked
+`game.physics.blocked()` there and at eight neighbours 3–6 m out: all clear, gentle terrain (well
+under a metre of rise over 6 m), and every one of the world's 46 other NPCs at least 16 m away.
+
+Verified beyond the test suite's own checks: a standalone headless harness called `game.start()`,
+travelled to world 5, teleported the cat to face the flyer, and confirmed `game.nearest.label()`
+reads "Say hello", `game.interact()` takes `friends.size` from 0 to 1 and `score` from 0 to 5, a
+second approach reads "Say hello again" with no further change, and the kite itself climbs to 6.5 m
+up and stays finite five simulated seconds later. Full suite: `world 5: 27 to meet` (up from 26),
+98% of Frosty Peak's ground still walkable, every NPC still in the scene graph, 273 checks all
+`ok`, 0 console warnings, exit 0, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.

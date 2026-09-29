@@ -6816,6 +6816,13 @@ function buildSnowVillage(game, entry) {
       hat: 'beanie', hatColor: 0xd6a339, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a }); W.add(busker.group);
     game.npcs.push(new Juggler(game, busker, [0xffffff, 0x9fe8ff, 0xbfa8ff], { x: jx, z: jz, ry: atan2(tx - jx, tz - jz),
       cries: ["Three's easy. Four's where it gets cold.", 'Careful, puss — mind the ice!', "Cold hands make for shakier catches."] })); }
+  // a kite flyer works the open snowfield well east of the village, kite looping high over the peak
+  { const kx = 46, kz = 44;
+    const kiteWard = makeWardrobe(r, { shirts: [0x2f6fd6, 0xd6a339, 0x5a4a6a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const flyer = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: kiteWard }),
+      hat: 'beanie', hatColor: 0x2f6fd6, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a }); W.add(flyer.group);
+    game.npcs.push(new KiteFlyer(game, flyer, makeKite(0xff6f3c, 0x9fe8ff), { x: kx, z: kz, wind: [0.5, -0.75],
+      cries: ["Mountain wind's the best kind for it.", 'Careful, puss — mind the line!', "Higher than the gondola, today."] })); }
   // kids in beanies: wrapped up in coats, scarves and mittens, no two the same colour
   const snowWard = makeWardrobe(r, { shirts: [0xd62839, 0x2f6fd6, 0x2e9e6e, 0xff8f00, 0x8a5acf, 0x00acc1], pants: [0x1e2a44, 0x3a3a3a, 0x4a3a2a], shoes: [0x2a2018, 0x1e1a18] });
   const beanieBag = bag(r, [0xd62839, 0x2f6fd6, 0xffd54a, 0x2e9e6e, 0xef7d2f]);
