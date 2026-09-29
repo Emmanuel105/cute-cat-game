@@ -2287,3 +2287,33 @@ three repeat runs (the exact cat-rest height on later worlds shifts a little run
 112 already noted — a new construction earlier in the shared `rnd()` sequence reshuffling a later
 spawn roll, not a bug) before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 114 — a berry seller for Whisper Woods
+
+Neighborhood, Frosty Peak and Whisper Woods were tied at the bottom of the to-meet tally, 23 apiece.
+Neighborhood had round 112, Frosty Peak round 111; Whisper Woods' last touch (round 110) was the
+oldest of the three, so it got this one.
+
+**A berry seller now stands between two big trees east of the glade, wicker basket held up, calling
+out to passers-by.** Whisper Woods had never had a vendor of its own, unlike every other world.
+Reuses the `Vendor` controller and the plain `makeFruitBasket()` prop (already doing duty for a
+costermonger in the Victorian market) unmodified — the basket's red, yellow and green already read
+as berries rather than orchard fruit. Lines: *"Wild berries, picked this morning!"* / *"Careful,
+puss - these aren't for cats."* / *"Sweetest ones grow where the moss is thickest."* Whisper Woods
+goes from 23 to 24 to meet.
+
+Found the spot with a headless probe: built world 6, collected every stationary NPC's and
+interactable's position (skipping the fairies and butterflies, which roam rather than sit still),
+then swept the hand-built part of the wood — inside the 58 m radius where the procedural outer-ring
+filler (`forestRegion`) never reaches — for the cell farthest from its nearest neighbour. Picked
+(34, 8): about 14 m from the nearest existing NPC, 9 m from the closest big tree so it still reads
+as part of the wood rather than off in a clearing, confirmed empty in an 8×8 m box and outside every
+zone.
+
+Verified beyond the test suite's own checks: a real `game.start('new')` and `game.load(6,
+'from-hub')` (skips the async fade, since only the NPC's presence and the interaction mattered here),
+walked the cat up to the seller, confirmed `game.nearest.label()` reads "Say hello" and
+`game.interact()` takes `friends.size` from 0 to 1 and score from 0 to 5. Full suite: `world 6: 24
+to meet` (up from 23), 99% of Whisper Woods' ground still walkable, every NPC still in the scene
+graph, 0 console warnings, exit 0, stable across three repeat runs, before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

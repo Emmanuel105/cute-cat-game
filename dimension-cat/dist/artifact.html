@@ -6964,6 +6964,16 @@ function buildForest(game, entry) {
     game.npcs.push(new Charger(game, attendant, { x: -33, z: 28, ry: atan2(-30 - (-33), 30 - 28), cryIcon: '🪢',
       cries: ["Cable's tight, harness checked - all set.", 'Only ever the squirrel gets a turn, mind.', "Mind the posts, puss - they don't budge."] })); }
 
+  // Whisper Woods had never had a vendor of its own; a berry seller sets up between the big trees east of the glade, basket held up
+  { const cx = 34, cz = 8; game.zones.addCircle(cx, cz, 1.2);
+    const berryWard = makeWardrobe(r, { shirts: [0x6b4f8a, 0x5a7a4a, 0x8a5a4a], pants: [0x3a3a3a, 0x4a4030], shoes: [0x2a2018, 0x1e2020] });
+    const berrySeller = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.4), wardrobe: berryWard }),
+      apron: 0xd9c9a8, hat: 'flatcap', hatColor: 0x4a4030, bag: null, jacket: null, scarf: null });
+    W.add(berrySeller.group);
+    const v = new Vendor(game, berrySeller, makeFruitBasket(), { x: cx, z: cz, ry: atan2(8 - cx, -6 - cz), cryIcon: '🍓',
+      cries: ['Wild berries, picked this morning!', 'Careful, puss - these aren\'t for cats.', 'Sweetest ones grow where the moss is thickest.'] });
+    game.npcs.push(v); greetable(game, v); }
+
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
 
