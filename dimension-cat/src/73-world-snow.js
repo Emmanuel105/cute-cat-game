@@ -110,6 +110,13 @@ function buildSnowVillage(game, entry) {
       hat: 'beanie', hatColor: 0x6a4a5a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a }); W.add(searcher.group);
     game.npcs.push(new Detectorist(game, searcher, { x, z, ry: atan2(tx - x, tz - z),
       cries: ["One of Copper's bells came loose out here somewhere.", "Careful, puss, don't step on it first.", "This thing beeps at every buckle-sized rock."] })); }
+  // a busker juggles on the open snow between the pond and the painter's easel, hoping passers-by stop and watch
+  { const jx = 20, jz = -8, tx = 18, tz = 8;
+    const buskWard = makeWardrobe(r, { shirts: [0xd6a339, 0x3a6a8a, 0x8a3a5a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const busker = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: buskWard }),
+      hat: 'beanie', hatColor: 0xd6a339, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a }); W.add(busker.group);
+    game.npcs.push(new Juggler(game, busker, [0xffffff, 0x9fe8ff, 0xbfa8ff], { x: jx, z: jz, ry: atan2(tx - jx, tz - jz),
+      cries: ["Three's easy. Four's where it gets cold.", 'Careful, puss — mind the ice!', "Cold hands make for shakier catches."] })); }
   // kids in beanies: wrapped up in coats, scarves and mittens, no two the same colour
   const snowWard = makeWardrobe(r, { shirts: [0xd62839, 0x2f6fd6, 0x2e9e6e, 0xff8f00, 0x8a5acf, 0x00acc1], pants: [0x1e2a44, 0x3a3a3a, 0x4a3a2a], shoes: [0x2a2018, 0x1e1a18] });
   const beanieBag = bag(r, [0xd62839, 0x2f6fd6, 0xffd54a, 0x2e9e6e, 0xef7d2f]);

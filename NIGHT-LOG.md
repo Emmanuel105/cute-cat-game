@@ -2445,3 +2445,32 @@ second approach reads "Say hello again" with no further change. Full suite: `wor
 console warnings, exit 0, stable across three repeat runs (only the usual non-deterministic timing
 numbers — kite height, snowball counts, idle rest height — differ between runs), before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 119 — a busker juggles on Frosty Peak's open snow
+
+Neighborhood and Frosty Peak were tied at the bottom of the to-meet tally, 24 apiece. Frosty Peak's
+last touch (round 115, the birdwatcher) was the older of the two.
+
+**A busker now juggles three ice-white and pale-blue balls on the open snow between the frozen pond
+and the painter's easel, hoping passers-by stop and watch.** Frosty Peak already leaned hard on the
+`Kneeler` pattern — a dozen-plus static figures kneeling by logs, snowmen and igloos — so this reuses
+`Juggler` instead (already doing duty in Candy Land and Victorian, and on Sunny Shore), for a bit of
+motion variety the world was otherwise missing. Faces roughly toward the pond, where the angler,
+skaters and birdwatcher already draw foot traffic. Lines: *"Three's easy. Four's where it gets
+cold."* / *"Careful, puss — mind the ice!"* / *"Cold hands make for shakier catches."* Frosty Peak
+goes from 24 to 25 to meet.
+
+Found the spot with a headless probe: built world 5, collected every NPC's position and swept
+`game.physics.boxes` for a grid of points at least 3 m clear of any collider and 5 m from the nearest
+NPC. Picked (20, -8) — clear of the two nearest cabins (east cabin and the one by the second igloo),
+about 8 m from the vendor and ice fisher clusters, in the gap between the pond and the painter.
+
+Verified beyond the test suite's own checks: a standalone headless harness, clicked "enter" to start
+the game (the first probe attempt skipped this and found `game.nearest` always null — `game.step`,
+which computes it, only runs once `game.started` is true), then `game.travel(5, 'from-hub')`, waited
+out both the load and the fade-lock timers, walked the cat up to the busker, confirmed
+`game.nearest.label()` reads "Say hello", `game.interact()` takes `friends.size` from 0 to 1 and
+`score` from 0 to 5, and a second approach reads "Say hello again" with no further change. Full
+suite: `world 5: 25 to meet` (up from 24), 97% of Frosty Peak's ground still walkable (unchanged), 0
+FAILs, 0 console warnings, exit 0, stable across repeat runs, before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
