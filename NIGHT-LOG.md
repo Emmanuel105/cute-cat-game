@@ -2825,3 +2825,35 @@ whoever next drives `travel()` from a headless script rather than the test suite
 suite: `world 4: 29 to meet` (up from 27), 100% of Sunny Shore's ground still walkable, every NPC
 still in the scene graph, 273 checks all `ok`, 0 console warnings, exit 0, stable across three repeat
 runs, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 130 — a game of tag for Whisper Woods
+
+Following the rotation (Neighborhood, Sunny Shore, Whisper Woods, Frosty Peak — the four worlds tied
+at 27 to meet before the last two rounds), this round was Whisper Woods' turn. The Neighborhood's
+park and Sunny Shore's dunes both already had two kids playing tag; Whisper Woods, despite five
+kneeling children, a firefly-chaser and a three-child fairy-ring dance, never had one.
+
+**Two kids now chase each other on a clear patch of forest floor north-west of the treehouse**,
+swapping who's "it" with a hop and a tag, exactly like the other two worlds' games — it reuses
+`Playmates` outright, in forest colours (mustard and moss shirts) instead of beach or park ones.
+Both kids are made greetable the same way `BallGame`'s players already are
+(`greetable(game, { rig })` on each moving rig), so saying hello to either counts toward the total.
+Whisper Woods goes from 27 to 29 to meet.
+
+Placed at (-18, 32) — found with a headless probe that built the world, then swept a fine grid over
+a 4.2 m disk at each candidate centre against every physics box (the same box-vs-point test the test
+suite uses to check roads are clear) and against `game.zones`, rejecting anywhere a tree, rock, stump
+or existing NPC's home spot overlapped. (An earlier version of the probe only sampled points on the
+circle's rim plus its centre, which missed a tree sitting inside the disk but off both — worth
+knowing for next time.) The nearest other soul at that spot is the zipline attendant, 15.5 m away.
+
+Verified beyond the test suite's own checks: a standalone headless harness built the woods directly
+(`game.load(6, 'from-hub')`, skipping the fade-transition `setTimeout` `travel()` normally goes
+through) and ran the game 3000 frames (~50 simulated seconds) — the two kids swapped "it" ten times,
+stayed within the 4 m leash plus a small buffer throughout, and kept finite positions. Reading each
+kid's interactable label gave "Say hi" (children use the child prompt); pressing use on both took
+`friends.size` from 0 to 2 and `score` from 0 to 10, and re-reading the label afterward gave "Say hi
+again". Full suite: `world 6: 29 to meet` (up from 27), 98% of Whisper Woods' ground still walkable
+(down one point from the two kids' own colliders, same as every other tag game added this way), every
+NPC still in the scene graph, 273 checks all `ok`, 0 console warnings, exit 0, before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

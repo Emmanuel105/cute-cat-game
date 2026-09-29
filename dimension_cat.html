@@ -7146,6 +7146,17 @@ function buildForest(game, entry) {
     game.npcs.push(new Juggler(game, juggler, [0xa8ff9a, 0xffd1ff, 0x9fe8ff], { x: jx, z: jz, ry: atan2(8 - jx, -6 - jz),
       cries: ["Fairies keep stealing my rhythm, I swear.", 'Careful, puss — mind the balls!', "Three's easy. It's the owls that put me off."] })); }
 
+  // two kids chase each other on the clear ground north-west of the treehouse — every other world's children
+  // already had a game of tag going (the park, the dunes); Whisper Woods never got round to it. Found with a
+  // headless probe that built the world and swept a 4.2 m disk against every physics box and zone: (-18, 32) is
+  // clear, with the attendant by the zipline the nearest other soul at 15.5 m
+  { const tagWard = makeWardrobe(r, { shirts: [0xd9a23a, 0x4a7a5a], pants: [0x2e4a3a, 0x3a3a3a], shoes: [0x3a2a1e, 0x2a2018] });
+    const tagA = makeHuman({ ...randomPerson(r, { female: false, child: true, wardrobe: tagWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    const tagB = makeHuman({ ...randomPerson(r, { female: true, child: true, wardrobe: tagWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(tagA.group); W.add(tagB.group);
+    game.npcs.push(new Playmates(game, tagA, tagB, { cx: -18, cz: 32, leash: 4 }));
+    greetable(game, { rig: tagA }); greetable(game, { rig: tagB }); }
+
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
 
