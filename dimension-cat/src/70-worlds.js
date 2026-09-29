@@ -274,6 +274,19 @@ function buildNeighborhood(game, entry) {
     game.npcs.push(new Washer(game, raker, { x: rx, z: rz, ry: atan2(lx - rx, lz - rz),
       cries: ['One more pile before lunch.', "Careful, puss — don't scatter it!", 'These leaves just keep coming down.'] })); }
   game.squirrels.push(new Squirrel(game, 9, 47, 'sq-neighborhood'));
+  // a detectorist sweeps the quiet grass behind the south-row houses, headphones on, hoping for buried
+  // treasure — already doing duty on Sunny Shore and at Frosty Peak, its first outing in the Neighborhood
+  // (own small wardrobe, not the street's shared `ward` bag, which is sized exactly to its 18 users already;
+  // placed last so it draws from the tail of the local RNG sequence and leaves every earlier neighbour's
+  // random wardrobe pick undisturbed)
+  // (a headless probe over the built world — every NPC and interactable position swept against the physics
+  // boxes and zones — found (60, -9) clear: about 36 m from the nearest other NPC, in the gap between the
+  // back gardens of the houses at x=54 and x=72)
+  { const digWard = makeWardrobe(r, { shirts: [0x707060, 0x4a3f33, 0x5c4a2f], pants: [0x3a3a2a, 0x2a2a2a], shoes: [0x5a4030, 0x3a2a1e] });
+    const digger = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: digWard }),
+      hat: r.chance(0.5) ? 'cap' : null, hatColor: 0x4a5a4a, jacket: null, scarf: null, bag: null, backpack: null }); W.add(digger.group);
+    game.npcs.push(new Detectorist(game, digger, { x: 60, z: -9, ry: -1.6,
+      cries: ["Just a bottle cap. Every time.", "Careful, puss — mind the headphones cable.", "One day it'll be buried gold."] })); }
   // three more ways out of the neighborhood: beach boardwalk (east), gondola to the peak (west), hollow oak to the woods (south-east)
   const beachGate = makeBeachGate(game, 78, 22, PI / 2, () => game.travel(WORLD_INDEX('beach'), 'from-hub')); U.push(beachGate.userData.update);
   flatPlane(game, 30, 3, walk, 60, 22, 0, 0.02);                                                                             // boardwalk from the road out to the arch

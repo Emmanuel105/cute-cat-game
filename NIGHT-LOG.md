@@ -2345,3 +2345,45 @@ hello" and `game.interact()` takes `friends.size` from 0 to 1 and score from 0 t
 98%, the new NPC's own collision circle), every NPC still in the scene graph, 0 console warnings,
 exit 0, stable across three repeat runs, before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 116 — a detectorist for the Neighborhood
+
+Neighborhood was the only world left at the bottom of the to-meet tally, 23, everyone else already
+at 24 or above and Neighborhood's own last touch (round 112) the oldest besides.
+
+**A detectorist now sweeps the quiet grass behind the south-row houses, headphones on, swinging the
+coil side to side, hoping for buried treasure.** Reuses the `Detectorist` controller already doing
+duty on Sunny Shore and at Frosty Peak — its first outing in the Neighborhood, and the least crowded
+back-lot corner of the map turned out to be exactly the kind of overlooked patch a detectorist would
+actually work. Lines: *"Just a bottle cap. Every time."* / *"Careful, puss — mind the headphones
+cable."* / *"One day it'll be buried gold."* Neighborhood goes from 23 to 24 to meet.
+
+First attempt was a two-kid game of catch with the `BallGame` controller (reused from Sunny Shore),
+which turned up two real gotchas worth recording: the street's shared wardrobe bag (`ward`) is sized
+to *exactly* the 18 colours in `SHIRT_COLORS` for its 18 existing users, so two more draws from it
+guarantee a shirt-colour collision (the "no two neighbours wear the same shirt" check caught it
+immediately); and `BallGame.update` draws from the *shared global* `rnd()` every time the ball
+changes hands (roughly once a second), which — unlike a slow-cry NPC — shifts the sequence enough,
+within a single build, to break an unrelated timing check (two neighbours' chat-turn count dropped
+to zero) and even to nudge Victorian's carriage speed in a later, separately-seeded world. Swapped
+to the single-NPC, own-wardrobe, slow-cry `Detectorist` pattern already proven safe by a dozen prior
+rounds, and — since even a slow-cry NPC still consumes the *local* per-world `r()` sequence used for
+every other neighbour's wardrobe pick — moved its construction to the very end of the NPC section
+(after the squirrel, right before the exit gates) so it draws from the tail of that sequence instead
+of shifting everyone built after it. Also had to hand-pick its own three shirt colours to be
+disjoint from every other wardrobe pool in the file (found one, `jettyWard`'s, already shares two
+exact hex values with what I first tried).
+
+Found the spot with a headless probe: built world 0, collected every NPC's and interactable's
+position, swept the physics boxes and the zone list for a clear patch, then verified an 8×2.6 m
+footprint around it. Picked (60, -9): about 36 m from the nearest other NPC, in the open gap between
+the back gardens of the houses at x=54 and x=72 — the emptiest corner left in a well-populated
+world.
+
+Verified beyond the test suite's own checks: a real `game.start('new')`, walked the cat up to the
+detectorist, confirmed `game.nearest.label()` reads "Say hello" and `game.interact()` takes
+`friends.size` from 0 to 1 and score from 0 to 5. Full suite: `the Neighborhood has 24 people to
+meet` (up from 23), no shirt-colour collisions, every neighbour's chat/wave/photo-mode timing checks
+still pass, 96% of the Neighborhood's ground still walkable, every NPC still in the scene graph, 0
+console warnings, exit 0, stable across three repeat runs, before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
