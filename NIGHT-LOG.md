@@ -2387,3 +2387,32 @@ meet` (up from 23), no shirt-colour collisions, every neighbour's chat/wave/phot
 still pass, 96% of the Neighborhood's ground still walkable, every NPC still in the scene graph, 0
 console warnings, exit 0, stable across three repeat runs, before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 117 — a clam digger for Sunny Shore's tideline
+
+Neighborhood, Sunny Shore, Frosty Peak and Whisper Woods were tied at the bottom of the to-meet
+tally, 24 apiece. Sunny Shore's last touch (round 113) was the oldest of the four, so it got this
+one.
+
+**A clam digger now kneels in the wet sand north of the pier, working the tideline for shellfish.**
+Sunny Shore already had a beachcomber sorting shells and a girl writing in the sand, but nobody
+actually digging the tideline itself — every other patch of the beach had a job to do except the
+strip of wet sand the sea keeps refreshing. Reuses the `Forager` controller (already doing duty on
+two mushroom/pinecone pickers in Whisper Woods and Frosty Peak), its first outing at the coast —
+the kneel-and-reach animation reads just as well as digging for clams as it does picking fungus.
+Lines: *"A clam! Bucket's filling up nicely."* / *"Careful, puss — sharp shells under that sand."* /
+*"Low tide's the only time worth digging."* Sunny Shore goes from 24 to 25 to meet.
+
+Found the spot with a headless probe: built world 4, collected every NPC's position plus the
+physics boxes and collision circles, then swept the tideline strip (x 14–26, where the shore
+gradient runs from dry sand to sea) for a patch clear of the pier's footprint, the pier-end angler,
+and the wandering crabs. Picked (20, 9): clear of every box and circle, about 6–7 m from the
+nearest wanderers (a crab and a beachgoer), well north of the pier at z=–10 and the lighthouse rocks
+at (12, –46).
+
+Verified beyond the test suite's own checks: a real `game.start('new')` and `game.load(4,
+'from-hub')`, walked the cat to (20, 9), confirmed `game.nearest.label()` reads "Say hello" and
+`game.interact()` takes `game.state.friends.size` from 0 to 1 and `game.state.score` from 0 to 5.
+Full suite: `world 4: 25 to meet` (up from 24), 100% of Sunny Shore's ground still walkable, every
+NPC still in the scene graph, 0 console warnings, exit 0, stable across three repeat runs, before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
