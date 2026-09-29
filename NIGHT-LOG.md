@@ -2888,3 +2888,36 @@ took `friends.size` from 0 to 2 and `score` from 0 to 10, with both new ids reco
 Full suite: `world 5: 29 to meet` (up from 27), 98% of Frosty Peak's ground still walkable, every NPC
 still in the scene graph, 290 checks all `ok`, 0 console warnings, exit 0, before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 132 — a resident for Candy Land's second empty house
+
+Victorian had had the most recent attention (a fiddler, round 98); Candy Land's turn instead, and a
+long-standing gap in it: the lane up to the Candy Queen's castle has five candy houses, and Round 102
+gave only the nearest one anybody outside it — a sweeper on its doorstep. The other four have sat
+empty ever since.
+
+**The next house along the lane now has someone too**, sitting cross-legged on their own doorstep,
+working through a swirl lollipop held in one hand (a striped disc on a stick, same build technique as
+the fiddler's violin and the reader's book — a small mesh parented straight to `resident.hands[1]`).
+It reuses `Sitter` at `seat: 0.1`, the same low seat the reader in Whisper Woods sits at, so the hips
+settle right onto the ground rather than a bench that isn't there. One line nods at the three houses
+still standing empty: *"The other houses? Empty, far as I've ever seen."* Candy Land goes from 29 to
+30 to meet.
+
+Placed at (-12.60, 94.89) — a headless probe built Candy Land and walked the scene graph for the
+house group nearest (-16, 95) to read its exact baked rotation (`ry = 1.60359…`, close enough to 90°
+that the door faces almost due world-+X), then offset 3.4 m out along that same facing so the sitter
+clears the house's own square physics collider (its rotated box snaps to an axis-aligned 5.6×5.6 m
+square around the round walls — a point offset diagonally to the door needed more like 4.4 m to clear
+it on both axes, but this house's near-cardinal facing meant 3.4 m cleared it on X alone). The nearest
+physics box at that point is 0.6 m away and the nearest other NPC 15.4 m, both confirmed by the same
+probe against `game.physics.boxes` and `game.npcs`.
+
+Verified beyond the test suite's own checks: a second headless harness called `game.load(1,
+'from-hub')` directly (skipping `travel()`'s fade timers, as a couple of earlier rounds' harnesses
+found necessary), found the new NPC by its unique cry text, ran 60 frames to settle its pose, walked
+the cat to it and fired the interactable — label read "Say hello", and using it took `friends.size`
+from 0 to 1 and `score` from 0 to 5. Full suite: `world 1: 30 to meet` (up from 29), 91% of Candy
+Land's ground still walkable (unchanged), every NPC still in the scene graph, all checks `ok`, 0
+console warnings, exit 0, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.
