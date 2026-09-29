@@ -2980,3 +2980,44 @@ going non-finite. A physics-box scan of a 1 m radius around the seat came back e
 `world 3: 35 to meet` (up from 34), 94% of Victorian's ground still walkable (unchanged), every NPC
 still in the scene graph, all checks `ok`, 0 console warnings, exit 0, before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 135 — a woodcutter for the Neighborhood's back gardens
+
+Scanned the log again for the world with the longest gap since its last new face: the Neighborhood
+hadn't had one since round 128 (the lemonade stand), six rounds back, the longest wait of the seven
+worlds. `Chopper` — the stand-over-a-stump, split-log-again-and-again controller already doing duty at
+Frosty Peak and in Whisper Woods — had never made it to the street, even though every house on it has a
+chimney and nobody was stocking any of them.
+
+**Someone splits logs on a stump in the backyard of the house at x=-36, out past the reach of the
+street and its own front path.** A stout figure in a plaid shirt with a flatcap, own small wardrobe
+rather than the street's shared one, axe already gripped from `makeHuman`'s `axe: true` option, three
+split logs already down beside the stump. Lines: *"Stove wants feeding before dark."*, *"Careful, puss
+— mind the chips."*, *"Whole winter's worth, if I keep at it."* The Neighborhood goes from 27 to 28 to
+meet.
+
+Placed at (-36, -9.6) for the stump and (-36, -8.3) for the woodcutter — a headless probe over the
+built world (every physics box and NPC position swept against the candidate spot) found it clear: 5-6 m
+from the house's own back wall (nothing else was ever put back there), 25 m from the nearest other NPC,
+comfortably south of the house's own footprint zone, which ends at z=-6.8.
+
+This one very nearly went in with a red build: adding the chopper on its own left the suite green, but
+its periodic axe-strikes (each one a `SFX.thunk()` and a particle burst, both drawing from the shared
+global `rnd()` sequence during simulated frames) shifted exactly which random tick the street's cyclist
+happened to be pedalling on 40 simulated seconds later, and the existing "cyclist rides the westbound
+lane" check samples the bike's hip rotation at two points 2 s apart — landing them, this once, close
+enough in phase that the delta fell under the check's own 0.05 rad threshold. Bisected the same way
+round 97 and the lemonade stand did it: three extra `rnd()` burns right before the chopper joins
+`game.npcs`, tried counts 0 through 6 in turn, and three was the first that put the cyclist's sampled
+phase back clear of the threshold without disturbing anything else - confirmed with a full clean run
+afterward, not just the one check.
+
+Verified beyond the test suite's own checks: a headless harness built the Neighborhood directly, found
+the new `Chopper` by its stump-side position, confirmed its rig was parented into the scene, ran 60
+frames and found its position still finite, then teleported the cat alongside it — `game.nearest._label`
+read "Say hello" and using it took `game.state.friends.size` from 0 to 1 and score from 0 to 5. A
+further 1200 frames (20 more simulated seconds) landed four axe-strikes without the rig's position ever
+going non-finite. A physics-box scan of a 1 m radius around the stump, excluding the stump's own
+collider, came back empty. Full suite: `world 0: 28 to meet` (up from 27), 96% of the Neighborhood's
+ground still walkable (unchanged), every NPC still in the scene graph, all checks `ok`, 0 console
+warnings, exit 0, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
