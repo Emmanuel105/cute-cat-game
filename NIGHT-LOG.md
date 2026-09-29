@@ -2506,3 +2506,44 @@ at the spawn point. Full suite: `world 0: 25 to meet` (up from 24), `no two neig
 shirt (26 colours for 26 people)`, 96% of the Neighborhood's ground still walkable (unchanged), every
 NPC still in the scene graph, 0 FAILs, 0 console warnings, exit 0, stable across four repeat runs,
 before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 121 — a net-mender for Sunny Shore, and a fourth stale-history recovery
+
+This sandbox's `main` started out frozen 87 rounds behind — a full round (a forager in Whisper
+Woods, reusing `Vendor` for a mushroom-basket seller) got built and verified clean against that
+stale base before the push came back rejected as non-fast-forward. Checked what had actually
+landed on `origin`: the real, 120-round history, force-pushed there by another concurrent run mid
+session — not an abandoned branch. The stale attempt was shelved on a local-only branch
+(`backup-stale-round34`, never pushed) and `main` was reset to match `origin/main` before starting
+over for real; Whisper Woods was already at 25 to meet by then anyway, so the shelved forager
+wouldn't have added anything.
+
+Four worlds were tied at the bottom of the to-meet tally, 25 apiece (Neighborhood, Sunny Shore,
+Frosty Peak, Whisper Woods); Sunny Shore's last dedicated touch (round 117) was the oldest of the
+four.
+
+**A net-mender now sits on a stool on the quiet sand at the north end of the beach, coiling rope in
+her lap — the two moored boats out past the shallows never had anyone tending their gear.** Reuses
+`Sitter` (already doing duty as the lifeguard) and the plain `makeIceStool()` prop (already doing
+duty under four anglers elsewhere), with a small coiled-rope mesh in one hand for flavour. Lines:
+*"Salt gets in every knot, out here."* / *"Careful, puss — this line still has hooks on it."* /
+*"Boats won't mend themselves, will they."* Sunny Shore goes from 25 to 26 to meet.
+
+Found the spot with a headless probe that replicated the test suite's own travel path exactly
+(world 0 → 1 → 2 → 3 → 2 → 1 → 0 → 4, not a direct hop) before sampling — an earlier, more direct
+probe had returned a different, wrong `friendTotal` for a mid-sequence world, because idle-timer and
+gesture rolls for unrelated NPCs draw from the same global `rnd()` sequence the whole session
+shares, so the exact travel history before a world is built shifts its own state in ways a
+shortcut probe won't reproduce. With that fixed, the real probe swept the walkable sand for points
+at least 4 m from Sunny Shore's other 24 hand-placed people and creatures; (25, 48) came back 14.7 m
+clear, on dry sand short of the water-crossing wall at x=33, in the open gap north of the kite
+flyer and the two friends talking on the sand.
+
+Verified beyond the test suite's own checks: a standalone headless harness replayed that exact
+travel sequence, walked the cat up to the new mender, confirmed `game.nearest.label()` reads "Say
+hello", `game.interact()` takes `friends.size` from 0 to 1 and `score` from 0 to 5, a second
+approach reads "Say hello again" with no further change, and the seated knee angle matches
+`Sitter`'s bent-knee pose. Full suite: `world 4: 26 to meet` (up from 25), 99% of Sunny Shore's
+ground still walkable (was 100%, the usual small cost of one more seated collider), every NPC still
+in the scene graph, 0 FAILs, 0 console warnings, exit 0, stable across three repeat runs, before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
