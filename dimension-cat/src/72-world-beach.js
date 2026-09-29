@@ -157,6 +157,10 @@ function buildBeach(game, entry) {
   { const ballA = beachPerson(false, false), ballB = beachPerson(true, false);
     game.npcs.push(new BallGame(game, ballA, ballB, ball, { cx: 4, cz: 10, gap: 5.5 }));
     greetable(game, { rig: ballA }); greetable(game, { rig: ballB }); }
+  // two kids chase each other round the open sand out past the dunes — a game of tag, the one thing the beach's children never had to do together
+  { const tagA = beachPerson(false, true), tagB = beachPerson(true, true);
+    game.npcs.push(new Playmates(game, tagA, tagB, { cx: -28, cz: 22, leash: 5.5 }));
+    greetable(game, { rig: tagA }); greetable(game, { rig: tagB }); }
   // the moored boats never had anyone tending their gear; a net-mender sits on a stool on the quiet north sand, coiling rope in her lap
   { const nx = 25, nz = 48, ry = PI / 2;
     const mendWard = makeWardrobe(r, { shirts: [0x8a6a4a, 0x5a7a6a, 0x4a5a4a], pants: [0x3a3a3a, 0x2a2a2a], shoes: [0x5a4030, 0x3a2a1e] });

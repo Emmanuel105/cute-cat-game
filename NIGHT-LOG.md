@@ -2792,3 +2792,36 @@ five simulated seconds later. Full suite: `world 0: 27 to meet` (up from 26), 28
 distinct shirt colours, 96% of the Neighborhood's ground still walkable (unchanged), every NPC
 still in the scene graph, 273 checks all `ok`, 0 console warnings, exit 0, stable across three
 repeat runs, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 129 — a game of tag on Sunny Shore's dunes
+
+Following the rotation (Neighborhood, Sunny Shore, Whisper Woods, Frosty Peak — the four worlds
+tied at 27 to meet), this round was Sunny Shore's turn. It had a beach-ball game, sunbathers and a
+sandcastle-patting toddler, but every other world's children had at least one *chase* going —
+Neighborhood's park has had a game of tag since early on — and Sunny Shore never did.
+
+**Two kids now chase each other round the open sand out past the dunes**, swapping who's "it" every
+time the runner is caught, exactly like the Neighborhood's park version — it reuses `Playmates`
+outright, just parked in a new clearing. Unlike the original Neighborhood pair, these two are also
+made greetable (`greetable(game, { rig })` on each, the same trick `BallGame`'s two players already
+use for their moving rigs), so saying hello to either one now counts toward Sunny Shore's total.
+Sunny Shore goes from 27 to 29 to meet.
+
+Placed at (-28, 22), out past the dune palms north-west of the ice-cream cart — found with a
+headless probe that built the world and swept a 6.2 m ring around several candidate spots for both
+static colliders (a 0.4 m grid scan; blocked=0 here) and slope (0.28 m of rise at the ring's edge,
+well within what a flat tag game needs). The nearest other NPC — excluding the gulls wheeling
+overhead — sits 22.4 m away, so the chase never wanders into anyone else's spot.
+
+Verified beyond the test suite's own checks: a standalone headless harness called `game.start()`,
+travelled to world 4, and let the game run 50 simulated seconds — the two kids swapped "it" nine
+times, stayed within 3.4 m of the anchor point (comfortably inside the clear 6.2 m ring), and kept
+finite positions throughout. Walking up to each kid and pressing E in turn read "Say hi" (children
+use the child prompt), took `friends.size` from 0 to 2 and `score` from 0 to 10, with both new ids
+recorded under `beach:`. (First attempt read `game.transitioning` as still `true` right after
+`travel()` flips `worldIndex` — the flag itself only clears in a second, nested `setTimeout` about a
+second later — so the harness now waits that out before trying to interact, a snag worth knowing for
+whoever next drives `travel()` from a headless script rather than the test suite's own helper.) Full
+suite: `world 4: 29 to meet` (up from 27), 100% of Sunny Shore's ground still walkable, every NPC
+still in the scene graph, 273 checks all `ok`, 0 console warnings, exit 0, stable across three repeat
+runs, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
