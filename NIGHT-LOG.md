@@ -2474,3 +2474,35 @@ out both the load and the fade-lock timers, walked the cat up to the busker, con
 suite: `world 5: 25 to meet` (up from 24), 97% of Frosty Peak's ground still walkable (unchanged), 0
 FAILs, 0 console warnings, exit 0, stable across repeat runs, before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 120 — a juggler works the grass east of the Neighborhood park
+
+Neighborhood was the only world left at the bottom of the to-meet tally, 24, everyone else already
+at 25; Neighborhood's own last touch (round 116, the detectorist) the oldest besides.
+
+**A juggler now performs on the open grass east of the park, three balls — gold, pink, sky blue —
+climbing and falling in a smooth loop.** Every other Neighborhood character stands still, kneels or
+walks a slow patrol; the `Juggler` controller (already doing duty in Victorian, on Sunny Shore and
+at Frosty Peak) was the one proven-safe pattern with real motion this world was still missing. Own
+explicit shirt (teal, with an off-white stripe) rather than the street's shared `ward` bag, which is
+sized exactly to its 18 existing users and has no room for a 19th draw — round 116 hit that
+collision first and left the fix on record. Lines: *"Three's easy round here."* / *"Careful, puss —
+mind the balls!"* / *"Fair weather for it, this."* Neighborhood goes from 24 to 25 to meet.
+
+Found the spot with a headless probe: built world 0, listed every NPC's position and swept a set of
+open-grass candidates against `game.physics.boxes`. Picked (40, 40): 16 m from the nearest other NPC
+(a wanderer), clear of the main street, both pavements, the side road, the boardwalk, the park path
+and the path to the portal — all six of the roads and paths `test/run.mjs` walks end to end — and
+outside every existing zone and hand-placed prop cluster. Placed after the detectorist, at the very
+tail of the Neighborhood's NPC construction, so it draws from the end of the local per-world `r()`
+sequence and leaves every earlier neighbour's wardrobe pick and idle-gesture timing undisturbed —
+the exact gotcha round 112 first wrote up.
+
+Verified beyond the test suite's own checks: a standalone headless harness, clicked "enter" to start
+the game, walked the cat up to the juggler, confirmed `game.nearest.label()` reads "Say hello",
+`game.interact()` takes `friends.size` from 0 to 1 and `score` from 0 to 5, a second approach reads
+"Say hello again", and the three balls animate to distinct, finite heights rather than sitting stuck
+at the spawn point. Full suite: `world 0: 25 to meet` (up from 24), `no two neighbours wear the same
+shirt (26 colours for 26 people)`, 96% of the Neighborhood's ground still walkable (unchanged), every
+NPC still in the scene graph, 0 FAILs, 0 console warnings, exit 0, stable across four repeat runs,
+before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
