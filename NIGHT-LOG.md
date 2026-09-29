@@ -2857,3 +2857,34 @@ again". Full suite: `world 6: 29 to meet` (up from 27), 98% of Whisper Woods' gr
 (down one point from the two kids' own colliders, same as every other tag game added this way), every
 NPC still in the scene graph, 273 checks all `ok`, 0 console warnings, exit 0, before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 131 — a game of tag for Frosty Peak
+
+Last of the four-world rotation (Neighborhood, Sunny Shore, Whisper Woods, Frosty Peak — all tied at
+27 to meet before the last two rounds added tag games to the dunes and the woods). Frosty Peak's four
+kids already wandered, threw snowballs across the square and knelt by both snowmen, but none of them
+ever chased each other.
+
+**Two more kids now chase each other on the open snow east of the village**, swapping who's "it" with
+a hop and a tag, reusing `Playmates` exactly as the other two worlds do — just in the village's own
+beanie-and-scarf colours (`kid()`, the same helper the snowball fight and both igloo-kneelers already
+use). Both are made greetable the same way `BallGame`'s two players and the other worlds' tag pairs
+already are (`greetable(game, { rig })` on each moving rig), so saying hello to either counts toward
+the total. Frosty Peak goes from 27 to 29 to meet.
+
+Placed at (38, 30) — found with a headless probe that built the world (`game.load(5, 'from-hub')`)
+and swept a 6.5 m disk against every physics box (the same box-vs-point test the test suite uses to
+check roads are clear) and against every rectangle in `game.zones`. The spot comes back fully clear
+out to that radius, on a gentle 0.12 slope, with the kite flyer out on the same snowfield the nearest
+other soul at 16.1 m.
+
+Verified beyond the test suite's own checks: a standalone headless harness clicked the start screen
+(without it `game.loop()` only updates the cat, not the NPCs — a snag the last round's harness didn't
+hit because `frames()` in `test/run.mjs` runs after the suite's own start click), built Frosty Peak,
+and ran the game 3000 frames (~50 simulated seconds) — the two kids swapped "it" eight times, stayed
+within 4.82 m of the anchor (comfortably inside the 5.5 m leash), and kept finite positions
+throughout. Walking the cat up to each kid and firing its interactable read "Say hi", and using both
+took `friends.size` from 0 to 2 and `score` from 0 to 10, with both new ids recorded under `snow:`.
+Full suite: `world 5: 29 to meet` (up from 27), 98% of Frosty Peak's ground still walkable, every NPC
+still in the scene graph, 290 checks all `ok`, 0 console warnings, exit 0, before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

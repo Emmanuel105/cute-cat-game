@@ -6859,6 +6859,13 @@ function buildSnowVillage(game, entry) {
   for (let i = 0; i < 2; i++) game.npcs.push(new Wanderer(game, kid(i === 1), { x: 5 + i * 5, z: 6, speed: r.range(0.9, 1.3), leash: 10, height: 1.5 }));
   // two of them are having a snowball fight across the square
   game.npcs.push(new SnowballFight(game, kid(false), kid(true), { cx: -3.5, cz: 6, gap: 5 }));
+  // two more chase each other on the open snow east of the village — the park, the dunes and the woods
+  // all had a game of tag going; Frosty Peak's kids only ever wandered, threw snowballs or knelt by
+  // snowmen. Found with a headless probe sweeping a 6.5 m disk against every physics box and zone:
+  // (38, 30) is clear all the way out, with the kite flyer the nearest other soul at 16 m
+  { const tagA = kid(false), tagB = kid(true);
+    game.npcs.push(new Playmates(game, tagA, tagB, { cx: 38, cz: 30, leash: 5.5 }));
+    greetable(game, { rig: tagA }); greetable(game, { rig: tagB }); }
   // another kneels by the first snowman, packing on a fresh layer of snow
   { const sx = -6, sz = -14, kx = sx, kz = sz + 1.3;
     game.npcs.push(new Kneeler(game, kid(false), { x: kx, z: kz, ry: atan2(sx - kx, sz - kz),
