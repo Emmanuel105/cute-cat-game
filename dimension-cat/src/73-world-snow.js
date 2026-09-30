@@ -152,6 +152,22 @@ function buildSnowVillage(game, entry) {
   { const tagA = kid(false), tagB = kid(true);
     game.npcs.push(new Playmates(game, tagA, tagB, { cx: 38, cz: 30, leash: 5.5 }));
     greetable(game, { rig: tagA }); greetable(game, { rig: tagB }); }
+  // two more kids play catch on open snow south-west of the pines — the Neighborhood's lawn, Sunny
+  // Shore's sand and Whisper Woods' clearing all already have a `BallGame`, but Frosty Peak's kids
+  // only ever wandered, snowballed or knelt by snowmen; nobody was actually throwing anything. A
+  // headless probe swept the built world's physics boxes against a grid of candidate centres (the
+  // game's 5.5 m throw gap plus 1.2 m side-to-side sway either side) and found (-24, -42) clear —
+  // 26 m from the nearest other soul (a wandering villager out in the region fill), ground height
+  // varying under 0.1 m across the whole footprint, well clear of both the cave's flat approach
+  // strip (which only ever runs within 7 m of x=0) and the zipline/sled-run keep-out zones
+  { const cbx = -24, cbz = -42;
+    const catchBall = mesh(G.sphere(0.18, 12, 8), mat(0xfff5e6, { roughness: 0.5 }), { parent: W });
+    mesh(G.sphere(0.181, 12, 8), mat(0xef7d2f, { roughness: 0.5 }), { sx: 0.5, parent: catchBall });
+    mesh(G.sphere(0.181, 12, 8), mat(0x2e9e6e, { roughness: 0.5 }), { sz: 0.5, parent: catchBall });
+    catchBall.position.set(cbx, P.ground0(cbx, cbz) + 0.18, cbz);
+    const catchA = kid(true), catchB = kid(false);
+    game.npcs.push(new BallGame(game, catchA, catchB, catchBall, { cx: cbx, cz: cbz, gap: 5.5 }));
+    greetable(game, { rig: catchA }); greetable(game, { rig: catchB }); }
   // another kneels by the first snowman, packing on a fresh layer of snow
   { const sx = -6, sz = -14, kx = sx, kz = sz + 1.3;
     game.npcs.push(new Kneeler(game, kid(false), { x: kx, z: kz, ry: atan2(sx - kx, sz - kz),

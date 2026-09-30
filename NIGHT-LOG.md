@@ -3460,3 +3460,37 @@ hi" (the informal greeting children use), greeting took `game.state.friends.size
 Full suite run three times in a row: `world 0: 35 to meet` (up from 31), 96% of the Neighborhood's
 ground still walkable, all checks `ok` every time, 0 console warnings, exit 0, before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 149 — a game of catch for Frosty Peak
+
+Frosty Peak had the fewest people to meet of all seven worlds (31) and hadn't had a round since
+144, four back — its kids only ever wandered the square, threw snowballs or knelt by a snowman,
+never actually threw anything to each other. The Neighborhood's lawn, Sunny Shore's sand and
+Whisper Woods' clearing all already run a `BallGame`; Frosty Peak was the last of the four worlds
+with open ground and a crowd of children left without one. **Two more bundled-up kids now toss a
+ball back and forth on open snow south-west of the tree line**, well clear of the village, the
+pond and the sled run — stand under the arc at the right moment and it boings off the cat's head
+before landing with the other kid, exactly like the other three versions. Both use the world's own
+`kid()` helper (beanie, coat, scarf, mismatched colours from its shuffled bags) so they read as
+part of the same crowd as the snowball fighters and the tag pair, and both are wired greetable by
+hand the same way those two pairs are.
+
+Placed at (-24, -42): a headless harness built the world, gathered every NPC's position and every
+physics box, and swept a grid of candidate centres against the game's 5.5 m throw gap and 1.2 m
+side-to-side sway on both ends of the line. The village core, the pond, the zipline/sled-run
+corridor and the ring of pines out to radius 50 all crowded the middle distance; (-24, -42) came
+back clear of every collider, 26 m from the nearest other soul (a wandering villager out in the
+region fill), ground height varying under 0.1 m across the whole footprint, and clear of both the
+cave's flat approach strip (which only ever runs within 7 m of x=0) and the zipline/sled-run
+keep-out zones.
+
+Verified beyond the suite's own checks: a headless harness clicked the real start button (not just
+`game.travel`, which alone leaves the sim paused and no NPC updating — caught this the first time
+through, when the ball sat frozen for 300 straight frames), travelled to Frosty Peak and waited out
+the transition on a real timer, found both kids in the scene graph with no static collider within
+1.2 m of either, ran 300 frames (5 simulated seconds) with the ball and both players staying finite
+and three full passes completed, then stood the cat by one kid — `game.nearest.label()` read "Say
+hi", greeting took `game.state.friends.size` from 0 to 1 with the prompt flipping to "Say hi again".
+Full suite run three times in a row: `world 5: 33 to meet` (up from 31), 98% of Frosty Peak's ground
+still walkable, all checks `ok` every time, 0 console warnings, exit 0, before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
