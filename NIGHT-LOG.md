@@ -3126,3 +3126,43 @@ Teleporting the cat beside it read `game.nearest.label()` as "Say hello" and usi
 from 0 to 1. Full suite: `world 5: 30 to meet` (up from 29), 98% of Frosty Peak's ground still walkable
 (unchanged), every NPC still in the scene graph, all checks `ok`, 0 console warnings, exit 0, before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 139 — a third resident for Candy Land's lane of houses
+
+`git fetch origin main` showed local `main` had gone stale again (still on "a toy mouse for the robot
+dog", 138 rounds behind), while the detached HEAD this session started on already matched the real
+`origin/main` tip exactly (round 138, the Frosty Peak zipline attendant) — a clean version of the
+recovery earlier rounds describe: `git checkout -B main origin/main` and no work was at risk.
+
+Candy Land had gone the longest without a new face — seven rounds back (a resident sat on the doorstep
+of the lane's *second* house), against gaps of 1–5 for every other world except Whisper Woods, which is
+already so densely peopled that its last two additions had to be squeezed into 5.6 m and 15.5 m gaps.
+Of the five candy houses on the lane up to the castle, only two had anyone outside them (a sweeper by
+the nearest, a lollipop-eater by the second). **A third resident now sits on the doorstep of the lane's
+next house, blowing a slow bubblegum bubble that inflates and deflates in an endless loop, never quite
+popping.** *"Bubblegum's the best sweet in the lane."* *"Careful, puss — it's stickier than it looks."*
+*"So close, that time."* Candy Land goes from 30 to 31 to meet. The bubble itself is a plain scaled
+sphere parented to the rig's own head (added after `makeHuman()`'s internal `bakeRig()` call, so it
+rides along without being baked static) and driven by a `U.push` sine-ish ramp, the same trick the
+reader's page-flip used a few rounds back.
+
+The house at (16, 97) turned out to have a wrinkle the second house didn't: its build-time rotation
+(`r() * TAU`, baked into the seeded RNG sequence — a headless probe built the world and read it straight
+off the scene graph as 4.0220 rad) pointed the door such that the usual 3.4 m doorstep offset the second
+house used lands squarely inside the house's own rotated collider. A probe swept offsets from 3.4 m to
+5.8 m against every physics box in the built world; 3.4–4.2 m all collided, 4.4 m and up were clear. This
+round uses 4.4 m — the resident sits a little further back from the door than their neighbour, still on
+the same line out from it.
+
+Verified beyond the test suite's own checks: a first attempt at a headless friend-interaction check found
+`game.transitioning` still `true` a full 1100 ms after calling `travel()` and concluded `interact()` was
+being silently swallowed — the actual bug was in the probe, not the game: waiting a fixed delay instead
+of polling `while (game.transitioning)` missed that Node's real timers just needed the poll loop to keep
+ticking (same trap round 138 hit from the other direction). Polling properly, `game.transitioning` cleared
+after ~1000–1100 ms as expected; from there, a headless harness found the new resident by its exact
+seat position, confirmed the rig was parented into the scene graph, ran 300 frames (5 simulated seconds)
+with its position staying finite throughout, found exactly one physics collider (the house's own) within
+1 m of the seat, and took `friends.size` from 0 to 1 with the label flipping from "Say hi" to "Say hi
+again" after use. Full suite: `world 1: 31 to meet` (up from 30), 91% of Candy Land's ground still
+walkable (unchanged), every NPC still in the scene graph, all checks `ok`, 0 console warnings, exit 0,
+before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
