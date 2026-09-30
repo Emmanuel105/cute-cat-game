@@ -3727,3 +3727,28 @@ throughout. Walked the cat up to one child and called `game.interact()`: the lab
 Victorian's ground still walkable (unchanged), every NPC including the new pair still in the scene graph,
 all 290+ checks `ok`, 0 console warnings, exit 0, before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 159 — a swing set for the Victorian town
+
+The grass verge north of the canal had three games going (tag, ring-a-ring o' roses, catch) but nowhere
+to just sit and swing — the Neighborhood's park and Whisper Woods both already have one. **A child now
+swings back and forth on a navy-painted swing set** east of the other three games; pushing it (E, "Push
+the swing") gives it a boost and a "Higher! Higher!" the same way the Neighborhood's does, and this one
+also answers a greeting like Whisper Woods' swing kid does.
+
+A headless probe swept the same north bank against every physics box and every NPC's physics circle
+already built into the town: `(25, 46)` came back clear by 25 m or more from the nearest of the three
+games, east of all of them and well inside the radius (88) where the hand-built town gives way to
+`victorianRegion`'s procedural fill.
+
+Verified beyond the suite's own checks: a headless harness built the real game, travelled into Victorian
+on a real timer, found the `Swinger` instance and ran 480 frames — the seat's pivot swung a steady ±0.62
+radians the whole time (the controller's own resting amplitude) with the child's position finite
+throughout. Calling the "Push the swing" interactable's `onUse` set its boost to 1 as expected. Worth
+noting: because the greet prompt sits on the child's own position and the push prompt sits on the swing
+set's centre, and those two points are only centimetres apart, the two prompts fight for "nearest" and
+in practice the push prompt almost always wins — the same ambiguity Whisper Woods' swing already has, not
+something new here. Full suite: `world 3: 44 to meet` (up from 43), 94% of Victorian's ground still
+walkable (unchanged), every NPC including the swing kid still in the scene graph, all 290+ checks `ok`,
+0 console warnings, exit 0, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.

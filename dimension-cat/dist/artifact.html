@@ -6776,6 +6776,20 @@ function buildVictorian(game, entry) {
     W.add(catchA.group); W.add(catchB.group);
     game.npcs.push(new BallGame(game, catchA, catchB, catchBall, { cx: cbx, cz: cbz, gap: 5.5 }));
     greetable(game, { rig: catchA }); greetable(game, { rig: catchB }); }
+  // three games now share this grass verge, but nowhere to just sit and swing — the Neighborhood and
+  // Whisper Woods both have one already. A headless probe swept the same north bank against every physics
+  // box and NPC circle built into the town so far (the tag pair, the ring, the catch pair): (25, 46) came
+  // back clear by 25 m or more from the nearest of them, east of all three and still well inside the radius
+  // where the hand-built town gives way to victorianRegion's procedural fill (88)
+  { const sx = 25, sz = 46;
+    const swingSet = makeSwingSet({ color: 0x2f4f6f }); place(game, U, swingSet, sx, sz, PI);
+    game.zones.add(sx, sz, 3.4, 3.2);
+    for (const px of [-1.3, 1.3]) P.addBox(sx + px, 1.4, sz, 0.4, 2.8, 1.3, { cam: false });
+    const swingWard = makeWardrobe(r, { shirts: [0x6a3a3a, 0x3a5a4a], pants: [0x2a2a24, 0x3a3327], shoes: [0x2a2018, 0x1e1a16] });
+    const swingKid = makeHuman({ ...randomPerson(r, { child: true, female: r.chance(0.5), wardrobe: swingWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(swingKid.group);
+    const sw = new Swinger(game, swingKid, swingSet, { x: sx, z: sz }); game.npcs.push(sw); greetable(game, sw);
+    game.addInteractable({ obj: swingSet, radius: 2.8, label: () => 'Push the swing', onUse: () => { sw.boost = 1; SFX.talk(); game.toast('🎠 "Higher! Higher!"', 1800); } }); }
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
