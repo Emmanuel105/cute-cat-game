@@ -3166,3 +3166,42 @@ with its position staying finite throughout, found exactly one physics collider 
 again" after use. Full suite: `world 1: 31 to meet` (up from 30), 91% of Candy Land's ground still
 walkable (unchanged), every NPC still in the scene graph, all checks `ok`, 0 console warnings, exit 0,
 before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 140 — a ukulele player for Sunny Shore's dunes
+
+`git fetch origin main` and the local `main` branch already matched `origin/main` exactly at round 139
+(the third Candy Land resident) — a clean start this time, just needed pointing `main` back at it with
+`git checkout -B main origin/main` before beginning the round.
+
+No world had ever had a musician, in seven worlds and 139 rounds of jugglers, buskers-with-balls, kite
+flyers and readers. Sunny Shore had also gone the longest of any world without a new *face* to meet —
+its friend count sat at 29 since round 129's game of tag, ten rounds back (round 136 added swim flags to
+the existing lifeguard, not a new person). **A musician now sits cross-legged in the dune grass west of
+the sunbathers' towels, strumming a small ukulele toward the crowd**, elbow keeping a steady rhythm long
+after the actual arm pose a sitting person normally holds. *"Three chords is all you need, really."*
+*"Careful, puss — that's out of tune, not broken."* *"Sea air's terrible for the strings."* Sunny Shore
+goes from 29 to 30 to meet. A new `makeUkulele()` prop (waisted body, neck, headstock, four thin strings)
+sits in `62-props-nature.js` next to the other beach-only props (the surfboard, the sandcastle); it's
+parented into the musician's hand the same way the Whisper Woods reader's book is parented into theirs,
+and the strum itself is a `U.push` callback that overwrites the sitting elbow angle with a sine wave
+every frame *after* the generic `Sitter` controller has already set its own resting pose — the same
+order-of-updates trick the reader's page-flip and the painter's canvas-filling both lean on, since the
+world's own update list runs after every NPC's.
+
+Placed at (-34, 0): a headless probe built Sunny Shore directly, swept a 2 m grid across the hand-built
+heart of the world (roughly the area inside the outer region's fill radius of 58 m, where `beachRegion`
+hasn't scattered its own procedural clusters yet) against `game.physics.blocked()`, and ranked the clear
+points by distance to the nearest other NPC. The single clearest spot sat right beside the Neighborhood
+portal on the dune ridge — technically open but a strange place for a busker — so the search excluded
+the portal's own corner and settled on this spot instead, 21.8 m from its nearest neighbour and inside
+the dune-grass patch `makeGrass` already covers, the same way several existing beachgoers already sit or
+kneel inside that grass without any special keep-out zone.
+
+Verified beyond the test suite's own checks: a headless harness started the game properly, travelled to
+Sunny Shore and waited out the transition, found the new musician by its exact seat position, confirmed
+the rig was parented into the scene graph, found zero physics colliders within 1.2 m of the seat, ran 300
+frames (5 simulated seconds) with the position staying finite throughout, and teleported the cat beside
+it — `game.nearest.label()` read "Say hello" and using it took `friends.size` from 0 to 1. Full suite:
+`world 4: 30 to meet` (up from 29), 100% of Sunny Shore's ground still walkable (unchanged), every NPC
+still in the scene graph, all checks `ok`, 0 console warnings, exit 0, before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

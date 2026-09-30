@@ -4791,6 +4791,19 @@ function makeSurfboard(color) {
   mesh(G.cone(0.09, 0.16, 8), mat(0x1e1e1e, { roughness: 0.7 }), { y: 0.05, z: -0.09, rx: -PI / 2, shadow: 'none', parent: g });
   return g;
 }
+/** A ukulele sized for one hand: a waisted body (a small bout above a bigger one), a thin neck, a headstock and four strings. Faces +z (soundboard toward the cat). */
+function makeUkulele(color = 0xd9a15a) {
+  const g = new THREE.Group(), wood = mat(color, { roughness: 0.55 }), dark = mat(0x2a1c12, { roughness: 0.8 }), string = mat(0xe8e0d0, { roughness: 0.5 });
+  mesh(G.cyl(0.1, 0.105, 0.045, 16), wood, { rx: PI / 2, parent: g });                 // lower bout
+  mesh(G.cyl(0.065, 0.07, 0.045, 14), wood, { y: 0.15, rx: PI / 2, parent: g });       // upper bout, waisted
+  mesh(G.cyl(0.028, 0.028, 0.01, 10), dark, { y: -0.01, z: 0.028, rx: PI / 2, shadow: 'none', parent: g });   // sound hole
+  mesh(G.box(0.03, 0.015, 0.06), dark, { y: -0.05, z: 0.028, parent: g });             // bridge
+  mesh(G.cyl(0.014, 0.017, 0.42, 8), wood, { y: 0.42, parent: g });                    // neck
+  const head = mesh(G.box(0.09, 0.13, 0.025), wood, { y: 0.68, parent: g });           // headstock
+  for (const [sx, sy] of [[-0.05, 0.04], [0.05, 0.04], [-0.05, -0.04], [0.05, -0.04]]) mesh(G.cyl(0.007, 0.007, 0.05, 6), dark, { x: sx, y: sy, rz: PI / 2, shadow: 'none', parent: head });
+  for (const sx of [-0.012, -0.004, 0.004, 0.012]) noInk(mesh(G.cyl(0.0025, 0.0025, 0.72, 4), string, { x: sx, y: 0.33, z: 0.03, shadow: 'none', parent: g }));
+  return g;
+}
 function makeBuoy(color = 0xd62839) {
   const g = new THREE.Group();
   mesh(G.cyl(0.35, 0.45, 0.5, 12), mat(color, { roughness: 0.5 }), { y: 0.2, parent: g }); mesh(G.cyl(0.45, 0.45, 0.1, 12), mat(0xffffff, { roughness: 0.5 }), { y: 0.5, parent: g });
@@ -6779,6 +6792,18 @@ function buildBeach(game, entry) {
     boxT(game, bx, bz, 0.6, 1.5, 0.4, { cam: false });
     game.npcs.push(new Washer(game, surfer, { x: sx, z: sz, ry,
       cries: ["Wax while it's warm, that's the trick.", 'Careful, puss — sticky hands.', "Flat today, but you never know."] })); }
+  // no world had a musician yet; one sits cross-legged in the dune grass west of the towels, strumming a ukulele toward the sunbathers
+  { const mx = -34, mz = 0, mry = atan2(5 - mx, 10 - mz);
+    const museWard = makeWardrobe(r, { shirts: [0xffd54a, 0xff7043, 0x2f6fd6], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0xefe7d8, 0x8d6e63] });
+    const musician = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.25), wardrobe: museWard }),
+      hat: r.chance(0.4) ? 'sunhat' : null, hatColor: 0xd9c9a8, glasses: r.chance(0.3), jacket: null, scarf: null, bag: null });
+    W.add(musician.group);
+    const uke = makeUkulele(r.pick([0xd9a15a, 0xc9915a, 0xb98a52]));
+    uke.position.set(0.03, -0.02, 0.14); uke.rotation.set(-0.25, 0.1, 0.2);
+    musician.hands[1].add(uke);
+    game.npcs.push(new Sitter(game, musician, { x: mx, z: mz, ry: mry, seat: 0.1,
+      cries: ["Three chords is all you need, really.", "Careful, puss — that's out of tune, not broken.", "Sea air's terrible for the strings."] }));
+    U.push((dt, t) => { const A = musician.arms[1]; A.el.rotation.x = -1.0 + sin(t * 5.4) * 0.22; A.sh.rotation.z = -0.15; }); }
   // the beach dog keeps to its own patch of sand — it does not follow the cat
   const dog = makeDog(0xc8925a); W.add(dog.group); game.npcs.push(new Wanderer(game, dog, { x: -2, z: 28, speed: 1.1, leash: 7, r: 0.35, height: 0.9, step: 0.3, idle: [1.5, 4], walk: [2, 5] }));
   let woofT = rnd.range(6, 12); U.push((dt) => { woofT -= dt; if (woofT <= 0) { SFX.woof(); woofT = rnd.range(10, 20); } });

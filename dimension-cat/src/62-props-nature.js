@@ -147,6 +147,19 @@ function makeSurfboard(color) {
   mesh(G.cone(0.09, 0.16, 8), mat(0x1e1e1e, { roughness: 0.7 }), { y: 0.05, z: -0.09, rx: -PI / 2, shadow: 'none', parent: g });
   return g;
 }
+/** A ukulele sized for one hand: a waisted body (a small bout above a bigger one), a thin neck, a headstock and four strings. Faces +z (soundboard toward the cat). */
+function makeUkulele(color = 0xd9a15a) {
+  const g = new THREE.Group(), wood = mat(color, { roughness: 0.55 }), dark = mat(0x2a1c12, { roughness: 0.8 }), string = mat(0xe8e0d0, { roughness: 0.5 });
+  mesh(G.cyl(0.1, 0.105, 0.045, 16), wood, { rx: PI / 2, parent: g });                 // lower bout
+  mesh(G.cyl(0.065, 0.07, 0.045, 14), wood, { y: 0.15, rx: PI / 2, parent: g });       // upper bout, waisted
+  mesh(G.cyl(0.028, 0.028, 0.01, 10), dark, { y: -0.01, z: 0.028, rx: PI / 2, shadow: 'none', parent: g });   // sound hole
+  mesh(G.box(0.03, 0.015, 0.06), dark, { y: -0.05, z: 0.028, parent: g });             // bridge
+  mesh(G.cyl(0.014, 0.017, 0.42, 8), wood, { y: 0.42, parent: g });                    // neck
+  const head = mesh(G.box(0.09, 0.13, 0.025), wood, { y: 0.68, parent: g });           // headstock
+  for (const [sx, sy] of [[-0.05, 0.04], [0.05, 0.04], [-0.05, -0.04], [0.05, -0.04]]) mesh(G.cyl(0.007, 0.007, 0.05, 6), dark, { x: sx, y: sy, rz: PI / 2, shadow: 'none', parent: head });
+  for (const sx of [-0.012, -0.004, 0.004, 0.012]) noInk(mesh(G.cyl(0.0025, 0.0025, 0.72, 4), string, { x: sx, y: 0.33, z: 0.03, shadow: 'none', parent: g }));
+  return g;
+}
 function makeBuoy(color = 0xd62839) {
   const g = new THREE.Group();
   mesh(G.cyl(0.35, 0.45, 0.5, 12), mat(color, { roughness: 0.5 }), { y: 0.2, parent: g }); mesh(G.cyl(0.45, 0.45, 0.1, 12), mat(0xffffff, { roughness: 0.5 }), { y: 0.5, parent: g });

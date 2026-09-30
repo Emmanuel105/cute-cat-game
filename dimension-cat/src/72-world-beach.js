@@ -185,6 +185,18 @@ function buildBeach(game, entry) {
     boxT(game, bx, bz, 0.6, 1.5, 0.4, { cam: false });
     game.npcs.push(new Washer(game, surfer, { x: sx, z: sz, ry,
       cries: ["Wax while it's warm, that's the trick.", 'Careful, puss — sticky hands.', "Flat today, but you never know."] })); }
+  // no world had a musician yet; one sits cross-legged in the dune grass west of the towels, strumming a ukulele toward the sunbathers
+  { const mx = -34, mz = 0, mry = atan2(5 - mx, 10 - mz);
+    const museWard = makeWardrobe(r, { shirts: [0xffd54a, 0xff7043, 0x2f6fd6], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0xefe7d8, 0x8d6e63] });
+    const musician = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.25), wardrobe: museWard }),
+      hat: r.chance(0.4) ? 'sunhat' : null, hatColor: 0xd9c9a8, glasses: r.chance(0.3), jacket: null, scarf: null, bag: null });
+    W.add(musician.group);
+    const uke = makeUkulele(r.pick([0xd9a15a, 0xc9915a, 0xb98a52]));
+    uke.position.set(0.03, -0.02, 0.14); uke.rotation.set(-0.25, 0.1, 0.2);
+    musician.hands[1].add(uke);
+    game.npcs.push(new Sitter(game, musician, { x: mx, z: mz, ry: mry, seat: 0.1,
+      cries: ["Three chords is all you need, really.", "Careful, puss — that's out of tune, not broken.", "Sea air's terrible for the strings."] }));
+    U.push((dt, t) => { const A = musician.arms[1]; A.el.rotation.x = -1.0 + sin(t * 5.4) * 0.22; A.sh.rotation.z = -0.15; }); }
   // the beach dog keeps to its own patch of sand — it does not follow the cat
   const dog = makeDog(0xc8925a); W.add(dog.group); game.npcs.push(new Wanderer(game, dog, { x: -2, z: 28, speed: 1.1, leash: 7, r: 0.35, height: 0.9, step: 0.3, idle: [1.5, 4], walk: [2, 5] }));
   let woofT = rnd.range(6, 12); U.push((dt) => { woofT -= dt; if (woofT <= 0) { SFX.woof(); woofT = rnd.range(10, 20); } });
