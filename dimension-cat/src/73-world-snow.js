@@ -222,6 +222,16 @@ function buildSnowVillage(game, entry) {
   // Standing at the top you look straight down the cable at the snow-capped mountains on the horizon.
   game.zones.addSpan(min(ZIP_TOP[0], ZIP_LANDING[0]) - 4, min(ZIP_TOP[1], ZIP_LANDING[1]) - 4, max(ZIP_TOP[0], ZIP_LANDING[0]) + 4, max(ZIP_TOP[1], ZIP_LANDING[1]) + 4);
   makeZipline(game, U, ZIP_TOP[0], ZIP_TOP[1], ZIP_LANDING[0], ZIP_LANDING[1], r);
+  // an attendant waits at the foot of the start tower, high on the mountain shoulder — Whisper Woods'
+  // zipline has one checking the cable before every rider, but Frosty Peak's has stood unattended since
+  // it was built (a headless probe over the built world found (-75, -72) clear: 35 m up the slope from
+  // the tower's own base at (-72, -70), unblocked, and over 20 m from the nearest other soul)
+  { const ax = ZIP_TOP[0], az = ZIP_TOP[1], tx = -75, tz = -72;
+    const towerWard = makeWardrobe(r, { shirts: [0x3a5a6a, 0x6a4a3a, 0x4a5a4a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const attendant = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: towerWard }),
+      hat: 'beanie', hatColor: 0x2a3a4a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a }); W.add(attendant.group);
+    game.npcs.push(new Charger(game, attendant, { x: tx, z: tz, ry: atan2(ax - tx, az - tz), cryIcon: '🪢',
+      cries: ["Cable's tight, harness checked - all set.", 'Coldest post on the mountain, this one.', "Only ever the squirrel gets a turn, mind."] })); }
   makeLanternPath(game, ZIP_LANDING[0] + 2, ZIP_LANDING[1] + 2, -10, -8, 5);
   // pines along the zipline, kept to its north-east side so the sled run on the other side stays clear
   for (let i = 0; i < 7; i++) { const k = i / 6, x = lerp(ZIP_TOP[0], ZIP_LANDING[0], k) + r.range(0, 9), z = lerp(ZIP_TOP[1], ZIP_LANDING[1], k) + r.range(-9, 0); const pn = makeSnowPine(r); placeT(game, U, pn, x, z, 0); boxT(game, x, z, 1.2 * pn.scale.x, 5, 1.2 * pn.scale.x, { cam: false }); }

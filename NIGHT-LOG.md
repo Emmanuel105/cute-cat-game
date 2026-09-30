@@ -3095,3 +3095,34 @@ its own). Teleporting the cat 0.5 m from the stall read `game.nearest.label()` a
 took `friends.size` from 0 to 1. Full suite: `world 2: 33 to meet` (up from 32), 88% of Robot City's
 ground still walkable (unchanged), every NPC still in the scene graph, all checks `ok`, 0 console
 warnings, exit 0, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 138 — an attendant for Frosty Peak's own zipline
+
+`git fetch origin main` showed local `main` already matched `origin/main` exactly at round 137 (the
+Robot City vendor), on a detached HEAD — nothing stale to recover this time, just `git checkout -B main
+origin/main` to put the branch pointer back where it belonged before starting the round for real.
+
+Whisper Woods' zipline has had an attendant checking the cable since round 121, but Frosty Peak has had
+its own zipline (a tower up on the shoulder of the west peak, running down to a post above the village)
+since round 100 or so, and nobody ever staffed it. **An attendant now waits at the foot of the start
+tower, high on the mountain slope, harness checked and ready to send the next rider off** — same as
+before, that rider is only ever the squirrel riding the trolley down the cable. *"Cable's tight, harness
+checked - all set."* *"Coldest post on the mountain, this one."* *"Only ever the squirrel gets a turn,
+mind."* Frosty Peak goes from 29 to 30 to meet.
+
+Placed at (-75, -72), 3.6 m off the tower's own base at (-72, -70): a headless probe built the world
+directly and swept `game.physics.blocked()` at six candidate spots on the slope, all clear, with the
+nearest other soul (a wandering penguin) over 20 m away in every case — this is a lonely, elevated corner
+of the map (the terrain there sits around 35 m above the village, on the flank of the same peak the
+zipline itself climbs), so there was no shortage of clear ground.
+
+Verified beyond the test suite's own checks: a headless harness started the game properly and waited out
+both the travel and the fade-lock timers (an early attempt that only waited for `worldIndex` to change
+still had `game.transitioning` true and `interact()` silently no-ops while that's set — found by checking
+`friends.size` before/after and seeing it hadn't moved), then found the new attendant by its exact placed
+position, confirmed its rig was parented into the scene, ran 300 frames (5 simulated seconds) with its
+position staying finite throughout, and scanned a 1.2 m radius around its spot for physics boxes (none).
+Teleporting the cat beside it read `game.nearest.label()` as "Say hello" and using it took `friends.size`
+from 0 to 1. Full suite: `world 5: 30 to meet` (up from 29), 98% of Frosty Peak's ground still walkable
+(unchanged), every NPC still in the scene graph, all checks `ok`, 0 console warnings, exit 0, before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
