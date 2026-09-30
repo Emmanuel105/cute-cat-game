@@ -7209,6 +7209,17 @@ function buildSnowVillage(game, entry) {
     const catchA = kid(true), catchB = kid(false);
     game.npcs.push(new BallGame(game, catchA, catchB, catchBall, { cx: cbx, cz: cbz, gap: 5.5 }));
     greetable(game, { rig: catchA }); greetable(game, { rig: catchB }); }
+  // a ring of kids dances in a circle on the open snow east of the pond. Every other world with
+  // children already had a RingDance (the Neighborhood, Candy Land, Robot City, Victorian, Sunny
+  // Shore, Whisper Woods) — Frosty Peak's own round claiming to finish the set (round 156) missed
+  // this one; its kids only ever wandered, snowballed, played tag or caught a ball. A headless probe
+  // swept a 2.7 m disc (ring radius plus a cat-sized margin) against every physics box and NPC
+  // already built into the mountain: (37, -16) comes back clear all the way round and 23 m from the
+  // nearest other soul (the painter's easel), well past the village's own 26 m keep-out circle and
+  // short of the region fill starting at 58
+  { const ringKids = [false, true, false, true].map(kid);
+    game.npcs.push(new RingDance(game, ringKids, { cx: 37, cz: -16, r: 1.8, speed: 0.55, turnEvery: 9, cryIcon: '🎵',
+      cries: ['Round we go, over the snow!', "Don't let go, or you'll go flying!", 'Faster now, before we freeze!', 'One more time round!'] })); }
   // another kneels by the first snowman, packing on a fresh layer of snow
   { const sx = -6, sz = -14, kx = sx, kz = sz + 1.3;
     game.npcs.push(new Kneeler(game, kid(false), { x: kx, z: kz, ry: atan2(sx - kx, sz - kz),

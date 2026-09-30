@@ -3752,3 +3752,27 @@ something new here. Full suite: `world 3: 44 to meet` (up from 43), 94% of Victo
 walkable (unchanged), every NPC including the swing kid still in the scene graph, all 290+ checks `ok`,
 0 console warnings, exit 0, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 160 — Frosty Peak's own ring dance, for real this time
+
+Round 156's log claimed Robot City was "the last of the seven without" a `RingDance`, but it miscounted
+— Frosty Peak never actually got one; its kids only ever wandered, threw snowballs, played tag or
+caught a ball. **Four kids in beanies now dance in a circle on the open snow east of the frozen pond**,
+turning together and calling out over the game — `"Round we go, over the snow!"`, `"Don't let go, or
+you'll go flying!"` — the same `RingDance` controller every other world already uses, so nothing needed
+changing there, just four more rigs from the world's own `kid()` factory slotted in.
+
+A headless probe swept a 2.7 m disc (the ring's 1.8 m radius plus a cat-sized margin) against every
+physics box and NPC already built into the mountain: `(37, -16)` came back clear all the way round,
+23 m from the nearest other soul (the aurora painter's easel), well outside the village's own 26 m
+keep-out circle and short of where the region fill takes over at 58.
+
+Verified with a headless harness beyond the suite's own checks: started the real game, travelled into
+Frosty Peak on a real timer (`game.worldIndex !== 5` loop, not a frame count — the transition runs on a
+real setTimeout), found the `RingDance` instance and ran 480 frames (8 simulated seconds) — all four
+dancers stayed exactly on the 1.8 m ring (zero drift) with finite positions throughout. Walked the cat
+up to one dancer: the nearest interactable read "Say hi", and calling its `onUse()` took `friends` from
+0 to 1. Full suite: `world 5: 37 to meet` (up from 33), 98% of Frosty Peak's ground still walkable
+(unchanged), every NPC including the four dancers still in the scene graph, all 290+ checks `ok`, 0
+console warnings, exit 0, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.
