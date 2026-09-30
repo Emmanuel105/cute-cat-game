@@ -3616,3 +3616,19 @@ in the ad-hoc check but not the underlying handler. Full suite: `world 1: 35 to 
 91% of Candy Land's ground still walkable (unchanged), every NPC still in the scene graph, all checks
 `ok`, 0 console warnings, exit 0, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 154 — a game of tag for the Victorian town
+
+Every other world already had a game of tag, a `BallGame`, or (Candy Land, Robot City) both — Victorian
+was the last one with neither. **Two urchins now chase each other round an open grass verge on the
+canal's far bank**, north of the stone bridges, using the same `Playmates` controller that already runs
+tag in the Neighborhood, Robot City, Sunny Shore, Frosty Peak and Whisper Woods. Checked by hand against
+the build function's own numbers before touching anything: the hand-built town keeps everything south of
+the canal (bridges at z 25–35), `victorianRegion`'s procedural fill only starts at radius 88, and (0, 50)
+sits inside that radius with nothing else placed there — clear of the bridges, the boats, the angler and
+the gossiping ladies all further south, and clear of the lamps and gaslit terraces further still.
+
+Verified: `node test/run.mjs` — world 3 goes from 35 to 37 to meet, 94% of its ground still walkable, every
+NPC (including both urchins) still in the scene graph, positions finite after 5 simulated seconds, all 290+
+checks `ok`, 0 console warnings, exit 0 — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
