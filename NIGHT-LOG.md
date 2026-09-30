@@ -3494,3 +3494,33 @@ hi", greeting took `game.state.friends.size` from 0 to 1 with the prompt flippin
 Full suite run three times in a row: `world 5: 33 to meet` (up from 31), 98% of Frosty Peak's ground
 still walkable, all checks `ok` every time, 0 console warnings, exit 0, before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 150 — a fifth resident for Candy Land's lane of houses, and a pinwheel
+
+Candy Land and Whisper Woods were tied for fewest people to meet (32 apiece), but Candy Land's own
+lane of five candy houses up by the castle had sat with four residents and one empty doorstep since
+round 139 first moved in next door — the third house along, at (-24, 112), had stood finished but
+unlived-in through three separate "another resident" rounds. **Its resident now sits on their own
+doorstep watching a peppermint pinwheel they've planted in the flower-bed beside the step**, four
+candy-striped blades turning steadily on a stick candy-cane-coloured pole. *"Watching that thing
+spin never gets old." "Mind the stick, puss — it'll poke an eye." "Fifth house on the lane, and I
+like it fine."* Every house on the lane now has someone home. The pinwheel is a plain decorative
+spinner — a flower-bed prop, not a toy the cat can push — but it turns continuously and reads
+clearly against the candy-pink ground.
+
+The house's own rotation was never hand-guessed: a headless build read it straight off the actual
+`THREE.Group` the world construction created (1.321612040983476 rad — the third `r() * TAU` draw in
+the houses' seeded build loop, same sequence the three earlier residents' exact rotations came
+from), then swept outward from the door in 0.1 m steps until a seat position cleared the house's
+own 5.6 m physics box (clear from 3.6 m out; seated at 3.7 m for margin, same pattern as the other
+four). The pinwheel plants in the gap beside the seat, checked clear the same way.
+
+Verified beyond the suite's own checks: a headless harness clicked the real start button, travelled
+to Candy Land and waited out both the portal fade and the transition lock on real timers, found the
+new `Sitter` at its exact seated coordinates, confirmed the pinwheel's pivot group spins with a
+finite, changing rotation across a full second of simulated frames, then stood the cat beside the
+resident — `game.nearest.label()` read "Say hello", greeting took `game.state.friends.size` from 0
+to 1 with the prompt flipping to "Say hello again". Full suite run twice in a row: `world 1: 33 to
+meet` (up from 32), 91% of Candy Land's ground still walkable, 272 checks `ok` both times, 0 console
+warnings, exit 0, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.
