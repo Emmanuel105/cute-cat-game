@@ -3251,3 +3251,41 @@ flipped to "Say hi again" on a second approach. Full suite: `the Neighborhood ha
 from 28), 96% of the Neighborhood's ground still walkable (unchanged), every NPC still in the scene
 graph, all checks `ok`, 0 console warnings, exit 0, before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 142 — a rope swing for the treehouse gang in Whisper Woods
+
+`git fetch origin main` showed the local `main` branch stale at an old commit while `origin/main` had
+moved on (a shallow clone, so `git merge-base` reports no common ancestor between them — expected, not
+real divergence); `git reset --hard origin/main` put `main` back on the true tip before starting.
+
+Whisper Woods was tied with the Neighborhood for the fewest people to meet of any world (29), but the
+Neighborhood had just gained one last round while the Woods had gone twelve rounds without a new face.
+Every controller in the file had been used there at least once except `Swinger` — the swing itself,
+`makeSwingSet`, already existed for the Neighborhood's park and needed no new geometry. **One of the two
+campers arguing at the foot of the treehouse's rope ladder has a friend up on a rope swing in the
+clearing just west of it, off rehearsing the same argument from a distance.** Painted a weathered brown
+(`0x7a5a3a`) rather than the park's playground red so it reads as something the kids rigged themselves.
+Saying hello counts it as a friend, same as everywhere else; a second "Push the swing" prompt on the
+frame itself boosts the arc, exactly the mechanic the Neighborhood's own swing already uses. *"Wheee!"*
+is the built-in `Swinger` cry, unprompted, whenever the cat is close enough to hear it. Whisper Woods
+goes from 29 to 30 to meet.
+
+Placed at (-23.5, 14): a headless probe built the forest world, swept a half-metre grid west of the
+treehouse against `game.physics.blocked` and `game.zones.blocked`, and kept only points clear out to
+3.5 m in every direction. The closest clear spot to the treehouse itself, one step east at (-21.5, 14),
+sat only 1.9 m from the treehouse's own trunk collider — tight enough that the swing's 1.3 m half-width
+frame would have brushed it — so the search moved two metres further out to (-23.5, 14), clear out to
+3.5 m on every side, 5.5 m from the treehouse and 6.7 m from the arguing campers, the nearest other soul.
+
+Verified beyond the test suite's own checks: a headless harness started the game properly, travelled to
+Whisper Woods and polled `while (game.transitioning)` rather than guessing a delay (the same trap round
+139 hit, and this run hit it too on the first pass — a direct `game.interact()` call silently did nothing
+until the fade-lock was actually given time to clear), found the swing kid by exact seat position,
+confirmed the rig was parented into the scene graph, found zero physics colliders within 1.2 m of the
+seat, ran 300 frames (5 simulated seconds) with the position staying finite throughout, watched the
+pivot's own rotation change frame to frame under its idle sway, then teleported the cat beside it —
+`game.nearest.label()` read "Say hi", saying hello took `friends.size` from 0 to 1 with the prompt
+flipping to "Say hi again", and firing the separate "Push the swing" interactable drove the arc's peak
+rotation from a natural 0.3 rad up past 1.0 rad. Full suite: `world 6: 30 to meet` (up from 29), every
+NPC still in the scene graph, all 273 checks `ok`, 0 console warnings, exit 0, before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

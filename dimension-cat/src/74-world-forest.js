@@ -195,6 +195,21 @@ function buildForest(game, entry) {
     game.npcs.push(new Playmates(game, tagA, tagB, { cx: -18, cz: 32, leash: 4 }));
     greetable(game, { rig: tagA }); greetable(game, { rig: tagB }); }
 
+  // one of the treehouse gang has rigged a rope swing in the clearing just west of it, while the two
+  // campers below keep arguing about who actually lives up there; every other world with children already
+  // had a swing (the Neighborhood's park) or an equivalent perch, and the treehouse itself had no reason
+  // for anyone to linger nearby once the campers' own two lines ran out. A headless probe swept a grid
+  // against game.physics.blocked and game.zones.blocked and found (-23.5, 14) clear out to 3.5 m in every
+  // direction — the nearest obstacle otherwise is the treehouse's own trunk, 1.9 m from the frame at the
+  // next spot in (-21.5, 14) — 5.5 m from the treehouse and 6.7 m from the campers, the nearest other soul
+  { const cx = -23.5, cz = 14; game.zones.addCircle(cx, cz, 2.4);
+    const swingSet = makeSwingSet({ color: 0x7a5a3a });
+    placeT(game, U, swingSet, cx, cz, 0.4);
+    const swingKid = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    const sw = new Swinger(game, swingKid, swingSet, { x: cx, z: cz });
+    game.npcs.push(sw); greetable(game, sw);
+    game.addInteractable({ obj: swingSet, radius: 2.8, label: () => 'Push the swing', onUse: () => { sw.boost = 1; SFX.talk(); game.toast('🎠 "Higher! Higher!"', 1800); } }); }
+
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
 
