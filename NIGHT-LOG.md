@@ -3396,3 +3396,36 @@ from ±40 on each axis, so it can't land on a spot 43 m out.
 Full suite run three times in a row: `world 6: 32 to meet` (up from 30), 99% of Whisper Woods'
 ground still walkable, all 290 checks `ok` every time, 0 console warnings, exit 0, before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 147 — a fourth resident for Candy Land's lane of houses
+
+The Neighborhood, Candy Land and Frosty Peak were tied for fewest people to meet (31 each); the
+Neighborhood had just had two rounds running (143, 141) and Frosty Peak one two rounds back (144),
+so this one went to Candy Land, which hadn't had a round since 139. Of the five candy houses on
+the lane up to the castle, three already had residents (rounds 132 and 139 gave two of them a
+lollipop-eater and a bubblegum-blower; the nearest one got a doorstep-sweeper earlier still) —
+two still stood empty. **A fourth resident now sits on their own doorstep knitting a striped
+scarf**, needles tucked in one mitten with a swatch already growing. *"One more row and it's long
+enough for a scarf." "Nobody's told me who it's for yet."* Reuses `Sitter` (same controller as the
+other two doorstep residents) with a small static prop — a folded scarf swatch and two crossed
+needles — parented to one hand, the same pattern as the sweeper's broom and the lollipop-eater's
+pop; nothing new animates, so nothing needed `userData.keep`.
+
+Placed at the second-to-last house, `[24, 114]`: the house's own seeded rotation (the fourth `r() *
+TAU` draw in the lane's build loop) was pulled out with a temporary debug print in a headless
+build, the same way earlier rounds found the bubblegum-blower's 4.4 m offset — `ry =
+3.9172832027518574`, giving a doorstep at `(21.62, 111.57)`, 3.4 m out along the house's own front
+(the usual offset; this one didn't need the 4.4 m adjustment the third house did). A headless probe
+swept for physics boxes and NPCs within several metres of that point and found nothing — the house
+box itself is the only collider anywhere near it.
+
+Verified beyond the suite's own checks: a headless harness called `game.start('new')`, travelled to
+Candy Land and waited out the transition on a real timer, found the knitter by exact position,
+confirmed no physics collider within 1.2 m, ran 300 frames with the position staying finite, then
+stood the cat a metre off — `game.nearest.label()` read "Say hello", greeting took
+`game.state.friends.size` from 0 to 1 with the prompt flipping to "Say hello again". Full suite run
+three times in a row: `world 1: 32 to meet` (up from 31), all 273 checks `ok` every time (the
+figure the suite actually reports today, not the 290 an earlier round logged — check totals vary
+run to run with which random path the walk-test takes, so this is the honest count, not a
+regression), 0 console warnings, exit 0, before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
