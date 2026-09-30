@@ -3524,3 +3524,43 @@ to 1 with the prompt flipping to "Say hello again". Full suite run twice in a ro
 meet` (up from 32), 91% of Candy Land's ground still walkable, 272 checks `ok` both times, 0 console
 warnings, exit 0, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 151 — an eighth stale-history recovery, and the treehouse mystery solved
+
+`git checkout main` landed on a detached HEAD sitting on round 33 ("a toy mouse for the robot dog"),
+45 commits deep, no common ancestor with the real history at all — the same failure mode rounds 110,
+111, 121, 122, 136 and 137 already named. Built and verified a whole round against that stale base
+(a mushroom forager for Whisper Woods, plus what looked at the time like a genuine fix for the
+`time door → neighborhood` test flake) before pushing came back rejected as non-fast-forward and
+`git fetch` showed `origin/main` had moved on to round 150 in the meantime. Checked what was actually
+on `origin` before touching anything: the genuine 150-round line, not an abandoned branch. Both the
+stale round's ideas turned out already spoken for — the real history had grown its own, more specific
+`Forager` controller for a chanterelle-picker back at some earlier round, and the time-door test's
+fixed sleeps had already been swapped for the same robust `while (game.transitioning)` wait
+independently. Parked the stale attempt on a local-only branch (`backup-round34-stale-base`, never
+pushed) and did this round over for real on a detached HEAD at the genuine `origin/main`, the same
+recovery rounds 111 and 137 used when the local `main` ref itself couldn't be trusted.
+
+Whisper Woods was tied with Candy Land for fewest people to meet before round 150 gave Candy Land its
+fifth resident, leaving Whisper Woods alone in last place at 32 — despite the two campers at the foot
+of the treehouse's rope ladder having speculated about who lives up there since round 121 or so
+("Wonder who built that treehouse." "No ladder for us, my knees say."). **The treehouse mystery is
+solved: a kid sits on the deck's own open front edge** — the hand rails in `makeTreehouse()` only run
+along the two sides, leaving the front clear — **legs dangling over, giving the campers below an
+occasional wave.** *"Took you long enough to look up!" "Best clubhouse in the whole wood." "Don't
+tell the campers down there — it's a secret."* Built like the owls already up in their own trees, not
+like the ground-bound `Sitter`/`Kneeler` controllers: no `game.physics.addCircle`, since circles have
+no height bounds at all (confirmed in `40-physics.js` — `blocked()`'s circle loop, unlike its box
+loop, never checks `feetY`/`height`) and would otherwise block the cat from walking under the
+treehouse floor 4.4 m below. Greeted instead by the same horizontal-distance `addInteractable` the
+owls use, `game.namedFriend()` + `game.befriend()` for the id. Whisper Woods goes from 32 to 33 to
+meet, tying it back up with everyone else.
+
+Verified beyond the suite's own checks: a headless harness started the game properly, travelled to
+Whisper Woods and waited out the transition on a real timer, stood the cat directly under the kid's
+seat and confirmed `game.nearest.label()` read "Wave up at the treehouse", used it and watched
+`game.state.friends.size` go from 0 to 1, and walked the interactable's own object up its parent
+chain to confirm it reaches the scene. Full suite: `world 6: 33 to meet` (up from 32), 98% of Whisper
+Woods' ground still walkable (unchanged — the new kid carries no ground-level collider to shrink it),
+every NPC still in the scene graph, all 273 checks `ok`, 0 console warnings, exit 0, before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

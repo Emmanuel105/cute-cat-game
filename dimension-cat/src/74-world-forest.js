@@ -112,6 +112,26 @@ function buildForest(game, entry) {
     game.npcs.push(new Talkers(game, a, b, { x: -19, z: 8.5, ry: 0,
       lines: ['Wonder who built that treehouse.', "Best view in the woods, I'd wager.", "Careful - you'll wake whoever lives up there.", 'No ladder for us, my knees say.'] })); }
 
+  // the campers below keep guessing who lives up in the treehouse — it's a kid, sitting on the deck's
+  // own open front edge (the railings only run along the sides, per makeTreehouse), legs dangling over.
+  // No ground-level physics circle: like the owls up in their trees, greeted by horizontal distance alone,
+  // so it never blocks the cat from walking under the treehouse.
+  { const tkx = -18.9, tkz = 16.15, tkDeckY = P.ground0(tkx, tkz) + 4.4;
+    const treeKid = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true }), shirt: 0xd9a23a, pants: 0x3a4a3a, shoes: 0x3a2a1e, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(treeKid.group); treeKid.group.rotation.y = 0;
+    treeKid.group.position.set(tkx, tkDeckY - 0.9 * treeKid.k + 0.02, tkz);
+    let tkt = r() * 10, waveT = rnd.range(4, 8);
+    U.push((dt) => {
+      tkt += dt; treeKid.animate(0, false, dt, tkt);
+      for (const L of treeKid.legs) { L.hip.rotation.x = -PI / 2 + 0.12 + sin(tkt * 1.1) * 0.06; L.knee.rotation.x = PI / 2 - 0.2; L.ankle.rotation.x = 0.1; }
+      treeKid.spine.rotation.x = damp(treeKid.spine.rotation.x, -0.08, 6, dt); treeKid.body.position.y = 0;
+      if (!treeKid.gesture) { waveT -= dt; if (waveT <= 0) { treeKid.gesture = 'wave'; treeKid.gT = 0; waveT = rnd.range(7, 13); } }
+    });
+    const tkid = game.namedFriend('treehouse-kid');
+    game.addInteractable({ obj: treeKid.group, radius: 3.6, label: () => 'Wave up at the treehouse', onUse: () => {
+      game.befriend(tkid); SFX.talk(); game.hearts(tkx, tkDeckY + 0.4, tkz, 3);
+      game.toast(rnd.pick(['🌳 "Took you long enough to look up!"', '🌳 "Best clubhouse in the whole wood."', '🌳 "Don\'t tell the campers down there — it\'s a secret."'])); } }); }
+
   // a child kneels at the mouth of the eastern hollow log, sure a hedgehog is still in there — the log itself (22, -14) has stood empty since it was first placed
   { const lx = 22, lz = -14, lry = 1.1, off = 2.5, kx = lx - off * cos(lry), kz = lz + off * sin(lry);
     const hunter = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true }), shirt: 0xd9a23a, pants: 0x3a4a3a, shoes: 0x3a2a1e, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
