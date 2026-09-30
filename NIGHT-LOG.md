@@ -3373,3 +3373,26 @@ position staying finite and the ring visibly turning, then stood the cat beside 
 the prompt flipping to "Say hello again". Full suite run three times in a row: `world 4: 33 to meet`
 (up from 30), 99% of Sunny Shore's ground still walkable, all 273 checks `ok` every time, 0 console
 warnings, exit 0, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 146 — a game of catch for Whisper Woods
+
+Whisper Woods was lowest of all seven worlds at 30 people to meet, and every other world with a
+`BallGame` — the Neighborhood's lawn, Sunny Shore's sand — already had one, but the woods, despite
+having a tag pair and a fairy ring-dance of their own, never did. **Two more kids now toss a ball
+back and forth in a quiet clearing west of the glade**, well past the ring of big trees that rims
+the core of the wood; stand under the arc at the right moment and it boings off the cat's head
+before landing with the other kid, exactly like the street and the beach versions. Both kids say
+hello like anyone else, `greetable` wired in by hand same as the tag pair beside them.
+
+Placed at (-43, -3): a headless harness built the world, gathered every NPC's position and every
+physics/zone collider, and swept a grid of candidate centres against the game's 5.5 m throw gap
+and 1.2 m side-to-side sway on both ends of the line. The densely packed core (pond, mushroom ring,
+stepping-stone path, a dozen-plus vignettes) pushed every wide-open spot out toward the tree ring at
+radius 40–54; (-43, -3) came back clear of every collider with room to spare, ground height varying
+only 0.17 m across the whole footprint (flat enough), and 20 m from the nearest other soul — the
+western deer. No new zone circle needed: the world's own random mushroom scatter only ever draws
+from ±40 on each axis, so it can't land on a spot 43 m out.
+
+Full suite run three times in a row: `world 6: 32 to meet` (up from 30), 99% of Whisper Woods'
+ground still walkable, all 290 checks `ok` every time, 0 console warnings, exit 0, before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

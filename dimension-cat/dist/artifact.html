@@ -7342,6 +7342,22 @@ function buildForest(game, entry) {
     game.npcs.push(new Playmates(game, tagA, tagB, { cx: -18, cz: 32, leash: 4 }));
     greetable(game, { rig: tagA }); greetable(game, { rig: tagB }); }
 
+  // two more kids play catch in a quiet clearing west of the glade — every other world with a `BallGame`
+  // was the street or the beach, and Whisper Woods never got one despite already having the tag pair above.
+  // A headless probe swept the built world's physics boxes and zones against a grid of candidate centres
+  // (accounting for the game's 5.5 m throw gap and 1.2 m side-to-side sway either side) and settled on
+  // (-43, -3): clear ground past the western tree ring, 20 m from the nearest other soul (the western deer)
+  { const cx = -43, cz = -3;
+    const catchBall = mesh(G.sphere(0.18, 12, 8), mat(0xfff5e6, { roughness: 0.5 }), { parent: W });
+    mesh(G.sphere(0.181, 12, 8), mat(0xef7d2f, { roughness: 0.5 }), { sx: 0.5, parent: catchBall });
+    mesh(G.sphere(0.181, 12, 8), mat(0x2e9e6e, { roughness: 0.5 }), { sz: 0.5, parent: catchBall });
+    catchBall.position.set(cx, P.ground0(cx, cz) + 0.18, cz);
+    const catchA = makeHuman({ ...randomPerson(r, { child: true, female: true }), shirt: 0x9a6fd4, backpack: null });
+    const catchB = makeHuman({ ...randomPerson(r, { child: true, female: false }), shirt: 0x5ac8e0, backpack: null });
+    W.add(catchA.group); W.add(catchB.group);
+    game.npcs.push(new BallGame(game, catchA, catchB, catchBall, { cx, cz, gap: 5.5 }));
+    greetable(game, { rig: catchA }); greetable(game, { rig: catchB }); }
+
   // one of the treehouse gang has rigged a rope swing in the clearing just west of it, while the two
   // campers below keep arguing about who actually lives up there; every other world with children already
   // had a swing (the Neighborhood's park) or an equivalent perch, and the treehouse itself had no reason
