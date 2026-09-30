@@ -6246,6 +6246,16 @@ function buildCandyLand(game, entry) {
     gumball.position.set(1, P.ground0(1, 1) + 0.24, 1);
     game.npcs.push(new BallGame(game, catchA, catchB, gumball, { cx: 1, cz: 1, gap: 5.5 }));
     greetable(game, { rig: catchA }); greetable(game, { rig: catchB }); }
+  // the gingerbread men wander, march, dance in a ring and play catch, but nobody ever played tag —
+  // every other tagged world (the Neighborhood, Robot City, Victorian, Sunny Shore, Frosty Peak, Whisper
+  // Woods) already has a `Playmates` pair; Candy Land was the last one left without it. A headless probe
+  // swept a grid of candidate centres against every physics box and NPC roam circle already built into
+  // the world, checking clearance for the game's own 5.5 m leash: (-70, -6) came back clear by 30 m or
+  // more from the nearest other soul, out among the candy-cane forest belt northwest of the chocolate river.
+  { const tagA = makeGingerbread(), tagB = makeGingerbread();
+    W.add(tagA.group); W.add(tagB.group);
+    game.npcs.push(new Playmates(game, tagA, tagB, { cx: -70, cz: -6, leash: 5.5 }));
+    greetable(game, { rig: tagA }); greetable(game, { rig: tagB }); }
   // the Candy Queen (giant cat) guarding the airlock
   const boss = makeCandyCat(); place(game, U, boss.group, -4.5, -31, 0.35);
   P.addBox(-4.5, 1.2, -31, 2.4, 2.4, 3.2);

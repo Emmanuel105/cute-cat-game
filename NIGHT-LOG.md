@@ -3684,3 +3684,24 @@ hello", and `game.state.friends` went from empty to one. Full suite: `world 2: 3
 35), 88% of Robot City's ground still walkable (unchanged), every NPC including the four dancers still
 in the scene graph, all checks `ok`, 0 console warnings, exit 0, before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 157 — a game of tag for Candy Land
+
+Candy Land's gingerbread men wander, march in step, dance in a ring and (round 153) play catch, but with
+Robot City's own tag pair added last round, Candy Land became the very last of the seven worlds without a
+`Playmates` game of tag. **Two gingerbread men now chase each other through the candy-cane forest belt**,
+northwest of the chocolate river. A headless probe swept a grid of candidate centres against every
+physics box and every other NPC's own roam circle already built into the world, checking clearance for
+the game's 5.5 m leash: `(-70, -6)` came back clear by 30 m or more from the nearest other soul — the
+Wanderer gingerbread man over at `(-46, 34)` — out among the scattered candy-cane trunks rather than on
+the open lawns nearer the spawn, which are already busy with the ring dance and the catch pair.
+
+Verified with a headless harness beyond the suite's own checks: started the real game, travelled into
+Candy Land and waited out the portal fade on a real timer (the same `transitioning` gotcha earlier
+rounds hit — a stray `interact()` call mid-fade silently does nothing), then ran 1200 frames (20
+simulated seconds) and watched the two cookies swap who's "it" four times, both staying inside their
+5.5 m leash the whole time with finite positions throughout. Walked the cat up to one and called
+`game.interact()`: the label read "Say hello", and `game.state.friends` went from empty to one. Full
+suite: `world 1: 37 to meet` (up from 35), 91% of Candy Land's ground still walkable (unchanged), every
+NPC including the new pair still in the scene graph, all checks `ok`, 0 console warnings, exit 0, before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
