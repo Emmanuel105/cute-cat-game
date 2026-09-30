@@ -3564,3 +3564,28 @@ chain to confirm it reaches the scene. Full suite: `world 6: 33 to meet` (up fro
 Woods' ground still walkable (unchanged — the new kid carries no ground-level collider to shrink it),
 every NPC still in the scene graph, all 273 checks `ok`, 0 console warnings, exit 0, before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 152 — Robot City learns to play catch
+
+Robot City had a tag-playing pair of robots (round 133) but no `BallGame`, the "keep something in the
+air between two players" controller every other tagged world (the Neighborhood, Sunny Shore, Frosty
+Peak, Whisper Woods) already had for its own game of catch — Candy Land's the one world left without
+either. **Two robots now lob a scavenged bearing — a steel ball banded with a glowing cyan ring — back
+and forth on the open concrete south of the sentry's own patrol beat.** Found with the same headless
+probe the tag pair's spot came from: every physics box and NPC in the built world swept against a grid
+of candidate centres, allowing for the game's 5.5 m throw gap either side; `(2, -54)` came back 27 m
+from the nearest other soul in the factory, well clear of the sentry's own `[-15,-35]..[15,-45]`
+rectangle to its north. `BallGame`'s `hands()` helper scales the throw height by `rig.k` — a human's
+height ÷ 1.75, set inside `makeHuman()` — which `makeRobot()` never sets; given the two catchers the
+same ratio their own height (1.9 m, the figure already used for every Wanderer robot in this world)
+implies, rather than leaving it `undefined` and NaN-ing the ball's flight.
+
+Verified beyond the suite's own checks: a headless harness clicked the real start button, waited out
+the portal fade and the world-load's own transition lock on real timers rather than a frame count,
+then ran 300 frames (5 simulated seconds) and found the `BallGame` instance mid-game — 3 passes
+completed, the ball's position still finite and above the ground the whole time, both robots' walk
+positions finite. Stood the cat beside one catcher and used the interactable: the label read "Beep
+hello" (robots get their own greeting line, same as everyone else `greetable()` covers), and
+`game.state.friends.size` went from 0 to 1. Full suite run twice in a row: `world 2: 35 to meet` (up
+from 33), all 273 checks `ok` both times, 0 console warnings, exit 0, before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

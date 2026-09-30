@@ -6443,6 +6443,21 @@ function buildRobotCity(game, entry) {
   { const tagA = makeRobot(), tagB = makeRobot(); W.add(tagA.group); W.add(tagB.group);
     game.npcs.push(new Playmates(game, tagA, tagB, { cx: 28, cz: -40, leash: 5.5 }));
     greetable(game, { rig: tagA }); greetable(game, { rig: tagB }); }
+  // Robot City had tag but never catch — every other world with a BallGame throws something between two
+  // players, and the factory floor south of the sentry's own beat had nothing on it; two robots now lob a
+  // scavenged bearing back and forth there. Found with the same headless-probe sweep as the tag pair above
+  // (physics boxes and NPCs checked against a grid, allowing for the 5.5 m throw gap either side): (2, -54)
+  // is 27 m from the nearest other soul, well south of the sentry's own [-15,-35]..[15,-45] rectangle.
+  // BallGame's hands() scales by rig.k (a human's height ÷ 1.75, set in makeHuman); makeRobot() never sets
+  // it, so it's given the same ratio the robots' own Wanderer height (1.9 m) already implies.
+  { const cbx = 2, cbz = -54;
+    const catchBall = mesh(G.sphere(0.16, 12, 8), mat(0x9aa3ad, { metalness: 0.75, roughness: 0.3 }), { parent: W });
+    mesh(G.torus(0.161, 0.03, 6, 14), glowMat(0x00e5ff, 1.8), { rx: PI / 2, shadow: 'none', parent: catchBall });
+    catchBall.position.set(cbx, P.ground0(cbx, cbz) + 0.16, cbz);
+    const catchA = makeRobot(), catchB = makeRobot(); catchA.k = catchB.k = 1.9 / 1.75;
+    W.add(catchA.group); W.add(catchB.group);
+    game.npcs.push(new BallGame(game, catchA, catchB, catchBall, { cx: cbx, cz: cbz, gap: 5.5 }));
+    greetable(game, { rig: catchA }); greetable(game, { rig: catchB }); }
   // a mechanic kneels over a wonky robot on the open floor, wrench in hand — a tightened bolt sparks and the patient sits bolt upright for a moment
   { const mech = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }), shirt: 0x3a4a6a, stripes: null, pants: 0x232c44, shoes: 0x1a1a20, hat: 'cap', hatColor: 0x3a4a6a, jacket: null, scarf: null, bag: null, build: 'stout', glasses: false });
     W.add(mech.group);
