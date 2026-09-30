@@ -6061,6 +6061,23 @@ function buildNeighborhood(game, entry) {
     W.add(catchA.group); W.add(catchB.group);
     game.npcs.push(new BallGame(game, catchA, catchB, catchBall, { cx: cbx, cz: cbz, gap: 5.5 }));
     greetable(game, { rig: catchA }); greetable(game, { rig: catchB }); }
+  // four kids play ring-around-the-rosie in the open field far past the north-row houses — RingDance
+  // already does duty as a fairy ring in Whisper Woods, a friends' dance on Sunny Shore and a
+  // gingerbread ring in Candy Land, but no street had kids doing the oldest circle game of all (own
+  // explicit shirt colours, not the street's shared `ward` bag, which is sized exactly to its 18
+  // users already; placed last, after the game of catch, so it draws from the tail of the local RNG
+  // sequence and leaves every earlier neighbour's random wardrobe pick undisturbed)
+  // (a headless probe over the built world — every physics box and NPC position swept against a grid
+  // of candidate ring centres, clear of every collider at the centre and around a 2.2 m ring — found
+  // (-78, -35) clear: about 35 m from the nearest other soul, well past the last house on that row)
+  { const ringKids = [
+      { female: true, shirt: 0xff6fb5 },
+      { female: false, shirt: 0x8a5acf },
+      { female: true, shirt: 0x4fc98a },
+      { female: false, shirt: 0x5aa9e6 },
+    ].map((o) => { const rig = makeHuman({ ...randomPerson(r, { child: true, female: o.female }), shirt: o.shirt, backpack: null }); W.add(rig.group); return rig; });
+    game.npcs.push(new RingDance(game, ringKids, { cx: -78, cz: -35, r: 1.8, speed: 0.6, turnEvery: 8, cryIcon: '🎵',
+      cries: ['Ring around the rosie!', 'A pocket full of posies!', 'Ashes, ashes...', 'We all fall down!'] })); }
   // three more ways out of the neighborhood: beach boardwalk (east), gondola to the peak (west), hollow oak to the woods (south-east)
   const beachGate = makeBeachGate(game, 78, 22, PI / 2, () => game.travel(WORLD_INDEX('beach'), 'from-hub')); U.push(beachGate.userData.update);
   flatPlane(game, 30, 3, walk, 60, 22, 0, 0.02);                                                                             // boardwalk from the road out to the arch

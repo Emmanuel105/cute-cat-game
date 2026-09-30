@@ -3429,3 +3429,34 @@ figure the suite actually reports today, not the 290 an earlier round logged —
 run to run with which random path the walk-test takes, so this is the honest count, not a
 regression), 0 console warnings, exit 0, before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 148 — ring-around-the-rosie for the Neighborhood
+
+The Neighborhood and Frosty Peak were tied for fewest people to meet (31 each); Frosty Peak had
+its round more recently (144, three back) than the Neighborhood's own last turn (143, five back),
+so this one went to the Neighborhood. `RingDance` already does duty as a fairy ring in Whisper
+Woods, a friends' dance on Sunny Shore's dune grass and a gingerbread ring outside the Candy Land
+castle, but no street in seven worlds had children playing the oldest circle game there is.
+**Four kids now join hands in the open field well past the north-row houses, turning together and
+swapping direction every eight seconds** — pink, purple, mint and sky-blue shirts, none of them
+drawn from the street's own crowded wardrobe bag. *"Ring around the rosie!" "A pocket full of
+posies!" "Ashes, ashes..." "We all fall down!"* No actual falling — `RingDance` only turns its
+dancers on a circle, so the rhyme's last line is just a cry, the same honest limit the two other
+`RingDance` rounds noted. Every dancer counts as a friend to greet, so the Neighborhood goes from
+31 to 35 to meet in one round.
+
+Placed at (-78, -35): a headless probe built the world, gathered every NPC and squirrel position
+plus every physics box and zone span/circle, and swept a grid of candidate ring centres for a spot
+where a 1.8 m ring plus a 0.4 m dancer clearance stayed clear of every collider and zone, both at
+the centre and at eight points around the ring itself. Kept only spots at least 12 m from the
+nearest other soul, then took the clearest: 35 m from anyone else, in the quiet grass west of the
+lantern path with nothing nearer than a couple of scattered oaks the probe had already ruled out.
+
+Verified beyond the suite's own checks: a headless harness called `game.start('new')` and waited
+out the fade lock on a real timer, found the ring by its centre coordinates, confirmed no static
+collider within 1 m of the centre, ran 300 frames with every dancer's position staying finite and
+the ring visibly turning, then stood the cat beside one dancer — `game.nearest.label()` read "Say
+hi" (the informal greeting children use), greeting took `game.state.friends.size` from 0 to 1.
+Full suite run three times in a row: `world 0: 35 to meet` (up from 31), 96% of the Neighborhood's
+ground still walkable, all checks `ok` every time, 0 console warnings, exit 0, before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
