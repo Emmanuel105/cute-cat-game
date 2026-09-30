@@ -1077,6 +1077,17 @@ function buildVictorian(game, entry) {
     W.add(tagA.group); W.add(tagB.group);
     game.npcs.push(new Playmates(game, tagA, tagB, { cx: 0, cz: 50, leash: 5 }));
     greetable(game, { rig: tagA }); greetable(game, { rig: tagB }); }
+  // the same grass verge has room for one more game: a ring of children playing ring-a-ring o' roses,
+  // itself a Victorian rhyme. Every other world with children already had a RingDance (the Neighborhood,
+  // Candy Land, Sunny Shore, Whisper Woods) — Victorian's kids only ever wandered, marched or chased.
+  // A headless probe swept a 1.9 m ring against every physics box and NPC built into the town: (2, 58)
+  // comes back clear all the way round and 9 m from the tag pair, the nearest other souls up here
+  { const ringWard = makeWardrobe(r, { shirts: [0x8a3a3a, 0x3a5a6a, 0x6a5a3a, 0x4a6a4a], pants: [0x2a2a24, 0x3a3327], shoes: [0x2a2018, 0x1e1a16] });
+    const ringKids = [true, false, true, false].map((female) => {
+      const rig = makeHuman({ ...randomPerson(r, { female, child: true, wardrobe: ringWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+      W.add(rig.group); return rig; });
+    game.npcs.push(new RingDance(game, ringKids, { cx: 2, cz: 58, r: 1.8, speed: 0.55, turnEvery: 9, cryIcon: '🎵',
+      cries: ["Ring-a-ring o' roses!", 'A pocket full of posies!', 'A-tishoo! A-tishoo!', 'We all fall down!'] })); }
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);

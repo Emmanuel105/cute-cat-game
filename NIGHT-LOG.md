@@ -3632,3 +3632,26 @@ Verified: `node test/run.mjs` — world 3 goes from 35 to 37 to meet, 94% of its
 NPC (including both urchins) still in the scene graph, positions finite after 5 simulated seconds, all 290+
 checks `ok`, 0 console warnings, exit 0 — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 155 — ring-a-ring o' roses for the Victorian town
+
+Every other world with children already had a `RingDance` (the Neighborhood, Candy Land, Sunny Shore,
+Whisper Woods) — Victorian's kids only ever wandered, marched or played tag. **Four children now hold
+hands in a ring on the same grass verge north of the canal where last round's tag pair plays**, a little
+further out, singing **"Ring-a-ring o' roses! A pocket full of posies! A-tishoo! A-tishoo! We all fall
+down!"** — the rhyme itself dates from Victorian England, so it fits the setting better than any of the
+other worlds it's already in. A headless harness built the real game, travelled through Candy Land and
+Robot City into Victorian on real timers (not a frame count — the fix from earlier rounds: `travel()`
+sets `transitioning` for ~1 s and a second call while it's still true is silently dropped, so the probe
+has to wait that out between hops too, not just wait for `worldIndex` to change), then swept a 1.9 m ring
+against every physics box and NPC already built into the town: `(2, 58)` came back clear all the way
+round, 9 m from the tag pair — the nearest other souls up there.
+
+Verified beyond the suite's own checks: the same headless harness found the new `RingDance` instance,
+ran 90 frames and confirmed every dancer stays exactly on its 1.8 m ring while covering ground (1.48 m in
+1.5 s), then stood the cat behind one dancer and called `game.interact()` — the label read "Say hi" (a
+child's own greeting line) and `game.state.friends` went from empty to one, confirming the befriend
+wiring end to end. Full suite: `world 3: 41 to meet` (up from 37), 94% of Victorian's ground still
+walkable (unchanged), every NPC including the four new dancers still in the scene graph, all 290+ checks
+`ok`, 0 console warnings, exit 0, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.
