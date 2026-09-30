@@ -197,6 +197,11 @@ function buildBeach(game, entry) {
     game.npcs.push(new Sitter(game, musician, { x: mx, z: mz, ry: mry, seat: 0.1,
       cries: ["Three chords is all you need, really.", "Careful, puss — that's out of tune, not broken.", "Sea air's terrible for the strings."] }));
     U.push((dt, t) => { const A = musician.arms[1]; A.el.rotation.x = -1.0 + sin(t * 5.4) * 0.22; A.sh.rotation.z = -0.15; }); }
+  // three friends dance a ring on the quiet dune grass west of the huts — Sunny Shore never had a dance circle, only the two ring-dances inland
+  { game.zones.addCircle(-42, -22, 2.4);
+    const dancers = [false, true, false].map((lady) => beachPerson(lady, false));
+    game.npcs.push(new RingDance(game, dancers, { cx: -42, cz: -22, r: 1.8, speed: 0.5, turnEvery: 10, cryIcon: '💃',
+      cries: ['Somebody find the beat, we lost it!', "Careful, puss, you'll get trodden on!", 'One more turn before the tide comes in!'] })); }
   // the beach dog keeps to its own patch of sand — it does not follow the cat
   const dog = makeDog(0xc8925a); W.add(dog.group); game.npcs.push(new Wanderer(game, dog, { x: -2, z: 28, speed: 1.1, leash: 7, r: 0.35, height: 0.9, step: 0.3, idle: [1.5, 4], walk: [2, 5] }));
   let woofT = rnd.range(6, 12); U.push((dt) => { woofT -= dt; if (woofT <= 0) { SFX.woof(); woofT = rnd.range(10, 20); } });

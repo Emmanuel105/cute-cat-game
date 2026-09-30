@@ -3342,3 +3342,34 @@ then stood the cat 1 m off facing it — `game.nearest.label()` read "Say hello"
 suite: `world 5: 31 to meet` (up from 30), 97% of Frosty Peak's ground still walkable (98% before —
 one more collider, still comfortably over the 80% floor), all 273 checks `ok`, 0 console warnings,
 exit 0, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 145 — a dance ring on Sunny Shore
+
+Sunny Shore and Whisper Woods were tied for fewest people to meet (30 each) and Whisper Woods had
+just had a round two ago, so this one went to the beach. Whisper Woods has a fairy ring of three
+kids and Candy Land has four gingerbread men circling a fountain, but Sunny Shore had never had a
+`RingDance` of its own despite already reusing nearly every other NPC controller in the game.
+**Three friends dance a ring on the quiet dune grass west of the beach huts**, turning together at
+a slow, easy pace and switching direction every ten seconds or so — no music, just the three of
+them and the surf. *"Somebody find the beat, we lost it!"* Sunny Shore goes from 30 to 33 to meet
+in one round, since `RingDance` folds in every dancer as a friend to greet.
+
+Placed at (-42, -22): a headless probe built the beach world, then swept the sand and dune grass
+(excluding the open water east of the huts) for a spot where a ring of radius 1.8 m, plus a half
+metre of dancer clearance, stayed clear of every physics box and circle, both at the centre and at
+eight points around the ring itself. Kept only spots at least 7 m from the nearest other soul so
+the ring wouldn't crowd an existing vignette, then took the one with the most breathing room: 18 m
+from the nearest neighbour, tucked among the palm-dune scatter with nothing else nearby. A
+`zones.addCircle` at the same spot keeps the world's own procedural grass-and-shell fill from
+growing shells or driftwood under the dancers' feet.
+
+Verified beyond the suite's own checks: a headless harness called `game.start('new')`, travelled to
+Sunny Shore and waited out the fade lock on a real timer (`while (game.transitioning) { await
+sleep(60); ...}`, not a bare frame-count loop — the same trap round 141 and 144 both hit), found the
+ring by its centre coordinates, confirmed all three dancers were parented into the scene graph,
+found none within 1 m of a static collider, ran 300 frames (5 simulated seconds) with every
+position staying finite and the ring visibly turning, then stood the cat beside one dancer —
+`game.nearest.label()` read "Say hello", greeting took `game.state.friends.size` from 0 to 1 with
+the prompt flipping to "Say hello again". Full suite run three times in a row: `world 4: 33 to meet`
+(up from 30), 99% of Sunny Shore's ground still walkable, all 273 checks `ok` every time, 0 console
+warnings, exit 0, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
