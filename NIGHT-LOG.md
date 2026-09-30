@@ -3705,3 +3705,25 @@ simulated seconds) and watched the two cookies swap who's "it" four times, both 
 suite: `world 1: 37 to meet` (up from 35), 91% of Candy Land's ground still walkable (unchanged), every
 NPC including the new pair still in the scene graph, all checks `ok`, 0 console warnings, exit 0, before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 158 — a game of catch for the Victorian town
+
+Every other world already had a `BallGame` (Neighborhood, Candy Land, Robot City, Sunny Shore, Frosty
+Peak, Whisper Woods) — Victorian had tag and a ring dance but nobody actually throwing anything, the last
+world missing it. **Two more urchins now toss a stitched leather ball back and forth on the same north
+bank of the canal**, a good 20 m west of the tag pair and the ring-a-ring-o'-roses circle already out
+there, sharing their own small wardrobe (brown and blue shirts) rather than the street's main `ward` bag.
+
+A headless probe swept the open grass north of the canal against every physics box and NPC already built
+into the town, allowing for the game's 5.5 m throw gap and 1.2 m side-to-side sway: `(-25, 52)` came back
+clear all the way round, out past both the tag pair at `(0, 50)` and the ring at `(2, 58)` with nothing
+else placed there.
+
+Verified beyond the suite's own checks: a headless harness built the real game, travelled straight into
+Victorian on a real timer, found the new `BallGame` instance, and ran 600 frames (10 simulated seconds) —
+both children stayed within their 1.2 m sway and the ball passed hands 6 times, all positions finite
+throughout. Walked the cat up to one child and called `game.interact()`: the label read "Say hi", and
+`game.state.friends` went from empty to one. Full suite: `world 3: 43 to meet` (up from 41), 94% of
+Victorian's ground still walkable (unchanged), every NPC including the new pair still in the scene graph,
+all 290+ checks `ok`, 0 console warnings, exit 0, before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
