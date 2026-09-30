@@ -3313,3 +3313,32 @@ check runs. Full suite, run four times in a row to make sure the fix actually ho
 a lucky wall-clock draw: `world 0: 31 to meet` (up from 29), all 273 checks `ok` every time, 0
 console warnings, exit 0, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 144 — a watcher for Frosty Peak's own sled run
+
+Sunny Shore, Frosty Peak and Whisper Woods were tied for fewest people to meet (30), and Whisper
+Woods had just had a round. Frosty Peak's zipline got an attendant a couple of rounds back "checking
+the cable before every rider," but the mountain's other ride — the sled run down the west peak's
+flank — had stood unwatched since it was built: the kid there sleds down and trudges back up
+entirely alone. **A parent now waits at the top of the slope, giving each run a push-off and
+greeting the sledder back up the climb.** *"Best seat's the one going down, not climbing back
+up."* Reuses `Charger` (the same idle-and-cry controller already doing duty at the zipline tower)
+rather than adding a new class — there's nothing for this one to actually do with its hands, just
+stand, watch and heckle.
+
+Placed at (-69.9, -41.7): a headless probe swept points on both sides of the sled's own line
+(top `[-68, -44]` to bottom `[-46, -26]`) at increasing offsets, picking the closest one that
+stayed clear of every physics box and at least 3 m off the sled's moving circle in both directions
+of travel — steep ground here (over a metre of height change per metre walked, the same shoulder
+the zipline attendant already stands on), but nothing new for this world. Settled on 3 m off the
+line, right at the top point, 14 m from the nearest other soul (a wandering penguin) and unblocked.
+
+Verified beyond the suite's own checks: a headless harness called `game.start('new')` before
+travelling (skip that and `game.nearest` stays `null` forever, the exact trap round 141's write-up
+warned about), found the watcher by exact position, confirmed the rig was parented into the scene
+graph, ran 300 frames with the position staying finite, found zero physics colliders within 1.2 m,
+then stood the cat 1 m off facing it — `game.nearest.label()` read "Say hello", saying hello took
+`friends.size` from 0 to 1, and the prompt flipped to "Say hello again" on a second read. Full
+suite: `world 5: 31 to meet` (up from 30), 97% of Frosty Peak's ground still walkable (98% before —
+one more collider, still comfortably over the 80% floor), all 273 checks `ok`, 0 console warnings,
+exit 0, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
