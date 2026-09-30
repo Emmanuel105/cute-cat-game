@@ -6015,6 +6015,25 @@ function buildNeighborhood(game, entry) {
     rnd(); rnd(); rnd();   // burns three shared draws: without them this chopper's chop timer lands on ticks that upset the cyclist's pedalling-delta check later in the same world (found by bisecting the test failure)
     game.npcs.push(new Chopper(game, cutter, { x: cx, z: cz, ry: atan2(sx - cx, sz - cz),
       cries: ['Stove wants feeding before dark.', 'Careful, puss — mind the chips.', "Whole winter's worth, if I keep at it."] })); }
+  // a girl kneels on the north pavement, chalking a row of hopscotch squares straight onto the paving —
+  // every other world's had a juggler or a busker perform for a crowd, but no street in seven worlds had
+  // a kid doing the oldest pavement game there is (own fixed shirt colour, not the street's shared `ward`
+  // bag, which is sized exactly to its 18 users already; placed last, after the woodcutter, so it draws
+  // from the tail of the local RNG sequence and leaves every earlier neighbour's random wardrobe pick
+  // undisturbed)
+  // (a headless probe over the built world — every physics box swept against a run of candidate points
+  // along both pavements, ranked by distance to the nearest other NPC — found the north pavement clear
+  // from x=59.5 to x=62.4: 23 m from the nearest other soul, and the nearest physics box anywhere near
+  // the kneeling spot itself (a streetlamp two posts along) 0.7 m off)
+  { const gz = 17.6, kx = 58.6, kz = 17.75, squares = [];
+    const squareColors = [0xffb3c6, 0xbde0fe, 0xfff3b0, 0xb9fbc0, 0xcdb4db, 0xffc8dd];
+    for (let i = 0; i < 6; i++) { const gx = 59.5 + i * 0.58; squares.push([gx, gz]);
+      mesh(G.plane(0.48, 0.48), mat(squareColors[i], { roughness: 0.95, transparent: true, opacity: 0.85 }), { x: gx, y: 0.018, z: gz, rx: -PI / 2, shadow: 'none', parent: W }); }
+    const chalker = makeHuman({ ...randomPerson(r, { female: true, child: true }), hairStyle: 'braids', shirt: 0xffd166, backpack: null }); W.add(chalker.group);
+    const chalk = group(0, 0.02, 0.09, chalker.hands[0]); chalk.rotation.x = -0.5;
+    mesh(G.cyl(0.014, 0.014, 0.09, 6), mat(0xf7f3ec, { roughness: 0.9 }), { y: 0.045, parent: chalk });
+    game.npcs.push(new Kneeler(game, chalker, { x: kx, z: kz, ry: atan2(squares[0][0] - kx, squares[0][1] - kz),
+      cries: ['One more square and the whole set is done!', 'Careful, puss — mind the chalk lines!', 'Six squares, dry before supper.'] })); }
   // three more ways out of the neighborhood: beach boardwalk (east), gondola to the peak (west), hollow oak to the woods (south-east)
   const beachGate = makeBeachGate(game, 78, 22, PI / 2, () => game.travel(WORLD_INDEX('beach'), 'from-hub')); U.push(beachGate.userData.update);
   flatPlane(game, 30, 3, walk, 60, 22, 0, 0.02);                                                                             // boardwalk from the road out to the arch

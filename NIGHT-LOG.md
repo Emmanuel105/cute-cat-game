@@ -3205,3 +3205,49 @@ it — `game.nearest.label()` read "Say hello" and using it took `friends.size` 
 `world 4: 30 to meet` (up from 29), 100% of Sunny Shore's ground still walkable (unchanged), every NPC
 still in the scene graph, all checks `ok`, 0 console warnings, exit 0, before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 141 — a hopscotch grid on the Neighborhood's north pavement
+
+Local `main` already matched `origin/main`'s tip exactly at round 140 (the Sunny Shore ukulele player),
+so no history recovery was needed this time — just `git checkout -B main origin/main` before starting.
+
+The Neighborhood had the fewest people to meet of any world (28, against 29–35 everywhere else) and
+had gone five rounds without a new face while every other world took its turn. Every world by now has
+had a juggler or a busker perform for a crowd, but no street in seven worlds had a kid doing the oldest
+pavement game there is. **A girl now kneels on the north pavement, chalk in hand, having drawn a row of
+six coloured squares straight onto the paving stones** — a small hopscotch grid, pink through lavender,
+that never gets played on since nobody's legs work like that here, but reads as a kid's own patch of the
+street all the same. *"One more square and the whole set is done!"* *"Careful, puss — mind the chalk
+lines!"* *"Six squares, dry before supper."* The Neighborhood goes from 28 to 29 to meet.
+
+Reuses `Kneeler` (already doing duty for the beekeeper, the gardener, the farmhand and the jetty
+angler) rather than a new controller — the squares themselves are just flat coloured planes at
+y=0.018, no physics box, the same trick the street's own lane-dash markings and painted crossings use.
+A tiny chalk stub is parented into the rig's own hand the same way the raker's rake and the woodcutter's
+axe are, so it swings with the kneeling arm instead of floating fixed in place.
+
+Placed at (58.6, 17.75), grid running east from (59.5, 17.6) to (62.4, 17.6): a headless probe swept a
+2 m grid of candidate points along both pavements against `game.physics.blocked()`, ranked by distance
+to the nearest other NPC, and restricted to `|x| <= 70` to keep it inside the village core rather than
+out at the map's edge — the north pavement here came back clear across the whole six-square span, 23 m
+from the nearest other soul, with the single nearest physics box (a streetlamp two posts further along)
+0.7 m from the kneeling spot itself, well outside its 0.35 m collision circle.
+
+First attempt used a shirt colour (`0xff8fab`) that happens to sit inside the shared `SHIRT_COLORS`
+pool the street's 15 `person()`-built neighbours draw their wardrobe from — the suite's own "no two
+neighbours wear the same shirt" check caught the collision immediately (`FAIL: ... 29 colours for 30
+people`), since that exact colour had already been dealt to someone else in this world's fixed seed.
+Switched to `0xffd166`, a colour used nowhere else in the file, and the check passed clean.
+
+Verified beyond the test suite's own checks: a headless harness built the game, called `game.start('new')`
+(the first attempt skipped this — `game.started` was still `false`, so `game.loop()` was only running the
+cat's own idle update and `game.nearest` stayed `null` no matter how close the cat stood, which looked
+like a placement bug until the actual cause turned up), found the new chalker by her exact seat position,
+confirmed her rig was parented into the scene graph, ran 300 frames (5 simulated seconds) with her
+position staying finite throughout, found exactly one physics box within 1.2 m of the seat (the same
+distant streetlamp), then stood the cat 1.2 m off in the direction the chalker faces — `game.nearest`
+read "Say hi" (she's a child), saying hello took `game.state.friends.size` from 0 to 1, and the prompt
+flipped to "Say hi again" on a second approach. Full suite: `the Neighborhood has 29 people to meet` (up
+from 28), 96% of the Neighborhood's ground still walkable (unchanged), every NPC still in the scene
+graph, all checks `ok`, 0 console warnings, exit 0, before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
