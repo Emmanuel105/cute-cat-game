@@ -3655,3 +3655,32 @@ wiring end to end. Full suite: `world 3: 41 to meet` (up from 37), 94% of Victor
 walkable (unchanged), every NPC including the four new dancers still in the scene graph, all 290+ checks
 `ok`, 0 console warnings, exit 0, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 156 — a ring dance for Robot City
+
+The Neighborhood, Candy Land, Sunny Shore, Whisper Woods and (last round) Victorian all have a
+`RingDance`; Robot City had tag and catch but no ring dance yet — the last of the seven without one.
+**Four robots now turn slowly in a circle north of the factory floor**, arms out just like the
+gingerbread men's ring in Candy Land — `RingDance` never assumes hands to actually hold, so
+`makeRobot()` rigs slot in exactly as `makeGingerbread()` ones already did, no changes needed to the
+controller itself.
+
+Finding a spot took more care than usual: Robot City's factory floor is busy (two loader robots, a
+sentry, RoboDog, five wandering robots each with their own roam leash, the tag pair, the catch pair,
+a mechanic, a painter, two chargers, a vendor…), and a `Patroller` or `RoboDog` walks a whole
+rectangular beat, not just the four corners logged for it. A headless probe swept a grid of candidate
+centres against every physics box, every `Wanderer`'s home-plus-leash circle, the tag/catch pairs' own
+radii, and the actual line segments of the sentry's and RoboDog's patrol loops (the first pass, which
+only excluded the patrol corners, turned up spots that looked clear but sat right on the sentry's own
+walking line). `(0, 40)` came back clear: 12.9 m from the nearest wall, 9.6 m past the nearest
+Wanderer's leash, north of the factory floor and outside every patrol beat.
+
+Verified with a headless harness beyond the suite's own checks: started the real game (`game.started`
+has to be `true` for the nearest-interactable prompt to compute at all — the first pass of this probe
+missed that and got a false "nothing here" reading), travelled into Robot City, and found the
+`RingDance` instance — all four dancers stayed exactly on the 1.8 m ring after 90 frames, positions
+finite throughout. Walked the cat up to one dancer and called `game.interact()`: the label read "Beep
+hello", and `game.state.friends` went from empty to one. Full suite: `world 2: 39 to meet` (up from
+35), 88% of Robot City's ground still walkable (unchanged), every NPC including the four dancers still
+in the scene graph, all checks `ok`, 0 console warnings, exit 0, before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

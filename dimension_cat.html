@@ -6472,6 +6472,18 @@ function buildRobotCity(game, entry) {
     W.add(catchA.group); W.add(catchB.group);
     game.npcs.push(new BallGame(game, catchA, catchB, catchBall, { cx: cbx, cz: cbz, gap: 5.5 }));
     greetable(game, { rig: catchA }); greetable(game, { rig: catchB }); }
+  // tag and catch were covered, but Robot City was the one world left with no RingDance — the Neighborhood,
+  // Candy Land, Sunny Shore, Whisper Woods and (last round) Victorian all already have one. A headless probe
+  // swept a grid of candidate centres against every physics box, every Wanderer's home-plus-leash circle, the
+  // tag and catch pairs' own leash/gap radii, and — since a Patroller or RoboDog walks a whole rectangle, not
+  // just its four corners — the segments of the sentry's and RoboDog's patrol loops too: (0, 40) came back
+  // clear, 12.9 m from the nearest wall and 9.6 m past the nearest Wanderer's own leash, north of the factory
+  // floor and well outside every patrol beat. Four robots now turn slowly in a ring there, arms out like the
+  // gingerbread men's ring in Candy Land — RingDance never assumes hands to hold, so makeRobot() rigs work
+  // exactly as makeGingerbread() ones already did.
+  { const ringBots = [0, 1, 2, 3].map(() => { const rig = makeRobot(); W.add(rig.group); return rig; });
+    game.npcs.push(new RingDance(game, ringBots, { cx: 0, cz: 40, r: 1.8, speed: 0.5, turnEvery: 8, cryIcon: '🤖',
+      cries: ['Recreational subroutine engaged.', 'Beep bo-beep!', 'Diagnostic: joy detected.', 'Do not report this to the foreman.'] })); }
   // a mechanic kneels over a wonky robot on the open floor, wrench in hand — a tightened bolt sparks and the patient sits bolt upright for a moment
   { const mech = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }), shirt: 0x3a4a6a, stripes: null, pants: 0x232c44, shoes: 0x1a1a20, hat: 'cap', hatColor: 0x3a4a6a, jacket: null, scarf: null, bag: null, build: 'stout', glasses: false });
     W.add(mech.group);
