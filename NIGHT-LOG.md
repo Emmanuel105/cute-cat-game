@@ -3058,3 +3058,40 @@ so the sway survives baking, each backed by exactly one physics collider and no 
 meet` (unchanged), 100% of Sunny Shore's ground still walkable (unchanged), every NPC still in the
 scene graph, all checks `ok`, 0 console warnings, exit 0, before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 137 — a seventh stale-history recovery, and Robot City's first street vendor
+
+`git status` came back clean on a detached HEAD sitting on round 136 (the swim flags), but local `main`
+itself was stuck 103 commits back at "a toy mouse for the robot dog" — its own history shares no common
+ancestor with the real `origin/main` at all (`git merge-base` came back empty), so it's an old, unrelated
+line rather than a simple fast-forward gap. `git fetch origin main` confirmed the genuine remote tip
+matches the checked-out detached HEAD exactly, so no work was at risk; rather than force-reset the local
+`main` branch (blocked as a destructive local rewrite), this round did its work on the detached HEAD and
+will push straight to `origin/main` from there, the same trick used when round 136's own local branch
+pointer went stale.
+
+Every world had a vendor of its own by now except Robot City — Neighborhood's balloon seller and
+lemonade stand, Candy Land's candy jar, Sunny Shore's ice cream cart, Frosty Peak's cocoa mug, Whisper
+Woods' berry basket, even Victorian's four market stalls — but nobody in the whole city was selling
+anything. **A street vendor now sets up on the open factory floor north-east of the plaza, holding up a
+tin oil can with a glowing green cap (the same green as the nearby CHARGE sign) for the robots to buy
+between shifts.** *"Fresh oil, straight off the line!"* *"Careful, puss — not for licking."* *"Every
+robot in the city swears by this brand."* Robot City goes from 32 to 33 to meet. A new `makeOilCan()`
+prop sits in `60-props.js` next to the other stall-keepers' held items (the cheese wheel, the candy jar).
+
+Placed at (24, 26): a headless probe built Robot City directly and swept every 2 m grid point against
+every registered physics box and NPC position, ranking survivors by distance to their nearest neighbour.
+(24, 26) came back with 19 m of clear space around it — nowhere near the skyscraper at (34, 24), the
+painter's easel, or any of the patrol routes/posts further south (the sentry's beat, the tag-game robots,
+the diagnostic cart) — and Robot City's own outer-region filler only starts at radius 98, so no
+`game.zones` circle was needed to protect the spot.
+
+Verified beyond the test suite's own checks: a headless harness started the game properly (`game.start
+('new')` — a first attempt without it left `game.nearest` permanently null, since the whole nearest-
+interactable calculation only runs once `game.started` is true), built Robot City directly, found the new
+`Vendor` by its exact placed position, confirmed its rig was parented into the scene, ran 200 frames and
+found its position still finite, and scanned a 1 m radius around its spot for physics boxes (none, beyond
+its own). Teleporting the cat 0.5 m from the stall read `game.nearest.label()` as "Say hello" and using it
+took `friends.size` from 0 to 1. Full suite: `world 2: 33 to meet` (up from 32), 88% of Robot City's
+ground still walkable (unchanged), every NPC still in the scene graph, all checks `ok`, 0 console
+warnings, exit 0, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

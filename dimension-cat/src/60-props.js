@@ -489,6 +489,16 @@ function makeCandyJar() {
   mesh(G.sphere(0.025, 8, 6), mat(0xd62839, { roughness: 0.5 }), { y: 0.25, shadow: 'none', parent: g });
   return g;
 }
+/** A metal oil can with a spout and a handle, its cap glowing the same green as Robot City's CHARGE sign, for a street vendor to hold up. */
+function makeOilCan() {
+  const g = new THREE.Group(), tin = mat(0x3a4048, { metalness: 0.6, roughness: 0.4 });
+  mesh(G.cyl(0.07, 0.075, 0.16, 12), tin, { y: 0.08, parent: g });
+  mesh(G.cyl(0.05, 0.07, 0.03, 12), tin, { y: 0.175, parent: g });
+  mesh(G.cyl(0.015, 0.022, 0.09, 8), tin, { x: 0.06, y: 0.21, z: 0.02, rz: -0.6, parent: g });
+  mesh(G.torus(0.035, 0.008, 5, 10), tin, { x: -0.06, y: 0.13, ry: PI / 2, parent: g });
+  mesh(G.cyl(0.06, 0.06, 0.005, 12), glowMat(0x4ade80, 1.2), { y: 0.192, shadow: 'none', parent: g });
+  return g;
+}
 /** A bicycle: two wheels, a frame, handlebars, a saddle and a crank. Faces +z; `wheels` and `crank` turn. */
 function makeBike(color = 0xd62839) {
   const g = new THREE.Group(), frame = mat(color, { roughness: 0.4, metalness: 0.3 }), dark = mat(0x1e1a18, { roughness: 0.8 }), rim = mat(0xc8ccd2, { metalness: 0.6, roughness: 0.4 });
