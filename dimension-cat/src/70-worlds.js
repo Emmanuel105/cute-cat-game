@@ -581,6 +581,20 @@ function buildCandyLand(game, entry) {
   game.npcs.push(new Marchers(game, [0, 1, 2].map(() => { const rig = makeGingerbread(); W.add(rig.group); return rig; }), { points: [[-13, -27], [5, -27]], speed: 1.1, pause: [1, 2], r: 0.4, height: 1.4, gap: 1.3, cries: ['Hup, two, three, four!', 'Eyes front! Cat approaching!', 'Halt! ...who goes there? Oh, a kitty.'], cryIcon: '\ud83c\udf6a' }));
   // four more dance a ring round the big lollipop, hand in hand, turning about every nine seconds
   game.npcs.push(new RingDance(game, [0, 1, 2, 3].map(() => { const rig = makeGingerbread(); W.add(rig.group); return rig; }), { cx: 14, cz: 10, r: 2.6 }));
+  // the gingerbread men wander, march and dance in a ring, but nobody ever threw anything — every other
+  // tagged world already has a `BallGame`, Candy Land the one left without either it or a game of tag.
+  // A headless probe swept the built world's own physics boxes and NPCs against a grid of candidate
+  // centres (the game's 5.5 m throw gap either side, plus the players' own 1.2 m side-to-side sway):
+  // (1, 1) came back fully clear out to 1.6 m either side, on open grass beside the candy-cane cluster
+  // near the spawn, 11 m from the nearest other soul (a wandering gingerbread man)
+  { const catchA = makeGingerbread(), catchB = makeGingerbread(); catchA.k = catchB.k = 0.8;   // BallGame's hands() scales by rig.k; makeGingerbread() never sets it, so give both the ratio their own 1.4 m Wanderer height already implies
+    W.add(catchA.group); W.add(catchB.group);
+    const gumball = mesh(G.sphere(0.24, 14, 10), mat(0xffffff, { roughness: 0.3 }), { parent: W });
+    mesh(G.sphere(0.242, 14, 10), mat(0xff3355, { roughness: 0.3 }), { sx: 0.5, parent: gumball });
+    mesh(G.sphere(0.242, 14, 10), mat(0xff3355, { roughness: 0.3 }), { sz: 0.5, parent: gumball });
+    gumball.position.set(1, P.ground0(1, 1) + 0.24, 1);
+    game.npcs.push(new BallGame(game, catchA, catchB, gumball, { cx: 1, cz: 1, gap: 5.5 }));
+    greetable(game, { rig: catchA }); greetable(game, { rig: catchB }); }
   // the Candy Queen (giant cat) guarding the airlock
   const boss = makeCandyCat(); place(game, U, boss.group, -4.5, -31, 0.35);
   P.addBox(-4.5, 1.2, -31, 2.4, 2.4, 3.2);

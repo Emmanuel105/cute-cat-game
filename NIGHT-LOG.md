@@ -3589,3 +3589,30 @@ hello" (robots get their own greeting line, same as everyone else `greetable()` 
 `game.state.friends.size` went from 0 to 1. Full suite run twice in a row: `world 2: 35 to meet` (up
 from 33), all 273 checks `ok` both times, 0 console warnings, exit 0, before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 153 — a game of catch for Candy Land
+
+Candy Land's gingerbread men wander, march in step and dance in a ring round the big lollipop, but
+until now nobody there ever threw anything: every other tagged world (the Neighborhood, Sunny Shore,
+Frosty Peak, Whisper Woods, and Robot City as of last round) already has a `BallGame`, and Candy Land
+was the one world left with neither that nor a game of tag. **Two gingerbread men now lob a striped
+red-and-white gumball back and forth on the open grass near the spawn**, beside the candy-cane cluster
+at (7, 3). A headless probe swept the built world's own physics boxes and NPCs against a grid of
+candidate centres, checking clearance across the game's 5.5 m throw gap plus the players' own 1.2 m
+side-to-side sway: (1, 1) came back fully clear out to 1.6 m either side and 11 m from the nearest
+other soul (a wandering gingerbread man). `BallGame`'s `hands()` helper scales throw height by
+`rig.k` — a human's height ÷ 1.75, set inside `makeHuman()` — which `makeGingerbread()` never sets,
+so both catchers are given 0.8, the same ratio their own 1.4 m `Wanderer`/`Marchers` height already
+implies elsewhere in this world (the same fix Robot City's robots needed last round).
+
+Verified with a headless harness beyond the suite's own checks: clicked the real start button, waited
+out the portal fade on a real timer, ran 300 frames (5 simulated seconds) and found the `BallGame`
+instance mid-game — 3 passes completed, the ball's position finite and above the ground throughout,
+both gingerbread men's positions finite. Walked the cat up to one catcher: the label read "Say hello"
+(gingerbread men get the same greeting line as everyone else `greetable()` covers), and calling the
+interactable's own `onUse()` took `game.state.friends` from empty to `candy:24` — confirming the
+befriend wiring, since a stray `transitioning` flag mid-portal-fade blocked `game.interact()` itself
+in the ad-hoc check but not the underlying handler. Full suite: `world 1: 35 to meet` (up from 33),
+91% of Candy Land's ground still walkable (unchanged), every NPC still in the scene graph, all checks
+`ok`, 0 console warnings, exit 0, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
