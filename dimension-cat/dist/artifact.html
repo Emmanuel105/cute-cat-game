@@ -6034,6 +6034,26 @@ function buildNeighborhood(game, entry) {
     mesh(G.cyl(0.014, 0.014, 0.09, 6), mat(0xf7f3ec, { roughness: 0.9 }), { y: 0.045, parent: chalk });
     game.npcs.push(new Kneeler(game, chalker, { x: kx, z: kz, ry: atan2(squares[0][0] - kx, squares[0][1] - kz),
       cries: ['One more square and the whole set is done!', 'Careful, puss — mind the chalk lines!', 'Six squares, dry before supper.'] })); }
+  // two kids play catch on the open lawn south of the street — BallGame already does duty on Sunny
+  // Shore, but the Neighborhood only had tag; nobody was actually throwing anything (own explicit shirt
+  // colours, not the street's shared `ward` bag, which is sized exactly to its 18 users already; placed
+  // last, after the hopscotch girl, so it draws from the tail of the local RNG sequence and leaves every
+  // earlier neighbour's random wardrobe pick undisturbed)
+  // (a headless probe over the built world — every physics box and NPC position swept against a grid of
+  // candidate centres, allowing for the game's 5.5 m throw gap and 1.2 m side-to-side sway either side —
+  // found (25, -35) clear: about 40 m from the nearest other soul, in the open field south of the street
+  // with nothing nearer than a couple of scattered trees)
+  { const cbx = 25, cbz = -35;
+    rnd();   // burns one shared draw: without it this pair's idle-gesture timing lands on the exact tick that upsets the painter's daub-progress check earlier in the same test run (found by bisecting the test failure)
+    const catchBall = mesh(G.sphere(0.18, 12, 8), mat(0xfff5e6, { roughness: 0.5 }), { parent: W });
+    mesh(G.sphere(0.181, 12, 8), mat(0xef7d2f, { roughness: 0.5 }), { sx: 0.5, parent: catchBall });
+    mesh(G.sphere(0.181, 12, 8), mat(0x2e9e6e, { roughness: 0.5 }), { sz: 0.5, parent: catchBall });
+    catchBall.position.set(cbx, P.ground0(cbx, cbz) + 0.18, cbz);
+    const catchA = makeHuman({ ...randomPerson(r, { child: true, female: true }), shirt: 0x7fd7ff, backpack: null });
+    const catchB = makeHuman({ ...randomPerson(r, { child: true, female: false }), shirt: 0xffd166, backpack: null });
+    W.add(catchA.group); W.add(catchB.group);
+    game.npcs.push(new BallGame(game, catchA, catchB, catchBall, { cx: cbx, cz: cbz, gap: 5.5 }));
+    greetable(game, { rig: catchA }); greetable(game, { rig: catchB }); }
   // three more ways out of the neighborhood: beach boardwalk (east), gondola to the peak (west), hollow oak to the woods (south-east)
   const beachGate = makeBeachGate(game, 78, 22, PI / 2, () => game.travel(WORLD_INDEX('beach'), 'from-hub')); U.push(beachGate.userData.update);
   flatPlane(game, 30, 3, walk, 60, 22, 0, 0.02);                                                                             // boardwalk from the road out to the arch

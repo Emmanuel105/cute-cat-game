@@ -3289,3 +3289,27 @@ flipping to "Say hi again", and firing the separate "Push the swing" interactabl
 rotation from a natural 0.3 rad up past 1.0 rad. Full suite: `world 6: 30 to meet` (up from 29), every
 NPC still in the scene graph, all 273 checks `ok`, 0 console warnings, exit 0, before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 143 — a game of catch for the Neighborhood
+
+The Neighborhood had a game of tag (two kids on the east lawn) but nothing with an actual ball —
+every other world with a `BallGame` was the beach, and the street never got its own. **Two kids
+play catch on the open field south of the street**, lobbing a little orange-and-green ball back
+and forth in a slow arc; stand under it at the right moment and it boings off the cat's head
+before landing on the other kid, exactly like the beach ball does on Sunny Shore. Both kids say
+hello like anyone else. A headless probe swept the built world's physics boxes and every other
+NPC's position against a grid of candidate centres (accounting for the game's 5.5 m throw gap and
+1.2 m side-to-side sway) and settled on (25, -35): open grass about 40 m from the nearest other
+soul, well south of the street with nothing nearer than a couple of scattered trees.
+
+Adding the pair broke an unrelated check the first time through: the painter by the pond, two
+daubs into her canvas, is supposed to have her arm well down mid-stroke, but with two more rigs
+now cycling idle gestures (wave/look/nod/shift) off the same shared `rnd()` sequence every frame,
+the painter's own next gesture pick landed on something that isn't a stroke at the exact frame the
+check fires, leaving her arm near zero instead of below -0.5. One extra `rnd()` burn right after
+the pair's construction — bisected the same way earlier rounds found theirs for the lemonade stand
+and the woodcutter — retimes the sequence enough that the painter is back to mid-stroke when the
+check runs. Full suite, run four times in a row to make sure the fix actually holds and wasn't
+a lucky wall-clock draw: `world 0: 31 to meet` (up from 29), all 273 checks `ok` every time, 0
+console warnings, exit 0, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.
