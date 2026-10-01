@@ -4083,3 +4083,37 @@ Full suite: `world 5: 38 to meet` (unchanged, as expected — ambient wildlife, 
 friend count), 98% of Frosty Peak's ground still walkable (unchanged), every NPC including the three new
 hares still in the scene graph, all 273 checks `ok`, 0 console warnings, exit 0 across three consecutive
 runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 172 — a vegetable patch for the Neighborhood
+
+(Housekeeping first: this sandbox's `main` branch was detached from `HEAD` again, pointing at round 171's
+own commit with `origin/main` already caught up to it — the same recurring mix-up earlier rounds hit.
+Re-pointed local `main` at `HEAD` and continued from there.)
+
+Three worlds were tied at the bottom of the friend count (35 apiece): the Neighborhood, Sunny Shore and
+Whisper Woods. The last two each got a new face in rounds 170 and 168/169, so the Neighborhood — last
+touched at round 148 — was the one still waiting. Its gardens had flowers, an orchard and a beehive, but
+nothing actually growing vegetables. **A gardener now kneels over a small vegetable patch in the quiet
+backyard behind the house at x=18**, three rows of leafy carrot tops planted in a tilled soil bed, a
+wicker basket of pulled carrots at their knee. *"Best carrots this patch has ever grown."* / *"Careful,
+puss — mind the rows!"* / *"One more row before the frost."*
+
+It reuses `Forager` — the crouched picking-and-reaching controller already doing duty as the
+mushroom-pickers in Whisper Woods, Sunny Shore and Frosty Peak — for its first outing in the Neighborhood,
+which otherwise had nobody actually harvesting anything. A headless probe built the real game and swept a
+grid of candidate points against every physics box and zone in the open backyard south of that house:
+`(14.5, -13.9)` came back clear the whole way round at 1.2 m, with the patch bed itself at `(14.5,
+-15.1)` equally clear — about 19.4 m from the nearest other soul and well short of the two trees already
+planted nearby at `(-9, -9)` and `(10, -9)`.
+
+The new rig draws its own small wardrobe, not the street's shared 18-person bag, and is placed last in
+the build order so it doesn't disturb any earlier neighbour's random wardrobe pick. It still needed two
+burned `rnd()` draws before construction: without them its own idle-gesture roll landed on the exact tick
+that flipped the park painter's pose from mid-daub to a stray nod, failing her "two daubs in" check — found
+by bisecting from 1 through 6 burns until the full suite came back clean at 2 (3 also worked, 2 was kept
+as the smaller fix).
+
+Full suite: `the Neighborhood has 36 people to meet` (up from 35), every NPC including the new gardener
+still in the scene graph, 96% of the Neighborhood's ground still walkable (unchanged), all 273 checks
+`ok`, 0 console warnings, exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
