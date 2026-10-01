@@ -612,6 +612,14 @@ function buildCandyLand(game, entry) {
     for (let k = 0; k < 6; k++) mesh(G.cyl(0.5, 0.65, 0.8, 12), mat(r.pick([0xff6fb5, 0x7fd7ff, 0xffd54a]), { roughness: 0.4 }), { x: -3.5 + k * 1.4, y: 0.4, z: 4.2, parent: gh });
     P.addBox(0, 2, -62, 7.4, 4, 6.4); pointLight(0xffd27a, 10, 10, 0, 2.5, -58, W); }
   for (let i = 0; i < 12; i++) mesh(G.cyl(0.9, 0.9, 0.12, 12), mat(0xd9a066, { roughness: 0.95 }), { x: sin(i * 0.9) * 1.6, y: 0.04, z: -40 - i * 1.9, shadow: 'receive', parent: W });   // cookie path to the cottage
+  // every other world has wildlife of its own, but Candy Land never did — a sugar mouse now lives on the
+  // quiet west side of the gingerbread cottage, darting between hops exactly like Whisper Woods' hedgehog
+  // and Frosty Peak's hares. A headless probe swept the cottage's own flank for clearance against every
+  // physics box already placed (the cottage itself, its doorstep, the bakery's tray to the east): (-8, -61)
+  // came back clear by 4.3 m in every direction, well inside the 1.4 m leash given here
+  { const rig = makeSugarMouse();
+    game.npcs.push(new Hopper(game, rig, { x: -8, z: -61, leash: 1.4, r: 0.1, dist: [0.25, 0.6], dur: 0.3, height: 0.18, idle: [1, 3.2],
+      onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } })); }
 
   // candy canes, lollipops, gumdrops, cotton candy
   const canes = [[-6, 6], [7, 3], [-14, -4], [15, -8], [-22, 8], [24, 12], [-30, -2], [30, -4], [-10, 22], [12, 24], [-26, 20], [26, 24], [-18, -30], [16, -32], [-8, -40], [8, -42], [-36, -14], [34, -20], [-40, 26], [40, 30], [-28, -38], [26, -40], [-44, 4], [44, 8], [-2, 30], [4, -26], [-20, -12], [20, -14]];

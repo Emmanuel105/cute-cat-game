@@ -135,6 +135,7 @@ const makeFox = () => makeQuadruped({ color: 0xe8702a, color2: 0xfff1e0, belly: 
 const makeHare = () => makeQuadruped({ color: 0xf2f0ea, color2: 0xe3ded0, belly: 0xffffff, ears: 'big', tail: 'stub', bodyY: 0.2, length: 0.3, scale: 0.55, wag: 2 });
 const makeHedgehog = () => makeQuadruped({ color: 0x3a2e22, color2: 0x241a12, belly: 0xcfc3a0, ears: 'round', tail: 'stub', bodyY: 0.13, length: 0.22, scale: 0.4, wag: 1.5 });
 const makeArcticFox = () => makeQuadruped({ color: 0xf2f0e8, color2: 0xd9d4c2, belly: 0xffffff, ears: 'big', tail: 'bushy', bodyY: 0.3, length: 0.46, scale: 0.72, wag: 3 });
+const makeSugarMouse = () => makeQuadruped({ color: 0xf7ecd9, color2: 0xffffff, belly: 0xffffff, ears: 'round', tail: 'long', bodyY: 0.09, length: 0.15, scale: 0.22, wag: 2.5 });
 
 // ---------------------------------------------------------------- sandpiper (small shorebird, two legs, darts along the tideline)
 function makeSandpiper() {

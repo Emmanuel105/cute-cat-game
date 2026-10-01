@@ -4244,3 +4244,31 @@ penguins, carries no friend count), 98% of Frosty Peak's ground still walkable (
 boxes (unchanged — a `Wanderer` gets a physics circle, not a box), every NPC including the new fox still in
 the scene graph, all 273 checks `ok`, 0 console warnings, exit 0 across three consecutive runs. Before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 177 — a sugar mouse for Candy Land
+
+Every other world had wildlife of its own — the Neighborhood's squirrel aside, there were foxes, deer,
+hares, hedgehogs, crabs, turtles, seagulls, sandpipers, penguins and a yeti — but Candy Land, for all its
+gingerbread men and sweet-stall keepers, never had a single creature just living in it. **A sugar mouse now
+lives on the quiet west flank of the gingerbread cottage**, a pale cream-and-white little thing with a long
+thin tail, darting a few steps at a time and freezing between hops exactly like Whisper Woods' hedgehog and
+Frosty Peak's hares — a real sugar mouse being an actual old-fashioned candy, so it fits the world's own
+theme rather than being borrowed wholesale from another one.
+
+`makeSugarMouse` in `56-npcs-wild.js` is one more `makeQuadruped()` preset alongside the fox, hare, hedgehog
+and arctic fox — round ears, a long plain tail, and the smallest scale of the lot (0.22, against the
+hedgehog's 0.4) — paired with the same `Hopper` controller the hedgehog, hares and sandpipers already use,
+with `SFX.chitter()` on about a quarter of hops. A headless probe built the real game, loaded Candy Land,
+and swept the cottage's own west flank against all 1919 physics boxes already standing there (the cottage
+itself, its glowing windows, the bakery's tray to the east): `(-8, -61)` came back clear by 4.3 m in every
+direction, comfortably inside the 1.4 m leash given here.
+
+Verified beyond the suite's own checks: a second headless probe built the real game, clicked start (the
+`loop()` only steps NPCs once `game.started` is true — the same trap noted in Round 175), travelled to
+Candy Land and ran 900 frames — the mouse stayed finite throughout, hopped seven times, and never strayed
+more than 0.89 m from home against its own 1.4 m leash.
+
+Full suite: `world 1: 39 to meet` (unchanged, as expected — ambient wildlife carries no friend count), 91%
+of Candy Land's ground still walkable (unchanged), every NPC including the new mouse still in the scene
+graph, all 273 checks `ok`, 0 console warnings, exit 0 across two consecutive runs. Before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
