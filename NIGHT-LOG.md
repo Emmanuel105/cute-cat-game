@@ -4020,3 +4020,34 @@ from 0 to 1.
 Full suite: `world 6: 35 to meet` (up from 34), 98% of Whisper Woods' ground still walkable (unchanged),
 every NPC including the new boy still in the scene graph, all 273 checks `ok`, 0 console warnings, exit
 0. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 170 — a keeper for Sunny Shore's lighthouse
+
+(Housekeeping first: this sandbox's `main` branch had been left detached from `HEAD` again, 12 commits
+behind `origin/main` — the same mix-up rounds 166-169 already hit. `git fetch` showed the remote already
+had all 12 commits, so nothing was lost; fast-forwarded local `main` to match and continued from there.)
+
+Sunny Shore's lighthouse has run its own beam every round since it was built, but nobody ever stood
+beside it. Looking across all seven worlds for the one with the fewest friends to meet (34, the lowest
+of the seven), the beach turned out to be the gap — and its one unstaffed landmark was the obvious spot.
+**A keeper now kneels at the lighthouse's own base, polishing the lowest painted band with a rag, a tin
+of polish set down beside them.** *"Salt air eats the paint faster than I can polish it."* / *"Careful,
+puss — don't track grease up the tower."* / *"Forty-two steps inside, and I still do this bit kneeling."*
+
+The tower's own physics box is a 1.5 m half-width square at its base (12, -46), and a dozen rocks are
+scattered round it at random distances from 2.6 m out — close in, but never closer. A headless probe
+built the real game, travelled it to Sunny Shore, and swept a clearance ring at 0.5 m steps of distance
+around the tower against every physics box: the entire ring at exactly 2.0 m out came back clear all the
+way round (the rocks' own 2.6 m inner edge leaves it untouched), so the keeper kneels on the south side,
+facing the tower, clear of both the tower and every rock, and a good 17 m from the nearest other soul.
+
+Verified beyond the suite's own checks: a second headless probe travelled into Sunny Shore, ran 480
+frames and confirmed the keeper's position stayed finite throughout and the rig sits in the scene graph,
+then walked the cat up and called the greet interactable directly — friends went from 0 to 1 and score
+from 0 to 5, with the prompt switching to "Say hello again" afterwards exactly as every other greeting
+does.
+
+Full suite: `world 4: 35 to meet` (up from 34), 100% of Sunny Shore's ground still walkable (unchanged),
+every NPC including the new keeper still in the scene graph, all 273 checks `ok`, 0 console warnings,
+exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.

@@ -6903,6 +6903,20 @@ function buildBeach(game, entry) {
   // pier + lighthouse + huts
   makePier(game, 17, -10, 15, PI / 2);
   const lighthouse = makeLighthouse(game, 12, -46); U.push(lighthouse.userData.update);
+  // the lighthouse itself never had anyone tending it, for all its own automatic beam — a keeper kneels
+  // at its base, polishing the lowest band with a rag, a tin of polish set down beside them. A headless
+  // probe swept a clearance ring around the tower's own 1.5 m half-width physics box: the ring at 2.0 m
+  // out comes back clear the whole way round (the scattered rocks only start at 2.6 m), so the keeper
+  // sits on the south side, well clear of both the tower and every rock, facing the tower to work on it
+  { const kx = 12, kz = -48, ry = 0;
+    const keeperWard = makeWardrobe(r, { shirts: [0x4a5a4a, 0x5a4a3a, 0x3a4a5a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018, 0x1e2020] });
+    const keeper = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.4), wardrobe: keeperWard }),
+      hat: 'cap', hatColor: 0x3a4a4a, coat: true, scarf: null, jacket: null, bag: null, glasses: r.chance(0.25) });
+    W.add(keeper.group);
+    mesh(G.box(0.14, 0.01, 0.1), mat(0xdcd3b8, { roughness: 0.9 }), { y: 0.02, z: 0.08, rx: -0.3, parent: keeper.hands[1] });   // the rag
+    mesh(G.cyl(0.05, 0.05, 0.04, 10), mat(0xc9a227, { metalness: 0.6, roughness: 0.4 }), { x: kx + 0.5, y: 0.02, z: kz - 0.3, parent: W });   // the tin of polish
+    game.npcs.push(new Kneeler(game, keeper, { x: kx, z: kz, ry,
+      cries: ["Salt air eats the paint faster than I can polish it.", "Careful, puss — don't track grease up the tower.", "Forty-two steps inside, and I still do this bit kneeling."] })); }
   // a fisherman on a stool near the end of the pier, rod out over the open water
   { const pierWard = makeWardrobe(r, { shirts: [0x4a6a7a, 0x5a5a4a, 0x3a5a4a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018, 0x1e2020] });
     const angler = makeHuman({ ...randomPerson(r, { female: false, elder: true, child: false, wardrobe: pierWard }),
