@@ -3806,3 +3806,31 @@ so the greet has to be reached by calling its `onUse` directly rather than walki
 Full suite: `world 5: 38 to meet` (up from 37), 98% of Frosty Peak's ground still walkable (unchanged),
 every NPC including the swing kid still in the scene graph, all 290+ checks `ok`, 0 console warnings,
 exit 0, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 162 — a swing set for Sunny Shore
+
+(Housekeeping first: this sandbox's `HEAD` was detached at round 161's commit, never attached to `main` —
+the same mix-up round 161 itself fixed for round 160. `main` was already caught up on `origin`, so this
+was a one-line `git merge --ff-only` with nothing left to push.)
+
+The Neighborhood, Victorian, Frosty Peak and Whisper Woods all have a swing set; Sunny Shore's children
+had sandcastles, a ball game, tag and a ring dance but nowhere to just sit and swing — the last of the
+seven without one. **A child now swings back and forth on a sun-bleached yellow swing set** planted in
+the dry sand north of the lifeguard chair, well up the beach from the wet sand and the water; pushing it
+(E, "Push the swing") gives it a boost and a "Higher! Higher!", same as the other three.
+
+A headless probe swept the real `game.physics.boxes` and every NPC's live position against candidate
+spots: `(8, 27)` came back clear by 4 m or more all round — 5.8 m from the nearest soul (the lifeguard in
+her chair), on firm dune sand rather than the shoreline's wetter ground, between the quiet north stretch
+and the sunbathers' corner without crowding either.
+
+Verified beyond the suite's own checks: built the real game headlessly, travelled into Sunny Shore on a
+real timer, found the `Swinger` instance and ran 480 frames — the seat's pivot swung a steady ±0.62
+radians throughout, the kid's position finite the whole time. The "Push the swing" interactable's
+`onUse` set its boost to 1 as expected; same ambiguity as Victorian's and Frosty Peak's own swings, the
+push prompt (centred on the swing set) sits nearer any standing spot than the greet prompt (centred on
+the kid), so it wins "nearest" and the greet has to be reached by calling its `onUse` directly — which
+took `friends` from 0 to 1. Full suite: `world 4: 34 to meet` (up from 33), 99% of Sunny Shore's ground
+still walkable (unchanged), every NPC including the swing kid still in the scene graph, all 290+ checks
+`ok`, 0 console warnings, exit 0, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.
