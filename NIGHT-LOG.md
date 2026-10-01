@@ -4051,3 +4051,35 @@ Full suite: `world 4: 35 to meet` (up from 34), 100% of Sunny Shore's ground sti
 every NPC including the new keeper still in the scene graph, all 273 checks `ok`, 0 console warnings,
 exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 171 — snow hares for Frosty Peak
+
+(Housekeeping first: this sandbox's `main` branch was detached from `HEAD` again, pointing at round 170's
+own commit with `origin/main` already caught up to it — the same recurring mix-up earlier rounds hit.
+Re-pointed local `main` at `HEAD` and continued from there.)
+
+`Hopper` — the random-hop controller built for Whisper Woods' ring of frogs — has sat unused everywhere
+else since the glade was built. Frosty Peak's own wildlife is all penguins, deer and a bolder fox, with
+nothing small darting about in the snow. **Three white hares now live in the gap east of the village,
+between the pine ring and the open snowfield**, hopping a short leash and freezing still between hops —
+ambient wildlife, like the frogs, with no greeting prompt and no effect on the friend count.
+
+The new rig (`makeHare`, in `56-npcs-wild.js`) is a one-line `makeQuadruped()` call — white-on-cream fur,
+a white belly, big ears and a stub tail, scaled down to about half a fox's size — reusing `Hopper`
+exactly as the frog loop does, down to an occasional `SFX.chitter()` on landing. A headless probe built
+the real game, travelled it to Frosty Peak, and swept a 16-point ring at the controller's own 2 m leash
+against every physics box already in the world (including all 44-odd ring pines, each placed at its own
+random radius): three spots came back clear the whole way round and at least 3.5 m apart — (48, 2),
+(45, 0) and (48, -2), 17-20 m from the nearest other soul and well inside the snow region's own fill
+boundary at radius 58.
+
+Verified beyond the suite's own checks: a first pass of the probe found all three hares frozen solid for
+600 simulated frames, timers never ticking down — not a placement bug but a harness mistake in the probe
+itself (the game only steps `update()` once `game.started` is true, set by the same button click
+`test/run.mjs` fires before its own first frame). Clicking it in the probe fixed it: over 600 frames all
+three hares stayed finite, hopped repeatedly, and never strayed outside their leash.
+
+Full suite: `world 5: 38 to meet` (unchanged, as expected — ambient wildlife, like the frogs, carries no
+friend count), 98% of Frosty Peak's ground still walkable (unchanged), every NPC including the three new
+hares still in the scene graph, all 273 checks `ok`, 0 console warnings, exit 0 across three consecutive
+runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

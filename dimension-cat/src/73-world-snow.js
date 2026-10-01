@@ -108,6 +108,13 @@ function buildSnowVillage(game, entry) {
   { const rig = makePenguin({ scarf: 0xffd54a, scale: 0.95 }); W.add(rig.group);
     game.npcs.push(new Follower(game, rig, { x: 26, z: 2, r: 0.3, height: 0.9, step: 0.25, idle: [1, 3], walk: [2, 4], leash: 6, speed: 0.9, range: 11, keep: 1.8, sfx: () => SFX.squawk() })); }
   for (const [x, z] of [[-22, 6], [-18, -12], [24, 20]]) { const rig = makeDeer(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x, z, speed: 0.6, leash: 8, r: 0.45, height: 1.4, step: 0.3, idle: [3, 7], walk: [2, 5] })); }
+  // snow hares, in the gap east of the village between the pine ring and the open snowfield — `Hopper`
+  // has done duty for Whisper Woods' frogs since the glade was built but never reused since; a white
+  // hare on white snow is the obvious second home for it. A headless probe swept a 16-point ring at the
+  // controller's own 2 m leash against every physics box built so far (trees included) and found three
+  // spots, each clear the whole way round and at least 3.5 m from one another: (48, 2) and (48, -2),
+  // 17-20 m from the nearest other soul, and (45, 0) between them
+  for (const [x, z] of [[48, 2], [45, 0], [48, -2]]) { const rig = makeHare(); game.npcs.push(new Hopper(game, rig, { x, z, leash: 1.8, r: 0.15, dist: [0.3, 0.8], dur: 0.3, height: 0.26, idle: [1, 3.5], onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } })); }
   // a reindeer keeper kneels by the herd's middle spot, checking harness bells before the next run
   { const dx = -18, dz = -12, kx = dx + 2.1, kz = dz + 0.4;
     const keeperWard = makeWardrobe(r, { shirts: [0x5a4a3a, 0x3a5a4a, 0x4a3a5a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });

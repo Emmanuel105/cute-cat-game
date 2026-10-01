@@ -132,6 +132,7 @@ const makeHorse = (color = 0x5a3a22) => makeQuadruped({ color, color2: 0x3a2416,
 const makeDog = (color = 0xc8925a) => makeQuadruped({ color, color2: 0xf3e3c8, belly: 0xf3e3c8, ears: 'floppy', tail: 'curl', wag: 7, bodyY: 0.42, length: 0.6, scale: 0.95 });
 const makeDeer = () => makeQuadruped({ color: 0xa8763f, color2: 0xe8d7b8, belly: 0xe8d7b8, ears: 'big', tail: 'stub', antlers: true, hooves: true, grazes: true, bodyY: 0.62, length: 0.75, neck: 0.12, scale: 1.05, wag: 2 });
 const makeFox = () => makeQuadruped({ color: 0xe8702a, color2: 0xfff1e0, belly: 0xfff1e0, ears: 'big', tail: 'bushy', bodyY: 0.34, length: 0.5, scale: 0.8, wag: 3 });
+const makeHare = () => makeQuadruped({ color: 0xf2f0ea, color2: 0xe3ded0, belly: 0xffffff, ears: 'big', tail: 'stub', bodyY: 0.2, length: 0.3, scale: 0.55, wag: 2 });
 
 // ---------------------------------------------------------------- penguin
 function makePenguin(o = {}) {
