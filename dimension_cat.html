@@ -3464,6 +3464,7 @@ const makeDog = (color = 0xc8925a) => makeQuadruped({ color, color2: 0xf3e3c8, b
 const makeDeer = () => makeQuadruped({ color: 0xa8763f, color2: 0xe8d7b8, belly: 0xe8d7b8, ears: 'big', tail: 'stub', antlers: true, hooves: true, grazes: true, bodyY: 0.62, length: 0.75, neck: 0.12, scale: 1.05, wag: 2 });
 const makeFox = () => makeQuadruped({ color: 0xe8702a, color2: 0xfff1e0, belly: 0xfff1e0, ears: 'big', tail: 'bushy', bodyY: 0.34, length: 0.5, scale: 0.8, wag: 3 });
 const makeHare = () => makeQuadruped({ color: 0xf2f0ea, color2: 0xe3ded0, belly: 0xffffff, ears: 'big', tail: 'stub', bodyY: 0.2, length: 0.3, scale: 0.55, wag: 2 });
+const makeHedgehog = () => makeQuadruped({ color: 0x3a2e22, color2: 0x241a12, belly: 0xcfc3a0, ears: 'round', tail: 'stub', bodyY: 0.13, length: 0.22, scale: 0.4, wag: 1.5 });
 
 // ---------------------------------------------------------------- penguin
 function makePenguin(o = {}) {
@@ -7629,6 +7630,19 @@ function buildForest(game, entry) {
     W.add(hunter.group);
     game.npcs.push(new Kneeler(game, hunter, { x: kx, z: kz, ry: atan2(lx - kx, lz - kz),
       cries: ["It's in there, I heard it snuffle.", 'Shh - you\'ll frighten it further in.', 'There! ...no. Gone again.'] })); }
+
+  // the child above was right all along: a hedgehog really does live in that log, just out of their reach.
+  // The log's own box (boxT, unrotated, half 0.7) is only a crude stand-in for the true cylinder, which runs
+  // 1.7 m either way along its rotated axis (L=3.4 in makeHollowLog) — so the real mouth nearest the child
+  // sits further out, at lx - 1.7*cos(lry), lz + 1.7*sin(lry) ≈ (21.23, -12.49), same bearing the child's own
+  // kx/kz formula uses. A headless probe swept that bearing outward from the opening in 0.05 m steps: clear
+  // of both the log's box and the child's own 0.35 m kneeling circle out to 0.3 m, blocked from 0.35 m on
+  // (the child's circle, their stick almost reaching) — so the hedgehog's leash is kept well inside that,
+  // poking its nose out, freezing, and ducking back, never quite within the stick's reach
+  { const lx = 22, lz = -14, lry = 1.1, dirx = -cos(lry), dirz = sin(lry), hx = lx + 1.9 * dirx, hz = lz + 1.9 * dirz;
+    const rig = makeHedgehog();
+    game.npcs.push(new Hopper(game, rig, { x: hx, z: hz, leash: 0.18, r: 0.1, dist: [0.08, 0.16], dur: 0.3, height: 0.12, idle: [1.5, 4],
+      onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } })); }
 
   // a naturalist kneels by the log up near the stepping stones — the only one of the five hollow logs nobody had stopped at yet — noting the moss along its bark
   { const lx = 12, lz = 14, lry = 0.6, off = 1.5, kx = lx + off * sin(lry), kz = lz + off * cos(lry);

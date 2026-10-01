@@ -4117,3 +4117,38 @@ Full suite: `the Neighborhood has 36 people to meet` (up from 35), every NPC inc
 still in the scene graph, 96% of the Neighborhood's ground still walkable (unchanged), all 273 checks
 `ok`, 0 console warnings, exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 173 — a hedgehog in the hollow log, Whisper Woods
+
+(Housekeeping first: this sandbox's `main` branch was detached from `HEAD` again, pointing at round 172's
+own commit with `origin/main` already caught up to it — the same recurring mix-up earlier rounds hit.
+Re-pointed local `main` at `HEAD` and continued from there.)
+
+Sunny Shore and Whisper Woods were tied at the bottom of the friend count (35 apiece), both already dense
+with vignettes from many earlier rounds. Rather than add yet another greetable stranger to either, this
+round paid off a joke Whisper Woods had been telling for two rounds and never finishing: the child kneeling
+at the eastern hollow log (22, -14) swears *"It's in there, I heard it snuffle"* — but nothing had ever
+actually lived in that log. **A small hedgehog now really does live there**, poking its nose out of the
+log's own near opening, freezing, and ducking back — ambient wildlife like the frogs and hares, with no
+greeting prompt and no effect on the friend count.
+
+The rig (`makeHedgehog`, a one-line `makeQuadruped()` call next to `makeHare` in `56-npcs-wild.js`) is dark
+brown with a cream belly, round ears and a stub tail, scaled down small, reusing the `Hopper` controller
+exactly as the frogs and hares already do, with an occasional `SFX.chitter()` on landing. The log's own
+physics box (`boxT`, unrotated, half 0.7 m) badly undersells the true cylinder — `makeHollowLog`'s geometry
+runs 1.7 m either way along its *rotated* axis — so the real mouth nearest the child sits further out than
+the box alone suggests, on the same bearing the child's own kneeling position already uses. A headless
+probe swept that bearing outward from the opening in 0.05 m steps: clear of both the log's box and the
+child's own 0.35 m kneeling circle out to 0.3 m, and blocked from 0.35 m on (the child's own circle — their
+stick almost reaches). The hedgehog's home sits at 1.9 m out along that line, leash kept to 0.18 m, so it
+can only ever shuffle in the safe pocket just shy of the child's reach.
+
+Verified beyond the suite's own checks: a second headless probe built the real game, travelled it to
+Whisper Woods, and ran 900 frames — the hedgehog's rig stayed finite throughout, started six hops, never
+left its 0.18 m leash, and sat correctly in the scene graph; a third check confirmed the kneeling child's
+own 0.35 m circle sits exactly where the placement math assumed.
+
+Full suite: `world 6: 35 to meet` (unchanged, as expected — ambient wildlife, like the frogs and hares,
+carries no friend count), 98% of Whisper Woods' ground still walkable (unchanged), every NPC including the
+new hedgehog still in the scene graph, all 273 checks `ok`, 0 console warnings, exit 0 across three
+consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

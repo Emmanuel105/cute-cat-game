@@ -139,6 +139,19 @@ function buildForest(game, entry) {
     game.npcs.push(new Kneeler(game, hunter, { x: kx, z: kz, ry: atan2(lx - kx, lz - kz),
       cries: ["It's in there, I heard it snuffle.", 'Shh - you\'ll frighten it further in.', 'There! ...no. Gone again.'] })); }
 
+  // the child above was right all along: a hedgehog really does live in that log, just out of their reach.
+  // The log's own box (boxT, unrotated, half 0.7) is only a crude stand-in for the true cylinder, which runs
+  // 1.7 m either way along its rotated axis (L=3.4 in makeHollowLog) — so the real mouth nearest the child
+  // sits further out, at lx - 1.7*cos(lry), lz + 1.7*sin(lry) ≈ (21.23, -12.49), same bearing the child's own
+  // kx/kz formula uses. A headless probe swept that bearing outward from the opening in 0.05 m steps: clear
+  // of both the log's box and the child's own 0.35 m kneeling circle out to 0.3 m, blocked from 0.35 m on
+  // (the child's circle, their stick almost reaching) — so the hedgehog's leash is kept well inside that,
+  // poking its nose out, freezing, and ducking back, never quite within the stick's reach
+  { const lx = 22, lz = -14, lry = 1.1, dirx = -cos(lry), dirz = sin(lry), hx = lx + 1.9 * dirx, hz = lz + 1.9 * dirz;
+    const rig = makeHedgehog();
+    game.npcs.push(new Hopper(game, rig, { x: hx, z: hz, leash: 0.18, r: 0.1, dist: [0.08, 0.16], dur: 0.3, height: 0.12, idle: [1.5, 4],
+      onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } })); }
+
   // a naturalist kneels by the log up near the stepping stones — the only one of the five hollow logs nobody had stopped at yet — noting the moss along its bark
   { const lx = 12, lz = 14, lry = 0.6, off = 1.5, kx = lx + off * sin(lry), kz = lz + off * cos(lry);
     const naturalist = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }), shirt: 0x5a6a4a, pants: 0x4a4030, shoes: 0x3a2a1e, bag: 0x8a6a4a, hat: 'cap', hatColor: 0x3a4a2e, scarf: null, jacket: null, backpack: null, glasses: true });
