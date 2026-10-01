@@ -4379,3 +4379,28 @@ Candy Land's ground still walkable (unchanged), every NPC including both gossips
 all 273 checks `ok`, 0 console warnings, exit 0 across two consecutive runs (a few pre-existing, unrelated
 timing-sensitive readouts on Sunny Shore's kite and Frosty Peak's snowball count still vary run to run, as
 before this change). Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 182 — a maintenance drone over Robot City's ring dance
+
+Every one of Robot City's seven predecessors has reached a point where nearly every ground-level slot —
+every wanderer's patch, every bench, every performer's pitch — is already filled, so this round looked up
+instead of out. **A small red-eyed maintenance drone now hovers in a slow circle above the four robots'
+own recreational ring**, three metres up, sensor light sweeping the floor below and four stub rotors on
+its underside.
+
+It reuses the exact clearing the `RingDance` robots already proved clear a few rounds back (12.9 m from
+the nearest wall, 9.6 m past the nearest `Wanderer`'s own leash) but flies at 3.4 m — comfortably above
+every robot's 1.9 m head height — so it needs no physics box of its own: nothing on the ground can ever
+reach it. It isn't pushed to `game.npcs` either; like the seagulls, fairies and butterflies elsewhere,
+it's a pure background prop with no greeting, no friend-count effect and no zone or physics check riding
+on it. Its circling reads the world clock `t` already passed into every `U` entry rather than drawing
+from the local seeded `r` or the shared `rnd()`, which matters more here than it looks: Round 180's
+sparrows found that extra draws from a world built early in the test's own travel order (Neighborhood,
+built before Victorian) can shift a later world's timing-sensitive check just by existing. Robot City
+builds third, before Victorian, Sunny Shore, Frosty Peak and Whisper Woods, so the same trap was live
+here — avoided this time by never drawing from either sequence at all, rather than discovering it the
+way Round 180 did.
+
+Full suite: all 273 checks `ok`, 0 console warnings, exit 0 across two consecutive runs, Robot City's own
+checks (hello, friend count, the robot's hop, the loader robots' crate lift) all unchanged. Before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

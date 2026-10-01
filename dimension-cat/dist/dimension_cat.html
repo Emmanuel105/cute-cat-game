@@ -6716,6 +6716,38 @@ function buildRobotCity(game, entry) {
   { const ringBots = [0, 1, 2, 3].map(() => { const rig = makeRobot(); W.add(rig.group); return rig; });
     game.npcs.push(new RingDance(game, ringBots, { cx: 0, cz: 40, r: 1.8, speed: 0.5, turnEvery: 8, cryIcon: '🤖',
       cries: ['Recreational subroutine engaged.', 'Beep bo-beep!', 'Diagnostic: joy detected.', 'Do not report this to the foreman.'] })); }
+  // the ring-dancing robots never had anything watching from above; a small maintenance drone now
+  // hovers in a slow circle over their own clearing, red sensor light sweeping the floor below. It
+  // reuses the same spot the RingDance probe already swept clear (12.9 m from the nearest wall, 9.6 m
+  // past the nearest Wanderer's leash) and flies at 3.4 m, well above every robot's 1.9 m head height,
+  // so it needs no physics box of its own — nothing on the ground can ever reach it. It is not pushed
+  // to game.npcs (no greeting, no friend count, no effect on any zone or physics check), exactly like
+  // the seagulls, fairies and butterflies elsewhere: a pure background prop. Its own circling uses the
+  // world clock `t` passed into every `U` entry, not `r` or the shared `rnd()`, so it draws nothing
+  // from either and cannot disturb any later wardrobe pick or timing-sensitive check, in this build or
+  // any built after it.
+  { const dcx = 0, dcz = 40, dh = 3.4, drad = 2.2;
+    const steel = mat(0x8a929c, { metalness: 0.75, roughness: 0.3 }), dark = mat(0x2a2f38, { roughness: 0.6 });
+    const drone = group(dcx, dh, dcz, W);
+    mesh(G.sphere(0.16, 14, 10), steel, { sy: 0.55, parent: drone });
+    mesh(G.torus(0.17, 0.02, 6, 16), dark, { y: -0.06, rx: PI / 2, shadow: 'none', parent: drone });
+    const eye = mesh(G.sphere(0.045, 10, 8), glowMat(0xff3b3b, 1.6), { y: -0.09, z: 0.1, shadow: 'none', parent: drone });
+    const rotors = [];
+    for (const [ax, az] of [[0.22, 0.22], [-0.22, 0.22], [0.22, -0.22], [-0.22, -0.22]]) {
+      const arm = group(ax, 0.03, az, drone);
+      mesh(G.cyl(0.012, 0.012, 0.18, 6), steel, { rx: PI / 2, parent: arm });
+      rotors.push(mesh(G.box(0.18, 0.006, 0.02), dark, { parent: arm }));
+    }
+    const pl = pointLight(0xff3b3b, 8, 5, 0, -0.09, 0.1, drone);
+    U.push((dt, t) => {
+      const a = t * 0.3;
+      drone.position.set(dcx + cos(a) * drad, dh + sin(t * 1.1) * 0.1, dcz + sin(a) * drad);
+      drone.rotation.y = a + PI / 2;
+      for (const rt of rotors) rt.rotation.y += dt * 30;
+      const blink = 0.6 + max(0, sin(t * 2.4)) * 1.4;
+      eye.material.emissiveIntensity = blink; pl.intensity = 4 + blink * 3;
+    });
+  }
   // every other world already has a Juggler (the Neighborhood's balloon square, Candy Land's court jester,
   // Victorian's street performer, Sunny Shore's boardwalk busker, Frosty Peak's and Whisper Woods' own) —
   // Robot City, the densest of the seven, was the one left without. A headless probe swept a 2.6 m clearance
