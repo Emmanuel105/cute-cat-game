@@ -243,6 +243,19 @@ function buildSnowVillage(game, entry) {
     W.add(painter.group);
     game.npcs.push(new Painter(game, painter, makeEasel(), { x: 20, z: -16, ry: 0.9,
       cries: ['The sky does all the work, up here.', 'Try painting that shimmer, if you can.', 'Best canvas in the sky, tonight.'] })); }
+  // the Neighborhood, Victorian and Whisper Woods all have a swing set, but Frosty Peak's kids only
+  // ever wandered, snowballed, played tag or catch, danced a ring or knelt by a snowman — nowhere to
+  // just sit and swing. A headless probe swept a 3 m clearance disc against every physics box and NPC
+  // circle built into the mountain so far: (-45, 30) came back clear by nearly 23 m from the nearest
+  // other soul (an igloo kneeler out near (-25.8, 17)), on open snow northwest of the village, well
+  // short of where snowRegion's own fill takes over at radius 58
+  { const sx = -45, sz = 30;
+    const swingSet = makeSwingSet({ color: 0x3a5a8a }); place(game, U, swingSet, sx, sz, PI);
+    game.zones.add(sx, sz, 3.4, 3.2);
+    for (const px of [-1.3, 1.3]) P.addBox(sx + px, 1.4, sz, 0.4, 2.8, 1.3, { cam: false });
+    const swingKid = kid(r.chance(0.5));
+    const sw = new Swinger(game, swingKid, swingSet, { x: sx, z: sz }); game.npcs.push(sw); greetable(game, sw);
+    game.addInteractable({ obj: swingSet, radius: 2.8, label: () => 'Push the swing', onUse: () => { sw.boost = 1; SFX.talk(); game.toast('🎠 "Higher! Higher!"', 1800); } }); }
 
   game.zones.addSpan(-7, -62, 7, -24); game.zones.addSpan(-44, -5, -6, 5); game.zones.addCircle(0, 0, 26);
   // the zipline: a tower high on the shoulder of the west peak, running down to a post above the village.

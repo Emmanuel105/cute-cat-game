@@ -3776,3 +3776,33 @@ up to one dancer: the nearest interactable read "Say hi", and calling its `onUse
 (unchanged), every NPC including the four dancers still in the scene graph, all 290+ checks `ok`, 0
 console warnings, exit 0, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 161 — a swing set for Frosty Peak
+
+(First, some housekeeping: Round 160's commit had landed in this sandbox but never reached `main` or
+`origin` — a detached-HEAD mix-up from whatever ended that session. Nothing was wrong with the work
+itself — the suite was green — so this round fast-forwarded `main` to it and pushed before starting its
+own change, rather than losing it.)
+
+The Neighborhood, Victorian and Whisper Woods all have a swing set, but Frosty Peak's kids only ever
+wandered, had a snowball fight, played tag, caught a ball, danced a ring or knelt by a snowman —
+nowhere to just sit and swing. **A child in a beanie now swings back and forth on a dark blue swing
+set** northwest of the village; pushing it (E, "Push the swing") gives it a boost the same way the
+other three worlds' do, and this one answers a greeting too.
+
+A headless probe swept the built mountain's own physics boxes and NPC circles for a clear spot: `(-45,
+30)` came back nearly 23 m from the nearest other soul (an igloo kneeler out near `(-25.8, 17)`), on
+open snow well short of where `snowRegion`'s own procedural fill takes over at radius 58.
+
+Verified beyond the suite's own checks: a headless harness built the real game, clicked past the title
+screen, travelled into Frosty Peak on a real timer, found the `Swinger` instance and ran 480 frames (8
+simulated seconds) — the seat's pivot swung a steady ±0.62 radians throughout (the controller's own
+resting amplitude, matching Victorian's own swing exactly) with finite positions the whole time. The
+"Push the swing" interactable's `onUse` set its boost to 1 as expected, and calling the swing kid's own
+greet interactable directly took `friends` from 0 to 1 — tried first through `game.nearest`, same as
+Victorian's round found, the push prompt (radius 2.8, centred on the swing set) sits closer to any
+standing position than the greet prompt (radius 2.1, centred on the kid's own seat) and wins every time,
+so the greet has to be reached by calling its `onUse` directly rather than walking up and pressing E.
+Full suite: `world 5: 38 to meet` (up from 37), 98% of Frosty Peak's ground still walkable (unchanged),
+every NPC including the swing kid still in the scene graph, all 290+ checks `ok`, 0 console warnings,
+exit 0, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
