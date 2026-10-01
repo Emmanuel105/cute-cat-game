@@ -6220,6 +6220,15 @@ function buildCandyLand(game, entry) {
     W.add(jester.group);
     game.npcs.push(new Juggler(game, jester, [0xffd54a, 0x7fd7ff, 0xff6fb5], { x: jx, z: jz, ry: atan2(castle.throne[0] - jx, castle.throne[1] - jz),
       cries: ["Juggling gumdrops — lick one and you're a ball down.", "The throne's empty most days. Good acoustics, though.", "Her Majesty prefers the airlock. More's the pity."] })); }
+  // the gate itself had nobody guarding it — the castle's own staff wander and march and dance and juggle,
+  // but the archway between its two towers was bare. A gingerbread sentry now paces across the opening.
+  // The gate towers' own boxes (2.3 m radius, centred at x = ±4.3) leave only |x| < 2.0 clear at z = 135
+  // (castle.gate itself); a headless probe swept the 0.4 m patrol circle along that line and found
+  // (-1.5, gate z) to (1.5, gate z) clear the whole way, 5.5 m short of the court jester to the north.
+  { const gx = castle.gate[0], gz = castle.gate[1];
+    const guard = makeGingerbread(); W.add(guard.group);
+    game.npcs.push(new Patroller(game, guard, { points: [[gx - 1.5, gz], [gx + 1.5, gz]], speed: 0.8, pause: [1.5, 3], r: 0.4, height: 1.4,
+      cries: ['Halt! ...oh. Just a cat.', 'No gumdrops past this point without a permit.', 'Her Majesty is not receiving visitors. Or anyone, really.', "Mind the icing, it's load-bearing."], cryIcon: '🍬' })); }
   candyRegion(game, U, r, 92, CANDY_LIMIT - 8);
   for (const [x, z] of [[-14, 18], [18, 16], [-8, -10], [10, -12], [-28, 8], [30, 4], [-22, 30], [22, 32], [-34, -32], [34, -36], [2, -30]]) { const b = makeMarshmallowBush(r); b.position.set(x, 0, z); W.add(b); P.addBox(x, 0.5, z, 1.2, 1, 1.2, { cam: false }); }
   for (const [x, z, ry, c] of [[-16, 8, 0.3, 0xff6fb5], [20, -8, -0.8, 0x7fd7ff], [0, 26, 1.5, 0xffd54a]]) { const d = makeDonut(c); d.position.set(x, 0, z); d.rotation.y = ry; W.add(d); addRotBox(game, x, 1.2, z, 0.6, 2.4, 3.4, ry, { cam: false }); }

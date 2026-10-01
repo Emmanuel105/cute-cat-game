@@ -3945,3 +3945,31 @@ instance afterwards — all three balls' positions finite throughout, and callin
 interactable directly took `friends` from 0 to 1. Full suite: `world 2: 42 to meet` (up from 41), every NPC
 including the juggler still in the scene graph, all checks `ok`, 0 console warnings, exit 0 — before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+(Housekeeping first: this sandbox's `HEAD` was detached at round 166's commit, the same mix-up earlier
+rounds have hit before — but `git ls-remote origin main` showed the remote was already caught up to that
+same commit, so nothing had actually been lost; just a stale local `origin/main` tracking ref. A `git
+fetch` plus reattaching the local `main` branch to `HEAD` fixed it with nothing to push on its own.)
+
+## Round 167 — a sentry at the Candy Castle gate
+
+Candy Land has fewer distinct NPC "activities" than any other world — a fair amount of it is wandering,
+marching, dancing and sitting, but the castle itself, for all its towers and throne, had nobody actually
+guarding the gate. **A gingerbread sentry now paces back and forth across the castle's own archway**,
+between the two gate towers, pausing at each end. *"Halt! ...oh. Just a cat."* / *"No gumdrops past this
+point without a permit."*
+
+The gate towers' own physics boxes (2.3 m square half-width, centred at `x = ±4.3`) turned out to leave a
+walkable opening only `|x| < 2.0` wide at the gate line itself (`castle.gate`, `z = 135`) — narrower than
+the visual `GATE = 6` archway suggests. A headless probe built the real game, travelled it into Candy
+Land, and swept a 0.4 m clearance circle (matching the gingerbread `Patroller`'s own collision radius)
+along several candidate lines; `(-1.5, 135)` to `(1.5, 135)` came back clear the whole way, 5.5 m south
+of the court jester and comfortably outside every house, hedge and gumdrop-patch cluster near the
+approach.
+
+Verified beyond the suite's own checks: ran 300 frames on the built `Patroller` instance — its `x`
+swept smoothly from -1.34 to 1.26 and back, positions finite throughout, and calling its greet
+interactable directly took `friends` from 0 to 1. Full suite: `world 1: 39 to meet` (up from 38), 91% of
+Candy Land's ground still walkable (unchanged), every NPC including the new sentry still in the scene
+graph, all 273 checks `ok`, 0 console warnings, exit 0 — before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
