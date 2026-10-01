@@ -869,6 +869,22 @@ function buildCandyLand(game, entry) {
     W.add(swingKid.group);
     const sw = new Swinger(game, swingKid, swingSet, { x: sx, z: sz }); game.npcs.push(sw); greetable(game, sw);
     game.addInteractable({ obj: swingSet, radius: 2.8, label: () => 'Push the swing', onUse: () => { sw.boost = 1; SFX.talk(); game.toast('🎠 "Higher! Higher!"', 1800); } }); }
+  // the swing set keeps one child busy, but the Neighborhood is the only other world with a seesaw —
+  // Candy Land's own gingerbread men can't use one (`Seesaw` reaches into a rider's `L.hip`/`L.knee`/
+  // `L.ankle` and `A.sh`/`A.el`, which the cookie rig doesn't have), so two more village children get it
+  // instead, same as the swing kid above. A headless probe swept a 3.6 m clearance disc against every
+  // physics box and NPC circle built into the world so far: (25, 51) came back clear by over 13 m in
+  // every direction, a quiet patch of grass just inside the candy-cane ring, well past the cupcake hill
+  // to the north and the river bridge below.
+  { const sx = 25, sz = 51;
+    const seesaw = makeSeesaw({ color: 0x7fd7ff }); place(game, U, seesaw, sx, sz, 0);
+    game.zones.add(sx, sz, 2.4, 1.2);
+    P.addBox(sx, 0.35, sz, 2.9, 0.7, 0.6, { cam: false });
+    const seeWard = makeWardrobe(r, { shirts: [0xffe0ea, 0xbfe7ff, 0xfff3b0, 0xff9ecf], pants: [0x7fd7ff, 0xff9ecf, 0xffffff, 0xffd54a] });
+    const kidA = makeHuman({ ...randomPerson(r, { child: true, female: false, wardrobe: seeWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    const kidB = makeHuman({ ...randomPerson(r, { child: true, female: true, hairStyle: 'braids', wardrobe: seeWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(kidA.group); W.add(kidB.group);
+    game.npcs.push(new Seesaw(game, kidA, kidB, seesaw, { x: sx, z: sz })); }
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('star', 7, -6); C.add('yarn', -9, 9); C.add('fish', -16, -13); C.add('mouse', 16, -9); C.add('star', -10, -27); C.add('yarn', 22, 4); C.add('mouse', -28, 26); C.add('fish', 14, -44); C.add('star', 0, -56); C.add('mouse', -58, 30); C.add('yarn', 60, 36);

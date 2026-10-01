@@ -4431,3 +4431,23 @@ Full suite: `world 0: 38 to meet` (up two, as expected — two new friends), 96%
 still walkable (unchanged, confirmed against the same build before this change), every NPC including both
 seesaw riders still in the scene graph, all 273 checks `ok`, 0 console warnings, exit 0 across two
 consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 184 — a seesaw for Candy Land
+
+The Neighborhood's seesaw (Round 183) was the only one in the game — every other world still had just
+a swing set for the children to share. Candy Land's own gingerbread men couldn't take the other seat
+(`Seesaw` drives a rider's hip/knee/ankle and shoulder/elbow joints directly, which the cookie rig
+doesn't have — the same reason last round's gossip pair stayed human instead of gingerbread), so
+**two more village children tip a plank up and down on the grass past the candy-cane ring**, same as
+the swing kid nearby.
+
+A headless probe built the real game, travelled to Candy Land, and swept a 3.6 m clearance disc against
+every one of its 1919 physics boxes and 44 NPC circles: `(25, 51)` came back clear by over 13 m in every
+direction — a quiet patch just inside the candy-cane belt, well past the cupcake hill to the north and
+the river bridge below. The prop and controller are both reused as-is from `60-props.js`/`55-npcs.js`;
+only the placement, wardrobe and two new children are new.
+
+Full suite: `world 1: 43 to meet` (up two, as expected), 91% of Candy Land's ground still walkable
+(unchanged), every NPC including both new riders still in the scene graph, all 273 checks `ok`, 0
+console warnings, exit 0 across three consecutive runs. Before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
