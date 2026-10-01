@@ -3866,3 +3866,34 @@ Victorian horse-and-carriage timing check as a false FAIL under load — a pre-e
 test, confirmed to fail the same way on the unmodified code too and to pass cleanly on a calmer re-run;
 not a regression from this change) — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 164 — a swing set for Robot City
+
+The last gap: the Neighborhood, Candy Land, Victorian, Sunny Shore and Frosty Peak all had a swing set;
+Robot City had tag, catch and a ring dance for its own robots, but nowhere for anyone to just sit and
+swing. **A kid in a yellow hard hat and a cyan-striped jacket now swings back and forth on a cyan-framed
+swing set** out past the factory floor's own perimeter; pushing it (E, "Push the swing") gives it a
+boost and a "Higher, like the crane arm!", exactly as the other five worlds' swings do.
+
+Robot City is the densest of the seven worlds — 1159 physics boxes once the outer skyline and the
+procedural fill are built, on top of five wanderers, a sentry's own patrol rectangle, a tag pair, a
+catch pair and a ring dance. A headless probe built the real game, travelled it into Robot City, and
+swept a clearance disc against every one of those: static boxes by nearest-point distance, wanderers by
+home-plus-leash circle, the sentry's patrol by distance to its rectangle's own edges, and the ring dance
+by its ring radius. `(-56, -38)` came back clear by nearly 14 m from the nearest skyscraper and over
+28 m from the nearest wandering robot — sitting in the open gap between the inner (50–62 m) and outer
+(72–92 m) skyscraper rings, south-west of the statue plaza, well short of where the procedural region
+fill takes over at radius 98.
+
+Verified beyond the suite's own checks: started the real game (clicking past the title screen, since the
+main loop only steps NPCs once `game.started` is true — the thing that cost the first probe run a
+false "pivot never moves" reading before it clicked "Enter" like the test harness does), travelled into
+Robot City on a real timer, found the `Swinger` instance and ran 480 frames (8 simulated seconds) — the
+seat's pivot swung a steady ±0.62 radians throughout, matching every other world's swing exactly, with
+finite positions the whole time. The "Push the swing" interactable's `onUse` set its boost to 1 as
+expected, and the swing kid's own greet interactable (found by its rig's group, same ambiguity as every
+other world's swing: the push prompt centred on the frame sits nearer any standing spot than the greet
+prompt centred on the seat) took `friends` from 0 to 1 when called directly. Full suite: `world 2: 40 to
+meet` (up from 39), 88% of Robot City's ground still walkable (unchanged), every NPC including the swing
+kid still in the scene graph, all 290+ checks `ok`, 0 console warnings, exit 0, before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
