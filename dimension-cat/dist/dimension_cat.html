@@ -3466,6 +3466,29 @@ const makeFox = () => makeQuadruped({ color: 0xe8702a, color2: 0xfff1e0, belly: 
 const makeHare = () => makeQuadruped({ color: 0xf2f0ea, color2: 0xe3ded0, belly: 0xffffff, ears: 'big', tail: 'stub', bodyY: 0.2, length: 0.3, scale: 0.55, wag: 2 });
 const makeHedgehog = () => makeQuadruped({ color: 0x3a2e22, color2: 0x241a12, belly: 0xcfc3a0, ears: 'round', tail: 'stub', bodyY: 0.13, length: 0.22, scale: 0.4, wag: 1.5 });
 
+// ---------------------------------------------------------------- sandpiper (small shorebird, two legs, darts along the tideline)
+function makeSandpiper() {
+  const g = new THREE.Group(), rig = { group: g, legs: [] };
+  const mottled = mat(0xb3a78f, { roughness: 0.85 }), pale = mat(0xf2ede0, { roughness: 0.85 }), dark = mat(0x5c5448, { roughness: 0.8 }),
+    beakM = mat(0x3a3028, { roughness: 0.5 }), legM = mat(0xd9a86a, { roughness: 0.6 });
+  const body = group(0, 0.09, 0, g); rig.body = body;
+  mesh(G.bodySphere(12, 9), mottled, { sx: 0.065, sy: 0.06, sz: 0.11, parent: body });
+  mesh(G.bodySphere(12, 9), pale, { y: -0.025, sx: 0.05, sy: 0.04, sz: 0.09, shadow: 'none', parent: body });
+  const head = group(0, 0.05, 0.095, body); rig.head = head;
+  mesh(G.sphere(0.04, 10, 8), mottled, { parent: head });
+  mesh(G.cone(0.01, 0.075, 6), beakM, { y: -0.003, z: 0.055, rx: PI / 2, shadow: 'none', parent: head });
+  for (const side of [1, -1]) mesh(G.sphere(0.007, 6, 6), mat(0x111111), { x: side * 0.022, y: 0.012, z: 0.03, shadow: 'none', parent: head });
+  for (const side of [1, -1]) { const leg = group(side * 0.02, -0.05, 0, body); mesh(G.cyl(0.006, 0.005, 0.09, 5), legM, { y: -0.045, parent: leg }); rig.legs.push({ leg, side }); }
+  const tail = group(0, 0.02, -0.11, body);
+  mesh(G.cone(0.02, 0.06, 6), dark, { rx: -PI / 2, z: -0.02, shadow: 'none', parent: tail });
+  rig.animate = (ph, moving, dt, t = 0) => {
+    for (const L of rig.legs) L.leg.rotation.x = moving ? sin(ph * 6 + L.side * 1.5) * 0.5 : 0;
+    head.rotation.x = moving ? 0 : (sin(t * 1.3) > 0.75 ? 0.6 : 0);   // the occasional quick peck at the sand
+  };
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- penguin
 function makePenguin(o = {}) {
   const g = new THREE.Group(), rig = { group: g, flippers: [] }, k = o.scale ?? 1;
@@ -7022,6 +7045,8 @@ function buildBeach(game, entry) {
     game.npcs.push(new Follower(game, rig, { x: 17, z: -6, r: 0.25, height: 0.5, step: 0.25, idle: [0.5, 2], walk: [1, 3], leash: 5, speed: 1.8, range: 10, keep: 1.6, sfx: () => SFX.click() })); }
   for (let i = 0; i < 7; i++) { const rig = makeSeagull({ phase: i * 1.3 }); game.npcs.push(new Flyer(game, rig, { cx: 14 + r.range(-8, 8), cz: r.range(-30, 30), r: r.range(9, 18), h: r.range(5, 11), speed: r.range(3.5, 5), bob: 1.2, wobble: 3, cw: i % 2 === 0, phase: i })); }
   for (const [x, z] of [[22, -2], [24, 20]]) { const rig = makeTurtle(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x, z, speed: 0.35, leash: 5, r: 0.45, height: 0.5, step: 0.25, idle: [2, 5], walk: [3, 7] })); }
+  // sandpipers dart along the tideline on the open sand, well clear of the crabs' own homes, the lighthouse rocks and the swim-flag posts — ambient like the crabs and gulls, no greeting, no effect on the friend count
+  for (const [x, z] of [[16, -24], [17, -38], [14, 44]]) { const rig = makeSandpiper(); game.npcs.push(new Hopper(game, rig, { x, z, leash: 1.6, r: 0.08, dist: [0.3, 0.7], dur: 0.28, height: 0.14, idle: [1, 3.5], onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } })); }
   const beachWard = makeWardrobe(r, {
     shirts: [0xff7043, 0x4fc3f7, 0xfff176, 0xf48fb1, 0xffffff, 0x80deea, 0xaed581],
     pants: [0x2f6fd6, 0xd62839, 0x2e9e6e, 0xff8fab, 0xffb74d],

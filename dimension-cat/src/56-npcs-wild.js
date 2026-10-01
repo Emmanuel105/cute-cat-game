@@ -135,6 +135,29 @@ const makeFox = () => makeQuadruped({ color: 0xe8702a, color2: 0xfff1e0, belly: 
 const makeHare = () => makeQuadruped({ color: 0xf2f0ea, color2: 0xe3ded0, belly: 0xffffff, ears: 'big', tail: 'stub', bodyY: 0.2, length: 0.3, scale: 0.55, wag: 2 });
 const makeHedgehog = () => makeQuadruped({ color: 0x3a2e22, color2: 0x241a12, belly: 0xcfc3a0, ears: 'round', tail: 'stub', bodyY: 0.13, length: 0.22, scale: 0.4, wag: 1.5 });
 
+// ---------------------------------------------------------------- sandpiper (small shorebird, two legs, darts along the tideline)
+function makeSandpiper() {
+  const g = new THREE.Group(), rig = { group: g, legs: [] };
+  const mottled = mat(0xb3a78f, { roughness: 0.85 }), pale = mat(0xf2ede0, { roughness: 0.85 }), dark = mat(0x5c5448, { roughness: 0.8 }),
+    beakM = mat(0x3a3028, { roughness: 0.5 }), legM = mat(0xd9a86a, { roughness: 0.6 });
+  const body = group(0, 0.09, 0, g); rig.body = body;
+  mesh(G.bodySphere(12, 9), mottled, { sx: 0.065, sy: 0.06, sz: 0.11, parent: body });
+  mesh(G.bodySphere(12, 9), pale, { y: -0.025, sx: 0.05, sy: 0.04, sz: 0.09, shadow: 'none', parent: body });
+  const head = group(0, 0.05, 0.095, body); rig.head = head;
+  mesh(G.sphere(0.04, 10, 8), mottled, { parent: head });
+  mesh(G.cone(0.01, 0.075, 6), beakM, { y: -0.003, z: 0.055, rx: PI / 2, shadow: 'none', parent: head });
+  for (const side of [1, -1]) mesh(G.sphere(0.007, 6, 6), mat(0x111111), { x: side * 0.022, y: 0.012, z: 0.03, shadow: 'none', parent: head });
+  for (const side of [1, -1]) { const leg = group(side * 0.02, -0.05, 0, body); mesh(G.cyl(0.006, 0.005, 0.09, 5), legM, { y: -0.045, parent: leg }); rig.legs.push({ leg, side }); }
+  const tail = group(0, 0.02, -0.11, body);
+  mesh(G.cone(0.02, 0.06, 6), dark, { rx: -PI / 2, z: -0.02, shadow: 'none', parent: tail });
+  rig.animate = (ph, moving, dt, t = 0) => {
+    for (const L of rig.legs) L.leg.rotation.x = moving ? sin(ph * 6 + L.side * 1.5) * 0.5 : 0;
+    head.rotation.x = moving ? 0 : (sin(t * 1.3) > 0.75 ? 0.6 : 0);   // the occasional quick peck at the sand
+  };
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- penguin
 function makePenguin(o = {}) {
   const g = new THREE.Group(), rig = { group: g, flippers: [] }, k = o.scale ?? 1;

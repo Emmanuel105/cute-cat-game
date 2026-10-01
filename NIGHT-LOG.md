@@ -4152,3 +4152,35 @@ Full suite: `world 6: 35 to meet` (unchanged, as expected — ambient wildlife, 
 carries no friend count), 98% of Whisper Woods' ground still walkable (unchanged), every NPC including the
 new hedgehog still in the scene graph, all 273 checks `ok`, 0 console warnings, exit 0 across three
 consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 174 — sandpipers for Sunny Shore's tideline
+
+(Housekeeping first: `main` was detached from `HEAD` again — the recurring mix-up earlier rounds hit. A
+fetch showed `origin/main` was actually already caught up to `HEAD` this time; fast-forwarded local `main`
+onto it and continued from there, no push needed for that part.)
+
+Sunny Shore and Whisper Woods were still tied at the bottom of the friend count (35 apiece) after last
+round gave Whisper Woods a hedgehog rather than another greetable stranger. Sunny Shore is just as dense —
+crabs, gulls, turtles, a lifeguard, a surfer, a net-mender, a dozen named vignettes — so this round followed
+the same restraint and gave it ambient wildlife instead of one more person to meet. **Three sandpipers now
+dart along the open sand**, small mottled-brown shorebirds with a pale belly and a thin dark beak, darting
+a short hop at a time and freezing with an occasional quick peck at the sand, exactly the quick dash-stop
+rhythm the real birds have.
+
+The rig (`makeSandpiper` in `56-npcs-wild.js`) is a small hand-built two-legged bird — `makeQuadruped()`
+doesn't fit a biped, so this one gets its own body/head/beak/leg meshes, reusing the `Hopper` controller the
+frogs, hares and hedgehog already use, with `SFX.chitter()` on about a quarter of landings. Three are placed
+along the beach at (16, -24), (17, -38) and (14, 44) — gaps between the existing crabs, the lighthouse rocks
+and the tideline kneelers checked by hand (nearest neighbour is the sand-message girl at 4.5 m, everything
+else 6 m or further), each with a small 1.6 m leash so they stay put on their own stretch of sand. `Hopper`
+already refuses to hop into another creature's physics circle, so no exact clearance was needed — only
+headroom from anything a bird could visibly clip through.
+
+Verified beyond the suite's own checks: a headless probe built the real game, travelled it to Sunny Shore,
+and ran 900 frames — all three sandpipers stayed finite throughout, hopped 5–7 times each, and never
+exceeded their own leash (max 1.2 m of a 1.6 m allowance).
+
+Full suite: `world 4: 35 to meet` (unchanged, as expected — ambient wildlife carries no friend count), 100%
+of Sunny Shore's ground still walkable (unchanged), every NPC including the three new sandpipers still in
+the scene graph, all 273 checks `ok`, 0 console warnings, exit 0 across three consecutive runs. Before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
