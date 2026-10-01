@@ -160,6 +160,30 @@ function makeSandpiper() {
   return rig;
 }
 
+// ---------------------------------------------------------------- pigeon (plump street bird, folded wings, pecks at the cobbles)
+function makePigeon() {
+  const g = new THREE.Group(), rig = { group: g, legs: [] };
+  const grey = mat(0x9198a2, { roughness: 0.85 }), dark = mat(0x4a4f58, { roughness: 0.8 }), sheen = mat(0x3a6a7a, { roughness: 0.4 }),
+    beakM = mat(0x2a2a2a, { roughness: 0.5 }), legM = mat(0xc9627a, { roughness: 0.6 }), eyeM = mat(0xff7a1a, { roughness: 0.3 });
+  const body = group(0, 0.1, 0, g); rig.body = body;
+  mesh(G.bodySphere(14, 10), grey, { sx: 0.09, sy: 0.09, sz: 0.14, parent: body });
+  mesh(G.bodySphere(12, 9), sheen, { y: 0.015, z: 0.1, sx: 0.06, sy: 0.055, sz: 0.07, shadow: 'none', parent: body });   // the iridescent throat patch
+  for (const side of [1, -1]) mesh(G.box(0.07, 0.05, 0.1), dark, { x: side * 0.08, z: -0.02, parent: body });            // folded wings
+  const tail = group(0, 0.02, -0.14, body);
+  mesh(G.box(0.12, 0.015, 0.08), dark, { z: -0.02, rx: 0.15, shadow: 'none', parent: tail });
+  const head = group(0, 0.07, 0.11, body); rig.head = head;
+  mesh(G.sphere(0.045, 10, 8), grey, { parent: head });
+  mesh(G.cone(0.012, 0.045, 6), beakM, { y: -0.005, z: 0.045, rx: PI / 2, shadow: 'none', parent: head });
+  for (const side of [1, -1]) mesh(G.sphere(0.008, 6, 6), eyeM, { x: side * 0.025, y: 0.01, z: 0.032, shadow: 'none', parent: head });
+  for (const side of [1, -1]) { const leg = group(side * 0.025, -0.1, 0, body); mesh(G.cyl(0.007, 0.006, 0.1, 5), legM, { y: -0.05, parent: leg }); rig.legs.push({ leg, side }); }
+  rig.animate = (ph, moving, dt, t = 0) => {
+    for (const L of rig.legs) L.leg.rotation.x = moving ? sin(ph * 6 + L.side * 1.5) * 0.5 : 0;
+    head.rotation.x = moving ? 0 : (sin(t * 1.1) > 0.8 ? 0.55 : 0);   // the occasional quick peck at the cobbles
+  };
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- penguin
 function makePenguin(o = {}) {
   const g = new THREE.Group(), rig = { group: g, flippers: [] }, k = o.scale ?? 1;

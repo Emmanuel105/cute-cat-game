@@ -4272,3 +4272,27 @@ Full suite: `world 1: 39 to meet` (unchanged, as expected — ambient wildlife c
 of Candy Land's ground still walkable (unchanged), every NPC including the new mouse still in the scene
 graph, all 273 checks `ok`, 0 console warnings, exit 0 across two consecutive runs. Before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 178 — pigeons for the Victorian market square
+
+Every other world had wildlife of its own — foxes, deer, hares, hedgehogs, crabs, turtles, penguins, a
+yeti, even a brand-new sugar mouse — but the Victorian town, for all its costermongers and gossiping
+ladies, never had a single animal past the universal squirrel. **A pair of pigeons now peck about the
+market square's quiet east side**, the way real ones always collect near a fountain and a row of food
+stalls, pecking at the cobbles between short darting hops.
+
+`makePigeon` in `56-npcs-wild.js` is a new two-legged bird rig alongside the existing sandpiper — a plumper
+grey body, folded dark wings, an iridescent throat patch, and a short dark beak with orange eyes, built the
+same way (`bodySphere` + a handful of small meshes, baked with `bakeRig`). It's driven by the same `Hopper`
+controller the shore's sandpipers and the woods' frogs already use: short hops, a pause to peck, and an
+occasional `SFX.chitter()` — no new sound added, since that cue already reads as "small critter" rather than
+anything species-specific. The two homes, `(5, -34)` and `(6.5, -37.5)`, sit in the gap east of the market
+fountain (whose own physics box only reaches `x = 3.4`) and well short of the two east-side stalls (half-
+extent `1.6` m, centred `(10, -29.3)` and `(10, -43.3)`) — checked by hand against both boxes' exact
+half-extents rather than a headless probe this round, since the market square's layout was already fully
+enumerated in the source a few lines above.
+
+Full suite: `world 3: 44 to meet` (unchanged, as expected — ambient wildlife carries no friend count), 94%
+of the Victorian town's ground still walkable (unchanged), every NPC including both new pigeons still in
+the scene graph, all 273 checks `ok`, 0 console warnings, exit 0 across two consecutive runs. Before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

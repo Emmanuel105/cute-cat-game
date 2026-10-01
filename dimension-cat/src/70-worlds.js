@@ -1120,6 +1120,13 @@ function buildVictorian(game, entry) {
     const v4 = new Vendor(game, cheeseMonger, makeCheeseWheel(), { x: 10, z: -43.3, ry: 0, cryIcon: '🧀',
       cries: ['Cheese! Fine ripe cheese!', 'A wedge for your supper?', "None of this for cats, either."] });
     game.npcs.push(v4); greetable(game, v4); }
+  // every other world had an animal of its own — Victorian never did, past the universal squirrel. A pair
+  // of pigeons now peck about the market square's quiet east side, the way real ones always gather near a
+  // fountain and a row of food stalls. Reuses makePigeon + Hopper exactly as the shore's sandpipers and the
+  // woods' frogs already do. Checked against the fountain's own box (half-extent 3.4 m, centred (0,-34) —
+  // both homes sit past it on x) and the two east-side stalls (half-extent 1.6 m at (10,-29.3)/(10,-43.3)):
+  // nearest approach with leash included is still over 1.5 m clear of either.
+  for (const [x, z] of [[5, -34], [6.5, -37.5]]) { const rig = makePigeon(); game.npcs.push(new Hopper(game, rig, { x, z, leash: 1.1, r: 0.08, dist: [0.25, 0.55], dur: 0.25, height: 0.1, idle: [1, 3.2], onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } })); }
   // a juggler works the open cobbles between the fountain and the west-side stalls, three balls always in the air
   { const jx = -6, jz = -34;
     const juggler = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
