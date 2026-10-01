@@ -4213,3 +4213,34 @@ Full suite: `world 0: 36 to meet` (unchanged — a scarecrow isn't a friend), 96
 ground still walkable (unchanged), 291 physics boxes (up by one, the scarecrow's own post), all 273 checks
 `ok`, 0 console warnings, exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 176 — an arctic fox for Frosty Peak
+
+Frosty Peak was already one of the densest worlds — penguins, reindeer, snow hares, a yeti, a dozen
+vignettes — but every quadruped roaming it was borrowed wholesale from elsewhere (the woods' own brown
+deer and orange fox) or new this winter (the hares); it never had an animal of its own making the mountain
+feel distinctly arctic. **A white arctic fox now roams the open snow south-east of the village**, past
+where the reindeer's patch and the ice sculptor's own corner give out — same silhouette as Whisper Woods'
+ordinary fox (bushy tail, big ears), but a size smaller and bleached white-on-cream rather than orange, the
+way a real arctic fox reads next to a red one.
+
+`makeArcticFox` in `56-npcs-wild.js` is one more `makeQuadruped()` preset alongside the existing horse, dog,
+deer, fox and hedgehog — no new rig code, just new fur colours and a smaller scale (0.72 against the
+ordinary fox's 0.8) — paired with the same `Wanderer` controller the woods' fox and the mountain's own deer
+already use, so it roams, grazes its head toward the cat and avoids every other creature's circle exactly
+as they do. A headless probe built the real game, travelled it to Frosty Peak, and swept a 16-point ring at
+an 8 m leash (matching the woods' fox's own roaming radius) against all 291 physics boxes already standing
+in the mountain: (12, -48) came back clear by 16.25 m at the centre and never closer than 8.36 m anywhere
+round the ring, south of the reindeer and the bell-searcher's sweep, clear of both the yeti cave's flat
+tunnel strip (which only ever runs within 9 m of x=0) and the sled run's corridor further west.
+
+Verified beyond the suite's own checks: a second headless probe built the real game, clicked start, and
+ran it 900 frames (15 s) at Frosty Peak — the fox stayed finite throughout, changed idle/walk state 7
+times, roamed out to the full 8 m of its leash and no further, and sat correctly in the scene graph the
+whole time.
+
+Full suite: `world 5: 38 to meet` (unchanged, as expected — ambient wildlife, like the hares and the
+penguins, carries no friend count), 98% of Frosty Peak's ground still walkable (unchanged), 291 physics
+boxes (unchanged — a `Wanderer` gets a physics circle, not a box), every NPC including the new fox still in
+the scene graph, all 273 checks `ok`, 0 console warnings, exit 0 across three consecutive runs. Before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

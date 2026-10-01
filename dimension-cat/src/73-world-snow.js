@@ -115,6 +115,15 @@ function buildSnowVillage(game, entry) {
   // spots, each clear the whole way round and at least 3.5 m from one another: (48, 2) and (48, -2),
   // 17-20 m from the nearest other soul, and (45, 0) between them
   for (const [x, z] of [[48, 2], [45, 0], [48, -2]]) { const rig = makeHare(); game.npcs.push(new Hopper(game, rig, { x, z, leash: 1.8, r: 0.15, dist: [0.3, 0.8], dur: 0.3, height: 0.26, idle: [1, 3.5], onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } })); }
+  // an arctic fox roams the open snow south-east of the village, past where the reindeer and ice
+  // sculptor's own ground gives out — Whisper Woods and the region fill both already have the ordinary
+  // orange `makeFox`, but Frosty Peak never had one of its own; a white coat reads better here than
+  // another deer or hare. A headless probe swept a 16-point ring at an 8 m leash (`Wanderer`'s own
+  // roaming radius, same as the woods' fox) against every physics box the mountain had built so far:
+  // (12, -48) comes back clear by 16.25 m at the centre and never closer than 8.36 m anywhere round the
+  // ring — south of the reindeer and the searcher's sweep, well clear of the cave tunnel's flat strip
+  // (which only ever runs within 9 m of x=0) and the sled run's corridor further west
+  { const rig = makeArcticFox(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x: 12, z: -48, speed: 1.1, leash: 8, r: 0.3, height: 0.7, step: 0.3, idle: [1, 3], walk: [2, 5] })); }
   // a reindeer keeper kneels by the herd's middle spot, checking harness bells before the next run
   { const dx = -18, dz = -12, kx = dx + 2.1, kz = dz + 0.4;
     const keeperWard = makeWardrobe(r, { shirts: [0x5a4a3a, 0x3a5a4a, 0x4a3a5a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
