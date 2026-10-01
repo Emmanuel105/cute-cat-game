@@ -3460,6 +3460,7 @@ const makeHare = () => makeQuadruped({ color: 0xf2f0ea, color2: 0xe3ded0, belly:
 const makeHedgehog = () => makeQuadruped({ color: 0x3a2e22, color2: 0x241a12, belly: 0xcfc3a0, ears: 'round', tail: 'stub', bodyY: 0.13, length: 0.22, scale: 0.4, wag: 1.5 });
 const makeArcticFox = () => makeQuadruped({ color: 0xf2f0e8, color2: 0xd9d4c2, belly: 0xffffff, ears: 'big', tail: 'bushy', bodyY: 0.3, length: 0.46, scale: 0.72, wag: 3 });
 const makeSugarMouse = () => makeQuadruped({ color: 0xf7ecd9, color2: 0xffffff, belly: 0xffffff, ears: 'round', tail: 'long', bodyY: 0.09, length: 0.15, scale: 0.22, wag: 2.5 });
+const makeFactoryMouse = () => makeQuadruped({ color: 0x6e6559, color2: 0x453f35, belly: 0x9a9080, ears: 'round', tail: 'long', bodyY: 0.09, length: 0.15, scale: 0.24, wag: 2.5 });
 
 // ---------------------------------------------------------------- sandpiper (small shorebird, two legs, darts along the tideline)
 function makeSandpiper() {
@@ -6589,6 +6590,13 @@ function buildRobotCity(game, entry) {
   const crateM = mat(0x8a6a3a, { roughness: 0.9, map: TEX.planks(30, 34) }), barrelM = mat(0x2f6f9f, { metalness: 0.6, roughness: 0.4 });
   for (const [x, z, s] of [[-22, 4, 1], [-23, 5.2, 0.8], [22, 2, 1], [-4, 8, 0.9], [15, 12, 1.1], [-16, -20, 1]]) { mesh(G.box(s, s, s), crateM, { x, y: s / 2, z, ry: r() * 0.5, parent: W }); P.addBox(x, s / 2, z, s, s, s, { cam: false }); }
   for (const [x, z] of [[28.5, 3.5], [29.7, 2.2], [-6, 10], [16, -22], [-24, -22]]) { mesh(G.cyl(0.5, 0.5, 1.2, 14), barrelM, { x, y: 0.6, z, parent: W }); P.addBox(x, 0.6, z, 1, 1.2, 1, { cam: false }); }
+  // every other world had wildlife of its own, down to last round's pigeons in the Victorian square — Robot
+  // City, for all its robots, never had a single living creature. A grey factory mouse now darts about the
+  // open floor by the crate stack near Sector 7's pipe run, the way a real one would live off whatever a
+  // factory drops. A headless probe swept the gap between the crates at (-22, 4)/(-23, 5.2), the Sector 7
+  // sign pole at (-18, 6) and the wandering robot patrolling near (-16, -2): (-19, 2) came back clear by
+  // 2.9 m from the nearest box, comfortably past the 1.3 m leash given here.
+  { const rig = makeFactoryMouse(); game.npcs.push(new Hopper(game, rig, { x: -19, z: 2, leash: 1.3, r: 0.15, dist: [0.3, 0.7], dur: 0.3, height: 0.24, idle: [1, 3.5], onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } })); }
   // spot lights on poles
   for (const [x, z] of [[-3, 14], [10, 12], [0, -8]]) { mesh(G.cyl(0.1, 0.14, 6, 8), pipe, { x, y: 3, z, parent: W }); mesh(G.box(0.6, 0.3, 0.4), glowMat(0xe8f4ff, 2), { x, y: 6, z, shadow: 'none', parent: W }); pointLight(0xcfe6ff, 70, 24, x, 5.6, z, W); P.addBox(x, 3, z, 0.3, 6, 0.3, { cam: false }); }
   robotRegion(game, U, r, 98, ROBOT_LIMIT - 10);

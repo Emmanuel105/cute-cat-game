@@ -4296,3 +4296,28 @@ Full suite: `world 3: 44 to meet` (unchanged, as expected — ambient wildlife c
 of the Victorian town's ground still walkable (unchanged), every NPC including both new pigeons still in
 the scene graph, all 273 checks `ok`, 0 console warnings, exit 0 across two consecutive runs. Before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 179 — a factory mouse for Robot City
+
+Every other world had wildlife of its own by now — foxes, deer, hares, hedgehogs, crabs, turtles, penguins,
+a yeti, a sugar mouse, a pair of pigeons — but Robot City, for all its robots, never had a single living
+creature. **A grey factory mouse now darts about the open floor by the crate stack** near Sector 7's pipe
+run, the way a real mouse would live off whatever a factory drops, scurrying a few steps at a time and
+freezing between dashes exactly like the sugar mouse and the hares before it.
+
+`makeFactoryMouse` in `56-npcs-wild.js` is one more `makeQuadruped()` preset alongside the sugar mouse,
+hedgehog and arctic fox — same small round-eared shape, but grimy grey-brown instead of cream, to read as a
+pest rather than a sweet. It's driven by the same `Hopper` controller as the sugar mouse and the shore's
+sandpipers, home at `(-19, 2)` with a 1.3 m leash and an occasional `SFX.chitter()` on hop. A headless probe
+built the real game, travelled to Robot City, and checked that spot against all 1163 physics boxes already
+standing there: clear by 2.9 m from the nearest (the crates at `(-22, 4)`/`(-23, 5.2)` and the Sector 7 sign
+pole at `(-18, 6)`), comfortably past the leash.
+
+Verified beyond the suite's own checks: a second headless probe ran the real game 900 frames (15 s) at
+Robot City — the mouse stayed finite throughout, hopped 6 times, and never strayed more than 0.78 m from
+home against its own 1.3 m leash, and sat correctly in the scene graph the whole time.
+
+Full suite: `world 2: 42 to meet` (unchanged, as expected — ambient wildlife carries no friend count), 88%
+of Robot City's ground still walkable (unchanged), every NPC including the new mouse still in the scene
+graph, all 273 checks `ok`, 0 console warnings, exit 0 across two consecutive runs. Before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
