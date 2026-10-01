@@ -3897,3 +3897,29 @@ prompt centred on the seat) took `friends` from 0 to 1 when called directly. Ful
 meet` (up from 39), 88% of Robot City's ground still walkable (unchanged), every NPC including the swing
 kid still in the scene graph, all 290+ checks `ok`, 0 console warnings, exit 0, before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 165 — a break for Robot City's own factory floor
+
+Checked every world's own `Sitter` usage before picking tonight's round: the Neighborhood, Candy Land,
+Victorian, Sunny Shore, Frosty Peak and Whisper Woods all seat someone somewhere — a bench, a log by the
+fire, a stump, a doorstep, a carriage seat — except Robot City, whose humans (the inspector, the mechanic,
+the painter, the oil seller) all stand or kneel. **A factory worker now sits on an upturned crate taking
+a break, a second crate beside it holding a steel flask**, on the quiet patch of floor near the spotlight
+pole at `(12, 20)`. *"Five minutes. That's all I'm owed and all I'm taking."*
+
+Checked the coordinate lists `buildRobotCity` already hand-places by eye — every `x:`/`z:` pair, every
+`cx`/`cz` and `kx`/`kz`, every `makeConveyor` call, and every static prop tuple in its own bracketed list
+— against the candidate spot by script. Nothing non-skyline sits within 10 m except the spotlight pole
+itself at `(10, 12)`, 8.25 m off (a thin 0.3 m-wide collider, nowhere near the crate's own 0.8 m box); the
+mechanic `(2, 18)`, painter `(0, 27)` and oil vendor `(24, 26)` are all 10–14 m away; the nearest
+wanderer's home-plus-leash circle (`(18, 8)`, leash 12) falls 1.4 m short of reaching this far. The
+skyscraper rings start at radius 50, and this spot sits at radius 23 from the origin, so no ring building
+comes anywhere close. Built the crate from the same plank-textured material the belt-side crates already
+use, gave it a plain cylinder flask rather than anything held in-hand (`Sitter`'s own "hands in lap" pose
+needed nothing extra), and set `seat: 0.8` to match the crate's own top height — in the same range as the
+Whisper Woods stump sitters' `0.72`.
+
+Full suite: `world 2: 41 to meet` (up from 40), 88% of Robot City's ground still walkable (unchanged, the
+new crates sit well clear of anything the test's road/path sweep or any wanderer's leash would reach),
+every NPC including the new worker still in the scene graph, all checks `ok`, 0 console warnings, exit 0
+— before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

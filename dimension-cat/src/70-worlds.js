@@ -910,6 +910,24 @@ function buildRobotCity(game, entry) {
     const v = new Vendor(game, oilSeller, makeOilCan(), { x: cx, z: cz, ry: atan2(-cx, -cz), cryIcon: '🛢️',
       cries: ['Fresh oil, straight off the line!', 'Careful, puss - not for licking.', 'Every robot in the city swears by this brand.'] });
     game.npcs.push(v); greetable(game, v); }
+  // every other world has someone sitting down somewhere; Robot City never did, for all its benches-free
+  // concrete. The quiet patch by the spotlight pole at (10, 12) had room: nearest neighbour is that pole
+  // itself at 8.25 m, with the mechanic, painter and oil vendor all 10 m or further off and no wanderer's
+  // leash reaching this far. A factory worker now takes five on an upturned crate, flask set on a second
+  // one beside it.
+  { const sx = 12, sz = 20;
+    const crateM = mat(0x8a6a3a, { roughness: 0.9, map: TEX.planks(30, 34) });
+    mesh(G.box(0.8, 0.8, 0.8), crateM, { x: sx, y: 0.4, z: sz, ry: 0.4, parent: W });
+    mesh(G.box(0.7, 0.5, 0.7), crateM, { x: sx - 0.9, y: 0.25, z: sz + 0.3, ry: -0.2, parent: W });
+    P.addBox(sx, 0.4, sz, 0.8, 0.8, 0.8, { cam: false });
+    P.addBox(sx - 0.9, 0.25, sz + 0.3, 0.7, 0.5, 0.7, { cam: false });
+    mesh(G.cyl(0.07, 0.07, 0.22, 10), mat(0x4a5a6a, { metalness: 0.5, roughness: 0.4 }), { x: sx - 0.9, y: 0.61, z: sz + 0.3, parent: W });
+    const breakWard = makeWardrobe(r, { shirts: [0x4a5a6a, 0x5a4a6a, 0x3a4a5a], pants: [0x232c34, 0x2a2a30] });
+    const worker = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: breakWard }),
+      hat: 'cap', hatColor: 0x3a4a5a, jacket: 0x2a3242, scarf: null, bag: null, glasses: r.chance(0.3) });
+    W.add(worker.group);
+    game.npcs.push(new Sitter(game, worker, { x: sx, z: sz, ry: -0.6, seat: 0.8,
+      cries: ["Five minutes. That's all I'm owed and all I'm taking.", "Don't tell the foreman I sat down.", 'Quietest spot on the whole floor, this.'] })); }
   // the Neighborhood, Candy Land, Victorian, Sunny Shore and Frosty Peak all have a swing set; Robot
   // City had tag, catch and a ring dance for its own robots but nowhere for anyone to just sit and
   // swing — the last of the seven without one. A headless probe swept a clearance disc against every
