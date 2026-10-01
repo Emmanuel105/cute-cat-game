@@ -162,6 +162,15 @@ function buildForest(game, entry) {
     game.npcs.push(new Kneeler(game, dormouseHunter, { x: kx, z: kz, ry: atan2(lx - kx, lz - kz),
       cries: ["I can hear it snoring, I swear.", 'Shh - you\'ll wake the dormouse.', "Nearly got the stick in far enough."] })); }
 
+  // the fifth and last hollow log, at (-22, -6), sat empty through all of that too — a boy now kneels by it, arm shoved in
+  // to the shoulder after the ball that rolled inside; placed off to its north-east, the one corner that clears both the
+  // fox denned at (-26, -14) and the deer at (-24, 4) and their wander leashes, even if only by a shin's width
+  { const lx = -22, lz = -6, kx = -19.67, kz = -5.1;
+    const ballHunter = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true }), shirt: 0x7a3a3a, pants: 0x3a3a4a, shoes: 0x3a2a1e, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(ballHunter.group);
+    game.npcs.push(new Kneeler(game, ballHunter, { x: kx, z: kz, ry: atan2(lx - kx, lz - kz),
+      cries: ["Nearly got it... nearly—", "If something bites me, I'm blaming the dog.", "Found a conker. Not what I was after, but I'll take it."] })); }
+
   // three children ring-dance in a clearing east of the glade — everyone knows three turns of the fairy ring earns a wish
   { const ringWard = makeWardrobe(r, { shirts: [0xef7d2f, 0x5a8a6a, 0x2f6fd6], pants: [0x2e4a3a, 0x3a3a3a, 0x4a3a2a], shoes: [0x3a2a1e, 0x2a2018] });
     const dancers = [true, false, true].map((female) => { const rig = makeHuman({ ...randomPerson(r, { female, child: true, wardrobe: ringWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false }); W.add(rig.group); return rig; });

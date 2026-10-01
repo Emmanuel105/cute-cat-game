@@ -3998,3 +3998,25 @@ wall-clock class of false failure earlier rounds have already logged, and it did
 this sandbox's `main` branch detached again at round 167's own commit, with `origin/main` already caught
 up to it (nothing lost) — re-pointed `main` at `HEAD` and continued from there, same fix as round 166's.
 Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 169 — the fifth hollow log, Whisper Woods
+
+Round 168 found that two of Whisper Woods' five hollow logs had never had anyone stop at them, and only
+filled the nearer one. The last empty log, at `(-22, -6)`, is done now too. **A boy kneels beside it,
+arm shoved in to the shoulder, feeling around for a ball that rolled inside.** *"Nearly got it...
+nearly—"* / *"If something bites me, I'm blaming the dog."* / *"Found a conker. Not what I was after,
+but I'll take it."*
+
+This was the trickiest of the five to place: a fox is denned at `(-26, -14)` with a 10 m leash and a
+deer at `(-24, 4)` with a 9 m leash, and both circles reach well past the log itself. A small script
+swept every angle and offset around the log and found the one corner — north-east, `(-19.67, -5.1)` —
+that clears both leash-plus-body circles at all, if only by about half a metre on paper. A headless
+probe then built the real game, travelled it into Whisper Woods, and tracked both animals' actual
+positions over 2000 simulated frames: the fox never came closer than 10.9 m and the deer never closer
+than 10.1 m, well clear in practice. The same probe confirmed the new `Kneeler` sits at finite
+coordinates, is in the scene graph, and that calling its greet interactable directly takes `friends`
+from 0 to 1.
+
+Full suite: `world 6: 35 to meet` (up from 34), 98% of Whisper Woods' ground still walkable (unchanged),
+every NPC including the new boy still in the scene graph, all 273 checks `ok`, 0 console warnings, exit
+0. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
