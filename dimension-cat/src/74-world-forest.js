@@ -153,6 +153,15 @@ function buildForest(game, entry) {
     game.npcs.push(new Kneeler(game, keeper, { x: kx, z: kz, ry: atan2(lx - kx, lz - kz),
       cries: ['One acorn, every visit. Old habit.', "Careful, puss — that offering isn't yours.", "Can't say what takes them. Just that they go."] })); }
 
+  // despite that last log's own write-up, two of the wood's five hollow logs had stood empty all along:
+  // (-8, -18) and (-22, -6) never got anyone. A girl kneels at the nearer one now, ear almost against the
+  // bark, a stick held just inside the opening
+  { const lx = -8, lz = -18, lry = 2.2, off = 2.5, kx = lx - off * cos(lry), kz = lz + off * sin(lry);
+    const dormouseHunter = makeHuman({ ...randomPerson(r, { female: true, child: true }), shirt: 0x5a8acf, pants: 0x3a4a3a, shoes: 0x3a2a1e, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(dormouseHunter.group);
+    game.npcs.push(new Kneeler(game, dormouseHunter, { x: kx, z: kz, ry: atan2(lx - kx, lz - kz),
+      cries: ["I can hear it snoring, I swear.", 'Shh - you\'ll wake the dormouse.', "Nearly got the stick in far enough."] })); }
+
   // three children ring-dance in a clearing east of the glade — everyone knows three turns of the fairy ring earns a wish
   { const ringWard = makeWardrobe(r, { shirts: [0xef7d2f, 0x5a8a6a, 0x2f6fd6], pants: [0x2e4a3a, 0x3a3a3a, 0x4a3a2a], shoes: [0x3a2a1e, 0x2a2018] });
     const dancers = [true, false, true].map((female) => { const rig = makeHuman({ ...randomPerson(r, { female, child: true, wardrobe: ringWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false }); W.add(rig.group); return rig; });

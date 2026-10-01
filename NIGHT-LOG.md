@@ -3973,3 +3973,28 @@ interactable directly took `friends` from 0 to 1. Full suite: `world 1: 39 to me
 Candy Land's ground still walkable (unchanged), every NPC including the new sentry still in the scene
 graph, all 273 checks `ok`, 0 console warnings, exit 0 — before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 168 — the fourth hollow log, Whisper Woods
+
+Whisper Woods scatters five hollow logs through the wood, and three already had someone stopped at
+them (a hedgehog-hunter, a naturalist noting the moss, an old woman leaving an acorn) — the last of
+those three was written up as "the last of the five hollow logs", but that was wrong: two, at
+`(-8, -18)` and `(-22, -6)`, had stood empty the whole time. **A girl now kneels at the nearer one,
+ear almost to the bark, easing a stick into the opening.** *"I can hear it snoring, I swear."* / *"Shh
+— you'll wake the dormouse."*
+
+Checked every hand-placed coordinate in `buildForest` against the new spot (`(-6.53, -15.98)`, found
+by the same offset-from-log-end formula the hedgehog-hunter already uses): the nearest leashed animal
+is a fox denned at `(-26, -14)` with a 10 m leash, whose reach falls 9.6 m short; the nearest stationary
+person (the daisy-chain weaver on the fourth stump) sits over 10 m off. The log itself already carries
+its own `boxT` collider from the original scatter loop, so only the kneeler's own 0.35 m physics circle
+needed clearing, and `Kneeler` registers the greet prompt itself.
+
+Full suite: `world 6: 34 to meet` (up from 33, confirmed by a stash-and-rerun against the unmodified
+code), 98% of Whisper Woods' ground still walkable (unchanged), every NPC including the new girl still
+in the scene graph, all 273 checks `ok`, 0 console warnings, exit 0 across three consecutive runs (one
+mid-session run threw an unrelated, pre-existing timing flake on a Sunny Shore kite-height check, same
+wall-clock class of false failure earlier rounds have already logged, and it did not recur). Also found
+this sandbox's `main` branch detached again at round 167's own commit, with `origin/main` already caught
+up to it (nothing lost) — re-pointed `main` at `HEAD` and continued from there, same fix as round 166's.
+Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
