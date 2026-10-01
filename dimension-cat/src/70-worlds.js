@@ -852,6 +852,19 @@ function buildRobotCity(game, entry) {
   { const ringBots = [0, 1, 2, 3].map(() => { const rig = makeRobot(); W.add(rig.group); return rig; });
     game.npcs.push(new RingDance(game, ringBots, { cx: 0, cz: 40, r: 1.8, speed: 0.5, turnEvery: 8, cryIcon: '🤖',
       cries: ['Recreational subroutine engaged.', 'Beep bo-beep!', 'Diagnostic: joy detected.', 'Do not report this to the foreman.'] })); }
+  // every other world already has a Juggler (the Neighborhood's balloon square, Candy Land's court jester,
+  // Victorian's street performer, Sunny Shore's boardwalk busker, Frosty Peak's and Whisper Woods' own) —
+  // Robot City, the densest of the seven, was the one left without. A headless probe swept a 2.6 m clearance
+  // disc against every one of its 1163 physics boxes, every Wanderer's home-plus-leash circle, the sentry's
+  // patrol rectangle, the tag and catch pairs' leash/gap, and the ring dance's own ring, each with a further
+  // 3 m margin: (15, 37) came back clear by over 15 m from the nearest of any of them — open floor north of
+  // the factory, close enough to the ring dance to read as the same recreational corner of the city.
+  // Juggler's baseY uses rig.k (a human's height ÷ 1.75, set by makeHuman); makeRobot() never sets it, so —
+  // exactly as the robots standing in for the catch pair already do — it's given the same ratio the robots'
+  // own Wanderer height (1.9 m) implies, or the three balls orbit at NaN height instead of the robot's hands.
+  { const juggler = makeRobot(); juggler.k = 1.9 / 1.75; W.add(juggler.group);
+    game.npcs.push(new Juggler(game, juggler, [0xff9f43, 0x00e5ff, 0x4ade80], { x: 15, z: 37, ry: atan2(0 - 15, 40 - 37), cryIcon: '🔧',
+      cries: ['Recreational subroutine: juggling.', 'Do not report dropped bolts to the foreman.', 'Entertainment protocol engaged.', 'Three bolts, zero torque wrenches.'] })); }
   // a mechanic kneels over a wonky robot on the open floor, wrench in hand — a tightened bolt sparks and the patient sits bolt upright for a moment
   { const mech = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }), shirt: 0x3a4a6a, stripes: null, pants: 0x232c44, shoes: 0x1a1a20, hat: 'cap', hatColor: 0x3a4a6a, jacket: null, scarf: null, bag: null, build: 'stout', glasses: false });
     W.add(mech.group);

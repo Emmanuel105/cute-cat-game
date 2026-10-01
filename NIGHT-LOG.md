@@ -3923,3 +3923,25 @@ Full suite: `world 2: 41 to meet` (up from 40), 88% of Robot City's ground still
 new crates sit well clear of anything the test's road/path sweep or any wanderer's leash would reach),
 every NPC including the new worker still in the scene graph, all checks `ok`, 0 console warnings, exit 0
 — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 166 — a juggler for Robot City
+
+Every other world already has a Juggler — the Neighborhood's balloon square, Candy Land's court jester,
+Victorian's street performer, Sunny Shore's boardwalk busker, Frosty Peak's and Whisper Woods' own — Robot
+City, the densest of the seven, was the last one left without. **A worker robot now juggles three glowing
+bolts in a steady loop** on the open floor north of the factory, close enough to the ring-dance plaza to
+read as the same recreational corner of the city. *"Do not report dropped bolts to the foreman."*
+
+A headless probe built the real game, travelled it into Robot City, and swept a 2.6 m clearance disc
+against every one of its 1163 physics boxes plus a further 3 m margin against every Wanderer's
+home-plus-leash circle, the sentry's patrol rectangle, the tag and catch pairs' leash/gap, and the ring
+dance's own ring. `(15, 37)` came back clear by over 15 m from the nearest of any of them.
+
+Caught one thing the suite's own checks don't cover: `Juggler` positions its balls at `rig.k * 0.95` above
+the ground, and `rig.k` is a human-only property (set by `makeHuman`, height ÷ 1.75) — `makeRobot()` never
+sets it, so the first run sent all three balls to `NaN`. Fixed exactly as the robot catch pair already had
+to: `juggler.k = 1.9 / 1.75`, matching the robots' own `Wanderer` height. Re-ran 480 frames on the built
+instance afterwards — all three balls' positions finite throughout, and calling the juggler's greet
+interactable directly took `friends` from 0 to 1. Full suite: `world 2: 42 to meet` (up from 41), every NPC
+including the juggler still in the scene graph, all checks `ok`, 0 console warnings, exit 0 — before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
