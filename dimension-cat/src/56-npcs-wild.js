@@ -185,6 +185,30 @@ function makePigeon() {
   return rig;
 }
 
+// ---------------------------------------------------------------- sparrow (small streaky garden bird, hops and pecks)
+function makeSparrow() {
+  const g = new THREE.Group(), rig = { group: g, legs: [] };
+  const brown = mat(0x8a6a44, { roughness: 0.85 }), streak = mat(0x4a3a28, { roughness: 0.8 }), pale = mat(0xe8dcc0, { roughness: 0.85 }),
+    beakM = mat(0x3a3028, { roughness: 0.5 }), legM = mat(0xc9a06a, { roughness: 0.6 });
+  const body = group(0, 0.065, 0, g); rig.body = body;
+  mesh(G.bodySphere(12, 9), brown, { sx: 0.055, sy: 0.05, sz: 0.08, parent: body });
+  mesh(G.bodySphere(10, 8), pale, { y: -0.018, sx: 0.04, sy: 0.032, sz: 0.06, shadow: 'none', parent: body });
+  for (const side of [1, -1]) mesh(G.box(0.05, 0.03, 0.06), streak, { x: side * 0.05, z: -0.01, parent: body });   // folded streaky wings
+  const head = group(0, 0.045, 0.07, body); rig.head = head;
+  mesh(G.sphere(0.032, 10, 8), brown, { parent: head });
+  mesh(G.cone(0.008, 0.035, 6), beakM, { y: -0.002, z: 0.03, rx: PI / 2, shadow: 'none', parent: head });
+  for (const side of [1, -1]) mesh(G.sphere(0.006, 6, 6), mat(0x111111), { x: side * 0.018, y: 0.01, z: 0.024, shadow: 'none', parent: head });
+  for (const side of [1, -1]) { const leg = group(side * 0.016, -0.035, 0, body); mesh(G.cyl(0.005, 0.004, 0.065, 5), legM, { y: -0.033, parent: leg }); rig.legs.push({ leg, side }); }
+  const tail = group(0, 0.015, -0.08, body);
+  mesh(G.box(0.05, 0.012, 0.055), streak, { z: -0.015, rx: 0.2, shadow: 'none', parent: tail });
+  rig.animate = (ph, moving, dt, t = 0) => {
+    for (const L of rig.legs) L.leg.rotation.x = moving ? sin(ph * 6 + L.side * 1.5) * 0.5 : 0;
+    head.rotation.x = moving ? 0 : (sin(t * 1.4) > 0.78 ? 0.6 : 0);   // the occasional quick peck at the grass
+  };
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- penguin
 function makePenguin(o = {}) {
   const g = new THREE.Group(), rig = { group: g, flippers: [] }, k = o.scale ?? 1;

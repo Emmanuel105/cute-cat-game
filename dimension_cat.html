@@ -3516,6 +3516,30 @@ function makePigeon() {
   return rig;
 }
 
+// ---------------------------------------------------------------- sparrow (small streaky garden bird, hops and pecks)
+function makeSparrow() {
+  const g = new THREE.Group(), rig = { group: g, legs: [] };
+  const brown = mat(0x8a6a44, { roughness: 0.85 }), streak = mat(0x4a3a28, { roughness: 0.8 }), pale = mat(0xe8dcc0, { roughness: 0.85 }),
+    beakM = mat(0x3a3028, { roughness: 0.5 }), legM = mat(0xc9a06a, { roughness: 0.6 });
+  const body = group(0, 0.065, 0, g); rig.body = body;
+  mesh(G.bodySphere(12, 9), brown, { sx: 0.055, sy: 0.05, sz: 0.08, parent: body });
+  mesh(G.bodySphere(10, 8), pale, { y: -0.018, sx: 0.04, sy: 0.032, sz: 0.06, shadow: 'none', parent: body });
+  for (const side of [1, -1]) mesh(G.box(0.05, 0.03, 0.06), streak, { x: side * 0.05, z: -0.01, parent: body });   // folded streaky wings
+  const head = group(0, 0.045, 0.07, body); rig.head = head;
+  mesh(G.sphere(0.032, 10, 8), brown, { parent: head });
+  mesh(G.cone(0.008, 0.035, 6), beakM, { y: -0.002, z: 0.03, rx: PI / 2, shadow: 'none', parent: head });
+  for (const side of [1, -1]) mesh(G.sphere(0.006, 6, 6), mat(0x111111), { x: side * 0.018, y: 0.01, z: 0.024, shadow: 'none', parent: head });
+  for (const side of [1, -1]) { const leg = group(side * 0.016, -0.035, 0, body); mesh(G.cyl(0.005, 0.004, 0.065, 5), legM, { y: -0.033, parent: leg }); rig.legs.push({ leg, side }); }
+  const tail = group(0, 0.015, -0.08, body);
+  mesh(G.box(0.05, 0.012, 0.055), streak, { z: -0.015, rx: 0.2, shadow: 'none', parent: tail });
+  rig.animate = (ph, moving, dt, t = 0) => {
+    for (const L of rig.legs) L.leg.rotation.x = moving ? sin(ph * 6 + L.side * 1.5) * 0.5 : 0;
+    head.rotation.x = moving ? 0 : (sin(t * 1.4) > 0.78 ? 0.6 : 0);   // the occasional quick peck at the grass
+  };
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- penguin
 function makePenguin(o = {}) {
   const g = new THREE.Group(), rig = { group: g, flippers: [] }, k = o.scale ?? 1;
@@ -6211,6 +6235,33 @@ function buildNeighborhood(game, entry) {
   // exactly PORTAL_GEMS gems, one for each gem engraved on the park portal, one at each corner of the neighbourhood
   const GEM_SPOTS = [[10.8, 48.6, 0x7fe0ff], [-29.5, -45.4, 0xa8ff9a], [66, 58, 0xff6fb5], [-68, 62, 0xffd54a], [66.5, 22, 0xc8a2ff], [-58, -24, 0x7fe0ff], [26, 66, 0xa8ff9a]];
   makeGemTrail(game, U, GEM_SPOTS.slice(0, PORTAL_GEMS), r);
+
+  // the birdwatcher's own cry warns the cat not to scatter the sparrows, a couple of metres off her own spot
+  // at (19, -75) — there weren't actually any until now. A pair hops in the grass there, the one thing she's
+  // come all this way to watch (homes 2.5 m either side of her physics circle, well clear of it and of each
+  // other). Placed last, after every other draw this build makes from its own local `r`, so these few extra
+  // draws disturb nothing earlier in the street (an earlier placement, right by the birder herself, worked
+  // but then shuffled a later wardrobe pick into a shirt-colour collision with another neighbour's — moving
+  // it here left every earlier pick untouched). A plain U.push animation rather than the Hopper controller
+  // every other critter uses, for the same reason one step further: Hopper draws from the module's shared
+  // `rnd()`, and this world builds well before three others in the test's travel order, so a Hopper instance
+  // here would have shifted their own timing-sensitive animations too (it intermittently broke the Victorian
+  // horse-and-carriage's gait check, two worlds later, until this was found).
+  for (const [hx, hz] of [[17, -73.5], [21, -76.5]]) {
+    const rig = makeSparrow(); W.add(rig.group);
+    const cyc = r.range(1.8, 2.6), hopDur = 0.26, hopDist = r.range(0.3, 0.5), heading = r.range(0, TAU), phase0 = r.range(0, cyc);
+    const tx = hx + sin(heading) * hopDist, tz = hz + cos(heading) * hopDist;
+    rig.group.position.set(hx, P.ground0(hx, hz), hz); rig.group.rotation.y = heading;
+    U.push((dt, t) => {
+      const ct = (t + phase0) % cyc, atB = floor((t + phase0) / cyc) % 2 === 1;
+      const [sx, sz] = atB ? [tx, tz] : [hx, hz], [ex, ez] = atB ? [hx, hz] : [tx, tz];
+      const hopping = ct < hopDur, k = hopping ? ct / hopDur : 1;
+      const x = lerp(sx, ex, k), z = lerp(sz, ez, k);
+      rig.group.position.set(x, P.ground0(x, z) + (hopping ? sin(k * PI) * 0.12 : 0), z);
+      if (hopping) rig.group.rotation.y = atan2(ex - sx, ez - sz);
+      rig.animate(0, hopping, dt, t);
+    });
+  }
 
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);

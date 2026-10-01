@@ -502,6 +502,33 @@ function buildNeighborhood(game, entry) {
   const GEM_SPOTS = [[10.8, 48.6, 0x7fe0ff], [-29.5, -45.4, 0xa8ff9a], [66, 58, 0xff6fb5], [-68, 62, 0xffd54a], [66.5, 22, 0xc8a2ff], [-58, -24, 0x7fe0ff], [26, 66, 0xa8ff9a]];
   makeGemTrail(game, U, GEM_SPOTS.slice(0, PORTAL_GEMS), r);
 
+  // the birdwatcher's own cry warns the cat not to scatter the sparrows, a couple of metres off her own spot
+  // at (19, -75) — there weren't actually any until now. A pair hops in the grass there, the one thing she's
+  // come all this way to watch (homes 2.5 m either side of her physics circle, well clear of it and of each
+  // other). Placed last, after every other draw this build makes from its own local `r`, so these few extra
+  // draws disturb nothing earlier in the street (an earlier placement, right by the birder herself, worked
+  // but then shuffled a later wardrobe pick into a shirt-colour collision with another neighbour's — moving
+  // it here left every earlier pick untouched). A plain U.push animation rather than the Hopper controller
+  // every other critter uses, for the same reason one step further: Hopper draws from the module's shared
+  // `rnd()`, and this world builds well before three others in the test's travel order, so a Hopper instance
+  // here would have shifted their own timing-sensitive animations too (it intermittently broke the Victorian
+  // horse-and-carriage's gait check, two worlds later, until this was found).
+  for (const [hx, hz] of [[17, -73.5], [21, -76.5]]) {
+    const rig = makeSparrow(); W.add(rig.group);
+    const cyc = r.range(1.8, 2.6), hopDur = 0.26, hopDist = r.range(0.3, 0.5), heading = r.range(0, TAU), phase0 = r.range(0, cyc);
+    const tx = hx + sin(heading) * hopDist, tz = hz + cos(heading) * hopDist;
+    rig.group.position.set(hx, P.ground0(hx, hz), hz); rig.group.rotation.y = heading;
+    U.push((dt, t) => {
+      const ct = (t + phase0) % cyc, atB = floor((t + phase0) / cyc) % 2 === 1;
+      const [sx, sz] = atB ? [tx, tz] : [hx, hz], [ex, ez] = atB ? [hx, hz] : [tx, tz];
+      const hopping = ct < hopDur, k = hopping ? ct / hopDur : 1;
+      const x = lerp(sx, ex, k), z = lerp(sz, ez, k);
+      rig.group.position.set(x, P.ground0(x, z) + (hopping ? sin(k * PI) * 0.12 : 0), z);
+      if (hopping) rig.group.rotation.y = atan2(ex - sx, ez - sz);
+      rig.animate(0, hopping, dt, t);
+    });
+  }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

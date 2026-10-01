@@ -4321,3 +4321,39 @@ Full suite: `world 2: 42 to meet` (unchanged, as expected — ambient wildlife c
 of Robot City's ground still walkable (unchanged), every NPC including the new mouse still in the scene
 graph, all 273 checks `ok`, 0 console warnings, exit 0 across two consecutive runs. Before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 180 — sparrows for the Neighborhood's birdwatcher
+
+Every other world had picked up wildlife of its own by now — foxes, deer, hares, hedgehogs, crabs, turtles,
+penguins, a yeti, a sugar mouse, pigeons, a factory mouse — but the Neighborhood never had, past the
+squirrel. It already had a birdwatcher out in the quiet south field, binoculars raised, with a line that
+warns the cat not to **"scatter the sparrows"** — except there weren't any. **A pair of sparrows now hops
+and pecks in the grass a couple of metres from her own spot**, small and streaky brown against the
+gingerbread-coloured pigeons and cream sugar mice already living elsewhere, giving her something to actually
+be watching.
+
+This one took two tries. The first pass gave them a new `makeSparrow` rig (`56-npcs-wild.js`, built the same
+way as the existing pigeon and sandpiper) and drove them with the shared `Hopper` controller, exactly like
+every other piece of ambient wildlife so far — and it worked, but a wide comparison run (15 full-suite runs
+with the change against 16 without) turned up an intermittent failure three worlds later: `Hopper` draws
+three numbers from the module's own shared `rnd()` on construction, and because the Neighborhood builds
+before Robot City and Victorian in the test's own travel order, those extra draws shifted the Victorian
+horse-and-carriage's random starting gait phase enough that its hip-rotation check occasionally landed on a
+dead spot in the stride and failed — about one run in five. Switching to the world's own local seeded `r`
+instead (rather than the shared `rnd()`) only moved the collision rather than fixing it: it immediately broke
+a *different*, deterministic check — two neighbours ended up in the same shirt colour, every single time —
+because something later in the same build draws from that same `r` sequence to shuffle wardrobes. The fix
+that actually held: a plain hand-rolled hop animation (`U.push`, no controller class at all) added dead last
+in `buildNeighborhood`, after every other line that reads `r` — so its few extra draws run off the end of the
+sequence and disturb nothing earlier, and the Hopper/shared-`rnd()` risk never comes up because nothing here
+touches `rnd()` at all.
+
+Verified beyond the suite's own checks: a standalone headless probe built the real game, started it, and
+tracked one sparrow's world-space position over 180 frames (3 s) — both finite throughout, hopping between
+their home spot and a short offset a few tenths of a metre off, landing cleanly back on each.
+
+Full suite: `world 0: 36 to meet` (unchanged, as expected — ambient wildlife carries no friend count), 96%
+of the Neighborhood's ground still walkable (unchanged), "no two neighbours wear the same shirt (33 colours
+for 33 people)" passing again, all 273 checks `ok`, 0 console warnings, exit 0 across more than a dozen
+consecutive runs this round (after finding the first version flaky at roughly 1-in-5). Before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
