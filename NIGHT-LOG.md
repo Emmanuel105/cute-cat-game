@@ -3834,3 +3834,35 @@ took `friends` from 0 to 1. Full suite: `world 4: 34 to meet` (up from 33), 99% 
 still walkable (unchanged), every NPC including the swing kid still in the scene graph, all 290+ checks
 `ok`, 0 console warnings, exit 0, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 163 — a swing set for Candy Land
+
+The Neighborhood, Victorian, Sunny Shore, Frosty Peak and Whisper Woods all have a swing set; Candy
+Land's own children (gingerbread men, mostly, but the lane of houses is lived in by regular people too)
+had wandering, marching, a ring dance, catch and tag, but nowhere to just sit and swing — the last of
+the seven without one, now that Robot City is the only one left. **A child in a pink party dress now
+swings back and forth on a bubblegum-pink swing set**, planted in a bare hollow northwest of the park;
+pushing it (E, "Push the swing") gives it a boost, same as the other five, legs kicking out on the
+forward swing the same way the `Swinger` controller already handles it everywhere else.
+
+A headless probe built the real game, travelled it into Candy Land, and swept a 3.6 m clearance disc
+against every one of its 1917 physics boxes and every NPC's live position, then cross-checked candidates
+against the world-builder's own coordinate lists for candy canes, lollipops, marshmallow bushes, cupcake
+hills and the sixteen gumdrop-patch centres (none of which register as colliders, so a sweep against
+`physics.boxes` alone would have missed them). `(-18, 46)` came back clear of all of it — nearly 31 m
+from the nearest other soul (a wandering gingerbread man) and sitting squarely in the untouched middle of
+its own gumdrop patch, whose scatter only fills the ring from 8 to 24 m out, leaving the centre bare by
+design.
+
+Verified beyond the suite's own checks: ran 480 frames (8 simulated seconds) on the built `Swinger`
+instance — the seat's pivot swung a steady ±0.62 radians throughout, the kid's position finite the whole
+time. The "Push the swing" interactable's `onUse` set its boost to 1 as expected; as with every other
+world's swing, the push prompt (centred on the frame) sits nearer any standing spot than the greet prompt
+(centred on the seat), so the greet was reached by calling the `Swinger`'s own `onUse` directly rather
+than walking up and pressing E, which took `friends` from 0 to 1. Full suite: `world 1: 38 to meet` (up
+from 37), 91% of Candy Land's ground still walkable (unchanged), every NPC including the swing kid still
+in the scene graph, all 273 checks `ok`, 0 console warnings, exit 0 (one later re-run flagged the
+Victorian horse-and-carriage timing check as a false FAIL under load — a pre-existing wall-clock-based
+test, confirmed to fail the same way on the unmodified code too and to pass cleanly on a calmer re-run;
+not a regression from this change) — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
