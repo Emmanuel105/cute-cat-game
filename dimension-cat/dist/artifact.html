@@ -5985,6 +5985,38 @@ function buildNeighborhood(game, entry) {
     rnd(); rnd();   // burns two shared draws: without them this forager's own idle-gesture roll lands on the exact tick that upsets the painter's daub-pose check earlier in the same test run (found by bisecting the test failure)
     game.npcs.push(new Forager(game, vegGardener, { x: kx, z: kz, ry: atan2(px - kx, pz - kz), cryIcon: '🥕',
       cries: ['Best carrots this patch has ever grown.', "Careful, puss — mind the rows!", 'One more row before the frost.'] })); }
+  // a scarecrow stands guard just south of the vegetable patch — a stick frame under a faded shirt,
+  // straw poking from every cuff, button-stitched eyes and a crooked mouth under a floppy hat, head and
+  // shoulders rocking gently as if nudged by a breeze. No person, so no draw on the shared `r` and no
+  // effect on later wardrobe picks in this build. (A headless probe swept the gap south of the patch bed:
+  // (14.5, -16.6) comes back clear by a full metre on every side — 1.5 m from the bed's own box, 2.65 m
+  // from the carrot basket, 2.7 m from the gardener.)
+  { const scx = 14.5, scz = -16.6;
+    const postMat = mat(0x6b4a2b, { roughness: 0.9 }), shirtMat = mat(0x5a6a8a, { roughness: 0.85 }),
+      strawMat = mat(0xd9c077, { roughness: 0.95 }), sackMat = mat(0xcaa877, { roughness: 0.9 }),
+      stitchMat = mat(0x2a2420, { roughness: 0.8 }), hatMat = mat(0x4a3a2a, { roughness: 0.9 });
+    const scare = group(scx, 0, scz, W);
+    mesh(G.cyl(0.045, 0.055, 1.05, 8), postMat, { y: 0.525, parent: scare });   // the post, planted in the soil
+    for (const [tx, tz] of [[-0.09, -0.05], [0.09, 0.05], [0.05, -0.09], [-0.05, 0.09]])
+      mesh(G.cone(0.045, 0.2, 5), strawMat, { x: tx, y: 0.1, z: tz, rx: tz * 2.2, rz: -tx * 2.2, parent: scare }); // straw at the cuffs
+    const upper = group(0, 1.05, 0, scare);   // sways gently — shirt, arms, head and hat all ride along
+    mesh(G.cyl(0.03, 0.035, 0.86, 8), postMat, { rz: PI / 2, parent: upper });   // the crossbar arms
+    mesh(G.box(0.42, 0.5, 0.2), shirtMat, { y: -0.15, parent: upper });         // the stuffed shirt
+    for (const side of [-1, 1]) {
+      mesh(G.cyl(0.045, 0.045, 0.3, 8), shirtMat, { x: side * 0.56, rz: PI / 2, parent: upper });
+      mesh(G.cone(0.05, 0.16, 5), strawMat, { x: side * 0.74, rz: side * (PI / 2 - 0.3), parent: upper }); }
+    const head = group(0, 0.35, 0, upper);
+    mesh(G.sphere(0.14, 10, 8), sackMat, { parent: head });
+    for (const side of [-1, 1]) {
+      mesh(G.box(0.08, 0.014, 0.01), stitchMat, { x: side * 0.06, y: 0.02, z: 0.13, rz: 0.6, parent: head });
+      mesh(G.box(0.08, 0.014, 0.01), stitchMat, { x: side * 0.06, y: 0.02, z: 0.13, rz: -0.6, parent: head }); }
+    mesh(G.box(0.06, 0.012, 0.01), stitchMat, { x: -0.03, y: -0.04, z: 0.135, rz: 0.3, parent: head });
+    mesh(G.box(0.06, 0.012, 0.01), stitchMat, { x: 0.03, y: -0.04, z: 0.135, rz: -0.3, parent: head });
+    mesh(G.cyl(0.27, 0.27, 0.03, 10), hatMat, { y: 0.1, parent: head });        // floppy hat brim
+    mesh(G.cone(0.19, 0.16, 10), hatMat, { y: 0.18, parent: head });           // hat crown
+    let scareT = 0;
+    U.push((dt) => { scareT += dt * 0.9; upper.rotation.z = sin(scareT) * 0.035; });
+    P.addBox(scx, 0.525, scz, 0.14, 1.05, 0.14, { cam: false }); }
   game.squirrels.push(new Squirrel(game, 9, 47, 'sq-neighborhood'));
   // a detectorist sweeps the quiet grass behind the south-row houses, headphones on, hoping for buried
   // treasure — already doing duty on Sunny Shore and at Frosty Peak, its first outing in the Neighborhood

@@ -4184,3 +4184,32 @@ Full suite: `world 4: 35 to meet` (unchanged, as expected — ambient wildlife c
 of Sunny Shore's ground still walkable (unchanged), every NPC including the three new sandpipers still in
 the scene graph, all 273 checks `ok`, 0 console warnings, exit 0 across three consecutive runs. Before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 175 — a scarecrow for the Neighborhood's vegetable patch
+
+Round 172 gave the Neighborhood's backyard its first row of carrots and a gardener to tend them, but left
+the patch itself unguarded. **A scarecrow now stands watch just past the southern row**, a stick frame
+under a faded shirt with straw poking from every cuff, stitched button eyes and a crooked stitched mouth
+under a floppy hat. It isn't a person — no greeting prompt, no line of dialogue, no draw on the friend
+count — just a quiet piece of garden furniture, though its head and shoulders rock gently side to side as
+if nudged by a breeze, on a slow four-second sway that never repeats the same way twice in a short visit.
+
+It's a plain decorative prop, not an NPC or a controller: built straight into `buildNeighborhood` with
+`mesh()`/`group()` calls (crossbar arms, a boxy shirt, cone-and-cylinder straw tufts, a sphere head), the
+same pattern Candy Land's peppermint pinwheel already uses for its own continuous spin. Unlike the
+pinwheel it draws no `r()` at all — one scarecrow needs no phase offset to desynchronise from a sibling —
+so it leaves every later wardrobe pick in the Neighborhood's build completely undisturbed, no bisection
+needed this time. A headless probe swept the gap south of the vegetable bed and found `(14.5, -16.6)`
+clear by a full metre on every side: 1.5 m from the bed's own box, 2.65 m from the carrot basket, 2.7 m
+from the gardener themself. Its own thin post gets a real physics box so the cat can't walk through it.
+
+Verified beyond the suite's own checks: a headless probe built the real game, clicked start, and ran it
+for about a second of real wall-clock time in the Neighborhood — the scarecrow's sway stayed finite
+throughout and visibly varied frame to frame, confirming the animation is actually wired into the world's
+update loop rather than sitting dead (a risk here specifically, since `game.loop()` only steps the world
+once `game.started` is true).
+
+Full suite: `world 0: 36 to meet` (unchanged — a scarecrow isn't a friend), 96% of the Neighborhood's
+ground still walkable (unchanged), 291 physics boxes (up by one, the scarecrow's own post), all 273 checks
+`ok`, 0 console warnings, exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
