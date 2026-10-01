@@ -6571,6 +6571,18 @@ function buildCandyLand(game, entry) {
     let pinT = r() * TAU;
     U.push((dt) => { pinT += dt * 4; pivot.rotation.z = pinT; });
     P.addBox(px, stickH / 2, pz, 0.16, stickH, 0.16, { cam: false }); }
+  // the gingerbread men wander, march, dance, play catch and tag and every doorstep is lived-in, but
+  // nobody in Candy Land ever just stood around and talked — the Neighborhood and Robot City each have
+  // a `Talkers` pair already, and Victorian too; Candy Land was the last world without one. A headless
+  // probe swept a grid of open-ground candidates against every physics box and NPC already built into
+  // the world: (60, -30) came back clear by at least 0.8 m either side of the pair's own stance and over
+  // 20 m from the nearest other soul, out on the quiet grass past the big lollipops east of the river.
+  { const chatWard = makeWardrobe(r, { shirts: [0xffe0ea, 0xbfe7ff, 0xfff3b0, 0xff9ecf], pants: [0x7fd7ff, 0xff9ecf, 0xffffff, 0x2a2420] });
+    const gossipA = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: r.chance(0.3), wardrobe: chatWard }), hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.3) });
+    const gossipB = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: r.chance(0.3), wardrobe: chatWard }), hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: false });
+    W.add(gossipA.group); W.add(gossipB.group);
+    game.npcs.push(new Talkers(game, gossipA, gossipB, { x: 60, z: -30, ry: 0.4,
+      lines: ["Have you tried this year's peppermints? Stronger than ever.", "I heard the Queen hasn't left the airlock in weeks.", "Mind the chocolate river — it never quite sets, that stuff.", 'The sentry at the gate looks half asleep today.'] })); }
   // the gingerbread men wander, march, dance, play catch and tag, and every doorstep on the lane is
   // lived-in, but nowhere in Candy Land to just sit and swing — the Neighborhood, Victorian, Sunny
   // Shore, Frosty Peak and Whisper Woods all have one already, the last gap among the seven. A headless

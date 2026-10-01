@@ -4357,3 +4357,25 @@ of the Neighborhood's ground still walkable (unchanged), "no two neighbours wear
 for 33 people)" passing again, all 273 checks `ok`, 0 console warnings, exit 0 across more than a dozen
 consecutive runs this round (after finding the first version flaky at roughly 1-in-5). Before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 181 — two gossips for Candy Land
+
+Every other tagged world had a `Talkers` pair — two people just standing and chatting — except Candy Land,
+which had gingerbread men wandering, marching, dancing in a ring, playing catch and tag, and every doorstep
+on the lane lived-in, but nobody who simply stood around and talked. **Two villagers now gossip on a quiet
+patch of grass east of the chocolate river**, past the big lollipops, taking turns with their hands going
+and a nod along from whoever isn't talking — **"I heard the Queen hasn't left the airlock in weeks."**
+
+They're plain `makeHuman()` townsfolk (not gingerbread — the `Talkers` controller reaches into `rig.arms[i].sh`
+and `.el` for the talking gesture, which the gingerbread rig's arms don't have; robots and humans both do, so
+this stays with people as every other world's `Talkers` pair already does), dressed from a shared candy-coloured
+wardrobe so they read as locals rather than a matched pair. A headless probe built the real game, travelled to
+Candy Land, and swept a grid of open-ground candidates against every physics box and NPC already standing in
+the world: `(60, -30)` came back clear by at least 0.8 m on both sides of the pair's own stance and over 20 m
+from the nearest other soul.
+
+Full suite: `world 1: 41 to meet` (up two, as expected — a `Talkers` pair is two separate friends), 91% of
+Candy Land's ground still walkable (unchanged), every NPC including both gossips still in the scene graph,
+all 273 checks `ok`, 0 console warnings, exit 0 across two consecutive runs (a few pre-existing, unrelated
+timing-sensitive readouts on Sunny Shore's kite and Frosty Peak's snowball count still vary run to run, as
+before this change). Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
