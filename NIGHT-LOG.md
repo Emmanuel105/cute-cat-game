@@ -4404,3 +4404,30 @@ way Round 180 did.
 Full suite: all 273 checks `ok`, 0 console warnings, exit 0 across two consecutive runs, Robot City's own
 checks (hello, friend count, the robot's hop, the loader robots' crate lift) all unchanged. Before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 183 — a seesaw for the Neighborhood's park
+
+The park had a swing set, a bench, a pond and a painter, but nothing for two children to share at once.
+**A seesaw now sits on the open grass east of the park path**, with a boy and a girl tipping it up and
+down, facing each other across the fulcrum.
+
+`makeSeesaw` in `60-props.js` is a new prop alongside `makeSwingSet` — a short post, a pivot bar, and a
+plank running along local x, with `userData.pivot`/`userData.armLen` for a controller to drive. `Seesaw`
+in `55-npcs.js` reparents both children's rigs into that pivot at `±armLen` (exactly how `Swinger` reparents
+its one rider into the swing's own pivot) and rotates the pivot about z each frame — a single rotating axis
+is all it takes for the two ends to rise and fall in opposite senses for free. Both kids are greetable, each
+through their own small `ctl` object with a world-space seat position for the "Say hi" interaction, the same
+pattern `Talkers` uses for its two standers. One thing deliberately left out: neither rider calls `lookAtCat`
+— their `rig.group.rotation.y` is local to the already-rotated pivot rather than a true world yaw, the same
+reason `Swinger`'s own rider never looks at the cat either.
+
+Placed at `(11, 45)`, inside the hand-built park rather than the region-filled country, so no `Z` keep-out
+zone was needed against procedural clutter — only one of its own, to protect it from later rounds. A
+headless probe built the real game, started it, and found the nearest other physics box (the park bench)
+6.2 m away; a second 900-frame (15 s) run kept the pivot's tilt oscillating cleanly between ±0.26 rad and
+every rider's position finite throughout, both still parented into the scene graph at the end.
+
+Full suite: `world 0: 38 to meet` (up two, as expected — two new friends), 96% of the Neighborhood's ground
+still walkable (unchanged, confirmed against the same build before this change), every NPC including both
+seesaw riders still in the scene graph, all 273 checks `ok`, 0 console warnings, exit 0 across two
+consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

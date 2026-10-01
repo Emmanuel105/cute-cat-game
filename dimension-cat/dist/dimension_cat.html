@@ -2582,6 +2582,36 @@ class Swinger {
   }
 }
 
+// ---------------------------------------------------------------- seesaw: two children tipping a plank up and down, facing each other across the fulcrum
+class Seesaw {
+  constructor(game, rigA, rigB, seesaw, { x, z, ry = 0 }) {
+    this.game = game; this.x = x; this.z = z; this.t = rnd() * 4; this.cryT = rnd.range(5, 10);
+    this.pivot = seesaw.userData.pivot; this.arm = seesaw.userData.armLen; this.rig = rigA;   // sanity checks look at npc.rig
+    const localY = seesaw.userData.seatY - this.pivot.position.y - 0.9 * rigA.k + 0.05;
+    this.ctls = [rigA, rigB].map((rig, i) => {
+      const side = i ? 1 : -1, px = x + sin(ry + PI / 2) * side * this.arm, pz = z + cos(ry + PI / 2) * side * this.arm;
+      rig.group.position.set(side * this.arm, localY, 0); rig.group.rotation.y = i ? -PI / 2 : PI / 2;   // facing each other across the fulcrum
+      this.pivot.add(rig.group);
+      const ctl = { game, rig, x: px, z: pz, look: 0, lookW: 0, tipT: 0, tipped: false, state: 'idle', timer: 0, circle: game.physics.addCircle(this, px, pz, 0.3) };
+      greetable(game, ctl); return ctl;
+    });
+  }
+  update(dt) {
+    this.t += dt; this.pivot.rotation.z = sin(this.t * 1.15) * 0.26;   // a slow, gentle tip
+    for (const ctl of this.ctls) {
+      const rig = ctl.rig;
+      rig.animate(0, false, dt, this.t);
+      for (const L of rig.legs) { L.hip.rotation.x = -PI / 2 + 0.1; L.knee.rotation.x = PI / 2 - 0.15; L.ankle.rotation.x = 0.15; }   // legs dangling off the end
+      if (!rig.gesture) for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -1.0, 8, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.75, 8, dt); }   // gripping the handle
+      rig.body.position.y = 0;
+      // no lookAtCat here: the rig is a child of the tipping pivot, so its rotation.y is local to that
+      // already-rotated frame rather than a world yaw — the same reason Swinger never calls it either.
+    }
+    this.cryT -= dt; const c = this.game.cat.group.position;
+    if (this.cryT <= 0) { this.cryT = rnd.range(8, 15); if (dist2(this.x, this.z, c.x, c.z) < 150) { this.game.toast('\ud83c\udfa0 "Up... and down!"', 1800); SFX.talk(); } }
+  }
+}
+
 // ---------------------------------------------------------------- ring dance: a circle of dancers going round, hand in hand
 class RingDance {
   constructor(game, rigs, { cx, cz, r = 2.4, speed = 0.55, turnEvery = 9, cries = null, cryIcon = '💬' }) {
@@ -4245,6 +4275,22 @@ function makeSwingSet(o = {}) {
   return g;
 }
 /**
+ * A seesaw: a plank on a central fulcrum, running along local x. `userData.pivot` is the group that
+ * tips — rotate it about z and the two ends (at ±`userData.armLen`) rise and fall in opposite senses
+ * for free, since they are just points either side of the same rotating axis.
+ */
+function makeSeesaw(o = {}) {
+  const g = new THREE.Group(), frame = mat(o.color ?? 0xf2c744, { roughness: 0.55, metalness: 0.2 }), wood = mat(0x8a5a32, { roughness: 0.85, map: TEX.planks(30, 40) });
+  const H = 0.46, L = 3.3, arm = L / 2 - 0.3;
+  mesh(G.box(0.22, H, 0.5), frame, { y: H / 2, parent: g });                      // the fulcrum post
+  mesh(G.cyl(0.07, 0.07, 0.3, 10), frame, { y: H, rz: PI / 2, parent: g });       // the pivot bar, under the plank
+  const pivot = group(0, H + 0.1, 0, g); g.userData.pivot = pivot; g.userData.armLen = arm;
+  mesh(G.box(L, 0.1, 0.4), wood, { parent: pivot });
+  for (const sx of [-1, 1]) mesh(G.box(0.1, 0.1, 0.1), frame, { x: sx * (arm + 0.22), y: 0.12, parent: pivot });   // handle knobs
+  g.userData.seatY = H + 0.1;   // plank-top height above the ground at rest
+  return g;
+}
+/**
  * One balloon on a string: the string is a unit cylinder along z from the group's origin, stretched
  * to the balloon each frame by `update`, and the balloon bobs. `keep` puts the materials in the
  * global bag, for a balloon that travels between worlds with the cat.
@@ -5899,6 +5945,10 @@ function buildNeighborhood(game, entry) {
   // a child on the swing
   { const sw = new Swinger(game, person({ child: true, female: true, hairStyle: 'pony' }), swingSet, { x: -7, z: 42.5 }); game.npcs.push(sw);
     game.addInteractable({ obj: swingSet, radius: 2.8, label: () => 'Push the swing', onUse: () => { sw.boost = 1; SFX.talk(); game.toast('\ud83c\udfa0 "Higher! Higher!"', 1800); } }); }
+  // a seesaw on the open grass east of the park path, two more kids tipping it up and down
+  { const seesaw = makeSeesaw({ color: 0xff8f3c }); place(game, U, seesaw, 11, 45, 0); Z.add(11, 45, 2.4, 1.2);
+    P.addBox(11, 0.35, 45, 2.9, 0.7, 0.6, { cam: false });
+    game.npcs.push(new Seesaw(game, person({ child: true, female: false }), person({ child: true, female: true, hairStyle: 'braids' }), seesaw, { x: 11, z: 45 })); }
   // the postie: every mailbox on the street in turn, south side east then north side west, round and round
   { const south = lots.filter((l) => l[2] === 0).map((l) => [l[0] + 1.6, 10.2]).sort((a, b) => a[0] - b[0]), north = lots.filter((l) => l[2] !== 0).map((l) => [l[0] + 1.6, 17.8]).sort((a, b) => b[0] - a[0]);
     const postie = person({ female: true, child: false, elder: false, shirt: 0x2f6fd6, pants: 0x1e2a44, shoes: 0x1e1a18, hat: 'cap', hatColor: 0x2f6fd6, bag: 0x8a5a32, jacket: null, scarf: null, skirt: null, hairStyle: 'pony' });

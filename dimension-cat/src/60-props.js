@@ -414,6 +414,22 @@ function makeSwingSet(o = {}) {
   return g;
 }
 /**
+ * A seesaw: a plank on a central fulcrum, running along local x. `userData.pivot` is the group that
+ * tips — rotate it about z and the two ends (at ±`userData.armLen`) rise and fall in opposite senses
+ * for free, since they are just points either side of the same rotating axis.
+ */
+function makeSeesaw(o = {}) {
+  const g = new THREE.Group(), frame = mat(o.color ?? 0xf2c744, { roughness: 0.55, metalness: 0.2 }), wood = mat(0x8a5a32, { roughness: 0.85, map: TEX.planks(30, 40) });
+  const H = 0.46, L = 3.3, arm = L / 2 - 0.3;
+  mesh(G.box(0.22, H, 0.5), frame, { y: H / 2, parent: g });                      // the fulcrum post
+  mesh(G.cyl(0.07, 0.07, 0.3, 10), frame, { y: H, rz: PI / 2, parent: g });       // the pivot bar, under the plank
+  const pivot = group(0, H + 0.1, 0, g); g.userData.pivot = pivot; g.userData.armLen = arm;
+  mesh(G.box(L, 0.1, 0.4), wood, { parent: pivot });
+  for (const sx of [-1, 1]) mesh(G.box(0.1, 0.1, 0.1), frame, { x: sx * (arm + 0.22), y: 0.12, parent: pivot });   // handle knobs
+  g.userData.seatY = H + 0.1;   // plank-top height above the ground at rest
+  return g;
+}
+/**
  * One balloon on a string: the string is a unit cylinder along z from the group's origin, stretched
  * to the balloon each frame by `update`, and the balloon bobs. `keep` puts the materials in the
  * global bag, for a balloon that travels between worlds with the cat.

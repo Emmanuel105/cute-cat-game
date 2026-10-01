@@ -816,6 +816,36 @@ class Swinger {
   }
 }
 
+// ---------------------------------------------------------------- seesaw: two children tipping a plank up and down, facing each other across the fulcrum
+class Seesaw {
+  constructor(game, rigA, rigB, seesaw, { x, z, ry = 0 }) {
+    this.game = game; this.x = x; this.z = z; this.t = rnd() * 4; this.cryT = rnd.range(5, 10);
+    this.pivot = seesaw.userData.pivot; this.arm = seesaw.userData.armLen; this.rig = rigA;   // sanity checks look at npc.rig
+    const localY = seesaw.userData.seatY - this.pivot.position.y - 0.9 * rigA.k + 0.05;
+    this.ctls = [rigA, rigB].map((rig, i) => {
+      const side = i ? 1 : -1, px = x + sin(ry + PI / 2) * side * this.arm, pz = z + cos(ry + PI / 2) * side * this.arm;
+      rig.group.position.set(side * this.arm, localY, 0); rig.group.rotation.y = i ? -PI / 2 : PI / 2;   // facing each other across the fulcrum
+      this.pivot.add(rig.group);
+      const ctl = { game, rig, x: px, z: pz, look: 0, lookW: 0, tipT: 0, tipped: false, state: 'idle', timer: 0, circle: game.physics.addCircle(this, px, pz, 0.3) };
+      greetable(game, ctl); return ctl;
+    });
+  }
+  update(dt) {
+    this.t += dt; this.pivot.rotation.z = sin(this.t * 1.15) * 0.26;   // a slow, gentle tip
+    for (const ctl of this.ctls) {
+      const rig = ctl.rig;
+      rig.animate(0, false, dt, this.t);
+      for (const L of rig.legs) { L.hip.rotation.x = -PI / 2 + 0.1; L.knee.rotation.x = PI / 2 - 0.15; L.ankle.rotation.x = 0.15; }   // legs dangling off the end
+      if (!rig.gesture) for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -1.0, 8, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.75, 8, dt); }   // gripping the handle
+      rig.body.position.y = 0;
+      // no lookAtCat here: the rig is a child of the tipping pivot, so its rotation.y is local to that
+      // already-rotated frame rather than a world yaw — the same reason Swinger never calls it either.
+    }
+    this.cryT -= dt; const c = this.game.cat.group.position;
+    if (this.cryT <= 0) { this.cryT = rnd.range(8, 15); if (dist2(this.x, this.z, c.x, c.z) < 150) { this.game.toast('\ud83c\udfa0 "Up... and down!"', 1800); SFX.talk(); } }
+  }
+}
+
 // ---------------------------------------------------------------- ring dance: a circle of dancers going round, hand in hand
 class RingDance {
   constructor(game, rigs, { cx, cz, r = 2.4, speed = 0.55, turnEvery = 9, cries = null, cryIcon = '💬' }) {
