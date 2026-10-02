@@ -1405,6 +1405,15 @@ function buildVictorian(game, entry) {
     P.addBox(kx + 0.4, 0.09, kz + 0.15, 0.22, 0.18, 0.14, { cam: false });
     game.npcs.push(new Forager(game, feeder, { x: kx, z: kz, ry, cryIcon: '🍞',
       cries: ["Not too close, puss, these are for the birds.", "There's always one greedier than the rest.", "Stale by Tuesday, but they never mind."] })); }
+  // the market square had pigeons but no rat — every market has one. A scrawnier, darker cousin of the
+  // sugar mouse and the factory mouse now skulks in the square's quiet south-west corner, well behind the
+  // pieman's own pitch rather than out where the pigeons gather at the fountain. A headless probe (walking
+  // the built Victorian world's own physics box list) swept this corner: (-13, -45) sits 2.2 m clear of the
+  // pieman's stall at (-10, -42) (half-extent 1.6x0.8) and over 11 m from the nearest lamp, with the whole
+  // 1.3 m hop leash staying inside the paved plaza (30x26, centred (0,-34)) and clear of the birch at (-12,-50)
+  { const rig = makeAlleyRat();
+    game.npcs.push(new Hopper(game, rig, { x: -13, z: -45, leash: 1.3, r: 0.1, dist: [0.25, 0.65], dur: 0.3, height: 0.2, idle: [1, 3.4],
+      onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } })); }
   // a juggler works the open cobbles between the fountain and the west-side stalls, three balls always in the air
   { const jx = -6, jz = -34;
     const juggler = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),

@@ -4925,3 +4925,21 @@ needed this time; the clean build passed first try once the controller was right
 Full suite: `the Neighborhood has 40 people to meet` (up one, from 39), every NPC including the new
 musician still in the scene graph, all 273 checks `ok`, 0 console warnings, exit 0 across four
 consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 206 — a rat for Victorian's market square
+
+Victorian's market square had pigeons (round 178) and a crumb-feeder to mind them (round 196), but no
+rat — every real market has one, usually unminded. **A scrawnier, darker cousin of the sugar mouse and
+the factory mouse now skulks in the square's south-west corner**, darting between the stalls rather than
+sitting pretty by the fountain with the pigeons. `makeAlleyRat()` is the same `makeQuadruped()` factory
+those two already use, just greyer and a touch bigger, and it runs on the same `Hopper` controller — no
+new rig, no new controller, just a third recolour of a shape the game already knows how to build and bake.
+
+Placed it well clear of the pieman's own pitch rather than out in the open where the pigeons gather: a
+quick headless build of the real Victorian world (travelling to world 3 and reading `game.physics.boxes`
+straight back out) confirmed (-13, -45) has nothing within 2.5 m in any direction — 2.2 m clear of the
+pieman's stall at (-10, -42) and well inside the paved plaza, clear of the birch tree further south. Like
+the sugar mouse and the factory mouse before it, it's ambient wildlife rather than a friend to meet, so
+Victorian's own friend count is unchanged. Full suite: all checks `ok` including `world 3: every NPC is
+in the scene graph` and `world 3: 96% of the ground is walkable` (unchanged), 0 console warnings, exit 0,
+before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
