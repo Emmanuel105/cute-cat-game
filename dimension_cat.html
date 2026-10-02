@@ -7084,6 +7084,24 @@ function buildVictorian(game, entry) {
   // both homes sit past it on x) and the two east-side stalls (half-extent 1.6 m at (10,-29.3)/(10,-43.3)):
   // nearest approach with leash included is still over 1.5 m clear of either.
   for (const [x, z] of [[5, -34], [6.5, -37.5]]) { const rig = makePigeon(); game.npcs.push(new Hopper(game, rig, { x, z, leash: 1.1, r: 0.08, dist: [0.25, 0.55], dur: 0.25, height: 0.1, idle: [1, 3.2], onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } })); }
+  // the pigeons above never had anyone minding them — every other world's wildlife has a human
+  // companion of its own (the Neighborhood's birdwatcher for the sparrows, Sunny Shore's for the gulls,
+  // the snow and forest worlds' too). A crumb-feeder now kneels on the square's quiet east side, a
+  // paper bag of breadcrumbs at her knee, reusing Forager's own kneel-and-toss exactly as the woods'
+  // mushroom-picker already does — the particle burst reads just as well as scattered crumbs as it
+  // does a popped-free mushroom. Placed at (10, -35): over 4.5 m clear of both east-side stalls
+  // (half-extent 1.6 m at (10,-29.3)/(10,-43.3)) and the nearest lamp (14,-34), well past the fountain's
+  // own box (half-extent 3.4 m, centred (0,-34)), and clear of each pigeon's own 1.1 m hop leash with
+  // room to spare, facing the pair of them.
+  { const kx = 10, kz = -35, hx = 5.75, hz = -35.75, ry = atan2(hx - kx, hz - kz);
+    const crumbWard = makeWardrobe(r, { shirts: [0x6a5a4a, 0x5a6a5a, 0x4a5a6a], pants: [0x2a2420], shoes: [0x2a2018] });
+    const feeder = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: r.chance(0.45), wardrobe: crumbWard }),
+      pants: 0x2a2420, apron: 0x6a5a4a, hat: 'bonnet', hatColor: 0x4a5a3a, scarf: 0x7a6a5a, bag: null, jacket: null, glasses: false });
+    W.add(feeder.group);
+    mesh(G.box(0.22, 0.18, 0.14), mat(0xd9c9a8, { roughness: 0.9 }), { x: kx + 0.4, y: 0.09, z: kz + 0.15, ry: 0.3, parent: W });   // the paper bag of crumbs
+    P.addBox(kx + 0.4, 0.09, kz + 0.15, 0.22, 0.18, 0.14, { cam: false });
+    game.npcs.push(new Forager(game, feeder, { x: kx, z: kz, ry, cryIcon: '🍞',
+      cries: ["Not too close, puss, these are for the birds.", "There's always one greedier than the rest.", "Stale by Tuesday, but they never mind."] })); }
   // a juggler works the open cobbles between the fountain and the west-side stalls, three balls always in the air
   { const jx = -6, jz = -34;
     const juggler = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),

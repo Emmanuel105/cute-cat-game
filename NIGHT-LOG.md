@@ -4676,3 +4676,24 @@ Full suite: `world 5: 41 to meet` (up one, as expected, up from 40), 98% of Fros
 walkable (unchanged), every NPC including the new patroller still in the scene graph, all 273 checks
 `ok`, 0 console warnings, exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 196 — a crumb-feeder for Victorian's pigeons
+
+Victorian's market square got a pair of pigeons back in round 178, but nobody ever minded them —
+every other world's wildlife has a human companion of its own (the Neighborhood's birdwatcher for the
+sparrows, Sunny Shore's for the gulls, the snow and forest worlds' too). **A woman now kneels on the
+square's quiet east side**, a paper bag of breadcrumbs at her knee, tossing out a handful every couple
+of seconds. *"Not too close, puss, these are for the birds."* It reuses `Forager`'s own kneel-and-toss
+exactly as the woods' mushroom-picker already does — the little burst of particles on each toss reads
+just as well as scattered crumbs as it does a popped-free mushroom, so no new controller was needed.
+
+Placed by hand at (10, -35), facing the two pigeons: over 4.5 m clear of both east-side market stalls
+(half-extent 1.6 m at (10,-29.3) and (10,-43.3)) and the nearest lamp at (14,-34), well past the
+fountain's own box (half-extent 3.4 m, centred (0,-34)), and clear of each pigeon's own 1.1 m hop
+leash with room to spare. The little paper bag beside her got its own small physics box so the cat
+can't walk straight through it.
+
+Full suite: `world 3: 50 to meet` (up one, as expected, up from 49), 96% of Victorian's ground still
+walkable (unchanged, within the usual floating-point jitter), every NPC including the new feeder still
+in the scene graph, all 290+ checks `ok`, 0 console warnings, exit 0 across two consecutive runs.
+Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
