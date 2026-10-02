@@ -4776,3 +4776,27 @@ Full suite: friend counts unchanged in every world (ducks aren't greetable), eve
 graph, all 273 checks `ok`, 0 console warnings, exit 0 across two consecutive runs — the first run after
 the quack-timer fix, and one more after, to be sure. Before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 200 — a meditating hiker, deep in Whisper Woods
+
+Whisper Woods was tied for fewest friends of the seven worlds (38, alongside the Neighborhood and Sunny
+Shore), and every soul already in it clusters near the glade, the treehouse or the four stumps — the
+deep forest to the west, past the fox's den, had nobody in it at all. **A hiker now sits cross-legged on
+the forest floor, eyes closed, meditating in the quiet.** *"Didn't hear you coming. Good sign,
+apparently."*
+
+It's the plain `Sitter` controller already doing duty as the reader on the grass and the beach's own
+ukulele player, seated straight onto the ground (`seat: 0.1`) rather than a bench — no new code, just a
+new person in a new spot. Finding that spot took a headless probe: it built the real game in Node against
+the test harness's own stub three.js, clicked through to the start screen, travelled to Whisper Woods, and
+then swept a grid of candidates against every one of the world's 694 physics boxes *and* every NPC's own
+position (rigs, flyers, hoppers — all of them), sampled every few frames over 40 simulated seconds so
+neither the fox denned at (-26,-14) nor the deer at (-24,4) could wander past the check unnoticed, mid-leash.
+(-34, 1) came back clear by 9.4 m in every direction — comfortably short of the tree ring that only starts
+at radius 40, and far enough from the glade (26 m) that it reads as its own quiet corner of the wood rather
+than crowding anyone already there.
+
+Full suite: `world 6: 39 to meet` (up one, from 38), every NPC including the new hiker still in the scene
+graph, 98% of the wood's ground still walkable (unchanged), all 273 checks `ok`, 0 console warnings, exit 0
+across two consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.

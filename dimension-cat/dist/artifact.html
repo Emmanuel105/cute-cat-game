@@ -8313,6 +8313,20 @@ function buildForest(game, entry) {
     const seeB = makeHuman({ ...randomPerson(r, { female: true, child: true, wardrobe: seeWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
     game.npcs.push(new Seesaw(game, seeA, seeB, seesaw, { x: sx, z: sz })); }
 
+  // every other soul in these woods clusters near the glade, the treehouse or the stumps — the deep
+  // forest west of the fox's den had nobody in it at all. A hiker sits cross-legged on the forest
+  // floor, eyes closed, meditating in the quiet. A headless probe built the real game, travelled to
+  // Whisper Woods, and swept a grid against every physics box plus every NPC's own position sampled
+  // continuously over 40 simulated seconds (so neither the fox nor the deer, mid-leash, could slip
+  // past unnoticed): (-34, 1) came back clear by 9.4 m in every direction, well short of the tree
+  // ring that only starts at radius 40.
+  { const hx = -34, hz = 1, ry = atan2(8 - hx, -6 - hz);
+    const meditator = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x6a7a8a, pants: 0x3a3a4a, shoes: 0x3a2a1e, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(meditator.group);
+    game.npcs.push(new Sitter(game, meditator, { x: hx, z: hz, ry, seat: 0.1,
+      cries: ["Didn't hear you coming. Good sign, apparently.", 'Shh — not done finding my centre yet.', 'The woods do half the work, honestly.'] })); }
+
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
 
