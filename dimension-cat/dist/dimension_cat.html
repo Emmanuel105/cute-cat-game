@@ -6396,6 +6396,32 @@ function buildNeighborhood(game, entry) {
     });
   }
 
+  // a ukulele player stands in the quiet yard behind the north-row houses, strumming — Sunny Shore,
+  // Frosty Peak and Victorian all have someone making music (a ukulele on the dunes, a juggling busker,
+  // a fiddler at the clock tower), but no street in the Neighborhood ever had its own musician, just
+  // practising for nobody in particular. `Charger` (already the fiddler's own controller) rather than
+  // `Sitter` — the test counts the park bench's sitters by class name and expects exactly two, so a
+  // third `Sitter` anywhere in this world would break that count even sitting nowhere near the bench
+  // (own small wardrobe, not the street's shared `ward` bag, which is sized exactly to its 18 users
+  // already; placed last of every person this build adds, after the sparrows, so it draws from the very
+  // tail of both the local `r` and the shared `rnd()` sequences and disturbs the fewest later ticks of
+  // either)
+  // (a headless probe over the built world — every physics box and NPC/squirrel position swept against a
+  // grid of candidate yard spots north of the houses — found (-38, 37) clear: 21 m from the nearest other
+  // soul (the ring-dance circle further west) and 6.7 m from the nearest physics box (the house at x=-45's
+  // own back wall), well short of the park path to its north)
+  { const mx = -38, mz = 37, mry = atan2(0 - mx, 36 - mz);
+    const museWard = makeWardrobe(r, { shirts: [0xd9a15a, 0x6a8a4a, 0x8a5acf], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0xefe7d8, 0x8d6e63] });
+    const musician = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.25), wardrobe: museWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.3) });
+    W.add(musician.group);
+    const uke = makeUkulele(r.pick([0xd9a15a, 0xc9915a, 0xb98a52]));
+    uke.position.set(0.03, -0.02, 0.14); uke.rotation.set(-0.25, 0.1, 0.2);
+    musician.hands[1].add(uke);
+    game.npcs.push(new Charger(game, musician, { x: mx, z: mz, ry: mry,
+      cries: ["Three chords and the truth, my gran always said.", "Careful, puss — that's out of tune, not broken.", "Nobody's listening, which is the best audience there is."] }));
+    U.push((dt, t) => { const A = musician.arms[1]; A.el.rotation.x = -1.0 + sin(t * 5.4) * 0.22; A.sh.rotation.z = -0.15; }); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

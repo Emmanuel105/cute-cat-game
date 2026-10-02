@@ -4898,3 +4898,30 @@ map, at least 22 m clear in every direction — nothing needed to be nudged or b
 Full suite: `world 4: 40 to meet` (up one, from 39), every NPC including the new sculptor still in the
 scene graph, all 273 checks `ok`, 0 console warnings, exit 0 across three consecutive runs. Before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 205 — a ukulele player in the Neighborhood's back yards
+
+The Neighborhood was the clear lowest of the seven worlds at 39 friends again, and three of its other
+six worlds already have someone making music — a ukulele player on Sunny Shore's dunes, a juggling
+busker at Frosty Peak, a fiddler resting at the foot of Victorian's clock tower — but no street in the
+Neighborhood had ever had its own musician. **Someone now stands in the quiet yard behind the north-row
+houses, strumming a ukulele for no audience at all.** *"Nobody's listening, which is the best audience
+there is."*
+
+A headless probe built the real game, swept a grid of candidate yard spots north of the houses against
+every physics box and every NPC's and squirrel's own position, and found (-38, 37) clear: 21 m from the
+nearest other soul (the ring-dance circle further west) and 6.7 m from the nearest physics box (the
+house at x=-45's own back wall). The ukulele itself is the same `makeUkulele()` prop the beach musician
+already uses, reused rather than rebuilt.
+
+The real snag wasn't the shared `rnd()` sequence this round — it was `test/run.mjs` itself. The beach
+musician stands on a `Sitter`, and this round started out copying that choice, but the Neighborhood's
+own test counts `Sitter` instances by class name and asserts there are exactly two (the pair on the park
+bench). A third `Sitter` anywhere in the world, nowhere near the bench included, broke that count
+outright. Switched to `Charger` instead — already the fiddler's own controller in Victorian, a plain
+standing idle-and-cry loop with no pose assumptions attached — and the count held. No `rnd()` burn was
+needed this time; the clean build passed first try once the controller was right.
+
+Full suite: `the Neighborhood has 40 people to meet` (up one, from 39), every NPC including the new
+musician still in the scene graph, all 273 checks `ok`, 0 console warnings, exit 0 across four
+consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
