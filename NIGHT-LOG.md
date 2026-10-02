@@ -4719,3 +4719,27 @@ Full suite: `world 4: 38 to meet` (up one, as expected, up from 37), ground walk
 up to 100% (unchanged in substance, just where the floating-point sampling landed), every NPC including
 the new patroller still in the scene graph, all 290+ checks `ok`, 0 console warnings, exit 0 across two
 consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 198 — a scrap scanner for Robot City
+
+Every other world already had a `Detectorist` sweeping the ground for buried treasure — the
+Neighborhood's bottle-cap hunter, Sunny Shore's, Frosty Peak's and Whisper Woods' own — but Robot City,
+which drops more hardware off its conveyors than any of them, was the one world left without. **A
+contractor now sweeps the open concrete east of the second factory line with a handheld scanner**,
+hunting for whatever the loader robots have shaken loose. *"Just a washer. Every time."* It's a human
+rather than a robot: `Detectorist` reaches into `rig.hands[0]`, `rig.spine` and `rig.head` for its stance,
+which `makeRobot()`'s own rig never sets, so this one got the same treatment the mechanic, painter and
+oil vendor elsewhere in the city already did.
+
+A headless probe built the real game, travelled to Robot City, and swept a grid of candidates against
+every one of its 1164 physics boxes and every NPC's own position — then, because a patrol beat or a
+chase game isn't just wherever its mover happens to be standing at the moment of the snapshot, checked
+the three nearby loops by their true shape: the sentry's full rectangle, the tag robots' leash circle at
+(28,-40) and the catch robots' throw gap at (2,-54). (32, -56) came back clear of all three — 19.8 m from
+the nearest point on the sentry's beat, 10.4 m past the tag pair's leash and 25.8 m past the catch pair's
+gap — on open concrete well inside the radius (98) where `robotRegion`'s own procedural fill takes over.
+
+Full suite: `world 2: 45 to meet` (up one, as expected, up from 44), 88% of Robot City's ground still
+walkable (unchanged), every NPC including the new scanner still in the scene graph, all 273 checks `ok`,
+0 console warnings, exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

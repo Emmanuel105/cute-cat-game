@@ -1135,6 +1135,24 @@ function buildRobotCity(game, entry) {
     W.add(worker.group);
     game.npcs.push(new Sitter(game, worker, { x: sx, z: sz, ry: -0.6, seat: 0.8,
       cries: ["Five minutes. That's all I'm owed and all I'm taking.", "Don't tell the foreman I sat down.", 'Quietest spot on the whole floor, this.'] })); }
+  // every other world already has a Detectorist (the Neighborhood's treasure hunter, Sunny Shore's and
+  // Frosty Peak's and Whisper Woods' own) — Robot City, which drops more hardware off its conveyors than
+  // any of them, was the one world left without. Detectorist reaches into rig.hands[0], rig.spine and
+  // rig.head, which makeRobot()'s rig never sets, so this one is a human contractor rather than a robot —
+  // exactly the same choice the mechanic, painter and oil vendor elsewhere in this city already made. A
+  // headless probe swept a grid of candidate points against every one of the city's 1164 physics boxes
+  // and every NPC's own position, then checked the three nearby patrol/game loops by their true shape
+  // rather than a single snapshot: the sentry's full rectangle ([-15,-35] to [15,-45]), the tag robots'
+  // leash circle at (28,-40) and the catch robots' throw gap at (2,-54). (32, -56) came back clear of all
+  // three — 19.8 m from the nearest point on the sentry's beat, 10.4 m past the tag pair's own leash and
+  // 25.8 m past the catch pair's gap — on open concrete east of the second conveyor line, well inside the
+  // radius (98) where robotRegion's own procedural fill takes over.
+  { const scanWard = makeWardrobe(r, { shirts: [0x4a5a6a, 0x5a4a6a, 0x3a4a5a], pants: [0x232c34, 0x2a2a30] });
+    const scanner = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: scanWard }),
+      hat: 'cap', hatColor: 0x3a4a5a, jacket: null, scarf: null, bag: null, glasses: r.chance(0.3) });
+    W.add(scanner.group);
+    game.npcs.push(new Detectorist(game, scanner, { x: 32, z: -56, ry: atan2(0 - 32, 0 - (-56)),
+      cries: ['Just a washer. Every time.', 'Careful, puss — mind the cable.', "One day it'll be a whole gearbox."] })); }
   // the Neighborhood, Candy Land, Victorian, Sunny Shore and Frosty Peak all have a swing set; Robot
   // City had tag, catch and a ring dance for its own robots but nowhere for anyone to just sit and
   // swing — the last of the seven without one. A headless probe swept a clearance disc against every
