@@ -4470,3 +4470,26 @@ NPC including both new riders still in the scene graph, all 273 checks `ok`, 0 c
 across two consecutive runs (the kite, the cat's resting height on sand/snow/leaf terrain and a couple of
 other timing-sensitive readouts still vary run to run, as before this change, and unrelated to it). Before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 186 — a seesaw for Sunny Shore
+
+The Neighborhood, Candy Land and Victorian all paired their swing set with a seesaw over the last three
+rounds; Sunny Shore had the swing set (north of the lifeguard chair) but never the seesaw. **Two more
+beach kids now tip a plank up and down on the dry sand north of the swing set**, same prop and controller,
+just reusing `beachPerson` for the wardrobe so they look like they belong on this beach rather than any
+other.
+
+Sunny Shore's ground isn't flat the way the first four worlds are — the dunes rise gently inland — so
+this is the first seesaw placed with `placeT` (ground-following) rather than a fixed `y`, with its physics
+box's height read from `ground0` too; the swing set a few rounds back was planted at a hardcoded `y: 0`
+and actually sits about 0.4 m into the sand there, which this round left alone rather than relitigating.
+A headless probe built the real game, travelled to the shore, and swept a clearance scan against every
+physics box, NPC circle and wandering rig's own position — sampled continuously over 20 simulated seconds
+so a `Wanderer` mid-leash couldn't slip past unnoticed: `(8, 38)` came back clear by at least 6.3 m
+throughout, 11 m past the swing set itself and well inside the 58 m radius where the procedural region
+fill begins.
+
+Full suite: `world 4: 37 to meet` (up two, as expected), 99% of Sunny Shore's ground still walkable, every
+NPC including both new riders still in the scene graph, all 273 checks `ok`, 0 console warnings, exit 0
+across two consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.

@@ -7427,6 +7427,19 @@ function buildBeach(game, entry) {
     const swingKid = beachPerson(r.chance(0.5), true);
     const sw = new Swinger(game, swingKid, swingSet, { x: sx, z: sz }); game.npcs.push(sw); greetable(game, sw);
     game.addInteractable({ obj: swingSet, radius: 2.8, label: () => 'Push the swing', onUse: () => { sw.boost = 1; SFX.talk(); game.toast('🎠 "Higher! Higher!"', 1800); } }); }
+  // the Neighborhood, Candy Land, Robot City and Victorian all paired their swing set with a seesaw —
+  // Sunny Shore's swing set (above) never got one. A headless probe swept the dry dune sand north of it
+  // against every physics box, NPC circle and wandering rig's own position, sampled over 20 simulated
+  // seconds so a Wanderer mid-leash wouldn't be missed: (8, 38) came back clear by at least 6.3 m
+  // throughout, 11 m past the swing set itself and well short of the region fill that only starts past
+  // 58 m out. Terrain here isn't flat (the dune rises gently inland), so, unlike the swing set's own fixed
+  // y, the seesaw is ground-following with `placeT`.
+  { const sx = 8, sz = 38;
+    const seesaw = makeSeesaw({ color: 0x2e9e6e }); placeT(game, U, seesaw, sx, sz, 0);
+    game.zones.add(sx, sz, 2.4, 1.2);
+    P.addBox(sx, game.physics.ground0(sx, sz) + 0.35, sz, 2.9, 0.7, 0.6, { cam: false });
+    const seeA = beachPerson(false, true), seeB = beachPerson(true, true);
+    game.npcs.push(new Seesaw(game, seeA, seeB, seesaw, { x: sx, z: sz })); }
   // the beach dog keeps to its own patch of sand — it does not follow the cat
   const dog = makeDog(0xc8925a); W.add(dog.group); game.npcs.push(new Wanderer(game, dog, { x: -2, z: 28, speed: 1.1, leash: 7, r: 0.35, height: 0.9, step: 0.3, idle: [1.5, 4], walk: [2, 5] }));
   let woofT = rnd.range(6, 12); U.push((dt) => { woofT -= dt; if (woofT <= 0) { SFX.woof(); woofT = rnd.range(10, 20); } });
