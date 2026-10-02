@@ -4823,3 +4823,33 @@ scene graph, 99% of Sunny Shore's ground still walkable, all 290 checks `ok`, 0 
 across two consecutive runs (a few physics-timing numbers — kite height, snowball throw count, exact
 resting y — jittered slightly between runs as they always do; no check flipped to FAIL). Before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 202 — a sunbather in a Neighborhood back garden
+
+With Sunny Shore and Whisper Woods both bumped up two rounds ago, the Neighborhood was left the clear
+lowest of the seven worlds at 38 friends, and for all its traffic — strollers, a postie, a cyclist, a
+beekeeper, a whole street's worth of vignettes — nobody had ever just lain out in their own back garden
+and done nothing. **Someone's stretched out on a blanket behind the house at the far east end of the
+street, sunglasses on, a little radio playing beside them.** *"Who needs the seaside when you've got a
+garden?"*
+
+It's the plain `Sunbather` controller already doing duty as the beach's three towel-loungers, lying flat
+on a `makeTowel()` blanket instead of sand, in its own small wardrobe (not the street's shared bag, which
+is sized exactly to its 18 regulars already). The radio beside it is a new, tiny static prop — a body, a
+speaker face, two knobs and a bent antenna — built the same plain way as the carrot basket and the
+bee-keeper's hives earlier in this same file. The backyard behind the house at x=72 came back clear in a
+check against every physics box and NPC position already in the world: 12 m from the nearest other soul
+(the detectorist out in the field beyond), 8.8 m short of the house's own back wall.
+
+The one snag was the shared, timing-sensitive `rnd()` sequence every controller's constructor draws its
+opening phase from: adding this one new call shifted the exact moment every later wanderer, in every
+world built afterward, hits its own random state changes, and on the first run that was enough to land a
+stroller in the cyclist's lane right when the westbound-cyclist check measured its two-second ride,
+failing it outright. One burn draw before the blanket goes down — exactly the fix the Chopper, the Vendor
+and the vegetable patch all needed before it, found the same way, by bisecting which draw count made the
+collision go away — cleared it. Confirmed clean over seven consecutive full runs, not just one, since
+nothing about this fix is a proof, only an empirical nudge of a chaotic shared sequence.
+
+Full suite: `the Neighborhood has 39 people to meet` (up one, from 38), every NPC including the new
+sunbather still in the scene graph, all 291 checks `ok`, 0 console warnings, exit 0 across seven
+consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

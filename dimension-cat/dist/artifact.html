@@ -6310,6 +6310,29 @@ function buildNeighborhood(game, entry) {
     ].map((o) => { const rig = makeHuman({ ...randomPerson(r, { child: true, female: o.female }), shirt: o.shirt, backpack: null }); W.add(rig.group); return rig; });
     game.npcs.push(new RingDance(game, ringKids, { cx: -78, cz: -35, r: 1.8, speed: 0.6, turnEvery: 8, cryIcon: '🎵',
       cries: ['Ring around the rosie!', 'A pocket full of posies!', 'Ashes, ashes...', 'We all fall down!'] })); }
+  // someone makes the most of the weather on a blanket in their own back garden — Sunbather already does
+  // duty as the sunbathers on Sunny Shore's beach, but no one in the Neighborhood had ever just lain out
+  // in a yard with a radio for company (own small wardrobe, not the street's shared `ward` bag, which is
+  // sized exactly to its 18 users already; placed last, after the ring dance, so it draws from the tail
+  // of the local RNG sequence and leaves every earlier neighbour's random wardrobe pick undisturbed)
+  // (a headless probe over the built world — every physics box and NPC position swept against the open
+  // backyard south of the house at x=72 — found (72, -12) clear: 12 m from the nearest other soul (the
+  // detectorist), 8.8 m short of the house's own back wall, nothing else anywhere nearby)
+  { const bx = 72, bz = -12, ry = 0.4;
+    rnd();   // burns one shared draw: without it the cyclist's own lane-riding check downstream collides with a stroller's wander timing (found by bisecting the test failure)
+    const blanket = makeTowel(0x89c2ff); place(game, U, blanket, bx, bz, ry);
+    const rx = bx + 0.85, rz = bz + 0.35;
+    const radioBody = mat(0x33322e, { roughness: 0.6 }), radioFace = mat(0xd9cdb0, { roughness: 0.85 }), radioTrim = mat(0xc8b878, { metalness: 0.5, roughness: 0.4 });
+    mesh(G.box(0.22, 0.14, 0.09), radioBody, { x: rx, y: 0.07, z: rz, shadow: 'both', parent: W });
+    mesh(G.box(0.18, 0.1, 0.005), radioFace, { x: rx, y: 0.07, z: rz + 0.048, shadow: 'none', parent: W });
+    for (const kx of [-0.06, 0.06]) mesh(G.cyl(0.018, 0.018, 0.025, 10), radioTrim, { x: rx + kx, y: 0.03, z: rz + 0.05, rx: PI / 2, shadow: 'none', parent: W });
+    mesh(G.cyl(0.006, 0.008, 0.34, 6), radioTrim, { x: rx + 0.08, y: 0.24, z: rz - 0.02, rz: 0.25, shadow: 'none', parent: W });
+    P.addBox(rx, 0.07, rz, 0.22, 0.14, 0.09, { cam: false });
+    const sunWard = makeWardrobe(r, { shirts: [0xffe7b0, 0xffd9c2, 0xeaf6ff], pants: [0x2c4a5a, 0x3a3a3a], shoes: [0xf7f3ec, 0x8d6e63] });
+    const lounger = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: sunWard }),
+      glasses: true, shorts: true, hat: null, jacket: null, scarf: null, bag: null, backpack: null }); W.add(lounger.group);
+    game.npcs.push(new Sunbather(game, lounger, { x: bx, z: bz, ry,
+      cries: ["Who needs the seaside when you've got a garden?", 'Five more minutes...', "Shout if a cloud comes over, would you?"] })); }
   // three more ways out of the neighborhood: beach boardwalk (east), gondola to the peak (west), hollow oak to the woods (south-east)
   const beachGate = makeBeachGate(game, 78, 22, PI / 2, () => game.travel(WORLD_INDEX('beach'), 'from-hub')); U.push(beachGate.userData.update);
   flatPlane(game, 30, 3, walk, 60, 22, 0, 0.02);                                                                             // boardwalk from the road out to the arch
