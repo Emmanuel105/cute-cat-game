@@ -7749,6 +7749,20 @@ function buildSnowVillage(game, entry) {
     const swingKid = kid(r.chance(0.5));
     const sw = new Swinger(game, swingKid, swingSet, { x: sx, z: sz }); game.npcs.push(sw); greetable(game, sw);
     game.addInteractable({ obj: swingSet, radius: 2.8, label: () => 'Push the swing', onUse: () => { sw.boost = 1; SFX.talk(); game.toast('🎠 "Higher! Higher!"', 1800); } }); }
+  // the Neighborhood, Candy Land, Robot City, Victorian and Sunny Shore all paired their swing set with
+  // a seesaw — Frosty Peak's own (above) never got one, leaving only Whisper Woods still without. A
+  // headless probe swept a 20 s clearance scan, sampling every physics box, NPC circle and wandering
+  // rig's own position continuously so nothing mid-leash could slip past unnoticed: (-50, 22) came back
+  // clear by over 8 m throughout, downhill and south of the swing set, still well inside the radius (58)
+  // where snowRegion's own fill takes over (its own 11 m zone claim keeps the fill out regardless).
+  // The slope here isn't flat either, so like Sunny Shore's seesaw this one is ground-following with
+  // `placeT`, unlike the swing set's own fixed y a few metres uphill.
+  { const sx = -50, sz = 22;
+    const seesaw = makeSeesaw({ color: 0xd64550 }); placeT(game, U, seesaw, sx, sz, 0);
+    game.zones.add(sx, sz, 2.4, 1.2);
+    P.addBox(sx, game.physics.ground0(sx, sz) + 0.35, sz, 2.9, 0.7, 0.6, { cam: false });
+    const seeA = kid(false), seeB = kid(true);
+    game.npcs.push(new Seesaw(game, seeA, seeB, seesaw, { x: sx, z: sz })); }
 
   game.zones.addSpan(-7, -62, 7, -24); game.zones.addSpan(-44, -5, -6, 5); game.zones.addCircle(0, 0, 26);
   // the zipline: a tower high on the shoulder of the west peak, running down to a post above the village.

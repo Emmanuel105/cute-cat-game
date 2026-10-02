@@ -4513,3 +4513,26 @@ Full suite: `world 2: 44 to meet` (up two, as expected, up from 42), 88% of Robo
 walkable (unchanged), every NPC including both new riders still in the scene graph, all 273 checks `ok`,
 0 console warnings, exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 188 — a seesaw for Frosty Peak
+
+The Neighborhood, Candy Land, Robot City, Victorian and Sunny Shore had all paired their swing set with
+a seesaw over the last five rounds; Frosty Peak got its own swing set three rounds back but never the
+seesaw to go with it, leaving only Whisper Woods still without either. **Two more kids in beanies and
+scarves now tip a red plank up and down** on the open snow downhill and south of the swing set, reusing
+the same `kid()` wardrobe helper the swing rider and the tag/snowball kids already use, so they're dressed
+no differently from any other village child.
+
+Frosty Peak's ground isn't flat the way the first four worlds with a seesaw are — the hills roll gently
+even out past the village — so, like Sunny Shore's, this seesaw is ground-following with `placeT` rather
+than the swing set's own fixed `y` a few metres uphill. A headless probe built the real game, travelled
+to Frosty Peak, and swept a clearance scan against every physics box, NPC circle and wandering rig's own
+position — sampled continuously over 20 simulated seconds so nothing mid-leash could drift into the spot
+unnoticed: `(-50, 22)` came back clear by over 8 m throughout, still comfortably inside the radius (58)
+where the hand-built mountain gives way to `snowRegion`'s procedural fill, and the seesaw's own 11 m zone
+claim keeps that fill from encroaching regardless of the exact distance.
+
+Full suite: `world 5: 40 to meet` (up two, as expected, up from 38), 98% of Frosty Peak's ground still
+walkable (unchanged), every NPC including both new riders still in the scene graph, all 273 checks `ok`,
+0 console warnings, exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
