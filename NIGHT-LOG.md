@@ -4943,3 +4943,25 @@ the sugar mouse and the factory mouse before it, it's ambient wildlife rather th
 Victorian's own friend count is unchanged. Full suite: all checks `ok` including `world 3: every NPC is
 in the scene graph` and `world 3: 96% of the ground is walkable` (unchanged), 0 console warnings, exit 0,
 before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 207 — a kid on a scooter, south of the Neighborhood's street
+
+The Neighborhood, Sunny Shore and Whisper Woods were tied at the bottom of the seven worlds for fewest
+friends (40 apiece), and this run's own brief names a vignette no round had actually built yet: a kid on
+a scooter. **A boy kneels in the open field south of the street, tightening his scooter's wobbly back
+wheel before trying it again.** *"Just a wobbly bolt - nearly got it."*
+
+`makeScooter()` is a new small prop in `60-props.js` — a low deck, two little wheels and a forked
+T-handlebar, built from the same primitives as the bike (`makeBike()`) but scaled down and parked
+upright rather than ridden; the kid himself is the plain `Kneeler` controller, already doing duty as
+every other fixer-upper in the game (the bootblack, the net-mender, the surf waxer), tightening a bolt
+rather than straddling the deck, which needed no new animation at all. A headless probe built the real
+Neighborhood, sampled every NPC's and the squirrel's own position continuously over 20 simulated seconds
+(so no wandering stroller or dog mid-leash could slip past unnoticed), and swept the physics boxes
+against a grid of the whole 95 m square outside every keep-out zone: (2, -54) came back clear by 23.2 m
+in every direction — well south of the vegetable patch and the game of catch, on the same open field as
+the birdwatcher further west.
+
+Full suite: `world 0: 41 to meet` (up one, from 40), every NPC including the new scooter kid still in the
+scene graph, all checks `ok`, 0 console warnings, exit 0 across three consecutive runs. Before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

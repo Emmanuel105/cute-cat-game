@@ -598,6 +598,24 @@ function buildNeighborhood(game, entry) {
       cries: ["Three chords and the truth, my gran always said.", "Careful, puss — that's out of tune, not broken.", "Nobody's listening, which is the best audience there is."] }));
     U.push((dt, t) => { const A = musician.arms[1]; A.el.rotation.x = -1.0 + sin(t * 5.4) * 0.22; A.sh.rotation.z = -0.15; }); }
 
+  // the task's own list of example vignettes names "a kid on a scooter" and no world has ever had one —
+  // a boy kneels in the open field south of the street, tightening his scooter's wobbly back wheel before
+  // trying it again (own small wardrobe, not the street's shared `ward` bag, which is sized exactly to its
+  // 18 users already; placed last of every person this build adds, after the musician, so it draws from the
+  // very tail of both the local `r` and the shared `rnd()` sequences and disturbs the fewest later ticks of
+  // either)
+  // (a headless probe over the built world — every physics box and every NPC's and the squirrel's own
+  // position, sampled continuously over 20 simulated seconds so no wandering stroller or dog mid-leash could
+  // slip past unnoticed — found (2, -54) clear by 23.2 m in every direction, well south of the vegetable
+  // patch and the game of catch, on the same flat open field as the birdwatcher further west)
+  { const sx = 2, sz = -54, kx = 2.9, kz = -54, ry = atan2(sx - kx, sz - kz);
+    const scooter = makeScooter(0xef7d2f); place(game, U, scooter, sx, sz, 0.4);
+    P.addBox(sx, 0.4, sz, 0.3, 0.8, 0.6, { cam: false });
+    const scootWard = makeWardrobe(r, { shirts: [0x4fc98a, 0x5aa9e6, 0xd9a23a], pants: [0x2e4a3a, 0x3a3a3a], shoes: [0x3a2a1e, 0x2a2018] });
+    const scootKid = makeHuman({ ...randomPerson(r, { female: false, child: true, wardrobe: scootWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false }); W.add(scootKid.group);
+    game.npcs.push(new Kneeler(game, scootKid, { x: kx, z: kz, ry,
+      cries: ['Just a wobbly bolt - nearly got it.', "Careful, puss — mind your tail, this spins.", 'Good as new. Three ramps today, easy.'] })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

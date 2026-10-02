@@ -515,6 +515,18 @@ function makeOilCan() {
   mesh(G.cyl(0.06, 0.06, 0.005, 12), glowMat(0x4ade80, 1.2), { y: 0.192, shadow: 'none', parent: g });
   return g;
 }
+/** A kick scooter: a low deck, two small wheels and a T-handlebar on a fork. Faces +z, standing in place. */
+function makeScooter(color = 0x2f6fd6) {
+  const g = new THREE.Group(), frame = mat(color, { roughness: 0.4, metalness: 0.3 }), deckM = mat(0x2a2a2a, { roughness: 0.75 }), wheelM = mat(0x1e1a18, { roughness: 0.8 }), gripM = mat(0x3a3a3a, { roughness: 0.6 });
+  mesh(G.box(0.16, 0.03, 0.56), deckM, { y: 0.1, z: -0.02, parent: g });
+  mesh(G.cyl(0.065, 0.065, 0.03, 12), wheelM, { y: 0.065, z: -0.26, rz: PI / 2, parent: g });
+  const fork = group(0, 0, 0.26, g);
+  mesh(G.cyl(0.065, 0.065, 0.03, 12), wheelM, { y: 0.065, rz: PI / 2, parent: fork });
+  mesh(G.cyl(0.018, 0.018, 0.75, 6), frame, { y: 0.4, parent: fork });
+  mesh(G.cyl(0.014, 0.014, 0.42, 6), frame, { y: 0.78, rz: PI / 2, parent: fork });
+  for (const s of [-1, 1]) mesh(G.cyl(0.02, 0.02, 0.06, 8), gripM, { x: s * 0.2, y: 0.78, rz: PI / 2, parent: fork });
+  return g;
+}
 /** A bicycle: two wheels, a frame, handlebars, a saddle and a crank. Faces +z; `wheels` and `crank` turn. */
 function makeBike(color = 0xd62839) {
   const g = new THREE.Group(), frame = mat(color, { roughness: 0.4, metalness: 0.3 }), dark = mat(0x1e1a18, { roughness: 0.8 }), rim = mat(0xc8ccd2, { metalness: 0.6, roughness: 0.4 });
