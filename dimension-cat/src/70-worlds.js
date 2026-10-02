@@ -1357,6 +1357,20 @@ function buildVictorian(game, entry) {
     mesh(G.box(0.42, 0.06, 0.24), mat(0x2a1c12, { roughness: 0.8 }), { x: cx, y: 0.03, z: cz, ry: 0.4, parent: W });   // the open case
     mesh(G.box(0.36, 0.03, 0.18), mat(0x6b4a2b, { roughness: 0.9 }), { x: cx, y: 0.065, z: cz, ry: 0.4, parent: W }); // its plush lining
     for (const [dx, dz] of [[-0.05, 0.03], [0.04, -0.02], [0.0, 0.04]]) mesh(G.cyl(0.025, 0.025, 0.006, 10), mat(0xc9a227, { metalness: 0.7, roughness: 0.35 }), { x: cx + dx, y: 0.09, z: cz + dz, parent: W }); }   // a few coins
+  // every other world already had a Painter at an easel (the Neighborhood, Robot City, Sunny Shore, Frosty
+  // Peak and Whisper Woods) — Victorian's clock tower plaza had the tower itself and nothing else, the one
+  // open space in the hand-built town with no one in it at all. An artist now sets up in its south-east
+  // corner, easel aimed back at the tower. A headless probe swept the plaza against the tower's own box
+  // (half-extent 3.75 m, centred (42, 0)) and every street lamp: (48, 6) comes back clear by over 2 m of
+  // the tower on both axes and over 7.5 m from the nearest lamp (45, -6.4) — still inside the 16x16 paved
+  // plaza and the zone circle (radius 11) that keeps victorianRegion's own fill off it
+  { const px = 48, pz = 6, pry = atan2(42 - px, 0 - pz);
+    const towerWard = makeWardrobe(r, { shirts: [0x6a5a7a, 0x4a3a5a, 0x3a5a4a], pants: [0x2a2a24, 0x3a3327], shoes: [0x2a2018, 0x1e1a16] });
+    const painter = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: towerWard }),
+      pants: 0x2a2a24, hat: 'flatcap', hatColor: 0x3a3327, coat: true, buttons: null, scarf: 0x5a4a3a, glasses: r.chance(0.3), build: 'slim' });
+    W.add(painter.group);
+    game.npcs.push(new Painter(game, painter, makeEasel(), { x: px, z: pz, ry: pry,
+      cries: ["Forty-three minutes past, and not a soul minds the time.", "I've painted that tower a hundred times. Never once been wrong.", "Mind the wet paint, puss — oh, you can't read, can you."] })); }
   // Victorian was the one world left with neither a game of tag nor a BallGame — every other world already
   // had at least one. Two urchins now chase each other on the open grass verge past the canal's north bank,
   // well clear of the bridges (z 25–35) and everything south of them: (0, 50) is inside the radius the hand-built

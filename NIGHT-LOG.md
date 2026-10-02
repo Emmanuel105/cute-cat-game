@@ -4556,3 +4556,23 @@ Full suite: `world 6: 37 to meet` (up two, as expected, up from 35), 99% of Whis
 walkable (unchanged), every NPC including both new riders still in the scene graph, all 273 checks `ok`,
 0 console warnings, exit 0 across two consecutive runs. Every world now has its swing-and-seesaw pair.
 Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 190 — an artist for the Victorian clock tower
+
+The Neighborhood, Robot City, Sunny Shore, Frosty Peak and Whisper Woods all had a `Painter` at an easel
+somewhere — Victorian was the only world left without one, and its clock tower plaza had nothing in it
+but the tower itself: the one open, hand-built space in the whole town with no one standing there at all.
+**An artist now sets up in its south-east corner**, easel aimed back at the tower, dabbing in a sky, a
+hill and a little black cat over the next few minutes the same way every other `Painter` does. *"I've
+painted that tower a hundred times. Never once been wrong."*
+
+A headless probe swept the plaza against the tower's own box (half-extent 3.75 m, centred (42, 0)) and
+every street lamp along the row: `(48, 6)` came back clear of the tower by over 2 m on both axes and over
+7.5 m from the nearest lamp at (45, -6.4), still inside the 16x16 paved plaza and the zone circle (radius
+11) that keeps `victorianRegion`'s own fill off it. Nothing else was ever placed in that corner, so no
+other prop or person needed rechecking.
+
+Full suite: `world 3: 47 to meet` (up one, as expected, up from 46), 94% of Victorian's ground still
+walkable (unchanged), every NPC including the new painter still in the scene graph, all 273 checks `ok`,
+0 console warnings, exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
