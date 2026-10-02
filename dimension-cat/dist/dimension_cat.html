@@ -7393,6 +7393,20 @@ function buildBeach(game, entry) {
   makeGrass(game, [[-26, 0, 22, 150], [-14, 30, 12, 70], [-40, -30, 12, 70]], r, { hue: [0.13, 0.21], light: [0.4, 0.56], tall: 1.15, wide: 1.45, pad: 0.2 });
   makeScatter(game, [[10, 0, 12, 60], [6, 28, 10, 40], [8, -26, 10, 40]], G.sphere(0.06, 6, 5), [0xfff1dc, 0xffd9c2, 0xf3e3c8, 0xd9a3a3, 0xe8c9a0], r, [0.6, 1.4], 0.02);  // shells
   for (const [x, z, ry] of [[-14, 36, 0.4], [4, -30, 1.2], [-6, 12, 2.4]]) { const log = makeHollowLog(r); log.scale.setScalar(0.7); placeT(game, U, log, x, z, ry); }
+  // every other world already had its own Patroller walking a beat (the Neighborhood's postie, Candy
+  // Land's gate guard, Robot City's sentry, Victorian's bobby, Frosty Peak's ski patroller, Whisper
+  // Woods' hiker) — Sunny Shore never had one. A headless probe swept the fully built world's own
+  // physics boxes plus every NPC's position sampled continuously over 40 simulated seconds (so no
+  // wandering crab, turtle or sunbather mid-leash could slip past unnoticed) and found a quiet dune
+  // pocket west of the beach huts clear the whole way round: the loop at x -44..-38, z -12..-4 never
+  // came closer than 3.75 m to anything else, mild underfoot (ground height 0.47-0.86 m across the four
+  // corners) and well short of the radius (58, padded to 65) where beachRegion's own fill takes over.
+  { const patrolWard = makeWardrobe(r, { shirts: [0xc9a15a, 0x5a7a6a, 0x3a5a6a], pants: [0x3a3a3a, 0x2a2a2a], shoes: [0x2a2018] });
+    const patroller = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: patrolWard }),
+      hat: 'cap', hatColor: 0xc9a15a, glasses: true, glassColor: 0x203040, jacket: null, scarf: null, bag: 0x3a3a3a });
+    W.add(patroller.group);
+    game.npcs.push(new Patroller(game, patroller, { points: [[-44, -12], [-38, -12], [-38, -4], [-44, -4]], speed: 0.8, pause: [1.5, 3], pauseAll: true, loop: true, cryIcon: '🏖️',
+      cries: ['Dunes are holding up fine today.', 'Careful, puss — that grass took years to root.', 'Quietest beat on the whole coast, this one.', 'No rip currents today. Or yesterday. Good record, really.'] })); }
   // sunbathers' corner: umbrellas, towels, sandcastle, beach ball
   const towels = [];
   for (const [x, z, hue, tc] of [[6, 4, 0, 0x2f6fd6], [10, 12, 200, 0xff7043], [4, 18, 50, 0x8e24aa], [9, -20, 320, 0x2e9e6e]]) { placeT(game, U, makeUmbrella(hue), x, z, 0); boxT(game, x, z, 0.2, 2.2, 0.2, { cam: false }); const ry = r() * 0.6; placeT(game, U, makeTowel(tc), x + 1.2, z + 0.6, ry); towels.push([x + 1.2, z + 0.6, ry]); }

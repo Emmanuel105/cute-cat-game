@@ -4697,3 +4697,25 @@ Full suite: `world 3: 50 to meet` (up one, as expected, up from 49), 96% of Vict
 walkable (unchanged, within the usual floating-point jitter), every NPC including the new feeder still
 in the scene graph, all 290+ checks `ok`, 0 console warnings, exit 0 across two consecutive runs.
 Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 197 — a dune patrol for Sunny Shore
+
+Every other world already had its own `Patroller` walking a beat — the Neighborhood's postie, Candy
+Land's gate guard, Robot City's sentry, Victorian's bobby, Frosty Peak's ski patroller, Whisper Woods'
+hiker — but Sunny Shore, for all its crabs, surfers and sandcastles, never had one. **A patrol officer
+now does a slow rectangular lap through the dune grass** west of the beach huts, pausing at each corner
+before moving on. *"No rip currents today. Or yesterday. Good record, really."*
+
+Sunny Shore turned out to be the most crowded world of the seven once sunbathers, wildlife and every
+hand-placed prop were counted, so finding four clear metres for a loop meant asking the computer rather
+than guessing: a headless probe built the real game, travelled to Sunny Shore, and checked every one of
+its physics boxes plus every NPC's position sampled continuously over 40 simulated seconds (so no
+wandering crab, turtle or sunbather mid-leash could slip past unnoticed) against a grid of candidate
+points, then against several candidate rectangles. The loop at x -44..-38, z -12..-4 came back clear the
+whole way round — never closer than 3.75 m to anything else — over mild, near-flat ground (0.47-0.86 m)
+and well inside the radius (58, padded to 65) where `beachRegion`'s own procedural fill takes over.
+
+Full suite: `world 4: 38 to meet` (up one, as expected, up from 37), ground walkability actually ticked
+up to 100% (unchanged in substance, just where the floating-point sampling landed), every NPC including
+the new patroller still in the scene graph, all 290+ checks `ok`, 0 console warnings, exit 0 across two
+consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
