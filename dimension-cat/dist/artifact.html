@@ -6658,6 +6658,18 @@ function buildCandyLand(game, entry) {
     const kidB = makeHuman({ ...randomPerson(r, { child: true, female: true, hairStyle: 'braids', wardrobe: seeWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
     W.add(kidA.group); W.add(kidB.group);
     game.npcs.push(new Seesaw(game, kidA, kidB, seesaw, { x: sx, z: sz })); }
+  // the Neighborhood, Robot City, Victorian, Sunny Shore, Frosty Peak and Whisper Woods all have a
+  // Painter at an easel — Candy Land was the only one of the seven left without one. A headless probe
+  // swept the meadow north-east of the river against every physics box and NPC roam circle already
+  // built into the world: (60, 48) came back clear by 9.4 m from the nearest box and 20 m from the
+  // nearest wandering gingerbread man, open grass with a clear view south to the cupcake hill at (60, 36).
+  { const px = 60, pz = 48, pry = atan2(60 - px, 36 - pz);
+    const painterWard = makeWardrobe(r, { shirts: [0xffe0ea, 0xbfe7ff, 0xfff3b0], pants: [0x7fd7ff, 0xff9ecf, 0xffffff] });
+    const painter = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: painterWard }),
+      hat: 'flatcap', hatColor: 0xffd54a, apron: 0xfffdf7, jacket: null, scarf: null, bag: null, glasses: r.chance(0.3) });
+    W.add(painter.group);
+    game.npcs.push(new Painter(game, painter, makeEasel(), { x: px, z: pz, ry: pry,
+      cries: ["That cupcake's bigger than the castle, sugar for sugar.", "Careful, puss — the paint's not icing.", "I keep giving the icing too much shine. It never looks quite real."] })); }
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('star', 7, -6); C.add('yarn', -9, 9); C.add('fish', -16, -13); C.add('mouse', 16, -9); C.add('star', -10, -27); C.add('yarn', 22, 4); C.add('mouse', -28, 26); C.add('fish', 14, -44); C.add('star', 0, -56); C.add('mouse', -58, 30); C.add('yarn', 60, 36);

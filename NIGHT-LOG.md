@@ -4576,3 +4576,23 @@ Full suite: `world 3: 47 to meet` (up one, as expected, up from 46), 94% of Vict
 walkable (unchanged), every NPC including the new painter still in the scene graph, all 273 checks `ok`,
 0 console warnings, exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 191 — a painter for Candy Land
+
+Round 190 gave the Victorian clock tower a painter, leaving every world with one except Candy Land —
+the one place in the whole game sweet enough to paint and nobody painting it. **An artist now sets up
+on the open meadow north-east of the chocolate river**, easel aimed south at one of the giant cupcake
+hills, daubing in icing and sprinkles the same way every other `Painter` fills in their own canvas over
+a few minutes. *"That cupcake's bigger than the castle, sugar for sugar."*
+
+A headless probe built the real game, travelled to Candy Land, and swept a grid of candidates against
+every one of its physics boxes and every NPC's own roam circle (wanderers, the tag and catch pairs, the
+swing and seesaw riders): `(60, 48)` came back clear by 9.4 m from the nearest box and 20 m from the
+nearest wandering gingerbread man — open grass well inside the radius (92) where `candyRegion`'s own
+procedural fill begins, with a clear line of sight to the cupcake hill at `(60, 36)`.
+
+Full suite: `world 1: 44 to meet` (up one, as expected, up from 43), 91% of Candy Land's ground still
+walkable (unchanged), every NPC including the new painter still in the scene graph, all 273 checks `ok`,
+0 console warnings, exit 0 across two consecutive runs (two unrelated floating-point jitters in the
+Sunny Shore kite height and a foot-rest y-value, not touched by this change). Every world now has a
+painter of its own. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
