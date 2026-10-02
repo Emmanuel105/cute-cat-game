@@ -4655,3 +4655,24 @@ Full suite: `world 3: 49 to meet` (up one, as expected, up from 48), 94% of Vict
 walkable (unchanged), every NPC including the new laundress still in the scene graph, all 290+ checks
 `ok`, 0 console warnings, exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 195 — a ski patroller for Frosty Peak
+
+The Neighborhood's postie, Candy Land's gate guard, Robot City's sentry, Victorian's bobby and Whisper
+Woods' hiker all walk a beat of their own using the shared `Patroller` controller — Frosty Peak was the
+only world left where every single person just stood, sat, knelt or wandered on a short leash, for all
+its sledders, skaters and snowball fights. **A ski patroller now checks the trail markers** on a
+rectangular loop over the open snowfield north of the village, pausing at each corner before moving on.
+*"No avalanche today. Or yesterday. Good record, really."*
+
+A headless probe built the real game, travelled to Frosty Peak, and swept a grid of candidates against
+every one of the mountain's 804 physics boxes and every NPC's own position, sampled continuously over
+25 simulated seconds so nothing mid-leash could slip past unnoticed. The rectangle at x -20..10, z 46..54
+came back clear the whole way round — never closer than 19 m to another soul — over a gentle 2.6 m
+hillside the whole length (shallower than the slope the sled run itself already climbs), and comfortably
+short of the radius (58) where `snowRegion`'s own procedural fill takes over.
+
+Full suite: `world 5: 41 to meet` (up one, as expected, up from 40), 98% of Frosty Peak's ground still
+walkable (unchanged), every NPC including the new patroller still in the scene graph, all 273 checks
+`ok`, 0 console warnings, exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

@@ -7849,6 +7849,21 @@ function buildSnowVillage(game, entry) {
     P.addBox(sx, game.physics.ground0(sx, sz) + 0.35, sz, 2.9, 0.7, 0.6, { cam: false });
     const seeA = kid(false), seeB = kid(true);
     game.npcs.push(new Seesaw(game, seeA, seeB, seesaw, { x: sx, z: sz })); }
+  // the Neighborhood's postie, Candy Land's gate guard, Robot City's sentry, Victorian's bobby and
+  // Whisper Woods' hiker all walk a beat of their own — every one of Frosty Peak's own people only
+  // ever stood, sat, knelt or wandered on a short leash. A ski patroller now checks the trail markers
+  // on a rectangular loop over the open snowfield north of the village. A headless probe swept that
+  // loop (x -20..10, z 46..54) against every one of the mountain's 804 physics boxes and every NPC's
+  // own position, sampled continuously over 25 simulated seconds so nothing mid-leash could slip past
+  // unnoticed: it comes back clear the whole way round, never closer than 19 m to another soul, over a
+  // gentle 2.6 m hillside the whole length (shallower than the slope the sled run itself uses) and well
+  // short of the radius (58) where snowRegion's own fill takes over.
+  { const patrolWard = makeWardrobe(r, { shirts: [0xd6453a, 0x3a5a8a, 0x4a5a4a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const patroller = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: patrolWard }),
+      hat: 'beanie', hatColor: 0xd6453a, coat: true, scarf: 0xf7f3ec, cuffs: 0x3a3a3a, bag: 0x3a3a3a });
+    W.add(patroller.group);
+    game.npcs.push(new Patroller(game, patroller, { points: [[-20, 46], [10, 46], [10, 54], [-20, 54]], speed: 0.8, pause: [1.5, 3], pauseAll: true, loop: true, cryIcon: '🚩',
+      cries: ['Markers all still standing, good.', 'Careful, puss — steeper than it looks, up here.', 'Quietest beat on the mountain, this one.', 'No avalanche today. Or yesterday. Good record, really.'] })); }
 
   game.zones.addSpan(-7, -62, 7, -24); game.zones.addSpan(-44, -5, -6, 5); game.zones.addCircle(0, 0, 26);
   // the zipline: a tower high on the shoulder of the west peak, running down to a post above the village.
