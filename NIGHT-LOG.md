@@ -4536,3 +4536,23 @@ Full suite: `world 5: 40 to meet` (up two, as expected, up from 38), 98% of Fros
 walkable (unchanged), every NPC including both new riders still in the scene graph, all 273 checks `ok`,
 0 console warnings, exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 189 — a seesaw for Whisper Woods
+
+The last six rounds paired every other world's swing set with a seesaw, and left Whisper Woods as the
+one place with a swing and no seesaw. **Two more kids now tip a plank up and down** north-west of the
+treehouse's rope swing, sharing the same wardrobe palette (mustard and sky-blue shirts, two trouser and
+shoe colours) as the tag pair already running nearby, so they read as village kids rather than strangers.
+
+Whisper Woods' ground rolls like Sunny Shore's and Frosty Peak's rather than sitting flat, so this
+seesaw is ground-following with `placeT` too. A headless probe built the real world, swept a grid of
+candidates against every physics box — the trees, the treehouse, the campers' gear — then re-checked the
+strongest ones against every NPC's own position, including the wandering deer and the tag and catch
+pairs, continuously over 20 simulated seconds so nothing mid-leash could slip past unnoticed: `(-31.5,
+20)` came back clear by 6.85 m throughout, with the pettable squirrel the nearest other soul at 17.5 m
+and the spot still deep inside the radius (58) where `forestRegion`'s procedural fill begins.
+
+Full suite: `world 6: 37 to meet` (up two, as expected, up from 35), 99% of Whisper Woods' ground still
+walkable (unchanged), every NPC including both new riders still in the scene graph, all 273 checks `ok`,
+0 console warnings, exit 0 across two consecutive runs. Every world now has its swing-and-seesaw pair.
+Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

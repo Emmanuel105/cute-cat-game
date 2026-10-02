@@ -8100,6 +8100,23 @@ function buildForest(game, entry) {
     game.npcs.push(sw); greetable(game, sw);
     game.addInteractable({ obj: swingSet, radius: 2.8, label: () => 'Push the swing', onUse: () => { sw.boost = 1; SFX.talk(); game.toast('🎠 "Higher! Higher!"', 1800); } }); }
 
+  // every other world had already paired its swing set with a seesaw; Whisper Woods was the last one
+  // left with a swing and no seesaw. A headless probe built the real world, swept a grid of candidates
+  // against every physics box (the trees, the treehouse, the campers' gear), then re-checked the best
+  // ones against every NPC rig's own position — including the wandering deer and the tag/catch pairs —
+  // continuously over 20 simulated seconds so nothing mid-leash could slip past unnoticed: (-31.5, 20)
+  // came back clear by 6.85 m throughout, north-west of the swing set and the treehouse clearing, with
+  // the pettable squirrel at (-14, 20) the nearest other soul at 17.5 m. The ground here isn't flat, so
+  // like Sunny Shore's and Frosty Peak's this one is ground-following with `placeT`.
+  { const sx = -31.5, sz = 20;
+    const seesaw = makeSeesaw({ color: 0x5a8a3a }); placeT(game, U, seesaw, sx, sz, 0);
+    game.zones.add(sx, sz, 2.4, 1.2);
+    P.addBox(sx, game.physics.ground0(sx, sz) + 0.35, sz, 2.9, 0.7, 0.6, { cam: false });
+    const seeWard = makeWardrobe(r, { shirts: [0xd9a23a, 0x5ac8e0], pants: [0x2e4a3a, 0x3a3a3a], shoes: [0x3a2a1e, 0x2a2018] });
+    const seeA = makeHuman({ ...randomPerson(r, { female: false, child: true, wardrobe: seeWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    const seeB = makeHuman({ ...randomPerson(r, { female: true, child: true, wardrobe: seeWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    game.npcs.push(new Seesaw(game, seeA, seeB, seesaw, { x: sx, z: sz })); }
+
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
 
