@@ -7005,6 +7005,40 @@ function buildVictorian(game, entry) {
     P.addBox(bx, 0.15, bz, 0.4, 0.3, 0.26, { cam: false });
     game.npcs.push(new Kneeler(game, bootblack, { x: kx, z: kz, ry: 0,
       cries: ['Shine, sir? Tuppence a shine!', "Mind your paws off the polish, puss.", "Can't shine fur, I'm afraid."] })); }
+  // every other world already had a Washer doing some chore of its own (the Neighborhood washes a car and
+  // rakes leaves, Candy Land sweeps a doorstep, Frosty Peak shovels snow, Sunny Shore waxes a surfboard,
+  // Whisper Woods scrubs the breakfast pot) — Victorian never had one, and its terrace houses have back
+  // yards nobody ever filled in. A laundress now scrubs at a washtub in the yard behind the house at
+  // x=-48, washboard propped against the rim, a basket of wrung washing at her feet and a line of drying
+  // shirts strung between two posts a couple of metres off. The whole yard sits at x=-48, z=-18 to -21,
+  // well south of that house's own back wall (half-extent 3.5 m, so its back edge is at z=-15 — a clear
+  // 3 m gap) and inside the radius (88) where victorianRegion's own procedural fill is kept off entirely,
+  // so nothing else was ever going to be placed out here. Checked against the only two things anywhere
+  // near: the terrace's own house box at (-48, -11.5) and the oak at (-66, -14), both more than 4 m clear.
+  { const tx = -48, tz = -20, wx = -48, wz = -21.1, wry = atan2(tx - wx, tz - wz);
+    const tub = group(tx, 0, tz, W), tubM = mat(0xaab0b6, { metalness: 0.55, roughness: 0.35 });
+    mesh(G.cyl(0.36, 0.3, 0.34, 16), tubM, { y: 0.17, shadow: 'both', parent: tub });
+    mesh(G.torus(0.36, 0.025, 6, 16), mat(0x8a9094, { metalness: 0.6, roughness: 0.3 }), { y: 0.34, rx: PI / 2, shadow: 'none', parent: tub });
+    mesh(G.cyl(0.33, 0.33, 0.02, 16), mat(0xd8ecec, { roughness: 0.25, transparent: true, opacity: 0.75 }), { y: 0.33, shadow: 'none', parent: tub });
+    P.addBox(tx, 0.17, tz, 0.72, 0.34, 0.72, { cam: false });
+    const board = group(0, 0.08, 0.08, tub); board.rotation.x = -1.05;   // leaning into the tub, top tilted toward the laundress
+    mesh(G.box(0.26, 0.46, 0.03), mat(0x6b4a2b, { roughness: 0.85 }), { y: 0.25, parent: board });
+    for (let i = 0; i < 5; i++) mesh(G.box(0.22, 0.03, 0.018), mat(0xb8bcc0, { metalness: 0.5, roughness: 0.4 }), { y: 0.1 + i * 0.08, z: 0.02, parent: board });
+    const basket = group(tx + 0.56, 0, tz + 0.18, W);
+    mesh(G.cyl(0.18, 0.15, 0.22, 10), mat(0xa9824a, { roughness: 0.9 }), { y: 0.11, shadow: 'both', parent: basket });
+    for (const [dx, dz, c] of [[-0.05, 0.03, 0xf7f3ec], [0.06, -0.02, 0xbfe3ff], [0.0, 0.05, 0xe8c4d8]]) mesh(G.box(0.13, 0.08, 0.13), mat(c, { roughness: 0.9 }), { x: dx, y: 0.24, z: dz, ry: r() * TAU, shadow: 'none', parent: basket });
+    P.addBox(tx + 0.56, 0.1, tz + 0.18, 0.36, 0.2, 0.36, { cam: false });
+    const postM = mat(0x5a3a1f, { roughness: 0.9 }), lineM = mat(0x2a2420, { roughness: 0.9 });
+    const px1 = tx - 2.5, px2 = tx + 2.5, pz = tz + 1.8, py = 1.55;
+    for (const px of [px1, px2]) { mesh(G.cyl(0.035, 0.045, py, 8), postM, { x: px, y: py / 2, z: pz, shadow: 'both', parent: W }); P.addBox(px, py / 2, pz, 0.12, py, 0.12, { cam: false }); }
+    const line = mesh(G.cyl(0.006, 0.006, px2 - px1, 6), lineM, { x: tx, y: py, z: pz, rz: PI / 2, shadow: 'none', parent: W }); noInk(line);
+    for (const [dx, c] of [[-0.9, 0xf7f3ec], [0.8, 0x9fd8ff]]) mesh(G.box(0.3, 0.38, 0.02), mat(c, { roughness: 0.85 }), { x: tx + dx, y: py - 0.2, z: pz, shadow: 'none', parent: W });
+    const laundryWard = makeWardrobe(r, { shirts: [0x6a7a5a, 0x5a6a7a, 0x7a6a5a], pants: [0x2a2420], shoes: [0x2a2018] });
+    const laundress = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: r.chance(0.35), wardrobe: laundryWard }),
+      pants: 0x2a2420, apron: 0x4a5a6a, hat: 'bonnet', hatColor: 0x3a4a3a, bag: null, jacket: null, scarf: null, sleeves: true });
+    W.add(laundress.group);
+    game.npcs.push(new Washer(game, laundress, { x: wx, z: wz, ry: wry,
+      cries: ['Scrub and rinse, scrub and rinse — every day the same.', "Mind your paws, puss, it's soap in that water.", "Wrung out by noon, dry by supper, if the sky stays kind."] })); }
   // market square (north): cobbled plaza, a fountain, striped stalls, gas lamps; a canal with a stone bridge (south)
   flatPlane(game, 30, 26, pave, 0, -34, 0, 0.015);
   { const f = group(0, 0, -34, W), stone = mat(0x8c8377, { roughness: 0.95, map: TEX.stone(30) }); mesh(G.cyl(3.2, 3.4, 0.7, 24), stone, { y: 0.35, parent: f }); mesh(G.cyl(2.8, 2.8, 0.1, 24), mat(0x3d8fd1, { roughness: 0.1, transparent: true, opacity: 0.85, emissive: 0x1a4a7a, emissiveIntensity: 0.3 }), { y: 0.72, shadow: 'none', parent: f }); mesh(G.cyl(0.4, 0.6, 2.2, 12), stone, { y: 1.8, parent: f }); mesh(G.cyl(1.2, 1.1, 0.15, 18), stone, { y: 2.9, parent: f }); mesh(G.sphere(0.4, 12, 9), mat(0xd4af37, { metalness: 0.9, roughness: 0.3 }), { y: 3.3, parent: f });

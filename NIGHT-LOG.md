@@ -4634,3 +4634,24 @@ Full suite: `world 3: 48 to meet` (up one, as expected, up from 47), 95% of Vict
 walkable (unchanged, within the usual floating-point jitter), every NPC including the new bootblack
 still in the scene graph, all 290 checks `ok`, 0 console warnings, exit 0 across two consecutive runs.
 Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 194 — a laundress for Victorian's back yard
+
+Every other world already had its own `Washer` doing some chore (the Neighborhood washes a car and
+rakes leaves, Candy Land sweeps a doorstep, Frosty Peak shovels snow, Sunny Shore waxes a surfboard,
+Whisper Woods scrubs the breakfast pot) — Victorian never had one, and its terrace houses have back
+yards that were never filled in at all. **A laundress now scrubs at a washtub** in the yard behind
+the house at x=-48, a washboard propped against the rim, a basket of wrung washing at her feet, and
+a line of drying shirts strung between two posts a couple of metres off. *"Scrub and rinse, scrub
+and rinse — every day the same."*
+
+The whole yard sits at x=-48, z=-18 to -21, well south of that house's own back wall (half-extent
+3.5 m, so its back edge is at z=-15 — a clear 3 m gap) and inside the radius (88) where
+`victorianRegion`'s own procedural fill is kept off entirely, so nothing was ever going to land out
+there on its own. Checked against the only two things anywhere near: the terrace's own house box at
+(-48, -11.5) and the oak at (-66, -14), both more than 4 m clear.
+
+Full suite: `world 3: 49 to meet` (up one, as expected, up from 48), 94% of Victorian's ground still
+walkable (unchanged), every NPC including the new laundress still in the scene graph, all 290+ checks
+`ok`, 0 console warnings, exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
