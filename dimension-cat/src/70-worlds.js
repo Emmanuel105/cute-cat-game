@@ -122,6 +122,22 @@ function buildNeighborhood(game, entry) {
   // park (south) with pond, bench, lamp, flowers and the portal arch
   flatPlane(game, 26, 1.4, walk, 0, 36, 0, 0.02); flatPlane(game, 1.4, 14, walk, 0, 42, 0, 0.02);
   makePond(W, -12, 46, 3.2, r);
+  // a drake and a hen paddle slow circles on the park pond — the painter and the fisherman at the
+  // lake both work the water's edge, but nothing had ever actually lived on the water itself. Fixed
+  // phases and speeds, not drawn from the shared `r`, so this costs no later wardrobe pick in the
+  // street below; the 2.0 m swim ring sits well inside the pond's own 3.2 m radius, short of both
+  // the lily pads scattered near the centre and the stone ring at the edge.
+  { const pcx = -12, pcz = 46, prad = 2.0, pY = 0.07;
+    const drake = makeDuck({ drake: true }); W.add(drake.group);
+    const hen = makeDuck({ drake: false }); W.add(hen.group);
+    const ducks = [[drake, 0, 0.16], [hen, PI, 0.21]];
+    U.push((dt, t) => { for (const [d, phase, speed] of ducks) {
+      const a = t * speed + phase, dx = -sin(a), dz = cos(a);
+      d.group.position.set(pcx + cos(a) * prad, pY + sin(t * 2.2 + phase) * 0.012, pcz + sin(a) * prad);
+      d.group.rotation.y = atan2(dx, dz);
+      d.head.rotation.x = sin(t * 0.6 + phase * 2) > 0.88 ? 0.5 : 0;   // the occasional dip toward the water
+    } });
+    let quackT = 6; U.push((dt) => { quackT -= dt; if (quackT <= 0) { SFX.squawk(); quackT = rnd.range(10, 18); } }); }
   const bench = makeBench(); place(game, U, bench, 6, 40, PI); P.addBox(6, 0.4, 40, 1.9, 0.8, 0.6, { cam: false });
   place(game, U, makeLamp('modern'), -4, 38, PI / 2); P.addBox(-4, 2, 38, 0.3, 4, 0.3, { cam: false });
   const swingSet = makeSwingSet({ color: 0x2e63d8 }); place(game, U, swingSet, -7, 42.5, PI); Z.add(-7, 42.5, 3.4, 3.2);

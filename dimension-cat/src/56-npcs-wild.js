@@ -209,6 +209,27 @@ function makeSparrow() {
   return rig;
 }
 
+// ---------------------------------------------------------------- duck (floats on the water, no legs shown — they're paddling under the surface)
+function makeDuck(o = {}) {
+  const g = new THREE.Group(), rig = { group: g }, drake = o.drake !== false;
+  const bodyM = mat(drake ? 0x5a4a3a : 0x7a6a4a, { roughness: 0.85 }), paleM = mat(0xe8dcc0, { roughness: 0.85 }),
+    headM = mat(drake ? 0x2e6a46 : 0x6a5a3a, { roughness: 0.55 }), ringM = mat(0xf5f2ea, { roughness: 0.8 }),
+    billM = mat(drake ? 0xd9a21a : 0xc97a3a, { roughness: 0.5 }), darkM = mat(0x2a2420, { roughness: 0.8 });
+  const body = group(0, 0.095, 0, g); rig.body = body;
+  mesh(G.bodySphere(14, 10), bodyM, { sx: 0.1, sy: 0.085, sz: 0.16, parent: body });
+  mesh(G.bodySphere(12, 9), paleM, { y: -0.02, z: 0.02, sx: 0.07, sy: 0.055, sz: 0.1, shadow: 'none', parent: body });
+  for (const side of [1, -1]) mesh(G.box(0.07, 0.05, 0.09), darkM, { x: side * 0.085, y: 0.01, z: -0.02, parent: body });   // folded wings
+  const tail = group(0, 0.03, -0.15, body);
+  mesh(G.cone(0.025, 0.08, 6), darkM, { rx: -PI / 2.4, z: -0.02, shadow: 'none', parent: tail });   // cocked tail
+  const neck = group(0, 0.07, 0.13, body); rig.head = neck;
+  if (drake) mesh(G.cyl(0.045, 0.05, 0.04, 10), ringM, { y: -0.01, shadow: 'none', parent: neck });   // white collar
+  mesh(G.sphere(0.055, 12, 9), headM, { y: 0.03, parent: neck });
+  mesh(G.cone(0.016, 0.07, 6), billM, { y: 0.015, z: 0.06, rx: PI / 2, shadow: 'none', parent: neck });
+  for (const side of [1, -1]) mesh(G.sphere(0.009, 6, 6), mat(0x111111), { x: side * 0.03, y: 0.04, z: 0.04, shadow: 'none', parent: neck });
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- penguin
 function makePenguin(o = {}) {
   const g = new THREE.Group(), rig = { group: g, flippers: [] }, k = o.scale ?? 1;

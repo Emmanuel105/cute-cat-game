@@ -4743,3 +4743,36 @@ Full suite: `world 2: 45 to meet` (up one, as expected, up from 44), 88% of Robo
 walkable (unchanged), every NPC including the new scanner still in the scene graph, all 273 checks `ok`,
 0 console warnings, exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 199 — ducks for the Neighborhood's park pond
+
+Every world's hand-built heart was already stacked with people doing things, but a look back over the
+last fifty-odd rounds turned up a plain gap: the Neighborhood, Sunny Shore and Whisper Woods are tied for
+fewest friends (38 apiece) in a game that otherwise keeps piling them on, and nobody in seven worlds had
+ever put an animal *on* a body of water rather than beside it — the painter works the park pond's edge,
+the old fisherman works the lake's, but the water itself was always empty. **A drake and a hen now paddle
+slow circles on the park pond**, dipping their heads toward the surface every few seconds and giving an
+occasional quack. They're new scenery, not new friends — ambient like the sparrows and sandpipers already
+hopping around elsewhere, so the friend count doesn't move.
+
+`makeDuck()` (56-npcs-wild.js) is a new small rig in the same style as the sparrow and pigeon it sits
+beside: a body, a cocked tail, folded wing patches, and a `head` joint that can still tip after baking.
+The drake gets a dark-green head and a white collar ring; the hen is plain mottled brown, same shape.
+Rather than reuse a controller class, the swim loop is hand-written straight into `buildNeighborhood`
+(the sparrows two rounds back set this precedent) — each duck orbits the pond's own centre at a fixed
+phase and speed, well inside its 3.2 m water radius and short of both the rock ring at the edge and the
+scattered lily pads nearer the middle. No part of it touches the shared `r` used for that world's
+wardrobe picks (every position and phase is a fixed number, not a draw), so no later neighbour's random
+outfit shifts.
+
+The quack timer was the one trap: an early version drew its first delay from the shared, timing-sensitive
+global `rnd()` at construction time, which silently nudged two unrelated checks built later in the same
+world off their expected numbers — the gossiping neighbours' turn-taking and the cyclist's pedalling
+distance both failed on the first full-suite run. Starting the timer on a fixed number and only drawing
+from `rnd()` once play is already under way (exactly how the beach's own gull-cry timer does it) fixed
+both without touching either NPC.
+
+Full suite: friend counts unchanged in every world (ducks aren't greetable), every NPC still in the scene
+graph, all 273 checks `ok`, 0 console warnings, exit 0 across two consecutive runs — the first run after
+the quack-timer fix, and one more after, to be sure. Before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
