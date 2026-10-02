@@ -4800,3 +4800,26 @@ Full suite: `world 6: 39 to meet` (up one, from 38), every NPC including the new
 graph, 98% of the wood's ground still walkable (unchanged), all 273 checks `ok`, 0 console warnings, exit 0
 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 201 — a fish-and-chips stand for Sunny Shore
+
+Sunny Shore was tied with the Neighborhood for fewest friends of the seven worlds (38 apiece), and its
+ice-cream seller had been working the sunbathing crowd alone for rounds — nobody had ever sold the other
+half of a classic day at the seaside. **A fish-and-chips stand now works the quiet sand south of the
+lighthouse**, past its scattered rocks, calling out over the chips. *"Fish and chips! Hot and vinegared,
+just how it should be."*
+
+It's the plain `Vendor` controller already doing duty as the ice-cream seller and the balloon seller,
+holding up a new small prop (`makeChipsCone()` in `62-props-nature.js`, built the same way as the
+existing ice-cream cone it sits beside in the file): a paper cone with four chips poking out at staggered
+angles. A headless probe built the real game in Node against the test harness's own stub three.js,
+travelled to Sunny Shore, and swept a grid of candidates across the whole hand-built heart against every
+physics box and every NPC's own position sampled over 40 simulated seconds. (4, -54) came back the
+clearest point in the south end — 11.3 m past the lighthouse's own rocks, 18 m from the gem cluster at
+(16.5, -41) and 21.6 m from the birdwatcher, with nothing else anywhere nearby.
+
+Full suite: `world 4: 39 to meet` (up one, from 38), every NPC including the new vendor still in the
+scene graph, 99% of Sunny Shore's ground still walkable, all 290 checks `ok`, 0 console warnings, exit 0
+across two consecutive runs (a few physics-timing numbers — kite height, snowball throw count, exact
+resting y — jittered slightly between runs as they always do; no check flipped to FAIL). Before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

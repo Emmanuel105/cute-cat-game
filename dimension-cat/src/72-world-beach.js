@@ -67,6 +67,20 @@ function buildBeach(game, entry) {
     W.add(painter.group);
     game.npcs.push(new Painter(game, painter, makeEasel(), { x: px, z: pz, ry,
       cries: ['That red band never sits quite straight, does it.', 'Best light on the coast, this time of day.', "Careful, puss - wet paint, if you can believe it dries out here at all."] })); }
+  // the ice-cream seller works the sunbathing crowd, but nobody sold the other half of a day at the
+  // seaside — a fish-and-chips stand on the quiet open sand south of the lighthouse, past its rocks.
+  // A headless probe swept a grid of candidates across the hand-built heart against every physics box
+  // and every NPC's own position sampled over 40 simulated seconds: (4, -54) came back the clearest
+  // point in the whole south end — 11.3 m past the lighthouse's own rocks, 18 m from the gem cluster
+  // at (16.5, -41) and 21.6 m from the birdwatcher, with nothing else anywhere nearby
+  { const cx = 4, cz = -54; game.zones.addCircle(cx, cz, 1.4);
+    const chipWard = makeWardrobe(r, { shirts: [0xf5f2ea, 0xe8d9b0], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0xefe7d8, 0x8d6e63] });
+    const fryer = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: chipWard }),
+      apron: 0xffffff, hat: 'cap', hatColor: 0x2f6fd6, jacket: null, scarf: null });
+    W.add(fryer.group);
+    const stand = new Vendor(game, fryer, makeChipsCone(), { x: cx, z: cz, ry: PI / 2, cryIcon: '🍟',
+      cries: ['Fish and chips! Hot and vinegared, just how it should be.', 'Mind the gulls, puss — they go for the chips first.', 'Extra salt? Go on then.'] });
+    game.npcs.push(stand); greetable(game, stand); }
   for (let i = 0; i < 5; i++) placeT(game, U, boxAround(game, makeBeachHut(r.pick([0xff8a65, 0x4fc3f7, 0xfff176, 0x81c784, 0xf48fb1]), r), -10, -24 + i * 9, 2.8, 2.8, 2.8), -10, -24 + i * 9, PI / 2);
   // an ice-cream vendor on the open sand between the huts and the sunbathing crowd
   { const cx = -4, cz = -6; game.zones.addCircle(cx, cz, 1.4);

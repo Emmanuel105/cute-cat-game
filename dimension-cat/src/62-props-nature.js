@@ -444,6 +444,15 @@ function makeIceCreamCone() {
   mesh(G.sphere(0.022, 6, 5), mat(0xd62839, { roughness: 0.5 }), { y: 0.525, shadow: 'none', parent: g });
   return g;
 }
+/** A paper cone of chips for a vendor to hold up: four chips poking out at staggered angles. */
+function makeChipsCone() {
+  const g = new THREE.Group(), chip = mat(0xe8b649, { roughness: 0.85 });
+  mesh(G.cone(0.1, 0.22, 8), mat(0xf5ead0, { roughness: 0.9 }), { y: 0.11, rx: PI, parent: g });
+  for (const [cx, cz, cry, h] of [[0, 0, 0, 0.11], [0.03, 0.02, 0.5, 0.095], [-0.025, -0.015, -0.4, 0.1], [0.01, -0.03, 1.1, 0.09]]) {
+    mesh(G.box(0.025, h, 0.025), chip, { x: cx, y: 0.2 + h / 2, z: cz, rx: 0.15, ry: cry, shadow: 'none', parent: g });
+  }
+  return g;
+}
 function makeIceCrystal(r = rnd, color = 0x9fe8ff) {
   const g = new THREE.Group(), m = glowMat(color, 0.8, { transparent: true, opacity: 0.85, roughness: 0.1 });
   const n = r.int(3, 5); for (let i = 0; i < n; i++) { const a = r() * TAU; mesh(G.cone(0.18, r.range(0.8, 1.8), 6), m, { x: cos(a) * 0.25, y: 0.4, z: sin(a) * 0.25, rx: r.range(-0.3, 0.3), rz: r.range(-0.3, 0.3), ry: a, shadow: 'none', parent: g }); }
