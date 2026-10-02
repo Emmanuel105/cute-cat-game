@@ -4451,3 +4451,22 @@ Full suite: `world 1: 43 to meet` (up two, as expected), 91% of Candy Land's gro
 (unchanged), every NPC including both new riders still in the scene graph, all 273 checks `ok`, 0
 console warnings, exit 0 across three consecutive runs. Before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 185 — a seesaw for the Victorian town
+
+Victorian already had a game of tag, a ring-a-ring o' roses, a game of catch and a swing set on its own
+grass verge past the canal, but — unlike the Neighborhood and Candy Land — never a seesaw. **Two more
+children now tip a plank up and down south of the swing set**, same prop and controller as the other two,
+just a fresh coat of paint.
+
+A headless probe built the real game, travelled to Victorian, and swept the town's physics boxes and NPC
+circles against a grid of candidates: `(25, 70)` came back clear by over 23 m in every direction — south
+of the tag pair, the ring and the catch pair, with the swing set the nearest other soul. Still well
+inside the radius (88) where the hand-built town gives way to `victorianRegion`'s procedural fill, so no
+extra keep-out zone was needed against scattered clutter, only the seesaw's own.
+
+Full suite: `world 3: 46 to meet` (up two, as expected), 94% of Victorian's ground still walkable, every
+NPC including both new riders still in the scene graph, all 273 checks `ok`, 0 console warnings, exit 0
+across two consecutive runs (the kite, the cat's resting height on sand/snow/leaf terrain and a couple of
+other timing-sensitive readouts still vary run to run, as before this change, and unrelated to it). Before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

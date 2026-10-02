@@ -7173,6 +7173,20 @@ function buildVictorian(game, entry) {
     W.add(swingKid.group);
     const sw = new Swinger(game, swingKid, swingSet, { x: sx, z: sz }); game.npcs.push(sw); greetable(game, sw);
     game.addInteractable({ obj: swingSet, radius: 2.8, label: () => 'Push the swing', onUse: () => { sw.boost = 1; SFX.talk(); game.toast('🎠 "Higher! Higher!"', 1800); } }); }
+  // the Neighborhood and Candy Land both got a seesaw already — Victorian was the one world left with a
+  // swing but no seesaw. A headless probe swept the same grass verge against every physics box and NPC
+  // circle built into the town so far (the tag pair, the ring, the catch pair and the swing set): (25, 70)
+  // came back clear by over 23 m from the nearest of them (the swing set), well south of all four and
+  // still inside the radius where the hand-built town gives way to victorianRegion's procedural fill (88)
+  { const sx = 25, sz = 70;
+    const seesaw = makeSeesaw({ color: 0x8a3a3a }); place(game, U, seesaw, sx, sz, 0);
+    game.zones.add(sx, sz, 2.4, 1.2);
+    P.addBox(sx, 0.35, sz, 2.9, 0.7, 0.6, { cam: false });
+    const seeWard = makeWardrobe(r, { shirts: [0x6a3a3a, 0x3a5a6a], pants: [0x2a2a24, 0x3a3327], shoes: [0x2a2018, 0x1e1a16] });
+    const seeA = makeHuman({ ...randomPerson(r, { child: true, female: false, wardrobe: seeWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    const seeB = makeHuman({ ...randomPerson(r, { child: true, female: true, wardrobe: seeWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(seeA.group); W.add(seeB.group);
+    game.npcs.push(new Seesaw(game, seeA, seeB, seesaw, { x: sx, z: sz })); }
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
