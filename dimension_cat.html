@@ -8380,6 +8380,20 @@ function buildForest(game, entry) {
     game.npcs.push(new Sitter(game, meditator, { x: hx, z: hz, ry, seat: 0.1,
       cries: ["Didn't hear you coming. Good sign, apparently.", 'Shh — not done finding my centre yet.', 'The woods do half the work, honestly.'] })); }
 
+  // the deep south of the wood, past the forager's own patch, had nobody in it either. An old
+  // storyteller sits straight on the ground there, retelling the fairy ring's own legend to no one in
+  // particular. A headless probe built the real game, travelled to Whisper Woods, and swept every point
+  // of a 1 m grid inside the tree ring (radius <= 38) against every physics box plus every NPC's own
+  // position, sampled continuously over several hundred simulated frames so nothing mid-leash (the
+  // western deer, the eastern fox) could slip past unnoticed: (-8, -37) came back clear by 12.5 m from
+  // the nearest box and 25.9 m from the nearest other soul (the forager, next closest after that).
+  { const sx = -8, sz = -37, ry = atan2(8 - sx, -6 - sz);
+    const storyteller = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: true, hairStyle: r.chance(0.5) ? 'bun' : null }),
+      shirt: 0x6b4f3a, pants: 0x4a3a5a, shoes: 0x3a2a1e, hat: 'flatcap', hatColor: 0x4a3a2a, scarf: null, jacket: null, bag: null, backpack: null, glasses: false, beard: r.chance(0.3) });
+    W.add(storyteller.group);
+    game.npcs.push(new Sitter(game, storyteller, { x: sx, z: sz, ry, seat: 0.1,
+      cries: ['Three turns of the fairy ring, mind, not four.', 'Shh — the owls are listening too, this time of night.', "Every story in these woods is true. Ask the fairies, if you doubt it."] })); }
+
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
 

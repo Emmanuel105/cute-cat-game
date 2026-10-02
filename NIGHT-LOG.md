@@ -4853,3 +4853,25 @@ nothing about this fix is a proof, only an empirical nudge of a chaotic shared s
 Full suite: `the Neighborhood has 39 people to meet` (up one, from 38), every NPC including the new
 sunbather still in the scene graph, all 291 checks `ok`, 0 console warnings, exit 0 across seven
 consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 203 — an old storyteller, deep in Whisper Woods
+
+Whisper Woods was tied with the Neighborhood and Sunny Shore for fewest friends of the seven worlds
+(39 apiece, after the last three rounds each raised one of them by one). Its deep south — past the
+forager's own mushroom patch, beyond even the hollow logs — had nobody in it at all, same blind spot
+the meditating hiker filled out west two rounds ago. **An old storyteller now sits straight on the
+ground there, retelling the fairy ring's own legend to nobody in particular.** *"Every story in these
+woods is true. Ask the fairies, if you doubt it."*
+
+It's the plain `Sitter` controller again, seated directly on the ground (`seat: 0.1`) exactly like the
+meditating hiker, in its own new spot rather than a bench or stump (every stump in the wood is already
+taken). A headless probe built the real game in Node against the test harness's own stub three.js,
+travelled to Whisper Woods, and swept every point of a 1 m grid inside the tree ring (radius ≤ 38)
+against every one of the world's physics boxes plus every NPC's own position, sampled continuously
+over several hundred simulated frames so neither the western deer nor the eastern fox, mid-leash, could
+slip past unnoticed: (-8, -37) came back clear by 12.5 m from the nearest box and 25.9 m from the
+nearest other soul (the forager, the next closest after that).
+
+Full suite: `world 6: 40 to meet` (up one, from 39), every NPC including the new storyteller still in
+the scene graph, all 291 checks `ok`, 0 console warnings, exit 0 across three consecutive runs. Before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
