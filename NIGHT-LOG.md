@@ -4616,3 +4616,21 @@ Full suite: `world 6: 38 to meet` (up one, as expected, up from 37), 99% of Whis
 walkable (unchanged), every NPC including the new scrubber still in the scene graph, all 273 checks `ok`,
 0 console warnings, exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 193 — a bootblack for Victorian's sidewalk
+
+Every other world had grown its own `Kneeler` doing some small task — the Neighborhood's beekeeper and
+gardener, Sunny Shore's sandcastle, several apiece in the snow and forest worlds — but Victorian had
+none at all, past its four vendors standing still at the market square stalls. **A bootblack boy now
+kneels on the south sidewalk**, shine box in front of him with a boot left on the stand and a tin of
+blacking at his side, in the gap between two of the terraced houses. *"Shine, sir? Tuppence a shine!"*
+
+A headless probe checked the gap between the houses at x=-48 and x=-28 (half-extent 3.5 m each, clear
+from -44.5 to -31.5) against every street lamp: `(-43, -5.9)` came back clear by over 1.4 m of the
+nearest house and 6 m of the nearest lamp at (-49.5, 6.4), still sitting on the south pave strip itself
+(centred z=-5.6, half-width 1.1).
+
+Full suite: `world 3: 48 to meet` (up one, as expected, up from 47), 95% of Victorian's ground still
+walkable (unchanged, within the usual floating-point jitter), every NPC including the new bootblack
+still in the scene graph, all 290 checks `ok`, 0 console warnings, exit 0 across two consecutive runs.
+Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

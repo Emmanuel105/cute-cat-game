@@ -6979,6 +6979,25 @@ function buildVictorian(game, entry) {
   // lamps along the street (real point lights)
   const vicLamps = [];
   for (let i = 0; i < 12; i++) { const x = -60 + i * 10.5, z = (i % 2 ? 1 : -1) * 6.4; if (abs(x + 38) < 3) continue; const lamp = makeLamp('victorian'); vicLamps.push(lamp); place(game, U, lamp, x, z, 0); P.addBox(x, 2, z, 0.4, 4, 0.4, { cam: false }); }
+  // every other world's wanderers already had a Kneeler of their own at some task (the Neighborhood's
+  // beekeeper and gardener, Sunny Shore's sandcastle, the snow and forest worlds' several) — Victorian
+  // was the only one with none at all, past the four vendors standing still at the market square. A
+  // bootblack boy now kneels on the south sidewalk, shine box in front of him, between the houses at
+  // x=-48 and x=-28 (half-extent 3.5 m each, so that gap runs clear from -44.5 to -31.5). A headless
+  // probe swept it against every lamp along the row: (-43, -5.9) comes back clear by over 1.4 m of the
+  // nearest house and 6 m of the nearest lamp (-49.5, 6.4), still on the south pave strip itself
+  // (centred z=-5.6, half-width 1.1)
+  { const bx = -43, bz = -5.0, kx = bx, kz = -5.9;
+    const shineWard = makeWardrobe(r, { shirts: [0x6a5a3a, 0x4a3a2a], pants: [0x2a2420], shoes: [0x2a2018] });
+    const bootblack = makeHuman({ ...randomPerson(r, { female: false, child: true, wardrobe: shineWard }),
+      hat: 'flatcap', hatColor: 0x3a3327, jacket: null, scarf: null, bag: null, backpack: null, glasses: false });
+    W.add(bootblack.group);
+    mesh(G.box(0.4, 0.3, 0.26), mat(0x5a3a1f, { roughness: 0.9 }), { x: bx, y: 0.15, z: bz, shadow: 'both', parent: W });
+    mesh(G.box(0.12, 0.09, 0.28), mat(0x1a1410, { roughness: 0.7 }), { x: bx, y: 0.34, z: bz, shadow: 'none', parent: W });   // a boot left on the stand
+    mesh(G.cyl(0.04, 0.04, 0.05, 10), mat(0x1a1a1a, { roughness: 0.4 }), { x: bx - 0.17, y: 0.32, z: bz + 0.05, parent: W });   // tin of blacking
+    P.addBox(bx, 0.15, bz, 0.4, 0.3, 0.26, { cam: false });
+    game.npcs.push(new Kneeler(game, bootblack, { x: kx, z: kz, ry: 0,
+      cries: ['Shine, sir? Tuppence a shine!', "Mind your paws off the polish, puss.", "Can't shine fur, I'm afraid."] })); }
   // market square (north): cobbled plaza, a fountain, striped stalls, gas lamps; a canal with a stone bridge (south)
   flatPlane(game, 30, 26, pave, 0, -34, 0, 0.015);
   { const f = group(0, 0, -34, W), stone = mat(0x8c8377, { roughness: 0.95, map: TEX.stone(30) }); mesh(G.cyl(3.2, 3.4, 0.7, 24), stone, { y: 0.35, parent: f }); mesh(G.cyl(2.8, 2.8, 0.1, 24), mat(0x3d8fd1, { roughness: 0.1, transparent: true, opacity: 0.85, emissive: 0x1a4a7a, emissiveIntensity: 0.3 }), { y: 0.72, shadow: 'none', parent: f }); mesh(G.cyl(0.4, 0.6, 2.2, 12), stone, { y: 1.8, parent: f }); mesh(G.cyl(1.2, 1.1, 0.15, 18), stone, { y: 2.9, parent: f }); mesh(G.sphere(0.4, 12, 9), mat(0xd4af37, { metalness: 0.9, roughness: 0.3 }), { y: 3.3, parent: f });
