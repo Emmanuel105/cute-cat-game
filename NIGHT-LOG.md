@@ -4965,3 +4965,24 @@ the birdwatcher further west.
 Full suite: `world 0: 41 to meet` (up one, from 40), every NPC including the new scooter kid still in the
 scene graph, all checks `ok`, 0 console warnings, exit 0 across three consecutive runs. Before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 208 — a jogger catches their breath, deep in Whisper Woods
+
+Sunny Shore and Whisper Woods were tied lowest of the seven worlds at 40 friends apiece, and both are
+already dense with vignettes in every corner — but a stretch of forest east of the naturalist's mossy
+log, between the inner tree ring and the stump cluster, had nobody in it at all. **A jogger stands there
+now, hands on hips, getting their breath back mid-run.** *"Just... one... more... lap."*
+
+It's the plain `Charger` controller — a standing idle loop with no pose assumptions, already doing duty
+as Victorian's fiddler and the Neighborhood's ukulele player — so no new animation was needed, just a
+plain `makeHuman()` in running gear. A headless probe built the real game, travelled to Whisper Woods,
+and sampled every NPC's and the squirrel's own position continuously over 12 real seconds of simulated
+movement (long enough for the wandering deer, the foxes and the flying fairies to cover their full range),
+then swept a grid of the deep forest against both those samples and every physics box: (26, 14) came back
+clear, 8.06 m from the nearest box and 8.49 m from the nearest other soul — comfortably inside the tree
+ring and well short of where `forestRegion`'s own fill takes over at radius 58, so no keep-out zone was
+needed either.
+
+Full suite: `world 6: 41 to meet` (up one, from 40), every NPC including the new jogger still in the scene
+graph, all checks `ok`, 0 console warnings, exit 0 across three consecutive runs. Before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

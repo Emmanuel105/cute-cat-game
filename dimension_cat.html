@@ -8492,6 +8492,19 @@ function buildForest(game, entry) {
     game.npcs.push(new Sitter(game, storyteller, { x: sx, z: sz, ry, seat: 0.1,
       cries: ['Three turns of the fairy ring, mind, not four.', 'Shh — the owls are listening too, this time of night.', "Every story in these woods is true. Ask the fairies, if you doubt it."] })); }
 
+  // the quiet stretch of forest east of the naturalist's log, between the inner tree ring and the stump
+  // cluster, had nobody in it either. A jogger pauses there, hands on hips, getting their breath back.
+  // A headless probe built the real game, travelled to Whisper Woods, and sampled every NPC's and the
+  // squirrel's own position over 12 real seconds of simulated movement (so no wandering deer, fox or
+  // flying fairy mid-leash could slip past unnoticed), then swept a grid of candidates against both the
+  // samples and every physics box: (26, 14) came back clear, 8.06 m from the nearest box and 8.49 m from
+  // the nearest other soul.
+  { const jx = 26, jz = 14, ry = atan2(8 - jx, -6 - jz);
+    const runner = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }), shirt: 0x3a6a8a, stripes: 0xffffff, pants: 0x2a2a2a, shoes: 0xf5f2ea, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(runner.group);
+    game.npcs.push(new Charger(game, runner, { x: jx, z: jz, ry, cryIcon: '🏃',
+      cries: ["Just... one... more... lap.", "Didn't expect company, out here.", "The hills are the hard part, not the distance."] })); }
+
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
 
