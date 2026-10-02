@@ -4596,3 +4596,23 @@ walkable (unchanged), every NPC including the new painter still in the scene gra
 0 console warnings, exit 0 across two consecutive runs (two unrelated floating-point jitters in the
 Sunny Shore kite height and a foot-rest y-value, not touched by this change). Every world now has a
 painter of its own. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 192 — a third camper scrubs the breakfast pot, Whisper Woods
+
+The Neighborhood washes a car, Candy Land sweeps a doorstep and Frosty Peak shovels snow — all three
+reuse the same `Washer` controller for a different chore, and Sunny Shore uses it for waxing a surfboard.
+Whisper Woods never had one of its own. **A third camper now gives the breakfast pot a scrub** on an
+old stump pressed into service as a washing-up table, a few steps from the other two still arguing about
+who lives in the treehouse overhead. *"Breakfast's half the work. Washing-up's the rest."*
+
+A headless probe built the real game, travelled to Whisper Woods, and swept a grid of candidates against
+every physics box and every NPC's own position — sampled continuously over 20 simulated seconds so the
+wandering deer and fox and the two campers' own circles couldn't be missed mid-leash: `(-14, 8)` came
+back clear by over 4 m throughout, with the campers themselves the nearest other souls at a little over
+5 m. The pot and its washing-up stump sit 0.9 m further along the same bearing, almost exactly between
+the scrubber and the campers.
+
+Full suite: `world 6: 38 to meet` (up one, as expected, up from 37), 99% of Whisper Woods' ground still
+walkable (unchanged), every NPC including the new scrubber still in the scene graph, all 273 checks `ok`,
+0 console warnings, exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

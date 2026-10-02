@@ -7954,6 +7954,28 @@ function buildForest(game, entry) {
     game.npcs.push(new Talkers(game, a, b, { x: -19, z: 8.5, ry: 0,
       lines: ['Wonder who built that treehouse.', "Best view in the woods, I'd wager.", "Careful - you'll wake whoever lives up there.", 'No ladder for us, my knees say.'] })); }
 
+  // the Neighborhood washes a car, Candy Land sweeps a doorstep and Frosty Peak shovels snow — the same
+  // `Washer` scrubbing motion, reused each time for a different chore — but Whisper Woods never had one
+  // of its own. A third camper gives the breakfast pot a scrub on an old stump pressed into service as a
+  // washing-up table, a few steps from the other two still arguing about the treehouse. A headless probe
+  // swept a 20 s clearance scan (every physics box and every NPC's own position, including the wandering
+  // deer and fox and the two campers' own circles) around the campsite: (-14, 8) came back clear by over
+  // 4 m throughout, with the campers themselves the nearest other souls at a little over 5 m.
+  { const wx = -14, wz = 8, ry = atan2(-19 - wx, 8.5 - wz);
+    const px = wx + sin(ry) * 0.9, pz = wz + cos(ry) * 0.9, py0 = P.ground0(px, pz);
+    placeT(game, U, makeStump(r), px, pz, r() * TAU); boxT(game, px, pz, 1.0, 0.75, 1.0, { cam: false });
+    const potM = mat(0x6a6a6a, { metalness: 0.5, roughness: 0.4 });
+    const pot = group(px, py0 + 0.72, pz, W);
+    mesh(G.cyl(0.16, 0.18, 0.2, 14), potM, { y: 0.1, parent: pot });
+    for (const s of [-1, 1]) mesh(G.torus(0.02, 0.012, 4, 8), potM, { x: s * 0.18, y: 0.14, rz: PI / 2, parent: pot });
+    mesh(G.cyl(0.17, 0.17, 0.02, 14), mat(0xdcecff, { roughness: 0.3, transparent: true, opacity: 0.8 }), { y: 0.21, shadow: 'none', parent: pot });
+    const campWard = makeWardrobe(r, { shirts: [0x6a8a5a, 0x5a7a8a, 0x8a6a5a], pants: [0x3a3a3a, 0x2a2a2a], shoes: [0x3a2a1e, 0x2a2018] });
+    const scrubber = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: campWard }),
+      backpack: r.chance(0.5) ? 0x8a6a4a : null, hat: r.chance(0.4) ? 'cap' : null, hatColor: 0x3a4a3a, scarf: null, jacket: null, bag: null, glasses: false });
+    W.add(scrubber.group);
+    game.npcs.push(new Washer(game, scrubber, { x: wx, z: wz, ry,
+      cries: ["Someone's got to do the pot.", 'Careful, puss — mind the soot.', "Breakfast's half the work. Washing-up's the rest."] })); }
+
   // the campers below keep guessing who lives up in the treehouse — it's a kid, sitting on the deck's
   // own open front edge (the railings only run along the sides, per makeTreehouse), legs dangling over.
   // No ground-level physics circle: like the owls up in their trees, greeted by horizontal distance alone,
