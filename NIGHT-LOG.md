@@ -4493,3 +4493,23 @@ Full suite: `world 4: 37 to meet` (up two, as expected), 99% of Sunny Shore's gr
 NPC including both new riders still in the scene graph, all 273 checks `ok`, 0 console warnings, exit 0
 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 187 — a seesaw for Robot City
+
+The Neighborhood, Candy Land, Victorian and Sunny Shore had all paired their swing set with a seesaw
+over the last four rounds; Robot City got its own swing set two rounds back but never the seesaw to go
+with it — the last of the five worlds with a swing and no seesaw (Frosty Peak and Whisper Woods have
+neither yet). **Two more factory kids in yellow hard hats now tip an orange-striped plank up and down**
+on the open floor south of the conveyor belts, same prop and controller as the other four.
+
+A headless probe built the real game, travelled to Robot City, and sampled a clearance scan against
+every physics box and every NPC circle — including the twelve wandering robots — continuously over
+20 simulated seconds so none of them could drift into the spot unnoticed: `(0, -45)` came back clear by
+over 15 m throughout, well south of the furnace and conveyor belts and still deep inside the radius (98)
+where the hand-built city gives way to `robotRegion`'s procedural fill, so no extra keep-out was needed
+beyond the seesaw's own.
+
+Full suite: `world 2: 44 to meet` (up two, as expected, up from 42), 88% of Robot City's ground still
+walkable (unchanged), every NPC including both new riders still in the scene graph, all 273 checks `ok`,
+0 console warnings, exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

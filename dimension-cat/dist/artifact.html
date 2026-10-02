@@ -6914,6 +6914,20 @@ function buildRobotCity(game, entry) {
     W.add(swingKid.group);
     const sw = new Swinger(game, swingKid, swingSet, { x: sx, z: sz }); game.npcs.push(sw); greetable(game, sw);
     game.addInteractable({ obj: swingSet, radius: 2.8, label: () => 'Push the swing', onUse: () => { sw.boost = 1; SFX.talk(); game.toast('🎠 "Higher, like the crane arm!"', 1800); } }); }
+  // the Neighborhood, Candy Land, Victorian and Sunny Shore all paired their swing set with a seesaw —
+  // Robot City's own swing set (above) never got one. A headless probe swept a 20 s clearance scan
+  // across every physics box, every NPC circle and every wandering robot's circuit as it moved: (0, -45)
+  // came back clear by over 15 m throughout, open factory floor well south of the conveyor belts and
+  // furnace, still deep inside the radius (98) where the hand-built city gives way to robotRegion's fill.
+  { const sx = 0, sz = -45;
+    const seesaw = makeSeesaw({ color: 0xffa23c }); place(game, U, seesaw, sx, sz, 0);
+    game.zones.add(sx, sz, 2.4, 1.2);
+    P.addBox(sx, 0.35, sz, 2.9, 0.7, 0.6, { cam: false });
+    const seeWard = makeWardrobe(r, { shirts: [0xffe27a, 0x9ad6ff, 0xffffff], pants: [0x3a4a6a, 0x5a6a8a] });
+    const seeA = makeHuman({ ...randomPerson(r, { child: true, female: false, wardrobe: seeWard }), hat: 'cap', hatColor: 0xffd54a, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    const seeB = makeHuman({ ...randomPerson(r, { child: true, female: true, hairStyle: 'braids', wardrobe: seeWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(seeA.group); W.add(seeB.group);
+    game.npcs.push(new Seesaw(game, seeA, seeB, seesaw, { x: sx, z: sz })); }
   makeWoodenDoor(game, 19, -15, 0, () => game.travel(3, 'from-prev'));
   const back = makeRingPortal(0xff5fd2, { frame: 0x3a4048 }); place(game, U, back, -10, 12, 0); P.addBox(-11.4, 1.3, 12, 0.5, 2.6, 0.6); P.addBox(-8.6, 1.3, 12, 0.5, 2.6, 0.6);
   game.addInteractable({ obj: back, radius: 2.4, label: () => 'Return to Candy Land', onUse: () => game.travel(1, 'from-next') });
