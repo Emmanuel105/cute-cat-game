@@ -4875,3 +4875,26 @@ nearest other soul (the forager, the next closest after that).
 Full suite: `world 6: 40 to meet` (up one, from 39), every NPC including the new storyteller still in
 the scene graph, all 291 checks `ok`, 0 console warnings, exit 0 across three consecutive runs. Before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 204 — a sand sculptor, far down Sunny Shore's dunes
+
+Sunny Shore and the Neighborhood were tied for fewest friends of the seven worlds (39 apiece), and the
+beach's own sandcastle already has its kid patting a lopsided copy of a hut — but nobody on the whole
+stretch of sand had ever built something properly ambitious. **Deep in the quiet south-west dune, past
+the patroller's own beat, someone kneels beside a life-size sand turtle, smoothing its shell scute by
+scute.** *"Took all morning, just the shell."*
+
+It's the plain `Kneeler` controller again (its own patting animation already reads as smoothing sand,
+no changes needed), beside a new static prop — `makeSandTurtle()` in `62-props-nature.js` — built the
+same plain way as the existing sandcastle: a domed shell of raised scute bumps, a head poking out the
+front with two dot eyes, four flipper nubs and a stub of a tail, all in the same sand material. A
+headless probe built the real game, travelled to Sunny Shore, sampled every NPC's and the squirrel's own
+position continuously over 30 simulated seconds, and swept a grid of candidate points on dry sand (ground
+height above 0.15 m, to stay off the wet shore and the shallows) against every physics box in the fully
+built world, the procedural region fill included: (-30, -54) came back the clearest spot on the whole
+map, at least 22 m clear in every direction — nothing needed to be nudged or burned from the shared
+`rnd()` sequence this time; the full suite passed clean on the first try.
+
+Full suite: `world 4: 40 to meet` (up one, from 39), every NPC including the new sculptor still in the
+scene graph, all 273 checks `ok`, 0 console warnings, exit 0 across three consecutive runs. Before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

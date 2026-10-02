@@ -139,7 +139,21 @@ function makeSandcastle() {
   mesh(G.box(0.02, 0.2, 0.3), mat(0xffd54a), { x: 0.16, y: 1.6, parent: g }); mesh(G.cyl(0.012, 0.012, 0.5, 4), mat(0x3a2a1a), { y: 1.55, parent: g });
   return g;
 }
-/** A surfboard stood nose-down in the sand: the same flattened capsule and racing stripe the boardwalk arch already wears, life-sized and on its own, with a single fin. */
+/** A life-size sand sculpture of a turtle: a domed shell with raised scutes, a head poking out the front, four flipper nubs and a stub of a tail — a quieter, more patient cousin of the sandcastle. */
+function makeSandTurtle() {
+  const g = new THREE.Group(), sand = mat(0xdcbf85, { roughness: 1, map: TEX.sand().clone() }); sand.map.needsUpdate = true; sand.map.repeat.set(1, 1); worldBag.track(sand.map);
+  const ridge = mat(0xc9a86a, { roughness: 1 });
+  mesh(G.sphere(0.95, 16, 10), sand, { y: 0.52, sy: 0.56, parent: g });               // the shell
+  for (const [sx, sz] of [[0, 0.3], [0, -0.05], [0, -0.42], [0.42, 0.1], [-0.42, 0.1], [0.4, -0.28], [-0.4, -0.28]])
+    mesh(G.sphere(0.22, 10, 8), ridge, { x: sx, y: 0.95, z: sz, sy: 0.32, parent: g });   // scutes
+  mesh(G.sphere(0.26, 10, 8), sand, { y: 0.42, z: 0.95, sy: 0.85, sz: 0.9, parent: g });  // head
+  for (const ex of [-0.1, 0.1]) mesh(G.sphere(0.03, 6, 5), mat(0x2a2018), { x: ex, y: 0.52, z: 1.16, shadow: 'none', parent: g }); // eyes
+  for (const [fx, fz] of [[0.72, 0.55], [-0.72, 0.55], [0.72, -0.55], [-0.72, -0.55]])
+    mesh(G.sphere(0.22, 8, 6), sand, { x: fx, y: 0.22, z: fz, sy: 0.45, sx: 1.25, parent: g });   // flippers
+  mesh(G.cone(0.14, 0.3, 8), sand, { y: 0.28, z: -1.04, rx: PI / 2, parent: g });     // tail
+  return g;
+}
+/** A surfboard stood nose-down in the sand:the same flattened capsule and racing stripe the boardwalk arch already wears, life-sized and on its own, with a single fin. */
 function makeSurfboard(color) {
   const g = new THREE.Group();
   mesh(G.capsule(0.28, 1.2, 10), mat(color, { roughness: 0.4 }), { y: 0.7, sz: 0.22, parent: g });

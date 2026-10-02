@@ -269,6 +269,24 @@ function buildBeach(game, entry) {
     P.addBox(sx, game.physics.ground0(sx, sz) + 0.35, sz, 2.9, 0.7, 0.6, { cam: false });
     const seeA = beachPerson(false, true), seeB = beachPerson(true, true);
     game.npcs.push(new Seesaw(game, seeA, seeB, seesaw, { x: sx, z: sz })); }
+  // a sand sculptor works alone in the quiet far south-west dune — the sandcastle up north already has
+  // its own patter of a kid, but nobody on this whole beach had ever built something properly ambitious.
+  // A headless probe built the real game, travelled to Sunny Shore, sampled every NPC's own position
+  // (and the squirrel's) continuously over 30 simulated seconds, and swept a grid of candidate points on
+  // dry sand (ground height above 0.15 m, to stay off the wet shore) against every physics box in the
+  // fully built world, region fill included: (-30, -54) came back the clearest spot on the whole map, at
+  // least 22 m from the nearest other soul or collider in any direction — well past the dune patroller's
+  // own loop and the birdwatcher further north
+  { const sx = -30, sz = -54, kx = sx - 1.4, kz = sz + 0.7;
+    const turtle = makeSandTurtle(); placeT(game, U, turtle, sx, sz, 0.4);
+    boxT(game, sx, sz, 1.9, 1.1, 2.1, { cam: false });
+    const sculptWard = makeWardrobe(r, { shirts: [0xdcd3b8, 0xc9a86a, 0x8a9a6a], pants: [0x3a3a2a, 0x2a2a2a], shoes: [0x5a4530, 0x2a2018] });
+    const sculptor = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: sculptWard }),
+      hat: r.chance(0.5) ? 'sunhat' : null, hatColor: 0xd9c9a8, shorts: true, jacket: null, scarf: null, bag: null }); W.add(sculptor.group);
+    const trowel = group(0, 0.02, 0.1, sculptor.hands[1]); trowel.rotation.x = -0.4;
+    mesh(G.box(0.02, 0.1, 0.06), mat(0x8a8a8a, { metalness: 0.4, roughness: 0.5 }), { y: 0.05, parent: trowel });
+    game.npcs.push(new Kneeler(game, sculptor, { x: kx, z: kz, ry: atan2(sx - kx, sz - kz), cryIcon: '🐢',
+      cries: ['Took all morning, just the shell.', "Careful, puss — one tail flick and it's rubble.", "Tide won't reach this far up. I hope."] })); }
   // the beach dog keeps to its own patch of sand — it does not follow the cat
   const dog = makeDog(0xc8925a); W.add(dog.group); game.npcs.push(new Wanderer(game, dog, { x: -2, z: 28, speed: 1.1, leash: 7, r: 0.35, height: 0.9, step: 0.3, idle: [1.5, 4], walk: [2, 5] }));
   let woofT = rnd.range(6, 12); U.push((dt) => { woofT -= dt; if (woofT <= 0) { SFX.woof(); woofT = rnd.range(10, 20); } });

@@ -4933,7 +4933,21 @@ function makeSandcastle() {
   mesh(G.box(0.02, 0.2, 0.3), mat(0xffd54a), { x: 0.16, y: 1.6, parent: g }); mesh(G.cyl(0.012, 0.012, 0.5, 4), mat(0x3a2a1a), { y: 1.55, parent: g });
   return g;
 }
-/** A surfboard stood nose-down in the sand: the same flattened capsule and racing stripe the boardwalk arch already wears, life-sized and on its own, with a single fin. */
+/** A life-size sand sculpture of a turtle: a domed shell with raised scutes, a head poking out the front, four flipper nubs and a stub of a tail — a quieter, more patient cousin of the sandcastle. */
+function makeSandTurtle() {
+  const g = new THREE.Group(), sand = mat(0xdcbf85, { roughness: 1, map: TEX.sand().clone() }); sand.map.needsUpdate = true; sand.map.repeat.set(1, 1); worldBag.track(sand.map);
+  const ridge = mat(0xc9a86a, { roughness: 1 });
+  mesh(G.sphere(0.95, 16, 10), sand, { y: 0.52, sy: 0.56, parent: g });               // the shell
+  for (const [sx, sz] of [[0, 0.3], [0, -0.05], [0, -0.42], [0.42, 0.1], [-0.42, 0.1], [0.4, -0.28], [-0.4, -0.28]])
+    mesh(G.sphere(0.22, 10, 8), ridge, { x: sx, y: 0.95, z: sz, sy: 0.32, parent: g });   // scutes
+  mesh(G.sphere(0.26, 10, 8), sand, { y: 0.42, z: 0.95, sy: 0.85, sz: 0.9, parent: g });  // head
+  for (const ex of [-0.1, 0.1]) mesh(G.sphere(0.03, 6, 5), mat(0x2a2018), { x: ex, y: 0.52, z: 1.16, shadow: 'none', parent: g }); // eyes
+  for (const [fx, fz] of [[0.72, 0.55], [-0.72, 0.55], [0.72, -0.55], [-0.72, -0.55]])
+    mesh(G.sphere(0.22, 8, 6), sand, { x: fx, y: 0.22, z: fz, sy: 0.45, sx: 1.25, parent: g });   // flippers
+  mesh(G.cone(0.14, 0.3, 8), sand, { y: 0.28, z: -1.04, rx: PI / 2, parent: g });     // tail
+  return g;
+}
+/** A surfboard stood nose-down in the sand:the same flattened capsule and racing stripe the boardwalk arch already wears, life-sized and on its own, with a single fin. */
 function makeSurfboard(color) {
   const g = new THREE.Group();
   mesh(G.capsule(0.28, 1.2, 10), mat(color, { roughness: 0.4 }), { y: 0.7, sz: 0.22, parent: g });
@@ -7666,6 +7680,24 @@ function buildBeach(game, entry) {
     P.addBox(sx, game.physics.ground0(sx, sz) + 0.35, sz, 2.9, 0.7, 0.6, { cam: false });
     const seeA = beachPerson(false, true), seeB = beachPerson(true, true);
     game.npcs.push(new Seesaw(game, seeA, seeB, seesaw, { x: sx, z: sz })); }
+  // a sand sculptor works alone in the quiet far south-west dune — the sandcastle up north already has
+  // its own patter of a kid, but nobody on this whole beach had ever built something properly ambitious.
+  // A headless probe built the real game, travelled to Sunny Shore, sampled every NPC's own position
+  // (and the squirrel's) continuously over 30 simulated seconds, and swept a grid of candidate points on
+  // dry sand (ground height above 0.15 m, to stay off the wet shore) against every physics box in the
+  // fully built world, region fill included: (-30, -54) came back the clearest spot on the whole map, at
+  // least 22 m from the nearest other soul or collider in any direction — well past the dune patroller's
+  // own loop and the birdwatcher further north
+  { const sx = -30, sz = -54, kx = sx - 1.4, kz = sz + 0.7;
+    const turtle = makeSandTurtle(); placeT(game, U, turtle, sx, sz, 0.4);
+    boxT(game, sx, sz, 1.9, 1.1, 2.1, { cam: false });
+    const sculptWard = makeWardrobe(r, { shirts: [0xdcd3b8, 0xc9a86a, 0x8a9a6a], pants: [0x3a3a2a, 0x2a2a2a], shoes: [0x5a4530, 0x2a2018] });
+    const sculptor = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: sculptWard }),
+      hat: r.chance(0.5) ? 'sunhat' : null, hatColor: 0xd9c9a8, shorts: true, jacket: null, scarf: null, bag: null }); W.add(sculptor.group);
+    const trowel = group(0, 0.02, 0.1, sculptor.hands[1]); trowel.rotation.x = -0.4;
+    mesh(G.box(0.02, 0.1, 0.06), mat(0x8a8a8a, { metalness: 0.4, roughness: 0.5 }), { y: 0.05, parent: trowel });
+    game.npcs.push(new Kneeler(game, sculptor, { x: kx, z: kz, ry: atan2(sx - kx, sz - kz), cryIcon: '🐢',
+      cries: ['Took all morning, just the shell.', "Careful, puss — one tail flick and it's rubble.", "Tide won't reach this far up. I hope."] })); }
   // the beach dog keeps to its own patch of sand — it does not follow the cat
   const dog = makeDog(0xc8925a); W.add(dog.group); game.npcs.push(new Wanderer(game, dog, { x: -2, z: 28, speed: 1.1, leash: 7, r: 0.35, height: 0.9, step: 0.3, idle: [1.5, 4], walk: [2, 5] }));
   let woofT = rnd.range(6, 12); U.push((dt) => { woofT -= dt; if (woofT <= 0) { SFX.woof(); woofT = rnd.range(10, 20); } });
