@@ -5010,3 +5010,23 @@ Full suite: `world 4: 41 to meet` (up one, from 40 — tied lowest of the seven 
 round), every NPC including the new feeder still in the scene graph, all 273 checks `ok`, 0 console
 warnings, exit 0 across three consecutive runs. Before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 210 — someone to catch riders at the bottom of Frosty Peak's zipline
+
+Frosty Peak was tied lowest of the seven worlds at 41 friends, and its own zipline had stood lopsided
+since it was built: an attendant checks the cable at the top of the run, but nobody waited at the bottom
+to see riders off, unlike Whisper Woods' matching line which was never fitted with one either — so this
+was a genuine gap rather than a copy of existing content. **A woman stands just off the landing post now,
+arms half-open, ready to steady the next rider onto their feet.** *"Feet down, nice and steady - there we
+go."*
+
+No new rig or controller: she's the same `Charger` standing-idle loop the top attendant and the sled
+run's own parent already use, just facing back up the cable instead of down it. A headless probe built
+the real Frosty Peak, sampled every NPC's and the squirrel's own position continuously over 20 simulated
+seconds, and swept a grid of the open snowfield south of the landing post against both those samples and
+all 294 physics boxes: (-20, -27) came back clear by 22 m in every direction — 6 m from the landing post
+itself, off the lantern path and clear of the pines strung along the cable.
+
+Full suite: `world 5: 42 to meet` (up one, from 41), every NPC including the new catcher still in the
+scene graph, all 273 checks `ok`, 0 console warnings, exit 0 across three consecutive runs. Before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

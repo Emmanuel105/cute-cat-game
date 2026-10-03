@@ -8123,6 +8123,16 @@ function buildSnowVillage(game, entry) {
       hat: 'beanie', hatColor: 0x2a3a4a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a }); W.add(attendant.group);
     game.npcs.push(new Charger(game, attendant, { x: tx, z: tz, ry: atan2(ax - tx, az - tz), cryIcon: '🪢',
       cries: ["Cable's tight, harness checked - all set.", 'Coldest post on the mountain, this one.', "Only ever the squirrel gets a turn, mind."] })); }
+  // the tower attendant checks every rider off at the top, but nobody was down here to catch them: a
+  // headless probe over the built world swept the open snowfield south of the landing post and found
+  // (-20, -27) clear by 22 m in every direction, 6 m from the landing post itself and well off the
+  // lantern path and the pines strung along the cable
+  { const lx = -20, lz = -27;
+    const catchWard = makeWardrobe(r, { shirts: [0x4a6a3a, 0x8a5a3a, 0x3a5a6a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const catcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: catchWard }),
+      hat: 'beanie', hatColor: 0x4a6a3a, coat: true, scarf: 0xf7f3ec, cuffs: 0x3a3a3a }); W.add(catcher.group);
+    game.npcs.push(new Charger(game, catcher, { x: lx, z: lz, ry: atan2(ZIP_LANDING[0] - lx, ZIP_LANDING[1] - lz), cryIcon: '🤗',
+      cries: ['Feet down, nice and steady - there we go.', "Best seat on the mountain, that cable.", 'One at a time off the line, please!'] })); }
   makeLanternPath(game, ZIP_LANDING[0] + 2, ZIP_LANDING[1] + 2, -10, -8, 5);
   // pines along the zipline, kept to its north-east side so the sled run on the other side stays clear
   for (let i = 0; i < 7; i++) { const k = i / 6, x = lerp(ZIP_TOP[0], ZIP_LANDING[0], k) + r.range(0, 9), z = lerp(ZIP_TOP[1], ZIP_LANDING[1], k) + r.range(-9, 0); const pn = makeSnowPine(r); placeT(game, U, pn, x, z, 0); boxT(game, x, z, 1.2 * pn.scale.x, 5, 1.2 * pn.scale.x, { cam: false }); }
