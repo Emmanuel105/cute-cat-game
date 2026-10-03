@@ -5387,3 +5387,25 @@ re-running the unmodified, pre-change suite found the *same* two timing-sensitiv
 horse-and-carriage, and tonight also Sunny Shore's kite) failing most of the time, confirming the
 flakiness already on record from round 221 rather than anything this round's own change touched. Before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 224 — a wind chime for the treehouse, Whisper Woods
+
+The Neighborhood's porch has had a wind chime since round 216, and `makeWindChime()` in `60-props.js`
+was already written generically enough to hang anywhere — but it had only ever been called once.
+**The treehouse now has one of its own**, tucked under the back eave in a mossier palette (dark wood,
+verdigris-green tubes instead of the porch's bright silver), swaying and giving the odd soft ring when
+the cat wanders close, same as the original.
+
+Picked the back corner of the eave deliberately: the front side already has the lit window and the
+rope-ladder, both close together, and the chime wanted a quiet corner of its own rather than crowding
+either. Placed with `place()` at the treehouse's own world coordinates plus a fixed local offset rather
+than nesting it as a child of the treehouse group — `makeWindChime()`'s own proximity check reads its
+group's position directly against the cat's world position, so a child transform would have measured
+distance from the wrong origin and the ring-when-near behaviour would have silently never fired.
+
+Verified: `node test/run.mjs` — every world's NPC and collectible counts unchanged, Whisper Woods still
+98% walkable, all 273 checks `ok`, 0 console warnings, exit 0. This sandbox's own clock was running
+unevenly again tonight (same flakiness round 223 already logged): the Victorian horse-and-carriage
+timing check failed on roughly half of several back-to-back runs both with and without this round's
+change, confirming it's pre-existing and not something this round touched, before a clean run gave the
+273/273 above. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

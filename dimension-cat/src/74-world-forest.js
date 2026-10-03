@@ -20,6 +20,10 @@ function buildForest(game, entry) {
   const inner = [[-30, -10], [-28, 12], [-12, 30], [12, 32], [30, 22], [34, -12], [22, -30], [-6, -34], [-34, -30], [26, 4], [-16, -26], [0, 34]];
   for (const [x, z] of inner) treeAt(x, z, { lanterns: r.chance(0.5) });
   const treehouse = makeTreehouse(game, -18, 14, r);
+  // a wind chime under the treehouse's own back eave, away from the ladder and lit window on the front
+  // side — reuses the Neighborhood porch's makeWindChime() with a mossier, woodland palette
+  { const y0t = P.ground0(-18, 14), chime = makeWindChime(game, { wood: 0x6b4a2a, metal: 0x7a9a7a });
+    place(game, U, chime, -16.3, 12.0, 0, y0t + 6.5); }
   const lantern1 = makeLanternString(game, -30, -10, -12, -26, 8, 4.0), lantern2 = makeLanternString(game, 12, 32, 30, 22, 7, 4.2), lantern3 = makeLanternString(game, -16, -26, 8, -30, 7, 4.4); U.push(lantern1.update, lantern2.update, lantern3.update);
   makeFerns(game, [[0, 0, 36, 140]], r);
   for (const [x, z, ry] of [[12, 14, 0.6], [-8, -18, 2.2], [22, -14, 1.1], [-22, -6, 0.2], [2, 12, 1.4]]) { placeT(game, U, makeHollowLog(r), x, z, ry); boxT(game, x, z, 1.4, 1.2, 1.4, { cam: false }); }
