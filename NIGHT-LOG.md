@@ -5083,3 +5083,24 @@ Full suite: `world 6: 42 to meet` (up one, from 41 — tied lowest of the seven 
 round), every NPC including the new musician still in the scene graph, 98% of Whisper Woods' ground
 still walkable, all checks `ok`, 0 console warnings, exit 0 across three consecutive runs. Before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 213 — a husky for Frosty Peak's sled run
+
+Every other world with a dog (the Neighborhood's walker on her lead, Sunny Shore's beach dog) actually
+has one, but Frosty Peak never did, for all its sled run and zipline. **A husky now keeps to its own
+patch of snow at the foot of the slope, pointed ears up, not following the cat** — a plain
+`makeQuadruped()` rather than the shared `makeDog()`, so it gets a grey-and-white coat and pointed ears
+instead of the floppy-eared tan dog every other world's already wears.
+
+No new rig or controller: `Wanderer` on a short leash, the same pattern as Sunny Shore's own beach dog —
+wander a small patch, pet it with the same `namedFriend('dog')` + `befriend()` + happy-tail-wag toast,
+no greeting line of its own. A headless probe built the real mountain, sampled every NPC's and the
+squirrel's own position continuously over 20 simulated seconds (so no wandering reindeer, hare or
+mid-slide sledder could slip past unnoticed), and swept a grid of the open snow against both those
+samples and every physics box: (-46, -30) came back clear by 26 m in every direction, 4 m off the sled
+run's own landing point and well south of the swing set and seesaw.
+
+Full suite: `world 5: 43 to meet` (up one, from 42 — tied lowest of the seven worlds going into this
+round, with Whisper Woods), every NPC including the new husky still in the scene graph, 98% of Frosty
+Peak's ground still walkable, all checks `ok`, 0 console warnings, exit 0 across three consecutive runs.
+Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

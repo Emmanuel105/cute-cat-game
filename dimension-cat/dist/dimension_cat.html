@@ -8179,6 +8179,22 @@ function buildSnowVillage(game, entry) {
       hat: 'beanie', hatColor: 0x8a5a3a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a }); W.add(watcher.group);
     game.npcs.push(new Charger(game, watcher, { x: wx, z: wz, ry: atan2(sledTop[0] - wx, sledTop[1] - wz), cryIcon: '🛷',
       cries: ["One more run before the light goes.", 'Careful on the turn, near the pines.', "Best seat's the one going down, not climbing back up."] })); }
+  // every other world with a dog (the Neighborhood's walker, Sunny Shore's beach dog) has one, but Frosty
+  // Peak never did, for all its sled run — a husky keeps to its own patch of snow at the foot of the slope,
+  // pointed ears up, not following the cat (plain `makeQuadruped`, not `makeDog`, for the pointed ears and
+  // grey-and-white coat rather than the floppy-eared tan one every other world's dog already wears). A
+  // headless probe built the real mountain, sampled every NPC's and the squirrel's own position
+  // continuously over 20 simulated seconds (so no wandering reindeer, hare or mid-slide sledder could slip
+  // past unnoticed), and swept a grid of the open snow against both those samples and every physics box:
+  // (-46, -30) came back clear by 26 m in every direction, 4 m off the sled run's own landing point and
+  // well south of the swing set and seesaw further north.
+  { const hx = -46, hz = -30;
+    const husky = makeQuadruped({ color: 0x9aa0a8, color2: 0xf2f0ea, belly: 0xf2f0ea, tail: 'curl', wag: 5, bodyY: 0.4, length: 0.58, scale: 0.9 });
+    placeT(game, U, husky.group, hx, hz, atan2(sledTop[0] - hx, sledTop[1] - hz));
+    game.npcs.push(new Wanderer(game, husky, { x: hx, z: hz, speed: 0.6, leash: 3, r: 0.3, height: 0.85, step: 0.25, idle: [2, 5], walk: [1.5, 3] }));
+    boxT(game, hx, hz, 0.4, 0.8, 0.6, { cam: false });
+    const hid = game.namedFriend('dog');
+    game.addInteractable({ obj: husky.group, radius: 2.2, label: () => 'Pet the husky', onUse: () => { game.befriend(hid); SFX.woof(); game.hearts(husky.group.position.x, 0.6, husky.group.position.z, 4); game.toast('🐕‍🦺 *happy tail wag*'); } }); }
   snowRegion(game, U, r, 58, PEAK_LIMIT - 8);
   makeHorizon(game, r, { clear: PEAK_LIMIT + 8, hills: true, hill: 0xe8eef6, rock: 0x6a7a94, rock2: 0x7e8ea6, snow: 0xf6fbff, snowLine: 26, peaks: 32, peakH: [46, 110], woodCount: 300, woodHue: [0.32, 0.42], woodLight: [0.12, 0.2], trunk: 0x4a3a2a });
   // gondola home (bottom station of the village)
