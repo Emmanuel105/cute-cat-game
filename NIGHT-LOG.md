@@ -5550,3 +5550,25 @@ pure sound, so there was nothing for a headless probe to clear in the first plac
 Verified: `node test/run.mjs` — every world's NPC, collectible and friend counts unchanged, Victorian
 still fully walkable where it was before, all checks `ok`, 0 console warnings, exit 0 across two
 consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 231 — a shift whistle for Robot City's factory floor
+
+The Victorian clock tower tolls, Sunny Shore's dog woofs, Whisper Woods' owl hoots — three of the seven
+worlds now keep their own ambient sound running on a loop. Robot City, loudest of them all on paper
+(furnace, conveyors, robot arms, a dozen wandering robots), had never once made a sound on its own.
+**A factory shift whistle now blows across the floor every couple of minutes**, one long steam blast
+easing off at the end, spaced far enough apart to read as a shift change rather than an alarm.
+
+A new `SFX.whistle()` in `30-audio.js` — a sawtooth tone sliding down in pitch under a quiet sine
+overtone and a touch of bandpass noise, built the same way `chime()` layers its three tolls — sits next
+to `chime()` since both are the only two "building, not creature" sounds in the kit. The loop itself is
+four lines next to the furnace in `buildRobotCity()`, the same shape as round 230's clock-tower timer:
+a `U` tick counts down a span seeded with `rnd.range(50, 80)`, calls `SFX.whistle()` when it runs out,
+then resets to `rnd.range(90, 140)`. Since the timer is only ever read inside a per-frame tick, after
+every NPC in the build has already drawn whatever it needed from `rnd()`, it can't shift a single
+wardrobe pick at construction time, here or in any world built after this one. No new mesh, no physics
+box, no zone — pure sound, same as the clock tower before it.
+
+Verified: `node test/run.mjs` — every world's NPC, collectible and friend counts unchanged, Robot City
+still fully walkable where it was before, all 273 checks `ok`, 0 console warnings, exit 0 across two
+consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

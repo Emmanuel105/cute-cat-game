@@ -85,6 +85,8 @@ class SoundKit {
   clang() { this.noise({ dur: 0.05, vol: 0.16, filter: 2200, type: 'bandpass' }); this.tone({ freq: 880, slide: 600, type: 'square', dur: 0.06, vol: 0.08, filter: 3000 }); }
   /** The clock tower, tolling three times. */
   chime() { for (let i = 0; i < 3; i++) { const d = i * 0.85; this.tone({ freq: 220, slide: 195, type: 'sine', dur: 1.1, vol: 0.16, attack: 0.01, release: 0.7, delay: d, filter: 900, q: 1 }); this.tone({ freq: 440, slide: 385, type: 'triangle', dur: 0.9, vol: 0.05, delay: d, release: 0.6 }); this.noise({ dur: 0.12, vol: 0.07, filter: 1400, delay: d }); } }
+  /** A factory shift whistle: a long steam blast, pitch easing off as it dies. */
+  whistle() { this.tone({ freq: 660, slide: 600, type: 'sawtooth', dur: 1.3, vol: 0.14, attack: 0.1, release: 0.4, filter: 2600, q: 2 }); this.tone({ freq: 1320, slide: 1200, type: 'sine', dur: 1.3, vol: 0.05, attack: 0.1, release: 0.4 }); this.noise({ dur: 1.3, vol: 0.03, filter: 3000, type: 'bandpass' }); }
   /** Footstep: soft pad on grass/sand/snow, tap on cobble/metal/planks. */
   step(kind = 'soft', run = false) {
     const v = run ? 0.09 : 0.06;

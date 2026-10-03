@@ -1107,6 +1107,14 @@ function buildRobotCity(game, entry) {
       P.addBox(L.x + sx + 0.37, 0.7, L.z, 1.5, 1.4, 0.8, { cam: false }); P.addBox(L.x, 0.9, L.z, 0.8, 1.8, 0.8, { cam: false }); } }
   const arm = makeRobotArm(game, -5, -16); U.push(arm.userData.update);
   const furnace = makeFurnace(game, 9, -17, 0); U.push(furnace.userData.update);
+  // every other world has an ambient sound of its own on a loop — the Victorian bell, Sunny Shore's dog,
+  // Whisper Woods' owl — but the factory floor, with its furnace and conveyors already running, had never
+  // once sounded a shift whistle. It blows on its own loop now, same long steam blast whatever the game
+  // does, spaced far enough apart to read as a shift change rather than an alarm. The interval is drawn
+  // from the shared `rnd()` inside this `U` tick, read only after every NPC in this build is already
+  // placed, so it can't shift any construction-time wardrobe pick, here or in any world built after it.
+  let shiftWhistleT = rnd.range(50, 80);
+  U.push((dt) => { shiftWhistleT -= dt; if (shiftWhistleT <= 0) { SFX.whistle(); shiftWhistleT = rnd.range(90, 140); } });
   const pipe = mat(0x5a6470, { metalness: 0.8, roughness: 0.35 });
   for (const [x, z, len, ry] of [[-20, -14, 26, PI / 2], [20, -12, 22, PI / 2], [0, -23, 40, 0]]) { mesh(G.cyl(0.35, 0.35, len, 12), pipe, { x, y: 3.6, z, rz: PI / 2, ry, parent: W }); for (let k = 0; k < len; k += 6) mesh(G.cyl(0.14, 0.14, 3.4, 8), pipe, { x: ry ? x : x - len / 2 + k, y: 1.9, z: ry ? z - len / 2 + k : z, parent: W }); }
   makeNeonSign('ROBOT WORKS', '#ff2d95', 9, W).position.set(0, 6.5, -24);
