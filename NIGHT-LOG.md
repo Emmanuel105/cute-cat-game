@@ -4986,3 +4986,27 @@ needed either.
 Full suite: `world 6: 41 to meet` (up one, from 40), every NPC including the new jogger still in the scene
 graph, all checks `ok`, 0 console warnings, exit 0 across three consecutive runs. Before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 209 — a gull-feeder for Sunny Shore
+
+Victorian's own crumb-feeder (round built for its pigeons) said outright in its code comment that Sunny
+Shore was the gulls' turn to come, and nobody had taken it yet — the beach had a birdwatcher training
+binoculars on the gulls, but nobody feeding them. **A woman kneels on the open sand of the sunbathing
+corner now, a paper bag of chips at her side, tossing scraps out toward the water.** *"They'll take it
+right out of your hand if you let them."*
+
+`Forager` is the same kneel-and-toss controller Victorian's crumb-feeder and Whisper Woods' mushroom-picker
+already use — no new controller, no new rig, just a third person reusing a motion the game already knows,
+with a small paper bag of chips (`mesh(G.box(...))`, the same shape as Victorian's bag of crumbs) at her
+knee instead of a mushroom basket. A headless probe built the real Sunny Shore, sampled every NPC's and
+the squirrel's own position continuously over 30 simulated seconds (so no wandering sunbather, crab or
+gull mid-circuit could slip past unnoticed), and swept a grid of the sunbathing corner against both those
+samples and every physics box, staying well inside the hand-built heart (radius under 50, short of
+`beachRegion`'s own fill at 58): (3, -13.5) came back clear, 8.7 m from the nearest other soul or collider
+in any direction — tucked between the ice-cream cart and the towels, facing out toward where the gulls
+wheel over the water.
+
+Full suite: `world 4: 41 to meet` (up one, from 40 — tied lowest of the seven worlds going into this
+round), every NPC including the new feeder still in the scene graph, all 273 checks `ok`, 0 console
+warnings, exit 0 across three consecutive runs. Before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

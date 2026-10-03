@@ -171,6 +171,25 @@ function buildBeach(game, entry) {
     W.add(birder.group);
     game.npcs.push(new Birder(game, birder, { x: -8, z: -36, ry: 1.3,
       cries: ["There's one - no, gone again.", "Fifty-two species this year, if I've counted right.", "Gulls mostly. Still counts."] })); }
+  // the birdwatcher above just watches the gulls; Victorian's own crumb-feeder (built for its pigeons)
+  // already named Sunny Shore as the gulls' turn to come — a feeder now kneels on the open sand of the
+  // sunbathing corner, a paper bag of chips at her side, reusing Forager's own kneel-and-toss exactly as
+  // Victorian's crumb-feeder and Whisper Woods' mushroom-picker already do. A headless probe built the
+  // real Sunny Shore, sampled every NPC's and the squirrel's own position continuously over 30 simulated
+  // seconds (so no wandering sunbather, crab or gull mid-circuit could slip past unnoticed), and swept a
+  // grid of the whole sunbathing corner against both those samples and every physics box, staying well
+  // inside the hand-built heart (radius < 50, short of beachRegion's own fill at 58): (3, -13.5) came back
+  // clear, 8.7 m from the nearest other soul or collider in any direction — between the ice-cream cart and
+  // the towels, facing out toward where the gulls wheel over the water.
+  { const kx = 3, kz = -13.5, gx = 14, gz = 0, ry = atan2(gx - kx, gz - kz);
+    const feedWard = makeWardrobe(r, { shirts: [0x6a5a4a, 0x5a6a5a, 0x4a5a6a], pants: [0x3a3a3a, 0x2a2a2a], shoes: [0xefe7d8, 0x8d6e63] });
+    const feeder = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.4), wardrobe: feedWard }),
+      hat: 'sunhat', hatColor: 0xd9c9a8, shorts: true, jacket: null, scarf: null, bag: null, glasses: r.chance(0.3) });
+    W.add(feeder.group);
+    mesh(G.box(0.2, 0.16, 0.12), mat(0xf0dcae, { roughness: 0.9 }), { x: kx + 0.35, y: 0.08, z: kz + 0.12, ry: 0.3, parent: W });   // the paper bag of chips
+    boxT(game, kx + 0.35, kz + 0.12, 0.2, 0.16, 0.12, { cam: false });
+    game.npcs.push(new Forager(game, feeder, { x: kx, z: kz, ry, cryIcon: '🍟',
+      cries: ["Not too close, puss, these are for the gulls.", "They'll take it right out of your hand if you let them.", "One always gets there before the rest."] })); }
   // a clam digger kneels in the wet sand north of the pier, working the tideline for shellfish — Sunny Shore's tideline never had anyone digging it, only walking it
   { const digWard = makeWardrobe(r, { shirts: [0x6a8a9a, 0x9a8a6a, 0x7a6a5a], pants: [0x3a4a3a, 0x4a3a2a], shoes: [0x5a4030, 0x3a2a1e] });
     const digger = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: digWard }),
