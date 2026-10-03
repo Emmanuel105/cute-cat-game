@@ -591,6 +591,34 @@ function makeMailbox(color) {
   mesh(G.box(0.03, 0.2, 0.08), mat(0xd62839), { x: 0.17, y: 1.45, z: 0.1, shadow: 'none', parent: g });
   return g;
 }
+/**
+ * A wind chime hung from an eave: a wooden disc with a handful of metal tubes dangling at different
+ * lengths, a wind-catcher on a thread below them. `userData.update` sways the whole thing and, now and
+ * then, rings a few soft notes if the cat is close enough to hear.
+ */
+function makeWindChime(game, o = {}) {
+  const g = new THREE.Group();
+  const wood = mat(o.wood ?? 0x8a5a32, { roughness: 0.85 }), metal = mat(o.metal ?? 0xcdd3d6, { roughness: 0.3, metalness: 0.7 });
+  mesh(G.cyl(0.11, 0.11, 0.02, 16), wood, { shadow: 'both', parent: g });
+  const hang = group(0, -0.02, 0, g);
+  const N = 5, R = 0.08, tubes = [];
+  for (let i = 0; i < N; i++) {
+    const a = (i / N) * TAU, len = 0.3 + (i % 3) * 0.09, tx = cos(a) * R, tz = sin(a) * R;
+    noInk(mesh(G.cyl(0.004, 0.004, 0.12, 4), metal, { x: tx, y: -0.06, z: tz, shadow: 'none', parent: hang }));
+    const tube = mesh(G.cyl(0.012, 0.012, len, 8), metal, { x: tx, y: -0.12 - len / 2, z: tz, shadow: 'both', parent: hang });
+    tubes.push({ m: tube, phase: i * 1.7 });
+  }
+  noInk(mesh(G.cyl(0.004, 0.004, 0.28, 4), metal, { y: -0.3, shadow: 'none', parent: hang }));
+  mesh(G.cyl(0.055, 0.055, 0.014, 12), wood, { y: -0.44, shadow: 'both', parent: hang });
+  let lastRing = 0;   // a fixed 16 s cycle, not the shared rnd() sequence: a draw here, even at runtime, would shift every other NPC's own idle-gesture roll off the shared stream they all share
+  g.userData.update = (dt, t) => {
+    hang.rotation.z = sin(t * 0.7) * 0.05; hang.rotation.x = sin(t * 0.55 + 1.3) * 0.04;
+    for (const tb of tubes) { tb.m.rotation.x = sin(t * 1.3 + tb.phase) * 0.05; tb.m.rotation.z = cos(t * 1.1 + tb.phase) * 0.05; }
+    const ring = floor(t / 16);
+    if (ring !== lastRing) { lastRing = ring; const c = game.cat.group.position; if (dist2(g.position.x, g.position.z, c.x, c.z) < 225) SFX.twinkle(); }
+  };
+  return g;
+}
 
 // ---------------------------------------------------------------- portals & doors
 /**

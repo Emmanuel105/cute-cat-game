@@ -5149,3 +5149,38 @@ Full suite: `world 2: 46 to meet` (up one, from 45), every NPC including the new
 scene graph, 88% of Robot City's ground still walkable, all checks `ok`, 0 console warnings, exit 0
 across three consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 216 — a wind chime on the Neighborhood's own porch
+
+The Neighborhood sat lowest of the seven worlds on friend count going into this round (41, with no
+other world below 42) and hadn't been touched in eight rounds, but it's also the single most densely
+built world in the game — every open yard already has somebody in it, right down to a hopscotch girl
+and a lemonade stand — so rather than squeeze in one more person, this round gave the cat's own house
+something it never had: **a small wind chime now hangs under the porch roof, between the two posts,
+swaying on its own and now and then ringing a few soft notes if the cat's close enough to hear.**
+
+A new `makeWindChime()` in `60-props.js`: a wooden disc, five metal tubes of different lengths on
+thread (`noInk()`'d), and a wind-catcher disc hanging below on its own thread, all parented to one
+group so the sway animation (two slow sine rotations on the hanging cluster, plus each tube wobbling
+out of phase) is just a few lines in `userData.update`. Placed in `70-worlds.js` right after the home
+beacon, at (0.9, 2.55, 5.95) — centred between the porch's own two posts, under the roof's own front
+overhang past its 4.25–6.05 m depth, nowhere near the porch light tucked back by the door. No physics
+box at all (it's a good 2 m up — nothing at that height ever blocks the ground-level walkability check),
+so no probe was needed for this one.
+
+The real lesson of this round wasn't the chime itself but the global `rnd()` sequence every NPC's own
+idle-gesture roll draws from, mentioned in passing in a dozen earlier rounds' own comments: the first
+version drew `rnd.range(...)` both once at construction (to stagger the first chime) and again every
+time it rang, and the full suite immediately broke two unrelated checks — the painter's own idle arm
+pose and the back-yard gossips' turn-taking — neither of which touches the chime at all. A quick debug
+pass confirmed the painter's own `this.t` phase was bit-for-bit identical either way (so the construction
+draw wasn't the culprit once trimmed down to one), but every *runtime* draw this prop made, interleaved
+across frames with every other rig's own `rnd()`-seeded idle-gesture timer, was still enough to shift
+which gesture they rolled and when. The fix was to stop drawing from `rnd()` at all, construction or
+runtime: the chime now rings on a fixed 16 s cycle timed off its own `t`, nothing shared, nothing to
+burn.
+
+Full suite: `world 0: 41 to meet` (unchanged — this round added a prop, not a friend), every NPC
+including the usual roster still in the scene graph, all checks `ok`, 0 console warnings, exit 0 across
+three consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.
