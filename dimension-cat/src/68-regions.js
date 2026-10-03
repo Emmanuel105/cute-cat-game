@@ -89,7 +89,27 @@ function makeCandyHouse(game, x, z, ry, r, hue) {
   mesh(G.torus(0.32, 0.05, 6, 14), icing, { y: 1.55, z: 2.62, shadow: 'none', parent: g });                                  // round window over the door
   mesh(G.cyl(0.28, 0.28, 0.05, 14), mat(0xbfe7ff, { roughness: 0.2, transparent: true, opacity: 0.6 }), { y: 1.55, z: 2.64, rx: PI / 2, shadow: 'none', parent: g });
   addRotBox(game, x, 1.6, z, 5.6, 3.2, 5.6, ry);
-  return g;
+  // the Neighborhood's and Victorian's own houses have had chimney smoke for a while now; these five
+  // hand-placed candy houses were the one house cluster left with nothing rising off their own roof.
+  // A wisp of sugar steam now curls from each one's gold finial instead of grey ash, tinted pale to the
+  // house's own icing colour. Same three-puff loop as `addChimneySmoke` (70-worlds.js), reusing its
+  // shape rather than its name since a module-scope forward reference from this earlier file felt one
+  // reuse too clever for a one-line payoff; driven only by the world clock `t` and a phase fixed from
+  // the house's own (x, z) — never `r()` or the shared `rnd()` — so it draws nothing from either
+  // sequence and can't shift any later wardrobe pick or timing-sensitive check, in this build or any
+  // built after it. The puffs sit at y=6.1, just above the finial (5.95) and well clear of the wall's
+  // own physics box (top at y=3.2); their material is transparent, so `bakeDeep`'s own `plain()` check
+  // already excludes them from baking without needing a `userData.keep` of their own.
+  const steamHue = new THREE.Color().setHSL(hue / 360, 0.5, 0.92).getHex();
+  const puffs = [0, 1, 2].map(() => mesh(G.sphere(0.09, 7, 5), mat(steamHue, { roughness: 1, transparent: true, opacity: 0.4 }), { shadow: 'none', parent: game.world }));
+  const CYCLE = 2.6, phase = abs(x + z) * 0.41, topY = 6.1;
+  const update = (dt, t) => { for (let i = 0; i < puffs.length; i++) {
+    const k = (((t + phase) + i * (CYCLE / puffs.length)) % CYCLE) / CYCLE;
+    puffs[i].position.set(x + sin(k * 4 + i * 2 + phase) * 0.14, topY + k * 1.3, z + cos(k * 3 + i * 2 + phase) * 0.1);
+    puffs[i].scale.setScalar(0.45 + k * 0.8);
+    puffs[i].material.opacity = 0.4 * (1 - k);
+  } };
+  return { group: g, updates: [update] };
 }
 /** A houmoungous candy castle: striped corner towers and a grand gate you can walk straight through, into one huge throne hall. */
 function makeCandyCastle(game, x, z, ry, r) {

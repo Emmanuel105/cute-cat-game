@@ -5480,3 +5480,28 @@ or any built after it.
 Verified: `node test/run.mjs` — every world's NPC, collectible and friend counts unchanged, Victorian
 still fully walkable where it was before, all 273 checks `ok`, 0 console warnings, exit 0 across two
 consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 228 — sugar steam for Candy Land's five houses
+
+The Neighborhood's and Victorian's own rooftops have had chimney smoke for a while now, but Candy
+Land's five hand-placed candy houses — round candy-tin walls, iced roofs, gold ball finials — were the
+one house cluster left with nothing rising off the top. **Each one now breathes a wisp of pale sugar
+steam from its own finial** instead of grey ash, tinted to match that house's own icing colour, curling
+up and fading just like a real chimney's smoke.
+
+`makeCandyHouse()` in `68-regions.js` gained the same three-puff loop `addChimneySmoke()` already uses
+over in `70-worlds.js` — reused as a shape rather than by name, since this file sits earlier in the
+build order and a forward reference felt one cleverness too many for a one-line payoff. The puffs sit
+at y=6.1, just above the finial (5.95) and well clear of the wall's own physics box (top at y=3.2), so
+no new box was needed. Their motion is driven only by the world clock `t` and a phase fixed from each
+house's own (x, z) — never `r()` or the shared `rnd()` — so it draws nothing from either sequence and
+can't shift any later wardrobe pick or timing-sensitive check, in this build or any built after it.
+Their material is transparent, so `bakeDeep`'s own `plain()` check already excludes them from baking
+without needing a `userData.keep` of their own — the same reason the original chimney smoke needed
+none. `makeCandyHouse()` now returns `{ group, updates }` instead of a bare group, so the five calls in
+`buildCandyLand()` push those update functions into the world's own tick list, the same convention
+`makeCandyCastle()`'s own flag-pennant updates (round 225) already set.
+
+Verified: `node test/run.mjs` — every world's NPC, collectible and friend counts unchanged, Candy Land
+still fully walkable where it was before, all 273 checks `ok`, 0 console warnings, exit 0 across two
+consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -802,7 +802,7 @@ function buildCandyLand(game, entry) {
   for (const [hx, hz] of [[-16, 95], [16, 97], [-24, 112], [24, 114], [0, 80]]) game.zones.addCircle(hx, hz, 5);
   const castle = makeCandyCastle(game, 0, 150, PI, r);
   for (const u of castle.updates) U.push(u);
-  for (const [hx, hz, hue] of [[-16, 95, 330], [16, 97, 200], [-24, 112, 50], [24, 114, 120], [0, 80, 280]]) makeCandyHouse(game, hx, hz, r() * TAU, r, hue);
+  for (const [hx, hz, hue] of [[-16, 95, 330], [16, 97, 200], [-24, 112, 50], [24, 114, 120], [0, 80, 280]]) { const house = makeCandyHouse(game, hx, hz, r() * TAU, r, hue); for (const u of house.updates) U.push(u); }
   for (const s of [-1, 1]) { const rig = makeGingerbread(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x: castle.throne[0] + s * 2.6, z: castle.throne[1] + 1.4, speed: 0.3, leash: 1.2, r: 0.4, height: 1.4, idle: [2, 5] })); }
   game.addInteractable({ obj: castle.throneGroup, radius: 3.4, label: () => 'Approach the throne', onUse: () => { SFX.talk(); game.toast('👑 "A comfy-looking throne. Built for someone rather bigger than a cat."', 3000); } });
   // the hall between the gate and the dais was empty; a court jester now juggles there for a throne its queen rarely visits
