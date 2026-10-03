@@ -938,7 +938,7 @@ function makeIronFence(len) {
   for (let i = 0; i <= len / 3; i++) mesh(G.box(0.12, 1.35, 0.12), iron, { x: -len / 2 + i * 3, y: 0.68, parent: g });
   return g;
 }
-function makeClockTower(game, x, z) {
+function makeClockTower(game, x, z, U) {
   const g = group(x, 0, z, game.world), stone = mat(0x8c8377, { roughness: 0.95, map: TEX.brick(30).clone() }); stone.map.needsUpdate = true; stone.map.repeat.set(3, 9); worldBag.track(stone.map);
   const slate = mat(0x2d3a42, { roughness: 0.8 }), gold = mat(0xd4af37, { metalness: 0.9, roughness: 0.3 });
   mesh(G.box(6, 18, 6), stone, { y: 9, shadow: 'both', parent: g }); mesh(G.box(7, 1, 7), slate, { y: 18.5, parent: g });
@@ -947,6 +947,19 @@ function makeClockTower(game, x, z) {
   for (let i = 0; i < 4; i++) { const a = i * PI / 2; mesh(G.cyl(1.8, 1.8, 0.1, 32), face, { x: sin(a) * 2.55, y: 21.5, z: cos(a) * 2.55, rx: PI / 2, ry: a, shadow: 'none', parent: g }); }
   mesh(G.cone(4.2, 5, 4), slate, { y: 26.5, ry: PI / 4, parent: g }); mesh(G.sphere(0.4, 8, 6), gold, { y: 29.2, parent: g });
   mesh(G.cyl(0.05, 0.05, 2, 6), gold, { y: 30.2, parent: g });
+  // the spire's own gold rod stood bare since the tower was first built; a weathervane now caps it —
+  // a fixed compass cross with a ball at each point, and an arrow that swings with the wind above it
+  { const vy = 31.35, cross = group(0, vy, 0, g);
+    for (let i = 0; i < 4; i++) { const a = i * PI / 2; mesh(G.box(0.05, 0.05, 0.56), gold, { ry: a, shadow: 'none', parent: cross });
+      mesh(G.sphere(0.075, 8, 6), gold, { x: sin(a) * 0.3, z: cos(a) * 0.3, shadow: 'none', parent: cross }); }
+    const arrow = group(0, vy + 0.12, 0, g);
+    mesh(G.cone(0.16, 0.5, 4), gold, { z: 0.55, rx: PI / 2, ry: PI / 4, shadow: 'none', parent: arrow });
+    mesh(G.box(0.05, 0.22, 0.95), gold, { shadow: 'none', parent: arrow });
+    mesh(G.box(0.05, 0.3, 0.32), gold, { z: -0.56, shadow: 'none', parent: arrow });
+    // a lazy, deterministic wander (two slow sines, never the shared rnd()) rather than a steady spin —
+    // a weathervane settles and gusts, it doesn't turn like a pinwheel
+    arrow.userData.update = (dt, t) => { arrow.rotation.y = 0.6 + sin(t * 0.17) * 0.9 + sin(t * 0.43) * 0.25; };
+    if (U) U.push(arrow.userData.update); }
   mesh(G.box(7.5, 0.6, 7.5), stone, { y: 0.3, parent: g });
   game.physics.addBox(x, 9, z, 7.5, 18, 7.5);
   return g;

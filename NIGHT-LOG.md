@@ -5235,3 +5235,31 @@ Full suite: `world 0: 42 to meet` (up one, from 41 — lowest of the seven world
 round), every NPC including the new griller still in the scene graph, 96% of the Neighborhood's ground
 still walkable, all checks `ok`, 0 console warnings, exit 0 across three consecutive runs. Before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 219 — a weathervane for the Victorian clock tower
+
+The clock tower has stood over the market square since the Victorian town was first built, its spire
+topped with nothing but a bare gold finial rod. **A weathervane now caps the spire**: a fixed compass
+cross with a small gold ball at each point, and a gold arrow above it that swings lazily back and
+forth as the wind shifts, rather than spinning like a pinwheel.
+
+Added a few meshes to the existing `makeClockTower()` in `60-props.js` rather than a new function —
+this is a one-off landmark detail, not a prop placed more than once. The arrow's motion is two slow
+sines added together and driven only by `t`, no draw from the shared `rnd()` sequence at all, learning
+straight from round 216's own wind-chime write-up about what that shared sequence does to every other
+NPC's idle-gesture timing. `makeClockTower` now takes an optional fourth `U` argument and pushes the
+arrow's own `userData.update` into it when given one, so the call site in `buildVictorian` just grew a
+`, U` — nothing else about the tower changed, and the gold ball, clock faces and spire it already had
+are untouched. The whole assembly sits a little over 31 m up, well above the tower's own physics box
+(which already stopped at 18 m, short of the spire, with no issue), so no new collision box was needed
+and the ground-level walkability sweep never goes near it.
+
+Housekeeping note, same lesson as round 212's: this session's local `main` branch was a stale ref,
+50 commits behind a force-updated `origin/main` with no shared history inside that depth — a `git
+fetch origin main` before trusting any cached ref caught it immediately, and the work went in on the
+genuine current tip rather than rebuilding something already done.
+
+Full suite: `world 3: 50 to meet` (unchanged — this round added a static landmark detail, not a
+friend), every NPC still in the scene graph, 96% of Victorian's ground still walkable, all checks
+`ok`, 0 console warnings, exit 0 across three consecutive runs. Before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

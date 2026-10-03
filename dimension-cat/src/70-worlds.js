@@ -1547,7 +1547,7 @@ function buildVictorian(game, entry) {
       cries: ['Not a bite in this canal all week.', 'Caught a boot once. Best catch all month.', 'Mind the towpath, puss.'] })); }
   for (const [x, z, k2] of [[-30, 20, 'oak'], [36, 22, 'oak'], [-12, -50, 'birch'], [18, -52, 'birch'], [-66, -14, 'oak'], [66, 18, 'oak']]) addTree(game, k2, x, z, r);
   // clock tower plaza (east), time door (west)
-  makeClockTower(game, 42, 0);
+  makeClockTower(game, 42, 0, U);
   flatPlane(game, 16, 16, pave, 42, 0, 0, 0.015);
   makeCarriage(game, 16, 3.4, PI / 2);
   // the parked carriage had no one minding it; a coachman now waits up on the driver's bench, watch in hand
