@@ -5324,3 +5324,28 @@ round, with the Neighborhood and Whisper Woods), every NPC including the new jog
 graph, 100% of Sunny Shore's ground still walkable, all checks `ok`, 0 console warnings, exit 0 across
 three consecutive runs (not counting the pre-existing Victorian flake above, reproduced independently
 of this change). Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 222 — a windsock for the zipline tower
+
+Checking what had gone longest untouched going into this round: Frosty Peak hadn't had anything new
+since round 213, nine rounds back, and both it and Whisper Woods share a zipline built by the one
+`makeZipline()` function in `62-props-nature.js` — its start tower has carried a bare gold-tipped flag
+pole at its mast-head since the tower was first built, in both worlds, and never flew anything from it.
+**A windsock now hangs from that pole on both towers**, tapering orange-and-white bands from a steel
+mouth ring down to a narrow tail, swinging lazily back and forth as if catching the mountain wind —
+genuinely useful-looking for anyone sizing up a jump off either platform.
+
+No new NPC, no friend count change, no probe for open ground: this is a landmark detail bolted onto an
+existing static prop, the same shape of change as round 219's clock-tower weathervane and for the same
+reason — the tower's own physics box already stops at 4.6 m (its four corner posts), and the sock sits
+higher still at 5.58 m, so no new collision box was needed and the ground-level walkability sweep never
+reaches it. The swing itself is two slow sines added together driven only by `t`, not the shared
+`rnd()` sequence, learning the same lesson round 219's write-up already spelled out: a draw from that
+sequence here would ripple into every NPC idle-gesture timer built afterward in both worlds. Because
+`makeZipline()` is shared, one change gives each tower its own sock — Frosty Peak's start tower at
+(-72, -70) and Whisper Woods' at (-30, 30) both got it from the same edit.
+
+Full suite: friend counts unchanged in every world (this round added no greetable NPC), every NPC
+still in the scene graph in every world, ground walkability unchanged (98% Frosty Peak, 98% Whisper
+Woods, same as before), all checks `ok`, 0 console warnings, exit 0 across three consecutive runs.
+Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

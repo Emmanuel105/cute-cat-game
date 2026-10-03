@@ -575,6 +575,20 @@ function makeZipline(game, U, ax, az, bx, bz, r = rnd) {
   for (let i = 0; i < 4; i++) for (const s of [-1, 1]) mesh(G.box(0.06, 0.8, 0.06), dark, { x: s * 1.15, y: 4.9, z: -1.1 + i * 0.72, shadow: 'none', parent: tower });
   for (let i = 0; i < 8; i++) mesh(G.box(0.5, 0.05, 0.1), wood, { x: -0.95, y: 0.5 + i * 0.5, z: 1.1, parent: tower });
   mesh(G.cyl(0.09, 0.09, 1.2, 7), dark, { y: 5.0, parent: tower });
+  // a windsock at the mast-head — the bare flag pole never had one, and it's the first thing anyone
+  // sizing up a jump off this tower actually wants to see. Swings on two slow sines added together,
+  // driven only by `t`, same trick as the Victorian clock tower's own weathervane (round 219) — no
+  // draw from the shared `rnd()` sequence, so no other NPC's idle-gesture timing shifts. `tower`
+  // already takes no physics box above the 4.6 m of its posts, and the sock sits higher still at
+  // 5.6 m, so it needs none either. Shared by both worlds that call `makeZipline` (Frosty Peak and
+  // Whisper Woods), so one change gives each tower its own sock.
+  { const sockMat = mat(0xe0503c, { roughness: 0.85 }), stripeMat = mat(0xf7f3ec, { roughness: 0.85 }), ringMat = mat(0x4a5058, { metalness: 0.6, roughness: 0.4 });
+    const sockPivot = group(0, 5.58, 0, tower);
+    mesh(G.torus(0.095, 0.012, 6, 12), ringMat, { ry: PI / 2, shadow: 'none', parent: sockPivot });
+    [[0.095, 0.075, sockMat], [0.075, 0.055, stripeMat], [0.055, 0.035, sockMat], [0.035, 0.015, stripeMat]].forEach(([r0, r1, m], i) =>
+      mesh(G.cyl(r0, r1, 0.2, 8), m, { x: 0.01 + 0.2 * (i + 0.5), rz: PI / 2, shadow: 'none', parent: sockPivot }));
+    sockPivot.userData.update = (dt, t) => { sockPivot.rotation.y = 0.4 + sin(t * 0.21) * 0.3 + sin(t * 0.52) * 0.12; sockPivot.rotation.x = sin(t * 1.3) * 0.035; };
+    U.push(sockPivot.userData.update); }
   P.addBox(ax, P.ground0(ax, az) + 2.3, az, 2.0, 4.6, 2.0);
   // landing post with a pile of leaves
   const post = group(bx, P.ground0(bx, bz), bz, game.world);
