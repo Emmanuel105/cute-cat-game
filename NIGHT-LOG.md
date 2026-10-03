@@ -5055,3 +5055,31 @@ shared `rnd()` sequence and disturbs nothing built earlier.
 Full suite: `world 1: 45 to meet` (up one, from 44), every NPC including the new musician still in the
 scene graph, all 273 checks `ok`, 0 console warnings, exit 0 across three consecutive runs. Before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 212 — a musician for Whisper Woods
+
+The Neighborhood, Sunny Shore and Candy Land all have a ukulele player and Victorian its fiddler at the
+clock tower, but Whisper Woods — for all its owls, fairies and a whole glade of mushrooms — never had
+anyone actually making music. **A woman sits cross-legged on the forest floor south of the glade,
+strumming a moss-green ukulele toward nobody in particular.** *"Even the owls go quiet for this one."*
+
+No new rig or controller: she's a plain `makeHuman()` holding the same `makeUkulele()` prop the other
+three musicians already use, recoloured mossy green, and `Sitter` (already doing duty as the reader, the
+meditator and the storyteller elsewhere in these woods) for the seated pose, with the same arm-strum
+override the other ukulele players use. A small headless probe (outside the usual test suite, same idea
+as the "headless probe" write-ups in earlier rounds) built the real Whisper Woods, sampled every NPC's
+own rig position and the squirrel's every quarter second over 20 simulated seconds, and swept a grid of
+the glade's clearing (radius under 36, short of the tree ring at 40) against both those samples and
+every physics box: `(5.5, -32)` came back clear by 7.76 m in every direction, the reader eight and a
+half metres off being the nearest other soul.
+
+Housekeeping note: this run started from a stale local clone whose `origin/main` ref was badly out of
+date (a shallow fetch boundary, not an actual rewrite) — comparing against it without fetching first
+would have rebuilt a round already done 54 rounds ago. A fresh `git fetch` caught it before anything
+was pushed; worth remembering for next time that the first move in any round should be `git fetch` before
+trusting a cached `origin/main`.
+
+Full suite: `world 6: 42 to meet` (up one, from 41 — tied lowest of the seven worlds going into this
+round), every NPC including the new musician still in the scene graph, 98% of Whisper Woods' ground
+still walkable, all checks `ok`, 0 console warnings, exit 0 across three consecutive runs. Before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
