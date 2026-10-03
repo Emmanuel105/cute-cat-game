@@ -7743,7 +7743,22 @@ function buildBeach(game, entry) {
     const stand = new Vendor(game, fryer, makeChipsCone(), { x: cx, z: cz, ry: PI / 2, cryIcon: '🍟',
       cries: ['Fish and chips! Hot and vinegared, just how it should be.', 'Mind the gulls, puss — they go for the chips first.', 'Extra salt? Go on then.'] });
     game.npcs.push(stand); greetable(game, stand); }
-  for (let i = 0; i < 5; i++) placeT(game, U, boxAround(game, makeBeachHut(r.pick([0xff8a65, 0x4fc3f7, 0xfff176, 0x81c784, 0xf48fb1]), r), -10, -24 + i * 9, 2.8, 2.8, 2.8), -10, -24 + i * 9, PI / 2);
+  // the five huts have stood here bare-roofed since round 13 — a small pennant now flies from each one's
+  // own ridge, in the hut's own wall colour. The pole sits at the roof apex (y=3.6, from makeBeachHut's
+  // wall top at 2.5 plus its 1.2 m gable) and climbs 0.5 m higher still, well above the hut's own physics
+  // box (top at h=2.8, same reasoning round 222's windsock and round 225's castle pennants already relied
+  // on), so no new box is needed. The flag sits at local (0,0) on the hut's own ridge line, so it needs no
+  // rotation math the way round 223's chimneys did: the hut's own ry (always PI/2 here) turns it in place
+  // without moving it off-centre. Only the five hand-placed huts get one — makeBeachHut() itself is shared
+  // with 68-regions.js's unbounded dune clusters, and giving every region-filled hut its own animated,
+  // unbaked flag would have multiplied draw calls across the whole outer country for no one to notice.
+  // The sway uses only the world clock `t` and a fixed phase from the hut's own index, never `r()` or the
+  // shared `rnd()`, so it draws nothing from either sequence and can't shift any later pick in this world.
+  for (let i = 0; i < 5; i++) {
+    const hz = -24 + i * 9, hutColor = r.pick([0xff8a65, 0x4fc3f7, 0xfff176, 0x81c784, 0xf48fb1]);
+    placeT(game, U, boxAround(game, makeBeachHut(hutColor, r), -10, hz, 2.8, 2.8, 2.8), -10, hz, PI / 2);
+    addHutFlag(game, U, -10, hz, hutColor, i);
+  }
   // an ice-cream vendor on the open sand between the huts and the sunbathing crowd
   { const cx = -4, cz = -6; game.zones.addCircle(cx, cz, 1.4);
     const scoopWard = makeWardrobe(r, { shirts: [0xffffff, 0xf7f3ec], pants: [0x2f6fd6, 0x2a2a2a], shoes: [0xefe7d8, 0x8d6e63] });
@@ -8035,6 +8050,18 @@ function buildBeach(game, entry) {
 }
 /** Adds a ground-following collider for a prop and returns the prop (for chaining into placeT). */
 function boxAround(game, obj, x, z, w, h, d, opts = {}) { boxT(game, x, z, w, h, d, opts); return obj; }
+/** A small pennant on a short pole at a beach hut's own roof apex (y=3.6 above its own ground), swaying on
+ *  the world clock `t` plus a fixed phase from the hut's own index — never `r()` or the shared `rnd()`. */
+function addHutFlag(game, U, x, z, color, i) {
+  const y0 = game.physics.ground0(x, z) + 3.6, poleM = mat(0xfff5e6, { roughness: 0.6 });
+  const pole = group(x, y0, z, game.world);
+  mesh(G.cyl(0.018, 0.024, 0.5, 6), poleM, { y: 0.25, shadow: 'none', parent: pole });
+  const flag = group(0, 0.5, 0, pole);
+  mesh(G.box(0.3, 0.17, 0.012), mat(color, { roughness: 0.6 }), { x: 0.16, shadow: 'none', parent: flag });
+  const phase = i * 1.3;
+  pole.userData.update = (dt, t) => { flag.rotation.y = 0.5 + sin(t * 2.3 + phase) * 0.25; flag.rotation.z = sin(t * 1.8 + phase) * 0.06; };
+  U.push(pole.userData.update);
+}
 
 
 // ---------------------------------------------------------------- 6. FROSTY PEAK

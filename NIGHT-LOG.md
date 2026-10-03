@@ -5431,3 +5431,27 @@ its pole) out of the castle's baking pass, same mechanism Whisper Woods' lantern
 Verified: `node test/run.mjs` — every world's NPC, collectible and friend counts unchanged, Candy Land
 still fully walkable where it was before, all 273 checks `ok`, 0 console warnings, exit 0 across three
 consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 226 — pennants for Sunny Shore's five beach huts
+
+The five beach huts lining the dune path (round 13's own addition) have had plain gable roofs the whole
+time, the last hand-built landmark cluster on Sunny Shore still bare on top. **Each hut now flies a
+small pennant from its own ridge**, coloured to match that hut's own walls, swaying gently above the
+rooftop.
+
+Same shape of change as rounds 222, 224 and 225: a detail bolted onto an existing static prop, no new
+NPC, no friend, no zone touched. The flag sits at the hut's own roof apex — `makeBeachHut()`'s wall top
+(2.5 m) plus its 1.2 m gable comes to 3.6 m — climbing another 0.5 m above that, well clear of the hut's
+own physics box (which tops out at 2.8 m, the same clearance round 222's windsock and round 225's castle
+pennants already relied on), so no new box was needed. The flag sits at the hut's own local centre, so
+it needed none of round 223's rotation math: turning the hut in place (`ry = PI/2` for all five) doesn't
+move a centred point off-axis. Deliberately added only to the five hand-placed huts rather than inside
+`makeBeachHut()` itself, which `68-regions.js`'s dune clusters also call, unbounded, out in the far
+country — giving every one of those its own animated, unbaked flag would have multiplied draw calls
+across the whole outer country for a detail nobody walks close enough to see. The sway is driven only by
+the world clock `t` and a fixed phase from the hut's own index, never `r()` or the shared `rnd()`, so it
+costs nothing anywhere else in this build or any built after it.
+
+Verified: `node test/run.mjs` — every world's NPC, collectible and friend counts unchanged, Sunny Shore
+still fully walkable where it was before, all 273 checks `ok`, 0 console warnings, exit 0 across two
+consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
