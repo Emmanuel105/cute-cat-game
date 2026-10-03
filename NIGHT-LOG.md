@@ -5455,3 +5455,28 @@ costs nothing anywhere else in this build or any built after it.
 Verified: `node test/run.mjs` — every world's NPC, collectible and friend counts unchanged, Sunny Shore
 still fully walkable where it was before, all 273 checks `ok`, 0 console warnings, exit 0 across two
 consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 227 — hanging baskets along the Victorian high street
+
+The dozen gas lamps down the Victorian main street have stood bare below their own lanterns since the
+town was first built. **Each one now carries a small hanging basket of flowers off a short iron
+bracket**, a ring of blooms swaying gently as the breeze catches it, in one of four colours rotating
+lamp to lamp (pink, gold, rose, amber) so the street doesn't repeat itself every two posts.
+
+A new `makeLampBasket()` in `60-props.js`, kept deliberately separate from `makeLamp()` itself:
+`makeLamp('victorian')` is also used, unbaked, by the market square and avenue lamps and by
+`68-regions.js`'s whole outer-country fill, and giving every one of those an extra update tick (the
+same trap round 226's log already named) would have added up across a lot more than a dozen lamps. The
+basket sits at y=2.55 in world space — comfortably below the lantern (3.82) and its own light (3.7),
+above the bobby's and the lamplighter's head height, and inside the post's existing physics box once
+the 0.26 m bracket arm is allowed for — so no new box was needed, the same reasoning the castle's
+pennants (round 225) and the beach huts' (round 226) already relied on. It's placed as its own object
+at each lamp's own position rather than nested inside the lamp group, so the Lamplighter's flare
+animation (which walks the whole lamp group looking for its lantern's emissive colour) never touches it.
+The sway reads off the world clock `t` and the basket's own fixed world position, never `r()` or the
+shared `rnd()`, so it costs nothing to any later wardrobe pick or timing-sensitive check, in this build
+or any built after it.
+
+Verified: `node test/run.mjs` — every world's NPC, collectible and friend counts unchanged, Victorian
+still fully walkable where it was before, all 273 checks `ok`, 0 console warnings, exit 0 across two
+consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

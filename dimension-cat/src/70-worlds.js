@@ -1404,6 +1404,17 @@ function buildVictorian(game, entry) {
   // lamps along the street (real point lights)
   const vicLamps = [];
   for (let i = 0; i < 12; i++) { const x = -60 + i * 10.5, z = (i % 2 ? 1 : -1) * 6.4; if (abs(x + 38) < 3) continue; const lamp = makeLamp('victorian'); vicLamps.push(lamp); place(game, U, lamp, x, z, 0); P.addBox(x, 2, z, 0.4, 4, 0.4, { cam: false }); }
+  // every lamp along the main street has stood bare below its own lantern since the town was first built;
+  // each now carries a small hanging basket of flowers off a short iron bracket, swaying gently. Sitting
+  // at y=2.55 — well below the lantern (3.82) and the lamp's own light (3.7), above the bobby's and the
+  // lamplighter's own head height, and inside the post's existing physics box (0.4 wide, 0 to 4 tall) once
+  // the 0.26 m bracket arm is allowed for — it needs no box of its own, same reasoning the castle's own
+  // pennants (round 225) and the beach huts' (round 226) already relied on. A separate `makeLampBasket()`
+  // rather than a change to `makeLamp()` itself, so only these dozen hand-placed lamps gain the sway tick —
+  // `makeLamp('victorian')` is also dropped, unbaked, by the market square, the avenue and 68-regions.js's
+  // whole outer-country fill, and an update tick on every one of those would have added up fast.
+  const basketHues = [0xd6487a, 0xe0a030, 0xc9516a, 0xd98a2a];
+  vicLamps.forEach((lamp, i) => place(game, U, makeLampBasket(basketHues[i % basketHues.length]), lamp.position.x, lamp.position.z, 0, 2.55));
   // every other world's wanderers already had a Kneeler of their own at some task (the Neighborhood's
   // beekeeper and gardener, Sunny Shore's sandcastle, the snow and forest worlds' several) — Victorian
   // was the only one with none at all, past the four vendors standing still at the market square. A

@@ -392,6 +392,27 @@ function makeLamp(style) {
   }
   return g;
 }
+/**
+ * A small hanging flower basket on a short iron bracket, for a Victorian lamp post: a tapered wire
+ * basket with a ring of blooms, swaying gently on the world clock. Built and placed separately from
+ * `makeLamp()` itself, and only ever called on the dozen hand-placed lamps along the Victorian main
+ * street — `makeLamp('victorian')` is also used, unbaked and update-free, by the market square and
+ * avenue lamps and by `68-regions.js`'s outer-country fill, and giving every one of those an update
+ * tick too would have cost a lot more than a dozen lamps' worth.
+ */
+function makeLampBasket(hue = 0xd6487a) {
+  const g = new THREE.Group();
+  const iron = mat(0x1e2426, { roughness: 0.6, metalness: 0.5 });
+  mesh(G.box(0.26, 0.025, 0.025), iron, { x: 0.13, parent: g });
+  const hang = group(0.25, -0.05, 0, g);
+  noInk(mesh(G.cyl(0.004, 0.004, 0.1, 4), iron, { y: 0.05, shadow: 'none', parent: hang }));
+  mesh(G.cyl(0.1, 0.08, 0.13, 10), iron, { y: -0.065, parent: hang });
+  const petal = mat(hue, { roughness: 0.7 }), leaf = mat(0x2f7a3f, { roughness: 0.8 });
+  for (let i = 0; i < 7; i++) { const a = (i / 7) * TAU, rr = 0.085;
+    mesh(G.sphere(0.04, 6, 5), i % 2 ? petal : leaf, { x: cos(a) * rr, y: -0.13 - (i % 3) * 0.025, z: sin(a) * rr, parent: hang }); }
+  g.userData.update = (dt, t) => { hang.rotation.z = sin(t * 0.6 + g.position.x) * 0.035; hang.rotation.x = sin(t * 0.5 + g.position.z) * 0.03; };
+  return g;
+}
 function makeBench() {
   const g = new THREE.Group(), wood = mat(0x8a5a32, { roughness: 0.8, map: TEX.planks(28, 32) }), iron = mat(0x2b2b2b, { metalness: 0.7, roughness: 0.4 });
   for (let i = 0; i < 3; i++) mesh(G.box(1.8, 0.05, 0.12), wood, { y: 0.48, z: -0.14 + i * 0.14, parent: g });
