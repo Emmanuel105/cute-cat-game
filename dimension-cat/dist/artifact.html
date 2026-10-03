@@ -5689,12 +5689,27 @@ function makeCandyCastle(game, x, z, ry, r) {
   wallX(-10, HD, 14); wallX(10, HD, 14);         // front, either side of the gate
   wallX(0, -HD, HW * 2);                          // back
   wallZ(-HW, 0, HD * 2); wallZ(HW, 0, HD * 2);    // sides
+  // all six towers wore a bare gold finial and nothing else — a candy-striped pennant now streams from
+  // each one, well above the tower's own physics box (top at y=h) and the trim ring just below the roof,
+  // so no new box is needed, the same reasoning round 222's zipline windsock already relied on. The sway
+  // is driven only by the world clock `t` plus a phase derived from the tower's own fixed (tx, tz), not
+  // `r()` or the shared `rnd()`, so it draws nothing from either sequence and can't disturb a later pick.
+  const flagUpdates = [];
   const tower = (tx, tz, rad, h, roofH) => {
     mesh(G.cyl(rad, rad, h, 16), cane, { x: tx, y: h / 2, z: tz, shadow: 'both', parent: g });
     mesh(G.cyl(rad + 0.35, rad + 0.35, 0.3, 16), trim, { x: tx, y: h + 0.1, z: tz, shadow: 'both', parent: g });
     mesh(G.cone(rad + 0.35, roofH, 16), mat(0xff5c8a, { roughness: 0.5 }), { x: tx, y: h + 0.15 + roofH / 2, z: tz, shadow: 'none', parent: g });
     mesh(G.sphere(0.35, 10, 8), mat(0xffd54a, { metalness: 0.3, roughness: 0.3 }), { x: tx, y: h + roofH + 0.5, z: tz, shadow: 'none', parent: g });
     const [wx, wz] = localXZ(x, z, tx, tz, ry); P.addBox(wx, h / 2, wz, rad * 2, h, rad * 2, { walk: false });
+    const poleY = h + roofH + 0.5, poleH = 1.0;
+    const pennant = group(tx, poleY, tz, g);
+    mesh(G.cyl(0.025, 0.035, poleH, 6), trim, { y: poleH / 2, shadow: 'none', parent: pennant });
+    const flag = group(0, poleH, 0, pennant);
+    mesh(G.box(0.46, 0.16, 0.012), mat(0xff5c8a, { roughness: 0.6 }), { x: 0.23, y: 0.08, shadow: 'none', parent: flag });
+    mesh(G.box(0.46, 0.16, 0.012), trim, { x: 0.23, y: -0.08, shadow: 'none', parent: flag });
+    const phase = (tx + tz) * 0.37;
+    pennant.userData.update = (dt, t) => { flag.rotation.y = 0.5 + sin(t * 2.2 + phase) * 0.25; flag.rotation.z = sin(t * 1.7 + phase) * 0.06; };
+    flagUpdates.push(pennant.userData.update);
   };
   for (const [tx, tz] of [[-HW, -HD], [HW, -HD], [-HW, HD], [HW, HD]]) tower(tx, tz, 3.1, 15, 6.6);
   for (const tx of [-(GATE / 2 + 1.3), GATE / 2 + 1.3]) tower(tx, HD, 2.3, 13, 5.4);
@@ -5720,7 +5735,7 @@ function makeCandyCastle(game, x, z, ry, r) {
   for (const s of [-1, 1]) mesh(G.cyl(0.16, 0.16, 1.0, 8), mat(0xffd54a, { metalness: 0.6, roughness: 0.3 }), { x: s * 1.5, y: 1.35, z: 0.3, parent: throne });   // armrests
   mesh(G.sphere(0.4, 12, 8), mat(0xd62839, { roughness: 0.4 }), { y: 5.3, z: -0.9, parent: throne });               // cherry on top
   { const [dwx, dwz] = localXZ(x, z, 0, TZ, ry); P.addBox(dwx, 0.15, dwz, 7, 0.3, 4.4, { cam: false }); addRotBox(game, dwx, 1.6, dwz, 2.8, 3.2, 2.2, ry, { cam: false }); }
-  return { group: g, throneGroup: throne, gate: localXZ(x, z, 0, HD, ry), throne: localXZ(x, z, 0, TZ, ry) };
+  return { group: g, throneGroup: throne, gate: localXZ(x, z, 0, HD, ry), throne: localXZ(x, z, 0, TZ, ry), updates: flagUpdates };
 }
 function candyRegion(game, U, r, inner, outer) {
   const W = game.world;
@@ -6704,6 +6719,7 @@ function buildCandyLand(game, entry) {
   game.zones.addCircle(0, 150, 27);
   for (const [hx, hz] of [[-16, 95], [16, 97], [-24, 112], [24, 114], [0, 80]]) game.zones.addCircle(hx, hz, 5);
   const castle = makeCandyCastle(game, 0, 150, PI, r);
+  for (const u of castle.updates) U.push(u);
   for (const [hx, hz, hue] of [[-16, 95, 330], [16, 97, 200], [-24, 112, 50], [24, 114, 120], [0, 80, 280]]) makeCandyHouse(game, hx, hz, r() * TAU, r, hue);
   for (const s of [-1, 1]) { const rig = makeGingerbread(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x: castle.throne[0] + s * 2.6, z: castle.throne[1] + 1.4, speed: 0.3, leash: 1.2, r: 0.4, height: 1.4, idle: [2, 5] })); }
   game.addInteractable({ obj: castle.throneGroup, radius: 3.4, label: () => 'Approach the throne', onUse: () => { SFX.talk(); game.toast('👑 "A comfy-looking throne. Built for someone rather bigger than a cat."', 3000); } });

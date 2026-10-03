@@ -5409,3 +5409,25 @@ unevenly again tonight (same flakiness round 223 already logged): the Victorian 
 timing check failed on roughly half of several back-to-back runs both with and without this round's
 change, confirming it's pre-existing and not something this round touched, before a clean run gave the
 273/273 above. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 225 — pennants on the Candy Queen's castle
+
+Every one of the castle's six towers (four corner towers, two flanking the gate) has worn a bare gold
+ball finial since it was first built — the one landmark in Candy Land with no decoration at its very
+top. **A candy-striped pennant now streams from each one**, pink-over-white, swaying lazily on its own
+short white pole above the gold cap.
+
+Same shape of change as round 222's zipline windsock and round 224's wind chime: a detail bolted onto
+an existing static structure, no new NPC, no friend, no zone. `makeCandyCastle()`'s own `tower()` helper
+builds all six towers from one shared function, so one edit gave every one of them its own flag. The
+pole and flag sit at `h + roofH + 0.5`, the same height as the gold finial already there and higher than
+the tower's own physics box (which tops out at `y = h`), so no new box was needed, for the same reason
+round 222's windsock needed none on its own tower. The sway is driven purely by the world clock `t` and
+a fixed phase computed from each tower's own `(tx, tz)` — never `r()` or the shared `rnd()` — so it
+draws nothing from either sequence and can't shift any later wardrobe pick or timing-sensitive check in
+this build or any built after it. The flag's own group carries `userData.update`, which keeps it (and
+its pole) out of the castle's baking pass, same mechanism Whisper Woods' lantern strings already rely on.
+
+Verified: `node test/run.mjs` — every world's NPC, collectible and friend counts unchanged, Candy Land
+still fully walkable where it was before, all 273 checks `ok`, 0 console warnings, exit 0 across three
+consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
