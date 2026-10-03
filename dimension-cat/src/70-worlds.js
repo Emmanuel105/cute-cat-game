@@ -736,6 +736,17 @@ function buildCandyLand(game, entry) {
   { const rig = makeSugarMouse();
     game.npcs.push(new Hopper(game, rig, { x: -8, z: -61, leash: 1.4, r: 0.1, dist: [0.25, 0.6], dur: 0.3, height: 0.18, idle: [1, 3.2],
       onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } })); }
+  // the sugar mouse was Candy Land's only living thing past the squirrel — every other world's own
+  // wildlife runs to several animals (Frosty Peak alone has penguins, deer, hares and a fox). A
+  // mint-green hare now thumps about the open grass between the market stalls and the cottage path,
+  // the same `makeHare` shape Frosty Peak's own hares use, recoloured pastel. A headless probe swept a
+  // 200-frame window (so no wandering gingerbread man or ring dancer mid-turn could slip past
+  // unnoticed) and ruled out every decorative gumdrop patch by its own radius, not just the physics
+  // boxes: (-17, -46) came back clear by over 10 m on both counts — south of the market stalls, north
+  // of the marshmallow bush cluster at (-36,-48), inside the 1.6 m leash given here.
+  { const rig = makeMintHare();
+    game.npcs.push(new Hopper(game, rig, { x: -17, z: -46, leash: 1.6, r: 0.15, dist: [0.3, 0.8], dur: 0.3, height: 0.26, idle: [1, 3.5],
+      onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } })); }
 
   // candy canes, lollipops, gumdrops, cotton candy
   const canes = [[-6, 6], [7, 3], [-14, -4], [15, -8], [-22, 8], [24, 12], [-30, -2], [30, -4], [-10, 22], [12, 24], [-26, 20], [26, 24], [-18, -30], [16, -32], [-8, -40], [8, -42], [-36, -14], [34, -20], [-40, 26], [40, 30], [-28, -38], [26, -40], [-44, 4], [44, 8], [-2, 30], [4, -26], [-20, -12], [20, -14]];

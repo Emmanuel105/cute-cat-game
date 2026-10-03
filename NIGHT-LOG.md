@@ -5184,3 +5184,27 @@ Full suite: `world 0: 41 to meet` (unchanged — this round added a prop, not a 
 including the usual roster still in the scene graph, all checks `ok`, 0 console warnings, exit 0 across
 three consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 217 — a second creature for Candy Land
+
+Past the squirrel every world has, Candy Land's wildlife was just the one sugar mouse by the
+gingerbread cottage — thin next to Frosty Peak's whole menagerie of penguins, deer, hares and a fox.
+**A mint-green hare now thumps about the open grass south of the market stalls**, the same `makeHare`
+shape Frosty Peak's own hares use (`56-npcs-wild.js` gets a new one-liner, `makeMintHare`), just
+recoloured pastel green and white to fit the candy theme. It hops on a short leash exactly like the
+sugar mouse and every other world's small critters, chittering now and then — pure background life,
+never greeted, so it doesn't touch any world's friend count.
+
+A headless probe (the same trick every recent round has used) built the real Candy Land, sampled
+every NPC's own position over 200 simulated frames so no wandering gingerbread man or ring dancer
+mid-turn could slip past unnoticed, and this time also ruled out every decorative gumdrop patch by
+its own radius rather than just the physics boxes that happen to have one — those patches are mostly
+undecorated scatter with no collider at all, so a physics-only sweep would have let the hare land
+visually on top of one. (-17, -46) came back clear by over 10 m either way: south of the market
+stalls, north of the marshmallow bush cluster at (-36, -48), comfortably inside the 1.6 m leash given
+here.
+
+Full suite: `world 1: 45 to meet` (unchanged — this round added wildlife, not a friend), every NPC
+including the new hare still in the scene graph, 91% of Candy Land's ground still walkable, all
+checks `ok`, 0 console warnings, exit 0 across three consecutive runs. Before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
