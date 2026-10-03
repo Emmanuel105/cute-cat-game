@@ -6817,6 +6817,29 @@ function buildCandyLand(game, entry) {
     W.add(painter.group);
     game.npcs.push(new Painter(game, painter, makeEasel(), { x: px, z: pz, ry: pry,
       cries: ["That cupcake's bigger than the castle, sugar for sugar.", "Careful, puss — the paint's not icing.", "I keep giving the icing too much shine. It never looks quite real."] })); }
+  // the Neighborhood, Sunny Shore and Victorian all have someone actually playing an instrument
+  // (a ukulele player twice over, a fiddler at the clock tower) — Candy Land never did, for all its
+  // dancing and juggling. A woman strums a candy-striped ukulele on the open grass south-east of the
+  // chocolate river, toward the two gossips rather than away from them (own small wardrobe, not any
+  // other character's bag, since this build keeps none shared; placed last of every person this build
+  // adds, after the painter, so it draws from the very tail of both the local `r` and the shared
+  // `rnd()` sequences and disturbs the fewest later ticks of either)
+  // (a headless probe over the built world — every physics box and every NPC's and the squirrel's own
+  // position, sampled continuously over 300 simulated frames so no wandering gingerbread man or ring
+  // dancer mid-turn could slip past unnoticed — found (49, -39) clear by 20.5 m in every direction,
+  // well inside the radius (92) where candyRegion's own procedural fill takes over, between the cookie
+  // path's cupcake hill and the gossiping pair)
+  { const mx = 49, mz = -39, mry = atan2(60 - mx, -30 - mz);
+    const museWard = makeWardrobe(r, { shirts: [0xffe0ea, 0xbfe7ff, 0xfff3b0], pants: [0xff9ecf, 0x7fd7ff, 0xffffff] });
+    const musician = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: museWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.3) });
+    W.add(musician.group);
+    const uke = makeUkulele(r.pick([0xff6fb5, 0x7fd7ff, 0xffd54a]));
+    uke.position.set(0.03, -0.02, 0.14); uke.rotation.set(-0.25, 0.1, 0.2);
+    musician.hands[1].add(uke);
+    game.npcs.push(new Charger(game, musician, { x: mx, z: mz, ry: mry,
+      cries: ["Three chords, all of them sugar-sweet.", "Careful, puss — that's a ukulele, not a chew toy.", "Nobody's taught the gumdrops to dance, but I like to think they're trying."] }));
+    U.push((dt, t) => { const A = musician.arms[1]; A.el.rotation.x = -1.0 + sin(t * 5.4) * 0.22; A.sh.rotation.z = -0.15; }); }
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('star', 7, -6); C.add('yarn', -9, 9); C.add('fish', -16, -13); C.add('mouse', 16, -9); C.add('star', -10, -27); C.add('yarn', 22, 4); C.add('mouse', -28, 26); C.add('fish', 14, -44); C.add('star', 0, -56); C.add('mouse', -58, 30); C.add('yarn', 60, 36);

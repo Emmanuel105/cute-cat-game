@@ -5030,3 +5030,28 @@ itself, off the lantern path and clear of the pines strung along the cable.
 Full suite: `world 5: 42 to meet` (up one, from 41), every NPC including the new catcher still in the
 scene graph, all 273 checks `ok`, 0 console warnings, exit 0 across three consecutive runs. Before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 211 — a ukulele player for Candy Land
+
+Candy Land hadn't had any round-shaped attention in nineteen rounds, even though its own friend count
+(44) sat well above the three worlds tied lowest — and for all its dancing gingerbread men, jugglers and
+ring games, it was the one of the three worlds with music (the Neighborhood and Sunny Shore each have a
+ukulele player, Victorian a fiddler at the clock tower) that never had anyone actually playing anything.
+**A woman sits in the open grass south-east of the chocolate river now, strumming a candy-striped
+ukulele toward the two gossips nearby rather than away from them.** *"Nobody's taught the gumdrops to
+dance, but I like to think they're trying."*
+
+No new rig or controller: she's a plain `makeHuman()` holding the same `makeUkulele()` prop the
+Neighborhood's own musician already uses, recoloured pink-and-cyan-and-gold, and `Charger` — already
+doing duty as that musician and the Victorian fiddler — for the standing idle strum. A headless probe
+built the real Candy Land, sampled every NPC's and the squirrel's own position continuously over 300
+simulated frames (so no wandering gingerbread man or mid-turn ring dancer could slip past unnoticed),
+and swept a grid of the whole hand-built heart (radius under 85, short of `candyRegion`'s own procedural
+fill at 92) against both those samples and every physics box: (49, -39) came back clear by 20.5 m in
+every direction, between the cookie path's cupcake hill and the gossiping pair. Placed last in the
+build, after the painter, so it draws from the very tail of both the world's own seeded RNG and the
+shared `rnd()` sequence and disturbs nothing built earlier.
+
+Full suite: `world 1: 45 to meet` (up one, from 44), every NPC including the new musician still in the
+scene graph, all 273 checks `ok`, 0 console warnings, exit 0 across three consecutive runs. Before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
