@@ -5263,3 +5263,29 @@ Full suite: `world 3: 50 to meet` (unchanged — this round added a static landm
 friend), every NPC still in the scene graph, 96% of Victorian's ground still walkable, all checks
 `ok`, 0 console warnings, exit 0 across three consecutive runs. Before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 220 — a dog walker for Whisper Woods
+
+Checking friend counts going into this round: the Neighborhood, Sunny Shore and Whisper Woods were all
+tied lowest of the seven worlds at 42, and Whisper Woods had gone the longest (eight rounds) without a
+new one. The Neighborhood already has its own `DogWalker` — a person strolling with a dog on a lead,
+reused from there — but Whisper Woods, for all its deer, foxes and a whole fairy ring, never had anyone
+out walking a dog of their own. **A woman now strolls a quiet pocket of forest floor south-east of the
+glade, a scruffy brown dog trotting along beside her on its lead.** *"He loves a good sniff round these
+parts."*
+
+No new rig or controller needed: `DogWalker` already pairs a `Wanderer` (the person) with a `Follower`
+(the dog, trailing on a lead line stretched between hand and collar every frame) — the Neighborhood's own
+copy just constrains it to a pavement strip with an `avoid` callback, which Whisper Woods doesn't need
+since the forest floor here is open. A headless probe built the real Whisper Woods, swept a 1.6 m disk
+through 20 simulated seconds of every NPC's own movement (so no wandering deer or fox mid-leash could
+slip past unnoticed), then re-checked the survivors' static clearance against every physics box and
+circle: (24, -22) came back clear by 7.3 m in every direction, comfortably outside the 4 m leash plus the
+dog's own trailing distance. One bug caught before it shipped: unlike the Neighborhood's own `person()`
+helper, a bare `makeHuman()` call doesn't add its rig to the scene on its own — the first run failed
+"every NPC is in the scene graph" until `W.add(walker.group)` was added before the `DogWalker` was built.
+
+Full suite: `world 6: 44 to meet` (up two, from 42 — the person and the dog are each their own friend,
+same as the Neighborhood's own pair), every NPC including both of them still in the scene graph, 98% of
+Whisper Woods' ground still walkable, all checks `ok`, 0 console warnings, exit 0 across three
+consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

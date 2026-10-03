@@ -8736,6 +8736,22 @@ function buildForest(game, entry) {
       cries: ["The fairies hum along, if you listen close.", "Careful, puss — that's out of tune, not broken.", "Even the owls go quiet for this one."] }));
     U.push((dt, t) => { const A = musician.arms[1]; A.el.rotation.x = -1.0 + sin(t * 5.4) * 0.22; A.sh.rotation.z = -0.15; }); }
 
+  // the Neighborhood already has `DogWalker` pairing a person with a dog on a lead, but Whisper Woods —
+  // for all its deer, foxes and a fairy ring — never had anyone out walking their own dog. A woman strolls
+  // a quiet pocket of forest floor south-east of the glade with a scruffy dog on a lead, well clear of
+  // both tree ring and stepping stones. A headless probe built the real Whisper Woods, swept a 1.6 m disk
+  // through 20 simulated seconds of every NPC's own movement (so no wandering deer or fox mid-leash could
+  // slip past unnoticed), then re-checked the survivors' static clearance: (24, -22) came back clear by
+  // 7.3 m in every direction — comfortably past the leash given here plus the dog's own trailing distance.
+  { const dwx = 24, dwz = -22, dwry = atan2(8 - dwx, -6 - dwz);
+    const dwWard = makeWardrobe(r, { shirts: [0x8a6a4a, 0x4a6a5a, 0x6b5a7a], pants: [0x3a3a3a, 0x2a2a2a], shoes: [0x3a2a1e, 0x2a2018] });
+    const walker = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: dwWard }),
+      hat: r.chance(0.4) ? 'cap' : null, hatColor: 0x3a4a3a, jacket: null, scarf: null, bag: null, backpack: null, glasses: false });
+    W.add(walker.group);
+    const dog = makeDog(0x6b5a46);
+    game.npcs.push(new DogWalker(game, walker, dog, { x: dwx, z: dwz, angle: dwry, speed: 0.9, leash: 4,
+      cries: ["He loves a good sniff round these parts.", 'Careful, puss - he only looks fierce.', "Best walk of the day, this one."] })); }
+
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
 
