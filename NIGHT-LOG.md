@@ -5104,3 +5104,27 @@ Full suite: `world 5: 43 to meet` (up one, from 42 — tied lowest of the seven 
 round, with Whisper Woods), every NPC including the new husky still in the scene graph, 98% of Frosty
 Peak's ground still walkable, all checks `ok`, 0 console warnings, exit 0 across three consecutive runs.
 Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 214 — a snorkeler for Sunny Shore
+
+Sunny Shore's surfer already waxes a board by the dunes, and the sea itself is full of boats, buoys,
+crabs and turtles, but checking the friend counts going into this round, the Neighborhood and Sunny
+Shore were tied lowest of the seven worlds at 41 each — and nobody on the whole beach had ever actually
+geared up to go *in* the water themselves. **A snorkeler now sits on the dry sand near the shore,
+pulling a fin on, mask pushed up on their forehead, the other fin still waiting on the sand beside
+them.** *"Clearest water of the week, out there."*
+
+No new rig or controller: a plain `makeHuman()` with a small hand-built mask-and-snorkel-tube parented
+to its head (so it inherits the rig's own head bob for free) and a second fin modelled from two boxes
+sitting loose on the sand, and `Kneeler` — already doing duty as the clam digger, the beachcomber and the
+shell sorter elsewhere on this beach — for the crouched, patting pose. A headless probe built the real
+Sunny Shore, sampled every NPC's and the squirrel's own position continuously over 30 simulated seconds
+(so no wandering crab, turtle or sunbather mid-circuit could slip past unnoticed), and swept a grid of
+the dry sand (ground height 0.35-1.0 m, to stay off both the wet shore and the dune grass) against those
+samples and every physics box: (21.5, -51.5) came back clear by 8.9 m in every direction, south of the
+gem cluster at (16.5, -41) and well past the fish-and-chips stand further west.
+
+Full suite: `world 4: 42 to meet` (up one, from 41 — tied lowest of the seven worlds going into this
+round, with the Neighborhood), every NPC including the new snorkeler still in the scene graph, 99% of
+Sunny Shore's ground still walkable, all checks `ok`, 0 console warnings, exit 0 across three consecutive
+runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

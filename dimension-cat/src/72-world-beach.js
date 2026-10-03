@@ -306,6 +306,33 @@ function buildBeach(game, entry) {
     mesh(G.box(0.02, 0.1, 0.06), mat(0x8a8a8a, { metalness: 0.4, roughness: 0.5 }), { y: 0.05, parent: trowel });
     game.npcs.push(new Kneeler(game, sculptor, { x: kx, z: kz, ry: atan2(sx - kx, sz - kz), cryIcon: '🐢',
       cries: ['Took all morning, just the shell.', "Careful, puss — one tail flick and it's rubble.", "Tide won't reach this far up. I hope."] })); }
+  // the surfer above waxes a board, but nobody on this whole beach had ever actually geared up to go
+  // *in* the water themselves — a snorkeler sits on the dry sand near the shore, pulling a fin on, mask
+  // pushed up on their forehead, the other fin still waiting on the sand beside them. A headless probe
+  // built the real Sunny Shore, sampled every NPC's and the squirrel's own position continuously over 30
+  // simulated seconds (so no wandering crab, turtle or sunbather mid-circuit could slip past unnoticed),
+  // and swept a grid of the dry sand (ground height 0.35-1.0 m, to stay off both the wet shore and the
+  // dune grass) against those samples and every physics box: (21.5, -51.5) came back clear by 8.9 m in
+  // every direction, south of the gem cluster at (16.5, -41) and well past the fish-and-chips stand
+  // further west — facing east, out toward the water.
+  { const kx = 21.5, kz = -51.5, ry = PI / 2;
+    const snorkWard = makeWardrobe(r, { shirts: [0x2f6fd6, 0xff7043, 0x2e9e6e], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0xefe7d8, 0x8d6e63] });
+    const snorkeler = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: snorkWard }),
+      shorts: true, hat: null, jacket: null, scarf: null, bag: null, glasses: false }); W.add(snorkeler.group);
+    // the mask, pushed up on the forehead, snorkel tube curling back from it
+    const maskMat = mat(0x2a2a2a, { roughness: 0.6 }), lensMat = mat(0x8fd6ff, { roughness: 0.2, transparent: true, opacity: 0.6 });
+    const mask = group(0, 0.16, 0.05, snorkeler.head); mask.rotation.x = -0.3;
+    mesh(G.box(0.14, 0.07, 0.03), maskMat, { parent: mask });
+    mesh(G.box(0.1, 0.045, 0.01), lensMat, { z: 0.02, shadow: 'none', parent: mask });
+    mesh(G.cyl(0.012, 0.012, 0.22, 6), maskMat, { x: 0.08, y: 0.05, rz: 0.4, parent: mask });
+    // the spare fin, waiting on the sand beside them
+    const finMat = mat(0x2f6fd6, { roughness: 0.6 });
+    const fin = group(kx + 0.5, 0.02, kz, W); fin.rotation.y = ry + 0.3;
+    mesh(G.box(0.1, 0.03, 0.42), finMat, { z: 0.15, shadow: 'both', parent: fin });
+    mesh(G.box(0.14, 0.02, 0.1), finMat, { z: -0.1, shadow: 'both', parent: fin });
+    boxT(game, kx + 0.5, kz, 0.3, 0.1, 0.5, { cam: false });
+    game.npcs.push(new Kneeler(game, snorkeler, { x: kx, z: kz, ry, cryIcon: '🤿',
+      cries: ['Nearly got this fin strap right.', "Careful, puss — mind your tail, these snap.", "Clearest water of the week, out there."] })); }
   // the beach dog keeps to its own patch of sand — it does not follow the cat
   const dog = makeDog(0xc8925a); W.add(dog.group); game.npcs.push(new Wanderer(game, dog, { x: -2, z: 28, speed: 1.1, leash: 7, r: 0.35, height: 0.9, step: 0.3, idle: [1.5, 4], walk: [2, 5] }));
   let woofT = rnd.range(6, 12); U.push((dt) => { woofT -= dt; if (woofT <= 0) { SFX.woof(); woofT = rnd.range(10, 20); } });
