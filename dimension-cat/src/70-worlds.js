@@ -618,6 +618,30 @@ function buildNeighborhood(game, entry) {
     game.npcs.push(new Kneeler(game, scootKid, { x: kx, z: kz, ry,
       cries: ['Just a wobbly bolt - nearly got it.', "Careful, puss — mind your tail, this spins.", 'Good as new. Three ramps today, easy.'] })); }
 
+  // a backyard griller tends a kettle barbecue behind the house at x=36 — every house on this street has
+  // a fireplace and a car out front, but nobody had ever actually cooked outdoors. `Washer`'s own
+  // side-to-side swipe already reads as a spatula working a grill, so no new controller; a pair of tongs
+  // joins its usual sponge in the working hand (the sponge stays tucked out of sight in the fist, same as
+  // the leaf raker's rake handle above) (own fixed shirt colour, not any of this build's wardrobe pools —
+  // checked against the shared street `ward` bag's own 18-colour SHIRT_COLORS list and every other
+  // wardrobe this build hands out, to keep the "no two neighbours share a shirt" rule; placed last of
+  // every person this build adds, after the scooter kid, so it draws from the very tail of both the
+  // local `r` and the shared `rnd()` sequences and disturbs the fewest later ticks of either)
+  // (a headless probe over the built world — every physics box and NPC position swept against a grid of
+  // candidate backyard spots — found (36, -9) clear: 19.9 m from the nearest other soul (the car washer
+  // out front), 5.8 m south of the house's own back wall, nothing else anywhere nearby)
+  { const gx = 36, gz = -10.3, kx2 = 36, kz2 = -9;
+    const grill = makeGrill(); place(game, U, grill, gx, gz, 0);
+    P.addBox(gx, 0.3, gz, 0.7, 0.65, 0.7, { cam: false });
+    const griller = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.2) }),
+      shirt: 0x3a6b8a, apron: 0xd6455c, pants: 0x2c2c2c, shoes: 0x2a2018, hat: r.chance(0.4) ? 'cap' : null, hatColor: 0x2a2a2a,
+      jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.25) }); W.add(griller.group);
+    const tongs = group(0, 0.02, 0.1, griller.hands[0]); tongs.rotation.x = -0.35;
+    const tongM = mat(0x8a8f96, { roughness: 0.4, metalness: 0.5 });
+    mesh(G.box(0.014, 0.2, 0.014), tongM, { x: -0.016, ry: 0.1, parent: tongs }); mesh(G.box(0.014, 0.2, 0.014), tongM, { x: 0.016, ry: -0.1, parent: tongs });
+    game.npcs.push(new Washer(game, griller, { x: kx2, z: kz2, ry: atan2(gx - kx2, gz - kz2),
+      cries: ["Two more minutes and they're done.", "Careful, puss — hot grate, that.", "Best burgers on the whole street, if I say so myself."] })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

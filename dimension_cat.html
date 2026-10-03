@@ -4429,6 +4429,22 @@ function makeBike(color = 0xd62839) {
   g.userData.crank = crank;
   return { group: g, wheels, crank };
 }
+/** A kettle barbecue: a domed bowl on three splayed legs, a grate with a couple of patties, coals glowing underneath, and its own lid lifted off and leaning against the bowl. `userData.update` flickers the coals and their light. */
+function makeGrill() {
+  const g = new THREE.Group(), body = mat(0x2e3a3e, { roughness: 0.45, metalness: 0.4 }), steel = mat(0x9aa3ad, { roughness: 0.35, metalness: 0.6 });
+  const coalMat = glowMat(0xff6a2a, 2.0, { transparent: true, opacity: 0.92 });
+  mesh(G.dome(0.32, 14, 8), body, { y: 0.56, parent: g });                                  // the bowl, open side up
+  mesh(G.cyl(0.33, 0.33, 0.035, 16), body, { y: 0.565, shadow: 'none', parent: g });         // rim lip
+  for (const a of [0.3, 2.4, 4.5]) mesh(G.cyl(0.013, 0.013, 0.56, 6), steel, { x: cos(a) * 0.22, y: 0.28, z: sin(a) * 0.22, rz: cos(a) * 0.22, rx: sin(a) * 0.22, parent: g });   // three splayed legs
+  mesh(G.cyl(0.3, 0.3, 0.01, 16), coalMat, { y: 0.4, shadow: 'none', parent: g });           // the coal bed, low in the bowl
+  for (let i = -3; i <= 3; i++) mesh(G.box(0.58, 0.012, 0.014), steel, { x: i * 0.045, y: 0.46, shadow: 'none', parent: g });   // grate bars
+  for (const [px, pz, pc] of [[-0.09, 0.06, 0x6b4226], [0.08, -0.03, 0x7a4c2c], [-0.02, -0.1, 0x5e3a22]]) mesh(G.cyl(0.075, 0.075, 0.025, 10), mat(pc, { roughness: 0.85 }), { x: px, y: 0.475, z: pz, parent: g });   // patties on the grate
+  mesh(G.dome(0.33, 12, 7), body, { x: 0.58, y: 0.335, ry: PI, rz: 1.2, parent: g });        // the lid, lifted off, leaning on the bowl
+  mesh(G.cyl(0.012, 0.012, 0.16, 8), steel, { x: 0.58, y: 0.63, z: -0.07, rx: PI / 2 + 1.2, shadow: 'none', parent: g });   // the lid's own handle
+  const light = pointLight(0xff8a3a, 7, 4, 0, 0.42, 0, g);
+  g.userData.update = (dt, t) => { light.intensity = 6 + sin(t * 9) * 1.4 + sin(t * 23) * 0.7; coalMat.emissiveIntensity = 1.8 + sin(t * 11) * 0.3; };
+  return g;
+}
 /** A carriage as a rig for the road: body, roof, box seat, lanterns, shafts forward, and four wheels that turn. Faces +z. */
 function makeCarriageRig() {
   const g = new THREE.Group(), wood = mat(0x2b1d14, { roughness: 0.7 }), red = mat(0x7a1f1f, { roughness: 0.6 }), iron = mat(0x1e2426, { metalness: 0.6, roughness: 0.5 }), gold = mat(0xd4af37, { metalness: 0.9, roughness: 0.3 });
@@ -6483,6 +6499,30 @@ function buildNeighborhood(game, entry) {
     const scootKid = makeHuman({ ...randomPerson(r, { female: false, child: true, wardrobe: scootWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false }); W.add(scootKid.group);
     game.npcs.push(new Kneeler(game, scootKid, { x: kx, z: kz, ry,
       cries: ['Just a wobbly bolt - nearly got it.', "Careful, puss — mind your tail, this spins.", 'Good as new. Three ramps today, easy.'] })); }
+
+  // a backyard griller tends a kettle barbecue behind the house at x=36 — every house on this street has
+  // a fireplace and a car out front, but nobody had ever actually cooked outdoors. `Washer`'s own
+  // side-to-side swipe already reads as a spatula working a grill, so no new controller; a pair of tongs
+  // joins its usual sponge in the working hand (the sponge stays tucked out of sight in the fist, same as
+  // the leaf raker's rake handle above) (own fixed shirt colour, not any of this build's wardrobe pools —
+  // checked against the shared street `ward` bag's own 18-colour SHIRT_COLORS list and every other
+  // wardrobe this build hands out, to keep the "no two neighbours share a shirt" rule; placed last of
+  // every person this build adds, after the scooter kid, so it draws from the very tail of both the
+  // local `r` and the shared `rnd()` sequences and disturbs the fewest later ticks of either)
+  // (a headless probe over the built world — every physics box and NPC position swept against a grid of
+  // candidate backyard spots — found (36, -9) clear: 19.9 m from the nearest other soul (the car washer
+  // out front), 5.8 m south of the house's own back wall, nothing else anywhere nearby)
+  { const gx = 36, gz = -10.3, kx2 = 36, kz2 = -9;
+    const grill = makeGrill(); place(game, U, grill, gx, gz, 0);
+    P.addBox(gx, 0.3, gz, 0.7, 0.65, 0.7, { cam: false });
+    const griller = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.2) }),
+      shirt: 0x3a6b8a, apron: 0xd6455c, pants: 0x2c2c2c, shoes: 0x2a2018, hat: r.chance(0.4) ? 'cap' : null, hatColor: 0x2a2a2a,
+      jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.25) }); W.add(griller.group);
+    const tongs = group(0, 0.02, 0.1, griller.hands[0]); tongs.rotation.x = -0.35;
+    const tongM = mat(0x8a8f96, { roughness: 0.4, metalness: 0.5 });
+    mesh(G.box(0.014, 0.2, 0.014), tongM, { x: -0.016, ry: 0.1, parent: tongs }); mesh(G.box(0.014, 0.2, 0.014), tongM, { x: 0.016, ry: -0.1, parent: tongs });
+    game.npcs.push(new Washer(game, griller, { x: kx2, z: kz2, ry: atan2(gx - kx2, gz - kz2),
+      cries: ["Two more minutes and they're done.", "Careful, puss — hot grate, that.", "Best burgers on the whole street, if I say so myself."] })); }
 
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);

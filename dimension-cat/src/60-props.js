@@ -545,6 +545,22 @@ function makeBike(color = 0xd62839) {
   g.userData.crank = crank;
   return { group: g, wheels, crank };
 }
+/** A kettle barbecue: a domed bowl on three splayed legs, a grate with a couple of patties, coals glowing underneath, and its own lid lifted off and leaning against the bowl. `userData.update` flickers the coals and their light. */
+function makeGrill() {
+  const g = new THREE.Group(), body = mat(0x2e3a3e, { roughness: 0.45, metalness: 0.4 }), steel = mat(0x9aa3ad, { roughness: 0.35, metalness: 0.6 });
+  const coalMat = glowMat(0xff6a2a, 2.0, { transparent: true, opacity: 0.92 });
+  mesh(G.dome(0.32, 14, 8), body, { y: 0.56, parent: g });                                  // the bowl, open side up
+  mesh(G.cyl(0.33, 0.33, 0.035, 16), body, { y: 0.565, shadow: 'none', parent: g });         // rim lip
+  for (const a of [0.3, 2.4, 4.5]) mesh(G.cyl(0.013, 0.013, 0.56, 6), steel, { x: cos(a) * 0.22, y: 0.28, z: sin(a) * 0.22, rz: cos(a) * 0.22, rx: sin(a) * 0.22, parent: g });   // three splayed legs
+  mesh(G.cyl(0.3, 0.3, 0.01, 16), coalMat, { y: 0.4, shadow: 'none', parent: g });           // the coal bed, low in the bowl
+  for (let i = -3; i <= 3; i++) mesh(G.box(0.58, 0.012, 0.014), steel, { x: i * 0.045, y: 0.46, shadow: 'none', parent: g });   // grate bars
+  for (const [px, pz, pc] of [[-0.09, 0.06, 0x6b4226], [0.08, -0.03, 0x7a4c2c], [-0.02, -0.1, 0x5e3a22]]) mesh(G.cyl(0.075, 0.075, 0.025, 10), mat(pc, { roughness: 0.85 }), { x: px, y: 0.475, z: pz, parent: g });   // patties on the grate
+  mesh(G.dome(0.33, 12, 7), body, { x: 0.58, y: 0.335, ry: PI, rz: 1.2, parent: g });        // the lid, lifted off, leaning on the bowl
+  mesh(G.cyl(0.012, 0.012, 0.16, 8), steel, { x: 0.58, y: 0.63, z: -0.07, rx: PI / 2 + 1.2, shadow: 'none', parent: g });   // the lid's own handle
+  const light = pointLight(0xff8a3a, 7, 4, 0, 0.42, 0, g);
+  g.userData.update = (dt, t) => { light.intensity = 6 + sin(t * 9) * 1.4 + sin(t * 23) * 0.7; coalMat.emissiveIntensity = 1.8 + sin(t * 11) * 0.3; };
+  return g;
+}
 /** A carriage as a rig for the road: body, roof, box seat, lanterns, shafts forward, and four wheels that turn. Faces +z. */
 function makeCarriageRig() {
   const g = new THREE.Group(), wood = mat(0x2b1d14, { roughness: 0.7 }), red = mat(0x7a1f1f, { roughness: 0.6 }), iron = mat(0x1e2426, { metalness: 0.6, roughness: 0.5 }), gold = mat(0xd4af37, { metalness: 0.9, roughness: 0.3 });

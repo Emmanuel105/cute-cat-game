@@ -5208,3 +5208,30 @@ Full suite: `world 1: 45 to meet` (unchanged — this round added wildlife, not 
 including the new hare still in the scene graph, 91% of Candy Land's ground still walkable, all
 checks `ok`, 0 console warnings, exit 0 across three consecutive runs. Before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 218 — a backyard griller for the Neighborhood
+
+The Neighborhood sat lowest of all seven worlds on friend count going into this round (41) and every
+house on the street already had a car out front and a fireplace inside, but nobody had ever actually
+cooked outdoors. **A griller now tends a kettle barbecue in the backyard behind the house at x=36**,
+tongs in hand, flipping a few patties over the glowing coals. *"Best burgers on the whole street, if I
+say so myself."*
+
+A new `makeGrill()` in `60-props.js`: a domed bowl on three splayed legs, a few grate bars over a
+glowing coal bed (flickering emissive intensity and point light, the same trick the campfire uses),
+three patties, and its own lid lifted off and leaning against the bowl. No new controller — `Washer`'s
+side-to-side swipe already reads as a spatula working a grill, so the griller reuses it, with a pair of
+tongs joining the usual sponge in the working hand (the sponge stays tucked out of sight in the fist,
+the same trick the leaf raker's rake handle used two rounds back). Its shirt colour was checked by hand
+against the street's shared 18-colour `SHIRT_COLORS` bag and every other wardrobe this build hands out,
+to keep the "no two neighbours share a shirt" rule intact.
+
+A headless probe (loading the real built game and sweeping every physics box and NPC position over a
+grid) found (36, -9) clear: 19.9 m from the nearest other soul (the car washer out front), 5.8 m south
+of the house's own back wall, nothing else anywhere nearby. The grill itself sits a metre further
+south at (36, -10.3), with its own physics box.
+
+Full suite: `world 0: 42 to meet` (up one, from 41 — lowest of the seven worlds going into this
+round), every NPC including the new griller still in the scene graph, 96% of the Neighborhood's ground
+still walkable, all checks `ok`, 0 console warnings, exit 0 across three consecutive runs. Before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
