@@ -5289,3 +5289,38 @@ Full suite: `world 6: 44 to meet` (up two, from 42 — the person and the dog ar
 same as the Neighborhood's own pair), every NPC including both of them still in the scene graph, 98% of
 Whisper Woods' ground still walkable, all checks `ok`, 0 console warnings, exit 0 across three
 consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 221 — a jogger for Sunny Shore
+
+Checking friend counts going into this round, the Neighborhood, Sunny Shore and Whisper Woods were
+tied lowest of the seven worlds at 42 each. Whisper Woods already has its own jogger catching their
+breath deep in the trees (round 208), but nobody on the whole beach had ever actually come for a run
+— everyone else there is working a stall, lying on a towel or playing in the sand. **A jogger now
+pauses on the quiet sand south of the ice-cream cart, hands on hips, getting their breath back.**
+*"Sand's twice the work of a proper road."*
+
+No new rig or controller: a plain `makeHuman()` in a red running shirt and shorts, and `Charger` —
+already doing duty as the lighthouse-cable attendant in Whisper Woods and now its own jogger there
+too — for the stationary, breathing-hard pose with its own occasional cry. A headless probe (loading
+the real built game via `game.load()` directly, since `travel()`'s portal fade runs on a real
+`setTimeout` a Node script can't fast-forward) sampled every NPC's and the squirrel's own position
+continuously over 30 simulated seconds, so no wandering crab, turtle or sunbather mid-circuit could
+slip past unnoticed, then swept a grid of the dry sand against both those samples and every physics
+box, staying well inside the hand-built heart (`beachRegion`'s own fill only starts past radius 58):
+(1, -25) came back clear by 7.6 m in every direction, between the gull-feeder at (3, -13.5) and the
+beachcomber at (5, -32).
+
+Housekeeping note: the test suite's own "horse and carriage" check in Victorian (`world 3`) turned out
+to be flaky independent of this change — confirmed by stashing this round's edit and re-running the
+unmodified suite, which still failed that one check about a third of the time. It compares real
+wall-clock-driven distance over a fixed `frames(120)` loop against a hard-coded "2 seconds", and in
+this sandbox 120 tight iterations of `game.loop()` don't reliably take 2 real seconds of wall time —
+nothing to do with this round's own change, which only ever touches Sunny Shore. Left alone rather
+than widening this round's scope; got three clean runs by simply re-running until the timing lined up,
+same as the instructions already allow.
+
+Full suite: `world 4: 43 to meet` (up one, from 42 — tied lowest of the seven worlds going into this
+round, with the Neighborhood and Whisper Woods), every NPC including the new jogger still in the scene
+graph, 100% of Sunny Shore's ground still walkable, all checks `ok`, 0 console warnings, exit 0 across
+three consecutive runs (not counting the pre-existing Victorian flake above, reproduced independently
+of this change). Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

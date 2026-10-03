@@ -190,6 +190,20 @@ function buildBeach(game, entry) {
     boxT(game, kx + 0.35, kz + 0.12, 0.2, 0.16, 0.12, { cam: false });
     game.npcs.push(new Forager(game, feeder, { x: kx, z: kz, ry, cryIcon: '🍟',
       cries: ["Not too close, puss, these are for the gulls.", "They'll take it right out of your hand if you let them.", "One always gets there before the rest."] })); }
+  // Whisper Woods has its own jogger catching their breath deep in the trees, but nobody on this whole
+  // beach had come for an actual run — every other soul here is either working, playing or lying down.
+  // A headless probe built the real Sunny Shore, sampled every NPC's and the squirrel's own position
+  // continuously over 30 simulated seconds (so no wandering crab, turtle or sunbather mid-circuit could
+  // slip past unnoticed), and swept the dry sand south of the ice-cream cart against both those samples
+  // and every physics box: (1, -25) came back clear by 7.6 m in every direction, between the gull-feeder
+  // at (3, -13.5) and the beachcomber at (5, -32) — well inside beachRegion's own fill, which only
+  // starts past radius 58.
+  { const jx = 1, jz = -25, ry = PI / 2;
+    const runner = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
+      shirt: 0xd62839, stripes: 0xf5f2ea, pants: 0x2a2a2a, shoes: 0xf5f2ea, shorts: true, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(runner.group);
+    game.npcs.push(new Charger(game, runner, { x: jx, z: jz, ry, cryIcon: '🏃',
+      cries: ["Didn't expect company, out here.", "Sand's twice the work of a proper road.", "One more stretch before the tide's all the way in."] })); }
   // a clam digger kneels in the wet sand north of the pier, working the tideline for shellfish — Sunny Shore's tideline never had anyone digging it, only walking it
   { const digWard = makeWardrobe(r, { shirts: [0x6a8a9a, 0x9a8a6a, 0x7a6a5a], pants: [0x3a4a3a, 0x4a3a2a], shoes: [0x5a4030, 0x3a2a1e] });
     const digger = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: digWard }),
