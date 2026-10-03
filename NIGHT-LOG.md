@@ -5572,3 +5572,25 @@ box, no zone — pure sound, same as the clock tower before it.
 Verified: `node test/run.mjs` — every world's NPC, collectible and friend counts unchanged, Robot City
 still fully walkable where it was before, all 273 checks `ok`, 0 console warnings, exit 0 across two
 consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 232 — a foghorn for Sunny Shore's lighthouse
+
+The Victorian bell tolls, Robot City's whistle blows, Whisper Woods' owl hoots — Sunny Shore itself only
+had the dog's own occasional woof, nothing from its own landmark. The lighthouse has swept its beam over
+the water every second since the world was first built, in total silence. **It now sounds a single low
+foghorn blast on a slow loop**, spaced far enough apart to read as a lighthouse keeping watch rather than
+a warning going off.
+
+A new `SFX.foghorn()` in `30-audio.js` layers a low sawtooth blast under a quiet sine octave and a wash
+of lowpass noise for sea mist, built the same way `whistle()` layers its own steam blast. The loop itself
+is two lines next to `makeLighthouse(game, 12, -46)` in `buildBeach()` (`72-world-beach.js`), the same
+shape as the clock tower and the shift whistle before it: a `U` tick counts down a span seeded with
+`rnd.range(35, 60)`, calls `SFX.foghorn()` when it runs out, then resets to `rnd.range(80, 130)`. Since
+the timer is only ever read inside a per-frame tick, after every NPC in this build (the lighthouse
+keeper included) has already drawn whatever it needed from `rnd()`, it can't shift a single wardrobe
+pick at construction time, here or in any world built after this one. No new mesh, no physics box, no
+zone — pure sound, same as the bell and the whistle before it.
+
+Verified: `node test/run.mjs` — every world's NPC, collectible and friend counts unchanged, Sunny Shore
+still fully walkable where it was before, all checks `ok`, 0 console warnings, exit 0 across two
+consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

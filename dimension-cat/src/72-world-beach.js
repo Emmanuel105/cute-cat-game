@@ -27,6 +27,14 @@ function buildBeach(game, entry) {
   // pier + lighthouse + huts
   makePier(game, 17, -10, 15, PI / 2);
   const lighthouse = makeLighthouse(game, 12, -46); U.push(lighthouse.userData.update);
+  // the Victorian bell tolls, the factory whistle blows, Whisper Woods' owl hoots — but Sunny Shore's
+  // own lighthouse, sweeping its beam every second since the world was first built, had never once
+  // sounded a horn. It blows a single low blast on a slow loop now, spaced far enough apart to read as
+  // a working lighthouse keeping watch over the water rather than a warning. The interval is drawn from
+  // the shared `rnd()` inside this `U` tick, read only after every NPC in this build is already placed,
+  // so it can't shift any construction-time wardrobe pick, here or in any world built after it.
+  let foghornT = rnd.range(35, 60);
+  U.push((dt) => { foghornT -= dt; if (foghornT <= 0) { SFX.foghorn(); foghornT = rnd.range(80, 130); } });
   // the lighthouse itself never had anyone tending it, for all its own automatic beam — a keeper kneels
   // at its base, polishing the lowest band with a rag, a tin of polish set down beside them. A headless
   // probe swept a clearance ring around the tower's own 1.5 m half-width physics box: the ring at 2.0 m
