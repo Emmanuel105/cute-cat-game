@@ -28,6 +28,20 @@ function place(game, U, obj, x = 0, z = 0, ry = 0, y = 0) {
   if (obj.userData.update) U.push(obj.userData.update);
   return obj;
 }
+/**
+ * A chimney's worth of smoke: three puffs rising and fading on a fixed loop, driven only by the world
+ * clock `t` — never the shared `rnd()` or a world's own seeded `r`, so it costs no later draw anywhere
+ * else in this build or any built after it (unlike `game.fx.emit`, which draws from `rnd()` for every
+ * particle it spawns).
+ */
+function addChimneySmoke(game, U, x, y, z) {
+  const CYCLE = 2.4, puffs = [0, 1, 2].map(() => mesh(G.sphere(0.1, 7, 5), mat(0xd8dde0, { roughness: 1, transparent: true, opacity: 0.4 }), { shadow: 'none', parent: game.world }));
+  U.push((dt, t) => { for (let i = 0; i < puffs.length; i++) {
+    const k = ((t + i * (CYCLE / puffs.length)) % CYCLE) / CYCLE;
+    puffs[i].position.set(x + sin(k * 4 + i * 2) * 0.16, y + k * 1.5, z + cos(k * 3 + i * 2) * 0.12);
+    puffs[i].scale.setScalar(0.5 + k * 0.9);
+    puffs[i].material.opacity = 0.4 * (1 - k);
+  } }); }
 /** Plants a tree, first nudging it clear of roads, paths and buildings (the trunk, not the canopy). */
 function addTree(game, kind, x, z, r) {
   const at = game.zones.nudge(x, z, 0.45, 9);
@@ -87,6 +101,7 @@ function buildNeighborhood(game, entry) {
 
   // home + yard
   const home = makeHome(game); W.add(home.group);
+  addChimneySmoke(game, U, -3.2, 6.15, -1.4);   // the cat's own chimney, first on the street to get a fire going
   U.push(makeHomeBeacon(game, 0, 0, 14).userData.update);   // the floating marker over the cat's own roof
   game.homeMarker = [0, 0];
   place(game, U, makeWindChime(game), 0.9, 5.95, 0, 2.55);   // hung from the porch eave, between the two posts and past the deck's own light
@@ -103,6 +118,7 @@ function buildNeighborhood(game, entry) {
   lots.forEach(([x, z, ry], i) => {
     const [wall, roof] = palette[i % palette.length], storeys = i % 3 === 1 ? 2 : 1, h = makeHouse({ wall, roof, doorRight: i % 2 === 1, lit: i % 3 === 0, roofH: 2 + (i % 3) * 0.4, storeys, shutter: r.pick([0x3f5573, 0x2f4f2f, 0x5a3a3a, 0xffffff]) }, r);
     place(game, U, h, x, z, ry); P.addBox(x, h.userData.h / 2, z, 7.4, h.userData.h, 6.4); P.addBox(x + (i % 2 === 1 ? 2.1 : 0), 1.2, z + (ry === 0 ? 1 : -1) * 4.35, 3.0, 2.4, 1.5, { cam: false });
+    { const ch = h.userData.chimney; addChimneySmoke(game, U, x + ch[0] * cos(ry) + ch[2] * sin(ry), ch[1], z - ch[0] * sin(ry) + ch[2] * cos(ry)); }
     const front = ry === 0 ? 1 : -1, fz = z + front * 8;
     for (const [cx, len] of [[-2.2, 3.6], [2.5, 3]]) { const f = makeFence(len, r.pick([0x2e63d8, 0x2e63d8, 0xffffff, 0x4a8ad8])); f.position.set(x + cx, 0, fz); f.rotation.y = ry; W.add(f); P.addBox(x + cx, 0.5, fz, len, 1, 0.2, { cam: false }); }
     place(game, U, makeMailbox(r.pick([0x2e63d8, 0xd62839, 0x2f4f4f])), x + 1.6, fz + front * 1.3, ry);

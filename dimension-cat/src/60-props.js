@@ -190,6 +190,7 @@ function makeHouse(o, r = rnd) {
   for (const [cx, cz] of [[-w / 2, -d / 2], [w / 2, -d / 2], [-w / 2, d / 2], [w / 2, d / 2]]) mesh(G.box(0.18, H, 0.18), trim, { x: cx, y: H / 2, z: cz, shadow: 'none', parent: g });   // corner boards
   mesh(G.gable(d + 0.9, o.roofH ?? 2.4, w + 0.9), roof, { y: H + 0.1, ry: PI / 2, parent: g });
   mesh(G.box(0.7, 1.4, 0.7), mat(0x7a5040, { roughness: 1, map: TEX.brick(14) }), { x: w * 0.3, y: H + 1.6, z: -d * 0.2, parent: g });
+  g.userData.chimney = [w * 0.3, H + 2.3, -d * 0.2];   // local offset to the chimney pot's top, for smoke
   if (o.dormer ?? (storeys > 1 || r.chance(0.4))) { mesh(G.box(1.5, 1.2, 1.4), wall, { x: -w * 0.2, y: H + 0.9, z: d * 0.28, parent: g }); mesh(G.gable(1.7, 0.8, 1.6), roof, { x: -w * 0.2, y: H + 1.5, z: d * 0.28, ry: PI / 2, parent: g }); mesh(G.box(0.8, 0.7, 0.1), glass, { x: -w * 0.2, y: H + 0.95, z: d * 0.28 + 0.72, shadow: 'none', parent: g }); }
   // windows on every storey, front and back, with shutters and a sill; one per storey on each side wall
   const win = (x, y, z, ry = 0) => {

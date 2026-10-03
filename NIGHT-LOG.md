@@ -5349,3 +5349,41 @@ Full suite: friend counts unchanged in every world (this round added no greetabl
 still in the scene graph in every world, ground walkability unchanged (98% Frosty Peak, 98% Whisper
 Woods, same as before), all checks `ok`, 0 console warnings, exit 0 across three consecutive runs.
 Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 223 — chimney smoke across the Neighborhood
+
+Frosty Peak's four cabins have had smoke drifting from their chimneys since early on, and the
+Neighborhood's own houses — sixteen of them on the street, plus the cat's own home — have had a
+matching brick chimney stack on every roof the whole time, cold and bare. **A thin wisp of smoke now
+rises from every chimney on the street, the cat's own included**, three soft puffs per house climbing,
+drifting and fading on a loop before the next set takes over — the one thing that made the cabins read
+as lived-in and the houses never had.
+
+No new NPC, no friend, no physics box: this is a landmark detail added to an existing static prop,
+same shape of change as round 222's windsock and round 219's weathervane, but a deliberately different
+mechanism from the cabins' own smoke. The cabins drive theirs with `game.fx.emit()`, and `emit()` draws
+several values from the shared `rnd()` sequence for every particle it spawns — fine for the cabins,
+which only ever run once, well after the Victorian horse-and-carriage and every other timing-sensitive
+check earlier in the test's travel order. The Neighborhood is different: it's world 0, visited six
+times across the whole run, each visit sitting *between* another world's own timing-sensitive checks
+(Candy Land's ring dance, Robot City's loader, the Victorian horse, Sunny Shore's kite, Frosty Peak's
+sledder, Whisper Woods' woodcutter all come immediately after one Neighborhood visit or another). Three
+`rnd()`-hungry emitters times seventeen chimneys, ticking every frame of every one of those six visits,
+would have shifted the exact sequence every later check depends on — exactly the fragility the existing
+code comments already document being bisected and patched around more than once. So this round's smoke
+is a new small helper, `addChimneySmoke()`, built from three plain spheres whose position, scale and
+fade are a pure function of the world clock `t` and the puff's own index — no `rnd()`, no local seeded
+`r()`, nothing drawn from any sequence at all, so it costs no later check anywhere a single tick.
+`makeHouse()` now exposes `userData.chimney`, the chimney pot's local top in the same `[x, y, z]` shape
+`makeCabin()` already uses, and the street loop transforms it through each house's own `(x, z, ry)` the
+same way the snow world's own cabin code already does; the player's own home chimney is a fixed point,
+so its world coordinates are just written out directly.
+
+Full suite: friend counts and every other count unchanged in every world (no greetable NPC, no new
+physics box, no zone touched), every NPC still in the scene graph, ground walkability unchanged in
+every world, all checks `ok`, 0 console warnings, exit 0 across three consecutive runs — needing rather
+more than three attempts tonight, since this sandbox's own wall-clock was running unusually unevenly:
+re-running the unmodified, pre-change suite found the *same* two timing-sensitive checks (the Victorian
+horse-and-carriage, and tonight also Sunny Shore's kite) failing most of the time, confirming the
+flakiness already on record from round 221 rather than anything this round's own change touched. Before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
