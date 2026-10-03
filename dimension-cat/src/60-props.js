@@ -925,8 +925,10 @@ function makeFurnace(game, x, z, ry) {
   mesh(G.box(2.2, 1.8, 0.2), iron, { y: 1.1, z: 1.45, shadow: 'none', parent: g }); for (let i = 0; i < 4; i++) mesh(G.box(2.2, 0.06, 0.24), iron, { y: 0.5 + i * 0.4, z: 1.55, shadow: 'none', parent: g });
   const l = pointLight(0xff7a20, 26, 12, 0, 1.2, 2.6, g);
   glowSprite(0xff7a20, 5, 0.5, g).position.set(0, 1.1, 1.7);
-  g.userData.update = (dt, t) => { l.intensity = 22 + sin(t * 11) * 4 + sin(t * 23) * 2; };
-  const c = cos(ry), s = sin(ry); game.physics.addBox(x, 1.6, z, abs(c) * 4 + abs(s) * 3, 3.2, abs(s) * 4 + abs(c) * 3);
+  const c = cos(ry), s = sin(ry), smokeX = x + -1 * c + -0.5 * s, smokeZ = z + 1 * s + -0.5 * c;
+  g.userData.update = (dt, t) => { l.intensity = 22 + sin(t * 11) * 4 + sin(t * 23) * 2;
+    if (rnd.chance(dt * 4)) game.fx.emit(smokeX, 6.1, smokeZ, { count: 1, color: 0x55585f, speed: 0.2, up: 1.1, life: 3, gravity: -0.15, spread: 0.25 }); };
+  game.physics.addBox(x, 1.6, z, abs(c) * 4 + abs(s) * 3, 3.2, abs(s) * 4 + abs(c) * 3);
   return g;
 }
 

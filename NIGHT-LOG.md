@@ -5505,3 +5505,28 @@ none. `makeCandyHouse()` now returns `{ group, updates }` instead of a bare grou
 Verified: `node test/run.mjs` — every world's NPC, collectible and friend counts unchanged, Candy Land
 still fully walkable where it was before, all 273 checks `ok`, 0 console warnings, exit 0 across two
 consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 229 — smoke from Robot City's furnace chimney
+
+Every other world with a fire or a stove has had something rising off it for a while — the
+Neighborhood's chimneys, the Victorian hearths, Frosty Peak's cabins and its cocoa vendor's own
+mug — but Robot City's factory-floor furnace, standing since the worlds were first built, has only ever
+had its flicker and its iron stack, nothing coming out of the top. **It now breathes a slow stream of grey
+industrial smoke from that stack**, darker and sootier than anywhere else's chimney haze, fitting a
+world built from metal rather than brick.
+
+`makeFurnace()` in `60-props.js` already carried the stack as a plain unlit cylinder at local
+(-1, 4.5, -0.5) inside the furnace's own group; the smoke emits from its top (world y=6.1, clear of
+the cylinder's own 1.5 m half-height) using the same `game.fx.emit()` one-puff-per-tick idiom the
+Frosty Peak cabins already established, just with a darker grey (0x55585f) and a faster, denser drift
+to read as smoke rather than steam. The furnace's own `ry` is folded into the stack's world position
+with the same rotation algebra the cabins use, even though the one call site in `buildRobotCity()`
+always passes `ry=0` today — so a future furnace placed at an angle won't come out with its smoke in
+the wrong spot. It rides on the furnace's own existing `userData.update` (already excluded from baking,
+same as the flicker it already drove) and draws only from the shared particle pool's own `rnd.chance`,
+never the per-world seeded `r()`, so it can't shift any later wardrobe pick in `buildRobotCity()` or
+any other build function downstream of it.
+
+Verified: `node test/run.mjs` — every world's NPC, collectible and friend counts unchanged, Robot City
+still fully walkable where it was before, all 273 checks `ok`, 0 console warnings, exit 0 across two
+consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
