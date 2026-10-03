@@ -5128,3 +5128,24 @@ Full suite: `world 4: 42 to meet` (up one, from 41 — tied lowest of the seven 
 round, with the Neighborhood), every NPC including the new snorkeler still in the scene graph, 99% of
 Sunny Shore's ground still walkable, all checks `ok`, 0 console warnings, exit 0 across three consecutive
 runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 215 — a cleaner for Robot City's statue
+
+Robot City hadn't had a fresh face since round 198, and every soul down there tends some machine or
+another except the one that never moves: the giant chrome statue in the plaza had stood there since
+round 83 without so much as a wipe. **A line worker now gives its foot a scrub with a bucket of suds
+north of the plinth.** *"Statue's not even real and it still gets filthy."*
+
+No new controller: `Washer` already does the scrubbing motion for a car in the Neighborhood, a tide
+pool on Sunny Shore and a breakfast pot in Whisper Woods, just never in Robot City. A bucket of suds
+(a cylinder and a translucent water-disc, the same pair the Neighborhood's car-washer already uses)
+sits beside them. Checked by hand against every physics box placed by the build itself — the statue's
+own 4×4 m base, the pole lights flanking the plaza at (-44, 10) and (-56, 22), and the charging pylon
+at (-36, 12) — (-44, 26) sits a clear 2 m north of the statue's base and well past everything else, still
+inside the statue's own 22×22 m plaza floor (which starts at radius 98 before the procedural fill
+takes over, so none of that is at risk either).
+
+Full suite: `world 2: 46 to meet` (up one, from 45), every NPC including the new cleaner still in the
+scene graph, 88% of Robot City's ground still walkable, all checks `ok`, 0 console warnings, exit 0
+across three consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.

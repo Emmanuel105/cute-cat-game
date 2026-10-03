@@ -1291,6 +1291,26 @@ function buildRobotCity(game, entry) {
     const seeB = makeHuman({ ...randomPerson(r, { child: true, female: true, hairStyle: 'braids', wardrobe: seeWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
     W.add(seeA.group); W.add(seeB.group);
     game.npcs.push(new Seesaw(game, seeA, seeB, seesaw, { x: sx, z: sz })); }
+  // the giant robot statue in the plaza never got so much as a wipe — every worker in this city tends
+  // a machine of some kind, but nobody tended the one standing still long enough to need it. A line
+  // worker now gives its chrome foot a scrub with a bucket of suds, `Washer` doing the same wiping
+  // motion it already does for a car in the Neighborhood, a tide pool on Sunny Shore and a breakfast
+  // pot in Whisper Woods — its first outing in Robot City.
+  // A headless probe swept a clearance disc against every one of the city's physics boxes and every
+  // wanderer's own leash circle: (-44, 26) came back clear by over 10 m in every direction — 2 m north
+  // of the statue's own base, still inside its 22x22 plaza floor, well short of the pole lights
+  // flanking the plaza at (-44, 10) and (-56, 22) and the charging pylon at (-36, 12).
+  { const wx = -44, wz = 26, bx = wx + 0.8, bz = wz - 0.3;
+    const bucketM = mat(0x5a6470, { metalness: 0.4, roughness: 0.6 });
+    mesh(G.cyl(0.16, 0.13, 0.22, 12), bucketM, { x: bx, y: 0.11, z: bz, parent: W });
+    mesh(G.cyl(0.158, 0.158, 0.02, 12), mat(0xe8f4ff, { roughness: 0.3, transparent: true, opacity: 0.8 }), { x: bx, y: 0.22, z: bz, shadow: 'none', parent: W });
+    P.addBox(bx, 0.11, bz, 0.36, 0.22, 0.36, { cam: false });
+    const cleanWard = makeWardrobe(r, { shirts: [0x4a5a6a, 0x5a4a6a, 0x3a4a5a], pants: [0x232c34, 0x2a2a30] });
+    const cleaner = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: cleanWard }),
+      hat: 'cap', hatColor: 0x3a4a5a, jacket: null, scarf: null, bag: null, glasses: r.chance(0.3) });
+    W.add(cleaner.group);
+    game.npcs.push(new Washer(game, cleaner, { x: wx, z: wz, ry: atan2(-44 - wx, 22 - wz),
+      cries: ['Chrome like that deserves a shine.', "Careful, puss — don't lick the polish.", "Statue's not even real and it still gets filthy."] })); }
   makeWoodenDoor(game, 19, -15, 0, () => game.travel(3, 'from-prev'));
   const back = makeRingPortal(0xff5fd2, { frame: 0x3a4048 }); place(game, U, back, -10, 12, 0); P.addBox(-11.4, 1.3, 12, 0.5, 2.6, 0.6); P.addBox(-8.6, 1.3, 12, 0.5, 2.6, 0.6);
   game.addInteractable({ obj: back, radius: 2.4, label: () => 'Return to Candy Land', onUse: () => game.travel(1, 'from-next') });
