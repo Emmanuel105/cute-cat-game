@@ -5530,3 +5530,23 @@ any other build function downstream of it.
 Verified: `node test/run.mjs` — every world's NPC, collectible and friend counts unchanged, Robot City
 still fully walkable where it was before, all 273 checks `ok`, 0 console warnings, exit 0 across two
 consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 230 — the Victorian clock tower learns to toll on its own
+
+`SFX.chime()` — three low tolls, written for the time door's own travel fanfare in `80-game.js` — had
+never once sounded on its own. The tower stood over its own plaza in total silence otherwise, despite
+the owl hooting on its own clock deep in Whisper Woods and the gulls crying on theirs out over Sunny
+Shore. **It now tolls by itself every minute or so**, the same three strikes, just spaced far enough
+apart to read as a town clock keeping time rather than an alarm going off.
+
+The whole change is four lines next to the `makeClockTower(game, 42, 0, U)` call in `buildVictorian()`:
+a `U` tick counts down a timer seeded with `rnd.range(40, 70)`, calls `SFX.chime()` when it runs out,
+then resets to `rnd.range(60, 100)` — exactly the shape the owl's `hootT` and the beach dog's `woofT`
+loops already use elsewhere. Since the timer is only ever read inside a per-frame tick, after every NPC
+in the build has already drawn whatever it needed from `rnd()`, it can't shift a single wardrobe pick at
+construction time, here or in any world built after this one. No new mesh, no physics box, no zone —
+pure sound, so there was nothing for a headless probe to clear in the first place.
+
+Verified: `node test/run.mjs` — every world's NPC, collectible and friend counts unchanged, Victorian
+still fully walkable where it was before, all checks `ok`, 0 console warnings, exit 0 across two
+consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

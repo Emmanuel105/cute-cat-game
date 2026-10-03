@@ -7537,6 +7537,15 @@ function buildVictorian(game, entry) {
   for (const [x, z, k2] of [[-30, 20, 'oak'], [36, 22, 'oak'], [-12, -50, 'birch'], [18, -52, 'birch'], [-66, -14, 'oak'], [66, 18, 'oak']]) addTree(game, k2, x, z, r);
   // clock tower plaza (east), time door (west)
   makeClockTower(game, 42, 0, U);
+  // the tower's own bell (SFX.chime(), "tolling three times") had only ever sounded once, for the time
+  // door's own fanfare in 80-game.js — otherwise it stood silent despite the owl hooting on its own clock
+  // in Whisper Woods and the gulls crying on theirs at Sunny Shore. It now tolls on its own loop too, same
+  // three strikes, just spaced minutes apart so it reads as a town clock rather than an alarm. The interval
+  // is drawn from the shared `rnd()` inside this `U` tick, exactly as the owl's and the gull's own loops
+  // already do — read only after every NPC in this build is already placed, so it can't shift any
+  // construction-time wardrobe pick, here or in any world built after it.
+  let towerChimeT = rnd.range(40, 70);
+  U.push((dt) => { towerChimeT -= dt; if (towerChimeT <= 0) { SFX.chime(); towerChimeT = rnd.range(60, 100); } });
   flatPlane(game, 16, 16, pave, 42, 0, 0, 0.015);
   makeCarriage(game, 16, 3.4, PI / 2);
   // the parked carriage had no one minding it; a coachman now waits up on the driver's bench, watch in hand
