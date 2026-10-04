@@ -5618,3 +5618,29 @@ before it.
 Verified: `node test/run.mjs` — every world's NPC, collectible and friend counts unchanged, Candy Land
 still fully walkable where it was before, all checks `ok`, 0 console warnings, exit 0 across two
 consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 234 — a fisherman for the chocolate river
+
+Every other body of water in the game already had someone fishing it — the Neighborhood's lake jetty,
+Frosty Peak's ice hole, Sunny Shore's pier, Whisper Woods' glowing pond — but Candy Land's own chocolate
+river, flowing the whole width of the world since it was first built, never did. **A fisherman now sits
+on a stool on the south bank, rod dipped into the fudge-brown water**, a stone's throw from one of the
+wafer bridges. "Nothing bites in a chocolate river, but it never stops me trying," he says, and once in
+a while: "Careful, puss — one splash and that's a bath, not a paw-wash."
+
+He's built from the same `IceFisher` controller every other world's angler already uses (the class is
+general-purpose despite its name, built for any seated line-in-the-water setup) with the existing
+`makeIceStool()` prop — no new mesh, no new SFX, no new controller, just a fourth call site for a pattern
+that already exists three times over. A headless probe (written against the test harness's own stub
+three.js, travelling into Candy Land and sampling every physics box and every NPC's own position over 400
+simulated frames) swept the south bank in 2 m steps, ruling out the three wafer bridges (x = 0, -44, 46)
+and every fixed cane and lollipop coordinate already in the build: (26, -13) came back clear by 0.75 m
+from the nearest cane trunk and clear of every other NPC's whole wander range, with the line dipping
+straight north into open river at (26, -18).
+
+Verified: `node test/run.mjs` — Candy Land now counts 46 to meet (up from 45), 11 collectibles and 92% of
+the ground still walkable, unchanged from before; every world's NPCs still finite and in the scene graph,
+all checks `ok`, 0 console warnings, exit 0 across two consecutive runs (a handful of unrelated
+timing-sensitive checks — kite height, snowball throw counts, exact rest height — jitter run to run as
+they always have, same as before this change). Before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

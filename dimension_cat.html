@@ -6724,6 +6724,18 @@ function buildCandyLand(game, entry) {
   for (const [cx, w] of [[-262, 500], [-24, 40], [26, 40], [264, 500]]) P.addBox(cx, 3, -18, w, 6, 6.8, { walk: false, cam: false });   // the river, open only at the three bridges
   makeCandyBridge(game, 0, -18, 3.2, 9); makeCandyBridge(game, -44, -18, 3.2, 9); makeCandyBridge(game, 46, -18, 3.2, 9);
   U.push((dt) => { choc.map.offset.x -= dt * 0.03; });
+  // every other body of water in the game already has an angler dipping a line in it — the Neighborhood's
+  // lake jetty, Frosty Peak's ice hole, Sunny Shore's pier, Whisper Woods' glowing pond — but the chocolate
+  // river itself never did. A headless probe swept the south bank in 2 m steps, well clear of all three
+  // bridges (x = 0, -44, 46) and every fixed cane and lollipop coordinate already placed nearby: (26, -13)
+  // came back clear by 0.75 m from the nearest cane trunk, and clear of every NPC's own position sampled
+  // over 400 frames, so a stool fits there with the line dipping straight north into the river proper.
+  { const riverWard = makeWardrobe(r, { shirts: [0xff6fb5, 0x7fd7ff, 0xffd54a], pants: [0xf5f2ea, 0x8d6e63], shoes: [0xffffff, 0x8d6e63] });
+    const angler = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: riverWard }),
+      hat: 'cap', hatColor: 0x7fd7ff, coat: false, scarf: null, jacket: null, bag: null });
+    W.add(angler.group);
+    game.npcs.push(new IceFisher(game, angler, makeIceStool(), { x: 26, z: -13, ry: PI, holeX: 26, holeZ: -18, holeY: 0.04,
+      cries: ['Nothing bites in a chocolate river, but it never stops me trying.', "Careful, puss — one splash and that's a bath, not a paw-wash.", 'Best fudge-brown water in the land, this.'] })); }
   // the outer sweet-lands: a candy-cane forest belt, cupcake hills, a gingerbread cottage, cookie paths
   for (let i = 0; i < 44; i++) { const a = i / 44 * TAU + r.range(-0.07, 0.07), d = r.range(56, 76), x = cos(a) * d, z = sin(a) * d; if (abs(z + 18) < 5) continue; const h = r.range(3, 5), c = makeCandyCane(h); c.position.set(x, 0, z); c.rotation.y = r() * TAU; W.add(c); P.addBox(x, h / 2, z, 0.5, h, 0.5, { cam: false }); }
   for (const [x, z, hue] of [[-58, 30, 330], [60, 36, 200], [-62, -44, 50], [58, -46, 120], [4, 64, 280], [-30, 62, 0], [34, -66, 330]]) {
