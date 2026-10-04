@@ -365,6 +365,31 @@ function makeFrog(color = 0x4caf50) {
   return rig;
 }
 
+// ---------------------------------------------------------------- snail (very slow Wanderer; foot, coiled shell, two eye stalks)
+function makeSnail(shellColor = 0xc9a24a) {
+  const g = new THREE.Group(), rig = { group: g };
+  const shellM = mat(shellColor, { roughness: 0.55 }), bandM = mat(0x7a5a24, { roughness: 0.6 }), skin = mat(0xcbb98a, { roughness: 0.85 }), dark = mat(0x161412);
+  const body = group(0, 0, 0, g); rig.body = body;
+  mesh(G.capsule(0.035, 0.1, 6), skin, { y: 0.035, z: -0.02, rx: PI / 2, sy: 0.55, parent: body });   // flat foot, hugging the ground
+  const shell = group(0, 0.065, -0.05, body); rig.shell = shell;
+  mesh(G.sphere(0.08, 14, 10), shellM, { sy: 0.8, parent: shell });
+  for (let i = 0; i < 2; i++) mesh(G.torus(0.075 - i * 0.028, 0.009, 5, 16), bandM, { y: 0.01 - i * 0.015, sy: 0.8, rx: PI / 2, shadow: 'none', parent: shell });
+  const head = group(0, 0.03, 0.1, body); rig.head = head;
+  mesh(G.sphere(0.025, 10, 8), skin, { sz: 1.4, parent: head });
+  for (const side of [1, -1]) {
+    const stalk = group(side * 0.014, 0.012, 0.02, head); rig['stalk' + side] = stalk;
+    mesh(G.cyl(0.005, 0.005, 0.055, 5), skin, { y: 0.028, rx: -0.35, parent: stalk });
+    mesh(G.sphere(0.009, 6, 6), dark, { y: 0.058, shadow: 'none', parent: stalk });
+  }
+  rig.animate = (ph, moving, dt, t = 0) => {
+    const alert = moving ? 1 : 0.6 + sin(t * 1.4) * 0.15;
+    for (const side of [1, -1]) rig['stalk' + side].rotation.x = -0.35 * alert + sin(t * 2 + side) * 0.05;
+    shell.rotation.z = sin(t * 0.8) * 0.02;
+  };
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- owl (perched; only animates)
 function makeOwl() {
   const g = new THREE.Group(), rig = { group: g };

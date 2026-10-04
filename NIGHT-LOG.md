@@ -5670,3 +5670,34 @@ Verified: `node test/run.mjs` — both the Neighborhood and Frosty Peak's NPC, c
 counts unchanged, both worlds still fully walkable where they were before, all 273 checks `ok`, 0 console
 warnings, exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 236 — a snail for Whisper Woods' fern litter
+
+Every creature in these woods moves at a clip — the deer, the foxes, even the frogs hop from spot to
+spot — and nothing had ever just crept along. **A snail now glides through the fern litter at the heart
+of the glade**, coiled shell and two eye stalks swaying, covering ground so slowly it barely seems to
+move at all. It doesn't speak and isn't one to say hello to — like the frogs, hares and sparrows
+elsewhere, it's background wildlife, not a friend to meet.
+
+`makeSnail()` in `56-npcs-wild.js` is a new small rig — a flat foot, a banded coiled shell, a tiny head
+with two stalked eyes that lean forward when it's moving and sway gently when it's still — reusing the
+existing `Wanderer` controller rather than a new class, just with a near-zero `speed` (0.05 m/s) and a
+1 m leash so it never strays from its patch. Since the rig carries no `.look`/`.robot`/`.cookie`, the
+`greetable()` call every `Wanderer` makes is a silent no-op for it, exactly as it already is for every
+other animal in the game — so it adds nothing to any world's friend count. A headless probe built the
+real Whisper Woods, sampled every NPC's and the squirrel's own position every quarter second over 300
+simulated frames (so nothing wandering, hopping or flying mid-leash could slip past unnoticed), then
+swept a grid against both those samples and every physics box: (0, -18) came back clear by 11.97 m in
+every direction — inside the fern patch, past the glowing pond's own 7 m keep-out circle. Placed last,
+after every other draw `buildForest()` makes from its own local `r`, so the one extra shell-colour pick
+disturbs nothing earlier in the wood.
+
+The first attempt forgot `W.add(rig.group)` before constructing the `Wanderer` — every other
+`Wanderer`-driven critter in the codebase adds its rig to the scene graph itself before handing it to the
+controller, and skipping that step failed the "every NPC is in the scene graph" check immediately. Fixed
+by adding the missing line.
+
+Verified: `node test/run.mjs` — Whisper Woods' NPC, collectible and friend counts unchanged (44 to meet,
+8 collectibles, 98% of the ground walkable), every other world unaffected, all checks `ok`, 0 console
+warnings, exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

@@ -398,6 +398,17 @@ function buildForest(game, entry) {
     game.npcs.push(new DogWalker(game, walker, dog, { x: dwx, z: dwz, angle: dwry, speed: 0.9, leash: 4,
       cries: ["He loves a good sniff round these parts.", 'Careful, puss - he only looks fierce.', "Best walk of the day, this one."] })); }
 
+  // every other creature in these woods moves at a clip — even the frogs hop — and nothing here had ever
+  // just crept along. A snail now glides, almost too slowly to notice, through the fern litter at the
+  // heart of the glade. A headless probe built the real Whisper Woods, sampled every NPC's and the
+  // squirrel's own position every quarter second over 300 simulated frames (so nothing wandering, hopping
+  // or flying mid-leash could slip past unnoticed), then swept a grid against both those samples and every
+  // physics box: (0, -18) came back clear by 11.97 m in every direction — inside the fern patch, but well
+  // past the glowing pond's own 7 m keep-out circle. Placed last, after every other draw this build makes
+  // from its own local `r`, so this one extra colour pick disturbs nothing earlier in the wood.
+  { const rig = makeSnail(r.pick([0xc9a24a, 0xb08a52, 0x8a9a6a])); W.add(rig.group);
+    game.npcs.push(new Wanderer(game, rig, { x: 0, z: -18, speed: 0.05, leash: 1.0, r: 0.08, height: 0.14, step: 0.08, idle: [2, 5], walk: [6, 14] })); }
+
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
 
