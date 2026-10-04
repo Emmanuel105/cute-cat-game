@@ -6170,6 +6170,26 @@ function buildNeighborhood(game, entry) {
     place(game, U, makeMailbox(r.pick([0x2e63d8, 0xd62839, 0x2f4f4f])), x + 1.6, fz + front * 1.3, ry);
     addBush(game, x - 2.8, z + front * 3.6, r);
     for (let k = 0; k < 5; k++) mesh(G.box(0.9, 0.03, 0.55), mat(0xb9b2a6, { roughness: 1 }), { x, y: 0.015, z: z + front * (4 + k * 1.2), shadow: 'receive', parent: W });
+    // Candy Land's lane got a garden pinwheel years of rounds ago, but none of the Neighborhood's own
+    // sixteen front yards ever had one — the first house on the street gets a toy pinwheel now, planted
+    // clear of its own porch, spinning in the breeze. (x+4.5, z+front*4.0) sits 0.8 m past the house's
+    // own wall box (half-extents 3.7×3.2 at this lot) in both x and z, 3 m clear of the porch awning box
+    // (half-width 1.5) on the other side of the house from the bush and path, and well past the fence at
+    // fz=z+front*8 and the mailbox beyond it. Spins on the world clock `t` alone, same trick as Robot
+    // City's maintenance drone and the zipline towers' windsocks — no draw from this world's own seeded
+    // `r`, so no later shutter or fence colour pick anywhere else on the street shifts.
+    if (i === 0) {
+      const px = x + 4.5, pz = z + front * 4.0, stickH = 0.7, bladeLen = 0.28;
+      const pin = group(px, 0, pz, W), stickMat = mat(0x6b4a2a, { roughness: 0.85 }), hubMat = mat(0xffd54a, { metalness: 0.4, roughness: 0.3 });
+      mesh(G.cyl(0.018, 0.022, stickH, 8), stickMat, { y: stickH / 2, parent: pin });
+      const pivot = group(0, stickH, 0, pin);
+      const bladeColors = [0xe0503c, 0xf7f3ec, 0x2e63d8, 0xf7f3ec];
+      for (let bi = 0; bi < 4; bi++) { const theta = bi * PI / 2, bx = cos(theta) * bladeLen / 2, by = sin(theta) * bladeLen / 2;
+        mesh(G.box(bladeLen, 0.2, 0.02), mat(bladeColors[bi], { roughness: 0.5 }), { x: bx, y: by, rz: theta, parent: pivot }); }
+      mesh(G.sphere(0.045, 8, 6), hubMat, { parent: pivot });
+      U.push((dt, t) => { pivot.rotation.z = t * 3.6; });
+      P.addBox(px, stickH / 2, pz, 0.14, stickH, 0.14, { cam: false });
+    }
   });
   // street trees + yard trees + wild trees
   for (let x = -82; x <= 82; x += 8.8) { if (abs(x) < 3 || abs(x - 44) < 6) continue; addTree(game, r.pick(['oak', 'oak', 'birch']), x + r.range(-1, 1), 9.2, r); addTree(game, r.pick(['oak', 'pine', 'birch']), x + 4 + r.range(-1, 1), 18.8, r); }

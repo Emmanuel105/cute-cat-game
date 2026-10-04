@@ -6008,3 +6008,22 @@ Verified: `node test/run.mjs` — Candy Land's friend count (48), 11 collectible
 the physics box count (295) all unchanged, every other world unaffected, all checks `ok`, 0 console
 warnings, exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 250 — a pinwheel for the first house on the street
+
+Candy Land's own lane got a garden pinwheel a long while back, but none of the Neighborhood's
+sixteen front yards ever had one, for all their fences, mailboxes and bushes. **A toy pinwheel is
+now planted in the first house's flower bed**, red-white-blue blades spinning steadily in the
+breeze, clear of the porch and the path.
+
+Sits at the house's own `x+4.5, z+front·4.0` — on the side of the house opposite the bush and the
+front path, 0.8 m past the house's own wall box in both directions and 3 m clear of the porch
+awning box on the other side. Spins on the world clock `t` alone (`pivot.rotation.z = t * 3.6`),
+the same trick Robot City's maintenance drone and the zipline towers' windsocks already use, so it
+draws nothing from this world's own seeded `r` and can't shift any later house's shutter or fence
+colour pick. Needs only a slim physics box (half-width 0.14) for its post, same as Candy Land's
+own pinwheel relied on.
+
+Verified: `node test/run.mjs` — all checks `ok`, 0 console warnings, exit 0 across two consecutive
+runs, physics box count up by exactly one (295 → 296) and every other world unaffected. Before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
