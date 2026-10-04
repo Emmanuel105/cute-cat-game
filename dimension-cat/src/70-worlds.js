@@ -1207,6 +1207,14 @@ function buildRobotCity(game, entry) {
   U.push((dt) => { shiftWhistleT -= dt; if (shiftWhistleT <= 0) { SFX.whistle(); shiftWhistleT = rnd.range(90, 140); } });
   const pipe = mat(0x5a6470, { metalness: 0.8, roughness: 0.35 });
   for (const [x, z, len, ry] of [[-20, -14, 26, PI / 2], [20, -12, 22, PI / 2], [0, -23, 40, 0]]) { mesh(G.cyl(0.35, 0.35, len, 12), pipe, { x, y: 3.6, z, rz: PI / 2, ry, parent: W }); for (let k = 0; k < len; k += 6) mesh(G.cyl(0.14, 0.14, 3.4, 8), pipe, { x: ry ? x : x - len / 2 + k, y: 1.9, z: ry ? z - len / 2 + k : z, parent: W }); }
+  // every other world has a wind chime by now — Robot City never did, since nobody lives there to hang
+  // one. A scavenged version hangs off the east-west pipe run instead: salvaged bolts on a bracket,
+  // clamped to the underside of the third run ([0, -23, 40, 0], y 3.6, spanning x -20..20 at z -23).
+  // x = -13 sits a metre clear of the nearest support post (x = -14, unphysical — those posts carry no
+  // P.addBox of their own) and well past every crate and barrel on this floor (nearest is [-16, -20],
+  // 4.2 m away) and both neon signs; makeWindChime() itself adds no collider, so it needed no box of its
+  // own either.
+  place(game, U, makeWindChime(game, { wood: 0x3a4048, metal: 0xc9a227 }), -13, -23, 0, 3.6);
   makeNeonSign('ROBOT WORKS', '#ff2d95', 9, W).position.set(0, 6.5, -24);
   const sign2 = makeNeonSign('SECTOR 7', '#00e5ff', 6, W); sign2.position.set(-18, 5, 6); sign2.rotation.y = PI / 2;
   makeNeonSign('CAT?', '#ffe040', 4, W).position.set(19, 5.6, -13);

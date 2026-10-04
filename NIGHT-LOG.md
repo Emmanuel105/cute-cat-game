@@ -6072,3 +6072,27 @@ Verified: `node dimension-cat/test/run.mjs` — Sunny Shore's friend count (43),
 100% walkable ground all unchanged, every other world unaffected, all checks `ok`, 0 console
 warnings, exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 253 — a scrap-metal wind chime for Robot City
+
+The Neighborhood, Candy Land, Victorian, Sunny Shore, Frosty Peak and Whisper Woods all have a
+wind chime hanging somewhere by now — Robot City never did, for the obvious reason that nobody
+lives there to hang one from a porch eave. **A scavenged version now hangs off the factory floor's
+own east-west pipe run** instead: a dark bracket clamped to the underside of the pipe, with
+salvaged brass bolts in place of the usual wood-and-metal tubes, chiming the same way the others do
+when the cat wanders past.
+
+Still just `makeWindChime()` with a new palette (`wood: 0x3a4048, metal: 0xc9a227`) — no new code,
+and no physics box of its own, same as every chime before it. Clamped to the third pipe run built in
+`buildRobotCity` (`[0, -23, 40, 0]`, mounted at y 3.6, spanning x -20..20 at z -23) at x = -13: a
+headless probe built the real game, travelled to Robot City, and swept a grid of candidates against
+every one of its 296 physics boxes and every NPC's own position, which put it a metre clear of the
+nearest support post (x = -14, itself uncollidable — those posts carry no `P.addBox`) and well past
+every crate and barrel on the factory floor (nearest is `[-16, -20]`, 4.2 m away) and both neon
+signs.
+
+Verified: `node dimension-cat/test/run.mjs` — Robot City's own counts untouched (46 to meet, 8
+collectibles, 88% of the ground still walkable), physics box count unchanged (296, since
+`makeWindChime()` adds none), every other world unaffected, all checks `ok`, 0 console warnings,
+exit 0 across five consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
