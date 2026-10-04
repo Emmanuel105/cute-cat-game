@@ -5931,3 +5931,28 @@ already relied on.
 Verified: `node test/run.mjs` — Victorian's friend count (53), 11 collectibles and 95% walkable all
 unchanged, every other world unaffected, all checks `ok`, 0 console warnings, exit 0 across three
 consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 247 — a treasure hunter sweeps Candy Land's open grass
+
+The Neighborhood, Robot City, Sunny Shore, Frosty Peak and Whisper Woods all have a **Detectorist**
+sweeping for buried treasure — Candy Land and Victorian were the last two of the seven without one.
+Candy Land gets its turn: a woman in a flatcap now sweeps a metal detector back and forth over a
+patch of open grass between the ring-dancing gingerbread men and the gossiping pair, pinging every
+so often with a little shower of sparks. `"Just a gumdrop. Every time."` `"One day it'll be a whole
+lollipop."`
+
+Reuses the `Detectorist` controller verbatim, same rig as Robot City's own scrap scanner — only the
+wardrobe and lines are new. A headless probe built the actual world (`game.travel(1, 'from-prev')`,
+waiting out the real `setTimeout` the transition runs on rather than guessing) and swept a grid of
+candidates against all 1775 physics boxes this build produces, every NPC's current position, and the
+sixteen gumdrop-patch donuts `makeGumdrops` scatters, so the detector wouldn't end up standing in a
+candy flowerbed: `(23, 27)` came back clear by 17 m of the nearest other soul (a wandering
+gingerbread man) and 3.9 m of the nearest static prop (a candy cane), well inside the radius (92)
+where `candyRegion`'s own procedural fill takes over. Candy Land now has 48 people to meet instead
+of 47.
+
+Verified: `node dimension-cat/test/run.mjs` — all checks `ok`, 0 console warnings, exit 0 across four
+consecutive runs. One run hit the test suite's own pre-existing, independently-documented flake
+(`Victorian: the horse and carriage are in the world and on the move`, noted independently several
+times before) — unrelated to this change, and absent from every other run. Before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

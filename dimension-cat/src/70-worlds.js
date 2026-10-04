@@ -1090,6 +1090,21 @@ function buildCandyLand(game, entry) {
     W.add(kiteKid.group);
     game.npcs.push(new KiteFlyer(game, kiteKid, makeKite(0xff6fb5, 0x7fd7ff), { x: 51, z: -33, wind: [0.25, -0.95],
       cries: ['Best wind all week, this!', "Careful, puss — don't swat it.", "Nearly snagged a cupcake hill, that time."] })); }
+  // the Neighborhood, Robot City, Sunny Shore, Frosty Peak and Whisper Woods all have a Detectorist
+  // sweeping for buried treasure — Candy Land and Victorian were the only two of the seven left
+  // without one. A headless probe swept a grid of candidates against every one of the 1775 physics
+  // boxes this build produces, every NPC's own position, and the sixteen gumdrop-patch donuts
+  // `makeGumdrops` scatters (so the detector doesn't look like it's standing in a flowerbed): (23, 27)
+  // came back clear by 17 m of the nearest other soul (a wandering gingerbread man at (6, 26)) and
+  // 3.9 m of the nearest static prop (a candy cane at (26, 24)), open grass between the ring-dancing
+  // gingerbread men and the gossiping pair, well inside the radius (92) where candyRegion's own
+  // procedural fill takes over.
+  { const scanWard = makeWardrobe(r, { shirts: [0xffe0ea, 0xbfe7ff, 0xfff3b0], pants: [0x7fd7ff, 0xff9ecf, 0xffffff] });
+    const scanner = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: scanWard }),
+      hat: 'flatcap', hatColor: 0xffd54a, jacket: null, scarf: null, bag: null, glasses: r.chance(0.3) });
+    W.add(scanner.group);
+    game.npcs.push(new Detectorist(game, scanner, { x: 23, z: 27, ry: atan2(-23, 123),
+      cries: ['Just a gumdrop. Every time.', 'Careful, puss — mind the wire.', "One day it'll be a whole lollipop."] })); }
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('star', 7, -6); C.add('yarn', -9, 9); C.add('fish', -16, -13); C.add('mouse', 16, -9); C.add('star', -10, -27); C.add('yarn', 22, 4); C.add('mouse', -28, 26); C.add('fish', 14, -44); C.add('star', 0, -56); C.add('mouse', -58, 30); C.add('yarn', 60, 36);
