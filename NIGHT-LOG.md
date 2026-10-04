@@ -5864,3 +5864,25 @@ south over open grass, away from the ukulele player and the gossiping pair rathe
 Verified: `node test/run.mjs` — Candy Land now 47 to meet (up from 46), 11 collectibles and 92% walkable
 both unchanged, every other world unaffected, all checks `ok`, 0 console warnings, exit 0 across two
 consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 244 — a wind chime for Frosty Peak's first cabin
+
+The Neighborhood's porch (round 216) and Whisper Woods' treehouse (round 224) have both had a wind
+chime swaying under their own eave for a while, but Frosty Peak's village — four log cabins round the
+campfire — never got one of its own. **A wind chime now hangs by the door of the first cabin**, the
+same one whose doorstep gets shovelled clear every morning, log-brown disc and a handful of pale icy
+tubes swaying in the mountain air and ringing a few soft notes now and then when the cat's close
+enough to hear.
+
+Reuses `makeWindChime()` verbatim, just a new wood/metal palette (log-brown disc, pale ice-blue tubes)
+to match the cabin's own wall colour and the mountain's cold light — no new code. Hung at distance 2.3
+along the door's own facing from the cabin's centre (the shoveler's snow pile sits just past it, at
+2.9, so the two don't overlap) and y=2.35, comfortably below the roof's underside (`makeCabin()`'s `h`
+is always its 2.8 default in this loop, never overridden, so that clearance holds for every cabin built
+from it) and above the window's own little light at 2.2. Purely decorative — no physics box, same as
+the lamp baskets and castle pennants before it — so it needed no sweep against the village's other
+boxes.
+
+Verified: `node test/run.mjs` — Frosty Peak's friend count (43), 8 collectibles and 98% walkable all
+unchanged, every other world unaffected, all checks `ok`, 0 console warnings, exit 0 across two
+consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

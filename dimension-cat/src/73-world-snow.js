@@ -69,6 +69,14 @@ function buildSnowVillage(game, entry) {
       mesh(G.sphere(r.range(0.05, 0.09), 6, 5), mat(0xf6f9fc, { roughness: 1 }), { x: px + cos(a) * d, y: 0.04, z: pz + sin(a) * d, shadow: 'none', parent: W }); }
     game.npcs.push(new Washer(game, shoveler, { x: sx, z: sz, ry: atan2(px - sx, pz - sz),
       cries: ["Fresh snow every morning, this time of year.", "Careful, puss — mind where it's packed down.", "Nearly clear. Just this last drift."] })); }
+  // a wind chime now hangs from the first cabin's own eave, just above the door — the same makeWindChime()
+  // the Neighborhood's porch (round 216) and the treehouse (round 224) already use, recoloured to this
+  // cabin's own log wall and an icy pale blue for the tubes. Hung at distance 2.3 along the door's own
+  // facing (the shoveler's snow pile above sits just past it, at 2.9) and y=2.35, well clear of the roof's
+  // underside at h-0.1=2.7 and above the window light at 2.2 — `makeCabin()`'s own `h` is always the 2.8
+  // default (never passed in this loop), so that clearance holds for every cabin built from it
+  { const cx = -11, cz = -6, cry = PI / 2 - 0.3, hx = cx + sin(cry) * 2.3, hz = cz + cos(cry) * 2.3;
+    placeT(game, U, makeWindChime(game, { wood: 0x8a5a32, metal: 0xcfe0ff }), hx, hz, 0, 2.35); }
   for (const [x, z, ry] of [[-16, 10, 0.6], [15, -14, -2.2]]) { placeT(game, U, makeIgloo(), x, z, ry); boxT(game, x, z, 3.4, 1.8, 3.4); }
   makeIcePond(game, 18, 8, 5, r);
   // an ice fisherman on a stool at the pond's edge, rod dipped into a hole cut in the ice, the odd bite
