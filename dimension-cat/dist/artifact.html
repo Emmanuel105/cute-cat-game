@@ -7511,6 +7511,22 @@ function buildVictorian(game, entry) {
   // whole outer-country fill, and an update tick on every one of those would have added up fast.
   const basketHues = [0xd6487a, 0xe0a030, 0xc9516a, 0xd98a2a];
   vicLamps.forEach((lamp, i) => place(game, U, makeLampBasket(basketHues[i % basketHues.length]), lamp.position.x, lamp.position.z, 0, 2.55));
+  // the Neighborhood's porch, Frosty Peak's first cabin and Whisper Woods' treehouse all sway a wind
+  // chime of their own by now, but no door on Victorian's own terraced street had one — a town with
+  // lamp baskets and hanging flowers on every post felt like it was missing the one sound a doorway
+  // itself makes. One now hangs by the door of the very last house on the north row (x=62), pewter
+  // disc and dulled brass tubes to match the terrace's own iron and stonework, rather than the porch's
+  // or the cabin's warmer palette.
+  // Hung at (63.75, 7.62, y=2.35) — directly above that house's own front door (local column x=-1.75,
+  // z=d/2+0.08=3.58 before rotation; this house sits at (62, 11.5) with ry=PI, so the door's own x,z
+  // flip sign — plus 0.3 m further out along the same facing, clear of the door frame's 2.1 m top and
+  // below the transom light at (x+0.9, 2.3), which sits 0.9 m to the side, not above the chime at all.
+  // Purely decorative, same as the lamp baskets above — no physics box of its own needed. A headless
+  // probe over the built town (`game.travel(3, 'from-prev')`) found this exact spot 15.8 m from the
+  // nearest other soul (the Victorian artist, painting by the house at x=48) — the most isolated door
+  // on the whole street — and clear of every lamp post and its own basket, the nearest standing 6.5 m
+  // off at x=55.5.
+  place(game, U, makeWindChime(game, { wood: 0x6b6a6e, metal: 0x8a7a52 }), 63.75, 7.62, 0, 2.35);
   // every other world's wanderers already had a Kneeler of their own at some task (the Neighborhood's
   // beekeeper and gardener, Sunny Shore's sandcastle, the snow and forest worlds' several) — Victorian
   // was the only one with none at all, past the four vendors standing still at the market square. A

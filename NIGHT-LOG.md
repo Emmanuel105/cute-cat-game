@@ -5908,3 +5908,26 @@ up to 9 m downwind, 3.2 m side to side, 6-8 m up — never crosses back over any
 Verified: `node test/run.mjs` — Victorian now 53 to meet (up from 52), 11 collectibles and 95% walkable
 both unchanged, every other world unaffected, all checks `ok`, 0 console warnings, exit 0 across two
 consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 246 — a wind chime by Victorian's last door
+
+The Neighborhood's porch, Frosty Peak's first cabin and Whisper Woods' treehouse have all had their own
+wind chime for a while, but Victorian — for all its lamp baskets and hanging flowers — never had one.
+**A pewter-and-brass wind chime now hangs by the front door** of the very last house on the north
+terrace, swaying and ringing a few soft notes whenever the cat passes close enough to hear it, same as
+the other three.
+
+Reuses `makeWindChime()` verbatim, just a duller pewter disc and dulled-brass tubes to match the
+terrace's own iron railings and stonework — no new code. Hung directly above that house's own door
+(the house sits at `(62, 11.5)`; a headless probe built the actual town (`game.travel(3, 'from-prev')`)
+and worked out the door's exact world position from the house's own rotation) at `(63.75, 7.62)`,
+y=2.35 — above the door frame's 2.1 m top and clear of the little transom light at `(x+0.9, 2.3)`,
+which sits 0.9 m to the side, not above it. The same probe swept every other NPC's current position and
+every physics box: this door came back the most isolated on the whole street, 15.8 m from the nearest
+other soul (the artist painting by the house at x=48) and 6.5 m from the nearest lamp post's own basket.
+Purely decorative, no physics box of its own — same reasoning the lamp baskets and castle pennants
+already relied on.
+
+Verified: `node test/run.mjs` — Victorian's friend count (53), 11 collectibles and 95% walkable all
+unchanged, every other world unaffected, all checks `ok`, 0 console warnings, exit 0 across three
+consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
