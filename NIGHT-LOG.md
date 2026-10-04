@@ -5886,3 +5886,25 @@ boxes.
 Verified: `node test/run.mjs` — Frosty Peak's friend count (43), 8 collectibles and 98% walkable all
 unchanged, every other world unaffected, all checks `ok`, 0 console warnings, exit 0 across two
 consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 245 — a kite over Victorian's north bank
+
+The Neighborhood, Candy Land, Sunny Shore and Frosty Peak have all had a kid flying a kite for a while,
+but Victorian — for all its street games on the canal's north bank (tag, a ring dance, catch, a swing
+and a seesaw) — never got one of its own. **A boy or girl now flies a maroon-and-cream kite** from the
+grass out past the swing and seesaw, string in hand, looking up at it swoop. `"Caught the wind off the
+clock tower, this one did!"`, `"Highest it's flown all week."`
+
+Reuses `KiteFlyer` + `makeKite()` exactly as the other four worlds' kites already do — no new code, just
+a new colour (maroon/cream, matching nothing else already flying) and a Victorian-wardrobe child. A
+small headless script built the actual town (`game.travel(3, 'from-prev')`, not a guess) and swept a
+grid of candidates against every physics box and every NPC's own leashed-wander range, staying inside
+radius 80 of the town's centre so the kid stands well short of the radius (88) where `victorianRegion`'s
+procedural fill takes over: `(50, 55)` came back clear by over 20 m of the nearest of the five other
+games (the ring dance at `(2, 58)`), east of the swing and seesaw, with the nearest tree 30+ m off. Wind
+blows east and slightly north, away from the whole cluster, so the kite's own figure-of-eight swoop —
+up to 9 m downwind, 3.2 m side to side, 6-8 m up — never crosses back over any of them.
+
+Verified: `node test/run.mjs` — Victorian now 53 to meet (up from 52), 11 collectibles and 95% walkable
+both unchanged, every other world unaffected, all checks `ok`, 0 console warnings, exit 0 across two
+consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

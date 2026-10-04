@@ -7896,6 +7896,22 @@ function buildVictorian(game, entry) {
     const seeB = makeHuman({ ...randomPerson(r, { child: true, female: true, wardrobe: seeWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
     W.add(seeA.group); W.add(seeB.group);
     game.npcs.push(new Seesaw(game, seeA, seeB, seesaw, { x: sx, z: sz })); }
+  // the Neighborhood, Candy Land, Sunny Shore and Frosty Peak all have a kite in the sky, but it was always
+  // children's play Victorian never got — the north bank's grass verge had room for a fifth game alongside
+  // tag, the ring dance, catch and the swing/seesaw pair. A headless probe swept a grid of candidates (every
+  // physics box, every NPC's own leashed-wander range, in a build taken all the way through `game.travel(3,
+  // 'from-prev')`) across the verge, staying inside radius 80 from the town's own centre so the kite's kid
+  // stands well short of the radius (88) where victorianRegion's procedural fill takes over: (50, 55) came
+  // back clear by over 20 m of the nearest of them (the ring dance at (2, 58)), well east of the swing and
+  // seesaw at x=25 and with nothing overhead — the nearest hand-planted tree is 30+ m off at (36, 22), by the
+  // clock tower. The wind blows east and slightly north (away from the whole cluster of games), so the kite's
+  // own figure-of-eight swoop, offset up to 9 m downwind and 3.2 m to either side at 6-8 m up, never crosses
+  // back over any of them.
+  { const kiteWard = makeWardrobe(r, { shirts: [0x8a3a3a, 0x3a5a6a, 0xd9c9a8], pants: [0x2a2a24, 0x3a3327], shoes: [0x2a2018, 0x1e1a16] });
+    const kiteKid = makeHuman({ ...randomPerson(r, { child: true, female: r.chance(0.5), wardrobe: kiteWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(kiteKid.group);
+    game.npcs.push(new KiteFlyer(game, kiteKid, makeKite(0x8a3a3a, 0xd9c9a8), { x: 50, z: 55, wind: [0.85, 0.3],
+      cries: ['Caught the wind off the clock tower, this one did!', "Mind you don't trip the string, puss.", 'Highest it\'s flown all week.'] })); }
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
