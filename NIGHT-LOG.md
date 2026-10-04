@@ -5793,3 +5793,29 @@ Verified: `node test/run.mjs` — Victorian's own counts untouched (50 to meet, 
 the ground walkable), every other world unaffected, all checks `ok`, 0 console warnings, exit 0 across
 two consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 241 — a mudlark on the canal's far bank
+
+Every other world had long since filled out its roster of working townsfolk, but Victorian's canal —
+for all its rowing boats, its angler and its stone bridges — never had anyone actually working its mud.
+**A mudlark now kneels on the grass past the canal's far wall**, a wicker pan set in a patch of
+churned-up mud, a couple of sieved coins already laid out to dry: a real Victorian trade, sifting
+riverside silt for whatever the boats and the townsfolk above had dropped. `"Found a farthing!
+Mudlarking never quite lets you down."`, and `"A thimble, would you believe. Third one this month —
+someone up there keeps losing them."`
+
+Reuses `Forager` exactly as the woods' mushroom-picker and the square's crumb-feeder already do — the
+same kneel-and-reach motion, repurposed a third time, this time for scooping mud rather than picking
+anything living. Deliberately **not** `Detectorist`, which every other world already uses for this kind
+of "treasure in the ground" vignette: a metal detector doesn't belong in a gas-lit Victorian town, so
+this one works by hand, same as the real trade did. A headless probe swept the stretch of grass just
+past the canal's far wall (the wall's own physics box is only 0.6 m deep) against every box already
+hand-placed into the town — the three bridges, the lamps and the angler on the near bank, the
+playground's tag, ring, catch, swing and seesaw further out — and found (-10, 37.3) clear by over 8 m
+in every direction, comfortably inside the radius (88) where `victorianRegion`'s own procedural fill
+stays off entirely.
+
+Verified: `node test/run.mjs` — Victorian now 51 to meet (up from 50), 11 collectibles unchanged, 95% of
+the ground walkable (was 96%, the one new pan-sized physics box accounting for the difference), every
+other world unaffected, all checks `ok`, 0 console warnings, exit 0 across two consecutive runs. Before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -7666,6 +7666,28 @@ function buildVictorian(game, entry) {
       hat: 'flatcap', hatColor: 0x3a3327, coat: true, scarf: null, jacket: null, buttons: null, cane: false, glasses: r.chance(0.25) }); W.add(angler.group);
     game.npcs.push(new IceFisher(game, angler, makeIceStool(), { x: 15, z: 24.4, ry: 0, holeX: 15, holeZ: 28.6, holeY: -0.3,
       cries: ['Not a bite in this canal all week.', 'Caught a boot once. Best catch all month.', 'Mind the towpath, puss.'] })); }
+  // the angler above has the near bank; the far bank, well past the water, had nobody at all — and a trade
+  // as Victorian as the chimney sweep was still missing from the whole town: no mudlark had ever worked the
+  // canal's mud for what the boats drop. One kneels on the grass just past the far wall now, a wicker pan
+  // set in a patch of churned-up mud, a couple of coins already sieved out and laid to dry. A headless
+  // probe swept the stretch of grass beyond the wall (every physics box at z=34.3 is only 0.6 m deep) against
+  // every box hand-placed into the town — the bridges at x=-1.2/-96/104, the lamps and angler on the near
+  // bank, the playground's tag/ring/catch/swing/seesaw further north — and found (-10, 37.3) clear by over
+  // 8 m in every direction, comfortably inside the radius (88) where victorianRegion's own fill stays off.
+  { const mx = -10, mz = 37.3, ry = PI, female = r.chance(0.5), px = mx, pz = mz - 0.75;
+    const mud = mat(0x3f3122, { roughness: 1 });
+    mesh(G.plane(2.6, 2.0), mud, { x: mx, y: -0.008, z: mz - 0.3, rx: -PI / 2, shadow: 'receive', parent: W });
+    const panM = mat(0x8a6a3a, { roughness: 0.9 });
+    mesh(G.cyl(0.24, 0.21, 0.05, 16), panM, { x: px, y: 0.025, z: pz, parent: W });
+    P.addBox(px, 0.025, pz, 0.5, 0.1, 0.5, { cam: false });
+    const coinM = mat(0xc9a227, { metalness: 0.7, roughness: 0.35 });
+    for (const [dx, dz] of [[-0.07, 0.04], [0.06, -0.03]]) mesh(G.cyl(0.025, 0.025, 0.006, 10), coinM, { x: px + dx, y: 0.056, z: pz + dz, parent: W });
+    const mudWard = makeWardrobe(r, { shirts: [0x6a7a5a, 0x7a5a4a, 0x5a6a7a], pants: [0x2a2420], shoes: [0x2a2018] });
+    const mudlark = makeHuman({ ...randomPerson(r, { female, child: false, elder: r.chance(0.3), wardrobe: mudWard }),
+      pants: 0x2a2420, apron: 0x5a4a3a, hat: female ? 'bonnet' : 'flatcap', hatColor: 0x3a3327, sleeves: true, bag: null, jacket: null, scarf: null, glasses: false });
+    W.add(mudlark.group);
+    game.npcs.push(new Forager(game, mudlark, { x: mx, z: mz, ry, cryIcon: '🪙',
+      cries: ['Found a farthing! Mudlarking never quite lets you down.', 'Careful, puss — mind the mud, it never comes out of white fur.', 'A thimble, would you believe. Third one this month — someone up there keeps losing them.'] })); }
   for (const [x, z, k2] of [[-30, 20, 'oak'], [36, 22, 'oak'], [-12, -50, 'birch'], [18, -52, 'birch'], [-66, -14, 'oak'], [66, 18, 'oak']]) addTree(game, k2, x, z, r);
   // clock tower plaza (east), time door (west)
   makeClockTower(game, 42, 0, U);
