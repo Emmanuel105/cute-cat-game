@@ -5594,3 +5594,27 @@ zone — pure sound, same as the bell and the whistle before it.
 Verified: `node test/run.mjs` — every world's NPC, collectible and friend counts unchanged, Sunny Shore
 still fully walkable where it was before, all checks `ok`, 0 console warnings, exit 0 across two
 consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 233 — a music-box jingle for the Candy Queen's castle
+
+The Victorian bell tolls, Robot City's whistle blows, Sunny Shore's foghorn sounds, Whisper Woods' owl
+hoots — every world but Candy Land now keeps some ambient sound of its own running on a loop, despite its
+castle flying pennants (round 225) and its five houses breathing sugar steam (round 228). **A little
+music-box jingle now chimes from the throne room every couple of minutes** — five bright bell-like notes
+with a quiet high overtone, light and quick rather than a tolling bell, so it reads as a cheerful castle
+clock rather than an alarm.
+
+A new `SFX.musicbox()` in `30-audio.js` sits next to `chime()`, `whistle()` and `foghorn()` — the same
+family of "building, not creature" sounds — but built from five short sine tones climbing and dipping
+(784–1568 Hz) rather than the long single blasts those three use, so it can't be mistaken for any of
+them. The loop itself is two lines right after `makeCandyCastle(game, 0, 150, PI, r)` in
+`buildCandyLand()` (`70-worlds.js`), the same shape as the three rounds before it: a `U` tick counts down
+a span seeded with `rnd.range(45, 75)`, calls `SFX.musicbox()` when it runs out, then resets to
+`rnd.range(90, 130)`. The timer draws only from the shared `rnd()` sequence, never the per-world seeded
+`r()`, so it can't shift a single wardrobe pick still to come in this build or in any world built after
+it. No new mesh, no physics box, no zone — pure sound, same as the bell, the whistle and the foghorn
+before it.
+
+Verified: `node test/run.mjs` — every world's NPC, collectible and friend counts unchanged, Candy Land
+still fully walkable where it was before, all checks `ok`, 0 console warnings, exit 0 across two
+consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

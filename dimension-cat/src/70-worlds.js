@@ -802,6 +802,14 @@ function buildCandyLand(game, entry) {
   for (const [hx, hz] of [[-16, 95], [16, 97], [-24, 112], [24, 114], [0, 80]]) game.zones.addCircle(hx, hz, 5);
   const castle = makeCandyCastle(game, 0, 150, PI, r);
   for (const u of castle.updates) U.push(u);
+  // every other world now keeps some ambient sound of its own on a loop — the Victorian bell, Robot City's
+  // shift whistle, Sunny Shore's foghorn, Whisper Woods' owl — but Candy Land, pennants flying and sugar
+  // steam rising from its five houses, had never once made a sound of its own. A little music-box jingle
+  // now chimes from the castle every couple of minutes: light and quick, not a tolling bell. The interval
+  // is drawn from the shared `rnd()`, never the per-world seeded `r()`, so it can't shift any wardrobe pick
+  // still to come in this build or any later one.
+  let castleJingleT = rnd.range(45, 75);
+  U.push((dt) => { castleJingleT -= dt; if (castleJingleT <= 0) { SFX.musicbox(); castleJingleT = rnd.range(90, 130); } });
   for (const [hx, hz, hue] of [[-16, 95, 330], [16, 97, 200], [-24, 112, 50], [24, 114, 120], [0, 80, 280]]) { const house = makeCandyHouse(game, hx, hz, r() * TAU, r, hue); for (const u of house.updates) U.push(u); }
   for (const s of [-1, 1]) { const rig = makeGingerbread(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x: castle.throne[0] + s * 2.6, z: castle.throne[1] + 1.4, speed: 0.3, leash: 1.2, r: 0.4, height: 1.4, idle: [2, 5] })); }
   game.addInteractable({ obj: castle.throneGroup, radius: 3.4, label: () => 'Approach the throne', onUse: () => { SFX.talk(); game.toast('👑 "A comfy-looking throne. Built for someone rather bigger than a cat."', 3000); } });

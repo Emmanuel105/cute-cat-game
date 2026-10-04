@@ -89,6 +89,8 @@ class SoundKit {
   whistle() { this.tone({ freq: 660, slide: 600, type: 'sawtooth', dur: 1.3, vol: 0.14, attack: 0.1, release: 0.4, filter: 2600, q: 2 }); this.tone({ freq: 1320, slide: 1200, type: 'sine', dur: 1.3, vol: 0.05, attack: 0.1, release: 0.4 }); this.noise({ dur: 1.3, vol: 0.03, filter: 3000, type: 'bandpass' }); }
   /** A lighthouse foghorn: one low, slow blast, two octaves layered under a touch of sea-mist noise. */
   foghorn() { this.tone({ freq: 110, slide: 95, type: 'sawtooth', dur: 1.8, vol: 0.13, attack: 0.15, release: 0.5, filter: 400, q: 1.5 }); this.tone({ freq: 220, slide: 190, type: 'sine', dur: 1.8, vol: 0.04, attack: 0.15, release: 0.5 }); this.noise({ dur: 1.8, vol: 0.02, filter: 300, type: 'lowpass' }); }
+  /** A little music-box jingle: five bright, bell-like notes, light and quick rather than a tolling bell. */
+  musicbox() { [784, 988, 1175, 1568, 1319].forEach((f, i) => this.tone({ freq: f, type: 'sine', dur: 0.3, vol: 0.09, delay: i * 0.14, attack: 0.01, release: 0.25 })); this.tone({ freq: 3136, type: 'sine', dur: 0.5, vol: 0.03, delay: 0.56, release: 0.4 }); }
   /** Footstep: soft pad on grass/sand/snow, tap on cobble/metal/planks. */
   step(kind = 'soft', run = false) {
     const v = run ? 0.09 : 0.06;
