@@ -24,6 +24,12 @@ function buildSnowVillage(game, entry) {
 
   // village: cabins around a campfire, igloos, a frozen pond, snowmen, sleds
   const fire = makeCampfire(game, 0, 0); U.push(fire.userData.update);
+  // the village fire has crackled with light and particle sparks since round 29 but never made a sound of
+  // its own; a quiet crackle now pops every few seconds while the cat's anywhere near the square. Kept to
+  // this one hand-placed fire rather than `makeCampfire` itself, since the outer snowfield's own region
+  // fill (68-regions.js) scatters several more of them — looping a sound on every one of those would turn
+  // into noise far from the village with nobody around to hear it.
+  U.push((dt) => { if (rnd.chance(dt * 0.18)) SFX.crackle(); });
   // an old-timer on one of the fire's log seats, come in from the cold to warm her hands
   { const a = 2.5, lx = cos(a) * 1.7, lz = sin(a) * 1.7;
     const fireWard = makeWardrobe(r, { shirts: [0x7a4a3a, 0x5a4a6a, 0x6a5a4a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });

@@ -1001,6 +1001,8 @@ class SoundKit {
   musicbox() { [784, 988, 1175, 1568, 1319].forEach((f, i) => this.tone({ freq: f, type: 'sine', dur: 0.3, vol: 0.09, delay: i * 0.14, attack: 0.01, release: 0.25 })); this.tone({ freq: 3136, type: 'sine', dur: 0.5, vol: 0.03, delay: 0.56, release: 0.4 }); }
   /** A gondola station's dispatch bell: two low brass strikes around a little metal clack as the cable lets go. */
   gondolaBell() { this.tone({ freq: 587, type: 'sine', dur: 0.5, vol: 0.12, attack: 0.01, release: 0.35, filter: 1400 }); this.tone({ freq: 294, type: 'sine', dur: 0.6, vol: 0.06, release: 0.4 }); this.noise({ dur: 0.07, vol: 0.06, filter: 2200, type: 'bandpass', delay: 0.4 }); this.tone({ freq: 587, slide: 560, type: 'sine', dur: 0.45, vol: 0.1, delay: 0.55, release: 0.3 }); this.tone({ freq: 294, slide: 280, type: 'sine', dur: 0.55, vol: 0.05, delay: 0.55, release: 0.35 }); }
+  /** A campfire's crackle: a few short, randomly pitched pops over a faint low rumble. */
+  crackle() { for (let i = 0; i < 4; i++) this.noise({ dur: 0.03 + rnd() * 0.03, vol: 0.04 + rnd() * 0.03, filter: 1000 + rnd() * 2200, type: 'bandpass', delay: i * (0.05 + rnd() * 0.05) }); this.tone({ freq: 85, slide: 55, type: 'sine', dur: 0.25, vol: 0.025, attack: 0.04 }); }
   /** Footstep: soft pad on grass/sand/snow, tap on cobble/metal/planks. */
   step(kind = 'soft', run = false) {
     const v = run ? 0.09 : 0.06;
@@ -8265,6 +8267,12 @@ function buildSnowVillage(game, entry) {
 
   // village: cabins around a campfire, igloos, a frozen pond, snowmen, sleds
   const fire = makeCampfire(game, 0, 0); U.push(fire.userData.update);
+  // the village fire has crackled with light and particle sparks since round 29 but never made a sound of
+  // its own; a quiet crackle now pops every few seconds while the cat's anywhere near the square. Kept to
+  // this one hand-placed fire rather than `makeCampfire` itself, since the outer snowfield's own region
+  // fill (68-regions.js) scatters several more of them — looping a sound on every one of those would turn
+  // into noise far from the village with nobody around to hear it.
+  U.push((dt) => { if (rnd.chance(dt * 0.18)) SFX.crackle(); });
   // an old-timer on one of the fire's log seats, come in from the cold to warm her hands
   { const a = 2.5, lx = cos(a) * 1.7, lz = sin(a) * 1.7;
     const fireWard = makeWardrobe(r, { shirts: [0x7a4a3a, 0x5a4a6a, 0x6a5a4a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });

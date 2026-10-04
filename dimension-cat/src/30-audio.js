@@ -93,6 +93,8 @@ class SoundKit {
   musicbox() { [784, 988, 1175, 1568, 1319].forEach((f, i) => this.tone({ freq: f, type: 'sine', dur: 0.3, vol: 0.09, delay: i * 0.14, attack: 0.01, release: 0.25 })); this.tone({ freq: 3136, type: 'sine', dur: 0.5, vol: 0.03, delay: 0.56, release: 0.4 }); }
   /** A gondola station's dispatch bell: two low brass strikes around a little metal clack as the cable lets go. */
   gondolaBell() { this.tone({ freq: 587, type: 'sine', dur: 0.5, vol: 0.12, attack: 0.01, release: 0.35, filter: 1400 }); this.tone({ freq: 294, type: 'sine', dur: 0.6, vol: 0.06, release: 0.4 }); this.noise({ dur: 0.07, vol: 0.06, filter: 2200, type: 'bandpass', delay: 0.4 }); this.tone({ freq: 587, slide: 560, type: 'sine', dur: 0.45, vol: 0.1, delay: 0.55, release: 0.3 }); this.tone({ freq: 294, slide: 280, type: 'sine', dur: 0.55, vol: 0.05, delay: 0.55, release: 0.35 }); }
+  /** A campfire's crackle: a few short, randomly pitched pops over a faint low rumble. */
+  crackle() { for (let i = 0; i < 4; i++) this.noise({ dur: 0.03 + rnd() * 0.03, vol: 0.04 + rnd() * 0.03, filter: 1000 + rnd() * 2200, type: 'bandpass', delay: i * (0.05 + rnd() * 0.05) }); this.tone({ freq: 85, slide: 55, type: 'sine', dur: 0.25, vol: 0.025, attack: 0.04 }); }
   /** Footstep: soft pad on grass/sand/snow, tap on cobble/metal/planks. */
   step(kind = 'soft', run = false) {
     const v = run ? 0.09 : 0.06;

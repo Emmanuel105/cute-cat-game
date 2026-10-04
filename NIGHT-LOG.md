@@ -5726,3 +5726,27 @@ Verified: `node test/run.mjs` — Robot City's own counts untouched (46 to meet,
 the ground walkable, 295 physics boxes, same as before), every other world unaffected, all checks `ok`,
 0 console warnings, exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 238 — a crackle for Frosty Peak's village fire
+
+The village campfire at the heart of Frosty Peak has thrown light, heat and the odd spark since round
+29 — the old-timer and the trapper warm their hands by it, a kid toasts a marshmallow on its third log
+seat — but it has always burned in total silence. **It now pops with a quiet crackle every few
+seconds**, a handful of short, randomly pitched noise bursts over a faint low rumble, nothing like the
+tolling bell or whistling blasts the other worlds' landmarks loop on their own slower timers.
+
+A new `SFX.crackle()` in `30-audio.js` sits apart from the bell/whistle/foghorn/musicbox/gondolaBell
+family built for the same purpose — those are all single, deliberate events on a long loop (40–130 s
+between them); a fire wants something far more frequent and irregular, so `crackle()` draws its own
+pitch, length and gap straight from `rnd()` each time it's called rather than following a fixed shape,
+and the one line that calls it in `buildSnowVillage()` (`73-world-snow.js`) checks a `rnd.chance(dt *
+0.18)` every frame instead of counting down a timer — same mechanism the chimney smoke already uses a
+few lines above it. Deliberately wired to the one hand-placed fire at the village centre rather than
+into `makeCampfire()` itself: the outer snowfield's own region fill (`68-regions.js`) scatters several
+more campfires around the edges of the world, and looping a sound on every one of those would have
+turned into noise with nobody nearby to hear it. No new mesh, no physics box, no zone — pure sound.
+
+Verified: `node test/run.mjs` — Frosty Peak's own counts untouched (44 to meet, 8 collectibles, 98% of
+the ground walkable), every other world unaffected, all checks `ok`, 0 console warnings, exit 0 across
+two consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.
