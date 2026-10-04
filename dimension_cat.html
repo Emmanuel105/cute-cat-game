@@ -4540,12 +4540,28 @@ function makeEasel() {
   g.userData.daubs = daubs;
   return g;
 }
-function makeMailbox(color) {
+/**
+ * `o.rattle` gives just one mailbox (the cat's own, by the front path) a flag that flutters in the
+ * breeze on a hinge and knocks softly against the box every so often — `game` and `game.cat` are only
+ * needed for that distance check, same gate `makeWindChime` uses for its own occasional ring.
+ */
+function makeMailbox(color, o = {}) {
   const g = new THREE.Group();
   mesh(G.box(0.08, 1.1, 0.08), mat(0x5a3b22), { y: 0.55, parent: g });
   mesh(G.box(0.3, 0.3, 0.5), mat(color, { roughness: 0.5, metalness: 0.3 }), { y: 1.25, parent: g });
   mesh(G.cyl(0.15, 0.15, 0.5, 10), mat(color, { roughness: 0.5, metalness: 0.3 }), { y: 1.4, rx: PI / 2, parent: g });
-  mesh(G.box(0.03, 0.2, 0.08), mat(0xd62839), { x: 0.17, y: 1.45, z: 0.1, shadow: 'none', parent: g });
+  if (o.rattle) {
+    const hinge = group(0.17, 1.35, 0.1, g);
+    mesh(G.box(0.03, 0.2, 0.08), mat(0xd62839), { y: 0.1, shadow: 'none', parent: hinge });
+    let lastKnock = 0;
+    g.userData.update = (dt, t) => {
+      hinge.rotation.x = sin(t * 2.1) * 0.22 + sin(t * 5.3) * 0.06;
+      const cyc = floor(t / 11);
+      if (cyc !== lastKnock) { lastKnock = cyc; const c = o.game.cat.group.position; if (dist2(g.position.x, g.position.z, c.x, c.z) < 225) SFX.clang(); }
+    };
+  } else {
+    mesh(G.box(0.03, 0.2, 0.08), mat(0xd62839), { x: 0.17, y: 1.45, z: 0.1, shadow: 'none', parent: g });
+  }
   return g;
 }
 /**
@@ -6146,7 +6162,7 @@ function buildNeighborhood(game, entry) {
   for (const [cx, len] of [[-2.5, 5.8], [3.4, 4.0]]) { const f = makeFence(len); f.position.set(cx, 0, 8); W.add(f); P.addBox(cx, 0.5, 8, len, 1, 0.2, { cam: false }); }
   for (const s of [-1, 1]) { const f = makeFence(5.4); f.position.set(s * 6.2, 0, 5.3); f.rotation.y = PI / 2; W.add(f); P.addBox(s * 6.2, 0.5, 5.3, 0.2, 1, 5.4, { cam: false }); }   // side fences
   for (const z of [6.0, 6.9, 7.8, 8.7, 9.5]) mesh(G.box(0.9, 0.03, 0.55), mat(0xb9b2a6, { roughness: 1 }), { x: 0.9, y: 0.015, z, shadow: 'receive', parent: W });
-  place(game, U, makeMailbox(0x2e63d8), 2.2, 9.4);
+  place(game, U, makeMailbox(0x2e63d8, { rattle: true, game }), 2.2, 9.4);
   for (const [x, z] of [[-6.6, 3.6], [6.6, 3.4], [-6.6, -1.5], [-3.9, 6.4], [4.6, 6.4]]) addBush(game, x, z, r);
   // neighbours
   const palette = [[0xdfe9f5, 0x3f5573], [0xf7e4c1, 0x8b3a2a], [0xe8f3d8, 0x4a6a3a], [0xf5dcd2, 0x6b3a3a], [0xfff3d6, 0x2f4f6f], [0xe5e0f5, 0x5a4a7a], [0xf3f0e6, 0x7a4a2a], [0xd9efe9, 0x3a6a6a], [0xf9e6e0, 0x4a4a6a], [0xe6f0f9, 0x8a3a2a], [0xf4f1dc, 0x3a5a3a], [0xe9e2f4, 0x6b3a5a]];

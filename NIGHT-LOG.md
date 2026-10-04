@@ -5750,3 +5750,26 @@ Verified: `node test/run.mjs` — Frosty Peak's own counts untouched (44 to meet
 the ground walkable), every other world unaffected, all checks `ok`, 0 console warnings, exit 0 across
 two consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 239 — a rattling mailbox by the cat's own front path
+
+Seventeen mailboxes stand in the Neighborhood — one by every house plus the cat's own — and all
+seventeen have stood stiff and silent since round 1, flag always up, never moving. **The cat's own
+mailbox now has a flag that flutters loose on its hinge**, swaying in the breeze and knocking softly
+against the box every eleven seconds or so if the cat is nearby to hear it — a small bit of life right
+at the start of the game, where every player's first few steps happen.
+
+`makeMailbox()` in `60-props.js` takes a new `o.rattle` flag: instead of the plain static red box bolted
+flat against the mailbox (what the other sixteen still get), it builds the flag inside a hinge `group()`
+and swings it with two summed `sin(t * …)` terms, driven only by the world clock the way the wind chime's
+own sway already is. Every 11 simulated seconds (`floor(t / 11)`, the same fixed-cycle trick the wind
+chime uses for its own ring rather than a per-frame `rnd()` draw) it plays `SFX.clang()` — already in the
+audio kit for metal-on-metal sounds — but only if the cat is within 15 m, the same `dist2(...) < 225` gate
+`makeWindChime()` checks before its own twinkle, so the knock doesn't fire from across the map. Left off
+the other sixteen mailboxes on purpose: every house's own copy already costs a full `update()` call if
+switched on, for a detail nobody stands close enough to a stranger's mailbox to ever notice.
+
+Verified: `node test/run.mjs` — world 0's own counts untouched (42 to meet, 7 collectibles, 96% of the
+ground walkable, same 295 physics boxes), every other world unaffected, all checks `ok`, 0 console
+warnings, exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

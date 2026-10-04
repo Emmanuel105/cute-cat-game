@@ -621,12 +621,28 @@ function makeEasel() {
   g.userData.daubs = daubs;
   return g;
 }
-function makeMailbox(color) {
+/**
+ * `o.rattle` gives just one mailbox (the cat's own, by the front path) a flag that flutters in the
+ * breeze on a hinge and knocks softly against the box every so often — `game` and `game.cat` are only
+ * needed for that distance check, same gate `makeWindChime` uses for its own occasional ring.
+ */
+function makeMailbox(color, o = {}) {
   const g = new THREE.Group();
   mesh(G.box(0.08, 1.1, 0.08), mat(0x5a3b22), { y: 0.55, parent: g });
   mesh(G.box(0.3, 0.3, 0.5), mat(color, { roughness: 0.5, metalness: 0.3 }), { y: 1.25, parent: g });
   mesh(G.cyl(0.15, 0.15, 0.5, 10), mat(color, { roughness: 0.5, metalness: 0.3 }), { y: 1.4, rx: PI / 2, parent: g });
-  mesh(G.box(0.03, 0.2, 0.08), mat(0xd62839), { x: 0.17, y: 1.45, z: 0.1, shadow: 'none', parent: g });
+  if (o.rattle) {
+    const hinge = group(0.17, 1.35, 0.1, g);
+    mesh(G.box(0.03, 0.2, 0.08), mat(0xd62839), { y: 0.1, shadow: 'none', parent: hinge });
+    let lastKnock = 0;
+    g.userData.update = (dt, t) => {
+      hinge.rotation.x = sin(t * 2.1) * 0.22 + sin(t * 5.3) * 0.06;
+      const cyc = floor(t / 11);
+      if (cyc !== lastKnock) { lastKnock = cyc; const c = o.game.cat.group.position; if (dist2(g.position.x, g.position.z, c.x, c.z) < 225) SFX.clang(); }
+    };
+  } else {
+    mesh(G.box(0.03, 0.2, 0.08), mat(0xd62839), { x: 0.17, y: 1.45, z: 0.1, shadow: 'none', parent: g });
+  }
   return g;
 }
 /**
