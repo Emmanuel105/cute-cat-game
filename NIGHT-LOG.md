@@ -6147,3 +6147,25 @@ the harness prints) unchanged at 296 since the new box belongs to world 2, every
 unaffected, all checks `ok`, 0 console warnings, exit 0 across four of five runs (one hit an
 unrelated, pre-existing Sunny Shore kite-height flake, absent from every other run and nowhere near
 this change). Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 256 — a toy pinwheel beside Frosty Peak's second cabin
+
+The Neighborhood, Candy Land, Sunny Shore, Robot City and Whisper Woods all have a toy pinwheel
+spinning on the world clock by now — Frosty Peak was the last of the seven left without one, past
+its own wind chime hung on the first cabin's eave. **A pinwheel now stands in the snow beside the
+second cabin's east wall**, blades in red, white and icy blue to match that chime's own palette.
+
+Same geometry and spin trick as every pinwheel before it (`pivot.rotation.z = t * 3.6`, driven only
+by the world clock `t`, never this world's own seeded `r`, so it can't shift any later wardrobe
+pick) — just reskinned to this world's own colours, the same reskin-not-new-code choice every
+pinwheel since round 250 has made. A headless probe built the real mountain, travelled to Frosty
+Peak, and swept a grid of candidates against all 623 of its physics boxes and all 61 NPCs: (15, -5)
+came back 1.78 m clear of the cabin's own wall box (the nearest box of any kind) and 5.83 m clear of
+the nearest soul, on flat open snow east of the cabin, well clear of the chimney smoke, the shoveler
+and the sled run further west. Needs only the same slim physics box (half-width 0.14) for its post
+that every pinwheel before it relies on.
+
+Verified: `node test/run.mjs` — Frosty Peak's own counts untouched (43 to meet, 8 collectibles, 98%
+of the ground still walkable), every other world unaffected, all 273 checks `ok`, 0 console
+warnings, exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

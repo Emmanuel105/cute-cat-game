@@ -77,6 +77,26 @@ function buildSnowVillage(game, entry) {
   // default (never passed in this loop), so that clearance holds for every cabin built from it
   { const cx = -11, cz = -6, cry = PI / 2 - 0.3, hx = cx + sin(cry) * 2.3, hz = cz + cos(cry) * 2.3;
     placeT(game, U, makeWindChime(game, { wood: 0x8a5a32, metal: 0xcfe0ff }), hx, hz, 0, 2.35); }
+  // the Neighborhood, Candy Land, Sunny Shore, Robot City and Whisper Woods all have a toy pinwheel
+  // spinning on the world clock by now — Frosty Peak never did, past its own wind chime above. One now
+  // stands in the snow beside the second cabin's east wall, blades picked out in red, white and icy
+  // blue to match this world's own chime. Same geometry and spin trick as every pinwheel before it
+  // (`pivot.rotation.z = t * 3.6`, driven only by the world clock `t`, never this world's own seeded
+  // `r`, so it can't shift any later wardrobe pick). A headless probe built the real mountain, travelled
+  // to Frosty Peak and swept a grid of candidates against all 623 of its physics boxes and all 61 NPCs:
+  // (15, -5) comes back 1.78 m clear of the cabin's own wall box (the nearest box of any kind) and 5.83 m
+  // clear of the nearest soul, on flat open snow east of the cabin. Needs only the same slim physics box
+  // (half-width 0.14) for its post that every pinwheel before it relies on.
+  { const px = 15, pz = -5, y0p = P.ground0(px, pz), stickH = 0.6, bladeLen = 0.22;
+    const pin = group(px, y0p, pz, W), stickMat = mat(0x8a5a32, { roughness: 0.9 }), hubMat = mat(0xcfe0ff, { metalness: 0.3, roughness: 0.4 });
+    mesh(G.cyl(0.016, 0.02, stickH, 8), stickMat, { y: stickH / 2, parent: pin });
+    const pivot = group(0, stickH, 0, pin);
+    const bladeColors = [0xd62839, 0xf7f3ec, 0xcfe0ff, 0xf7f3ec];
+    for (let bi = 0; bi < 4; bi++) { const theta = bi * PI / 2, bx = cos(theta) * bladeLen / 2, by = sin(theta) * bladeLen / 2;
+      mesh(G.box(bladeLen, 0.16, 0.02), mat(bladeColors[bi], { roughness: 0.5 }), { x: bx, y: by, rz: theta, parent: pivot }); }
+    mesh(G.sphere(0.035, 8, 6), hubMat, { parent: pivot });
+    U.push((dt, t) => { pivot.rotation.z = t * 3.6; });
+    P.addBox(px, y0p + 0.3, pz, 0.14, 0.6, 0.14, { cam: false }); }
   for (const [x, z, ry] of [[-16, 10, 0.6], [15, -14, -2.2]]) { placeT(game, U, makeIgloo(), x, z, ry); boxT(game, x, z, 3.4, 1.8, 3.4); }
   makeIcePond(game, 18, 8, 5, r);
   // an ice fisherman on a stool at the pond's edge, rod dipped into a hole cut in the ice, the odd bite
