@@ -5956,3 +5956,29 @@ consecutive runs. One run hit the test suite's own pre-existing, independently-d
 (`Victorian: the horse and carriage are in the world and on the move`, noted independently several
 times before) — unrelated to this change, and absent from every other run. Before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 248 — a wind chime for Sunny Shore's last beach hut
+
+The Neighborhood's porch, Frosty Peak's first cabin, Whisper Woods' treehouse and Victorian's last
+terrace door all sway a wind chime of their own by now, but Sunny Shore's five beach huts — each
+already flying its own little pennant — never got one. **A driftwood-and-sea-glass wind chime now
+hangs under the back-left eave** of the last hut in the row, opposite the door and striped trim on
+the front, ringing a few soft notes whenever the cat wanders close enough to hear it, same as the
+other four.
+
+Reuses `makeWindChime()` verbatim, just a driftwood-tan disc and sea-worn pale tubes instead of the
+others' warmer wood and brass or Victorian's pewter — no new code. The hut's own rotation (`ry =
+PI/2`, same for all five) means its local corners don't sit at the hut's own x/z, so this is the
+first wind chime round to actually need `localXZ()` rather than skip the rotation math the way the
+porch, the cabin and Victorian's door all could: `localXZ(-10, 12, -1.1, -1.1, PI/2)` carries the
+hut's own back-left corner out to world `(-11.1, 13.1)`, 36 m from the sand-castle kid by the first
+hut and 29 m from the ice-cream vendor, well clear of both. Hung at y=2.3 — just under the wall's own
+2.5 m top, below the roof overhang and well short of the flagpole another 1.3 m up — purely
+decorative, no physics box of its own, same reasoning every wind chime before it relied on.
+
+Verified: `node dimension-cat/test/run.mjs` — Sunny Shore's friend count (43), 8 collectibles, 98%
+walkable and the physics box count (295) all unchanged, every other world unaffected, all checks
+`ok`, 0 console warnings, exit 0 across five runs total (one hit the same pre-existing,
+independently-documented horse-and-carriage flake on Victorian noted in Round 247 — unrelated to
+this change, absent from every other run). Before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
