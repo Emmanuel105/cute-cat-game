@@ -5844,3 +5844,23 @@ consecutive runs (a pre-existing, unrelated flake in the horse-and-carriage timi
 present on the unmodified tree too, before this change, by running the suite three times over — showed
 up once across all of these runs and is not something this round touches). Before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 243 — a kite in Candy Land's own sky
+
+The Neighborhood, Sunny Shore and Frosty Peak have all had a kid flying a kite since early on, but
+Candy Land — all open sweet-lands, with nothing overhead but pennants and cupcake hills — never did.
+**A boy now flies a candy-striped kite** from the quiet stretch of grass the ukulele player and the
+gossiping pair already share, east of the chocolate river, pink and cyan sail swooping in its own lazy
+figure-of-eight. `"Best wind all week, this!"`, `"Nearly snagged a cupcake hill, that time."`
+
+Reuses `KiteFlyer` + `makeKite()` exactly as the Neighborhood's park kite and the beach's and snow
+village's own already do — no new code, just a new flavour of kite (pink/cyan instead of the others'
+own colours) and a new kid. A small helper script built Candy Land headlessly and swept a grid of
+candidates against every one of its physics boxes and every NPC already placed: `(51, -33)` came back
+clear by over 19 m of the nearest box and at least 6.3 m of the nearest other soul (the ukulele player
+at `(49, -39)`), well past `KiteFlyer`'s own 0.35 m stance circle. The wind is set to carry the kite
+south over open grass, away from the ukulele player and the gossiping pair rather than toward them.
+
+Verified: `node test/run.mjs` — Candy Land now 47 to meet (up from 46), 11 collectibles and 92% walkable
+both unchanged, every other world unaffected, all checks `ok`, 0 console warnings, exit 0 across two
+consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -1077,6 +1077,19 @@ function buildCandyLand(game, entry) {
     game.npcs.push(new Charger(game, musician, { x: mx, z: mz, ry: mry,
       cries: ["Three chords, all of them sugar-sweet.", "Careful, puss — that's a ukulele, not a chew toy.", "Nobody's taught the gumdrops to dance, but I like to think they're trying."] }));
     U.push((dt, t) => { const A = musician.arms[1]; A.el.rotation.x = -1.0 + sin(t * 5.4) * 0.22; A.sh.rotation.z = -0.15; }); }
+  // the Neighborhood, Sunny Shore and Frosty Peak all have a kite in the sky; Candy Land's own wide-open
+  // sweet-lands, with nothing overhead but pennants and cupcake hills, never did. A boy now flies a
+  // candy-striped kite from the same quiet stretch of grass the ukulele player and the gossiping pair
+  // already share, east of the chocolate river. A headless probe swept every physics box and NPC already
+  // built into the world against a grid of candidates: (51, -33) came back clear by over 19 m of the
+  // nearest box and at least 6.3 m of the nearest other soul (the ukulele player at (49, -39)) — well past
+  // KiteFlyer's own 0.35 m stance — with the wind set to carry the kite south over open grass, away from
+  // everyone else rather than toward them.
+  { const kiteWard = makeWardrobe(r, { shirts: [0xffe0ea, 0xbfe7ff, 0xfff3b0], pants: [0xff9ecf, 0x7fd7ff, 0x2a2420] });
+    const kiteKid = makeHuman({ ...randomPerson(r, { child: true, female: r.chance(0.5), wardrobe: kiteWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(kiteKid.group);
+    game.npcs.push(new KiteFlyer(game, kiteKid, makeKite(0xff6fb5, 0x7fd7ff), { x: 51, z: -33, wind: [0.25, -0.95],
+      cries: ['Best wind all week, this!', "Careful, puss — don't swat it.", "Nearly snagged a cupcake hill, that time."] })); }
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('star', 7, -6); C.add('yarn', -9, 9); C.add('fish', -16, -13); C.add('mouse', 16, -9); C.add('star', -10, -27); C.add('yarn', 22, 4); C.add('mouse', -28, 26); C.add('fish', 14, -44); C.add('star', 0, -56); C.add('mouse', -58, 30); C.add('yarn', 60, 36);
