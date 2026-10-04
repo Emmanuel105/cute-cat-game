@@ -8875,6 +8875,28 @@ function buildForest(game, entry) {
   // side — reuses the Neighborhood porch's makeWindChime() with a mossier, woodland palette
   { const y0t = P.ground0(-18, 14), chime = makeWindChime(game, { wood: 0x6b4a2a, metal: 0x7a9a7a });
     place(game, U, chime, -16.3, 12.0, 0, y0t + 6.5); }
+  // the Neighborhood, Candy Land, Sunny Shore and Robot City all have a toy pinwheel spinning
+  // somewhere by now, planted by somebody's own front door — Whisper Woods never had one, past the
+  // wind chime hung above. A small toadstool-coloured one now stands in the dirt south of the
+  // treehouse, the kid up top's own toy, left out mid-climb. Spins on the world clock `t` alone, the
+  // same trick every pinwheel before it uses, so it draws nothing from this world's own seeded `r`
+  // and can't shift any later mushroom hue or butterfly colour pick.
+  // A real headless probe (travelling the built world and sweeping every physics box, NPC position
+  // and physics circle already placed into it) found (-18, 11): 3 m due south of the treehouse's own
+  // trunk box (half-width 1.6, so 1.4 m clear of its face), 3 m clear of the nearest other soul and
+  // 2.2 m clear of the nearest physics circle — sitting between the treehouse above (z=14) and the
+  // two campers and the pot-scrubber further south (z=8.5 and z=8).
+  { const px = -18, pz = 11, y0p = P.ground0(px, pz), stickH = 0.6, bladeLen = 0.22;
+    const pin = group(px, y0p, pz, W), stickMat = mat(0x6b4a2a, { roughness: 0.9 }), hubMat = mat(0xd9a23a, { metalness: 0.3, roughness: 0.4 });
+    mesh(G.cyl(0.016, 0.02, stickH, 8), stickMat, { y: stickH / 2, parent: pin });
+    const pivot = group(0, stickH, 0, pin);
+    const bladeColors = [0xd0451f, 0xf7f3ec, 0x7a9a7a, 0xf7f3ec];
+    for (let bi = 0; bi < 4; bi++) { const theta = bi * PI / 2, bx = cos(theta) * bladeLen / 2, by = sin(theta) * bladeLen / 2;
+      mesh(G.box(bladeLen, 0.16, 0.02), mat(bladeColors[bi], { roughness: 0.5 }), { x: bx, y: by, rz: theta, parent: pivot }); }
+    mesh(G.sphere(0.035, 8, 6), hubMat, { parent: pivot });
+    U.push((dt, t) => { pivot.rotation.z = t * 3.6; });
+    P.addBox(px, y0p + stickH / 2, pz, 0.12, stickH, 0.12, { cam: false });
+  }
   const lantern1 = makeLanternString(game, -30, -10, -12, -26, 8, 4.0), lantern2 = makeLanternString(game, 12, 32, 30, 22, 7, 4.2), lantern3 = makeLanternString(game, -16, -26, 8, -30, 7, 4.4); U.push(lantern1.update, lantern2.update, lantern3.update);
   makeFerns(game, [[0, 0, 36, 140]], r);
   for (const [x, z, ry] of [[12, 14, 0.6], [-8, -18, 2.2], [22, -14, 1.1], [-22, -6, 0.2], [2, 12, 1.4]]) { placeT(game, U, makeHollowLog(r), x, z, ry); boxT(game, x, z, 1.4, 1.2, 1.4, { cam: false }); }

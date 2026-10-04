@@ -6096,3 +6096,29 @@ collectibles, 88% of the ground still walkable), physics box count unchanged (29
 `makeWindChime()` adds none), every other world unaffected, all checks `ok`, 0 console warnings,
 exit 0 across five consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 254 — a toy pinwheel south of the treehouse, Whisper Woods
+
+The Neighborhood, Candy Land, Sunny Shore and Robot City all have a toy pinwheel spinning somewhere
+by now, planted by somebody's own front door or wall — Whisper Woods never had one, past the wind
+chime already hanging under the treehouse's back eave. **A small toadstool-red-and-cream pinwheel
+now stands in the dirt south of the treehouse**, as if the kid living up top left their own toy out
+mid-climb.
+
+Just `makeWindChime()`'s own trick repeated inline rather than reused — a stick, four blades, a hub,
+`pivot.rotation.z = t * 3.6` driven only by the world clock `t`, exactly like every pinwheel before
+it — so it draws nothing from this world's own seeded `r` and can't shift any later mushroom hue or
+butterfly colour pick. This round actually wrote a small headless probe script (loading the real
+game under the test harness's stub three.js, calling `game.travel(6, 'from-hub')`, and sweeping a
+grid of candidate points against every physics box, NPC position and physics circle the built world
+actually contains) rather than reasoning from the source alone — the first attempt at a probe mistook
+world 0's own box list for world 6's, since `travel()` only finishes after its fade timer, and the
+second attempt got it right. (-18, 11) came back 1.4 m clear of the treehouse's own trunk box (half-
+width 1.6, centred 3 m north), 3.0 m clear of the nearest other soul and 2.2 m clear of the nearest
+physics circle — between the treehouse above and the two campers and the pot-scrubber further south.
+
+Verified: `node dimension-cat/test/run.mjs` — Whisper Woods' own counts untouched (44 to meet, 8
+collectibles, 98% of the ground still walkable), physics box count for the Neighborhood (the number
+the harness prints) unchanged at 296 since the new box belongs to world 6, every other world
+unaffected, all checks `ok`, 0 console warnings, exit 0 across two consecutive runs. Before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
