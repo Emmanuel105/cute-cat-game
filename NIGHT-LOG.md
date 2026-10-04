@@ -5644,3 +5644,29 @@ all checks `ok`, 0 console warnings, exit 0 across two consecutive runs (a handf
 timing-sensitive checks — kite height, snowball throw counts, exact rest height — jitter run to run as
 they always have, same as before this change). Before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 235 — a dispatch bell for both gondola stations
+
+The Victorian bell tolls, Robot City's whistle blows, Sunny Shore's foghorn sounds, Candy Land's music
+box chimes, Whisper Woods' owl hoots — but the gondola stations bookending that whole ride, one at the
+edge of the Neighborhood and one at the foot of Frosty Peak, had stood silent since they were built,
+nothing but the cabins swinging on their cable. **A low brass bell now rings at both stations on a slow
+loop**, as if marking a cabin letting go of the cable for its next run — two soft strikes with a little
+metal clack between them, pitched well below the bike's own bell so the two are never mistaken for each
+other.
+
+Both stations are built from the one shared `makeGondolaStation()` in `62-props-nature.js`, so a single
+loop added to its own `g.userData.update` — the same shape as the bell, the whistle, the foghorn and the
+music box before it — covers both ends of the ride in one change: a `bellT` timer counts down a span
+seeded with `rnd.range(40, 70)`, calls the new `SFX.gondolaBell()` when it runs out, then resets to
+`rnd.range(85, 125)`. `gondolaBell()` itself sits in `30-audio.js` next to `chime()`, `whistle()`,
+`foghorn()` and `musicbox()`: two low sine strikes (587 Hz and its octave below) around a short bandpass
+clack, instead of `bell()`'s own pair of bright 2093 Hz dings. The timer's own initial draw happens where
+the loop is wired in, after every mesh, physics box and label in the function is already built, so it
+can't shift a single construction-time pick in either world that calls it. No new mesh, no physics box,
+no zone — pure sound, same as every landmark loop before it.
+
+Verified: `node test/run.mjs` — both the Neighborhood and Frosty Peak's NPC, collectible and friend
+counts unchanged, both worlds still fully walkable where they were before, all 273 checks `ok`, 0 console
+warnings, exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

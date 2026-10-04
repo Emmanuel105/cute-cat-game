@@ -282,9 +282,18 @@ function makeGondolaStation(game, x, z, ry, onEnter, prompt = 'Ride the gondola 
   glowSprite(0xbfe8ff, 3.0, 0.4, cabin).position.y = 0.75;
   for (const s of [-1, 1]) for (const t of [-1, 1]) { const [px, pz] = localXZ(x, z, s * 2.6, t * 1.8, ry); game.physics.addBox(px, 2.4, pz, 0.35, 4.8, 0.35, { cam: false }); }
   const [bx, bz] = localXZ(x, z, -1.6, -1.4, ry); game.physics.addBox(bx, 0.7, bz, abs(cos(ry)) * 1.6 + abs(sin(ry)) * 0.5, 0.5, abs(sin(ry)) * 1.6 + abs(cos(ry)) * 0.5, { cam: false });
+  // every other landmark worth lingering by now keeps some ambient sound of its own (the Victorian bell,
+  // Robot City's whistle, Sunny Shore's foghorn, Candy Land's music box, Whisper Woods' owl) but the
+  // gondola stations at both ends of this ride — built from this one shared function — never sounded a
+  // thing beyond the cabins' own silent swing. A low brass dispatch bell now rings here on a loop, as if
+  // marking a cabin letting go of the cable. The interval is drawn from the shared `rnd()` sequence only
+  // inside this `g.userData.update` tick, which the game calls once per frame after the whole world is
+  // already built, so it can't shift a single construction-time pick anywhere in either world.
+  let bellT = rnd.range(40, 70);
   g.userData.update = (dt, t) => {
     cabin.rotation.z = sin(t * 0.9) * 0.04; cabin.position.y = 2.4 + sin(t * 1.3) * 0.04; swirl.rotation.y = t * 0.8; swirl.rotation.x = sin(t) * 0.3;
     for (const rd of riders) { rd.userData.k = (rd.userData.k + rd.userData.dir * dt * 0.022 + 1) % 1; rd.position.z = -4 - rd.userData.k * (cableLen - 8); rd.rotation.z = sin(t * 0.7 + rd.userData.k * 9) * 0.04; }
+    bellT -= dt; if (bellT <= 0) { SFX.gondolaBell(); bellT = rnd.range(85, 125); }
   };
   hubPrompt(game, g, x, z, prompt, onEnter, 0x9fe8ff, 3.4);
   return g;

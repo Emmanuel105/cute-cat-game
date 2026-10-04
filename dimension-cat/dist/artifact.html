@@ -992,6 +992,8 @@ class SoundKit {
   foghorn() { this.tone({ freq: 110, slide: 95, type: 'sawtooth', dur: 1.8, vol: 0.13, attack: 0.15, release: 0.5, filter: 400, q: 1.5 }); this.tone({ freq: 220, slide: 190, type: 'sine', dur: 1.8, vol: 0.04, attack: 0.15, release: 0.5 }); this.noise({ dur: 1.8, vol: 0.02, filter: 300, type: 'lowpass' }); }
   /** A little music-box jingle: five bright, bell-like notes, light and quick rather than a tolling bell. */
   musicbox() { [784, 988, 1175, 1568, 1319].forEach((f, i) => this.tone({ freq: f, type: 'sine', dur: 0.3, vol: 0.09, delay: i * 0.14, attack: 0.01, release: 0.25 })); this.tone({ freq: 3136, type: 'sine', dur: 0.5, vol: 0.03, delay: 0.56, release: 0.4 }); }
+  /** A gondola station's dispatch bell: two low brass strikes around a little metal clack as the cable lets go. */
+  gondolaBell() { this.tone({ freq: 587, type: 'sine', dur: 0.5, vol: 0.12, attack: 0.01, release: 0.35, filter: 1400 }); this.tone({ freq: 294, type: 'sine', dur: 0.6, vol: 0.06, release: 0.4 }); this.noise({ dur: 0.07, vol: 0.06, filter: 2200, type: 'bandpass', delay: 0.4 }); this.tone({ freq: 587, slide: 560, type: 'sine', dur: 0.45, vol: 0.1, delay: 0.55, release: 0.3 }); this.tone({ freq: 294, slide: 280, type: 'sine', dur: 0.55, vol: 0.05, delay: 0.55, release: 0.35 }); }
   /** Footstep: soft pad on grass/sand/snow, tap on cobble/metal/planks. */
   step(kind = 'soft', run = false) {
     const v = run ? 0.09 : 0.06;
@@ -5170,9 +5172,18 @@ function makeGondolaStation(game, x, z, ry, onEnter, prompt = 'Ride the gondola 
   glowSprite(0xbfe8ff, 3.0, 0.4, cabin).position.y = 0.75;
   for (const s of [-1, 1]) for (const t of [-1, 1]) { const [px, pz] = localXZ(x, z, s * 2.6, t * 1.8, ry); game.physics.addBox(px, 2.4, pz, 0.35, 4.8, 0.35, { cam: false }); }
   const [bx, bz] = localXZ(x, z, -1.6, -1.4, ry); game.physics.addBox(bx, 0.7, bz, abs(cos(ry)) * 1.6 + abs(sin(ry)) * 0.5, 0.5, abs(sin(ry)) * 1.6 + abs(cos(ry)) * 0.5, { cam: false });
+  // every other landmark worth lingering by now keeps some ambient sound of its own (the Victorian bell,
+  // Robot City's whistle, Sunny Shore's foghorn, Candy Land's music box, Whisper Woods' owl) but the
+  // gondola stations at both ends of this ride — built from this one shared function — never sounded a
+  // thing beyond the cabins' own silent swing. A low brass dispatch bell now rings here on a loop, as if
+  // marking a cabin letting go of the cable. The interval is drawn from the shared `rnd()` sequence only
+  // inside this `g.userData.update` tick, which the game calls once per frame after the whole world is
+  // already built, so it can't shift a single construction-time pick anywhere in either world.
+  let bellT = rnd.range(40, 70);
   g.userData.update = (dt, t) => {
     cabin.rotation.z = sin(t * 0.9) * 0.04; cabin.position.y = 2.4 + sin(t * 1.3) * 0.04; swirl.rotation.y = t * 0.8; swirl.rotation.x = sin(t) * 0.3;
     for (const rd of riders) { rd.userData.k = (rd.userData.k + rd.userData.dir * dt * 0.022 + 1) % 1; rd.position.z = -4 - rd.userData.k * (cableLen - 8); rd.rotation.z = sin(t * 0.7 + rd.userData.k * 9) * 0.04; }
+    bellT -= dt; if (bellT <= 0) { SFX.gondolaBell(); bellT = rnd.range(85, 125); }
   };
   hubPrompt(game, g, x, z, prompt, onEnter, 0x9fe8ff, 3.4);
   return g;
