@@ -6050,3 +6050,25 @@ collectibles and 95% walkable ground both unchanged, physics box count unchanged
 `Detectorist` uses a physics circle, not a box) and every other world unaffected, all checks `ok`,
 0 console warnings, exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 252 — a toy pinwheel for Sunny Shore's own huts
+
+The Neighborhood's first front yard got a toy pinwheel a few rounds back, spinning on nothing but
+the world clock, but the five beach huts here — with their own flags and even a wind chime by
+now — never had one planted in the sand. **A red-white-and-blue pinwheel now stands beside the
+second hut**, on the quiet side away from the sunbathing crowd, spinning steadily whatever the
+wind is doing.
+
+Reuses the Neighborhood's own pinwheel geometry and spin trick verbatim (`pivot.rotation.z = t *
+3.6`, drawing only on the world clock `t`, never this world's own seeded `r`, so it can't shift any
+later wardrobe pick) — no new shared helper, just the same inline block in its new spot. Placed at
+(-10, -17.2): the same `localXZ`-style `ry = PI/2` transform the hut's own wind chime already uses
+(`world_x = x + lz`, `world_z = z - lx`) puts it 0.8 m clear of that hut's 2.8×2.8 physics box, 6.3 m
+from the sand-castle kid at (-6, -22), 13.5 m from the gull-feeder at (3, -13.5), and well past
+every palm, hut and vendor checked by hand against the build's own coordinate list. Needs only the
+same slim physics box (half-width 0.14) for its post that the Neighborhood's own pinwheel relies on.
+
+Verified: `node dimension-cat/test/run.mjs` — Sunny Shore's friend count (43), 8 collectibles and
+100% walkable ground all unchanged, every other world unaffected, all checks `ok`, 0 console
+warnings, exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

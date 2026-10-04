@@ -8120,6 +8120,28 @@ function buildBeach(game, entry) {
   // as every wind chime before it.
   { const [cx, cz] = localXZ(-10, 12, -1.1, -1.1, PI / 2);
     placeT(game, U, makeWindChime(game, { wood: 0x9a7a52, metal: 0xb8c4c4 }), cx, cz, 0, 2.3); }
+  // the Neighborhood's first front yard got a toy pinwheel a few rounds back, spinning on the world
+  // clock alone — nobody at the huts here had ever planted one in the sand, for all their own flags
+  // and wind chime. One now stands on the quiet side of the second hut (-10, -15), away from the open
+  // sand where the sunbathers and vendors are. Local (lx=2.2, lz=0) through the same ry=PI/2 transform
+  // as the wind chime above (world_x = x + lz, world_z = z - lx) lands it at (-10, -17.2), 0.8 m clear
+  // of that hut's own 2.8x2.8 physics box (z to -16.4) and well past every neighbour checked: 6.3 m
+  // from the sand-castle kid at (-6, -22), 13.5 m from the gull-feeder at (3, -13.5), and over 9 m from
+  // both the first hut's own box (centred -24 away on z) and the nearest palm at (-28, -14). Spins on
+  // the world clock `t` alone, the same trick the Neighborhood's own pinwheel and Robot City's
+  // maintenance drone already use, so it draws nothing from this world's own seeded `r` and can't
+  // shift any later pick.
+  { const px = -10, pz = -17.2, stickH = 0.7, bladeLen = 0.28;
+    const y0 = P.ground0(px, pz);
+    const pin = group(px, y0, pz, W), stickMat = mat(0xe8dcc0, { roughness: 0.85 }), hubMat = mat(0xffd54a, { metalness: 0.4, roughness: 0.3 });
+    mesh(G.cyl(0.018, 0.022, stickH, 8), stickMat, { y: stickH / 2, parent: pin });
+    const pivot = group(0, stickH, 0, pin);
+    const bladeColors = [0xff7043, 0xf7f3ec, 0x2f6fd6, 0xf7f3ec];
+    for (let bi = 0; bi < 4; bi++) { const theta = bi * PI / 2, bx = cos(theta) * bladeLen / 2, by = sin(theta) * bladeLen / 2;
+      mesh(G.box(bladeLen, 0.2, 0.02), mat(bladeColors[bi], { roughness: 0.5 }), { x: bx, y: by, rz: theta, parent: pivot }); }
+    mesh(G.sphere(0.045, 8, 6), hubMat, { parent: pivot });
+    U.push((dt, t) => { pivot.rotation.z = t * 3.6; });
+    boxT(game, px, pz, 0.14, stickH, 0.14, { cam: false }); }
   // an ice-cream vendor on the open sand between the huts and the sunbathing crowd
   { const cx = -4, cz = -6; game.zones.addCircle(cx, cz, 1.4);
     const scoopWard = makeWardrobe(r, { shirts: [0xffffff, 0xf7f3ec], pants: [0x2f6fd6, 0x2a2a2a], shoes: [0xefe7d8, 0x8d6e63] });
