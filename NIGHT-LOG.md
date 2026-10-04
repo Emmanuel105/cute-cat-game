@@ -6027,3 +6027,26 @@ own pinwheel relied on.
 Verified: `node test/run.mjs` — all checks `ok`, 0 console warnings, exit 0 across two consecutive
 runs, physics box count up by exactly one (295 → 296) and every other world unaffected. Before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 251 — a treasure hunter for Victorian's north bank
+
+The Neighborhood, Candy Land, Robot City, Sunny Shore, Frosty Peak and Whisper Woods all had a
+**Detectorist** sweeping for buried treasure by now — Victorian was the last of the seven left
+without one, past the mudlark's own pan of canal mud. One now works the quiet grass west of the
+games cluster on the north bank, headphones on, hoping for an old coin: *"Just a button. Every
+time."* *"One day it'll be a whole Roman hoard."*
+
+Reuses the `Detectorist` controller verbatim, same metal-detector rig every other world's own
+treasure hunter already carries — no new code, just a human in period-drab colours (own small
+wardrobe, not the street's shared one) with a flatcap or bonnet depending on a coin flip. Placed at
+(-45, 42): a headless check against every physics box and NPC built into the town so far put it
+15.9 m clear of the catch pair's own leashed gap at (-25, 52), over 35 m from the mudlark at
+(-10, 37.3), and well past the tag pair, the ring dance, the swing/seesaw pair and the kite kid —
+still well inside the radius (88) where `victorianRegion`'s own procedural fill takes over, so
+nothing else was ever going to end up out here.
+
+Verified: `node dimension-cat/test/run.mjs` — Victorian's friend count up by one (53 → 54), 11
+collectibles and 95% walkable ground both unchanged, physics box count unchanged (296, since
+`Detectorist` uses a physics circle, not a box) and every other world unaffected, all checks `ok`,
+0 console warnings, exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

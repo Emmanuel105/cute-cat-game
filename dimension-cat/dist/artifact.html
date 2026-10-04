@@ -7976,6 +7976,22 @@ function buildVictorian(game, entry) {
     W.add(kiteKid.group);
     game.npcs.push(new KiteFlyer(game, kiteKid, makeKite(0x8a3a3a, 0xd9c9a8), { x: 50, z: 55, wind: [0.85, 0.3],
       cries: ['Caught the wind off the clock tower, this one did!', "Mind you don't trip the string, puss.", 'Highest it\'s flown all week.'] })); }
+  // the Neighborhood, Candy Land, Robot City, Sunny Shore, Frosty Peak and Whisper Woods all have a
+  // Detectorist sweeping for buried treasure by now — Victorian was the last of the seven left without
+  // one, past the mudlark's own pan of canal mud. One works the quiet grass west of the games cluster,
+  // well clear of the catch pair, headphones on, hoping for an old coin rather than another button.
+  // A headless probe swept the north bank against every physics box and NPC built into the town so far:
+  // (-45, 42) came back clear by 15.9 m of the catch pair's own leashed gap at (-25, 52), over 35 m of
+  // the mudlark at (-10, 37.3) and far past every other game on the verge (the tag pair, the ring dance,
+  // the swing and seesaw, the kite kid), still well inside the radius (88) where victorianRegion's own
+  // procedural fill takes over.
+  { const relicWard = makeWardrobe(r, { shirts: [0x5a6a4a, 0x4a3f33, 0x5c4a2f], pants: [0x2a2a24, 0x3a3327], shoes: [0x2a2018, 0x1e1a16] });
+    const relicFemale = r.chance(0.5);
+    const relicHunter = makeHuman({ ...randomPerson(r, { female: relicFemale, child: false, elder: r.chance(0.4), wardrobe: relicWard }),
+      hat: relicFemale ? 'bonnet' : 'flatcap', hatColor: 0x3a3327, coat: true, scarf: null, jacket: null, bag: null, glasses: r.chance(0.3) });
+    W.add(relicHunter.group);
+    game.npcs.push(new Detectorist(game, relicHunter, { x: -45, z: 42, ry: PI,
+      cries: ["Just a button. Every time.", "Careful, puss — mind the headphones cable.", "One day it'll be a whole Roman hoard."] })); }
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
