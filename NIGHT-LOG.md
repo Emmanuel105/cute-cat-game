@@ -5982,3 +5982,29 @@ walkable and the physics box count (295) all unchanged, every other world unaffe
 independently-documented horse-and-carriage flake on Victorian noted in Round 247 — unrelated to
 this change, absent from every other run). Before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 249 — a wind chime for Candy Land's gingerbread cottage
+
+The Neighborhood's porch, Frosty Peak's first cabin, Whisper Woods' treehouse, Victorian's last
+terrace door and one of Sunny Shore's beach huts all sway a wind chime by now, but Candy Land —
+for all its sugar steam and pennants — never had one. **A cookie-and-icing wind chime now hangs
+over the doorway of the gingerbread cottage**, the one hand-built house in Candy Land whose door
+the cat actually walks up to (the five lane houses up by the castle are only ever seen from
+outside), ringing a few soft notes whenever the cat passes close enough to hear it, same as the
+other four.
+
+Reuses `makeWindChime()` verbatim, just a cookie-tan disc and pale icing-gold tubes instead of wood
+and brass — no new code. The cottage group (`gh`) is built with no rotation of its own
+(`group(0, 0, -62, W)`, never given a `g.rotation.y`), so for once no rotation math was needed to
+place it: directly above the door (local x = 0) the only neighbours are the icing arch over the
+doorframe (its torus top lands near y = 2.8) below and the eave dollops (y ≥ 4.4, and only for
+|x| ≥ 0.5 anyway) above, with the side windows out at x = ±2.2 and the roof's own garland light at
+y = 4.9 clear overhead — so y = 3.3 clears the arch by 0.5 m and sits 1.1 m under the dollops, hung
+a touch proud of the wall face (local z = 3.6 against the door's own 3.08) so it reads as hanging
+rather than embedded. Purely decorative, no physics box of its own, same reasoning every wind chime
+before it relied on.
+
+Verified: `node test/run.mjs` — Candy Land's friend count (48), 11 collectibles, 92% walkable and
+the physics box count (295) all unchanged, every other world unaffected, all checks `ok`, 0 console
+warnings, exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

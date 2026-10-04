@@ -6824,7 +6824,20 @@ function buildCandyLand(game, entry) {
     mesh(G.box(1.2, 2.1, 0.16), mat(0x8a4a2a), { y: 1.05, z: 3.08, parent: gh }); mesh(G.torus(0.7, 0.08, 6, 14, PI), icing, { y: 2.1, z: 3.12, shadow: 'none', parent: gh });
     for (const wx of [-2.2, 2.2]) { mesh(G.box(1.2, 1.2, 0.14), glowMat(0xffe082, 0.6), { x: wx, y: 2.2, z: 3.08, shadow: 'none', parent: gh }); mesh(G.torus(0.75, 0.07, 6, 14), icing, { x: wx, y: 2.2, z: 3.12, shadow: 'none', parent: gh }); }
     for (let k = 0; k < 6; k++) mesh(G.cyl(0.5, 0.65, 0.8, 12), mat(r.pick([0xff6fb5, 0x7fd7ff, 0xffd54a]), { roughness: 0.4 }), { x: -3.5 + k * 1.4, y: 0.4, z: 4.2, parent: gh });
-    P.addBox(0, 2, -62, 7.4, 4, 6.4); pointLight(0xffd27a, 10, 10, 0, 2.5, -58, W); }
+    P.addBox(0, 2, -62, 7.4, 4, 6.4); pointLight(0xffd27a, 10, 10, 0, 2.5, -58, W);
+    // the Neighborhood's porch, Frosty Peak's first cabin, Whisper Woods' treehouse, Victorian's last
+    // terrace door and one of Sunny Shore's beach huts all sway a wind chime by now; the gingerbread
+    // cottage — the one hand-built house in Candy Land whose door the cat can actually walk up to,
+    // unlike the five lane houses it only ever sees from outside — never got one. A cookie-and-icing
+    // wind chime now hangs over the doorway, swapping the usual wood and brass for the cottage's own
+    // cookie tan and pale icing gold. `gh` is built with no rotation of its own (`group(0, 0, -62, W)`,
+    // never given a `g.rotation.y`), so no rotation math is needed to place it: directly above the door
+    // (local x = 0) the only neighbours are the icing arch over the doorframe (torus top near y = 2.8)
+    // below and the eave dollops (y >= 4.4, and only for |x| >= 0.5 anyway) above, with the side windows
+    // out at x = ±2.2 and the roof's own garland light at y = 4.9 — so y = 3.3 clears the arch by 0.5 m
+    // and sits 1.1 m under the dollops, hung a little proud of the wall face (local z = 3.6, vs. the
+    // door's own 3.08) so it reads as hanging rather than embedded.
+    place(game, U, makeWindChime(game, { wood: 0xc27b3a, metal: 0xfff3b0 }), 0, -58.4, 0, 3.3); }
   for (let i = 0; i < 12; i++) mesh(G.cyl(0.9, 0.9, 0.12, 12), mat(0xd9a066, { roughness: 0.95 }), { x: sin(i * 0.9) * 1.6, y: 0.04, z: -40 - i * 1.9, shadow: 'receive', parent: W });   // cookie path to the cottage
   // every other world has wildlife of its own, but Candy Land never did — a sugar mouse now lives on the
   // quiet west side of the gingerbread cottage, darting between hops exactly like Whisper Woods' hedgehog
