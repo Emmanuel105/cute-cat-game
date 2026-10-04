@@ -884,6 +884,31 @@ function makeSkyscraper(w, h, d, seed) {
   if (h > 24) { mesh(G.cyl(0.08, 0.12, 4, 6), top, { y: h + 3, parent: g }); const b = mesh(G.sphere(0.25, 8, 6), glowMat(0xff3030, 2.5), { y: h + 5.1, shadow: 'none', parent: g }); g.userData.beacon = b; }
   return g;
 }
+/**
+ * A rooftop radar dish for one hand-placed skyscraper: a short mast, a yoke sweeping slow circles in
+ * azimuth, and the dish itself nodding through a shallower elevation scan inside that turn. Driven only
+ * by the world clock `t` passed into its own update tick, never `r()` or the shared `rnd()`, so it draws
+ * nothing from either sequence and can't shift any later wardrobe pick in this build or any built after
+ * it. Sets `g.userData.update` on the skyscraper group itself (the caller still has to push it to `U`),
+ * the same pattern the furnace, drone and conveyor belts already use.
+ */
+function addRadarDish(g, h) {
+  const steel = mat(0x5a6470, { metalness: 0.8, roughness: 0.3 }), dishM = mat(0xc9ced4, { metalness: 0.55, roughness: 0.35 });
+  const mast = group(0, h, 0, g);
+  mesh(G.cyl(0.07, 0.09, 0.9, 8), steel, { y: 0.45, parent: mast });
+  const yoke = group(0, 0.9, 0, mast);
+  const dish = group(0, 0, 0, yoke);
+  mesh(G.cyl(0.5, 0.5, 0.05, 20), dishM, { rx: PI / 2, parent: dish });
+  mesh(G.torus(0.5, 0.025, 6, 20), steel, { rx: PI / 2, shadow: 'none', parent: dish });
+  mesh(G.cyl(0.025, 0.025, 0.38, 6), steel, { y: 0.03, z: 0.28, rx: -0.55, parent: dish });
+  const blip = mesh(G.sphere(0.035, 8, 6), glowMat(0x7dd8ff, 1.6), { y: 0.03, z: 0.44, shadow: 'none', parent: dish });
+  g.userData.update = (dt, t) => {
+    yoke.rotation.y = t * 0.22;
+    dish.rotation.x = -0.3 + sin(t * 0.35) * 0.22;
+    blip.material.emissiveIntensity = 1.0 + max(0, sin(t * 2.6)) * 1.4;
+  };
+  return g;
+}
 function makeConveyor(game, x, z, len, dir = 1) {
   const g = group(x, 0, z, game.world), frame = mat(0x3a4048, { roughness: 0.5, metalness: 0.7 }), beltM = mat(0x1c1f24, { roughness: 0.9 });
   const belt = mesh(G.box(1.6, 0.16, len), beltM, { y: 0.62, parent: g });

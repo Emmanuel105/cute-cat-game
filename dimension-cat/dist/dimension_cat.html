@@ -4801,6 +4801,31 @@ function makeSkyscraper(w, h, d, seed) {
   if (h > 24) { mesh(G.cyl(0.08, 0.12, 4, 6), top, { y: h + 3, parent: g }); const b = mesh(G.sphere(0.25, 8, 6), glowMat(0xff3030, 2.5), { y: h + 5.1, shadow: 'none', parent: g }); g.userData.beacon = b; }
   return g;
 }
+/**
+ * A rooftop radar dish for one hand-placed skyscraper: a short mast, a yoke sweeping slow circles in
+ * azimuth, and the dish itself nodding through a shallower elevation scan inside that turn. Driven only
+ * by the world clock `t` passed into its own update tick, never `r()` or the shared `rnd()`, so it draws
+ * nothing from either sequence and can't shift any later wardrobe pick in this build or any built after
+ * it. Sets `g.userData.update` on the skyscraper group itself (the caller still has to push it to `U`),
+ * the same pattern the furnace, drone and conveyor belts already use.
+ */
+function addRadarDish(g, h) {
+  const steel = mat(0x5a6470, { metalness: 0.8, roughness: 0.3 }), dishM = mat(0xc9ced4, { metalness: 0.55, roughness: 0.35 });
+  const mast = group(0, h, 0, g);
+  mesh(G.cyl(0.07, 0.09, 0.9, 8), steel, { y: 0.45, parent: mast });
+  const yoke = group(0, 0.9, 0, mast);
+  const dish = group(0, 0, 0, yoke);
+  mesh(G.cyl(0.5, 0.5, 0.05, 20), dishM, { rx: PI / 2, parent: dish });
+  mesh(G.torus(0.5, 0.025, 6, 20), steel, { rx: PI / 2, shadow: 'none', parent: dish });
+  mesh(G.cyl(0.025, 0.025, 0.38, 6), steel, { y: 0.03, z: 0.28, rx: -0.55, parent: dish });
+  const blip = mesh(G.sphere(0.035, 8, 6), glowMat(0x7dd8ff, 1.6), { y: 0.03, z: 0.44, shadow: 'none', parent: dish });
+  g.userData.update = (dt, t) => {
+    yoke.rotation.y = t * 0.22;
+    dish.rotation.x = -0.3 + sin(t * 0.35) * 0.22;
+    blip.material.emissiveIntensity = 1.0 + max(0, sin(t * 2.6)) * 1.4;
+  };
+  return g;
+}
 function makeConveyor(game, x, z, len, dir = 1) {
   const g = group(x, 0, z, game.world), frame = mat(0x3a4048, { roughness: 0.5, metalness: 0.7 }), beltM = mat(0x1c1f24, { roughness: 0.9 });
   const belt = mesh(G.box(1.6, 0.16, len), beltM, { y: 0.62, parent: g });
@@ -7108,7 +7133,16 @@ function buildRobotCity(game, entry) {
   // skyline
   for (let i = 0; i < 24; i++) { const a = i / 24 * TAU + r.range(-0.06, 0.06), d = r.range(72, 92), w = r.range(8, 16), h = r.range(22, 56); const dd = w * r.range(0.8, 1.2), b = makeSkyscraper(w, h, dd, i); place(game, U, b, cos(a) * d, sin(a) * d, 0); P.addBox(cos(a) * d, h / 2, sin(a) * d, w, h, dd); if (b.userData.beacon) U.push((dt, t) => { b.userData.beacon.material.emissiveIntensity = sin(t * 2 + i) > 0 ? 3 : 0.2; }); }
   for (let i = 0; i < 12; i++) { const a = i / 12 * TAU + 0.26 + r.range(-0.08, 0.08), d = r.range(50, 62), w = r.range(6, 11), h = r.range(12, 26); if (abs(sin(a) * d - 10) < 8 && cos(a) * d > 30) continue; const b = makeSkyscraper(w, h, w, i + 30); place(game, U, b, cos(a) * d, sin(a) * d, 0); P.addBox(cos(a) * d, h / 2, sin(a) * d, w, h, w); }
-  for (const [x, z, w, h] of [[-30, -30, 7, 16], [32, -28, 8, 20], [-34, 26, 9, 14], [34, 24, 7, 18], [-38, 0, 6, 12], [38, -6, 7, 15]]) { const b = makeSkyscraper(w, h, w, floor(abs(x + z))); place(game, U, b, x, z, 0); P.addBox(x, h / 2, z, w, h, w); }
+  // the tallest of the six east-yard towers (32, -28, h=20) stood bare-roofed since it was first built,
+  // same as every other skyscraper in the city — a radar dish now turns slowly up there, sweeping the
+  // skyline. Only this one hand-placed tower gets it: makeSkyscraper() itself is also what the skyline
+  // loops above and robotRegion()'s own unbounded fill build with, and giving every one of those an
+  // animated, unbaked dish would have multiplied update ticks across the whole outer country for no one
+  // to notice from the ground.
+  [[-30, -30, 7, 16], [32, -28, 8, 20], [-34, 26, 9, 14], [34, 24, 7, 18], [-38, 0, 6, 12], [38, -6, 7, 15]].forEach(([x, z, w, h], i) => {
+    const b = makeSkyscraper(w, h, w, floor(abs(x + z))); place(game, U, b, x, z, 0); P.addBox(x, h / 2, z, w, h, w);
+    if (i === 1) { addRadarDish(b, h); U.push(b.userData.update); }
+  });
   // east yard: a second factory line, a plaza with a giant robot statue to the west, more lights and neon
   const conv2 = makeConveyor(game, 44, 12, 12, 1); U.push(conv2.userData.update); const arm2 = makeRobotArm(game, 50, 2); U.push(arm2.userData.update);
   // Sector 8's belt had no one minding it; a quality inspector now kneels by the crates it's already stacked, clipboard in hand

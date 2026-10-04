@@ -5701,3 +5701,28 @@ Verified: `node test/run.mjs` — Whisper Woods' NPC, collectible and friend cou
 8 collectibles, 98% of the ground walkable), every other world unaffected, all checks `ok`, 0 console
 warnings, exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 237 — a radar dish for one of Robot City's skyscrapers
+
+Every tall building in Robot City has stood bare-roofed since the city was first built, save for the
+red aircraft beacon the tallest ones already blink. Nothing up there had ever actually looked like it
+was *doing* something. **A radar dish now turns slowly atop the tallest of the six hand-placed towers
+in the east yard** (32, -28, 20 m tall), sweeping a lazy circle on its mast while the dish itself nods
+through a shallower tilt inside that turn, a small blue receiver light pulsing at its feed arm — the
+skyline's own answer to the furnace's steam and the drone's sweeping sensor.
+
+`addRadarDish(g, h)` in `60-props.js` sits right after `makeSkyscraper()`: a mast, a yoke that spins in
+azimuth, and the dish group nodding in elevation inside it, driven only by the world clock `t` the way
+the chimney smoke, the gondola bell and the maintenance drone's own circling already are — never `r()`
+or the shared `rnd()`, so it draws nothing from either sequence and can't shift a single later wardrobe
+pick anywhere in this build. Only the one hand-placed tower gets it, picked out by index inside the
+existing east-yard loop in `70-worlds.js`: `makeSkyscraper()` is also what the skyline rings and
+`robotRegion()`'s own unbounded fill build every other tower from, and an update tick on every one of
+those would have added a lot of per-frame work across the whole outer country for nothing anyone on the
+ground would ever notice. No new physics box either — the dish sits 20 m up, same reasoning the
+existing aircraft beacons already relied on to go without one.
+
+Verified: `node test/run.mjs` — Robot City's own counts untouched (46 to meet, 8 collectibles, 88% of
+the ground walkable, 295 physics boxes, same as before), every other world unaffected, all checks `ok`,
+0 console warnings, exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
