@@ -7270,6 +7270,26 @@ function buildRobotCity(game, entry) {
   const crateM = mat(0x8a6a3a, { roughness: 0.9, map: TEX.planks(30, 34) }), barrelM = mat(0x2f6f9f, { metalness: 0.6, roughness: 0.4 });
   for (const [x, z, s] of [[-22, 4, 1], [-23, 5.2, 0.8], [22, 2, 1], [-4, 8, 0.9], [15, 12, 1.1], [-16, -20, 1]]) { mesh(G.box(s, s, s), crateM, { x, y: s / 2, z, ry: r() * 0.5, parent: W }); P.addBox(x, s / 2, z, s, s, s, { cam: false }); }
   for (const [x, z] of [[28.5, 3.5], [29.7, 2.2], [-6, 10], [16, -22], [-24, -22]]) { mesh(G.cyl(0.5, 0.5, 1.2, 14), barrelM, { x, y: 0.6, z, parent: W }); P.addBox(x, 0.6, z, 1, 1.2, 1, { cam: false }); }
+  // the Neighborhood, Candy Land, Sunny Shore, Whisper Woods and Robot City's own maintenance drone all
+  // spin on the world clock by now, but no actual toy pinwheel had ever been planted on the factory
+  // floor — someone off-shift stuck a scavenged one in a crack in the concrete anyway. Same geometry and
+  // spin trick as every pinwheel before it (`pivot.rotation.z = t * 3.6`, drawing only on the world clock
+  // `t`, never this world's own seeded `r`, so it can't shift any later wardrobe pick), just reskinned in
+  // scrap-metal and neon instead of wood and primary colours, the same reskin-not-new-code choice round
+  // 253's wind chime made here. A headless probe swept candidate points against every one of the city's
+  // 1165 physics boxes and all 42 NPCs: (-8, -27) came back clear by 9.9 m from the nearest box (the
+  // crate at [-16, -20]) and 10.6 m from the nearest soul, open concrete north of the sentry's own
+  // [-15,-35]..[15,-45] patrol rectangle.
+  { const px = -8, pz = -27, stickH = 0.7, bladeLen = 0.28;
+    const pin = group(px, 0, pz, W), stickMat = mat(0x3a4048, { metalness: 0.6, roughness: 0.5 }), hubMat = mat(0xc9a227, { metalness: 0.7, roughness: 0.3 });
+    mesh(G.cyl(0.018, 0.022, stickH, 8), stickMat, { y: stickH / 2, parent: pin });
+    const pivot = group(0, stickH, 0, pin);
+    const bladeColors = [0x00e5ff, 0xff2d95, 0xffe040, 0x8a929c];
+    for (let bi = 0; bi < 4; bi++) { const theta = bi * PI / 2, bx = cos(theta) * bladeLen / 2, by = sin(theta) * bladeLen / 2;
+      mesh(G.box(bladeLen, 0.2, 0.02), mat(bladeColors[bi], { metalness: 0.4, roughness: 0.4 }), { x: bx, y: by, rz: theta, parent: pivot }); }
+    mesh(G.sphere(0.045, 8, 6), hubMat, { parent: pivot });
+    U.push((dt, t) => { pivot.rotation.z = t * 3.6; });
+    P.addBox(px, stickH / 2, pz, 0.14, stickH, 0.14, { cam: false }); }
   // every other world had wildlife of its own, down to last round's pigeons in the Victorian square — Robot
   // City, for all its robots, never had a single living creature. A grey factory mouse now darts about the
   // open floor by the crate stack near Sector 7's pipe run, the way a real one would live off whatever a

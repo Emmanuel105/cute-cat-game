@@ -6122,3 +6122,28 @@ collectibles, 98% of the ground still walkable), physics box count for the Neigh
 the harness prints) unchanged at 296 since the new box belongs to world 6, every other world
 unaffected, all checks `ok`, 0 console warnings, exit 0 across two consecutive runs. Before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 255 — a scrap-metal pinwheel for Robot City's factory floor
+
+The Neighborhood, Candy Land, Sunny Shore, Robot City's own maintenance drone and Whisper Woods all
+spin on the world clock by now, but a check of every world builder turned up something the last few
+rounds' own write-ups got wrong: Robot City never actually had a toy pinwheel of its own, past the
+drone's circling and the wind chime on the pipe run. **A scavenged one is now wedged into a crack in
+the factory floor**, cyan, magenta, yellow and steel blades spinning steadily whatever shift it is.
+
+Same geometry and spin trick as every pinwheel before it (`pivot.rotation.z = t * 3.6`, driven only
+by the world clock `t`, never this world's own seeded `r`, so it can't shift any later wardrobe
+pick) — just reskinned in dark metal and brass instead of wood and primary colours, the same
+reskin-not-new-code choice round 253's wind chime made here. A headless probe (loading the real game
+under the test harness's stub three.js, travelling to Robot City, and sweeping candidate points
+against every one of its 1165 physics boxes and all 42 NPCs) put (-8, -27) 9.9 m clear of the
+nearest box (the crate at [-16, -20]) and 10.6 m clear of the nearest soul — open concrete north of
+the sentry's own patrol rectangle, well short of the tag, catch and ring-dance clearings. Needs only
+the same slim physics box (half-width 0.14) for its post that every pinwheel before it relies on.
+
+Verified: `node dimension-cat/test/run.mjs` — Robot City's own counts untouched (46 to meet, 8
+collectibles, 88% of the ground still walkable), physics box count for the Neighborhood (the number
+the harness prints) unchanged at 296 since the new box belongs to world 2, every other world
+unaffected, all checks `ok`, 0 console warnings, exit 0 across four of five runs (one hit an
+unrelated, pre-existing Sunny Shore kite-height flake, absent from every other run and nowhere near
+this change). Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
