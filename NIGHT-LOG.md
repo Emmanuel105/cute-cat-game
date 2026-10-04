@@ -5773,3 +5773,23 @@ Verified: `node test/run.mjs` — world 0's own counts untouched (42 to meet, 7 
 ground walkable, same 295 physics boxes), every other world unaffected, all checks `ok`, 0 console
 warnings, exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 240 — a wish in the Victorian fountain
+
+The market-square fountain has thrown its own light and a little spray of sparks since round 1, but
+nobody could ever actually *do* anything with it beyond walk past — no fountain anywhere in the game
+had a wishing-coin interaction. **The cat can now toss a coin in**, with a plink and a brighter burst
+of gold-and-blue sparkle up from the basin, and one of a few wishes reported granted: `"A wish for more
+fish, obviously."`, `"Wished the lamplighter would hurry up, for once."`
+
+Just a new `game.addInteractable` on the fountain's existing group in `buildVictorian()`
+(`70-worlds.js`) — no new mesh, no physics box, no zone. The fountain's own basin already blocks the
+cat from standing closer than its 3.4 m half-extent, so the interactable's 4.4 m radius is reachable
+from every side without the cat needing to round a corner. The wish text is picked with `rnd()` at the
+moment of use, never the per-world seeded `r()` and never drawn at build time, so it can't shift any
+wardrobe pick anywhere in this build or any later one.
+
+Verified: `node test/run.mjs` — Victorian's own counts untouched (50 to meet, 11 collectibles, 96% of
+the ground walkable), every other world unaffected, all checks `ok`, 0 console warnings, exit 0 across
+two consecutive runs. Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.
