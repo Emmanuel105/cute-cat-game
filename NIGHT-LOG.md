@@ -5819,3 +5819,28 @@ Verified: `node test/run.mjs` — Victorian now 51 to meet (up from 50), 11 coll
 the ground walkable (was 96%, the one new pan-sized physics box accounting for the difference), every
 other world unaffected, all checks `ok`, 0 console warnings, exit 0 across two consecutive runs. Before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 242 — a woodcutter for Victorian's own backyard
+
+`Chopper` already splits logs on a stump in the Neighborhood's own backyard, at Frosty Peak and in
+Whisper Woods, but Victorian — gas-lit, chimney-smoking, every terrace house with a fireplace of its
+own — never had anyone stocking one. **A woodcutter now works a stump in the yard behind the house at
+x=-28**, two doors along from the laundress's own backyard behind x=-48, splitting logs into a small
+pile beside the block. `"Every grate on this street burns coal — this one still likes its wood."`,
+`"Won't split itself, more's the pity."`
+
+Reuses the Neighborhood's own `Chopper` + `makeStump()` + split-log pile verbatim, just recoloured to a
+duller, more Victorian wardrobe (`makeHuman({ ..., axe: true })`, same as the original). A headless
+probe built the actual world and measured straight from `game.physics.boxes` and `game.npcs` rather
+than guessing offsets by eye: the house at x=-28 has its own back wall at z=-15 (half-extent 3.5 m,
+centred z=-11.5, confirmed from the registered box itself), and the stump (-28,-20.3) and the
+woodcutter (-28,-18.9) both came back clear by nearly 4 m of that wall and almost 20 m of the nearest
+other soul (the bootblack boy), still well inside the radius (88) where `victorianRegion`'s own
+procedural fill stays off entirely — nothing else was ever going to end up back there.
+
+Verified: `node test/run.mjs` — Victorian now 52 to meet (up from 51), 11 collectibles and 95% walkable
+both unchanged, every other world unaffected, all checks `ok`, 0 console warnings, exit 0 across two
+consecutive runs (a pre-existing, unrelated flake in the horse-and-carriage timing check — confirmed
+present on the unmodified tree too, before this change, by running the suite three times over — showed
+up once across all of these runs and is not something this round touches). Before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

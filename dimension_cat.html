@@ -7558,6 +7558,29 @@ function buildVictorian(game, entry) {
     W.add(laundress.group);
     game.npcs.push(new Washer(game, laundress, { x: wx, z: wz, ry: wry,
       cries: ['Scrub and rinse, scrub and rinse — every day the same.', "Mind your paws, puss, it's soap in that water.", "Wrung out by noon, dry by supper, if the sky stays kind."] })); }
+  // Chopper already splits logs in the Neighborhood's own backyard and at Frosty Peak and in Whisper
+  // Woods, but every terrace house on this street has a fireplace of its own and only the laundress's
+  // yard behind x=-48 had ever been filled in. A woodcutter now works a stump in the yard behind the
+  // house at x=-28, same side of the street as the laundress, two doors along. A headless probe swept
+  // the yard against every physics box already placed into the town: the house's own back wall sits at
+  // z=-15 (half-extent 3.5 m, centred z=-11.5), and (-28,-20.3)/(-28,-18.9) both came back clear by
+  // nearly 4 m of it and 19.8 m of the nearest other soul (the bootblack boy), well inside the radius
+  // (88) where victorianRegion's own procedural fill is kept off entirely, so nothing else was ever
+  // going to end up out here.
+  { const sx = -28, sz = -20.3, cx = -28, cz = -18.9;
+    place(game, U, makeStump(r), sx, sz, r() * TAU); P.addBox(sx, 0.36, sz, 0.5, 0.72, 0.5, { cam: false });
+    const splitWard = makeWardrobe(r, { shirts: [0x6a5a4a, 0x5a6a4a, 0x4a3a2a], pants: [0x2a2420], shoes: [0x2a2018] });
+    const cutter = makeHuman({ ...randomPerson(r, { female: r.chance(0.4), child: false, elder: false, wardrobe: splitWard, build: 'stout' }),
+      hat: r.chance(0.5) ? 'flatcap' : null, hatColor: 0x3a3327, jacket: null, scarf: null, bag: null, backpack: null, axe: true, beard: r.chance(0.4) });
+    W.add(cutter.group);
+    // a few split logs already down, piled beside the stump
+    const bark = mat(0x5b3d24, { roughness: 1, map: TEX.bark() }), cutFace = mat(0xc9a86a, { roughness: 1 });
+    for (const [lx, lz, lry] of [[-0.55, 0.15, 0.3], [-0.4, 0.35, -0.4], [-0.6, 0.4, 1.1]]) {
+      const log = group(sx + lx, 0.09, sz + lz, W); log.rotation.z = PI / 2; log.rotation.y = lry;
+      mesh(G.cyl(0.09, 0.09, 0.34, 8), bark, { shadow: 'both', parent: log }); mesh(G.cyl(0.089, 0.089, 0.01, 8), cutFace, { y: 0.17, shadow: 'none', parent: log }); mesh(G.cyl(0.089, 0.089, 0.01, 8), cutFace, { y: -0.17, shadow: 'none', parent: log });
+    }
+    game.npcs.push(new Chopper(game, cutter, { x: cx, z: cz, ry: atan2(sx - cx, sz - cz),
+      cries: ['Every grate on this street burns coal — this one still likes its wood.', "Careful, puss — mind the chips.", "Won't split itself, more's the pity."] })); }
   // market square (north): cobbled plaza, a fountain, striped stalls, gas lamps; a canal with a stone bridge (south)
   flatPlane(game, 30, 26, pave, 0, -34, 0, 0.015);
   { const f = group(0, 0, -34, W), stone = mat(0x8c8377, { roughness: 0.95, map: TEX.stone(30) }); mesh(G.cyl(3.2, 3.4, 0.7, 24), stone, { y: 0.35, parent: f }); mesh(G.cyl(2.8, 2.8, 0.1, 24), mat(0x3d8fd1, { roughness: 0.1, transparent: true, opacity: 0.85, emissive: 0x1a4a7a, emissiveIntensity: 0.3 }), { y: 0.72, shadow: 'none', parent: f }); mesh(G.cyl(0.4, 0.6, 2.2, 12), stone, { y: 1.8, parent: f }); mesh(G.cyl(1.2, 1.1, 0.15, 18), stone, { y: 2.9, parent: f }); mesh(G.sphere(0.4, 12, 9), mat(0xd4af37, { metalness: 0.9, roughness: 0.3 }), { y: 3.3, parent: f });
