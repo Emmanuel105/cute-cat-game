@@ -6409,3 +6409,30 @@ FAILs), Victorian's own counts untouched (54 to meet, 11 collectibles, 95% of th
 walkable, physics box count unchanged at 296 — a `Flyer` adds no collider), every NPC including the
 five new doves still in the scene graph, 0 console warnings, exit 0 every time, before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 266 — a kite over Whisper Woods, at last
+
+Round 262 closed the kite gap for Robot City and noted it left exactly one world without a kid flying
+one overhead: Whisper Woods, the one place in the game with a real forest canopy to worry about. A
+tree's own canopy sits right around the height `KiteFlyer` swoops its kite (roughly 4.8–9.2 m up, in a
+loop about 9 m across) — so the usual floor-space clearance check wasn't enough here; what mattered was
+headroom. **A kid now flies a kite south of the glade**, between the stump-weaver and the ukulele
+player's own patch of grass, the wind carrying it north over the fern litter rather than back toward
+either of them. "Caught a gap in the branches, finally!"
+
+No new code: same `KiteFlyer` controller and `makeKite()` prop every other world's kite already uses,
+just a woodland-green wardrobe and a leaf-and-sun kite instead of candy stripes or a robot's cyan. The
+placement did take a proper headless probe, though — not just a point check but the whole flight path:
+200 samples over a simulated 20-second loop, checked against every physics box over 5 m tall (a
+stand-in for canopy height, since no tree's own trunk box is shorter than that). `(7, -24)` came back
+clear by 14.8 m of the nearest tree anywhere along the loop, deep enough inside the hand-built ring
+that `forestRegion`'s own procedural fill (which only starts at radius 58) never comes near it.
+
+Verified: `node dimension-cat/test/run.mjs` nine times total. Two of those nine hit the same flaky
+`FAIL` round 264 already wrote up and tied to wall-clock load — Victorian's horse-and-carriage "moved
+4 m in 2 s" check, nothing to do with Whisper Woods or this round's own change. The other seven passed
+clean: 273 checks, Whisper Woods' own counts moved exactly as expected (46 to meet, up from 45, for the
+one new friend `KiteFlyer` greets on construction; 8 collectibles and 98% of the ground walkable both
+unchanged, since a kite adds a physics circle for the kid but no box), every NPC including the new kite
+kid in the scene graph, 0 console warnings, exit 0, before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

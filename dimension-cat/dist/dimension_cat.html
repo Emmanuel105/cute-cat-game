@@ -9534,6 +9534,24 @@ function buildForest(game, entry) {
     game.npcs.push(new DogWalker(game, walker, dog, { x: dwx, z: dwz, angle: dwry, speed: 0.9, leash: 4,
       cries: ["He loves a good sniff round these parts.", 'Careful, puss - he only looks fierce.', "Best walk of the day, this one."] })); }
 
+  // the Neighborhood, Candy Land, Victorian, Sunny Shore and Frosty Peak all have a kid flying a kite
+  // overhead by now, and Robot City closed the gap two rounds back — Whisper Woods was the one world
+  // left without, its own canopy being the obvious reason nobody had tried. KiteFlyer swoops its kite
+  // 4.8-9.2 m up in a lazy loop roughly 9 m across, which is exactly the height a big tree's own canopy
+  // sits at (makeBigTree's leaf spheres start around h-0.3, h = 7-10 m), so clearance here means headroom,
+  // not just floor space. A headless probe built the real Whisper Woods, ran the candidate flight path
+  // itself (200 samples over a simulated 20 s loop) against every physics box taller than 5 m — a
+  // stand-in for canopy height, since no tree's trunk box is shorter than that — and only afterwards
+  // checked the kid's own standing point against everything else: (7, -24) came back clear by 14.8 m of
+  // the nearest tree anywhere along the loop, south of the glade between the weaver's stump and the
+  // musician's own patch of grass. The wind blows north, carrying the kite out over the fern litter
+  // rather than back toward either of them.
+  { const kiteWard = makeWardrobe(r, { shirts: [0x6b8a5a, 0xd9a23a, 0x5ac8e0], pants: [0x3a4a2e, 0x2a2a2a] });
+    const kiteKid = makeHuman({ ...randomPerson(r, { child: true, female: r.chance(0.5), wardrobe: kiteWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(kiteKid.group);
+    game.npcs.push(new KiteFlyer(game, kiteKid, makeKite(0x6b8a5a, 0xffd54a), { x: 7, z: -24, wind: [0.18, 0.98],
+      cries: ['Caught a gap in the branches, finally!', 'Mind the string, puss.', "The trees eat more kites than the fairies ever will."] })); }
+
   // every other creature in these woods moves at a clip — even the frogs hop — and nothing here had ever
   // just crept along. A snail now glides, almost too slowly to notice, through the fern litter at the
   // heart of the glade. A headless probe built the real Whisper Woods, sampled every NPC's and the
