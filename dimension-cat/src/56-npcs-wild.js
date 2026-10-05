@@ -464,6 +464,31 @@ function makeSnowBird(o = {}) {
   return rig;
 }
 
+// ---------------------------------------------------------------- dove (flyer, overhead — the market square's own pigeons stay grounded)
+function makeDove(o = {}) {
+  const g = new THREE.Group(), rig = { group: g, wings: [] };
+  const white = mat(o.color ?? 0xeee8dc, { roughness: 0.8 }), sheen = mat(0xd9cfc0, { roughness: 0.7 }), beakM = mat(0xc97a5a, { roughness: 0.5 });
+  const body = group(0, 0, 0, g); rig.body = body;
+  mesh(G.bodySphere(12, 9), white, { sx: 0.055, sy: 0.055, sz: 0.1, parent: body });
+  mesh(G.sphere(0.04, 10, 8), white, { y: 0.025, z: 0.09, parent: body });
+  mesh(G.cone(0.011, 0.038, 6), beakM, { y: 0.015, z: 0.115, rx: PI / 2, shadow: 'none', parent: body });
+  for (const side of [1, -1]) mesh(G.sphere(0.007, 6, 6), mat(0x2a1f1a), { x: side * 0.017, y: 0.035, z: 0.105, shadow: 'none', parent: body });
+  mesh(G.box(0.06, 0.016, 0.07), sheen, { y: -0.005, z: -0.1, parent: body });   // fantail
+  for (const side of [1, -1]) {
+    const w = group(side * 0.035, 0.012, 0, body);
+    mesh(G.box(0.16, 0.014, 0.07), white, { x: side * 0.08, parent: w });
+    const tipW = group(side * 0.16, 0, 0, w); mesh(G.box(0.12, 0.012, 0.055), sheen, { x: side * 0.06, parent: tipW });
+    rig.wings.push({ w, tipW, side });
+  }
+  rig.animate = (ph, moving, dt, t = 0) => {
+    const flap = sin(t * 8 + (o.phase ?? 0)), glide = (sin(t * 0.3 + (o.phase ?? 0)) > 0.6) ? 1 : 0;
+    for (const W of rig.wings) { const a = glide ? 0.1 : flap * 0.65; W.w.rotation.z = W.side * -a; W.tipW.rotation.z = W.side * -a * 0.75; }
+    body.rotation.z = sin(t * 0.85) * 0.12;
+  };
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- fairy (flyer) + butterfly (flyer)
 function makeFairy(color = 0xa8ff9a) {
   const g = new THREE.Group(), rig = { group: g };

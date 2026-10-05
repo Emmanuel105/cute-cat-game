@@ -6383,3 +6383,29 @@ contention) — all passed, Frosty Peak's own counts untouched (44 to meet, 8 co
 ground still walkable, physics box count unchanged — a `Flyer` adds no collider), every NPC including
 the six new birds still in the scene graph, 0 console warnings, exit 0 every time, before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 265 — doves over Victorian's market square
+
+Candy Land, Sunny Shore, Frosty Peak and Whisper Woods all have something looping overhead by now —
+butterflies, gulls, snow buntings, fairies and more butterflies — but Victorian's own sky over the
+market square had nothing in it at all, for all its fountain, four stalls and the pair of pigeons
+pecking the cobbles below. **Five white doves now wheel above the square**, pale against the dusk sky,
+the way they would over any town square with a fountain and food under it.
+
+New `makeDove()` in `56-npcs-wild.js` — built the same two-piece flapping wing the seagull and the
+snow bunting already use (a root `w` and a tip `tipW`, rotated together), just dove-sized and pale
+cream rather than white-and-grey or winter-white, with a small fantail instead of a seagull's flat
+one. Driven by the existing `Flyer` controller, the same one already doing duty as Candy Land's
+butterflies, Sunny Shore's gulls and Frosty Peak's buntings — it loops a centre point in the air and
+never touches the ground or the physics grid, so like those three rounds this needed no headless
+clearance probe. Centred on the square itself at (0, -34), looping at radius 9-15 m and height 7-12 m,
+comfortably above the fountain's own gilded ball on top (y=3.3), the three lamp posts ringing the
+square (4 m) and every stall's own awning (2.65 m), with room to spare before the clock tower away to
+the east. Pure background life, never greeted, so no world's friend count moves — Victorian holds at
+54 to meet.
+
+Verified: `node dimension-cat/test/run.mjs` three times in a row — all passed clean (273 checks, no
+FAILs), Victorian's own counts untouched (54 to meet, 11 collectibles, 95% of the ground still
+walkable, physics box count unchanged at 296 — a `Flyer` adds no collider), every NPC including the
+five new doves still in the scene graph, 0 console warnings, exit 0 every time, before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

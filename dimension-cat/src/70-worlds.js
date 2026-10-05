@@ -1751,6 +1751,19 @@ function buildVictorian(game, entry) {
     const v4 = new Vendor(game, cheeseMonger, makeCheeseWheel(), { x: 10, z: -43.3, ry: 0, cryIcon: '🧀',
       cries: ['Cheese! Fine ripe cheese!', 'A wedge for your supper?', "None of this for cats, either."] });
     game.npcs.push(v4); greetable(game, v4); }
+  // Candy Land, Sunny Shore, Frosty Peak and Whisper Woods all have something looping overhead by now
+  // (butterflies, gulls, snow buntings, fairies and more butterflies) — Victorian's own sky over the market
+  // square had nothing in it at all. Five doves now wheel above the square, white against the dusk sky, the
+  // way they would over any town square with a fountain and food stalls under it. New `makeDove()`, built
+  // the same two-piece flapping wing as the seagull's and the snow bunting's own (root + tip, `w`/`tipW`),
+  // just dove-sized and pale rather than white-and-grey or winter-white. Driven by the same `Flyer`
+  // controller already circling Candy Land's butterflies, Sunny Shore's gulls and Frosty Peak's buntings
+  // overhead, so — as every round before it has found — it needs no headless clearance probe: a `Flyer`
+  // never touches the ground or the physics grid, it just loops a centre point in the air. Centred on the
+  // square itself (0, -34), looping at radius 9-15 m and height 7-12 m — comfortably above the fountain's
+  // own gilded ball on top (y=3.3), the three lamps posts ringing the square (4 m) and every stall's own
+  // awning (2.65 m), with room to spare before the clock tower at (42, 0), far off to the east.
+  for (let i = 0; i < 5; i++) { const rig = makeDove({ phase: i * 1.3 }); game.npcs.push(new Flyer(game, rig, { cx: 0, cz: -34, r: r.range(9, 15), h: r.range(7, 12), speed: r.range(1.8, 2.6), bob: 0.5, wobble: 1.6, cw: i % 2 === 0, phase: i * 1.3 })); }
   // every other world had an animal of its own — Victorian never did, past the universal squirrel. A pair
   // of pigeons now peck about the market square's quiet east side, the way real ones always gather near a
   // fountain and a row of food stalls. Reuses makePigeon + Hopper exactly as the shore's sandpipers and the
