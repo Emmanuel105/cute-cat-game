@@ -7568,6 +7568,22 @@ function buildRobotCity(game, entry) {
     const seeB = makeHuman({ ...randomPerson(r, { child: true, female: true, hairStyle: 'braids', wardrobe: seeWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
     W.add(seeA.group); W.add(seeB.group);
     game.npcs.push(new Seesaw(game, seeA, seeB, seesaw, { x: sx, z: sz })); }
+  // the Neighborhood, Candy Land, Victorian, Sunny Shore and Frosty Peak all have a kid flying a kite —
+  // Robot City and Whisper Woods are the only two of the seven left without one. The swing and seesaw
+  // above already prove a human kid reads fine amid the robots, so one more flies a kite south of the
+  // catch pair's own throw gap. A headless probe sampled every NPC's own position (including the sentry
+  // mid-patrol and both wandering-robot packs) over 400 simulated frames, then swept a grid of candidates
+  // against both those samples and every one of the city's 1167 physics boxes with a 9 m buffer: (-34,
+  // -54) came back clear by nearly 27 m from the nearest soul (the sentry, mid-beat), well south of the
+  // catch pair's own gap at (2, -54) and still inside the radius (98) where robotRegion's own procedural
+  // fill takes over. The wind blows south-south-east, away from both the catch pair and the sentry's own
+  // patrol rectangle, so the kite's figure-of-eight swoop — up to 9 m downwind and 3.2 m to either side,
+  // 6-8 m up — never drifts back over either.
+  { const kiteWard = makeWardrobe(r, { shirts: [0xffe27a, 0x9ad6ff, 0xffffff], pants: [0x3a4a6a, 0x5a6a8a] });
+    const kiteKid = makeHuman({ ...randomPerson(r, { child: true, female: r.chance(0.5), wardrobe: kiteWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(kiteKid.group);
+    game.npcs.push(new KiteFlyer(game, kiteKid, makeKite(0x00c2e0, 0xffe27a), { x: -34, z: -54, wind: [0.4, -0.9],
+      cries: ['Caught a good gust off the factory roof!', 'Mind the string, puss.', "Robots don't fly kites. Their loss."] })); }
   // the giant robot statue in the plaza never got so much as a wipe — every worker in this city tends
   // a machine of some kind, but nobody tended the one standing still long enough to need it. A line
   // worker now gives its chrome foot a scrub with a bucket of suds, `Washer` doing the same wiping

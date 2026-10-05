@@ -6304,3 +6304,23 @@ nothing new to sweep for clearance.
 Verified: `node dimension-cat/test/run.mjs` — all checks `ok`, friend counts and walkable-ground
 percentages unchanged in every world, 0 console warnings, exit 0 across two consecutive runs. Before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 262 — a kite for Robot City
+
+The Neighborhood, Candy Land, Victorian, Sunny Shore and Frosty Peak all have a kid flying a kite —
+only Robot City and Whisper Woods were left without one. **A kid now flies a cyan-and-yellow kite** on
+the bare concrete south of the catch-pair's own throw gap, the swing and seesaw up the street already
+proof a human kid reads fine amid the robots. A headless probe (written against the real game object
+the test harness already builds, not a guess) sampled the sentry's and every wandering robot's own
+position over 400 simulated frames, then swept a grid of candidates against both those samples and
+every one of the city's 1167 physics boxes with a 9 m buffer: `(-34, -54)` came back clear by nearly
+27 m from the nearest soul, well south of the catch pair at `(2, -54)` and still inside the radius (98)
+where `robotRegion`'s own procedural fill takes over. The wind blows south-south-east, away from both
+the catch pair and the sentry's own patrol rectangle, so the kite's figure-of-eight swoop never drifts
+back over either. Robot City's own gap closed; Whisper Woods — a forest with a tree canopy overhead —
+is left as the one world still without a kite, which may or may not actually suit it.
+
+Verified: `node dimension-cat/test/run.mjs` twice in a row — Robot City's own count went from `47 to
+meet` to `48 to meet`, ground-walkable held at 88%, every NPC (the new kite kid included) still in the
+scene graph, all checks `ok`, 0 console warnings, exit 0 both times, before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
