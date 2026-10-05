@@ -6436,3 +6436,34 @@ one new friend `KiteFlyer` greets on construction; 8 collectibles and 98% of the
 unchanged, since a kite adds a physics circle for the kid but no box), every NPC including the new kite
 kid in the scene graph, 0 console warnings, exit 0, before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 267 — a yo-yo for the Neighborhood
+
+The Neighborhood hadn't had a new friend to meet since round 218 (the backyard griller) — every round
+since went to one of the other six worlds, leaving it the lowest to-meet tally of the seven (42, against
+43-54 everywhere else) and the longest-overdue for a turn. The task's own list of example vignettes
+names a yo-yo, and no world had one yet, so that's what it got.
+
+**A kid works a yo-yo on the open field south of the street, the disc dropping down its own string,
+pausing a beat at the bottom for the catch, then climbing back up to the hand — over and over, never
+tangled.** *"Thirty drops and not one tangle!"* / *"Careful, puss — it just about clears your ears."* /
+*"Watch — down, and... caught it!"* Neighborhood goes from 42 to 43 to meet.
+
+New `YoYoer` controller in `55-npcs.js`, built the same way as the detectorist's metal detector and the
+woodcutter's axe — a string and a small striped disc parented straight onto `rig.hands[1]`, added after
+`makeHuman()` returns so baking never freezes them. The disc's height along the string eases down with a
+smoothstep, holds for a beat, then eases back up on a 1.25 s cycle; the arm's shoulder and elbow rotate to
+match so the hand actually looks like it's feeding the string out and reeling it back in. No world-space
+placement math at all — the whole rig, string and disc already share the same scaled local hierarchy, so
+a child's yo-yo is sized for a child's hand without any extra work.
+
+Placed at (-12, -26) with a headless probe: every NPC's and the squirrel's own position, checked against
+`game.physics.blocked()` across a grid of open-field candidates south of the street — this spot came back
+clear by a metre on every side and 29 m from the nearest other soul (the lake's jetty angler), on flat
+open ground well short of the lantern path and the vegetable patch's own corner.
+
+Verified: `node test/run.mjs` three times in a row — all passed clean, 273 checks, 0 FAILs, 0 console
+warnings, exit 0 every time. Neighborhood's own counts moved exactly as expected (43 to meet, up from 42;
+7 collectibles and 96% of the ground walkable both unchanged, since a hand-held yo-yo adds a physics
+circle for the kid but no box), every NPC including the new yo-yo kid still in the scene graph, before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

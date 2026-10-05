@@ -678,6 +678,20 @@ function buildNeighborhood(game, entry) {
     game.npcs.push(new Washer(game, griller, { x: kx2, z: kz2, ry: atan2(gx - kx2, gz - kz2),
       cries: ["Two more minutes and they're done.", "Careful, puss — hot grate, that.", "Best burgers on the whole street, if I say so myself."] })); }
 
+  // a kid works a yo-yo on the open field south of the street — the task's own example list names a yo-yo
+  // and no world has ever had one; the disc drops and climbs on its own string, never attached to the rig
+  // (own fixed shirt colour, not the street's shared `ward` bag, which is sized exactly to its 18 users
+  // already; placed last of every person this build adds, after the griller, so it draws from the very
+  // tail of both the local `r` and the shared `rnd()` sequences and disturbs the fewest later ticks of either)
+  // (a headless probe over the built world — every NPC's and the squirrel's own position swept against a
+  // grid of open-field candidates south of the street, each checked against `game.physics.blocked()` at a
+  // metre's radius — found (-12, -26) clear: 29 m from the nearest other soul (the lake's jetty angler),
+  // flat open ground, well short of the lantern path to the gondola and the vegetable patch's own corner)
+  { const yx = -12, yz = -26;
+    const yoyoKid = makeHuman({ ...randomPerson(r, { child: true, female: r.chance(0.5) }), shirt: 0xffa94d, backpack: null }); W.add(yoyoKid.group);
+    game.npcs.push(new YoYoer(game, yoyoKid, 0xd62839, { x: yx, z: yz, ry: 0.6,
+      cries: ['Thirty drops and not one tangle!', 'Careful, puss — it just about clears your ears.', "Watch — down, and... caught it!"] })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

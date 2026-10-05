@@ -1015,6 +1015,37 @@ class Charger {
   }
 }
 
+// ---------------------------------------------------------------- yo-yoer: stands put, a disc on a string dropping from the hand and climbing back up, over and over
+class YoYoer {
+  constructor(game, rig, color, { x, z, ry = 0, cries = null, cryIcon = '🪀' }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    const hand = rig.hands[1];
+    this.string = mesh(G.cyl(0.004, 0.004, 1, 4), mat(0xe8e2d0, { roughness: 0.9 }), { parent: hand });
+    this.yoyo = group(0, 0, 0, hand);
+    mesh(G.cyl(0.05, 0.05, 0.03, 14), mat(color, { roughness: 0.4 }), { rz: PI / 2, parent: this.yoyo });
+    mesh(G.cyl(0.051, 0.051, 0.006, 14), mat(0xf7f3ec, { roughness: 0.6 }), { rz: PI / 2, parent: this.yoyo });   // a pale band round the middle, so the spin reads even standing still
+    mesh(G.cyl(0.013, 0.013, 0.034, 8), mat(0x3a3a3a, { roughness: 0.6, metalness: 0.3 }), { rz: PI / 2, parent: this.yoyo });
+    this.circle = game.physics.addCircle(this, x, z, 0.35);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig;
+    rig.animate(0, false, dt, this.t);
+    // drop, a brief hover at the bottom (the catch), climb back — eased both ways so it never snaps
+    const cyc = 1.25, hover = 0.08, ph = (this.t % cyc) / cyc;
+    let k; if (ph < 0.42) k = ph / 0.42; else if (ph < 0.42 + hover) k = 1; else k = 1 - (ph - 0.42 - hover) / (1 - 0.42 - hover);
+    k = k * k * (3 - 2 * k);
+    const len = 0.06 + k * 0.4;
+    this.yoyo.position.y = -len; this.string.position.y = -len / 2; this.string.scale.y = len;
+    this.yoyo.rotation.x += dt * (4 + k * 10);
+    if (!rig.gesture) { const A = rig.arms[1]; A.sh.rotation.x = damp(A.sh.rotation.x, -0.55 + k * 0.1, 9, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.9, 9, dt); A.sh.rotation.z = -0.25; }
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- vendor: stands on their pitch holding something up in the left hand, and calls their wares
 class Vendor {
   constructor(game, rig, held, { x, z, ry = 0, cries = null, cryIcon = '\ud83c\udf88' }) {

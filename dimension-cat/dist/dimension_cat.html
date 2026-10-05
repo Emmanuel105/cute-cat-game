@@ -2793,6 +2793,37 @@ class Charger {
   }
 }
 
+// ---------------------------------------------------------------- yo-yoer: stands put, a disc on a string dropping from the hand and climbing back up, over and over
+class YoYoer {
+  constructor(game, rig, color, { x, z, ry = 0, cries = null, cryIcon = '🪀' }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    const hand = rig.hands[1];
+    this.string = mesh(G.cyl(0.004, 0.004, 1, 4), mat(0xe8e2d0, { roughness: 0.9 }), { parent: hand });
+    this.yoyo = group(0, 0, 0, hand);
+    mesh(G.cyl(0.05, 0.05, 0.03, 14), mat(color, { roughness: 0.4 }), { rz: PI / 2, parent: this.yoyo });
+    mesh(G.cyl(0.051, 0.051, 0.006, 14), mat(0xf7f3ec, { roughness: 0.6 }), { rz: PI / 2, parent: this.yoyo });   // a pale band round the middle, so the spin reads even standing still
+    mesh(G.cyl(0.013, 0.013, 0.034, 8), mat(0x3a3a3a, { roughness: 0.6, metalness: 0.3 }), { rz: PI / 2, parent: this.yoyo });
+    this.circle = game.physics.addCircle(this, x, z, 0.35);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig;
+    rig.animate(0, false, dt, this.t);
+    // drop, a brief hover at the bottom (the catch), climb back — eased both ways so it never snaps
+    const cyc = 1.25, hover = 0.08, ph = (this.t % cyc) / cyc;
+    let k; if (ph < 0.42) k = ph / 0.42; else if (ph < 0.42 + hover) k = 1; else k = 1 - (ph - 0.42 - hover) / (1 - 0.42 - hover);
+    k = k * k * (3 - 2 * k);
+    const len = 0.06 + k * 0.4;
+    this.yoyo.position.y = -len; this.string.position.y = -len / 2; this.string.scale.y = len;
+    this.yoyo.rotation.x += dt * (4 + k * 10);
+    if (!rig.gesture) { const A = rig.arms[1]; A.sh.rotation.x = damp(A.sh.rotation.x, -0.55 + k * 0.1, 9, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.9, 9, dt); A.sh.rotation.z = -0.25; }
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- vendor: stands on their pitch holding something up in the left hand, and calls their wares
 class Vendor {
   constructor(game, rig, held, { x, z, ry = 0, cries = null, cryIcon = '\ud83c\udf88' }) {
@@ -6803,6 +6834,20 @@ function buildNeighborhood(game, entry) {
     mesh(G.box(0.014, 0.2, 0.014), tongM, { x: -0.016, ry: 0.1, parent: tongs }); mesh(G.box(0.014, 0.2, 0.014), tongM, { x: 0.016, ry: -0.1, parent: tongs });
     game.npcs.push(new Washer(game, griller, { x: kx2, z: kz2, ry: atan2(gx - kx2, gz - kz2),
       cries: ["Two more minutes and they're done.", "Careful, puss — hot grate, that.", "Best burgers on the whole street, if I say so myself."] })); }
+
+  // a kid works a yo-yo on the open field south of the street — the task's own example list names a yo-yo
+  // and no world has ever had one; the disc drops and climbs on its own string, never attached to the rig
+  // (own fixed shirt colour, not the street's shared `ward` bag, which is sized exactly to its 18 users
+  // already; placed last of every person this build adds, after the griller, so it draws from the very
+  // tail of both the local `r` and the shared `rnd()` sequences and disturbs the fewest later ticks of either)
+  // (a headless probe over the built world — every NPC's and the squirrel's own position swept against a
+  // grid of open-field candidates south of the street, each checked against `game.physics.blocked()` at a
+  // metre's radius — found (-12, -26) clear: 29 m from the nearest other soul (the lake's jetty angler),
+  // flat open ground, well short of the lantern path to the gondola and the vegetable patch's own corner)
+  { const yx = -12, yz = -26;
+    const yoyoKid = makeHuman({ ...randomPerson(r, { child: true, female: r.chance(0.5) }), shirt: 0xffa94d, backpack: null }); W.add(yoyoKid.group);
+    game.npcs.push(new YoYoer(game, yoyoKid, 0xd62839, { x: yx, z: yz, ry: 0.6,
+      cries: ['Thirty drops and not one tangle!', 'Careful, puss — it just about clears your ears.', "Watch — down, and... caught it!"] })); }
 
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
