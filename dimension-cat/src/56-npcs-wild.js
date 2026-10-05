@@ -188,9 +188,9 @@ function makePigeon() {
 }
 
 // ---------------------------------------------------------------- sparrow (small streaky garden bird, hops and pecks)
-function makeSparrow() {
+function makeSparrow(o = {}) {
   const g = new THREE.Group(), rig = { group: g, legs: [] };
-  const brown = mat(0x8a6a44, { roughness: 0.85 }), streak = mat(0x4a3a28, { roughness: 0.8 }), pale = mat(0xe8dcc0, { roughness: 0.85 }),
+  const brown = mat(o.body ?? 0x8a6a44, { roughness: 0.85 }), streak = mat(o.streak ?? 0x4a3a28, { roughness: 0.8 }), pale = mat(o.pale ?? 0xe8dcc0, { roughness: 0.85 }),
     beakM = mat(0x3a3028, { roughness: 0.5 }), legM = mat(0xc9a06a, { roughness: 0.6 });
   const body = group(0, 0.065, 0, g); rig.body = body;
   mesh(G.bodySphere(12, 9), brown, { sx: 0.055, sy: 0.05, sz: 0.08, parent: body });

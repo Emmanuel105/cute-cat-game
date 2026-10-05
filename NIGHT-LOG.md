@@ -6642,3 +6642,30 @@ before, 0 FAILs, 0 console warnings, exit 0 every time). The Victorian town's ow
 (54 to meet, 95% of the ground walkable), since the ducks add NPCs but no greetable id and no physics
 box — they still land in the scene graph, before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 274 — a peppermint sparrow for Candy Land's open grass
+
+Counted every world's own ambient wildlife looking for this round's gap and Candy Land came up
+shortest: a sugar mouse, a mint hare and a sky of butterflies, nothing else — every other world has a
+ground-pecking bird of its own too (the Neighborhood's sparrow, Victorian's two pigeons, Sunny Shore's
+sandpipers), and Candy Land never got one. **A peppermint-red-and-white sparrow now hops the open
+grass north of the lane**, pecking at the ground between hops exactly like every other world's own
+small birds. Purely ambient — no dialogue, no greeting, no effect on the friend count.
+
+No new rig: it's the same `makeSparrow()` every other world's sparrow already uses, but the function
+took no colour options until now, so it gained `o.body` / `o.streak` / `o.pale` overrides — the same
+kind `makeDove()` and `makeDroneFly()` already had — defaulting to the Neighborhood sparrow's own
+plain brown so every existing call is untouched. Placed at (-29, 40) with a 1.6 m leash, found by
+writing a small Node probe script (reusing the test harness's own stub-three setup) that travelled
+the real game to Candy Land, sampled every NPC's position continuously over 400 frames so no
+wandering gingerbread man or ring dancer mid-turn could slip past unnoticed, and swept a grid of the
+open heart against both those samples and every one of the land's physics boxes: (-29, 40) came back
+clearest, 10.9 m from anything else, north of the market stalls and well short of the castle approach.
+
+Verified: `node dimension-cat/test/run.mjs` three times in a row — all passed clean (273 `ok` lines, 0
+FAILs, 0 console warnings, exit 0 every time; the handful of timing-jittery numbers this log has
+flagged before — Sunny Shore's kite height, Frosty Peak's snowball count, a few resting-y values —
+moved run to run exactly as they already did before this change, unrelated to it). Candy Land's own
+counts are unchanged (48 to meet, 91% of the ground walkable), since the new sparrow adds an NPC but
+no greetable id and no physics box — it still lands in the scene graph, before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

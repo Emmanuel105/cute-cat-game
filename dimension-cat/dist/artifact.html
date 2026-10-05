@@ -3585,9 +3585,9 @@ function makePigeon() {
 }
 
 // ---------------------------------------------------------------- sparrow (small streaky garden bird, hops and pecks)
-function makeSparrow() {
+function makeSparrow(o = {}) {
   const g = new THREE.Group(), rig = { group: g, legs: [] };
-  const brown = mat(0x8a6a44, { roughness: 0.85 }), streak = mat(0x4a3a28, { roughness: 0.8 }), pale = mat(0xe8dcc0, { roughness: 0.85 }),
+  const brown = mat(o.body ?? 0x8a6a44, { roughness: 0.85 }), streak = mat(o.streak ?? 0x4a3a28, { roughness: 0.8 }), pale = mat(o.pale ?? 0xe8dcc0, { roughness: 0.85 }),
     beakM = mat(0x3a3028, { roughness: 0.5 }), legM = mat(0xc9a06a, { roughness: 0.6 });
   const body = group(0, 0.065, 0, g); rig.body = body;
   mesh(G.bodySphere(12, 9), brown, { sx: 0.055, sy: 0.05, sz: 0.08, parent: body });
@@ -7106,7 +7106,20 @@ function buildCandyLand(game, entry) {
   { const rig = makeMintHare();
     game.npcs.push(new Hopper(game, rig, { x: -17, z: -46, leash: 1.6, r: 0.15, dist: [0.3, 0.8], dur: 0.3, height: 0.26, idle: [1, 3.5],
       onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } })); }
-  // the mouse and the hare are both ground-bound; Whisper Woods alone has a whole sky of butterflies
+  // the mouse and the hare are both ground-bound mammals; every other world's own ground-pecking bird
+  // (the Neighborhood's sparrow, Victorian's pigeons, Sunny Shore's sandpipers) is a plain reskin of
+  // `makeSparrow`'s own rig, and Candy Land never had one of its own, past the butterflies overhead. A
+  // peppermint sparrow now hops the open grass north of the lane, recoloured candy red and white —
+  // `makeSparrow` took no colour options until now, so it gained the same `o.body` / `o.streak` /
+  // `o.pale` overrides `makeDove` and `makeDroneFly` already had, defaulting to the Neighborhood
+  // sparrow's own brown so nothing else that calls it changes. A headless probe swept a grid of the
+  // open heart against every physics box and 400 frames of every wandering gingerbread man and ring
+  // dancer: (-29, 40) came back clearest, 10.9 m from anything else — north of the market stalls and
+  // well short of the castle approach (z > 70), inside the 1.6 m leash given here.
+  { const rig = makeSparrow({ body: 0xd6334a, streak: 0xffffff, pale: 0xfff2ea });
+    game.npcs.push(new Hopper(game, rig, { x: -29, z: 40, leash: 1.6, r: 0.08, dist: [0.3, 0.6], dur: 0.28, height: 0.14, idle: [1, 3.2],
+      onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } })); }
+  // the mouse, the hare and the sparrow are all ground-bound; Whisper Woods alone has a whole sky of butterflies
   // drifting over it, and Candy Land, pastel and sugar-dusted as it is, never had any of its own. Six
   // now loop lazily over the open heart of the land — same `makeButterfly()` rig and `Flyer` controller
   // the woods already use (no new geometry, `TEX.wing(hue)` takes any hue), recoloured candy pink,
