@@ -9105,9 +9105,16 @@ function buildForest(game, entry) {
     W.add(artist.group);
     game.npcs.push(new Painter(game, artist, makeEasel(), { x: 6, z: 20, ry: -2.0,
       cries: ['The light here is far too good to waste.', "I swear that mushroom moved when I wasn't looking.", 'Nearly got the whiskers right, this time.'] })); }
-  // a child chases fireflies near the glade with a jam-jar, never quite catching one
+  // a child chases fireflies near the glade with a jam-jar, never quite catching one — the dialogue has
+  // named the jar since round 127's own build, but nothing was ever actually in the kid's hand. One now
+  // hangs from a wire bail handle gripped in the right fist: empty glass, same as the cries keep admitting.
   { const chaser = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true }), shirt: 0x3a6a4a, pants: 0x2e4a3a, shoes: 0x3a2a1e, hat: null, scarf: null, jacket: null, bag: null, glasses: false });
     W.add(chaser.group);
+    const jar = group(0, 0.0, 0.08, chaser.hands[0]); jar.rotation.x = 0.1;
+    const glassM = mat(0xdce8d8, { roughness: 0.15, transparent: true, opacity: 0.35 }), lidM = mat(0x8a7a5a, { roughness: 0.6 }), wireM = mat(0x8a8a82, { metalness: 0.6, roughness: 0.4 });
+    mesh(G.cyl(0.04, 0.036, 0.09, 10), glassM, { y: -0.05, shadow: 'none', parent: jar });
+    mesh(G.cyl(0.042, 0.042, 0.015, 10), lidM, { y: 0.0025, shadow: 'none', parent: jar });
+    mesh(G.torus(0.045, 0.006, 5, 12), wireM, { y: 0.03, rx: PI / 2, shadow: 'none', parent: jar });
     game.npcs.push(new Wanderer(game, chaser, { x: -10, z: -8, speed: 1.1, leash: 7, height: 1.3, r: 0.3, idle: [1, 3], walk: [1.5, 4],
       cries: ['Nearly caught one!', 'They twinkle if you creep up slow.', "Don't tell my mum I'm still out."], cryIcon: '✨' })); }
   // an old whittler sits on the eastern stump, carving away at a block of wood

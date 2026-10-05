@@ -6280,3 +6280,27 @@ Verified: `node dimension-cat/test/run.mjs` — Whisper Woods' own counts update
 meet, 8 collectibles, 98% of the ground still walkable, unchanged from before), every other world
 unaffected, all 273 checks `ok`, 0 console warnings, exit 0 across two consecutive runs. Before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 261 — the firefly-chaser's jam jar, actually in her hand
+
+Whisper Woods has had a child near the glade chasing fireflies since round 127, her own cries
+("Nearly caught one!", "They twinkle if you creep up slow.") naming the jam-jar she's hunting with —
+but nobody ever modelled one. Every other prop-carrying soul in these seven worlds (the chopper's
+axe, the sculptor's trowel, the mechanic's wrench) actually holds the thing their dialogue describes;
+this kid alone was empty-handed. **She now swings an actual glass jam jar from a wire bail handle,
+gripped in her right fist** — empty, same as her own lines keep admitting nothing's caught yet.
+
+Three small meshes (a tapered glass-look cylinder body, a short lid, a thin wire torus for the
+handle) parented straight onto `chaser.hands[0]`, the same local-offset convention every other
+hand-held tool in this codebase already uses (the raker's rake, the griller's tongs, the chalker's
+chalk) — no new controller, no `U.push`, no physics box: it just rides along with whatever
+`Wanderer`'s own arm-swing animation already does to that hand every frame. Pure reskin of existing
+primitives (`G.cyl`, `G.torus`), nothing baked that would need `userData.keep` or `userData.update`,
+and no draw on this world's own seeded `r` or the shared `rnd()`, so it can't disturb any later
+wardrobe pick or timing-sensitive check anywhere in this build or any built after it. No headless
+probe was needed this round — the change adds no new ground footprint, zone, or NPC, so there was
+nothing new to sweep for clearance.
+
+Verified: `node dimension-cat/test/run.mjs` — all checks `ok`, friend counts and walkable-ground
+percentages unchanged in every world, 0 console warnings, exit 0 across two consecutive runs. Before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
