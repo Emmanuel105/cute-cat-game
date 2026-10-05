@@ -6324,3 +6324,26 @@ Verified: `node dimension-cat/test/run.mjs` twice in a row — Robot City's own 
 meet` to `48 to meet`, ground-walkable held at 88%, every NPC (the new kite kid included) still in the
 scene graph, all checks `ok`, 0 console warnings, exit 0 both times, before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 263 — butterflies for Candy Land
+
+Candy Land's own wildlife was two creatures ground-bound to a single spot each (the sugar mouse by
+the cottage, the mint hare on the open grass) — thin next to Whisper Woods, which has a whole sky of
+a dozen butterflies drifting over it and nothing else like them anywhere in the other five worlds.
+**Six pastel butterflies now loop lazily over the open heart of Candy Land**, pink, gold, cyan and
+purple to match the castle's own palette, reusing the exact same `makeButterfly()` rig and `Flyer`
+controller the woods already run — no new geometry, `TEX.wing(hue)` already takes any hue going in.
+
+Unlike the mouse and the hare, a `Flyer` never touches the ground or the physics grid; it just orbits
+a centre point 1.2-2.4 m up, so no headless probe was needed the way every ground-bound critter before
+it has needed one. The orbit centres are drawn from `r.range(-32, 32)` on x and `r.range(-10, 40)` on
+z, which by construction keeps every one of them clear of the chocolate river (z -22..-14), the
+gingerbread cottage and sweet stall (z < -55) and the castle approach (z > 70) — the same way Whisper
+Woods' own butterflies already pass freely over tree trunks and canopy without a per-one clearance
+check. Pure background life, never greeted, so no world's friend count moves.
+
+Verified: `node dimension-cat/test/run.mjs` twice in a row — Candy Land's own counts held exactly where
+they were (48 to meet, 11 collectibles, 91% of the ground still walkable, physics box count unchanged
+at 296 — a `Flyer` adds no collider), every NPC including the six new butterflies still in the scene
+graph, all checks `ok`, 0 console warnings, exit 0 both times, before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

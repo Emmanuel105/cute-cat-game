@@ -832,6 +832,17 @@ function buildCandyLand(game, entry) {
   { const rig = makeMintHare();
     game.npcs.push(new Hopper(game, rig, { x: -17, z: -46, leash: 1.6, r: 0.15, dist: [0.3, 0.8], dur: 0.3, height: 0.26, idle: [1, 3.5],
       onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } })); }
+  // the mouse and the hare are both ground-bound; Whisper Woods alone has a whole sky of butterflies
+  // drifting over it, and Candy Land, pastel and sugar-dusted as it is, never had any of its own. Six
+  // now loop lazily over the open heart of the land — same `makeButterfly()` rig and `Flyer` controller
+  // the woods already use (no new geometry, `TEX.wing(hue)` takes any hue), recoloured candy pink,
+  // gold, cyan and purple to match the castle's own palette. `Flyer` never touches the ground or the
+  // physics grid — it orbits at 1.2-2.4 m up, well above the gumdrop patches and the lollipop stems it
+  // passes over, the same way the forest's own butterflies pass over tree trunks and canopy without a
+  // per-one clearance check. The x range (-32..32) and z range (-10..40) by construction stay clear of
+  // the chocolate river (z -22..-14), the gingerbread cottage and sweet stall (z < -55) and the castle
+  // approach (z > 70) — pure background life, never greeted, so no world's friend count moves.
+  for (let i = 0; i < 6; i++) { const rig = makeButterfly(r.pick([330, 45, 190, 300])); game.npcs.push(new Flyer(game, rig, { cx: r.range(-32, 32), cz: r.range(-10, 40), r: r.range(2, 4.5), h: r.range(1.2, 2.4), speed: r.range(1, 1.8), bob: 0.4, wobble: 0.9, cw: i % 2 === 0 })); }
 
   // candy canes, lollipops, gumdrops, cotton candy
   const canes = [[-6, 6], [7, 3], [-14, -4], [15, -8], [-22, 8], [24, 12], [-30, -2], [30, -4], [-10, 22], [12, 24], [-26, 20], [26, 24], [-18, -30], [16, -32], [-8, -40], [8, -42], [-36, -14], [34, -20], [-40, 26], [40, 30], [-28, -38], [26, -40], [-44, 4], [44, 8], [-2, 30], [4, -26], [-20, -12], [20, -14]];
