@@ -6169,3 +6169,26 @@ Verified: `node test/run.mjs` — Frosty Peak's own counts untouched (43 to meet
 of the ground still walkable), every other world unaffected, all 273 checks `ok`, 0 console
 warnings, exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 257 — a toy pinwheel for Victorian's first house
+
+The Neighborhood, Candy Land, Sunny Shore, Robot City, Frosty Peak and Whisper Woods all have a toy
+pinwheel spinning on the world clock by now — Victorian was the last of the seven left without one,
+past its own hanging baskets on every lamp and the wind chime by the last house's door. **One now
+stands in the grass just past the first house's own garden**, west of its iron fence, black, white
+and brick-red to match the terrace's own ironwork, as if a child left a toy out by the gate.
+
+Same geometry and spin trick as every pinwheel before it (`pivot.rotation.z = t * 3.6`, drawing only
+on the world clock `t`, never this world's own seeded `r`, so it can't shift any later wardrobe
+pick) — just reskinned, the same reskin-not-new-code choice every pinwheel since round 250 has made.
+A headless probe (loading the real game under the test harness's stub three.js, travelling to
+Victorian, and sweeping the gap west of the first house against every one of the town's 296 physics
+boxes and all 42 NPCs) put (-60.5, -7.5) over 5 m clear of the nearest box (that house's own wall)
+and 19 m clear of the nearest soul, short of the sidewalk strip (centred z=-5.6, half-width 1.1) and
+well inside the radius (88) where `victorianRegion`'s own procedural fill takes over. Needs only the
+same slim physics box (half-width 0.14) for its post that every pinwheel before it relies on.
+
+Verified: `node test/run.mjs` — Victorian's own counts untouched (54 to meet, 11 collectibles, 95%
+of the ground still walkable), every other world unaffected, all 273 checks `ok`, 0 console
+warnings, exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

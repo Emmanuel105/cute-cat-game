@@ -7573,6 +7573,28 @@ function buildVictorian(game, entry) {
     const f = makeIronFence(5.4); f.position.set(x + 1.2, 0, side * 7.6); W.add(f); P.addBox(x + 1.2, 0.6, side * 7.6, 5.4, 1.2, 0.2, { cam: false });
     U.push(((cx, cz) => (dt) => { if (r.chance(0.35 * dt * 4)) game.fx.emit(cx, h + 3.2, cz, { count: 1, color: 0x8a8a9a, speed: 0.2, up: 0.9, life: 3, gravity: -0.1, spread: 0.2 }); })(x - w * 0.3, side * 11.5 - d * 0.15 * (side === -1 ? 1 : -1)));
   }
+  // the Neighborhood, Candy Land, Sunny Shore, Robot City, Frosty Peak and Whisper Woods all have a
+  // toy pinwheel spinning on the world clock by now — Victorian was the last of the seven left
+  // without one, past its own hanging baskets and the last house's own wind chime. One now stands in
+  // the grass just past the first house's own garden, west of its iron fence, as if a child left a
+  // toy out by the gate. Same geometry and spin trick as every pinwheel before it
+  // (`pivot.rotation.z = t * 3.6`, drawing only on the world clock `t`, never this world's own seeded
+  // `r`, so it can't shift any later wardrobe pick) — just reskinned in black, white and brick-red to
+  // match the terrace's own ironwork. A headless probe swept the gap west of the first house (x=-58,
+  // fence spanning x=-59.5..-54.1) against every one of the town's 296 physics boxes and 42 NPCs:
+  // (-60.5, -7.5) came back clear by over 5 m of the nearest box (that house's own wall) and 19 m of
+  // the nearest soul, well short of the sidewalk strip (centred z=-5.6, half-width 1.1) and the radius
+  // (88) where victorianRegion's own procedural fill takes over.
+  { const px = -60.5, pz = -7.5, stickH = 0.7, bladeLen = 0.28;
+    const pin = group(px, 0, pz, W), stickMat = mat(0x1e1e24, { roughness: 0.6 }), hubMat = mat(0xd8d8d8, { metalness: 0.5, roughness: 0.3 });
+    mesh(G.cyl(0.018, 0.022, stickH, 8), stickMat, { y: stickH / 2, parent: pin });
+    const pivot = group(0, stickH, 0, pin);
+    const bladeColors = [0x8b1a1a, 0xf7f3ec, 0x1e1e24, 0xf7f3ec];
+    for (let bi = 0; bi < 4; bi++) { const theta = bi * PI / 2, bx = cos(theta) * bladeLen / 2, by = sin(theta) * bladeLen / 2;
+      mesh(G.box(bladeLen, 0.2, 0.02), mat(bladeColors[bi], { roughness: 0.5 }), { x: bx, y: by, rz: theta, parent: pivot }); }
+    mesh(G.sphere(0.045, 8, 6), hubMat, { parent: pivot });
+    U.push((dt, t) => { pivot.rotation.z = t * 3.6; });
+    P.addBox(px, stickH / 2, pz, 0.14, stickH, 0.14, { cam: false }); }
   // lamps along the street (real point lights)
   const vicLamps = [];
   for (let i = 0; i < 12; i++) { const x = -60 + i * 10.5, z = (i % 2 ? 1 : -1) * 6.4; if (abs(x + 38) < 3) continue; const lamp = makeLamp('victorian'); vicLamps.push(lamp); place(game, U, lamp, x, z, 0); P.addBox(x, 2, z, 0.4, 4, 0.4, { cam: false }); }
