@@ -6770,3 +6770,27 @@ FAILs, 0 console warnings, exit 0 every time, physics box count unchanged at 296
 own counts are untouched (45 to meet, 96% of the ground walkable), since the signpost already had its
 box and gains no greetable id — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 279 — dolphins out past Sunny Shore's own pier
+
+Every other world's water has had something living on it for a while now — ducks on the park pond, the
+Victorian canal, Candy Land's chocolate river and Whisper Woods' glow pond — but Sunny Shore's own open
+sea, past the wade-blocking wall at x=33, had been empty water since round 1: just the foam line, the
+sea shader and the horizon. **A pair of dolphins now porpoises on a slow circuit far out past the
+pier**, each breaking the surface for a moment every lap or so before sinking back under, in a loose
+leapfrogging rhythm rather than leaping in lockstep.
+
+No new controller: the pod copies the park/canal/river/pond ducks' own fixed-phase circular orbit
+(round 199 onward) rather than a straight-line swim, with a porpoising height curve layered on top of
+the same `x = cx + cos(a) * r` orbit math, and `group.visible` toggled off while a dolphin is submerged
+so nothing gets drawn mid-dive. The circuit (centre x=72, 32–36 m radius) sits entirely past the swim
+flags and the lighthouse's own rocks, comfortably inside `SHORE_LIMIT` (196) for the fog and horizon to
+still read right, but miles past the physics box at x=33 the cat can never cross — so neither dolphin
+needed a physics box, a zone, or a greetable id of its own; they're ambient scenery, like the ducks.
+The rig itself (`makeDolphin` in `56-npcs-wild.js`) is new: a grey-blue body, a beak, a flattened dorsal
+fin, two pectoral fins and a tail fluke, baked the same way as every other wild creature in the file.
+
+Verified: `node dimension-cat/test/run.mjs` three times in a row — all passed clean, 0 FAILs, 0 console
+warnings, exit 0 every time, physics box count unchanged at 296. Sunny Shore's own counts are untouched
+(44 to meet, 99% of the ground walkable), since the dolphins add no greetable id and no box — before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

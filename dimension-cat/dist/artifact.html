@@ -3629,6 +3629,22 @@ function makeDuck(o = {}) {
   return rig;
 }
 
+// ---------------------------------------------------------------- dolphin (porpoises in open water, no legs or ground contact — the whole rig is moved and tilted by its caller)
+function makeDolphin(o = {}) {
+  const g = new THREE.Group(), rig = { group: g };
+  const skin = mat(o.color ?? 0x5b6b7c, { roughness: 0.3, metalness: 0.1 }), belly = mat(0xe4e9ee, { roughness: 0.4 }), dark = mat(0x161616);
+  const body = group(0, 0, 0, g); rig.body = body;
+  mesh(G.bodySphere(16, 12), skin, { sx: 0.16, sy: 0.17, sz: 0.6, parent: body });
+  mesh(G.bodySphere(14, 10), belly, { y: -0.07, sx: 0.12, sy: 0.1, sz: 0.48, shadow: 'none', parent: body });
+  mesh(G.cone(0.055, 0.22, 10), skin, { y: -0.01, z: 0.58, rx: PI / 2, shadow: 'none', parent: body });              // beak
+  mesh(G.cone(0.15, 0.26, 4), skin, { y: 0.19, sx: 0.32, sz: 1.3, shadow: 'none', parent: body });                   // dorsal fin
+  for (const side of [1, -1]) mesh(G.box(0.14, 0.02, 0.08), skin, { x: side * 0.15, y: -0.03, z: 0.16, rz: side * 0.4, shadow: 'none', parent: body });   // pectoral fins
+  for (const side of [1, -1]) mesh(G.sphere(0.012, 6, 6), dark, { x: side * 0.08, y: 0.04, z: 0.42, shadow: 'none', parent: body });                      // eyes
+  mesh(G.box(0.42, 0.025, 0.17), skin, { z: -0.62, shadow: 'none', parent: body });                                  // tail fluke
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- penguin
 function makePenguin(o = {}) {
   const g = new THREE.Group(), rig = { group: g, flippers: [] }, k = o.scale ?? 1;
@@ -8628,6 +8644,29 @@ function buildBeach(game, entry) {
     game.npcs.push(new Follower(game, rig, { x: 17, z: -6, r: 0.25, height: 0.5, step: 0.25, idle: [0.5, 2], walk: [1, 3], leash: 5, speed: 1.8, range: 10, keep: 1.6, sfx: () => SFX.click() })); }
   for (let i = 0; i < 7; i++) { const rig = makeSeagull({ phase: i * 1.3 }); game.npcs.push(new Flyer(game, rig, { cx: 14 + r.range(-8, 8), cz: r.range(-30, 30), r: r.range(9, 18), h: r.range(5, 11), speed: r.range(3.5, 5), bob: 1.2, wobble: 3, cw: i % 2 === 0, phase: i })); }
   for (const [x, z] of [[22, -2], [24, 20]]) { const rig = makeTurtle(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x, z, speed: 0.35, leash: 5, r: 0.45, height: 0.5, step: 0.25, idle: [2, 5], walk: [3, 7] })); }
+  // the open sea past the wade limit (x=33) has been empty water since round 1 — nothing was ever living
+  // out there, only the foam line and the horizon. A pair of dolphins now porpoises on a slow circuit far
+  // out past the pier, each one surfacing for a moment every lap or so before sinking back under: the pod
+  // copies the park/canal/river/pond ducks' own fixed-phase circular orbit (round 199 onward) rather than
+  // a straight-line swim, just with a porpoising height curve layered on top and `group.visible` toggled
+  // off while submerged, so nothing is drawn mid-dive. The circuit (centre x=72, 32-36 m radius) sits
+  // entirely past the swim flags and the lighthouse's own rocks, inside `SHORE_LIMIT` (196) for the fog
+  // and horizon but miles past the wade-blocking physics box at x=33 the cat can never cross, so neither
+  // dolphin needs a physics box, a zone or a greetable id of its own.
+  { const dcx = 72, dcz = 0, waterY = 0, leapPeriod = 4.2;
+    const pod = [
+      { rig: makeDolphin({ color: 0x5b6b7c }), orad: 32, ospeed: 0.07, ophase: 0, lphase: 0 },
+      { rig: makeDolphin({ color: 0x6b7c8c }), orad: 36, ospeed: 0.07, ophase: 1.3, lphase: 2.1 },
+    ];
+    for (const d of pod) W.add(d.rig.group);
+    U.push((dt, t) => { for (const d of pod) {
+      const a = t * d.ospeed + d.ophase, dx = -sin(a), dz = cos(a);
+      const lp = ((t + d.lphase) % leapPeriod) / leapPeriod, raw = sin(lp * TAU);
+      const arc = raw > 0.5 ? (raw - 0.5) * 2 : 0;
+      d.rig.group.visible = arc > 0.02;
+      d.rig.group.position.set(dcx + cos(a) * d.orad, waterY + arc * 1.3, dcz + sin(a) * d.orad);
+      d.rig.group.rotation.set(arc > 0 ? -cos(lp * TAU) * 0.6 : 0, atan2(dx, dz), 0);
+    } }); }
   // sandpipers dart along the tideline on the open sand, well clear of the crabs' own homes, the lighthouse rocks and the swim-flag posts — ambient like the crabs and gulls, no greeting, no effect on the friend count
   for (const [x, z] of [[16, -24], [17, -38], [14, 44]]) { const rig = makeSandpiper(); game.npcs.push(new Hopper(game, rig, { x, z, leash: 1.6, r: 0.08, dist: [0.3, 0.7], dur: 0.28, height: 0.14, idle: [1, 3.5], onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } })); }
   const beachWard = makeWardrobe(r, {

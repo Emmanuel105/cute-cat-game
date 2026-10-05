@@ -232,6 +232,22 @@ function makeDuck(o = {}) {
   return rig;
 }
 
+// ---------------------------------------------------------------- dolphin (porpoises in open water, no legs or ground contact — the whole rig is moved and tilted by its caller)
+function makeDolphin(o = {}) {
+  const g = new THREE.Group(), rig = { group: g };
+  const skin = mat(o.color ?? 0x5b6b7c, { roughness: 0.3, metalness: 0.1 }), belly = mat(0xe4e9ee, { roughness: 0.4 }), dark = mat(0x161616);
+  const body = group(0, 0, 0, g); rig.body = body;
+  mesh(G.bodySphere(16, 12), skin, { sx: 0.16, sy: 0.17, sz: 0.6, parent: body });
+  mesh(G.bodySphere(14, 10), belly, { y: -0.07, sx: 0.12, sy: 0.1, sz: 0.48, shadow: 'none', parent: body });
+  mesh(G.cone(0.055, 0.22, 10), skin, { y: -0.01, z: 0.58, rx: PI / 2, shadow: 'none', parent: body });              // beak
+  mesh(G.cone(0.15, 0.26, 4), skin, { y: 0.19, sx: 0.32, sz: 1.3, shadow: 'none', parent: body });                   // dorsal fin
+  for (const side of [1, -1]) mesh(G.box(0.14, 0.02, 0.08), skin, { x: side * 0.15, y: -0.03, z: 0.16, rz: side * 0.4, shadow: 'none', parent: body });   // pectoral fins
+  for (const side of [1, -1]) mesh(G.sphere(0.012, 6, 6), dark, { x: side * 0.08, y: 0.04, z: 0.42, shadow: 'none', parent: body });                      // eyes
+  mesh(G.box(0.42, 0.025, 0.17), skin, { z: -0.62, shadow: 'none', parent: body });                                  // tail fluke
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- penguin
 function makePenguin(o = {}) {
   const g = new THREE.Group(), rig = { group: g, flippers: [] }, k = o.scale ?? 1;
