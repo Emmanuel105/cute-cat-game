@@ -6467,3 +6467,30 @@ warnings, exit 0 every time. Neighborhood's own counts moved exactly as expected
 7 collectibles and 96% of the ground walkable both unchanged, since a hand-held yo-yo adds a physics
 circle for the kid but no box), every NPC including the new yo-yo kid still in the scene graph, before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 268 — the coconuts Sunny Shore's own blurb promised
+
+Sunny Shore's world entry has read "Waves, crabs and coconuts" since the day it was written — but a
+read-through of `72-world-beach.js` turned up waves, crabs, gulls, turtles, sandpipers, two dozen
+people and even a dog, and not one single coconut anywhere on the sand. The blurb was the one thing in
+the whole world nobody had ever actually built. **A vendor now sets up in the dune grass north-west of
+the huts, a small pile of whole coconuts at her feet, cracking one open and fitting it with a straw and
+a tiny paper umbrella for the cat.** *"Fresh coconut! Straw's included."* / *"Careful, puss — the
+shell's sharper than it looks."* / *"Cracked that one myself. Mind the splinters."* Sunny Shore goes
+from 43 to 44 to meet.
+
+New `makeCoconutDrink()` in `62-props-nature.js` — a flattened brown sphere for the shell, a pale disc
+where it's cut open, a pink straw at an angle and a tiny cone-and-stick paper umbrella, held up in the
+vendor's hand the same way the ice-cream seller and the fish-and-chips fryer already hold theirs. New
+`Vendor` instance in `72-world-beach.js`, three small uncollidable coconut spheres piled by her feet
+(each under 0.2 m tall, like the shell scatter already dotting the sand, so no physics box is needed).
+Placed with a headless probe: every NPC's and the squirrel's own position sampled continuously over 30
+simulated seconds (so no wandering crab, turtle or sunbather mid-circuit could slip past unnoticed),
+swept against every physics box in the fully built world — `(-25, -6)` came back clear by 8.2 m in
+every direction, tucked into the dune grass between the musician and the sand-crab boy.
+
+Verified: `node dimension-cat/test/run.mjs` three times in a row — all passed clean, 273 checks, 0
+FAILs, 0 console warnings, exit 0 every time. Sunny Shore's own counts moved exactly as expected (44 to
+meet, up from 43; 8 collectibles and 99% of the ground walkable both unchanged, since the pile of
+coconuts carries no collider), every NPC including the new coconut vendor still in the scene graph,
+before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

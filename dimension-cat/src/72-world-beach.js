@@ -147,6 +147,22 @@ function buildBeach(game, entry) {
     const v = new Vendor(game, scoopSeller, makeIceCreamCone(), { x: cx, z: cz, ry: PI / 2, cryIcon: '🍦',
       cries: ['Ice cream! Cold as the sea!', "Melts fast in this sun — best hurry!", 'One scoop or two, puss?'] });
     game.npcs.push(v); greetable(game, v); }
+  // the beach's own blurb promises "waves, crabs and coconuts" but not one coconut was ever planted
+  // anywhere on the sand — a vendor now sets up in the dune grass north-west of the huts, a stack of
+  // whole coconuts at her feet, cracking one open and fitting it with a straw for the cat. A headless
+  // probe sampled every NPC's and the squirrel's own position continuously over 30 simulated seconds
+  // (so no wandering crab, turtle or sunbather mid-circuit could slip past unnoticed) and swept the dune
+  // grass against those samples and every physics box: (-25, -6) came back clear by 8.2 m in every
+  // direction, between the musician and the sand-crab boy with nothing else nearby.
+  { const cx = -25, cz = -6; game.zones.addCircle(cx, cz, 1.4);
+    const cocoWard = makeWardrobe(r, { shirts: [0x2e9e6e, 0xff7043, 0xffd54a], pants: [0x8a6a4a, 0x3a3a3a], shoes: [0xefe7d8, 0x8d6e63] });
+    const cocoSeller = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: cocoWard }),
+      apron: 0xf0dcae, hat: 'sunhat', hatColor: 0xd9c9a8, jacket: null, scarf: null });
+    W.add(cocoSeller.group);
+    for (const [ox, oz] of [[-0.3, 0.2], [-0.15, 0.4], [-0.4, 0.45]]) mesh(G.sphere(0.1, 8, 6), mat(0x5a3a22, { roughness: 0.95 }), { x: cx + ox, y: P.ground0(cx + ox, cz + oz) + 0.08, z: cz + oz, parent: W });   // whole coconuts piled at her feet
+    const v = new Vendor(game, cocoSeller, makeCoconutDrink(), { x: cx, z: cz, ry: atan2(7 - cx, 10 - cz), cryIcon: '🥥',
+      cries: ["Fresh coconut! Straw's included.", "Careful, puss — the shell's sharper than it looks.", "Cracked that one myself. Mind the splinters."] });
+    game.npcs.push(v); greetable(game, v); }
   // dunes: palms, grass tufts, driftwood
   const palmSpots = [[-20, 6], [-24, 16], [-18, 28], [-30, 30], [-34, -4], [-28, -14], [-38, 12], [-22, -32], [-36, -28], [-44, 2], [-42, 22], [-16, 40], [-30, 44], [-46, -18], [-12, 48], [-6, 34], [-4, -34], [-40, 40]];
   for (const [x, z] of palmSpots) { const p = makePalm(r, r.range(3.8, 5.6)); placeT(game, U, p, x, z, 0); boxT(game, x, z, 0.5, 5, 0.5, { cam: false }); }

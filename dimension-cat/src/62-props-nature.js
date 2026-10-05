@@ -476,6 +476,17 @@ function makeChipsCone() {
   }
   return g;
 }
+/** A halved coconut with a straw and a tiny paper umbrella, for a vendor to hold up. */
+function makeCoconutDrink() {
+  const g = new THREE.Group(), shell = mat(0x5a3a22, { roughness: 0.95 });
+  mesh(G.sphere(0.12, 10, 8), shell, { y: 0.1, sy: 0.85, parent: g });
+  mesh(G.cyl(0.095, 0.095, 0.015, 10), mat(0xf7f3ec, { roughness: 0.8 }), { y: 0.195, parent: g });   // the cut top, pale flesh
+  mesh(G.cyl(0.012, 0.012, 0.3, 6), mat(0xff6fb5, { roughness: 0.5 }), { x: 0.03, y: 0.32, z: 0.02, rx: 0.3, rz: 0.3, shadow: 'none', parent: g });   // the straw
+  const um = group(0.065, 0.24, 0, g);
+  mesh(G.cone(0.045, 0.012, 8), mat(0xffd54a, { roughness: 0.6 }), { shadow: 'none', parent: um });
+  mesh(G.cyl(0.004, 0.004, 0.09, 4), mat(0xf7f3ec, { roughness: 0.7 }), { y: -0.05, shadow: 'none', parent: um });   // the umbrella's stick
+  return g;
+}
 function makeIceCrystal(r = rnd, color = 0x9fe8ff) {
   const g = new THREE.Group(), m = glowMat(color, 0.8, { transparent: true, opacity: 0.85, roughness: 0.1 });
   const n = r.int(3, 5); for (let i = 0; i < n; i++) { const a = r() * TAU; mesh(G.cone(0.18, r.range(0.8, 1.8), 6), m, { x: cos(a) * 0.25, y: 0.4, z: sin(a) * 0.25, rx: r.range(-0.3, 0.3), rz: r.range(-0.3, 0.3), ry: a, shadow: 'none', parent: g }); }
