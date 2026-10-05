@@ -6744,3 +6744,29 @@ Verified: `node test/run.mjs` three times in a row — all passed clean, 0 FAILs
 exit 0 every time, physics box count unchanged at 296. Robot City's own counts are untouched (48 to
 meet, 89% of the ground walkable), since the statue already had its box and gains no greetable id —
 before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 278 — the Neighborhood's own signpost learns to talk
+
+Round 277's write-up named the pattern — the throne, the fountain and Robot City's statue had each
+had a one-off "walk up and look" toast for a while — and checking the rest of the game for the same
+gap turned up the most obvious miss of all: the wooden signpost at the edge of the park, the very
+first landmark the cat passes on its way out of the house, pointing an arm each at Park & portal,
+Sunny Shore, Frosty Peak and Whisper Woods, had stood there since round 1 with a physics box and
+nothing else. **The cat can now read the signpost** for a soft click and one of three dry little
+lines: *"Park & portal. Sunny Shore. Frosty Peak. Whisper Woods. No sign for Nap Here, strangely."*,
+*"Four arms, four doors, and the house behind you never gets one of its own."*, *"Whoever carved
+these letters clearly trusted a cat to read them."*
+
+Exactly the statue's own pattern: a single `game.addInteractable` added right where `buildNeighborhood`
+already builds the signpost in `70-worlds.js`, reusing the group `place()` already returns (previously
+discarded) rather than building anything new. No new mesh, no new physics box — the signpost's
+existing box (half-extent 0.3 in x and z) already keeps the cat from walking through the post, so the
+interactable's 2.4 m radius is reachable from any arm around it. The line is picked with `rnd.pick()`
+at the moment of use, same as the statue's and fountain's own lines, never the world's own seeded `r()`
+at build time, so no later wardrobe or colour draw in this build or any later one shifts.
+
+Verified: `node dimension-cat/test/run.mjs` three times in a row — all passed clean, 273 `ok` lines, 0
+FAILs, 0 console warnings, exit 0 every time, physics box count unchanged at 296. The Neighborhood's
+own counts are untouched (45 to meet, 96% of the ground walkable), since the signpost already had its
+box and gains no greetable id — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.

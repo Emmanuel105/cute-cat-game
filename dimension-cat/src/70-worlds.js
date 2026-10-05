@@ -575,7 +575,12 @@ function buildNeighborhood(game, entry) {
   makeLanternPath(game, -50, -12, -66, -36, 6);
   const hollow = makeHollowOak(game, 40, 78, PI, () => game.travel(WORLD_INDEX('forest'), 'from-hub')); U.push(hollow.userData.update);
   for (let i = 0; i < 10; i++) { const z = 56 + i * 2.2, x = 8 + i * 3.0 + sin(i) * 0.8; mesh(G.cyl(0.55, 0.6, 0.1, 9), mat(0x8a8a80, { roughness: 1 }), { x, y: 0.05, z, ry: r() * TAU, shadow: 'receive', parent: W }); }   // stepping stones to the oak
-  place(game, U, makeSignpost([['Park & portal', 0, 50], ['Sunny Shore', 78, 22], ['Frosty Peak', -72, -40], ['Whisper Woods', 40, 78]], -4.4, 8.9), -4.4, 8.9, 0); P.addBox(-4.4, 1.2, 8.9, 0.3, 2.4, 0.3, { cam: false });
+  const signpost = place(game, U, makeSignpost([['Park & portal', 0, 50], ['Sunny Shore', 78, 22], ['Frosty Peak', -72, -40], ['Whisper Woods', 40, 78]], -4.4, 8.9), -4.4, 8.9, 0); P.addBox(-4.4, 1.2, 8.9, 0.3, 2.4, 0.3, { cam: false });
+  // the throne, the fountain, Robot City's statue and the park portal ring have all had a one-off
+  // "walk up and look" toast for a while now, but the signpost that points the way to every other
+  // world from the moment the cat steps outside the house never got so much as a glance of its own.
+  const signLines = ['🪧 "Park & portal. Sunny Shore. Frosty Peak. Whisper Woods. No sign for Nap Here, strangely."', '🪧 "Four arms, four doors, and the house behind you never gets one of its own."', '🪧 "Whoever carved these letters clearly trusted a cat to read them."'];
+  game.addInteractable({ obj: signpost, radius: 2.4, label: () => 'Read the signpost', onUse: () => { SFX.click(); game.toast(rnd.pick(signLines), 3000); } });
   // collectibles + the gems by the squirrel
   const C = game.collectibles;
   C.add('yarn', -3.0, 0.1, 0.6); C.add('fish', -8, 5); C.add('mouse', -6.5, -6); C.add('star', 14, 50); C.add('fish', -14, 41); C.add('yarn', 21, 3); C.add('star', 40, 20); C.add('mouse', -30, 34);
