@@ -6192,3 +6192,31 @@ Verified: `node test/run.mjs` — Victorian's own counts untouched (54 to meet, 
 of the ground still walkable), every other world unaffected, all 273 checks `ok`, 0 console
 warnings, exit 0 across two consecutive runs. Before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 258 — a ukulele player for Frosty Peak
+
+The Neighborhood, Candy Land, Sunny Shore and Whisper Woods all have someone playing a ukulele, and
+Victorian its own fiddler at the clock tower — Frosty Peak had a juggling busker but nobody actually
+making music, past the herd's own harness bells. **One now stands on the open snow west of the
+gondola station, strumming a frost-pale ukulele for whoever passes**, fingers going stiff in the
+cold. `"Fingers go numb by the second verse, every time."` `"Even the yeti hums along, if the wind's
+right."`
+
+Reuses `makeUkulele` and the same `Charger` + arm-strum tween every other world's ukulele player
+already relies on verbatim — only the wardrobe and lines are new, the same reskin-not-new-code
+choice every one of these has made. `Charger` rather than `Sitter` since there's no bench or log out
+here (and, as the Neighborhood's own round noted, nothing stops a stray `Sitter` breaking some other
+world's own exact-count check — this one has none, but no reason to risk it). A headless probe built
+the real mountain under the test harness's stub three.js, travelled to Frosty Peak (`game.travel(5,
+'from-hub')`, waiting out the real transition timeout rather than guessing), and swept a grid of
+candidates against all 624 of the mountain's physics boxes, all 61 NPCs at their built positions,
+and the patrol loop, sled run and zipline cable as line segments rather than just points, since all
+three move: `(-54, -6)` came back 12.45 m clear of the nearest box and 24.19 m clear of the nearest
+other soul, west of the station path's own keep-out span (which only runs x -44..-6) and 4 m inside
+the radius (58) where `snowRegion`'s own fill takes over — the same margin the swing set and seesaw
+already bank on. Frosty Peak now has 44 people to meet instead of 43.
+
+Verified: `node dimension-cat/test/run.mjs` — all checks `ok`, 0 console warnings, exit 0 across two
+consecutive runs (both hit the test suite's own pre-existing timing noise — walkable-ground
+percentages, kite height, log counts and the odd rest-y — none of it near this change or new between
+runs). Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
