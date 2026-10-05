@@ -6794,3 +6794,26 @@ Verified: `node dimension-cat/test/run.mjs` three times in a row — all passed 
 warnings, exit 0 every time, physics box count unchanged at 296. Sunny Shore's own counts are untouched
 (44 to meet, 99% of the ground walkable), since the dolphins add no greetable id and no box — before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 280 — the fairy ring actually grants a wish
+
+The storyteller south of Whisper Woods' glade has sworn for rounds now that three turns of the fairy
+ring earns a wish, and the ring-dance kids east of it sing the same line — but the ring itself, the 14
+mushrooms circling (-6, 8) since round 1, had never actually done anything. **The cat can now step
+inside the ring** for a soft chime, a scatter of fairy-light sparkles, and one of three wishes: *"Three
+turns, and the ring felt a little warmer underfoot."*, *"Somewhere, a fairy almost noticed."*, *"Wish
+granted. Terms and conditions may apply."*
+
+Same trick as the Candy Land fountain's own wishes: the line is picked with `rnd.pick()` at the moment
+of use, never this world's own seeded `r` at build time. No new mesh and no physics box — the ring has
+always been open ground, so a bare marker group dropped at its own centre is all `addInteractable`
+needed, at a 7 m radius wide enough to catch the cat anywhere inside the ring's own 6.5 m spread, not
+just right at the rim. Checked clear of every neighbour: 13.4 m from the treehouse, 19.8 m from the
+glowing pond.
+
+Verified: `node dimension-cat/test/run.mjs` several times in a row — exit 0 and 0 console warnings every
+time, physics box count unchanged at 296, Whisper Woods' own counts untouched (46 to meet, 98% of the
+ground walkable), since the ring gains no greetable id and no box. One run (on this change, and
+independently confirmed on the unmodified code too) hit a single unrelated flake in Victorian's own
+horse-and-carriage movement check — a pre-existing, timing-sensitive test, not anything this round
+touched — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

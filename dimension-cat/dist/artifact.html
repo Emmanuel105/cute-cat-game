@@ -9405,6 +9405,22 @@ function buildForest(game, entry) {
     } });
     let quackT = 7; U.push((dt) => { quackT -= dt; if (quackT <= 0) { SFX.squawk(); quackT = rnd.range(10, 18); } }); }
   for (let i = 0; i < 14; i++) { const a = i / 14 * TAU; const m = makeMushroom(0.45, r.pick([0, 300, 200]), r, true); placeT(game, U, m, cos(a) * 6.5 - 6, sin(a) * 6.5 + 8, 0); if (m.userData.update) U.push(m.userData.update); }
+  // the storyteller and the ring-dance kids both swear three turns of the fairy ring earns a wish, but
+  // the ring itself — the 14 mushrooms circling (-6, 8) above — had never actually granted one; nothing
+  // ever happened if the cat walked into it. The cat can now step inside for a soft chime, a scatter of
+  // fairy-light sparkles, and one of three wishes, picked with `rnd.pick()` at the moment of use (the
+  // same trick the Candy Land fountain's own wishes already use) rather than this world's own seeded `r`
+  // at build time, so it can't shift any later mushroom hue or butterfly colour pick. No new mesh and no
+  // physics box: the ring has stood open ground since round 1 (`placeT` with no `boxT` call, just above),
+  // so a bare marker group at its own centre is all `addInteractable` needs — at a 7 m radius, wide enough
+  // to catch the cat anywhere inside the ring's own 6.5 m spread, not just right at the rim. Clear of
+  // every neighbour checked: 13.4 m from the treehouse, 19.8 m from the glowing pond, well past both.
+  { const rcx = -6, rcz = 8, ry0 = P.ground0(rcx, rcz);
+    const ringCenter = group(rcx, ry0, rcz, W);
+    const ringWishes = ['🧚 Three turns, and the ring felt a little warmer underfoot.', '🧚 Somewhere, a fairy almost noticed.', '🧚 "Wish granted. Terms and conditions may apply."'];
+    game.addInteractable({ obj: ringCenter, radius: 7, label: () => 'Turn three times in the fairy ring', onUse: () => {
+      SFX.twinkle(); game.fx.emit(rcx, ry0 + 0.3, rcz, { count: 16, colors: [0xa8ff9a, 0xffd1ff, 0x9fe8ff], speed: 1.1, up: 1.4, life: 1.0, gravity: 2 });
+      game.toast(rnd.pick(ringWishes)); } }); }
   for (const [x, z, s, hue] of [[-14, -14, 2.6, 0], [16, 12, 3.2, 200], [-20, 0, 2.2, 300], [14, -20, 2.4, 40], [-2, -22, 2.9, 0], [24, -4, 2.0, 280], [-24, 20, 2.6, 200], [4, 24, 2.3, 0]]) { const m = makeMushroom(s, hue, r, true); placeT(game, U, m, x, z, 0); boxT(game, x, z, 0.5 * s, 1.3 * s, 0.5 * s, { cam: false }); U.push(m.userData.update); }
   for (let i = 0; i < 30; i++) { const x = r.range(-40, 40), z = r.range(-40, 40); if (dist2(x, z, 8, -6) < 36) continue; placeT(game, U, makeMushroom(r.range(0.25, 0.6), r.pick([0, 20, 200, 300, 40]), r, r.chance(0.4)), x, z, 0); }
   // trees: a ring at the edge and scattered giants
