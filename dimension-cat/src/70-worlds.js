@@ -841,6 +841,25 @@ function buildCandyLand(game, entry) {
     W.add(angler.group);
     game.npcs.push(new IceFisher(game, angler, makeIceStool(), { x: 26, z: -13, ry: PI, holeX: 26, holeZ: -18, holeY: 0.04,
       cries: ['Nothing bites in a chocolate river, but it never stops me trying.', "Careful, puss — one splash and that's a bath, not a paw-wash.", 'Best fudge-brown water in the land, this.'] })); }
+  // the Neighborhood's pond and the Victorian canal both got a duck pair that actually lives on the
+  // water rather than beside it; the chocolate river, the one other body of water with nobody on it,
+  // never did. A drake and a hen now paddle a 18 m stretch east of the last bridge — read straight off
+  // the source rather than a live probe, since a swimming duck carries no physics box of its own to
+  // sweep for: the bridge at x=46 is only 3.2 m wide (`makeCandyBridge`'s own `width` arg), so its deck
+  // ends at x=47.6, the angler's line is back at x=26, and the cane-forest ring that fills the radius
+  // 56-76 band explicitly skips `abs(z + 18) < 5` for its own entire 44-tree loop, leaving this whole
+  // stretch of river bank clear all the way out past the cupcake hills at z=36 and z=-46.
+  { const dz = -18, dMid = 70, dRange = 9, dY = 0.08;
+    const drake = makeDuck({ drake: true }); W.add(drake.group);
+    const hen = makeDuck({ drake: false }); W.add(hen.group);
+    const pair = [[drake, 0, 0.12], [hen, PI, 0.15]];
+    U.push((dt, t) => { for (const [d, phase, speed] of pair) {
+      const a = t * speed + phase, facing = cos(a) >= 0 ? PI / 2 : -PI / 2;
+      d.group.position.set(dMid + sin(a) * dRange, dY + sin(t * 2.4 + phase) * 0.01, dz);
+      d.group.rotation.y = facing;
+      d.head.rotation.x = sin(t * 0.6 + phase * 2) > 0.88 ? 0.5 : 0;   // the occasional dip toward the water
+    } });
+    let quackT = 7; U.push((dt) => { quackT -= dt; if (quackT <= 0) { SFX.squawk(); quackT = rnd.range(10, 18); } }); }
   // the outer sweet-lands: a candy-cane forest belt, cupcake hills, a gingerbread cottage, cookie paths
   for (let i = 0; i < 44; i++) { const a = i / 44 * TAU + r.range(-0.07, 0.07), d = r.range(56, 76), x = cos(a) * d, z = sin(a) * d; if (abs(z + 18) < 5) continue; const h = r.range(3, 5), c = makeCandyCane(h); c.position.set(x, 0, z); c.rotation.y = r() * TAU; W.add(c); P.addBox(x, h / 2, z, 0.5, h, 0.5, { cam: false }); }
   for (const [x, z, hue] of [[-58, 30, 330], [60, 36, 200], [-62, -44, 50], [58, -46, 120], [4, 64, 280], [-30, 62, 0], [34, -66, 330]]) {

@@ -6669,3 +6669,26 @@ moved run to run exactly as they already did before this change, unrelated to it
 counts are unchanged (48 to meet, 91% of the ground walkable), since the new sparrow adds an NPC but
 no greetable id and no physics box — it still lands in the scene graph, before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 275 — a duck pair for the chocolate river
+
+Round 273's own write-up named the gap and never closed it: "Candy Land's chocolate river and Robot
+City's canal still have nobody" on the water itself, unlike the Neighborhood's pond and the Victorian
+canal, both of which got a duck pair living right on the surface rather than beside it. **A drake and a
+hen now paddle an 18 m stretch of the chocolate river**, east of the last wafer bridge, dipping their
+heads to the fudge-brown water every few seconds with an occasional quack.
+
+No new rig, same `makeDuck()` the pond and canal pairs already use, and the same straight-line swim loop
+the canal ducks introduced in round 273 (`x = mid + sin(a) * range` at a fixed z, rather than orbiting a
+pond's centre) — fixed phases and speeds throughout, nothing drawn from the shared `r`, so no later
+wardrobe pick in this world shifts. Placed by reading the source rather than a live probe, since a
+swimming duck carries no physics box of its own to sweep for: `makeCandyBridge`'s own `width` argument
+is 3.2 m, so the bridge at x=46 ends its deck at x=47.6; the river's own angler sits back at x=26 with
+his line at (26,-18); and the candy-cane forest ring that fills the radius 56-76 band explicitly skips
+`abs(z + 18) < 5` for its entire 44-tree loop, leaving the whole river corridor clear past the bridge all
+the way out — the nearest cupcake hills sit at z=36 and z=-46, nowhere near the river's own z=-18.
+
+Verified: `node dimension-cat/test/run.mjs` twice in a row — both passed clean, 0 FAILs, 0 console
+warnings, exit 0 both times. Candy Land's own counts are unchanged (48 to meet, 91% of the ground
+walkable), since the ducks add NPCs but no greetable id and no physics box — they still land in the
+scene graph, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
