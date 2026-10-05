@@ -417,6 +417,14 @@ function buildSnowVillage(game, entry) {
     boxT(game, hx, hz, 0.4, 0.8, 0.6, { cam: false });
     const hid = game.namedFriend('dog');
     game.addInteractable({ obj: husky.group, radius: 2.2, label: () => 'Pet the husky', onUse: () => { game.befriend(hid); SFX.woof(); game.hearts(husky.group.position.x, 0.6, husky.group.position.z, 4); game.toast('🐕‍🦺 *happy tail wag*'); } }); }
+  // the birdwatcher up by the ice pond has her binoculars trained on the penguin colony, same as every round
+  // before this one — Candy Land, Sunny Shore and Whisper Woods all got an actual flock wheeling overhead
+  // (butterflies, gulls, fairies), but Frosty Peak's own sky, for all its aurora, never had a single real
+  // bird in it. A small flock of snow buntings now wheels high over the village, winter-white with dark
+  // wingtips and tail. Reuses the Flyer controller exactly as those other flocks do: it never touches the
+  // ground or the physics grid, so (like the Candy Land butterflies) this needed no headless clearance
+  // probe. Centred on the village square and high enough to clear the cabins and the zipline towers.
+  for (let i = 0; i < 6; i++) { const rig = makeSnowBird({ phase: i * 1.1 }); game.npcs.push(new Flyer(game, rig, { cx: 0, cz: 6, r: r.range(16, 30), h: r.range(14, 22), speed: r.range(1.6, 2.4), bob: 0.5, wobble: 1.4, cw: i % 2 === 0, phase: i * 1.1 })); }
   snowRegion(game, U, r, 58, PEAK_LIMIT - 8);
   makeHorizon(game, r, { clear: PEAK_LIMIT + 8, hills: true, hill: 0xe8eef6, rock: 0x6a7a94, rock2: 0x7e8ea6, snow: 0xf6fbff, snowLine: 26, peaks: 32, peakH: [46, 110], woodCount: 300, woodHue: [0.32, 0.42], woodLight: [0.12, 0.2], trunk: 0x4a3a2a });
   // gondola home (bottom station of the village)

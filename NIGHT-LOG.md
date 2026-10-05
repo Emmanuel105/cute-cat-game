@@ -6347,3 +6347,39 @@ they were (48 to meet, 11 collectibles, 91% of the ground still walkable, physic
 at 296 — a `Flyer` adds no collider), every NPC including the six new butterflies still in the scene
 graph, all checks `ok`, 0 console warnings, exit 0 both times, before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 264 — a real flock over Frosty Peak, at last
+
+Frosty Peak has had a birdwatcher by the ice pond since the mountain was built, binoculars trained
+on the penguin colony below — but for all the world's own aurora, snow crystals and sled run, there
+had never actually been a bird in its sky. Candy Land got a loop of butterflies, Sunny Shore its
+gulls, Whisper Woods both fairies and butterflies; Frosty Peak's own air was empty. **A small flock
+of six snow buntings now wheels high over the village square**, winter-white with dark wingtips and
+tail, banking and flapping on the wind above the cabins and the zipline towers.
+
+A new `makeSnowBird()` in `56-npcs-wild.js` — small bodied, a dark cap-less head this time (unlike
+the woodpecker's red one), proper flapping wings built the same way the seagull's own two-piece wing
+(root + tip) already works, just smaller and slower. Driven by the existing `Flyer` controller, the
+same one already doing duty as Candy Land's butterflies and the shore's gulls: it loops around a
+centre point in the air and never touches the ground or the physics grid, so — like those two rounds
+before it — this needed no headless clearance probe. Centred on the village square or (0, 6), looping
+at radius 16–30 m and height 14–22 m, comfortably clear of every cabin roof and the zipline cable.
+Placed last in `buildSnowVillage`, after everything else that draws from this world's own seeded `r`,
+so it disturbs no earlier wardrobe or prop pick in this build.
+
+One wrinkle: `Flyer` draws once from the *shared* `rnd()` sequence per instance (`this.t = rnd() * 10`),
+not just this world's own local `r` — six new birds means six new shared draws, shifting every
+timing-sensitive tick built after Frosty Peak in the test's travel order. Built and ran the suite
+six times in a row (plus three more before that) to be sure: all passed clean. One earlier run, done
+by accident in parallel with a second `node` process fighting it for CPU, threw a single flaky FAIL
+on the Victorian horse-and-carriage's "moved 2 m in 2 s" check — confirmed with the *unmodified* code
+that the same two-processes-at-once trick reproduces nothing (three clean runs), and three further
+sequential runs of the new code alone came back clean too. The game's frame clock is real wall-time
+(`THREE.Clock`, not a fixed step), so a borderline distance check like that one can wobble under
+system load regardless of any code change — not something this round's addition caused.
+
+Verified: `node dimension-cat/test/run.mjs` nine times total (nowhere near each other, no CPU
+contention) — all passed, Frosty Peak's own counts untouched (44 to meet, 8 collectibles, 97% of the
+ground still walkable, physics box count unchanged — a `Flyer` adds no collider), every NPC including
+the six new birds still in the scene graph, 0 console warnings, exit 0 every time, before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

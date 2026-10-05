@@ -3805,6 +3805,31 @@ function makeWoodpecker() {
   return rig;
 }
 
+// ---------------------------------------------------------------- snow bird (flyer: a small flock wheeling over the mountain)
+function makeSnowBird(o = {}) {
+  const g = new THREE.Group(), rig = { group: g, wings: [] };
+  const white = mat(o.color ?? 0xf4f6fa, { roughness: 0.85 }), dark = mat(0x2a2a2a, { roughness: 0.7 }), beakM = mat(0xd68a2a, { roughness: 0.5 });
+  const body = group(0, 0, 0, g); rig.body = body;
+  mesh(G.bodySphere(12, 9), white, { sx: 0.045, sy: 0.045, sz: 0.09, parent: body });
+  mesh(G.sphere(0.035, 10, 8), white, { y: 0.02, z: 0.08, parent: body });
+  mesh(G.cone(0.01, 0.035, 6), beakM, { y: 0.015, z: 0.1, rx: PI / 2, shadow: 'none', parent: body });
+  for (const side of [1, -1]) mesh(G.sphere(0.006, 6, 6), mat(0x111111), { x: side * 0.015, y: 0.03, z: 0.095, shadow: 'none', parent: body });
+  mesh(G.box(0.05, 0.015, 0.06), dark, { y: -0.005, z: -0.09, parent: body });   // dark tail, the one patch that isn't winter-white
+  for (const side of [1, -1]) {
+    const w = group(side * 0.03, 0.01, 0, body);
+    mesh(G.box(0.14, 0.012, 0.06), dark, { x: side * 0.07, parent: w });
+    const tipW = group(side * 0.14, 0, 0, w); mesh(G.box(0.1, 0.01, 0.045), white, { x: side * 0.05, parent: tipW });
+    rig.wings.push({ w, tipW, side });
+  }
+  rig.animate = (ph, moving, dt, t = 0) => {
+    const flap = sin(t * 9 + (o.phase ?? 0));
+    for (const W of rig.wings) { W.w.rotation.z = W.side * -flap * 0.7; W.tipW.rotation.z = W.side * -flap * 0.4; }
+    body.rotation.z = sin(t * 0.9) * 0.1;
+  };
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- fairy (flyer) + butterfly (flyer)
 function makeFairy(color = 0xa8ff9a) {
   const g = new THREE.Group(), rig = { group: g };
@@ -8987,6 +9012,14 @@ function buildSnowVillage(game, entry) {
     boxT(game, hx, hz, 0.4, 0.8, 0.6, { cam: false });
     const hid = game.namedFriend('dog');
     game.addInteractable({ obj: husky.group, radius: 2.2, label: () => 'Pet the husky', onUse: () => { game.befriend(hid); SFX.woof(); game.hearts(husky.group.position.x, 0.6, husky.group.position.z, 4); game.toast('🐕‍🦺 *happy tail wag*'); } }); }
+  // the birdwatcher up by the ice pond has her binoculars trained on the penguin colony, same as every round
+  // before this one — Candy Land, Sunny Shore and Whisper Woods all got an actual flock wheeling overhead
+  // (butterflies, gulls, fairies), but Frosty Peak's own sky, for all its aurora, never had a single real
+  // bird in it. A small flock of snow buntings now wheels high over the village, winter-white with dark
+  // wingtips and tail. Reuses the Flyer controller exactly as those other flocks do: it never touches the
+  // ground or the physics grid, so (like the Candy Land butterflies) this needed no headless clearance
+  // probe. Centred on the village square and high enough to clear the cabins and the zipline towers.
+  for (let i = 0; i < 6; i++) { const rig = makeSnowBird({ phase: i * 1.1 }); game.npcs.push(new Flyer(game, rig, { cx: 0, cz: 6, r: r.range(16, 30), h: r.range(14, 22), speed: r.range(1.6, 2.4), bob: 0.5, wobble: 1.4, cw: i % 2 === 0, phase: i * 1.1 })); }
   snowRegion(game, U, r, 58, PEAK_LIMIT - 8);
   makeHorizon(game, r, { clear: PEAK_LIMIT + 8, hills: true, hill: 0xe8eef6, rock: 0x6a7a94, rock2: 0x7e8ea6, snow: 0xf6fbff, snowLine: 26, peaks: 32, peakH: [46, 110], woodCount: 300, woodHue: [0.32, 0.42], woodLight: [0.12, 0.2], trunk: 0x4a3a2a });
   // gondola home (bottom station of the village)

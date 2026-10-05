@@ -439,6 +439,31 @@ function makeWoodpecker() {
   return rig;
 }
 
+// ---------------------------------------------------------------- snow bird (flyer: a small flock wheeling over the mountain)
+function makeSnowBird(o = {}) {
+  const g = new THREE.Group(), rig = { group: g, wings: [] };
+  const white = mat(o.color ?? 0xf4f6fa, { roughness: 0.85 }), dark = mat(0x2a2a2a, { roughness: 0.7 }), beakM = mat(0xd68a2a, { roughness: 0.5 });
+  const body = group(0, 0, 0, g); rig.body = body;
+  mesh(G.bodySphere(12, 9), white, { sx: 0.045, sy: 0.045, sz: 0.09, parent: body });
+  mesh(G.sphere(0.035, 10, 8), white, { y: 0.02, z: 0.08, parent: body });
+  mesh(G.cone(0.01, 0.035, 6), beakM, { y: 0.015, z: 0.1, rx: PI / 2, shadow: 'none', parent: body });
+  for (const side of [1, -1]) mesh(G.sphere(0.006, 6, 6), mat(0x111111), { x: side * 0.015, y: 0.03, z: 0.095, shadow: 'none', parent: body });
+  mesh(G.box(0.05, 0.015, 0.06), dark, { y: -0.005, z: -0.09, parent: body });   // dark tail, the one patch that isn't winter-white
+  for (const side of [1, -1]) {
+    const w = group(side * 0.03, 0.01, 0, body);
+    mesh(G.box(0.14, 0.012, 0.06), dark, { x: side * 0.07, parent: w });
+    const tipW = group(side * 0.14, 0, 0, w); mesh(G.box(0.1, 0.01, 0.045), white, { x: side * 0.05, parent: tipW });
+    rig.wings.push({ w, tipW, side });
+  }
+  rig.animate = (ph, moving, dt, t = 0) => {
+    const flap = sin(t * 9 + (o.phase ?? 0));
+    for (const W of rig.wings) { W.w.rotation.z = W.side * -flap * 0.7; W.tipW.rotation.z = W.side * -flap * 0.4; }
+    body.rotation.z = sin(t * 0.9) * 0.1;
+  };
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- fairy (flyer) + butterfly (flyer)
 function makeFairy(color = 0xa8ff9a) {
   const g = new THREE.Group(), rig = { group: g };
