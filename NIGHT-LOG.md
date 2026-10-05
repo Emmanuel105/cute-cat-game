@@ -6692,3 +6692,31 @@ Verified: `node dimension-cat/test/run.mjs` twice in a row — both passed clean
 warnings, exit 0 both times. Candy Land's own counts are unchanged (48 to meet, 91% of the ground
 walkable), since the ducks add NPCs but no greetable id and no physics box — they still land in the
 scene graph, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 276 — ducks for Whisper Woods' own glowing pond
+
+Rounds 199, 273 and 275 each closed the same gap world by world — something actually living on the
+water, not just working its edge — for the park pond, the Victorian canal and Candy Land's chocolate
+river. None of those write-ups ever checked Whisper Woods' own glowing pond in the glade, even though
+it's had lily pads scattered across it since the world was first built: the six frogs only ever hop
+its rim (at radius 5.6, outside the pond's own 4.5 m edge) and the angler only ever works the bank.
+**A drake and a hen now paddle slow circles on the glow pond itself**, dipping their heads toward the
+glow every few seconds with an occasional quack — the water finally has something living on it, the
+last of the seven worlds' ponds, canals and rivers to get one.
+
+No new rig, same `makeDuck()` every other pair already uses, and the same fixed-phase circular orbit
+the park pond's own ducks introduced in round 199 (`x = cx + cos(a) * prad`, rather than the straight-
+line swim the canal and river pairs needed) — nothing here draws from this world's own seeded `r`, so
+no later mushroom hue or butterfly colour pick shifts. The one wrinkle the flat-floored worlds never
+had to think about: Whisper Woods' terrain is bumpy, so the ducks' own height is read once from
+`P.ground0(8, -6)` (the same call the pond's own construction already makes for itself) rather than a
+fixed number, then held steady at that height plus a small swim-bob — unlike Victorian and Candy
+Land, where the floor is flat and every prop's y is just a constant. The 2.3 m swim ring sits well
+inside the pond's own 4.5 m radius, short of the reeds (which only start past 5.0 m out) and mostly
+clear of the lily pads scattered closer to the centre, the same margin round 199's own ducks kept from
+the park pond's rocks.
+
+Verified: `node dimension-cat/test/run.mjs` three times in a row — all passed clean, 0 FAILs, 0 console
+warnings, exit 0 every time. Whisper Woods' own counts are unchanged (46 to meet, 98% of the ground
+walkable), since the ducks add NPCs but no greetable id and no physics box — they still land in the
+scene graph, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

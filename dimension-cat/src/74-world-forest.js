@@ -12,6 +12,26 @@ function buildForest(game, entry) {
 
   // the glade: fairy ring, glowing pond, giant mushrooms, lantern strings
   const pond = makeGlowPond(game, 8, -6, 4.5, r); U.push(pond.userData.update);
+  // the Neighborhood's park pond (round 199), the Victorian canal (round 273) and Candy Land's chocolate
+  // river (round 275) all got something actually living on the water, but the survey that closed those
+  // gaps never checked this glade's own glowing pond — the frogs only ever hop its rim and the angler
+  // only ever works its edge, same as the painter and the old fisherman did before round 199. A drake and
+  // a hen now paddle slow circles on the pond itself, dipping their heads toward the glow every few
+  // seconds with an occasional quack. Fixed phases and speeds throughout, nothing drawn from this world's
+  // own seeded `r`, so no later mushroom hue or butterfly colour pick shifts. The 2.3 m swim ring sits
+  // well inside the pond's own 4.5 m radius, short of the reeds that only start past 5.0 m out, the same
+  // margin the park pond's own ducks kept from its rocks.
+  { const pcx = 8, pcz = -6, prad = 2.3, pY0 = P.ground0(pcx, pcz);
+    const drake = makeDuck({ drake: true }); W.add(drake.group);
+    const hen = makeDuck({ drake: false }); W.add(hen.group);
+    const ducks = [[drake, 0, 0.17], [hen, PI, 0.22]];
+    U.push((dt, t) => { for (const [d, phase, speed] of ducks) {
+      const a = t * speed + phase, dx = -sin(a), dz = cos(a);
+      d.group.position.set(pcx + cos(a) * prad, pY0 + 0.07 + sin(t * 2.2 + phase) * 0.012, pcz + sin(a) * prad);
+      d.group.rotation.y = atan2(dx, dz);
+      d.head.rotation.x = sin(t * 0.6 + phase * 2) > 0.88 ? 0.5 : 0;   // the occasional dip toward the glow
+    } });
+    let quackT = 7; U.push((dt) => { quackT -= dt; if (quackT <= 0) { SFX.squawk(); quackT = rnd.range(10, 18); } }); }
   for (let i = 0; i < 14; i++) { const a = i / 14 * TAU; const m = makeMushroom(0.45, r.pick([0, 300, 200]), r, true); placeT(game, U, m, cos(a) * 6.5 - 6, sin(a) * 6.5 + 8, 0); if (m.userData.update) U.push(m.userData.update); }
   for (const [x, z, s, hue] of [[-14, -14, 2.6, 0], [16, 12, 3.2, 200], [-20, 0, 2.2, 300], [14, -20, 2.4, 40], [-2, -22, 2.9, 0], [24, -4, 2.0, 280], [-24, 20, 2.6, 200], [4, 24, 2.3, 0]]) { const m = makeMushroom(s, hue, r, true); placeT(game, U, m, x, z, 0); boxT(game, x, z, 0.5 * s, 1.3 * s, 0.5 * s, { cam: false }); U.push(m.userData.update); }
   for (let i = 0; i < 30; i++) { const x = r.range(-40, 40), z = r.range(-40, 40); if (dist2(x, z, 8, -6) < 36) continue; placeT(game, U, makeMushroom(r.range(0.25, 0.6), r.pick([0, 20, 200, 300, 40]), r, r.chance(0.4)), x, z, 0); }
