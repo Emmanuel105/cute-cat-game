@@ -8125,7 +8125,24 @@ function buildVictorian(game, entry) {
       P.addBox(bx, 0.4, 30, 4.4, 0.8, 10.4, { cam: false });
       for (const s of [-1, 1]) P.addBox(bx + s * 2.0, 1.4, 30, 0.3, 1.2, 10.4, { cam: false, walk: false });
     }
-    for (const x of [-40, 20, 40, -140, 150, 70, -70]) { const b = makeBoat(r.pick([0x3f6fd6, 0x7a1f1f])); b.userData.y0 = -0.3; b.scale.setScalar(1.2); place(game, U, b, x, 30, r() * TAU, -0.3); } }
+    for (const x of [-40, 20, 40, -140, 150, 70, -70]) { const b = makeBoat(r.pick([0x3f6fd6, 0x7a1f1f])); b.userData.y0 = -0.3; b.scale.setScalar(1.2); place(game, U, b, x, 30, r() * TAU, -0.3); }
+    // the canal had boats and two bank workers (the angler, the mudlark) but, like the Neighborhood's
+    // park pond before round 199, nothing ever actually lived on the water itself. A duck pair now
+    // paddles the one straight run of open canal with neither a boat nor a bridge in it at all — the
+    // 30 m stretch between the boats at x=40 and x=70 (the nearest bridge, at x=104, is well past the
+    // far one). Fixed numbers throughout, same as the pond ducks, so nothing here draws from the
+    // shared `r` and shifts any later wardrobe pick.
+    { const dz = 30, dMid = 55, dRange = 9, dY = -0.3;
+      const drake = makeDuck({ drake: true }); W.add(drake.group);
+      const hen = makeDuck({ drake: false }); W.add(hen.group);
+      const pair = [[drake, 0, 0.1], [hen, PI, 0.13]];
+      U.push((dt, t) => { for (const [d, phase, speed] of pair) {
+        const a = t * speed + phase, facing = cos(a) >= 0 ? PI / 2 : -PI / 2;
+        d.group.position.set(dMid + sin(a) * dRange, dY + sin(t * 2.4 + phase) * 0.01, dz);
+        d.group.rotation.y = facing;
+        d.head.rotation.x = sin(t * 0.6 + phase * 2) > 0.88 ? 0.5 : 0;   // the occasional dip toward the water
+      } });
+      let quackT = 8; U.push((dt) => { quackT -= dt; if (quackT <= 0) { SFX.squawk(); quackT = rnd.range(10, 18); } }); } }
   for (const x of [-52, -24, 8, 24, 48]) { place(game, U, makeLamp('victorian'), x, 25.3, 0); P.addBox(x, 2, 25.3, 0.4, 4, 0.4, { cam: false }); }
   // the canal had rowing boats but nobody minding a line; an old-timer takes the north bank between two lamps, rod dipped in
   { const anglerWard = makeWardrobe(r, { shirts: [0x4a5a4a, 0x5a4a3a, 0x3a4a5a], pants: [0x2e3a2e, 0x2a2a2a], shoes: [0x2a2018, 0x1e2020] });

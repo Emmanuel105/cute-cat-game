@@ -6615,3 +6615,30 @@ run to run exactly as they already did before this change, unrelated to it). Rob
 are unchanged (48 to meet, 8 collectibles, 88% of the ground walkable), since the new crab-bot adds an
 NPC but no greetable id and no physics box — it still lands in the scene graph, before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 273 — a duck pair for the Victorian canal
+
+Round 199 fixed this exact gap for the Neighborhood's own park pond — "nothing in seven worlds had
+ever put an animal *on* a body of water rather than beside it" — and gave `makeDuck()` to the project,
+but it stayed a one-world rig ever since. Checked every other water feature for the same gap: Sunny
+Shore's sea already has turtles and crabs in it, Candy Land's chocolate river and Robot City's canal
+still have nobody, but the Victorian canal stood out, since it already has an old-timer angling off
+the north bank and a mudlark working the mud on the far side — bank workers on a waterway with nothing
+on the water itself. **A drake and a hen now paddle a straight stretch of the canal**, dipping their
+heads toward the surface every few seconds with an occasional quack, between the boats moored at x=40
+and x=70 — the one 30 m run of open water in the whole canal with neither a boat nor a bridge in it
+(the nearest, at x=104, is well past the far boat).
+
+No new rig: it's the same `makeDuck()` the pond pair already uses, just the swim loop rewritten for a
+straight canal instead of a circular pond — `x = 55 + sin(a) * 9` rather than orbiting a centre, with
+the facing flipped at each turning point instead of tracked continuously. Fixed numbers throughout
+(phase, speed, the swim centre and range), none of it drawn from the shared `r`, so — like the pond
+ducks before them — nothing here can shift a later wardrobe pick built elsewhere in the same world.
+The quack timer starts from a fixed 8 s and only draws from `rnd()` once play is under way, the same
+dodge round 199 had to learn the hard way.
+
+Verified: `node dimension-cat/test/run.mjs` three times in a row — all passed clean (the same checks as
+before, 0 FAILs, 0 console warnings, exit 0 every time). The Victorian town's own counts are unchanged
+(54 to meet, 95% of the ground walkable), since the ducks add NPCs but no greetable id and no physics
+box — they still land in the scene graph, before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
