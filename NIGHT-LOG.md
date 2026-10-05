@@ -6720,3 +6720,27 @@ Verified: `node dimension-cat/test/run.mjs` three times in a row — all passed 
 warnings, exit 0 every time. Whisper Woods' own counts are unchanged (46 to meet, 98% of the ground
 walkable), since the ducks add NPCs but no greetable id and no physics box — they still land in the
 scene graph, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 277 — a look at Robot City's own statue
+
+Candy Land's throne and Victorian's fountain have both had a one-off "walk up and look" toast for
+rounds now (approach, read a dry little line, move on) — but Robot City's own plaza, with its giant
+chrome robot statue standing over the whole sector since round 1, never got the same treatment. The
+cleaner who scrubs its foot (a later round) was as close as the cat ever got to a reaction to it.
+**The cat can now walk up to the statue and get a look**, a soft chime of sparks off its chrome, and
+one of three lines: *"Thirty-two tonnes of chrome, and it still can't wave back."*, *"The eyes used to
+light up. Nobody remembers why they stopped."*, *"Tallest robot in the city, and the only one that
+never clocks in."*
+
+Exactly the fountain's own pattern: a single `game.addInteractable` on the statue's existing group,
+inside the same block that already builds it in `buildRobotCity()` — no new mesh, no new physics box,
+no zone. The statue's own box (half-extent 2 m in x and z) already stops the cat getting any closer
+than that, so the interactable's 3.6 m radius is reachable from every side of the plaza without the
+cat needing to round the base. The line is picked with `rnd.pick()` at the moment of use, same as the
+fountain's wishes, never the world's own seeded `r()` at build time, so it can't shift any later
+wardrobe or colour draw in this build or any later one.
+
+Verified: `node test/run.mjs` three times in a row — all passed clean, 0 FAILs, 0 console warnings,
+exit 0 every time, physics box count unchanged at 296. Robot City's own counts are untouched (48 to
+meet, 89% of the ground walkable), since the statue already had its box and gains no greetable id —
+before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
