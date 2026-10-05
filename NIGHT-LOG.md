@@ -6534,3 +6534,30 @@ Neighborhood's own counts moved exactly as expected (45 to meet, up from 43; 7 c
 the ground still walkable, both unchanged, since a `Kneeler` and a static dog each add only a physics
 circle, not a box), every NPC including the new groomer still in the scene graph, before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 270 — a little swarm over Robot City's factory floor
+
+Every other world has had a flock wheeling overhead for a while now — butterflies over Candy Land and
+Whisper Woods, gulls on Sunny Shore, snow buntings at Frosty Peak, doves over Victorian's market square,
+even Whisper Woods' own fairies. Robot City never did: its single maintenance drone circles the
+ring-dance clearing alone, and nothing else in that sky was ever alive (or, this being Robot City,
+alive-adjacent). **Six small drone-flies now buzz in a loose, bobbing orbit over the open factory floor
+between the conveyors and the statue plaza** — steel bead bodies, two spinning rotor blades standing in
+for wings, and a blinking red sensor-eye instead of a face. Purely ambient, like the butterflies and
+gulls before them: no dialogue, no greeting, no effect on the friend count.
+
+New `makeDroneFly()` in `56-npcs-wild.js`, sitting right next to the other small flying rigs
+(`makeSnowBird`, `makeDove`, `makeButterfly`) just above the `Flyer` controller they all share. Six
+instances fly on that same `Flyer` orbit (centred on (0, -10), radius 12–19 m, height 8–10.5 m) exactly
+the way every other world's flock already does — which means, like those butterflies and gulls, it
+never touches the ground or the physics grid and needed no headless clearance probe. The flight height
+was still picked by eye against everything tall nearby on this stretch of floor (spotlight poles at
+y=6, the pipe runs at y=3.6, the furnace and robot arm further south), so the swarm reads as flying
+*over* the city floor rather than through it.
+
+Verified: `node test/run.mjs` three times in a row — all passed clean (273 `ok` lines, 0 FAILs, 0
+console warnings, exit 0 every time; a handful of unrelated timing-based numbers, like the Sunny Shore
+kite's exact height, jitter run to run as they already did before this change). Robot City's own counts
+are unchanged (48 to meet, 8 collectibles, 88% of the ground walkable), since the new flock adds NPCs
+but never a physics box or a greetable id — every NPC, drone-flies included, still lands in the scene
+graph, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -515,6 +515,32 @@ function makeButterfly(hue = 300) {
   return rig;
 }
 
+// ---------------------------------------------------------------- drone-fly (flyer: Robot City's own answer to a butterfly or a gull — every
+// other world has an ambient flock wheeling overhead by now (butterflies, gulls, snow buntings, doves, fairies), but Robot City's single
+// maintenance drone over the ring-dance clearing never had any company, and nothing in this city's sky was alive. A little swarm of these now
+// buzzes over the factory floor: a steel bead body, two spinning rotor blades standing in for wings, and a blinking sensor eye instead of a
+// face — the same Flyer controller every other world's flock already uses, so it needs no new orbit or bob logic.
+function makeDroneFly(o = {}) {
+  const g = new THREE.Group(), rig = { group: g };
+  const steel = mat(o.color ?? 0x8a929c, { metalness: 0.7, roughness: 0.35 }), dark = mat(0x2a2f38, { roughness: 0.6 });
+  const body = group(0, 0, 0, g); rig.body = body;
+  mesh(G.sphere(0.032, 10, 8), steel, { sy: 0.75, parent: body });
+  mesh(G.cyl(0.01, 0.014, 0.03, 6), dark, { y: -0.028, parent: body });   // stubby tail fin
+  const eye = mesh(G.sphere(0.011, 8, 6), glowMat(o.eye ?? 0xff3b3b, 1.6), { z: 0.028, shadow: 'none', parent: body });
+  rig.rotors = [1, -1].map((side) => {
+    const arm = group(side * 0.045, 0.012, 0, body);
+    mesh(G.box(0.07, 0.006, 0.018), dark, { x: side * 0.03, parent: arm });
+    return arm;
+  });
+  rig.animate = (ph, moving, dt, t = 0) => {
+    for (const arm of rig.rotors) arm.rotation.y += dt * 30;
+    eye.material.emissiveIntensity = 0.8 + max(0, sin(t * 3 + (o.phase ?? 0))) * 1.6;
+    body.rotation.z = sin(t * 2.2 + (o.phase ?? 0)) * 0.14;
+  };
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- Flyer controller: loops around a centre in the air
 class Flyer {
   /** o: {cx, cz, r, h, speed, bob, wobble, phase, cw} */
