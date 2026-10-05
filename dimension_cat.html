@@ -7564,6 +7564,18 @@ function buildRobotCity(game, entry) {
   // sign pole at (-18, 6) and the wandering robot patrolling near (-16, -2): (-19, 2) came back clear by
   // 2.9 m from the nearest box, comfortably past the 1.3 m leash given here.
   { const rig = makeFactoryMouse(); game.npcs.push(new Hopper(game, rig, { x: -19, z: 2, leash: 1.3, r: 0.15, dist: [0.3, 0.7], dur: 0.3, height: 0.24, idle: [1, 3.5], onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } })); }
+  // the factory mouse above was Robot City's only living thing past the robots themselves — every other
+  // world's own wildlife runs to at least two creatures by now (Candy Land's sugar mouse and mint hare,
+  // Frosty Peak's hares and arctic fox, Victorian's pigeons and alley rat). A scrap-built crab-bot now
+  // scuttles the open floor north of the ring dance, built from spare plating rather than shell — the
+  // same `makeCrab` rig every Sunny Shore crab already uses, just recoloured gunmetal grey, on a plain
+  // `Wanderer` exactly as those beach crabs are, ambient like them too (no greeting, no effect on the
+  // friend count). A headless probe sampled every NPC's own position continuously over 400 simulated
+  // frames (so no wandering robot, tag pair or ring dancer mid-turn could slip past unnoticed) and swept
+  // a grid of the open floor against both those samples and every one of the city's 1166 physics boxes:
+  // (-12, 30) came back clear by 11.1 m in every direction, open concrete north of the ring dance at
+  // (0, 40) and well inside the radius (98) where robotRegion's own procedural fill takes over.
+  { const rig = makeCrab(0x7a828c); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x: -12, z: 30, speed: r.range(0.6, 0.9), leash: 4, r: 0.22, height: 0.45, step: 0.25, idle: [1, 3], walk: [1, 3] })); }
   // spot lights on poles
   for (const [x, z] of [[-3, 14], [10, 12], [0, -8]]) { mesh(G.cyl(0.1, 0.14, 6, 8), pipe, { x, y: 3, z, parent: W }); mesh(G.box(0.6, 0.3, 0.4), glowMat(0xe8f4ff, 2), { x, y: 6, z, shadow: 'none', parent: W }); pointLight(0xcfe6ff, 70, 24, x, 5.6, z, W); P.addBox(x, 3, z, 0.3, 6, 0.3, { cam: false }); }
   robotRegion(game, U, r, 98, ROBOT_LIMIT - 10);

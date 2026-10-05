@@ -6587,3 +6587,31 @@ FAILs, 0 console warnings, exit 0 every time). The Neighborhood's own counts are
 meet, 7 collectibles, 96% of the ground walkable), since the new flock adds NPCs but never a physics
 box or a greetable id — every NPC, crows included, still lands in the scene graph, before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 272 — a scrap-metal crab-bot for Robot City's factory floor
+
+Checked every world's own wildlife tally while looking for this round's gap: Candy Land has a sugar
+mouse and a mint hare, Frosty Peak a trio of hares and an arctic fox, Victorian two pigeons and an
+alley rat, Whisper Woods frogs and a snail — but Robot City, for all its robots, only ever had the
+one grey factory mouse darting round the Sector 7 crates. **A second small creature now scuttles the
+open factory floor north of the ring dance**: a scrap-built crab-bot, gunmetal grey, built from spare
+plating rather than shell, hunting down stray hardware that rattles loose off the belts. Purely
+ambient like the factory mouse before it — no dialogue, no greeting, no effect on the friend count.
+
+No new rig code: it's the same `makeCrab()` every Sunny Shore crab already uses, just recoloured, on
+a plain `Wanderer` exactly as those beach crabs are — the same reskin-not-new-code choice this log has
+leaned on for two hundred-odd rounds now. Placed at (-12, 30) with a 4 m leash, found by writing a
+small Node probe script (reusing the test harness's own stub-three setup) that travelled the real
+game to Robot City, sampled every NPC's position continuously over 400 simulated frames so no
+wandering robot, tag pair or ring dancer mid-turn could slip past unnoticed, and swept a grid of the
+open floor against both those samples and every one of the city's 1166 physics boxes: (-12, 30) came
+back clearest, 11.1 m from anything else, well inside the radius (98) where `robotRegion`'s own
+procedural fill takes over.
+
+Verified: `node dimension-cat/test/run.mjs` twice — both passed clean (273 `ok` lines, 0 FAILs, 0
+console warnings, exit 0 both times; the handful of timing-jittery numbers this log has flagged
+before — the Sunny Shore kite's height, Frosty Peak's snowball count, a few resting-y values — moved
+run to run exactly as they already did before this change, unrelated to it). Robot City's own counts
+are unchanged (48 to meet, 8 collectibles, 88% of the ground walkable), since the new crab-bot adds an
+NPC but no greetable id and no physics box — it still lands in the scene graph, before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
