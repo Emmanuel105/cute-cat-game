@@ -104,5 +104,7 @@ class SoundKit {
     else { this.noise({ dur: 0.06, vol: v * 0.8, filter: 500, slide: 250 }); }
   }
   heart() { [784, 988, 1175].forEach((f, i) => this.tone({ freq: f, type: 'sine', dur: 0.3, vol: 0.12, delay: i * 0.1 })); }
+  /** A woodpecker's rapid-fire knock against bark: three dry, high clicks. */
+  peck() { for (let i = 0; i < 3; i++) this.tone({ freq: 1900, slide: 1400, type: 'square', dur: 0.025, vol: 0.07, delay: i * 0.075, filter: 3200 }); }
 }
 const SFX = new SoundKit();

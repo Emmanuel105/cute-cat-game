@@ -78,6 +78,27 @@ function buildForest(game, entry) {
   { const oid2 = game.namedFriend('owl2'); game.addInteractable({ obj: watchedOwl.group, radius: 3.4, label: () => 'Say hello to the owl', onUse: () => { game.befriend(oid2); SFX.hoot(); game.hearts(watchedOwl.group.position.x, watchedOwl.group.position.y - 0.4, watchedOwl.group.position.z, 3); game.toast('🦉 "Not a woodpecker. Never was."'); } }); }
   // the third owl, over by the treehouse's lantern string, answers too
   { const oid3 = game.namedFriend('owl3'); game.addInteractable({ obj: thirdOwl.group, radius: 3.4, label: () => 'Say hello to the owl', onUse: () => { game.befriend(oid3); SFX.hoot(); game.hearts(thirdOwl.group.position.x, thirdOwl.group.position.y - 0.4, thirdOwl.group.position.z, 3); game.toast('🦉 "Hoo? ...Hoo. That\'s the whole conversation, really."'); } }); }
+  // the birdwatcher keeps swearing it's a woodpecker, three trees over, and the second owl gets blamed
+  // for the knocking every time — there was never an actual woodpecker in these woods until now. One
+  // clings to the very same trunk as that "not a woodpecker" owl, on the trunk's far side from its own
+  // branch (the owl sits out at local +x, z unchanged; the woodpecker sits in at local x≈-0.72, z≈+0.3,
+  // low on the trunk rather than up at the owl's branch height), hammering away in short bursts every
+  // few seconds. No physics box, same as the owls and the branch they perch on — purely decorative and
+  // non-colliding, so it changes no walkable-ground percentage and needs no keep-out probe.
+  { const tx = 30, tz = 22, dx = -0.72, dz = 0.3, wx = tx + dx, wz = tz + dz, wy = P.ground0(tx, tz) + 2.2;
+    const woodpecker = makeWoodpecker(); W.add(woodpecker.group);
+    woodpecker.group.position.set(wx, wy, wz); woodpecker.group.rotation.y = atan2(dx, dz);
+    let peckT = r.range(2.5, 5), burst = 0;
+    U.push((dt) => {
+      peckT -= dt;
+      if (peckT <= 0) { burst = 0.4; SFX.peck(); peckT = rnd.range(5, 11); }
+      if (burst > 0) { burst = max(0, burst - dt); woodpecker.head.rotation.x = -0.5 * abs(sin((0.4 - burst) * 26)); }
+      else if (woodpecker.head.rotation.x !== 0) woodpecker.head.rotation.x = 0;
+    });
+    const wid = game.namedFriend('woodpecker');
+    game.addInteractable({ obj: woodpecker.group, radius: 2.6, label: () => 'Say hello to the woodpecker', onUse: () => {
+      game.befriend(wid); SFX.peck(); game.hearts(wx, wy + 0.1, wz, 3);
+      game.toast('🐦 "The actual woodpecker. The owls get all the credit."'); } }); }
   for (let i = 0; i < 5; i++) { const rig = makeFairy(r.pick([0xa8ff9a, 0xffd1ff, 0x9fe8ff, 0xfff3a0])); game.npcs.push(new Flyer(game, rig, { cx: r.range(-16, 16), cz: r.range(-14, 18), r: r.range(2.5, 5), h: r.range(1.2, 2.4), speed: r.range(1.2, 2), bob: 0.5, wobble: 1, cw: i % 2 === 0 })); }
   for (let i = 0; i < 12; i++) { const rig = makeButterfly(r.pick([300, 40, 200, 20, 260])); game.npcs.push(new Flyer(game, rig, { cx: r.range(-30, 30), cz: r.range(-30, 30), r: r.range(1.5, 4), h: r.range(0.7, 2), speed: r.range(0.8, 1.6), bob: 0.3, wobble: 0.8, cw: i % 2 === 0 })); }
   // a woodcutter at the stump by the glade, splitting logs

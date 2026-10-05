@@ -1005,6 +1005,8 @@ class SoundKit {
     else { this.noise({ dur: 0.06, vol: v * 0.8, filter: 500, slide: 250 }); }
   }
   heart() { [784, 988, 1175].forEach((f, i) => this.tone({ freq: f, type: 'sine', dur: 0.3, vol: 0.12, delay: i * 0.1 })); }
+  /** A woodpecker's rapid-fire knock against bark: three dry, high clicks. */
+  peck() { for (let i = 0; i < 3; i++) this.tone({ freq: 1900, slide: 1400, type: 'square', dur: 0.025, vol: 0.07, delay: i * 0.075, filter: 3200 }); }
 }
 const SFX = new SoundKit();
 
@@ -3778,6 +3780,27 @@ function makeOwl() {
     const blink = (sin(t * 1.9) > 0.97) ? 0.1 : 1; rig.eye1.scale.y = damp(rig.eye1.scale.y, blink, 20, dt); rig['eye-1'].scale.y = rig.eye1.scale.y;
     body.scale.y = 1 + sin(t * 1.2) * 0.015;
   };
+  bakeRig(g);
+  return rig;
+}
+
+// ---------------------------------------------------------------- woodpecker (clings to a trunk, head pecks on its own)
+function makeWoodpecker() {
+  const g = new THREE.Group(), rig = { group: g };
+  const black = mat(0x1c1a18, { roughness: 0.8 }), white = mat(0xf2ede0, { roughness: 0.85 }),
+    red = mat(0xd6283f, { roughness: 0.6 }), beakM = mat(0x2a2420, { roughness: 0.5 }), legM = mat(0x3a3028, { roughness: 0.6 });
+  const body = group(0, 0.11, 0, g); rig.body = body;   // long axis vertical: clinging to the bark, belly facing out
+  mesh(G.bodySphere(12, 9), black, { sx: 0.045, sy: 0.1, sz: 0.05, parent: body });
+  mesh(G.bodySphere(10, 8), white, { z: 0.03, sx: 0.032, sy: 0.085, sz: 0.035, shadow: 'none', parent: body });
+  for (const side of [1, -1]) mesh(G.box(0.014, 0.07, 0.02), white, { x: side * 0.032, y: 0.01, parent: body });   // barred flank
+  const head = group(0, 0.1, 0.015, body); rig.head = head;
+  mesh(G.sphere(0.034, 10, 8), black, { parent: head });
+  mesh(G.sphere(0.02, 8, 6), red, { y: 0.03, z: -0.004, sy: 0.75, shadow: 'none', parent: head });   // red cap
+  mesh(G.cone(0.011, 0.05, 6), beakM, { y: -0.004, z: 0.034, rx: PI / 2, shadow: 'none', parent: head });
+  for (const side of [1, -1]) mesh(G.sphere(0.006, 6, 6), mat(0x111111), { x: side * 0.018, y: 0.012, z: 0.028, shadow: 'none', parent: head });
+  const tail = group(0, -0.015, -0.03, body);   // stiff tail braced against the bark, propping the bird up
+  mesh(G.box(0.03, 0.09, 0.012), black, { y: -0.065, rx: -0.5, shadow: 'none', parent: tail });
+  for (const side of [1, -1]) mesh(G.cyl(0.004, 0.004, 0.03, 5), legM, { x: side * 0.03, y: -0.01, z: 0.01, rx: -0.5, parent: body });
   bakeRig(g);
   return rig;
 }
@@ -9036,6 +9059,27 @@ function buildForest(game, entry) {
   { const oid2 = game.namedFriend('owl2'); game.addInteractable({ obj: watchedOwl.group, radius: 3.4, label: () => 'Say hello to the owl', onUse: () => { game.befriend(oid2); SFX.hoot(); game.hearts(watchedOwl.group.position.x, watchedOwl.group.position.y - 0.4, watchedOwl.group.position.z, 3); game.toast('🦉 "Not a woodpecker. Never was."'); } }); }
   // the third owl, over by the treehouse's lantern string, answers too
   { const oid3 = game.namedFriend('owl3'); game.addInteractable({ obj: thirdOwl.group, radius: 3.4, label: () => 'Say hello to the owl', onUse: () => { game.befriend(oid3); SFX.hoot(); game.hearts(thirdOwl.group.position.x, thirdOwl.group.position.y - 0.4, thirdOwl.group.position.z, 3); game.toast('🦉 "Hoo? ...Hoo. That\'s the whole conversation, really."'); } }); }
+  // the birdwatcher keeps swearing it's a woodpecker, three trees over, and the second owl gets blamed
+  // for the knocking every time — there was never an actual woodpecker in these woods until now. One
+  // clings to the very same trunk as that "not a woodpecker" owl, on the trunk's far side from its own
+  // branch (the owl sits out at local +x, z unchanged; the woodpecker sits in at local x≈-0.72, z≈+0.3,
+  // low on the trunk rather than up at the owl's branch height), hammering away in short bursts every
+  // few seconds. No physics box, same as the owls and the branch they perch on — purely decorative and
+  // non-colliding, so it changes no walkable-ground percentage and needs no keep-out probe.
+  { const tx = 30, tz = 22, dx = -0.72, dz = 0.3, wx = tx + dx, wz = tz + dz, wy = P.ground0(tx, tz) + 2.2;
+    const woodpecker = makeWoodpecker(); W.add(woodpecker.group);
+    woodpecker.group.position.set(wx, wy, wz); woodpecker.group.rotation.y = atan2(dx, dz);
+    let peckT = r.range(2.5, 5), burst = 0;
+    U.push((dt) => {
+      peckT -= dt;
+      if (peckT <= 0) { burst = 0.4; SFX.peck(); peckT = rnd.range(5, 11); }
+      if (burst > 0) { burst = max(0, burst - dt); woodpecker.head.rotation.x = -0.5 * abs(sin((0.4 - burst) * 26)); }
+      else if (woodpecker.head.rotation.x !== 0) woodpecker.head.rotation.x = 0;
+    });
+    const wid = game.namedFriend('woodpecker');
+    game.addInteractable({ obj: woodpecker.group, radius: 2.6, label: () => 'Say hello to the woodpecker', onUse: () => {
+      game.befriend(wid); SFX.peck(); game.hearts(wx, wy + 0.1, wz, 3);
+      game.toast('🐦 "The actual woodpecker. The owls get all the credit."'); } }); }
   for (let i = 0; i < 5; i++) { const rig = makeFairy(r.pick([0xa8ff9a, 0xffd1ff, 0x9fe8ff, 0xfff3a0])); game.npcs.push(new Flyer(game, rig, { cx: r.range(-16, 16), cz: r.range(-14, 18), r: r.range(2.5, 5), h: r.range(1.2, 2.4), speed: r.range(1.2, 2), bob: 0.5, wobble: 1, cw: i % 2 === 0 })); }
   for (let i = 0; i < 12; i++) { const rig = makeButterfly(r.pick([300, 40, 200, 20, 260])); game.npcs.push(new Flyer(game, rig, { cx: r.range(-30, 30), cz: r.range(-30, 30), r: r.range(1.5, 4), h: r.range(0.7, 2), speed: r.range(0.8, 1.6), bob: 0.3, wobble: 0.8, cw: i % 2 === 0 })); }
   // a woodcutter at the stump by the glade, splitting logs

@@ -418,6 +418,27 @@ function makeOwl() {
   return rig;
 }
 
+// ---------------------------------------------------------------- woodpecker (clings to a trunk, head pecks on its own)
+function makeWoodpecker() {
+  const g = new THREE.Group(), rig = { group: g };
+  const black = mat(0x1c1a18, { roughness: 0.8 }), white = mat(0xf2ede0, { roughness: 0.85 }),
+    red = mat(0xd6283f, { roughness: 0.6 }), beakM = mat(0x2a2420, { roughness: 0.5 }), legM = mat(0x3a3028, { roughness: 0.6 });
+  const body = group(0, 0.11, 0, g); rig.body = body;   // long axis vertical: clinging to the bark, belly facing out
+  mesh(G.bodySphere(12, 9), black, { sx: 0.045, sy: 0.1, sz: 0.05, parent: body });
+  mesh(G.bodySphere(10, 8), white, { z: 0.03, sx: 0.032, sy: 0.085, sz: 0.035, shadow: 'none', parent: body });
+  for (const side of [1, -1]) mesh(G.box(0.014, 0.07, 0.02), white, { x: side * 0.032, y: 0.01, parent: body });   // barred flank
+  const head = group(0, 0.1, 0.015, body); rig.head = head;
+  mesh(G.sphere(0.034, 10, 8), black, { parent: head });
+  mesh(G.sphere(0.02, 8, 6), red, { y: 0.03, z: -0.004, sy: 0.75, shadow: 'none', parent: head });   // red cap
+  mesh(G.cone(0.011, 0.05, 6), beakM, { y: -0.004, z: 0.034, rx: PI / 2, shadow: 'none', parent: head });
+  for (const side of [1, -1]) mesh(G.sphere(0.006, 6, 6), mat(0x111111), { x: side * 0.018, y: 0.012, z: 0.028, shadow: 'none', parent: head });
+  const tail = group(0, -0.015, -0.03, body);   // stiff tail braced against the bark, propping the bird up
+  mesh(G.box(0.03, 0.09, 0.012), black, { y: -0.065, rx: -0.5, shadow: 'none', parent: tail });
+  for (const side of [1, -1]) mesh(G.cyl(0.004, 0.004, 0.03, 5), legM, { x: side * 0.03, y: -0.01, z: 0.01, rx: -0.5, parent: body });
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- fairy (flyer) + butterfly (flyer)
 function makeFairy(color = 0xa8ff9a) {
   const g = new THREE.Group(), rig = { group: g };

@@ -6251,3 +6251,32 @@ Verified: `node dimension-cat/test/run.mjs` — Robot City's own counts updated 
 meet, 8 collectibles, 88% of the ground still walkable, unchanged from before), every other world
 unaffected, all checks `ok`, 0 console warnings, exit 0 across two consecutive runs. Before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 260 — a real woodpecker for Whisper Woods
+
+Whisper Woods' birdwatcher has always had this line: `"Ssh — a woodpecker, three trees over."` — and
+one of the three owls has its own joke built around the same mix-up: say hello to it and it answers
+`"Not a woodpecker. Never was."` There was never an actual woodpecker anywhere in the woods; the
+knocking the birdwatcher keeps hearing had no source. **One now clings to that exact same owl's own
+tree trunk**, red-capped, black-and-white, bracing with a stiff tail and pecking at the bark in short
+rattling bursts every five to eleven seconds. Say hello and it answers back: `"The actual woodpecker.
+The owls get all the credit."`
+
+A new `makeWoodpecker()` in `56-npcs-wild.js`, built vertically from the start (head up, tail bracing
+down and back against the bark, breast facing out) rather than reusing a walking bird's rig rotated
+sideways — simpler to get right than reasoning through what a 90° rotation does to every child mesh's
+local offset. No controller: `W.add()` plus a direct `U.push` closure drives the head-jab animation
+and a burst timer, the same pattern the owls' own hoot timer already uses (one build-time draw from
+this world's seeded `r` for the very first interval, `rnd.range()` for every reset after — exactly how
+`hootT` already works a few lines up, so no new timing risk). A new `peck()` in `30-audio.js`, three
+dry high clicks, joins it. Sits low on the trunk at local (-0.72, +0.3) from the tree centre, the far
+side from the owl's own branch (which sticks straight out at local +x) — no physics box, same as the
+owls and their branches, so it changes no walkable-ground percentage and needed no keep-out probe: a
+decorative, non-colliding creature the cat can walk straight through, exactly like every owl, fairy
+and butterfly already in these woods. `game.namedFriend('woodpecker')` makes it a friend to meet like
+the three owls before it; Whisper Woods now has 45 people to meet instead of 44.
+
+Verified: `node dimension-cat/test/run.mjs` — Whisper Woods' own counts updated as expected (45 to
+meet, 8 collectibles, 98% of the ground still walkable, unchanged from before), every other world
+unaffected, all 273 checks `ok`, 0 console warnings, exit 0 across two consecutive runs. Before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
