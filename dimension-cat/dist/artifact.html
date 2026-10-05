@@ -7290,6 +7290,27 @@ function buildRobotCity(game, entry) {
     mesh(G.sphere(0.045, 8, 6), hubMat, { parent: pivot });
     U.push((dt, t) => { pivot.rotation.z = t * 3.6; });
     P.addBox(px, stickH / 2, pz, 0.14, stickH, 0.14, { cam: false }); }
+  // the Neighborhood, Candy Land, Sunny Shore, Frosty Peak, Victorian (its fiddler) and Whisper Woods all
+  // have someone making music by now — Robot City was the one world left without, since a robot has no
+  // hands to hold a ukulele. One drums on a scavenged oil barrel instead, its own two arms standing in for
+  // sticks. A headless probe swept open floor west of Sector 7 against every one of the city's 1166
+  // physics boxes and all 42 NPCs sampled continuously over 20 simulated seconds (so no wandering robot or
+  // the tag/catch/ring-dance pairs could slip past unnoticed): (-20, 20) came back clear by 9.6 m from the
+  // nearest box and 18 m from the nearest soul, well past the skyscraper at (-34, 26) and the factory
+  // mouse's own patch by the crates.
+  { const mx = -20, mz = 20, mry = PI / 2, dx = mx + sin(mry) * 0.6, dz = mz + cos(mry) * 0.6;
+    const drummer = makeRobot(); W.add(drummer.group);
+    const stickMat = mat(0x3a4048, { metalness: 0.6, roughness: 0.5 });
+    for (const side of [0, 1]) mesh(G.cyl(0.015, 0.015, 0.26, 6), stickMat, { y: -0.46, rx: 0.3, parent: drummer.arms[side].el });
+    const drumM = mat(0x2f6f9f, { metalness: 0.6, roughness: 0.4 }), rimM = mat(0xc9a227, { metalness: 0.7, roughness: 0.3 });
+    mesh(G.cyl(0.3, 0.3, 0.55, 14), drumM, { x: dx, y: 0.275, z: dz, parent: W });
+    mesh(G.torus(0.3, 0.025, 6, 16), rimM, { x: dx, y: 0.55, z: dz, rx: PI / 2, shadow: 'none', parent: W });
+    P.addBox(dx, 0.275, dz, 0.6, 0.55, 0.6, { cam: false });
+    game.npcs.push(new Charger(game, drummer, { x: mx, z: mz, ry: mry,
+      cries: ['Rhythm subroutine: engaged.', 'Nobody wrote sheet music for a robot. Improvising.', 'Mind the dents, puss — this drum used to be a barrel.', 'Beep. Boop. Beep-beep-boop.'] }));
+    U.push((dt, t) => { const A0 = drummer.arms[0], A1 = drummer.arms[1];
+      A0.sh.rotation.x = -0.35; A0.el.rotation.x = -0.9 + max(0, sin(t * 4.4)) * -0.5;
+      A1.sh.rotation.x = -0.35; A1.el.rotation.x = -0.9 + max(0, sin(t * 4.4 + PI)) * -0.5; }); }
   // every other world had wildlife of its own, down to last round's pigeons in the Victorian square — Robot
   // City, for all its robots, never had a single living creature. A grey factory mouse now darts about the
   // open floor by the crate stack near Sector 7's pipe run, the way a real one would live off whatever a

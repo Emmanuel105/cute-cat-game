@@ -6220,3 +6220,34 @@ Verified: `node dimension-cat/test/run.mjs` — all checks `ok`, 0 console warni
 consecutive runs (both hit the test suite's own pre-existing timing noise — walkable-ground
 percentages, kite height, log counts and the odd rest-y — none of it near this change or new between
 runs). Before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 259 — a robot drummer for Robot City
+
+The Neighborhood, Candy Land, Sunny Shore, Frosty Peak and Whisper Woods all have a ukulele player,
+and Victorian its own fiddler at the clock tower — Robot City was the one world left without anyone
+making music, for a plain reason none of the others share: `makeRobot()` rigs have no hands to hold
+a ukulele. **A robot now stands over a scavenged oil barrel west of Sector 7, drumming on it with its
+own two arms** in place of sticks, alternating strikes, forever, for no one. `"Rhythm subroutine:
+engaged."` `"Nobody wrote sheet music for a robot. Improvising."` `"Mind the dents, puss — this drum
+used to be a barrel."`
+
+Reuses `Charger` exactly as every other world's musician already does, and the same oil-drum/brass-rim
+palette the factory floor's own crates and barrels already use — the drumsticks are just small
+cylinders parented straight onto the robot's `el` (elbow) groups, since there's no `hands` array to
+attach anything to, and the strike itself is the same kind of direct arm-rotation tween the
+Neighborhood's ukulele player already relies on (`U.push` setting `el.rotation.x` from `sin(t*4.4)`
+each frame, after `Charger.update()`'s own `rig.animate()` has already run and set a neutral pose —
+the same overwrite-after trick every musician before it banks on), just two arms taking turns instead
+of one strumming. A headless probe (loading the real game under the test harness's stub three.js,
+travelling to Robot City, and sampling every NPC's position continuously over 20 simulated seconds —
+so no wandering robot, nor the tag pair, catch pair or ring-dance robots mid-circle, could slip past
+unnoticed — then sweeping candidates against all 1166 physics boxes) put (-20, 20) clear by 9.6 m
+from the nearest box and 18 m from the nearest soul, open floor west of Sector 7's pipe run, well
+clear of the skyscraper at (-34, 26) and the factory mouse's own patch by the crates. The barrel gets
+its own physics box so the cat can't walk through it; the robot gets the usual slim circle collider
+`Charger` already gives every stationary NPC. Robot City now has 47 people to meet instead of 46.
+
+Verified: `node dimension-cat/test/run.mjs` — Robot City's own counts updated as expected (47 to
+meet, 8 collectibles, 88% of the ground still walkable, unchanged from before), every other world
+unaffected, all checks `ok`, 0 console warnings, exit 0 across two consecutive runs. Before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
