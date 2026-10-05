@@ -6494,3 +6494,43 @@ FAILs, 0 console warnings, exit 0 every time. Sunny Shore's own counts moved exa
 meet, up from 43; 8 collectibles and 99% of the ground walkable both unchanged, since the pile of
 coconuts carries no collider), every NPC including the new coconut vendor still in the scene graph,
 before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 269 — a dog getting brushed in the Neighborhood's own backyard
+
+Neighborhood sat lowest of the seven worlds on friend count going into this round (43) — the street
+already has a postie, a car washer, a leaf raker, a griller and someone walking a dog on a lead, but
+nobody had ever just sat down to actually groom one. **A neighbour now kneels in the backyard behind
+the house at x=-18, working a small wooden-backed brush over a scruffy dog's coat, who sits still for
+it (mostly).** *"Hold still, you're getting fluff everywhere."* / *"Careful, puss — he's shy of
+strangers till he's sure of you."* / *"There — all brushed out, aren't you handsome."* Both the
+groomer and the dog are their own friend, so Neighborhood goes from 43 to 45 to meet.
+
+Reuses `Kneeler` outright for the groomer — its existing patting motion already reads as working a
+brush over a coat, so no new controller — with a tiny cylinder-handled brush joining the kneeling
+hand, the same way the detectorist's coil and the griller's tongs join their rigs after `makeHuman()`
+returns. The dog is a plain `makeDog()`, deliberately *not* wrapped in a `Wanderer` the way the beach
+dog and Frosty Peak's husky are, so it stays put getting brushed rather than wandering off mid-stroke;
+it still gets its own idle tail-wag and head-glance every frame, and its own "Pet the dog" friend
+(`namedFriend('yard-dog')`, since `DogWalker`'s own dog already claimed this world's plain `'dog'`
+key). One real bug caught before it shipped: giving the groomer `Kneeler`'s usual `cries` option
+drew from the *shared global* `rnd()` sequence at construction and then again, unpredictably, partway
+through a simulated run — exactly the trap round 116's detectorist write-up already warned about —
+and it reliably broke the "two neighbours chat, taking turns" timing check elsewhere in this same
+world (the speaking arm's rotation came up a hair short of the test's threshold, every time,
+deterministically). Fixed by dropping `Kneeler`'s own `cries` entirely and driving the groomer's lines
+from a plain `U.push` closure timed off this world's own local `r()` generator instead, which the
+chat test never touches.
+
+Placed with a headless-probe style check read directly off the existing source rather than a live grid
+sweep: the lot at x=-18 has stood in `buildNeighborhood` since round 1 with nothing in its backyard
+but decorative grass and flowers (confirmed by grepping every coordinate in the function), the
+house/porch/path zones there only reach to z=3.4, and the nearest other soul (the dog walker on the
+north pavement) is 17.4 m away — comfortably inside the same backyard grass patch the chopper and the
+griller already sit in at the neighbouring lots.
+
+Verified: `node dimension-cat/test/run.mjs` three times in a row after the fix — all passed clean, 0
+FAILs, 0 console warnings, exit 0 every time, including the previously-broken chat-timing check.
+Neighborhood's own counts moved exactly as expected (45 to meet, up from 43; 7 collectibles and 96% of
+the ground still walkable, both unchanged, since a `Kneeler` and a static dog each add only a physics
+circle, not a box), every NPC including the new groomer still in the scene graph, before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

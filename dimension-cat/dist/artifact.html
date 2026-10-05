@@ -6853,6 +6853,41 @@ function buildNeighborhood(game, entry) {
     game.npcs.push(new YoYoer(game, yoyoKid, 0xd62839, { x: yx, z: yz, ry: 0.6,
       cries: ['Thirty drops and not one tangle!', 'Careful, puss — it just about clears your ears.', "Watch — down, and... caught it!"] })); }
 
+  // a dog getting a good brushing in the backyard behind the house at x=-18 — the street already has
+  // someone walking a dog on a lead, but nobody had ever just sat down to groom one. `Kneeler`'s own
+  // patting motion already reads as working a brush over a coat, so no new controller — a small
+  // wooden-backed brush joins the kneeling hand, the same way the detectorist's coil and the griller's
+  // tongs join the rig after it's built. The dog itself stays put rather than wandering off mid-brush
+  // (plain `makeDog`, driven only by its own idle tail-wag and head-glance every frame, no `Wanderer`),
+  // pet-able and its own friend exactly like the beach dog and Frosty Peak's husky, but under
+  // `namedFriend('yard-dog')` since `DogWalker` already claimed this world's plain `'dog'` key. Both
+  // this groomer's shirt and the dog's own coat colour are fixed, not drawn from the street's shared
+  // `ward` bag or `rnd()`, same reasoning as the griller and the yo-yo kid above.
+  // (a headless probe over the built world — every physics box and every NPC's and the squirrel's own
+  // position swept against a grid of candidate backyard spots — found (-18, -9) clear: 17.4 m from the
+  // nearest other soul, inside the same backyard grass patch the chopper and griller already sit in,
+  // well south of the house's own back wall at z=3.2)
+  { const kx3 = -18, kz3 = -9, dx = -18, dz = -10.1;
+    const groomer = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false }),
+      shirt: 0x6b8a5a, pants: 0x3a3a3a, shoes: 0x3a2e22, apron: 0xd9c9a8, jacket: null, scarf: null, bag: null, backpack: null, hat: null }); W.add(groomer.group);
+    const brush = group(0, 0.015, 0.09, groomer.hands[1]); brush.rotation.x = -0.3;
+    mesh(G.cyl(0.015, 0.018, 0.14, 8), mat(0x6b4a2a, { roughness: 0.85 }), { y: -0.08, parent: brush });
+    mesh(G.box(0.07, 0.03, 0.1), mat(0x8a5a32, { roughness: 0.8 }), { y: 0.02, parent: brush });
+    mesh(G.box(0.062, 0.012, 0.09), mat(0x2a2420, { roughness: 0.95 }), { y: 0.005, parent: brush });
+    game.npcs.push(new Kneeler(game, groomer, { x: kx3, z: kz3, ry: atan2(dx - kx3, dz - kz3) }));
+    const dog = makeDog(0x9a6a3a); dog.group.position.set(dx, game.physics.ground0(dx, dz), dz); dog.group.rotation.y = atan2(kx3 - dx, kz3 - dz); W.add(dog.group);
+    game.physics.addCircle(dog, dx, dz, 0.3);
+    let dogT = r() * 10; U.push((dt) => { dogT += dt; dog.animate(0, false, dt, dogT); });
+    // the groomer's own lines, timed off this world's local `r()` rather than Kneeler's usual `cries`
+    // (which draws from the *shared* global `rnd()` every few seconds) — round 116's detectorist already
+    // found that the shared sequence is shifted just enough by a new draw mid-simulation to break the
+    // two-neighbours chat-turn timing check elsewhere in this very world
+    const groomCries = ["Hold still, you're getting fluff everywhere.", "Careful, puss — he's shy of strangers till he's sure of you.", "There — all brushed out, aren't you handsome."];
+    let groomCryT = r.range(4, 9);
+    U.push((dt) => { groomCryT -= dt; if (groomCryT <= 0) { groomCryT = r.range(9, 16); const c = game.cat.group.position; if (dist2(kx3, kz3, c.x, c.z) < 400) { game.toast('🐾 "' + r.pick(groomCries) + '"', 2400); SFX.talk(); } } });
+    const did2 = game.namedFriend('yard-dog');
+    game.addInteractable({ obj: dog.group, radius: 2.2, label: () => 'Pet the dog', onUse: () => { game.befriend(did2); SFX.woof(); game.hearts(dog.group.position.x, 0.6, dog.group.position.z, 4); game.toast('🐕 *happy tail wag*'); } }); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
