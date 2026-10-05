@@ -6561,3 +6561,29 @@ kite's exact height, jitter run to run as they already did before this change). 
 are unchanged (48 to meet, 8 collectibles, 88% of the ground walkable), since the new flock adds NPCs
 but never a physics box or a greetable id — every NPC, drone-flies included, still lands in the scene
 graph, before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 271 — a murder of crows over the Neighborhood, the last world missing one
+
+Round 270's write-up listed every world with an ambient flock wheeling overhead by now — butterflies
+over Candy Land and Whisper Woods, gulls on Sunny Shore, snow buntings at Frosty Peak, doves over
+Victorian, Robot City's new drone-flies — and never once mentioned the Neighborhood. Checking the
+source confirmed it: past the kite flown over the park and a couple of sparrows hopping the grass far
+south of the street, the start world's own sky never had a single real bird in it, let alone a flock.
+**Six crows now wheel high over the main street**, glossy black with a plain black beak and a fanned
+tail, well above every rooftop and chimney pot. Purely ambient, like every flock before it — no
+dialogue, no greeting, no effect on the friend count.
+
+New `makeCrow()` in `56-npcs-wild.js`, built the same wing/flap way as `makeSeagull` and `makeDove`
+(a body, a head, folded-then-flapping wings with a glossy tip segment), just recoloured black with a
+slight blue-grey sheen on the wingtips. Flies on the same shared `Flyer` orbit every other world's
+flock already uses, centred on the street at `(0, 14)` with a 22–34 m radius and an 11–15 m height —
+comfortably above the tallest two-storey house's chimney pot, which only ever reaches about y=8.5.
+Like the Candy Land butterflies and Robot City's drone-flies, `Flyer` never touches the ground or the
+physics grid, so this needed no headless clearance probe at all — just a check of the tallest rooftop
+in the source to pick a safe height.
+
+Verified: `node dimension-cat/test/run.mjs` three times in a row — all passed clean (273 `ok` lines, 0
+FAILs, 0 console warnings, exit 0 every time). The Neighborhood's own counts are unchanged (45 to
+meet, 7 collectibles, 96% of the ground walkable), since the new flock adds NPCs but never a physics
+box or a greetable id — every NPC, crows included, still lands in the scene graph, before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -541,6 +541,34 @@ function makeDroneFly(o = {}) {
   return rig;
 }
 
+// ---------------------------------------------------------------- crow (flyer, overhead — the Neighborhood's last world without an ambient
+// flock wheeling above it: Candy Land and Whisper Woods got butterflies, Sunny Shore gulls, Frosty Peak snow buntings, Victorian doves and
+// Robot City its drone-flies, but the street's own sky, past the kite and the odd sparrow hopping the grass, never had a single real bird
+// in it. Same wing/flap build as makeSeagull and makeDove, just glossy black with a plain black beak and a fanned tail instead of a webbed one.
+function makeCrow(o = {}) {
+  const g = new THREE.Group(), rig = { group: g, wings: [] };
+  const black = mat(o.color ?? 0x1c1c1e, { roughness: 0.55 }), sheen = mat(0x2e3542, { roughness: 0.4, metalness: 0.2 }), beakM = mat(0x161616, { roughness: 0.5 });
+  const body = group(0, 0, 0, g); rig.body = body;
+  mesh(G.bodySphere(14, 10), black, { sx: 0.08, sy: 0.075, sz: 0.17, parent: body });
+  mesh(G.sphere(0.055, 12, 9), black, { y: 0.03, z: 0.15, parent: body });
+  mesh(G.cone(0.018, 0.075, 6), beakM, { y: 0.01, z: 0.2, rx: PI / 2, shadow: 'none', parent: body });
+  for (const side of [1, -1]) mesh(G.sphere(0.009, 6, 6), mat(0x111111), { x: side * 0.022, y: 0.045, z: 0.175, shadow: 'none', parent: body });
+  mesh(G.box(0.07, 0.016, 0.09), black, { y: -0.01, z: -0.17, rx: 0.15, shadow: 'none', parent: body });   // fanned tail
+  for (const side of [1, -1]) {
+    const w = group(side * 0.05, 0.02, 0, body);
+    mesh(G.box(0.26, 0.02, 0.1), black, { x: side * 0.13, parent: w });
+    const tipW = group(side * 0.26, 0, 0, w); mesh(G.box(0.2, 0.018, 0.085), sheen, { x: side * 0.1, parent: tipW });
+    rig.wings.push({ w, tipW, side });
+  }
+  rig.animate = (ph, moving, dt, t = 0) => {
+    const flap = sin(t * 6.5 + (o.phase ?? 0)), glide = (sin(t * 0.28 + (o.phase ?? 0)) > 0.5) ? 1 : 0;
+    for (const W of rig.wings) { const a = glide ? 0.14 : flap * 0.6; W.w.rotation.z = W.side * -a; W.tipW.rotation.z = W.side * -a * 0.8; }
+    body.rotation.z = sin(t * 0.75) * 0.13;
+  };
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- Flyer controller: loops around a centre in the air
 class Flyer {
   /** o: {cx, cz, r, h, speed, bob, wobble, phase, cw} */

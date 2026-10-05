@@ -610,6 +610,16 @@ function buildNeighborhood(game, entry) {
     });
   }
 
+  // Candy Land, Whisper Woods, Sunny Shore, Frosty Peak, Victorian and Robot City all had an ambient
+  // flock wheeling overhead by now (butterflies, gulls, snow buntings, doves, drone-flies) — the
+  // Neighborhood, past its kite and the odd sparrow hopping the grass, never had a single real bird in
+  // its own sky. A small murder of crows now wheels high over the street, well above every rooftop and
+  // chimney (houses top out around y=8.5 at their tallest chimney pot; the flock never dips below 11).
+  // Reuses the Flyer controller exactly as every other world's flock already does — it never touches
+  // the ground or the physics grid, so (like the Candy Land butterflies) this needed no headless
+  // clearance probe.
+  for (let i = 0; i < 6; i++) { const rig = makeCrow({ phase: i * 1.15 }); game.npcs.push(new Flyer(game, rig, { cx: 0, cz: 14, r: r.range(22, 34), h: r.range(11, 15), speed: r.range(1.4, 2.0), bob: 0.5, wobble: 1.3, cw: i % 2 === 0, phase: i * 1.15 })); }
+
   // a ukulele player stands in the quiet yard behind the north-row houses, strumming — Sunny Shore,
   // Frosty Peak and Victorian all have someone making music (a ukulele on the dunes, a juggling busker,
   // a fiddler at the clock tower), but no street in the Neighborhood ever had its own musician, just
