@@ -8412,7 +8412,7 @@ function buildVictorian(game, entry) {
   const towerLines = ['🕰️ "Four faces, and every one tells the same lie about the time."', '🕰️ "Still the tallest thing in town. Even the robots across the valley haven\'t topped it."', '🕰️ "Someone built eighteen metres of stone just to hold up a clock face."'];
   game.addInteractable({ obj: tower, radius: 5.8, label: () => 'Look up at the clock tower', onUse: () => { SFX.click(); game.toast(rnd.pick(towerLines), 3000); } });
   flatPlane(game, 16, 16, pave, 42, 0, 0, 0.015);
-  makeCarriage(game, 16, 3.4, PI / 2);
+  const carriage = makeCarriage(game, 16, 3.4, PI / 2);
   // the parked carriage had no one minding it; a coachman now waits up on the driver's bench, watch in hand
   { const cx = 16, cz = 3.4, ry = PI / 2, sx = cx + 1.9 * sin(ry), sz = cz + 1.9 * cos(ry);
     const coachman = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: r.chance(0.4) }),
@@ -8420,6 +8420,18 @@ function buildVictorian(game, entry) {
     W.add(coachman.group);
     game.npcs.push(new Sitter(game, coachman, { x: sx, z: sz, ry, seat: 2.0,
       cries: ["Right on time, or so the clock says.", "The fare's been in that shop twenty minutes. Some things never change.", 'Careful of the wheels, puss.'] })); }
+  // the clock tower and the fountain both got a "walk up and look" toast rounds ago, but the carriage
+  // parked beside the first — the thing the coachman's own bench is actually bolted to — never got one
+  // of its own. `makeCarriage`'s own return value — previously discarded — is handed straight to
+  // `game.addInteractable` here, no new mesh, no new physics box: the carriage's own collider (a 90°
+  // rotated box, full extents 5 × 2.4 × 2.2, centred on this same (16, 3.4)) already keeps the cat at
+  // least 1.1 m off on its short ends and 2.5 m off on its long ones, so a 3.2 m radius reaches every
+  // side without ever beating the coachman's own 2.1 m greet circle at (17.9, 3.4): the nearest the cat
+  // can stand to him outside the box, past its east face, is only 0.6 m from his seat but 2.5 m from the
+  // carriage's own centre, so his "Say hello" always wins there, exactly as the clock tower's prompt
+  // keeps losing to the fiddler 6.7 m off instead of swallowing his spot too.
+  const carriageLines = ['🛺 "Not a horse in sight. Hasn\'t moved in years, by the look of the wheels."', '🛺 "Lovely bit of brass, that lamp. Shame nobody\'s lit it."', '🛺 "Big enough for four, a driver, and apparently no horse at all."'];
+  game.addInteractable({ obj: carriage, radius: 3.2, label: () => 'Look at the carriage', onUse: () => { SFX.click(); game.toast(rnd.pick(carriageLines), 3000); } });
   const timeDoor = makeTimeDoor(game, -38, 0, PI / 2); U.push(timeDoor.userData.update);
   mesh(G.box(1.2, 0.3, 4), mat(0x6b6660, { roughness: 0.9 }), { x: -38, y: 0.15, z: 0, parent: W }); P.addBox(-38, 0.15, 0, 1.2, 0.3, 4, { cam: false });
   // the ginger boy keeps the time door company

@@ -7353,3 +7353,32 @@ both 4.5 m radii without ever blocking them, same as round 294 already lived wit
 `onUse()` runs clean without touching `game.state.friends` (ambient, same as every other "look" toast).
 Full suite (`node test/run.mjs`) ran clean — exit 0, 0 console warnings, physics box count unchanged at
 297 — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 300 — a look at Victorian's own carriage
+
+The clock tower and the fountain both got a "walk up and look" toast rounds ago, but the parked carriage
+beside the first — the one thing the coachman's own bench is actually bolted to — never got one of its
+own, even though the cat walks right past it every time it heads for the time door. **The cat can now
+look the carriage over**, for a soft click and one of three lines: *"Not a horse in sight. Hasn't moved
+in years, by the look of the wheels."*, *"Lovely bit of brass, that lamp. Shame nobody's lit it."*,
+*"Big enough for four, a driver, and apparently no horse at all."*
+
+Same trick as every "look" round before it: `makeCarriage`'s own return value — previously discarded —
+is handed straight to `game.addInteractable`. No new mesh, no new physics box: the carriage's existing
+collider (rotated 90°, so it's a box 5 m long in world x and 2.2 m deep in world z, centred on this same
+(16, 3.4)) already keeps the cat off the short ends by 1.1 m and the long sides by 2.5 m, so a 3.2 m
+radius reaches every face. Checked it against the coachman sitting on the carriage's own bench at
+(17.9, 3.4), 2.1 m greet radius: the closest the cat can stand to him from outside the box — just past
+its east face — is only 0.6 m from his seat but 2.5 m from the carriage's own centre, so his "Say hello"
+always wins there and the two prompts never collide.
+
+Verified beyond the test suite's own checks: a headless run started the game, travelled to Victorian
+(`game.travel(3, 'from-prev')`), found the new interactable by label ("Look at the carriage", radius
+3.2) and confirmed the carriage's own physics box matches the hand calculation exactly (x: 13.5–18.5,
+z: 2.3–4.5). Standing just past the box's east face showed the coachman's "Say hello", not the
+carriage's prompt; standing just past the box's south face (away from the coachman) showed "Look at the
+carriage" instead. Standing at the clock tower confirmed its own "Look up at the clock tower" still
+wins there. `onUse()` ran clean without touching `game.state.friends` (ambient, same as every other
+"look" toast), and the cat's own position stayed finite through 300 more simulated frames. Full suite
+(`node test/run.mjs`) ran clean — exit 0, 0 console warnings, physics box count unchanged at 297 —
+before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
