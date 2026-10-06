@@ -7110,3 +7110,36 @@ position stayed finite. Full suite (`node test/run.mjs`) ran clean three times i
 console warnings, physics box count steady at 297 — and Victorian's own count of who there is to meet
 rose by exactly one, to 56, since the walker is greetable the same way every other `Wanderer` already
 is — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+(This round also fast-forwarded `main` to the tip of round 290, which had been committed on a detached
+`HEAD` — same mistake round 289 already caught and fixed once tonight, so nothing from that round was
+lost, just re-pushed properly before this round's own work began.)
+
+## Round 291 — a look up at Whisper Woods' own giant mushroom
+
+The fairy ring, the zipline tower and the treehouse have all had a one-off "walk up and look" toast for
+rounds now, but none of the eight giant glowing mushrooms scattered round the glade — the one landmark
+shape unique to these woods — ever got one; the cat could only ever walk past them. **The cat can now
+stand at the foot of the tallest one, south-east of the glade, and look up**, for a soft click and one
+of three lines: *"Taller than the treehouse ladder, nearly. And it just sits there glowing."*,
+*"Nobody's ever eaten this one. Nobody's brave enough to find out why it glows."*, *"The cap alone could
+shelter a whole family of frogs."*
+
+Same trick as every other "look up" round: the mushroom's own group (captured straight out of the loop
+that already builds the whole set of eight) is handed to `game.addInteractable` — no new mesh, no new
+physics box. It already escapes the baking pass on its own, since every mushroom in this set is built
+with `glow: true` and already carries `userData.update` for its own pulsing cap light. A headless probe
+built the real Whisper Woods (`game.load(6, 'from-hub')`) and swept the mushroom's own point against
+every physics box and 3000 simulated frames of every NPC's own position: the nearest other box stayed
+9.0 m clear and the nearest grounded creature (a wandering hopper) never closer than 8.0 m, well past
+this interactable's 3.6 m radius — only passing butterflies and fairies, flying well overhead, ever come
+closer, no obstruction at all.
+
+Verified beyond the test suite's own checks: a real `game.start('new')` and `game.load(6, 'from-hub')`,
+teleported the cat to (14, 0, -20), confirmed `game.nearest.label()` reads "Look up at the mushroom" and
+`game.interact()` runs clean without touching `game.state.friends` (ambient, same as every other
+landmark toast), then ran 300 more frames and confirmed the cat's own position stayed finite. Full suite
+(`node test/run.mjs`) ran clean three times in a row — exit 0, 0 console warnings, physics box count
+unchanged at 297 every time — and Whisper Woods' own count of who there is to meet is untouched at 46,
+since the mushroom gains no greetable id and no box — before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
