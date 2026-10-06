@@ -7382,3 +7382,27 @@ wins there. `onUse()` ran clean without touching `game.state.friends` (ambient, 
 "look" toast), and the cat's own position stayed finite through 300 more simulated frames. Full suite
 (`node test/run.mjs`) ran clean — exit 0, 0 console warnings, physics box count unchanged at 297 —
 before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+Housekeeping note first: the last several rounds' commits had again landed on a detached `HEAD` rather
+than advancing `main` (the same slip round 299 found and fixed), so none of this container's own work had
+actually reached `origin/main` until this round pushed it. Confirmed before touching anything else that
+`origin/main` already had every commit — the detached ref was just stale locally — so nothing was lost,
+and moved `main` up to match so it can't happen again on the next push.
+
+## Round 301 — a sniff at Candy Land's other cupcake hill
+
+Seven cupcake hills ring Candy Land's sweet-lands, but only one of them — the sixth, back in round 299's
+lineage — ever got a "walk up and look" toast of its own. **The second hill, out past the chocolate river
+near the painter's meadow, can now be sniffed too**, for one of: *"Blue icing on a cupcake. Someone's very
+proud of that food dye."*, *"Smells like blueberries. Tastes like more blueberries, probably."*, *"Second-
+tallest hill in the sweet-lands, and it knows it."*
+
+Same trick as every "look" round before it: `cupcakeHills[1]`, the group the world's own build loop already
+made (icing, sprinkles, cherry and all), is handed straight to `game.addInteractable` — no new mesh, no new
+physics box, same 5.5 m radius the first hill's toast already uses to clear its own box's 3.68 m corner. A
+headless probe (built off the test harness's own stub setup, loading Candy Land and sweeping every one of
+its 1866 physics boxes and every NPC's position over 400 simulated frames) confirmed the spot: the nearest
+other box — a candy-cane trunk at the edge of the cane belt — stays 10.85 m clear, and the nearest soul
+(the painter, 12 m off) never comes close enough for the two prompts to collide. Full suite ran clean —
+exit 0, 0 console warnings, 297 physics boxes, same as before — before rebuilding both dist files and the
+root copy.
