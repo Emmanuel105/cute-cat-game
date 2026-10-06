@@ -8493,6 +8493,21 @@ function buildBeach(game, entry) {
   // so it can't shift any construction-time wardrobe pick, here or in any world built after it.
   let foghornT = rnd.range(35, 60);
   U.push((dt) => { foghornT -= dt; if (foghornT <= 0) { SFX.foghorn(); foghornT = rnd.range(80, 130); } });
+  // the throne, the fountain, Robot City's statue, the Neighborhood's signpost, the fairy ring and
+  // Victorian's clock tower have all had a one-off "walk up and look" toast for rounds now — but Sunny
+  // Shore's own lighthouse, the tallest thing on this whole stretch of coast, never got the same look.
+  // `makeLighthouse`'s own return value (already kept, for its beam's `U.push` above) is handed to a
+  // second `game.addInteractable` here — no new mesh, no new box. The tower's existing physics box
+  // (half-extent 1.5 m in x and z) already keeps the cat from standing closer than about 1.9 m to the
+  // centre, so a 5 m radius covers a generous approach from the open north and east without reaching the
+  // painter south at (0, -40) (13.4 m off) or the chip stand further south at (4, -54) (11.3 m off). It
+  // does overlap the keeper's own 2.1 m greet radius 2 m south of the tower, same as the Candy Queen
+  // overlaps her own throne's toast — `game.nearest` always picks whichever interactable centre is
+  // closest, so standing right by the keeper still greets the keeper, not the tower. The line is picked
+  // with `rnd.pick()` at the moment of use, never this world's own seeded `r` at build time, so it costs
+  // no later wardrobe or colour draw.
+  { const towerLines = ['💡 "Forty-two steps inside, and the view is just more sea."', '🌊 "Red and white, same as it ever was — ships still find it in the fog."', '🔭 "Tallest thing on this whole stretch of coast. The gulls agree."'];
+    game.addInteractable({ obj: lighthouse, radius: 5, label: () => 'Look up at the lighthouse', onUse: () => { SFX.click(); game.toast(rnd.pick(towerLines), 3000); } }); }
   // the lighthouse itself never had anyone tending it, for all its own automatic beam — a keeper kneels
   // at its base, polishing the lowest band with a rag, a tin of polish set down beside them. A headless
   // probe swept a clearance ring around the tower's own 1.5 m half-width physics box: the ring at 2.0 m

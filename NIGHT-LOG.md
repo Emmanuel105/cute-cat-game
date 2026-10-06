@@ -6842,3 +6842,29 @@ warnings; one hit the same pre-existing Victorian horse-and-carriage timing flak
 own log, not anything this round touched. Physics box count unchanged at 296 throughout. Victorian's
 own counts are untouched, since the tower gains no greetable id and no box — before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 282 — a look up at Sunny Shore's own lighthouse
+
+The throne, the fountain, Robot City's statue, the Neighborhood's signpost, Whisper Woods' fairy ring
+and Victorian's clock tower have all had a one-off "walk up and look" toast for rounds now — but Sunny
+Shore's own lighthouse, the tallest thing on that whole stretch of coast, sweeping its beam and sounding
+its foghorn every round since it was first built, never got the same look. **The cat can now stand at
+its foot and look up**, for a soft click and one of three dry lines: *"Forty-two steps inside, and the
+view is just more sea."*, *"Red and white, same as it ever was — ships still find it in the fog."*,
+*"Tallest thing on this whole stretch of coast. The gulls agree."*
+
+Same trick as the others: `makeLighthouse`'s own return value (already kept, for its beam's own `U.push`)
+is handed to a second `game.addInteractable` right after the tower's build call in `buildBeach()` — no
+new mesh, no new physics box. The tower's existing base box (half-extent 1.5 m in x and z) already keeps
+the cat from getting closer than about 1.9 m to the centre, so a 5 m radius covers a generous approach
+without reaching the painter south at (0, -40) (13.4 m off) or the chip stand further south at (4, -54)
+(11.3 m off). It does overlap the keeper's own 2.1 m greet radius 2 m south of the tower — same as the
+Candy Queen's own radius overlaps her throne's toast — but `game.nearest` always picks whichever
+interactable centre is closest, so standing right by the keeper still greets the keeper, not the tower.
+The line is picked with `rnd.pick()` at the moment of use, never this world's own seeded `r` at build
+time, so it costs no later wardrobe or colour draw.
+
+Verified: `node test/run.mjs` four times in a row — exit 0, 0 console warnings and physics box count
+unchanged at 296 every time. Sunny Shore's own counts are untouched (44 to meet, 99% of the ground
+walkable), since the tower gains no greetable id and no box — before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
