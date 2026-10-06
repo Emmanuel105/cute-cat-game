@@ -7199,3 +7199,27 @@ and the mushrooms), then ran 300 more frames and confirmed the cat's own positio
 suite (`node test/run.mjs`) ran clean twice in a row — exit 0, 0 console warnings, physics box count
 unchanged at 297 both times — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 294 — the cat finally checks its own mailbox
+
+The postie has been doing her rounds past every mailbox on the street for rounds now, the cat's own
+included — but the cat itself could never do anything with its own mailbox but walk past it, same as
+every other prop before it got a toast. **The cat can now stand at its own mailbox and check it**, for a
+soft click and one of three lines: *"Just a seed catalogue and a flyer for the hardware store. The cat
+sniffs both and loses interest."*, *"A postcard from somewhere with a beach on it. No return address."*,
+*"Empty. The postie must be running behind today."*
+
+Same trick as every other "look" round: the mailbox's own group — built by the existing `makeMailbox()`
+call at the front path, the one with the rattling flag — is captured instead of discarded and handed
+straight to `game.addInteractable`. No new mesh, no new physics box: this mailbox never had one to begin
+with, so there is nothing for a 2.2 m interaction radius to collide with. That radius sits inside x
+2.2±2.2 (so -0.0 to 4.4) and z 9.4±2.2 (7.2 to 11.6) around the box — short of the home's own front-path
+keep-out zone (x 0.2-1.6) to the west, and 1.3 m clear of the nearby fence's own physics box (which only
+reaches z=8.1) to the south-west.
+
+Verified beyond the test suite's own checks: a headless `game.start('new')`, stood the cat at (2.2, 10.6)
+— 1.2 m north of the mailbox, on the pavement side — confirmed `game.nearest.label()` reads "Check the
+mailbox" and `game.interact()` runs clean without touching `game.state.friends` (ambient, same as every
+other look/sniff toast), then ran 300 more frames and confirmed the cat's own position stayed finite.
+Full suite (`node test/run.mjs`) ran clean — exit 0, 0 console warnings, physics box count unchanged at
+297 — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
