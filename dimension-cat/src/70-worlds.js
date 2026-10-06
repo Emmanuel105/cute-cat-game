@@ -1416,6 +1416,16 @@ function buildRobotCity(game, entry) {
       P.addBox(L.x + sx + 0.37, 0.7, L.z, 1.5, 1.4, 0.8, { cam: false }); P.addBox(L.x, 0.9, L.z, 0.8, 1.8, 0.8, { cam: false }); } }
   const arm = makeRobotArm(game, -5, -16); U.push(arm.userData.update);
   const furnace = makeFurnace(game, 9, -17, 0); U.push(furnace.userData.update);
+  // the statue, the radar dish and the mailbox back home have all had a one-off "walk up and look"
+  // toast for rounds now — the furnace, roaring and smoking since round 1, never got one, past its own
+  // worker-free glow. No new mesh, no new physics box: `makeFurnace`'s own return value (already kept,
+  // for its smoke-and-flicker `U.push` above) is handed straight to `game.addInteractable`. Its existing
+  // box (half-extent 2 in x, 1.5 in z, at ry=0) already keeps the cat about 2 m clear on every side, so a
+  // 3.6 m radius — the same used at the statue — is reachable from any angle without reaching the nearest
+  // other prop: the sign-pole box at (19, -13) stays 10.8 m off, the nearest barrel (16, -22) 8.6 m off,
+  // and the robot arm at (-5, -16) 14 m off, all well past this radius.
+  { const furnaceLines = ['🔥 "Been roaring since the city went up. Nobody\'s ever seen it go out."', '🔥 "Too hot to get close, which is rather the point of it."', '🔥 "Feeds the whole factory floor. Mostly scrap metal, these days, and a few old secrets."'];
+    game.addInteractable({ obj: furnace, radius: 3.6, label: () => 'Look at the furnace', onUse: () => { SFX.click(); game.toast(rnd.pick(furnaceLines), 3000); } }); }
   // every other world has an ambient sound of its own on a loop — the Victorian bell, Sunny Shore's dog,
   // Whisper Woods' owl — but the factory floor, with its furnace and conveyors already running, had never
   // once sounded a shift whistle. It blows on its own loop now, same long steam blast whatever the game

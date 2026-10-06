@@ -7249,3 +7249,26 @@ Verified beyond the test suite's own checks: a headless run of the real game (`g
 and the cat's own position stayed finite throughout. Full suite (`node test/run.mjs`) ran clean — exit 0,
 273 checks, 0 console warnings, physics box count unchanged at 297 — before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 296 — a look at Robot City's own furnace
+
+The factory floor's furnace has been roaring, smoking and lighting the room red since round 1, same as
+every other prop before it got its own toast — the cat could only ever walk past it. **The cat can now
+stand at the furnace and have a look**, for a soft click and one of three lines: *"Been roaring since
+the city went up. Nobody's ever seen it go out."*, *"Too hot to get close, which is rather the point of
+it."*, *"Feeds the whole factory floor. Mostly scrap metal, these days, and a few old secrets."*
+
+Same trick as every other "look" round: `makeFurnace`'s own return value — already kept for its
+smoke-and-flicker `U.push` — is handed straight to `game.addInteractable`. No new mesh, no new physics
+box: the furnace's existing collider (half-extent 2 m in x, 1.5 m in z) already keeps the cat about 2 m
+clear on every side, so the 3.6 m radius used here, the same as the plaza statue's own, is reachable from
+any angle without reaching the nearest other prop — the Sector 7 sign pole 10.8 m off, the nearest barrel
+8.6 m off, the robot arm 14 m off.
+
+Verified beyond the test suite's own checks: a headless `game.start('new')`, travelled to Robot City
+(`game.travel(2, 'from-prev')`), found the new interactable by label, stood the cat 3 m south of the
+furnace, confirmed `game.nearest.label()` reads "Look at the furnace" and `onUse()` runs clean without
+touching `game.state.friends` (ambient, same as the statue and the radar dish), then ran 300 more
+simulated frames and confirmed the cat's own position stayed finite. Full suite (`node test/run.mjs`) ran
+clean — exit 0, 0 console warnings, physics box count unchanged at 297 — before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
