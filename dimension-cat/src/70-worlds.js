@@ -981,6 +981,17 @@ function buildCandyLand(game, entry) {
     const guard = makeGingerbread(); W.add(guard.group);
     game.npcs.push(new Patroller(game, guard, { points: [[gx - 1.5, gz], [gx + 1.5, gz]], speed: 0.8, pause: [1.5, 3], r: 0.4, height: 1.4,
       cries: ['Halt! ...oh. Just a cat.', 'No gumdrops past this point without a permit.', 'Her Majesty is not receiving visitors. Or anyone, really.', "Mind the icing, it's load-bearing."], cryIcon: '🍬' })); }
+  // the throne, Robot City's statue, the Neighborhood's signpost, the fairy ring, Victorian's clock
+  // tower, Sunny Shore's lighthouse and both zipline towers have all had a one-off "walk up and look"
+  // toast by now, but the castle's own gate towers — the first thing the cat passes under on the way in
+  // — never got a glance of their own. `makeCandyCastle` now hands back the six tower cylinders it
+  // builds (`towers`, in build order: four corner towers then the two flanking the gate), so this reuses
+  // the right-hand gate tower mesh itself as the interactable's `obj` — no new mesh, no new box. Its own
+  // box (half-extent 2.3 m in x and z, the same one the guard's own comment above already measured) sits
+  // 2.8 m from the nearest end of the guard's patrol line (x = 1.5, same z) and 6.6 m from the court
+  // jester at (0, 140), so a 4.5 m radius clears the tower from any side with room to spare before either.
+  { const lines = ['🍬 "Thirteen metres of candy cane, striped all the way to the roof."', '🍬 "Her Majesty\'s own flag flies up there, same as every other tower\'s — nobody dares fly a different one."', '🍬 "First thing you see coming up the lane. Still the best view of the gate."'];
+    game.addInteractable({ obj: castle.towers[5], radius: 4.5, label: () => 'Look up at the tower', onUse: () => { SFX.click(); game.toast(rnd.pick(lines), 3000); } }); }
   candyRegion(game, U, r, 92, CANDY_LIMIT - 8);
   for (const [x, z] of [[-14, 18], [18, 16], [-8, -10], [10, -12], [-28, 8], [30, 4], [-22, 30], [22, 32], [-34, -32], [34, -36], [2, -30]]) { const b = makeMarshmallowBush(r); b.position.set(x, 0, z); W.add(b); P.addBox(x, 0.5, z, 1.2, 1, 1.2, { cam: false }); }
   for (const [x, z, ry, c] of [[-16, 8, 0.3, 0xff6fb5], [20, -8, -0.8, 0x7fd7ff], [0, 26, 1.5, 0xffd54a]]) { const d = makeDonut(c); d.position.set(x, 0, z); d.rotation.y = ry; W.add(d); addRotBox(game, x, 1.2, z, 0.6, 2.4, 3.4, ry, { cam: false }); }

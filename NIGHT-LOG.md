@@ -6922,3 +6922,31 @@ Verified: `node test/run.mjs` — exit 0, 0 console warnings, physics box count 
 Woods' own counts are untouched (46 to meet, 98% of the ground walkable), since the tower gains no
 greetable id and no box — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 285 — a look up at Candy Land's own gate tower
+
+The throne, Robot City's statue, the Neighborhood's signpost, the fairy ring, Victorian's clock tower,
+Sunny Shore's lighthouse and both zipline towers have all had a one-off "walk up and look" toast by now
+— but the castle's own gate towers, the first thing the cat passes under on the way into Candy Land,
+never got a glance of their own. **The cat can now stand by the right-hand gate tower and look up**, for
+a soft click and one of three dry lines: *"Thirteen metres of candy cane, striped all the way to the
+roof."*, *"Her Majesty's own flag flies up there, same as every other tower's — nobody dares fly a
+different one."*, *"First thing you see coming up the lane. Still the best view of the gate."*
+
+Every earlier "look up" round reused an existing return value already kept for something else (a beam,
+a windsock). The castle's six towers had no such hook — `makeCandyCastle`'s own `tower()` helper builds
+each one in a closure and never returned anything — so this round's only real change is handing the
+tower cylinder meshes back: `towers`, a new array on `makeCandyCastle`'s return object, in build order
+(the four corner towers, then the two flanking the gate). `buildCandyLand` then hands `castle.towers[5]`
+(the right-hand gate tower) straight to `game.addInteractable` as its `obj` — no new mesh, no new box,
+since that mesh already carries its own physics box from round one. The tower's own box (half-extent
+2.3 m in x and z — the same figure round 281's gate-guard comment already measured) sits 2.8 m from the
+nearest end of the guard's own patrol line and 6.6 m from the court jester, so the toast's 4.5 m radius
+clears the tower from any side with room to spare before either; neither the guard nor the jester has an
+interactable of its own to collide with, so the overlap is harmless, the same reasoning every earlier
+"look up" round with a nearby attendant already relied on. The line is picked with `rnd.pick()` at the
+moment of use, never this world's own seeded `r`, so it costs no later wardrobe or colour draw.
+
+Verified: `node test/run.mjs` twice in a row — exit 0, 0 console warnings, physics box count unchanged
+at 296, Candy Land's own counts untouched (48 to meet, its 11 collectibles) — before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

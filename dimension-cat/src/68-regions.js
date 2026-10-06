@@ -135,9 +135,9 @@ function makeCandyCastle(game, x, z, ry, r) {
   // so no new box is needed, the same reasoning round 222's zipline windsock already relied on. The sway
   // is driven only by the world clock `t` plus a phase derived from the tower's own fixed (tx, tz), not
   // `r()` or the shared `rnd()`, so it draws nothing from either sequence and can't disturb a later pick.
-  const flagUpdates = [];
+  const flagUpdates = [], towerMeshes = [];
   const tower = (tx, tz, rad, h, roofH) => {
-    mesh(G.cyl(rad, rad, h, 16), cane, { x: tx, y: h / 2, z: tz, shadow: 'both', parent: g });
+    towerMeshes.push(mesh(G.cyl(rad, rad, h, 16), cane, { x: tx, y: h / 2, z: tz, shadow: 'both', parent: g }));
     mesh(G.cyl(rad + 0.35, rad + 0.35, 0.3, 16), trim, { x: tx, y: h + 0.1, z: tz, shadow: 'both', parent: g });
     mesh(G.cone(rad + 0.35, roofH, 16), mat(0xff5c8a, { roughness: 0.5 }), { x: tx, y: h + 0.15 + roofH / 2, z: tz, shadow: 'none', parent: g });
     mesh(G.sphere(0.35, 10, 8), mat(0xffd54a, { metalness: 0.3, roughness: 0.3 }), { x: tx, y: h + roofH + 0.5, z: tz, shadow: 'none', parent: g });
@@ -176,7 +176,7 @@ function makeCandyCastle(game, x, z, ry, r) {
   for (const s of [-1, 1]) mesh(G.cyl(0.16, 0.16, 1.0, 8), mat(0xffd54a, { metalness: 0.6, roughness: 0.3 }), { x: s * 1.5, y: 1.35, z: 0.3, parent: throne });   // armrests
   mesh(G.sphere(0.4, 12, 8), mat(0xd62839, { roughness: 0.4 }), { y: 5.3, z: -0.9, parent: throne });               // cherry on top
   { const [dwx, dwz] = localXZ(x, z, 0, TZ, ry); P.addBox(dwx, 0.15, dwz, 7, 0.3, 4.4, { cam: false }); addRotBox(game, dwx, 1.6, dwz, 2.8, 3.2, 2.2, ry, { cam: false }); }
-  return { group: g, throneGroup: throne, gate: localXZ(x, z, 0, HD, ry), throne: localXZ(x, z, 0, TZ, ry), updates: flagUpdates };
+  return { group: g, throneGroup: throne, gate: localXZ(x, z, 0, HD, ry), throne: localXZ(x, z, 0, TZ, ry), updates: flagUpdates, towers: towerMeshes };
 }
 function candyRegion(game, U, r, inner, outer) {
   const W = game.world;
