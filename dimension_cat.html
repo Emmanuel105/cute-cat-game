@@ -7140,13 +7140,28 @@ function buildCandyLand(game, entry) {
     let quackT = 7; U.push((dt) => { quackT -= dt; if (quackT <= 0) { SFX.squawk(); quackT = rnd.range(10, 18); } }); }
   // the outer sweet-lands: a candy-cane forest belt, cupcake hills, a gingerbread cottage, cookie paths
   for (let i = 0; i < 44; i++) { const a = i / 44 * TAU + r.range(-0.07, 0.07), d = r.range(56, 76), x = cos(a) * d, z = sin(a) * d; if (abs(z + 18) < 5) continue; const h = r.range(3, 5), c = makeCandyCane(h); c.position.set(x, 0, z); c.rotation.y = r() * TAU; W.add(c); P.addBox(x, h / 2, z, 0.5, h, 0.5, { cam: false }); }
+  const cupcakeHills = [];
   for (const [x, z, hue] of [[-58, 30, 330], [60, 36, 200], [-62, -44, 50], [58, -46, 120], [4, 64, 280], [-30, 62, 0], [34, -66, 330]]) {
     const cup = group(x, 0, z, W), icing = mat(new THREE.Color().setHSL(hue / 360, 0.85, 0.7), { roughness: 0.6 });
     mesh(G.cyl(2.6, 2.0, 3.0, 20), mat(0xd9a066, { roughness: 0.95 }), { y: 1.5, parent: cup }); for (let k = 0; k < 12; k++) mesh(G.box(0.25, 3.0, 0.1), mat(0xb8843f, { roughness: 1 }), { x: cos(k / 12 * TAU) * 2.35, y: 1.5, z: sin(k / 12 * TAU) * 2.35, ry: -k / 12 * TAU, shadow: 'none', parent: cup });
     mesh(G.sphere(2.6, 18, 12), icing, { y: 3.6, sy: 0.8, parent: cup }); mesh(G.sphere(1.6, 16, 10), icing, { y: 5.1, parent: cup }); mesh(G.sphere(0.9, 14, 10), icing, { y: 6.2, parent: cup }); mesh(G.sphere(0.4, 10, 8), mat(0xd62839, { roughness: 0.4 }), { y: 6.95, parent: cup });
     for (let k = 0; k < 40; k++) { const a = r() * TAU, e = r.range(0.2, 1.2); mesh(G.box(0.1, 0.04, 0.24), mat(r.pick([0xffffff, 0xffd54a, 0x7fd7ff, 0xff6fb5, 0x4ade80]), { roughness: 0.6 }), { x: cos(a) * 2.3 * cos(e), y: 3.6 + sin(e) * 2.1, z: sin(a) * 2.3 * cos(e), ry: a, rx: r() * PI, shadow: 'none', parent: cup }); }
     P.addBox(x, 3, z, 5.2, 6, 5.2);
+    cupcakeHills.push(cup);
   }
+  // seven cupcake hills ring the sweet-lands and every other landmark in Candy Land has had a one-off
+  // "walk up and look" toast for rounds now (the throne, both gate towers), but the cupcake hills
+  // themselves — the tallest things in the outer country after the candy-cane belt — never got so much
+  // as a sniff. The sixth one in the list, at (-30, 62), gets one: `cupcakeHills[5]` is the group the
+  // loop above already built (icing, sprinkles, cherry and all), handed straight to `addInteractable` —
+  // no new mesh, no new box. Its own physics box (full size 5.2x6x5.2, so half-extent 2.6 in x and z)
+  // means the cat's closest approach varies with angle from 2.6 m dead-on a face to 3.68 m at a corner;
+  // a 5.5 m radius clears the corner case by 1.8 m, the same margin the castle's own gate towers kept
+  // past their own box. Nothing else is built anywhere near (-30, 62): the nearest hand-placed prop is
+  // the swing set 20 m south at (-18, 46), and candyRegion's own procedural fill only starts at radius
+  // 92 from the origin, well past this hill's own distance of 68.8.
+  { const lines = ['🧁 "Cream, then sponge, then more cream. All the way down, probably."', '🧁 "That cherry on top is bigger than the cat\'s whole head."', '🧁 "Somebody built this with a trowel, not a piping bag."'];
+    game.addInteractable({ obj: cupcakeHills[5], radius: 5.5, label: () => 'Sniff the cupcake hill', onUse: () => { SFX.click(); game.toast(rnd.pick(lines), 3000); } }); }
   { const gh = group(0, 0, -62, W), cookie = mat(0xc27b3a, { roughness: 0.95 }), icing = mat(0xfffdf7, { roughness: 0.35 });   // gingerbread cottage
     mesh(G.box(7, 4, 6), cookie, { y: 2, shadow: 'both', parent: gh }); mesh(G.gable(6.8, 2.8, 7.6), mat(0x8a4a2a, { roughness: 0.9 }), { y: 4, ry: PI / 2, parent: gh });
     for (let k = 0; k < 8; k++) for (const s of [-1, 1]) mesh(G.sphere(0.32, 8, 6), icing, { x: -3.5 + k * 1.0, y: 4.4 + k * 0.0, z: s * 3.4 - s * (k * 0.0), sy: 0.5, shadow: 'none', parent: gh });

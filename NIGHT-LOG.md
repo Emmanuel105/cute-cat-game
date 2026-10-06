@@ -7143,3 +7143,34 @@ landmark toast), then ran 300 more frames and confirmed the cat's own position s
 unchanged at 297 every time — and Whisper Woods' own count of who there is to meet is untouched at 46,
 since the mushroom gains no greetable id and no box — before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 292 — a sniff at Candy Land's own cupcake hills
+
+Every other landmark in Candy Land has had a one-off "walk up and look" toast for rounds now — the
+throne, both gate towers — but the seven cupcake hills scattered round the sweet-lands, the tallest
+things out there after the candy-cane belt, never got so much as a sniff; the cat could only ever walk
+past them. **The cat can now stand at the foot of the sixth hill, out past the swing set at (-30, 62),
+and have a sniff**, for a soft click and one of three lines: *"Cream, then sponge, then more cream. All
+the way down, probably."*, *"That cherry on top is bigger than the cat's whole head."*, *"Somebody built
+this with a trowel, not a piping bag."*
+
+Same trick as every other "look up" round: the hill's own group (captured straight out of the loop that
+already builds the whole set of seven) is handed to `game.addInteractable` — no new mesh, no new physics
+box. Its existing box (full size 5.2×6×5.2, so a 2.6 m half-extent in x and z) means the cat's closest
+approach varies with angle, from 2.6 m dead-on a face to 3.68 m at a corner; a 5.5 m radius clears the
+corner case by 1.8 m, the same margin the castle's own gate towers kept past their own box. A headless
+probe built the real Candy Land (`game.load(1, 'from-prev')`) and swept this spot against every other
+physics box and 200 simulated frames of every NPC's own position: the nearest other box stayed 5.96 m
+clear and the nearest soul never closer than 22.1 m — the swing set at (-18, 46) is the nearest hand-built
+thing, and candyRegion's own procedural fill only starts at radius 92 from the origin, well past this
+hill's own distance of 68.8.
+
+Verified beyond the test suite's own checks: a real `game.start('new')` and `game.load(1, 'from-prev')`,
+teleported the cat to both a face approach (hillX, hillZ-3.0) and a corner approach (hillX+2.6, hillZ+2.6)
+of the hill's box, confirmed `game.nearest.label()` reads "Sniff the cupcake hill" from both angles and
+`game.interact()` runs clean without touching `game.state.friends` (ambient, same as every other landmark
+toast), then ran 300 more frames and confirmed the cat's own position stayed finite. Full suite
+(`node test/run.mjs`) ran clean twice in a row — exit 0, 0 console warnings, physics box count unchanged
+at 297 both times — and Candy Land's own count of who there is to meet is untouched at 48, since the hill
+gains no greetable id and no new box — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
