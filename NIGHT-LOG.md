@@ -6950,3 +6950,37 @@ moment of use, never this world's own seeded `r`, so it costs no later wardrobe 
 Verified: `node test/run.mjs` twice in a row — exit 0, 0 console warnings, physics box count unchanged
 at 296, Candy Land's own counts untouched (48 to meet, its 11 collectibles) — before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 286 — a look up at Frosty Peak's own aurora
+
+Every earlier "look up" round picked a landmark — a throne, a statue, a signpost, a clock tower, a
+lighthouse, both zipline towers, a gate tower — but Frosty Peak's own world blurb is "Penguins under
+the aurora," and nobody had ever stopped to actually look up at the aurora itself. The painter paints
+it from her easel, the zipline tower's own toast (round 283) only ever looked at the tower, and the sky
+it's painted on had no landmark of its own to stand at. **A small cairn of stacked, snow-dusted stones
+now sits on a quiet rise north-west of the village**, and the cat can stand beside it and look straight
+up, for a soft click, a scatter of green-and-violet sparks, and one of three lines: *"Green and violet,
+same as every clear night."*, *"The painter swears it never looks the same twice."*, *"Even the yeti's
+own cave doesn't get a view like this."*
+
+Unlike every earlier landmark, the aurora itself is a drifting shader plane with nothing solid to hang
+an interactable off, so this round built a small new prop instead — three stacked rock spheres with a
+fourth, paler one on top for a cap of snow, the same `mat()`/`mesh()` pattern every rock prop in this
+file already uses. A headless script built the real mountain, started the game for real and swept every
+one of its physics boxes and every NPC's own position continuously over 20 simulated seconds (so the
+ski patroller's own rectangle and every wandering reindeer, hare or kid mid-game couldn't slip past
+unnoticed): `(-30, 36)` came back 6.19 m clear of the nearest box (the forest ring's own nearest pine)
+and never closer than 14.15 m to another soul throughout — well inside the radius (58) where
+`snowRegion`'s own procedural fill takes over, so it needed no keep-out zone to protect it. The cairn's
+own three stones use fixed rotations rather than a draw from this world's own seeded `r`, so placing it
+can't shift `snowRegion`'s own fill (seeded from that same `r`, called later in this function) by so
+much as one cluster; the toast line is picked with `rnd.pick()` at the moment of use, same as every
+earlier "look up" round.
+
+Verified beyond the test suite's own checks: a real `game.start('new')` and `game.load(5, 'from-hub')`,
+teleported the cat to (-30, 36), confirmed `game.nearest.label()` reads "Look up at the aurora" and
+`game.interact()` runs clean without touching `game.state.friends` (this one's ambient, not a friend to
+meet, same as the other landmark toasts). Full suite (`node test/run.mjs`) ran clean three times in a
+row — exit 0, 0 console warnings, physics box count unchanged at 296, Frosty Peak's own counts
+untouched (44 to meet, 98% of the ground walkable) — before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

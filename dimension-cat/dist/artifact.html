@@ -9320,6 +9320,27 @@ function buildSnowVillage(game, entry) {
     W.add(patroller.group);
     game.npcs.push(new Patroller(game, patroller, { points: [[-20, 46], [10, 46], [10, 54], [-20, 54]], speed: 0.8, pause: [1.5, 3], pauseAll: true, loop: true, cryIcon: '🚩',
       cries: ['Markers all still standing, good.', 'Careful, puss — steeper than it looks, up here.', 'Quietest beat on the mountain, this one.', 'No avalanche today. Or yesterday. Good record, really.'] })); }
+  // Frosty Peak's own blurb is "Penguins under the aurora", but nobody had ever stopped to actually look
+  // up at it — the painter paints it from her easel, the zipline tower's own "look up" toast (round 283)
+  // only ever looked at the tower itself, and the sky it's painted on had no landmark of its own. A small
+  // cairn of stacked stones, snow dusted on top, now sits on a quiet rise north-west of the village. A
+  // headless probe swept the built world's own physics boxes and every NPC's position continuously over
+  // 20 simulated seconds (so the patroller's own rectangle and every wandering reindeer, hare or kid
+  // mid-game couldn't slip past unnoticed): (-30, 36) comes back 6.19 m clear of the nearest box (the
+  // forest ring's own nearest pine) and never closer than 14.15 m to another soul throughout — well
+  // inside the radius (58) where snowRegion's own procedural fill takes over, so it needs no keep-out
+  // zone of its own. The stones use fixed rotations rather than a draw from this world's own seeded `r`,
+  // so building it can't shift snowRegion's own fill (called later in this function, from the same `r`)
+  // by so much as one cluster.
+  { const cx = -30, cz = 36, cy = P.ground0(cx, cz);
+    const cairn = group(cx, cy, cz, W), stoneM = mat(0x8a929c, { roughness: 0.95, flatShading: true });
+    mesh(G.sphere(0.5, 8, 6), stoneM, { y: 0.26, sy: 0.55, ry: 0.4, parent: cairn });
+    mesh(G.sphere(0.36, 8, 6), stoneM, { y: 0.58, sy: 0.6, ry: 2.1, parent: cairn });
+    mesh(G.sphere(0.22, 7, 5), stoneM, { y: 0.84, sy: 0.65, ry: 4.5, parent: cairn });
+    mesh(G.sphere(0.2, 7, 5), mat(0xf6f9fc, { roughness: 1 }), { y: 0.95, sy: 0.4, shadow: 'none', parent: cairn });
+    P.addBox(cx, cy + 0.5, cz, 0.9, 1.1, 0.9, { cam: false });
+    const auroraLines = ['🌌 "Green and violet, same as every clear night."', '🌌 "The painter swears it never looks the same twice."', '🌌 "Even the yeti\'s own cave doesn\'t get a view like this."'];
+    game.addInteractable({ obj: cairn, radius: 3.6, label: () => 'Look up at the aurora', onUse: () => { SFX.click(); game.fx.emit(cx, cy + 2.2, cz, { count: 14, colors: [0x4dffa0, 0x9f6fff, 0xffffff], speed: 1.0, up: 1.8, life: 1.0, gravity: 1.5 }); game.toast(rnd.pick(auroraLines), 3000); } }); }
 
   game.zones.addSpan(-7, -62, 7, -24); game.zones.addSpan(-44, -5, -6, 5); game.zones.addCircle(0, 0, 26);
   // the zipline: a tower high on the shoulder of the west peak, running down to a post above the village.
