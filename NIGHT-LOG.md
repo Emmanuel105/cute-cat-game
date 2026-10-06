@@ -6984,3 +6984,33 @@ meet, same as the other landmark toasts). Full suite (`node test/run.mjs`) ran c
 row — exit 0, 0 console warnings, physics box count unchanged at 296, Frosty Peak's own counts
 untouched (44 to meet, 98% of the ground walkable) — before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 287 — a telescope, left out, in the Neighborhood's own quiet field
+
+Every "look up" round so far picked a landmark someone had already built — a throne, a statue, a
+signpost, two zipline towers, a fairy ring, even a cairn for the aurora. But the Neighborhood is the one
+world of the seven with a real day/night cycle, porch lights and street lamps included, and nothing in
+it had ever once pointed the cat at the sky it earns every evening. **A small brass-and-wood telescope
+now stands alone on its own tripod**, out past the side road, no owner in sight — just left out for
+whoever finds it. Looking through it gives a soft click, a scatter of pale sparks, and one of three dry
+lines: *"Just the Plough tonight. Same as every night, really."*, *"You can see clean past the
+streetlamps out here."*, *"Somebody left it out again. Lucky, this time."*
+
+This is a brand-new small prop rather than a reused return value — three splayed tripod legs, a brass
+hub and a tilted tube with a lens ring and an eyepiece, built inline the same way the oil can and the
+radio prop are, and left fully static (no `userData.update`, so baking is free to merge it like any
+other background mesh — `game.nearest` resolves it by `getWorldPosition` regardless). A headless script
+built the real Neighborhood, started the game for real, and swept a 1 m grid of the whole world against
+every one of its physics boxes and every NPC's own position: `(49, -38)` came back clear by 20.7 m from
+the nearest box and 24 m from the nearest soul — 2.5 m past the side road's own zone (x 41.5..46.5) and
+well past the catch pair's own throw gap at (25, -35), comfortably inside the 95 m walkable limit. No
+draw from this world's own seeded `r`, so it costs no later wardrobe pick anywhere on the street.
+
+Verified beyond the test suite's own checks: a real `game.start('new')`, teleported the cat to (49, -38),
+confirmed `game.nearest.label()` reads "Look through the telescope" and `game.interact()` runs clean
+without touching `game.state.friends` (ambient, not a friend to meet, same as every other landmark
+toast), then ran 300 more frames and confirmed the cat's own position stayed finite throughout. Full
+suite (`node test/run.mjs`) ran clean three times in a row — exit 0, 0 console warnings, physics box
+count up by exactly one (296 → 297, the telescope's own base) — and the Neighborhood's own counts are
+untouched (45 to meet, 96% of the ground walkable), since the telescope gains no greetable id — before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

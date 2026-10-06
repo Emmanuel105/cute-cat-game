@@ -6806,6 +6806,29 @@ function buildNeighborhood(game, entry) {
       glasses: true, shorts: true, hat: null, jacket: null, scarf: null, bag: null, backpack: null }); W.add(lounger.group);
     game.npcs.push(new Sunbather(game, lounger, { x: bx, z: bz, ry,
       cries: ["Who needs the seaside when you've got a garden?", 'Five more minutes...', "Shout if a cloud comes over, would you?"] })); }
+  // every "look up" toast so far has picked a landmark someone already built — a tower, a statue, a
+  // signpost — but the Neighborhood is the one world with a real day/night cycle, and nothing in it had
+  // ever pointed the cat at the sky it earns every evening. A small brass-and-wood telescope now stands
+  // on its own tripod in the quiet field south-east of the side road, no owner, just left out. A headless
+  // probe swept a 1 m grid of the whole built world against every physics box and every NPC's own
+  // position: (49, -38) came back clear by 20.7 m from the nearest box and 24 m from the nearest soul,
+  // 2.5 m past the side road's own zone (x 41.5..46.5) and comfortably inside the 95 m walkable limit, far
+  // past the catch pair's own throw gap at (25, -35). No draw from this world's own seeded `r`, so it
+  // costs no later wardrobe pick anywhere on the street.
+  { const tx = 49, tz = -38, hubY = 0.72;
+    const wood = mat(0x6b4a2b, { roughness: 0.85 }), brass = mat(0xc9a227, { metalness: 0.6, roughness: 0.35 }), tubeM = mat(0x2a2f38, { roughness: 0.5, metalness: 0.3 });
+    const rig = group(tx, 0, tz, W);
+    for (let i = 0; i < 3; i++) { const a = i / 3 * TAU; const leg = group(cos(a) * 0.32, 0, sin(a) * 0.32, rig); leg.rotation.y = -a;
+      mesh(G.cyl(0.02, 0.025, 0.86, 6), wood, { y: 0.43, rx: -0.28, parent: leg }); }
+    const hub = group(0, hubY, 0, rig);
+    mesh(G.sphere(0.07, 10, 8), brass, { parent: hub });
+    const tube = group(0, 0, 0, hub); tube.rotation.x = -1.0;
+    mesh(G.cyl(0.055, 0.045, 0.62, 12), tubeM, { y: 0.31, parent: tube });
+    mesh(G.cyl(0.058, 0.058, 0.03, 12), brass, { y: 0.61, parent: tube });
+    mesh(G.cyl(0.03, 0.025, 0.05, 10), brass, { y: -0.02, parent: tube });
+    P.addBox(tx, hubY / 2, tz, 0.7, hubY, 0.7, { cam: false });
+    const starLines = ['🔭 "Just the Plough tonight. Same as every night, really."', '🔭 "You can see clean past the streetlamps out here."', '🔭 "Somebody left it out again. Lucky, this time."'];
+    game.addInteractable({ obj: rig, radius: 2.6, label: () => 'Look through the telescope', onUse: () => { SFX.click(); game.fx.emit(tx, hubY + 0.3, tz, { count: 14, colors: [0xcfe6ff, 0xffffff, 0xfff2d9], speed: 1.0, up: 1.6, life: 0.9, gravity: 1.4 }); game.toast(rnd.pick(starLines), 3000); } }); }
   // three more ways out of the neighborhood: beach boardwalk (east), gondola to the peak (west), hollow oak to the woods (south-east)
   const beachGate = makeBeachGate(game, 78, 22, PI / 2, () => game.travel(WORLD_INDEX('beach'), 'from-hub')); U.push(beachGate.userData.update);
   flatPlane(game, 30, 3, walk, 60, 22, 0, 0.02);                                                                             // boardwalk from the road out to the arch
