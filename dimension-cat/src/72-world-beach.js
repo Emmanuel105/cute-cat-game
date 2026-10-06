@@ -467,6 +467,23 @@ function buildBeach(game, entry) {
   let cryT = 4, waveT = 2;
   U.push((dt) => { cryT -= dt; waveT -= dt; const cx = game.cat.group.position.x; if (cryT <= 0) { SFX.gull(); cryT = rnd.range(6, 14); } if (waveT <= 0 && cx > 4) { SFX.wave(); waveT = rnd.range(4, 7); } });
 
+  // every rock, shell and pebble scattered up and down this coast has been pure background dressing
+  // since round 1 — nothing on the whole beach was ever something to stop and listen to. A single big
+  // conch, half-buried in the dry sand, lets the cat press an ear to its mouth for a soft wave-wash
+  // sound, a scatter of pale, sandy sparks, and one of three dry lines. A headless probe built the real
+  // Sunny Shore, sampled every NPC's and the squirrel's own position continuously over 20 simulated
+  // seconds (so no wandering crab, turtle or sunbather mid-circuit could slip past unnoticed), and swept
+  // a grid of the open dry sand against those samples and every physics box: (-20, -36) came back clear
+  // by 4.1 m from the nearest box and 12 m from the nearest soul — between the sand-crab boy, the
+  // birdwatcher and the sand sculptor, with nothing else anywhere nearby. A fixed rotation, not a draw
+  // from this world's own seeded `r`, so it costs no later wardrobe or colour pick.
+  { const cx = -20, cz = -36;
+    const shell = makeConch(); placeT(game, U, shell, cx, cz, 2.4);
+    boxT(game, cx, cz, 0.5, 0.5, 0.5, { cam: false });
+    const shellLines = ['🐚 "You really can hear the sea in it. Mostly because the sea is right there."', '🐚 "Big as your head, nearly. Something must have grown it."', '🐚 "Somebody swears it still remembers the storm that washed it up."'];
+    const shellY = P.ground0(cx, cz) + 0.35;
+    game.addInteractable({ obj: shell, radius: 2.2, label: () => 'Listen to the shell', onUse: () => { SFX.wave(); game.fx.emit(cx, shellY, cz, { count: 12, colors: [0xf2a6ab, 0xe4d2ab, 0xffffff], speed: 0.8, up: 1.2, life: 0.8, gravity: 1.2 }); game.toast(rnd.pick(shellLines), 3000); } }); }
+
   beachRegion(game, U, r, 58, SHORE_LIMIT - 8);
   // the headland behind the dunes: hills and peaks inland only, never out to sea
   makeHorizon(game, r, { clear: SHORE_LIMIT + 8, hill: 0x8c9a58, rock: 0x7a7060, rock2: 0x8a8272, snowLine: 58, peaks: 26, woodCount: 260, woodHue: [0.18, 0.28], woodLight: [0.18, 0.3], keep: (x) => x < -SHORE_LIMIT * 0.15 });

@@ -196,6 +196,18 @@ function makeRock(r = rnd, color = 0x7d7a72, s = 1) {
   const n = r.int(2, 4); for (let i = 0; i < n; i++) mesh(G.sphere(1, 7, 5), m, { x: r.range(-0.4, 0.4) * s, y: r.range(0.1, 0.4) * s, z: r.range(-0.4, 0.4) * s, sx: r.range(0.5, 0.9) * s, sy: r.range(0.35, 0.7) * s, sz: r.range(0.5, 0.9) * s, ry: r() * TAU, parent: g });
   return g;
 }
+/** A big conch, standing on its flared lip in the sand: a spiral of shrinking whorls rising to a
+ *  point, with a flared outer lip and a pink mouth low on the front — life-sized, big enough to press
+ *  an ear to. Reuses the snail's own torus-band trick for the whorls, just taller and wound more times. */
+function makeConch() {
+  const g = new THREE.Group(), outer = mat(0xe4d2ab, { roughness: 0.55 }), band = mat(0xc49a6a, { roughness: 0.6 }), inner = mat(0xf2a6ab, { roughness: 0.4 });
+  const whorls = 4;
+  for (let i = 0; i < whorls; i++) mesh(G.torus(0.26 - i * 0.055, (0.26 - i * 0.055) * 0.42, 8, 16), i % 2 ? band : outer, { y: 0.1 + i * 0.1, sy: 0.75, rx: PI / 2, parent: g });
+  mesh(G.cone(0.08, 0.16, 10), outer, { y: 0.1 + whorls * 0.1, parent: g });                           // the pointed spire
+  mesh(G.torus(0.3, 0.1, 8, 20, PI * 1.3), band, { y: 0.06, z: 0.08, rx: PI / 2, ry: 0.3, parent: g }); // the flared outer lip
+  mesh(G.sphere(0.2, 12, 8), inner, { y: 0.08, z: 0.18, sy: 0.4, sz: 0.55, shadow: 'none', parent: g }); // the pink mouth
+  return g;
+}
 /** Instanced shells / pebbles scattered on the ground. spots = [[x,z,radius,count]] */
 function makeScatter(game, spots, geo, colors, r, scale = [0.6, 1.2], yOff = 0.02) {
   const pts = scatterPoints(game, spots, r, 0.3), total = pts.length;

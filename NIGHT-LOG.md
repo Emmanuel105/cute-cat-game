@@ -7045,3 +7045,42 @@ times in a row — exit 0, 0 console warnings, physics box count unchanged at 29
 City's own counts are untouched (48 to meet, 8 collectibles, 89% of the ground walkable), since the
 tower gains no greetable id and no box — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 289 — a conch to listen to, on Sunny Shore's own dry sand
+
+Rocks, pebbles and a scatter of little shells have dressed this coast since round 1, but every one of
+them has been pure background — nothing on the whole beach was ever something to actually stop and
+listen to. **A single big conch now stands half-buried in the dry sand south-west of the birdwatcher**,
+and pressing an ear to it gets a soft wash of surf, a scatter of pale, sandy sparks, and one of three
+dry lines: *"You really can hear the sea in it. Mostly because the sea is right there."*, *"Big as your
+head, nearly. Something must have grown it."*, *"Somebody swears it still remembers the storm that
+washed it up."*
+
+It's a brand-new small prop (`makeConch`), built the same way the snail's own shell already is — a
+stack of torus "whorls" shrinking toward a point — just four of them, taller, topped with a small cone
+spire, with a flared partial-torus lip out front and a flattened pink sphere for the mouth. Ambient,
+like the lighthouse's own "look up" toast: `game.addInteractable` plays `SFX.wave()` rather than
+`SFX.click()`, since the joke only works with the actual sound of the sea. A headless probe built the
+real Sunny Shore (`game.load(4, 'from-hub')`, same direct-build trick round 288 used to skip the portal
+fade's own `setTimeout`), sampled every NPC's and the squirrel's own position continuously over 20
+simulated seconds (so no wandering crab, turtle or sunbather mid-circuit could slip past unnoticed), and
+swept a grid of the open dry sand against those samples and every physics box: (-20, -36) came back
+clear by 4.1 m from the nearest box and 12 m from the nearest soul — between the sand-crab boy, the
+birdwatcher and the sand sculptor, comfortably inside the hand-built heart (beachRegion's own fill only
+starts past radius 58). The rotation is a fixed value, not a draw from this world's own seeded `r`, so
+it costs no later wardrobe or colour pick anywhere else in this build.
+
+This also turned up a real problem from earlier in the night: rounds 283 through 288 had all been
+committed on a detached `HEAD` rather than the `main` branch, so `git push origin main` was silently
+pushing the stale local `main` ref instead of those commits — six rounds' worth of work never actually
+reached `origin`. Fast-forwarded `main` to the detached tip and pushed that first, before starting this
+round, so nothing from the earlier rounds was lost.
+
+Verified beyond the test suite's own checks: a real `game.start('new')` and `game.load(4, 'from-hub')`,
+teleported the cat to (-20, -36), confirmed `game.nearest.label()` reads "Listen to the shell" and
+`game.interact()` runs clean without touching `game.state.friends` (ambient, not a friend to meet, same
+as every other landmark toast), then ran 300 more frames and confirmed the cat's own position stayed
+finite. Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, 0 console warnings,
+physics box count unchanged at 297 every time — and Sunny Shore's own counts are untouched (44 to meet,
+8 collectibles, 99% of the ground walkable), since the shell gains no greetable id — before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
