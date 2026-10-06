@@ -8125,6 +8125,24 @@ function buildVictorian(game, entry) {
     }
     game.npcs.push(new Chopper(game, cutter, { x: cx, z: cz, ry: atan2(sx - cx, sz - cz),
       cries: ['Every grate on this street burns coal — this one still likes its wood.', "Careful, puss — mind the chips.", "Won't split itself, more's the pity."] })); }
+  // the Neighborhood and Whisper Woods both pair a stroller with a dog on a lead already (`DogWalker`)
+  // — Victorian, for all its carriages, its bobby on the beat and its lamplighter, never had anyone out
+  // walking a dog of their own. An old gent now takes his out along the one stretch of south pavement
+  // the street lamps actually skip (`abs(x + 38) < 3`, just above, by the pinwheel), between the
+  // laundress's yard at x=-48 and the woodcutter's at x=-28 — the darkest, quietest patch of the whole
+  // street. A headless probe built the real Victorian town (`game.load(3, 'from-prev')`) and swept every
+  // point on the full leash-2.0 wander disk around (-36.5, -6) against all 560 of the town's physics
+  // boxes: the worst point on the disk's own edge still came back 2.8 m clear, the centre itself 4.8 m
+  // clear, and the nearest other soul (the bootblack boy, kneeling at (-43, -5.9)) stayed 6.5 m off
+  // throughout — comfortably past the lead's own length.
+  { const dwx = -36.5, dwz = -6;
+    const dwWard = makeWardrobe(r, { shirts: [0x4a3a5a, 0x3a4a3a, 0x5a3a3a], pants: [0x1e1e24], shoes: [0x2a2018] });
+    const walker = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: true, wardrobe: dwWard }),
+      pants: 0x1e1e24, coat: true, hat: 'flatcap', hatColor: 0x3a3327, scarf: 0x5a3a3a, cane: false, buttons: null, glasses: r.chance(0.3) });
+    W.add(walker.group);
+    const dog = makeDog(0x4a362a);
+    game.npcs.push(new DogWalker(game, walker, dog, { x: dwx, z: dwz, angle: PI / 2, speed: 0.75, leash: 2.0,
+      cries: ["Good a walk as any, rain or not.", "Mind your paws, puss — he's particular about strangers.", "Lamp's out down this end. Nobody's ever fixed it."] })); }
   // market square (north): cobbled plaza, a fountain, striped stalls, gas lamps; a canal with a stone bridge (south)
   flatPlane(game, 30, 26, pave, 0, -34, 0, 0.015);
   { const f = group(0, 0, -34, W), stone = mat(0x8c8377, { roughness: 0.95, map: TEX.stone(30) }); mesh(G.cyl(3.2, 3.4, 0.7, 24), stone, { y: 0.35, parent: f }); mesh(G.cyl(2.8, 2.8, 0.1, 24), mat(0x3d8fd1, { roughness: 0.1, transparent: true, opacity: 0.85, emissive: 0x1a4a7a, emissiveIntensity: 0.3 }), { y: 0.72, shadow: 'none', parent: f }); mesh(G.cyl(0.4, 0.6, 2.2, 12), stone, { y: 1.8, parent: f }); mesh(G.cyl(1.2, 1.1, 0.15, 18), stone, { y: 2.9, parent: f }); mesh(G.sphere(0.4, 12, 9), mat(0xd4af37, { metalness: 0.9, roughness: 0.3 }), { y: 3.3, parent: f });

@@ -7084,3 +7084,29 @@ finite. Full suite (`node test/run.mjs`) ran clean three times in a row — exit
 physics box count unchanged at 297 every time — and Sunny Shore's own counts are untouched (44 to meet,
 8 collectibles, 99% of the ground walkable), since the shell gains no greetable id — before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 290 — an old gent walks his dog down Victorian's quiet end
+
+The Neighborhood and Whisper Woods have both paired a stroller with a dog on a lead (`DogWalker`) for
+rounds now, but Victorian — for all its carriages, its bobby on the beat and its lamplighter — never
+had anyone just out walking a dog. **An elderly gent now takes his for a stroll down the one stretch of
+south pavement the street lamps actually skip**, between the laundress's yard at x=-48 and the
+woodcutter's at x=-28 — the darkest, quietest patch of the whole street. He has a line for it: *"Lamp's
+out down this end. Nobody's ever fixed it."* The dog gets its own "Pet the dog" prompt, same as every
+other dog in the game.
+
+Nothing new under the hood — just another `DogWalker` (person + `Wanderer`, dog + `Follower` on a lead),
+same as the two that already exist, reskinned in a dark Victorian wardrobe with a flatcap and a small
+brown dog, wandering a tight 2 m leash around (-36.5, -6). A headless probe built the real Victorian
+town (`game.load(3, 'from-prev')`) and swept every point on that 2 m wander disk against all of the
+town's physics boxes: the worst point on the disk's own edge still came back 2.8 m clear, the centre
+itself 4.8 m clear, and the nearest other soul (the bootblack boy, kneeling at (-43, -5.9)) stayed 6.5 m
+off throughout.
+
+Verified beyond the test suite's own checks: a real `game.start('new')` and `game.load(3, 'from-prev')`,
+walked the cat up to 1.2 m from the dog, confirmed `game.nearest.label()` reads "Pet the dog" and
+`game.interact()` registers a new friend (0 → 1), then ran 300 more frames and confirmed the cat's own
+position stayed finite. Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, 0
+console warnings, physics box count steady at 297 — and Victorian's own count of who there is to meet
+rose by exactly one, to 56, since the walker is greetable the same way every other `Wanderer` already
+is — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
