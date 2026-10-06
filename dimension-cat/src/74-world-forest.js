@@ -85,7 +85,22 @@ function buildForest(game, entry) {
   const lantern1 = makeLanternString(game, -30, -10, -12, -26, 8, 4.0), lantern2 = makeLanternString(game, 12, 32, 30, 22, 7, 4.2), lantern3 = makeLanternString(game, -16, -26, 8, -30, 7, 4.4); U.push(lantern1.update, lantern2.update, lantern3.update);
   makeFerns(game, [[0, 0, 36, 140]], r);
   for (const [x, z, ry] of [[12, 14, 0.6], [-8, -18, 2.2], [22, -14, 1.1], [-22, -6, 0.2], [2, 12, 1.4]]) { placeT(game, U, makeHollowLog(r), x, z, ry); boxT(game, x, z, 1.4, 1.2, 1.4, { cam: false }); }
-  makeZipline(game, U, -30, 30, 20, 34, r);
+  // the throne, the fountain, Robot City's statue, the Neighborhood's signpost, the fairy ring,
+  // Victorian's clock tower, Sunny Shore's lighthouse and Frosty Peak's own zipline tower have all had
+  // a one-off "walk up and look" toast for rounds now — but this zipline, the one `makeZipline` was
+  // written for first, never got the same treatment, even after round 283 flagged it as leftover work.
+  // Same trick as Frosty Peak's: `makeZipline`'s own return value (previously discarded here) is kept
+  // and its `tower` handed straight to a single `game.addInteractable`. No new mesh, no new physics box
+  // — the tower's existing base box (full size 2.0 x 4.6 x 2.0, half-extent 1.0 in x and z) already
+  // keeps the cat from getting closer than 1.0 m to the centre face-on, so a 4.2 m radius, the same used
+  // at Frosty Peak, is reachable from any side without reaching the cable attendant 3.6 m away at
+  // (-33, 28) — the same overlap-is-fine case as the lighthouse and its keeper, since `game.nearest`
+  // always resolves to whichever interactable centre is actually closest. The line is picked with
+  // `rnd.pick()` at the moment of use, never this world's own seeded `r` at build time, so it costs no
+  // later mushroom hue or butterfly colour draw.
+  const forestZip = makeZipline(game, U, -30, 30, 20, 34, r);
+  const forestZipLines = ['🚡 "Same four posts since it went up. The squirrel\'s the only one who trusts them."', '🚡 "Straight down to the glade from here — the fairies never fly this high."', '🚡 "You can see clean over the treehouse roof from up here, when the owls aren\'t glaring."'];
+  game.addInteractable({ obj: forestZip.tower, radius: 4.2, label: () => 'Look up at the zipline tower', onUse: () => { SFX.click(); game.toast(rnd.pick(forestZipLines), 3000); } });
   makeGemCluster(game, U, -6, 8, 7, [0xa8ff9a, 0x7fe0ff, 0xffd54a, 0xff6fb5], r, 1.6); makeGemCluster(game, U, -12, 22.5, 4, [0xc8a2ff, 0xa8ff9a], r, 0.9);
   for (const [x, z] of [[-6, 2], [18, 24], [-26, -22], [4, -16]]) { placeT(game, U, makeStump(r), x, z, r() * TAU); boxT(game, x, z, 1.0, 0.75, 1.0, { cam: false }); }
   for (const [x, z] of [[-24, 30], [32, 8], [-36, 6], [8, -38]]) placeT(game, U, makeRock(r, 0x6b7a6a, r.range(1.2, 2.2)), x, z, 0);

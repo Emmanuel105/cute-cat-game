@@ -6896,3 +6896,29 @@ Verified: `node test/run.mjs` three times in a row — exit 0, 0 console warning
 unchanged at 296 every time. Frosty Peak's own counts are untouched (44 to meet, 98% of the ground
 walkable), since the tower gains no greetable id and no box — before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 284 — a look up at Whisper Woods' own zipline tower
+
+Round 283 closed out by flagging its own leftover work: `makeZipline` is shared between Frosty Peak and
+Whisper Woods, and only Frosty Peak's copy got a "look up" toast that round. Whisper Woods' zipline — the
+one high above the glade, running from (-30, 30) down to the post near the stepping stones, with its own
+attendant checking the cable and a squirrel the only rider — had stood silent since it was first built.
+**The cat can now stand at its foot and look up**, for a soft click and one of three dry lines:
+*"Same four posts since it went up. The squirrel's the only one who trusts them."*, *"Straight down to
+the glade from here — the fairies never fly this high."*, *"You can see clean over the treehouse roof
+from up here, when the owls aren't glaring."*
+
+Same trick as Frosty Peak's own version: `makeZipline`'s return value (previously discarded in
+`buildForest()`) is now kept and its `tower` handed straight to a single `game.addInteractable` — no new
+mesh, no new physics box. The tower's existing base box (full size 2.0 x 4.6 x 2.0, half-extent 1.0 in x
+and z) already keeps the cat from getting closer than 1.0 m to the centre face-on, so the same 4.2 m
+radius Frosty Peak uses is reachable from any side without reaching the cable attendant 3.6 m away at
+(-33, 28) — the same overlap-is-fine case as the lighthouse and its keeper, since `game.nearest` always
+resolves to whichever interactable centre is actually closest. The line is picked with `rnd.pick()` at
+the moment of use, never this world's own seeded `r` at build time, so it costs no later mushroom hue or
+butterfly colour draw.
+
+Verified: `node test/run.mjs` — exit 0, 0 console warnings, physics box count unchanged at 296. Whisper
+Woods' own counts are untouched (46 to meet, 98% of the ground walkable), since the tower gains no
+greetable id and no box — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.
