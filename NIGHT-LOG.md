@@ -7014,3 +7014,34 @@ suite (`node test/run.mjs`) ran clean three times in a row — exit 0, 0 console
 count up by exactly one (296 → 297, the telescope's own base) — and the Neighborhood's own counts are
 untouched (45 to meet, 96% of the ground walkable), since the telescope gains no greetable id — before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 288 — a look up at Robot City's own radar dish
+
+Every other landmark in the game has had a one-off "walk up and look" toast for rounds now — the
+throne, the statue, the signpost, both zipline towers, the fairy ring, the clock tower, the lighthouse,
+the aurora cairn, the Candy Land gate tower, the Neighborhood's telescope. But Robot City's tallest
+east-yard tower has carried a slowly turning radar dish on its roof since round 182, sweeping the
+skyline on its own update loop, and nobody had ever once pointed the cat up at the one thing in this
+city that visibly moves against the sky. **The cat can now stand at its foot and look up**, for a soft
+click and one of three dry lines: *"Sweeps the whole skyline every few seconds. Still hasn't found
+anything."*, *"Nobody remembers what it's listening for. It just keeps listening."*, *"Tallest point in
+the east yard, and the view is mostly more skyline."*
+
+Same trick as every "look up" round before it: the tower's own group (`b`, from the six-tower `forEach`
+that already builds it and calls `addRadarDish`) is handed straight to `game.addInteractable` — no new
+mesh, no new physics box. A headless probe built the real Robot City (`game.load(2, 'from-prev')`,
+bypassing the portal fade's own `setTimeout` so the boxes it reads are actually this world's and not
+whatever the previous one left behind — a mistake the probe caught on its first run, when it read the
+Neighborhood's own oak tree hitbox because `game.travel()` hadn't finished loading yet) and swept the
+tower's footprint against every one of the city's physics boxes and 1200 simulated frames of every NPC's
+own position: the nearest other box stayed 7.3 m clear and the nearest NPC (the tag robots' own leash
+circle at (28, -40)) never closer than 9.5 m, well past this interactable's 6.5 m radius.
+
+Verified beyond the test suite's own checks: teleported the cat to (32, 0, -22), confirmed
+`game.nearest.label()` reads "Look up at the radar dish" and `game.interact()` runs clean without
+touching `game.state.friends` (ambient, same as every other landmark toast), then ran 300 more frames
+and confirmed the cat's own position stayed finite. Full suite (`node test/run.mjs`) ran clean three
+times in a row — exit 0, 0 console warnings, physics box count unchanged at 297 every time — and Robot
+City's own counts are untouched (48 to meet, 8 collectibles, 89% of the ground walkable), since the
+tower gains no greetable id and no box — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.

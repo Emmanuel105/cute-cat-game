@@ -7539,7 +7539,20 @@ function buildRobotCity(game, entry) {
   // to notice from the ground.
   [[-30, -30, 7, 16], [32, -28, 8, 20], [-34, 26, 9, 14], [34, 24, 7, 18], [-38, 0, 6, 12], [38, -6, 7, 15]].forEach(([x, z, w, h], i) => {
     const b = makeSkyscraper(w, h, w, floor(abs(x + z))); place(game, U, b, x, z, 0); P.addBox(x, h / 2, z, w, h, w);
-    if (i === 1) { addRadarDish(b, h); U.push(b.userData.update); }
+    if (i === 1) {
+      addRadarDish(b, h); U.push(b.userData.update);
+      // every other landmark in the city got a one-off "walk up and look" toast by now (the statue, the
+      // zipline towers elsewhere) but the one thing in Robot City that actually moves on its own against
+      // the sky, this radar dish, never did. No new mesh, no new box: `b`, the tower's own group, is
+      // handed straight to `addInteractable` — the same previously-discarded-return-value trick every
+      // earlier "look up" round already used. A headless probe (`game.load(2, 'from-prev')`, then 1200
+      // simulated frames) swept this spot against every one of the city's physics boxes and every NPC's
+      // own position: the tower's own footprint aside (half-extent 4 m), the nearest other box stayed
+      // 7.3 m clear and the nearest NPC (the tag robots' own leash circle at (28, -40)) never came closer
+      // than 9.5 m, comfortably past this interactable's 6.5 m radius.
+      const radarLines = ['📡 "Sweeps the whole skyline every few seconds. Still hasn\'t found anything."', '📡 "Nobody remembers what it\'s listening for. It just keeps listening."', '📡 "Tallest point in the east yard, and the view is mostly more skyline."'];
+      game.addInteractable({ obj: b, radius: 6.5, label: () => 'Look up at the radar dish', onUse: () => { SFX.click(); game.toast(rnd.pick(radarLines), 3000); } });
+    }
   });
   // east yard: a second factory line, a plaza with a giant robot statue to the west, more lights and neon
   const conv2 = makeConveyor(game, 44, 12, 12, 1); U.push(conv2.userData.update); const arm2 = makeRobotArm(game, 50, 2); U.push(arm2.userData.update);
