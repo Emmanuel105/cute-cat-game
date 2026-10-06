@@ -6868,3 +6868,31 @@ Verified: `node test/run.mjs` four times in a row — exit 0, 0 console warnings
 unchanged at 296 every time. Sunny Shore's own counts are untouched (44 to meet, 99% of the ground
 walkable), since the tower gains no greetable id and no box — before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 283 — a look up at Frosty Peak's own zipline tower
+
+The throne, the fountain, Robot City's statue, the Neighborhood's signpost, the fairy ring, Victorian's
+clock tower and Sunny Shore's lighthouse have all had a one-off "walk up and look" toast for rounds now
+— but the zipline's own start tower, high on the shoulder of the west peak, never got the same
+treatment, even though the world's own code comment had been promising the view since the tower was
+first built: "standing at the top you look straight down the cable at the snow-capped mountains on the
+horizon." **The cat can now stand at its foot and actually look up**, for a soft click and one of three
+dry lines: *"Forty feet of lumber, and a squirrel's the only one brave enough to ride it."*,
+*"Steepest view on the mountain, and the wind doesn't care who's looking."*, *"Windsock says it's fine.
+The ladder disagrees."*
+
+Same trick as the others: `makeZipline`'s own return value (previously discarded) is now kept and its
+`tower` handed straight to a single `game.addInteractable` right after the call in `buildSnowVillage()`
+— no new mesh, no new physics box. The tower's existing base box (full size 2.0 x 4.6 x 2.0, so
+half-extent 1.0 in x and z) already keeps the cat from getting closer than 1.0 m to the centre face-on,
+or 1.4 m on a corner, so the interactable's 4.2 m radius is reachable from any side without reaching the
+cable attendant 3.6 m away at (-75, -72) — same overlap-is-fine case as the lighthouse and its keeper,
+since `game.nearest` always resolves to whichever interactable centre is actually closest. The line is
+picked with `rnd.pick()` at the moment of use, never this world's own seeded `r` at build time, so it
+costs no later wardrobe or colour draw. `makeZipline` is shared with Whisper Woods' own zipline, which
+still has no look-up toast of its own — material for a future round.
+
+Verified: `node test/run.mjs` three times in a row — exit 0, 0 console warnings and physics box count
+unchanged at 296 every time. Frosty Peak's own counts are untouched (44 to meet, 98% of the ground
+walkable), since the tower gains no greetable id and no box — before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

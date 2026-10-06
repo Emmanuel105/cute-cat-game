@@ -9314,7 +9314,18 @@ function buildSnowVillage(game, entry) {
   // the zipline: a tower high on the shoulder of the west peak, running down to a post above the village.
   // Standing at the top you look straight down the cable at the snow-capped mountains on the horizon.
   game.zones.addSpan(min(ZIP_TOP[0], ZIP_LANDING[0]) - 4, min(ZIP_TOP[1], ZIP_LANDING[1]) - 4, max(ZIP_TOP[0], ZIP_LANDING[0]) + 4, max(ZIP_TOP[1], ZIP_LANDING[1]) + 4);
-  makeZipline(game, U, ZIP_TOP[0], ZIP_TOP[1], ZIP_LANDING[0], ZIP_LANDING[1], r);
+  const zipline = makeZipline(game, U, ZIP_TOP[0], ZIP_TOP[1], ZIP_LANDING[0], ZIP_LANDING[1], r);
+  // the throne, the fountain, Robot City's statue, the Neighborhood's signpost, the fairy ring, Victorian's
+  // clock tower and Sunny Shore's lighthouse have all had a one-off "walk up and look" toast for rounds now
+  // — but the zipline's own start tower, the very thing the comment two lines up already promised a view
+  // from ("you look straight down the cable at the snow-capped mountains on the horizon"), never actually
+  // delivered it. The cat can now stand at its foot and look up. `makeZipline`'s own base box (full size
+  // 2.0 x 4.6 x 2.0, so half-extent 1.0 in x and z) keeps the cat from getting closer than 1.0 m to the
+  // centre face-on, or 1.4 m on a corner, so a 4.2 m radius is reachable from any side without reaching the
+  // cable attendant 3.6 m away at (-75, -72) — same overlap-is-fine case as the lighthouse and its keeper,
+  // since `game.nearest` always resolves to whichever interactable centre is actually closest.
+  const zipTowerLines = ['🚡 "Forty feet of lumber, and a squirrel\'s the only one brave enough to ride it."', '🚡 "Steepest view on the mountain, and the wind doesn\'t care who\'s looking."', '🚡 "Windsock says it\'s fine. The ladder disagrees."'];
+  game.addInteractable({ obj: zipline.tower, radius: 4.2, label: () => 'Look up at the zipline tower', onUse: () => { SFX.click(); game.toast(rnd.pick(zipTowerLines), 3000); } });
   // an attendant waits at the foot of the start tower, high on the mountain shoulder — Whisper Woods'
   // zipline has one checking the cable before every rider, but Frosty Peak's has stood unattended since
   // it was built (a headless probe over the built world found (-75, -72) clear: 35 m up the slope from
