@@ -7406,3 +7406,35 @@ other box — a candy-cane trunk at the edge of the cane belt — stays 10.85 m 
 (the painter, 12 m off) never comes close enough for the two prompts to collide. Full suite ran clean —
 exit 0, 0 console warnings, 297 physics boxes, same as before — before rebuilding both dist files and the
 root copy.
+
+## Round 302 — a look at Sunny Shore's own sandcastle
+
+Housekeeping note first: the container had again come up on a detached `HEAD` rather than `main` (the
+same slip rounds 299 and 300 already found once each), so this round's commit would otherwise have been
+lost same as before. Confirmed `origin/main` already matched `HEAD` exactly — nothing missing, just a
+stale local ref — and moved `main` up to it before touching anything else.
+
+The sunbathers' corner on the beach has had its sandcastle since round 1, with a child kneeling right
+beside it patting fresh sand onto the walls, but the castle itself never got a "walk up and look" toast
+of its own — the one gap left among the hand-built beach props after rounds of "look" additions elsewhere.
+**The cat can now look the sandcastle over**, for a soft click and one of three lines: *"Four towers, one
+flag, not a drop of moat water left."*, *"Survived two tides and one very curious gull."*, *"Somebody is
+awfully proud of that little flag."*
+
+Same trick as every "look" round before it: `makeSandcastle`'s own return value — previously discarded —
+is handed straight to `game.addInteractable`. No new mesh, no new physics box: the existing box
+(half-extent 0.8 m in x and z, corner at 1.13 m) already keeps the cat about 0.8 m clear on every face, so
+a 3.0 m radius reaches it from any open side. The patting kid kneels only 1.3 m north of the same centre,
+well inside that radius too, but `game.nearest` (the per-frame scan in 80-game.js's `step()`) always
+resolves ties by which interactable is physically *closer* to the cat, not by which was added first or
+which has the bigger radius, so the two prompts never actually collide regardless of radius size.
+
+Verified beyond the test suite's own checks: a headless run started the game for real (fired the Enter
+button's own click handler, not just a `travel()` call, since `step()` — and the whole nearest-interactable
+scan — only runs once `game.started` is true), travelled to Sunny Shore, found the new interactable by its
+label ("Look at the sandcastle", radius 3), and confirmed its world position matches the hand-placed
+(7, -4) exactly. Standing 2.5 m south of the castle (clear of the kid) showed "Look at the sandcastle";
+standing 1.5 m from the kid (3.8 m from the castle) showed "Say hi" instead, never the castle's own prompt.
+`onUse()` ran clean without touching `game.state.friends` (ambient, same as every other "look" toast).
+Full suite (`node test/run.mjs`) ran clean — exit 0, 0 console warnings, physics box count unchanged at
+297 — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

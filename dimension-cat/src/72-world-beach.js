@@ -213,7 +213,17 @@ function buildBeach(game, entry) {
   // sunbathers' corner: umbrellas, towels, sandcastle, beach ball
   const towels = [];
   for (const [x, z, hue, tc] of [[6, 4, 0, 0x2f6fd6], [10, 12, 200, 0xff7043], [4, 18, 50, 0x8e24aa], [9, -20, 320, 0x2e9e6e]]) { placeT(game, U, makeUmbrella(hue), x, z, 0); boxT(game, x, z, 0.2, 2.2, 0.2, { cam: false }); const ry = r() * 0.6; placeT(game, U, makeTowel(tc), x + 1.2, z + 0.6, ry); towels.push([x + 1.2, z + 0.6, ry]); }
-  placeT(game, U, makeSandcastle(), 7, -4, 0.3); boxT(game, 7, -4, 1.6, 1.4, 1.6, { cam: false });
+  const sandcastle = placeT(game, U, makeSandcastle(), 7, -4, 0.3); boxT(game, 7, -4, 1.6, 1.4, 1.6, { cam: false });
+  // the kid a step to the north has been patting this castle since it was first built, but the castle
+  // itself never got a "walk up and look" toast of its own, same gap every other hand-built prop in
+  // this file has had filled one round at a time. No new mesh, no new physics box: `placeT`'s own return
+  // value is handed straight to `game.addInteractable`. The existing box (half-extent 0.8 in x and z,
+  // corner at 1.13 m) already keeps the cat about 0.8 m clear on every face, so a 3.0 m radius is
+  // reachable from any side. The patting kid sits only 1.3 m north of this same centre, well inside that
+  // radius too, but `game.nearest` always resolves to whichever interactable is physically closer to the
+  // cat (see the main loop in 80-game.js), so standing near the kid still shows "Say hi", not this toast.
+  { const sandcastleLines = ['🏰 "Four towers, one flag, not a drop of moat water left."', '🏰 "Survived two tides and one very curious gull."', '🏰 "Somebody is awfully proud of that little flag."'];
+    game.addInteractable({ obj: sandcastle, radius: 3.0, label: () => 'Look at the sandcastle', onUse: () => { SFX.click(); game.toast(rnd.pick(sandcastleLines), 3000); } }); }
   const ball = mesh(G.sphere(0.32, 14, 10), mat(0xffffff, { roughness: 0.5 }), { parent: W }); mesh(G.sphere(0.322, 14, 10), mat(0xd62839, { roughness: 0.5 }), { sx: 0.5, parent: ball }); mesh(G.sphere(0.322, 14, 10), mat(0x2f6fd6, { roughness: 0.5 }), { sz: 0.5, parent: ball });
   const ballY = P.ground0(3, 8); ball.position.set(3, ballY + 0.32, 8);
   // the ball is in play: see BallGame below, once the sunbathers are made
