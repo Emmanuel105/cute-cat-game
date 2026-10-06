@@ -6817,3 +6817,28 @@ ground walkable), since the ring gains no greetable id and no box. One run (on t
 independently confirmed on the unmodified code too) hit a single unrelated flake in Victorian's own
 horse-and-carriage movement check — a pre-existing, timing-sensitive test, not anything this round
 touched — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 281 — a look up at Victorian's clock tower
+
+The throne, the fountain, Robot City's statue, the Neighborhood's signpost and the fairy ring have all
+had a one-off "walk up and look" toast for rounds now — but the clock tower itself, the one landmark
+the whole Victorian street scene is built around since round 1, with its own bell and weathervane,
+never got the same treatment. **The cat can now stand at its foot and look up**, for a soft click and
+one of three dry lines: *"Four faces, and every one tells the same lie about the time."*, *"Still the
+tallest thing in town. Even the robots across the valley haven't topped it."*, *"Someone built
+eighteen metres of stone just to hold up a clock face."*
+
+Same trick as the others: `makeClockTower`'s own return value (previously discarded) is now kept and
+handed straight to a single `game.addInteractable` right after the tower's build call in
+`buildVictorian()` — no new mesh, no new physics box. The tower's existing base box (half-extent 3.75 m
+in x and z) already keeps the cat from getting closer than about 4.0 m to the centre face-on, or about
+5.6 m square on a corner, so the interactable's 5.8 m radius covers every approach, corner or not,
+without reaching the fiddler resting at the tower's foot (6.7 m off) or the kite kid further up the
+bank. The line is picked with `rnd.pick()` at the moment of use, never the world's own seeded `r` at
+build time, so it costs no later wardrobe or colour draw.
+
+Verified: `node test/run.mjs` five times in a row — four passed clean with 0 FAILs and 0 console
+warnings; one hit the same pre-existing Victorian horse-and-carriage timing flake noted in round 280's
+own log, not anything this round touched. Physics box count unchanged at 296 throughout. Victorian's
+own counts are untouched, since the tower gains no greetable id and no box — before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

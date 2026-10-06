@@ -8235,7 +8235,7 @@ function buildVictorian(game, entry) {
       cries: ['Found a farthing! Mudlarking never quite lets you down.', 'Careful, puss — mind the mud, it never comes out of white fur.', 'A thimble, would you believe. Third one this month — someone up there keeps losing them.'] })); }
   for (const [x, z, k2] of [[-30, 20, 'oak'], [36, 22, 'oak'], [-12, -50, 'birch'], [18, -52, 'birch'], [-66, -14, 'oak'], [66, 18, 'oak']]) addTree(game, k2, x, z, r);
   // clock tower plaza (east), time door (west)
-  makeClockTower(game, 42, 0, U);
+  const tower = makeClockTower(game, 42, 0, U);
   // the tower's own bell (SFX.chime(), "tolling three times") had only ever sounded once, for the time
   // door's own fanfare in 80-game.js — otherwise it stood silent despite the owl hooting on its own clock
   // in Whisper Woods and the gulls crying on theirs at Sunny Shore. It now tolls on its own loop too, same
@@ -8245,6 +8245,15 @@ function buildVictorian(game, entry) {
   // construction-time wardrobe pick, here or in any world built after it.
   let towerChimeT = rnd.range(40, 70);
   U.push((dt) => { towerChimeT -= dt; if (towerChimeT <= 0) { SFX.chime(); towerChimeT = rnd.range(60, 100); } });
+  // the throne, the fountain, Robot City's statue, the Neighborhood's signpost and the fairy ring have all
+  // had a one-off "walk up and look" toast for rounds now — but the clock tower itself, the one landmark
+  // every Victorian street scene is built around, never got the same treatment, for all its own bell and
+  // weathervane. The cat can now stand at its foot and look up. `makeClockTower`'s own base box (half-extent
+  // 3.75 in x and z) keeps the cat from getting closer than ~4.0 m to the centre face-on, or ~5.6 m square
+  // on a corner, so a 5.8 m radius is reachable from any side of the plaza, square to the base or not,
+  // without reaching the fiddler's own spot 6.7 m away or the kite kid at (50, 55).
+  const towerLines = ['🕰️ "Four faces, and every one tells the same lie about the time."', '🕰️ "Still the tallest thing in town. Even the robots across the valley haven\'t topped it."', '🕰️ "Someone built eighteen metres of stone just to hold up a clock face."'];
+  game.addInteractable({ obj: tower, radius: 5.8, label: () => 'Look up at the clock tower', onUse: () => { SFX.click(); game.toast(rnd.pick(towerLines), 3000); } });
   flatPlane(game, 16, 16, pave, 42, 0, 0, 0.015);
   makeCarriage(game, 16, 3.4, PI / 2);
   // the parked carriage had no one minding it; a coachman now waits up on the driver's bench, watch in hand
