@@ -7223,3 +7223,29 @@ mailbox" and `game.interact()` runs clean without touching `game.state.friends` 
 other look/sniff toast), then ran 300 more frames and confirmed the cat's own position stayed finite.
 Full suite (`node test/run.mjs`) ran clean — exit 0, 0 console warnings, physics box count unchanged at
 297 — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 295 — ducks for the Neighborhood's own lake
+
+Round 199 gave the park pond a swimming duck pair and its own write-up named the lake as the other body
+of water in the Neighborhood with nobody actually living on it — the jetty angler works its edge, same as
+the painter and the old fisherman did before that round — but nobody ever circled back to it. **A drake
+and a hen now paddle slow circles in the lake's own south-west corner**, dipping their heads toward the
+water now and then, the same fixed-phase orbit every other duck pair in the game already swims.
+
+The circle (radius 2.2, centred (-37, -51)) stays 2.0 m clear of the fishing hole at the pond's own centre
+and 3.4 m clear of the jetty's physics box at every point, while its farthest reach from the pond's true
+centre (6.44 m) stays well inside the water itself (the pond's own radius here is 7.5, with reeds only
+starting past that). Unlike every other duck pair so far, this one has no quack timer of its own: the
+Neighborhood is the one world every test travel starts from, and its painter's held-pose check turned out
+to be tuned to the exact count of shared `rnd()` draws every NPC there already makes before it runs — one
+more runtime draw, even on a quiet nine-second timer, rolled a different idle gesture onto the painter and
+froze her arm mid-check. Found by bisecting the failure against the unchanged file, then dropping the
+sound rather than hunting for a number that wouldn't collide. The ducks themselves draw from neither the
+per-world seeded `r` nor the shared `rnd()` at all, so nothing about them can shift a later wardrobe pick
+either.
+
+Verified beyond the test suite's own checks: a headless run of the real game (`game.start('new')`, then
+600 simulated frames) confirmed the physics box count held at 297 before and after, 0 console warnings,
+and the cat's own position stayed finite throughout. Full suite (`node test/run.mjs`) ran clean — exit 0,
+273 checks, 0 console warnings, physics box count unchanged at 297 — before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

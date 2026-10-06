@@ -163,6 +163,31 @@ function buildNeighborhood(game, entry) {
   for (const [px, pz] of [[-31.5, -48.5], [-31.5, -47.5], [-27.5, -48.5], [-27.5, -47.5]]) mesh(G.cyl(0.08, 0.1, 0.9, 6), mat(0x6b4a2a, { roughness: 1 }), { x: px, y: 0.3, z: pz, parent: W });
   P.addBox(-29.5, 0.2, -48, 5, 0.4, 1.0, { cam: false });
   for (let i = 0; i < 12; i++) { const a = r() * TAU, d = r.range(9.5, 14); addBush(game, -34 + cos(a) * d, -48 + sin(a) * d, r, r.pick([0x2f7a2f, 0x3a8a3a, 0x5a9a3a])); }
+  // the park pond got a swimming duck pair back in round 199, and the comment that added it named the
+  // lake as the other body of water with nobody actually living on it — the jetty angler works its edge,
+  // same as the painter and the old fisherman did before that round, but the lake itself was never
+  // circled back to. A drake and a hen now paddle the lake's own south-west corner, well clear of both
+  // the jetty (its physics box spans x -32..-27 at z -48) and the fishing hole at the pond's own centre
+  // (-34, -48): a circle of radius 2.2 centred (-37, -51) stays 2.0 m clear of the hole and 3.4 m clear
+  // of the jetty's nearest corner at every point, while its farthest reach (6.44 m from the pond's own
+  // centre) stays well inside the water itself (`makePond`'s radius here is 7.5, with reeds only
+  // starting past that). Fixed phases and speeds, so nothing here draws from this world's own seeded `r`
+  // and no later wardrobe pick anywhere on the street shifts. No quack timer of its own, unlike the park
+  // pond's pair: this world is the one every test travel starts from, and its own timing-sensitive checks
+  // (the painter's held pose among them) are tuned to the exact number of shared `rnd()` draws every
+  // Neighborhood NPC already makes before them — one more runtime draw, even off on a quiet nine-second
+  // timer, shifted a different idle gesture onto the painter and froze her arm mid-test (found by
+  // bisecting the failure). The swim itself draws from neither `r` nor the shared `rnd()` at all.
+  { const dcx = -37, dcz = -51, drad = 2.2, dY = 0.07;
+    const drake = makeDuck({ drake: true }); W.add(drake.group);
+    const hen = makeDuck({ drake: false }); W.add(hen.group);
+    const ducks = [[drake, 0, 0.14], [hen, PI, 0.19]];
+    U.push((dt, t) => { for (const [d, phase, speed] of ducks) {
+      const a = t * speed + phase, dx = -sin(a), dz = cos(a);
+      d.group.position.set(dcx + cos(a) * drad, dY + sin(t * 2.2 + phase) * 0.012, dcz + sin(a) * drad);
+      d.group.rotation.y = atan2(dx, dz);
+      d.head.rotation.x = sin(t * 0.6 + phase * 2) > 0.88 ? 0.5 : 0;   // the occasional dip toward the water
+    } }); }
   makeFlowers(game, [[60, -40, 14, 260], [72, -58, 10, 160], [-70, 60, 12, 200], [-56, -60, 9, 120]], r);
   // park (south) with pond, bench, lamp, flowers and the portal arch
   flatPlane(game, 26, 1.4, walk, 0, 36, 0, 0.02); flatPlane(game, 1.4, 14, walk, 0, 42, 0, 0.02);
