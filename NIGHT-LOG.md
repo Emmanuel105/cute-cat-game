@@ -7461,3 +7461,26 @@ kid further out at (-34, -54).
 count. Full suite (`node test/run.mjs`) ran clean — exit 0, 0 console warnings, Robot City's friend count
 up by one (48 → 49) and every other world unchanged — before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 304 — a look at Robot City's own conveyor belt
+
+Housekeeping note first, same as a few rounds back: the container came up on a detached `HEAD` again.
+`origin/main` matched it exactly once fetched fresh — nothing was lost, just a stale local ref — so
+`main` was moved up to it before anything else this round touched the repo.
+
+The statue, the furnace and the robot arm have all had a one-off "walk up and look" toast for a while
+now, but the thing that's actually been running the factory floor since round 1 — the conveyor belts
+themselves, looping the same three crates forever — never got so much as a glance. **The east yard's
+own belt, out by Sector 8, can now be looked at**: *"The belt never stops — the crates just loop back
+when nobody's looking."*
+
+Same trick as every "look" round before it: `conv2` (already kept for its own crate-loop animation) is
+handed straight to `game.addInteractable`, no new mesh and no new physics box. A headless probe built
+the real Robot City, swept every physics box and circle against the spot, and sampled every NPC's
+position over 400 simulated frames: the belt's own box (half-extent 0.95 m × 6 m) stays clear at its
+center, the inspector's crate pile sits 7.3 m off and the stationary inspector herself 8.0 m off, both
+safely past the 5.5 m radius chosen. Confirmed in a second probe that standing beside the belt shows the
+prompt, standing 35 m off shows nothing, and `onUse()` runs clean. The main factory floor's own twin
+belts (with the Loader robots at each end) were left alone — crowded enough already. Full suite
+(`node test/run.mjs`) ran clean — exit 0, 0 console warnings, physics box count unchanged at 297 —
+before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

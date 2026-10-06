@@ -7646,6 +7646,17 @@ function buildRobotCity(game, entry) {
   });
   // east yard: a second factory line, a plaza with a giant robot statue to the west, more lights and neon
   const conv2 = makeConveyor(game, 44, 12, 12, 1); U.push(conv2.userData.update); const arm2 = makeRobotArm(game, 50, 2); U.push(arm2.userData.update);
+  // the statue, the furnace and the robot arm all got their own "walk up and look" toast by now, but
+  // every conveyor belt in the city — the two on the main factory floor, and this one out in the east
+  // yard — never got so much as a glance, despite looping the same three crates since round 1. No new
+  // mesh, no new box: `conv2` (already kept, for its crate-loop `U.push` above) is handed straight to
+  // `game.addInteractable`. Its own physics box (half-extent 0.95 m in x, 6 m in z) keeps the cat clear
+  // on every side, so a 5.5 m radius reaches it comfortably from along its length without reaching the
+  // inspector's crate pile or the inspector herself — a headless probe (built the real Robot City, then
+  // swept every physics box and circle, and sampled every NPC's position over 400 simulated frames)
+  // found the crate pile 7.3 m off and the stationary inspector 8.0 m off, both well past this radius.
+  { const convLines = ['📦 "Same three crates, round and round. Nobody\'s ever counted exactly how long."', '📦 "The belt never stops — the crates just loop back when nobody\'s looking."', '📦 "Sector 8\'s whole operation, really: three crates and a very patient machine."'];
+    game.addInteractable({ obj: conv2, radius: 5.5, label: () => 'Look at the conveyor belt', onUse: () => { SFX.click(); game.toast(rnd.pick(convLines), 3000); } }); }
   // Sector 8's belt had no one minding it; a quality inspector now kneels by the crates it's already stacked, clipboard in hand
   { const crateM = mat(0x8a6a3a, { roughness: 0.9, map: TEX.planks(30, 34) }), cx = conv2.position.x + 1.5, cz = conv2.position.z + conv2.userData.len / 2 + 1.1;
     for (const [dx, dy, dz] of [[0, 0.35, 0], [0.75, 0.35, 0], [0.37, 1.05, 0]]) mesh(G.box(0.7, 0.7, 0.7), crateM, { x: cx + dx, y: dy, z: cz + dz, parent: W });
