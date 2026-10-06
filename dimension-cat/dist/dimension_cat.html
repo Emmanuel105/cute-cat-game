@@ -6648,7 +6648,17 @@ function buildNeighborhood(game, entry) {
     mesh(G.cone(0.19, 0.16, 10), hatMat, { y: 0.18, parent: head });           // hat crown
     let scareT = 0;
     U.push((dt) => { scareT += dt * 0.9; upper.rotation.z = sin(scareT) * 0.035; });
-    P.addBox(scx, 0.525, scz, 0.14, 1.05, 0.14, { cam: false }); }
+    P.addBox(scx, 0.525, scz, 0.14, 1.05, 0.14, { cam: false });
+    // a look at the scarecrow itself — every other hand-built landmark in the Neighborhood has had its
+    // own "walk up and look" toast for rounds now, but the scarecrow never got one; the cat could only
+    // ever walk past it. Same trick as every other round like this: `scare`, the post's own group
+    // (already built above, already escaping the outer-country bake pass since it is hand-placed here
+    // rather than dropped by fillRing), is handed straight to `game.addInteractable` — no new mesh, no
+    // new physics box. Its own existing box (0.14 half-extent) sits well inside a 2.2 m radius, and the
+    // comment above already measured this spot 1.5 m clear of the patch bed, 2.65 m clear of the carrot
+    // basket and 2.7 m clear of the gardener — all comfortably past this interactable's own reach.
+    const scareLines = ['🌾 "Button eyes, straw for bones, and it still looks unimpressed."', '🌾 "Doesn\'t scare the gardener\'s carrots one bit. The sparrows ignore it completely."', '🌾 "That floppy hat has seen more weather than anyone else on this street."'];
+    game.addInteractable({ obj: scare, radius: 2.2, label: () => 'Look at the scarecrow', onUse: () => { SFX.click(); game.toast(rnd.pick(scareLines), 3000); } }); }
   game.squirrels.push(new Squirrel(game, 9, 47, 'sq-neighborhood'));
   // a detectorist sweeps the quiet grass behind the south-row houses, headphones on, hoping for buried
   // treasure — already doing duty on Sunny Shore and at Frosty Peak, its first outing in the Neighborhood

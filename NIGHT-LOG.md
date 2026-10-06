@@ -7174,3 +7174,28 @@ toast), then ran 300 more frames and confirmed the cat's own position stayed fin
 at 297 both times — and Candy Land's own count of who there is to meet is untouched at 48, since the hill
 gains no greetable id and no new box — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 293 — a look at the Neighborhood's own scarecrow
+
+The scarecrow in the vegetable patch has been swaying gently in its own breeze for a few rounds now —
+head and shoulders rocking on a hidden timer — but, like every prop before it got its own toast, the cat
+could only ever walk past it. **The cat can now stand at its foot and have a look**, for a soft click and
+one of three lines: *"Button eyes, straw for bones, and it still looks unimpressed."*, *"Doesn't scare
+the gardener's carrots one bit. The sparrows ignore it completely."*, *"That floppy hat has seen more
+weather than anyone else on this street."*
+
+Same trick as every other "look up" round: `scare`, the post's own group built a few rounds back, is
+handed straight to `game.addInteractable` — no new mesh, no new physics box. It was never part of the
+`fillRing` bake pass to begin with (that only touches the outer-country clusters, not this hand-built
+corner of the Neighborhood), so its sway animation was already safe. A 2.2 m radius sits well inside the
+clearances an earlier round's own headless probe already measured for this exact spot: 1.5 m clear of
+the patch bed, 2.65 m of the carrot basket, 2.7 m of the gardener kneeling nearby — no new overlap risk,
+since nothing about those boxes changed.
+
+Verified beyond the test suite's own checks: a real `game.start('new')`, found the new interactable by
+label, stood the cat 1 m south of the post, confirmed `game.nearest.label()` reads "Look at the
+scarecrow" and `onUse()` runs clean without touching `game.state.friends` (ambient, same as the statue
+and the mushrooms), then ran 300 more frames and confirmed the cat's own position stayed finite. Full
+suite (`node test/run.mjs`) ran clean twice in a row — exit 0, 0 console warnings, physics box count
+unchanged at 297 both times — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.
