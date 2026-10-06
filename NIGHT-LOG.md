@@ -7322,3 +7322,34 @@ furnace instead and confirmed its own "Look at the furnace" still wins there, no
 simulated frames and confirmed the cat's own position stayed finite throughout. Full suite
 (`node test/run.mjs`) ran clean — exit 0, 0 console warnings, physics box count unchanged at 297 — before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 299 — a look at Candy Land's other gate tower
+
+Housekeeping note first: the last several rounds' commits had landed on a detached `HEAD` instead of
+advancing the `main` branch, so none of rounds 283–298 had actually reached `origin/main` — sixteen
+rounds of work was sitting only in this container. Moved `main` up to match and pushed before touching
+anything else, so that's safe now.
+
+The right-hand gate tower got its own "walk up and look" toast back in round 294; its twin across the
+arch, same height and same candy-cane stripe, never got one. **The cat can now look up at the other gate
+tower too**, for a soft click and one of three lines: *"No guard troubles this one — Her Majesty only
+ever posted the one."*, *"Mirror image of its neighbour across the arch, down to the last candy
+stripe."*, *"Quietest tower in the castle. Nobody's ever been told why it matters less."*
+
+Same trick as round 294: `makeCandyCastle`'s own `towers` array already held this one too
+(`castle.towers[4]`, the gate tower round 294 skipped), so it's handed straight to a second
+`game.addInteractable` — no new mesh, no new box. The whole plaza is symmetric about its own centre line
+(the guard's patrol spans `gx-1.5..gx+1.5`, the jester sits at `x=0`, both straddling this tower and its
+twin alike), so every clearance round 294 measured for the first tower holds here by mirror symmetry, not
+just by eye.
+
+Verified beyond the test suite's own checks: a headless run confirmed the two towers sit at world
+`(-4.3, 135)` and `(4.3, 135)` — exact mirror images, 8.6 m apart — found the new interactable by its own
+label ("Look up at the other tower", distinct from the first tower's "Look up at the tower" so the two
+never collide in the prompt), and confirmed standing at each tower's own spot shows its own prompt, not
+the other's. Swept the guard's patrol over 300 simulated frames: it comes no closer than 3.0 m to either
+tower (2.97 m to the first, 3.04 m to the second — the same margin, as symmetry predicts), well inside
+both 4.5 m radii without ever blocking them, same as round 294 already lived with for the first tower.
+`onUse()` runs clean without touching `game.state.friends` (ambient, same as every other "look" toast).
+Full suite (`node test/run.mjs`) ran clean — exit 0, 0 console warnings, physics box count unchanged at
+297 — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

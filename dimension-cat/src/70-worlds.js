@@ -1072,6 +1072,17 @@ function buildCandyLand(game, entry) {
   // jester at (0, 140), so a 4.5 m radius clears the tower from any side with room to spare before either.
   { const lines = ['🍬 "Thirteen metres of candy cane, striped all the way to the roof."', '🍬 "Her Majesty\'s own flag flies up there, same as every other tower\'s — nobody dares fly a different one."', '🍬 "First thing you see coming up the lane. Still the best view of the gate."'];
     game.addInteractable({ obj: castle.towers[5], radius: 4.5, label: () => 'Look up at the tower', onUse: () => { SFX.click(); game.toast(rnd.pick(lines), 3000); } }); }
+  // the right-hand gate tower got its own look above, but its twin on the other side of the arch —
+  // same height, same candy-cane stripe, same stride from the gate — never got so much as a glance.
+  // `castle.towers[4]` is the other one `makeCandyCastle` hands back (build order: four corner towers,
+  // then the gate towers, left then right): same mesh, same existing box, no new geometry. The whole
+  // castle is symmetric about its own centre line (the guard's patrol spans gx-1.5..gx+1.5, the jester
+  // sits at x=0, both either side of this tower and tower 5 alike), so every clearance already measured
+  // for tower 5 above — 2.8 m from the patrol line's near end, 6.6 m from the jester — holds for tower 4
+  // by mirror symmetry, not just by eye: reflecting the whole plaza about x=0 maps tower 5 onto tower 4
+  // and leaves the guard and the jester exactly where they were. A 4.5 m radius is just as reachable here.
+  { const lines4 = ['🍬 "No guard troubles this one — Her Majesty only ever posted the one."', '🍬 "Mirror image of its neighbour across the arch, down to the last candy stripe."', '🍬 "Quietest tower in the castle. Nobody\'s ever been told why it matters less."'];
+    game.addInteractable({ obj: castle.towers[4], radius: 4.5, label: () => 'Look up at the other tower', onUse: () => { SFX.click(); game.toast(rnd.pick(lines4), 3000); } }); }
   candyRegion(game, U, r, 92, CANDY_LIMIT - 8);
   for (const [x, z] of [[-14, 18], [18, 16], [-8, -10], [10, -12], [-28, 8], [30, 4], [-22, 30], [22, 32], [-34, -32], [34, -36], [2, -30]]) { const b = makeMarshmallowBush(r); b.position.set(x, 0, z); W.add(b); P.addBox(x, 0.5, z, 1.2, 1, 1.2, { cam: false }); }
   for (const [x, z, ry, c] of [[-16, 8, 0.3, 0xff6fb5], [20, -8, -0.8, 0x7fd7ff], [0, 26, 1.5, 0xffd54a]]) { const d = makeDonut(c); d.position.set(x, 0, z); d.rotation.y = ry; W.add(d); addRotBox(game, x, 1.2, z, 0.6, 2.4, 3.4, ry, { cam: false }); }
