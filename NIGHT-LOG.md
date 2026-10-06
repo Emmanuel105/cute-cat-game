@@ -7297,3 +7297,28 @@ angler's own spot and confirmed his "Say hello" still wins there, not the pier's
 simulated frames and confirmed the cat's own position stayed finite throughout. Full suite
 (`node test/run.mjs`) ran clean — exit 0, 273 checks, 0 console warnings, physics box count unchanged at
 297 — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 298 — a look at Robot City's own robot arm
+
+The furnace got its own "walk up and look" toast last round; right beside it on the factory floor, the
+robot arm has been swinging its claw over an invisible crate since round 1 and never got one either.
+**The cat can now stand at the robot arm and have a look**, for a soft click and one of three lines:
+*"Swings the same six crates all day. Never drops one, never gets bored."*, *"Mind the claw, puss — it
+doesn't know you're not a crate."*, *"Been reaching for something just out of frame since the day it was
+bolted down."*
+
+Same trick as the furnace and every other "look" round: `makeRobotArm`'s own return value — already kept
+for its swing-animation `U.push` — is handed straight to `game.addInteractable`. No new mesh, no new
+physics box: the arm's existing base collider (half-extent 2.2 m in x and z) already keeps the cat about
+2.2 m clear on every side, so a 3.8 m radius — just past the box's own 3.11 m diagonal corner — is
+reachable from any angle without reaching another interactable: the furnace sits 14 m off, the nearest
+conveyor 12.2 m off.
+
+Verified beyond the test suite's own checks: a headless `game.start('new')`, travelled to Robot City
+(`game.travel(2, 'from-prev')`), found the new interactable by label, stood the cat 3.5 m from the arm's
+base and confirmed `game.nearest.label()` reads "Look at the robot arm" and `onUse()` runs clean without
+touching `game.state.friends` (ambient, same as the furnace and the statue); then stood the cat at the
+furnace instead and confirmed its own "Look at the furnace" still wins there, not the arm's. Ran 300 more
+simulated frames and confirmed the cat's own position stayed finite throughout. Full suite
+(`node test/run.mjs`) ran clean — exit 0, 0 console warnings, physics box count unchanged at 297 — before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

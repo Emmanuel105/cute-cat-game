@@ -7669,6 +7669,15 @@ function buildRobotCity(game, entry) {
   // and the robot arm at (-5, -16) 14 m off, all well past this radius.
   { const furnaceLines = ['🔥 "Been roaring since the city went up. Nobody\'s ever seen it go out."', '🔥 "Too hot to get close, which is rather the point of it."', '🔥 "Feeds the whole factory floor. Mostly scrap metal, these days, and a few old secrets."'];
     game.addInteractable({ obj: furnace, radius: 3.6, label: () => 'Look at the furnace', onUse: () => { SFX.click(); game.toast(rnd.pick(furnaceLines), 3000); } }); }
+  // the furnace just got its own look toast above, but the robot arm beside it — swinging its claw over
+  // the factory floor since round 1 — still had nothing. Same trick again: `makeRobotArm`'s own return
+  // value (already kept, for its swing-animation `U.push` two lines up) is handed straight to
+  // `game.addInteractable`. No new mesh, no new box: its existing base box (half-extent 2.2 in x and z)
+  // already keeps the cat about 2.2 m clear on every side, so a 3.8 m radius — just past the box's own
+  // 3.11 m diagonal corner — is reachable from any angle without reaching another interactable: the
+  // furnace itself sits 14 m off, the nearest conveyor (-12, -6) 12.2 m off.
+  { const armLines = ['🦾 "Swings the same six crates all day. Never drops one, never gets bored."', '🤖 "Mind the claw, puss — it doesn\'t know you\'re not a crate."', '🦾 "Been reaching for something just out of frame since the day it was bolted down."'];
+    game.addInteractable({ obj: arm, radius: 3.8, label: () => 'Look at the robot arm', onUse: () => { SFX.click(); game.toast(rnd.pick(armLines), 3000); } }); }
   // every other world has an ambient sound of its own on a loop — the Victorian bell, Sunny Shore's dog,
   // Whisper Woods' owl — but the factory floor, with its furnace and conveyors already running, had never
   // once sounded a shift whistle. It blows on its own loop now, same long steam blast whatever the game
