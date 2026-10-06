@@ -1779,6 +1779,20 @@ function buildRobotCity(game, entry) {
     W.add(kiteKid.group);
     game.npcs.push(new KiteFlyer(game, kiteKid, makeKite(0x00c2e0, 0xffe27a), { x: -34, z: -54, wind: [0.4, -0.9],
       cries: ['Caught a good gust off the factory roof!', 'Mind the string, puss.', "Robots don't fly kites. Their loss."] })); }
+  // the Neighborhood's had a yo-yo kid since round 267 and no other world ever got one of its own —
+  // one more child joins the swing-and-seesaw pair south of the statue plaza, working a yo-yo on the
+  // open factory floor. `YoYoer` needs no held prop beyond what it builds itself (the disc and string
+  // hang straight off `rig.hands[1]`), so this is a placement, not a build. A headless probe swept a
+  // disc against every one of the city's physics boxes, every zone and every physics circle, then
+  // re-sampled every NPC's own position (the wandering robot packs, the sentry's patrol, the tag and
+  // catch pairs, the ring dancers) continuously over 25 simulated seconds: (-56, -46) came back clear
+  // throughout — not a single box, zone or circle within range, and the nearest other soul never closer
+  // than 16 m — 8 m south of the swing set at (-56, -38), inside the playground cluster but short of
+  // the seesaw's own gap at (0, -45).
+  { const yoyoKid = makeHuman({ ...randomPerson(r, { child: true, female: r.chance(0.5) }), shirt: 0x9ad6ff, backpack: null, hat: null, scarf: null, jacket: null, bag: null, glasses: false });
+    W.add(yoyoKid.group);
+    game.npcs.push(new YoYoer(game, yoyoKid, 0xffe27a, { x: -56, z: -46, ry: 1.0,
+      cries: ['Watch this - no hands on the catch!', "Careful, puss — it swings wider than it looks.", 'Robots just stare. No idea why.'] })); }
   // the giant robot statue in the plaza never got so much as a wipe — every worker in this city tends
   // a machine of some kind, but nobody tended the one standing still long enough to need it. A line
   // worker now gives its chrome foot a scrub with a bucket of suds, `Washer` doing the same wiping

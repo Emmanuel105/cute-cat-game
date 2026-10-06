@@ -7438,3 +7438,26 @@ standing 1.5 m from the kid (3.8 m from the castle) showed "Say hi" instead, nev
 `onUse()` ran clean without touching `game.state.friends` (ambient, same as every other "look" toast).
 Full suite (`node test/run.mjs`) ran clean — exit 0, 0 console warnings, physics box count unchanged at
 297 — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 303 — a yo-yo kid for Robot City's own playground
+
+The Neighborhood has had a kid working a yo-yo since round 267, and the task's own example list is where
+the idea came from in the first place — but none of the other six worlds ever got one of their own. **A
+second child now joins Robot City's swing-and-seesaw pair**, working a yo-yo on the open factory floor
+south of the statue plaza: *"Watch this — no hands on the catch!"*, *"Careful, puss — it swings wider than
+it looks."*, *"Robots just stare. No idea why."*
+
+No new mesh beyond what `YoYoer` already builds for itself — the disc and string hang straight off
+`rig.hands[1]`, same as the Neighborhood's own kid — so this was placement, not construction. A headless
+probe (loaded the real built game, travelled to Robot City, then swept candidate spots against every one
+of the city's 297 physics boxes, every keep-out zone and every physics circle, before re-sampling every
+NPC's own position — the wandering robot packs, the sentry's patrol, the tag and catch pairs, the ring
+dancers — continuously over 25 simulated seconds) settled on (-56, -46): clear of every box, zone and
+circle throughout, and never closer than 16 m to another soul. That's 8 m south of the swing set at
+(-56, -38) — inside the same playground cluster, short of the seesaw's own gap at (0, -45) and the kite
+kid further out at (-34, -54).
+
+`YoYoer`'s own constructor calls `greetable()` internally, so no extra wiring was needed for the friend
+count. Full suite (`node test/run.mjs`) ran clean — exit 0, 0 console warnings, Robot City's friend count
+up by one (48 → 49) and every other world unchanged — before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
