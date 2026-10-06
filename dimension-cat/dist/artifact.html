@@ -8620,7 +8620,19 @@ function buildBeach(game, entry) {
   game.zones.addSpan(-52, -14, -44, 14); game.zones.addCircle(12, -46, 9); game.zones.addSpan(2, -26, 20, 6);
 
   // pier + lighthouse + huts
-  makePier(game, 17, -10, 15, PI / 2);
+  const pier = makePier(game, 17, -10, 15, PI / 2);
+  // the throne, the fountain, the lighthouse two lines below and Robot City's statue have all had a
+  // one-off "walk up and look" toast for rounds now — but Sunny Shore's own pier, the first thing
+  // underfoot on the way out to the fisherman, never got a glance of its own. `makePier`'s own return
+  // value (otherwise discarded) is handed straight to `game.addInteractable` — no new mesh, no new
+  // physics box: the pier's existing deck box already carries the cat out over the water, and the
+  // group's own origin sits at the pier's landward end (17, -10), a fixed point regardless of the
+  // group's rotation. A 4 m radius reaches comfortably onto the first stretch of planking from the sand
+  // behind it, 13 m short of the angler's own 2.1 m greet circle at the far end (30, -10), so standing at
+  // the near end never steals his prompt. The line is picked with `rnd.pick()` at the moment of use, never
+  // this world's own seeded `r` at build time, so it costs no later wardrobe or colour draw.
+  { const pierLines = ['🌊 "Water as far as the eye can go. Somewhere under it, fish."', '🪵 "Salt-bleached boards, creaking the whole way out."', '🎣 "Best seat in the house for watching somebody else not catch anything."'];
+    game.addInteractable({ obj: pier, radius: 4, label: () => 'Look out over the pier', onUse: () => { SFX.click(); game.toast(rnd.pick(pierLines), 3000); } }); }
   const lighthouse = makeLighthouse(game, 12, -46); U.push(lighthouse.userData.update);
   // the Victorian bell tolls, the factory whistle blows, Whisper Woods' owl hoots — but Sunny Shore's
   // own lighthouse, sweeping its beam every second since the world was first built, had never once

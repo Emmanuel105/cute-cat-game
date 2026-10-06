@@ -7272,3 +7272,28 @@ touching `game.state.friends` (ambient, same as the statue and the radar dish), 
 simulated frames and confirmed the cat's own position stayed finite. Full suite (`node test/run.mjs`) ran
 clean — exit 0, 0 console warnings, physics box count unchanged at 297 — before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 297 — a look out over Sunny Shore's own pier
+
+The throne, the fountain, the clock tower, the lighthouse, both zipline towers, the aurora, the radar
+dish, the giant mushroom, the castle's gate towers, the furnace and more have all had a one-off "walk up
+and look" toast by now — but Sunny Shore's own pier, the very first thing the cat's paws land on along
+the way out to the old fisherman, never got a glance of its own. **The cat can now stand at the pier's
+landward end and take in the view**, for a soft click and one of three lines: *"Water as far as the eye
+can go. Somewhere under it, fish."*, *"Salt-bleached boards, creaking the whole way out."*, *"Best seat
+in the house for watching somebody else not catch anything."*
+
+Same trick as the furnace and the lighthouse before it: `makePier`'s own return value — previously
+discarded — is handed straight to `game.addInteractable`. No new mesh, no new physics box: the group's
+own origin sits at the pier's landward end (17, -10), a fixed point no matter how the pier itself is
+rotated, and a 4 m radius reaches comfortably onto the first stretch of planking without coming anywhere
+near the angler's own 2.1 m greet circle 13 m further out at the far end (30, -10).
+
+Verified beyond the test suite's own checks: a headless run through the real game (clicking "enter",
+then `game.travel(4, 'from-hub')`), found the new interactable by label, stood the cat at the pier's near
+end and confirmed `game.nearest.label()` reads "Look out over the pier" and `onUse()` runs clean without
+touching `game.state.friends` (ambient, same as every other look toast); then stood the cat at the
+angler's own spot and confirmed his "Say hello" still wins there, not the pier's own toast. Ran 300 more
+simulated frames and confirmed the cat's own position stayed finite throughout. Full suite
+(`node test/run.mjs`) ran clean — exit 0, 273 checks, 0 console warnings, physics box count unchanged at
+297 — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
