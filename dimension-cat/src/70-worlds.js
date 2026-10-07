@@ -2456,6 +2456,22 @@ function buildVictorian(game, entry) {
     const v = new Vendor(game, roaster, makeChestnutCone(), { x: vx, z: vz, ry: vry, cryIcon: '🌰',
       cries: ["Hot chestnuts! Straight off the brazier!", "Careful, puss — that griddle's hotter than it looks.", "Best thing for cold hands, this time of year."] });
     game.npcs.push(v); greetable(game, v); }
+  // the Neighborhood, Candy Land and Robot City all have a kid working a yo-yo by now — Victorian, for
+  // all five of its own games on the north bank (tag, the ring dance, catch, the swing and the seesaw),
+  // never had one. A child now works one on the grass between the kite kid and the chestnut roaster,
+  // facing the brazier as if drawn in by the smell. Same placement-only trick as the other three (`YoYoer`
+  // needs no held prop beyond what it builds itself off `rig.hands[1]`). A headless probe built the real
+  // Victorian town (`game.travel(3, 'from-prev')`) and sampled every NPC's own position continuously over
+  // 30 simulated seconds (so no wandering urchin or dancer mid-game could slip past unnoticed), then swept
+  // a grid of candidates between the kite kid at (50, 55) and the roaster at (73, 39.6) against both those
+  // samples and every one of the town's physics boxes, keeping the whole grid under 78 m from the origin —
+  // comfortably short of the radius (88) where victorianRegion's own procedural fill takes over: (61, 48)
+  // came back clear by 13.4 m of the nearest box and 13.0 m of the nearest other soul (the kite kid).
+  { const yoyoWard = makeWardrobe(r, { shirts: [0x6a4a3a, 0x3a4a6a, 0x5a3a3a], pants: [0x2a2a24, 0x3a3327], shoes: [0x2a2018, 0x1e1a16] });
+    const yoyoKid = makeHuman({ ...randomPerson(r, { child: true, female: r.chance(0.5), wardrobe: yoyoWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(yoyoKid.group);
+    game.npcs.push(new YoYoer(game, yoyoKid, 0xc9a227, { x: 61, z: 48, ry: atan2(73 - 61, 39.6 - 48),
+      cries: ["Forty drops, guv'nor, and not one tangle yet!", "Mind your paws, puss — it bites back if you miss the catch.", "Won it off a lad by the bridge. Best three of five, he said. Liar."] })); }
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);

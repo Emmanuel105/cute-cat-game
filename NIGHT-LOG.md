@@ -7624,3 +7624,24 @@ fill takes over: (73, 39.6) for the roaster and (73, 38.3) for the brazier besid
 — the canal's own bank, 4.4 m south. Full suite (`node test/run.mjs`) ran clean on the final check — exit
 0, 273 checks all `ok`, 0 console warnings, Victorian's own friend count up by one — before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 310 — a yo-yo kid for Victorian's own north bank
+
+The Neighborhood, Candy Land and Robot City have all had a kid working a yo-yo for a while now, but
+Victorian — for all five of its own games out on the north bank (tag, the ring dance, catch, the swing
+and the seesaw) — never had one of its own. **A child now works a yo-yo on the grass between the kite
+kid and the chestnut roaster**, facing the brazier as if drawn in by the smell. *"Forty drops, guv'nor,
+and not one tangle yet!"* *"Mind your paws, puss — it bites back if you miss the catch."* *"Won it off a
+lad by the bridge. Best three of five, he said. Liar."* Victorian goes from 57 to 58 to meet.
+
+Pure placement, same as the other three `YoYoer` kids — the disc and string hang straight off
+`rig.hands[1]`, so no new prop was needed. A headless probe built the real Victorian town
+(`game.travel(3, 'from-prev')`), sampled every NPC's own position continuously over 30 simulated seconds
+(so no wandering urchin or dancer mid-game could slip past unnoticed), and swept a grid of candidates
+between the kite kid at (50, 55) and the chestnut roaster at (73, 39.6) against both those samples and
+every one of the town's physics boxes, keeping the whole grid under 78 m from the origin — comfortably
+short of the radius (88) where `victorianRegion`'s own procedural fill takes over: (61, 48) came back
+clear by 13.4 m of the nearest box and 13.0 m of the nearest other soul (the kite kid). Full suite
+(`node test/run.mjs`) ran clean on the final check — exit 0, 273 checks all `ok`, 0 console warnings,
+physics box count unchanged at 297 (a `YoYoer` only ever needs a physics circle, not a box) — before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
