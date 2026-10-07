@@ -7811,3 +7811,22 @@ warnings, physics box count unchanged at 297 (a `JumpRoper` only ever needs a ph
 box) — the one failure was the same wall-clock-timing flake in the Victorian horse-and-carriage check
 that rounds 312, 314 and 316 already diagnosed and ruled out as pre-existing, in a world this round
 never touches. `dist/dimension_cat.html`, `dist/artifact.html` and the root copy are rebuilt.
+
+## Round 318 — a hula hoop for Sunny Shore
+
+Whisper Woods got its hula hooper two rounds back, but a hoop fits a beach at least as well as a
+glade. **A child now works a hula hoop on the open dry sand north of Sunny Shore's dunes.** *"A
+hundred spins and counting!"* *"Better than swimming for keeping warm."* *"The crabs just stare —
+never join in."*
+
+No new controller needed — `HulaHooper` (`55-npcs.js`, added round 316) takes no held prop, just the
+one ring it builds itself parented to the body, so this is a placement reusing the beach's own
+`beachPerson()` wardrobe helper, the same trick the yo-yo kid a few lines above it already uses. A
+headless probe built the real Sunny Shore (`game.load(4, 'from-hub')`), sampled every NPC's and the
+squirrel's own position every quarter second over 30 simulated seconds, then swept a grid of the open
+dry sand (ground height 0.3–2.0 m, radius ≤ 50, short of `beachRegion`'s own fill at 58) against both
+those samples and every one of the beach's own physics boxes: (-24, 36) came back clear by 8.1 m of
+the nearest box (the gem cluster near the squirrel's patch) and 16.3 m of the nearest other soul. Full
+suite (`node test/run.mjs`) ran clean on three reruns in a row — exit 0, 273 checks all `ok`, 0 console
+warnings, physics box count unchanged at 297 (a `HulaHooper` only ever needs a physics circle, not a
+box) — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

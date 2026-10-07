@@ -9314,6 +9314,20 @@ function buildBeach(game, entry) {
   { const yx = -14, yz = -48;
     game.npcs.push(new YoYoer(game, beachPerson(r.chance(0.5), true), 0x2f6fd6, { x: yx, z: yz, ry: atan2(0 - yx, 0 - yz),
       cries: ["Forty drops, and the gulls still haven't noticed!", 'Careful — it swings wider than it looks, out here.', "Nearly got it to loop that time."] })); }
+  // Whisper Woods has a hula hooper by now, but Sunny Shore never had one — and a hoop belongs on a
+  // beach at least as much as in a glade. A child now works one on the open dry sand north of the dunes,
+  // well clear of the squirrel's own patch and the gem cluster beside it. `HulaHooper` needs no held
+  // prop, just a ring parented to the body at waist height, so this is a placement, not a build, reusing
+  // the same `beachPerson()` wardrobe helper the yo-yo kid above already draws from. A headless probe
+  // built the real Sunny Shore, sampled every NPC's and the squirrel's own position every quarter second
+  // over 30 simulated seconds (so no wandering crab, turtle, sandpiper or dolphin mid-leap could slip
+  // past unnoticed), then swept a grid of the open dry sand (ground height 0.3-2.0 m, radius ≤ 50, short
+  // of the radius (58) where beachRegion's own fill takes over) against both those samples and every one
+  // of the beach's own physics boxes: (-24, 36) came back clear by 8.1 m of the nearest box (the gem
+  // cluster) and 16.3 m of the nearest other soul.
+  { const hx = -24, hz = 36;
+    game.npcs.push(new HulaHooper(game, beachPerson(r.chance(0.5), true), r.pick([0xff6fb5, 0xffd54a, 0x7fe0ff]), { x: hx, z: hz, ry: atan2(0 - hx, 0 - hz), cryIcon: '⭕',
+      cries: ["A hundred spins and counting!", "Better than swimming for keeping warm.", "The crabs just stare — never join in."] })); }
   // the beach dog keeps to its own patch of sand — it does not follow the cat
   const dog = makeDog(0xc8925a); W.add(dog.group); game.npcs.push(new Wanderer(game, dog, { x: -2, z: 28, speed: 1.1, leash: 7, r: 0.35, height: 0.9, step: 0.3, idle: [1.5, 4], walk: [2, 5] }));
   let woofT = rnd.range(6, 12); U.push((dt) => { woofT -= dt; if (woofT <= 0) { SFX.woof(); woofT = rnd.range(10, 20); } });
