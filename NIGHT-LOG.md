@@ -7855,3 +7855,36 @@ the same way. With that fixed, full suite (`node test/run.mjs`) ran clean on thr
 exit 0, 273 checks all `ok`, 0 console warnings, physics box count unchanged at 297 (a `HulaHooper` only
 ever needs a physics circle, not a box) — before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 320 — a jump rope for Candy Land
+
+Whisper Woods, Sunny Shore and the Neighborhood all got a jump-rope kid, but Candy Land — for all its
+marching, dancing and juggling gingerbread men, and its own yo-yo kid — never had one. **A child now
+skips rope on the open grass out past the candy-cane ring.** *"Two hundred and not a single trip!"*
+*"Careful, puss — it swings wider than it looks."* *"The gingerbread men never bounce this well."*
+
+No new controller needed — `JumpRoper` (`55-npcs.js`, added round 317) takes no held prop beyond the
+loose grip at each hand it builds itself, just a placement reusing the same `randomPerson()` /
+`makeHuman()` pattern the yo-yo kid a few lines above it already uses. A headless probe built the real
+Candy Land (`game.travel(1, 'from-prev')`), sampled every NPC's own position every quarter second over
+30 simulated seconds (so no marching, dancing or wandering gingerbread man, nor the tag or catch pairs
+mid-turn, could slip past unnoticed), then swept a 1 m grid of the grass beyond the hand-placed
+candy-cane ring (which only reaches out to `d: r.range(56, 76)`) against both those samples and every
+physics box: (-59, 50) came back clear by 8.8 m of the nearest box (one of the outer lollipops) and
+11.0 m of the nearest other soul — well short of the radius (92) where `candyRegion`'s own procedural
+fill takes over. Full suite (`node test/run.mjs`) ran clean on six of seven reruns — exit 0, 273 checks
+all `ok`, 0 console warnings, physics box count unchanged at 297 (a `JumpRoper` only ever needs a
+physics circle, not a box); the one failure was a new wall-clock timing flake in Sunny Shore's own
+kite check (`kf.kite.position.y > ... + 4.5` after a fixed `frames(90)`), the same pre-existing
+`this.clock.getDelta()`-driven class of false failure rounds 312/314/316/317 already diagnosed in the
+Victorian carriage check, here showing up at a different assertion; it is unrelated to this round's
+change (Candy Land's own build never touches Sunny Shore) and did not recur on the next run.
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy are rebuilt.
+
+This run also found 37 commits of previously-verified work (through Round 319) sitting on a detached
+HEAD, unmerged into the local `main` branch — a prior session's sandbox that ended before it could land
+them. They were already on `origin/main` (a fast-forward merge here confirmed it, and the subsequent
+push reported "everything up-to-date"), so nothing was at risk, but it's the second time this exact
+situation has turned up (round 316 found the same thing with 33 commits) — worth a mention again in
+case a future round needs to know it's safe to fast-forward and push rather than something to
+investigate further.

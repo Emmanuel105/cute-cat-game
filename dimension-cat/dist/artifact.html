@@ -7743,6 +7743,21 @@ function buildCandyLand(game, entry) {
     W.add(yoyoKid.group);
     game.npcs.push(new YoYoer(game, yoyoKid, 0xff6fb5, { x: 32, z: 38, ry: atan2(0 - 32, 0 - 38),
       cries: ["Forty drops and no tangles yet, puss!", 'Careful — it swings wider than it looks.', "Nearly a loop-the-loop, that time."] })); }
+  // Whisper Woods, Sunny Shore and the Neighborhood all have a jump-rope kid by now — Candy Land, for
+  // all its yo-yo kid a few lines up, never had one. A child skips rope on the open grass out past the
+  // hand-placed candy-cane ring (that loop only reaches out to `d: r.range(56, 76)`), short of the
+  // radius (92) where `candyRegion`'s own procedural fill takes over. `JumpRoper` needs no held prop
+  // beyond the loose grip at each hand it builds itself (the spinning rod hangs off the hips), so this
+  // is a placement, not a build. A headless probe built the real Candy Land (`game.travel(1, 'from-prev')`),
+  // sampled every NPC's own position every quarter second over 30 simulated seconds (so no marching,
+  // dancing or wandering gingerbread man, nor the tag or catch pairs mid-turn, could slip past
+  // unnoticed), then swept a 1 m grid of the grass beyond the cane ring against both those samples and
+  // every physics box: (-59, 50) came back clear by 8.8 m of the nearest box (one of the outer
+  // lollipops) and 11.0 m of the nearest other soul.
+  { const roper = makeHuman({ ...randomPerson(r, { child: true, female: r.chance(0.5) }), shirt: 0xa8ff9a, backpack: null, hat: null, scarf: null, jacket: null, bag: null, glasses: false });
+    W.add(roper.group);
+    game.npcs.push(new JumpRoper(game, roper, 0xffd54a, { x: -59, z: 50, ry: atan2(0 - (-59), 0 - 50),
+      cries: ['Two hundred and not a single trip!', 'Careful, puss — it swings wider than it looks.', 'The gingerbread men never bounce this well.'] })); }
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('star', 7, -6); C.add('yarn', -9, 9); C.add('fish', -16, -13); C.add('mouse', 16, -9); C.add('star', -10, -27); C.add('yarn', 22, 4); C.add('mouse', -28, 26); C.add('fish', 14, -44); C.add('star', 0, -56); C.add('mouse', -58, 30); C.add('yarn', 60, 36);
