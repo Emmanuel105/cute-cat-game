@@ -488,6 +488,17 @@ function makeChipsCone() {
   }
   return g;
 }
+/** A twist of brown paper full of roasted chestnuts, for a vendor to hold up — each one scored with a little cross-cut. */
+function makeChestnutCone() {
+  const g = new THREE.Group(), paper = mat(0x8a6a4a, { roughness: 0.9 }), nut = mat(0x5a3a22, { roughness: 0.75 }), cut = mat(0xd9a15a, { roughness: 0.6 });
+  mesh(G.cone(0.1, 0.22, 8), paper, { y: 0.11, rx: PI, parent: g });
+  for (const [cx, cz, cry] of [[0, 0.01, 0], [0.035, -0.02, 0.6], [-0.03, -0.015, -0.5], [0.01, 0.03, 1.1], [-0.025, 0.025, 2.0]]) {
+    mesh(G.sphere(0.032, 8, 6), nut, { x: cx, y: 0.21, z: cz, parent: g });
+    mesh(G.box(0.028, 0.004, 0.006), cut, { x: cx, y: 0.236, z: cz, ry: cry, shadow: 'none', parent: g });
+    mesh(G.box(0.006, 0.004, 0.028), cut, { x: cx, y: 0.236, z: cz, ry: cry, shadow: 'none', parent: g });
+  }
+  return g;
+}
 /** A halved coconut with a straw and a tiny paper umbrella, for a vendor to hold up. */
 function makeCoconutDrink() {
   const g = new THREE.Group(), shell = mat(0x5a3a22, { roughness: 0.95 });

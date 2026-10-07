@@ -583,6 +583,23 @@ function makeGrill() {
   g.userData.update = (dt, t) => { light.intensity = 6 + sin(t * 9) * 1.4 + sin(t * 23) * 0.7; coalMat.emissiveIntensity = 1.8 + sin(t * 11) * 0.3; };
   return g;
 }
+/** A chestnut roaster: an upright iron drum, a ring of glowing vents round its middle, and a flat griddle lid on top scattered with roasting chestnuts, each one scored with a cross-cut. `userData.update` flickers the vents and their light. */
+function makeChestnutBrazier() {
+  const g = new THREE.Group(), iron = mat(0x2a2420, { roughness: 0.6, metalness: 0.5 }), rust = mat(0x5a3a28, { roughness: 0.8, metalness: 0.25 }), cut = mat(0x1a1410, { roughness: 0.8 });
+  const ventMat = glowMat(0xff7a2a, 1.6, { transparent: true, opacity: 0.92 });
+  mesh(G.cyl(0.26, 0.28, 0.6, 16), iron, { y: 0.3, parent: g });                 // the drum
+  mesh(G.cyl(0.29, 0.29, 0.04, 16), rust, { y: 0.02, parent: g });               // base rim
+  for (let i = 0; i < 8; i++) { const a = i / 8 * TAU; mesh(G.cyl(0.03, 0.03, 0.015, 8), ventMat, { x: cos(a) * 0.265, y: 0.32, z: sin(a) * 0.265, rz: PI / 2, ry: a, shadow: 'none', parent: g }); }   // a ring of glowing vent holes
+  mesh(G.cyl(0.29, 0.29, 0.03, 16), iron, { y: 0.615, parent: g });              // the lid / griddle
+  for (const [cx, cz] of [[-0.09, 0.04], [0.07, -0.05], [0.1, 0.07], [-0.03, -0.1], [0.01, 0.0]]) {
+    mesh(G.sphere(0.035, 8, 6), rust, { x: cx, y: 0.65, z: cz, parent: g });
+    mesh(G.box(0.03, 0.004, 0.006), cut, { x: cx, y: 0.672, z: cz, shadow: 'none', parent: g });
+    mesh(G.box(0.006, 0.004, 0.03), cut, { x: cx, y: 0.672, z: cz, shadow: 'none', parent: g });
+  }
+  const light = pointLight(0xff7a2a, 9, 6, 0, 0.32, 0, g);
+  g.userData.update = (dt, t) => { ventMat.emissiveIntensity = 1.4 + sin(t * 9) * 0.3 + sin(t * 23) * 0.15; light.intensity = 7 + sin(t * 9) * 1.6 + sin(t * 23) * 0.8; };
+  return g;
+}
 /** A carriage as a rig for the road: body, roof, box seat, lanterns, shafts forward, and four wheels that turn. Faces +z. */
 function makeCarriageRig() {
   const g = new THREE.Group(), wood = mat(0x2b1d14, { roughness: 0.7 }), red = mat(0x7a1f1f, { roughness: 0.6 }), iron = mat(0x1e2426, { metalness: 0.6, roughness: 0.5 }), gold = mat(0xd4af37, { metalness: 0.9, roughness: 0.3 });

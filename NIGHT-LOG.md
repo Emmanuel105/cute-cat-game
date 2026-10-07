@@ -7570,3 +7570,34 @@ before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root c
 carriage's own pre-existing timing flake, first logged in round 305, showed up again in 2 of 8 repeat
 runs this round too — reproduces identically with this change reverted, so confirmed unrelated and left
 alone, same as before.)
+
+## Round 308 — a chestnut roaster for Victorian's own grass verge
+
+Housekeeping note first: the container came up on a detached `HEAD` again, sitting on the exact commit
+`origin/main` already had — nothing lost, just a stale local branch pointer.
+
+Every world by now has a juggler, an angler and a fisherman of some kind, and Victorian's own market
+square already has a fruit stall, a flower stall, a pieman and a cheesemonger — but no world in the whole
+game had ever had the most Victorian street-food of all: roasted chestnuts off a brazier. **A chestnut
+roaster now works the open grass past the canal's north bank**, well east of the games cluster out there,
+her own iron drum beside her glowing from a ring of vents round its middle, a griddle lid on top scattered
+with chestnuts (each one scored with a little cross-cut), roasting away. *"Hot chestnuts! Straight off the
+brazier!"* *"Careful, puss — that griddle's hotter than it looks."* *"Best thing for cold hands, this time
+of year."* Victorian goes from 56 to 57 to meet.
+
+Two new props, both new: `makeChestnutBrazier()` in `60-props.js` (an upright drum, a `glowMat` ring of
+vents, and a flickering `pointLight`, same flicker trick `makeGrill`'s coals already use) and
+`makeChestnutCone()` in `62-props-nature.js` (a twist of paper holding five chestnuts, each with a tiny
+scored cross — the same cone-and-held-prop shape the chips, ice cream and coconut stalls already use).
+The roaster herself is a plain `Vendor` holding the cone, same controller every other market-stall keeper
+in this town already uses, with the brazier placed beside her as its own static prop (no controller of its
+own, just `place()` plus a physics box, the way the Neighborhood's own barbecue grill already sits by its
+griller). A headless probe built the real Victorian town (`game.load(3, 'from-hub')`), sampled every NPC's
+own position continuously over 30 simulated seconds (so no wandering urchin or dancer mid-game could slip
+past unnoticed), and swept the grass east of the whole games cluster against both those samples and every
+one of the town's physics boxes, staying short of the radius (88) where `victorianRegion`'s own procedural
+fill takes over: (73, 39.6) for the roaster and (73, 38.3) for the brazier beside her came back clear by
+27.7 m of the nearest other soul (the kite kid, the furthest east of the games) and 5 m of the nearest box
+— the canal's own bank, 4.4 m south. Full suite (`node test/run.mjs`) ran clean on the final check — exit
+0, 273 checks all `ok`, 0 console warnings, Victorian's own friend count up by one — before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -4669,6 +4669,23 @@ function makeGrill() {
   g.userData.update = (dt, t) => { light.intensity = 6 + sin(t * 9) * 1.4 + sin(t * 23) * 0.7; coalMat.emissiveIntensity = 1.8 + sin(t * 11) * 0.3; };
   return g;
 }
+/** A chestnut roaster: an upright iron drum, a ring of glowing vents round its middle, and a flat griddle lid on top scattered with roasting chestnuts, each one scored with a cross-cut. `userData.update` flickers the vents and their light. */
+function makeChestnutBrazier() {
+  const g = new THREE.Group(), iron = mat(0x2a2420, { roughness: 0.6, metalness: 0.5 }), rust = mat(0x5a3a28, { roughness: 0.8, metalness: 0.25 }), cut = mat(0x1a1410, { roughness: 0.8 });
+  const ventMat = glowMat(0xff7a2a, 1.6, { transparent: true, opacity: 0.92 });
+  mesh(G.cyl(0.26, 0.28, 0.6, 16), iron, { y: 0.3, parent: g });                 // the drum
+  mesh(G.cyl(0.29, 0.29, 0.04, 16), rust, { y: 0.02, parent: g });               // base rim
+  for (let i = 0; i < 8; i++) { const a = i / 8 * TAU; mesh(G.cyl(0.03, 0.03, 0.015, 8), ventMat, { x: cos(a) * 0.265, y: 0.32, z: sin(a) * 0.265, rz: PI / 2, ry: a, shadow: 'none', parent: g }); }   // a ring of glowing vent holes
+  mesh(G.cyl(0.29, 0.29, 0.03, 16), iron, { y: 0.615, parent: g });              // the lid / griddle
+  for (const [cx, cz] of [[-0.09, 0.04], [0.07, -0.05], [0.1, 0.07], [-0.03, -0.1], [0.01, 0.0]]) {
+    mesh(G.sphere(0.035, 8, 6), rust, { x: cx, y: 0.65, z: cz, parent: g });
+    mesh(G.box(0.03, 0.004, 0.006), cut, { x: cx, y: 0.672, z: cz, shadow: 'none', parent: g });
+    mesh(G.box(0.006, 0.004, 0.03), cut, { x: cx, y: 0.672, z: cz, shadow: 'none', parent: g });
+  }
+  const light = pointLight(0xff7a2a, 9, 6, 0, 0.32, 0, g);
+  g.userData.update = (dt, t) => { ventMat.emissiveIntensity = 1.4 + sin(t * 9) * 0.3 + sin(t * 23) * 0.15; light.intensity = 7 + sin(t * 9) * 1.6 + sin(t * 23) * 0.8; };
+  return g;
+}
 /** A carriage as a rig for the road: body, roof, box seat, lanterns, shafts forward, and four wheels that turn. Faces +z. */
 function makeCarriageRig() {
   const g = new THREE.Group(), wood = mat(0x2b1d14, { roughness: 0.7 }), red = mat(0x7a1f1f, { roughness: 0.6 }), iron = mat(0x1e2426, { metalness: 0.6, roughness: 0.5 }), gold = mat(0xd4af37, { metalness: 0.9, roughness: 0.3 });
@@ -5617,6 +5634,17 @@ function makeChipsCone() {
   mesh(G.cone(0.1, 0.22, 8), mat(0xf5ead0, { roughness: 0.9 }), { y: 0.11, rx: PI, parent: g });
   for (const [cx, cz, cry, h] of [[0, 0, 0, 0.11], [0.03, 0.02, 0.5, 0.095], [-0.025, -0.015, -0.4, 0.1], [0.01, -0.03, 1.1, 0.09]]) {
     mesh(G.box(0.025, h, 0.025), chip, { x: cx, y: 0.2 + h / 2, z: cz, rx: 0.15, ry: cry, shadow: 'none', parent: g });
+  }
+  return g;
+}
+/** A twist of brown paper full of roasted chestnuts, for a vendor to hold up — each one scored with a little cross-cut. */
+function makeChestnutCone() {
+  const g = new THREE.Group(), paper = mat(0x8a6a4a, { roughness: 0.9 }), nut = mat(0x5a3a22, { roughness: 0.75 }), cut = mat(0xd9a15a, { roughness: 0.6 });
+  mesh(G.cone(0.1, 0.22, 8), paper, { y: 0.11, rx: PI, parent: g });
+  for (const [cx, cz, cry] of [[0, 0.01, 0], [0.035, -0.02, 0.6], [-0.03, -0.015, -0.5], [0.01, 0.03, 1.1], [-0.025, 0.025, 2.0]]) {
+    mesh(G.sphere(0.032, 8, 6), nut, { x: cx, y: 0.21, z: cz, parent: g });
+    mesh(G.box(0.028, 0.004, 0.006), cut, { x: cx, y: 0.236, z: cz, ry: cry, shadow: 'none', parent: g });
+    mesh(G.box(0.006, 0.004, 0.028), cut, { x: cx, y: 0.236, z: cz, ry: cry, shadow: 'none', parent: g });
   }
   return g;
 }
@@ -8664,6 +8692,27 @@ function buildVictorian(game, entry) {
     W.add(relicHunter.group);
     game.npcs.push(new Detectorist(game, relicHunter, { x: -45, z: 42, ry: PI,
       cries: ["Just a button. Every time.", "Careful, puss — mind the headphones cable.", "One day it'll be a whole Roman hoard."] })); }
+  // the market square has had a fruit stall, a flower stall, a pieman and a cheesemonger for a long
+  // while now, but no world in the whole game had ever had a chestnut roaster — the most Victorian
+  // thing a street corner can sell. One now works the quiet grass past the canal's north bank, well
+  // east of the games cluster, her brazier beside her rather than a stall (nobody had put a standalone
+  // fire-lit cart anywhere in this town). A headless probe built the real Victorian town and sampled
+  // every NPC's own position continuously over 30 simulated seconds (so no wandering urchin or dancer
+  // mid-game could slip past unnoticed), then swept the grass east of the games against both those
+  // samples and every one of the town's physics boxes, staying short of the radius (88) where
+  // victorianRegion's own procedural fill takes over: (73, 39) came back clear by 27.7 m of the nearest
+  // other soul (the kite kid, the furthest east of the games) and 5 m of the nearest box — the canal's
+  // own bank, 4.4 m south.
+  { const vx = 73, vz = 39.6, bx = 73, bz = 38.3, vry = atan2(bx - vx, bz - vz);
+    const roastWard = makeWardrobe(r, { shirts: [0x6a3a3a, 0x5a4a3a, 0x3a4a4a], pants: [0x2a2420, 0x2a2a24], shoes: [0x2a2018, 0x1e1a16] });
+    const roaster = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.4), wardrobe: roastWard }),
+      pants: 0x2a2420, apron: 0x3a3330, hat: r.chance(0.5) ? 'flatcap' : 'bonnet', hatColor: 0x3a3327, scarf: 0x6a3a3a, bag: null, jacket: null, glasses: false });
+    W.add(roaster.group);
+    place(game, U, makeChestnutBrazier(), bx, bz, 0);
+    P.addBox(bx, 0.3, bz, 0.3, 0.65, 0.3, { cam: false });
+    const v = new Vendor(game, roaster, makeChestnutCone(), { x: vx, z: vz, ry: vry, cryIcon: '🌰',
+      cries: ["Hot chestnuts! Straight off the brazier!", "Careful, puss — that griddle's hotter than it looks.", "Best thing for cold hands, this time of year."] });
+    game.npcs.push(v); greetable(game, v); }
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);

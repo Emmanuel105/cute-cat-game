@@ -2421,6 +2421,27 @@ function buildVictorian(game, entry) {
     W.add(relicHunter.group);
     game.npcs.push(new Detectorist(game, relicHunter, { x: -45, z: 42, ry: PI,
       cries: ["Just a button. Every time.", "Careful, puss — mind the headphones cable.", "One day it'll be a whole Roman hoard."] })); }
+  // the market square has had a fruit stall, a flower stall, a pieman and a cheesemonger for a long
+  // while now, but no world in the whole game had ever had a chestnut roaster — the most Victorian
+  // thing a street corner can sell. One now works the quiet grass past the canal's north bank, well
+  // east of the games cluster, her brazier beside her rather than a stall (nobody had put a standalone
+  // fire-lit cart anywhere in this town). A headless probe built the real Victorian town and sampled
+  // every NPC's own position continuously over 30 simulated seconds (so no wandering urchin or dancer
+  // mid-game could slip past unnoticed), then swept the grass east of the games against both those
+  // samples and every one of the town's physics boxes, staying short of the radius (88) where
+  // victorianRegion's own procedural fill takes over: (73, 39) came back clear by 27.7 m of the nearest
+  // other soul (the kite kid, the furthest east of the games) and 5 m of the nearest box — the canal's
+  // own bank, 4.4 m south.
+  { const vx = 73, vz = 39.6, bx = 73, bz = 38.3, vry = atan2(bx - vx, bz - vz);
+    const roastWard = makeWardrobe(r, { shirts: [0x6a3a3a, 0x5a4a3a, 0x3a4a4a], pants: [0x2a2420, 0x2a2a24], shoes: [0x2a2018, 0x1e1a16] });
+    const roaster = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.4), wardrobe: roastWard }),
+      pants: 0x2a2420, apron: 0x3a3330, hat: r.chance(0.5) ? 'flatcap' : 'bonnet', hatColor: 0x3a3327, scarf: 0x6a3a3a, bag: null, jacket: null, glasses: false });
+    W.add(roaster.group);
+    place(game, U, makeChestnutBrazier(), bx, bz, 0);
+    P.addBox(bx, 0.3, bz, 0.3, 0.65, 0.3, { cam: false });
+    const v = new Vendor(game, roaster, makeChestnutCone(), { x: vx, z: vz, ry: vry, cryIcon: '🌰',
+      cries: ["Hot chestnuts! Straight off the brazier!", "Careful, puss — that griddle's hotter than it looks.", "Best thing for cold hands, this time of year."] });
+    game.npcs.push(v); greetable(game, v); }
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
