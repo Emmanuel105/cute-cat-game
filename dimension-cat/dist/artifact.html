@@ -7255,7 +7255,18 @@ function buildCandyLand(game, entry) {
     // out at x = ±2.2 and the roof's own garland light at y = 4.9 — so y = 3.3 clears the arch by 0.5 m
     // and sits 1.1 m under the dollops, hung a little proud of the wall face (local z = 3.6, vs. the
     // door's own 3.08) so it reads as hanging rather than embedded.
-    place(game, U, makeWindChime(game, { wood: 0xc27b3a, metal: 0xfff3b0 }), 0, -58.4, 0, 3.3); }
+    place(game, U, makeWindChime(game, { wood: 0xc27b3a, metal: 0xfff3b0 }), 0, -58.4, 0, 3.3);
+    // the statue, the furnace, both gate towers and both cupcake hills have all had a one-off "walk up
+    // and look" toast for rounds now, but the gingerbread cottage itself — the one hand-built house in
+    // the whole land the cat can actually walk up to — never got one, past its own wind chime. No new
+    // mesh, no new box: `gh` (already kept, for the wind chime placed just above) is handed straight to
+    // `game.addInteractable`. Its own box (half-extent 3.7 m in x, 3.2 m in z, so a 4.89 m diagonal at
+    // the corners) keeps the cat that far off on every side, so a 5.5 m radius — the same already used
+    // at both cupcake hills — clears the corner by 0.6 m without ever reaching the baker's own kneel
+    // spot 6.52 m off at (3.5, -56.5) or his tray 6.85 m off, so his "Say hello" keeps winning there,
+    // exactly as the fountain's prompt in Victorian still loses to the fiddler nearby.
+    const cottageLines = ['🍪 "Every brick of it edible, and not one bite taken yet."', '🍪 "The icing never melts here, however warm the sun gets."', '🍪 "Smells like the baker\'s tray from clear across the lane."'];
+    game.addInteractable({ obj: gh, radius: 5.5, label: () => 'Look at the gingerbread cottage', onUse: () => { SFX.click(); game.toast(rnd.pick(cottageLines), 3000); } }); }
   for (let i = 0; i < 12; i++) mesh(G.cyl(0.9, 0.9, 0.12, 12), mat(0xd9a066, { roughness: 0.95 }), { x: sin(i * 0.9) * 1.6, y: 0.04, z: -40 - i * 1.9, shadow: 'receive', parent: W });   // cookie path to the cottage
   // every other world has wildlife of its own, but Candy Land never did — a sugar mouse now lives on the
   // quiet west side of the gingerbread cottage, darting between hops exactly like Whisper Woods' hedgehog

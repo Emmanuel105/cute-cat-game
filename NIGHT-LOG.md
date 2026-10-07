@@ -7715,3 +7715,25 @@ equally distant). Full suite (`node test/run.mjs`) ran clean on the final check 
 `ok`, 0 console warnings, physics box count unchanged at 297 (a `YoYoer` only ever needs a physics
 circle, not a box) — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 314 — a look at Candy Land's own gingerbread cottage
+
+The statue, the furnace, both robot-arm and conveyor rounds, both of the castle's gate towers and both
+cupcake hills have all had a one-off "walk up and look" toast by now, but the gingerbread cottage
+itself — the one hand-built house in the whole land the cat can actually walk up to, unlike the five
+lane houses it only ever sees from outside — never got one, past its own wind chime and the baker
+kneeling by its tray. **The cat can now stop and look at the cottage itself.** *"Every brick of it
+edible, and not one bite taken yet."* *"The icing never melts here, however warm the sun gets."*
+*"Smells like the baker's tray from clear across the lane."*
+
+Pure decoration, same trick every earlier "look" round has used: `gh`, the cottage's own group (already
+kept from round 253's wind chime), is handed straight to `game.addInteractable` — no new mesh, no new
+physics box. Its existing box (half-extent 3.7 m in x, 3.2 m in z, a 4.89 m diagonal at the corners)
+keeps the cat that far off on every side, so the 5.5 m radius already used at both cupcake hills clears
+the corner by 0.6 m without ever reaching the baker's own kneel spot 6.52 m off or his tray 6.85 m off,
+so his "Say hello" keeps winning there. Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks
+all `ok`, 0 console warnings, physics box count unchanged at 297 — before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy. (One rerun of the suite hit the same
+wall-clock-timing flake in the Victorian horse-and-carriage check that round 312 already diagnosed and
+ruled out as pre-existing — confirmed again here by two more clean reruns, in a world this round never
+touches.)
