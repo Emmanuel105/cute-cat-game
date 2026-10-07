@@ -7830,3 +7830,28 @@ the nearest box (the gem cluster near the squirrel's patch) and 16.3 m of the ne
 suite (`node test/run.mjs`) ran clean on three reruns in a row — exit 0, 273 checks all `ok`, 0 console
 warnings, physics box count unchanged at 297 (a `HulaHooper` only ever needs a physics circle, not a
 box) — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 319 — a hula hoop for the Neighborhood
+
+Sunny Shore and Whisper Woods both got a hula hooper two rounds back, but the Neighborhood — for all
+its yo-yo kid, scooter kid, backyard grill and dog-brushing — never had one. **A child now works a hula
+hoop on the open field south of the street.** *"Sixty spins before lunch, easy!"* *"Careful, puss — the
+ring's wider than it looks from out there."* *"Keeps me warm without even running."*
+
+No new controller needed — `HulaHooper` (`55-npcs.js`, added round 316) takes no held prop, just the one
+ring it builds itself parented to the body, so this is a placement reusing the same `randomPerson()` /
+`makeHuman()` pattern the yo-yo kid a few lines above it already uses, with its own fixed shirt colour
+rather than a draw from the street's own 18-user wardrobe bag. A headless probe built the real
+Neighborhood (the default world), sampled every NPC's and the squirrel's own position every quarter
+second over 20 simulated seconds, then swept a grid of the open south field (clear of the yo-yo kid, the
+scooter kid and both backyards) against both those samples and every physics box: (32, -55) came back
+clear by 18.1 m of the nearest box (the side road's own kerb) and 18.2 m of the nearest other soul. Its
+lines are timed off the world's own local `r()` in a hand-rolled loop rather than passed as `cries` to
+the controller — the first attempt passed `cries` straight through and immediately failed the
+Neighborhood's "two neighbours chat, taking turns" check, because `HulaHooper`'s built-in cry timer
+draws from the *shared* global `rnd()` sequence and shifts every other NPC's timing that shares it,
+exactly the trap round 116's detectorist (and the dog groomer just above) already found and sidestepped
+the same way. With that fixed, full suite (`node test/run.mjs`) ran clean on three reruns in a row —
+exit 0, 273 checks all `ok`, 0 console warnings, physics box count unchanged at 297 (a `HulaHooper` only
+ever needs a physics circle, not a box) — before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
