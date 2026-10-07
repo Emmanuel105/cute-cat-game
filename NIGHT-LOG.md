@@ -7758,3 +7758,31 @@ sin/cos(ry)`), just outside that reach, the same margin the first igloo's toast 
 against its own kneeler. Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks all `ok`, 0
 console warnings, physics box count unchanged at 297 — before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 316 — a hula hoop for Whisper Woods
+
+Yo-yos, kites, ball games, tag, snowball fights, hopscotch and ring-around-the-rosie have all done the
+rounds by now, but no world had ever had a hula hoop. **A child now works one on open ground south of
+Whisper Woods' own glade, well clear of the tree ring and the snail's fern patch.** *"Don't tell the
+fairies — they'd want a turn."* *"Fifty spins, and the squirrels still won't join in."* *"Keeps me
+warmer than standing still, anyway."*
+
+A new `HulaHooper` controller (`55-npcs.js`, next to `YoYoer`): a plain ring parented to the body at
+waist height, no held prop needed. The ring stays tilted off the horizontal and that tilt precesses
+round over time — a conical pendulum — while the hips trace the same small circle a beat behind it and
+the arms come out a little for balance; no new mesh beyond the one torus, no new physics box beyond the
+usual 0.35 m circle. A headless probe built the real Whisper Woods (`game.travel(6, 'from-hub')`),
+sampled every NPC's and the squirrel's own position every quarter second over 30 simulated seconds (so
+no wandering deer, fox or flying fairy mid-leash could slip past unnoticed), then swept a 1 m grid of
+the glade's own clearing (radius ≤ 52, short of `forestRegion`'s own fill at 58) against both those
+samples and every physics box: (-8, -41) came back clear by 15.5 m of the nearest other soul and 15.8 m
+of the nearest box. Full suite (`node test/run.mjs`) ran clean on two reruns in a row — exit 0, 273
+checks all `ok`, 0 console warnings, physics box count unchanged at 297 (a `HulaHooper` only ever needs
+a physics circle, not a box) — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.
+
+This run also found 33 commits of previously-verified work (through Round 315) sitting on a detached
+HEAD, unmerged into `main` locally — a prior session's sandbox that ended before it could land them on
+the branch. They were already on `origin/main` (a fast-forward merge here confirmed it), so nothing was
+at risk, but it was worth a mention in case a future round finds the same thing and needs to know it's
+safe to fast-forward and push rather than something to investigate further.

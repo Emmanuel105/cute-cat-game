@@ -2824,6 +2824,33 @@ class YoYoer {
   }
 }
 
+// ---------------------------------------------------------------- hula-hooper: stands put, a ring circling the waist on a tilt that precesses, hips chasing it round
+class HulaHooper {
+  constructor(game, rig, color, { x, z, ry = 0, cries = null, cryIcon = '⭕' }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    const k = rig.k;
+    this.hoop = group(0, 0.92 * k, 0, rig.body);
+    mesh(G.torus(0.27 * k, 0.017 * k, 8, 24), mat(color, { roughness: 0.4 }), { parent: this.hoop });
+    this.circle = game.physics.addCircle(this, x, z, 0.35);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig;
+    rig.animate(0, false, dt, this.t);
+    // the ring stays tilted off the horizontal and that tilt swings round (a conical pendulum), while
+    // the hips trace the same small circle a beat behind it, and the arms come out a little for balance
+    const spin = this.t * 2.3;
+    this.hoop.rotation.set(1.15 + sin(spin) * 0.22, spin, cos(spin) * 0.22);
+    const k = rig.k;
+    rig.body.position.x = sin(spin) * 0.03 * k; rig.body.position.z = (cos(spin) - 1) * 0.015 * k;
+    if (!rig.gesture) for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -0.15, 8, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.3, 8, dt); A.sh.rotation.z = damp(A.sh.rotation.z, (A === rig.arms[0] ? 1 : -1) * 0.4, 8, dt); }
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- vendor: stands on their pitch holding something up in the left hand, and calls their wares
 class Vendor {
   constructor(game, rig, held, { x, z, ry = 0, cries = null, cryIcon = '\ud83c\udf88' }) {
@@ -10390,6 +10417,21 @@ function buildForest(game, entry) {
     W.add(yoyoKid.group);
     game.npcs.push(new YoYoer(game, yoyoKid, 0x5ac8e0, { x: yx, z: yz, ry: yry, cryIcon: '🪀',
       cries: ["Forty drops, and the owls still haven't blinked.", 'Careful, puss — it swings wider than it looks.', 'The fairies keep trying to grab it mid-drop.'] })); }
+
+  // no world yet had a hula hoop (every other new trick — yo-yos, kites, ball games — had already done
+  // the rounds). A child works one on open ground south of the glade, well clear of the tree ring and
+  // the snail's own fern patch. `HulaHooper` needs no held prop, just a ring parented to the body at
+  // waist height, so this was placement, same as the yo-yo kid above. A headless probe built the real
+  // Whisper Woods (`game.travel(6, 'from-hub')`), sampled every NPC's and the squirrel's own position
+  // every quarter second over 30 simulated seconds (so no wandering deer, fox or flying fairy mid-leash
+  // could slip past unnoticed), then swept a 1 m grid of the glade's own clearing (radius <= 52, short
+  // of `forestRegion`'s own fill at 58) against both those samples and every physics box: (-8, -41) came
+  // back clear by 15.5 m of the nearest other soul and 15.8 m of the nearest box.
+  { const hx = -8, hz = -41, hry = atan2(0 - hx, 0 - hz);
+    const hoopKid = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(hoopKid.group);
+    game.npcs.push(new HulaHooper(game, hoopKid, r.pick([0xff6fb5, 0xffd54a, 0x8a5cf6]), { x: hx, z: hz, ry: hry,
+      cries: ["Don't tell the fairies — they'd want a turn.", "Fifty spins, and the squirrels still won't join in.", 'Keeps me warmer than standing still, anyway.'] })); }
 
   // every other creature in these woods moves at a clip — even the frogs hop — and nothing here had ever
   // just crept along. A snail now glides, almost too slowly to notice, through the fern litter at the

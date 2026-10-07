@@ -546,6 +546,21 @@ function buildForest(game, entry) {
     game.npcs.push(new YoYoer(game, yoyoKid, 0x5ac8e0, { x: yx, z: yz, ry: yry, cryIcon: '🪀',
       cries: ["Forty drops, and the owls still haven't blinked.", 'Careful, puss — it swings wider than it looks.', 'The fairies keep trying to grab it mid-drop.'] })); }
 
+  // no world yet had a hula hoop (every other new trick — yo-yos, kites, ball games — had already done
+  // the rounds). A child works one on open ground south of the glade, well clear of the tree ring and
+  // the snail's own fern patch. `HulaHooper` needs no held prop, just a ring parented to the body at
+  // waist height, so this was placement, same as the yo-yo kid above. A headless probe built the real
+  // Whisper Woods (`game.travel(6, 'from-hub')`), sampled every NPC's and the squirrel's own position
+  // every quarter second over 30 simulated seconds (so no wandering deer, fox or flying fairy mid-leash
+  // could slip past unnoticed), then swept a 1 m grid of the glade's own clearing (radius <= 52, short
+  // of `forestRegion`'s own fill at 58) against both those samples and every physics box: (-8, -41) came
+  // back clear by 15.5 m of the nearest other soul and 15.8 m of the nearest box.
+  { const hx = -8, hz = -41, hry = atan2(0 - hx, 0 - hz);
+    const hoopKid = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(hoopKid.group);
+    game.npcs.push(new HulaHooper(game, hoopKid, r.pick([0xff6fb5, 0xffd54a, 0x8a5cf6]), { x: hx, z: hz, ry: hry,
+      cries: ["Don't tell the fairies — they'd want a turn.", "Fifty spins, and the squirrels still won't join in.", 'Keeps me warmer than standing still, anyway.'] })); }
+
   // every other creature in these woods moves at a clip — even the frogs hop — and nothing here had ever
   // just crept along. A snail now glides, almost too slowly to notice, through the fern litter at the
   // heart of the glade. A headless probe built the real Whisper Woods, sampled every NPC's and the

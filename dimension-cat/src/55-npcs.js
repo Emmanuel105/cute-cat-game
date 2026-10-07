@@ -1046,6 +1046,33 @@ class YoYoer {
   }
 }
 
+// ---------------------------------------------------------------- hula-hooper: stands put, a ring circling the waist on a tilt that precesses, hips chasing it round
+class HulaHooper {
+  constructor(game, rig, color, { x, z, ry = 0, cries = null, cryIcon = '⭕' }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    const k = rig.k;
+    this.hoop = group(0, 0.92 * k, 0, rig.body);
+    mesh(G.torus(0.27 * k, 0.017 * k, 8, 24), mat(color, { roughness: 0.4 }), { parent: this.hoop });
+    this.circle = game.physics.addCircle(this, x, z, 0.35);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig;
+    rig.animate(0, false, dt, this.t);
+    // the ring stays tilted off the horizontal and that tilt swings round (a conical pendulum), while
+    // the hips trace the same small circle a beat behind it, and the arms come out a little for balance
+    const spin = this.t * 2.3;
+    this.hoop.rotation.set(1.15 + sin(spin) * 0.22, spin, cos(spin) * 0.22);
+    const k = rig.k;
+    rig.body.position.x = sin(spin) * 0.03 * k; rig.body.position.z = (cos(spin) - 1) * 0.015 * k;
+    if (!rig.gesture) for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -0.15, 8, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.3, 8, dt); A.sh.rotation.z = damp(A.sh.rotation.z, (A === rig.arms[0] ? 1 : -1) * 0.4, 8, dt); }
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- vendor: stands on their pitch holding something up in the left hand, and calls their wares
 class Vendor {
   constructor(game, rig, held, { x, z, ry = 0, cries = null, cryIcon = '\ud83c\udf88' }) {
