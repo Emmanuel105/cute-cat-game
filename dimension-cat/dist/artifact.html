@@ -7642,6 +7642,20 @@ function buildCandyLand(game, entry) {
     game.npcs.push(new Wanderer(game, dog, { x: -70, z: 50, speed: 0.7, leash: 3, r: 0.35, height: 0.9, step: 0.3, idle: [1.5, 4], walk: [2, 5] }));
     const did3 = game.namedFriend('dog');
     game.addInteractable({ obj: dog.group, radius: 2.4, label: () => 'Pet the dog', onUse: () => { game.befriend(did3); SFX.woof(); game.hearts(dog.group.position.x, 0.8, dog.group.position.z, 4); game.toast('🐕 *happy tail wag*'); } }); }
+  // the Neighborhood's had a yo-yo kid since round 267 and Robot City got one of its own two rounds
+  // later — Candy Land, for all its marching, dancing and juggling gingerbread men, never had one.
+  // A child works a yo-yo on the open grass east of the big lollipops, well short of the cane forest's
+  // own outer ring. `YoYoer` needs no held prop beyond what it builds itself (the disc and string hang
+  // straight off `rig.hands[1]`), so this is a placement, not a build. A headless probe swept a grid of
+  // candidates against every one of the world's physics boxes and 500 simulated frames of every NPC's
+  // own position (so no wandering gingerbread man, ring dancer or tag pair mid-turn could slip past
+  // unnoticed): (32, 38) came back clear by 10.4 m from the nearest box and 14.2 m from the nearest
+  // other soul, 49.7 m out from the origin — comfortably short of the radius (56) where the candy-cane
+  // forest belt begins and well inside the one (92) where candyRegion's own procedural fill takes over.
+  { const yoyoKid = makeHuman({ ...randomPerson(r, { child: true, female: r.chance(0.5) }), shirt: 0x7fd7ff, backpack: null, hat: null, scarf: null, jacket: null, bag: null, glasses: false });
+    W.add(yoyoKid.group);
+    game.npcs.push(new YoYoer(game, yoyoKid, 0xff6fb5, { x: 32, z: 38, ry: atan2(0 - 32, 0 - 38),
+      cries: ["Forty drops and no tangles yet, puss!", 'Careful — it swings wider than it looks.', "Nearly a loop-the-loop, that time."] })); }
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('star', 7, -6); C.add('yarn', -9, 9); C.add('fish', -16, -13); C.add('mouse', 16, -9); C.add('star', -10, -27); C.add('yarn', 22, 4); C.add('mouse', -28, 26); C.add('fish', 14, -44); C.add('star', 0, -56); C.add('mouse', -58, 30); C.add('yarn', 60, 36);

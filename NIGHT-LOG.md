@@ -7585,6 +7585,29 @@ with chestnuts (each one scored with a little cross-cut), roasting away. *"Hot c
 brazier!"* *"Careful, puss — that griddle's hotter than it looks."* *"Best thing for cold hands, this time
 of year."* Victorian goes from 56 to 57 to meet.
 
+## Round 309 — a yo-yo kid for Candy Land's own open grass
+
+Housekeeping note first: the container came up on a detached `HEAD` again, sitting on the exact commit
+`origin/main` already had — nothing lost, just a stale local branch pointer — so `main` was moved up to
+it before anything else this round touched the repo.
+
+The Neighborhood has had a kid working a yo-yo since round 267, and Robot City got one of its own two
+rounds later, but Candy Land — for all its marching, ring-dancing and juggling gingerbread men — never
+had one. **A child now works a yo-yo on the open grass east of the big lollipops**, well short of the
+candy-cane forest's own outer ring. *"Forty drops and no tangles yet, puss!"* *"Careful — it swings
+wider than it looks."* *"Nearly a loop-the-loop, that time."* Candy Land goes from 49 to 50 to meet.
+
+`YoYoer` needed no held prop beyond what it builds itself — the disc and string hang straight off
+`rig.hands[1]` — so this was a placement, not a build. A headless probe built the real Candy Land, ran
+500 simulated frames sampling every NPC's own position along the way (so no wandering gingerbread man,
+ring dancer or tag pair mid-turn could slip past unnoticed), then swept a grid of candidates against
+both those samples and every one of the world's physics boxes: (32, 38) came back clear by 10.4 m from
+the nearest box and 14.2 m from the nearest other soul, 49.7 m out from the origin — comfortably short
+of the radius (56) where the candy-cane forest belt begins and well inside the one (92) where
+candyRegion's own procedural fill takes over. Full suite (`node test/run.mjs`) ran clean on the final
+check — exit 0, 273 checks all `ok`, 0 console warnings — before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
+
 Two new props, both new: `makeChestnutBrazier()` in `60-props.js` (an upright drum, a `glowMat` ring of
 vents, and a flickering `pointLight`, same flicker trick `makeGrill`'s coals already use) and
 `makeChestnutCone()` in `62-props-nature.js` (a twist of paper holding five chestnuts, each with a tiny
