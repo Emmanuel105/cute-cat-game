@@ -9234,6 +9234,22 @@ function buildBeach(game, entry) {
     boxT(game, kx + 0.5, kz, 0.3, 0.1, 0.5, { cam: false });
     game.npcs.push(new Kneeler(game, snorkeler, { x: kx, z: kz, ry, cryIcon: '🤿',
       cries: ['Nearly got this fin strap right.', "Careful, puss — mind your tail, these snap.", "Clearest water of the week, out there."] })); }
+  // the Neighborhood, Candy Land, Robot City, Victorian, Frosty Peak and Whisper Woods all have a kid
+  // working a yo-yo by now, but Sunny Shore — for all its ball game, tag, swing, seesaw and ring dance —
+  // never had one. A child now works a yo-yo on the open dry sand south of the lighthouse, well clear of
+  // the beachcomber, the birdwatcher and the conch shell. `YoYoer` needs no held prop beyond what it
+  // builds itself — the disc and string hang straight off `rig.hands[1]` — so this is a placement, not a
+  // build, reusing the same `beachPerson()` wardrobe helper every other beachgoer in this file already
+  // draws from. A headless probe built the real Sunny Shore, sampled every NPC's and the squirrel's own
+  // position every quarter second over 30 simulated seconds (so no wandering crab, turtle, sandpiper or
+  // dolphin mid-leap could slip past unnoticed), then swept a grid of the open dry sand (ground height
+  // 0.3-2.0 m, radius ≤ 50, short of the radius (58) where beachRegion's own fill takes over) against
+  // both those samples and every one of the beach's own physics boxes: (-14, -48) came back clear by
+  // 13.1 m of the nearest box and 13.4 m of the nearest other soul (the conch shell and the birdwatcher,
+  // equally distant).
+  { const yx = -14, yz = -48;
+    game.npcs.push(new YoYoer(game, beachPerson(r.chance(0.5), true), 0x2f6fd6, { x: yx, z: yz, ry: atan2(0 - yx, 0 - yz),
+      cries: ["Forty drops, and the gulls still haven't noticed!", 'Careful — it swings wider than it looks, out here.', "Nearly got it to loop that time."] })); }
   // the beach dog keeps to its own patch of sand — it does not follow the cat
   const dog = makeDog(0xc8925a); W.add(dog.group); game.npcs.push(new Wanderer(game, dog, { x: -2, z: 28, speed: 1.1, leash: 7, r: 0.35, height: 0.9, step: 0.3, idle: [1.5, 4], walk: [2, 5] }));
   let woofT = rnd.range(6, 12); U.push((dt) => { woofT -= dt; if (woofT <= 0) { SFX.woof(); woofT = rnd.range(10, 20); } });

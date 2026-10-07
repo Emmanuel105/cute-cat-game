@@ -7692,3 +7692,26 @@ unmodified checkout (mostly green, one red on an identical build) before conclud
 change wasn't the cause. Full suite (`node test/run.mjs`) ran clean on the final two checks in a row —
 exit 0, 273 checks all `ok`, 0 console warnings, physics box count unchanged at 297 — before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 313 — a yo-yo kid for Sunny Shore's own open sand
+
+The Neighborhood, Candy Land, Robot City, Victorian, Frosty Peak and Whisper Woods all have a kid
+working a yo-yo by now, but Sunny Shore — for all its ball game, tag, swing, seesaw and ring dance —
+never had one, the last of the seven worlds without one. **A child now works a yo-yo on the open dry
+sand south of the lighthouse**, well clear of the beachcomber, the birdwatcher and the conch shell.
+*"Forty drops, and the gulls still haven't noticed!"* *"Careful — it swings wider than it looks, out
+here."* *"Nearly got it to loop that time."*
+
+Pure placement, same as the other six `YoYoer` kids — the disc and string hang straight off
+`rig.hands[1]`, so no new mesh or prop was needed, and the child itself comes straight from this file's
+own `beachPerson()` wardrobe helper, the same one every other beachgoer here already draws from. A
+headless probe built the real Sunny Shore (`game.travel(4, 'from-hub')`), sampled every NPC's and the
+squirrel's own position every quarter second over 30 simulated seconds (so no wandering crab, turtle,
+sandpiper or dolphin mid-leap could slip past unnoticed), then swept a grid of the open dry sand (ground
+height 0.3-2.0 m, radius ≤ 50, short of the radius (58) where `beachRegion`'s own fill takes over)
+against both those samples and every one of the beach's own physics boxes: (-14, -48) came back clear
+by 13.1 m of the nearest box and 13.4 m of the nearest other soul (the conch shell and the birdwatcher,
+equally distant). Full suite (`node test/run.mjs`) ran clean on the final check — exit 0, 273 checks all
+`ok`, 0 console warnings, physics box count unchanged at 297 (a `YoYoer` only ever needs a physics
+circle, not a box) — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.
