@@ -7543,3 +7543,30 @@ on the final check — exit 0, 273 checks all `ok`, 0 console warnings, Candy La
 carriage's own pre-existing timing flake, first logged in round 305, showed up again in 1 of 7 repeat
 runs this round too — reproduces identically with this change reverted, so confirmed unrelated and left
 alone, same as before.)
+
+## Round 307 — a look at Frosty Peak's own igloo
+
+Housekeeping note first: the container came up on a detached `HEAD` again, sitting on the exact commit
+`origin/main` already had — nothing lost, just a stale local branch pointer — so `main` was moved up to
+it before anything else this round touched the repo.
+
+A frequency check of the last 120 rounds' own titles found Frosty Peak the coldest world for attention
+by a clear margin, and its own village square still had a gap every other world's centrepiece (the
+statue, the furnace, the carriage, the sandcastle) has had filled for a while: the near igloo has glowed
+with its own blue gem lamp inside the tunnel mouth since the world was built, but never got a "walk up
+and look" toast. **The near igloo can now be looked at**, for one of three lines: *"Packed snow walls,
+and somehow warmer in there than out here."*, *"That blue glow's just the gem lamp — nothing to be
+scared of."*, *"Built fresh most winters. Melts a little more every spring."*
+
+Same trick as every "look" round before it: the loop that places both igloos now keeps a reference to
+the first one's own group (previously discarded) and hands it straight to `game.addInteractable` — no
+new mesh and no new physics box. Its existing centre box (half-extent 1.7 m in x and z, from the `boxT`
+call already there) keeps the cat that far clear on every side, so a 3.0 m radius was chosen to reach it
+from any open side; the kneeler patting fresh snow at this same igloo's own tunnel mouth stands 3.6 m
+from its centre, just outside that reach, and `game.nearest` always resolves to whichever interactable is
+physically closer anyway, so the two prompts can't fight. Full suite (`node test/run.mjs`) ran clean on
+the final check — exit 0, 273 checks all `ok`, 0 console warnings, physics box count unchanged at 297 —
+before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. (The Victorian
+carriage's own pre-existing timing flake, first logged in round 305, showed up again in 2 of 8 repeat
+runs this round too — reproduces identically with this change reverted, so confirmed unrelated and left
+alone, same as before.)
