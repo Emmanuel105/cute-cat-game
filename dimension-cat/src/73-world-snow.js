@@ -469,6 +469,21 @@ function buildSnowVillage(game, entry) {
     boxT(game, hx, hz, 0.4, 0.8, 0.6, { cam: false });
     const hid = game.namedFriend('dog');
     game.addInteractable({ obj: husky.group, radius: 2.2, label: () => 'Pet the husky', onUse: () => { game.befriend(hid); SFX.woof(); game.hearts(husky.group.position.x, 0.6, husky.group.position.z, 4); game.toast('🐕‍🦺 *happy tail wag*'); } }); }
+  // the Neighborhood, Robot City, Candy Land, Victorian and Whisper Woods all have a kid working a
+  // yo-yo by now, but Frosty Peak — for all its swing set, seesaw, snowball fight, tag, catch and ring
+  // dance — never had one. A child now works a yo-yo on the open snowfield south-east of the village,
+  // well clear of the busker, the painter and the catch-ball game. `YoYoer` needs no held prop beyond
+  // what it builds itself — the disc and string hang straight off `rig.hands[1]` — so this is a
+  // placement, not a build, reusing the same `kid()` wardrobe helper every other child in this file
+  // already draws from. A headless probe built the real mountain, sampled every NPC's and the
+  // squirrel's own position every quarter second over 30 simulated seconds (so no wandering reindeer,
+  // hare or mid-game kid could slip past unnoticed), then swept a grid of candidates (radius < 53,
+  // short of the radius (58) where snowRegion's own fill takes over) against both those samples and
+  // every one of the mountain's physics boxes: (29, -43) came back clear by 7.2 m of the nearest box
+  // and 17.7 m of the nearest other soul (the arctic fox, mid-wander).
+  { const yx = 29, yz = -43;
+    game.npcs.push(new YoYoer(game, kid(r.chance(0.5)), 0xffd54a, { x: yx, z: yz, ry: atan2(0 - yx, 0 - yz),
+      cries: ["Forty drops, and my fingers still work!", 'Careful — it swings wider than it looks, out here.', "Nearly a loop-the-loop, that time."] })); }
   // the birdwatcher up by the ice pond has her binoculars trained on the penguin colony, same as every round
   // before this one — Candy Land, Sunny Shore and Whisper Woods all got an actual flock wheeling overhead
   // (butterflies, gulls, fairies), but Frosty Peak's own sky, for all its aurora, never had a single real

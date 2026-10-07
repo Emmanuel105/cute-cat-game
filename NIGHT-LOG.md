@@ -7664,3 +7664,31 @@ starts at 40) against both those samples and every physics box: (34, 0) came bac
 nearest other soul and 8.1 m of the nearest box. Full suite (`node test/run.mjs`) ran clean on the final
 check — exit 0, 273 checks all `ok`, 0 console warnings, physics box count unchanged at 297 — before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 312 — a yo-yo kid for Frosty Peak's own open snowfield
+
+The Neighborhood, Robot City, Candy Land, Victorian and Whisper Woods all have a kid working a yo-yo by
+now, but Frosty Peak — for all its swing set, seesaw, snowball fight, tag, catch and ring dance — never
+had one. **A child now works a yo-yo on the open snowfield south-east of the village**, well clear of
+the busker, the painter and the catch-ball game. *"Forty drops, and my fingers still work!"* *"Careful —
+it swings wider than it looks, out here."* *"Nearly a loop-the-loop, that time."* Frosty Peak goes from
+44 to 45 to meet. Only Sunny Shore is left without one.
+
+`YoYoer` needed no held prop beyond what it builds itself — the disc and string hang straight off
+`rig.hands[1]` — so this was a placement, not a build, reusing the same `kid()` wardrobe helper every
+other child in Frosty Peak already draws from. A headless probe built the real mountain, sampled every
+NPC's and the squirrel's own position every quarter second over 30 simulated seconds (so no wandering
+reindeer, hare or mid-game kid could slip past unnoticed), then swept a grid of candidates (radius < 53,
+short of the radius (58) where `snowRegion`'s own fill takes over) against both those samples and every
+one of the mountain's own physics boxes: (29, -43) came back clear by 7.2 m of the nearest box and
+17.7 m of the nearest other soul (the arctic fox, mid-wander).
+
+One detour this round: the `test/run.mjs` suite's own "the horse and carriage are in the world and on
+the move" check (Victorian) turned out to be flaky independent of anything touched here — `game.loop()`
+reads a real wall-clock delta (`this.clock.getDelta()`), so a fixed `frames(120)` call can land the
+carriage's gait at a slightly different phase run to run depending on how fast the machine executes that
+tick, in a world this round never builds or edits. Confirmed by running the suite repeatedly against the
+unmodified checkout (mostly green, one red on an identical build) before concluding Frosty Peak's own
+change wasn't the cause. Full suite (`node test/run.mjs`) ran clean on the final two checks in a row —
+exit 0, 273 checks all `ok`, 0 console warnings, physics box count unchanged at 297 — before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
