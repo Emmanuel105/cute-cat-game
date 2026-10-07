@@ -1357,6 +1357,20 @@ function buildCandyLand(game, entry) {
     W.add(scanner.group);
     game.npcs.push(new Detectorist(game, scanner, { x: 23, z: 27, ry: atan2(-23, 123),
       cries: ['Just a gumdrop. Every time.', 'Careful, puss — mind the wire.', "One day it'll be a whole lollipop."] })); }
+  // every other world has a dog of its own by now — the beach's own wandering retriever, Frosty Peak's
+  // husky by the sled run, even Robot City's answer in the sentry RoboDog — but Candy Land, sugar-dusted
+  // as it is, never had one. A gingerbread-coloured pup now has the run of the open grass out past the
+  // candy-cane forest belt, the same plain `makeDog` rig the beach and the Neighborhood's own backyard
+  // already use, recoloured to match the cottage's own cookie dough rather than drawn from any shared
+  // wardrobe. A headless probe swept this exact spot against every one of the world's 1866 physics
+  // boxes and every NPC's own position over 400 simulated frames (so no wandering gingerbread man
+  // mid-leash could slip past unnoticed): (-70, 50) came back clear by 16.7 m of the nearest box and
+  // 28 m of the nearest other soul — past the candy-cane ring (which only runs out to radius 76) and
+  // short of where `candyRegion`'s own procedural fill takes over, at radius 92.
+  { const dog = makeDog(0xc27b3a); W.add(dog.group);
+    game.npcs.push(new Wanderer(game, dog, { x: -70, z: 50, speed: 0.7, leash: 3, r: 0.35, height: 0.9, step: 0.3, idle: [1.5, 4], walk: [2, 5] }));
+    const did3 = game.namedFriend('dog');
+    game.addInteractable({ obj: dog.group, radius: 2.4, label: () => 'Pet the dog', onUse: () => { game.befriend(did3); SFX.woof(); game.hearts(dog.group.position.x, 0.8, dog.group.position.z, 4); game.toast('🐕 *happy tail wag*'); } }); }
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('star', 7, -6); C.add('yarn', -9, 9); C.add('fish', -16, -13); C.add('mouse', 16, -9); C.add('star', -10, -27); C.add('yarn', 22, 4); C.add('mouse', -28, 26); C.add('fish', 14, -44); C.add('star', 0, -56); C.add('mouse', -58, 30); C.add('yarn', 60, 36);

@@ -7516,3 +7516,30 @@ physics box count unchanged at 297 — before rebuilding `dist/dimension_cat.htm
 and the root copy. (One unrelated, pre-existing flake turned up while repeat-running the suite to check
 this: the Victorian carriage's own movement check occasionally times out under load — reproduces on the
 untouched `main` branch too, nothing to do with this round's change, left alone.)
+
+## Round 306 — a dog for Candy Land's own sweet-lands
+
+Housekeeping note first, same as a few rounds back: the container came up on a detached `HEAD`, 22
+commits behind a fresh `origin/main`. Nothing was lost — `main` was simply fast-forwarded onto it
+before anything else this round touched the repo.
+
+Every other world has had a dog of its own for a while now — Sunny Shore's wandering beach retriever,
+Frosty Peak's husky by the sled run, even Robot City's own answer in the sentry RoboDog — but Candy Land,
+sugar-dusted and otherwise full of life (a sugar mouse, a mint hare, a peppermint sparrow, six
+butterflies), never had one. **A gingerbread-coloured pup now has the run of the open grass out past the
+candy-cane forest belt**, the same plain `makeDog` rig the Neighborhood's own backyard groomer and the
+beach already use, recoloured to match the gingerbread cottage's own cookie-dough tan rather than drawn
+from any shared wardrobe. Pet it for a happy tail wag, same as every other world's dog.
+
+No new controller — `Wanderer` already handles a standalone, non-following pet exactly like this, so
+this was purely placement and colour. A headless probe built the real Candy Land, then swept the
+candidate spot against all 1866 of its physics boxes and sampled every NPC's own position continuously
+over 400 simulated frames (so no wandering gingerbread man or ring dancer mid-turn could slip past
+unnoticed): (-70, 50) came back clear by 16.7 m from the nearest box and 28 m from the nearest other
+soul — past the candy-cane ring (which only runs out to radius 76 from the origin) and short of where
+`candyRegion`'s own procedural fill takes over, at radius 92. Full suite (`node test/run.mjs`) ran clean
+on the final check — exit 0, 273 checks all `ok`, 0 console warnings, Candy Land's friend count up by one
+— before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. (The Victorian
+carriage's own pre-existing timing flake, first logged in round 305, showed up again in 1 of 7 repeat
+runs this round too — reproduces identically with this change reverted, so confirmed unrelated and left
+alone, same as before.)
