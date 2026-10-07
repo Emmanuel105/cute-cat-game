@@ -7786,3 +7786,28 @@ HEAD, unmerged into `main` locally — a prior session's sandbox that ended befo
 the branch. They were already on `origin/main` (a fast-forward merge here confirmed it), so nothing was
 at risk, but it was worth a mention in case a future round finds the same thing and needs to know it's
 safe to fast-forward and push rather than something to investigate further.
+
+## Round 317 — a jump rope for Whisper Woods
+
+Yo-yos and a hula hoop have both done the rounds, but no world yet had a jump rope. **A child now
+skips rope on open ground deep in the south of Whisper Woods.** *"Two hundred, and I haven't tripped
+once."* *"The rabbits won't try it — too many ears in the way."* *"Mind the vines — I nearly caught
+one last week."*
+
+A new `JumpRoper` controller (`55-npcs.js`, next to `HulaHooper`): the rope itself is a single thin rod
+pivoting through the hips like a propeller blade, not a literal loop — a torus is radially symmetric
+about its own spin axis and spinning it would show no visible motion at all, same problem a hula hoop
+sidesteps by precessing its tilt instead. The rod is point-symmetric too, so its "underfoot" pass
+repeats every half turn; the whole body hops clear right as it does, timed with a `smoothstep` bump
+around that moment, same easing helper the rest of the file already leans on. No held prop beyond a
+loose grip at each hand, no new mesh beyond one rod, no new physics box beyond the usual 0.35 m circle.
+A headless probe built the real Whisper Woods (`game.travel(6, 'from-hub')`), sampled every NPC's and
+the squirrel's own position every quarter second over 30 simulated seconds (so no wandering deer, fox
+or flying fairy mid-leash could slip past unnoticed), then swept a 2 m grid of the wood's own floor
+(radius ≤ 50, short of `forestRegion`'s own fill at 58) against both those samples and every physics
+box: (8, -48) came back clear by 7.1 m of the nearest box and 16.2 m of the nearest other soul. Full
+suite (`node test/run.mjs`) ran clean on three of four reruns — exit 0, 273 checks all `ok`, 0 console
+warnings, physics box count unchanged at 297 (a `JumpRoper` only ever needs a physics circle, not a
+box) — the one failure was the same wall-clock-timing flake in the Victorian horse-and-carriage check
+that rounds 312, 314 and 316 already diagnosed and ruled out as pre-existing, in a world this round
+never touches. `dist/dimension_cat.html`, `dist/artifact.html` and the root copy are rebuilt.

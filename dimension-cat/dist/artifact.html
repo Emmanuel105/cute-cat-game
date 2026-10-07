@@ -2817,6 +2817,32 @@ class YoYoer {
   }
 }
 
+// ---------------------------------------------------------------- jump-roper: a thin rod pivots through the hips like a propeller, hands loosely gripping its ends, and the whole body hops clear each time it sweeps underfoot
+class JumpRoper {
+  constructor(game, rig, color, { x, z, ry = 0, speed = 3.2, cries = null, cryIcon = '➰' }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10; this.a = rnd() * PI; this.speed = speed;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    const k = rig.k, h = 0.85 * k;
+    this.pivot = group(0, h, 0.14 * k, rig.group);
+    mesh(G.cyl(0.012 * k, 0.012 * k, h * 2, 6), mat(color, { roughness: 0.6 }), { parent: this.pivot });
+    for (const hand of rig.hands) mesh(G.cyl(0.03 * k, 0.03 * k, 0.1 * k, 6), mat(0x3a3a3a, { roughness: 0.7 }), { rz: PI / 2, parent: hand });   // a loose grip on the handles, held still rather than chasing the spinning rod
+    this.circle = game.physics.addCircle(this, x, z, 0.35);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig;
+    rig.animate(0, false, dt, this.t);
+    this.a += dt * this.speed; this.pivot.rotation.x = this.a;
+    // the rod is point-symmetric, so its "underfoot" pass repeats every half turn; hop clear right as it does
+    const p = (this.a % PI) / PI, d = min(p, 1 - p), hop = smoothstep(0, 0.3, 0.3 - d);
+    rig.group.position.y = this.game.physics.ground0(this.x, this.z) + hop * 0.22 * rig.k;
+    if (!rig.gesture) for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -0.5, 8, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.9, 8, dt); A.sh.rotation.z = damp(A.sh.rotation.z, (A === rig.arms[0] ? 1 : -1) * 0.3, 8, dt); }
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- hula-hooper: stands put, a ring circling the waist on a tilt that precesses, hips chasing it round
 class HulaHooper {
   constructor(game, rig, color, { x, z, ry = 0, cries = null, cryIcon = '⭕' }) {
@@ -10436,6 +10462,25 @@ function buildForest(game, entry) {
   // from its own local `r`, so this one extra colour pick disturbs nothing earlier in the wood.
   { const rig = makeSnail(r.pick([0xc9a24a, 0xb08a52, 0x8a9a6a])); W.add(rig.group);
     game.npcs.push(new Wanderer(game, rig, { x: 0, z: -18, speed: 0.05, leash: 1.0, r: 0.08, height: 0.14, step: 0.08, idle: [2, 5], walk: [6, 14] })); }
+
+  // yo-yos and a hula hoop have both done the rounds here, but no world yet had a jump rope. A child
+  // works one on open ground deep in the south of these woods: the rope is a single thin rod pivoting
+  // through the hips like a propeller blade rather than a literal loop (a loop is radially symmetric
+  // about its own spin axis and would show no visible motion at all), so the sweep reads clearly from
+  // any camera angle, and the whole body hops clear right as the rod passes underfoot. `JumpRoper`
+  // needs no held prop beyond what it builds itself, so this is placement, same as the yo-yo and hula
+  // hoop kids above. A headless probe built the real Whisper Woods (`game.travel(6, 'from-hub')`),
+  // sampled every NPC's and the squirrel's own position every quarter second over 30 simulated seconds
+  // (so no wandering deer, fox or flying fairy mid-leash could slip past unnoticed), then swept a 2 m
+  // grid of the wood's own floor (radius <= 50, short of `forestRegion`'s own fill at 58) against both
+  // those samples and every physics box: (8, -48) came back clear by 7.1 m of the nearest box and
+  // 16.2 m of the nearest other soul. Placed last, after the snail's own colour draw, so this one more
+  // pick off the local `r` disturbs nothing built earlier in the wood.
+  { const jx = 8, jz = -48, jry = atan2(0 - jx, 0 - jz);
+    const roper = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(roper.group);
+    game.npcs.push(new JumpRoper(game, roper, r.pick([0xffd54a, 0x5ac8e0, 0xa8ff9a]), { x: jx, z: jz, ry: jry,
+      cries: ["Two hundred, and I haven't tripped once.", "The rabbits won't try it — too many ears in the way.", "Mind the vines — I nearly caught one last week."] })); }
 
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });

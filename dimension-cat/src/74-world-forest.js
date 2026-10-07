@@ -572,6 +572,25 @@ function buildForest(game, entry) {
   { const rig = makeSnail(r.pick([0xc9a24a, 0xb08a52, 0x8a9a6a])); W.add(rig.group);
     game.npcs.push(new Wanderer(game, rig, { x: 0, z: -18, speed: 0.05, leash: 1.0, r: 0.08, height: 0.14, step: 0.08, idle: [2, 5], walk: [6, 14] })); }
 
+  // yo-yos and a hula hoop have both done the rounds here, but no world yet had a jump rope. A child
+  // works one on open ground deep in the south of these woods: the rope is a single thin rod pivoting
+  // through the hips like a propeller blade rather than a literal loop (a loop is radially symmetric
+  // about its own spin axis and would show no visible motion at all), so the sweep reads clearly from
+  // any camera angle, and the whole body hops clear right as the rod passes underfoot. `JumpRoper`
+  // needs no held prop beyond what it builds itself, so this is placement, same as the yo-yo and hula
+  // hoop kids above. A headless probe built the real Whisper Woods (`game.travel(6, 'from-hub')`),
+  // sampled every NPC's and the squirrel's own position every quarter second over 30 simulated seconds
+  // (so no wandering deer, fox or flying fairy mid-leash could slip past unnoticed), then swept a 2 m
+  // grid of the wood's own floor (radius <= 50, short of `forestRegion`'s own fill at 58) against both
+  // those samples and every physics box: (8, -48) came back clear by 7.1 m of the nearest box and
+  // 16.2 m of the nearest other soul. Placed last, after the snail's own colour draw, so this one more
+  // pick off the local `r` disturbs nothing built earlier in the wood.
+  { const jx = 8, jz = -48, jry = atan2(0 - jx, 0 - jz);
+    const roper = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(roper.group);
+    game.npcs.push(new JumpRoper(game, roper, r.pick([0xffd54a, 0x5ac8e0, 0xa8ff9a]), { x: jx, z: jz, ry: jry,
+      cries: ["Two hundred, and I haven't tripped once.", "The rabbits won't try it — too many ears in the way.", "Mind the vines — I nearly caught one last week."] })); }
+
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
 
