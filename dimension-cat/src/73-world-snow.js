@@ -30,6 +30,16 @@ function buildSnowVillage(game, entry) {
   // fill (68-regions.js) scatters several more of them — looping a sound on every one of those would turn
   // into noise far from the village with nobody around to hear it.
   U.push((dt) => { if (rnd.chance(dt * 0.18)) SFX.crackle(); });
+  // the fire itself never got the "walk up and look" toast every other world's own centrepiece has had
+  // by now (the furnace, the robot arm, the carriage, the sandcastle) — same trick again: `fire` (already
+  // kept, two lines up, for its own flicker animation) is handed straight to `game.addInteractable`. No
+  // new mesh, no new box: the existing centre box (half-extent 1.2 in x and z, corner at 1.7 m) already
+  // keeps the cat that far clear on every side, so a 2.6 m radius reaches it from any open side. The three
+  // log-seat sitters (granny, trapper, marshmallow kid, below and at line 279) sit at the same 1.7 m
+  // radius, well inside that reach too, but `game.nearest` always resolves to whichever interactable is
+  // physically closer to the cat, so standing by any of them still shows their own greeting, not this one.
+  { const fireLines = ['🔥 "Kept going every night since before the gondola had a name."', '🔥 "Whoever\'s shift it is, they never let it go out."', '🔥 "Closest thing to summer, this far up the mountain."'];
+    game.addInteractable({ obj: fire, radius: 2.6, label: () => 'Look at the fire', onUse: () => { SFX.click(); game.toast(rnd.pick(fireLines), 3000); } }); }
   // an old-timer on one of the fire's log seats, come in from the cold to warm her hands
   { const a = 2.5, lx = cos(a) * 1.7, lz = sin(a) * 1.7;
     const fireWard = makeWardrobe(r, { shirts: [0x7a4a3a, 0x5a4a6a, 0x6a5a4a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });

@@ -7484,3 +7484,35 @@ prompt, standing 35 m off shows nothing, and `onUse()` runs clean. The main fact
 belts (with the Loader robots at each end) were left alone — crowded enough already. Full suite
 (`node test/run.mjs`) ran clean — exit 0, 0 console warnings, physics box count unchanged at 297 —
 before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 305 — a look at Frosty Peak's own village fire
+
+Housekeeping note first, same as a few rounds back: the container came up on a detached `HEAD` again,
+sitting 22 commits ahead of the local `main` branch. Fetched `origin/main` fresh and found it already
+matched that detached `HEAD` exactly — nothing was ever lost, the real push from round 304 had landed
+fine, it was only the local branch pointer that was stale — so `main` was fast-forwarded onto it before
+anything else this round touched the repo.
+
+A frequency check of the last 60 rounds' own titles turned up Frosty Peak as the coldest world for
+attention lately (5 mentions against 8-12 for everywhere else), and its own village square still had a
+gap every other world's centrepiece has had filled for a while: the campfire has crackled with light and
+sound (round 29, round 238) and seated three regulars on its log benches, but never got its own "walk up
+and look" toast. **The village fire can now be looked at**, for one of three lines: *"Kept going every
+night since before the gondola had a name."*, *"Whoever's shift it is, they never let it go out."*,
+*"Closest thing to summer, this far up the mountain."*
+
+Same trick as every "look" round before it: `fire` (already kept, two lines up, for its own flicker
+animation) is handed straight to `game.addInteractable` — no new mesh, no new physics box. Its existing
+centre box (half-extent 1.2 m in x and z, corner at 1.7 m) already keeps the cat that far clear, so a
+2.6 m radius was chosen to reach it from the open ground past that corner. Checked with a probe built on
+the test harness's own stub (loading the real game logic, then calling `game.load(5, 'from-hub')`
+directly rather than `travel()`, since `travel()` only fires its real work after a `setTimeout`): the
+three log-seat sitters' own greet circles (radius 2.1, centred 1.7 m out on each bench) turned out to
+cover most of the fire's own 2.6 m ring, but a sweep of the full ring at every radius from 1.8 to 2.6 m
+found two narrow gaps — between the trapper's and the marshmallow kid's seats, and a second between the
+kid's and the granny's — where the fire's own prompt wins outright, and confirmed every point in both
+gaps clear of every physics box. Full suite (`node test/run.mjs`) ran clean — exit 0, 0 console warnings,
+physics box count unchanged at 297 — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy. (One unrelated, pre-existing flake turned up while repeat-running the suite to check
+this: the Victorian carriage's own movement check occasionally times out under load — reproduces on the
+untouched `main` branch too, nothing to do with this round's change, left alone.)
