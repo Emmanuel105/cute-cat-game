@@ -7737,3 +7737,24 @@ all `ok`, 0 console warnings, physics box count unchanged at 297 — before rebu
 wall-clock-timing flake in the Victorian horse-and-carriage check that round 312 already diagnosed and
 ruled out as pre-existing — confirmed again here by two more clean reruns, in a world this round never
 touches.)
+
+## Round 315 — a look at Frosty Peak's own second igloo
+
+Round 307 gave the near igloo (the one by the first cabin) its own "walk up and look" toast, but the
+second igloo further round the slope — the banker's own, the one he's seen kneeling outside banking
+fresh snow up its base — never got one, same gap round 301's second cupcake hill and round 314's
+gingerbread cottage already turned out to have. **The cat can now stop and look at the second igloo
+too.** *"Newer than the first one — still settling into the slope."* *"Colder side of the mountain,
+this. Walls are thicker for it."* *"That one's the banker's own work — packed it himself."*
+
+Pure decoration, same trick as every "look" round before it: the build loop that places both igloos
+only ever captured the first one (`iglooA`) for round 307's toast and threw the second away once built;
+it now captures both (`iglooA`, `iglooB`), and `iglooB` is handed straight to a second
+`game.addInteractable` — no new mesh, no new physics box. Its existing centre box (half-extent 1.7 m in
+x and z, from the same `boxT` call that already placed it) keeps the cat that far off on every side, so
+the same 3.0 m radius round 307 used reaches it from any open side. The banker kneeling at this igloo's
+own tunnel mouth sits exactly 3.3 m from centre (by construction — `kx/kz` are the centre plus `3.3 *
+sin/cos(ry)`), just outside that reach, the same margin the first igloo's toast already relies on
+against its own kneeler. Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks all `ok`, 0
+console warnings, physics box count unchanged at 297 — before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

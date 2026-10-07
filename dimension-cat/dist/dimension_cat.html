@@ -9434,8 +9434,8 @@ function buildSnowVillage(game, entry) {
     mesh(G.sphere(0.035, 8, 6), hubMat, { parent: pivot });
     U.push((dt, t) => { pivot.rotation.z = t * 3.6; });
     P.addBox(px, y0p + 0.3, pz, 0.14, 0.6, 0.14, { cam: false }); }
-  let iglooA;
-  for (const [i, [x, z, ry]] of [[-16, 10, 0.6], [15, -14, -2.2]].entries()) { const ig = makeIgloo(); if (i === 0) iglooA = ig; placeT(game, U, ig, x, z, ry); boxT(game, x, z, 3.4, 1.8, 3.4); }
+  let iglooA, iglooB;
+  for (const [i, [x, z, ry]] of [[-16, 10, 0.6], [15, -14, -2.2]].entries()) { const ig = makeIgloo(); if (i === 0) iglooA = ig; else iglooB = ig; placeT(game, U, ig, x, z, ry); boxT(game, x, z, 3.4, 1.8, 3.4); }
   // the near igloo's own blue gem lamp has glowed in its tunnel mouth since this world was built, but like the fire
   // and the aurora it never got its own "walk up and look" toast. Same trick again: `iglooA`, the first igloo's own
   // group (captured above instead of discarded by the loop), handed straight to `game.addInteractable` — no new
@@ -9445,6 +9445,11 @@ function buildSnowVillage(game, entry) {
   // `game.nearest` always resolves to whichever interactable is physically closer anyway.
   { const iglooLines = ['🏠 "Packed snow walls, and somehow warmer in there than out here."', '🏠 "That blue glow\'s just the gem lamp — nothing to be scared of."', '🏠 "Built fresh most winters. Melts a little more every spring."'];
     game.addInteractable({ obj: iglooA, radius: 3.0, label: () => 'Look at the igloo', onUse: () => { SFX.click(); game.toast(rnd.pick(iglooLines), 3000); } }); }
+  // the second igloo, further round the slope, never got its own toast either — `iglooB` is captured the same way.
+  // Same 3.0 m radius against the same 1.7 m centre box; the banker kneeling at this igloo's own tunnel mouth sits
+  // 3.3 m from centre (see the Kneeler below), just outside reach, same margin the first igloo already relies on.
+  { const iglooBLines = ['🏠 "Newer than the first one — still settling into the slope."', '🏠 "Colder side of the mountain, this. Walls are thicker for it."', '🏠 "That one\'s the banker\'s own work — packed it himself."'];
+    game.addInteractable({ obj: iglooB, radius: 3.0, label: () => 'Look at the igloo', onUse: () => { SFX.click(); game.toast(rnd.pick(iglooBLines), 3000); } }); }
   makeIcePond(game, 18, 8, 5, r);
   // an ice fisherman on a stool at the pond's edge, rod dipped into a hole cut in the ice, the odd bite
   { const holeY = P.ground0(18, 8) + 0.06;
