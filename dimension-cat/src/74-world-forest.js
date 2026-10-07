@@ -530,6 +530,22 @@ function buildForest(game, entry) {
     game.npcs.push(new KiteFlyer(game, kiteKid, makeKite(0x6b8a5a, 0xffd54a), { x: 7, z: -24, wind: [0.18, 0.98],
       cries: ['Caught a gap in the branches, finally!', 'Mind the string, puss.', "The trees eat more kites than the fairies ever will."] })); }
 
+  // the Neighborhood, Candy Land, Robot City and Victorian all have a kid working a yo-yo by now — the
+  // one trick every other world's children picked up, and Whisper Woods, for all its tag, catch, swing
+  // and seesaw, never got round to it either. A child works one on the open ground east of the glade,
+  // well clear of the tree ring. `YoYoer` needs no held prop beyond what it builds itself (the disc and
+  // string hang straight off `rig.hands[1]`), so this was placement, not construction. A headless probe
+  // built the real Whisper Woods (`game.travel(6, 'from-hub')`), sampled every NPC's and the squirrel's
+  // own position every quarter second over 25 simulated seconds (so no wandering deer, fox or flying
+  // fairy mid-leash could slip past unnoticed), then swept a grid of the glade's own clearing (radius
+  // <= 36, short of the tree ring that starts at 40) against both those samples and every physics box:
+  // (34, 0) came back clear by 8.0 m of the nearest other soul and 8.1 m of the nearest box.
+  { const yx = 34, yz = 0, yry = atan2(8 - yx, -6 - yz);
+    const yoyoKid = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(yoyoKid.group);
+    game.npcs.push(new YoYoer(game, yoyoKid, 0x5ac8e0, { x: yx, z: yz, ry: yry, cryIcon: '🪀',
+      cries: ["Forty drops, and the owls still haven't blinked.", 'Careful, puss — it swings wider than it looks.', 'The fairies keep trying to grab it mid-drop.'] })); }
+
   // every other creature in these woods moves at a clip — even the frogs hop — and nothing here had ever
   // just crept along. A snail now glides, almost too slowly to notice, through the fern litter at the
   // heart of the glade. A headless probe built the real Whisper Woods, sampled every NPC's and the

@@ -7645,3 +7645,22 @@ clear by 13.4 m of the nearest box and 13.0 m of the nearest other soul (the kit
 (`node test/run.mjs`) ran clean on the final check — exit 0, 273 checks all `ok`, 0 console warnings,
 physics box count unchanged at 297 (a `YoYoer` only ever needs a physics circle, not a box) — before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 311 — a yo-yo kid for Whisper Woods' own open ground
+
+The Neighborhood, Candy Land, Robot City and Victorian all have a kid working a yo-yo by now, but
+Whisper Woods — for all its tag pair, catch pair, swing and seesaw — never got one of its own. **A child
+now works a yo-yo on the open ground east of the glade**, between the inner tree ring and the glowing
+pond, well clear of every tree, stump and wandering soul. *"Forty drops, and the owls still haven't
+blinked."* *"Careful, puss — it swings wider than it looks."* *"The fairies keep trying to grab it
+mid-drop."* Whisper Woods goes from 46 to 47 to meet.
+
+Pure placement, same as the other four `YoYoer` kids — the disc and string hang straight off
+`rig.hands[1]`, so no new mesh or prop was needed. A headless probe built the real Whisper Woods
+(`game.travel(6, 'from-hub')`), sampled every NPC's and the squirrel's own position every quarter second
+over 25 simulated seconds (so no wandering deer, fox or flying fairy mid-leash could slip past
+unnoticed), then swept a grid of the glade's own clearing (radius ≤ 36, short of the tree ring that only
+starts at 40) against both those samples and every physics box: (34, 0) came back clear by 8.0 m of the
+nearest other soul and 8.1 m of the nearest box. Full suite (`node test/run.mjs`) ran clean on the final
+check — exit 0, 273 checks all `ok`, 0 console warnings, physics box count unchanged at 297 — before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
