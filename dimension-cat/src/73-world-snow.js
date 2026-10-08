@@ -505,6 +505,21 @@ function buildSnowVillage(game, entry) {
   { const jx = -48, jz = 14;
     game.npcs.push(new JumpRoper(game, kid(r.chance(0.5)), 0xff6fb5, { x: jx, z: jz, ry: atan2(0 - jx, 0 - jz),
       cries: ["Two hundred and not a single trip!", 'Careful, puss — it swings wider than it looks.', "Warms you up faster than the fire does."] })); }
+  // every other world has a hula hooper by now — the Neighborhood, Sunny Shore, Whisper Woods, Candy
+  // Land, Robot City and Victorian all got one over the last several rounds — Frosty Peak was the last
+  // world left without, completing the set across all seven. A child now works a hula hoop on the open
+  // snowfield north of the ice pond, well past the birdwatcher's rise. `HulaHooper` needs no held prop
+  // beyond the one ring it builds itself, parented to the body at waist height, so this is a placement,
+  // not a build, reusing the same `kid()` wardrobe helper every other child in this file already draws
+  // from. A headless probe built the real mountain (`game.load(5, 'from-prev')`), sampled every NPC's
+  // own position every quarter second over 25 simulated seconds (so no wandering reindeer, hare, arctic
+  // fox or mid-game kid could slip past unnoticed), then swept a 2 m grid of the open snow (radius < 54,
+  // short of the radius (58) where snowRegion's own fill takes over) against both those samples and
+  // every one of the mountain's physics boxes: (12, 52) came back clear by 11.5 m of the nearest box and
+  // 20.6 m of the nearest other soul, at radius 53.4 from the origin.
+  { const hx = 12, hz = 52;
+    game.npcs.push(new HulaHooper(game, kid(r.chance(0.5)), 0xffd54a, { x: hx, z: hz, ry: atan2(0 - hx, 0 - hz),
+      cries: ["Sixty spins and not a shiver!", 'Careful, puss — the ring swings wider than it looks.', "Keeps you warmer than the fire does, honest."] })); }
   // the birdwatcher up by the ice pond has her binoculars trained on the penguin colony, same as every round
   // before this one — Candy Land, Sunny Shore and Whisper Woods all got an actual flock wheeling overhead
   // (butterflies, gulls, fairies), but Frosty Peak's own sky, for all its aurora, never had a single real

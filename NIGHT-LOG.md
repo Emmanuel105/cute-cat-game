@@ -8047,3 +8047,28 @@ that rounds 312/314/316/317/320/323/325 already diagnosed as a wall-clock flake 
 hand-placed NPC, then a clean six-run streak right after: 273 checks all `ok`, 0 console warnings each
 time, physics box count unchanged at 297 (a `HulaHooper` only ever needs a physics circle) — before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 327 — a hula hoop for Frosty Peak
+
+Frosty Peak was the last of the seven worlds without a hula hooper, completing the set round 324
+started. **A child now works a hula hoop on the open snowfield north of the ice pond**, well past the
+birdwatcher's rise and the outlying ice-crystal cluster. *"Sixty spins and not a shiver!"* *"Careful,
+puss — the ring swings wider than it looks."* *"Keeps you warmer than the fire does, honest."*
+
+Same placement-only trick as every hula hooper before it: `HulaHooper` (`55-npcs.js`) needs no held
+prop beyond the ring it builds itself, parented to the body at waist height, so this is a `kid()` +
+`new HulaHooper(...)` pair dropped into `buildSnowVillage` (`73-world-snow.js`) right after the
+jump-rope kid. A headless probe built the real mountain (`game.load(5, 'from-prev')`), sampled every
+NPC's own position every quarter second over 25 simulated seconds (so no wandering reindeer, hare,
+arctic fox or mid-game kid could slip past unnoticed), then swept a 2 m grid of the open snow (radius
+< 54, short of the radius (58) where `snowRegion`'s own procedural fill takes over) against both those
+samples and every one of the mountain's physics boxes: (12, 52) came back clear by 11.5 m of the
+nearest box and 20.6 m of the nearest other soul, at radius 53.4 from the origin.
+
+All seven worlds now have a hula hooper, a jump-rope kid and a yo-yo kid.
+
+On arrival, local `main` was a stale ref pointing 44 commits behind `origin/main` with `HEAD` detached
+at the same commit `origin/main` already had — nothing unpushed, just `git branch -f main HEAD` and a
+checkout needed before starting, same as rounds 325/326. Full suite (`node test/run.mjs`) ran clean on
+four runs in a row — exit 0, 273 checks all `ok`, 0 console warnings, physics box count unchanged at 297
+— before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
