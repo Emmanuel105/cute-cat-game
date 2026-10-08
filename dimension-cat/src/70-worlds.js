@@ -2743,6 +2743,28 @@ function buildVictorian(game, entry) {
     W.add(scootKid.group);
     game.npcs.push(new Kneeler(game, scootKid, { x: kx, z: kz, ry,
       cries: ['Just a wobbly bolt, guv\'nor — nearly got it.', "Careful, puss — mind your tail, this spins.", "Good as new. Right round the square, no hands, easy."] })); }
+  // the Neighborhood has had a girl chalking a hopscotch grid onto its own pavement since round 141,
+  // and Robot City picked the game up too — Victorian, for all its own cobblestones, never got one.
+  // A boy now kneels on the quiet cobblestones south-west of the market square, six squares chalked in
+  // a row, same `Kneeler` stance and the same hand-held chalk stub every hand-held tool in this file
+  // already uses, just a flatcap and a different hand this time round. A headless probe built the real
+  // Victorian town (`game.travel(3, 'from-prev')`) and sampled every NPC's own position every quarter
+  // second over 30 simulated seconds (so no wandering urchin, dancer or game mid-turn could slip past
+  // unnoticed), then swept the open cobblestones south-west of the market square against both those
+  // samples and every one of the town's physics boxes: (-42, -58) came back clear by 29.4 m of the
+  // nearest box (a streetlamp down by the lane) and 29.4 m of the nearest other soul (a wandering
+  // urchin), at radius 71.6 from the origin — comfortably short of the radius (88) where
+  // victorianRegion's own procedural fill takes over.
+  { const gz = -58, kx = -45.9, kz = -57.85, squares = [];
+    const squareColors = [0xffb3c6, 0xbde0fe, 0xfff3b0, 0xb9fbc0, 0xcdb4db, 0xffc8dd];
+    for (let i = 0; i < 6; i++) { const gx = -45 + i * 0.58; squares.push([gx, gz]);
+      mesh(G.plane(0.48, 0.48), mat(squareColors[i], { roughness: 0.95, transparent: true, opacity: 0.85 }), { x: gx, y: 0.018, z: gz, rx: -PI / 2, shadow: 'none', parent: W }); }
+    const chalker = makeHuman({ ...randomPerson(r, { female: false, child: true }), hat: 'flatcap', hatColor: 0x3a3a44, backpack: null, scarf: null, jacket: null, bag: null, glasses: false });
+    W.add(chalker.group);
+    const chalk = group(0, 0.02, 0.09, chalker.hands[0]); chalk.rotation.x = -0.5;
+    mesh(G.cyl(0.014, 0.014, 0.09, 6), mat(0xf7f3ec, { roughness: 0.9 }), { y: 0.045, parent: chalk });
+    game.npcs.push(new Kneeler(game, chalker, { x: kx, z: kz, ry: atan2(squares[0][0] - kx, squares[0][1] - kz),
+      cries: ['Six squares, dry before the rain comes back.', "Careful, puss — mind the chalk lines!", "Found the stub behind the schoolhouse. Nobody's missed it yet."] })); }
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);

@@ -8436,3 +8436,28 @@ flake, not a regression from this round — but it is now logged here in case a 
 Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks all `ok` (Robot City's own friend count
 up one, to 55), 0 console warnings, physics box count unchanged at 297 — before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 341 — a hopscotch grid for Victorian
+
+The Neighborhood has had a girl chalking a hopscotch grid onto its own pavement since round 141, and
+Robot City picked the game up last round — Victorian, for all its own cobblestones, never got one.
+**A boy now kneels on the quiet cobblestones south-west of the market square, six squares chalked in a
+row, flatcap pushed back.** *"Six squares, dry before the rain comes back."* *"Careful, puss — mind the
+chalk lines!"* *"Found the stub behind the schoolhouse. Nobody's missed it yet."*
+
+Same trick as the other two: the same six colour-coded `G.plane` squares plus a `Kneeler` and a
+hand-held chalk stub (parented into his own hand), reskinned as a boy in a flatcap rather than a girl
+in braids. A headless probe (a small stub-three harness built the same way `test/run.mjs` does) loaded
+the real Victorian town (`game.travel(3, 'from-prev')`), sampled every NPC's own position every quarter
+second over 30 simulated seconds, then swept a 1 m grid of the open ground south-west of the market
+square (radius 15-80, short of the radius (88) where `victorianRegion`'s own procedural fill takes
+over) against both those samples and every one of the town's physics boxes: (-42, -58) came back clear
+by 29.4 m of the nearest box (a streetlamp down by the lane) and 29.4 m of the nearest other soul (a
+wandering urchin), at radius 71.6 from the origin. The whole spot sits on the cobblestone disc that
+already floors the entire hand-built town out to radius 145, so the chalk lands on real paving, same as
+the other two.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks all `ok` (Victorian's own friend count
+up one, to 62), 0 console warnings, physics box count unchanged at 297 (the grid is six decal planes
+and a `Kneeler`, neither of which registers a collider) — before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
