@@ -8297,3 +8297,31 @@ up two, to 55 — the walker and the dog both count), 0 console warnings, ground
 Candy Land unchanged at 91%, physics box count unchanged at 297 (that tally is read off the Neighborhood,
 which this round never touched) — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 336 — a dog walker for Frosty Peak
+
+The Neighborhood, Robot City, Victorian, Sunny Shore, Whisper Woods and Candy Land all pair a stroller
+with a dog on a lead (`DogWalker`) by now; Frosty Peak was the last world left without one — its own
+husky has only ever kept to its own patch of snow since round 335, never actually taken for a walk.
+**A woman now strolls a tan dog on a lead across the open snowfield north of the village, well clear of
+the forest ring.** *"She's not scared of the cold, just the penguins."* *"Careful, puss — mind your
+tail, she only wants a sniff."* *"Same loop every morning, round past the pines."*
+
+No new controller: the same `DogWalker` pairing of a `Wanderer` (the owner) and a `Follower` (the dog,
+leashed to her) that the other six worlds already use, dropped into `buildSnowVillage` (`73-world-snow.js`)
+right after the husky. `DogWalker`'s own friend key is configurable (`o.key`, defaulting to `'dog'`) since
+round 333's fix for Sunny Shore, so this one claims `'walked-dog'` instead and leaves the husky's own
+claim on the plain `'dog'` key untouched. A headless probe built the real mountain (`game.load(5,
+'from-prev')`), sampled every NPC's own position every quarter second over 30 simulated seconds — this
+time widened to also read the live `x`/`z` (or `circle.x`/`z`) of every player inside the tag, catch,
+snowball-fight and ring-dance pair-games, not just the solo wanderers, after an early pass under-counted
+those and nearly placed the walker 6 m from the catch game — then swept a grid of the open snowfield
+(radius ≤ 53, short of where `snowRegion`'s own fill takes over at 58) against both those samples and
+every one of the mountain's physics boxes: (-3, 43) came back clear by 6.4 m of the nearest box (a pine
+in the forest ring) and 17.3 m of the nearest other soul, north of the hula hooper's own patch.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 290+ checks all `ok` (Frosty Peak's own friend count
+up two, to 49 — the walker and the dog both count), 0 console warnings, ground-walkable percentage for
+Frosty Peak unchanged at 97%, physics box count unchanged at 297 (that tally is read off the
+Neighborhood, which this round never touched) — before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

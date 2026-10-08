@@ -10128,6 +10128,24 @@ function buildSnowVillage(game, entry) {
     boxT(game, hx, hz, 0.4, 0.8, 0.6, { cam: false });
     const hid = game.namedFriend('dog');
     game.addInteractable({ obj: husky.group, radius: 2.2, label: () => 'Pet the husky', onUse: () => { game.befriend(hid); SFX.woof(); game.hearts(husky.group.position.x, 0.6, husky.group.position.z, 4); game.toast('🐕‍🦺 *happy tail wag*'); } }); }
+  // the Neighborhood, Robot City, Victorian, Sunny Shore, Whisper Woods and Candy Land all pair a
+  // stroller with a dog on a lead (`DogWalker`) by now — Frosty Peak was the last world left without
+  // one, its own husky just above keeping to its own patch rather than being walked anywhere.
+  // `DogWalker`'s own friend key is configurable (`o.key`, defaulting to `'dog'`), so this one claims
+  // `'walked-dog'` instead and leaves the husky's own claim on the plain `'dog'` key untouched. A
+  // headless probe built the real mountain (`game.load(5, 'from-prev')`), sampled every NPC's own
+  // position (including every tag, catch, snowball and ring-dance player, not just the solo wanderers)
+  // every quarter second over 30 simulated seconds, then swept a grid of the open snowfield (radius
+  // <= 53, short of where snowRegion's own fill takes over at 58) against both those samples and every
+  // one of the mountain's physics boxes: (-3, 43) came back clear by 6.4 m of the nearest box (a pine
+  // in the forest ring) and 17.3 m of the nearest other soul, north of the hula hooper's own patch.
+  { const dwx = -3, dwz = 43, dwry = atan2(0 - dwx, 0 - dwz);
+    const dwWard = makeWardrobe(r, { shirts: [0x6a5a3a, 0x3a5a6a, 0x5a4a6a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const walker = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: dwWard }),
+      hat: 'beanie', hatColor: 0x6a5a3a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a }); W.add(walker.group);
+    const walkedDog = makeDog(0x8a6a4a);
+    game.npcs.push(new DogWalker(game, walker, walkedDog, { x: dwx, z: dwz, angle: dwry, speed: 0.8, leash: 4, key: 'walked-dog',
+      cries: ["She's not scared of the cold, just the penguins.", 'Careful, puss — mind your tail, she only wants a sniff.', "Same loop every morning, round past the pines."] })); }
   // the Neighborhood, Robot City, Candy Land, Victorian and Whisper Woods all have a kid working a
   // yo-yo by now, but Frosty Peak — for all its swing set, seesaw, snowball fight, tag, catch and ring
   // dance — never had one. A child now works a yo-yo on the open snowfield south-east of the village,
