@@ -8270,3 +8270,30 @@ Full suite (`node test/run.mjs`) ran clean — exit 0, 290+ checks all `ok` (Rob
 up one, to 54), 0 console warnings, physics box count unchanged at 297 (that tally is read off the
 Neighborhood, which this round never touched — Robot City itself picked up one small box for the
 scooter) — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 335 — a dog walker for Candy Land
+
+The Neighborhood, Robot City, Victorian, Sunny Shore and Whisper Woods all pair a stroller with a dog
+on a lead (`DogWalker`) by now; Candy Land only ever had its own standalone, gingerbread-coloured pup
+wandering a patch of grass by itself since round 325 — nobody there had come for an actual walk either.
+**A woman now strolls a chocolate-brown dog along the open sweet-lands west of the cottage.** *"She's
+never met a cupcake hill she didn't try to climb."* *"Careful, puss — mind your tail, she only wants a
+sniff."* *"Same loop every morning, out past the cane ring and back."*
+
+No new controller: the same `DogWalker` pairing of a `Wanderer` (the owner) and a `Follower` (the dog,
+leashed to her rather than the cat) that the other five worlds already use, built from the same fix
+round 333 landed for Sunny Shore — `DogWalker`'s own friend key is configurable (`o.key`, defaulting to
+`'dog'`), so this one claims `'walked-dog'` instead and leaves the standalone pup's own claim on the
+plain `'dog'` key untouched. A headless probe built the real Candy Land (`game.load(1, 'from-prev')`),
+sampled every NPC's own position every quarter second over 30 simulated seconds (so no marching, dancing
+or wandering gingerbread man, nor the tag or catch pairs mid-turn, could slip past unnoticed), then swept
+a 2 m grid of the open sweet-lands (radius ≤ 85, short of the radius (92) where `candyRegion`'s own
+procedural fill takes over) against both those samples and every one of the world's 1867 physics boxes:
+(-83, 5) came back clear by 19.6 m of the nearest box and 40.7 m of the nearest other soul, at radius
+83.2 from the origin.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 290+ checks all `ok` (Candy Land's own friend count
+up two, to 55 — the walker and the dog both count), 0 console warnings, ground-walkable percentage for
+Candy Land unchanged at 91%, physics box count unchanged at 297 (that tally is read off the Neighborhood,
+which this round never touched) — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.

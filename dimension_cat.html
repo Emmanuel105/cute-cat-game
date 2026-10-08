@@ -7820,6 +7820,27 @@ function buildCandyLand(game, entry) {
     W.add(scootKid.group);
     game.npcs.push(new Kneeler(game, scootKid, { x: kx, z: kz, ry,
       cries: ['Just a wobbly bolt — nearly got it.', "Careful, puss — mind your tail, this spins.", "Good as new. Three cupcake hills, no hands, easy."] })); }
+  // the Neighborhood, Robot City, Victorian, Sunny Shore and Whisper Woods all pair a stroller with a
+  // dog on a lead (`DogWalker`) by now — Candy Land, for all its own gingerbread-coloured standalone pup
+  // a few lines up, never had a second, walked dog of its own. A woman now strolls a chocolate-brown dog
+  // along the open sweet-lands west of the cottage, well short of where `candyRegion`'s own procedural
+  // fill takes over. `DogWalker`'s own friend key is configurable (`o.key`, defaulting to `'dog'`), so
+  // this one claims `'walked-dog'` instead, leaving the standalone pup's own claim on the plain `'dog'`
+  // key untouched. A headless probe built the real Candy Land (`game.load(1, 'from-prev')`), sampled
+  // every NPC's own position every quarter second over 30 simulated seconds (so no marching, dancing or
+  // wandering gingerbread man, nor the tag or catch pairs mid-turn, could slip past unnoticed), then
+  // swept a 2 m grid of the open sweet-lands (radius ≤ 85, short of the radius (92) where candyRegion's
+  // own fill takes over) against both those samples and every one of the world's 1867 physics boxes:
+  // (-83, 5) came back clear by 19.6 m of the nearest box and 40.7 m of the nearest other soul, at
+  // radius 83.2 from the origin.
+  { const dwx = -83, dwz = 5, dwry = atan2(0 - dwx, 0 - dwz);
+    const walkerWard = makeWardrobe(r, { shirts: [0xffe0ea, 0x7fd7ff, 0xfff3b0], pants: [0xff9ecf, 0x2a2420, 0x7fd7ff] });
+    const walker = makeHuman({ ...randomPerson(r, { female: r.chance(0.6), child: false, elder: r.chance(0.3), wardrobe: walkerWard }),
+      hat: r.chance(0.4) ? 'flatcap' : null, hatColor: 0xffd54a, jacket: null, scarf: null, bag: null, glasses: r.chance(0.2) });
+    W.add(walker.group);
+    const walkedDog = makeDog(0x5a4a3a);
+    game.npcs.push(new DogWalker(game, walker, walkedDog, { x: dwx, z: dwz, angle: dwry, speed: 0.8, leash: 4, key: 'walked-dog',
+      cries: ["She's never met a cupcake hill she didn't try to climb.", 'Careful, puss — mind your tail, she only wants a sniff.', "Same loop every morning, out past the cane ring and back."] })); }
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('star', 7, -6); C.add('yarn', -9, 9); C.add('fish', -16, -13); C.add('mouse', 16, -9); C.add('star', -10, -27); C.add('yarn', 22, 4); C.add('mouse', -28, 26); C.add('fish', 14, -44); C.add('star', 0, -56); C.add('mouse', -58, 30); C.add('yarn', 60, 36);
