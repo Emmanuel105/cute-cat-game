@@ -8297,3 +8297,32 @@ up two, to 55 — the walker and the dog both count), 0 console warnings, ground
 Candy Land unchanged at 91%, physics box count unchanged at 297 (that tally is read off the Neighborhood,
 which this round never touched) — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 336 — a dog walker for Frosty Peak
+
+The Neighborhood, Candy Land, Robot City, Victorian, Sunny Shore and Whisper Woods all pair a stroller
+with a dog on a lead (`DogWalker`) by now; Frosty Peak only ever had its own husky keeping to a patch of
+snow by the sled run, pointed ears up and never following the cat — the last of the seven still without
+an actual walk. **A woman now strolls a tan, floppy-eared dog across the open snowfield east of the
+village.** *"Doesn't feel the cold at all, this one."* *"Careful, puss — mind your tail, she only wants a
+sniff."* *"Same loop every morning, round past the pines."*
+
+No new controller: the same `DogWalker` pairing of a `Wanderer` (the owner) and a `Follower` (the dog,
+leashed to her rather than the cat) every other world already uses, with the same fix round 333 gave it —
+`DogWalker`'s own friend key is configurable (`o.key`, defaulting to `'dog'`), so this one claims
+`'walked-dog'` instead and leaves the husky's own claim on the plain `'dog'` key untouched. A headless
+probe (written against the same stub-three test harness `test/run.mjs` uses, since this sandbox has no
+browser) built the real mountain (`game.load(5, 'from-prev')`), sampled every NPC's and the squirrel's
+own position every quarter second over 30 simulated seconds (so no wandering reindeer, hare, arctic fox,
+penguin or mid-game kid could slip past unnoticed), then swept a grid of the open snowfield (radius
+27-46, clear of the village's own keep-out circle and well short of the radius (58) where snowRegion's
+own fill takes over) against both those samples and every one of the mountain's physics boxes: (21, 31)
+came back clear by 8.7 m of the nearest box (a pine trunk out in the forest ring) and 8.1 m of the
+nearest other soul (the pinecone gatherer, stationary at (14, 27)), at radius 37.4 from the origin, with
+ground height varying only 0.55 m across a 3 m radius around it.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 290+ checks all `ok` (Frosty Peak's own friend count
+up two, to 49 — the walker and the dog both count), 0 console warnings, ground-walkable percentage for
+Frosty Peak unchanged at 97%, physics box count unchanged at 297 (that tally is read off the
+Neighborhood, which this round never touched) — before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
