@@ -8995,6 +8995,24 @@ function buildVictorian(game, entry) {
     W.add(hoopKid.group);
     game.npcs.push(new HulaHooper(game, hoopKid, 0xc9516a, { x: hx, z: hz, ry: atan2(0 - hx, 0 - hz),
       cries: ["A hundred round and not a wobble, guv'nor!", "Mind your tail, puss — it swings wider than it looks.", "Found it behind the market stalls. Nobody's claimed it yet."] })); }
+  // the Neighborhood and Candy Land both have a kid kneeling by a wobbly scooter — Victorian, for all
+  // nine of its own games and vignettes on the north bank by now, never had one. A girl kneels in the
+  // open grass west of the catch pair, tightening her scooter's back wheel. Same `makeScooter()` +
+  // `Kneeler` pairing as the other two, no new controller. A headless probe built the real Victorian
+  // town (`game.travel(3, 'from-prev')`) and sampled every NPC's own position every quarter second over
+  // 30 simulated seconds (so no wandering urchin, dancer or game mid-turn could slip past unnoticed),
+  // then swept the open grass against both those samples and every physics box: (-48, 52) came back
+  // clear by 17.6 m of the nearest box and 18.0 m of the nearest other soul (the catch pair at
+  // (-25, 52)), at radius 70.8 from the origin — comfortably short of the radius (88) where
+  // victorianRegion's own procedural fill takes over.
+  { const sx = -48, sz = 52, kx = -47.1, kz = 52, ry = atan2(sx - kx, sz - kz);
+    const scooter = makeScooter(0xa65a2e); place(game, U, scooter, sx, sz, 0.4);
+    P.addBox(sx, 0.4, sz, 0.3, 0.8, 0.6, { cam: false });
+    const scootWard = makeWardrobe(r, { shirts: [0x6a4a6a, 0x4a6a5a, 0x8a5a3a], pants: [0x2a2a24, 0x3a3327], shoes: [0x2a2018, 0x1e1a16] });
+    const scootKid = makeHuman({ ...randomPerson(r, { female: true, child: true, wardrobe: scootWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(scootKid.group);
+    game.npcs.push(new Kneeler(game, scootKid, { x: kx, z: kz, ry,
+      cries: ['Just a wobbly bolt, guv\'nor — nearly got it.', "Careful, puss — mind your tail, this spins.", "Good as new. Right round the square, no hands, easy."] })); }
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);

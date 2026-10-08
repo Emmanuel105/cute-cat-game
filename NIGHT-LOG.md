@@ -8182,3 +8182,32 @@ up one, to 53), 0 console warnings, the final printed box count unchanged at 297
 whichever world the suite lands on last, the Neighborhood, which this round never touched — Candy Land
 itself picked up one small box for the scooter, same as the Neighborhood's own) — before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 332 — a scooter kid for Victorian
+
+The Neighborhood and Candy Land both have a kid kneeling by a wobbly scooter; Victorian, for all nine
+of its own games and vignettes crowding the north bank's green by now (tag, the ring dance, catch, the
+swing and seesaw, the kite, the yo-yo kid, the jump-rope kid and the hula hooper), never had one.
+**A girl now kneels in the open grass west of the catch pair, tightening her scooter's back wheel.**
+*"Just a wobbly bolt, guv'nor — nearly got it."* *"Careful, puss — mind your tail, this spins."* *"Good
+as new. Right round the square, no hands, easy."*
+
+No new controller: the exact same `makeScooter()` + `Kneeler` pairing the Neighborhood's and Candy
+Land's own scooter kids already use, dropped into `buildVictorian` (`70-worlds.js`) right after the
+hula hooper, in a muted brass-brown rather than their orange and yellow. A headless probe built the
+real Victorian town (`game.travel(3, 'from-prev')`), sampled every NPC's own position every quarter
+second over 30 simulated seconds (so no wandering urchin, dancer or game mid-turn could slip past
+unnoticed), then swept the open grass against both those samples and every physics box: (-48, 52) came
+back clear by 17.6 m of the nearest box and 18.0 m of the nearest other soul (the catch pair at
+(-25, 52)), at radius 70.8 from the origin — comfortably short of the radius (88) where
+`victorianRegion`'s own procedural fill takes over.
+
+On arrival, local `main` was a stale ref 49 commits behind `origin/main` with `HEAD` detached at the
+same commit `origin/main` already had — same pattern as several rounds before it, nothing unpushed,
+just a `git checkout main && git merge --ff-only` needed before starting.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 290+ checks all `ok` (Victorian's own friend count
+up one, to 61), 0 console warnings, physics box count unchanged at 297 (that tally is read off
+whichever world the suite lands on last, the Neighborhood, which this round never touched — Victorian
+itself picked up one small box for the scooter) — before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
