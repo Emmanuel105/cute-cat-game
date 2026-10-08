@@ -1510,6 +1510,29 @@ function buildCandyLand(game, entry) {
     const walkedDog = makeDog(0x5a4a3a);
     game.npcs.push(new DogWalker(game, walker, walkedDog, { x: dwx, z: dwz, angle: dwry, speed: 0.8, leash: 4, key: 'walked-dog',
       cries: ["She's never met a cupcake hill she didn't try to climb.", 'Careful, puss — mind your tail, she only wants a sniff.', "Same loop every morning, out past the cane ring and back."] })); }
+  // the Neighborhood has had a girl chalking a hopscotch grid onto its own pavement since round 141,
+  // and Robot City and Victorian each picked the game up in turn — Candy Land, for all its marching,
+  // dancing, juggling and tag-playing gingerbread men, never had one. A girl now kneels on the open
+  // sweet-lands west of the cane ring, six squares chalked straight onto the grass, same `Kneeler`
+  // stance and the same hand-held chalk stub (parented into her own hand) every chalking kid in this
+  // file already uses. A headless probe built the real Candy Land (`game.load(1, 'from-prev')`),
+  // sampled every NPC's own position every quarter second over 30 simulated seconds (so no marching,
+  // dancing or wandering gingerbread man, nor the tag or catch pairs mid-turn, could slip past
+  // unnoticed), then swept a grid of the open sweet-lands (radius 20-88, short of the radius (92)
+  // where candyRegion's own procedural fill takes over) against both those samples and every one of
+  // the world's 1867 physics boxes: (-85.2, 29) came back clear by 19.8-22.9 m of the nearest box and
+  // at least 24 m of the nearest other soul, across the whole six-square span.
+  { const gz = 29, squares = [];
+    const squareColors = [0xffb3c6, 0xbde0fe, 0xfff3b0, 0xb9fbc0, 0xcdb4db, 0xffc8dd];
+    for (let i = 0; i < 6; i++) { const gx = -85.2 + i * 0.58; squares.push([gx, gz]);
+      mesh(G.plane(0.48, 0.48), mat(squareColors[i], { roughness: 0.95, transparent: true, opacity: 0.85 }), { x: gx, y: 0.018, z: gz, rx: -PI / 2, shadow: 'none', parent: W }); }
+    const kx = squares[0][0] - 0.9, kz = gz + 0.15;
+    const chalker = makeHuman({ ...randomPerson(r, { female: true, child: true }), hairStyle: 'braids', shirt: 0x7fd7ff, backpack: null, hat: null, scarf: null, jacket: null, bag: null, glasses: false });
+    W.add(chalker.group);
+    const chalk = group(0, 0.02, 0.09, chalker.hands[0]); chalk.rotation.x = -0.5;
+    mesh(G.cyl(0.014, 0.014, 0.09, 6), mat(0xf7f3ec, { roughness: 0.9 }), { y: 0.045, parent: chalk });
+    game.npcs.push(new Kneeler(game, chalker, { x: kx, z: kz, ry: atan2(squares[0][0] - kx, squares[0][1] - kz),
+      cries: ['Six squares, dry before the gingerbread men march past.', 'Careful, puss — mind the chalk lines!', "Nobody else out here to play it with, but I like the quiet."] })); }
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('star', 7, -6); C.add('yarn', -9, 9); C.add('fish', -16, -13); C.add('mouse', 16, -9); C.add('star', -10, -27); C.add('yarn', 22, 4); C.add('mouse', -28, 26); C.add('fish', 14, -44); C.add('star', 0, -56); C.add('mouse', -58, 30); C.add('yarn', 60, 36);

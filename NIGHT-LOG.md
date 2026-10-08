@@ -8461,3 +8461,29 @@ Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks all `ok` (Vict
 up one, to 62), 0 console warnings, physics box count unchanged at 297 (the grid is six decal planes
 and a `Kneeler`, neither of which registers a collider) — before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 342 — a hopscotch grid for Candy Land
+
+The Neighborhood has had a girl chalking a hopscotch grid onto its own pavement since round 141, and
+Robot City and Victorian each picked the game up in their own turn — Candy Land, for all its marching,
+dancing, juggling and tag-playing gingerbread men, never had one. **A girl now kneels on the open
+sweet-lands out past the candy-cane ring, six squares chalked straight onto the grass.** *"Six squares,
+dry before the gingerbread men march past."* *"Careful, puss — mind the chalk lines!"* *"Nobody else out
+here to play it with, but I like the quiet."*
+
+Same trick as the other three: the same six colour-coded `G.plane` squares plus a `Kneeler` and a
+hand-held chalk stub (parented into her own hand), reskinned as a girl in braids with a sky-blue shirt
+of her own rather than reused wardrobe. A headless probe (a small stub-three harness built the same way
+`test/run.mjs` does, using `game.load(1, 'from-prev')` directly rather than `game.travel()` — the latter
+only queues the real build behind a `setTimeout`, which never fires in a script that just calls
+`game.loop()` in a tight sync loop) built the real Candy Land, sampled every NPC's own position every
+quarter second over 30 simulated seconds (so no marching, dancing or wandering gingerbread man, nor the
+tag or catch pairs mid-turn, could slip past unnoticed), then swept a grid of the open sweet-lands
+(radius 20-88, short of the radius (92) where `candyRegion`'s own procedural fill takes over) against
+both those samples and every one of the world's 1867 physics boxes: the whole six-square span from
+(-85.2, 29) to (-82.3, 29) came back clear by 19.8-22.9 m of the nearest box and at least 24 m of the
+nearest other soul.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks all `ok` (Candy Land's own friend count
+up one, to 56), 0 console warnings, three repeat runs afterward all exit 0 with no flakes — before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
