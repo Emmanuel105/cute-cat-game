@@ -7888,3 +7888,25 @@ push reported "everything up-to-date"), so nothing was at risk, but it's the sec
 situation has turned up (round 316 found the same thing with 33 commits) — worth a mention again in
 case a future round needs to know it's safe to fast-forward and push rather than something to
 investigate further.
+
+## Round 321 — a jump rope for Victorian
+
+Whisper Woods, Sunny Shore, the Neighborhood and Candy Land all have a jump-rope kid by now —
+Victorian, for all six of its own games on the north bank (tag, the ring dance, catch, the swing,
+the seesaw and the kite), never had one. **A child now skips rope on the open grass past the ring
+dance.** *"A hundred skips and not a trip!"* *"Mind your tail, puss — the rope swings wider than it
+looks."* *"Better than catch for keeping warm."*
+
+No new controller needed — `JumpRoper` (`55-npcs.js`, added round 317) takes no held prop beyond the
+loose grip at each hand it builds itself, just a placement reusing the same `randomPerson()` /
+`makeHuman()` pattern the yo-yo kid a few lines above it already uses. A headless probe built the real
+Victorian town (`game.travel(3, 'from-prev')`) and sampled every NPC's own position every quarter
+second over 30 simulated seconds (so no wandering urchin, dancer or tag pair mid-turn could slip past
+unnoticed), then swept the open grass north of the ring dance against both those samples and every one
+of the town's physics boxes: (-10, 65) came back clear by 28.2 m of the nearest box (the seesaw's own
+post, the furthest-flung of the hand-placed props) and 15.5 m of the nearest other soul (the ring dance
+at (2, 58)), at radius 65.8 from the origin — comfortably short of the radius (88) where
+victorianRegion's own procedural fill takes over. Full suite (`node test/run.mjs`) ran clean on three
+reruns in a row — exit 0, 273 checks all `ok`, 0 console warnings, physics box count unchanged at 297
+(a `JumpRoper` only ever needs a physics circle, not a box) — before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
