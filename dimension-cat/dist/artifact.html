@@ -9949,6 +9949,22 @@ function buildSnowVillage(game, entry) {
   { const yx = 29, yz = -43;
     game.npcs.push(new YoYoer(game, kid(r.chance(0.5)), 0xffd54a, { x: yx, z: yz, ry: atan2(0 - yx, 0 - yz),
       cries: ["Forty drops, and my fingers still work!", 'Careful — it swings wider than it looks, out here.', "Nearly a loop-the-loop, that time."] })); }
+  // every other world now has a jump-rope kid — the Neighborhood, Candy Land, Victorian, Sunny Shore,
+  // Whisper Woods and Robot City all got one over the last several rounds — Frosty Peak, for all its
+  // swing set, seesaw, snowball fight, tag, catch, ring dance and yo-yo, was the one world left without.
+  // A child now skips rope on the open snowfield west of the swing-and-seesaw cluster. `JumpRoper` needs
+  // no held prop beyond the loose grip at each hand it builds itself, so this is a placement, not a
+  // build, reusing the same `kid()` wardrobe helper every other child in this file already draws from.
+  // A headless probe built the real mountain (`game.load(5, 'from-prev')`), sampled every NPC's own
+  // position every quarter second over 25 simulated seconds (so no wandering reindeer, hare, arctic fox
+  // or mid-game kid could slip past unnoticed), then swept a 2 m grid of the open snow (radius < 50,
+  // short of the radius (58) where snowRegion's own fill takes over) against both those samples and
+  // every one of the mountain's physics boxes: (-48, 14) came back clear by 6.7 m of the nearest box
+  // (the seesaw's own post) and 20.9 m of the nearest other soul, with the ground varying under 0.16 m
+  // across the whole footprint.
+  { const jx = -48, jz = 14;
+    game.npcs.push(new JumpRoper(game, kid(r.chance(0.5)), 0xff6fb5, { x: jx, z: jz, ry: atan2(0 - jx, 0 - jz),
+      cries: ["Two hundred and not a single trip!", 'Careful, puss — it swings wider than it looks.', "Warms you up faster than the fire does."] })); }
   // the birdwatcher up by the ice pond has her binoculars trained on the penguin colony, same as every round
   // before this one — Candy Land, Sunny Shore and Whisper Woods all got an actual flock wheeling overhead
   // (butterflies, gulls, fairies), but Frosty Peak's own sky, for all its aurora, never had a single real

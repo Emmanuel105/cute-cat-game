@@ -7933,3 +7933,28 @@ over. Full suite (`node test/run.mjs`) ran clean on three reruns in a row — ex
 `ok`, 0 console warnings, physics box count unchanged at 297 (a `JumpRoper` only ever needs a physics
 circle, not a box) — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 323 — a jump rope for Frosty Peak
+
+The Neighborhood, Candy Land, Victorian, Sunny Shore, Whisper Woods and Robot City all picked up a
+jump-rope kid over the last four rounds — Frosty Peak, for all its swing set, seesaw, snowball fight,
+tag, catch, ring dance and yo-yo kid, was the one world left without, completing the set across all
+seven worlds. **A child now skips rope on the open snowfield west of the swing-and-seesaw cluster.**
+*"Two hundred and not a single trip!"* *"Careful, puss — it swings wider than it looks."* *"Warms you
+up faster than the fire does."*
+
+No new controller needed — `JumpRoper` (`55-npcs.js`, added round 317) takes no held prop beyond the
+loose grip at each hand it builds itself, just a placement reusing the same `kid()` wardrobe helper
+every other child in `73-world-snow.js` already draws from. A headless probe built the real mountain
+(`game.load(5, 'from-prev')`), sampled every NPC's own position every quarter second over 25 simulated
+seconds (so no wandering reindeer, hare, arctic fox or mid-game kid could slip past unnoticed), then
+swept a 2 m grid of the open snow (radius under 50, short of the radius (58) where snowRegion's own
+fill takes over) against both those samples and every one of the mountain's physics boxes: (-48, 14)
+came back clear by 6.7 m of the nearest box (the seesaw's own post) and 20.9 m of the nearest other
+soul, with the ground varying under 0.16 m across the whole footprint. Full suite (`node test/run.mjs`)
+ran clean on three reruns in a row — exit 0, 273 checks all `ok`, 0 console warnings, physics box count
+unchanged at 297 (a `JumpRoper` only ever needs a physics circle, not a box) — before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy. (One earlier run did show a single
+`FAIL` on an unrelated Sunny Shore kite-height assertion — the same pre-existing wall-clock timing flake
+rounds 312/314/316/317/320 already diagnosed; Frosty Peak's own build never touches Sunny Shore, and it
+did not recur on any of the three reruns that followed.)
