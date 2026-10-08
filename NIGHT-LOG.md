@@ -8072,3 +8072,27 @@ at the same commit `origin/main` already had — nothing unpushed, just `git bra
 checkout needed before starting, same as rounds 325/326. Full suite (`node test/run.mjs`) ran clean on
 four runs in a row — exit 0, 273 checks all `ok`, 0 console warnings, physics box count unchanged at 297
 — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 328 — a jump rope for the Neighborhood
+
+Checking the jump-rope tally against the hula-hoop and yo-yo ones (both already in all seven worlds)
+turned up a gap: `JumpRoper` had only reached five worlds, skipping the Neighborhood and Sunny Shore.
+**A child now skips rope on the open field south of the Neighborhood's street**, clear of the yo-yo kid,
+the scooter kid and the hula hooper already out there. *"Forty in a row, puss — watch!"* *"Careful —
+don't trip over the rope."* *"Mum says I'll wear a groove in the grass."*
+
+Same placement-only trick as every jump-roper before it: `JumpRoper` (`55-npcs.js`) needs no held prop
+beyond the loose grip at each hand it builds itself, so this is a `makeHuman()` + `new JumpRoper(...)`
+pair dropped into `buildNeighborhood` (`70-worlds.js`) right after the hula hooper, with its own lines
+rolled off the world's local `r()` rather than the controller's shared-`rnd()` `cries` option, same
+reasoning as the hula hooper just above it. A headless probe built the real Neighborhood, sampled every
+NPC's own position every quarter second over 25 simulated seconds (so no wandering stroller, the
+postie's round nor a dog mid-leash could slip past unnoticed), then swept a 2 m grid of the open south
+field against both those samples and every one of the street's physics boxes: (18, -44) came back clear
+by 18.6 m of the nearest box and 17.8 m of the nearest other soul.
+
+Sunny Shore is now the only world left without a jump-roper.
+
+Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, 273 checks all `ok`, 0 console
+warnings, physics box count unchanged at 297 (a `JumpRoper` only ever needs a physics circle, not a
+box) — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

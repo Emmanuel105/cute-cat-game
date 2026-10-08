@@ -7161,6 +7161,27 @@ function buildNeighborhood(game, entry) {
     let hoopCryT = r.range(4, 9);
     U.push((dt) => { hoopCryT -= dt; if (hoopCryT <= 0) { hoopCryT = r.range(9, 16); const c = game.cat.group.position; if (dist2(hx, hz, c.x, c.z) < 400) { game.toast('⭕ "' + r.pick(hoopCries) + '"', 2400); SFX.talk(); } } }); }
 
+  // Every other world now has a jump-roper (Sunny Shore is the only other one left) — the Neighborhood,
+  // for all its yo-yo kid, scooter kid and hula hooper, never had one. A child skips rope on the open
+  // field south of the street, well clear of all three. `JumpRoper` needs no held prop beyond the loose
+  // grip at each hand it builds itself, so this is a placement, not a build (own fixed shirt colour, not
+  // the street's shared `ward` bag, which is sized exactly to its 18 users already; placed last of every
+  // person this build adds, after the hula hooper, so it draws from the very tail of both the local `r`
+  // and the shared `rnd()` sequences and disturbs the fewest later ticks of either).
+  // (a headless probe over the built world — every NPC's own position sampled every quarter second over
+  // 25 simulated seconds, so no wandering stroller, the postie's round nor a dog mid-leash could slip
+  // past unnoticed, swept against a grid of the open south field and every physics box — found (18, -44)
+  // clear: 18.6 m from the nearest box and 17.8 m from the nearest other soul)
+  // (its lines are timed off this world's local `r()` rather than `JumpRoper`'s usual `cries`, which
+  // draws from the *shared* global `rnd()` every few seconds — the same reason the hula hooper above
+  // rolls its own loop instead of passing `cries` straight to its controller)
+  { const jx = 18, jz = -44;
+    const jumpKid = makeHuman({ ...randomPerson(r, { child: true, female: r.chance(0.5) }), shirt: 0xa8ff9a, backpack: null }); W.add(jumpKid.group);
+    game.npcs.push(new JumpRoper(game, jumpKid, 0xff6fb5, { x: jx, z: jz, ry: atan2(0 - jx, 0 - jz) }));
+    const jumpCries = ['Forty in a row, puss — watch!', "Careful — don't trip over the rope.", "Mum says I'll wear a groove in the grass."];
+    let jumpCryT = r.range(4, 9);
+    U.push((dt) => { jumpCryT -= dt; if (jumpCryT <= 0) { jumpCryT = r.range(9, 16); const c = game.cat.group.position; if (dist2(jx, jz, c.x, c.z) < 400) { game.toast('➰ "' + r.pick(jumpCries) + '"', 2400); SFX.talk(); } } }); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
