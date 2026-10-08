@@ -4104,7 +4104,7 @@ class DogWalker {
     this.lead = group(0, 0, 0, game.world);
     noInk(mesh(G.cyl(0.012, 0.012, 1, 4), mat(0x8a2f2f, { roughness: 0.9 }), { rx: PI / 2, shadow: 'none', parent: this.lead }));
     this.hand = V3(); this.collar = V3();
-    const did = game.namedFriend('dog'); game.addInteractable({ obj: dog.group, radius: 2.2, label: () => 'Pet the dog', onUse: () => { game.befriend(did); SFX.woof(); game.hearts(dog.group.position.x, 0.8, dog.group.position.z, 4); game.toast('\ud83d\udc15 *happy tail wag*'); } });
+    const did = game.namedFriend(o.key ?? 'dog'); game.addInteractable({ obj: dog.group, radius: 2.2, label: () => 'Pet the dog', onUse: () => { game.befriend(did); SFX.woof(); game.hearts(dog.group.position.x, 0.8, dog.group.position.z, 4); game.toast('\ud83d\udc15 *happy tail wag*'); } });
   }
   update(dt) {
     this.walker.update(dt); this.follow.update(dt);
@@ -9540,6 +9540,22 @@ function buildBeach(game, entry) {
   { const jx = -39, jz = 30.5;
     game.npcs.push(new JumpRoper(game, beachPerson(r.chance(0.5), true), 0xa8ff9a, { x: jx, z: jz, ry: atan2(0 - jx, 0 - jz), cryIcon: '➰',
       cries: ["Thirty in a row, watch!", "Careful, puss — don't trip over the rope.", "Sand makes it twice the workout, honest."] })); }
+  // the Neighborhood, Robot City, Victorian and Whisper Woods all pair a stroller with a dog on a
+  // lead (`DogWalker`), but Sunny Shore's own dog, just below, only ever had its own patch of sand to
+  // wander — nobody here had come for an actual walk. `DogWalker`'s own friend key is now configurable
+  // (`o.key`, defaulting to `'dog'`) so this one claims `'walked-dog'` instead, leaving the beach dog's
+  // own claim on the plain `'dog'` key untouched. A headless probe built the real Sunny Shore
+  // (`game.load(4, 'from-prev')`), sampled every NPC's and the squirrel's own position every quarter
+  // second over 30 simulated seconds (so no wandering crab, turtle or sunbather mid-circuit could slip
+  // past unnoticed), then swept the dry dune sand (ground height 0.25-2.2 m, radius ≤ 48, short of the
+  // radius (58) where beachRegion's own fill takes over) against both those samples and every physics
+  // box: (-30, -36) came back clear by 8.6 m of the nearest box (the conch shell) and 15.2 m of the
+  // nearest other soul (the sand sculptor further south).
+  { const dwx = -30, dwz = -36, dwry = atan2(0 - dwx, 0 - dwz);
+    const walker = beachPerson(r.chance(0.5), false);
+    const strollDog = makeDog(0x4a3a2a);
+    game.npcs.push(new DogWalker(game, walker, strollDog, { x: dwx, z: dwz, angle: dwry, speed: 0.85, leash: 4, key: 'walked-dog',
+      cries: ["She won't go near the water, bless her.", 'Careful, puss — mind your tail, she only wants a sniff.', "Same walk every morning. She picks the route."] })); }
   // the beach dog keeps to its own patch of sand — it does not follow the cat
   const dog = makeDog(0xc8925a); W.add(dog.group); game.npcs.push(new Wanderer(game, dog, { x: -2, z: 28, speed: 1.1, leash: 7, r: 0.35, height: 0.9, step: 0.3, idle: [1.5, 4], walk: [2, 5] }));
   let woofT = rnd.range(6, 12); U.push((dt) => { woofT -= dt; if (woofT <= 0) { SFX.woof(); woofT = rnd.range(10, 20); } });

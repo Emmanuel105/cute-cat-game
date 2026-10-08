@@ -8211,3 +8211,32 @@ up one, to 61), 0 console warnings, physics box count unchanged at 297 (that tal
 whichever world the suite lands on last, the Neighborhood, which this round never touched — Victorian
 itself picked up one small box for the scooter) — before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 333 — a dog walker for Sunny Shore
+
+The Neighborhood, Robot City, Victorian and Whisper Woods all pair a stroller with a dog on a lead
+(`DogWalker`), but Sunny Shore's own dog has only ever had its own patch of sand to wander since round
+1 — nobody there had come for an actual walk. **A woman now strolls the dry dune sand south-west of the
+lighthouse with a scruffy dog on a lead.** *"She won't go near the water, bless her."* *"Careful, puss —
+mind your tail, she only wants a sniff."* *"Same walk every morning. She picks the route."*
+
+Candy Land, Sunny Shore and Frosty Peak each already have their own loose, pettable dog claiming the
+plain `'dog'` friend key, which is exactly why none of them ever got a `DogWalker` of their own before —
+the class hardcoded that same key, so a second dog in the same world would have called `namedFriend('dog')`
+twice, inflating the world's own friend total by one phantom friend nobody could ever actually meet. The
+fix is a one-line change to `DogWalker` itself (`56-npcs-wild.js`): its friend key is now `o.key ?? 'dog'`
+instead of a bare literal, defaulting to the exact same behaviour everywhere it was already used. This
+placement claims `'walked-dog'` instead, leaving Sunny Shore's own standalone beach dog's claim on `'dog'`
+untouched.
+
+A headless probe built the real Sunny Shore (`game.load(4, 'from-prev')`), sampled every NPC's and the
+squirrel's own position every quarter second over 30 simulated seconds (so no wandering crab, turtle or
+sunbather mid-circuit could slip past unnoticed), then swept the dry dune sand (ground height 0.25-2.2 m,
+radius ≤ 48, short of the radius (58) where `beachRegion`'s own fill takes over) against both those
+samples and every physics box: (-30, -36) came back clear by 8.6 m of the nearest box (the conch shell)
+and 15.2 m of the nearest other soul (the sand sculptor further south).
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 290+ checks all `ok` (Sunny Shore's own friend count
+up two, to 49 — the walker and the dog both count), 0 console warnings, physics box count unchanged at
+297 (that tally is read off the Neighborhood, which this round never touched) — before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
