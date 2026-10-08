@@ -7794,6 +7794,25 @@ function buildCandyLand(game, entry) {
     W.add(hoopKid.group);
     game.npcs.push(new HulaHooper(game, hoopKid, 0x7fe0ff, { x: 39, z: -77, ry: atan2(0 - 39, 0 - -77),
       cries: ['Sixty spins before lunch, easy!', "Careful, puss — the ring's wider than it looks from out there.", 'Keeps me warm without even running.'] })); }
+  // the Neighborhood has had a kid kneeling by a wobbly scooter since round 207, and no other world ever
+  // picked up one of its own — Candy Land, for all its yo-yo kid, jump-rope kid and hula hooper a few
+  // lines up, never had one either. A girl kneels in the open grass out past the candy-cane ring,
+  // tightening her scooter's back wheel. Same `makeScooter()` + `Kneeler` pairing as the Neighborhood's
+  // own scooter kid, no new controller. A headless probe built the real Candy Land
+  // (`game.travel(1, 'from-prev')`), sampled every NPC's own position every quarter second over 30
+  // simulated seconds (so no marching, dancing or wandering gingerbread man, nor the tag or catch pairs
+  // mid-turn, could slip past unnoticed), then swept a 2 m grid of the open sweet-lands (short of the
+  // radius (92) where `candyRegion`'s own procedural fill takes over, clear of the river band and every
+  // hand-placed prop in this build) against both those samples and every physics box: (-30, -84) came
+  // back clear by 18.5 m of the nearest box and 34.1 m of the nearest other soul, at radius 89.2 from the
+  // origin.
+  { const sx = -30, sz = -84, kx = -29.1, kz = -84, ry = atan2(sx - kx, sz - kz);
+    const scooter = makeScooter(0xffd54a); place(game, U, scooter, sx, sz, 0.4);
+    P.addBox(sx, 0.4, sz, 0.3, 0.8, 0.6, { cam: false });
+    const scootKid = makeHuman({ ...randomPerson(r, { child: true, female: true }), shirt: 0xff6fb5, backpack: null, hat: null, scarf: null, jacket: null, bag: null, glasses: false });
+    W.add(scootKid.group);
+    game.npcs.push(new Kneeler(game, scootKid, { x: kx, z: kz, ry,
+      cries: ['Just a wobbly bolt — nearly got it.', "Careful, puss — mind your tail, this spins.", "Good as new. Three cupcake hills, no hands, easy."] })); }
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('star', 7, -6); C.add('yarn', -9, 9); C.add('fish', -16, -13); C.add('mouse', 16, -9); C.add('star', -10, -27); C.add('yarn', 22, 4); C.add('mouse', -28, 26); C.add('fish', 14, -44); C.add('star', 0, -56); C.add('mouse', -58, 30); C.add('yarn', 60, 36);

@@ -8154,3 +8154,31 @@ own procedural fill takes over.
 Full suite (`node test/run.mjs`) ran clean — exit 0, 290+ checks all `ok`, 0 console warnings, physics
 box count unchanged at 297 (`DogWalker`'s own dog and owner only ever need physics circles, not boxes) —
 before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 331 — a scooter kid for Candy Land
+
+The Neighborhood has had a kid kneeling by a wobbly scooter since round 207, and no other world ever
+picked up one of its own — a gap the task's own list of example vignettes calls out by name. **A girl
+now kneels in the open grass out past Candy Land's candy-cane ring, tightening her scooter's back
+wheel.** *"Just a wobbly bolt — nearly got it."* *"Careful, puss — mind your tail, this spins."* *"Good
+as new. Three cupcake hills, no hands, easy."*
+
+No new controller: this is the exact same `makeScooter()` + `Kneeler` pairing the Neighborhood's own
+scooter kid already uses, dropped into `buildCandyLand` (`70-worlds.js`) right after the hula hooper. A
+headless probe built the real Candy Land (`game.travel(1, 'from-prev')`), sampled every NPC's own
+position every quarter second over 30 simulated seconds (so no marching, dancing or wandering
+gingerbread man, nor the tag or catch pairs mid-turn, could slip past unnoticed), then swept a 2 m grid
+of the open sweet-lands — short of the radius (92) where `candyRegion`'s own procedural fill takes over,
+clear of the river band and every hand-placed prop in this build — against both those samples and every
+physics box: (-30, -84) came back clear by 18.5 m of the nearest box and 34.1 m of the nearest other
+soul, at radius 89.2 from the origin.
+
+On arrival, local `main` was a stale ref pointing 48 commits behind `origin/main` with `HEAD` detached at
+the same commit `origin/main` already had — same pattern as rounds 325/326/330, nothing unpushed, just a
+`git checkout main && git merge --ff-only` needed before starting.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 290+ checks all `ok` (Candy Land's own friend count
+up one, to 53), 0 console warnings, the final printed box count unchanged at 297 (that tally is read off
+whichever world the suite lands on last, the Neighborhood, which this round never touched — Candy Land
+itself picked up one small box for the scooter, same as the Neighborhood's own) — before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
