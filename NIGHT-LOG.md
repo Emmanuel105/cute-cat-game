@@ -8352,3 +8352,30 @@ Full suite (`node test/run.mjs`) ran clean — exit 0, 290+ checks all `ok` (Sun
 up one, to 50), 0 console warnings, ground-walkable percentage for Sunny Shore unchanged at 99%, physics
 box count unchanged at 297 (that tally is read off the Neighborhood, which this round never touched) —
 before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 338 — a scooter kid for Frosty Peak
+
+The Neighborhood, Candy Land, Robot City, Victorian and Sunny Shore all have a kid kneeling by a wobbly
+scooter (`makeScooter()` + `Kneeler`) by now; Frosty Peak and Whisper Woods are the only two worlds left
+without one. **A boy now kneels on the open snowfield south of the tracker, tightening his scooter's back
+wheel before trying it again on the packed snow.** *"Wobbly bolt again - nearly got it."* *"Careful, puss
+— mind your tail, this spins."* *"Good as new. Straight down the slope, no hands."*
+
+No new controller: the same `makeScooter()` + `Kneeler` pairing every other world's scooter kid already
+uses, built with the terrain-aware `placeT`/`boxT` helpers (as Sunny Shore's was) rather than the other
+four worlds' flat-floor `place()` + `P.addBox()`, since the snowfield slopes gently underfoot here too —
+and dressed through this file's own `kid()` helper, so he gets a coat and beanie like every other child on
+the mountain instead of the bare head the first four worlds' scooter kids wear. A headless probe (written
+against the same stub-three test harness `test/run.mjs` uses, since this sandbox has no browser) built the
+real mountain (`game.load(5, 'from-prev')`), sampled every NPC's and the squirrel's own position every
+quarter second over 30 simulated seconds (so no wandering reindeer, hare, arctic fox, penguin or mid-game
+kid could slip past unnoticed), then swept a 1 m grid of the open snow (radius 26-52, clear of the
+village's own keep-out circle and short of the radius (58) where snowRegion's own fill takes over) against
+both those samples and every one of the mountain's physics boxes: (13, -33) came back clear by 7.05 m of
+the nearest box and 14.76 m of the nearest other soul (the tracker, kneeling at (6, -20)), with ground
+height varying only 0.11 m within a metre of it.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 290+ checks all `ok` (Frosty Peak's own friend count
+up one, to 50), 0 console warnings, ground-walkable percentage for Frosty Peak unchanged at 99%, physics
+box count unchanged at 297 (that tally is read off the Neighborhood, which this round never touched) —
+before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

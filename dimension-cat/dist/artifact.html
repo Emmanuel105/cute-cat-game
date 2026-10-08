@@ -10215,6 +10215,26 @@ function buildSnowVillage(game, entry) {
   { const hx = 12, hz = 52;
     game.npcs.push(new HulaHooper(game, kid(r.chance(0.5)), 0xffd54a, { x: hx, z: hz, ry: atan2(0 - hx, 0 - hz),
       cries: ["Sixty spins and not a shiver!", 'Careful, puss — the ring swings wider than it looks.', "Keeps you warmer than the fire does, honest."] })); }
+  // the Neighborhood, Candy Land, Robot City and Victorian all have a kid kneeling by a wobbly scooter
+  // (`makeScooter()` + `Kneeler`), and Sunny Shore got its own turn too — Frosty Peak and Whisper Woods are
+  // the only two worlds left without one. A boy now kneels on the open snowfield south of the tracker,
+  // tightening his scooter's back wheel before trying it again on the packed snow. Same pairing every other
+  // world's own scooter kid already uses, no new controller, built with the terrain-aware `placeT`/`boxT`
+  // helpers (like Sunny Shore's) rather than the flat-floor `place()` + `P.addBox()` the first four reach
+  // for, since the snowfield slopes gently underfoot here too — `kid()`'s own coat and beanie suit the cold
+  // better than the other worlds' bare-headed scooter kids anyway. A headless probe built the real mountain
+  // (`game.load(5, 'from-prev')`), sampled every NPC's and the squirrel's own position every quarter second
+  // over 30 simulated seconds (so no wandering reindeer, hare, arctic fox, penguin or mid-game kid could
+  // slip past unnoticed), then swept a 1 m grid of the open snow (radius 26-52, clear of the village's own
+  // keep-out circle and short of the radius (58) where snowRegion's own fill takes over) against both those
+  // samples and every one of the mountain's physics boxes: (13, -33) came back clear by 7.05 m of the
+  // nearest box and 14.76 m of the nearest other soul (the tracker, kneeling at (6, -20)), with ground
+  // height varying only 0.11 m within a metre of it.
+  { const sx = 13, sz = -33, kx = 13.9, kz = -33, ry = atan2(sx - kx, sz - kz);
+    const scooter = makeScooter(0xd6453a); placeT(game, U, scooter, sx, sz, 0.4);
+    boxT(game, sx, sz, 0.3, 0.8, 0.6, { cam: false });
+    game.npcs.push(new Kneeler(game, kid(r.chance(0.5)), { x: kx, z: kz, ry,
+      cries: ['Wobbly bolt again - nearly got it.', "Careful, puss — mind your tail, this spins.", 'Good as new. Straight down the slope, no hands.'] })); }
   // the birdwatcher up by the ice pond has her binoculars trained on the penguin colony, same as every round
   // before this one — Candy Land, Sunny Shore and Whisper Woods all got an actual flock wheeling overhead
   // (butterflies, gulls, fairies), but Frosty Peak's own sky, for all its aurora, never had a single real
