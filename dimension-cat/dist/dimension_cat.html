@@ -10862,6 +10862,30 @@ function buildForest(game, entry) {
     game.npcs.push(new JumpRoper(game, roper, r.pick([0xffd54a, 0x5ac8e0, 0xa8ff9a]), { x: jx, z: jz, ry: jry,
       cries: ["Two hundred, and I haven't tripped once.", "The rabbits won't try it — too many ears in the way.", "Mind the vines — I nearly caught one last week."] })); }
 
+  // the Neighborhood, Candy Land, Robot City, Victorian, Sunny Shore and Frosty Peak all have a kid
+  // kneeling by a wobbly scooter (`makeScooter()` + `Kneeler`) by now — Whisper Woods was the last of
+  // the seven still without one. A girl now kneels on the forest floor west of the swing and seesaw
+  // clearing, tightening her scooter's back wheel before trying it again on the packed earth. Same
+  // `makeScooter()` + `Kneeler` pairing every other world's scooter kid already uses, built with the
+  // terrain-aware `placeT`/`boxT` helpers (like Sunny Shore's and Frosty Peak's) rather than the other
+  // four worlds' flat-floor `place()` + `P.addBox()`, since the forest floor rolls gently underfoot
+  // here too. A headless probe (written against the same stub-three test harness `test/run.mjs` uses,
+  // since this sandbox has no browser) built the real Whisper Woods (`game.travel(6, 'from-hub')`),
+  // sampled every NPC's and the squirrel's own position every quarter second over 30 simulated seconds
+  // (so no wandering deer, fox or flying fairy mid-leash could slip past unnoticed), then swept a 1 m
+  // grid of the forest floor (radius 2-50, short of the tree ring that starts at 40 and clear of every
+  // zone circle) against both those samples and every physics box: (-38, 10) came back clear by 9.5 m
+  // of the nearest box and 9.85 m of the nearest other soul, with ground height varying only 0.13 m
+  // within a metre of it. Placed last, after every other draw this build makes from its own local `r`,
+  // so this one extra gender pick disturbs nothing earlier in the wood.
+  { const sx = -38, sz = 10, kx = sx + 0.9, kz = sz, ry = atan2(sx - kx, sz - kz);
+    const scooter = makeScooter(0x5ac8e0); placeT(game, U, scooter, sx, sz, 0.4);
+    boxT(game, sx, sz, 0.3, 0.8, 0.6, { cam: false });
+    const scooterKid = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(scooterKid.group);
+    game.npcs.push(new Kneeler(game, scooterKid, { x: kx, z: kz, ry,
+      cries: ['Wobbly bolt again - nearly got it.', "Careful, puss — mind your tail, this spins.", "Good as new. Straight down the path, no hands."] })); }
+
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
 

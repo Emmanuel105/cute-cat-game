@@ -8379,3 +8379,28 @@ Full suite (`node test/run.mjs`) ran clean — exit 0, 290+ checks all `ok` (Fro
 up one, to 50), 0 console warnings, ground-walkable percentage for Frosty Peak unchanged at 99%, physics
 box count unchanged at 297 (that tally is read off the Neighborhood, which this round never touched) —
 before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 339 — a scooter kid for Whisper Woods
+
+The Neighborhood, Candy Land, Robot City, Victorian, Sunny Shore and Frosty Peak all have a kid kneeling
+by a wobbly scooter (`makeScooter()` + `Kneeler`) by now; Whisper Woods was the last of the seven still
+without one. **A girl now kneels on the forest floor west of the swing and seesaw clearing, tightening her
+scooter's back wheel before trying it again on the packed earth.** *"Wobbly bolt again - nearly got it."*
+*"Careful, puss — mind your tail, this spins."* *"Good as new. Straight down the path, no hands."*
+
+No new controller: the same `makeScooter()` + `Kneeler` pairing every other world's scooter kid already
+uses, built with the terrain-aware `placeT`/`boxT` helpers (like Sunny Shore's and Frosty Peak's) rather
+than the other four worlds' flat-floor `place()` + `P.addBox()`, since the forest floor rolls gently
+underfoot here too. A headless probe (written against the same stub-three test harness `test/run.mjs`
+uses, since this sandbox has no browser) built the real Whisper Woods (`game.travel(6, 'from-hub')`),
+sampled every NPC's and the squirrel's own position every quarter second over 30 simulated seconds (so no
+wandering deer, fox or flying fairy mid-leash could slip past unnoticed), then swept a 1 m grid of the
+forest floor (radius 2-50, short of the tree ring that starts at 40 and clear of every zone circle) against
+both those samples and every physics box: (-38, 10) came back clear by 9.5 m of the nearest box and 9.85 m
+of the nearest other soul, with ground height varying only 0.13 m within a metre of it.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 290+ checks all `ok` (Whisper Woods' own friend count
+up one, to 50 — every one of the seven worlds now sits at either 49 or 50), 0 console warnings, ground-
+walkable percentage for Whisper Woods unchanged at 98%, physics box count unchanged at 297 (that tally is
+read off the Neighborhood, which this round never touched) — before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
