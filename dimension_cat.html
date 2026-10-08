@@ -8186,6 +8186,29 @@ function buildRobotCity(game, entry) {
     W.add(scanner.group);
     game.npcs.push(new Detectorist(game, scanner, { x: 32, z: -56, ry: atan2(0 - 32, 0 - (-56)),
       cries: ['Just a washer. Every time.', 'Careful, puss — mind the cable.', "One day it'll be a whole gearbox."] })); }
+  // every other world has had a real dog of its own for rounds now — the Neighborhood's and Victorian's
+  // own leashed walkers, Candy Land's and Sunny Shore's standalone pups, Frosty Peak's husky, Whisper
+  // Woods' own walker too — Robot City, for all its robots, never had one. A visitor off the gondola now
+  // walks hers along a quiet stretch of open concrete west of the statue plaza, steel-grey to read as
+  // another piece of the skyline rather than clash with it. `DogWalker` pairs a `Wanderer` (the owner)
+  // with a `Follower` (the dog, leashed to her rather than the cat) and builds its own string-stretched
+  // lead every frame, exactly as those three other worlds' walkers already do — this is placement, not a
+  // build. A headless probe built the real city (`game.load(2, 'from-prev')`), swept a grid of candidates
+  // against every one of the city's physics boxes, then re-checked the shortlist against every one of
+  // the game's own live physics circles — the same representation its own collision code checks every
+  // frame, so the hula hooper's swing and every wandering robot, patrol beat, tag pair and ring dancer
+  // could not slip past a single-frame snapshot — continuously over 150 simulated seconds: (-54, 4) came
+  // back clearest of the lot, 11.1 m from the nearest box (a skyscraper) and 7.9 m from the nearest other
+  // soul (the hula hooper at (-62, 2)), comfortably past the leash given here and well inside the radius
+  // (98) where robotRegion's own procedural fill takes over.
+  { const dwx = -54, dwz = 4;
+    const dogWard = makeWardrobe(r, { shirts: [0x4a5a6a, 0x5a4a6a, 0x3a4a5a], pants: [0x232c34, 0x2a2a30] });
+    const walker = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: false, wardrobe: dogWard }),
+      hat: 'cap', hatColor: 0x3a4a5a, jacket: 0x2a3242, scarf: null, bag: null, glasses: r.chance(0.3) });
+    W.add(walker.group);
+    const dog = makeDog(0x4a4a52);
+    game.npcs.push(new DogWalker(game, walker, dog, { x: dwx, z: dwz, speed: 0.85, leash: 5,
+      cries: ['Not everything round here needs a battery.', "Careful, puss — she thinks you're a toy.", 'Half the robots stop dead when they see her. No idea why.'] })); }
   // the Neighborhood, Candy Land, Victorian, Sunny Shore and Frosty Peak all have a swing set; Robot
   // City had tag, catch and a ring dance for its own robots but nowhere for anyone to just sit and
   // swing — the last of the seven without one. A headless probe swept a clearance disc against every

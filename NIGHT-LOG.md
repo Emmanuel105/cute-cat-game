@@ -8120,3 +8120,37 @@ All seven worlds now have a hula hooper, a jump-rope kid and a yo-yo kid.
 Full suite (`node test/run.mjs`) ran clean four times in a row — exit 0, 273 checks all `ok`, 0 console
 warnings, physics box count unchanged at 297 (a `JumpRoper` only ever needs a physics circle, not a
 box) — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 330 — a dog walker for Robot City
+
+Housekeeping note first: the container came up with local `main` 47 commits behind a fresh `origin/main`
+and `HEAD` detached at the tip — a fresh `git fetch` showed the remote tracking ref had simply gone stale
+before this session's first fetch, so nothing was actually unpushed. `git checkout main && git merge
+--ff-only origin/main` brought it up to date before anything else touched the repo.
+
+Every other world has had a real dog for a while now — the Neighborhood's and Victorian's own leashed
+`DogWalker`s, Candy Land's and Sunny Shore's standalone pups, Frosty Peak's husky, Whisper Woods' own
+walker too — Robot City, for all its robots, never had one. **A visitor off the gondola now walks her
+dog along a quiet stretch of open concrete west of the statue plaza**, steel-grey to read as another
+piece of the skyline rather than clash with it. *"Not everything round here needs a battery."* *"Careful,
+puss — she thinks you're a toy."* *"Half the robots stop dead when they see her. No idea why."*
+
+No new controller: `DogWalker` (`56-npcs-wild.js`) already pairs a `Wanderer` (the owner) with a
+`Follower` (the dog, leashed to her rather than the cat) and builds its own string-stretched lead every
+frame, exactly as the Neighborhood's, Victorian's and Whisper Woods' walkers already do — this is
+placement, not a build, dropped into `buildRobotCity` (`70-worlds.js`) right after the detectorist. The
+placement probe itself needed a fix along the way: an npc's `.x`/`.z` only exist for the simpler
+controllers, so a first pass sampling `game.npcs` entries missed every composite pair (`RingDance`'s
+orbiting dancers, `Playmates`/`SnowballFight`/`BallGame`'s moving players), which keep their own position
+on a sub-object instead. Switching to `game.physics.circles` — the actual collision circles the game's
+own code checks every frame, which every controller shape updates as it moves — caught all of them
+without hand-modelling each one. With that fixed, a headless probe built the real city (`game.load(2,
+'from-prev')`), swept a grid of candidates against every physics box, then re-checked the shortlist
+against every live circle continuously over 150 simulated seconds: (-54, 4) came back clearest of the
+lot, 11.1 m from the nearest box (a skyscraper) and 7.9 m from the nearest other soul (the hula hooper at
+(-62, 2)), comfortably past the 5 m leash given here and well inside the radius (98) where robotRegion's
+own procedural fill takes over.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 290+ checks all `ok`, 0 console warnings, physics
+box count unchanged at 297 (`DogWalker`'s own dog and owner only ever need physics circles, not boxes) —
+before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
