@@ -557,6 +557,31 @@ function buildBeach(game, entry) {
     W.add(scootKid.group);
     game.npcs.push(new Kneeler(game, scootKid, { x: kx, z: kz, ry,
       cries: ['Sand in the back wheel again — nearly got it.', 'Careful, puss — mind your tail, this spins.', 'Good as new. Right down the boardwalk, no hands, easy.'] })); }
+  // the Neighborhood, Robot City, Victorian and Candy Land all have a kid chalking a row of hopscotch
+  // squares by now (`Kneeler` + six colour-coded `G.plane` decals); Sunny Shore never had one. A girl
+  // kneels in the dry dune sand south-west of the dog walker's own route, drawing straight onto the sand
+  // itself rather than paving or grass. `Kneeler` already asks `ground0()` for its own rig's height
+  // regardless of world, so only the six decal squares need it explicitly here — each is placed at its
+  // own `P.ground0(gx, gz)` rather than the other three worlds' single flat `y`, since the sand underfoot
+  // has real slope. A headless probe built the real Sunny Shore (`game.load(4, 'from-hub')`), sampled
+  // every NPC's and the squirrel's own
+  // position every quarter second over 30 simulated seconds (so no wandering crab, turtle, sunbather,
+  // kite flyer or dolphin mid-circuit could slip past unnoticed), then swept a 1 m grid of the open dry
+  // sand (ground height 0.2-2.4 m, radius ≤ 50, short of the radius (58) where beachRegion's own
+  // procedural fill takes over) against both those samples and every one of the beach's own physics
+  // boxes: the six-square run from (-25, -43) to (-22.1, -43) came back clear by 7.0-8.25 m of the
+  // nearest box and 8.59-9.88 m of the nearest other soul (the dog walker), at radius 49.7 from the
+  // origin.
+  { const gz = -43, kx = -25.9, kz = -43, squares = [];
+    const squareColors = [0xffb3c6, 0xbde0fe, 0xfff3b0, 0xb9fbc0, 0xcdb4db, 0xffc8dd];
+    for (let i = 0; i < 6; i++) { const gx = -25 + i * 0.58; squares.push([gx, gz]);
+      mesh(G.plane(0.48, 0.48), mat(squareColors[i], { roughness: 0.95, transparent: true, opacity: 0.85 }), { x: gx, y: P.ground0(gx, gz) + 0.018, z: gz, rx: -PI / 2, shadow: 'none', parent: W }); }
+    const chalker = makeHuman({ ...randomPerson(r, { female: true, child: true, wardrobe: beachWard }), hairStyle: 'braids', hat: null, glasses: false });
+    W.add(chalker.group);
+    const chalk = group(0, 0.02, 0.09, chalker.hands[0]); chalk.rotation.x = -0.5;
+    mesh(G.cyl(0.014, 0.014, 0.09, 6), mat(0xf7f3ec, { roughness: 0.9 }), { y: 0.045, parent: chalk });
+    game.npcs.push(new Kneeler(game, chalker, { x: kx, z: kz, ry: atan2(squares[0][0] - kx, squares[0][1] - kz),
+      cries: ['Six squares, dry before the tide turns.', 'Careful, puss — mind the chalk lines!', "Sand draws better than pavement, honestly — smoother lines."] })); }
   // the beach dog keeps to its own patch of sand — it does not follow the cat
   const dog = makeDog(0xc8925a); W.add(dog.group); game.npcs.push(new Wanderer(game, dog, { x: -2, z: 28, speed: 1.1, leash: 7, r: 0.35, height: 0.9, step: 0.3, idle: [1.5, 4], walk: [2, 5] }));
   let woofT = rnd.range(6, 12); U.push((dt) => { woofT -= dt; if (woofT <= 0) { SFX.woof(); woofT = rnd.range(10, 20); } });

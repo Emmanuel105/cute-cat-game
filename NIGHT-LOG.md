@@ -8487,3 +8487,29 @@ nearest other soul.
 Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks all `ok` (Candy Land's own friend count
 up one, to 56), 0 console warnings, three repeat runs afterward all exit 0 with no flakes — before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 343 — a hopscotch grid for Sunny Shore
+
+Neighborhood, Robot City, Victorian and Candy Land all have a kid chalking a row of hopscotch squares
+by now; Sunny Shore never got one. **A girl now kneels in the dry dune sand south-west of the dog
+walker's own route, drawing a row of six squares straight onto the sand.** *"Six squares, dry before
+the tide turns."* *"Careful, puss — mind the chalk lines!"* *"Sand draws better than pavement, honestly
+— smoother lines."*
+
+Same `Kneeler` plus six colour-coded `G.plane` decals as the other three, reskinned as a braided girl
+out of the beach's own `beachWard` wardrobe bag. The one real difference: Sunny Shore's sand actually
+slopes, so each decal square asks `game.physics.ground0()` for its own height instead of sharing one
+flat `y` the way the paved and grassy worlds do — `Kneeler` itself already asked `ground0()` for its
+rig regardless of world, so that part needed no change. A small headless probe (the same stub-three
+harness `test/run.mjs` uses) built the real Sunny Shore (`game.load(4, 'from-hub')`), sampled every
+NPC's and the squirrel's own position every quarter second over 30 simulated seconds (so no wandering
+crab, turtle, sunbather, kite flyer or dolphin mid-circuit could slip past unnoticed), then swept a 1 m
+grid of the open dry sand (ground height 0.2-2.4 m, radius ≤ 50, short of the radius (58) where
+`beachRegion`'s own procedural fill takes over) against both those samples and every one of the
+beach's own physics boxes: the six-square run from (-25, -43) to (-22.1, -43) came back clear by
+7.0-8.25 m of the nearest box and 8.59-9.88 m of the nearest other soul (the dog walker), at radius
+49.7 from the origin.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks all `ok` (Sunny Shore's own friend
+count up one, to 51), 0 console warnings, three repeat runs afterward all exit 0 with no flakes —
+before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
