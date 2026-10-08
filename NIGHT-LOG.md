@@ -7958,3 +7958,31 @@ unchanged at 297 (a `JumpRoper` only ever needs a physics circle, not a box) —
 `FAIL` on an unrelated Sunny Shore kite-height assertion — the same pre-existing wall-clock timing flake
 rounds 312/314/316/317/320 already diagnosed; Frosty Peak's own build never touches Sunny Shore, and it
 did not recur on any of the three reruns that followed.)
+
+## Round 324 — a hula hoop for Candy Land
+
+This run also found 41 commits of previously-verified work (through round 323) sitting on a detached
+`HEAD`, with local `main` genuinely behind (unlike rounds 316/320, this time `origin/main` had not yet
+seen them). The full suite was still green on that `HEAD`, so it was fast-forwarded onto `main` and
+pushed before anything else — nothing was lost, but it's worth flagging again for a future round: check
+`git status` and `git log --oneline origin/main -3` early, since a detached `HEAD` here has twice now
+meant real unpushed work rather than a false alarm.
+
+The Neighborhood, Sunny Shore and Whisper Woods have had a hula hooper for a few rounds now — Candy
+Land, for all its yo-yo kid and jump-rope kid, never had one. **A child now works a hula hoop on the
+open grass well past the candy-cane ring.** *"Sixty spins before lunch, easy!"* *"Careful, puss — the
+ring's wider than it looks from out there."* *"Keeps me warm without even running."*
+
+No new controller needed — `HulaHooper` (`55-npcs.js`, already used by three other worlds) needs no
+held prop beyond the one ring it builds itself, parented to the body at waist height, so this is a
+placement in `70-worlds.js`'s `buildCandyLand`, reusing the same `randomPerson()` / `makeHuman()`
+pattern the yo-yo and jump-rope kids a few lines above it already use. A headless probe built the real
+Candy Land (`game.travel(1, 'from-prev')`), sampled every NPC's own position every quarter second over
+30 simulated seconds (so no marching, dancing or wandering gingerbread man, nor the tag or catch pairs
+mid-turn, could slip past unnoticed), then swept a 1 m grid of the open grass (radius 78–87, short of
+the radius (92) where `candyRegion`'s own procedural fill takes over) against both those samples and
+every physics box: (39, -77) came back clear by 19.6 m of the nearest box and 20.1 m of the nearest
+other soul, at radius 86.3 from the origin. Full suite (`node test/run.mjs`) ran clean on three reruns
+in a row — exit 0, 273 checks all `ok`, 0 console warnings, physics box count unchanged at 297 (a
+`HulaHooper` only ever needs a physics circle, not a box) — before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy. Robot City, Victorian and Frosty Peak still don't have one.

@@ -7758,6 +7758,21 @@ function buildCandyLand(game, entry) {
     W.add(roper.group);
     game.npcs.push(new JumpRoper(game, roper, 0xffd54a, { x: -59, z: 50, ry: atan2(0 - (-59), 0 - 50),
       cries: ['Two hundred and not a single trip!', 'Careful, puss — it swings wider than it looks.', 'The gingerbread men never bounce this well.'] })); }
+  // the Neighborhood, Sunny Shore and Whisper Woods all have a hula hooper by now — Candy Land, for all
+  // its yo-yo kid and jump-rope kid a few lines up, never had one. A child works a hula hoop on the open
+  // grass well past the candy-cane ring (which only runs out to `d: r.range(56, 76)`), clear of every
+  // hand-placed prop in this build. `HulaHooper` needs no held prop beyond the one ring it builds itself
+  // (parented to the body at waist height), so this is a placement, not a build. A headless probe built
+  // the real Candy Land (`game.travel(1, 'from-prev')`), sampled every NPC's own position every quarter
+  // second over 30 simulated seconds (so no marching, dancing or wandering gingerbread man, nor the tag
+  // or catch pairs mid-turn, could slip past unnoticed), then swept a 1 m grid of the open grass (radius
+  // 78–87) against both those samples and every physics box: (39, -77) came back clear by 19.6 m of the
+  // nearest box and 20.1 m of the nearest other soul, at radius 86.3 from the origin — short of the
+  // radius (92) where `candyRegion`'s own procedural fill takes over.
+  { const hoopKid = makeHuman({ ...randomPerson(r, { child: true, female: r.chance(0.5) }), shirt: 0xff9ac8, backpack: null, hat: null, scarf: null, jacket: null, bag: null, glasses: false });
+    W.add(hoopKid.group);
+    game.npcs.push(new HulaHooper(game, hoopKid, 0x7fe0ff, { x: 39, z: -77, ry: atan2(0 - 39, 0 - -77),
+      cries: ['Sixty spins before lunch, easy!', "Careful, puss — the ring's wider than it looks from out there.", 'Keeps me warm without even running.'] })); }
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('star', 7, -6); C.add('yarn', -9, 9); C.add('fish', -16, -13); C.add('mouse', 16, -9); C.add('star', -10, -27); C.add('yarn', 22, 4); C.add('mouse', -28, 26); C.add('fish', 14, -44); C.add('star', 0, -56); C.add('mouse', -58, 30); C.add('yarn', 60, 36);
