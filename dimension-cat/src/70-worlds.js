@@ -2586,6 +2586,21 @@ function buildVictorian(game, entry) {
     W.add(jumper.group);
     game.npcs.push(new JumpRoper(game, jumper, 0x2f6fd6, { x: jx, z: jz, ry: atan2(0 - jx, 0 - jz),
       cries: ['A hundred skips and not a trip!', "Mind your tail, puss — the rope swings wider than it looks.", 'Better than catch for keeping warm.'] })); }
+  // the Neighborhood, Candy Land, Robot City, Sunny Shore and Whisper Woods all have a hula hooper by
+  // now — Victorian and Frosty Peak were the only two worlds left without one. A girl now spins a
+  // hoop on the open grass south of the terraces, well past every hand-placed prop and game on the
+  // north bank. A headless probe built the real Victorian town (`game.load(3, 'from-prev')`) and
+  // sampled every NPC's own position every quarter second over 30 simulated seconds (so no wandering
+  // urchin, dancer or tag pair mid-turn could slip past unnoticed), then swept the open grass south of
+  // the market square against both those samples and every one of the town's physics boxes: (50, -46)
+  // came back clear by 31 m of the nearest box (a terrace house's own fence) and 38.7 m of the nearest
+  // other soul, at radius 67.9 from the origin — comfortably short of the radius (88) where
+  // victorianRegion's own procedural fill takes over.
+  { const hx = 50, hz = -46;
+    const hoopKid = makeHuman({ ...randomPerson(r, { child: true, female: r.chance(0.5) }), shirt: 0x6fd68a, backpack: null, hat: null, scarf: null, jacket: null, bag: null, glasses: false });
+    W.add(hoopKid.group);
+    game.npcs.push(new HulaHooper(game, hoopKid, 0xc9516a, { x: hx, z: hz, ry: atan2(0 - hx, 0 - hz),
+      cries: ["A hundred round and not a wobble, guv'nor!", "Mind your tail, puss — it swings wider than it looks.", "Found it behind the market stalls. Nobody's claimed it yet."] })); }
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);

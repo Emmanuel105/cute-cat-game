@@ -8017,3 +8017,33 @@ distance check that rounds 312/314/316/317/320/323 already diagnosed as a wall-c
 clean six-run streak right after, and an earlier four-run streak on the unmodified code with zero
 failures, confirms it has nothing to do with Robot City's own build — before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 326 — a hula hoop for Victorian
+
+Victorian was one of the last two worlds without a hula hooper. **A girl now spins a hoop on the open
+grass south of the terraces**, well past the market square and every game on the north bank.
+*"A hundred round and not a wobble, guv'nor!"* *"Mind your tail, puss — it swings wider than it looks."*
+*"Found it behind the market stalls. Nobody's claimed it yet."*
+
+Same placement-only trick as every hula hooper before it: `HulaHooper` (`55-npcs.js`) needs no held
+prop beyond the ring it builds itself, so this is a `makeHuman()` + `new HulaHooper(...)` pair dropped
+into `buildVictorian` right after the jump-rope kid. A headless probe built the real Victorian town
+(`game.load(3, 'from-prev')`), sampled every NPC's own position every quarter second over 30 simulated
+seconds (so no wandering urchin, dancer or tag pair mid-turn could slip past unnoticed), then swept the
+open grass south of the market square against both those samples and every one of the town's physics
+boxes: (50, -46) came back clear by 31 m of the nearest box (a terrace house's own fence) and 38.7 m of
+the nearest other soul, at radius 67.9 from the origin — comfortably short of the radius (88) where
+`victorianRegion`'s own procedural fill takes over.
+
+Frosty Peak is now the only world left without a hula hooper.
+
+Housekeeping first: the container came up on a detached `HEAD` again, 43 commits ahead of the stale
+local `main` branch — but `git push` reported "Everything up-to-date" once `main` was moved up to match,
+confirming `origin/main` already had every one of those commits (the local tracking ref was just stale
+before a `git fetch`). Nothing was at risk; `main` now points at the same commit `HEAD` does, so the next
+round's `git push -u origin main` pushes from the right branch. Full suite (`node test/run.mjs`) ran
+seven times total — the very first hit the same pre-existing Victorian horse-and-carriage timing `FAIL`
+that rounds 312/314/316/317/320/323/325 already diagnosed as a wall-clock flake unrelated to any
+hand-placed NPC, then a clean six-run streak right after: 273 checks all `ok`, 0 console warnings each
+time, physics box count unchanged at 297 (a `HulaHooper` only ever needs a physics circle) — before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
