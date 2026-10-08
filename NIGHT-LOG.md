@@ -7986,3 +7986,34 @@ other soul, at radius 86.3 from the origin. Full suite (`node test/run.mjs`) ran
 in a row — exit 0, 273 checks all `ok`, 0 console warnings, physics box count unchanged at 297 (a
 `HulaHooper` only ever needs a physics circle, not a box) — before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy. Robot City, Victorian and Frosty Peak still don't have one.
+
+## Round 325 — a hula hoop for Robot City
+
+Picking up where round 324 left off: Robot City was one of the three worlds still without a hula
+hooper. **A child now spins a hoop on the open factory floor east of the playground cluster**, well
+clear of the sentry, the loaders, the wandering robot packs and every other hand-placed kid out there.
+*"Sixty spins before lunch, easy!"* *"Careful, puss — the ring's wider than it looks from out there."*
+*"Robots just roll past. No idea what they're missing."*
+
+No new controller needed — `HulaHooper` (`55-npcs.js`) needs no held prop beyond the one ring it builds
+itself, parented to the body at waist height, so this is a placement in `70-worlds.js`'s
+`buildRobotCity`, right after the jump-rope kid, reusing the same `randomPerson()` / `makeHuman()`
+pattern. A headless probe built the real Robot City (`game.load(2, 'from-prev')`), sampled every NPC's
+own position every quarter second over 25 simulated seconds (so no wandering robot pack, the sentry's
+patrol, the loaders, nor the tag, catch or ring dance mid-turn could slip past unnoticed), then swept a
+2 m grid of the open floor (radius 20–92, short of the radius (98) where `robotRegion`'s own procedural
+fill takes over) against both those samples and every one of the city's physics boxes: (-62, 2) came
+back clear by 14.2 m of the nearest box and 15.6 m of the nearest other soul, at radius 62.0 from the
+origin.
+
+Victorian and Frosty Peak are now the only two worlds left without a hula hooper.
+
+On arrival, local `main` was 42 commits behind `origin/main` (a stale checkout, `HEAD` detached but
+pointing at the same commit as `origin/main` — nothing unpushed, just needed `git merge --ff-only`).
+Full suite (`node test/run.mjs`) ran clean repeatedly — 273 checks all `ok`, 0 console warnings, physics
+box count unchanged at 297 (a `HulaHooper` only ever needs a physics circle, not a box). Two scattered
+reruns (out of thirteen total) did show the same pre-existing `FAIL` on the Victorian horse-and-carriage
+distance check that rounds 312/314/316/317/320/323 already diagnosed as a wall-clock timing flake — a
+clean six-run streak right after, and an earlier four-run streak on the unmodified code with zero
+failures, confirms it has nothing to do with Robot City's own build — before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -1915,6 +1915,21 @@ function buildRobotCity(game, entry) {
     W.add(jumper.group);
     game.npcs.push(new JumpRoper(game, jumper, 0xff6fb5, { x: jx, z: jz, ry: atan2(0 - jx, 0 - jz),
       cries: ['Two hundred and not a single trip!', "Careful, puss — it swings wider than it looks.", "Robots don't skip. Something about the gears."] })); }
+  // the Neighborhood, Candy Land, Victorian, Sunny Shore and Whisper Woods all have a hula hooper —
+  // Robot City, the last of the three the hula hoop still hadn't reached, now gets its own, well clear
+  // of the playground cluster on the open factory floor to its east. `HulaHooper` needs no held prop
+  // beyond the one ring it builds itself, parented to the body at waist height, so this is a placement,
+  // not a build, same as the jump roper just above it. A headless probe built the real Robot City
+  // (`game.load(2, 'from-prev')`), sampled every NPC's own position every quarter second over 25
+  // simulated seconds (so no wandering robot pack, the sentry's patrol, the loaders, nor the tag, catch
+  // or ring dance mid-turn could slip past unnoticed), then swept a 2 m grid of the open floor (radius
+  // 20-92, short of the radius (98) where robotRegion's own procedural fill takes over) against both
+  // those samples and every one of the city's physics boxes: (-62, 2) came back clear by 14.2 m of the
+  // nearest box and 15.6 m of the nearest other soul, at radius 62.0 from the origin.
+  { const hoopKid = makeHuman({ ...randomPerson(r, { child: true, female: r.chance(0.5) }), shirt: 0xffd54a, backpack: null, hat: null, scarf: null, jacket: null, bag: null, glasses: false });
+    W.add(hoopKid.group);
+    game.npcs.push(new HulaHooper(game, hoopKid, 0x7fe0ff, { x: -62, z: 2, ry: atan2(0 - -62, 0 - 2),
+      cries: ['Sixty spins before lunch, easy!', "Careful, puss — the ring's wider than it looks from out there.", "Robots just roll past. No idea what they're missing."] })); }
   // the giant robot statue in the plaza never got so much as a wipe — every worker in this city tends
   // a machine of some kind, but nobody tended the one standing still long enough to need it. A line
   // worker now gives its chrome foot a scrub with a bucket of suds, `Washer` doing the same wiping
