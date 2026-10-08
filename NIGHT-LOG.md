@@ -8096,3 +8096,27 @@ Sunny Shore is now the only world left without a jump-roper.
 Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, 273 checks all `ok`, 0 console
 warnings, physics box count unchanged at 297 (a `JumpRoper` only ever needs a physics circle, not a
 box) — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 329 — a jump rope for Sunny Shore
+
+Round 328 left Sunny Shore as the only one of the seven worlds without a jump-roper (it already had a
+yo-yo kid and a hula hooper). **A child now skips rope on the open dune sand out past the tag game**,
+closing the set. *"Thirty in a row, watch!"* *"Careful, puss — don't trip over the rope."* *"Sand makes
+it twice the workout, honest."*
+
+Same placement-only trick as every jump-roper before it: `JumpRoper` (`55-npcs.js`) needs no held prop
+beyond the loose grip at each hand it builds itself, so this is a `beachPerson()` + `new JumpRoper(...)`
+pair dropped into `buildBeach` (`72-world-beach.js`) right after the hula hooper. A headless probe built
+the real Sunny Shore (`game.travel(4, 'from-hub')`), sampled every NPC's and the squirrel's own position
+every quarter second over 30 simulated seconds (so no wandering crab, turtle, sandpiper or dolphin
+mid-leap could slip past unnoticed), then swept a 1 m grid of the open dry sand (ground height 0.2-2.0 m,
+radius ≤ 50, short of the radius (58) where `beachRegion`'s own fill takes over, and clear of every
+hand-reserved zone in the file) against both those samples and every one of the beach's own physics
+boxes: (-39, 30.5) came back clear by 8.7 m of the nearest box (a dune palm) and 9.6 m of the nearest
+other soul (the tag game out past the dunes), at radius 49.5 from the origin.
+
+All seven worlds now have a hula hooper, a jump-rope kid and a yo-yo kid.
+
+Full suite (`node test/run.mjs`) ran clean four times in a row — exit 0, 273 checks all `ok`, 0 console
+warnings, physics box count unchanged at 297 (a `JumpRoper` only ever needs a physics circle, not a
+box) — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

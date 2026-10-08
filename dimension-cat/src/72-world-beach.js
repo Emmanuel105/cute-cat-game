@@ -509,6 +509,19 @@ function buildBeach(game, entry) {
   { const hx = -24, hz = 36;
     game.npcs.push(new HulaHooper(game, beachPerson(r.chance(0.5), true), r.pick([0xff6fb5, 0xffd54a, 0x7fe0ff]), { x: hx, z: hz, ry: atan2(0 - hx, 0 - hz), cryIcon: '⭕',
       cries: ["A hundred spins and counting!", "Better than swimming for keeping warm.", "The crabs just stare — never join in."] })); }
+  // every other world has a jump-roper by now; Sunny Shore had the yo-yo and hula hoop above but never
+  // the rope. `JumpRoper` needs no held prop beyond the loose grip at each hand it builds itself, so this
+  // is a placement, not a build, reusing the same `beachPerson()` wardrobe helper as the two kids above.
+  // A headless probe built the real Sunny Shore, sampled every NPC's and the squirrel's own position
+  // every quarter second over 30 simulated seconds (so no wandering crab, turtle, sandpiper or dolphin
+  // mid-leap could slip past unnoticed), then swept a grid of the open dry sand (ground height 0.2-2.0 m,
+  // radius ≤ 50, short of the radius (58) where beachRegion's own fill takes over, and clear of every
+  // hand-reserved zone in this file) against both those samples and every one of the beach's own physics
+  // boxes: (-39, 30.5) came back clear by 8.7 m of the nearest box (a dune palm) and 9.6 m of the nearest
+  // other soul (the tag game out past the dunes).
+  { const jx = -39, jz = 30.5;
+    game.npcs.push(new JumpRoper(game, beachPerson(r.chance(0.5), true), 0xa8ff9a, { x: jx, z: jz, ry: atan2(0 - jx, 0 - jz), cryIcon: '➰',
+      cries: ["Thirty in a row, watch!", "Careful, puss — don't trip over the rope.", "Sand makes it twice the workout, honest."] })); }
   // the beach dog keeps to its own patch of sand — it does not follow the cat
   const dog = makeDog(0xc8925a); W.add(dog.group); game.npcs.push(new Wanderer(game, dog, { x: -2, z: 28, speed: 1.1, leash: 7, r: 0.35, height: 0.9, step: 0.3, idle: [1.5, 4], walk: [2, 5] }));
   let woofT = rnd.range(6, 12); U.push((dt) => { woofT -= dt; if (woofT <= 0) { SFX.woof(); woofT = rnd.range(10, 20); } });
