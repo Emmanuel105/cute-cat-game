@@ -8404,3 +8404,35 @@ up one, to 50 — every one of the seven worlds now sits at either 49 or 50), 0 
 walkable percentage for Whisper Woods unchanged at 98%, physics box count unchanged at 297 (that tally is
 read off the Neighborhood, which this round never touched) — before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 340 — a hopscotch grid for Robot City
+
+The Neighborhood has had a girl chalking a hopscotch grid onto its own pavement since round 141, and no
+other world ever picked the game up. **A girl now kneels on the open factory floor north of Robot City's
+own scooter kid, six squares chalked in a row, dry before the next shift.** *"Six squares, dry before the
+next shift."* *"Careful, puss — mind the chalk lines!"* *"Robots just roll straight over them. No idea
+what they're missing."*
+
+No new controller: the same six colour-coded `G.plane` squares plus a `Kneeler` and a hand-held chalk
+stub the Neighborhood's own chalker already uses, reskinned (orange shirt, braids) and moved onto Robot
+City's flat concrete rather than a pavement. A headless probe (same stub-three harness `test/run.mjs`
+uses) built the real city (`game.load(2, 'from-prev')`), sampled every NPC's own position every quarter
+second over 30 simulated seconds, then swept a 2 m grid of the open floor (radius 10-90, short of the
+radius (98) where `robotRegion`'s own fill takes over) against both those samples and every physics box:
+(-48, 52) came back clear by 17.6 m of the nearest box and 18.0 m of the nearest other soul, at radius
+70.8 from the origin.
+
+One real wrinkle: the new `Kneeler` draws two numbers from the shared `rnd()` sequence at construction
+(its idle phase and its first cry timer), and that shift reached all the way to Sunny Shore's own kite
+test, which failed once on the first run after this change with the kite barely moving in the sampled
+window. Ten repeats of the full suite afterward — five before touching anything, five after, all exit 0
+with the kite's measured height and line length both drifting a little each time (6.4-9.0 m, 8.6-10.1 m)
+— showed the same test still passes or fails by a hair's width run to run regardless of this change: the
+game's own frame clock (`THREE.Clock.getDelta()`) reads real wall time, so a loop of raw `game.loop()`
+calls in Node is itself slightly non-deterministic between runs. The single failure was that pre-existing
+flake, not a regression from this round — but it is now logged here in case a future round wants to pin
+`game.loop()`'s `dt` in the test harness instead of trusting wall time.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks all `ok` (Robot City's own friend count
+up one, to 55), 0 console warnings, physics box count unchanged at 297 — before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

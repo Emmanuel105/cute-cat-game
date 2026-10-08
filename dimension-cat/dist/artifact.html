@@ -8356,6 +8356,28 @@ function buildRobotCity(game, entry) {
     W.add(scootKid.group);
     game.npcs.push(new Kneeler(game, scootKid, { x: kx, z: kz, ry,
       cries: ['Just a wobbly bolt — nearly got it.', "Careful, puss — mind your tail, this spins.", "Good as new. Right round the skyscrapers, no hands, easy."] })); }
+  // the Neighborhood has had a girl chalking a hopscotch grid onto its own pavement since round 141 —
+  // no other world ever picked the game up, Robot City included, for all its open concrete. A girl now
+  // kneels on the factory floor north of the scooter kid's own patch, six squares chalked in a row, same
+  // `Kneeler` stance and the same hand-held chalk stub (parented into her own hand, same trick every
+  // hand-held tool in this file already uses). A headless probe built the real Robot City (`game.load(2,
+  // 'from-prev')`), sampled every NPC's own position every quarter second over 30 simulated seconds (so
+  // no wandering robot pack, the sentry's patrol, the tag, catch or ring dance mid-turn could slip past
+  // unnoticed), then swept a 2 m grid of the open floor (radius 10-90, short of the radius (98) where
+  // robotRegion's own procedural fill takes over) against both those samples and every one of the city's
+  // physics boxes: (-48, 52) came back clear by 17.6 m of the nearest box and 18.0 m of the nearest other
+  // soul, at radius 70.8 from the origin.
+  { const gz = 52, squares = [];
+    const squareColors = [0xffb3c6, 0xbde0fe, 0xfff3b0, 0xb9fbc0, 0xcdb4db, 0xffc8dd];
+    for (let i = 0; i < 6; i++) { const gx = -50 + i * 0.58; squares.push([gx, gz]);
+      mesh(G.plane(0.48, 0.48), mat(squareColors[i], { roughness: 0.95, transparent: true, opacity: 0.85 }), { x: gx, y: 0.018, z: gz, rx: -PI / 2, shadow: 'none', parent: W }); }
+    const kx = squares[0][0] - 0.9, kz = gz + 0.15;
+    const chalker = makeHuman({ ...randomPerson(r, { female: true, child: true }), hairStyle: 'braids', shirt: 0xff9f43, backpack: null, hat: null, scarf: null, jacket: null, bag: null, glasses: false });
+    W.add(chalker.group);
+    const chalk = group(0, 0.02, 0.09, chalker.hands[0]); chalk.rotation.x = -0.5;
+    mesh(G.cyl(0.014, 0.014, 0.09, 6), mat(0xf7f3ec, { roughness: 0.9 }), { y: 0.045, parent: chalk });
+    game.npcs.push(new Kneeler(game, chalker, { x: kx, z: kz, ry: atan2(squares[0][0] - kx, squares[0][1] - kz),
+      cries: ['Six squares, dry before the next shift.', 'Careful, puss — mind the chalk lines!', "Robots just roll straight over them. No idea what they're missing."] })); }
   // the giant robot statue in the plaza never got so much as a wipe — every worker in this city tends
   // a machine of some kind, but nobody tended the one standing still long enough to need it. A line
   // worker now gives its chrome foot a scrub with a bucket of suds, `Washer` doing the same wiping
