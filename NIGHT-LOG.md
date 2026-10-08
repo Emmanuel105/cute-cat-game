@@ -8326,3 +8326,29 @@ up two, to 49 — the walker and the dog both count), 0 console warnings, ground
 Frosty Peak unchanged at 97%, physics box count unchanged at 297 (that tally is read off the
 Neighborhood, which this round never touched) — before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 337 — a scooter kid for Sunny Shore
+
+The Neighborhood, Candy Land, Robot City and Victorian all have a kid kneeling by a wobbly scooter
+(`makeScooter()` + `Kneeler`) by now; Sunny Shore — for all its kite, beach ball, tag, yo-yo, hula hoop,
+jump rope and dog walker — never had one. **A boy now kneels in the dry dune sand north-west of the
+squirrel's patch, tightening the scooter's back wheel.** *"Sand in the back wheel again — nearly got
+it."* *"Careful, puss — mind your tail, this spins."* *"Good as new. Right down the boardwalk, no hands,
+easy."*
+
+No new controller: the same `makeScooter()` + `Kneeler` pairing the other four worlds already use, this
+time built with the terrain-aware `placeT`/`boxT` helpers instead of the flat-floor `place()` +
+`P.addBox()` the other four reach for, since Sunny Shore's sand actually slopes under it. A headless
+probe (written against the same stub-three test harness `test/run.mjs` uses, since this sandbox has no
+browser) built the real Sunny Shore (`game.load(4, 'from-hub')`), sampled every NPC's and the squirrel's
+own position every quarter second over 30 simulated seconds (so no wandering crab, turtle, sunbather,
+kite flyer or dolphin mid-circuit could slip past unnoticed), then swept a 1 m grid of the dry dune sand
+(ground height 0.25-2.2 m, radius ≤ 50, short of the radius (58) where `beachRegion`'s own procedural fill
+takes over) against both those samples and every one of the beach's own physics boxes: (-48, 12) came
+back clear by 9.75 m of the nearest box (a dune palm) and 16.6 m of the nearest other soul, at radius
+49.5 from the origin.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 290+ checks all `ok` (Sunny Shore's own friend count
+up one, to 50), 0 console warnings, ground-walkable percentage for Sunny Shore unchanged at 99%, physics
+box count unchanged at 297 (that tally is read off the Neighborhood, which this round never touched) —
+before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
