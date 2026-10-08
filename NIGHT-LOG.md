@@ -8240,3 +8240,33 @@ Full suite (`node test/run.mjs`) ran clean — exit 0, 290+ checks all `ok` (Sun
 up two, to 49 — the walker and the dog both count), 0 console warnings, physics box count unchanged at
 297 (that tally is read off the Neighborhood, which this round never touched) — before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 334 — a scooter kid for Robot City
+
+The Neighborhood, Candy Land and Victorian have all had a kid kneeling by a wobbly scooter for rounds
+now; Robot City, the third flat-floored city the prop fits, never had one. **A boy now kneels on the
+open concrete south of the kite flyer's own patch, tightening his scooter's back wheel.** *"Just a wobbly
+bolt — nearly got it."* *"Careful, puss — mind your tail, this spins."* *"Good as new. Right round the
+skyscrapers, no hands, easy."*
+
+No new controller: the exact same `makeScooter()` + `Kneeler` pairing the Neighborhood's, Candy Land's
+and Victorian's own scooter kids already use, dropped into `buildRobotCity` (`70-worlds.js`) right after
+the hula hooper, in a steel-blue to read as city hardware rather than a toy. A headless probe built the
+real Robot City (`game.load(2, 'from-prev')`), sampled every NPC's own position every quarter second
+over 30 simulated seconds (so no wandering robot pack, the sentry's patrol, the tag, catch or ring dance
+mid-turn could slip past unnoticed), then swept a 1-2 m grid of the open floor (radius 15-95, short of
+the radius (98) where robotRegion's own procedural fill takes over) against both those samples and every
+one of the city's physics boxes: (-20, -70) came back clear by 13.5 m of the nearest box (a skyscraper)
+and 21.3 m of the nearest other soul (the kite flyer), at radius 72.8 from the origin.
+
+On arrival, local `main` was a stale ref whose shallow history (50 commits) shared no visible merge base
+with `origin/main`'s own shallow window — `git merge --ff-only` refused it as "unrelated histories" for
+the first time this log has seen, rather than the usual clean fast-forward. Since local `main` carried
+no commits of its own (purely behind, never diverged in truth, just a shallower graft point than
+`origin/main`'s), the fix was `git checkout -B main origin/main` to snap it straight onto the remote tip
+before starting, no history rewritten and nothing lost.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 290+ checks all `ok` (Robot City's own friend count
+up one, to 54), 0 console warnings, physics box count unchanged at 297 (that tally is read off the
+Neighborhood, which this round never touched — Robot City itself picked up one small box for the
+scooter) — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
