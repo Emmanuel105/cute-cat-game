@@ -1881,6 +1881,25 @@ function buildRobotCity(game, entry) {
     W.add(yoyoKid.group);
     game.npcs.push(new YoYoer(game, yoyoKid, 0xffe27a, { x: -56, z: -46, ry: 1.0,
       cries: ['Watch this - no hands on the catch!', "Careful, puss — it swings wider than it looks.", 'Robots just stare. No idea why.'] })); }
+  // every other world has a jump-rope kid by now — the Neighborhood, Candy Land, Victorian, Sunny Shore
+  // and Whisper Woods all got one over the last several rounds — Robot City, the one world with the
+  // fullest playground cluster of the seven (swing, seesaw, kite, yo-yo), was still missing it. A child
+  // now skips rope on the open floor just north of the swing set, inside the same south-west corner of
+  // the cluster. `JumpRoper` needs no held prop beyond the loose grip at each hand it builds itself, so
+  // this is a placement, not a build, same as the yo-yo kid just above it. A headless probe built the
+  // real Robot City (`game.load(2, 'from-prev')`), sampled every NPC's own position every quarter second
+  // over 25 simulated seconds (so no wandering robot pack, the sentry's patrol, the tag, catch or ring
+  // dance mid-turn could slip past unnoticed), then swept a 1 m grid of the open floor west of the
+  // mechanic and painter against both those samples and every one of the city's physics boxes: (-46, -31)
+  // came back clear by 10.1 m of the nearest box or soul — 12.2 m north-east of the swing set at
+  // (-56, -38), at radius 55.4 from the origin, comfortably short of the radius (98) where robotRegion's
+  // own procedural fill takes over.
+  { const jumpWard = makeWardrobe(r, { shirts: [0xffe27a, 0x9ad6ff, 0xffffff], pants: [0x3a4a6a, 0x5a6a8a] });
+    const jx = -46, jz = -31;
+    const jumper = makeHuman({ ...randomPerson(r, { child: true, female: r.chance(0.5), wardrobe: jumpWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(jumper.group);
+    game.npcs.push(new JumpRoper(game, jumper, 0xff6fb5, { x: jx, z: jz, ry: atan2(0 - jx, 0 - jz),
+      cries: ['Two hundred and not a single trip!', "Careful, puss — it swings wider than it looks.", "Robots don't skip. Something about the gears."] })); }
   // the giant robot statue in the plaza never got so much as a wipe — every worker in this city tends
   // a machine of some kind, but nobody tended the one standing still long enough to need it. A line
   // worker now gives its chrome foot a scrub with a bucket of suds, `Washer` doing the same wiping

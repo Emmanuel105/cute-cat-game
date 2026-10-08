@@ -7910,3 +7910,26 @@ victorianRegion's own procedural fill takes over. Full suite (`node test/run.mjs
 reruns in a row — exit 0, 273 checks all `ok`, 0 console warnings, physics box count unchanged at 297
 (a `JumpRoper` only ever needs a physics circle, not a box) — before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 322 — a jump rope for Robot City
+
+The Neighborhood, Candy Land, Victorian, Sunny Shore and Whisper Woods all have a jump-rope kid by
+now — Robot City, the one world with the fullest playground cluster of the seven (a swing, a seesaw,
+a kite flyer and a yo-yo kid, all south-west of the statue plaza), was the one left without. **A child
+now skips rope on the open factory floor just north of the swing set.** *"Two hundred and not a single
+trip!"* *"Careful, puss — it swings wider than it looks."* *"Robots don't skip. Something about the
+gears."*
+
+No new controller needed — `JumpRoper` (`55-npcs.js`, added round 317) takes no held prop beyond the
+loose grip at each hand it builds itself, just a placement reusing the same `randomPerson()` /
+`makeHuman()` pattern the yo-yo kid a few lines above it already uses in `70-worlds.js`. A headless
+probe built the real Robot City (`game.load(2, 'from-prev')`), sampled every NPC's own position every
+quarter second over 25 simulated seconds (so no wandering robot pack, the sentry's patrol, the tag,
+catch or ring-dance robots mid-turn could slip past unnoticed), then swept a 1 m grid of the open floor
+against both those samples and every one of the city's physics boxes: (-46, -31) came back clear by
+10.1 m of the nearest box or soul — 12.2 m north-east of the swing set at (-56, -38), at radius 55.4
+from the origin, comfortably short of the radius (98) where robotRegion's own procedural fill takes
+over. Full suite (`node test/run.mjs`) ran clean on three reruns in a row — exit 0, 273 checks all
+`ok`, 0 console warnings, physics box count unchanged at 297 (a `JumpRoper` only ever needs a physics
+circle, not a box) — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.
