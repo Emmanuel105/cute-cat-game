@@ -8710,3 +8710,31 @@ one, to 52), 0 console warnings, physics box count unchanged at 297 (no new box,
 meshes). Six repeat runs afterward: four exit 0, two hit the same pre-existing `Victorian: the horse and
 carriage` timing flake noted in the last two rounds' logs — nothing to do with this change, which never
 touches Victorian — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 351 — marbles for Frosty Peak
+
+Robot City, the Neighborhood, Victorian, Candy Land and Sunny Shore have all had a marbles ring by now
+— the oldest pavement game of all — but Frosty Peak was the only world left without one. **A child now
+kneels on the open snowfield east of the village, flicking marbles at a ring chalked straight onto the
+packed snow.** *"Watch close — I never miss."* *"Careful, puss — don't swallow one of these."* *"Won
+every single one, fair and square."*
+
+No new controller: `Kneeler`'s own patting motion already reads as the flick, same as the other five
+rings, so this is a placement — a chalk ring (`G.torus`) and six small glass-coloured `G.sphere`
+marbles, same geometry and colours as the other rings — not a build. Reuses the mountain's own `kid()`
+wardrobe helper (coat, beanie, scarf) rather than a bare-headed chalker, and the terrain-aware
+`P.ground0()` lookup for every mesh here, same trick Sunny Shore's own version used, since the
+snowfield slopes gently underfoot. A headless probe built the real mountain (`game.travel(5,
+'from-hub')`), stepped the real game loop for 30 simulated seconds (so no wandering reindeer, hare,
+arctic fox or mid-game kid could slip past unnoticed) sampling every NPC's and the squirrel's own
+position every quarter second, then swept a 2 m grid of the open snow (radius 12-53, clear of the
+village's own keep-out circle and short of the radius (58) where snowRegion's own fill takes over)
+against both those samples and every one of the mountain's 683 physics boxes: (44.5, 24) came back
+clear by 10.3 m of the nearest box and 10.3 m of the nearest other soul, at radius 50.6 from the
+origin, with ground height varying only 0.09 m across the whole footprint.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok` (Frosty Peak's own friend count up
+one, to 52), 0 console warnings, physics box count unchanged at 297 (no new box, only decorative
+meshes). Three repeat runs afterward all exit 0 with no flakes — before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Only Whisper Woods is left without a
+marbles ring of its own now.

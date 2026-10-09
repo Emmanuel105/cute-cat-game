@@ -10475,6 +10475,29 @@ function buildSnowVillage(game, entry) {
     mesh(G.cyl(0.014, 0.014, 0.09, 6), mat(0xf7f3ec, { roughness: 0.9 }), { y: 0.045, parent: chalk });
     game.npcs.push(new Kneeler(game, chalker, { x: kx, z: kz, ry: atan2(squares[0][0] - kx, squares[0][1] - kz),
       cries: ['Six squares, drawn before the next snowfall covers them.', 'Careful, puss — mind the chalk lines!', "Doesn't last long up here, but worth it anyway."] })); }
+  // Robot City, the Neighborhood, Victorian, Candy Land and Sunny Shore all have a marbles ring by now —
+  // the oldest pavement game of all — but Frosty Peak was the only world left without one. A child now
+  // kneels on the open snowfield east of the village, flicking marbles at a ring chalked straight onto the
+  // packed snow. Same `Kneeler` pairing as the other five, no new controller, reusing the same `kid()`
+  // wardrobe helper every other child in this file already draws from, and the terrain-aware `P.ground0()`
+  // lookup (like Sunny Shore's version) for every mesh here since the snowfield slopes gently underfoot.
+  // A headless probe built the real mountain (`game.travel(5, 'from-hub')`), stepped the real game loop
+  // for 30 simulated seconds (so no wandering reindeer, hare, arctic fox or mid-game kid could slip past
+  // unnoticed) sampling every NPC's and the squirrel's own position every quarter second, then swept a 2 m
+  // grid of the open snow (radius 12-53, clear of the village's own keep-out circle and short of the
+  // radius (58) where snowRegion's own fill takes over) against both those samples and every one of the
+  // mountain's 683 physics boxes: (44.5, 24) came back clear by 10.3 m of the nearest box and 10.3 m of
+  // the nearest other soul, at radius 50.6 from the origin, with ground height varying only 0.09 m across
+  // the whole footprint.
+  { const mcx = 44.5, mcz = 24, mkx = mcx - 0.9, mkz = mcz, mry = atan2(mcx - mkx, mcz - mkz);
+    mesh(G.torus(0.5, 0.025, 6, 24), mat(0xf7f3ec, { roughness: 0.95, transparent: true, opacity: 0.85 }), { x: mcx, y: P.ground0(mcx, mcz) + 0.02, z: mcz, rx: -PI / 2, shadow: 'none', parent: W });
+    const marbleColors = [0xff6fb5, 0x7fe0ff, 0xffd54a, 0xb9fbc0, 0x8a5acf];
+    const marblePos = [[-0.22, 0.12], [0.18, -0.16], [0.02, 0.26], [-0.3, -0.1], [0.3, 0.05]];
+    for (let i = 0; i < marblePos.length; i++) { const px = mcx + marblePos[i][0], pz = mcz + marblePos[i][1]; mesh(G.sphere(0.035, 8, 6), mat(marbleColors[i], { roughness: 0.2 }), { x: px, y: P.ground0(px, pz) + 0.035, z: pz, shadow: 'none', parent: W }); }
+    mesh(G.sphere(0.035, 8, 6), mat(0xffd54a, { roughness: 0.2 }), { x: mkx + 0.35, y: P.ground0(mkx + 0.35, mkz) + 0.035, z: mkz, shadow: 'none', parent: W });   // the shooter, paused mid-flick just outside the ring
+    const marbleKid = kid(r.chance(0.5));
+    game.npcs.push(new Kneeler(game, marbleKid, { x: mkx, z: mkz, ry: mry,
+      cries: ["Watch close — I never miss.", "Careful, puss — don't swallow one of these.", "Won every single one, fair and square."] })); }
   // the birdwatcher up by the ice pond has her binoculars trained on the penguin colony, same as every round
   // before this one — Candy Land, Sunny Shore and Whisper Woods all got an actual flock wheeling overhead
   // (butterflies, gulls, fairies), but Frosty Peak's own sky, for all its aurora, never had a single real
