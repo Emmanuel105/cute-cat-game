@@ -9627,6 +9627,35 @@ function buildBeach(game, entry) {
   makeGrass(game, [[-26, 0, 22, 150], [-14, 30, 12, 70], [-40, -30, 12, 70]], r, { hue: [0.13, 0.21], light: [0.4, 0.56], tall: 1.15, wide: 1.45, pad: 0.2 });
   makeScatter(game, [[10, 0, 12, 60], [6, 28, 10, 40], [8, -26, 10, 40]], G.sphere(0.06, 6, 5), [0xfff1dc, 0xffd9c2, 0xf3e3c8, 0xd9a3a3, 0xe8c9a0], r, [0.6, 1.4], 0.02);  // shells
   for (const [x, z, ry] of [[-14, 36, 0.4], [4, -30, 1.2], [-6, 12, 2.4]]) { const log = makeHollowLog(r); log.scale.setScalar(0.7); placeT(game, U, log, x, z, ry); }
+  // the dunes have palms, grass and driftwood, but nowhere to actually lie down — a hammock now hangs
+  // between two posts on the open sand south-west of the huts, swaying gently on the sea breeze. Driven
+  // only by the world clock `t`, never this world's own seeded `r`, so it costs no later palm height or
+  // wardrobe pick. A headless probe swept the fully built world's own physics boxes and zones: (-10, -40)
+  // came back clear by just over 15 m on every side, well past the patroller's own loop just below and
+  // every palm, hut and vendor already placed, and short of the radius (58, padded to 65) where
+  // beachRegion's own fill takes over.
+  { const hx = -10, hz = -40, gy = P.ground0(hx, hz), postH = 1.15, half = 1.7;
+    const postM = mat(0x6b4a2a, { roughness: 0.9 }), ropeM = mat(0x3a2e20, { roughness: 1 }),
+      stripeA = mat(0xe0503c, { roughness: 0.85 }), stripeB = mat(0xf7f0e0, { roughness: 0.85 });
+    for (const s of [-1, 1]) mesh(G.cyl(0.07, 0.09, postH, 8), postM, { x: hx + s * half, y: gy + postH / 2, z: hz, parent: W });
+    P.addBox(hx, gy + postH / 2, hz, half * 2 + 0.3, postH, 1.0, { cam: false });
+    // the woven bed: a shallow sag between the two posts, built from a few chunky striped segments
+    // (paper-thin geometry comes out as a solid ink line, same reason grass blades and flower petals
+    // are built chunky) rather than one flat plane.
+    const swing = group(hx, gy, hz, W);
+    const N = 6, pts = [];
+    for (let i = 0; i < N; i++) { const u = i / (N - 1); pts.push([lerp(-half + 0.15, half - 0.15, u), postH - 1.4 * u * (1 - u)]); }
+    for (let i = 0; i < N - 1; i++) {
+      const [x0, y0] = pts[i], [x1, y1] = pts[i + 1], mx = (x0 + x1) / 2, my = (y0 + y1) / 2;
+      const len = sqrt((x1 - x0) * (x1 - x0) + (y1 - y0) * (y1 - y0)), ang = atan2(y1 - y0, x1 - x0);
+      mesh(G.box(len, 0.08, 0.85), i % 2 ? stripeA : stripeB, { x: mx, y: my, rz: ang, parent: swing });
+    }
+    for (const [[px, py], postX] of [[pts[0], -half], [pts[N - 1], half]]) {
+      const dx = postX - px, dy = postH - py, len = sqrt(dx * dx + dy * dy), ang = atan2(dy, dx);
+      noInk(mesh(G.box(len, 0.03, 0.03), ropeM, { x: (px + postX) / 2, y: (py + postH) / 2, rz: ang, parent: swing })); }
+    U.push((dt, t) => { swing.rotation.z = sin(t * 0.55) * 0.03; swing.position.y = gy + sin(t * 1.1) * 0.01; });
+    const hammockLines = ['🏖️ "Whoever strung this up clearly had the right idea."', '🏖️ "Empty most of the day — the sand\'s too hot to cross for a nap."', '🏖️ "Rope\'s a bit salt-stiff, but it still swings easy enough."'];
+    game.addInteractable({ obj: swing, radius: 2.6, label: () => 'Look at the hammock', onUse: () => { SFX.click(); game.toast(rnd.pick(hammockLines), 3000); } }); }
   // every other world already had its own Patroller walking a beat (the Neighborhood's postie, Candy
   // Land's gate guard, Robot City's sentry, Victorian's bobby, Frosty Peak's ski patroller, Whisper
   // Woods' hiker) — Sunny Shore never had one. A headless probe swept the fully built world's own

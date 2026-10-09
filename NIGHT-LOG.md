@@ -9001,3 +9001,32 @@ and back to -0.160 within a couple of seconds of it walking off again.
 Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, physics box
 count up by one to 299. Five repeat runs afterward all came back exit 0 with no FAILs — before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 361 — a hammock for Sunny Shore
+
+Hammocks, picnic blankets and wishing wells had never shown up anywhere in the seven worlds, for all the
+reuse everywhere else (dog walkers, scooter kids, hopscotch, marbles…). **A striped hammock now hangs
+between two posts on the open sand south-west of the beach huts**, swaying gently on the sea breeze. No
+rider, no quest, just a quiet thing to walk up to and look at: *"Whoever strung this up clearly had the
+right idea."* *"Empty most of the day — the sand's too hot to cross for a nap."* *"Rope's a bit salt-stiff,
+but it still swings easy enough."*
+
+Built straight into `buildBeach` rather than a new shared factory (a one-off landmark, same as the
+Victorian pinwheel or the Neighborhood's telescope): two wooden posts, a woven bed built from six chunky
+striped box segments sagging in a shallow parabola between them (paper-thin geometry inks solid, same
+reason grass blades and flower petals are built chunky rather than flat), and two short ropes tying the
+ends to the post tops. The whole bed+rope group sways on `sin(t * 0.55) * 0.03` radians plus a one-centimetre
+bob — the world clock `t` alone, never this world's own seeded `r`, so it costs no later palm height or
+wardrobe pick anywhere else in the build. One physics box spanning both posts keeps the cat from walking
+through it; `game.addInteractable` on the swaying group itself needs no extra mesh or box of its own.
+
+A headless probe (the same stub-three harness `test/run.mjs` uses) built the real Sunny Shore
+(`game.start('new')`, then `game.travel(4, 'from-hub')`) and swept a 2 m grid of the dunes against every
+one of the world's own physics boxes and keep-out zones, then sampled every NPC's position every quarter
+second over roughly six simulated seconds: (-10, -40) came back clear by just over 15 m on every side —
+well past the dune patroller's own loop, every palm, hut and vendor already standing, and short of the
+radius (58, padded to 65) where `beachRegion`'s own procedural fill takes over.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, Sunny Shore's
+own ground-walkable percentage unchanged at 99%. Five repeat runs afterward all came back exit 0 with no
+FAILs — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
