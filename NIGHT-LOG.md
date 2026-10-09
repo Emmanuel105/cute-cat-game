@@ -8599,3 +8599,31 @@ Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok` (Robot Ci
 one, to 56), 0 console warnings, physics box count unchanged at 297 (read off the Neighborhood, which
 this round never touched); three repeat runs afterward all exit 0 with no flakes — before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 347 — marbles for the Neighborhood
+
+Robot City picked up a marbles ring two rounds back — the oldest pavement game of all — but the
+Neighborhood, where every one of these playground games started in the first place (hopscotch, the
+scooter kid, the hula hoop, the jump rope), had never got a ring of its own. **A girl now kneels on the
+open field south of the street, flicking marbles at a chalked ring.** *"That one's mine, fair and
+square!"* *"Careful, puss — don't swallow one."* *"Grandad gave me this bag. Won them all himself, he
+says."*
+
+No new controller: `Kneeler`'s own patting motion already reads as the flick, the same trick the
+hopscotch chalker and the scooter kid both already use, so this is a placement — a chalk ring
+(`G.torus`, the same chalky colour and transparency the hopscotch squares use) and six small
+glass-coloured `G.sphere` marbles, five resting inside the ring and one paused just outside it at the
+girl's own hand. A headless probe (the same stub-three harness `test/run.mjs` uses) ran the real
+Neighborhood, sampled every NPC's and the squirrel's own position every quarter second over 30
+simulated seconds (so no wandering stroller, dog mid-leash or the postie's round could slip past
+unnoticed), then swept a grid of the open south field against both those samples and every one of the
+street's own physics boxes: (-19, -68) came back clear by 14.1 m of the nearest box and 23.3 m of the
+nearest other soul, well south of the scooter kid, the hula hooper, the jump-roper and the lantern path
+to the gondola. Placed last of every person this build adds, after the jump-roper, so it draws from the
+very tail of both the local `r()` and the shared global `rnd()` sequences and disturbs no earlier
+wardrobe or colour pick.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok` (the Neighborhood's own friend
+count up one, to 48), 0 console warnings, physics box count unchanged at 297 (no new box, only a
+`Kneeler` leash circle and decorative meshes); three repeat runs afterward all exit 0 with no flakes —
+before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -851,6 +851,31 @@ function buildNeighborhood(game, entry) {
     let jumpCryT = r.range(4, 9);
     U.push((dt) => { jumpCryT -= dt; if (jumpCryT <= 0) { jumpCryT = r.range(9, 16); const c = game.cat.group.position; if (dist2(jx, jz, c.x, c.z) < 400) { game.toast('➰ "' + r.pick(jumpCries) + '"', 2400); SFX.talk(); } } }); }
 
+  // Robot City picked up a marbles ring two rounds back — the oldest pavement game of all — but the
+  // Neighborhood, where every other one of these playground games started (hopscotch, the scooter kid,
+  // the hula hoop, the jump rope), never got its own. A girl kneels on the open field south of the
+  // street, flicking marbles at a chalked ring. `Kneeler`'s own patting motion already reads as the
+  // flick, the same trick the hopscotch chalker and the scooter kid both already use, so this is a
+  // placement, not a build (own fixed wardrobe, not the street's shared `ward` bag, which is sized
+  // exactly to its 18 users already; placed last of every person this build adds, after the jump-roper,
+  // so it draws from the very tail of both the local `r` and the shared `rnd()` sequences and disturbs
+  // the fewest later ticks of either).
+  // (a headless probe over the built world — every physics box and every NPC's and the squirrel's own
+  // position, sampled every quarter second over 30 simulated seconds so no wandering stroller, dog
+  // mid-leash or the postie's round could slip past unnoticed, swept against a grid of the open south
+  // field — found (-19, -68) clear: 14.1 m from the nearest box and 23.3 m from the nearest other soul,
+  // well south of all four other playground games and the lantern path to the gondola)
+  { const mcx = -19, mcz = -68, mkx = mcx - 0.9, mkz = mcz, mry = atan2(mcx - mkx, mcz - mkz);
+    mesh(G.torus(0.5, 0.025, 6, 24), mat(0xf7f3ec, { roughness: 0.95, transparent: true, opacity: 0.85 }), { x: mcx, y: 0.02, z: mcz, rx: -PI / 2, shadow: 'none', parent: W });
+    const marbleColors = [0xff6fb5, 0x7fe0ff, 0xffd54a, 0xb9fbc0, 0x8a5acf];
+    const marblePos = [[-0.22, 0.12], [0.18, -0.16], [0.02, 0.26], [-0.3, -0.1], [0.3, 0.05]];
+    for (let i = 0; i < marblePos.length; i++) mesh(G.sphere(0.035, 8, 6), mat(marbleColors[i], { roughness: 0.2 }), { x: mcx + marblePos[i][0], y: 0.035, z: mcz + marblePos[i][1], shadow: 'none', parent: W });
+    mesh(G.sphere(0.035, 8, 6), mat(0x00e5ff, { roughness: 0.2 }), { x: mkx + 0.35, y: 0.035, z: mkz, shadow: 'none', parent: W });   // the shooter, paused mid-flick just outside the ring
+    const marbleWard = makeWardrobe(r, { shirts: [0xff9a5a, 0x5ac8e0, 0xffe27a], pants: [0x3a3a3a, 0x2e4a3a] });
+    const marbleKid = makeHuman({ ...randomPerson(r, { female: true, child: true, wardrobe: marbleWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false }); W.add(marbleKid.group);
+    game.npcs.push(new Kneeler(game, marbleKid, { x: mkx, z: mkz, ry: mry,
+      cries: ["That one's mine, fair and square!", "Careful, puss — don't swallow one.", "Grandad gave me this bag. Won them all himself, he says."] })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
