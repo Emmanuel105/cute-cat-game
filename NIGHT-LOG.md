@@ -9093,3 +9093,33 @@ flanking gumdrop patches, and north of the butterflies' flight box and the sparr
 Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings. Three repeat
 runs afterward all came back exit 0 with no FAILs — before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 364 — a postbox for Victorian
+
+Victorian has its gaslight, its pigeons, its lamplighter doing the rounds every night — but for all that,
+it never had the one street fixture the era is actually known for. **A red pillar postbox now stands on
+the grass verge where the south terrace runs out**, a couple of letters wedged half into its slot and
+swaying faintly, as if someone had shoved them in too fast to notice they didn't quite fit: *"Posted a
+letter in there years ago. Still waiting on a reply."* *"The flap sticks a little — everyone gives it
+the same shove."* *"Somebody's postcard never did make it out of that slot."* The Neighborhood's own
+mailbox already got its "check it" toast back in round 294 and the postie delivers to it every day, but
+that's a different object on a different street — this is Victorian's first postbox of its own.
+
+Built straight into `buildVictorian`, same one-off-landmark pattern as the last three rounds' hammock,
+picnic blanket and wishing well: a tapered red cylinder for the pillar, a flattened-sphere dome and a
+small brass crest reusing `noInk()` so its disc doesn't fight the pillar's own ink pass, and two paper-pale
+planes wedged in the slot that sway a few degrees on `sin(t * 0.7)` plus a phase offset — the world clock
+`t` alone, never this world's own seeded `r`, so it costs no later wardrobe pick anywhere in this build.
+One physics box over the whole pillar keeps the cat from walking through it.
+
+A headless probe (the same stub-three harness `test/run.mjs` uses) built the real Victorian town
+(`game.travel(3, 'from-prev')`) and sampled every NPC's own position every quarter second over roughly
+fifteen simulated seconds, then swept the grass verge past the terrace's own end against every one of
+the town's physics boxes: (84, -7.3) came back clear by 18.1 m of the nearest box and 38.2 m of the
+nearest wandering soul — short of the radius (88) where `victorianRegion`'s own procedural fill takes
+over, and well past the clock tower, the time door and the market square, none of which sit anywhere
+near the terrace's own far end.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings. Three repeat
+runs afterward all came back exit 0 with no FAILs — before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
