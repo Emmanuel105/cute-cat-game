@@ -7882,6 +7882,32 @@ function buildCandyLand(game, entry) {
     mesh(G.cyl(0.014, 0.014, 0.09, 6), mat(0xf7f3ec, { roughness: 0.9 }), { y: 0.045, parent: chalk });
     game.npcs.push(new Kneeler(game, chalker, { x: kx, z: kz, ry: atan2(squares[0][0] - kx, squares[0][1] - kz),
       cries: ['Six squares, dry before the gingerbread men march past.', 'Careful, puss — mind the chalk lines!', "Nobody else out here to play it with, but I like the quiet."] })); }
+  // Robot City, the Neighborhood and Victorian have each picked up marbles by now — the oldest pavement
+  // game of all — but Candy Land, for all its hula hoop, scooter kid, dog walker and hopscotch grid a
+  // few lines up, never had a ring of its own. A boy now kneels on the open sweet-lands south-west of
+  // the cane ring, flicking marbles at a chalked ring. `Kneeler`'s own patting motion already reads as
+  // the flick, the same trick every other chalking or flicking kid in this file already uses, so this
+  // is a placement, not a build (own fixed wardrobe, not any shared bag). A headless probe built the
+  // real Candy Land (`game.travel(1, 'from-prev')`), sampled every NPC's and the squirrel's own
+  // position every quarter second over 30 simulated seconds (so no marching, dancing or wandering
+  // gingerbread man, nor the tag or catch pairs mid-turn, could slip past unnoticed), then swept a grid
+  // of the open sweet-lands against both those samples and every one of the world's 1867 physics boxes:
+  // (-65, -60) came back clear by 13.17 m of the nearest box and 30.41 m of the nearest other soul, at
+  // radius 88.5 from the origin — short of the radius (92) where candyRegion's own procedural fill
+  // takes over, and far past the scooter kid at (-30, -84), the dog walker at (-83, 5) and the
+  // hopscotch grid at (-85.2, 29). Placed last of every person this build adds, after the hopscotch
+  // chalker, so it draws from the very tail of both the local `r` and the shared `rnd()` sequences and
+  // disturbs the fewest later ticks of either.
+  { const mcx = -65, mcz = -60, mkx = mcx - 0.9, mkz = mcz, mry = atan2(mcx - mkx, mcz - mkz);
+    mesh(G.torus(0.5, 0.025, 6, 24), mat(0xf7f3ec, { roughness: 0.95, transparent: true, opacity: 0.85 }), { x: mcx, y: 0.02, z: mcz, rx: -PI / 2, shadow: 'none', parent: W });
+    const marbleColors = [0xff6fb5, 0x7fe0ff, 0xffd54a, 0xb9fbc0, 0x8a5acf];
+    const marblePos = [[-0.22, 0.12], [0.18, -0.16], [0.02, 0.26], [-0.3, -0.1], [0.3, 0.05]];
+    for (let i = 0; i < marblePos.length; i++) mesh(G.sphere(0.035, 8, 6), mat(marbleColors[i], { roughness: 0.2 }), { x: mcx + marblePos[i][0], y: 0.035, z: mcz + marblePos[i][1], shadow: 'none', parent: W });
+    mesh(G.sphere(0.035, 8, 6), mat(0xffd54a, { roughness: 0.2 }), { x: mkx + 0.35, y: 0.035, z: mkz, shadow: 'none', parent: W });   // the shooter, paused mid-flick just outside the ring
+    const marbleWard = makeWardrobe(r, { shirts: [0xff6fb5, 0x7fd7ff, 0xffd54a] });
+    const marbleKid = makeHuman({ ...randomPerson(r, { female: false, child: true, wardrobe: marbleWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false }); W.add(marbleKid.group);
+    game.npcs.push(new Kneeler(game, marbleKid, { x: mkx, z: mkz, ry: mry,
+      cries: ["Watch close — I never miss.", "Careful, puss — don't swallow one of these.", "Won every single one fair and square."] })); }
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('star', 7, -6); C.add('yarn', -9, 9); C.add('fish', -16, -13); C.add('mouse', 16, -9); C.add('star', -10, -27); C.add('yarn', 22, 4); C.add('mouse', -28, 26); C.add('fish', 14, -44); C.add('star', 0, -56); C.add('mouse', -58, 30); C.add('yarn', 60, 36);

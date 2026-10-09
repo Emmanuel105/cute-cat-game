@@ -8652,3 +8652,33 @@ Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok` (Victoria
 one, to 63), 0 console warnings, physics box count unchanged at 297 (no new box, only decorative meshes
 and a `Kneeler` leash circle); three repeat runs afterward all exit 0 with no flakes — before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 349 — marbles for Candy Land
+
+Robot City, the Neighborhood and Victorian have each picked up marbles by now — the oldest pavement
+game of all — but Candy Land, for all its hula hoop, scooter kid, dog walker and hopscotch grid, never
+had a ring of its own. **A boy now kneels on the open sweet-lands south-west of the cane ring, flicking
+marbles at a chalked ring.** *"Watch close — I never miss."* *"Careful, puss — don't swallow one of
+these."* *"Won every single one fair and square."*
+
+No new controller: `Kneeler`'s own patting motion already reads as the flick, the same trick every
+other chalking or flicking kid in this file already uses, so this is a placement — a chalk ring
+(`G.torus`) and six small glass-coloured `G.sphere` marbles, the same geometry and colours the Robot
+City, Neighborhood and Victorian rings already use — not a build. A headless probe (the same stub-three
+harness `test/run.mjs` uses) built the real Candy Land (`game.travel(1, 'from-prev')`), sampled every
+NPC's and the squirrel's own position every quarter second over 30 simulated seconds (so no marching,
+dancing or wandering gingerbread man, nor the tag or catch pairs mid-turn, could slip past unnoticed),
+then swept a grid of the open sweet-lands against both those samples and every one of the world's 1867
+physics boxes: (-65, -60) came back clear by 13.17 m of the nearest box and 30.41 m of the nearest other
+soul, at radius 88.5 from the origin — short of the radius (92) where candyRegion's own procedural fill
+takes over, and far past the scooter kid at (-30, -84), the dog walker at (-83, 5) and the hopscotch
+grid at (-85.2, 29). Placed last of every person this build adds, after the hopscotch chalker, so it
+draws from the very tail of both the local `r` and the shared `rnd()` sequences and disturbs the fewest
+later ticks of either.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok` (Candy Land's own friend count up
+one, to 57), 0 console warnings, physics box count unchanged at 297 (no new box, only decorative meshes
+and a `Kneeler` leash circle). Six repeat runs afterward were all exit 0 with no FAILs; one earlier
+single run elsewhere in the suite hit an unrelated flake typical of this suite's own timing-sensitive
+checks, not reproduced on any of the six follow-up runs and not touched by this change — before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
