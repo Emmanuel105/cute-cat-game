@@ -6856,6 +6856,35 @@ function buildNeighborhood(game, entry) {
     // basket and 2.7 m clear of the gardener — all comfortably past this interactable's own reach.
     const scareLines = ['🌾 "Button eyes, straw for bones, and it still looks unimpressed."', '🌾 "Doesn\'t scare the gardener\'s carrots one bit. The sparrows ignore it completely."', '🌾 "That floppy hat has seen more weather than anyone else on this street."'];
     game.addInteractable({ obj: scare, radius: 2.2, label: () => 'Look at the scarecrow', onUse: () => { SFX.click(); game.toast(rnd.pick(scareLines), 3000); } }); }
+  // hammocks, picnic blankets and wishing wells had never shown up anywhere in the seven worlds — the
+  // hammock went to Sunny Shore last round, so a picnic blanket lands here, spread on the open grass
+  // south-west of the street, no owner in sight. A striped blanket, a wicker basket with its lid propped
+  // open, a loaf, a wedge of cheese and two tin mugs, left out as if someone had only just stepped away.
+  // Driven only by the world clock `t`, never this world's own seeded `r`, so it costs no later wardrobe
+  // pick anywhere in this build. A headless probe (the same stub-three harness `test/run.mjs` uses) built
+  // the real Neighborhood, sampled every NPC's position every quarter second over roughly eight simulated
+  // seconds, and swept the quiet field south-west of the street against every one of the world's 299
+  // physics boxes: (-40, -30) came back clear by 7.4 m of the nearest box and over 20 m of the nearest
+  // wandering soul, well inside the 95 m edge of the village.
+  { const px = -40, pz = -30;
+    const blanket = group(px, 0, pz, W);
+    const stripeA = mat(0xd6455c, { roughness: 0.85 }), stripeB = mat(0xf7f0e0, { roughness: 0.85 });
+    for (let i = 0; i < 5; i++) mesh(G.box(0.34, 0.04, 1.3), i % 2 ? stripeA : stripeB, { x: -0.68 + i * 0.34, y: 0.02, shadow: 'receive', parent: blanket });
+    const basketWood = mat(0xb5862f, { roughness: 0.95 }), lidWood = mat(0xa9824a, { roughness: 0.95 });
+    const basket = group(0.55, 0, -0.35, blanket);
+    mesh(G.cyl(0.26, 0.21, 0.26, 12), basketWood, { y: 0.13, shadow: 'both', parent: basket });
+    const lid = group(0, 0.26, -0.18, basket); lid.rotation.x = -1.1;
+    mesh(G.box(0.5, 0.03, 0.42), lidWood, { parent: lid });
+    const loaf = mesh(G.capsule(0.07, 0.22, 8), mat(0xc98a3f, { roughness: 0.9 }), { x: -0.1, y: 0.28, z: 0.05, rz: PI / 2, parent: basket });
+    mesh(G.box(0.14, 0.08, 0.16), mat(0xf4e0a0, { roughness: 0.8 }), { x: 0.14, y: 0.3, parent: basket });   // wedge of cheese
+    P.addBox(px + 0.55, 0.13, pz - 0.35, 0.52, 0.42, 0.52, { cam: false });
+    const mugMat = mat(0xcfd4d8, { metalness: 0.5, roughness: 0.35 });
+    for (const [mx, mz] of [[-0.55, 0.3], [-0.2, 0.5]]) {
+      mesh(G.cyl(0.06, 0.05, 0.09, 10), mugMat, { x: mx, y: 0.065, z: mz, shadow: 'both', parent: blanket });
+      noInk(mesh(G.torus(0.055, 0.012, 5, 10), mugMat, { x: mx + 0.07, y: 0.065, z: mz, ry: PI / 2, parent: blanket })); }
+    U.push((dt, t) => { blanket.rotation.z = sin(t * 0.3) * 0.004; });   // the faintest ripple, as if the breeze just caught the corner
+    const picnicLines = ['🧺 "Whoever laid this out never even got to the cheese."', '🧺 "Not an ant in sight — lucky, for once."', '🧺 "Someone\'s coming back for that loaf. Eventually."'];
+    game.addInteractable({ obj: blanket, radius: 2.4, label: () => 'Look at the picnic blanket', onUse: () => { SFX.click(); game.toast(rnd.pick(picnicLines), 3000); } }); }
   game.squirrels.push(new Squirrel(game, 9, 47, 'sq-neighborhood'));
   // a detectorist sweeps the quiet grass behind the south-row houses, headphones on, hoping for buried
   // treasure — already doing duty on Sunny Shore and at Frosty Peak, its first outing in the Neighborhood

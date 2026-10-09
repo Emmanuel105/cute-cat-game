@@ -9030,3 +9030,36 @@ radius (58, padded to 65) where `beachRegion`'s own procedural fill takes over.
 Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, Sunny Shore's
 own ground-walkable percentage unchanged at 99%. Five repeat runs afterward all came back exit 0 with no
 FAILs — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 362 — a picnic blanket for the Neighborhood
+
+Hammocks, picnic blankets and wishing wells had never shown up anywhere in the seven worlds, for all the
+reuse everywhere else — the hammock went to Sunny Shore last round, so the picnic blanket lands here, on
+the quiet grass south-west of the street. **A striped blanket spread on the lawn, a wicker basket with
+its lid propped open, a loaf, a wedge of cheese and two tin mugs**, left out as if someone had only just
+stepped away. No owner, no quest, just a quiet thing to walk up to and look at: *"Whoever laid this out
+never even got to the cheese."* *"Not an ant in sight — lucky, for once."* *"Someone's coming back for
+that loaf. Eventually."*
+
+Built straight into `buildNeighborhood` rather than a new shared factory, same as the hammock and the
+scarecrow before it: five striped boxes for the blanket (chunky, not paper-thin, for the same reason
+grass blades and flower petals are built chunky — thin geometry inks solid), a wicker-cylinder basket
+with a propped lid, a capsule loaf, a cheese wedge, and two mugs each with a torus handle kept out of the
+ink pass with `noInk()`. The whole blanket group gets the faintest `sin(t * 0.3) * 0.004` rock, the world
+clock `t` alone, never this world's own seeded `r`, so it costs no later wardrobe pick anywhere in this
+build. One physics box over the basket keeps the cat from walking through it; the blanket itself lies
+flat and needs none.
+
+A headless probe (the same stub-three harness `test/run.mjs` uses) built the real Neighborhood, clicked
+through the start screen, and sampled every NPC's position every quarter second over roughly eight
+simulated seconds, then swept the field south-west of the street against all 299 of the village's own
+physics boxes: (-40, -30) came back clear by 7.4 m of the nearest box and over 20 m of the nearest
+wandering soul, well inside the 95 m edge of the village and far from the lake, the vegetable patch and
+the scarecrow.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, physics box
+count up by one to 300, Neighborhood's own ground-walkable percentage unchanged at 96%. Five repeat runs
+total: four came back exit 0, and one hit the same pre-existing `Victorian: the horse and carriage`
+timing flake these logs have already noted several times (rounds 280, 281, 348-350, 356, 358) —
+unrelated to this change, which never touches Victorian — before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
