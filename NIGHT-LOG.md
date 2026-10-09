@@ -8906,3 +8906,36 @@ uses) fixed it: ten repeat runs afterward all came back clean.
 Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, physics box
 count up by one to 298 — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 358 — a blooming flower for Whisper Woods
+
+Robot City's archive-bot, Victorian's night watchman, Candy Land's jack-in-the-box and Sunny Shore's
+treasure chest all react to the cat on their own, no `E` needed — but Whisper Woods, the one world built
+entirely around fairies, never got a version of its own. **A giant flower now stands closed in a
+south-west clearing, its five petals folded shut around a sleeping fairy, until the cat wanders within
+6 m**, when the petals peel open on their own stems and the fairy rises into view, blinking awake and
+fluttering in place, before folding shut over her again once the cat wanders off. *"Oh! A visitor. Nobody
+ever finds this flower."* *"Five more minutes... oh, fine, I am up."* *"Mind the pollen, puss — it is for
+sneezing, not sleeping. I checked."*
+
+A build, not a controller: five petal hinges sit at the rim of a small calyx, each rotating open on its
+own local X axis exactly like the chest's and jack-in-the-box's own lids, and the fairy (`makeFairy()`,
+already in the file for the ambient flocks) rides a hidden pop-up node that rises as the petals open, its
+own `rig.animate()` called directly each frame for the wing flutter and light pulse rather than through a
+`Flyer` controller, since nothing here is meant to fly off anywhere. No new SFX: the bloom reuses
+`SFX.twinkle()`, already heard at the fairy ring and the glowing pond. A headless probe (the same
+stub-three harness `test/run.mjs` uses) built the real Whisper Woods (`game.travel(6, 'from-hub')`),
+sampled every NPC's and the squirrel's own position every quarter second over 30 simulated seconds (so no
+wandering deer, fox or flying fairy mid-leash could slip past unnoticed), then swept a 1 m grid of the
+open floor (radius 14-46, short of the radius (58) where `forestRegion`'s own fill takes over) against
+both those samples and every one of the wood's 298 physics boxes: (-9, -42) came back clear by 15.2 m of
+the nearest box and 15.3 m of the nearest other soul, with the ground flat across the whole footprint. A
+second probe started the game properly (so the world's own update loop actually runs) and read the petal
+hinge rotations directly out of the scene graph: closed (rotation.x = 0.000) at rest, open (1.299) the
+moment the cat crossed the 6 m line and fired the toast, and closed again once the cat walked off.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings. Ten repeat runs
+total: eight came back exit 0, and two hit the same pre-existing `Victorian: the horse and carriage`
+timing flake these logs have already noted several times (rounds 280, 281, 348-350, 356) — unrelated to
+this change, which never touches Victorian — before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
