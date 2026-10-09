@@ -235,7 +235,23 @@ for (const [idx, entry] of [[1, 'from-prev'], [2, 'from-prev'], [3, 'from-prev']
   if (idx === 2) { const rb = game.npcs.find((n) => n.rig && n.rig.robot && n.constructor.name === 'Wanderer'); const a3 = rb.rig.group.rotation.y; pos().set(rb.x + Math.sin(a3) * 1.2, game.physics.ground0(rb.x, rb.z), rb.z + Math.cos(a3) * 1.2); frames(5); check(game.nearest && /Beep hello/.test(game.nearest._label), `Robot City: ${game.nearest && game.nearest._label}`); const f1 = game.state.friends.size, known = /again/.test(game.nearest._label); game.interact(); frames(20); check(known ? game.state.friends.size === f1 : game.state.friends.size === f1 + 1, known ? 'the robot was already a friend from the last visit' : `the robot is a friend now (${f1} → ${game.state.friends.size})`); check(rb.rig.group.position.y > game.physics.ground0(rb.x, rb.z) + 0.05, `the robot hopped (y ${rb.rig.group.position.y.toFixed(2)} over ground ${game.physics.ground0(rb.x, rb.z).toFixed(2)}, joy ${rb.rig.joy === undefined ? 'unset' : rb.rig.joy.toFixed(2)}, ctl ${rb.constructor.name})`); }
   if (idx === 2) { const ld = game.npcs.filter((n) => n.constructor.name === 'Loader'); let lifts = 0; for (let i = 0; i < 900; i++) { game.loop(); if (ld.some((l) => l.lift > 0.8)) lifts++; } check(ld.length === 2 && lifts > 30, `Robot City: two loader robots lift crates off the belts (arms up for ${lifts} frames of 900)`); }
   if (idx === 3) { const tk = game.npcs.filter((n) => n.constructor.name === 'Talkers'); check(tk.length === 1 && tk[0].rigs.every((r) => r.look.dress), 'Victorian: two ladies in gowns gossip by the square'); }
-  if (idx === 3) { const hc = game.npcs.find((n) => n.constructor.name === 'HorseCarriage'); const x0 = hc.x, h0 = hc.horse.legs[0].hip.rotation.x; frames(120); check(hc && hc.rig.group.parent === game.world && hc.x - x0 > 2 && Math.abs(hc.horse.legs[0].hip.rotation.x - h0) > 0.05 && Number.isFinite(hc.rig.group.position.y), `Victorian: the horse and carriage are in the world and on the move (${(hc.x - x0).toFixed(1)} m in 2 s)`); }
+  if (idx === 3) {
+    // the bobby's own patrol rectangle ([-30,5.2]..[30,-5.2], round 2894) crosses this lane (z=-1.3,
+    // laneW=1.0) twice a loop, at x=-30 and x=30 — Vehicle.update()'s own mustStop politely halts the
+    // carriage for the few seconds he's actually crossing, exactly as it halts for the cat. The old check
+    // (frames(120), net hc.x - x0 > 2) measured a fixed 2 s window too short to survive one such crossing
+    // landing inside it, which is the pre-existing flake these logs have noted since round 219: whether the
+    // bobby happens to be mid-crossing when this check starts depends on the exact frame count burned by
+    // the travel-settling poll a few lines up (await sleep(40); frames(2)), which races a real timer and so
+    // isn't fixed run to run. Summing each frame's own |dx| over a longer 400-frame (6.67 s) window survives
+    // a full crossing (worst case ~3.5 s stalled) with room to spare, and filtering out any single-frame
+    // jump of a metre or more also makes it immune to Vehicle's own x-wraps at the lane's `limit`, which a
+    // net-displacement check over this many frames could otherwise land on.
+    const hc = game.npcs.find((n) => n.constructor.name === 'HorseCarriage'); const h0 = hc.horse.legs[0].hip.rotation.x;
+    let dist = 0, px = hc.x;
+    for (let i = 0; i < 400; i++) { game.loop(); const dx = hc.x - px; if (Math.abs(dx) < 1) dist += Math.abs(dx); px = hc.x; }
+    check(hc && hc.rig.group.parent === game.world && dist > 3 && Math.abs(hc.horse.legs[0].hip.rotation.x - h0) > 0.05 && Number.isFinite(hc.rig.group.position.y), `Victorian: the horse and carriage are in the world and on the move (${dist.toFixed(1)} m in 6.67 s)`);
+  }
   if (idx === 3) { const ll = game.npcs.find((n) => n.constructor.name === 'Lamplighter'); const lit0 = ll.lit; frames(2400); check(ll && ll.lit > lit0 && ll.lamps.length >= 8 && Number.isFinite(ll.rig.group.position.y), `Victorian: the lamplighter has attended to ${ll.lit - lit0} lamps in 40 s`); }
   if (idx === 3 || idx === 6) { const pt = game.npcs.find((n) => n.constructor.name === 'Patroller'); const p0 = [pt.x, pt.z]; frames(240); check(pt && Math.hypot(pt.x - p0[0], pt.z - p0[1]) > 1 && Number.isFinite(pt.rig.group.position.y), `world ${idx}: the patroller is on the move`); }
   if (idx === 1) { const m = game.npcs.find((n) => n.constructor.name === 'Marchers'); const p0 = m.lead.x; frames(180); const gaps = m.rigs.slice(1).map((r, i) => Math.hypot(r.group.position.x - m.lead.x, r.group.position.z - m.lead.z) - (i + 1) * m.gap); check(m && Math.abs(m.lead.x - p0) > 1 && gaps.every((g) => Math.abs(g) < 0.05), `Candy Land: three guards march in step (${m.rigs.length} of them, gaps ${gaps.map((g) => g.toFixed(2)).join('/')})`); }

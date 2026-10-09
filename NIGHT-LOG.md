@@ -9123,3 +9123,38 @@ near the terrace's own far end.
 Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings. Three repeat
 runs afterward all came back exit 0 with no FAILs — before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 365 — chasing down the horse and carriage flake
+
+No new prop or NPC this round: a housekeeping fix on the one check these logs have flagged as flaky
+since round 219 (and again at 222, 280, 281, 348-350, 356, 358) — `Victorian: the horse and carriage are
+in the world and on the move` — tracked down properly rather than shrugged off as "timing" again.
+
+The earlier notes blamed real wall-clock jitter in `game.loop()`'s delta, but the test harness's own
+`Clock` stub (`test/stub-three.mjs`) always returns a fixed `dt = 1/60` — every simulated frame is
+exactly 1/60 s, every run, so that was never actually the cause. The real one: the per-world travel loop
+(`game.travel(idx, entry); while (game.worldIndex !== idx) { await sleep(40); frames(2); }`) polls a real
+timer racing against `game.travel()`'s own real `setTimeout` fade, so the exact number of frames burned
+settling into Victorian **does** vary run to run with system scheduling — confirmed by the renderer's own
+frame counter printed at the end (`renders: 47322`..`47354` across six otherwise-clean runs of the
+unmodified suite). That stray handful of frames shifts exactly where the horse-drawn carriage and the
+bobby on his beat (`Patroller`, round ~2894, rectangle `[-30,5.2]`..`[30,-5.2]`) land relative to each
+other. The bobby's own route crosses the carriage's lane (z=-1.3, `laneW` 1.0) twice a loop, at x=-30 and
+x=30, and `Vehicle.update()`'s `mustStop` politely halts the carriage for the few seconds he's actually
+mid-crossing — exactly as it already halts for the cat. The old check measured a fixed 120-frame
+(2 s) window for over 2 m of net travel; landing one of those crossings inside that short a window could
+eat enough of it to fail, which is the flake.
+
+Fix is in the test only, `test/run.mjs`: the window is now 400 frames (6.67 s) and the check sums each
+frame's own `|dx|` rather than net displacement (same pattern Candy Land's ring-dance check already
+uses), both to survive a full crossing (worst case ~3.5 s stalled, still leaves 13 m or so of margin
+below the 3 m threshold) and to stay immune to `Vehicle`'s own x-wraparound at the lane's `limit`, which
+a net-displacement check over this many frames could otherwise land squarely on. Nothing about the
+carriage, the bobby or `Vehicle` itself changed — the stop-for-pedestrians behaviour is correct and
+staying.
+
+Ten repeat runs of the full suite afterward all came back exit 0 with the carriage check reporting a
+healthy 10-14 m travelled each time, no FAILs — the first time in over a hundred rounds of this log that
+this particular flake has had an actual fix behind it rather than a re-run. `python3 build.py` rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy (no gameplay bytes changed, only the
+test harness).
