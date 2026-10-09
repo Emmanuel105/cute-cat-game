@@ -8572,3 +8572,30 @@ Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok` (Whisper 
 one, to 51), 0 console warnings, physics box count unchanged at 297 (read off the Neighborhood, which
 this round never touched); three repeat runs afterward all exit 0 with no flakes — before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 346 — marbles for Robot City
+
+Every world's playground has its hopscotch girl, its scooter kid, its jump-roper and its hula hooper by
+now, but nobody anywhere had picked up the oldest pavement game of all. **A boy now kneels on the open
+factory floor west of Robot City's own hula hooper, flicking marbles at a chalked ring.** *"Right in the
+ring — that one's mine now!"* *"Careful, puss — don't swallow one of these."* *"Robots don't play for
+keeps. Something about the grip."*
+
+No new controller: `Kneeler`'s own patting motion already reads as the flick, the same trick the
+hopscotch chalker and the scooter kid both already use, so this is a placement — a chalk ring (`G.torus`,
+the same chalky colour and transparency the hopscotch squares use) and six small glass-coloured
+`G.sphere` marbles, five resting inside the ring and one paused just outside it at the boy's own hand,
+about to be flicked in. A headless probe (the same stub-three harness `test/run.mjs` uses) built the real
+Robot City (`game.load(2, 'from-prev')`), sampled every NPC's own position every quarter second over 30
+simulated seconds (so no wandering robot pack, the sentry's patrol, the tag, catch or ring dance mid-turn
+could slip past unnoticed), then swept the open floor (radius 15-85, short of the radius (98) where
+`robotRegion`'s own procedural fill takes over) against both those samples and every one of the city's
+physics boxes: (-69, 19.5) came back clear by 12.2 m of the nearest box and 18.8 m of the nearest other
+soul (the hula hooper at (-62, 2)). Placed last of every person this world's build adds, after the statue
+cleaner and the drone-flies, so it draws from the very tail of this world's own local `r()` sequence and
+disturbs no earlier wardrobe or colour pick.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok` (Robot City's own friend count up
+one, to 56), 0 console warnings, physics box count unchanged at 297 (read off the Neighborhood, which
+this round never touched); three repeat runs afterward all exit 0 with no flakes — before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

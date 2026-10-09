@@ -8433,6 +8433,31 @@ function buildRobotCity(game, entry) {
   makeWoodenDoor(game, 19, -15, 0, () => game.travel(3, 'from-prev'));
   const back = makeRingPortal(0xff5fd2, { frame: 0x3a4048 }); place(game, U, back, -10, 12, 0); P.addBox(-11.4, 1.3, 12, 0.5, 2.6, 0.6); P.addBox(-8.6, 1.3, 12, 0.5, 2.6, 0.6);
   game.addInteractable({ obj: back, radius: 2.4, label: () => 'Return to Candy Land', onUse: () => game.travel(1, 'from-next') });
+  // every other world's playground has its hopscotch girl, its scooter kid, its jump-roper and its hula
+  // hooper by now — Robot City never had the oldest pavement game of all, marbles. A boy kneels on the
+  // open factory floor west of the hula hooper's own patch, flicking marbles at a chalked ring. `Kneeler`'s
+  // own patting motion already reads as the flick, so no new controller, the same trick the hopscotch
+  // chalker and the scooter kid both already use — this is a placement and a handful of small spheres,
+  // not a build. Placed last of every person this build adds, after the statue cleaner and the
+  // drone-flies, so it draws from the very tail of this world's own local `r()` sequence and disturbs no
+  // earlier wardrobe or colour pick.
+  // A headless probe built the real Robot City (`game.load(2, 'from-prev')`), sampled every NPC's own
+  // position every quarter second over 30 simulated seconds (so no wandering robot pack, the sentry's
+  // patrol, the tag, catch or ring dance mid-turn could slip past unnoticed), then swept the open floor
+  // (radius 15-85, short of the radius (98) where robotRegion's own procedural fill takes over) against
+  // both those samples and every one of the city's physics boxes: (-69, 19.5) came back clear by 12.2 m
+  // of the nearest box and 18.8 m of the nearest other soul (the hula hooper at (-62, 2)).
+  { const mcx = -69, mcz = 19.5, mkx = mcx - 0.9, mkz = mcz, mry = atan2(mcx - mkx, mcz - mkz);
+    mesh(G.torus(0.5, 0.025, 6, 24), mat(0xf7f3ec, { roughness: 0.95, transparent: true, opacity: 0.85 }), { x: mcx, y: 0.02, z: mcz, rx: -PI / 2, shadow: 'none', parent: W });
+    const marbleColors = [0xff6fb5, 0x7fe0ff, 0xffd54a, 0xb9fbc0, 0x8a5acf];
+    const marblePos = [[-0.22, 0.12], [0.18, -0.16], [0.02, 0.26], [-0.3, -0.1], [0.3, 0.05]];
+    for (let i = 0; i < marblePos.length; i++) mesh(G.sphere(0.035, 8, 6), mat(marbleColors[i], { roughness: 0.2 }), { x: mcx + marblePos[i][0], y: 0.035, z: mcz + marblePos[i][1], shadow: 'none', parent: W });
+    mesh(G.sphere(0.035, 8, 6), mat(0x00e5ff, { roughness: 0.2 }), { x: mkx + 0.35, y: 0.035, z: mkz, shadow: 'none', parent: W });   // the shooter, paused mid-flick just outside the ring
+    const marbleWard = makeWardrobe(r, { shirts: [0x6fa8ff, 0xffe27a, 0x9ad6ff], pants: [0x3a4a6a, 0x5a6a8a] });
+    const marbleKid = makeHuman({ ...randomPerson(r, { female: false, child: true, wardrobe: marbleWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(marbleKid.group);
+    game.npcs.push(new Kneeler(game, marbleKid, { x: mkx, z: mkz, ry: mry,
+      cries: ["Right in the ring — that one's mine now!", "Careful, puss — don't swallow one of these.", "Robots don't play for keeps. Something about the grip."] })); }
   const sq = new Squirrel(game, -14, -9, 'sq-robot'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('mouse', -8, 7); C.add('star', 12, -22); C.add('fish', -18, 2); C.add('yarn', 21, 9); C.add('star', 0, -27); C.add('fish', 4, 14); C.add('mouse', 26, -18); C.add('yarn', -26, -6);
