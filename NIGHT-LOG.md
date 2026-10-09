@@ -9187,3 +9187,33 @@ leashed near [30, 44]) — between the oil vendor's own patch and the juggler/ri
 Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings. Three repeat
 runs afterward all came back exit 0 with no FAILs — before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 367 — a birdbath for the Neighborhood
+
+The pinwheel, the sprinkler and the kennel each gave one of the street's sixteen front yards its own
+feature over the last several dozen rounds, but the other thirteen stayed bare, and the whole village
+never had anywhere a bird actually lived — just the birdwatcher's sparrows hopping the open grass down
+by the park. **Lot 14's own corner now holds a stone birdbath**: a shallow bowl on a short pedestal,
+water rippling in a slow pair of fading rings, with a sparrow perched on the rim dipping its beak in
+every few seconds. No new animation needed for the bird — it's `makeSparrow()`'s own built-in idle peck,
+the same gesture the birdwatcher's pair already does on the grass, just aimed down into a bowl instead
+of the lawn. *"Chirp. (Translation: lovely water, thank you.)"* *"A stone bowl of rainwater, and somehow
+the most popular spot on the street."* It's a look-and-walk-on landmark like the sprinkler before it, no
+quest attached.
+
+Everything here runs off the world clock `t` alone — the ripple rings cycle the same way the sprinkler's
+own droplet pool does, and the peck timing lives inside `rig.animate()` itself — so none of it draws from
+either this world's own seeded `r` or the shared `rnd()` sequence, the exact trap the sprinkler's own
+round warned about (the Neighborhood is the one world every test travel starts from, and an earlier stray
+`rnd()` draw anywhere in it has flaked the Victorian horse-and-carriage check before).
+
+A headless probe built the real Neighborhood, sampled every NPC's own position every 1/30 s over roughly
+33 simulated seconds (strollers, the dog walker and the postie's full round all included), and swept the
+yard corners the pinwheel, the sprinkler and the kennel hadn't already claimed against both that trace
+and the world's own physics boxes. Lot 14's usual corner offset still clipped its own porch awning, but
+pushing it out to (-57.5, 22.4) came back clear by 2.75 m of the nearest box (that same awning) and 7.0 m
+of the nearest wandering soul — comfortably past this prop's own sub-metre footprint.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, physics box
+count up by one to 301. Three repeat runs afterward all came back exit 0 with no FAILs — before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

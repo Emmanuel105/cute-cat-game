@@ -6560,6 +6560,39 @@ function buildNeighborhood(game, entry) {
       U.push(kennel.userData.update);
     }
   });
+  // the pinwheel, sprinkler and kennel above gave three of the street's sixteen yards their own
+  // feature; lot 14's own corner now gets a fourth — a stone birdbath, a shallow bowl on a short
+  // pedestal with a sparrow perched on its rim, dipping its beak into the water every few seconds.
+  // Reuses `makeSparrow()`'s own built-in idle peck (the same gesture the birdwatcher's pair already
+  // does on the grass further south), just aimed down into a bowl instead of the lawn, so it needed
+  // no new animation of its own. No draw from either this world's own seeded `r` or the shared `rnd()`
+  // sequence — the peck timing comes from the world clock `t` alone inside `rig.animate()` itself, and
+  // the ripple rings on the water are cycled by `t` the same way the sprinkler's own droplet pool is —
+  // so this costs nothing downstream, the exact caution the sprinkler's own comment above spells out.
+  // A headless probe built the real Neighborhood, sampled every NPC's own position every 1/30 s over
+  // roughly 33 simulated seconds (strollers, the dog walker and the postie's full round all included),
+  // and swept the yard corners the pinwheel/sprinkler/kennel hadn't already claimed against both that
+  // trace and the world's physics boxes: lot 14's usual corner offset still caught its own porch-awning
+  // box, but pushing it out to (x+5.5, z+front*5.6) — (-57.5, 22.4) — came back clear by 2.75 m of the
+  // nearest box (that same awning) and 7.0 m of the nearest wandering soul, comfortably past this
+  // prop's own sub-metre footprint and outside every zone this build registers.
+  { const bx = -57.5, bz = 22.4, standH = 0.58, bowlR = 0.4, bowlH = 0.15;
+    const stoneMat = mat(0x9a9488, { roughness: 0.9 }), waterMat = mat(0x8fd0e8, { roughness: 0.2, transparent: true, opacity: 0.78 });
+    const bath = group(bx, 0, bz, W);
+    mesh(G.cyl(0.1, 0.15, standH, 10), stoneMat, { y: standH / 2, shadow: 'both', parent: bath });
+    mesh(G.cyl(bowlR, bowlR * 0.84, bowlH, 16), stoneMat, { y: standH + bowlH / 2, shadow: 'both', parent: bath });
+    noInk(mesh(G.torus(bowlR * 0.93, 0.03, 8, 20), stoneMat, { y: standH + bowlH, parent: bath }));
+    mesh(G.cyl(bowlR * 0.82, bowlR * 0.82, 0.02, 16), waterMat, { y: standH + bowlH - 0.02, shadow: 'none', parent: bath });
+    const RCYCLE = 2.6, ripples = [0, 1].map(() => noInk(mesh(G.torus(0.05, 0.008, 6, 16), mat(0xe8f8ff, { transparent: true, opacity: 0.55 }), { y: standH + bowlH - 0.004, rx: PI / 2, shadow: 'none', parent: bath })));
+    U.push((dt, t) => { for (let ri = 0; ri < ripples.length; ri++) { const rt = (t + ri * (RCYCLE / ripples.length)) % RCYCLE, k = rt / RCYCLE, rad = 0.04 + k * (bowlR * 0.72), s = rad / 0.05; ripples[ri].scale.set(s, 1, s); ripples[ri].material.opacity = 0.5 * (1 - k); } });
+    P.addBox(bx, (standH + bowlH) / 2, bz, bowlR, standH + bowlH, bowlR, { cam: false });
+    const rimAngle = 0, rimX = bx + bowlR * 0.82 * cos(rimAngle), rimZ = bz + bowlR * 0.82 * sin(rimAngle);
+    const visitor = makeSparrow(); W.add(visitor.group);
+    visitor.group.position.set(rimX, standH + bowlH, rimZ);
+    visitor.group.rotation.y = atan2(-cos(rimAngle), -sin(rimAngle));
+    U.push((dt, t) => visitor.animate(0, false, dt, t));
+    const bathLines = ['🐦 "Chirp. (Translation: lovely water, thank you.)"', '🪶 "A stone bowl of rainwater, and somehow the most popular spot on the street."', '💧 "That sparrow\'s been dipping in and out of it all morning."'];
+    game.addInteractable({ obj: bath, radius: 1.8, label: () => 'Look at the birdbath', onUse: () => { SFX.click(); game.toast(rnd.pick(bathLines), 3000); } }); }
   // street trees + yard trees + wild trees
   for (let x = -82; x <= 82; x += 8.8) { if (abs(x) < 3 || abs(x - 44) < 6) continue; addTree(game, r.pick(['oak', 'oak', 'birch']), x + r.range(-1, 1), 9.2, r); addTree(game, r.pick(['oak', 'pine', 'birch']), x + 4 + r.range(-1, 1), 18.8, r); }
   for (const [x, z, k] of [[-9, -9, 'oak'], [10, -9, 'pine'], [-42, 12, 'pine'], [26, -6, 'birch'], [-22, 40, 'oak'], [30, 44, 'pine'], [-30, 52, 'birch'], [20, 54, 'oak'], [-8, 56, 'pine'], [48, 30, 'oak'], [52, -12, 'pine'], [-50, -20, 'oak'], [-15, -25, 'pine'], [30, -28, 'oak'], [4, -30, 'birch'],
