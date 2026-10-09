@@ -8738,3 +8738,30 @@ one, to 52), 0 console warnings, physics box count unchanged at 297 (no new box,
 meshes). Three repeat runs afterward all exit 0 with no flakes — before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Only Whisper Woods is left without a
 marbles ring of its own now.
+
+
+## Round 352 — marbles for Whisper Woods
+
+Robot City, the Neighborhood, Victorian, Candy Land, Sunny Shore and Frosty Peak all had a marbles ring
+by now — the oldest pavement game of all — and Whisper Woods was the last of the seven left without one.
+**A child now kneels on the forest floor off to the side of the stepping-stone path, flicking marbles at
+a ring chalked straight onto the packed earth.** *"Watch close — I never miss."* *"Careful, puss — don't
+swallow one of these."* *"Won every single one, fair and square."*
+
+No new controller: `Kneeler`'s own patting motion already reads as the flick, same as every other ring
+in this file, so this is a placement — a chalk ring (`G.torus`) and six small glass-coloured `G.sphere`
+marbles, same geometry and colours as the other six worlds' rings — not a build. Terrain-aware
+`P.ground0()` lookups for every mesh here, like Sunny Shore's and Frosty Peak's own versions, since the
+forest floor rolls gently underfoot too. A headless probe (the same stub-three harness `test/run.mjs`
+uses) built the real Whisper Woods (`game.travel(6, 'from-hub')`), sampled every NPC's and the squirrel's
+own position every tenth of a second over 30 simulated seconds (so no wandering deer, fox or flying fairy
+mid-leash could slip past unnoticed), then swept a 1 m grid of the open floor (radius ≤ 55, short of the
+radius (58) where `forestRegion`'s own fill takes over) against both those samples and every physics box:
+(-8, 39) came back clear by 8.53 m of the nearest box and 9.60 m of the nearest other soul, at radius
+39.8 from the origin, with ground height varying only 0.06 m across the whole footprint.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok` (Whisper Woods' own friend count up
+one, to 52), 0 console warnings, physics box count unchanged at 297 (no new box, only decorative meshes
+and a `Kneeler` leash circle). Three repeat runs afterward all exit 0 with no flakes — before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Every world now has its own marbles
+ring.

@@ -11178,6 +11178,33 @@ function buildForest(game, entry) {
     game.npcs.push(new Kneeler(game, chalker, { x: kx, z: kz, ry: atan2(squares[0][0] - kx, squares[0][1] - kz),
       cries: ['Six squares, dry before the dew comes back.', 'Careful, puss — mind the chalk lines!', "Quietest spot in the whole wood for it."] })); }
 
+  // Robot City, the Neighborhood, Victorian, Candy Land, Sunny Shore and Frosty Peak all have a marbles
+  // ring by now — the oldest pavement game of all — and Whisper Woods was the last of the seven left
+  // without one. A child now kneels on the forest floor east of the stepping-stone path, flicking
+  // marbles at a ring chalked straight onto the packed earth. Same `Kneeler` pairing every other
+  // world's version already uses, no new controller, and the terrain-aware `P.ground0()` lookup (like
+  // Sunny Shore's and Frosty Peak's own versions) for every mesh here, since the forest floor rolls
+  // gently underfoot too. A headless probe (the same stub-three harness `test/run.mjs` uses) built the
+  // real Whisper Woods (`game.travel(6, 'from-hub')`), sampled every NPC's and the squirrel's own
+  // position every tenth of a second over 30 simulated seconds (so no wandering deer, fox or flying
+  // fairy mid-leash could slip past unnoticed), then swept a 1 m grid of the open floor (radius <= 55,
+  // short of the radius (58) where forestRegion's own fill takes over) against both those samples and
+  // every physics box: (-8, 39) came back clear by 8.53 m of the nearest box and 9.60 m of the nearest
+  // other soul, at radius 39.8 from the origin — well off to the side of the stepping-stone path and
+  // short of the tree ring that starts at 40 — with ground height varying only 0.06 m across the whole
+  // footprint. Placed last, after every other draw this build makes from its own local `r`, so this
+  // one extra gender pick disturbs nothing built earlier in the wood.
+  { const mcx = -8, mcz = 39, mkx = mcx - 0.9, mkz = mcz, mry = atan2(mcx - mkx, mcz - mkz);
+    mesh(G.torus(0.5, 0.025, 6, 24), mat(0xf7f3ec, { roughness: 0.95, transparent: true, opacity: 0.85 }), { x: mcx, y: P.ground0(mcx, mcz) + 0.02, z: mcz, rx: -PI / 2, shadow: 'none', parent: W });
+    const marbleColors = [0xff6fb5, 0x7fe0ff, 0xffd54a, 0xb9fbc0, 0x8a5acf];
+    const marblePos = [[-0.22, 0.12], [0.18, -0.16], [0.02, 0.26], [-0.3, -0.1], [0.3, 0.05]];
+    for (let i = 0; i < marblePos.length; i++) { const px = mcx + marblePos[i][0], pz = mcz + marblePos[i][1]; mesh(G.sphere(0.035, 8, 6), mat(marbleColors[i], { roughness: 0.2 }), { x: px, y: P.ground0(px, pz) + 0.035, z: pz, shadow: 'none', parent: W }); }
+    mesh(G.sphere(0.035, 8, 6), mat(0xffd54a, { roughness: 0.2 }), { x: mkx + 0.35, y: P.ground0(mkx + 0.35, mkz) + 0.035, z: mkz, shadow: 'none', parent: W });   // the shooter, paused mid-flick just outside the ring
+    const marbleKid = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(marbleKid.group);
+    game.npcs.push(new Kneeler(game, marbleKid, { x: mkx, z: mkz, ry: mry,
+      cries: ["Watch close — I never miss.", "Careful, puss — don't swallow one of these.", "Won every single one, fair and square."] })); }
+
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
 
