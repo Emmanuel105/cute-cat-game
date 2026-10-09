@@ -8497,6 +8497,34 @@ function buildRobotCity(game, entry) {
     const v = new Vendor(game, oilSeller, makeOilCan(), { x: cx, z: cz, ry: atan2(-cx, -cz), cryIcon: '🛢️',
       cries: ['Fresh oil, straight off the line!', 'Careful, puss - not for licking.', 'Every robot in the city swears by this brand.'] });
     game.npcs.push(v); greetable(game, v); }
+  // the oil vendor above sells by hand when she's on shift, but nothing in this city dispenses on its
+  // own. A vending machine now stands on the open floor north of the ring-dance clearing, squat and
+  // scuffed, its screen flickering between an oil-drop icon and a wall of small print nobody reads. A
+  // headless probe (the same stub-three harness `test/run.mjs` uses) built the real Robot City
+  // (`game.travel(2, 'from-prev')`), sampled every NPC's own position every quarter second over 150
+  // simulated seconds — long enough for the sentry's and RoboDog's full patrol loops and several
+  // tag/catch/ring-dance cycles to show up, not just whatever a short snapshot happened to catch — then
+  // swept the open floor (radius 15-55, well short of the city's hand-built edge) against both those
+  // samples and every one of the city's physics boxes: (25, 36) came back clear by 10.1 m of the nearest
+  // box (a skyscraper wall) and 9.4 m of the nearest other soul (the wandering robot leashed near
+  // [30, 44]), between the oil vendor's own patch to the south and the juggler/ring-dance corner to the
+  // north-west. No new controller: it's a static machine like the furnace and the statue, its screen and
+  // point light flickering on the world clock `t` alone, never this world's own seeded `r`, so it costs
+  // no later wardrobe or layout pick anywhere in this build.
+  { const vx = 25, vz = 36, vh = 0.95, vry = atan2(-vx, -vz);
+    const steel = mat(0x5a6470, { metalness: 0.75, roughness: 0.35 }), dark = mat(0x232832, { roughness: 0.6 });
+    const vend = group(vx, 0, vz, W); vend.rotation.y = vry;
+    mesh(G.box(0.9, 1.9, 0.6), steel, { y: vh, parent: vend });
+    mesh(G.box(0.76, 0.9, 0.02), dark, { y: 1.25, z: 0.31, parent: vend });
+    const screen = mesh(G.box(0.7, 0.8, 0.01), glowMat(0x00e5ff, 1.4), { y: 1.25, z: 0.325, shadow: 'none', parent: vend });
+    for (let i = 0; i < 3; i++) mesh(G.cyl(0.03, 0.03, 0.03, 10), mat([0xff9f43, 0x4ade80, 0xffe040][i], { roughness: 0.4 }), { x: -0.28 + i * 0.28, y: 0.62, z: 0.31, rx: PI / 2, parent: vend });
+    mesh(G.box(0.7, 0.14, 0.1), dark, { y: 0.2, z: 0.26, parent: vend });
+    const pl = pointLight(0x00e5ff, 14, 5, vx + sin(vry) * 0.32, 1.4, vz + cos(vry) * 0.32, W);
+    U.push((dt, t) => { const k = 0.9 + max(0, sin(t * 3.3)) * 0.8; screen.material.emissiveIntensity = k; pl.intensity = 7 + k * 5; });
+    P.addBox(vx, vh, vz, 1.0, 1.9, 0.7, { cam: false });
+    const dropX = vx + sin(vry) * 0.32, dropZ = vz + cos(vry) * 0.32;
+    const vendLines = ['🛢️ "Exact change only. It has never once given correct change."', '🛢️ "Vends oil, bolts, and — twice now — a single sock."', '🛢️ "No queue, no vendor, just the machine. Somehow colder than the vendor\'s own banter."'];
+    game.addInteractable({ obj: vend, radius: 2.6, label: () => 'Buy an oil can', onUse: () => { SFX.clang(); game.fx.emit(dropX, vh - 0.6, dropZ, { count: 10, colors: [0x4ade80, 0x00e5ff, 0xcccccc], speed: 1.0, up: 1.2, life: 0.7, gravity: 2.4 }); game.toast(rnd.pick(vendLines), 3000); } }); }
   // every other world has someone sitting down somewhere; Robot City never did, for all its benches-free
   // concrete. The quiet patch by the spotlight pole at (10, 12) had room: nearest neighbour is that pole
   // itself at 8.25 m, with the mechanic, painter and oil vendor all 10 m or further off and no wanderer's

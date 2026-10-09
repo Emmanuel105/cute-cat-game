@@ -9158,3 +9158,32 @@ healthy 10-14 m travelled each time, no FAILs — the first time in over a hundr
 this particular flake has had an actual fix behind it rather than a re-run. `python3 build.py` rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy (no gameplay bytes changed, only the
 test harness).
+
+## Round 366 — an oil vending machine for Robot City
+
+Robot City had a human oil vendor holding up cans by the plaza since round ~302, but nothing in the
+whole city dispensed anything on its own — every other machine (the furnace, the conveyors, the robot
+arm) needed a worker standing over it, and this one world full of automation had no actual vending
+machine. **A squat, scuffed oil-vending machine now stands on the open floor north of the ring-dance
+clearing**, its cyan screen flickering between an oil-drop icon and a wall of fine print nobody reads,
+three coloured buttons under the glass and a drop slot at the bottom. Press E and it clangs, a handful
+of green-cyan-grey sparks spit from the slot, and it tells you about itself: *"Exact change only. It has
+never once given correct change."* *"Vends oil, bolts, and — twice now — a single sock."* *"No queue, no
+vendor, just the machine. Somehow colder than the vendor's own banter."* It's a static landmark, same
+pattern as the furnace and the statue — no new controller, just a mesh, a point light and a screen that
+flickers on the world clock, never Robot City's own seeded RNG, so it can't disturb any later wardrobe
+pick in this build.
+
+A headless probe (the same stub-three harness `test/run.mjs` uses) ran into a real gotcha building this
+one: the first pass sampled every NPC's position for only 20 simulated seconds and found a "clear" spot
+that turned out to be inside the sentry's own patrol rectangle, because the sentry's robot never actually
+moves in that harness until `game.started` is true — a `click` on the `enter` button that the probe had
+skipped. Fixed the probe, not the game: clicking start, then sampling continuously over 150 simulated
+seconds (long enough for the sentry's and RoboDog's full patrol loops and several tag/catch/ring-dance
+cycles to show up for real, not just whatever a short snapshot happened to catch) found (25, 36) clear by
+10.1 m of the nearest box (a skyscraper wall) and 9.4 m of the nearest other soul (the wandering robot
+leashed near [30, 44]) — between the oil vendor's own patch and the juggler/ring-dance corner.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings. Three repeat
+runs afterward all came back exit 0 with no FAILs — before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
