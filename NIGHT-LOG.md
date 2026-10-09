@@ -8822,3 +8822,34 @@ head settled back down once the cat retreated.
 Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings. Three repeat
 runs afterward all exit 0 with no flakes — before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 355 — a jack-in-the-box for Candy Land
+
+Robot City's archive-bot and Victorian's night watchman both react to the cat on their own — no `E`
+needed — but that trick had only ever been tried in those two worlds. **A candy-striped jack-in-the-box
+now sits closed on the open grass east of the chocolate river, spring crouched down inside, until the
+cat wanders within 7 m.** The lid flips open and a bell-capped jester springs up with a bounce and a
+shout, then settles back down and swings the lid shut again once the cat wanders off. *"Surprise! …did
+I get you? I always get them."* *"Careful, puss — I spring higher than I look."* *"Nobody's jumped this
+high since the Queen's own coronation."*
+
+A build, not a controller: the lid is a plain hinged group tipping open on `rotation.x`, the spring and
+jester ride the box's own local Y, and the one-shot toast on approach plus the quiet close on retreat
+reuse the same `dist2`-and-a-bool trick the watchman's bench and the Candy Queen's growl already use —
+all driven by `damp()` toward an open/closed target exactly like the airlock door's own sliding panels.
+No new SFX: the pop reuses `SFX.bounce()`, already in the file but never called from this build. A
+headless probe built the real Candy Land (`game.travel(1, 'from-prev')`), sampled every NPC's and the
+squirrel's own position every quarter second over 30 simulated seconds (so no marching, dancing or
+wandering gingerbread man, nor the tag or catch pairs mid-turn, could slip past unnoticed), then swept a
+1.5 m grid of the open sweet-lands (radius 10–45, clear of the chocolate river's own keep-out band)
+against both those samples and every one of the world's 1867 physics boxes: (40.5, -1.5) came back
+clear by 9.8 m of the nearest box and 15.0 m of the nearest other soul, at radius 40.5 from the origin —
+well inside the candy-cane ring (which only starts at radius 56) and nowhere near either bridge (x = 0,
+-44, 46) or the river's own z-band. A second probe started the game properly (so the world's own update
+loop actually runs), walked the cat up to the box and back: the lid sat closed at rest, flipped open
+(hinge rotation -2.10 rad) and fired the toast the moment the cat crossed the 7 m line, then swung back
+to closed (-0.01 rad) once the cat retreated.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings. Four repeat
+runs afterward all exit 0 with no flakes — before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

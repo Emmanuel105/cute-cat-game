@@ -1584,6 +1584,52 @@ function buildCandyLand(game, entry) {
     const marbleKid = makeHuman({ ...randomPerson(r, { female: false, child: true, wardrobe: marbleWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false }); W.add(marbleKid.group);
     game.npcs.push(new Kneeler(game, marbleKid, { x: mkx, z: mkz, ry: mry,
       cries: ["Watch close — I never miss.", "Careful, puss — don't swallow one of these.", "Won every single one fair and square."] })); }
+  // Robot City's archive-bot and Victorian's night watchman both react to the cat on their own, no `E`
+  // needed, but that trick had only ever been tried in those two worlds. A candy-striped jack-in-the-box
+  // now sits closed on the open grass east of the chocolate river, spring crouched down inside — until
+  // the cat wanders within 7 m, when the lid flips open and a bell-capped jester springs up with a
+  // bounce and a shout, settling back down and swinging the lid shut again once the cat wanders off.
+  // A headless probe built the real Candy Land (`game.travel(1, 'from-prev')`), sampled every NPC's
+  // and the squirrel's own position every quarter second over 30 simulated seconds (so no marching,
+  // dancing or wandering gingerbread man, nor the tag or catch pairs mid-turn, could slip past
+  // unnoticed), then swept a 1.5 m grid of the open sweet-lands (radius 10-45, clear of the chocolate
+  // river's own keep-out band) against both those samples and every one of the world's 1867 physics
+  // boxes: (40.5, -1.5) came back clear by 9.8 m of the nearest box and 15.0 m of the nearest other
+  // soul, at radius 40.5 from the origin — well inside the candy-cane ring (which only starts at radius
+  // 56) and nowhere near either bridge (x = 0, -44, 46) or the river's own z-band.
+  { const bx = 40.5, bz = -1.5, bry = atan2(0 - bx, 0 - bz);
+    const box = group(bx, 0, bz, W); box.rotation.y = bry;
+    const stripeA = mat(0xd6283c, { roughness: 0.6 }), stripeB = mat(0xfffdf7, { roughness: 0.5 }), gold = mat(0xd4af37, { roughness: 0.35, metalness: 0.4 });
+    mesh(G.box(0.9, 0.62, 0.9), stripeA, { y: 0.31, parent: box });
+    for (let i = 0; i < 4; i++) mesh(G.box(0.92, 0.1, 0.92), stripeB, { y: 0.08 + i * 0.16, shadow: 'none', parent: box });
+    for (const s of [-1, 1]) mesh(G.box(0.04, 0.62, 0.92), gold, { x: s * 0.45, y: 0.31, shadow: 'none', parent: box });
+    P.addBox(bx, 0.31, bz, 0.9, 0.62, 0.9);
+    // the lid hinges off the box's own back edge so it tips up and open rather than sliding
+    const hinge = group(0, 0.62, -0.45, box);
+    mesh(G.box(0.92, 0.08, 0.92), stripeA, { y: 0.04, z: 0.45, parent: hinge });
+    mesh(G.sphere(0.07, 10, 8), gold, { y: 0.08, z: 0.87, shadow: 'none', parent: hinge });
+    // the spring and the jester riding it, parented together so the whole figure rides the box's own local Y
+    const spring = group(0, 0.31, 0, box);
+    mesh(G.cyl(0.18, 0.18, 0.4, 10), mat(0xffd54a, { roughness: 0.4 }), { parent: spring });
+    for (let i = 0; i < 5; i++) noInk(mesh(G.torus(0.19, 0.025, 6, 14), mat(0xff8f1f, { roughness: 0.4 }), { y: -0.18 + i * 0.09, rx: PI / 2, shadow: 'none', parent: spring }));
+    const face = group(0, 0.42, 0, spring);
+    mesh(G.sphere(0.2, 14, 10), mat(0xffe0b8, { roughness: 0.7 }), { parent: face });
+    for (const s of [-1, 1]) mesh(G.sphere(0.028, 8, 6), mat(0x1a1410), { x: s * 0.08, y: 0.03, z: 0.17, shadow: 'none', parent: face });
+    noInk(mesh(G.torus(0.08, 0.012, 6, 10, PI), mat(0x8a2a2a), { y: -0.04, z: 0.18, rx: PI, shadow: 'none', parent: face }));
+    for (const s of [-1, 1]) { const horn = group(s * 0.12, 0.16, 0, face); horn.rotation.z = s * 0.9;
+      mesh(G.cone(0.075, 0.32, 8), stripeB, { y: 0.16, parent: horn }); mesh(G.sphere(0.045, 8, 6), gold, { y: 0.32, shadow: 'none', parent: horn }); }
+    let boxNear = false, boxOpen = 0;
+    const boxLines = ['🪅 "Surprise! …did I get you? I always get them."', '🪅 "Careful, puss — I spring higher than I look."', '🪅 "Nobody\'s jumped this high since the Queen\'s own coronation."'];
+    box.userData.update = (dt, t) => {
+      const c = game.cat.group.position, near = dist2(c.x, c.z, bx, bz) < 49;
+      boxOpen = damp(boxOpen, near ? 1 : 0, 6, dt);
+      hinge.rotation.x = -boxOpen * 2.1;
+      spring.position.y = 0.31 + boxOpen * 0.5 + (near ? sin(t * 9) * 0.04 * boxOpen : 0);
+      face.rotation.z = near ? sin(t * 7) * 0.15 * boxOpen : 0;
+      if (near && !boxNear) { boxNear = true; SFX.bounce(); game.toast(rnd.pick(boxLines)); game.fx.emit(bx, 0.9, bz, { count: 14, colors: [0xffd54a, 0xff6fb5, 0x7fd7ff], speed: 1.4, up: 1.2, life: 0.7, gravity: 2.2, spread: 0.5 }); }
+      if (!near) boxNear = false;
+    };
+    U.push(box.userData.update); }
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('star', 7, -6); C.add('yarn', -9, 9); C.add('fish', -16, -13); C.add('mouse', 16, -9); C.add('star', -10, -27); C.add('yarn', 22, 4); C.add('mouse', -28, 26); C.add('fish', 14, -44); C.add('star', 0, -56); C.add('mouse', -58, 30); C.add('yarn', 60, 36);
