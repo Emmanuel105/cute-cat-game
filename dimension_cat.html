@@ -11003,6 +11003,35 @@ function buildForest(game, entry) {
     game.npcs.push(new Kneeler(game, scooterKid, { x: kx, z: kz, ry,
       cries: ['Wobbly bolt again - nearly got it.', "Careful, puss — mind your tail, this spins.", "Good as new. Straight down the path, no hands."] })); }
 
+  // the Neighborhood, Robot City, Victorian, Candy Land, Sunny Shore and Frosty Peak all have a kid
+  // chalking a row of hopscotch squares by now (`Kneeler` + six colour-coded `G.plane` decals) —
+  // Whisper Woods was the last of the seven without one. A girl now kneels on the forest floor deep in
+  // the south of these woods, chalking six squares straight onto the packed earth, not far from the
+  // jump rope kid's own clearing. Built with plain `makeHuman` rather than a local `kid()` wardrobe
+  // helper (unlike Frosty Peak's own version), since nothing else in these woods dresses its children
+  // against the cold. Like Sunny Shore's and Frosty Peak's own versions, each decal square asks
+  // `P.ground0()` for its own height instead of sharing one flat `y`, since the forest floor rolls
+  // gently underfoot here too — `Kneeler` already asks `ground0()` for its own rig regardless of
+  // world, so that part needed no change. A headless probe (the same stub-three harness `test/run.mjs`
+  // uses) built the real Whisper Woods (`game.travel(6, 'from-hub')`), sampled every NPC's and the
+  // squirrel's own position every quarter second over 30 simulated seconds (so no wandering deer, fox
+  // or flying fairy mid-leash could slip past unnoticed), then swept a 2 m grid of the open floor
+  // (radius <= 50, short of the radius (58) where forestRegion's own fill takes over) against both
+  // those samples and every physics box: the six-square run from (26, -42) to (28.9, -42) came back
+  // clear by 4.17-7.09 m of the nearest box and 14.94-17.94 m of the nearest other soul, with ground
+  // height varying only 0.06 m across the whole footprint. Placed last, after every other draw this
+  // build makes from its own local `r`, so this one extra gender pick disturbs nothing built earlier.
+  { const gz = -42, kx = 25.1, kz = -42, squares = [];
+    const squareColors = [0xffb3c6, 0xbde0fe, 0xfff3b0, 0xb9fbc0, 0xcdb4db, 0xffc8dd];
+    for (let i = 0; i < 6; i++) { const gx = 26 + i * 0.58; squares.push([gx, gz]);
+      mesh(G.plane(0.48, 0.48), mat(squareColors[i], { roughness: 0.95, transparent: true, opacity: 0.85 }), { x: gx, y: P.ground0(gx, gz) + 0.018, z: gz, rx: -PI / 2, shadow: 'none', parent: W }); }
+    const chalker = makeHuman({ ...randomPerson(r, { female: true, child: true }), hairStyle: 'braids', hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(chalker.group);
+    const chalk = group(0, 0.02, 0.09, chalker.hands[0]); chalk.rotation.x = -0.5;
+    mesh(G.cyl(0.014, 0.014, 0.09, 6), mat(0xf7f3ec, { roughness: 0.9 }), { y: 0.045, parent: chalk });
+    game.npcs.push(new Kneeler(game, chalker, { x: kx, z: kz, ry: atan2(squares[0][0] - kx, squares[0][1] - kz),
+      cries: ['Six squares, dry before the dew comes back.', 'Careful, puss — mind the chalk lines!', "Quietest spot in the whole wood for it."] })); }
+
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
 

@@ -8545,3 +8545,30 @@ tested and finished before Frosty Peak, `idx === 5`, is even loaded) — confirm
 unmodified code three times beforehand with no flakes at all, and by the fact this round's own new `r()`
 draws live inside Frosty Peak's local seeded RNG, never the shared global `rnd()` the kite's wind gusts
 depend on — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 345 — a hopscotch grid for Whisper Woods
+
+Neighborhood, Robot City, Victorian, Candy Land, Sunny Shore and Frosty Peak all have a kid chalking a
+row of hopscotch squares by now — Whisper Woods was the last of the seven without one. **A girl now
+kneels on the forest floor deep in the south of these woods, chalking six squares straight onto the
+packed earth, not far from the jump rope kid's own clearing.** *"Six squares, dry before the dew comes
+back."* *"Careful, puss — mind the chalk lines!"* *"Quietest spot in the whole wood for it."*
+
+Same `Kneeler` plus six colour-coded `G.plane` decals every other hopscotch grid in this file uses,
+built with plain `makeHuman` rather than a local `kid()` wardrobe helper (unlike Frosty Peak's own
+version), since nothing else in these woods dresses its children against the cold. Like Sunny Shore's
+and Frosty Peak's own versions, each decal square asks `P.ground0()` for its own height instead of
+sharing one flat `y`, since the forest floor rolls gently underfoot here too — `Kneeler` already asks
+`ground0()` for its own rig regardless of world, so that part needed no change. A headless probe (the
+same stub-three harness `test/run.mjs` uses) built the real Whisper Woods (`game.travel(6, 'from-hub')`),
+sampled every NPC's and the squirrel's own position every quarter second over 30 simulated seconds (so
+no wandering deer, fox or flying fairy mid-leash could slip past unnoticed), then swept a 2 m grid of the
+open floor (radius ≤ 50, short of the radius (58) where `forestRegion`'s own fill takes over) against
+both those samples and every one of the wood's own physics boxes: the six-square run from (26, -42) to
+(28.9, -42) came back clear by 4.17-7.09 m of the nearest box and 14.94-17.94 m of the nearest other
+soul, with ground height varying only 0.06 m across the whole footprint.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok` (Whisper Woods' own friend count up
+one, to 51), 0 console warnings, physics box count unchanged at 297 (read off the Neighborhood, which
+this round never touched); three repeat runs afterward all exit 0 with no flakes — before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
