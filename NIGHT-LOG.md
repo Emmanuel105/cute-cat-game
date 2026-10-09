@@ -8794,3 +8794,31 @@ leash (the nearest, centred at `(-16, -2)` with leash 9, cannot reach closer tha
 Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok` (Robot City's own friend count up
 one, to 57), 0 console warnings. Four repeat runs afterward all exit 0 with no flakes — before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 354 — a night watchman for Victorian
+
+Victorian had a daytime bobby on the beat, but no "Charley" — the night watchman every gaslit town
+actually had — and the archive-bot's own trick two rounds back (a landmark that reacts on its own,
+no `E` needed) had only ever been tried in Robot City. **One now naps on a bench in the quiet grass
+south of the market square, lantern set down beside him, chin on his chest, dead asleep — until the
+cat gets close.** *"WHO GOES THERE?! …oh. Just a cat. Carry on, carry on."* Walk off and he nods back
+to sleep, breath puffing gently in the cold.
+
+No new controller: `Sitter` poses him exactly like the park bench's own pair in the Neighborhood and
+every knitter and reader since; the sleeping nod is a plain per-frame override of `rig.head.rotation.x`
+(which `Sitter` itself only ever touches on `rotation.y`, so nothing fights it), and the one-shot wake
+is the same `dist2`-and-a-bool trick the Candy Queen's growl and Frosty Peak's yeti already use. The
+lantern beside him is new geometry — a small glass box on an iron cage, a real flickering point light,
+and the same emissive-sine trick the market square's own fountain light uses — plus a handful of cold
+little "breath" puffs while he sleeps, reusing the sparkle particle system rather than any new effect.
+A headless probe built the real Victorian town (`game.travel(3, 'from-prev')`) and sampled every NPC's
+own position every tenth of a second over 30 simulated seconds, then swept the open grass south of the
+market square against both those samples and every one of the town's physics boxes: (36, -30) came
+back clear by 15.0 m of the nearest box and 21.3 m of the nearest other soul, at radius 46.9 from the
+origin — comfortably short of the radius (88) where victorianRegion's own procedural fill takes over.
+A second probe walked the cat straight up to him and back: the wake toast fired right on cue, and his
+head settled back down once the cat retreated.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings. Three repeat
+runs afterward all exit 0 with no flakes — before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

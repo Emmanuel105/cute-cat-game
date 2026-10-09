@@ -9247,6 +9247,48 @@ function buildVictorian(game, entry) {
     W.add(marbleKid.group);
     game.npcs.push(new Kneeler(game, marbleKid, { x: mkx, z: mkz, ry: mry,
       cries: ["Fair go, guv'nor — mind my aim!", "Careful, puss — don't swallow one of these.", "Grandad gave me the bag. Won them all himself, he says."] })); }
+  // every world's open spaces have filled in fast, but Victorian's own night watchman — the "Charley"
+  // who should have been patrolling these streets after dark — was never actually there: only the bobby
+  // on the beat (a daytime constable by uniform) stood in for him. One now naps on a bench in the quiet
+  // grass south of the market square, lantern set down beside him, chin on his chest, fast asleep.
+  // Reuses `Sitter` exactly as the park bench's own pair in the Neighborhood and every knitter, whittler
+  // and reader since — the sleeping nod is a plain per-frame override of `rig.head.rotation.x` (which
+  // `Sitter` itself only ever touches on `rotation.y`, so nothing fights it), and the one-shot wake is
+  // the same `dist2`-and-a-bool trick the Candy Queen's growl and Frosty Peak's yeti already use. A
+  // headless probe built the real Victorian town (`game.travel(3, 'from-prev')`) and sampled every
+  // NPC's own position every tenth of a second over 30 simulated seconds (so no wandering urchin,
+  // dancer or game mid-turn could slip past unnoticed), then swept the open grass south of the market
+  // square against both those samples and every one of the town's physics boxes: (36, -30) came back
+  // clear by 15.0 m of the nearest box and 21.3 m of the nearest other soul, at radius 46.9 from the
+  // origin — comfortably short of the radius (88) where victorianRegion's own procedural fill takes over.
+  { const wx = 36, wz = -30, wry = 0;
+    const watchWard = makeWardrobe(r, { shirts: [0x2a2e38, 0x30342e], pants: [0x1e1e24], shoes: [0x1a1410] });
+    const watchman = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: true, wardrobe: watchWard }),
+      pants: 0x1e1e24, coat: true, hat: 'flatcap', hatColor: 0x1e2436, scarf: 0x3a3a44, buttons: null,
+      beard: false, moustache: true, glasses: false, cane: false, build: 'stout' });
+    W.add(watchman.group);
+    place(game, U, makeBench(), wx, wz, wry); P.addBox(wx, 0.4, wz, 1.9, 0.8, 0.6, { cam: false });
+    // a lantern set down on the grass beside the bench, glass glowing, flame guttering gently
+    const lx = wx + 1.1, lz = wz - 0.4, iron = mat(0x1e2426, { roughness: 0.6, metalness: 0.5 });
+    const lantern = group(lx, 0, lz, W);
+    mesh(G.cyl(0.07, 0.09, 0.05, 10), iron, { y: 0.025, parent: lantern });
+    const glass = mesh(G.box(0.13, 0.18, 0.13), glowMat(0xffc46a, 1.8, { transparent: true, opacity: 0.85 }), { y: 0.14, shadow: 'none', parent: lantern });
+    for (const a of [0, PI / 2]) mesh(G.box(0.15, 0.015, 0.015), iron, { y: 0.14, ry: a, shadow: 'none', parent: lantern });
+    mesh(G.cyl(0.08, 0.1, 0.03, 10), iron, { y: 0.235, parent: lantern });
+    noInk(mesh(G.torus(0.09, 0.012, 6, 10, PI), iron, { y: 0.33, rz: PI / 2, shadow: 'none', parent: lantern }));
+    glowSprite(0xffb85a, 0.5, 0.5, lantern).position.y = 0.14;
+    const lanternLight = pointLight(0xffb060, 9, 6, lx, 0.2, lz, W);
+    P.addBox(lx, 0.1, lz, 0.2, 0.3, 0.2, { cam: false });
+    game.npcs.push(new Sitter(game, watchman, { x: wx, z: wz, ry: wry,
+      cries: ["Quiet tonight. Quiet every night, if I'm honest.", "Don't tell the sergeant, puss.", "Forty years on this beat and never once needed that rattle."] }));
+    let watchNear = false, watchSnoreT = rnd.range(2, 3.5);
+    U.push((dt, t) => {
+      const c = game.cat.group.position, near = dist2(c.x, c.z, wx, wz) < 36;
+      watchman.head.rotation.x = damp(watchman.head.rotation.x, near ? 0 : 0.85, 6, dt);
+      lanternLight.intensity = 8 + sin(t * 9) * 1.2; glass.material.emissiveIntensity = 1.6 + sin(t * 9) * 0.3;
+      if (near && !watchNear) { watchNear = true; SFX.whistle(); game.toast('🕯️ "WHO GOES THERE?! ...oh. Just a cat. Carry on, carry on."'); }
+      if (!near) { watchNear = false; watchSnoreT -= dt; if (watchSnoreT <= 0) { watchSnoreT = rnd.range(2.5, 4); game.fx.emit(wx, P.ground0(wx, wz) + 1.1, wz, { count: 1, color: 0xbcdfff, speed: 0.15, up: 0.4, life: 1.6, gravity: -0.05, spread: 0.15 }); } }
+    }); }
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
