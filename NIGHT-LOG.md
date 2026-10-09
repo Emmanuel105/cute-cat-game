@@ -8765,3 +8765,32 @@ one, to 52), 0 console warnings, physics box count unchanged at 297 (no new box,
 and a `Kneeler` leash circle). Three repeat runs afterward all exit 0 with no flakes — before rebuilding
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Every world now has its own marbles
 ring.
+
+## Round 353 — an archive-bot for Robot City
+
+Every other world has at least one landmark that reacts when the cat walks up to it, and Robot City had
+its own furnace, radar dish, robot arm and statue — but nothing in the whole city ever actually *noticed*
+the cat on its own. **An archive-bot now stands at its own tripod camera on the open concrete south of
+Sector 7, filing an image of whatever crosses its lens.** Every so often its flash bulb spikes, a soft
+white sparkle kicks off the lens, and `SFX.shutter()` — the same click the cat's own photo mode already
+uses — fires once into the city air. *"Image capture subroutine: engaged."* *"Hold still. Or don't — I'll
+adjust the shutter speed."* *"Filed under: visitor, feline, unauthorized."*
+
+No new controller: `Charger` already stands put with its own idle sway, greet circle and cries, exactly
+like the fiddler and the robot drummer — the raised arm (permanently cocked toward the shutter release)
+and the flash itself are a per-frame `U.push` override, the same trick the drummer's own drumsticks
+already use. The tripod and camera body are a few plain `mesh()`/`group()` calls in the city's own steel
+palette, not run through `makeHuman`/`makeRobot`'s baking, so mutating the flash bulb's material each
+frame needed no special flag. A headless probe (the same stub-three harness `test/run.mjs` uses) built
+the real city (`game.load(2, 'from-hub')`) and sampled every NPC's own position every quarter second over
+30 simulated seconds (so no wandering robot or ring dancer mid-turn could slip past unnoticed), then swept
+the open floor against both those samples and every one of the city's physics boxes, staying well clear
+of the sentry's own patrol rectangle (`[-15,-35]..[15,-45]`, with a margin) and every wandering robot's
+own leashed range: `(-25, -8.5)` came back clear by 11.4 m of the nearest box (a skyscraper wall) and
+11.0 m of the nearest other soul, at radius 26.4 from the origin — comfortably inside the radius (98)
+where `robotRegion`'s own procedural fill takes over, and analytically outside every wandering robot's
+leash (the nearest, centred at `(-16, -2)` with leash 9, cannot reach closer than 11.1 m).
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok` (Robot City's own friend count up
+one, to 57), 0 console warnings. Four repeat runs afterward all exit 0 with no flakes — before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
