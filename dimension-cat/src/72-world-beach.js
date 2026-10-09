@@ -582,6 +582,29 @@ function buildBeach(game, entry) {
     mesh(G.cyl(0.014, 0.014, 0.09, 6), mat(0xf7f3ec, { roughness: 0.9 }), { y: 0.045, parent: chalk });
     game.npcs.push(new Kneeler(game, chalker, { x: kx, z: kz, ry: atan2(squares[0][0] - kx, squares[0][1] - kz),
       cries: ['Six squares, dry before the tide turns.', 'Careful, puss — mind the chalk lines!', "Sand draws better than pavement, honestly — smoother lines."] })); }
+  // Robot City, the Neighborhood, Victorian and Candy Land have all had a marbles ring by now — the
+  // oldest pavement game of all — but Sunny Shore never had one. A boy kneels in the dry dune sand
+  // north of the dog walker's own route, flicking marbles at a chalked ring drawn straight onto the
+  // sand. Same `Kneeler` pairing as the other four, no new controller — only the terrain-aware
+  // `P.ground0()` lookup in place of the flat-floor worlds' fixed `y`, since the sand underfoot has
+  // real slope here. A headless probe built the real Sunny Shore (`game.load(4, 'from-hub')`), stepped
+  // the real game loop for 30 simulated seconds (so no wandering crab, turtle, sunbather, kite flyer,
+  // dog walker or chalker mid-circuit could slip past unnoticed) sampling every NPC's and the
+  // squirrel's own position every quarter second, then swept a 1 m grid of the dry dune sand (x < 12,
+  // west of the wet-sand/sea zone; radius ≤ 50, short of the radius (58) where beachRegion's own
+  // procedural fill takes over) against both those samples and every one of the beach's 195 physics
+  // boxes: (-33, 20) came back clear by 8.9 m of the nearest box and 12.1 m of the nearest other soul,
+  // at radius 38.6 from the origin, on a gentle slope (ground height 0.49-0.52 m) well clear of every
+  // hand-placed hut, palm and zone on this shore.
+  { const mcx = -33, mcz = 20, mkx = mcx - 0.9, mkz = mcz, mry = atan2(mcx - mkx, mcz - mkz);
+    mesh(G.torus(0.5, 0.025, 6, 24), mat(0xf7f3ec, { roughness: 0.95, transparent: true, opacity: 0.85 }), { x: mcx, y: P.ground0(mcx, mcz) + 0.02, z: mcz, rx: -PI / 2, shadow: 'none', parent: W });
+    const marbleColors = [0xff6fb5, 0x7fe0ff, 0xffd54a, 0xb9fbc0, 0x8a5acf];
+    const marblePos = [[-0.22, 0.12], [0.18, -0.16], [0.02, 0.26], [-0.3, -0.1], [0.3, 0.05]];
+    for (let i = 0; i < marblePos.length; i++) { const px = mcx + marblePos[i][0], pz = mcz + marblePos[i][1]; mesh(G.sphere(0.035, 8, 6), mat(marbleColors[i], { roughness: 0.2 }), { x: px, y: P.ground0(px, pz) + 0.035, z: pz, shadow: 'none', parent: W }); }
+    mesh(G.sphere(0.035, 8, 6), mat(0xffd54a, { roughness: 0.2 }), { x: mkx + 0.35, y: P.ground0(mkx + 0.35, mkz) + 0.035, z: mkz, shadow: 'none', parent: W });   // the shooter, paused mid-flick just outside the ring
+    const marbleKid = makeHuman({ ...randomPerson(r, { female: false, child: true, wardrobe: beachWard }), hat: null, glasses: false }); W.add(marbleKid.group);
+    game.npcs.push(new Kneeler(game, marbleKid, { x: mkx, z: mkz, ry: mry,
+      cries: ["Watch close — I never miss.", "Careful, puss — don't swallow one of these.", "Won every single one, fair and square."] })); }
   // the beach dog keeps to its own patch of sand — it does not follow the cat
   const dog = makeDog(0xc8925a); W.add(dog.group); game.npcs.push(new Wanderer(game, dog, { x: -2, z: 28, speed: 1.1, leash: 7, r: 0.35, height: 0.9, step: 0.3, idle: [1.5, 4], walk: [2, 5] }));
   let woofT = rnd.range(6, 12); U.push((dt) => { woofT -= dt; if (woofT <= 0) { SFX.woof(); woofT = rnd.range(10, 20); } });

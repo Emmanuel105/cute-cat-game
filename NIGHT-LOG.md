@@ -8682,3 +8682,31 @@ and a `Kneeler` leash circle). Six repeat runs afterward were all exit 0 with no
 single run elsewhere in the suite hit an unrelated flake typical of this suite's own timing-sensitive
 checks, not reproduced on any of the six follow-up runs and not touched by this change — before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 350 — marbles for Sunny Shore
+
+Robot City, the Neighborhood, Victorian and Candy Land have all had a marbles ring by now — the oldest
+pavement game of all — but Sunny Shore, for all its scooter kid, dog walker and hopscotch grid, never
+had one of its own. **A boy now kneels in the dry dune sand north of the dog walker's own route,
+flicking marbles at a ring chalked straight onto the sand.** *"Watch close — I never miss."* *"Careful,
+puss — don't swallow one of these."* *"Won every single one, fair and square."*
+
+No new controller: `Kneeler`'s own patting motion already reads as the flick, same as the other four
+rings, so this is a placement — a chalk ring (`G.torus`) and six small glass-coloured `G.sphere`
+marbles, same geometry and colours as the other shores' rings — not a build. The one real difference is
+terrain: Sunny Shore's sand has actual slope under it, so every mesh here asks `P.ground0(x, z)` for its
+own height rather than using one flat `y`, the same trick the beach's own hopscotch squares already use.
+A headless probe built the real Sunny Shore (`game.load(4, 'from-hub')`), stepped the real game loop for
+30 simulated seconds (so no wandering crab, turtle, sunbather, kite flyer, dog walker or chalker
+mid-circuit could slip past unnoticed) sampling every NPC's and the squirrel's own position every
+quarter second, then swept a 1 m grid of the dry dune sand (west of the wet-sand/sea zone, radius ≤ 50,
+short of the radius (58) where beachRegion's own procedural fill takes over) against both those samples
+and every one of the beach's 195 physics boxes: (-33, 20) came back clear by 8.9 m of the nearest box and
+12.1 m of the nearest other soul, at radius 38.6 from the origin, on a gentle slope (ground height
+0.49-0.52 m).
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok` (Sunny Shore's own friend count up
+one, to 52), 0 console warnings, physics box count unchanged at 297 (no new box, only decorative
+meshes). Six repeat runs afterward: four exit 0, two hit the same pre-existing `Victorian: the horse and
+carriage` timing flake noted in the last two rounds' logs — nothing to do with this change, which never
+touches Victorian — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
