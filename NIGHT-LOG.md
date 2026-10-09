@@ -8513,3 +8513,35 @@ beach's own physics boxes: the six-square run from (-25, -43) to (-22.1, -43) ca
 Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks all `ok` (Sunny Shore's own friend
 count up one, to 51), 0 console warnings, three repeat runs afterward all exit 0 with no flakes —
 before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 344 — a hopscotch grid for Frosty Peak
+
+Neighborhood, Robot City, Victorian, Candy Land and Sunny Shore all have a kid chalking a row of
+hopscotch squares by now; Frosty Peak and Whisper Woods were the two worlds left without one. **A child
+now kneels on the open snowfield north-west of the swing-and-seesaw cluster, chalking six squares
+straight onto the packed snow.** *"Six squares, drawn before the next snowfall covers them."* *"Careful,
+puss — mind the chalk lines!"* *"Doesn't last long up here, but worth it anyway."*
+
+Same trick as the other five: a `Kneeler` plus six colour-coded `G.plane` decals, but built with the
+`kid()` wardrobe helper every other child in this file already uses (beanie and coat included) rather
+than the bare-headed chalker the paved worlds build fresh — every kid on this mountain is already
+dressed for the cold. Like Sunny Shore's own version, each decal square asks `P.ground0()` for its own
+height instead of sharing one flat `y`, since the snowfield slopes gently underfoot here too — `Kneeler`
+already asks `ground0()` for its own rig regardless of world, so that part needed no change. A headless
+probe (a small stub-three harness built the same way `test/run.mjs` does) loaded the real mountain
+(`game.load(5, 'from-hub')`), sampled every NPC's and the squirrel's own position every quarter second
+over 30 simulated seconds (so no wandering reindeer, hare, arctic fox or mid-game kid could slip past
+unnoticed), then swept a 2 m grid of the open snow (radius 28-53, short of the radius (58) where
+snowRegion's own fill takes over) against both those samples and every one of the mountain's physics
+boxes: the six-square run from (-34, 40) to (-31.1, 40) came back clear by 7.94-9.09 m of the nearest box
+and 12.62-16.06 m of the nearest other soul, with ground height varying only 0.07 m across the whole
+footprint.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks all `ok` (Frosty Peak's own friend count
+up one, to 51), 0 console warnings, physics box count unchanged at 297 (read off the Neighborhood, which
+this round never touched); nine of ten repeat runs afterward were exit 0 with no FAILs, and the one
+exception was a pre-existing real-wall-clock timing flake in Sunny Shore's own kite test (`idx === 4`,
+tested and finished before Frosty Peak, `idx === 5`, is even loaded) — confirmed unrelated by running the
+unmodified code three times beforehand with no flakes at all, and by the fact this round's own new `r()`
+draws live inside Frosty Peak's local seeded RNG, never the shared global `rnd()` the kite's wind gusts
+depend on — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

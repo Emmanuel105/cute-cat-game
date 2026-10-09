@@ -562,6 +562,31 @@ function buildSnowVillage(game, entry) {
     boxT(game, sx, sz, 0.3, 0.8, 0.6, { cam: false });
     game.npcs.push(new Kneeler(game, kid(r.chance(0.5)), { x: kx, z: kz, ry,
       cries: ['Wobbly bolt again - nearly got it.', "Careful, puss — mind your tail, this spins.", 'Good as new. Straight down the slope, no hands.'] })); }
+  // the Neighborhood, Robot City, Victorian, Candy Land and Sunny Shore all have a kid chalking a row
+  // of hopscotch squares by now (`Kneeler` + six colour-coded `G.plane` decals) — Frosty Peak and
+  // Whisper Woods are the only two worlds left without one. A child now kneels on the open snowfield
+  // north-west of the swing-and-seesaw cluster, drawing six squares straight onto the packed snow.
+  // Reuses the same `kid()` wardrobe helper every other child in this file already draws from, rather
+  // than the bare-headed chalker the paved worlds build fresh, since every kid here already wears a
+  // coat and beanie against the cold. Like Sunny Shore's own version, each decal square asks
+  // `P.ground0()` for its own height instead of sharing one flat `y`, since the snowfield slopes gently
+  // underfoot here too — `Kneeler` already asks `ground0()` for its own rig regardless of world, so
+  // that part needed no change. A headless probe built the real mountain (`game.load(5, 'from-hub')`),
+  // sampled every NPC's and the squirrel's own position every quarter second over 30 simulated seconds
+  // (so no wandering reindeer, hare, arctic fox or mid-game kid could slip past unnoticed), then swept a
+  // 2 m grid of the open snow (radius 28-53, short of the radius (58) where snowRegion's own fill takes
+  // over) against both those samples and every one of the mountain's physics boxes: the six-square run
+  // from (-34, 40) to (-31.1, 40) came back clear by 7.94-9.09 m of the nearest box and 12.62-16.06 m of
+  // the nearest other soul, with ground height varying only 0.07 m across the whole footprint.
+  { const gz = 40, kx = -34.9, kz = 40, squares = [];
+    const squareColors = [0xffb3c6, 0xbde0fe, 0xfff3b0, 0xb9fbc0, 0xcdb4db, 0xffc8dd];
+    for (let i = 0; i < 6; i++) { const gx = -34 + i * 0.58; squares.push([gx, gz]);
+      mesh(G.plane(0.48, 0.48), mat(squareColors[i], { roughness: 0.95, transparent: true, opacity: 0.85 }), { x: gx, y: P.ground0(gx, gz) + 0.018, z: gz, rx: -PI / 2, shadow: 'none', parent: W }); }
+    const chalker = kid(r.chance(0.5));
+    const chalk = group(0, 0.02, 0.09, chalker.hands[0]); chalk.rotation.x = -0.5;
+    mesh(G.cyl(0.014, 0.014, 0.09, 6), mat(0xf7f3ec, { roughness: 0.9 }), { y: 0.045, parent: chalk });
+    game.npcs.push(new Kneeler(game, chalker, { x: kx, z: kz, ry: atan2(squares[0][0] - kx, squares[0][1] - kz),
+      cries: ['Six squares, drawn before the next snowfall covers them.', 'Careful, puss — mind the chalk lines!', "Doesn't last long up here, but worth it anyway."] })); }
   // the birdwatcher up by the ice pond has her binoculars trained on the penguin colony, same as every round
   // before this one — Candy Land, Sunny Shore and Whisper Woods all got an actual flock wheeling overhead
   // (butterflies, gulls, fairies), but Frosty Peak's own sky, for all its aurora, never had a single real
