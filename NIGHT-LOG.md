@@ -8853,3 +8853,31 @@ to closed (-0.01 rad) once the cat retreated.
 Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings. Four repeat
 runs afterward all exit 0 with no flakes — before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 356 — a treasure chest for Sunny Shore
+
+Robot City's archive-bot, Victorian's night watchman and Candy Land's jack-in-the-box all react to the
+cat on their own, no `E` needed — but that trick had only ever been tried in those three worlds. **A
+half-buried wooden chest now sits closed in the dry sand west of the dunes, until the cat wanders within
+6 m**, when the lid creaks open on its own, a little pile of gold coins and a single pearl rising into
+view inside, before it creaks shut again once the cat wanders off. *"Buried for who-knows-how-long, and
+nobody dug it up till now."* *"Careful, puss — that pearl rolls if you so much as breathe on it."*
+*"Every coin in there is real gold. Or real paint. One of the two."*
+
+A build, not a controller: the lid hinges open on `rotation.x` off the chest's own back edge, the exact
+trick the jack-in-the-box's lid already uses, and the coin-and-pearl hoard rides straight up through the
+opening on `damp()` from a hidden spot well inside the box to a point just clear of the rim — the same
+dist2-and-a-bool approach-trigger every one of these three already relies on. No new SFX: the open
+reuses `SFX.thunk()`, already in the file but never called from this build. A headless probe built the
+real Sunny Shore (`game.travel(4, 'from-hub')`), sampled every NPC's own position over 500 simulated
+frames (so no wandering crab, turtle, sunbather, the beach dog or the marble kid mid-turn could slip past
+unnoticed), then swept the dry sand (radius 5-50, short of the radius (58) where `beachRegion`'s own fill
+takes over) against both those samples and every one of the beach's 247 physics boxes: (-30, 10) came
+back clear by 7.95 m of the nearest box and 10.73 m of the nearest other soul.
+
+Full suite (`node test/run.mjs`) ran clean six times out of seven — exit 0, all checks `ok` (Sunny
+Shore's own friend count up one, to 52), 0 console warnings, physics box count up by one to 297 (the
+chest's own solid base). The one failure hit the same pre-existing `Victorian: the horse and carriage`
+timing flake these logs have already noted several times (rounds 280, 281, 348-350) — unrelated to this
+change, which never touches Victorian — before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

@@ -632,6 +632,47 @@ function buildBeach(game, entry) {
     const shellY = P.ground0(cx, cz) + 0.35;
     game.addInteractable({ obj: shell, radius: 2.2, label: () => 'Listen to the shell', onUse: () => { SFX.wave(); game.fx.emit(cx, shellY, cz, { count: 12, colors: [0xf2a6ab, 0xe4d2ab, 0xffffff], speed: 0.8, up: 1.2, life: 0.8, gravity: 1.2 }); game.toast(rnd.pick(shellLines), 3000); } }); }
 
+  // Robot City's archive-bot, Victorian's night watchman and Candy Land's jack-in-the-box all react to
+  // the cat on their own, no `E` needed, but that trick had only ever been tried in those three worlds.
+  // A half-buried wooden chest now sits closed in the dry sand, lid shut — until the cat wanders within
+  // 6 m, when the lid creaks open on its own, a little pile of gold coins and a single pearl rising into
+  // view inside, before it creaks shut again once the cat wanders off.
+  // A headless probe built the real Sunny Shore (`game.travel(4, 'from-hub')`), sampled every NPC's own
+  // position over 500 simulated frames (so no wandering crab, turtle, sunbather, the beach dog or the
+  // marble kid mid-turn could slip past unnoticed), then swept the dry sand (radius 5-50, short of the
+  // radius (58) where beachRegion's own fill takes over) against both those samples and every one of the
+  // beach's 247 physics boxes: (-30, 10) came back clear by 7.95 m of the nearest box and 10.73 m of the
+  // nearest other soul.
+  { const cx = -30, cz = 10, cry = 0.4, y0 = P.ground0(cx, cz);
+    const chest = group(cx, y0, cz, W); chest.rotation.y = cry;
+    const wood = mat(0x6b4226, { roughness: 0.85, map: TEX.planks(20, 24) }), band = mat(0x8a6a2a, { roughness: 0.4, metalness: 0.5 }), gold = mat(0xd4af37, { roughness: 0.3, metalness: 0.6 });
+    mesh(G.box(0.8, 0.42, 0.5), wood, { y: 0.21, parent: chest });
+    for (const by of [0.08, 0.34]) mesh(G.box(0.82, 0.07, 0.52), band, { y: by, shadow: 'none', parent: chest });
+    for (const s of [-1, 1]) mesh(G.box(0.05, 0.42, 0.52), band, { x: s * 0.4, y: 0.21, shadow: 'none', parent: chest });
+    mesh(G.box(0.1, 0.09, 0.03), gold, { y: 0.32, z: 0.26, shadow: 'none', parent: chest });   // the clasp, front face
+    P.addBox(cx, 0.21, cz, 0.8, 0.42, 0.5, { cam: false });
+    // the lid hinges off the chest's own back edge, same trick the jack-in-the-box's lid already uses
+    const hinge = group(0, 0.42, -0.25, chest);
+    mesh(G.box(0.82, 0.1, 0.52), wood, { y: 0.05, z: 0.25, parent: hinge });
+    mesh(G.box(0.84, 0.06, 0.02), band, { y: 0.03, z: 0.5, shadow: 'none', parent: hinge });
+    // the hoard, tucked down inside the closed chest (below the rim at local y=0.42, fully hidden by
+    // the box's own opaque walls) and raised up past it into view as the lid lifts
+    const hoard = group(0, 0.08, 0, chest);
+    const coinPos = [[-0.18, -0.08], [0.1, -0.12], [0.2, 0.05], [-0.05, 0.14], [-0.22, 0.1]];
+    for (const [px, pz] of coinPos) mesh(G.cyl(0.055, 0.055, 0.02, 10), gold, { x: px, y: 0, z: pz, shadow: 'none', parent: hoard });
+    noInk(mesh(G.sphere(0.07, 12, 10), mat(0xf2ead8, { roughness: 0.2, metalness: 0.1 }), { y: 0.06, shadow: 'none', parent: hoard }));   // the pearl
+    let chestNear = false, chestOpen = 0;
+    const chestLines = ['🏴‍☠️ "Buried for who-knows-how-long, and nobody dug it up till now."', '🏴‍☠️ "Careful, puss — that pearl rolls if you so much as breathe on it."', '🏴‍☠️ "Every coin in there is real gold. Or real paint. One of the two."'];
+    chest.userData.update = (dt, t) => {
+      const c = game.cat.group.position, near = dist2(c.x, c.z, cx, cz) < 36;
+      chestOpen = damp(chestOpen, near ? 1 : 0, 6, dt);
+      hinge.rotation.x = -chestOpen * 2.0;
+      hoard.position.y = 0.08 + chestOpen * 0.4;
+      if (near && !chestNear) { chestNear = true; SFX.thunk(); game.toast(rnd.pick(chestLines)); game.fx.emit(cx, y0 + 0.5, cz, { count: 12, colors: [0xd4af37, 0xfff3c0, 0xf2ead8], speed: 1.1, up: 1.1, life: 0.8, gravity: 2 }); }
+      if (!near) chestNear = false;
+    };
+    U.push(chest.userData.update); }
+
   beachRegion(game, U, r, 58, SHORE_LIMIT - 8);
   // the headland behind the dunes: hills and peaks inland only, never out to sea
   makeHorizon(game, r, { clear: SHORE_LIMIT + 8, hill: 0x8c9a58, rock: 0x7a7060, rock2: 0x8a8272, snowLine: 58, peaks: 26, woodCount: 260, woodHue: [0.18, 0.28], woodLight: [0.18, 0.3], keep: (x) => x < -SHORE_LIMIT * 0.15 });
