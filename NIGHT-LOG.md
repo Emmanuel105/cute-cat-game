@@ -9063,3 +9063,33 @@ total: four came back exit 0, and one hit the same pre-existing `Victorian: the 
 timing flake these logs have already noted several times (rounds 280, 281, 348-350, 356, 358) —
 unrelated to this change, which never touches Victorian — before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 363 — a wishing well for Candy Land
+
+Last of the three: hammocks, picnic blankets and wishing wells had never shown up anywhere in the seven
+worlds. The hammock went to Sunny Shore and the picnic blanket to the Neighborhood, so **a wishing well
+now stands in the open meadow between Candy Land's sweet-lands and the lane up to the castle** — a
+candy-cane-striped barrel between two cookie-brown posts, a thin rope swinging a small bucket of
+gumballs down into the dark opening. Victorian already has a coin-toss fountain, so this one stays a
+quiet "walk up and look" landmark rather than a second wish-granting mechanic: *"No coins down here —
+just gumballs. Nobody's worked out why, exactly."* *"Toss a wish and it rolls right back out, sticky
+with gumdrop glaze."* *"The bucket's never once come up full. Someone's been skimming the wishes."*
+
+Built straight into `buildCandyLand`, same one-off-landmark pattern as the hammock and the blanket
+before it: the well wall reuses `TEX.candyCane()`, the same stripe map the candy canes themselves
+already use, just wrapped round a squat cylinder instead of a tall one. The rope-and-bucket group hangs
+from a pivot at the crossbar and sways on `sin(t * 0.5) * 0.05` radians — the world clock `t` alone,
+never this world's own seeded `r`, so it costs no later wardrobe or layout pick anywhere in this build.
+One physics box over the whole wall and posts keeps the cat from walking through it; no new mesh or box
+was needed for the interactable itself.
+
+A headless probe (the same stub-three harness `test/run.mjs` uses) built the real Candy Land
+(`game.travel(1, 'from-prev')`) and swept candidate points against every one of the land's own physics
+boxes, then sampled every NPC's position every quarter second over roughly eight simulated seconds:
+(0, 56) came back clear by 5.58 m of the nearest box (a candy-cane trunk) and 22.2 m of the nearest
+wandering soul — short of the 56–76 m band where the candy-cane forest ring takes over, clear of both
+flanking gumdrop patches, and north of the butterflies' flight box and the sparrow's leash.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings. Three repeat
+runs afterward all came back exit 0 with no FAILs — before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

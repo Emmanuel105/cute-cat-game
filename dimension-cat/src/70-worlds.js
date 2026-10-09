@@ -1232,6 +1232,45 @@ function buildCandyLand(game, entry) {
   for (const [x, z] of [[-40, 44], [44, 46], [-56, -10], [58, -14], [-14, -56], [22, -58], [-66, 16], [68, 4]]) { const s = r.range(1.2, 1.9), l = makeLollipop(s, r.pick([330, 0, 200, 50, 280, 120]), r.range(3, 4.5)); l.position.set(x, 0, z); l.rotation.y = r() * TAU; W.add(l); P.addBox(x, 1.5, z, 0.4, 3, 0.4, { cam: false }); }
   for (const [x, z] of [[-48, 30], [50, 28], [-36, -48], [38, -50], [-10, 46], [12, 48], [-60, -2], [62, -4]]) { const b = makeMarshmallowBush(r); b.position.set(x, 0, z); W.add(b); P.addBox(x, 0.5, z, 1.2, 1, 1.2, { cam: false }); }
   makeCandyHills(W, r, CANDY_LIMIT + 8);
+  // hammocks, picnic blankets and wishing wells had never shown up anywhere in the seven worlds — the
+  // hammock went to Sunny Shore and the picnic blanket to the Neighborhood, so the wishing well lands
+  // here, in the open meadow between the sweet-lands and the lane up to the castle. Victorian already
+  // has a coin-toss fountain, so this one stays a quiet "walk up and look" landmark (same trick as the
+  // hammock and the blanket before it) rather than a second wish-granting mechanic. A candy-cane-striped
+  // barrel (the same `TEX.candyCane()` map the canes and canes' own curved handle already use, just
+  // wrapped round a squat cylinder instead of a tall one this time) sits between two cookie-brown posts
+  // under a crossbar, a thin rope swinging a small bucket of gumballs down into the dark opening. No
+  // coins, no quest: *"No coins down here — just gumballs. Nobody's worked out why, exactly."*
+  // *"Toss a wish and it rolls right back out, sticky with gumdrop glaze."* *"The bucket's never once
+  // come up full. Someone's been skimming the wishes."*
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` uses) built the real Candy Land
+  // (`game.travel(1, 'from-prev')`), sampled every NPC's position every quarter second over roughly
+  // eight simulated seconds, and swept candidate points against all of the land's own physics boxes:
+  // (0, 56) came back clear by 5.58 m of the nearest box (a candy-cane trunk) and 22.2 m of the nearest
+  // wandering soul — well short of the 56-76 m band where the candy-cane forest ring itself takes over,
+  // clear of both flanking gumdrop patches (centred at (-20,50) and (26,52)), and far north of the
+  // butterflies' own flight box (z ≤ 40) and the sparrow's leash at (-29, 40).
+  { const wx = 0, wz = 56;
+    const g = group(wx, 0, wz, W);
+    const stripe = mat(0xffffff, { roughness: 0.4, map: TEX.candyCane() });
+    const postMat = mat(0xc27b3a, { roughness: 0.9 }), rimMat = mat(0xd62839, { roughness: 0.5 });
+    mesh(G.cyl(1.0, 1.05, 0.85, 16), stripe, { y: 0.425, shadow: 'both', parent: g });
+    noInk(mesh(G.torus(1.02, 0.12, 10, 20), rimMat, { y: 0.85, parent: g }));
+    mesh(G.cyl(0.85, 0.85, 0.06, 16), mat(0x3a2410, { roughness: 0.9 }), { y: 0.89, shadow: 'none', parent: g });   // the dark opening
+    for (const side of [-1, 1]) mesh(G.cyl(0.07, 0.07, 1.25, 8), postMat, { x: side * 0.72, y: 1.475, parent: g });
+    mesh(G.cyl(0.06, 0.06, 1.7, 8), postMat, { y: 2.1, rz: PI / 2, parent: g });
+    const pivot = group(0, 2.1, 0, g);   // rope + bucket hang and sway from here, never the posts themselves
+    noInk(mesh(G.cyl(0.015, 0.015, 1.05, 6), mat(0xc9a86a, { roughness: 0.9 }), { y: -0.525, parent: pivot }));
+    const bucket = group(0, -1.08, 0, pivot);
+    const bucketMat = mat(0xcfd4d8, { metalness: 0.5, roughness: 0.35 });
+    mesh(G.cyl(0.18, 0.15, 0.22, 12), bucketMat, { shadow: 'both', parent: bucket });
+    noInk(mesh(G.torus(0.165, 0.014, 4, 10, PI), bucketMat, { y: 0.12, rz: PI / 2, parent: bucket }));   // handle arc
+    for (const [bx, bz, hue] of [[-0.06, 0.04, 0], [0.07, -0.02, 0.33], [0, 0.07, 0.55]]) mesh(G.sphere(0.07, 8, 6), mat(new THREE.Color().setHSL(hue, 0.85, 0.6), { roughness: 0.5 }), { x: bx, y: 0.1, z: bz, parent: bucket });
+    U.push((dt, t) => { pivot.rotation.z = sin(t * 0.5) * 0.05; });   // the faintest pendulum sway, the world clock `t` alone
+    P.addBox(wx, 0.95, wz, 2.3, 1.9, 2.3);
+    const wishLines = ['🪣 "No coins down here — just gumballs. Nobody\'s worked out why, exactly."', '🪣 "Toss a wish and it rolls right back out, sticky with gumdrop glaze."', '🪣 "The bucket\'s never once come up full. Someone\'s been skimming the wishes."'];
+    game.addInteractable({ obj: g, radius: 2.8, label: () => 'Look at the wishing well', onUse: () => { SFX.click(); game.toast(rnd.pick(wishLines), 3000); } }); }
   // the Candy Queen's castle, up the lane to the north — houmoungous, and you can walk right in — with a little candy village on the approach
   game.zones.addCircle(0, 150, 27);
   for (const [hx, hz] of [[-16, 95], [16, 97], [-24, 112], [24, 114], [0, 80]]) game.zones.addCircle(hx, hz, 5);
