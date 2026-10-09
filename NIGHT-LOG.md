@@ -8627,3 +8627,28 @@ Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok` (the Neig
 count up one, to 48), 0 console warnings, physics box count unchanged at 297 (no new box, only a
 `Kneeler` leash circle and decorative meshes); three repeat runs afterward all exit 0 with no flakes —
 before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 348 — marbles for Victorian
+
+Robot City and the Neighborhood picked up the oldest pavement game of all two rounds running — marbles —
+but Victorian, for all ten of its own games and vignettes already spread across the north bank, never
+had a ring of its own. **A boy now kneels on the grass south-west of the seesaw, flicking marbles at a
+chalked ring.** *"Fair go, guv'nor — mind my aim!"* *"Careful, puss — don't swallow one of these."*
+*"Grandad gave me this bag. Won them all himself, he says."*
+
+No new controller: `Kneeler`'s own patting motion already reads as the flick, the same trick the
+hopscotch chalker, the bootblack and the scooter kid all use, so this is a placement — a chalk ring
+(`G.torus`) and six small glass-coloured `G.sphere` marbles, same geometry and colours as the Robot City
+and Neighborhood rings — not a build. A headless probe (the same stub-three harness `test/run.mjs` uses)
+built the real Victorian town (`game.travel(3, 'from-prev')`), sampled every NPC's own position every
+quarter second over 30 simulated seconds (so no wandering urchin, dancer or game mid-turn could slip past
+unnoticed), then checked a handful of candidates against both those samples and every one of the town's
+physics boxes: (-25, 70) came back clear by 8.85 m of the nearest box (the seesaw's own post) and 28 m of
+the nearest other soul (the catch pair at (-25, 52)), at radius 74.3 from the origin — comfortably short
+of the radius (88) where victorianRegion's own procedural fill takes over, and mirroring the seesaw's own
+spot across the games cluster rather than crowding any of it.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok` (Victorian's own friend count up
+one, to 63), 0 console warnings, physics box count unchanged at 297 (no new box, only decorative meshes
+and a `Kneeler` leash circle); three repeat runs afterward all exit 0 with no flakes — before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

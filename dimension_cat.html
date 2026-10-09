@@ -9169,6 +9169,30 @@ function buildVictorian(game, entry) {
     mesh(G.cyl(0.014, 0.014, 0.09, 6), mat(0xf7f3ec, { roughness: 0.9 }), { y: 0.045, parent: chalk });
     game.npcs.push(new Kneeler(game, chalker, { x: kx, z: kz, ry: atan2(squares[0][0] - kx, squares[0][1] - kz),
       cries: ['Six squares, dry before the rain comes back.', "Careful, puss — mind the chalk lines!", "Found the stub behind the schoolhouse. Nobody's missed it yet."] })); }
+  // Robot City and the Neighborhood both picked up the oldest pavement game of all two rounds back —
+  // marbles — but Victorian, for all ten of its own games and vignettes on the north bank by now, never
+  // had a ring of its own. A boy now kneels on the grass south-west of the seesaw, flicking marbles at
+  // a chalked ring, mirroring the seesaw's own spot across the games cluster rather than crowding any of
+  // it. No new controller: `Kneeler`'s own patting motion already reads as the flick, the same trick the
+  // hopscotch chalker, the bootblack and the scooter kid all use — this is a placement, not a build.
+  // A headless probe (the same stub-three harness `test/run.mjs` uses) built the real Victorian town
+  // (`game.travel(3, 'from-prev')`) and sampled every NPC's own position every quarter second over 30
+  // simulated seconds (so no wandering urchin, dancer or game mid-turn could slip past unnoticed), then
+  // checked a handful of candidates against both those samples and every one of the town's physics
+  // boxes: (-25, 70) came back clear by 8.85 m of the nearest box (the seesaw's own post) and 28 m of
+  // the nearest other soul (the catch pair at (-25, 52)), at radius 74.3 from the origin — comfortably
+  // short of the radius (88) where victorianRegion's own procedural fill takes over.
+  { const mcx = -25, mcz = 70, mkx = mcx - 0.9, mkz = mcz, mry = atan2(mcx - mkx, mcz - mkz);
+    mesh(G.torus(0.5, 0.025, 6, 24), mat(0xf7f3ec, { roughness: 0.95, transparent: true, opacity: 0.85 }), { x: mcx, y: 0.02, z: mcz, rx: -PI / 2, shadow: 'none', parent: W });
+    const marbleColors = [0xff6fb5, 0x7fe0ff, 0xffd54a, 0xb9fbc0, 0x8a5acf];
+    const marblePos = [[-0.22, 0.12], [0.18, -0.16], [0.02, 0.26], [-0.3, -0.1], [0.3, 0.05]];
+    for (let i = 0; i < marblePos.length; i++) mesh(G.sphere(0.035, 8, 6), mat(marbleColors[i], { roughness: 0.2 }), { x: mcx + marblePos[i][0], y: 0.035, z: mcz + marblePos[i][1], shadow: 'none', parent: W });
+    mesh(G.sphere(0.035, 8, 6), mat(0x00e5ff, { roughness: 0.2 }), { x: mkx + 0.35, y: 0.035, z: mkz, shadow: 'none', parent: W });   // the shooter, paused mid-flick just outside the ring
+    const marbleWard = makeWardrobe(r, { shirts: [0x6a5a3a, 0x3a5a4a, 0x8a3a3a], pants: [0x2a2a24, 0x3a3327], shoes: [0x2a2018, 0x1e1a16] });
+    const marbleKid = makeHuman({ ...randomPerson(r, { female: false, child: true, wardrobe: marbleWard }), hat: 'flatcap', hatColor: 0x3a3a44, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(marbleKid.group);
+    game.npcs.push(new Kneeler(game, marbleKid, { x: mkx, z: mkz, ry: mry,
+      cries: ["Fair go, guv'nor — mind my aim!", "Careful, puss — don't swallow one of these.", "Grandad gave me the bag. Won them all himself, he says."] })); }
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
