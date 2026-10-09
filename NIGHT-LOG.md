@@ -8881,3 +8881,28 @@ chest's own solid base). The one failure hit the same pre-existing `Victorian: t
 timing flake these logs have already noted several times (rounds 280, 281, 348-350) — unrelated to this
 change, which never touches Victorian — before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 357 — a lawn sprinkler for the Neighborhood
+
+Candy Land's lane got a garden pinwheel years ago, and house 0 on the Neighborhood's own street got
+one too, but none of the street's other fifteen yards had ever grown their own yard feature. **House 8's
+front lawn now has an oscillating lawn sprinkler**, sweeping back and forth on a slow arc and throwing up
+a little spray of droplets that rise and fall with it — no dialogue beyond a "look" prompt, since this
+one is purely something to notice rather than someone to talk to. *"Tchick-tchick-tchick — same arc,
+every time."* *"Keeps this lawn greener than the rest of the street. Allegedly."*
+
+A headless probe built the real Neighborhood, then swept every front yard's own offset against both the
+world's physics boxes and 60 simulated seconds of every NPC's sampled position (strollers, dog walker and
+postie included): (x+5.5, z+front*5.2) on house 8 came back the best-scoring spot clear of a dedicated
+house, 2.69 m from the nearest box (the porch awning) and well clear of the nearest wandering neighbour.
+The sweep itself is a plain pivot rotation off the world clock `t`, same trick as the pinwheel; the
+droplets took an extra round to get right — the first version gated a `game.fx.emit()` burst behind
+`rnd.chance()` each frame, which flaked the pre-existing Victorian horse-and-carriage timing check in two
+out of three repeat runs, because `game.fx.emit()` draws from the shared `rnd()` sequence on every call
+and the Neighborhood is the one world every test travel starts from. Swapping to a small pool of
+pre-built droplet spheres cycled deterministically by `t` (the same technique the chimney smoke already
+uses) fixed it: ten repeat runs afterward all came back clean.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, physics box
+count up by one to 298 — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.

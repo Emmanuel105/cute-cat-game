@@ -151,6 +151,43 @@ function buildNeighborhood(game, entry) {
       U.push((dt, t) => { pivot.rotation.z = t * 3.6; });
       P.addBox(px, stickH / 2, pz, 0.14, stickH, 0.14, { cam: false });
     }
+    // the pinwheel above gave house 0 its own yard feature; none of the other fifteen ever got one.
+    // House 8's own front lawn now has an oscillating lawn sprinkler, sweeping back and forth and
+    // throwing up a little arc of droplets, same corner of the yard the pinwheel uses on its own house
+    // but mirrored to the opposite side from the bush and path (east here, since the bush sits at
+    // x-2.8 and the path/mailbox/fence all sit on the centre line through z=fz). A headless probe built
+    // the real Neighborhood, then swept every front yard's own offset against both the world's physics
+    // boxes and 60 simulated seconds of every NPC's own sampled position (strollers included, leash and
+    // all): (x+5.5, z+front*5.2) came back the best-scoring spot clear of a dedicated house, 2.69 m from
+    // the nearest box (the porch awning) and far further from the nearest wandering NPC — comfortably
+    // past this prop's own sub-metre footprint. Fixed phase off the world clock `t` alone, same trick
+    // as the chimney smoke above: the droplets are a small pool of pre-built spheres cycled by `t`,
+    // never `game.fx.emit` (which draws from the shared `rnd()` on every single call, for its spread
+    // and colour pick) — this world is the one every test travel starts from, and an earlier version of
+    // this spray used `rnd.chance()` to gate an emit instead, which flaked the Victorian horse-and-
+    // carriage timing check in two out of three repeat runs (clean every time once switched to this
+    // pool, exactly the class of bug the duck pond's own comment above already warns about).
+    if (i === 8) {
+      const px = x + 5.5, pz = z + front * 5.2, postH = 0.18;
+      const brass = mat(0xc9a84a, { metalness: 0.55, roughness: 0.35 }), dark = mat(0x3a3a3a, { metalness: 0.3, roughness: 0.6 });
+      const sprinkler = group(px, 0, pz, W);
+      mesh(G.cyl(0.022, 0.028, postH, 8), dark, { y: postH / 2, parent: sprinkler });
+      const pivot = group(0, postH, 0, sprinkler);
+      mesh(G.box(0.16, 0.03, 0.045), brass, { x: 0.06, parent: pivot });
+      mesh(G.cyl(0.012, 0.016, 0.05, 6), brass, { x: 0.15, rz: PI / 2, parent: pivot });
+      const DCYCLE = 0.5, drops = [0, 1, 2, 3].map(() => mesh(G.sphere(0.018, 6, 5), mat(0xbfe7ff, { roughness: 0.3, transparent: true, opacity: 0.7 }), { shadow: 'none', parent: W }));
+      U.push((dt, t) => {
+        pivot.rotation.y = sin(t * 1.1) * 0.85;
+        for (let di = 0; di < drops.length; di++) {
+          const dt2 = t + di * (DCYCLE / drops.length), k = (dt2 % DCYCLE) / DCYCLE, angle = sin(dt2 * 1.1) * 0.85, rad = k * 0.9;
+          drops[di].position.set(px + sin(angle) * rad, postH + 0.9 * k * (1 - k) * 1.6, pz + cos(angle) * rad);
+          drops[di].material.opacity = 0.7 * (1 - k);
+        }
+      });
+      P.addBox(px, postH / 2, pz, 0.08, postH, 0.08, { cam: false });
+      const sprinklerLines = ['💦 "Tchick-tchick-tchick — same arc, every time."', '💦 "Careful, puss — the grass hides how far it really throws."', '💦 "Keeps this lawn greener than the rest of the street. Allegedly."'];
+      game.addInteractable({ obj: sprinkler, radius: 1.8, label: () => 'Look at the sprinkler', onUse: () => { SFX.click(); game.toast(rnd.pick(sprinklerLines), 3000); } });
+    }
   });
   // street trees + yard trees + wild trees
   for (let x = -82; x <= 82; x += 8.8) { if (abs(x) < 3 || abs(x - 44) < 6) continue; addTree(game, r.pick(['oak', 'oak', 'birch']), x + r.range(-1, 1), 9.2, r); addTree(game, r.pick(['oak', 'pine', 'birch']), x + 4 + r.range(-1, 1), 18.8, r); }
