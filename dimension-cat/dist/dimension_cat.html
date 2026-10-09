@@ -6519,6 +6519,53 @@ function buildNeighborhood(game, entry) {
       const sprinklerLines = ['💦 "Tchick-tchick-tchick — same arc, every time."', '💦 "Careful, puss — the grass hides how far it really throws."', '💦 "Keeps this lawn greener than the rest of the street. Allegedly."'];
       game.addInteractable({ obj: sprinkler, radius: 1.8, label: () => 'Look at the sprinkler', onUse: () => { SFX.click(); game.toast(rnd.pick(sprinklerLines), 3000); } });
     }
+    // Robot City's archive-bot, Victorian's night watchman, Candy Land's jack-in-the-box, Sunny Shore's
+    // treasure chest, Whisper Woods' flower and Frosty Peak's yeti cub all react to the cat on their own
+    // by now, no `E` needed — the Neighborhood, the one world every test travel starts from, never got
+    // a version of its own. A small wooden kennel now sits on one lawn, a dog curled out of sight behind
+    // its own low doorway sill; the cat wandering within 6 m is enough to bring it sitting up into the
+    // doorway, ears pricked and tail going, before it curls back down out of sight once the cat wanders
+    // off. *"Woof! Oh — just you. Carry on."* *"Best guard dog on the street. Mostly guards the sofa."*
+    // *"Sniffs the air, decides the cat is fine, goes back to sleep."*
+    // A headless probe tried the same relative yard-corner offset the pinwheel and sprinkler already use
+    // (x+4.5, z+front*4.0) and swept it against 30 simulated seconds of every NPC's own position
+    // (strollers, the dog walker and the postie's round all included): on most of the street's own
+    // middle lots that offset sits within reach of a stroller's own 16 m leash off a pavement anchor
+    // (as close as 1.89 m on one lot), so the far end of the street was tried instead — house 13, the
+    // thirteenth lot (x=-81, z=28), came back clear by 8.60 m of the nearest wandering soul and 0.90 m
+    // of the nearest physics box (the house's own wall), both well past this prop's own sub-metre
+    // footprint. A build, not a controller: the dog (`makeDog()`, already in the file for the street's
+    // own dog walker) rides a hidden node whose own y rises from behind the doorway's low sill up into
+    // the opening on `damp()`, the same trick the yeti cub's own burrow already uses, with its own
+    // `rig.animate()` called directly each frame for the idle tail wag. No new SFX: the wake reuses
+    // `SFX.bark()`, already heard from the dog walker's own dog.
+    if (i === 13) {
+      const px = x + 4.5, pz = z + front * 4.0;
+      const kennel = group(px, 0, pz, W); kennel.rotation.y = ry;
+      const wood = mat(0x8a5a32, { roughness: 0.9 }), trimM = mat(0x5c3a1e, { roughness: 0.85 }), roofM = mat(0xb5342a, { roughness: 0.75 }), darkM = mat(0x241a14, { roughness: 0.9 });
+      const wallH = 0.42, kw = 0.8, kd = 0.9;
+      mesh(G.box(0.06, wallH, kd), wood, { x: -kw / 2, y: wallH / 2, parent: kennel });
+      mesh(G.box(0.06, wallH, kd), wood, { x: kw / 2, y: wallH / 2, parent: kennel });
+      mesh(G.box(kw, wallH, 0.06), wood, { y: wallH / 2, z: -kd / 2, parent: kennel });
+      mesh(G.box(kw, 0.05, kd), trimM, { y: 0.025, parent: kennel });
+      mesh(G.gable(kd + 0.18, 0.34, kw + 0.18), roofM, { y: wallH, ry: PI / 2, parent: kennel });
+      mesh(G.box(kw - 0.1, 0.07, 0.03), darkM, { y: 0.035, z: kd / 2 - 0.02, parent: kennel });   // the low doorway sill, in shadow
+      P.addBox(px, wallH / 2, pz, kw / 2, wallH, kd / 2, { cam: false });
+      const resident = makeDog(0xb97a46); resident.group.scale.setScalar(0.72);
+      const pit = group(0, -0.16, kd / 2 - 0.22, kennel); pit.add(resident.group);
+      let dogOut = 0, dogNear = false;
+      const dogLines = ['🐶 "Woof! Oh — just you. Carry on."', '🐶 "Best guard dog on the street. Mostly guards the sofa."', '🐶 "Sniffs the air, decides the cat is fine, goes back to sleep."'];
+      kennel.userData.update = (dt, t) => {
+        const c = game.cat.group.position, near = dist2(c.x, c.z, px, pz) < 36;
+        dogOut = damp(dogOut, near ? 1 : 0, 5, dt);
+        pit.position.y = lerp(-0.16, 0.02, dogOut);
+        resident.animate(0, false, dt, t);
+        resident.head.rotation.x -= 0.3 * dogOut;
+        if (near && !dogNear) { dogNear = true; SFX.bark(); game.toast(rnd.pick(dogLines)); game.fx.emit(px, wallH * 0.6, pz + kd / 2, { count: 8, colors: [0xb97a46, 0xf3e3c8], speed: 0.9, up: 0.8, life: 0.6, gravity: 2.0, spread: 0.6 }); }
+        if (!near) dogNear = false;
+      };
+      U.push(kennel.userData.update);
+    }
   });
   // street trees + yard trees + wild trees
   for (let x = -82; x <= 82; x += 8.8) { if (abs(x) < 3 || abs(x - 44) < 6) continue; addTree(game, r.pick(['oak', 'oak', 'birch']), x + r.range(-1, 1), 9.2, r); addTree(game, r.pick(['oak', 'pine', 'birch']), x + 4 + r.range(-1, 1), 18.8, r); }

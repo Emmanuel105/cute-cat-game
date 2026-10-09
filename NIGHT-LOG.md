@@ -8971,3 +8971,33 @@ percentage for Frosty Peak unchanged at 98%. Ten repeat runs total: eight came b
 the same pre-existing `Victorian: the horse and carriage` timing flake these logs have already noted
 several times (rounds 280, 281, 348-350, 356, 358) — unrelated to this change, which never touches
 Victorian — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 360 — a sleepy dog for the Neighborhood
+
+Robot City's archive-bot, Victorian's night watchman, Candy Land's jack-in-the-box, Sunny Shore's
+treasure chest, Whisper Woods' flower and Frosty Peak's yeti cub all react to the cat on their own by
+now, no `E` needed — the Neighborhood, the one world every test travel starts from, was the only one
+left without a version of its own. **A small wooden kennel now sits on one lawn, a dog curled out of
+sight behind its own low doorway sill**, until the cat wanders within 6 m, when it sits up into the
+doorway, ears pricked and tail going, before curling back down out of sight once the cat wanders off.
+*"Woof! Oh — just you. Carry on."* *"Best guard dog on the street. Mostly guards the sofa."* *"Sniffs
+the air, decides the cat is fine, goes back to sleep."*
+
+A build, not a controller: the dog (`makeDog()`, already in the file for the street's own dog walker)
+rides a hidden node whose own y rises from behind the kennel's low doorway sill up into the opening on
+`damp()`, the exact same trick the yeti cub's own burrow already uses, with its own `rig.animate()`
+called directly each frame for the idle tail wag. No new SFX: the wake reuses `SFX.bark()`, already
+heard from the dog walker's own dog. The pinwheel and sprinkler already gave two of the street's sixteen
+yards their own quiet feature, both sat at the same relative yard-corner offset off their own house
+(x+4.5, z+front*4.0) — a headless probe tried that same offset again and swept it against 30 simulated
+seconds of every NPC's own position (strollers, the dog walker and the postie's round all included):
+on most of the street's own middle lots that offset sits within a stroller's own 16 m leash off a
+pavement anchor (as close as 1.89 m on one lot), so the far end of the street was tried instead — house
+13 (x=-81, z=28) came back clear by 8.60 m of the nearest wandering soul and 0.90 m of the nearest
+physics box (the house's own wall). A second probe started the game properly and read the hidden node's
+own y directly out of the scene graph: -0.160 at rest with the cat 26 m off, 0.020 once it closed to 6 m,
+and back to -0.160 within a couple of seconds of it walking off again.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, physics box
+count up by one to 299. Five repeat runs afterward all came back exit 0 with no FAILs — before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
