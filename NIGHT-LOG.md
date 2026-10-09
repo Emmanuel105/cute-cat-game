@@ -8939,3 +8939,35 @@ total: eight came back exit 0, and two hit the same pre-existing `Victorian: the
 timing flake these logs have already noted several times (rounds 280, 281, 348-350, 356) — unrelated to
 this change, which never touches Victorian — before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 359 — a baby yeti for Frosty Peak
+
+Robot City's archive-bot, Victorian's night watchman, Candy Land's jack-in-the-box, Sunny Shore's
+treasure chest and Whisper Woods' flower all react to the cat on their own by now, no `E` needed — Frosty
+Peak was the one world left without a version of its own. **A small snow mound now sits over its own
+burrow far out on the eastern snowfield**, a dark hole in the snow beside it; the cat wandering within 6 m
+is enough to coax a baby yeti up out of the ground to blink awake and peer around, before it sinks back
+under once the cat wanders off. *"A second yeti? Shh — don't tell the tracker."* *"Squeak, not roar — give
+it a few winters yet."* *"Burrows deeper than the grown one's own cave, this little one."*
+
+A build, not a controller: the cub is `makeYeti()` — already in the file for the cave's own grown yeti —
+scaled to a third its size, riding a hidden node whose own y rises from well below this world's flat
+terrain (fully hidden behind the opaque ground, the same trick the treasure chest's hoard and the
+flower's fairy already rely on to stay out of sight when "closed") up to standing height on `damp()`, no
+lid or petals to hinge since snow has neither. No new SFX: the emerge reuses `SFX.chitter()`, already
+heard from the snow hares. A headless probe built the real mountain (`game.travel(5, 'from-hub')`),
+sampled every NPC's and the squirrel's own position every quarter second over 25 simulated seconds (so no
+wandering reindeer, hare, arctic fox or mid-game kid could slip past unnoticed), then swept a grid of the
+open snowfield (radius 20-55, short of the radius (58) where snowRegion's own fill takes over) against
+both those samples and every one of the mountain's physics boxes: (48, -24) came back clear by 12.09 m of
+the nearest box and 19.21 m of the nearest other soul, with the ground flat across the whole footprint. A
+second probe actually clicked through the start screen (easy to miss in a headless harness — building and
+travelling both run fine before that click, but the per-frame world update, this one included, only runs
+once `game.started` is true) and read the hidden node's own y directly: -1.100 at rest, rising to -0.007
+the moment the cat crossed the 6 m line, and back down to -1.093 within a second of it leaving.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, ground-walkable
+percentage for Frosty Peak unchanged at 98%. Ten repeat runs total: eight came back exit 0, and two hit
+the same pre-existing `Victorian: the horse and carriage` timing flake these logs have already noted
+several times (rounds 280, 281, 348-350, 356, 358) — unrelated to this change, which never touches
+Victorian — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

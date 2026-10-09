@@ -10422,6 +10422,44 @@ function buildSnowVillage(game, entry) {
   makeGemCluster(game, U, 18, 3.5, 5, [0x9fe8ff, 0xbfa8ff, 0xa8ffe8], r, 1.2);
   let yetiHi = false; U.push(() => { const c = game.cat.group.position, near = dist2(c.x, c.z, yeti.group.position.x, yeti.group.position.z) < 36; if (near && !yetiHi) { yetiHi = true; SFX.roar(); game.toast('🦍 "RAAAWR… oh! Hello, tiny cat. Cold, isn\'t it?"'); } if (!near) yetiHi = false; });
   { const yid = game.namedFriend('yeti'); game.addInteractable({ obj: yeti.group, radius: 3.4, label: () => 'Say hi to the yeti', onUse: () => { game.befriend(yid); SFX.roar(); game.hearts(yeti.group.position.x, 2.2, yeti.group.position.z, 3); game.toast('🦍 "Warm fur! Best friends now."'); } }); }
+  // Robot City's archive-bot, Victorian's night watchman, Candy Land's jack-in-the-box, Sunny Shore's
+  // treasure chest and Whisper Woods' flower all react to the cat on their own, no `E` needed — Frosty
+  // Peak was the only world left without one. A small snow mound now sits over its own burrow far out on
+  // the eastern snowfield, with a dark hole in the snow beside it; the cat wandering within 6 m is enough
+  // to coax a baby yeti up out of the ground to blink awake and peer around, before it sinks back under
+  // once the cat wanders off. A build, not a controller: the cub (`makeYeti()`, already in the file for
+  // the cave's own grown yeti, scaled to a third its size) sits on a hidden node whose own y rises from
+  // well below this world's own flat terrain (fully hidden behind the opaque ground, the same trick the
+  // treasure chest's hoard and the flower's fairy already rely on to stay out of sight when "closed") up
+  // to standing height, driven by `damp()` off the cat's own distance — no lid or petals to hinge, since
+  // snow has neither. No new SFX: the emerge reuses `SFX.chitter()`, already heard from the snow hares.
+  // A headless probe built the real mountain (`game.travel(5, 'from-hub')`), sampled every NPC's and the
+  // squirrel's own position every quarter second over 25 simulated seconds (so no wandering reindeer,
+  // hare, arctic fox or mid-game kid could slip past unnoticed), then swept a grid of the open snowfield
+  // (radius 20-55, short of the radius (58) where snowRegion's own fill takes over) against both those
+  // samples and every one of the mountain's 683 physics boxes: (48, -24) came back clear by 12.09 m of
+  // the nearest box and 19.21 m of the nearest other soul, with the ground flat (y=0) across the whole
+  // footprint.
+  { const bx = 48, bz = -24, by0 = P.ground0(bx, bz);
+    const mound = group(bx, by0, bz, W);
+    const snowM = mat(0xf6f9fc, { roughness: 1 });
+    mesh(G.sphere(1.0, 10, 7), snowM, { y: 0.3, sy: 0.45, shadow: 'none', parent: mound });
+    mesh(G.sphere(0.7, 9, 6), snowM, { x: 0.5, z: 0.4, y: 0.18, sy: 0.4, shadow: 'none', parent: mound });
+    mesh(G.cyl(0.45, 0.45, 0.04, 14), mat(0x2a3a4a, { roughness: 0.6, transparent: true, opacity: 0.85 }), { y: 0.03, z: 0.85, shadow: 'none', parent: mound });   // the burrow mouth
+    boxT(game, bx, bz, 1.6, 0.9, 1.6, { cam: false });
+    const cub = makeYeti(); cub.group.scale.setScalar(0.34);
+    const pit = group(0, -1.1, 0.85, mound); pit.add(cub.group);
+    let cubOut = 0, cubNear = false;
+    const cubLines = ['🦍 "A second yeti? Shh — don\'t tell the tracker."', '🦍 "Squeak, not roar — give it a few winters yet."', '🦍 "Burrows deeper than the grown one\'s own cave, this little one."'];
+    mound.userData.update = (dt, t) => {
+      const c = game.cat.group.position, near = dist2(c.x, c.z, bx, bz) < 36;
+      cubOut = damp(cubOut, near ? 1 : 0, 5, dt);
+      pit.position.y = lerp(-1.1, 0, cubOut);
+      cub.animate(0, false, dt, t);
+      if (near && !cubNear) { cubNear = true; SFX.chitter(); game.toast(rnd.pick(cubLines)); game.fx.emit(bx, by0 + 0.5, bz + 0.85, { count: 10, colors: [0xffffff, 0xdfe8f2], speed: 0.8, up: 1.0, life: 0.8, gravity: 1.0 }); }
+      if (!near) cubNear = false;
+    };
+    U.push(mound.userData.update); }
   const sq = new Squirrel(game, -12, 18, 'sq-snow'); game.squirrels.push(sq);
   let squawkT = 5; U.push((dt) => { squawkT -= dt; if (squawkT <= 0) { SFX.squawk(); squawkT = rnd.range(6, 12); } });
   // an artist sets up an easel on the fringe of the village, painting the aurora overhead
