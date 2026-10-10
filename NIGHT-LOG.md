@@ -9564,3 +9564,25 @@ container (four days behind `origin/main`, with no shared shallow history, so gi
 "diverged" rather than "behind"). Verified via the GitHub API that `origin/main` was the true, current
 tip before doing any work, then built this round on a fresh branch tracking `origin/main` rather than
 force-resetting the stale local ref, so nothing was at risk of being overwritten either way.
+
+## Round 381 — a trampoline for Victorian
+
+Last round's trampoline for Robot City left Victorian as the only one of the seven worlds without
+one. **A postbox-red trampoline now bounces a visiting child on the open grass east of the seesaw**,
+out on the north bank with the rest of the town's games and vignettes (tag, the ring dance, catch,
+the swing, the kite, the yoyo kid and the rest). Same `makeTrampoline` prop and `Bouncer` controller
+the other six worlds already use, just restriped to match the postbox's own pillar-box red. *"Higher
+than the clock tower, nearly!"* *"Borrowed it off a cousin in Candy Land. Nobody's asked for it
+back."* All seven worlds now have one — properly, this time: checked with a headless probe, not a
+recount of someone else's comment.
+
+A headless probe (the stub-three harness `test/run.mjs` itself uses, driven by hand with
+`game.load(3, 'from-hub')` then `game.start('new')` so every urchin, dancer and ball-tossing pair
+actually moved) sampled every NPC's and the squirrel's own position every quarter second over 300
+simulated seconds, then checked a handful of candidates on the north bank against both those samples
+and all 546 of the town's physics boxes: (40, 70) came back clear by 13.6 m of the nearest box (the
+seesaw's own post) and 18.0 m of the nearest other soul (the yoyo kid at (61, 48)).
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks `ok`, 0 console warnings. Two repeat
+runs afterward both came back exit 0 with no FAILs — before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
