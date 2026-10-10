@@ -9766,3 +9766,27 @@ after that also clean (`world 1: 60 to meet`, up from 59). A standalone probe ra
 against the built world directly and confirmed the worker's position stayed finite and the machine's own
 physics box sits exactly where intended. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 389 — a leak tester for Robot City
+
+Sunny Shore, Victorian and Frosty Peak have all had a kid blowing soap bubbles for fun since round 385 —
+Robot City's own version finally gives the trick a job to do. **A technician now stands at a pipe joint
+out on the open factory floor, brushing on test solution and watching for a bubble** — the oldest way
+there is to check a seam for a gas leak. *"Still holding pressure — good."* *"Careful, puss — that's test
+soap, not for licking."* *"Bubble means a leak. No bubble means paperwork."* The joint itself is a new
+small prop (a stub of pipe between two bolted flanges, an amber shutoff wheel on top) with its own
+physics box; the two bubbles ride the same rise-and-pop loop the beach, Victorian and Frosty Peak blowers
+already use, just launched from the joint's own fixed position instead of a wand in anyone's hand, since
+this technician never lifts one to her mouth. No new controller — a plain `Charger`, same as every other
+standing figure in this file.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real Robot City
+(`game.travel(2, 'from-prev')`, then `game.start('new')` so every wandering, patrolling, dancing and
+ball-tossing robot pack actually moved), sampled every NPC's own position every quarter second over 300
+simulated seconds, then swept a 2 m grid of the open floor (radius 20-90, short of the radius (98) where
+robotRegion's own procedural fill takes over) against both those samples and all 1139 of the city's
+physics boxes: (66, 60) came back clear by 11.4 m of the nearest box and 33.0 m of the nearest other soul.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks `ok`, 0 console warnings, two repeat runs
+after that also clean (`world 2: 62 to meet`, up from 61). Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

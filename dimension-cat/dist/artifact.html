@@ -9117,6 +9117,59 @@ function buildRobotCity(game, entry) {
       cries: ["Lost count of how many he's won. Still playing, though.", "Careful, puss — don't knock the pieces.", "One more game before the whistle. Always one more game."] }));
     let moveT = rnd.range(6, 10);
     U.push((dt) => { moveT -= dt; if (moveT <= 0) { moveT = rnd.range(7, 12); SFX.click(); game.fx.emit(tx, topY + 0.1, tz, { count: 4, color: 0x00e5ff, speed: 0.3, up: 0.3, life: 0.6, gravity: 1.2, spread: 0.4 }); } }); }
+  // Sunny Shore, Victorian and Frosty Peak have all had a child blowing soap bubbles for fun since
+  // round 385 — Robot City's own version has a reason: a technician brushes test solution on a pipe
+  // joint out on the open floor and watches for a bubble, the oldest way there is to find a gas leak.
+  // Reuses the beach/Victorian/Frosty-Peak bubble loop almost verbatim (same two-bubble rise-and-pop
+  // cycle, driven off the world clock `t` alone, never this world's own seeded `r`), but the bubbles
+  // rise from the fixed pipe joint itself rather than a wand in the technician's hand — she only ever
+  // brushes near it, never actually swings anything up to her mouth — so there is no `hands[1]` prop to
+  // read a world position from at all; the joint's own literal (jx, jy, jz) is the launch point, read
+  // once at build time. The joint is a new static prop (two bolted flanges on a stub of pipe, a shutoff
+  // wheel on top) with its own small physics box. `Charger` again for the technician (stationary,
+  // never swings a tool), the same pairing every other standing figure in this file already uses.
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real Robot
+  // City (`game.travel(2, 'from-prev')`, then `game.start('new')` so every wandering, patrolling,
+  // dancing and ball-tossing robot pack actually moved), sampled every NPC's own position every
+  // quarter second over 300 simulated seconds, then swept a 2 m grid of the open floor (radius 20-90,
+  // short of the radius (98) where robotRegion's own procedural fill takes over) against both those
+  // samples and all 1139 of the city's physics boxes: (66, 60) came back clear by 11.4 m of the
+  // nearest box (one of the outer skyline towers) and 33.0 m of the nearest other soul.
+  { const bx = 66, bz = 60, jx = bx, jz = bz - 0.9, bry = atan2(jx - bx, jz - bz);
+    const pipeM = mat(0x5a6470, { metalness: 0.75, roughness: 0.35 }), flangeM = mat(0x2a2f38, { metalness: 0.8, roughness: 0.3 });
+    mesh(G.cyl(0.09, 0.1, 0.7, 12), pipeM, { x: jx, y: 0.35, z: jz, parent: W });
+    mesh(G.cyl(0.16, 0.16, 0.05, 12), flangeM, { x: jx, y: 0.14, z: jz, parent: W });
+    mesh(G.cyl(0.16, 0.16, 0.05, 12), flangeM, { x: jx, y: 0.56, z: jz, parent: W });
+    mesh(G.cyl(0.02, 0.02, 0.12, 8), mat(0x1a1f26, { metalness: 0.5, roughness: 0.6 }), { x: jx, y: 0.76, z: jz, parent: W });
+    mesh(G.torus(0.08, 0.018, 6, 14), mat(0xff9f43, { roughness: 0.4, metalness: 0.5 }), { x: jx, y: 0.84, z: jz, rx: PI / 2, parent: W });   // shutoff wheel
+    P.addBox(jx, 0.4, jz, 0.3, 0.9, 0.3, { cam: false });
+    const jointY = 0.58;
+    const leakWard = makeWardrobe(r, { shirts: [0xff9f43, 0x4a5a6a], pants: [0x232c34, 0x2a2a30] });
+    const leakTech = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: leakWard }),
+      hat: 'cap', hatColor: 0x3a4a5a, jacket: null, scarf: null, bag: null, glasses: r.chance(0.3) });
+    W.add(leakTech.group);
+    game.npcs.push(new Charger(game, leakTech, { x: bx, z: bz, ry: bry, cryIcon: '🫧',
+      cries: ['Still holding pressure — good.', "Careful, puss — that's test soap, not for licking.", 'Bubble means a leak. No bubble means paperwork.'] }));
+    const leakBubbleM = mat(0xd7f5e2, { pbr: true, metalness: 0.05, roughness: 0.1, transparent: true, opacity: 0.42 });
+    const leakBubbles = [0, 1].map((i) => ({ m: mesh(G.sphere(0.045, 10, 8), leakBubbleM, { shadow: 'none', parent: W }), ph: i * 1.8, popped: -1 }));
+    const lbCyc = 3.2;
+    U.push((dt, t) => {
+      for (const b of leakBubbles) {
+        const k = ((t + b.ph) % lbCyc) / lbCyc;
+        if (k < 0.92) {
+          b.m.visible = true;
+          b.m.position.set(jx + sin(t * 1.6 + b.ph) * 0.16 * k, jointY + k * 1.3, jz + cos(t * 1.1 + b.ph) * 0.1 * k);
+          b.m.scale.setScalar(0.4 + k * 0.7);
+        } else {
+          b.m.visible = false;
+          const cycleNo = floor((t + b.ph) / lbCyc);
+          if (cycleNo !== b.popped) { b.popped = cycleNo;
+            const c = game.cat.group.position;
+            if (dist2(jx, jz, c.x, c.z) < 400) { SFX.twinkle(); game.fx.emit(b.m.position.x, b.m.position.y, b.m.position.z, { count: 4, colors: [0xd7f5e2, 0xffffff, 0x00e5ff], speed: 0.5, up: 0.6, life: 0.5, gravity: 1.5 }); }
+          }
+        }
+      }
+    }); }
   const sq = new Squirrel(game, -14, -9, 'sq-robot'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('mouse', -8, 7); C.add('star', 12, -22); C.add('fish', -18, 2); C.add('yarn', 21, 9); C.add('star', 0, -27); C.add('fish', 4, 14); C.add('mouse', 26, -18); C.add('yarn', -26, -6);
