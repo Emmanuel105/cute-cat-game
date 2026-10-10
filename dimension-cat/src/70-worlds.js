@@ -235,6 +235,44 @@ function buildNeighborhood(game, entry) {
       };
       U.push(kennel.userData.update);
     }
+    // the pinwheel, the sprinkler and the kennel each gave one yard a feature of its own, but nothing
+    // on the whole street doubles as a home for anyone but the kennel's own dog. House 9's own front
+    // yard now gets a little wooden birdhouse on a post, a round hole in its front wall and a short
+    // perch dowel below it — a sparrow stands on the dowel, peering about and dipping its head to peck
+    // at the wood every so often. *"Chirp. (Translation: nice and roomy, thank you.)"* *"No one's
+    // moved in yet, but the sparrow's clearly scouting it."* *"Puss, leave it be — it's not for you."*
+    // No new rig and no new controller: the sparrow is the exact same `makeSparrow()` the birdbath's
+    // own visitor already uses a few yards away, and its built-in idle peck (driven off the world
+    // clock `t` alone, inside `rig.animate()`) needed no changes to read as pecking at a birdhouse
+    // instead of dipping into a bowl. The post and house are plain static geometry — no draw from
+    // this world's own seeded `r` or the shared `rnd()` sequence at build time, so nothing later in
+    // this build shifts.
+    // A headless probe built the real Neighborhood, called `game.start('new')`, then sampled every
+    // one of the street's 54 NPCs' own positions every frame over 150 simulated seconds (long enough
+    // for the postie's and every stroller's full round to clear the corner, not just a snapshot) and
+    // swept the same yard-corner offset the pinwheel, the sprinkler and the kennel already use
+    // (x+4.5, z+front*4.0) against both that trace and every one of the street's physics boxes. House
+    // 9's own corner (58.5, 4.0) came back clear by 8.60 m of the nearest wandering soul, and the
+    // usual 0.90 m of the house's own porch-awning box that the pinwheel and the kennel both already
+    // accept as plenty clear of a sub-decimetre post.
+    if (i === 9) {
+      const px = x + 4.5, pz = z + front * 4.0, postH = 1.0, hw = 0.11, hd = 0.11, wallH = 0.16, dowelLen = 0.075;
+      const postM = mat(0x6b4a2a, { roughness: 0.9 }), wallM = mat(0xf3ead6, { roughness: 0.85 }), roofM = mat(0xb5342a, { roughness: 0.7 }), darkM = mat(0x241a14, { roughness: 0.9 }), dowelM = mat(0x8a5a32, { roughness: 0.85 });
+      const post = group(px, 0, pz, W); post.rotation.y = ry;
+      mesh(G.cyl(0.028, 0.034, postH, 8), postM, { y: postH / 2, parent: post });
+      const house = group(0, postH, 0, post);
+      mesh(G.box(hw, wallH, hd), wallM, { y: wallH / 2, parent: house });
+      mesh(G.gable(hd + 0.03, 0.1, hw + 0.03), roofM, { y: wallH + 0.025, ry: PI / 2, parent: house });
+      mesh(G.cyl(0.028, 0.028, 0.018, 12), darkM, { y: wallH * 0.62, z: hd / 2 + 0.01, rx: PI / 2, shadow: 'none', parent: house });
+      mesh(G.cyl(0.009, 0.009, dowelLen, 6), dowelM, { y: wallH * 0.38, z: hd / 2 + dowelLen / 2, rx: PI / 2, parent: house });
+      P.addBox(px, postH / 2, pz, 0.08, postH, 0.08, { cam: false });
+      const visitor = makeSparrow(); W.add(visitor.group);
+      visitor.group.position.set(px, postH + wallH * 0.38 + 0.012, pz + hd / 2 + dowelLen + 0.015);
+      visitor.group.rotation.y = ry;
+      U.push((dt, t) => visitor.animate(0, false, dt, t));
+      const birdhouseLines = ['🐦 "Chirp. (Translation: nice and roomy, thank you.)"', '🏠 "No one\'s moved in yet, but the sparrow\'s clearly scouting it."', '😼 "Puss, leave it be — it\'s not for you."'];
+      game.addInteractable({ obj: post, radius: 1.8, label: () => 'Look at the birdhouse', onUse: () => { SFX.click(); game.toast(rnd.pick(birdhouseLines), 3000); } });
+    }
   });
   // the pinwheel, sprinkler and kennel above gave three of the street's sixteen yards their own
   // feature; lot 14's own corner now gets a fourth — a stone birdbath, a shallow bowl on a short

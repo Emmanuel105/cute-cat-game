@@ -9334,3 +9334,29 @@ the radius (58) where forestRegion's own fill takes over.
 Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok` (Whisper Woods' own friend count
 up by one to 53), 0 console warnings. Two repeat runs afterward both came back exit 0 with no FAILs —
 before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 372 — a birdhouse for the Neighborhood
+
+The pinwheel, the sprinkler and the kennel each gave one yard on the street a feature of its own, but
+nothing on the whole street doubles as a home for anyone but the kennel's own dog. **House 9's own
+front yard now has a little wooden birdhouse on a post, a round hole in its front wall and a short
+perch dowel below it, a sparrow standing on the dowel** and dipping its head to peck at the wood every
+so often. *"Chirp. (Translation: nice and roomy, thank you.)"* *"No one's moved in yet, but the
+sparrow's clearly scouting it."* *"Puss, leave it be — it's not for you."* No new rig and no new
+controller: the sparrow is the exact same `makeSparrow()` the birdbath's own visitor already uses a
+few yards away, reusing its built-in idle peck as-is — it reads just as well pecking at a birdhouse as
+dipping into a bowl. The post and house are static geometry built from the same `mesh`/`group`/`G.*`
+helpers every other prop in this file uses, with a plain static-box physics collider for the post.
+
+A headless probe built the real Neighborhood, called `game.start('new')`, then sampled every one of
+the street's 54 NPCs' own positions every frame over 150 simulated seconds (long enough for the
+postie's and every stroller's full round to clear the corner, not just a snapshot) and swept the same
+yard-corner offset the pinwheel, the sprinkler and the kennel already use (x+4.5, z+front*4.0) against
+both that trace and every one of the street's physics boxes. House 9's own corner (58.5, 4.0) came
+back clear by 8.60 m of the nearest wandering soul, and the usual 0.90 m of the house's own
+porch-awning box that the pinwheel and the kennel both already accept as plenty clear of a
+sub-decimetre post.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, physics box
+count up by one to 303. Two repeat runs afterward both came back exit 0 with no FAILs — before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
