@@ -9578,6 +9578,51 @@ function buildVictorian(game, entry) {
       if (near && !watchNear) { watchNear = true; SFX.whistle(); game.toast('🕯️ "WHO GOES THERE?! ...oh. Just a cat. Carry on, carry on."'); }
       if (!near) { watchNear = false; watchSnoreT -= dt; if (watchSnoreT <= 0) { watchSnoreT = rnd.range(2.5, 4); game.fx.emit(wx, P.ground0(wx, wz) + 1.1, wz, { count: 1, color: 0xbcdfff, speed: 0.15, up: 0.4, life: 1.6, gravity: -0.05, spread: 0.15 }); } }
     }); }
+  // the children had marbles, hopscotch, tag and two separate ball games by now, but nobody in Victorian
+  // had a game for the old folk. Two retired gents now sit either side of a small round table on the
+  // quiet grass south-west of the market square, a draughts board between them, mid-game. No new
+  // controller: both are a plain `Sitter`, the same pairing the knitter and whittler already use in
+  // Whisper Woods, just seated on a `makeIceStool()` each instead of a stump — reused as a generic
+  // three-legged stool here, nothing to do with ice. A headless probe (the same stub-three harness
+  // `test/run.mjs` uses) built the real town (`game.travel(3, 'from-prev')`), clicked start, then
+  // sampled every one of its 64 NPCs' own positions every 1/30 s over 30 simulated seconds (long enough
+  // for the urchins' tag, both ball games and the ring dance to show their whole loop, not just a
+  // snapshot) and swept the grass south-west of the market square against both that trace and every one
+  // of the town's physics boxes, staying short of the radius (88) where victorianRegion's own fill takes
+  // over: (-34, -38) came back clear by 18.4 m of the nearest box and 20.0 m of the nearest other soul,
+  // at radius 51.0 from the origin — roughly the mirror image, across the square, of the night
+  // watchman's own bench at (36, -30).
+  { const tx = -34, tz = -38, topY = 0.74, boardW = 0.74, sq2 = boardW / 8;
+    const seatAx = tx - 0.78, seatAz = tz, seatBx = tx + 0.78, seatBz = tz;
+    const ryA = atan2(seatBx - seatAx, seatBz - seatAz), ryB = atan2(seatAx - seatBx, seatAz - seatBz);
+    const wood = mat(0x6b4a2a, { roughness: 0.85, map: TEX.planks(26, 26) });
+    const table = group(tx, 0, tz, W);
+    mesh(G.box(boardW, 0.03, boardW), wood, { y: topY, parent: table });
+    const lightSq = mat(0xe8dcc0, { roughness: 0.9 }), darkSq = mat(0x4a2e1c, { roughness: 0.9 });
+    for (let gx = 0; gx < 8; gx++) for (let gz = 0; gz < 8; gz++) {
+      mesh(G.box(sq2 * 0.97, 0.01, sq2 * 0.97), (gx + gz) % 2 ? darkSq : lightSq,
+        { x: -boardW / 2 + sq2 * (gx + 0.5), y: topY + 0.021, z: -boardW / 2 + sq2 * (gz + 0.5), parent: table }); }
+    for (const [lx, lz] of [[-0.32, -0.32], [0.32, -0.32], [-0.32, 0.32], [0.32, 0.32]]) mesh(G.cyl(0.025, 0.03, topY, 8), wood, { x: lx, y: topY / 2, z: lz, parent: table });
+    // a scatter of pieces, mid-game, dark squares only
+    const redM = mat(0x8a2a2a, { roughness: 0.4 }), blackM = mat(0x1e1e22, { roughness: 0.4 });
+    const pieceY = topY + 0.036;
+    const toXZ = (gx, gz) => [-boardW / 2 + sq2 * (gx + 0.5), -boardW / 2 + sq2 * (gz + 0.5)];
+    [[1, 0, redM], [3, 0, redM], [0, 1, redM], [2, 1, redM], [4, 1, redM], [1, 2, blackM], [3, 4, blackM], [5, 4, blackM], [2, 5, blackM], [6, 3, redM]].forEach(([gx, gz, m]) => {
+      const [px, pz] = toXZ(gx, gz); mesh(G.cyl(0.042, 0.042, 0.018, 12), m, { x: px, y: pieceY, z: pz, parent: table }); });
+    P.addBox(tx, topY / 2, tz, boardW + 0.06, topY, boardW + 0.06, { cam: false });
+    place(game, U, makeIceStool(), seatAx, seatAz, ryA + PI); place(game, U, makeIceStool(), seatBx, seatBz, ryB + PI);
+    const draughtsWard = makeWardrobe(r, { shirts: [0x5a5248, 0x3a4a52], pants: [0x2a2a30, 0x34302a] });
+    const playerA = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: true, wardrobe: draughtsWard }),
+      hat: 'flatcap', hatColor: 0x3a3a40, coat: true, scarf: null, jacket: null, bag: null, cane: false, beard: false, moustache: true, glasses: false });
+    const playerB = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: true, wardrobe: draughtsWard }),
+      hat: null, coat: true, scarf: 0x4a3a2a, jacket: null, bag: null, cane: false, beard: true, moustache: false, glasses: true });
+    W.add(playerA.group); W.add(playerB.group);
+    game.npcs.push(new Sitter(game, playerA, { x: seatAx, z: seatAz, ry: ryA, seat: 0.33,
+      cries: ["Best of three, same as every afternoon.", "Mind the board, puss — that king took forty years to earn.", "Lost three in a row. Still the better player, obviously."] }));
+    game.npcs.push(new Sitter(game, playerB, { x: seatBx, z: seatBz, ry: ryB, seat: 0.33,
+      cries: ["Forty years, and he still can't beat me.", "Careful, puss — don't knock the pieces.", "One more game. Always one more game."] }));
+    let moveT = rnd.range(6, 10);
+    U.push((dt) => { moveT -= dt; if (moveT <= 0) { moveT = rnd.range(7, 12); SFX.click(); game.fx.emit(tx, topY + 0.1, tz, { count: 4, color: 0xc9a86a, speed: 0.3, up: 0.3, life: 0.6, gravity: 1.2, spread: 0.4 }); } }); }
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);

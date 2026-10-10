@@ -9246,3 +9246,29 @@ and well clear of both the marbles ring and the kite flyer.
 Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings. Two repeat runs
 afterward both came back exit 0 with no FAILs — before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 369 — a game of draughts for Victorian
+
+Children in Victorian had marbles, hopscotch, tag and two separate ball games by now, but nobody had
+given the old folk anything of their own. **Two retired gents now sit either side of a small round
+table on the quiet grass south-west of the market square, a draughts board between them, mid-game** —
+an 8x8 checkerboard built right onto the tabletop, ten pieces scattered across the dark squares as if
+play had paused mid-afternoon. Every so often a soft click and a scatter of wood-dust sound out over
+the board, as if a piece just moved, though nothing actually slides. *"Best of three, same as every
+afternoon."* *"Mind the board, puss — that king took forty years to earn."* *"Forty years, and he still
+can't beat me."* No new controller: both men are a plain `Sitter`, the same pairing the knitter and
+whittler already use in Whisper Woods, just seated on a `makeIceStool()` each — reused here as a
+generic three-legged stool, nothing to do with ice.
+
+A headless probe (the same stub-three harness `test/run.mjs` uses) built the real town
+(`game.travel(3, 'from-prev')`), clicked start, then sampled every one of its 64 NPCs' own positions
+every 1/30 s over 30 simulated seconds (long enough for the urchins' tag, both ball games and the ring
+dance to show their whole loop, not just a snapshot) and swept the grass south-west of the market
+square against both that trace and every one of the town's physics boxes, staying short of the radius
+(88) where victorianRegion's own fill takes over: (-34, -38) came back clear by 18.4 m of the nearest
+box and 20.0 m of the nearest other soul, at radius 51.0 from the origin — roughly the mirror image,
+across the square, of the night watchman's own bench at (36, -30).
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok` (Victorian's own friend count up by
+two for the new pair), 0 console warnings. Three repeat runs afterward all came back exit 0 with no
+FAILs — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
