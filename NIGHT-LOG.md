@@ -9666,3 +9666,27 @@ and partially fixed at round 365) that reproduces on the unmodified tree too and
 jitter in the portal-travel poll, not by anything in this round's diff — confirmed by stashing this
 change and seeing the base tree pass three clean runs in a row with the same test still carrying that
 known caveat. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 385 — a bubble-blower for Sunny Shore
+
+Sea spray, gull cries and sand sparks have all drifted over this coast for rounds now, but nothing on
+the whole beach had ever actually bubbled. **A girl now blows soap bubbles from a loop-ended wand on the
+dune grass north of the net-mender and the surfer**, two afloat at a time, drifting up and sideways on
+the sea breeze before each pops into a soft pale sparkle. *"Careful, puss — don't pop them with your
+nose!"* *"Watch this one — it's a big one."* No new controller: the kid is a plain `Charger` (stands put,
+rig's own idle doing the work), same pairing every other standing vendor or attendant in this file
+already uses. The wand sits in `hands[1]` — the resting hand nothing else in this file's own idle
+gestures ever swings — so its exact launch point only needed reading once, with `getWorldPosition()`
+right after `Charger` fixes the rig's position, rather than guessed from trig; the two bubbles themselves
+are plain transparent spheres riding the world clock alone, never this world's own seeded `r`, so the
+build costs no later wardrobe or colour pick.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real Sunny Shore
+(`game.travel(4, 'from-hub')`, then `game.start('new')` so every crab, turtle, sunbather, dolphin and dog
+actually moved), sampled every NPC's and the squirrel's own position every quarter second over 30
+simulated seconds, then swept the dune grass against both those samples and all 231 of the beach's
+physics boxes: (-22, 46) came back clear by 7.9 m of the nearest box (a dune palm) and 7.7 m of the
+nearest other soul.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks `ok`, 0 console warnings, two repeat runs
+after that also clean. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
