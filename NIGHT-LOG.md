@@ -9308,3 +9308,29 @@ other soul — comfortably past the trampoline's own sub-1.5 m footprint.
 Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, physics box
 count up by one to 302. Three repeat runs afterward all came back exit 0 with no FAILs — before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 371 — a firefly catcher for Whisper Woods
+
+Whisper Woods has had its own warm green-gold motes drifting over the whole floor since the
+ambient particle system went in, but nobody had ever given a soul a reason to chase them. **A child
+now wanders a small clearing south of the frog pond, jam jar held up overhead, three tiny glowing
+motes circling inside it**, looking up at the glow every few seconds. *"Three in the jar already —
+getting faster at this."* *"Careful, puss, don't tip it — they're friendly once they're in."* *"Mum
+says to let them go before bed. I always do. Eventually."* No new controller — a plain `Wanderer` on
+a short 4 m leash, same pairing the deer and fox already use. The jar's glass is transparent and its
+motes use `glowMat`, so both skip `bakeRig()` on their own, the same free pass every other glowing or
+see-through held prop in this file gets; the motes' own circling and the jar light's own pulse run on
+the world clock alone, never this world's own seeded `r`, so neither can shift any later wardrobe or
+layout pick in this build.
+
+A headless probe (the same stub-three harness `test/run.mjs` uses) built the real Whisper Woods
+(`game.travel(6, 'from-hub')`), sampled every NPC's and the squirrel's own position every frame over
+30 simulated seconds (so no wandering deer, fox or flying fairy mid-leash could slip past unnoticed),
+then checked the chosen spot against every one of the wood's physics boxes: (18, -30) came back clear
+by 11.6 m of the nearest box (the south rock at (8, -38)) and 14.0 m of the nearest other soul (the
+tracking deer's own leash circle centred on (-10, -30)), at radius 35 from the origin, well short of
+the radius (58) where forestRegion's own fill takes over.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok` (Whisper Woods' own friend count
+up by one to 53), 0 console warnings. Two repeat runs afterward both came back exit 0 with no FAILs —
+before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
