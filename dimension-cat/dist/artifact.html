@@ -10261,6 +10261,27 @@ function buildBeach(game, entry) {
     P.addBox(sx, game.physics.ground0(sx, sz) + 0.35, sz, 2.9, 0.7, 0.6, { cam: false });
     const seeA = beachPerson(false, true), seeB = beachPerson(true, true);
     game.npcs.push(new Seesaw(game, seeA, seeB, seesaw, { x: sx, z: sz })); }
+  // the Neighborhood and Candy Land both have a trampoline bouncing a child by now — Sunny Shore, for
+  // all its swing set and seesaw just above, never had one. A sea-turquoise trampoline now bounces a
+  // beach kid on the dry sand south-west of the dune patroller's own loop. Same `makeTrampoline` prop
+  // and `Bouncer` controller the Neighborhood's backyard and Candy Land's sweet-lands already use, just
+  // restriped, and `beachPerson(child, true)` for the kid instead of a fresh `makeHuman` call, since
+  // every other child on this beach already comes from that one helper. A headless probe (the stub-three
+  // harness `test/run.mjs` itself uses, driven by hand with `game.travel(4, 'from-hub')`) sampled every
+  // NPC's and the squirrel's own position every quarter second over 300 simulated seconds — long enough
+  // for the dune patroller's own rectangle, every wandering sunbather, crab, turtle, seagull and dolphin
+  // to clear the spot several times over — then swept a 2 m grid of the dry sand (x < 10, radius 10-50,
+  // short of the radius (58) where beachRegion's own fill takes over) against both those samples and all
+  // 303 of the beach's physics boxes: (-8, -40) came back clear by 15.1 m of the nearest box and 14.6 m
+  // of the nearest other soul, ground flat (height 0) across the whole footprint.
+  { const tx = -8, tz = -40;
+    const tramp = makeTrampoline({ color: 0x2ec4b6 }); placeT(game, U, tramp, tx, tz, 0);
+    P.addBox(tx, game.physics.ground0(tx, tz) + 0.21, tz, 1.1, 0.42, 1.1, { cam: false });
+    const bounceKid = beachPerson(r.chance(0.5), true);
+    game.npcs.push(new Bouncer(game, bounceKid, tramp, { x: tx, z: tz, ry: PI, height: 0.68, cycle: 1.05 }));
+    const bounceLines = ["Higher than the lifeguard's chair, nearly!", "Careful, puss — mind the springs, they're full of sand.", "Bet I could land clean in the sea from up here!"];
+    let bounceCryT = r.range(3, 7);
+    U.push((dt) => { bounceCryT -= dt; if (bounceCryT <= 0) { bounceCryT = r.range(8, 14); const c = game.cat.group.position; if (dist2(tx, tz, c.x, c.z) < 400) { game.toast('🤸 "' + r.pick(bounceLines) + '"', 2400); SFX.talk(); } } }); }
   // a sand sculptor works alone in the quiet far south-west dune — the sandcastle up north already has
   // its own patter of a kid, but nobody on this whole beach had ever built something properly ambitious.
   // A headless probe built the real game, travelled to Sunny Shore, sampled every NPC's own position

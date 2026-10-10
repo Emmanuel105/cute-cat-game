@@ -9458,3 +9458,28 @@ Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 consol
 count unchanged where it mattered (one more box in Candy Land itself; the suite's own final tally
 reflects whichever world it ends on, not this one). Two repeat runs afterward both came back exit 0
 with no FAILs — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 377 — a trampoline for Sunny Shore
+
+The Neighborhood and Candy Land both have a trampoline bouncing a child by now — Sunny Shore, for all
+its swing set and seesaw, never had one. **A sea-turquoise trampoline now bounces a beach kid on the
+dry sand south-west of the dune patroller's own loop**, well clear of the lifeguard chair, the sand
+sculptor and the ring dancers. *"Higher than the lifeguard's chair, nearly!"* *"Bet I could land clean
+in the sea from up here!"* No new mesh, no new controller: the same `makeTrampoline` prop and `Bouncer`
+controller the Neighborhood's backyard and Candy Land's sweet-lands already use, just restriped, with
+`beachPerson(…, true)` for the kid instead of a fresh `makeHuman` call — the same helper every other
+beach child already comes from.
+
+A headless probe (the stub-three harness `test/run.mjs` itself uses, driven by hand with
+`game.travel(4, 'from-hub')`) sampled every NPC's and the squirrel's own position every quarter second
+over 300 simulated seconds — long enough for the dune patroller's own rectangle and every wandering
+sunbather, crab, turtle, seagull and dolphin to clear the spot several times over — then swept a 2 m
+grid of the dry sand (x < 10, radius 10-50, short of the radius (58) where beachRegion's own fill takes
+over) against both those samples and all 303 of the beach's physics boxes: (-8, -40) came back clear by
+15.1 m of the nearest box and 14.6 m of the nearest other soul, ground flat (height 0) across the whole
+footprint.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks `ok`, 0 console warnings, physics box
+count unchanged where it mattered (one more box on Sunny Shore itself). Two repeat runs afterward both
+came back exit 0 with no FAILs — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.
