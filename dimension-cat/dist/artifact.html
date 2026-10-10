@@ -9933,6 +9933,52 @@ function buildVictorian(game, entry) {
     const bounceLines = ["Higher than the clock tower, nearly!", "Careful, puss — the springs are tighter than they look.", "Borrowed it off a cousin in Candy Land. Nobody's asked for it back."];
     let bounceCryT = r.range(3, 7);
     U.push((dt) => { bounceCryT -= dt; if (bounceCryT <= 0) { bounceCryT = r.range(8, 14); const c = game.cat.group.position; if (dist2(tx, tz, c.x, c.z) < 400) { game.toast('🤸 "' + r.pick(bounceLines) + '"', 2400); SFX.talk(); } } }); }
+  // Sunny Shore's had a girl blowing soap bubbles since round 385 — nowhere else in the game had ever
+  // actually bubbled. A barefoot urchin now blows the same kind of bubbles from a clay pipe on the open
+  // grass well north of the trampoline, two afloat at a time, drifting up and sideways before each pops
+  // into a soft spark, same as the beach version. No new controller (`Charger` again, the child never
+  // moves) and no new animated-bubble code: the pipe sits in `hands[1]`, the resting hand nothing else in
+  // this build's own idle gestures ever swings, so `pipe.getWorldPosition()` only needs reading once,
+  // right after `Charger` fixes the rig's position, for an exact launch point for both bubbles — no
+  // manual trig. Driven only by the world clock, never this world's own seeded `r`, so the build costs
+  // no later wardrobe or colour pick.
+  // A headless probe (`game.load(3, 'from-hub')` then `game.start('new')`, the same stub-three harness
+  // `test/run.mjs` itself uses) sampled every NPC's and the squirrel's own position every quarter second
+  // over 300 simulated seconds — long enough for every wandering urchin, dancer and ball-tossing pair to
+  // clear the spot several times over — then swept a 2 m grid of the open grass north of the river
+  // (radius ≤ 84, short of the radius (88) where victorianRegion's own procedural fill takes over)
+  // against both those samples and all 547 of the town's physics boxes: (-10, 82) came back clear by
+  // 32.5 m of the nearest box and 17.0 m of the nearest other soul.
+  { const bkx = -10, bkz = 82, bkry = atan2(-bkx, -bkz);
+    const bubbleWard = makeWardrobe(r, { shirts: [0x9a7a5a, 0x7a8a5a, 0x6a6a8a] });
+    const blower = makeHuman({ ...randomPerson(r, { child: true, female: r.chance(0.5), wardrobe: bubbleWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(blower.group);
+    const pipe = group(0.02, 0, 0.1, blower.hands[1]); pipe.rotation.set(-0.3, 0, 0.3);
+    mesh(G.cyl(0.012, 0.012, 0.14, 6), mat(0xc9a86a, { roughness: 0.6 }), { y: 0.07, parent: pipe });
+    mesh(G.torus(0.045, 0.009, 6, 16), mat(0xf7f3ec, { roughness: 0.3, transparent: true, opacity: 0.6 }), { y: 0.15, parent: pipe });
+    game.npcs.push(new Charger(game, blower, { x: bkx, z: bkz, ry: bkry, cryIcon: '🫧',
+      cries: ['Farthing a pipeful, if you want a go.', "Careful, puss — don't pop them with your nose!", 'Biggest one yet, that was.'] }));
+    const tip = V3(); pipe.getWorldPosition(tip);
+    const bubbleM = mat(0xeaf6ff, { pbr: true, metalness: 0.05, roughness: 0.1, transparent: true, opacity: 0.4 });
+    const bubbles = [0, 1].map((i) => ({ m: mesh(G.sphere(0.05, 10, 8), bubbleM, { shadow: 'none', parent: W }), ph: i * 1.8, popped: -1 }));
+    const cyc = 3.2;
+    U.push((dt, t) => {
+      for (const b of bubbles) {
+        const k = ((t + b.ph) % cyc) / cyc;
+        if (k < 0.92) {
+          b.m.visible = true;
+          b.m.position.set(tip.x + sin(t * 1.6 + b.ph) * 0.18 * k, tip.y + k * 1.5, tip.z + cos(t * 1.1 + b.ph) * 0.12 * k);
+          b.m.scale.setScalar(0.4 + k * 0.7);
+        } else {
+          b.m.visible = false;
+          const cycleNo = floor((t + b.ph) / cyc);
+          if (cycleNo !== b.popped) { b.popped = cycleNo;
+            const c = game.cat.group.position;
+            if (dist2(tip.x, tip.z, c.x, c.z) < 400) { SFX.twinkle(); game.fx.emit(b.m.position.x, b.m.position.y, b.m.position.z, { count: 4, colors: [0xeaf6ff, 0xffffff, 0xbfd8ff], speed: 0.5, up: 0.6, life: 0.5, gravity: 1.5 }); }
+          }
+        }
+      }
+    }); }
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);

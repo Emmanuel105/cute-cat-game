@@ -9690,3 +9690,27 @@ nearest other soul.
 
 Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks `ok`, 0 console warnings, two repeat runs
 after that also clean. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 386 — a bubble-blower for Victorian
+
+Sunny Shore's had a girl blowing soap bubbles since round 385 — nowhere else in the game had ever
+actually bubbled. **A barefoot urchin now blows the same kind of bubbles from a clay pipe on the open
+grass well north of the postbox-red trampoline**, two afloat at a time, drifting up and sideways before
+each pops into a soft spark. *"Farthing a pipeful, if you want a go."* *"Careful, puss — don't pop them
+with your nose!"* No new controller: the kid is a plain `Charger`, same pairing the trampoline's bouncer
+and every other standing figure in this file already uses. No new animated-bubble code either — the pipe
+sits in `hands[1]`, the resting hand nothing else in this build's own idle gestures ever swings, so
+`pipe.getWorldPosition()` only needed reading once, right after `Charger` fixes the rig's position, for
+an exact launch point for both bubbles; the bubbles themselves ride the world clock alone, never this
+world's own seeded `r`, so the build costs no later wardrobe or colour pick.
+
+A headless probe (`game.load(3, 'from-hub')` then `game.start('new')`, the same stub-three harness
+`test/run.mjs` itself uses) sampled every NPC's and the squirrel's own position every quarter second over
+300 simulated seconds — long enough for every wandering urchin, dancer and ball-tossing pair to clear the
+spot several times over — then swept a 2 m grid of the open grass north of the river (radius ≤ 84, short
+of the radius (88) where victorianRegion's own procedural fill takes over) against both those samples and
+all 547 of the town's physics boxes: (-10, 82) came back clear by 32.5 m of the nearest box and 17.0 m of
+the nearest other soul.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks `ok`, 0 console warnings, two repeat runs
+after that also clean. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
