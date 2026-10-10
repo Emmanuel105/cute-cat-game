@@ -9512,3 +9512,26 @@ Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks `ok`, 0 consol
 count unchanged where it mattered (one more box on Frosty Peak itself). Two repeat runs afterward both
 came back exit 0 with no FAILs — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 379 — a trampoline for Whisper Woods
+
+Neighborhood, Candy Land, Sunny Shore and Frosty Peak all had a kid bouncing on a trampoline by now —
+Whisper Woods was the last of the seven worlds left without one. **A moss-green trampoline now bounces
+a kid in a thin ring of open ground just past the forest's outer tree ring**, where the 40 hand-placed
+trees stop (radius 54) and before the automatic outer-country fill takes over (radius 58). *"Higher
+than the treehouse roof, nearly!"* *"The fairies won't try it. Too much bounce for their wings."* No
+new mesh, no new controller: the same `makeTrampoline` prop and `Bouncer` controller the other four
+worlds already use, just restriped, with the terrain-aware `placeT`/`boxT` helpers in place of flat
+`place()`/`P.addBox()`, since the forest floor rolls gently underfoot out here too.
+
+A headless probe (the stub-three harness `test/run.mjs` itself uses, driven by hand with `game.load(6,
+'from-hub')` then `game.step(dt)` run for 300 simulated seconds so every deer, fox, hare, fairy and
+wandering child actually moved) sampled every NPC's and the squirrel's own position every quarter
+second, then swept a 2 m grid of the open floor (radius 15-55, short of the radius (58) where
+`forestRegion`'s own fill takes over) against both those samples and all 751 of the wood's physics
+boxes: (54, 7) came back clear by 9.7 m of the nearest box and well past 20 m of the nearest other
+soul, with ground height rising gently (0.83 m) this far out — all seven worlds now have one.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks `ok`, 0 console warnings. Two repeat
+runs afterward both came back exit 0 with no FAILs — before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
