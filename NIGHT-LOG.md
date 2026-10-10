@@ -9360,3 +9360,28 @@ sub-decimetre post.
 Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, physics box
 count up by one to 303. Two repeat runs afterward both came back exit 0 with no FAILs — before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 373 — hares for Whisper Woods
+
+The jump-rope girl deep in the south of the wood has had a line about rabbits since her own round went
+in — *"The rabbits won't try it — too many ears in the way"* — but no rabbit had ever actually lived
+here to make her right. **A trio of hares now huddles in a small clearing in the south-east corner of
+Whisper Woods**, thumping a short hop away the instant the cat gets within 2.2 m, exactly as a real
+one would bolt. No new rig or controller: `makeHare()` already existed (Frosty Peak's own snow hares
+and Candy Land's mint-green one both use it) and had simply never been given a plain woodland coat;
+`Hopper`, the same shy-hop controller the frogs and the hollow log's own hedgehog already use, does
+all the work.
+
+A headless probe (the stub-three harness `test/run.mjs` itself uses, driven by hand with `game.load(6,
+'from-hub')` rather than `game.travel()`, which only queues a 520 ms real-time fade and never actually
+swaps the world in a script with no running clock) sampled every NPC's and the squirrel's own position
+every frame over 300 simulated frames, then swept a 1 m grid of the open floor against both those
+samples and every physics box. (30, -32), (32, -34) and (29, -35) came back clear by 5.9-7.6 m of the
+nearest box and 8.0-10.6 m of the nearest other soul, each only 2.8-3.2 m from the next — a loose
+huddle, not a line — and a comfortable 10-13 m outside the third fox's own 8 m leash from (32, -22), so
+it never actually reaches them mid-chase.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged at 303 (`Hopper` adds a collision circle, not a box). Two repeat runs afterward both
+came back exit 0 with no FAILs — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.
