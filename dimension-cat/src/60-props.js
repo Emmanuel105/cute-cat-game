@@ -452,6 +452,20 @@ function makeSeesaw(o = {}) {
   return g;
 }
 /**
+ * A trampoline: a round steel rim on four angled legs, a dark jumping mat and a padded rim in a
+ * bright colour. `userData.matY` is the mat's own height above the ground, for whoever bounces on it.
+ */
+function makeTrampoline(o = {}) {
+  const g = new THREE.Group(), R = 1.1, matY = 0.42;
+  const steel = mat(0x8a8f96, { roughness: 0.4, metalness: 0.7 }), pad = mat(o.color ?? 0xd6455c, { roughness: 0.75 }), jumpMat = mat(0x1c2733, { roughness: 0.9 });
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) mesh(G.cyl(0.035, 0.045, matY + 0.1, 6), steel, { x: sx * R * 0.72, y: matY / 2, z: sz * R * 0.72, rx: -sz * 0.22, rz: sx * 0.22, parent: g });   // four splayed legs
+  mesh(G.cyl(R, R, 0.03, 20), steel, { y: matY, parent: g });                                       // the steel rim
+  noInk(mesh(G.cyl(R - 0.05, R - 0.05, 0.02, 20), jumpMat, { y: matY + 0.015, parent: g }));         // the jumping mat
+  mesh(G.torus(R - 0.1, 0.06, 6, 18), pad, { y: matY + 0.02, rx: PI / 2, parent: g });               // the safety pad over the springs
+  g.userData.matY = matY + 0.02;
+  return g;
+}
+/**
  * One balloon on a string: the string is a unit cylinder along z from the group's origin, stretched
  * to the balloon each frame by `update`, and the balloon bobs. `keep` puts the materials in the
  * global bag, for a balloon that travels between worlds with the cat.

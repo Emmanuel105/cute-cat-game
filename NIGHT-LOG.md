@@ -9272,3 +9272,39 @@ across the square, of the night watchman's own bench at (36, -30).
 Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok` (Victorian's own friend count up by
 two for the new pair), 0 console warnings. Three repeat runs afterward all came back exit 0 with no
 FAILs — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 370 — a trampoline for the Neighborhood
+
+Every other playground game had already found its way onto the street's open south field — hopscotch,
+marbles, jump rope, hula hoop, the yo-yo kid — but nobody had the one yard toy every kid actually wants
+a turn on. **A round steel-framed trampoline now sits in the backyard behind house 10, a kid bouncing
+on it in a steady rhythm**, knees tucking up at the top of every arc and crouching down into the next
+one on landing. *"Highest one yet, I swear!"* *"Careful, puss — mind the springs round the edge."*
+*"Mum says I'll bounce clean over the fence one day."* A new controller, `Bouncer` (55-npcs.js), does
+the work: none of the file's existing hop/swing/tip controllers move a rig straight up and down on a
+fixed vertical cycle, so this one eases a sine arc between a fixed base height and a peak, squashing
+the rig's own vertical scale for a brief crouch right at touchdown and tucking the knees in proportion
+to how high off the mat it currently is. The trampoline itself (`makeTrampoline()`, 60-props.js) is a
+steel rim on four splayed legs, a dark jumping mat and a bright padded ring over where the springs
+would be.
+
+`Bouncer` never calls the shared `rnd()` sequence at all — its own phase starts at a fixed 0, passed in
+rather than drawn — and its toast line is timed off this world's local `r()` instead of the usual
+`cries`/`cryIcon` constructor option every other standalone kid in this file takes. That's deliberate:
+the dog groomer's own round, several dozen back, found that one new draw on the shared sequence a few
+seconds into the simulation shifts every later tick of it just enough to break a timing-sensitive check
+elsewhere in this same world (the painter's held pose, the cyclist's pedalling-delta check). The hula
+hooper, the jump-roper and the groomer itself all dodge this the same way; this round follows suit, and
+goes one step further by keeping the new controller itself free of any shared-sequence draw whatsoever.
+
+A headless probe built the real Neighborhood, called `game.start('new')` so every wanderer, the postie
+and the dog walker actually moved rather than sitting frozen at their spawn point, then ran the game
+loop for 150 simulated seconds, sampling every NPC's own position every quarter second. Sweeping a grid
+of the backyard behind the house at x=-72 (open and unclaimed since the sprinkler took the house next
+door's own front lawn) against both that trace and every one of the street's physics boxes found
+(-72, -10) clear by 4.9 m of the nearest box (that house's own back wall) and 12.6 m of the nearest
+other soul — comfortably past the trampoline's own sub-1.5 m footprint.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, physics box
+count up by one to 302. Three repeat runs afterward all came back exit 0 with no FAILs — before
+rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

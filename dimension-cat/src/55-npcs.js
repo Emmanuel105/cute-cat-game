@@ -846,6 +846,29 @@ class Seesaw {
   }
 }
 
+// ---------------------------------------------------------------- bouncer: launches straight up off a trampoline mat on a fixed cycle, tucking at the peak and squashing down on landing. No `cries`/`cryIcon` of its own, unlike most of this file's standalone kids — see the Neighborhood's own trampoline for why.
+class Bouncer {
+  constructor(game, rig, trampoline, { x, z, ry = 0, height = 0.68, cycle = 1.05, t0 = 0 }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.height = height; this.cycle = cycle; this.t = t0;
+    this.base = game.physics.ground0(x, z) + trampoline.userData.matY;
+    rig.group.position.set(x, this.base, z); rig.group.rotation.y = ry;
+    this.circle = game.physics.addCircle(this, x, z, 0.5);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t = (this.t + dt) % this.cycle; const rig = this.rig, ph = this.t / this.cycle;
+    const k = sin(ph * PI);   // 0 at launch and landing, 1 at the top of the arc
+    rig.group.position.y = this.base + k * this.height;
+    const land = min(ph, 1 - ph), squat = land < 0.07 ? 1 - land / 0.07 : 0;   // a brief crouch right at touchdown
+    rig.group.scale.y = 1 - squat * 0.16;
+    rig.animate(0, false, dt, this.t);
+    for (const L of rig.legs) { L.hip.rotation.x = -0.25 - k * 1.0 + squat * 0.35; L.knee.rotation.x = 0.1 + k * 1.75 + squat * 0.5; L.ankle.rotation.x = 0.15; }
+    if (!rig.gesture) for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -0.35 - k * 0.3, 8, dt); A.sh.rotation.z = damp(A.sh.rotation.z, (A === rig.arms[0] ? 1 : -1) * (0.75 + k * 0.3), 8, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.3, 8, dt); }
+    rig.spine.rotation.x = damp(rig.spine.rotation.x, -k * 0.1, 6, dt); rig.body.position.y = 0;
+    Wanderer.prototype.lookAtCat.call(this, dt);
+  }
+}
+
 // ---------------------------------------------------------------- ring dance: a circle of dancers going round, hand in hand
 class RingDance {
   constructor(game, rigs, { cx, cz, r = 2.4, speed = 0.55, turnEvery = 9, cries = null, cryIcon = '💬' }) {

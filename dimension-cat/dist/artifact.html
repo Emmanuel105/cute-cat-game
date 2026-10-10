@@ -2617,6 +2617,29 @@ class Seesaw {
   }
 }
 
+// ---------------------------------------------------------------- bouncer: launches straight up off a trampoline mat on a fixed cycle, tucking at the peak and squashing down on landing. No `cries`/`cryIcon` of its own, unlike most of this file's standalone kids — see the Neighborhood's own trampoline for why.
+class Bouncer {
+  constructor(game, rig, trampoline, { x, z, ry = 0, height = 0.68, cycle = 1.05, t0 = 0 }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.height = height; this.cycle = cycle; this.t = t0;
+    this.base = game.physics.ground0(x, z) + trampoline.userData.matY;
+    rig.group.position.set(x, this.base, z); rig.group.rotation.y = ry;
+    this.circle = game.physics.addCircle(this, x, z, 0.5);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t = (this.t + dt) % this.cycle; const rig = this.rig, ph = this.t / this.cycle;
+    const k = sin(ph * PI);   // 0 at launch and landing, 1 at the top of the arc
+    rig.group.position.y = this.base + k * this.height;
+    const land = min(ph, 1 - ph), squat = land < 0.07 ? 1 - land / 0.07 : 0;   // a brief crouch right at touchdown
+    rig.group.scale.y = 1 - squat * 0.16;
+    rig.animate(0, false, dt, this.t);
+    for (const L of rig.legs) { L.hip.rotation.x = -0.25 - k * 1.0 + squat * 0.35; L.knee.rotation.x = 0.1 + k * 1.75 + squat * 0.5; L.ankle.rotation.x = 0.15; }
+    if (!rig.gesture) for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -0.35 - k * 0.3, 8, dt); A.sh.rotation.z = damp(A.sh.rotation.z, (A === rig.arms[0] ? 1 : -1) * (0.75 + k * 0.3), 8, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.3, 8, dt); }
+    rig.spine.rotation.x = damp(rig.spine.rotation.x, -k * 0.1, 6, dt); rig.body.position.y = 0;
+    Wanderer.prototype.lookAtCat.call(this, dt);
+  }
+}
+
 // ---------------------------------------------------------------- ring dance: a circle of dancers going round, hand in hand
 class RingDance {
   constructor(game, rigs, { cx, cz, r = 2.4, speed = 0.55, turnEvery = 9, cries = null, cryIcon = '💬' }) {
@@ -4588,6 +4611,20 @@ function makeSeesaw(o = {}) {
   mesh(G.box(L, 0.1, 0.4), wood, { parent: pivot });
   for (const sx of [-1, 1]) mesh(G.box(0.1, 0.1, 0.1), frame, { x: sx * (arm + 0.22), y: 0.12, parent: pivot });   // handle knobs
   g.userData.seatY = H + 0.1;   // plank-top height above the ground at rest
+  return g;
+}
+/**
+ * A trampoline: a round steel rim on four angled legs, a dark jumping mat and a padded rim in a
+ * bright colour. `userData.matY` is the mat's own height above the ground, for whoever bounces on it.
+ */
+function makeTrampoline(o = {}) {
+  const g = new THREE.Group(), R = 1.1, matY = 0.42;
+  const steel = mat(0x8a8f96, { roughness: 0.4, metalness: 0.7 }), pad = mat(o.color ?? 0xd6455c, { roughness: 0.75 }), jumpMat = mat(0x1c2733, { roughness: 0.9 });
+  for (const sx of [-1, 1]) for (const sz of [-1, 1]) mesh(G.cyl(0.035, 0.045, matY + 0.1, 6), steel, { x: sx * R * 0.72, y: matY / 2, z: sz * R * 0.72, rx: -sz * 0.22, rz: sx * 0.22, parent: g });   // four splayed legs
+  mesh(G.cyl(R, R, 0.03, 20), steel, { y: matY, parent: g });                                       // the steel rim
+  noInk(mesh(G.cyl(R - 0.05, R - 0.05, 0.02, 20), jumpMat, { y: matY + 0.015, parent: g }));         // the jumping mat
+  mesh(G.torus(R - 0.1, 0.06, 6, 18), pad, { y: matY + 0.02, rx: PI / 2, parent: g });               // the safety pad over the springs
+  g.userData.matY = matY + 0.02;
   return g;
 }
 /**
@@ -7345,6 +7382,38 @@ function buildNeighborhood(game, entry) {
     const marbleKid = makeHuman({ ...randomPerson(r, { female: true, child: true, wardrobe: marbleWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false }); W.add(marbleKid.group);
     game.npcs.push(new Kneeler(game, marbleKid, { x: mkx, z: mkz, ry: mry,
       cries: ["That one's mine, fair and square!", "Careful, puss — don't swallow one.", "Grandad gave me this bag. Won them all himself, he says."] })); }
+
+  // every playground game on this street now plays out on the open south field — hopscotch, marbles,
+  // jump rope, hula hoop, the yo-yo kid — but nobody had a trampoline, the one yard toy every kid
+  // actually wants a turn on. The backyard behind house 10 (x=-72), open and unclaimed since the
+  // sprinkler took the house next door's own front lawn, gets one now: a round steel-framed trampoline
+  // with a kid mid-bounce, knees tucking at the top of every arc and crouching down into the next one.
+  // `Bouncer` is a new controller (55-npcs.js) — none of this file's existing hop/swing/tip controllers
+  // move a rig straight up and down on a fixed vertical cycle (own fixed shirt colour, not the street's
+  // shared `ward` bag, which is sized exactly to its 18 users already; placed last of every person this
+  // build adds, after the marbles kid, so it draws from the very tail of the local `r` sequence and
+  // disturbs the fewest later ticks of it).
+  // No `cries`/`cryIcon` passed to `Bouncer`, and `Bouncer` itself never calls the shared `rnd()` at all
+  // (its own phase starts at a fixed 0, passed in rather than drawn) — the dog groomer's own round
+  // (above) already found that one new draw on the *shared* `rnd()` sequence a few seconds into the
+  // simulation shifts every later tick of it just enough to break a timing-sensitive check elsewhere in
+  // this same world, so this one times its own line off the world's local `r()` instead, the same trick
+  // the groomer, the hula hooper, the jump-roper and the marbles kid above all use for exactly that
+  // reason.
+  // (a headless probe built the real Neighborhood, called `game.start('new')` so every wanderer, the
+  // postie and the dog walker actually moved rather than sitting frozen at their spawn point, then ran
+  // the game loop for 150 simulated seconds, sampling every NPC's own position every quarter second —
+  // swept against a grid of the backyard behind the house at x=-72 and every one of the street's physics
+  // boxes — found (-72, -10) clear by 4.9 m of the nearest box (that house's own back wall) and 12.6 m
+  // of the nearest other soul, well past this prop's own sub-1.5 m footprint)
+  { const tx = -72, tz = -10;
+    const tramp = makeTrampoline({ color: 0x3f6fd6 }); place(game, U, tramp, tx, tz, 0);
+    P.addBox(tx, 0.21, tz, 1.1, 0.42, 1.1, { cam: false });
+    const bounceKid = makeHuman({ ...randomPerson(r, { child: true, female: r.chance(0.5) }), shirt: 0xff8f3c, backpack: null }); W.add(bounceKid.group);
+    game.npcs.push(new Bouncer(game, bounceKid, tramp, { x: tx, z: tz, ry: PI, height: 0.68, cycle: 1.05 }));
+    const bounceLines = ["Highest one yet, I swear!", "Careful, puss — mind the springs round the edge.", "Mum says I'll bounce clean over the fence one day."];
+    let bounceCryT = r.range(3, 7);
+    U.push((dt) => { bounceCryT -= dt; if (bounceCryT <= 0) { bounceCryT = r.range(8, 14); const c = game.cat.group.position; if (dist2(tx, tz, c.x, c.z) < 400) { game.toast('🤸 "' + r.pick(bounceLines) + '"', 2400); SFX.talk(); } } }); }
 
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);

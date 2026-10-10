@@ -1022,6 +1022,38 @@ function buildNeighborhood(game, entry) {
     game.npcs.push(new Kneeler(game, marbleKid, { x: mkx, z: mkz, ry: mry,
       cries: ["That one's mine, fair and square!", "Careful, puss — don't swallow one.", "Grandad gave me this bag. Won them all himself, he says."] })); }
 
+  // every playground game on this street now plays out on the open south field — hopscotch, marbles,
+  // jump rope, hula hoop, the yo-yo kid — but nobody had a trampoline, the one yard toy every kid
+  // actually wants a turn on. The backyard behind house 10 (x=-72), open and unclaimed since the
+  // sprinkler took the house next door's own front lawn, gets one now: a round steel-framed trampoline
+  // with a kid mid-bounce, knees tucking at the top of every arc and crouching down into the next one.
+  // `Bouncer` is a new controller (55-npcs.js) — none of this file's existing hop/swing/tip controllers
+  // move a rig straight up and down on a fixed vertical cycle (own fixed shirt colour, not the street's
+  // shared `ward` bag, which is sized exactly to its 18 users already; placed last of every person this
+  // build adds, after the marbles kid, so it draws from the very tail of the local `r` sequence and
+  // disturbs the fewest later ticks of it).
+  // No `cries`/`cryIcon` passed to `Bouncer`, and `Bouncer` itself never calls the shared `rnd()` at all
+  // (its own phase starts at a fixed 0, passed in rather than drawn) — the dog groomer's own round
+  // (above) already found that one new draw on the *shared* `rnd()` sequence a few seconds into the
+  // simulation shifts every later tick of it just enough to break a timing-sensitive check elsewhere in
+  // this same world, so this one times its own line off the world's local `r()` instead, the same trick
+  // the groomer, the hula hooper, the jump-roper and the marbles kid above all use for exactly that
+  // reason.
+  // (a headless probe built the real Neighborhood, called `game.start('new')` so every wanderer, the
+  // postie and the dog walker actually moved rather than sitting frozen at their spawn point, then ran
+  // the game loop for 150 simulated seconds, sampling every NPC's own position every quarter second —
+  // swept against a grid of the backyard behind the house at x=-72 and every one of the street's physics
+  // boxes — found (-72, -10) clear by 4.9 m of the nearest box (that house's own back wall) and 12.6 m
+  // of the nearest other soul, well past this prop's own sub-1.5 m footprint)
+  { const tx = -72, tz = -10;
+    const tramp = makeTrampoline({ color: 0x3f6fd6 }); place(game, U, tramp, tx, tz, 0);
+    P.addBox(tx, 0.21, tz, 1.1, 0.42, 1.1, { cam: false });
+    const bounceKid = makeHuman({ ...randomPerson(r, { child: true, female: r.chance(0.5) }), shirt: 0xff8f3c, backpack: null }); W.add(bounceKid.group);
+    game.npcs.push(new Bouncer(game, bounceKid, tramp, { x: tx, z: tz, ry: PI, height: 0.68, cycle: 1.05 }));
+    const bounceLines = ["Highest one yet, I swear!", "Careful, puss — mind the springs round the edge.", "Mum says I'll bounce clean over the fence one day."];
+    let bounceCryT = r.range(3, 7);
+    U.push((dt) => { bounceCryT -= dt; if (bounceCryT <= 0) { bounceCryT = r.range(8, 14); const c = game.cat.group.position; if (dist2(tx, tz, c.x, c.z) < 400) { game.toast('🤸 "' + r.pick(bounceLines) + '"', 2400); SFX.talk(); } } }); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
