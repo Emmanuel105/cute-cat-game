@@ -9790,3 +9790,29 @@ physics boxes: (66, 60) came back clear by 11.4 m of the nearest box and 33.0 m 
 Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks `ok`, 0 console warnings, two repeat runs
 after that also clean (`world 2: 62 to meet`, up from 61). Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 390 — a dandelion wisher for Whisper Woods
+
+Sunny Shore, Victorian, Frosty Peak and Robot City have all had a kid blow or brush at something that
+drifts and fades since round 385 — Whisper Woods, the one world actually built around fairies and wishes
+(the fairy ring has granted three since round 1), never got one of its own. **A child now stands in a
+clearing north-east of the trampoline holding a dandelion up to blow**: three seeds lift off the puff and
+drift upward on the breeze before fading into a soft green-gold sparkle, the same `SFX.twinkle()` and
+palette the fairy ring's own wish already uses. *"Make a wish, puss."* *"Careful — don't sneeze on it,
+you'll ruin the count."* *"One for every secret, they say."* No new controller — a plain `Charger`, same
+pairing every other standing figure in this file already uses; the dandelion sits in `hands[1]`, the
+resting hand every held prop here already keeps steady, so its world position only needed reading once
+right after `Charger` fixed the rig. The seeds themselves ride the world clock alone, off three fixed
+phases, never this world's own seeded `r`.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real Whisper Woods
+(`game.travel(6, 'from-hub')`), sampled every NPC's and the squirrel's own position every quarter second
+over 300 simulated seconds — long enough for every wandering deer, fox, hare and the jam-jar child to
+clear the spot several times over — then swept a 2 m grid of the open floor (radius 15-56, short of the
+radius (58) where forestRegion's own fill takes over, and clear of every hand-placed landmark by 8 m or
+more) against both those samples and all 707 of the wood's physics boxes: (40, 38) came back clear by
+10.0 m of the nearest box and 11.7 m of the nearest other soul.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks `ok`, 0 console warnings, three repeat
+runs after that also clean (`world 6: 55 to meet`, up from 54). Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

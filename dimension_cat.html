@@ -12501,6 +12501,59 @@ function buildForest(game, entry) {
     let bounceCryT = r.range(3, 7);
     U.push((dt) => { bounceCryT -= dt; if (bounceCryT <= 0) { bounceCryT = r.range(8, 14); const c = game.cat.group.position; if (dist2(tx, tz, c.x, c.z) < 400) { game.toast('🤸 "' + r.pick(bounceLines) + '"', 2400); SFX.talk(); } } }); }
 
+  // Sunny Shore, Victorian, Frosty Peak and Robot City all blow or brush at something that drifts and
+  // fades by now — these woods, the one world actually built around fairies and wishes (the fairy ring
+  // above already grants three), never got one of their own. A child now stands in a clearing north-east
+  // of the trampoline holding a dandelion up to blow: three seeds lift off the puff and drift upward on
+  // the breeze before fading into a soft green-gold sparkle, the same `SFX.twinkle()` and palette the
+  // fairy ring's own wish already uses, so this reads as a small wish of its own rather than a copy of
+  // the beach's soap bubbles. No new controller: a plain `Charger`, the same pairing every other standing
+  // figure in this file already uses. The dandelion sits in `hands[1]` — the resting hand every other
+  // held prop here already keeps steady, never the one `makeHuman`'s own idle gestures swing — so its
+  // world position only needs reading once, right after `Charger` fixes the rig's own position and
+  // rotation; the seeds themselves ride the world clock `t` off three fixed phases, never this world's
+  // own seeded `r`, so nothing later shifts.
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real Whisper
+  // Woods (`game.travel(6, 'from-hub')`), sampled every NPC's and the squirrel's own position every
+  // quarter second over 300 simulated seconds (so the wandering deer, fox, hares and the jam-jar child
+  // all actually moved), then swept a 2 m grid of the open floor (radius 15-56, short of the radius (58)
+  // where forestRegion's own fill takes over, and clear of every hand-placed landmark by 8 m or more)
+  // against both those samples and all 707 of the wood's physics boxes: (40, 38) came back clear by
+  // 10.0 m of the nearest box and 11.7 m of the nearest other soul.
+  { const ddx = 40, ddz = 38, ddry = atan2(-ddx, -ddz);
+    const blower = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(blower.group);
+    const stem = group(0.02, 0, 0.08, blower.hands[1]); stem.rotation.set(-0.5, 0, 0.25);
+    const stemM = mat(0x5a8a4a, { roughness: 0.8 });
+    mesh(G.cyl(0.008, 0.01, 0.22, 6), stemM, { y: 0.11, parent: stem });
+    const puff = group(0, 0.24, 0, stem);
+    const puffM = mat(0xf2efe6, { roughness: 0.9, transparent: true, opacity: 0.85 });
+    for (let i = 0; i < 9; i++) { const a = r() * TAU, el = r() * PI, rr = 0.045;
+      mesh(G.sphere(0.012, 5, 4), puffM, { x: sin(el) * cos(a) * rr, y: cos(el) * rr, z: sin(el) * sin(a) * rr, shadow: 'none', parent: puff }); }
+    game.npcs.push(new Charger(game, blower, { x: ddx, z: ddz, ry: ddry, cryIcon: '🌼',
+      cries: ['Make a wish, puss.', "Careful — don't sneeze on it, you'll ruin the count.", 'One for every secret, they say.'] }));
+    const tip = V3(); puff.getWorldPosition(tip);
+    const seedM = mat(0xf7f3ec, { roughness: 0.95, transparent: true, opacity: 0.9 });
+    const seeds = [0, 1, 2].map((i) => ({ m: mesh(G.sphere(0.02, 6, 5), seedM, { shadow: 'none', parent: W }), ph: i * 1.4, popped: -1 }));
+    const cyc = 3.6;
+    U.push((dt, t) => {
+      for (const s of seeds) {
+        const k = ((t + s.ph) % cyc) / cyc;
+        if (k < 0.95) {
+          s.m.visible = true;
+          s.m.position.set(tip.x + sin(t * 0.7 + s.ph) * 0.3 * k, tip.y + k * 1.8, tip.z + cos(t * 0.5 + s.ph) * 0.22 * k);
+          s.m.scale.setScalar(1 - k * 0.6);
+        } else {
+          s.m.visible = false;
+          const cycleNo = floor((t + s.ph) / cyc);
+          if (cycleNo !== s.popped) { s.popped = cycleNo;
+            const c = game.cat.group.position;
+            if (dist2(tip.x, tip.z, c.x, c.z) < 400) { SFX.twinkle(); game.fx.emit(s.m.position.x, s.m.position.y, s.m.position.z, { count: 3, colors: [0xf7f3ec, 0xa8ff9a, 0xffe27a], speed: 0.4, up: 0.5, life: 0.5, gravity: 1.2 }); }
+          }
+        }
+      }
+    }); }
+
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
 
