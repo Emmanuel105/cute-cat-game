@@ -9217,3 +9217,32 @@ of the nearest wandering soul — comfortably past this prop's own sub-metre foo
 Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, physics box
 count up by one to 301. Three repeat runs afterward all came back exit 0 with no FAILs — before
 rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 368 — an ice sculpture for Frosty Peak
+
+Every other world had grown at least one thing somebody clearly made on purpose and left standing still
+to be looked at — the Neighborhood's signpost, Candy Land's wishing well, Robot City's statue and oil
+vending machine, Victorian's postbox and clock tower, Sunny Shore's lighthouse. Frosty Peak never did:
+everything up there either moves (the yeti, the reindeer herd, the aurora) or was simply always going to
+be there (the mountain itself). **A block of carved ice now stands alone on the open snowfield east of
+the village**, chiselled into a sitting cat — ears, curled tail and all — by someone nobody in the
+village will admit to being. Press E for a small icy chime and a line about it: *"Nobody will say who
+carved it. Everyone up here has a theory."* *"It's melted clean away twice and come back twice. Nobody
+will explain that either."* *"The yeti swears it isn't him. The yeti is a terrible liar."* It's a static
+landmark, same pattern as the vending machine and the birdbath before it — no new controller, and its
+transparent `pbr` ice material gets a free pass from `bakeDeep()` (same as anything glowing), so it costs
+nothing to leave unbaked. The point light's glint runs on the world clock `t` alone, never this world's
+own seeded `r`, so it can't shift any later wardrobe or layout pick in this build.
+
+A headless probe (the same stub-three harness `test/run.mjs` uses) built the real mountain, clicked
+start, then ran the game loop for 150 simulated seconds — long enough for the reindeer herd, the
+searcher, the tracker, the kite flyer and every other wanderer to show their whole patrol, not just
+whatever a short snapshot happened to catch — sampling every NPC's own position every quarter second.
+Sweeping a grid of the open snowfield (radius 20–53, short of the radius (58) where the outer-country
+fill takes over) against both that trace and every one of the mountain's physics boxes turned up
+(50, -14): clear by 7.77 m of the nearest box and 10.48 m of the nearest other soul, east of the village
+and well clear of both the marbles ring and the kite flyer.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings. Two repeat runs
+afterward both came back exit 0 with no FAILs — before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

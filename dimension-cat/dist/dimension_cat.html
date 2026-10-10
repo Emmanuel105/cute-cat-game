@@ -10987,6 +10987,38 @@ function buildSnowVillage(game, entry) {
   // ground or the physics grid, so (like the Candy Land butterflies) this needed no headless clearance
   // probe. Centred on the village square and high enough to clear the cabins and the zipline towers.
   for (let i = 0; i < 6; i++) { const rig = makeSnowBird({ phase: i * 1.1 }); game.npcs.push(new Flyer(game, rig, { cx: 0, cz: 6, r: r.range(16, 30), h: r.range(14, 22), speed: r.range(1.6, 2.4), bob: 0.5, wobble: 1.4, cw: i % 2 === 0, phase: i * 1.1 })); }
+  // the Neighborhood's got its signpost, Candy Land its wishing well, Robot City a statue and now a
+  // vending machine, Victorian a postbox and a clock tower, Sunny Shore a lighthouse — every other world
+  // has at least one thing somebody clearly made on purpose, standing still, just to be looked at. Frosty
+  // Peak never did: everything here either moves (the yeti, the herd) or was always going to be here (the
+  // mountain itself). A block of carved ice now stands alone on the open snowfield east of the square —
+  // a sitting cat, ears, curled tail and all, chiselled by someone nobody in the village will admit to
+  // being. The ice itself is a transparent `pbr` material, which `bakeDeep()` already skips outright (the
+  // same free pass glass and anything glowing gets), so it costs nothing to leave unbaked; the point
+  // light's glint runs on the world clock `t` alone, same as the vending machine's screen, never this
+  // world's own seeded `r`, so it can't shift any later wardrobe or layout pick in this build.
+  // A headless probe built the real mountain (`game.travel(5, 'from-hub')`), ran the game loop for 150
+  // simulated seconds (long enough for the reindeer herd, the searcher, the tracker, the kite flyer and
+  // every other wanderer to show their whole patrol, not just whatever a short snapshot happened to
+  // catch), sampling every NPC's own position every quarter second, then swept the open snowfield
+  // (radius 20-53, short of the radius (58) where snowRegion's own fill takes over) against both that
+  // trace and all of the mountain's physics boxes: (50, -14) came back clear by 7.77 m of the nearest box
+  // and 10.48 m of the nearest other soul — east of the village, well clear of the marbles ring at
+  // (44.5, 24) and the kite flyer at (46, 44).
+  { const scx = 50, scz = -14, scy = P.ground0(scx, scz), scry = atan2(-scx, -scz);
+    const ice = mat(0xcdeeff, { pbr: true, metalness: 0.05, roughness: 0.1, transparent: true, opacity: 0.72 });
+    const sculpt = group(scx, scy, scz, W); sculpt.rotation.y = scry;
+    mesh(G.box(1.3, 0.5, 1.3), ice, { y: 0.25, parent: sculpt });          // base block
+    mesh(G.box(0.58, 0.6, 0.48), ice, { y: 0.8, parent: sculpt });         // body
+    mesh(G.sphere(0.32, 10, 8), ice, { y: 1.22, z: 0.04, parent: sculpt }); // head
+    mesh(G.cone(0.1, 0.22, 6), ice, { x: -0.15, y: 1.46, z: 0.08, rz: -0.3, parent: sculpt }); // ears
+    mesh(G.cone(0.1, 0.22, 6), ice, { x: 0.15, y: 1.46, z: 0.08, rz: 0.3, parent: sculpt });
+    mesh(G.cyl(0.03, 0.05, 0.75, 6), ice, { y: 0.56, z: -0.56, rx: 1.0, parent: sculpt }); // curled tail
+    const pl = pointLight(0xbfe8ff, 5, 4.5, scx, scy + 1.1, scz, W);
+    U.push((dt, t) => { pl.intensity = 3.5 + max(0, sin(t * 1.6)) * 3.5; });
+    boxT(game, scx, scz, 0.8, 1.3, 0.8, { cam: false });
+    const sculptLines = ['🧊 "Nobody will say who carved it. Everyone up here has a theory."', '🧊 "It\'s melted clean away twice and come back twice. Nobody will explain that either."', '🧊 "The yeti swears it isn\'t him. The yeti is a terrible liar."'];
+    game.addInteractable({ obj: sculpt, radius: 2.8, label: () => 'Look at the ice sculpture', onUse: () => { SFX.twinkle(); game.toast(rnd.pick(sculptLines), 3000); } }); }
   snowRegion(game, U, r, 58, PEAK_LIMIT - 8);
   makeHorizon(game, r, { clear: PEAK_LIMIT + 8, hills: true, hill: 0xe8eef6, rock: 0x6a7a94, rock2: 0x7e8ea6, snow: 0xf6fbff, snowLine: 26, peaks: 32, peakH: [46, 110], woodCount: 300, woodHue: [0.32, 0.42], woodLight: [0.12, 0.2], trunk: 0x4a3a2a });
   // gondola home (bottom station of the village)
