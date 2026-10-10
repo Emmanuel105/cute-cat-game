@@ -8277,6 +8277,31 @@ function buildCandyLand(game, entry) {
     const bounceLines = ["Higher than the cupcake hill, nearly!", "Careful, puss — mind the springs round the edge.", "Bet I could bounce clean over the cane forest."];
     let bounceCryT = r.range(3, 7);
     U.push((dt) => { bounceCryT -= dt; if (bounceCryT <= 0) { bounceCryT = r.range(8, 14); const c = game.cat.group.position; if (dist2(tx, tz, c.x, c.z) < 400) { game.toast('🤸 "' + r.pick(bounceLines) + '"', 2400); SFX.talk(); } } }); }
+  // Victorian's hedgerows, the woods' mushroom patch and the shore's rock pools all have a forager
+  // stooped over them by now — Candy Land, whose own ground is half gumdrop button and half marzipan,
+  // never had anyone picking at it. A girl now kneels on the open sweet-lands, picking stray gumdrops up
+  // one at a time. No new controller: `Forager`'s own reach-and-pick animation already reads as plucking
+  // something small off the ground, the same trick the woods' mushroom-picker and Victorian's own
+  // mudlark already use. A scatter of loose gumdrop spheres sits in front of her knees — small enough to
+  // carry no physics box of their own, the same precedent the hopscotch chalk squares nearby already
+  // set — so the picking has something to aim at.
+  // A headless probe (`game.load(1, 'from-hub')`, the same stub-three harness `test/run.mjs` itself
+  // uses) sampled every NPC's own position every quarter second over 300 simulated seconds (long enough
+  // for every marching, dancing, wandering and ball-tossing gingerbread man to clear the spot several
+  // times over), then swept the open sweet-lands (radius 10-80, short of the radius (92) where
+  // candyRegion's own procedural fill takes over, and clear of the chocolate river band) against both
+  // those samples and every one of the world's physics boxes: (56, 15) came back clear by 12.6 m of the
+  // nearest box or soul. Placed last of every person this build adds, after the trampoline, so it draws
+  // from the very tail of this world's own local `r()` sequence.
+  { const fx = 56, fz = 15, fry = atan2(0 - fx, 0 - fz);
+    const gumColors = [0xff3355, 0x4ade80, 0x64b5f6, 0xffd54a, 0xff8fab];
+    const gumPos = [[-0.18, 0.1], [0.12, -0.14], [0.02, 0.22], [-0.26, -0.08], [0.22, 0.04]];
+    for (let i = 0; i < gumPos.length; i++) mesh(G.sphere(0.045, 8, 6), mat(gumColors[i], { roughness: 0.3 }), { x: fx + gumPos[i][0], y: 0.045, z: fz + gumPos[i][1], shadow: 'none', parent: W });
+    const forageWard = makeWardrobe(r, { shirts: [0xff6fb5, 0x7fd7ff, 0xffd54a] });
+    const forager = makeHuman({ ...randomPerson(r, { female: true, child: true, wardrobe: forageWard }), hairStyle: 'braids', hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(forager.group);
+    game.npcs.push(new Forager(game, forager, { x: fx, z: fz, ry: fry, cryIcon: '🍬',
+      cries: ['Found a whole handful, right by the lollipops!', "Careful, puss — don't swallow one, they're real.", 'Grows right out of the ground here. Nobody knows why.'] })); }
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('star', 7, -6); C.add('yarn', -9, 9); C.add('fish', -16, -13); C.add('mouse', 16, -9); C.add('star', -10, -27); C.add('yarn', 22, 4); C.add('mouse', -28, 26); C.add('fish', 14, -44); C.add('star', 0, -56); C.add('mouse', -58, 30); C.add('yarn', 60, 36);

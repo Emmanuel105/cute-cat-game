@@ -9586,3 +9586,28 @@ seesaw's own post) and 18.0 m of the nearest other soul (the yoyo kid at (61, 48
 Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks `ok`, 0 console warnings. Two repeat
 runs afterward both came back exit 0 with no FAILs — before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 382 — a gumdrop forager for Candy Land
+
+Victorian's hedgerows, Whisper Woods' mushroom patch and Sunny Shore's rock pools all have a `Forager`
+stooped over them picking at something — Candy Land, whose own ground is half gumdrop button and half
+marzipan, never had anyone picking at it. **A girl now kneels on the open sweet-lands, picking stray
+gumdrops up one at a time**, a little scatter of loose candy-coloured spheres in front of her knees to
+aim the picking at. *"Found a whole handful, right by the lollipops!"* *"Grows right out of the ground
+here. Nobody knows why."* No new controller: the same `Forager` class the woods' mushroom-picker and
+Victorian's own mudlark already use, just given a human child and a candy cryIcon (🍬) instead of a
+mushroom one. The gumdrops themselves carry no physics box — small enough at ankle height to sit on the
+ground the same way the hopscotch chalk squares already do nearby.
+
+A headless probe (`game.load(1, 'from-hub')`, the same stub-three harness `test/run.mjs` itself uses)
+sampled every NPC's own position every quarter second over 300 simulated seconds — long enough for
+every marching, dancing, wandering and ball-tossing gingerbread man to clear the spot several times
+over — then swept the open sweet-lands (radius 10-80, short of the radius (92) where candyRegion's own
+procedural fill takes over, and clear of the chocolate river band) against both those samples and
+every one of the world's 1870 physics boxes: (56, 15) came back clear by 12.6 m of the nearest box or
+soul. Placed last of every person this build adds, after the trampoline, so it draws from the very
+tail of this world's own local `r()` sequence and disturbs no earlier wardrobe or colour pick.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks `ok`, 0 console warnings. Two repeat
+runs afterward both came back exit 0 with no FAILs — before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
