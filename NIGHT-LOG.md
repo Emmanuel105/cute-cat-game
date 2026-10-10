@@ -9636,3 +9636,33 @@ city's 1138 physics boxes: the stool at (1, 67) came back clear by 11.3 m and th
 Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks `ok`, 0 console warnings. Two repeat
 runs afterward both came back exit 0 with no FAILs — before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 384 — a checkers game for Robot City
+
+Victorian's two retired gents have had a draughts board between them since round 354, but no world's
+own off-shift workers had a sit-down game of their own. **Two factory workers now sit either side of an
+upturned steel drum out on the open floor north of the city, a checkers board welded to its lid, mid-game**
+— cyan and amber washers standing in for draughts men, dark and light steel-plate squares instead of
+wood. *"Thirty-second break. We've been at this for twenty minutes."* *"Robots don't play games. Lucky
+for us, we do."* No new controller: both are a plain `Sitter`, the same pairing Victorian's draughts
+players and Robot City's own break-time worker already use, just seated on a `makeIceStool()` each
+(reused as a generic stool, nothing to do with ice). The board geometry and piece-scatter borrow
+Victorian's draughts table code directly, recoloured to the city's own steel-and-neon palette and
+raised on a repurposed barrel instead of a garden table.
+
+A headless probe (`game.travel(2, 'from-prev')`, the same stub-three harness `test/run.mjs` itself
+uses, driven with a real `start` click so every wanderer, sentry and dancer actually moved) sampled
+every NPC's own position every quarter second over 300 simulated seconds, then swept a 4 m grid of the
+open floor (radius 20-88, short of the radius (98) where robotRegion's own procedural fill takes over)
+against both those samples and all 1138 of the city's physics boxes: (0, 54) came back clear by 10.1 m
+of the nearest box (one of the outer skyline towers) and 12.2 m of the nearest other soul. Placed last
+of every person this build adds, after the drain-fishing technician, so it draws from the tail of this
+world's own local `r()` sequence.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks `ok`, 0 console warnings. Eight total
+runs afterward (across two sittings) came back exit 0 with no FAILs bar one: a single, previously-noted
+flake (`Victorian: the horse and carriage are in the world and on the move`, tracked since round 219
+and partially fixed at round 365) that reproduces on the unmodified tree too and is caused by real-timer
+jitter in the portal-travel poll, not by anything in this round's diff — confirmed by stashing this
+change and seeing the base tree pass three clean runs in a row with the same test still carrying that
+known caveat. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -9023,6 +9023,55 @@ function buildRobotCity(game, entry) {
     W.add(drainTech.group);
     game.npcs.push(new IceFisher(game, drainTech, makeIceStool(), { x: fx, z: fz, ry: fry, holeX: hx, holeZ: hz, holeY: 0.05, cryIcon: '🧲',
       cries: ['Fourth bolt down there this week.', "Careful, puss — mind the line, that pull is stronger than it looks.", "Robots don't fish. Can't blame them — nothing down there but hardware."] })); }
+  // Victorian's two retired gents have had a draughts board between them since round 354 — Robot City
+  // never had a game for the off-shift workers. Two of them now sit either side of an upturned steel
+  // drum out on the open floor north of the city, a checkers board welded to its lid, mid-game. No new
+  // controller: both are a plain `Sitter`, same pairing the Victorian draughts players and the break-time
+  // worker already use, just seated on a `makeIceStool()` each (reused as a generic stool, nothing to do
+  // with ice) instead of a bench. The board itself borrows the Victorian draughts table's own square-grid
+  // and piece-scatter code, recoloured to the city's own steel-and-neon palette (cyan and amber instead of
+  // red and black) and raised onto a repurposed barrel instead of a garden table.
+  // A headless probe (`game.travel(2, 'from-prev')`, the same stub-three harness `test/run.mjs` itself
+  // uses, driven with a real `start` click so every wanderer, sentry and dancer actually moved) sampled
+  // every NPC's own position every 1/4 second over 300 simulated seconds — long enough for every
+  // patrolling sentry and ball-tossing pair to clear the spot several times over — then swept a 4 m grid
+  // of the open floor (radius 20-88, short of the radius (98) where robotRegion's own procedural fill
+  // takes over) against both those samples and all 1138 of the city's physics boxes: (0, 54) came back
+  // clear by 10.1 m of the nearest box (one of the outer skyline towers) and 12.2 m of the nearest other
+  // soul. Placed last of every person this build adds, after the drain-fishing technician, so it draws
+  // from the very tail of this world's own local `r()` sequence and disturbs no earlier wardrobe or
+  // colour pick.
+  { const tx = 0, tz = 54, topY = 0.62, boardW = 0.74, sq2 = boardW / 8;
+    const seatAx = tx - 0.82, seatAz = tz, seatBx = tx + 0.82, seatBz = tz;
+    const ryA = atan2(seatBx - seatAx, seatBz - seatAz), ryB = atan2(seatAx - seatBx, seatAz - seatBz);
+    const drum = mat(0x3a4048, { metalness: 0.7, roughness: 0.4 });
+    mesh(G.cyl(0.34, 0.36, topY, 16), drum, { x: tx, y: topY / 2, z: tz, parent: W });
+    for (let i = 0; i < 3; i++) mesh(G.cyl(0.345, 0.345, 0.04, 16), mat(0x2a2f38, { metalness: 0.75, roughness: 0.35 }), { x: tx, y: topY * 0.2 + i * topY * 0.3, z: tz, parent: W });
+    const lightSq = mat(0xc9d6de, { roughness: 0.4, metalness: 0.4 }), darkSq = mat(0x1a1f26, { roughness: 0.5, metalness: 0.3 });
+    const board = group(tx, topY, tz, W);
+    for (let gx = 0; gx < 8; gx++) for (let gz = 0; gz < 8; gz++) {
+      mesh(G.box(sq2 * 0.97, 0.02, sq2 * 0.97), (gx + gz) % 2 ? darkSq : lightSq,
+        { x: -boardW / 2 + sq2 * (gx + 0.5), y: 0.011, z: -boardW / 2 + sq2 * (gz + 0.5), parent: board }); }
+    // a scatter of pieces, mid-game, dark squares only — washers standing in for draughts men
+    const cyanM = glowMat(0x00e5ff, 0.6), amberM = glowMat(0xff9f43, 0.6);
+    const pieceY = 0.028;
+    const toXZ = (gx, gz) => [-boardW / 2 + sq2 * (gx + 0.5), -boardW / 2 + sq2 * (gz + 0.5)];
+    [[1, 0, cyanM], [3, 0, cyanM], [0, 1, cyanM], [2, 1, cyanM], [4, 1, cyanM], [1, 2, amberM], [3, 4, amberM], [5, 4, amberM], [2, 5, amberM], [6, 3, cyanM]].forEach(([gx, gz, m]) => {
+      const [px, pz] = toXZ(gx, gz); mesh(G.cyl(0.042, 0.042, 0.016, 12), m, { x: px, y: pieceY, z: pz, parent: board, shadow: 'none' }); });
+    P.addBox(tx, topY / 2, tz, boardW + 0.1, topY, boardW + 0.1, { cam: false });
+    const checkersWard = makeWardrobe(r, { shirts: [0x4a5a6a, 0x5a4a6a], pants: [0x232c34, 0x2a2a30] });
+    const playerA = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: checkersWard }),
+      hat: 'cap', hatColor: 0x3a4a5a, jacket: null, scarf: null, bag: null, glasses: r.chance(0.4) });
+    const playerB = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: checkersWard }),
+      hat: null, jacket: 0x2a3242, scarf: null, bag: null, glasses: r.chance(0.3) });
+    W.add(playerA.group); W.add(playerB.group);
+    place(game, U, makeIceStool(), seatAx, seatAz, ryA + PI); place(game, U, makeIceStool(), seatBx, seatBz, ryB + PI);
+    game.npcs.push(new Sitter(game, playerA, { x: seatAx, z: seatAz, ry: ryA, seat: 0.33,
+      cries: ["Thirty-second break. We've been at this for twenty minutes.", "Mind the board, puss — that king took half my lunch hour.", "Robots don't play games. Lucky for us, we do."] }));
+    game.npcs.push(new Sitter(game, playerB, { x: seatBx, z: seatBz, ry: ryB, seat: 0.33,
+      cries: ["Lost count of how many he's won. Still playing, though.", "Careful, puss — don't knock the pieces.", "One more game before the whistle. Always one more game."] }));
+    let moveT = rnd.range(6, 10);
+    U.push((dt) => { moveT -= dt; if (moveT <= 0) { moveT = rnd.range(7, 12); SFX.click(); game.fx.emit(tx, topY + 0.1, tz, { count: 4, color: 0x00e5ff, speed: 0.3, up: 0.3, life: 0.6, gravity: 1.2, spread: 0.4 }); } }); }
   const sq = new Squirrel(game, -14, -9, 'sq-robot'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('mouse', -8, 7); C.add('star', 12, -22); C.add('fish', -18, 2); C.add('yarn', 21, 9); C.add('star', 0, -27); C.add('fish', 4, 14); C.add('mouse', 26, -18); C.add('yarn', -26, -6);
