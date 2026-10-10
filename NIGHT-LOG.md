@@ -9434,3 +9434,27 @@ count unchanged where it mattered (Sunny Shore itself gained one small box; the 
 count reflects whichever world the suite ends on, not this one). Two repeat runs afterward both came
 back exit 0 with no FAILs — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 376 — a trampoline for Candy Land
+
+The Neighborhood and Robot City both already had a child bouncing on a trampoline, but Candy Land —
+for all its swing set, seesaw, jack-in-the-box and marching gingerbread men — never had one of its own.
+**A gumdrop-pink trampoline now bounces a village child on the open grass north-east of the seesaw**,
+launching up with a brief crouch at touchdown exactly like the other two — *"Higher than the cupcake
+hill, nearly!"* *"Bet I could bounce clean over the cane forest."* No new mesh and no new controller:
+`makeTrampoline` (restriped pink) and `Bouncer`, both already built for the Neighborhood's own backyard,
+just needed a new child and a clear patch of grass.
+
+A headless probe (the stub-three harness `test/run.mjs` itself uses, driven by hand with
+`game.travel(1, 'from-prev')`) sampled every NPC's own position every quarter second over 400 simulated
+frames — long enough for every marching, dancing and wandering gingerbread man, and both the tag and
+catch pairs, to clear any one spot several times over — then swept a grid of the open sweet-lands
+against both those samples and every one of the world's physics boxes. (38, 60) came back clear by
+13.1 m of the nearest box (the seesaw) and 17.8 m of the nearest other soul — inside the candy-cane
+ring's own 56-76 m radius band by distance alone, but at an angle with no actual cane trunk nearby, and
+well short of the radius (92) where `candyRegion`'s own procedural fill takes over.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged where it mattered (one more box in Candy Land itself; the suite's own final tally
+reflects whichever world it ends on, not this one). Two repeat runs afterward both came back exit 0
+with no FAILs — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
