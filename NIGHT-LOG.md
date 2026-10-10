@@ -9611,3 +9611,28 @@ tail of this world's own local `r()` sequence and disturbs no earlier wardrobe o
 Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks `ok`, 0 console warnings. Two repeat
 runs afterward both came back exit 0 with no FAILs — before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 383 — a drain-fishing technician for Robot City
+
+Every other world has someone dipping a line into real water — the Neighborhood's lake jetty, Candy
+Land's chocolate river, Victorian's canal, the ice-fishers on the snow and forest worlds, the beach's
+rock-pool version. Robot City has no lake, so **a maintenance technician now sits on a stool over a
+floor drain, fishing bolts out of it with a magnet on a line** instead of a hook. The drain itself is
+new: a sunken dark grate with a few raised bars and a faint cyan glow underneath, reading as a coolant
+vent rather than open water. *"Fourth bolt down there this week."* *"Robots don't fish. Can't blame
+them — nothing down there but hardware."* Same `IceFisher` controller every other world's version
+already uses, no new controller — it only ever grew a hardcoded 🎣 cry-icon because no world before this
+one needed anything else, so it now takes the same optional `cryIcon` override `Juggler` already has
+(defaulting to 🎣, so every existing caller is untouched); this one passes 🧲.
+
+A headless probe (`game.load(2, 'from-prev')`, the same stub-three harness `test/run.mjs` itself uses)
+sampled every NPC's and the squirrel's own position every quarter second over 300 simulated seconds —
+long enough for every wandering, patrolling, dancing and ball-tossing robot pack to clear the spot
+several times over — then swept a 2 m grid of the open floor (radius 15-85, short of the radius (98)
+where robotRegion's own procedural fill takes over) against both those samples and every one of the
+city's 1138 physics boxes: the stool at (1, 67) came back clear by 11.3 m and the drain at (1, 63.5),
+3.5 m south of it, by 10.4 m.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks `ok`, 0 console warnings. Two repeat
+runs afterward both came back exit 0 with no FAILs — before rebuilding `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

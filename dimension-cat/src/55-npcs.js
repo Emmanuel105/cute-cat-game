@@ -1349,9 +1349,9 @@ class Birder {
 // ---------------------------------------------------------------- ice fisher: sits by the hole, rod dipping, and strikes every so often
 // (also used for a pier fisherman over open water — pass `seatY` when the seat isn't at ground0)
 class IceFisher {
-  constructor(game, rig, stool, { x, z, ry = 0, seatY, holeX, holeZ, holeY, cries = null }) {
+  constructor(game, rig, stool, { x, z, ry = 0, seatY, holeX, holeZ, holeY, cries = null, cryIcon = '🎣' }) {
     this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10; this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false;
-    this.state = 'idle'; this.timer = 0; this.cries = cries; this.cryIcon = '🎣'; this.cryT = rnd.range(5, 10);
+    this.state = 'idle'; this.timer = 0; this.cries = cries; this.cryIcon = cryIcon; this.cryT = rnd.range(5, 10);
     this.holeX = holeX; this.holeZ = holeZ; this.biteT = rnd.range(6, 11); this.bite = 0; this.caught = 0;
     const groundY = seatY ?? game.physics.ground0(x, z);
     stool.position.set(x, groundY, z); stool.rotation.y = ry; game.world.add(stool);

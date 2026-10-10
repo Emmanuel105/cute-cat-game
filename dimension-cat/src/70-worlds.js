@@ -2623,6 +2623,33 @@ function buildRobotCity(game, entry) {
     const bounceLines = ["Higher than the gantry crane, nearly!", "Careful, puss — the springs are bolted tighter than they look.", "Even the robots stop their patrol to watch this one."];
     let bounceCryT = r.range(3, 7);
     U.push((dt) => { bounceCryT -= dt; if (bounceCryT <= 0) { bounceCryT = r.range(8, 14); const c = game.cat.group.position; if (dist2(tx, tz, c.x, c.z) < 400) { game.toast('🤸 "' + r.pick(bounceLines) + '"', 2400); SFX.talk(); } } }); }
+  // every other world has an angler dipping a line into real water by now (the Neighborhood's lake
+  // jetty, Candy Land's chocolate river, Victorian's canal, the two ice-fishers on the snow and forest
+  // worlds, the beach's own rock-pool version) — Robot City has no lake, so a maintenance technician
+  // sits on her stool over a floor drain instead, a magnet tied to the end of her line fishing for
+  // bolts the factory floor keeps swallowing. Same `IceFisher` controller every other world's version
+  // already uses (no new controller), just a drain grate standing in for the hole: a sunken dark disc
+  // with a few raised bars across it and a faint cyan glow underneath, reading as a coolant vent rather
+  // than open water. `IceFisher` itself only ever grew a hardcoded 🎣 cry-icon because no world before
+  // this one needed anything else — it now takes the same optional `cryIcon` override `Juggler` already
+  // has, defaulting to 🎣 so every existing caller is untouched, and this one passes 🧲 instead.
+  // A headless probe (`game.load(2, 'from-prev')`, the same stub-three harness `test/run.mjs` itself
+  // uses) sampled every NPC's and the squirrel's own position every quarter second over 300 simulated
+  // seconds — long enough for every wandering, patrolling, dancing and ball-tossing robot pack to clear
+  // the spot several times over — then swept a 2 m grid of the open floor (radius 15-85, short of the
+  // radius (98) where robotRegion's own procedural fill takes over) against both those samples and every
+  // one of the city's 1138 physics boxes: the stool at (1, 67) came back clear by 11.3 m and the drain
+  // at (1, 63.5), 3.5 m south of it, by 10.4 m.
+  { const fx = 1, fz = 67, hx = 1, hz = 63.5, fry = atan2(hx - fx, hz - fz);
+    mesh(G.cyl(0.5, 0.5, 0.04, 16), mat(0x14181f, { roughness: 0.6, metalness: 0.6 }), { x: hx, y: 0.02, z: hz, shadow: 'none', parent: W });
+    for (let i = 0; i < 5; i++) mesh(G.box(0.96, 0.02, 0.06), mat(0x2a2f3a, { roughness: 0.4, metalness: 0.75 }), { x: hx, y: 0.045, z: hz - 0.36 + i * 0.18, shadow: 'none', parent: W });
+    pointLight(0x00e5ff, 1.1, 3, hx, 0.15, hz, W);
+    const drainWard = makeWardrobe(r, { shirts: [0xff9f43, 0xffd54a], pants: [0x232c34, 0x2a2a30] });
+    const drainTech = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: drainWard }),
+      hat: 'cap', hatColor: 0x2a2a30, jacket: null, scarf: null, bag: null, glasses: false });
+    W.add(drainTech.group);
+    game.npcs.push(new IceFisher(game, drainTech, makeIceStool(), { x: fx, z: fz, ry: fry, holeX: hx, holeZ: hz, holeY: 0.05, cryIcon: '🧲',
+      cries: ['Fourth bolt down there this week.', "Careful, puss — mind the line, that pull is stronger than it looks.", "Robots don't fish. Can't blame them — nothing down there but hardware."] })); }
   const sq = new Squirrel(game, -14, -9, 'sq-robot'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('mouse', -8, 7); C.add('star', 12, -22); C.add('fish', -18, 2); C.add('yarn', 21, 9); C.add('star', 0, -27); C.add('fish', 4, 14); C.add('mouse', 26, -18); C.add('yarn', -26, -6);
