@@ -688,6 +688,32 @@ function buildSnowVillage(game, entry) {
     boxT(game, scx, scz, 0.8, 1.3, 0.8, { cam: false });
     const sculptLines = ['🧊 "Nobody will say who carved it. Everyone up here has a theory."', '🧊 "It\'s melted clean away twice and come back twice. Nobody will explain that either."', '🧊 "The yeti swears it isn\'t him. The yeti is a terrible liar."'];
     game.addInteractable({ obj: sculpt, radius: 2.8, label: () => 'Look at the ice sculpture', onUse: () => { SFX.twinkle(); game.toast(rnd.pick(sculptLines), 3000); } }); }
+  // the Neighborhood, Candy Land and Sunny Shore all have a trampoline bouncing a kid by now — Frosty
+  // Peak and Whisper Woods are the only two worlds left without one. A teal-padded trampoline now bounces
+  // a bundled-up kid on the open snowfield south-west of the mountain, well past the forest ring and the
+  // zipline's own cable line. Same `makeTrampoline` prop and `Bouncer` controller the other three worlds
+  // already use, just restriped; the kid itself comes from this file's own `kid()` helper (coat, beanie
+  // and mittens already on, same as every other child here, rather than the bare-headed bounce kids the
+  // flat-floor worlds build fresh) and is placed with the terrain-aware `placeT`/`boxT` helpers since the
+  // snowfield slopes gently underfoot out here too. Placed last of every person this build adds, after
+  // the ice sculptor and every other child, so it draws from the very tail of both the local `r` and the
+  // shared `rnd()` sequences and disturbs the fewest later ticks of either.
+  // A headless probe built the real mountain (`game.load(5, 'from-hub')`, then `game.start('new')` so
+  // every reindeer, hare, arctic fox, yeti and wandering kid actually moved rather than sitting frozen at
+  // spawn), sampled every NPC's own position every quarter second over 150 simulated seconds — long
+  // enough for the slowest patrol to clear the spot several times over — then swept a 1 m grid of the
+  // open snowfield (radius 15-55, short of the radius (58) where snowRegion's own fill takes over)
+  // against both those samples and all 781 of the mountain's physics boxes: (-52, -17) came back clear
+  // by 10.4 m of the nearest box and 10.8 m of the nearest other soul, with ground height varying only
+  // about 0.08 m within a metre of it.
+  { const tx = -52, tz = -17;
+    const tramp = makeTrampoline({ color: 0x00acc1 }); placeT(game, U, tramp, tx, tz, 0);
+    boxT(game, tx, tz, 1.1, 0.42, 1.1, { cam: false });
+    const bounceKid = kid(r.chance(0.5));
+    game.npcs.push(new Bouncer(game, bounceKid, tramp, { x: tx, z: tz, ry: 0, height: 0.68, cycle: 1.05 }));
+    const bounceLines = ["Higher than the gondola, nearly!", "Careful, puss — mind the springs round the edge.", "Warms you up better than the fire does, this."];
+    let bounceCryT = r.range(3, 7);
+    U.push((dt) => { bounceCryT -= dt; if (bounceCryT <= 0) { bounceCryT = r.range(8, 14); const c = game.cat.group.position; if (dist2(tx, tz, c.x, c.z) < 400) { game.toast('🤸 "' + r.pick(bounceLines) + '"', 2400); SFX.talk(); } } }); }
   snowRegion(game, U, r, 58, PEAK_LIMIT - 8);
   makeHorizon(game, r, { clear: PEAK_LIMIT + 8, hills: true, hill: 0xe8eef6, rock: 0x6a7a94, rock2: 0x7e8ea6, snow: 0xf6fbff, snowLine: 26, peaks: 32, peakH: [46, 110], woodCount: 300, woodHue: [0.32, 0.42], woodLight: [0.12, 0.2], trunk: 0x4a3a2a });
   // gondola home (bottom station of the village)

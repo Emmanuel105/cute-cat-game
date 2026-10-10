@@ -9483,3 +9483,32 @@ Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks `ok`, 0 consol
 count unchanged where it mattered (one more box on Sunny Shore itself). Two repeat runs afterward both
 came back exit 0 with no FAILs — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 378 — a trampoline for Frosty Peak
+
+Neighborhood, Candy Land and Sunny Shore all have a kid bouncing on a trampoline by now — Frosty Peak,
+for all its swing set, seesaw, hopscotch grid and marbles ring, never had one. **A teal-padded
+trampoline now bounces a bundled-up kid on the open snowfield south-west of the mountain**, coat,
+beanie and mittens still on same as every other child up here. *"Higher than the gondola, nearly!"*
+*"Warms you up better than the fire does, this."* No new mesh, no new controller: the same
+`makeTrampoline` prop and `Bouncer` controller the other three worlds already use, just restriped, with
+this file's own `kid()` wardrobe helper standing in for the usual bare-headed bounce kid the flat-floor
+worlds build fresh — and the terrain-aware `placeT`/`boxT` helpers in place of flat `place()`/`P.addBox()`,
+since the snowfield slopes gently underfoot out here too.
+
+A headless probe (the stub-three harness `test/run.mjs` itself uses, driven by hand with `game.load(5,
+'from-hub')` then `game.start('new')` so every reindeer, hare, arctic fox, yeti and wandering kid
+actually moved rather than sitting frozen at spawn) sampled every NPC's own position every quarter
+second over 150 simulated seconds, then swept a 1 m grid of the open snowfield (radius 15-55, short of
+the radius (58) where `snowRegion`'s own fill takes over) against both those samples and all 781 of the
+mountain's physics boxes: (-52, -17) came back clear by 10.4 m of the nearest box and 10.8 m of the
+nearest other soul, well past the forest ring and clear of the zipline's own cable line, with ground
+height varying only about 0.08 m within a metre of it. (An earlier pass of the same probe used
+`game.travel()` instead of `game.load()` and silently never finished loading the world inside the
+synchronous sweep — caught by a `typeof game.physics.terrain` sanity check reading `'object'` for a
+null, not a function, before it could feed a false "clear" verdict into the actual placement.)
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks `ok`, 0 console warnings, physics box
+count unchanged where it mattered (one more box on Frosty Peak itself). Two repeat runs afterward both
+came back exit 0 with no FAILs — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.
