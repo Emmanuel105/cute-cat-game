@@ -9408,3 +9408,29 @@ doors along, stayed 10.0 m off throughout.
 Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok` (Victorian's own friend count up
 by one to 67), 0 console warnings. Two repeat runs afterward both came back exit 0 with no FAILs —
 before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 375 — a message in a bottle for Sunny Shore
+
+Every rock, shell and pebble up and down the coast has been pure dressing, or since round 319 something
+to stop and listen to, but nothing the tide itself had ever actually carried in. **A corked glass bottle
+now lies half-buried on its side in the dry sand south of the chip stand, a rolled note just visible
+through the neck** — walk up and read it for one of three lines, among them *"The ink's run, but one
+word still reads clear: 'HELP'. Or maybe 'KELP'."* No new mesh elsewhere, no new rig, no new controller:
+just a small hand-built prop (a tapered glass body, neck, cork and rolled paper, all built lying on their
+sides with a yaw to face the path) and a `game.addInteractable` that tosses a handful of sea-coloured
+sparks and a toast line, the same pattern the conch shell two rounds back already uses.
+
+A headless probe (the stub-three harness `test/run.mjs` itself uses, driven by hand with `game.load(4,
+'from-hub')`) sampled every NPC's and the squirrel's own position every frame over 1200 simulated
+frames — long enough for every wandering crab, turtle, sunbather and dolphin to clear the spot several
+times over, not just whatever a short snapshot happened to catch — then swept a 2 m grid of the dry sand
+(ground height 0.1-3.0 m, radius ≤ 54, short of the radius where `beachRegion`'s own procedural fill
+takes over) against both those samples and every one of the beach's 249 physics boxes. (-6, -52) came
+back clear by 11.7 m of the nearest box and 8.9 m of the nearest other soul, sitting quietly between the
+chip stand and the sand sculptor with nothing else anywhere nearby.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged where it mattered (Sunny Shore itself gained one small box; the game's final reported
+count reflects whichever world the suite ends on, not this one). Two repeat runs afterward both came
+back exit 0 with no FAILs — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.

@@ -10474,6 +10474,28 @@ function buildBeach(game, entry) {
     };
     U.push(chest.userData.update); }
 
+  // every rock, shell and pebble on this coast has been pure dressing or, since round 319, something to
+  // stop and listen to — but nothing the tide itself might have carried in ever washed up here. A corked
+  // glass bottle now lies half-buried on its side in the dry sand south of the chip stand, a rolled note
+  // just visible through the neck. A headless probe built the real Sunny Shore (`game.load(4,
+  // 'from-hub')`), sampled every NPC's and the squirrel's own position every frame over 1200 simulated
+  // frames (so no wandering crab, turtle, sunbather or dolphin mid-circuit could slip past unnoticed),
+  // then swept a 2 m grid of the dry sand (ground height 0.1-3.0 m, radius ≤ 54, short of the radius (58)
+  // where beachRegion's own fill takes over) against both those samples and every one of the beach's 249
+  // physics boxes: (-6, -52) came back clear by 11.7 m of the nearest box and 8.9 m of the nearest other
+  // soul, between the chip stand (4, -54) and the sand sculptor (-30, -54) with nothing else nearby.
+  { const bx = -6, bz = -52, bry = 0.6, y0 = P.ground0(bx, bz);
+    const bottle = group(bx, y0 + 0.045, bz, W); bottle.rotation.y = bry;
+    const glass = mat(0x2e7d5a, { roughness: 0.15, metalness: 0.05, transparent: true, opacity: 0.55 });
+    const cork = mat(0x8a6a42, { roughness: 0.9 }), paper = mat(0xe8dcb8, { roughness: 0.9 });
+    mesh(G.cyl(0.055, 0.075, 0.26, 12), glass, { x: -0.06, rz: PI / 2, parent: bottle });            // the body, lying on its side
+    mesh(G.cyl(0.022, 0.034, 0.1, 10), glass, { x: 0.12, rz: PI / 2, parent: bottle });               // the neck, tapering out
+    mesh(G.cyl(0.02, 0.02, 0.05, 10), cork, { x: 0.18, rz: PI / 2, parent: bottle });                 // the cork, stoppering it
+    mesh(G.cyl(0.03, 0.03, 0.17, 8), paper, { x: -0.03, rz: PI / 2, parent: bottle });                // the rolled note, glimpsed through the glass
+    P.addBox(bx, y0 + 0.08, bz, 0.34, 0.16, 0.2, { cam: false });
+    const bottleLines = ['📜 "The ink\'s run, but one word still reads clear: \'HELP\'. Or maybe \'KELP\'."', '📜 "No name, no date — just a wobbly little drawing of a boat."', '📜 "Whoever threw this one in clearly didn\'t expect a cat to find it first."'];
+    game.addInteractable({ obj: bottle, radius: 2.2, label: () => 'Read the message in the bottle', onUse: () => { SFX.click(); game.fx.emit(bx, y0 + 0.2, bz, { count: 10, colors: [0x7fd7ff, 0xffffff, 0xe8dcb8], speed: 0.9, up: 1.0, life: 0.7, gravity: 1.6 }); game.toast(rnd.pick(bottleLines), 3000); } }); }
+
   beachRegion(game, U, r, 58, SHORE_LIMIT - 8);
   // the headland behind the dunes: hills and peaks inland only, never out to sea
   makeHorizon(game, r, { clear: SHORE_LIMIT + 8, hill: 0x8c9a58, rock: 0x7a7060, rock2: 0x8a8272, snowLine: 58, peaks: 26, woodCount: 260, woodHue: [0.18, 0.28], woodLight: [0.18, 0.3], keep: (x) => x < -SHORE_LIMIT * 0.15 });
