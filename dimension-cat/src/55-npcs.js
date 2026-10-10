@@ -178,6 +178,11 @@ function makeHuman(o = {}) {
     if (o.cane && side === -1) mesh(G.cyl(0.013, 0.013, 0.86, 6), mat(0x3a2718), { y: -0.3, z: 0.08, parent: hand });
     if (o.axe && side === 1) { mesh(G.cyl(0.018, 0.022, 0.8, 6), mat(0x6a4a2a, { roughness: 0.9 }), { y: 0.3, z: 0.02, parent: hand }); mesh(G.box(0.05, 0.22, 0.14), mat(0x9aa3ad, { metalness: 0.7, roughness: 0.35 }), { y: 0.66, z: 0.06, parent: hand }); }   // a woodcutter's axe
     if (o.pole && side === 1) { mesh(G.cyl(0.012, 0.014, 1.7, 6), mat(0x4a3a2a), { y: 0.55, z: 0.03, parent: hand }); mesh(G.sphere(0.035, 8, 6), glowMat(0xffb060, 1.4), { y: 1.42, z: 0.03, shadow: 'none', parent: hand }); }   // a lamplighter's pole, lit at the tip
+    if (o.brush && side === 1) {   // a chimney sweep's rod, bristles splayed at the top
+      mesh(G.cyl(0.013, 0.016, 1.6, 6), mat(0x3a2a1a, { roughness: 0.85 }), { y: 0.5, z: 0.04, parent: hand });
+      const bristleM = mat(0x18181a, { roughness: 0.95 });
+      for (let bi = 0; bi < 7; bi++) { const ba = bi / 7 * TAU; mesh(G.cyl(0.006, 0.011, 0.24, 4), bristleM, { x: cos(ba) * 0.045, y: 1.32, z: 0.04 + sin(ba) * 0.045, rx: sin(ba) * 0.3, rz: cos(ba) * 0.3, parent: hand }); }
+    }
     rig.arms.push({ sh, el });
   }
   mesh(G.cyl(0.05, 0.058, 0.14, 8), skinM, { y: 0.63, parent: spine });            // neck: 5 cm of it shows between the collar and the chin

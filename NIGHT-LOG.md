@@ -9385,3 +9385,26 @@ Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 consol
 count unchanged at 303 (`Hopper` adds a collision circle, not a box). Two repeat runs afterward both
 came back exit 0 with no FAILs — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 374 — a chimney sweep for Victorian
+
+Round 365's own mudlark, kneeling on the canal's far bank, noted the one trade "as Victorian as the
+chimney sweep" was still missing from the whole town — and it still was, past every terrace roof's own
+smoke since round 1. **A chimney sweep now stands in the yard behind the house two doors past the
+woodcutter's own stump, rod and brush held upright, staring up at the job ahead, a soot sack dropped at
+his feet.** *"Every grate on this street feeds a flue, and every flue's mine sooner or later."*
+*"Mind your paws, puss — soot never washes out of white fur."* *"Thirty feet of brick, straight up, and
+not one of them the same shape twice."* `makeHuman` gets a new `o.brush` hand prop for the rod and its
+splayed bristles — the same pattern `cane`, `axe` and the lamplighter's own `pole` already used, so no
+other rig needed touching — and `Charger`, already standing in for the fiddler, the painter and Robot
+City's own drummer, needed no new controller at all.
+
+A headless probe (the stub-three harness `test/run.mjs` itself uses, driven by hand with
+`game.travel(3, 'from-prev')`) sampled every other NPC's own position every frame over 400 simulated
+frames, then swept the sack's own footprint against all 546 of the town's physics boxes: it came back
+clear by 4.25 m of the nearest other box (that house's own back wall) and the woodcutter himself, two
+doors along, stayed 10.0 m off throughout.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok` (Victorian's own friend count up
+by one to 67), 0 console warnings. Two repeat runs afterward both came back exit 0 with no FAILs —
+before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -2728,6 +2728,31 @@ function buildVictorian(game, entry) {
     const dog = makeDog(0x4a362a);
     game.npcs.push(new DogWalker(game, walker, dog, { x: dwx, z: dwz, angle: PI / 2, speed: 0.75, leash: 2.0,
       cries: ["Good a walk as any, rain or not.", "Mind your paws, puss — he's particular about strangers.", "Lamp's out down this end. Nobody's ever fixed it."] })); }
+  // the mudlark on the canal's far bank (round 365) noted the one trade "as Victorian as the chimney
+  // sweep" was still missing from the whole town — it still was, past the smoke itself drifting off
+  // every terrace roof since round 1. One now stands in the yard behind the house at x=-18, between
+  // the laundress's own yard and the woodcutter's two doors either side, rod and brush held upright,
+  // staring up at the job ahead; a soot sack sits dropped at his feet. `makeHuman` gets a new `o.brush`
+  // hand prop for the rod (same pattern as `cane`, `axe` and the lamplighter's own `pole`, added just
+  // above in 55-npcs.js); `Charger`, already standing in for the fiddler, the painter and Robot City's
+  // own drummer, needs no new controller. A headless probe (the stub-three harness `test/run.mjs`
+  // itself uses, driven by hand with `game.travel(3, 'from-prev')`) sampled every other NPC's own
+  // position every frame over 400 simulated frames (so no wandering stroller or the tag/catch pairs
+  // at the playground could slip past unnoticed) and swept the sack's own footprint at (-18.55,
+  // -19.25) against all 546 of the town's physics boxes: the sack came back clear by 4.25 m of the
+  // nearest other box (that house's own back wall, half-extent 3.5 m, centred z=-11.5) and the
+  // nearest other soul (the woodcutter himself, two doors along) stayed 10.0 m off throughout.
+  { const sx = -18, sz = -19.5, ry = 0, bagX = sx - 0.55, bagZ = sz + 0.25;
+    const sackM = mat(0x1c1a1c, { roughness: 0.95 });
+    mesh(G.sphere(0.26, 10, 8), sackM, { x: bagX, y: 0.2, z: bagZ, sy: 0.85, parent: W });
+    mesh(G.torus(0.1, 0.02, 5, 10), mat(0x3a2a1a, { roughness: 0.8 }), { x: bagX, y: 0.42, z: bagZ, rx: PI / 2, shadow: 'none', parent: W });   // drawstring tie
+    P.addBox(bagX, 0.2, bagZ, 0.5, 0.4, 0.5, { cam: false });
+    const sweepWard = makeWardrobe(r, { shirts: [0x2a2a2e, 0x242024, 0x302c2a] });
+    const sweep = makeHuman({ ...randomPerson(r, { female: r.chance(0.3), child: false, elder: false, wardrobe: sweepWard }),
+      pants: 0x1a1a1c, jacket: null, scarf: null, bag: null, backpack: null, hat: 'top', hatColor: 0x161418, hatBand: 0x3a2a1a, brush: true, glasses: false });
+    W.add(sweep.group);
+    game.npcs.push(new Charger(game, sweep, { x: sx, z: sz, ry, cryIcon: '🧹',
+      cries: ["Every grate on this street feeds a flue, and every flue's mine sooner or later.", "Mind your paws, puss — soot never washes out of white fur.", "Thirty feet of brick, straight up, and not one of them the same shape twice."] })); }
   // market square (north): cobbled plaza, a fountain, striped stalls, gas lamps; a canal with a stone bridge (south)
   flatPlane(game, 30, 26, pave, 0, -34, 0, 0.015);
   { const f = group(0, 0, -34, W), stone = mat(0x8c8377, { roughness: 0.95, map: TEX.stone(30) }); mesh(G.cyl(3.2, 3.4, 0.7, 24), stone, { y: 0.35, parent: f }); mesh(G.cyl(2.8, 2.8, 0.1, 24), mat(0x3d8fd1, { roughness: 0.1, transparent: true, opacity: 0.85, emissive: 0x1a4a7a, emissiveIntensity: 0.3 }), { y: 0.72, shadow: 'none', parent: f }); mesh(G.cyl(0.4, 0.6, 2.2, 12), stone, { y: 1.8, parent: f }); mesh(G.cyl(1.2, 1.1, 0.15, 18), stone, { y: 2.9, parent: f }); mesh(G.sphere(0.4, 12, 9), mat(0xd4af37, { metalness: 0.9, roughness: 0.3 }), { y: 3.3, parent: f });
