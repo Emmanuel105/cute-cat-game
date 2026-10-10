@@ -2575,6 +2575,29 @@ function buildRobotCity(game, entry) {
     W.add(marbleKid.group);
     game.npcs.push(new Kneeler(game, marbleKid, { x: mkx, z: mkz, ry: mry,
       cries: ["Right in the ring — that one's mine now!", "Careful, puss — don't swallow one of these.", "Robots don't play for keeps. Something about the grip."] })); }
+  // Robot City and Victorian were the only two worlds left without a trampoline — the Neighborhood,
+  // Candy Land, Sunny Shore, Frosty Peak and Whisper Woods all have one bouncing a kid by now. A
+  // cyan-padded trampoline now bounces a visiting kid on the open factory floor well out past the
+  // hand-built heart of the city, same `makeTrampoline` prop and `Bouncer` controller those five worlds
+  // already use, placed last of every person this build adds so it draws from the tail of this world's
+  // own local `r()` sequence.
+  // A headless probe (`game.load(2, 'from-prev')`, the same stub-three harness `test/run.mjs` itself
+  // uses) sampled every NPC's and the squirrel's own position every 1/4 second over 300 simulated
+  // seconds — long enough for every wandering, patrolling, dancing and ball-tossing robot pack to clear
+  // the spot several times over — then swept a 1 m grid of the open floor (radius 35-85, short of the
+  // radius (98) where robotRegion's own procedural fill takes over) against both those samples and all
+  // 1137 of the city's physics boxes: (70, 5) came back clear by 11.3 m of the nearest box (one of the
+  // outer skyline towers) and 23.2 m of the nearest other soul.
+  { const tx = 70, tz = 5;
+    const tramp = makeTrampoline({ color: 0x00e5ff }); place(game, U, tramp, tx, tz, 0);
+    P.addBox(tx, 0.21, tz, 1.1, 0.42, 1.1, { cam: false });
+    const bounceWard = makeWardrobe(r, { shirts: [0xffa23c, 0x6fa8ff, 0xb9fbc0] });
+    const bounceKid = makeHuman({ ...randomPerson(r, { child: true, female: r.chance(0.5), wardrobe: bounceWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(bounceKid.group);
+    game.npcs.push(new Bouncer(game, bounceKid, tramp, { x: tx, z: tz, ry: PI, height: 0.68, cycle: 1.05 }));
+    const bounceLines = ["Higher than the gantry crane, nearly!", "Careful, puss — the springs are bolted tighter than they look.", "Even the robots stop their patrol to watch this one."];
+    let bounceCryT = r.range(3, 7);
+    U.push((dt) => { bounceCryT -= dt; if (bounceCryT <= 0) { bounceCryT = r.range(8, 14); const c = game.cat.group.position; if (dist2(tx, tz, c.x, c.z) < 400) { game.toast('🤸 "' + r.pick(bounceLines) + '"', 2400); SFX.talk(); } } }); }
   const sq = new Squirrel(game, -14, -9, 'sq-robot'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('mouse', -8, 7); C.add('star', 12, -22); C.add('fish', -18, 2); C.add('yarn', 21, 9); C.add('star', 0, -27); C.add('fish', 4, 14); C.add('mouse', 26, -18); C.add('yarn', -26, -6);

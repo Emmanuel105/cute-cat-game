@@ -9535,3 +9535,32 @@ soul, with ground height rising gently (0.83 m) this far out — all seven world
 Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks `ok`, 0 console warnings. Two repeat
 runs afterward both came back exit 0 with no FAILs — before rebuilding `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 380 — a trampoline for Robot City
+
+Last round's own write-up claimed all seven worlds had a trampoline, but that was wrong on a recount:
+a stray comment in the source (left over from an earlier, inaccurate round) had always said Robot City
+had one, and nobody had actually checked. It didn't. **A cyan-padded trampoline now bounces a visiting
+kid on the open factory floor** well out past the statue plaza and the marbles ring, the fifth and
+sixth worlds' `makeTrampoline` prop and `Bouncer` controller reused as-is, just restriped to match the
+city's own neon palette. *"Higher than the gantry crane, nearly!"* *"Even the robots stop their patrol
+to watch this one."* Victorian is now the only world left without one.
+
+A headless probe (`game.load(2, 'from-prev')`, the same stub-three harness `test/run.mjs` itself uses)
+sampled every NPC's and the squirrel's own position every quarter second over 300 simulated seconds —
+long enough for every wandering, patrolling, dancing and ball-tossing robot pack to clear the spot
+several times over — then swept a 1 m grid of the open floor (radius 35-85, short of the radius (98)
+where `robotRegion`'s own procedural fill takes over) against both those samples and all 1137 of the
+city's physics boxes: (70, 5) came back clear by 11.3 m of the nearest box (one of the outer skyline
+towers) and 23.2 m of the nearest other soul.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks `ok`, 0 console warnings, physics box
+count unchanged where it mattered (one more box on Robot City itself, 303 in the final tally the suite
+ends on). Two repeat runs afterward both came back exit 0 with no FAILs — before rebuilding
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+Housekeeping note: this run's sandbox had a stale local `main` branch left over from an earlier
+container (four days behind `origin/main`, with no shared shallow history, so git reported a false
+"diverged" rather than "behind"). Verified via the GitHub API that `origin/main` was the true, current
+tip before doing any work, then built this round on a fresh branch tracking `origin/main` rather than
+force-resetting the stale local ref, so nothing was at risk of being overwritten either way.
