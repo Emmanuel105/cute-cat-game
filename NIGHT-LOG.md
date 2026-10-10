@@ -9816,3 +9816,19 @@ more) against both those samples and all 707 of the wood's physics boxes: (40, 3
 Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks `ok`, 0 console warnings, three repeat
 runs after that also clean (`world 6: 55 to meet`, up from 54). Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 391 — a garden gnome for the Neighborhood
+
+Every cottage-garden fixture had shown up on the street by now — a pinwheel, a sprinkler, a kennel, a
+birdhouse — except the one plaster figure gardens are actually famous for. **House 11's own front yard
+now has a garden gnome**: red pointed cap flopped to one side, white beard, blue tunic, a little lantern
+held at its side that has never once lit up. *"Paint's chipped on the nose. Character, the owners call
+it."* *"That lantern has never once lit up. Purely for show."* *"Puss, that hat is not a toy."* Pure
+static geometry — no controller, no new SFX, and no draw on this world's own seeded `r`, so nothing later
+in this build shifts. It sits in the exact yard-corner offset (`x+4.5, z+front*4.0`) the pinwheel, the
+birdhouse and the kennel already use, on house 11 (an odd index, same as the birdhouse's own house 9),
+so the same clearance already proven twice over — 0.8–0.9 m clear of the house's own wall box and its
+porch awning — applies here without a fresh probe.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks `ok`, 0 console warnings, three repeat
+runs after that also clean. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

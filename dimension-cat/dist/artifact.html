@@ -6639,6 +6639,39 @@ function buildNeighborhood(game, entry) {
       const birdhouseLines = ['🐦 "Chirp. (Translation: nice and roomy, thank you.)"', '🏠 "No one\'s moved in yet, but the sparrow\'s clearly scouting it."', '😼 "Puss, leave it be — it\'s not for you."'];
       game.addInteractable({ obj: post, radius: 1.8, label: () => 'Look at the birdhouse', onUse: () => { SFX.click(); game.toast(rnd.pick(birdhouseLines), 3000); } });
     }
+    // the pinwheel, the sprinkler, the kennel and the birdhouse gave four yards their own feature —
+    // every cottage-garden fixture but the one plaster figure gardens are actually famous for. House
+    // 11's own front yard now gets a garden gnome: red pointed cap, white beard, blue tunic, a tiny
+    // lantern held at its side, stood perfectly still in the grass (no controller, no draw from this
+    // world's own seeded `r`, so nothing later in this build shifts). Same yard-corner offset the
+    // pinwheel, the birdhouse and the kennel all already use (x+4.5, z+front*4.0); house 11 is odd
+    // (i%2===1), the same porch-awning offset the birdhouse's own house 9 already clears by 0.90 m —
+    // identical geometry, so the same margin applies here without a fresh probe. The house's own wall
+    // box (half-extents 3.7×3.2) clears this corner by 0.8 m on both axes, same as every other feature
+    // already sat in this exact corner.
+    if (i === 11) {
+      const gx = x + 4.5, gz = z + front * 4.0;
+      const skinM = mat(0xe8b088, { roughness: 0.8 }), beardM = mat(0xf2ece0, { roughness: 0.85 }),
+        hatM = mat(0xc0392b, { roughness: 0.75 }), tunicM = mat(0x2f6fd6, { roughness: 0.8 }),
+        beltM = mat(0x5a3a1e, { roughness: 0.85 }), bootM = mat(0x2a2018, { roughness: 0.8 }),
+        lanternM = mat(0xf2c744, { roughness: 0.4 });
+      const gnome = group(gx, 0, gz, W); gnome.rotation.y = ry;
+      for (const bx2 of [-0.05, 0.05]) mesh(G.cyl(0.035, 0.04, 0.08, 8), bootM, { x: bx2, y: 0.04, shadow: 'both', parent: gnome });
+      mesh(G.cyl(0.07, 0.11, 0.28, 10), tunicM, { y: 0.22, shadow: 'both', parent: gnome });
+      mesh(G.cyl(0.115, 0.115, 0.03, 10), beltM, { y: 0.1, shadow: 'none', parent: gnome });
+      for (const sx2 of [-0.1, 0.1]) mesh(G.cyl(0.02, 0.022, 0.16, 6), tunicM, { x: sx2, y: 0.3, rz: sx2 * 2.2, parent: gnome });
+      mesh(G.sphere(0.028, 8, 6), lanternM, { x: 0.11, y: 0.22, z: 0.02, shadow: 'none', parent: gnome });   // the little lantern, held at its side
+      const head = group(0, 0.44, 0, gnome);
+      mesh(G.sphere(0.075, 10, 8), skinM, { parent: head });
+      mesh(G.sphere(0.018, 6, 5), skinM, { z: 0.07, y: -0.01, shadow: 'none', parent: head });   // nose
+      mesh(G.cone(0.065, 0.14, 8), beardM, { y: -0.1, z: 0.025, rx: PI, parent: head });   // beard, hanging down over the chest
+      mesh(G.cyl(0.08, 0.08, 0.02, 10), hatM, { y: 0.06, parent: head });   // hat brim
+      mesh(G.cone(0.075, 0.22, 10), hatM, { y: 0.17, rz: 0.2, parent: head });   // the pointed cap, flopped slightly to one side
+      mesh(G.sphere(0.022, 8, 6), hatM, { y: 0.26, x: 0.06, parent: head });   // the floppy tip
+      P.addBox(gx, 0.22, gz, 0.3, 0.6, 0.3, { cam: false });
+      const gnomeLines = ['🧙 "Paint\'s chipped on the nose. Character, the owners call it."', '🧙 "That lantern has never once lit up. Purely for show."', '😼 "Puss, that hat is not a toy."'];
+      game.addInteractable({ obj: gnome, radius: 1.8, label: () => 'Look at the garden gnome', onUse: () => { SFX.click(); game.toast(rnd.pick(gnomeLines), 3000); } });
+    }
   });
   // the pinwheel, sprinkler and kennel above gave three of the street's sixteen yards their own
   // feature; lot 14's own corner now gets a fourth — a stone birdbath, a shallow bowl on a short
