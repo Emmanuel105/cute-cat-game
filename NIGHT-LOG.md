@@ -9739,3 +9739,30 @@ nearest other soul.
 
 Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks `ok`, 0 console warnings, three repeat
 runs after that also clean. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 388 — a taffy-pulling machine for Candy Land
+
+Candy Land is named for the stuff, but nobody down there had ever actually made any of it — every other
+world's own landmark ties to its own craft (Robot City's conveyor line, Victorian's clock tower) while the
+sweet-lands just grew candy out of the ground. **A taffy-pulling machine now works on its own in the open
+sweet-lands**: two posts, a hand crank, and a rope of pink taffy slung between a pair of swinging hooks,
+pulled together then stretched out thin before gathering back in. A candy-shop worker stands at the crank
+and talks through it. *"Pull, stretch, fold — that's the whole trick."* *"Mind your whiskers near the
+hooks, puss."* No new controller: the worker is a plain `Charger`, same pairing every other standing vendor
+in this file already uses; the machine itself is a single `U.push` that swings two hook pivots in mirror
+and re-derives the taffy strand's length, midpoint height and radius from their own positions each frame,
+off the shared world clock alone, never this world's own seeded `r`.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real Candy Land
+(`game.load(1, 'from-hub')`), sampled every NPC's own position every quarter second over 400 simulated
+seconds — long enough for every marching, dancing, wandering and ball-tossing gingerbread man to clear the
+spot several times over — then swept the open sweet-lands (radius 8-75, short of the radius (92) where
+candyRegion's own procedural fill takes over, and clear of the chocolate river band) against both those
+samples and all 1870 of the world's physics boxes: (-24, -70) came back clear by 14.87 m of the nearest
+box or soul.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 272 checks `ok`, 0 console warnings, three repeat runs
+after that also clean (`world 1: 60 to meet`, up from 59). A standalone probe ran 1600 simulated frames
+against the built world directly and confirmed the worker's position stayed finite and the machine's own
+physics box sits exactly where intended. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.

@@ -1936,6 +1936,58 @@ function buildCandyLand(game, entry) {
     W.add(forager.group);
     game.npcs.push(new Forager(game, forager, { x: fx, z: fz, ry: fry, cryIcon: '🍬',
       cries: ['Found a whole handful, right by the lollipops!', "Careful, puss — don't swallow one, they're real.", 'Grows right out of the ground here. Nobody knows why.'] })); }
+  // Candy Land is named for the stuff, but nobody down there had ever actually made any of it — every
+  // other world's own landmark ties to its own craft (Robot City's conveyor line, Victorian's clock
+  // tower) while the sweet-lands just grew the candy out of the ground. A taffy-pulling machine now
+  // works on its own: two posts, a hand crank, and a rope of pink taffy slung between a pair of
+  // swinging hooks, pulled nearly together then stretched out thin before gathering back in — the real
+  // shop motion, just slowed down and made of cartoon taffy. A candy-shop worker stands at the crank
+  // and talks through it. No new controller: a plain `Charger`, the same pairing every other standing
+  // vendor in this file already uses; the machine's own motion is a single `U.push` swinging two hook
+  // pivots in mirror and re-deriving the strand's length, midpoint and radius from their own positions
+  // each frame, off the shared world clock `t` alone, never this world's own seeded `r`, so it costs no
+  // later wardrobe or colour pick. *"Pull, stretch, fold — that's the whole trick."* *"Lovely and
+  // glossy once it's pulled enough, this."* *"Mind your whiskers near the hooks, puss."*
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real Candy Land
+  // (`game.load(1, 'from-hub')`), sampled every NPC's own position every quarter second over 400
+  // simulated seconds — long enough for every marching, dancing, wandering and ball-tossing gingerbread
+  // man to clear the spot several times over — then swept the open sweet-lands (radius 8-75, short of
+  // the radius (92) where candyRegion's own procedural fill takes over, and clear of the chocolate
+  // river band) against both those samples and all 1870 of the world's physics boxes: (-24, -70) came
+  // back clear by 14.87 m of the nearest box or soul.
+  { const mx = -24, mz = -70;
+    const g = group(mx, 0, mz, W);
+    const postMat = mat(0xc27b3a, { roughness: 0.9 }), steelMat = mat(0x9aa3ad, { metalness: 0.6, roughness: 0.4 });
+    const taffyMat = mat(0xffaed4, { roughness: 0.22, metalness: 0.05 });
+    for (const side of [-1, 1]) mesh(G.cyl(0.09, 0.09, 1.3, 10), postMat, { x: side * 0.9, y: 0.65, shadow: 'both', parent: g });
+    const crank = group(-0.9, 1.05, 0, g);
+    noInk(mesh(G.torus(0.22, 0.03, 8, 16), steelMat, { parent: crank }));
+    mesh(G.cyl(0.03, 0.03, 0.26, 6), steelMat, { x: 0.22, rz: PI / 2, parent: crank });
+    const pivotA = group(-0.9, 1.05, 0, g), pivotB = group(0.9, 1.05, 0, g);
+    mesh(G.cyl(0.02, 0.02, 0.6, 6), steelMat, { y: -0.3, parent: pivotA });
+    mesh(G.cyl(0.02, 0.02, 0.6, 6), steelMat, { y: -0.3, parent: pivotB });
+    mesh(G.sphere(0.05, 8, 6), steelMat, { y: -0.6, shadow: 'none', parent: pivotA });
+    mesh(G.sphere(0.05, 8, 6), steelMat, { y: -0.6, shadow: 'none', parent: pivotB });
+    const strand = mesh(G.cyl(0.09, 0.09, 1, 10), taffyMat, { shadow: 'both', parent: g });
+    P.addBox(mx, 0.7, mz, 2.8, 1.4, 0.9);
+    U.push((dt, t) => {
+      const swing = sin(t * 1.1) * 0.8;
+      pivotA.rotation.z = swing; pivotB.rotation.z = -swing;
+      crank.rotation.z += dt * 1.8;
+      const len = 1.8 - 1.2 * sin(swing);
+      strand.position.set(0, 1.05 - 0.6 * cos(swing), 0);
+      strand.rotation.z = -PI / 2;
+      const rf = clamp(1 / sqrt(len), 0.55, 1.6);
+      strand.scale.set(rf, len, rf);
+    });
+    const ward = makeWardrobe(r, { shirts: [0xffe0ea, 0xff9fc9, 0xfff3b0] });
+    const wkx = mx - 2.3, wkz = mz + 0.6;
+    const puller = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: ward }),
+      apron: 0xfff3e6, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(puller.group);
+    game.npcs.push(new Charger(game, puller, { x: wkx, z: wkz, ry: atan2((mx - 0.9) - wkx, mz - wkz), cryIcon: '🍬',
+      cries: ['Pull, stretch, fold — that\'s the whole trick.', 'Lovely and glossy once it\'s pulled enough, this.', 'Mind your whiskers near the hooks, puss.'] })); }
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('star', 7, -6); C.add('yarn', -9, 9); C.add('fish', -16, -13); C.add('mouse', 16, -9); C.add('star', -10, -27); C.add('yarn', 22, 4); C.add('mouse', -28, 26); C.add('fish', 14, -44); C.add('star', 0, -56); C.add('mouse', -58, 30); C.add('yarn', 60, 36);
