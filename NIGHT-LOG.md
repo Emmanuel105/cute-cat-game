@@ -9714,3 +9714,28 @@ the nearest other soul.
 
 Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks `ok`, 0 console warnings, two repeat runs
 after that also clean. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 387 — a frost-bubble blower for Frosty Peak
+
+Sunny Shore, Victorian and Candy Land have all had something bubbling since round 385 — Frosty Peak
+never did. **A bundled-up kid now blows frost bubbles from an icicle-tipped wand** on the open snowfield
+east of the trampoline, pale blue instead of the other worlds' clear soap film, since nothing up here
+would stay a plain bubble for long. *"Freeze before they even pop, these ones."* *"Careful, puss —
+they're colder than they look."* Same trick as the Sunny Shore/Victorian versions: a plain `Charger` (the
+kid never moves, its own idle plus its `ground0()` lookup does the rest), the wand sitting in `hands[1]`
+read once with `getWorldPosition()` right after `Charger` fixes the rig, and two bubbles riding the world
+clock alone rather than this world's own seeded `r`. Reuses this file's own `kid()` helper for the rig,
+coat and beanie already on. Only real change from the beach/town version: the pop effect's colours lean
+icy (white and pale blue) instead of the beach's pale cyan, so the shatter reads as a bit of frost giving
+way rather than a soap film bursting.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real mountain
+(`game.travel(5, 'from-hub')`, then `game.start('new')` so every reindeer, hare, arctic fox, penguin,
+yeti and wandering kid actually moved), sampled every NPC's and every squirrel's own position every
+quarter second over 150 simulated seconds, then checked a candidate on the open snowfield (radius 56.6,
+short of the radius (58) where snowRegion's own fill takes over) against both those samples and all 757
+of the mountain's physics boxes: (38, -42) came back clear by 9.22 m of the nearest box and 9.06 m of the
+nearest other soul.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks `ok`, 0 console warnings, three repeat
+runs after that also clean. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

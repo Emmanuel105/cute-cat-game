@@ -714,6 +714,57 @@ function buildSnowVillage(game, entry) {
     const bounceLines = ["Higher than the gondola, nearly!", "Careful, puss — mind the springs round the edge.", "Warms you up better than the fire does, this."];
     let bounceCryT = r.range(3, 7);
     U.push((dt) => { bounceCryT -= dt; if (bounceCryT <= 0) { bounceCryT = r.range(8, 14); const c = game.cat.group.position; if (dist2(tx, tz, c.x, c.z) < 400) { game.toast('🤸 "' + r.pick(bounceLines) + '"', 2400); SFX.talk(); } } }); }
+  // Sunny Shore, Victorian and Candy Land have all had something bubbling since round 385 (soap bubbles
+  // twice over, a chewer's own bubblegum once) — Frosty Peak never did. A bundled-up kid now blows frost
+  // bubbles from an icicle-tipped wand on the open snowfield east of the trampoline, well clear of the
+  // scooter kid and the marbles ring: pale blue instead of the other worlds' clear soap film, since
+  // nothing up here would stay a plain bubble for long. Same trick as those two: `Charger` (the kid never
+  // moves, `Charger`'s own idle plus its already-built `ground0()` lookup does the rest, so the terrain-
+  // aware `placeT`/`boxT` pair this file's moving props need goes unused here), the wand sitting in
+  // `hands[1]` (the resting hand nothing else in this file's own idle gestures ever swings) read once
+  // with `getWorldPosition()` right after `Charger` fixes the rig, and two bubbles riding the world clock
+  // alone rather than this world's own seeded `r` — so, like those two, the build costs no later wardrobe
+  // or colour pick. Reuses this file's own `kid()` helper for the rig, coat and beanie already on same as
+  // every other child here, rather than the bare-headed blowers the paved worlds build fresh. Only real
+  // change from the Sunny Shore/Victorian version: the pop effect's own colours lean icy (white and pale
+  // blue, not the beach's pale cyan or the town's plain white-blue), since the shattering sound should
+  // read as a tiny bit of frost giving way, not a soap film bursting.
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real mountain
+  // (`game.travel(5, 'from-hub')`, then `game.start('new')` so every reindeer, hare, arctic fox, penguin,
+  // yeti and wandering kid actually moved rather than sitting frozen at spawn), sampled every NPC's and
+  // every squirrel's own position every quarter second over 150 simulated seconds — long enough for the
+  // slowest patrol to clear the spot several times over — then checked a candidate on the open snowfield
+  // (radius 56.6, short of the radius (58) where snowRegion's own fill takes over) against both those
+  // samples and all 757 of the mountain's physics boxes: (38, -42) came back clear by 9.22 m of the
+  // nearest box and 9.06 m of the nearest other soul.
+  { const fbx = 38, fbz = -42, fbry = atan2(-fbx, -fbz);
+    const frostKid = kid(r.chance(0.5));
+    const wand = group(0.02, 0, 0.1, frostKid.hands[1]); wand.rotation.set(-0.3, 0, 0.3);
+    mesh(G.cyl(0.012, 0.012, 0.16, 6), mat(0x7a8a9a, { roughness: 0.6 }), { y: 0.08, parent: wand });
+    mesh(G.cone(0.05, 0.1, 6), mat(0xcdeeff, { roughness: 0.2, transparent: true, opacity: 0.85 }), { y: 0.21, parent: wand });   // icicle tip
+    game.npcs.push(new Charger(game, frostKid, { x: fbx, z: fbz, ry: fbry, cryIcon: '🫧',
+      cries: ['Freeze before they even pop, these ones.', "Careful, puss — they're colder than they look.", 'Watch — this one is a beauty.'] }));
+    const tip = V3(); wand.getWorldPosition(tip);
+    const frostBubbleM = mat(0xdff3ff, { pbr: true, metalness: 0.05, roughness: 0.1, transparent: true, opacity: 0.45 });
+    const frostBubbles = [0, 1].map((i) => ({ m: mesh(G.sphere(0.05, 10, 8), frostBubbleM, { shadow: 'none', parent: W }), ph: i * 1.8, popped: -1 }));
+    const fbCyc = 3.2;
+    U.push((dt, t) => {
+      for (const b of frostBubbles) {
+        const k = ((t + b.ph) % fbCyc) / fbCyc;
+        if (k < 0.92) {
+          b.m.visible = true;
+          b.m.position.set(tip.x + sin(t * 1.6 + b.ph) * 0.18 * k, tip.y + k * 1.5, tip.z + cos(t * 1.1 + b.ph) * 0.12 * k);
+          b.m.scale.setScalar(0.4 + k * 0.7);
+        } else {
+          b.m.visible = false;
+          const cycleNo = floor((t + b.ph) / fbCyc);
+          if (cycleNo !== b.popped) { b.popped = cycleNo;
+            const c = game.cat.group.position;
+            if (dist2(tip.x, tip.z, c.x, c.z) < 400) { SFX.twinkle(); game.fx.emit(b.m.position.x, b.m.position.y, b.m.position.z, { count: 4, colors: [0xffffff, 0xcdeeff, 0x9fe8ff], speed: 0.5, up: 0.6, life: 0.5, gravity: 1.5 }); }
+          }
+        }
+      }
+    }); }
   snowRegion(game, U, r, 58, PEAK_LIMIT - 8);
   makeHorizon(game, r, { clear: PEAK_LIMIT + 8, hills: true, hill: 0xe8eef6, rock: 0x6a7a94, rock2: 0x7e8ea6, snow: 0xf6fbff, snowLine: 26, peaks: 32, peakH: [46, 110], woodCount: 300, woodHue: [0.32, 0.42], woodLight: [0.12, 0.2], trunk: 0x4a3a2a });
   // gondola home (bottom station of the village)
