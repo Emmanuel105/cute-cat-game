@@ -811,6 +811,29 @@ function buildSnowVillage(game, entry) {
       cries: ["He says that every round. He's bluffing.", "Careful, puss — you'll knock the deck.", 'Loser treks down for more firewood. Every time.'] }));
     let cardMoveT = rnd.range(6, 10);
     U.push((dt) => { cardMoveT -= dt; if (cardMoveT <= 0) { cardMoveT = rnd.range(7, 12); SFX.click(); game.fx.emit(tx, ty0 + topY + 0.1, tz, { count: 4, color: 0xf2ead6, speed: 0.3, up: 0.3, life: 0.6, gravity: 1.2, spread: 0.4 }); } }); }
+  // Victorian, Sunny Shore and Candy Land all have a photographer bent under a dark cloth by now, but
+  // Frosty Peak — for all its own aurora painter — never had anyone pointing a camera at the view
+  // instead of a brush. A photographer sets up an old box camera on the open snowfield east of the
+  // village, framing the whole mountainside: the gondola station, the peaks and the aurora overhead,
+  // all in one shot. Same `Photographer` controller and `makeOldCamera()` tripod every earlier one
+  // already uses, just a cold-weather wardrobe in place of a flatcap or sunhat.
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real mountain
+  // (`game.travel(5, 'from-hub')`, then `game.start('new')` so every reindeer, hare, arctic fox, penguin,
+  // yeti and wandering villager actually moved), sampled every NPC's and the squirrel's own position
+  // every quarter second over 300 simulated seconds, then swept a 1 m grid of the open snowfield
+  // (radius 10-56, short of the radius (58) where snowRegion's own fill takes over) against both those
+  // samples and all 681 of the mountain's physics boxes: (25, 50) came back clear by 9.2 m of the
+  // nearest box and 13.2 m of the nearest other soul, at radius 55.9 from the origin. Placed last of
+  // every person this build adds, after the two card players, so it draws from the very tail of this
+  // world's own local `r()` sequence.
+  { const px = 25, pz = 50, pry = atan2(0 - px, 0 - pz);   // facing back toward the village and peaks
+    const camWard = makeWardrobe(r, { shirts: [0x3a5a6a, 0x4a4a5a, 0x5a4a3a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const snapper = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: camWard }),
+      hat: 'beanie', hatColor: 0x3a3a3a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a, glasses: r.chance(0.3) });
+    W.add(snapper.group);
+    const camera = makeOldCamera();
+    game.npcs.push(new Photographer(game, snapper, camera, { x: px, z: pz, ry: pry, cryIcon: '📷',
+      cries: ['Whole mountain in one shot, if the light holds.', "Careful, puss — it's only flash powder, not fire.", "The painter says a photograph has no soul. I say develop faster, then we'll talk."] })); }
   snowRegion(game, U, r, 58, PEAK_LIMIT - 8);
   makeHorizon(game, r, { clear: PEAK_LIMIT + 8, hills: true, hill: 0xe8eef6, rock: 0x6a7a94, rock2: 0x7e8ea6, snow: 0xf6fbff, snowLine: 26, peaks: 32, peakH: [46, 110], woodCount: 300, woodHue: [0.32, 0.42], woodLight: [0.12, 0.2], trunk: 0x4a3a2a });
   // gondola home (bottom station of the village)

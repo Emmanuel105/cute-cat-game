@@ -10154,3 +10154,29 @@ after the birdwatcher, so it draws from the very tail of this world's own local 
 Full suite (`node test/run.mjs`) ran clean twice in a row — exit 0, 290 checks `ok`, 0 console warnings,
 Candy Land's own friend count up one to 62. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 403 — a photographer for Frosty Peak
+
+Victorian, Sunny Shore and Candy Land all have someone bent under a dark cloth by now, and Robot City's
+own archive-bot has had a tripod camera since round 316 — but Frosty Peak, for all its own aurora
+painter, never had anyone pointing a camera at the view instead of a brush. **A photographer now sets
+up an old box camera on the open snowfield east of the village, framing the whole mountainside — the
+gondola station, the peaks and the aurora overhead — in one shot.** *"Whole mountain in one shot, if the
+light holds."* *"Careful, puss — it's only flash powder, not fire."* *"The painter says a photograph has
+no soul. I say develop faster, then we'll talk."*
+
+No new controller or prop: this is the exact same `Photographer` class and `makeOldCamera()` tripod
+Victorian, Sunny Shore and Candy Land already use, just a cold-weather wardrobe (coat, beanie, scarf)
+in place of a flatcap or sunhat. A headless probe (a scratch script built on the same stub-three harness
+`test/run.mjs` itself uses, since there's no browser here to look at it) built the real Frosty Peak
+(`game.travel(5, 'from-hub')`, then `game.start('new')` so every reindeer, hare, arctic fox, penguin,
+yeti and wandering villager actually moved), sampled every NPC's and the squirrel's own position every
+quarter second over 300 simulated seconds, then swept a 1 m grid of the open snowfield (radius 10-56,
+short of the radius (58) where snowRegion's own fill takes over) against both those samples and all 681
+of the mountain's physics boxes: (25, 50) came back clear by 9.2 m of the nearest box and 13.2 m of the
+nearest other soul, at radius 55.9 from the origin. Placed last of every person this build adds, after
+the two card players, so it draws from the very tail of this world's own local `r()` sequence.
+
+Full suite (`node test/run.mjs`) ran clean twice in a row — exit 0, 274 checks `ok`, 0 console warnings,
+Frosty Peak's own friend count up one to 57. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.
