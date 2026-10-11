@@ -652,6 +652,21 @@ function makeEasel() {
   g.userData.daubs = daubs;
   return g;
 }
+/** An old box camera on a tripod, lens facing +z (the subject); the dark focusing cloth drapes off the back (-z), where a photographer standing behind it ducks under to compose the shot. */
+function makeOldCamera() {
+  const g = new THREE.Group(), wood = mat(0x3f2a1a, { roughness: 0.85 }), brass = mat(0xc8a45c, { metalness: 0.6, roughness: 0.35 }), black = mat(0x1c1c1c, { roughness: 0.75 });
+  const legH = 0.86;
+  for (let i = 0; i < 3; i++) { const a = i / 3 * TAU; mesh(G.cyl(0.02, 0.026, legH, 6), wood, { x: cos(a) * 0.26, y: legH / 2, z: sin(a) * 0.26, rx: sin(a) * 0.22, rz: -cos(a) * 0.22, parent: g }); }
+  mesh(G.cyl(0.1, 0.1, 0.03, 10), wood, { y: legH, parent: g });
+  const body = group(0, legH + 0.14, 0, g);
+  mesh(G.box(0.34, 0.26, 0.4), wood, { parent: body });
+  mesh(G.box(0.36, 0.04, 0.42), brass, { y: 0.15, parent: body });
+  mesh(G.cyl(0.09, 0.1, 0.1, 14), black, { z: 0.22, parent: body });
+  mesh(G.cyl(0.085, 0.085, 0.01, 14), mat(0x2a3a44, { roughness: 0.15, metalness: 0.4 }), { z: 0.275, parent: body });
+  mesh(G.box(0.3, 0.22, 0.02), black, { z: -0.22, y: 0.02, ry: 0.05, parent: body });
+  g.userData.lensY = legH + 0.14;
+  return g;
+}
 /**
  * `o.rattle` gives just one mailbox (the cat's own, by the front path) a flag that flutters in the
  * breeze on a hinge and knocks softly against the box every so often — `game` and `game.cat` are only

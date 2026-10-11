@@ -1507,6 +1507,49 @@ class Painter {
   }
 }
 
+// ---------------------------------------------------------------- photographer: stands behind a box camera on a tripod, every so often ducking under the cloth to compose, then springing straight for the flash
+class Photographer {
+  constructor(game, rig, camera, { x, z, ry = 0, cries = null }) {
+    this.game = game; this.rig = rig; this.camera = camera; this.x = x; this.z = z; this.t = rnd() * 10; this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false;
+    this.state = 'idle'; this.timer = 0; this.cries = cries; this.cryIcon = '📷'; this.cryT = rnd.range(4, 9);
+    this.gapT = rnd.range(3, 6); this.bendT = -1; this.flashed = false; this.shots = 0;
+    const cx = x + sin(ry) * 0.8, cz = z + cos(ry) * 0.8, gy = game.physics.ground0(cx, cz);
+    camera.position.set(cx, gy, cz); camera.rotation.y = ry; game.world.add(camera);
+    this.lensPos = { x: cx + sin(ry) * 0.26, y: gy + camera.userData.lensY, z: cz + cos(ry) * 0.26 };
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    this.circle = game.physics.addCircle(this, x, z, 0.35);
+    game.physics.addBox(cx, 0.55, cz, 0.46, 1.1, 0.46, { cam: false });
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig;
+    rig.animate(0, false, dt, this.t);
+    if (this.bendT < 0) {
+      this.gapT -= dt;
+      if (this.gapT <= 0) { this.bendT = 0; this.flashed = false; }
+    } else {
+      this.bendT += dt;
+      const DOWN = 0.7, HOLD = 1.3, UP = 0.5; let bend;
+      if (this.bendT < DOWN) bend = this.bendT / DOWN;
+      else if (this.bendT < DOWN + HOLD) bend = 1;
+      else if (this.bendT < DOWN + HOLD + UP) bend = 1 - (this.bendT - DOWN - HOLD) / UP;
+      else { this.bendT = -1; this.gapT = rnd.range(6, 10); bend = 0; }
+      if (!this.flashed && this.bendT >= DOWN + HOLD * 0.6) {   // the exposure, while still bent under the cloth composing the shot
+        this.flashed = true; this.shots++; SFX.shutter();
+        this.game.fx.emit(this.lensPos.x, this.lensPos.y, this.lensPos.z, { count: 9, colors: [0xffffff, 0xfff3c4], speed: 2.2, up: 2.4, life: 0.3, gravity: -1.2 });
+      }
+      if (!rig.gesture) {
+        rig.spine.rotation.x = bend * 0.6; rig.head.rotation.x = bend * 0.32;
+        const A = rig.arms[0], B = rig.arms[1];
+        A.sh.rotation.x = lerp(-0.25, -1.05, bend); A.el.rotation.x = lerp(-0.2, -1.3, bend); A.sh.rotation.z = 0.2;
+        B.sh.rotation.x = lerp(-0.25, -0.95, bend); B.el.rotation.x = lerp(-0.2, -1.2, bend); B.sh.rotation.z = -0.2;
+      }
+    }
+    if (this.bendT < 0) Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- washer: stands beside the parked car, sponge in hand, working a slow side-to-side scrub
 class Washer {
   constructor(game, rig, { x, z, ry = 0, cries = null }) {

@@ -9953,3 +9953,35 @@ back clear, with both players' and both stakes' own exact spots 15-17 m from the
 Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks `ok`, 0 console warnings, two repeat
 runs after that also clean (`world 0: 52 to meet`, up from 50). Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 396 — a street photographer for Victorian
+
+Robot City's archive-bot has had a tripod camera since round 316, but the one trade the Victorian era
+is actually famous for inventing had never shown up in its own town. **A street photographer now
+stands behind an old box camera on the quiet grass south-east of the market square**, ducking under
+the focusing cloth every so often to compose a shot, then springing straight as the shutter fires — a
+puff of white sparks off the lens standing in for the flash powder. *"Hold very still now — the plate
+takes a few seconds!"* *"Splendid! Right in profile, if you please."* *"Mind the flash, puss — it's
+only powder, not fire."*
+
+New `Photographer` controller in `55-npcs.js`: the bend itself is a plain three-phase ramp (down, hold,
+up) driven off its own timer rather than the rig's built-in gesture system (`chop`'s own lean reads as
+a swing, not someone hunched over a viewfinder), guarded by `if (!rig.gesture)` exactly as the
+painter's own easel-work already is, so a greeting wave or a photo-mode pose still wins over it. The
+exposure itself latches once per bend — the same single-flag-per-cycle trick the mechanic's spark and
+the puppet booth's clash already use — a little before the stand-up, while the rig is still fully bent
+under the cloth. `makeOldCamera()` in `60-props.js` builds the tripod, bellows and lens with local +z
+facing the subject and the dark cloth draped off -z, where the photographer stands; the camera isn't
+baked, same as the painter's own easel, since nothing here needs to move it once placed.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real Victorian town
+(`game.travel(3, 'from-prev')`, then `game.start('new')` so every urchin, dancer and ball-tossing pair
+actually moved), sampled every NPC's and the squirrel's own position every quarter second over 300
+simulated seconds, then swept a 2 m grid of the quiet grass out to radius 65 from the town's own centre
+against both those samples and every one of the town's physics boxes: (35, -53) came back clear by
+16.7 m of the nearest box and 16.6 m of the nearest other soul, well outside the market square's own
+zone (centred (0,-34), radius 17).
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 274 checks `ok`, 0 console warnings, two repeat
+runs after that also clean (`world 3: the street photographer has taken 7 photos in 15 s`). Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
