@@ -10341,3 +10341,43 @@ them, rather than weakening it to skip the new pair.
 Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, 274 checks `ok`, 0 console
 warnings every time, the Neighborhood's own friend count up two to 55. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 409 — a mancala game for Sunny Shore, played with pebbles and cowrie shells
+
+Victorian has had a draughts table since round 354, Robot City a checkers drum since round 384, Frosty
+Peak a card table since round 397, Whisper Woods its own draughts board since round 407 and the
+Neighborhood a chess set since round 408 — but Sunny Shore, all sand and shore, never had the one board
+game that's actually played with what a beach already has lying around. **A driftwood mancala board now
+lies between two beachgoers seated on the open dune sand, a mid-game spread of dark pebbles down one row
+and pale cowrie shells down the other, a scooped hoard of each already banked in the store pit at both
+ends.** *"Six shells to your five pebbles — I'm not losing this one."* *"Careful, puss — one flick of
+your tail and we start the whole row over."* *"Loser fetches the next round of ice lollies, same as
+always."*
+
+No new controller: both players are a plain `Sitter`, the same pairing every other table game in this
+file already uses, each on a `makeIceStool()` — the same generic three-legged stool the draughts, card
+and chess tables all reuse too. Unlike those four, though, a real mancala board seats its two players
+along its long sides rather than its short ends (each owns the row of six pits nearest their own seat,
+with a store pit at either end belonging to neither row), so the seats sit offset in *z* here instead of
+the other tables' *x*, and the two rows of pits run along the board's own x-axis between them. The pits
+themselves are shallow dark discs rather than carved recesses, same flat-decal trick the chess board's
+own squares already relied on, with the pebbles and shells as small spheres (the shells flattened on y)
+scattered across them in a fixed, not randomly drawn, spiral per pit — same reasoning the chess board's
+own fixed opening position used, so it costs no draw from this world's own seeded `r()`. Terrain-aware
+`placeT`/`boxT` in place of the flat-floor worlds' `place()`/`P.addBox()`, since the sand underfoot has
+real slope out here too, the same reasoning Frosty Peak's own card table already relied on.
+
+A headless probe (a scratch script built on the same stub-three harness `test/run.mjs` itself uses,
+since there's no browser here to look at it) built the real Sunny Shore (`game.travel(4, 'from-hub')`,
+then `game.start('new')` so every crab, turtle, sunbather, dolphin, dog and dancer actually moved),
+sampled every NPC's and the squirrel's own position every quarter second over 300 simulated seconds,
+then swept a 1 m grid of the dry dune sand (x ≤ -12, radius 10-50, short of the radius (58) where
+beachRegion's own fill takes over) against both those samples and all 192 of the beach's physics boxes:
+(-32, -21) came back clear by 7.72 m of the nearest box and 8.06 m of the nearest other soul (the dune
+ring-dance at (-42, -22)), at radius 38.3 from the origin, on a gentle slope (ground height 0.50 m).
+Placed right after the photographer, the last person this build had added, so it draws from the tail of
+this world's own local `r()` sequence and disturbs no earlier wardrobe, colour or gem-cluster pick.
+
+Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, 274 checks `ok`, 0 console
+warnings every time, Sunny Shore's own friend count up two to 57. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

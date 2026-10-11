@@ -723,6 +723,62 @@ function buildBeach(game, entry) {
     const camera = makeOldCamera();
     game.npcs.push(new Photographer(game, snapper, camera, { x: phx, z: phz, ry: phry, cryIcon: '📷',
       cries: ['Hold still — the plate takes a few seconds!', 'Best light on the coast, this time of day.', "Careful, puss — it's only flash powder, not fire."] })); }
+  // Victorian has had a draughts table since round 354, Robot City a checkers drum since round 384,
+  // Frosty Peak a card table since round 397, Whisper Woods its own draughts board since round 407 and
+  // the Neighborhood a chess set since round 408 — but Sunny Shore, for all its sand, never had the one
+  // board game that is actually played with sand's own leftovers. A driftwood mancala board now lies
+  // between two beachgoers seated either side on the open dune sand, a mid-game spread of dark pebbles
+  // down one row and pale cowrie shells down the other, a scooped hoard of each already banked in the
+  // store pit at both ends. **"Six shells to your five pebbles — I'm not losing this one."** *"Careful,
+  // puss — one flick of your tail and we start the whole row over."* *"Loser fetches the next round of
+  // ice lollies, same as always."*
+  // No new controller: both players are a plain `Sitter`, the same pairing every other table game in
+  // this file already uses, each on a `makeIceStool()` — the same generic three-legged stool the
+  // draughts, card and chess tables all reuse too. Unlike those four, though, a mancala board seats its
+  // two players along its long sides rather than its short ends (each player owns the row of six pits
+  // nearest their own seat, with a store pit at either end of the board belonging to neither row), so
+  // the seats sit offset in *z* here instead of the other tables' *x*, and the two rows of pits run
+  // along the board's own x-axis between them. Terrain-aware `placeT`/`boxT` in place of the flat-floor
+  // worlds' `place()`/`P.addBox()`, since the sand underfoot has real slope out here too, same reasoning
+  // Frosty Peak's own card table already relied on.
+  // A headless probe (a scratch script built on the same stub-three harness `test/run.mjs` itself uses,
+  // since there's no browser here to look at it) built the real Sunny Shore (`game.travel(4,
+  // 'from-hub')`, then `game.start('new')` so every crab, turtle, sunbather, dolphin, dog and dancer
+  // actually moved), sampled every NPC's and the squirrel's own position every quarter second over 300
+  // simulated seconds, then swept a 1 m grid of the dry dune sand (x ≤ -12, radius 10-50, short of the
+  // radius (58) where beachRegion's own fill takes over) against both those samples and all 192 of the
+  // beach's physics boxes: (-32, -21) came back clear by 7.72 m of the nearest box and 8.06 m of the
+  // nearest other soul (the dune ring-dance at (-42, -22)), at radius 38.3 from the origin, on a gentle
+  // slope (ground height 0.50 m).
+  { const tx = -32, tz = -21, topY = 0.72, boardLen = 0.92, boardDep = 0.28;
+    const seatAx = tx, seatAz = tz - 0.5, seatBx = tx, seatBz = tz + 0.5;
+    const ty0 = P.ground0(tx, tz);
+    const wood = mat(0x8a6a42, { roughness: 0.85, map: TEX.planks(30, 10) });
+    const table = group(tx, ty0, tz, W);
+    mesh(G.box(boardLen, 0.04, boardDep), wood, { y: topY, parent: table });
+    mesh(G.cyl(0.18, 0.2, 0.04, 12), wood, { y: 0.02, parent: table });
+    mesh(G.cyl(0.05, 0.07, topY, 8), wood, { y: topY / 2, parent: table });
+    const pitM = mat(0x4a3220, { roughness: 0.9 }), shellM = mat(0xf0e4c8, { roughness: 0.6 }), pebbleM = mat(0x5a5048, { roughness: 0.3 });
+    const addCounters = (gx, gz, n, isShell) => { for (let i = 0; i < n; i++) {
+      const ang = i * 2.4, rr = Math.min(0.012 + i * 0.006, 0.022), ox = cos(ang) * rr, oz = sin(ang) * rr;
+      if (isShell) mesh(G.sphere(0.016, 8, 6), shellM, { x: gx + ox, y: topY + 0.021, z: gz + oz, sy: 0.55, parent: table });
+      else mesh(G.sphere(0.015, 8, 6), pebbleM, { x: gx + ox, y: topY + 0.021, z: gz + oz, parent: table });
+    } };
+    const pitXs = [-0.27, -0.162, -0.054, 0.054, 0.162, 0.27];
+    const rowACounts = [4, 1, 3, 0, 2, 4], rowBCounts = [2, 4, 0, 3, 1, 2];   // A's row (pebbles, nearest seatA) / B's row (shells, nearest seatB)
+    for (let i = 0; i < 6; i++) {
+      mesh(G.cyl(0.042, 0.042, 0.012, 12), pitM, { x: pitXs[i], y: topY + 0.016, z: -0.075, parent: table }); addCounters(pitXs[i], -0.075, rowACounts[i], false);
+      mesh(G.cyl(0.042, 0.042, 0.012, 12), pitM, { x: pitXs[i], y: topY + 0.016, z: 0.075, parent: table }); addCounters(pitXs[i], 0.075, rowBCounts[i], true);
+    }
+    for (const sx of [-0.37, 0.37]) mesh(G.cyl(0.08, 0.08, 0.014, 14), pitM, { x: sx, y: topY + 0.017, parent: table });
+    addCounters(-0.37, 0, 6, true); addCounters(0.37, 0, 5, false);
+    boxT(game, tx, tz, boardLen + 0.1, topY, boardDep + 0.3, { cam: false });
+    placeT(game, U, makeIceStool(), seatAx, seatAz, PI); placeT(game, U, makeIceStool(), seatBx, seatBz, 0);
+    const playerA = beachPerson(r.chance(0.5), false), playerB = beachPerson(r.chance(0.5), false);
+    game.npcs.push(new Sitter(game, playerA, { x: seatAx, z: seatAz, ry: 0, seat: 0.3,
+      cries: ["Six shells to your five pebbles — I'm not losing this one.", "Careful, puss — one flick of your tail and we start the whole row over.", "Loser fetches the next round of ice lollies, same as always."] }));
+    game.npcs.push(new Sitter(game, playerB, { x: seatBx, z: seatBz, ry: PI, seat: 0.3,
+      cries: ["Pebbles don't lie — I'm two scoops ahead.", "Mind your paws, puss, that store's not finished filling yet.", "Best two out of three, same as every afternoon."] })); }
   // the beach dog keeps to its own patch of sand — it does not follow the cat
   const dog = makeDog(0xc8925a); W.add(dog.group); game.npcs.push(new Wanderer(game, dog, { x: -2, z: 28, speed: 1.1, leash: 7, r: 0.35, height: 0.9, step: 0.3, idle: [1.5, 4], walk: [2, 5] }));
   let woofT = rnd.range(6, 12); U.push((dt) => { woofT -= dt; if (woofT <= 0) { SFX.woof(); woofT = rnd.range(10, 20); } });
