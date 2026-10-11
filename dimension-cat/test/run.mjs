@@ -197,7 +197,7 @@ check(game.npcs.filter((n) => n instanceof Object && n.constructor.name === 'Wan
   check(strollers.length >= 7 && strollers.every((n) => !n.avoid(n.x, n.z)), `${strollers.length} strollers, none standing in the road`);
   // the bench: two sitters with bent hips; the lawn: two children playing tag who swap who is "it"
   const sitters = game.npcs.filter((n) => n.constructor.name === 'Sitter');
-  check(sitters.length === 2 && sitters.every((s) => s.rig.legs[0].hip.rotation.x < -1.2 && s.rig.legs[0].knee.rotation.x > 1.2), 'two people sit on the park bench with their knees bent');
+  check(sitters.length === 4 && sitters.every((s) => s.rig.legs[0].hip.rotation.x < -1.2 && s.rig.legs[0].knee.rotation.x > 1.2), 'the park bench pair and the chess players all sit with their knees bent');
   const play = game.npcs.find((n) => n.constructor.name === 'Playmates');
   let swaps = 0, last = play.chaser; for (let i = 0; i < 1200; i++) { game.loop(); if (play.chaser !== last) { swaps++; last = play.chaser; } }
   check(swaps >= 1, `the children tag each other (${swaps} swaps in 20 s)`);

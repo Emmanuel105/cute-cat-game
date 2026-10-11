@@ -7745,6 +7745,73 @@ function buildNeighborhood(game, entry) {
     game.npcs.push(new Photographer(game, snapper, camera, { x: px, z: pz, ry: pry, cryIcon: '📷',
       cries: ['Both roofs and the street, if I angle it right.', "Careful, puss — it's only flash powder, not fire.", 'Every house on this street, one of these days.'] })); }
 
+  // Victorian's had a draughts table since round 354, Robot City a checkers drum since round 384,
+  // Frosty Peak a card table since round 397 and Whisper Woods a draughts board of its own since round
+  // 407 — but no world yet had an actual game of chess, and the Neighborhood, every house on its street
+  // full of retirees with nothing but yard games, never got a table game at all. Two neighbours now sit
+  // either side of a small round table on the quiet grass past the back row of houses, a chess set out
+  // between them, mid-game. Same `Sitter` pairing every other table game in this file already uses, each
+  // seated on a `makeIceStool()` — the same generic three-legged stool the draughts and card tables reuse,
+  // nothing to do with ice here either.
+  // The board borrows the draughts table's own square-grid build, recoloured birch and espresso, but the
+  // pieces are new: six shapes (`pawn`, `rook`, `knight`, `bishop`, `queen`, `king`) stacked from `G.cyl`,
+  // `G.cone`, `G.box` and `G.sphere` rather than the draughts table's flat discs, and — unlike draughts,
+  // where a man only ever stands on a dark square — scattered across both colours, since that is where a
+  // real mid-game chess position actually sits. Ivory and ebony sets, one king and queen each, so it
+  // reads as a real game rather than a tied scoreboard.
+  // A headless probe (a scratch script built on the same stub-three harness `test/run.mjs` itself uses)
+  // started the real Neighborhood the same way the test does (click "enter", then `game.loop()`), sampled
+  // every NPC's and the squirrel's own position every quarter second over 300 simulated seconds — long
+  // enough for every wanderer, the postie, the cyclist and the dog walker to clear any one spot several
+  // times over — then swept a grid of the open field past the back row of houses against both those
+  // samples and every one of the street's own physics boxes, well inside the world's own 95 m movement
+  // limit and clear of every road, pavement and path this world's own test walks end to end: (-60, 60)
+  // came back clear by 9.46 m of the nearest box and 16.97 m of the nearest other soul. Placed last of
+  // every person this build adds, after the photographer, so it draws from the very tail of this world's
+  // own local `r()` sequence and disturbs no earlier neighbour's wardrobe or colour pick; the two players'
+  // own `Sitter` cry timers still draw from the shared `rnd()` at construction the same way the draughts
+  // and horseshoe pitchers already do, which is only safe placed this late in the build.
+  { const tx = -60, tz = 60, topY = 0.74, boardW = 0.74, sq2 = boardW / 8;
+    const seatAx = tx - 0.78, seatAz = tz, seatBx = tx + 0.78, seatBz = tz;
+    const ryA = atan2(seatBx - seatAx, seatBz - seatAz), ryB = atan2(seatAx - seatBx, seatAz - seatBz);
+    const wood = mat(0x5a3a22, { roughness: 0.85, map: TEX.planks(26, 26) });
+    const table = group(tx, 0, tz, W);
+    mesh(G.box(boardW, 0.03, boardW), wood, { y: topY, parent: table });
+    const lightSq = mat(0xdcd0b0, { roughness: 0.9 }), darkSq = mat(0x3a281c, { roughness: 0.9 });
+    for (let gx = 0; gx < 8; gx++) for (let gz = 0; gz < 8; gz++) {
+      mesh(G.box(sq2 * 0.97, 0.01, sq2 * 0.97), (gx + gz) % 2 ? darkSq : lightSq,
+        { x: -boardW / 2 + sq2 * (gx + 0.5), y: topY + 0.021, z: -boardW / 2 + sq2 * (gz + 0.5), parent: table }); }
+    for (const [lx, lz] of [[-0.32, -0.32], [0.32, -0.32], [-0.32, 0.32], [0.32, 0.32]]) mesh(G.cyl(0.025, 0.03, topY, 8), wood, { x: lx, y: topY / 2, z: lz, parent: table });
+    const ivoryM = mat(0xf0ead6, { roughness: 0.4 }), ebonyM = mat(0x2a2320, { roughness: 0.4 });
+    const toXZ = (gx, gz) => [-boardW / 2 + sq2 * (gx + 0.5), -boardW / 2 + sq2 * (gz + 0.5)];
+    const baseY = topY + 0.022;
+    const addPiece = (gx, gz, type, light) => {
+      const [px, pz] = toXZ(gx, gz); const m = light ? ivoryM : ebonyM;
+      const pg = group(px, baseY, pz, table);
+      if (type === 'pawn') { mesh(G.cyl(0.03, 0.034, 0.04, 10), m, { y: 0.02, parent: pg }); mesh(G.sphere(0.018, 8, 6), m, { y: 0.049, parent: pg }); }
+      else if (type === 'rook') { mesh(G.cyl(0.036, 0.04, 0.055, 10), m, { y: 0.0275, parent: pg }); mesh(G.cyl(0.042, 0.038, 0.012, 10), m, { y: 0.061, parent: pg }); }
+      else if (type === 'knight') { mesh(G.cyl(0.032, 0.036, 0.05, 10), m, { y: 0.025, parent: pg }); mesh(G.box(0.026, 0.045, 0.017), m, { y: 0.07, rz: 0.3, parent: pg }); }
+      else if (type === 'bishop') { mesh(G.cyl(0.03, 0.034, 0.06, 10), m, { y: 0.03, parent: pg }); mesh(G.cone(0.024, 0.035, 10), m, { y: 0.0775, parent: pg }); }
+      else if (type === 'queen') { mesh(G.cyl(0.032, 0.036, 0.07, 10), m, { y: 0.035, parent: pg }); mesh(G.cone(0.028, 0.04, 10), m, { y: 0.09, parent: pg }); mesh(G.sphere(0.013, 8, 6), m, { y: 0.123, parent: pg }); }
+      else { mesh(G.cyl(0.034, 0.038, 0.075, 10), m, { y: 0.0375, parent: pg }); mesh(G.cone(0.03, 0.04, 10), m, { y: 0.095, parent: pg }); mesh(G.box(0.009, 0.028, 0.009), m, { y: 0.129, parent: pg }); mesh(G.box(0.02, 0.009, 0.009), m, { y: 0.124, parent: pg }); }
+    };
+    [[0, 7, 'rook', true], [7, 0, 'rook', false], [2, 1, 'knight', true], [5, 6, 'knight', false],
+     [1, 6, 'bishop', true], [6, 1, 'bishop', false], [4, 7, 'king', true], [3, 0, 'king', false],
+     [3, 6, 'queen', true], [4, 1, 'queen', false], [3, 3, 'pawn', true], [4, 4, 'pawn', false]].forEach(([gx, gz, type, light]) => addPiece(gx, gz, type, light));
+    P.addBox(tx, topY / 2, tz, boardW + 0.06, topY, boardW + 0.06, { cam: false });
+    place(game, U, makeIceStool(), seatAx, seatAz, ryA + PI); place(game, U, makeIceStool(), seatBx, seatBz, ryB + PI);
+    const chessWard = makeWardrobe(r, { shirts: [0x6a4a7a, 0x4a7a6a], pants: [0x2a2a30, 0x34302a] });
+    const playerA = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: true, wardrobe: chessWard }),
+      hat: null, coat: true, scarf: 0x6a5a4a, jacket: null, bag: null, cane: false, beard: false, moustache: false, glasses: true });
+    const playerB = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: true, wardrobe: chessWard }),
+      hat: 'flatcap', hatColor: 0x3a3a40, coat: true, scarf: null, jacket: null, bag: null, cane: false, beard: true, moustache: false, glasses: false });
+    W.add(playerA.group); W.add(playerB.group);
+    game.npcs.push(new Sitter(game, playerA, { x: seatAx, z: seatAz, ry: ryA, seat: 0.33,
+      cries: ["Still playing for the garden gnome, same as every Tuesday.", "Careful, puss — don't knock the board, that king took me an hour to corner.", "One more game before the sprinklers come on."] }));
+    game.npcs.push(new Sitter(game, playerB, { x: seatBx, z: seatBz, ry: ryB, seat: 0.33,
+      cries: ["Forty years on this street, and she still plays like that.", "Mind your tail, puss — that's a real ivory set, or near enough.", "Lost the gnome fair and square. I'll win it back by spring."] }));
+  }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

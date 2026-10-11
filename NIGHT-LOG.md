@@ -10300,3 +10300,44 @@ this world's own local `r()` sequence — nothing earlier in the build shifts.
 Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, 274 checks `ok`, 0 console
 warnings every time, Whisper Woods' own friend count up two to 59. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 408 — a chess game for the Neighborhood
+
+Victorian has had a draughts board since round 354, Robot City a checkers drum since round 384, Frosty
+Peak a card table since round 397 and Whisper Woods its own draughts board since round 407 — but no world
+had ever had an actual game of chess, and the Neighborhood, every house on its street full of retirees
+with nothing but yard games, never got a table game at all. **Two neighbours now sit either side of a
+small round table on the quiet grass past the back row of houses, a chess set out between them,
+mid-game.** *"Still playing for the garden gnome, same as every Tuesday."* *"Careful, puss — don't knock
+the board, that king took me an hour to corner."* *"Lost the gnome fair and square. I'll win it back by
+spring."*
+
+No new controller: both players are a plain `Sitter`, the same pairing every other table game in this
+file already uses, each seated on a `makeIceStool()` — the generic three-legged stool the draughts and
+card tables reuse too, nothing to do with ice. The board itself borrows the draughts table's own
+square-grid build, recoloured birch and espresso, but the pieces are new: six shapes (pawn, rook, knight,
+bishop, queen, king) stacked from `G.cyl`, `G.cone`, `G.box` and `G.sphere` rather than flat discs, and —
+unlike draughts, where a man only ever stands on a dark square — scattered across both colours, since
+that's where a real mid-game position actually sits. One king and one queen each side, ivory against
+ebony, so it reads as a real game rather than a tied scoreboard.
+
+A headless probe (a scratch script built on the same stub-three harness `test/run.mjs` itself uses)
+started the real Neighborhood the way the test does (click "enter", then `game.loop()`), sampled every
+NPC's and the squirrel's own position every quarter second over 300 simulated seconds — long enough for
+every wanderer, the postie, the cyclist and the dog walker to clear any one spot several times over —
+then swept a grid of the open field past the back row of houses against both those samples and every one
+of the street's own physics boxes, well inside the world's 95 m movement limit and clear of every road,
+pavement and path the test walks end to end: (-60, 60) came back clear by 9.46 m of the nearest box and
+16.97 m of the nearest other soul. Placed last of every person this build adds, after the photographer,
+so it draws from the tail of this world's own local `r()` sequence.
+
+One real snag: `Sitter`'s own cry timer draws from the *shared* global `rnd()` at construction, the same
+thing the draughts table and the horseshoe pitchers already do safely only because they're placed last —
+placing these two players last too kept the sequence shift harmless everywhere else, but it did break a
+different, pre-existing test that counted the Neighborhood's sitters by number (it expected exactly the
+two park-bench regulars). Updated that check to expect four and still require bent knees on all of
+them, rather than weakening it to skip the new pair.
+
+Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, 274 checks `ok`, 0 console
+warnings every time, the Neighborhood's own friend count up two to 55. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
