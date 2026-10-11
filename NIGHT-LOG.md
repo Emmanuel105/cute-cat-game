@@ -10490,3 +10490,34 @@ draws from the very tail of this world's own local `r()` sequence.
 Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, 0 console warnings every time,
 Whisper Woods' own friend count up one to 60. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 413 — a birdwatcher for Victorian
+
+Every other world — the Neighborhood, Candy Land, Sunny Shore, Frosty Peak, Whisper Woods — has had
+someone scanning the sky with binoculars for ages. Victorian was the last one without, even though it
+already has its own market-square pigeons and a crumb-feeder minding them. **A woman now stands on the
+quiet field behind the north terrace, binoculars raised not at the square's flock but at the chimney-pots
+overhead.** *"Starlings on the chimney-pots again. Must be thirty up there."* *"Careful, puss — you're not
+what I came out to watch."* *"Sparrows nest in every spare pot on this row. Lucky things."*
+
+No new controller: `Birder` already builds its own binoculars and greets the cat the same way every other
+standing figure in this file does, and she borrows `vicWard`, the wardrobe already built for the street's
+own wanderers, rather than a dedicated one — one less draw on the local `r()` sequence.
+
+A headless probe (a scratch script built on the same stub-three harness `test/run.mjs` itself uses, since
+there's no browser here to look at it) built the real Victorian town (`game.load(3, 'from-prev')`, then
+`game.start('new')` so every urchin, duck, dancer and ball-tossing pair actually moved), then sampled every
+physics *circle's* position rather than each controller's own `x`/`z` — a couple of controllers (the ring
+dance, the seesaw) only keep a fixed `cx`/`cz` anchor and move their own circles well clear of it, which a
+first pass at this probe missed entirely before the circles were used instead. Every quarter second over
+300 simulated seconds, then swept a 1 m grid of the open grass (radius 18–62, short of the radius (88)
+where `victorianRegion`'s own procedural fill takes over) against both those samples and all 561 of the
+town's physics boxes: (-53, 20) came back clear by 5.2 m of the nearest box (the corner of the first
+terrace house's own garden, at x=-58) and 17.3 m of the nearest other soul, north of that house's iron
+fence (z=7.6) and clear of the laundress's own yard two houses along. Placed last of every person this
+build adds, after the street photographer, so it draws from the very tail of this world's own local `r()`
+sequence.
+
+Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, 0 console warnings every time,
+Victorian's own friend count up one to 72. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.
