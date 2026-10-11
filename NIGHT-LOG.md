@@ -10018,3 +10018,33 @@ nearest other soul.
 Full suite (`node test/run.mjs`) ran clean — exit 0, 274 checks `ok` (Frosty Peak's own friend count up
 to 56), two repeat runs after that also clean. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 398 — a card game for Robot City
+
+Frosty Peak finally dealt an actual hand of cards last round, and Robot City's own two retired gents
+have had a checkers drum since round 384 — but Robot City itself, for all its break-time workers, never
+had anyone playing cards. **Two more off-shift workers now sit either side of a small round steel table
+out past the east yard, a deck stacked to one side and a scattered hand laid face up, mid-game.**
+*"Last hand before the whistle. Definitely the last one."* *"He's been saying 'last hand' for twenty
+minutes."* *"Whoever loses buys the coolant."*
+
+No new controller or geometry: this is Frosty Peak's own round card table verbatim, just steel-topped
+and lit this city's own cyan-and-amber instead of candlelit wood, and the pip colours swapped the same
+way the checkers drum's own pieces were. Since Robot City's floor is flat, it skips the terrain-aware
+`placeT`/`boxT`/`P.ground0` helpers that version needed for the snowfield and uses this world's own
+`place`/`P.addBox` instead. Same `Sitter` pairing every other seated pair in this file already uses,
+each on a `makeIceStool()` (still nothing to do with ice). A runtime-only tick off the shared `rnd()`
+flicks a card every 6-12 seconds with a click and a small cyan spark, same as the other two table games.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real Robot City
+(`game.travel(2, 'from-prev')`, then `game.start('new')` so every wandering, patrolling, dancing and
+ball-tossing robot pack actually moved), sampled every NPC's own position every quarter second over 300
+simulated seconds, then swept a 2 m grid of the open floor (radius 20-92, short of the radius (98) where
+robotRegion's own procedural fill takes over) against both those samples and all 1140 of the city's
+physics boxes: (-40, 82) came back clear by 11.9 m of the nearest box and 31.8 m of the nearest other
+soul. Placed last of every person this build adds, after the leak-testing technician, so it draws from
+the very tail of this world's own local `r()` sequence and disturbs no earlier wardrobe or colour pick.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks `ok` (Robot City's own friend count up
+to 64), two repeat runs after that also clean (only the usual timing-sensitive numbers moved). Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

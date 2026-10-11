@@ -2926,6 +2926,55 @@ function buildRobotCity(game, entry) {
         }
       }
     }); }
+  // Robot City's own checkers drum has sat on the factory floor since round 384, and Frosty Peak's
+  // travellers finally dealt an actual hand of cards last round — but no card game had ever reached
+  // Robot City itself. Two more off-shift workers now sit either side of a small round steel table out
+  // past the east yard, a deck stacked to one side and a scattered hand laid face up, mid-game. Same
+  // round table Frosty Peak's own version uses, just steel-topped and lit this city's own cyan-and-amber
+  // instead of candlelit wood, and since the floor here is flat, this skips the terrain-aware
+  // `placeT`/`boxT`/`P.ground0` helpers that version needed for the snowfield and uses this world's own
+  // `place`/`P.addBox` instead — same pairing the checkers drum and every other seated pair in this file
+  // already use: a plain `Sitter` each, seated on a `makeIceStool()` (reused as a generic stool, nothing
+  // to do with ice).
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real Robot City
+  // (`game.travel(2, 'from-prev')`, then `game.start('new')` so every wandering, patrolling, dancing and
+  // ball-tossing robot pack actually moved), sampled every NPC's own position every quarter second over
+  // 300 simulated seconds, then swept a 2 m grid of the open floor (radius 20-92, short of the radius
+  // (98) where robotRegion's own procedural fill takes over) against both those samples and all 1140 of
+  // the city's physics boxes: (-40, 82) came back clear by 11.9 m of the nearest box (one of the outer
+  // skyline towers) and 31.8 m of the nearest other soul. Placed last of every person this build adds,
+  // after the leak-testing technician, so it draws from the very tail of this world's own local `r()`
+  // sequence and disturbs no earlier wardrobe or colour pick.
+  { const tx = -40, tz = 82, topY = 0.72, tableR = 0.4;
+    const seatAx = tx - 0.68, seatAz = tz, seatBx = tx + 0.68, seatBz = tz;
+    const ryA = atan2(seatBx - seatAx, seatBz - seatAz), ryB = atan2(seatAx - seatBx, seatAz - seatBz);
+    const steel = mat(0x5a6470, { metalness: 0.7, roughness: 0.35 });
+    const table = group(tx, 0, tz, W);
+    mesh(G.cyl(tableR, tableR, 0.03, 14), steel, { y: topY, parent: table });
+    mesh(G.cyl(0.05, 0.07, topY, 8), steel, { y: topY / 2, parent: table });
+    mesh(G.cyl(0.2, 0.22, 0.04, 12), steel, { y: 0.02, parent: table });
+    // the deck, stacked neat to one side
+    mesh(G.box(0.07, 0.03, 0.1), mat(0x1a1f26, { metalness: 0.6, roughness: 0.4 }), { x: -0.18, y: topY + 0.016, z: 0.08, ry: 0.3, parent: table });
+    // a scattered hand, face up, mid-game — cream cards, cyan-and-amber pips instead of red-and-black
+    const cardM = mat(0xdfe6ec, { roughness: 0.55, metalness: 0.1 }), pipColors = [0x00e5ff, 0xff9f43, 0x00e5ff, 0xff9f43, 0xff9f43];
+    const cardPos = [[0.12, 0.1, 0.1], [0.05, -0.08, -0.3], [-0.05, 0.06, 0.6], [0.2, -0.12, -0.5], [-0.14, -0.04, 0.9]];
+    for (let i = 0; i < cardPos.length; i++) { const [cx, cz, crz] = cardPos[i];
+      mesh(G.box(0.07, 0.004, 0.1), cardM, { x: cx, y: topY + 0.017, z: cz, ry: crz, parent: table });
+      mesh(G.box(0.018, 0.004, 0.018), glowMat(pipColors[i], 0.6), { x: cx + sin(crz) * 0.03, y: topY + 0.021, z: cz + cos(crz) * 0.03, ry: crz, parent: table, shadow: 'none' }); }
+    P.addBox(tx, topY / 2, tz, tableR * 2 + 0.2, topY, tableR * 2 + 0.2, { cam: false });
+    place(game, U, makeIceStool(), seatAx, seatAz, ryA + PI); place(game, U, makeIceStool(), seatBx, seatBz, ryB + PI);
+    const cardWard = makeWardrobe(r, { shirts: [0x4a5a6a, 0x5a4a6a, 0x3a4a5a], pants: [0x232c34, 0x2a2a30] });
+    const playerA = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: cardWard }),
+      hat: 'cap', hatColor: 0x3a4a5a, jacket: null, scarf: null, bag: null, glasses: r.chance(0.4) });
+    const playerB = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: cardWard }),
+      hat: null, jacket: 0x2a3242, scarf: null, bag: null, glasses: r.chance(0.3) });
+    W.add(playerA.group); W.add(playerB.group);
+    game.npcs.push(new Sitter(game, playerA, { x: seatAx, z: seatAz, ry: ryA, seat: 0.3,
+      cries: ["Last hand before the whistle. Definitely the last one.", "Mind the deck, puss — that's a winning hand.", "Robots don't bluff. We're better at this than they'll ever be."] }));
+    game.npcs.push(new Sitter(game, playerB, { x: seatBx, z: seatBz, ry: ryB, seat: 0.3,
+      cries: ["He's been saying 'last hand' for twenty minutes.", "Careful, puss — you'll knock the deck.", 'Whoever loses buys the coolant.'] }));
+    let cardMoveT = rnd.range(6, 10);
+    U.push((dt) => { cardMoveT -= dt; if (cardMoveT <= 0) { cardMoveT = rnd.range(7, 12); SFX.click(); game.fx.emit(tx, topY + 0.1, tz, { count: 4, color: 0x00e5ff, speed: 0.3, up: 0.3, life: 0.6, gravity: 1.2, spread: 0.4 }); } }); }
   const sq = new Squirrel(game, -14, -9, 'sq-robot'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('mouse', -8, 7); C.add('star', 12, -22); C.add('fish', -18, 2); C.add('yarn', 21, 9); C.add('star', 0, -27); C.add('fish', 4, 14); C.add('mouse', 26, -18); C.add('yarn', -26, -6);
