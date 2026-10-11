@@ -10101,3 +10101,29 @@ soul (the tag game's own leash, further west), at radius 26.2 from the origin.
 Full suite (`node test/run.mjs`) ran clean — exit 0, 274 checks `ok`, 0 console warnings, two repeat runs
 after that also clean (Sunny Shore's own friend count up to 55). Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 401 — a drone-spotter for Robot City
+
+Victorian, Sunny Shore, Frosty Peak, Whisper Woods, the Neighborhood and (last round) Candy Land all
+have a `Birder` watching the sky by now, but Robot City never got one — there was nothing obviously
+avian to watch. Frosty Peak's own birdwatcher (round 115) was the first to break from generic wildlife
+and train its binoculars on something the world really has, its own penguin colony; this is the second.
+**A technician now stands south-east of the robot ring-dance, binoculars raised to the little
+maintenance drone that's circled overhead since round 182, instead of a flock.** *"Same loop, same six
+seconds, every time."* *"Careful, puss — it's not a bird, but it still logs you."* *"Foreman swears it
+watches for pests. Nobody believes him."*
+
+No new controller or prop: this is the exact same `Birder` class and binoculars every other world's
+birdwatcher already uses, just a Robot City technician's wardrobe (navy and steel) standing where there's
+something to watch. A headless probe (a scratch script built on the same stub-three harness `test/run.mjs`
+itself uses) built the real Robot City (`game.load(2, 'from-prev')`, then `game.start('new')` so every
+wandering, patrolling, ring-dancing and ball-tossing robot actually moved), sampled every NPC's own
+position every quarter second over 300 simulated seconds, then swept a grid around the ring-dance
+clearing's own centre (radius 3-10) against both those samples and every one of the city's physics boxes:
+(7.1, 32.9) came back clear by 9.6 m of the nearest box and 8.8 m of the nearest other soul (the juggler
+further north), 10 m out from the clearing itself — close enough to read as watching the drone circling
+above it, not the dancers below.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 274 checks `ok`, 0 console warnings, two repeat runs
+after that also clean (Robot City's own friend count up to 65). Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

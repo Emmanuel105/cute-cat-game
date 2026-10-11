@@ -8904,6 +8904,23 @@ function buildRobotCity(game, entry) {
       eye.material.emissiveIntensity = blink; pl.intensity = 4 + blink * 3;
     });
   }
+  // every other world's Birder watches generic wildlife that isn't actually a scene object — except
+  // Frosty Peak's (round 115), the first to train its binoculars on something the world really has,
+  // its own penguin colony. Robot City never had a Birder at all (nothing here flies except the
+  // drone-flies and this one maintenance drone), so it skipped the pattern twice over. A technician
+  // now stands south-east of the ring, binoculars trained on the drone's own slow circle instead of a
+  // flock. A headless probe swept a grid around the ring-dance clearing (radius 3-10 from its centre)
+  // against every one of the city's physics boxes and 300 simulated seconds of every NPC's own
+  // position (long enough for the ring-dancers, the sentry's patrol and the tag/catch pairs to clear
+  // any one spot several times over): (7.1, 32.9) came back clear by 9.6 m of the nearest box and
+  // 8.8 m of the nearest other soul (the juggler further north), 10 m out from the clearing's own
+  // centre — close enough to read as watching the drone, not the dancers.
+  { const spotWard = makeWardrobe(r, { shirts: [0x3a4a6a, 0x4a5a6a, 0x2a3a52], pants: [0x232c34, 0x2a2a30] });
+    const spotter = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.25), wardrobe: spotWard }),
+      hat: 'cap', hatColor: 0x2a3a52, glasses: true, glassColor: 0x1c232c, jacket: null, scarf: null, bag: null, backpack: null });
+    W.add(spotter.group);
+    game.npcs.push(new Birder(game, spotter, { x: 7.1, z: 32.9, ry: atan2(0 - 7.1, 40 - 32.9),
+      cries: ['Same loop, same six seconds, every time.', "Careful, puss — it's not a bird, but it still logs you.", 'Foreman swears it watches for pests. Nobody believes him.'] })); }
   // every other world already has a Juggler (the Neighborhood's balloon square, Candy Land's court jester,
   // Victorian's street performer, Sunny Shore's boardwalk busker, Frosty Peak's and Whisper Woods' own) —
   // Robot City, the densest of the seven, was the one left without. A headless probe swept a 2.6 m clearance
