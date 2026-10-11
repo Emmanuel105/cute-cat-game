@@ -765,6 +765,52 @@ function buildSnowVillage(game, entry) {
         }
       }
     }); }
+  // Robot City's two retired gents have had a checkers board since round 384 and Victorian's own
+  // draughts table since round 354, both a plain `Sitter` pairing seated either side of a board — but
+  // no world yet had an actual deck of cards on the table, and Frosty Peak, for all its fireside sitters,
+  // never had anyone playing anything. Two travellers now sit either side of a small round table in a
+  // quiet clearing south of the village, a deck stacked to one side and a scattered hand laid face up,
+  // mid-game. Same `Sitter` pairing those other two tables already use, seated on a `makeIceStool()`
+  // each like the draughts table borrows too, with the terrain-aware `placeT`/`boxT` helpers in place of
+  // the flat-floor city's `place()`/`P.addBox()`, since the snowfield rolls gently underfoot out here too.
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real mountain
+  // (`game.travel(5, 'from-hub')`, then `game.start('new')` so every reindeer, hare, arctic fox, penguin,
+  // yeti and wandering villager actually moved), sampled every NPC's and the squirrel's own position
+  // every quarter second over 300 simulated seconds, then swept a 2 m grid of the open snowfield
+  // (radius 15-54, short of the radius (58) where snowRegion's own fill takes over, and clear of every
+  // zone circle — the sled run's own corridor runs x -7..7, well east of here) against both those samples
+  // and all 729 of the mountain's physics boxes: (-16, -51) came back clear by 10.2 m of the nearest box
+  // and 9.2 m of the nearest other soul.
+  { const tx = -16, tz = -51, topY = 0.72, tableR = 0.4;
+    const seatAx = tx - 0.68, seatAz = tz, seatBx = tx + 0.68, seatBz = tz;
+    const ryA = atan2(seatBx - seatAx, seatBz - seatAz), ryB = atan2(seatAx - seatBx, seatAz - seatBz);
+    const ty0 = P.ground0(tx, tz);
+    const wood = mat(0x5a3a22, { roughness: 0.85, map: TEX.planks(22, 22) });
+    const table = group(tx, ty0, tz, W);
+    mesh(G.cyl(tableR, tableR, 0.03, 14), wood, { y: topY, parent: table });
+    mesh(G.cyl(0.05, 0.07, topY, 8), wood, { y: topY / 2, parent: table });
+    mesh(G.cyl(0.2, 0.22, 0.04, 12), wood, { y: 0.02, parent: table });
+    // the deck, stacked neat to one side
+    mesh(G.box(0.07, 0.03, 0.1), mat(0x2a4a6a, { roughness: 0.6 }), { x: -0.18, y: topY + 0.016, z: 0.08, ry: 0.3, parent: table });
+    // a scattered hand, face up, mid-game
+    const cardM = mat(0xf2ead6, { roughness: 0.7 }), pipColors = [0xb5272a, 0x1e1e22, 0xb5272a, 0x1e1e22, 0x1e1e22];
+    const cardPos = [[0.12, 0.1, 0.1], [0.05, -0.08, -0.3], [-0.05, 0.06, 0.6], [0.2, -0.12, -0.5], [-0.14, -0.04, 0.9]];
+    for (let i = 0; i < cardPos.length; i++) { const [cx, cz, crz] = cardPos[i];
+      mesh(G.box(0.07, 0.004, 0.1), cardM, { x: cx, y: topY + 0.017, z: cz, ry: crz, parent: table });
+      mesh(G.box(0.018, 0.004, 0.018), mat(pipColors[i], { roughness: 0.5 }), { x: cx + sin(crz) * 0.03, y: topY + 0.021, z: cz + cos(crz) * 0.03, ry: crz, parent: table }); }
+    boxT(game, tx, tz, tableR * 2 + 0.2, topY, tableR * 2 + 0.2, { cam: false });
+    placeT(game, U, makeIceStool(), seatAx, seatAz, ryA + PI); placeT(game, U, makeIceStool(), seatBx, seatBz, ryB + PI);
+    const cardWard = makeWardrobe(r, { shirts: [0x7a4a3a, 0x4a5a6a, 0x5a4a6a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const playerA = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.4), wardrobe: cardWard }),
+      hat: 'beanie', hatColor: 0x5a4a6a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a }); W.add(playerA.group);
+    const playerB = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.4), wardrobe: cardWard }),
+      hat: 'beanie', hatColor: 0x3a4a5a, coat: true, scarf: 0xf7f3ec, cuffs: 0x3a3a3a }); W.add(playerB.group);
+    game.npcs.push(new Sitter(game, playerA, { x: seatAx, z: seatAz, ry: ryA, seat: 0.3,
+      cries: ['Snap — no, wrong game. Ignore that.', "Mind your paws, puss — that's a winning hand.", 'One more round before the fire dies down.'] }));
+    game.npcs.push(new Sitter(game, playerB, { x: seatBx, z: seatBz, ry: ryB, seat: 0.3,
+      cries: ["He says that every round. He's bluffing.", "Careful, puss — you'll knock the deck.", 'Loser treks down for more firewood. Every time.'] }));
+    let cardMoveT = rnd.range(6, 10);
+    U.push((dt) => { cardMoveT -= dt; if (cardMoveT <= 0) { cardMoveT = rnd.range(7, 12); SFX.click(); game.fx.emit(tx, ty0 + topY + 0.1, tz, { count: 4, color: 0xf2ead6, speed: 0.3, up: 0.3, life: 0.6, gravity: 1.2, spread: 0.4 }); } }); }
   snowRegion(game, U, r, 58, PEAK_LIMIT - 8);
   makeHorizon(game, r, { clear: PEAK_LIMIT + 8, hills: true, hill: 0xe8eef6, rock: 0x6a7a94, rock2: 0x7e8ea6, snow: 0xf6fbff, snowLine: 26, peaks: 32, peakH: [46, 110], woodCount: 300, woodHue: [0.32, 0.42], woodLight: [0.12, 0.2], trunk: 0x4a3a2a });
   // gondola home (bottom station of the village)

@@ -9985,3 +9985,36 @@ zone (centred (0,-34), radius 17).
 Full suite (`node test/run.mjs`) ran clean — exit 0, 274 checks `ok`, 0 console warnings, two repeat
 runs after that also clean (`world 3: the street photographer has taken 7 photos in 15 s`). Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 397 — a card game for Frosty Peak
+
+Robot City's two retired gents have had a checkers board since round 384 and Victorian's own pair a
+draughts table since round 354, but nobody anywhere had ever dealt an actual hand of cards — and Frosty
+Peak, counted out as the least-visited of the seven worlds this run, never had a table game of its own
+at all, despite three separate people already warming their hands at the fire. **Two travellers now sit
+either side of a small round table in a quiet clearing south of the village, a deck stacked neatly to
+one side and a scattered hand laid face up, mid-game.** *"Snap — no, wrong game. Ignore that."* *"He
+says that every round. He's bluffing."* *"Loser treks down for more firewood. Every time."*
+
+No new controller: both players are a plain `Sitter`, the same pairing the checkers and draughts tables
+already use, seated on a `makeIceStool()` each — same prop those other two tables borrow too, nothing to
+do with ice. The table itself is new geometry (a round top on a single pedestal, rather than the square
+four-legged board those two reuse) so it reads as its own thing: a stacked deck (one blue-backed box) to
+one side and five scattered cards, each a cream box rotated flat with one small red or black pip, laid
+out mid-game rather than lined up. Built with the terrain-aware `placeT`/`boxT` helpers throughout, since
+the snowfield rolls gently underfoot here same as everywhere else in this file. A runtime-only tick
+(reading the shared `rnd()`, never this world's own seeded `r`, so it can't shift any later wardrobe or
+layout pick) flicks a card every 6-12 seconds with a click and a small scatter of cream sparks.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real mountain
+(`game.travel(5, 'from-hub')`, then `game.start('new')` so every reindeer, hare, arctic fox, penguin,
+yeti and wandering villager actually moved), sampled every NPC's and the squirrel's own position every
+quarter second over 300 simulated seconds, then swept a 2 m grid of the open snowfield (radius 15-54,
+short of the radius (58) where snowRegion's own fill takes over, and clear of every zone circle — the
+sled run's own corridor runs x -7..7, well east of here) against both those samples and all 729 of the
+mountain's physics boxes: (-16, -51) came back clear by 10.2 m of the nearest box and 9.2 m of the
+nearest other soul.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 274 checks `ok` (Frosty Peak's own friend count up
+to 56), two repeat runs after that also clean. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
