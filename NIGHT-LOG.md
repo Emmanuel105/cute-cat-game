@@ -10048,3 +10048,31 @@ the very tail of this world's own local `r()` sequence and disturbs no earlier w
 Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks `ok` (Robot City's own friend count up
 to 64), two repeat runs after that also clean (only the usual timing-sensitive numbers moved). Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 399 — a birdwatcher for Candy Land
+
+The Neighborhood, Sunny Shore, Frosty Peak and Whisper Woods have all had a birdwatcher scanning the
+sky by now — Candy Land, for all its own peppermint sparrow (round 397) and the six candy butterflies
+looping over the open heart of the land, never had anyone watching either. **A birdwatcher now stands
+alone on the open sweet-lands west of the candy-cane ring, binoculars raised to the sky every few
+seconds.** *"That peppermint sparrow again — never sits still."* *"Careful, puss — you'll scatter the
+butterflies."* *"Mistook a lollipop for a woodpecker once. Never again."*
+
+No new controller or geometry: this is the exact same `Birder` class and binoculars prop every other
+world's own birdwatcher already uses, just given a Candy-flavoured wardrobe (muted greens and browns,
+same idea as the Neighborhood's own) and three new lines. A headless probe (a scratch script built on
+the same stub-three harness `test/run.mjs` itself uses, since there's no browser here to look at it)
+built the real Candy Land (`game.load(1, 'from-prev')`), sampled every NPC's and the squirrel's own
+position every quarter second over 300 simulated seconds — long enough for every marching, dancing,
+wandering and ball-tossing gingerbread man to clear any one spot several times over — then swept the
+open sweet-lands (radius 6-88, clear of the chocolate river band and the castle approach) against both
+those samples and every one of the world's physics boxes: (-53, 13) came back clear by 11.1 m of the
+nearest box and 13.0 m of the nearest other soul, at radius 54.6 from the origin — short of the radius
+(56) where the candy-cane ring itself begins. Placed last of every person this build adds, after the
+taffy puller, so it draws from the very tail of this world's own local `r()` sequence.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 274 checks `ok`, 0 console warnings. One run hit the
+long-documented pre-existing Victorian horse-and-carriage timing flake (round 219's own note on it, a
+real-timer race in the travel-settling poll, nothing to do with this change); three immediate reruns
+after that all came back clean. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.

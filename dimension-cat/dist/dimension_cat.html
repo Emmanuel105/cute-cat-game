@@ -8578,6 +8578,26 @@ function buildCandyLand(game, entry) {
     W.add(puller.group);
     game.npcs.push(new Charger(game, puller, { x: wkx, z: wkz, ry: atan2((mx - 0.9) - wkx, mz - wkz), cryIcon: '🍬',
       cries: ['Pull, stretch, fold — that\'s the whole trick.', 'Lovely and glossy once it\'s pulled enough, this.', 'Mind your whiskers near the hooks, puss.'] })); }
+  // the Neighborhood, Sunny Shore, Frosty Peak and Whisper Woods all have a birdwatcher scanning the
+  // sky by now — Candy Land, for all its own peppermint sparrow and the six candy butterflies looping
+  // overhead, never had anyone watching either. A birdwatcher now stands alone on the open sweet-lands
+  // west of the candy-cane ring, binoculars raised to the sky every few seconds, same as every other
+  // world's own. No new controller: `Birder` already builds its own binoculars and greets the cat the
+  // same way every other standing figure in this file does.
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real Candy Land
+  // (`game.load(1, 'from-prev')`), sampled every NPC's and the squirrel's own position every quarter
+  // second over 300 simulated seconds (long enough for every marching, dancing, wandering and
+  // ball-tossing gingerbread man to clear the spot several times over), then swept the open sweet-lands
+  // (radius 6-88, clear of the chocolate river band and the castle approach) against both those samples
+  // and every one of the world's physics boxes: (-53, 13) came back clear by 11.1 m of the nearest box
+  // and 13.0 m of the nearest other soul, at radius 54.6 from the origin — short of the radius (56)
+  // where the candy-cane ring itself begins. Placed last of every person this build adds, after the
+  // taffy puller, so it draws from the very tail of this world's own local `r()` sequence.
+  { const birdWard = makeWardrobe(r, { shirts: [0x6a7a4a, 0x4a5a6a, 0x7a6a4a], pants: [0x3a3a3a, 0x2f3a2a], shoes: [0x5a4030, 0x3a2a1e] });
+    const birder = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: birdWard }),
+      hat: 'cap', hatColor: 0x3a4a2e, glasses: true, glassColor: 0x2a2a2a, jacket: null, scarf: null, bag: null, backpack: null }); W.add(birder.group);
+    game.npcs.push(new Birder(game, birder, { x: -53, z: 13, ry: atan2(0 - -53, 0 - 13),
+      cries: ["That peppermint sparrow again — never sits still.", "Careful, puss — you'll scatter the butterflies.", 'Mistook a lollipop for a woodpecker once. Never again.'] })); }
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('star', 7, -6); C.add('yarn', -9, 9); C.add('fish', -16, -13); C.add('mouse', 16, -9); C.add('star', -10, -27); C.add('yarn', 22, 4); C.add('mouse', -28, 26); C.add('fish', 14, -44); C.add('star', 0, -56); C.add('mouse', -58, 30); C.add('yarn', 60, 36);
