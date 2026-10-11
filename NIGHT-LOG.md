@@ -10211,3 +10211,29 @@ back in an earlier round, by bisecting the failure).
 Full suite (`node test/run.mjs`) ran clean twice in a row — exit 0, 274 checks `ok`, 0 console warnings,
 the Neighborhood's own friend count up one to 53. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 405 — a photographer for Whisper Woods
+
+Victorian, Sunny Shore, Frosty Peak, Candy Land and the Neighborhood all have someone bent under a dark
+cloth by now — Whisper Woods, with its deer, foxes and fairy rings, was the one world left without a
+camera. **A photographer now sets up an old box camera on the open forest floor south-west of the
+clearing, framing the deer glade and the mushroom ring beyond.** *"Deer glade and the mushroom ring,
+both in one plate."* *"Careful, puss — it's only flash powder, not fire."* *"Hold still now — well, you
+won't, but the deer might."*
+
+No new controller or prop: this is the exact same `Photographer` class and `makeOldCamera()` tripod
+every earlier world's photographer already uses, just woodland colours (moss and bark) in place of a
+flatcap-and-coat, a sunhat or a beanie. A headless probe (a scratch script built on the same stub-three
+harness `test/run.mjs` itself uses, since there's no browser here to look at it) walked the real
+Whisper Woods through the suite's own hub route (`game.travel(6, 'from-hub')`), sampled every NPC's and
+the squirrel's own position every quarter second over 300 simulated seconds — long enough for every
+deer, fox, hare and frog to clear any one spot several times over — then swept a 1 m grid of the open
+forest floor (radius 15-50, short of the radius (58) where forestRegion's own fill takes over) against
+both those samples and all 722 of the wood's physics boxes: (-16, -36) came back clear by 7.9 m of the
+nearest box and 8.1 m of the nearest other soul (one of the wandering deer, on its own long leash).
+Placed last of every person this build adds, after the spinning-top child, so it draws from the very
+tail of this world's own local `r()` sequence.
+
+Full suite (`node test/run.mjs`) ran clean twice in a row — exit 0, 274 checks `ok`, 0 console warnings,
+Whisper Woods' own friend count up one to 57. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.

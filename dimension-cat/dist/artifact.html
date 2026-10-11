@@ -13113,6 +13113,31 @@ function buildForest(game, entry) {
     game.npcs.push(new Kneeler(game, spinner, { x: kx, z: kz, ry: kry, cryIcon: '🌀',
       cries: ['Fastest spinner in the whole wood, this one.', "Careful, puss — swat it and it'll roll clean into the ferns.", "Wound it myself. Bit wobbly, but it holds."] })); }
 
+  // Victorian, Sunny Shore, Frosty Peak, Candy Land and the Neighborhood all have someone bent under a
+  // dark cloth by now — Whisper Woods, with its deer, foxes and fairy rings, never got its own. A
+  // photographer sets up an old box camera on the open forest floor south-west of the clearing, framing
+  // the deer glade and the mushroom ring beyond. Same `Photographer` controller and `makeOldCamera()`
+  // tripod every earlier world's photographer already uses, just woodland colours (moss and bark) in
+  // place of a flatcap-and-coat, a sunhat or a beanie.
+  // A headless probe (a scratch script built on the same stub-three harness `test/run.mjs` itself uses,
+  // since there's no browser here to look at it) walked the real Whisper Woods through the suite's own
+  // hub route (`game.travel(6, 'from-hub')`), sampled every NPC's and the squirrel's own position every
+  // quarter second over 300 simulated seconds — long enough for every deer, fox, hare and frog to clear
+  // any one spot several times over — then swept a 1 m grid of the open forest floor (radius 15-50,
+  // short of the radius (58) where forestRegion's own fill takes over) against both those samples and
+  // all 722 of the wood's physics boxes: (-16, -36) came back clear by 7.9 m of the nearest box and
+  // 8.1 m of the nearest other soul (one of the wandering deer, on its own long leash). Placed last of
+  // every person this build adds, after the spinning-top child, so it draws from the very tail of this
+  // world's own local `r()` sequence.
+  { const px = -16, pz = -36, pry = atan2(0 - px, 0 - pz);   // facing back toward the clearing and the big mushroom ring
+    const camWard = makeWardrobe(r, { shirts: [0x4a5a3a, 0x5a4a3a, 0x3a4a4a], pants: [0x3a3a2a, 0x2a2a2a], shoes: [0x2a2018] });
+    const snapper = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: camWard }),
+      hat: 'flatcap', hatColor: 0x3a3a2a, jacket: 0x3a4a2e, glasses: r.chance(0.3) });
+    W.add(snapper.group);
+    const camera = makeOldCamera();
+    game.npcs.push(new Photographer(game, snapper, camera, { x: px, z: pz, ry: pry, cryIcon: '📷',
+      cries: ['Deer glade and the mushroom ring, both in one plate.', "Careful, puss — it's only flash powder, not fire.", "Hold still now — well, you won't, but the deer might."] })); }
+
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
 
