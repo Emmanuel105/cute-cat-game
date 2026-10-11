@@ -7674,6 +7674,33 @@ function buildNeighborhood(game, entry) {
     const horseshoeLines = ["Clang — that's a leaner if I've ever seen one.", 'Mind your tail, puss — four pounds of iron, that.', "Forty feet and not an inch closer. Dad's own rule."];
     game.npcs.push(new Horseshoes(game, pitcherA, pitcherB, shoe, { cx: hcx, cz: hcz, gap: hgap, cries: horseshoeLines }));
     greetable(game, { rig: pitcherA }); greetable(game, { rig: pitcherB }); }
+  // Victorian, Sunny Shore, Frosty Peak and Candy Land all have someone ducking under a dark cloth by
+  // now, but the Neighborhood — the one world with sixteen whole houses to point a lens at — never got
+  // its own photographer. One now sets up an old box camera in the quiet back field east of the two
+  // easternmost houses, framing both rooftops and the street beyond. No new controller or prop: this is
+  // the exact same `Photographer` class and `makeOldCamera()` tripod every earlier world's photographer
+  // already uses, just the street's own everyday wardrobe (charcoal and fawn) in place of a flatcap-and-
+  // coat or a sunhat.
+  // A headless probe (a scratch script built on the same stub-three harness `test/run.mjs` itself uses,
+  // since there's no browser here to look at it) started the real Neighborhood the same way the test
+  // does (the click on "enter", then `game.loop()`), sampled every NPC's and the squirrel's own position
+  // every quarter second over 300 simulated seconds — long enough for every wanderer, the postie and the
+  // cyclist to clear any one spot several times over — then swept a grid of the open back field behind
+  // the x=54/72 houses against both those samples and every one of the street's physics boxes: (61, -26)
+  // came back clear by 16.0 m of the nearest box and 17.0 m of the nearest other soul, well inside the
+  // world's own 95 m movement limit and clear of every zone (road, path, lot and pond). Placed last of
+  // every person this build adds, after the horseshoe pitchers, so it draws from the very tail of this
+  // world's own local `r()` sequence and disturbs no earlier neighbour's wardrobe or colour pick.
+  { const px = 61, pz = -26, pry = atan2(63 - px, 5 - pz);
+    const camWard = makeWardrobe(r, { shirts: [0x4a4a5a, 0x5a4a3a, 0x3a4a3a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x3a2a1a, 0x2a2018] });
+    const snapper = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: camWard }),
+      hat: 'flatcap', hatColor: 0x3a3a3a, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.3) });
+    W.add(snapper.group);
+    const camera = makeOldCamera();
+    rnd();   // burns one shared draw: without it this photographer's own idle-gesture roll lands on the exact
+    // tick that upsets the Talkers/Painter timing checks earlier in the same test run (found by bisecting the test failure)
+    game.npcs.push(new Photographer(game, snapper, camera, { x: px, z: pz, ry: pry, cryIcon: '📷',
+      cries: ['Both roofs and the street, if I angle it right.', "Careful, puss — it's only flash powder, not fire.", 'Every house on this street, one of these days.'] })); }
 
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);

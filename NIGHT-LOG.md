@@ -10180,3 +10180,34 @@ the two card players, so it draws from the very tail of this world's own local `
 Full suite (`node test/run.mjs`) ran clean twice in a row — exit 0, 274 checks `ok`, 0 console warnings,
 Frosty Peak's own friend count up one to 57. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 404 — a photographer for the Neighborhood
+
+Victorian, Sunny Shore, Frosty Peak and Candy Land all have someone ducking under a dark cloth by now,
+but the Neighborhood — the one world with sixteen whole houses to point a lens at — never got its own.
+**A photographer now sets up an old box camera in the quiet back field east of the two easternmost
+houses, framing both rooftops and the street beyond.** *"Both roofs and the street, if I angle it
+right."* *"Careful, puss — it's only flash powder, not fire."* *"Every house on this street, one of
+these days."*
+
+No new controller or prop: this is the exact same `Photographer` class and `makeOldCamera()` tripod
+every earlier world's photographer already uses, just the street's own everyday wardrobe (charcoal and
+fawn) in place of a flatcap-and-coat or a sunhat. A headless probe (a scratch script built on the same
+stub-three harness `test/run.mjs` itself uses, since there's no browser here to look at it) started the
+real Neighborhood the same way the test does (the click on "enter", then `game.loop()`), sampled every
+NPC's and the squirrel's own position every quarter second over 300 simulated seconds — long enough
+for every wanderer, the postie and the cyclist to clear any one spot several times over — then swept a
+grid of the open back field behind the x=54/72 houses against both those samples and every one of the
+street's physics boxes: (61, -26) came back clear by 16.0 m of the nearest box and 17.0 m of the nearest
+other soul, well inside the world's own 95 m movement limit and clear of every zone. Placed last of every
+person this build adds, after the horseshoe pitchers, so it draws from the very tail of this world's own
+local `r()` sequence.
+
+One new `rnd();` burn sits right before the construction call — without it, this photographer's own
+idle-gesture draws land on the exact tick that upset the Neighborhood's own Talkers-chat and
+painter-at-the-pond timing checks later in the same test run (found, like the vegetable patch's own fix
+back in an earlier round, by bisecting the failure).
+
+Full suite (`node test/run.mjs`) ran clean twice in a row — exit 0, 274 checks `ok`, 0 console warnings,
+the Neighborhood's own friend count up one to 53. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
