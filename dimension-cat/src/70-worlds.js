@@ -1175,6 +1175,45 @@ function buildNeighborhood(game, entry) {
     let bubbleCryT = r.range(4, 9);
     U.push((dt) => { bubbleCryT -= dt; if (bubbleCryT <= 0) { bubbleCryT = r.range(9, 16); const c = game.cat.group.position; if (dist2(bkx, bkz, c.x, c.z) < 400) { game.toast('🫧 "' + r.pick(bubbleLines) + '"', 2400); SFX.talk(); } } }); }
 
+  // Robot City's two retired gents have had a checkers board since round 384 and a dozen other worlds
+  // have a yard game of some kind by now, but no street in the Neighborhood has ever had the oldest
+  // backyard rivalry of all: two dads pitch horseshoes at each other's stake across a sandy court far
+  // past the back row of houses. New `Horseshoes` controller (`55-npcs.js`): it reuses `BallGame`'s own
+  // hand-to-flight-to-hand shape (held a moment, lobbed on an arc, held by the other side, lobbed back)
+  // but the target is the dirt by the far stake rather than the other player's own hand, landing with a
+  // clang (`SFX.clang()`, already in this file for the wrench on Robot City's own scrap) and a shower of
+  // sparks rather than a catch. The horseshoe itself is a stretched-open torus arc (`G.torus(…, PI*1.5)`),
+  // tumbling end over end in flight on `rotation.x` alone, same trick `BallGame`'s own ball already uses.
+  // Own fixed shirt colours (0x8a5a3a, 0x4a6a3a), neither in the street's shared 18-colour `ward` bag nor
+  // any other fixed shirt this build hands out, so the "no two neighbours share a shirt" check stays
+  // clean; placed last of all, after the bubble-blower, so it draws from the very tail of this world's
+  // own local `r()` sequence and disturbs no earlier neighbour's wardrobe or colour pick.
+  // (a headless probe over the built world — every NPC's and the squirrel's own position sampled every
+  // quarter second over 300 simulated seconds with `game.start('new')` so every stroller, the postie and
+  // the cyclist actually moved, swept against a grid of open field candidates and all 304 of the street's
+  // physics boxes, kept clear of every road, pavement and path this world's own test walks end to end —
+  // found (-48, 52) clear: both players' and both stakes' own exact spots came back 15-17 m from the
+  // nearest box and 15-21 m from the nearest other soul)
+  { const hcx = -48, hcz = 52, hgap = 8;
+    const sandM = mat(0xdcbf85, { roughness: 1, map: TEX.sand() }), stakeM = mat(0x4a4a4a, { metalness: 0.55, roughness: 0.4 }), capM = mat(0xb33a2e, { metalness: 0.2, roughness: 0.5 });
+    for (const sz of [hcz - hgap / 2 + 0.5, hcz + hgap / 2 - 0.5]) {
+      mesh(G.box(1.7, 0.02, 1.7), sandM, { x: hcx, y: 0.012, z: sz, shadow: 'receive', parent: W });
+      mesh(G.cyl(0.028, 0.028, 0.42, 8), stakeM, { x: hcx, y: 0.21, z: sz, parent: W });
+      mesh(G.cyl(0.04, 0.04, 0.03, 8), capM, { x: hcx, y: 0.435, z: sz, shadow: 'none', parent: W });
+      P.addBox(hcx, 0.21, sz, 0.1, 0.42, 0.1, { cam: false });
+    }
+    // a couple of spare horseshoes stacked by each stake, baked in with everything else — just set dressing
+    const spareM = mat(0x5a5a5a, { metalness: 0.55, roughness: 0.4 });
+    for (const sz of [hcz - hgap / 2 + 0.5, hcz + hgap / 2 - 0.5]) for (let i = 0; i < 2; i++)
+      mesh(G.torus(0.11, 0.022, 6, 16, PI * 1.5), spareM, { x: hcx + 0.32, y: 0.025 + i * 0.05, z: sz + 0.1, rx: PI / 2, ry: i * 0.6, parent: W });
+    const pitcherA = makeHuman({ ...randomPerson(r, { female: false, child: false }), shirt: 0x8a5a3a, hat: 'cap', hatColor: 0x3a3a3a, jacket: null, backpack: null });
+    const pitcherB = makeHuman({ ...randomPerson(r, { female: false, child: false }), shirt: 0x4a6a3a, hat: null, jacket: null, backpack: null });
+    W.add(pitcherA.group); W.add(pitcherB.group);
+    const shoe = mesh(G.torus(0.11, 0.025, 6, 16, PI * 1.5), mat(0x4a4a4a, { metalness: 0.6, roughness: 0.4 }), { x: hcx, y: 1, z: hcz - hgap / 2, rx: PI / 2, parent: W });
+    const horseshoeLines = ["Clang — that's a leaner if I've ever seen one.", 'Mind your tail, puss — four pounds of iron, that.', "Forty feet and not an inch closer. Dad's own rule."];
+    game.npcs.push(new Horseshoes(game, pitcherA, pitcherB, shoe, { cx: hcx, cz: hcz, gap: hgap, cries: horseshoeLines }));
+    greetable(game, { rig: pitcherA }); greetable(game, { rig: pitcherB }); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

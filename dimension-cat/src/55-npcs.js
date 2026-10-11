@@ -795,6 +795,43 @@ class BallGame {
   }
 }
 
+// ---------------------------------------------------------------- horseshoes: two players lob a horseshoe underhand past the other, same hand-to-flight-to-hand shape `BallGame` already uses, but the target is the dirt by the far stake rather than the other player's own hand, landing with a clang and a shower of sparks before it is lobbed back the other way
+class Horseshoes {
+  constructor(game, rigA, rigB, shoe, { cx, cz, gap = 8, cries = null, cryIcon = '🧲' }) {
+    this.game = game; this.shoe = shoe; this.t = 0; this.holder = 0; this.holdT = rnd.range(0.7, 1.3); this.flight = -1; this.dur = 1.25;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(5, 10) : 0;
+    this.players = [rigA, rigB].map((rig, i) => {
+      const x = cx, z = cz + (i ? gap / 2 : -gap / 2);
+      rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = i ? PI : 0;   // facing each other across the pit
+      return { rig, x, z, circle: game.physics.addCircle(this, x, z, 0.3) };
+    });
+    this.cx = cx; this.cz = cz; this.rig = rigA; this.from = V3(); this.to = V3();
+  }
+  hand(p, v) { return v.set(p.x, this.game.physics.ground0(p.x, p.z) + 0.95 * p.rig.k + 0.25, p.z); }
+  update(dt) {
+    this.t += dt; const cat = this.game.cat.group.position;
+    for (const p of this.players) p.rig.animate(0, false, dt, this.t);
+    const h = this.players[this.holder], o = this.players[1 - this.holder];
+    if (this.flight < 0) {   // held a moment, then lobbed underhand
+      this.holdT -= dt; this.hand(h, this.shoe.position);
+      if (this.holdT <= 0) {
+        this.flight = 0; this.from.copy(this.shoe.position);
+        this.to.set(this.cx + rnd.range(-0.22, 0.22), this.game.physics.ground0(o.x, o.z) + 0.035, o.z);
+        this.dur = 1.25; h.rig.gesture = 'throw'; h.rig.gT = 0.22;
+      }
+      return;
+    }
+    this.flight += dt; const u = min(1, this.flight / this.dur);
+    this.shoe.position.copy(this.from).lerp(this.to, u); this.shoe.position.y += sin(u * PI) * 2.3;
+    this.shoe.rotation.x += dt * 9;   // tumbling end over end
+    if (u >= 1) {
+      this.flight = -1; this.holder = 1 - this.holder; this.holdT = rnd.range(1.1, 1.9);
+      SFX.clang(); this.game.fx.emit(this.shoe.position.x, this.shoe.position.y + 0.04, this.shoe.position.z, { count: 5, color: 0xcfd6dc, speed: 0.4, up: 0.4, life: 0.5, gravity: 1.3, spread: 0.5 });
+    }
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); if (dist2(this.cx, this.cz, cat.x, cat.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- swinger: a child on the park swing, legs kicking at the top of each arc
 class Swinger {
   constructor(game, rig, swingSet, { x, z, ry = 0 }) {

@@ -9920,3 +9920,36 @@ end — against both those samples and all 304 of the street's physics boxes: (3
 Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks `ok`, 0 console warnings, three repeat
 runs after that also clean (`world 0: 50 to meet`, up from 49). Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 395 — horseshoes for the Neighborhood
+
+A dozen worlds have picked up a yard game of some kind by now — Robot City's two gents have had a
+checkers board since round 384 — but no street in the Neighborhood ever had the oldest backyard
+rivalry of all. **Two dads now pitch horseshoes at each other's stake across a sandy court far past
+the back row of houses**, lobbing underhand, landing with a clang and a shower of sparks, then doing
+it again the other way. *"Clang — that's a leaner if I've ever seen one."* *"Mind your tail, puss —
+four pounds of iron, that."* *"Forty feet and not an inch closer. Dad's own rule."*
+
+New `Horseshoes` controller in `55-npcs.js`: it reuses `BallGame`'s own hand-to-flight-to-hand shape
+(held a moment, lobbed on an arc, held by the other side, lobbed back) almost exactly, but the target
+is the dirt by the far stake rather than the other player's own hand, so it lands with `SFX.clang()`
+(already in this file for the wrench on Robot City's own scrap) and a burst of sparks instead of being
+caught. The horseshoe itself is a stretched-open torus arc (`G.torus(…, PI * 1.5)`), tumbling end over
+end on `rotation.x` alone in flight, the same trick `BallGame`'s own ball already uses. A couple of
+spare horseshoes sit stacked by each stake as plain set dressing. Own fixed shirt colours (0x8a5a3a,
+0x4a6a3a), neither in the street's shared 18-colour `ward` bag nor any other fixed shirt this build
+already hands out, so the "no two neighbours share a shirt" check stays clean; placed last of
+everything in this world, after the bubble-blower, so it draws from the very tail of this world's own
+local `r()` sequence and disturbs no earlier neighbour's wardrobe or colour pick.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real Neighborhood,
+called `game.start('new')` so every stroller, the postie and the cyclist actually moved, sampled every
+NPC's and the squirrel's own position every quarter second over 300 simulated seconds, then swept a
+grid of open-field candidates against both those samples and all 304 of the street's physics boxes,
+kept clear of every road, pavement and path this world's own test walks end to end: (-48, 52) came
+back clear, with both players' and both stakes' own exact spots 15-17 m from the nearest box and
+15-21 m from the nearest other soul.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks `ok`, 0 console warnings, two repeat
+runs after that also clean (`world 0: 52 to meet`, up from 50). Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
