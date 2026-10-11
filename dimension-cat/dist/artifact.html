@@ -8591,6 +8591,30 @@ function buildCandyLand(game, entry) {
       hat: 'cap', hatColor: 0x3a4a2e, glasses: true, glassColor: 0x2a2a2a, jacket: null, scarf: null, bag: null, backpack: null }); W.add(birder.group);
     game.npcs.push(new Birder(game, birder, { x: -53, z: 13, ry: atan2(0 - -53, 0 - 13),
       cries: ["That peppermint sparrow again — never sits still.", "Careful, puss — you'll scatter the butterflies.", 'Mistook a lollipop for a woodpecker once. Never again.'] })); }
+  // Victorian's own street photographer and Sunny Shore's holidaymaker both duck under a dark cloth to
+  // capture their own world's view — Candy Land, for all its painter at the easel, never had anyone
+  // pointing a camera at it. A tourist now sets up an old box camera on the open sweet-lands north-west
+  // of the cane ring, framing the nearest cupcake hill and the candy-cane forest beyond it. No new
+  // controller or prop: this is the exact same `Photographer` class and `makeOldCamera()` tripod
+  // Victorian and Sunny Shore already use, just a sugar-pink wardrobe and a sunhat instead of a flatcap.
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real Candy Land
+  // (`game.load(1, 'from-prev')`, then `game.start('new')` so every marching, dancing, wandering and
+  // ball-tossing gingerbread man and the gingerbread-coloured dog actually moved), sampled every NPC's
+  // own position every quarter second over 300 simulated seconds, then swept a 1 m grid of the open
+  // sweet-lands (short of the radius (92) where candyRegion's own procedural fill takes over, clear of
+  // the river band and the castle approach) against both those samples and every one of the world's
+  // physics boxes: (-74, 34) came back clear by 13.5 m of the nearest box (the north-west cupcake hill)
+  // and 13.0 m of the nearest other soul (the gingerbread-coloured dog's own wander leash at (-70, 50)).
+  // Placed last of every person this build adds, after the birdwatcher, so it draws from the very tail
+  // of this world's own local `r()` sequence.
+  { const px = -74, pz = 34, pry = atan2(-58 - px, 30 - pz);
+    const camWard = makeWardrobe(r, { shirts: [0xffffff, 0xff9ecf, 0x7fd7ff], pants: [0xffffff, 0xff9ecf, 0x7fd7ff], shoes: [0xffffff, 0xffd54a] });
+    const snapper = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: camWard }),
+      hat: 'sunhat', hatColor: 0xffd54a, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.3) });
+    W.add(snapper.group);
+    const camera = makeOldCamera();
+    game.npcs.push(new Photographer(game, snapper, camera, { x: px, z: pz, ry: pry, cryIcon: '📷',
+      cries: ['Best view of the cupcake hills from right here.', "Careful, puss — it's only flash powder, not fire.", 'The candy-cane forest never quite fits in one shot.'] })); }
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('star', 7, -6); C.add('yarn', -9, 9); C.add('fish', -16, -13); C.add('mouse', 16, -9); C.add('star', -10, -27); C.add('yarn', 22, 4); C.add('mouse', -28, 26); C.add('fish', 14, -44); C.add('star', 0, -56); C.add('mouse', -58, 30); C.add('yarn', 60, 36);

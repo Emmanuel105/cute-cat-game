@@ -10127,3 +10127,30 @@ above it, not the dancers below.
 Full suite (`node test/run.mjs`) ran clean — exit 0, 274 checks `ok`, 0 console warnings, two repeat runs
 after that also clean (Robot City's own friend count up to 65). Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 402 — a tourist with a camera for Candy Land
+
+Victorian's own street photographer and Sunny Shore's holidaymaker both duck under a dark cloth to
+capture their own world's view — Candy Land, for all its painter at the easel, never had anyone
+pointing a camera at it. **A tourist now sets up an old box camera on the open sweet-lands north-west
+of the candy-cane ring, framing the nearest cupcake hill and the forest of canes beyond it, ducking
+under the cloth every so often to compose a shot before springing straight as the shutter fires.**
+*"Best view of the cupcake hills from right here."* *"Careful, puss — it's only flash powder, not
+fire."* *"The candy-cane forest never quite fits in one shot."*
+
+No new controller or prop: this is the exact same `Photographer` class and `makeOldCamera()` tripod
+Victorian and Sunny Shore already use, just a sugar-pink wardrobe and a sunhat instead of a flatcap or
+dark coat. A headless probe (a scratch script built on the same stub-three harness `test/run.mjs`
+itself uses, since there's no browser here to look at it) built the real Candy Land (`game.load(1,
+'from-prev')`, then `game.start('new')` so every marching, dancing, wandering and ball-tossing
+gingerbread man and the gingerbread-coloured dog actually moved), sampled every NPC's own position
+every quarter second over 300 simulated seconds, then swept a 1 m grid of the open sweet-lands (short
+of the radius where candyRegion's own procedural fill takes over, clear of the river band and the
+castle approach) against both those samples and every one of the world's physics boxes: (-74, 34) came
+back clear by 13.5 m of the nearest box (the north-west cupcake hill) and 13.0 m of the nearest other
+soul (the gingerbread-coloured dog's own wander leash). Placed last of every person this build adds,
+after the birdwatcher, so it draws from the very tail of this world's own local `r()` sequence.
+
+Full suite (`node test/run.mjs`) ran clean twice in a row — exit 0, 290 checks `ok`, 0 console warnings,
+Candy Land's own friend count up one to 62. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.
