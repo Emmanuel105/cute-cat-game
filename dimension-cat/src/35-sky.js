@@ -54,6 +54,26 @@ class Sky {
     const glow = new THREE.Sprite(new THREE.SpriteMaterial({ map: TEX.glow(), color: 0xcfd8ff, transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, depthWrite: false, fog: false }));
     glow.scale.set(70, 70, 1); this.moon.add(glow);
     this.moon.visible = false; this.group.add(this.moon);
+
+    // a handful of shooting stars — paths and timings are fixed once here (continuing to draw from
+    // this same local `seeded(7)`, never the shared `rnd()`), so every night sky in every world always
+    // streaks the same way. Each is a short trail of fading glow dots rather than one oriented sprite,
+    // so it reads as a streak from any camera angle without needing to rotate to face its own direction
+    // of travel. Gated by `starU.opacity` (the same value that fades stars in), it only ever shows once
+    // the sky is dark enough for stars to be visible at all.
+    this.meteors = [];
+    const meteorTex = TEX.glow();
+    for (let i = 0; i < 4; i++) {
+      const a = r() * TAU, y = 0.45 + r() * 0.4, rr = sqrt(1 - y * y);
+      const start = new THREE.Vector3(cos(a) * rr * 440, y * 440, sin(a) * rr * 440);
+      const dir = new THREE.Vector3(r.range(-1, 1), -r.range(0.25, 0.55), r.range(-1, 1)); dir.normalize();
+      const dots = [];
+      for (let j = 0; j < 5; j++) {
+        const spr = new THREE.Sprite(new THREE.SpriteMaterial({ map: meteorTex, color: 0xeaf6ff, transparent: true, opacity: 0, blending: THREE.AdditiveBlending, depthWrite: false, fog: false }));
+        spr.scale.setScalar(5 - j * 0.8); this.group.add(spr); dots.push(spr);
+      }
+      this.meteors.push({ dots, start, dir, period: r.range(19, 33), offset: r() * 40, len: r.range(55, 85) });
+    }
     this.time = 0;
   }
   /** preset: { top, horizon, bottom, sun:[x,y,z], sunColor, sunSize, halo, stars, moon:[x,y,z] } */
@@ -64,7 +84,23 @@ class Sky {
     this.starU.opacity.value = p.stars ?? 0;
     this.moon.visible = !!p.moon; if (p.moon) this.moon.position.set(...p.moon);
   }
-  update(camera, dt) { this.time += dt; this.group.position.copy(camera.position); this.starU.time.value = this.time; }
+  update(camera, dt) {
+    this.time += dt; this.group.position.copy(camera.position); this.starU.time.value = this.time;
+    const vis = this.starU.opacity.value, dash = 0.05;
+    for (const m of this.meteors) {
+      const ph = ((this.time + m.offset) % m.period) / m.period;
+      const active = vis > 0.01 && ph < dash;
+      for (let j = 0; j < m.dots.length; j++) {
+        const d = m.dots[j];
+        if (!active) { d.material.opacity = 0; continue; }
+        const back = ph / dash - j * 0.012;
+        if (back < 0) { d.material.opacity = 0; continue; }
+        const dist = back * m.len;
+        d.position.set(m.start.x + m.dir.x * dist, m.start.y + m.dir.y * dist, m.start.z + m.dir.z * dist);
+        d.material.opacity = sin((ph / dash) * PI) * vis * (1 - j / m.dots.length);
+      }
+    }
+  }
 }
 
 /** Fluffy cloud from a few flattened spheres. */

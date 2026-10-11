@@ -10237,3 +10237,33 @@ tail of this world's own local `r()` sequence.
 Full suite (`node test/run.mjs`) ran clean twice in a row — exit 0, 274 checks `ok`, 0 console warnings,
 Whisper Woods' own friend count up one to 57. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 406 — shooting stars
+
+Five worlds now have someone pointing a camera at the sky, but the sky itself never had anything worth
+photographing after dark. **A handful of shooting stars now streak across the night sky**, wherever the
+stars are already out — Robot City's permanent night, the Neighborhood's dusk-to-dawn cycle, Victorian's
+dusk, Frosty Peak and Whisper Woods' own starlight. Each one is a short trail of five fading glow dots
+rather than a single sprite rotated to face its own direction of travel, so it reads as a streak from any
+camera angle without needing that rotation math.
+
+Lives entirely in `35-sky.js`'s own `Sky` class, which already tracked its own `time` for the twinkling
+stars and the day/night fade; four meteors were added there, each with a start point, a direction and a
+period (19-33 s) drawn once at construction from the same local `seeded(7)` the star field itself already
+uses — never the shared `rnd()` every world build depends on for its own layout, so nothing anywhere else
+shifts by a single draw. Each frame, `update()` works out how far into its own period a meteor is and, for
+the ~1-1.5 s window near the start of that period, places its five dots along a fixed line and fades them
+in and out with a sine envelope, scaled by the same `starU.opacity` value that already fades the star
+field itself in and out — so meteors never show in daylight, only when stars would actually be visible.
+
+No new physics box, no new zone, no change to any NPC, world build function or the shared RNG sequence —
+just four more objects added to the sky's own group and updated alongside everything else already in
+`Sky.update()`. Checked against the one thing that looked risky: `Vector3` in the test harness's stub
+three.js lacks `addScaledVector`, so the position math here is written as plain `x + dir.x * dist` instead.
+
+Full suite (`node test/run.mjs`) ran clean five times in a row — exit 0, 274 checks `ok`, 0 console
+warnings every time. (One single run in between, while still checking this change against the suite,
+hit the Victorian horse-and-carriage check's own long-documented real-timer flake from round 219 —
+unrelated to this round, confirmed by then running the untouched baseline four times with zero failures
+and rereading that check's own comment, which names the exact `await sleep(40)` race.) Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
