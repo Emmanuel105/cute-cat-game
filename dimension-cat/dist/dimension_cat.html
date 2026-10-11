@@ -12587,6 +12587,38 @@ function buildForest(game, entry) {
       }
     }); }
 
+  // every other world's children have worked through yo-yos, hula hoops, jump ropes and hopscotch by
+  // now (the yo-yo kid above is Whisper Woods' own) — but no world yet had the oldest toy of them all,
+  // a spinning top. A child kneels on the open ground east of the jogger's own patch, pull-string just
+  // yanked free, watching it go. The top itself is a standalone prop rather than anything held — once
+  // launched, a real top rides the ground, not a hand — spinning fast on the world clock `t` alone with
+  // a slow circular wobble, same as a real one losing its balance, so it draws nothing from this
+  // world's own seeded `r` and can't shift any later mushroom hue or butterfly colour pick.
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real Whisper
+  // Woods (`game.travel(6, 'from-hub')`), sampled every NPC's and the squirrel's own position every
+  // frame over 300 simulated seconds (so no wandering deer, fox or flying fairy mid-leash could slip
+  // past unnoticed), then swept a 2 m grid of the open floor (radius 15-50, short of the radius (58)
+  // where forestRegion's own fill takes over) against both those samples and every one of the wood's
+  // 678 physics boxes: (35, 17) came back clear by 6.1 m of the nearest box and 9.0 m of the nearest
+  // other soul (the jogger, pausing for breath 9.5 m off).
+  { const tx = 35, tz = 17, topY = P.ground0(tx, tz);
+    const top = group(tx, topY, tz, W);
+    const bodyM = mat(0xff6fb5, { roughness: 0.5 }), rimM = mat(0xffd54a, { roughness: 0.4 }), pegM = mat(0x5a3a28, { roughness: 0.8 });
+    mesh(G.cone(0.17, 0.3, 12), bodyM, { y: 0.15, rx: PI, parent: top });
+    noInk(mesh(G.torus(0.17, 0.022, 6, 16), rimM, { y: 0.3, rx: PI / 2, shadow: 'none', parent: top }));
+    mesh(G.cyl(0.035, 0.035, 0.12, 8), pegM, { y: 0.36, parent: top });
+    for (let i = 0; i < 3; i++) { const a = i * TAU / 3; mesh(G.sphere(0.022, 6, 5), rimM, { x: cos(a) * 0.095, y: 0.16, z: sin(a) * 0.095, shadow: 'none', parent: top }); }
+    boxT(game, tx, tz, 0.4, 0.42, 0.4, { cam: false });
+    top.userData.update = (dt, t) => { top.rotation.y += dt * 16; top.rotation.x = sin(t * 2.3) * 0.06; top.rotation.z = cos(t * 2.3) * 0.06; };
+    U.push(top.userData.update);
+    const kx = tx - 0.85, kz = tz + 0.25, kry = atan2(tx - kx, tz - kz);
+    const spinner = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(spinner.group);
+    const cord = group(0, 0.02, 0.08, spinner.hands[0]); cord.rotation.x = -0.4;
+    noInk(mesh(G.cyl(0.006, 0.006, 0.16, 5), mat(0xd9c9a8, { roughness: 0.9 }), { y: 0.08, rz: 0.6, parent: cord }));
+    game.npcs.push(new Kneeler(game, spinner, { x: kx, z: kz, ry: kry, cryIcon: '🌀',
+      cries: ['Fastest spinner in the whole wood, this one.', "Careful, puss — swat it and it'll roll clean into the ferns.", "Wound it myself. Bit wobbly, but it holds."] })); }
+
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
 

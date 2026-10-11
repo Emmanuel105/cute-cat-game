@@ -9832,3 +9832,27 @@ porch awning — applies here without a fresh probe.
 
 Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks `ok`, 0 console warnings, three repeat
 runs after that also clean. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 392 — a spinning top for Whisper Woods
+
+Every world's children had worked their way through yo-yos, hula hoops, jump ropes, hopscotch and
+marbles by now — but none of the seven had ever picked up the oldest toy of them all. **A child kneels
+on the open ground east of the jogger's own patch in Whisper Woods, pull-string just yanked free,
+watching a wooden top spin itself dizzy.** *"Fastest spinner in the whole wood, this one."* *"Careful,
+puss — swat it and it'll roll clean into the ferns."* *"Wound it myself. Bit wobbly, but it holds."* The
+top is a standalone prop, not anything held — once launched, a real top rides the ground, not a hand —
+spinning fast on the world clock alone with a slow circular wobble, same as a real one losing its
+balance, so it draws nothing from this world's own seeded RNG and can't shift any later mushroom hue or
+butterfly colour pick. No new controller: the kid is a plain `Kneeler`, same stance every other kneeling
+figure in these woods already uses, with a short pull-cord stub parented into her resting hand.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real Whisper Woods
+(`game.travel(6, 'from-hub')`), sampled every NPC's and the squirrel's own position every frame over 300
+simulated seconds, then swept a 2 m grid of the open floor (radius 15-50, short of the radius (58) where
+forestRegion's own fill takes over) against both those samples and every one of the wood's 678 physics
+boxes: (35, 17) came back clear by 6.1 m of the nearest box and 9.0 m of the nearest other soul (the
+jogger, pausing for breath 9.5 m off).
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks `ok`, 0 console warnings, two repeat runs
+after that also clean (`world 6: 56 to meet`, up from 55). Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
