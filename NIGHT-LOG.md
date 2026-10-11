@@ -10381,3 +10381,42 @@ this world's own local `r()` sequence and disturbs no earlier wardrobe, colour o
 Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, 274 checks `ok`, 0 console
 warnings every time, Sunny Shore's own friend count up two to 57. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 410 — a dominoes table for Candy Land
+
+Victorian (draughts, round 354), Robot City (checkers, round 384), Frosty Peak (cards, round 397),
+Whisper Woods (draughts, round 407), the Neighborhood (chess, round 408) and Sunny Shore (mancala, round
+409) have all had a table game by now — Candy Land, named for the stuff and stuffed with more sweets
+than any other world, was the only one of the seven left without one. **A dominoes table now sits on
+the open sweet-lands east of the village, a mid-game chain of seven iced tiles laid out between two
+seated residents, a small messy stack of five more face-down beside it.** *"Eighteen pips and the
+lead's still mine."* *"Careful, puss — knock that chain and we start over."* *"Mind your tail, puss —
+that's a whole afternoon's work."*
+
+No new controller: both players are a plain `Sitter`, the same pairing every other table game in this
+file already uses, each on a `makeIceStool()` — the same stool the draughts, card, chess and mancala
+tables all reuse too. The table itself is a plain iced-white top on four cookie-brown posts (skipped the
+candy-cane stripe map the wishing well's barrel uses — wrapped round a flat tabletop it just reads as
+diagonal noise, not a tablecloth). Each tile is a flat box split by a dark divider with up to six pips a
+side, laid out from a small canonical dot table (the same layout real dominoes and dice both use, built
+fresh here since nothing in this file had one yet). The seven-tile chain matches real play, number for
+number, at every join — 6|6, 6|2, 2|2, 2|5, 5|5, 5|0, 0|3 — though the three doubles stay inline rather
+than turned crosswise the way an actual chain would turn them; a straight row was plenty to read as
+"mid-game" without the extra layout math.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, calling
+`game.travel(1, 'from-prev')` and waiting out its real 520 ms fade timer rather than `game.load()`
+directly — a bare `load()` never flips `game.worldIndex` or finishes building the next world's own
+NPCs) sampled every NPC's and the squirrel's own position every quarter second over 300 simulated
+seconds, then swept the sweet-lands against both those samples, every one of the world's 1872 physics
+boxes and the sixteen gumdrop-patch circles `makeGumdrops` scatters (no physics box of their own, so a
+plain box sweep alone would have missed them): (82, 4) came back clear by 13.52 m of the nearest box, 28.23
+m of the nearest other soul and 22.12 m of the nearest gumdrop patch — past the candy-cane ring's own
+outer edge (76 m) and short of where candyRegion's own procedural fill takes over (92 m), the same quiet
+empty band the dog walker and the hopscotch grid already share on the opposite side of the map. Placed
+last of every person this build adds, after the photographer, so it draws from the tail of this world's
+own local `r()` sequence.
+
+Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, 0 console warnings every time,
+Candy Land's own friend count up two to 64. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.

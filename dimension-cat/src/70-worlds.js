@@ -2248,6 +2248,79 @@ function buildCandyLand(game, entry) {
     const camera = makeOldCamera();
     game.npcs.push(new Photographer(game, snapper, camera, { x: px, z: pz, ry: pry, cryIcon: '📷',
       cries: ['Best view of the cupcake hills from right here.', "Careful, puss — it's only flash powder, not fire.", 'The candy-cane forest never quite fits in one shot.'] })); }
+  // Victorian (draughts, round 354), Robot City (checkers, round 384), Frosty Peak (cards, round 397),
+  // Whisper Woods (draughts, round 407), the Neighborhood (chess, round 408) and Sunny Shore (mancala,
+  // round 409) have all had a table game by now — Candy Land, named for the stuff and stuffed with more
+  // sweets than any other world, was the only one of the seven left without one. A dominoes table now
+  // sits on the open sweet-lands east of the village, a mid-game chain of seven iced tiles laid out
+  // between two seated residents, a small messy stack of five more face-down beside it. *"Eighteen pips
+  // and the lead's still mine."* *"Careful, puss — knock that chain and we start over."* *"Mind your
+  // tail, puss — that's a whole afternoon's work."*
+  //
+  // No new controller: both players are a plain `Sitter`, the same pairing every other table game in
+  // this file already uses, each on a `makeIceStool()` — the same generic three-legged stool the
+  // draughts, card, chess and mancala tables all reuse too. The table itself is a plain iced-white
+  // tabletop on four cookie-brown posts (no candy-cane stripe map this time — wrapping `TEX.candyCane()`
+  // round a flat plane reads as diagonal noise rather than a tablecloth, so this keeps the same solid
+  // colour the gingerbread cottage's own icing already uses). Each tile is a flat box split by a thin
+  // dark divider with up to six pips per half, built from the same canonical dot layout real dominoes
+  // and dice both use — `PIP[n]` below, not pulled from any shared helper since none existed yet. The
+  // seven-tile chain matches real play, number for number, at every join (6|6 - 6|2 - 2|2 - 2|5 - 5|5 -
+  // 5|0 - 0|3), though the three doubles stay inline rather than turned crosswise the way a real chain
+  // would turn them — a straight row was plenty to read as "mid-game" without the extra layout math.
+  //
+  // A headless probe (a scratch script built on the same stub-three harness `test/run.mjs` itself uses,
+  // calling `game.travel(1, 'from-prev')` and waiting out its real 520 ms fade timer rather than
+  // `game.load()` directly, since a bare `load()` never flips `game.worldIndex` or finishes building the
+  // next world's own NPCs on its own) sampled every NPC's and the squirrel's own position every quarter
+  // second over 300 simulated seconds — long enough for every marching, dancing, wandering, ball-tossing
+  // and tag-playing gingerbread man, both walked dogs and every doorstep resident to clear any one spot
+  // several times over — then swept the sweet-lands against both those samples, every one of the world's
+  // 1872 physics boxes and the sixteen gumdrop-patch circles `makeGumdrops` scatters (which carry no
+  // physics box of their own, so a plain box sweep would have missed them): (82, 4) came back clear by
+  // 13.52 m of the nearest box (one of the candy-cane ring's own trunks), 28.23 m of the nearest other
+  // soul and 22.12 m of the nearest gumdrop patch, at radius 82.1 from the origin — past the candy-cane
+  // ring's own outer edge (76 m) and short of the radius (92) where candyRegion's own procedural fill
+  // takes over, in the same quiet empty band the dog walker (-83, 5) and the hopscotch grid (-85.2, 29)
+  // already share on the opposite side of the map. Placed last of every person this build adds, after
+  // the photographer, so it draws from the very tail of this world's own local `r()` sequence.
+  { const PIP = { 0: [], 1: [[0, 0]], 2: [[-1, -1], [1, 1]], 3: [[-1, -1], [0, 0], [1, 1]],
+      4: [[-1, -1], [-1, 1], [1, -1], [1, 1]], 5: [[-1, -1], [-1, 1], [0, 0], [1, -1], [1, 1]],
+      6: [[-1, -1], [-1, 0], [-1, 1], [1, -1], [1, 0], [1, 1]] };
+    const tx = 82, tz = 4, topY = 0.72, tableLen = 2.6, tableWid = 1.0;
+    const seatAz = tz - 0.85, seatBz = tz + 0.85;
+    const woodM = mat(0xc27b3a, { roughness: 0.9 }), topM = mat(0xfffdf7, { roughness: 0.4 }), trimM = mat(0xd62839, { roughness: 0.5 });
+    const table = group(tx, 0, tz, W);
+    mesh(G.box(tableLen, 0.04, tableWid), topM, { y: topY, shadow: 'both', parent: table });
+    noInk(mesh(G.box(tableLen + 0.04, 0.012, tableWid + 0.04), trimM, { y: topY - 0.025, shadow: 'none', parent: table }));
+    for (const [lx, lz] of [[-tableLen / 2 + 0.14, -tableWid / 2 + 0.14], [tableLen / 2 - 0.14, -tableWid / 2 + 0.14], [-tableLen / 2 + 0.14, tableWid / 2 - 0.14], [tableLen / 2 - 0.14, tableWid / 2 - 0.14]])
+      mesh(G.cyl(0.03, 0.035, topY, 8), woodM, { x: lx, y: topY / 2, z: lz, parent: table });
+    const tileLen = 0.26, tileWid = 0.13, tileH = 0.03, tileY = topY + 0.021;
+    const dividerM = mat(0x5a2d12, { roughness: 0.8 }), pipM = mat(0x3a2410, { roughness: 0.6 });
+    const chain = [[6, 6], [6, 2], [2, 2], [2, 5], [5, 5], [5, 0], [0, 3]];
+    const step = tileLen + 0.012, rowOffset = (chain.length - 1) / 2 * step;
+    chain.forEach(([a, b], i) => {
+      const cx = i * step - rowOffset;
+      mesh(G.box(tileLen, tileH, tileWid), topM, { x: cx, y: tileY, z: 0, shadow: 'none', parent: table });
+      mesh(G.box(0.01, tileH + 0.004, tileWid * 0.9), dividerM, { x: cx, y: tileY, z: 0, shadow: 'none', parent: table });
+      for (const [half, n] of [[-1, a], [1, b]]) for (const [px, pz] of PIP[n])
+        mesh(G.sphere(0.012, 6, 6), pipM, { x: cx + half * 0.065 + px * 0.045, y: tileY + tileH / 2 + 0.012, z: pz * 0.04, shadow: 'none', parent: table });
+    });
+    const boneX = rowOffset + step / 2 + 0.3;
+    for (let i = 0; i < 5; i++) mesh(G.box(tileLen, tileH, tileWid), topM, { x: boneX + (i % 2) * 0.03, y: topY + 0.021 + i * 0.012, z: (i % 3 - 1) * 0.04, ry: (i - 2) * 0.18, shadow: 'both', parent: table });
+    P.addBox(tx, topY / 2, tz, tableLen + 0.1, topY, tableWid + 0.1);
+    place(game, U, makeIceStool(), tx, seatAz, PI); place(game, U, makeIceStool(), tx, seatBz, 0);
+    const domWard = makeWardrobe(r, { shirts: [0xff6fb5, 0x7fd7ff], pants: [0xfff3b0, 0x2a2420] });
+    const playerA = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: r.chance(0.4), wardrobe: domWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.3) });
+    const playerB = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: r.chance(0.4), wardrobe: domWard }),
+      hat: 'flatcap', hatColor: 0xffd54a, jacket: null, scarf: null, bag: null, backpack: null, glasses: false });
+    W.add(playerA.group); W.add(playerB.group);
+    game.npcs.push(new Sitter(game, playerA, { x: tx, z: seatAz, ry: 0, seat: 0.33,
+      cries: ["Eighteen pips and the lead's still mine.", 'Careful, puss — knock that chain and we start over.', "Save the double six, it's the whole game right there."] }));
+    game.npcs.push(new Sitter(game, playerB, { x: tx, z: seatBz, ry: PI, seat: 0.33,
+      cries: ["One more tile and it's mine, easy.", "Mind your tail, puss — that's a whole afternoon's work.", 'Lost count past twelve. Started again, obviously.'] })); }
+
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('star', 7, -6); C.add('yarn', -9, 9); C.add('fish', -16, -13); C.add('mouse', 16, -9); C.add('star', -10, -27); C.add('yarn', 22, 4); C.add('mouse', -28, 26); C.add('fish', 14, -44); C.add('star', 0, -56); C.add('mouse', -58, 30); C.add('yarn', 60, 36);
