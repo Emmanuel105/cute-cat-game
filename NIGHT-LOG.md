@@ -10267,3 +10267,36 @@ hit the Victorian horse-and-carriage check's own long-documented real-timer flak
 unrelated to this round, confirmed by then running the untouched baseline four times with zero failures
 and rereading that check's own comment, which names the exact `await sleep(40)` race.) Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 407 — a draughts game for Whisper Woods, played with acorns and chestnuts
+
+Victorian has had a draughts board since round 354, Robot City a checkers drum since round 384 and
+Frosty Peak a card table since round 397 — Whisper Woods never had a table game of its own. **Two old
+foresters now sit on sawn log rounds either side of a low bark table in a clearing east of the
+photographer, playing draughts with real acorns and chestnuts standing in for the usual painted
+counters.** *"Best of three, same as every lunch break."* *"Careful, puss — don't scatter the acorns."*
+*"One more game before the light goes."*
+
+No new controller: both are a plain `Sitter`, the same pairing the whittler and knitter already use on
+their own stumps in this same wood, just seated on a smaller sawn log round (built inline, bark-sided
+like `makeStump()` but a third its height) instead of a full stump — matching the exact seat-to-table
+proportions the Victorian draughts table's `makeIceStool()` and Frosty Peak's card table already settled
+on. The board itself is the same 8x8 checkered box Victorian's table uses, recoloured pale birch and
+dark bark-stain, with `placeT`/`boxT` in place of the flat town's `place()`/`P.addBox()` since the forest
+floor rolls underfoot out here too. Pieces are chestnuts (plain glossy spheres) on one side and acorns
+(a tan sphere with a small dark cap) on the other, scattered mid-game on the dark squares only.
+
+A headless probe (a scratch script built on the same stub-three harness `test/run.mjs` itself uses,
+since there's no browser here to look at it) walked the real Whisper Woods through the suite's own hub
+route (`game.travel(6, 'from-hub')`), sampled every NPC's and the squirrel's own position every quarter
+second over 300 simulated seconds — long enough for every deer, fox, hare and frog to clear any one spot
+several times over — then swept a 1 m grid of the open forest floor (radius 15-50, short of the radius
+(58) where forestRegion's own fill takes over, and clear of every hand-placed landmark by 5 m or more)
+against both those samples and all 295 of the wood's physics boxes: (42, -27) came back clear by 11.5 m
+of the nearest box and 19.0 m of the nearest other soul, with the ground flat across the whole footprint.
+Placed last of every person this build adds, after the photographer, so it draws from the very tail of
+this world's own local `r()` sequence — nothing earlier in the build shifts.
+
+Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, 274 checks `ok`, 0 console
+warnings every time, Whisper Woods' own friend count up two to 59. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

@@ -13174,6 +13174,64 @@ function buildForest(game, entry) {
     game.npcs.push(new Photographer(game, snapper, camera, { x: px, z: pz, ry: pry, cryIcon: '📷',
       cries: ['Deer glade and the mushroom ring, both in one plate.', "Careful, puss — it's only flash powder, not fire.", "Hold still now — well, you won't, but the deer might."] })); }
 
+  // Victorian's two retired gents have had a draughts board between them since round 354, Robot City's
+  // own checkers drum since round 384 and Frosty Peak's card table since round 397 — but no world yet
+  // had a game that used what was actually lying on the ground around it. Two foresters now sit on sawn
+  // log rounds either side of a low table in a clearing east of the photographer's own spot, a draughts
+  // board between them — counters replaced with a scatter of real acorns and chestnuts instead of the
+  // usual painted discs. No new controller: both are a plain `Sitter`, the same pairing the whittler and
+  // knitter already use on their own stumps, just seated on a smaller sawn log round (built inline here,
+  // bark-sided like `makeStump()` but a third its height, matching the exact proportions the Victorian
+  // draughts table's `makeIceStool()` seats and Frosty Peak's card table already use) rather than a full
+  // stump, with the terrain-aware `placeT`/`boxT` helpers in place of the flat-floor town's
+  // `place()`/`P.addBox()`, since the forest floor rolls gently underfoot out here too.
+  // A headless probe (a scratch script built on the same stub-three harness `test/run.mjs` itself uses,
+  // since there's no browser here to look at it) walked the real Whisper Woods through the suite's own
+  // hub route (`game.travel(6, 'from-hub')`), sampled every NPC's and the squirrel's own position every
+  // quarter second over 300 simulated seconds — long enough for every deer, fox, hare and frog to clear
+  // any one spot several times over — then swept a 1 m grid of the open forest floor (radius 15-50,
+  // short of the radius (58) where forestRegion's own fill takes over, and clear of every hand-placed
+  // landmark by 5 m or more) against both those samples and all 295 of the wood's physics boxes:
+  // (42, -27) came back clear by 11.5 m of the nearest box and 19.0 m of the nearest other soul (one of
+  // the wandering deer, on its own long leash), with the ground flat (y=0) across the whole footprint.
+  // Placed last of every person this build adds, after the photographer, so it draws from the very tail
+  // of this world's own local `r()` sequence.
+  { const tx = 42, tz = -27, topY = 0.72, boardW = 0.64, sq2 = boardW / 8;
+    const seatAx = tx - 0.72, seatAz = tz, seatBx = tx + 0.72, seatBz = tz;
+    const ryA = atan2(seatBx - seatAx, seatBz - seatAz), ryB = atan2(seatAx - seatBx, seatAz - seatBz);
+    const ty0 = P.ground0(tx, tz);
+    const bark = mat(0x5b3d24, { roughness: 1, map: TEX.bark() });
+    const table = group(tx, ty0, tz, W);
+    mesh(G.box(boardW, 0.03, boardW), bark, { y: topY, parent: table });
+    const lightSq = mat(0xcdbb8e, { roughness: 0.9 }), darkSq = mat(0x3f2a1a, { roughness: 0.9 });
+    for (let gx = 0; gx < 8; gx++) for (let gz = 0; gz < 8; gz++) {
+      mesh(G.box(sq2 * 0.97, 0.01, sq2 * 0.97), (gx + gz) % 2 ? darkSq : lightSq,
+        { x: -boardW / 2 + sq2 * (gx + 0.5), y: topY + 0.021, z: -boardW / 2 + sq2 * (gz + 0.5), parent: table }); }
+    for (const [lx, lz] of [[-0.27, -0.27], [0.27, -0.27], [-0.27, 0.27], [0.27, 0.27]]) mesh(G.cyl(0.025, 0.03, topY, 8), bark, { x: lx, y: topY / 2, z: lz, parent: table });
+    // acorns and chestnuts standing in for draughts men, a scatter mid-game, dark squares only
+    const chestnutM = mat(0x3a2418, { roughness: 0.3 }), acornBodyM = mat(0xcfa15a, { roughness: 0.6 }), acornCapM = mat(0x5a3a20, { roughness: 0.8 });
+    const pieceY = topY + 0.036;
+    const toXZ = (gx, gz) => [-boardW / 2 + sq2 * (gx + 0.5), -boardW / 2 + sq2 * (gz + 0.5)];
+    [[1, 0, 1], [3, 0, 1], [0, 1, 1], [2, 1, 1], [4, 1, 1], [1, 2, 0], [3, 4, 0], [5, 4, 0], [2, 5, 0], [6, 3, 1]].forEach(([gx, gz, isChestnut]) => {
+      const [px, pz] = toXZ(gx, gz);
+      if (isChestnut) mesh(G.sphere(0.04, 8, 6), chestnutM, { x: px, y: pieceY, z: pz, sy: 0.8, parent: table });
+      else { const acorn = group(px, pieceY, pz, table); mesh(G.sphere(0.034, 8, 6), acornBodyM, { y: 0.006, sy: 0.9, parent: acorn }); mesh(G.cyl(0.038, 0.03, 0.026, 8), acornCapM, { y: 0.024, parent: acorn }); } });
+    boxT(game, tx, tz, boardW + 0.1, topY, boardW + 0.1, { cam: false });
+    const logRound = () => { const g = new THREE.Group(); mesh(G.cyl(0.26, 0.28, 0.32, 12), bark, { y: 0.16, parent: g }); mesh(G.cyl(0.25, 0.25, 0.03, 12), mat(0xd9c29a, { roughness: 1 }), { y: 0.3, shadow: 'none', parent: g }); return g; };
+    placeT(game, U, logRound(), seatAx, seatAz, ryA + PI); placeT(game, U, logRound(), seatBx, seatBz, ryB + PI);
+    const forestWard = makeWardrobe(r, { shirts: [0x5a6a4a, 0x6b4f3a], pants: [0x3a3a2a, 0x2e3a28], shoes: [0x3a2a1e] });
+    const playerA = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: true, wardrobe: forestWard }),
+      hat: 'flatcap', hatColor: 0x3a3a28, jacket: 0x4a4030, scarf: null, bag: null, backpack: null, beard: true, glasses: false });
+    const playerB = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: true, wardrobe: forestWard }),
+      hat: 'bonnet', hatColor: 0x6b4f3a, jacket: null, scarf: 0x8a6a4a, bag: null, backpack: null, glasses: true });
+    W.add(playerA.group); W.add(playerB.group);
+    game.npcs.push(new Sitter(game, playerA, { x: seatAx, z: seatAz, ry: ryA, seat: 0.3,
+      cries: ['Best of three, same as every lunch break.', "Mind the board, puss — that's a hard-won king.", "Lost count of how many games we've played out here."] }));
+    game.npcs.push(new Sitter(game, playerB, { x: seatBx, z: seatBz, ry: ryB, seat: 0.3,
+      cries: ["He still can't beat me, after all these years.", "Careful, puss — don't scatter the acorns.", "One more game before the light goes."] }));
+    let acornMoveT = rnd.range(6, 10);
+    U.push((dt) => { acornMoveT -= dt; if (acornMoveT <= 0) { acornMoveT = rnd.range(7, 12); SFX.click(); game.fx.emit(tx, ty0 + topY + 0.1, tz, { count: 4, color: 0xcfa15a, speed: 0.3, up: 0.3, life: 0.6, gravity: 1.2, spread: 0.4 }); } }); }
+
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
 
