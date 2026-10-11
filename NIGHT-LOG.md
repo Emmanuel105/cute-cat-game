@@ -10076,3 +10076,28 @@ long-documented pre-existing Victorian horse-and-carriage timing flake (round 21
 real-timer race in the travel-settling poll, nothing to do with this change); three immediate reruns
 after that all came back clean. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 400 — a holidaymaker with a camera for Sunny Shore
+
+Victorian's own street photographer (round 396) ducks under a dark cloth to capture its market square,
+and Robot City's archive-bot files its own tripod shots of Sector 7 — but nobody on this whole coast had
+ever pointed a camera at the view it is actually famous for. **A holidaymaker now stands behind an old
+box camera on the open sand between the palms and the dune, facing out over the water, bending under the
+cloth every so often to compose a shot before springing straight as the shutter fires.** *"Hold still —
+the plate takes a few seconds!"* *"Best light on the coast, this time of day."* *"Careful, puss — it's
+only flash powder, not fire."*
+
+No new controller or prop: this is the exact same `Photographer` class and `makeOldCamera()` tripod
+Victorian's own photographer already uses, just a tourist in sunhat and shorts instead of a flatcap and
+coat. A headless probe (a scratch script built on the same stub-three harness `test/run.mjs` itself uses,
+since there's no browser here to look at it) built the real Sunny Shore (`game.load(4, 'from-hub')`,
+then `game.start('new')` so every crab, turtle, sunbather, dolphin and dog actually moved), sampled every
+NPC's and the squirrel's own position every quarter second over 300 simulated seconds, then swept a 1 m
+grid of the dry sand (x ≤ 11, short of the wet-sand zone, radius ≤ 50, short of the radius (58) where
+beachRegion's own fill takes over) against both those samples and every one of the beach's own physics
+boxes: (-17, 20) came back clear by 7.7 m of the nearest box (a dune palm) and 7.3 m of the nearest other
+soul (the tag game's own leash, further west), at radius 26.2 from the origin.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 274 checks `ok`, 0 console warnings, two repeat runs
+after that also clean (Sunny Shore's own friend count up to 55). Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
