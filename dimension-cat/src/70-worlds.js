@@ -1125,6 +1125,56 @@ function buildNeighborhood(game, entry) {
     let bounceCryT = r.range(3, 7);
     U.push((dt) => { bounceCryT -= dt; if (bounceCryT <= 0) { bounceCryT = r.range(8, 14); const c = game.cat.group.position; if (dist2(tx, tz, c.x, c.z) < 400) { game.toast('🤸 "' + r.pick(bounceLines) + '"', 2400); SFX.talk(); } } }); }
 
+  // Every other world picked up a bubble-blower (Sunny Shore, Victorian, Frosty Peak) — the Neighborhood,
+  // for all its yo-yo kid, hula hooper and jump-roper, never got one. A girl blows soap bubbles from a
+  // loop-ended wand on the open field east of the hula hooper, out past the hoopscotch and marbles games.
+  // Same build as the Sunny Shore one: the wand sits in `hands[1]`, the resting hand none of this rig's
+  // own idle gestures swing, so `wand.getWorldPosition()` only needs reading once, right after `Charger`
+  // sets the rig's fixed position and rotation, for an exact launch point for both bubbles. Own fixed
+  // shirt colour (0x7ee8fa), not in the street's shared 18-colour `ward` bag nor any other fixed shirt
+  // this build already hands out, so the "no two neighbours share a shirt" check stays clean. No `cries`
+  // passed to `Charger` itself — that draws its cry timer off the *shared* global `rnd()` at construction,
+  // the same stray draw the dog groomer's own round found breaks a later timing-sensitive check elsewhere
+  // in this world — so this one times its own toast off the local `r()` instead, exactly like the hula
+  // hooper, jump-roper, marbles kid and bouncer above. The bubbles themselves ride the world clock `t`
+  // alone on two fixed phases, so they draw from neither sequence and can't shift any later pick.
+  // (a headless probe over the built world — every NPC's and the squirrel's own position sampled every
+  // quarter second over 60 simulated seconds, so no wandering stroller, the postie's round, the cyclist
+  // nor a dog mid-leash could slip past unnoticed, swept against a grid of the open field and every one
+  // of the street's physics boxes, also kept 6 m clear of every road, pavement and path this world's own
+  // test walks end to end — found (37, -72) clear: 16.7 m from the nearest box and 17.7 m from the
+  // nearest other soul (the hula hooper, 17.7 m off))
+  { const bkx = 37, bkz = -72, bkry = atan2(-bkx, -bkz);
+    const blower = makeHuman({ ...randomPerson(r, { female: true, child: true }), hairStyle: 'pony', shirt: 0x7ee8fa, backpack: null }); W.add(blower.group);
+    const wand = group(0.02, 0, 0.1, blower.hands[1]); wand.rotation.set(-0.3, 0, 0.3);
+    mesh(G.cyl(0.012, 0.012, 0.14, 6), mat(0xffd54a, { roughness: 0.6 }), { y: 0.07, parent: wand });
+    mesh(G.torus(0.055, 0.009, 6, 16), mat(0xf7f3ec, { roughness: 0.3, transparent: true, opacity: 0.6 }), { y: 0.16, parent: wand });
+    game.npcs.push(new Charger(game, blower, { x: bkx, z: bkz, ry: bkry }));
+    const tip = V3(); wand.getWorldPosition(tip);
+    const bubbleM = mat(0xeaffff, { pbr: true, metalness: 0.05, roughness: 0.1, transparent: true, opacity: 0.4 });
+    const bubbles = [0, 1].map((i) => ({ m: mesh(G.sphere(0.05, 10, 8), bubbleM, { shadow: 'none', parent: W }), ph: i * 1.8, popped: -1 }));
+    const cyc = 3.2;
+    U.push((dt, t) => {
+      for (const b of bubbles) {
+        const k = ((t + b.ph) % cyc) / cyc;
+        if (k < 0.92) {
+          b.m.visible = true;
+          b.m.position.set(tip.x + sin(t * 1.6 + b.ph) * 0.18 * k, tip.y + k * 1.5, tip.z + cos(t * 1.1 + b.ph) * 0.12 * k);
+          b.m.scale.setScalar(0.4 + k * 0.7);
+        } else {
+          b.m.visible = false;
+          const cycleNo = floor((t + b.ph) / cyc);
+          if (cycleNo !== b.popped) { b.popped = cycleNo;
+            const c = game.cat.group.position;
+            if (dist2(tip.x, tip.z, c.x, c.z) < 400) { SFX.twinkle(); game.fx.emit(b.m.position.x, b.m.position.y, b.m.position.z, { count: 4, colors: [0xeaffff, 0xffffff, 0xbfe8ff], speed: 0.5, up: 0.6, life: 0.5, gravity: 1.5 }); }
+          }
+        }
+      }
+    });
+    const bubbleLines = ["Careful, puss — don't pop them with your nose!", "Mum's own recipe — dish soap and a spoon of sugar.", "That one's going clean over the fence!"];
+    let bubbleCryT = r.range(4, 9);
+    U.push((dt) => { bubbleCryT -= dt; if (bubbleCryT <= 0) { bubbleCryT = r.range(9, 16); const c = game.cat.group.position; if (dist2(bkx, bkz, c.x, c.z) < 400) { game.toast('🫧 "' + r.pick(bubbleLines) + '"', 2400); SFX.talk(); } } }); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

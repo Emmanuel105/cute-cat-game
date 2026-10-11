@@ -9888,3 +9888,35 @@ position stayed finite throughout — no runaway puppet animation.
 Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks `ok`, 0 console warnings, three repeat
 runs after that also clean (`world 3: 70 to meet`, up from 69). Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 394 — a bubble-blower for the Neighborhood
+
+Sunny Shore, Victorian and Frosty Peak all picked up a soap-bubble kid at some point, but the
+Neighborhood — the world with the yo-yo kid, the hula hooper and the jump-roper — never got one.
+**A girl now blows bubbles from a wand on the open field east of the hula hooper**, two afloat at a
+time, drifting up on the breeze before popping into a little sparkle. *"Careful, puss — don't pop them
+with your nose!"* *"Mum's own recipe — dish soap and a spoon of sugar."* *"That one's going clean over
+the fence!"*
+
+Reused the Sunny Shore build almost line for line: the wand sits in `hands[1]`, the one resting hand
+none of `makeHuman`'s own idle gestures swing, so its world position only needs reading once, right
+after `Charger` sets the rig's fixed spot, for an exact launch point for both bubbles — no per-frame
+trig. Own fixed shirt colour (a sky-blue `0x7ee8fa`) rather than the street's shared 18-colour wardrobe,
+checked against every other fixed shirt this build already hands out so "no two neighbours wear the
+same shirt" stays true (45 colours for 45 people now). `Charger` itself gets no `cries` — passing them
+would draw its cry timer off the *shared* global `rnd()` at construction, the same stray draw the dog
+groomer's own round found shifts a later timing-sensitive check elsewhere in this world — so the toast
+line is timed off this world's own local `r()` instead, same as the hula hooper, jump-roper, marbles kid
+and bouncer already do. The bubbles themselves ride the world clock alone on two fixed phases, drawing
+from neither sequence.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real Neighborhood,
+called `game.start('new')` so every stroller, the postie and the cyclist actually moved, sampled every
+NPC's and the squirrel's own position every quarter second over 60 simulated seconds, then swept a grid
+of the open field — kept 6 m clear of every road, pavement and path this world's own test walks end to
+end — against both those samples and all 304 of the street's physics boxes: (37, -72) came back clear by
+16.7 m of the nearest box and 17.7 m of the nearest other soul (the hula hooper).
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks `ok`, 0 console warnings, three repeat
+runs after that also clean (`world 0: 50 to meet`, up from 49). Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
