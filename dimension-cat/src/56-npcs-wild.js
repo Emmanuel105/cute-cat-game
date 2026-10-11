@@ -531,6 +531,23 @@ function makeButterfly(hue = 300) {
   return rig;
 }
 
+// ---------------------------------------------------------------- bee (flyer): a striped capsule body, a dark head, two blurred wings — the
+// same `Flyer` controller every other world's flock already loops with, just a much tighter orbit and a much faster flap, so it reads as a
+// bee circling close round a hive rather than a butterfly out wandering the glade.
+function makeBee() {
+  const g = new THREE.Group(), rig = { group: g };
+  const body = group(0, 0, 0, g); rig.body = body;
+  const gold = mat(0xf2b705, { roughness: 0.45 }), black = mat(0x18140f, { roughness: 0.5 });
+  mesh(G.capsule(0.021, 0.018, 6), gold, { rx: PI / 2, shadow: 'none', parent: body });
+  for (const z of [-0.013, 0.001, 0.015]) mesh(G.torus(0.0215, 0.006, 4, 10), black, { z, shadow: 'none', parent: body });
+  mesh(G.sphere(0.013, 6, 6), black, { z: 0.033, shadow: 'none', parent: body });
+  const wingM = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.4, side: THREE.DoubleSide, depthWrite: false }); worldBag.track(wingM);
+  rig.wings = [1, -1].map((side) => { const w = group(side * 0.012, 0.018, 0, body); mesh(G.plane(0.05, 0.028), wingM, { x: side * 0.024, ry: side * 0.3, shadow: 'none', parent: w }); return { w, side }; });
+  rig.animate = (ph, moving, dt, t = 0) => { for (const W of rig.wings) W.w.rotation.y = W.side * (0.25 + sin(t * 42 + (rig.phase ?? 0)) * 1.1); };
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- drone-fly (flyer: Robot City's own answer to a butterfly or a gull — every
 // other world has an ambient flock wheeling overhead by now (butterflies, gulls, snow buntings, doves, fairies), but Robot City's single
 // maintenance drone over the ring-dance clearing never had any company, and nothing in this city's sky was alive. A little swarm of these now

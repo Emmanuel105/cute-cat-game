@@ -10454,3 +10454,39 @@ wardrobe or colour pick.
 Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, 0 console warnings every time,
 Sunny Shore's own friend count up one to 58. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 412 — a beekeeper for Whisper Woods
+
+Every world's vendor and every world's garden (the Neighborhood's vegetable patch, Candy Land's gumdrop
+patches) has somebody tending it by now, but Whisper Woods — for all its foragers, berry sellers and
+dandelion wishers — never had anyone keeping anything of their own. **A beekeeper now stands beside a
+three-tier hive on the woods' own quiet western fringe, smoker in hand, a few real bees looping tight
+circles just above the roof.** *"Calm smoke, calm bees. Works every time."* *"Careful, puss — give the
+hive some room."* *"Three jars of honey off this lot, last season."*
+
+No new standing controller: `Charger` already does nothing but hold an idle pose and greet, the same job
+it does for Robot City's plugged-in robots, so the keeper just stands there calmly the way anyone minding
+a hive from a safe distance actually would. The hive itself is three stacked boxes (white, white, mossy
+green) under a flat roof board, with a small dark cylinder for the entrance — all built inline, no new
+shared prop function. The smoker is a held prop parented straight into `rig.hands[1]`, the same trick the
+chalker's chalk and the spinner's cord already use, and puffs a few pale motes from its spout every several
+seconds, the same `game.fx.emit` trick the draughts table's own acorn-click already relies on, just
+upward and pale instead of brown and outward. The bees themselves are new: `makeBee` (`56-npcs-wild.js`,
+next to `makeButterfly`) is a striped capsule body with two blurred wings, flown on the same `Flyer`
+controller every other world's flock already loops with — just a much tighter orbit (0.35-0.55 m) and a
+much faster flap, so three of them read as bees circling close round a hive rather than butterflies out
+wandering the glade.
+
+A headless probe (a scratch script built on the same stub-three harness `test/run.mjs` itself uses, since
+there's no browser here to look at it) built the real Whisper Woods (`game.load(6, 'from-hub')`, then
+`game.start('new')` so every deer, fox, hare and frog actually moved), sampled every NPC's and the
+squirrel's own position every quarter second over 300 simulated seconds, then swept a 1 m grid of the open
+forest floor (radius 15-50, short of the radius (58) where forestRegion's own fill takes over) against both
+those samples and all 629 of the wood's physics boxes: (-43, 2) came back clear by 8.2 m of the nearest box
+and 9.1 m of the nearest other soul, well clear of the photographer (-16, -36), the draughts table (42, -27)
+and the spinning-top child. Placed last of every person this build adds, after the draughts players, so it
+draws from the very tail of this world's own local `r()` sequence.
+
+Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, 0 console warnings every time,
+Whisper Woods' own friend count up one to 60. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.

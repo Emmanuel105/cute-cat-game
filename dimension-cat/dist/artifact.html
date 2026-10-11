@@ -4153,6 +4153,23 @@ function makeButterfly(hue = 300) {
   return rig;
 }
 
+// ---------------------------------------------------------------- bee (flyer): a striped capsule body, a dark head, two blurred wings — the
+// same `Flyer` controller every other world's flock already loops with, just a much tighter orbit and a much faster flap, so it reads as a
+// bee circling close round a hive rather than a butterfly out wandering the glade.
+function makeBee() {
+  const g = new THREE.Group(), rig = { group: g };
+  const body = group(0, 0, 0, g); rig.body = body;
+  const gold = mat(0xf2b705, { roughness: 0.45 }), black = mat(0x18140f, { roughness: 0.5 });
+  mesh(G.capsule(0.021, 0.018, 6), gold, { rx: PI / 2, shadow: 'none', parent: body });
+  for (const z of [-0.013, 0.001, 0.015]) mesh(G.torus(0.0215, 0.006, 4, 10), black, { z, shadow: 'none', parent: body });
+  mesh(G.sphere(0.013, 6, 6), black, { z: 0.033, shadow: 'none', parent: body });
+  const wingM = new THREE.MeshBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.4, side: THREE.DoubleSide, depthWrite: false }); worldBag.track(wingM);
+  rig.wings = [1, -1].map((side) => { const w = group(side * 0.012, 0.018, 0, body); mesh(G.plane(0.05, 0.028), wingM, { x: side * 0.024, ry: side * 0.3, shadow: 'none', parent: w }); return { w, side }; });
+  rig.animate = (ph, moving, dt, t = 0) => { for (const W of rig.wings) W.w.rotation.y = W.side * (0.25 + sin(t * 42 + (rig.phase ?? 0)) * 1.1); };
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- drone-fly (flyer: Robot City's own answer to a butterfly or a gull — every
 // other world has an ambient flock wheeling overhead by now (butterflies, gulls, snow buntings, doves, fairies), but Robot City's single
 // maintenance drone over the ring-dance clearing never had any company, and nothing in this city's sky was alive. A little swarm of these now
@@ -13473,6 +13490,48 @@ function buildForest(game, entry) {
       cries: ["He still can't beat me, after all these years.", "Careful, puss — don't scatter the acorns.", "One more game before the light goes."] }));
     let acornMoveT = rnd.range(6, 10);
     U.push((dt) => { acornMoveT -= dt; if (acornMoveT <= 0) { acornMoveT = rnd.range(7, 12); SFX.click(); game.fx.emit(tx, ty0 + topY + 0.1, tz, { count: 4, color: 0xcfa15a, speed: 0.3, up: 0.3, life: 0.6, gravity: 1.2, spread: 0.4 }); } }); }
+
+  // Whisper Woods has a forager, a berry seller and a dandelion wisher living off the woods already, but
+  // nobody out here had ever kept anything of their own — every world's vendor and every world's garden
+  // (the Neighborhood's vegetable patch, Candy Land's gumdrop patches) has somebody tending it except this
+  // one. **A beekeeper now stands beside a three-tier hive on the woods' own quiet western fringe**,
+  // smoker in hand, a few real bees (`makeBee`, next to `makeButterfly` in `56-npcs-wild.js`) looping tight
+  // circles just above the roof. No new standing controller: `Charger` already does nothing but hold an
+  // idle pose and greet, the same job it does for Robot City's own plugged-in robots, so the keeper just
+  // stands there calmly the way anyone minding a hive from a safe distance actually would. The smoker
+  // itself is a held prop built the same way the chalker's chalk and the spinner's cord already are —
+  // parented straight into `rig.hands[1]`, no controller change — and puffs a few pale motes from its
+  // spout every several seconds, the same `game.fx.emit` trick the draughts table's own acorn-click
+  // already uses, just upward and pale instead of brown and outward.
+  // A headless probe (a scratch script built on the same stub-three harness `test/run.mjs` itself uses,
+  // since there's no browser here to look at it) built the real Whisper Woods (`game.load(6, 'from-hub')`,
+  // then `game.start('new')` so every deer, fox, hare and frog actually moved), sampled every NPC's and
+  // the squirrel's own position every quarter second over 300 simulated seconds, then swept a 1 m grid of
+  // the open forest floor (radius 15-50, short of the radius (58) where forestRegion's own fill takes
+  // over) against both those samples and all 629 of the wood's physics boxes: (-43, 2) came back clear by
+  // 8.2 m of the nearest box and 9.1 m of the nearest other soul, well clear of the photographer (-16,-36),
+  // the draughts table (42,-27) and the spinning-top child. Placed last of every person this build adds,
+  // after the draughts players, so it draws from the very tail of this world's own local `r()` sequence.
+  { const hx = -43, hz = 2, hy0 = P.ground0(hx, hz);
+    const white = mat(0xe9e4d6, { roughness: 0.85 }), trim = mat(0x6b8a5a, { roughness: 0.8 }), dark = mat(0x241e14, { roughness: 0.9 });
+    const hive = group(hx, hy0, hz, W);
+    for (let i = 0; i < 3; i++) mesh(G.box(0.46, 0.26, 0.4), i === 2 ? trim : white, { y: 0.1 + i * 0.27, parent: hive });
+    mesh(G.box(0.52, 0.03, 0.46), dark, { y: 0.835, shadow: 'both', parent: hive });   // flat roof board
+    mesh(G.cyl(0.035, 0.035, 0.05, 8), dark, { y: 0.235, z: 0.21, rx: PI / 2, shadow: 'none', parent: hive });   // entrance
+    boxT(game, hx, hz, 0.3, 1.0, 0.25, { cam: false });
+    for (let i = 0; i < 3; i++) { const rig = makeBee(); game.npcs.push(new Flyer(game, rig, { cx: hx, cz: hz, r: rnd.range(0.35, 0.55), h: 1.0 + rnd.range(-0.1, 0.15), speed: rnd.range(2.6, 3.6), bob: 0.12, wobble: 0.15, cw: i % 2 === 0, phase: i * 2.1 })); }
+    const bx = hx, bz = hz - 1.1, bry = atan2(hx - bx, hz - bz);
+    const beeWard = makeWardrobe(r, { shirts: [0xece4d2], pants: [0xece4d2, 0xe3dcc8], shoes: [0x3a3226] });
+    const keeper = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: beeWard }),
+      hat: 'sunhat', hatColor: 0xe9e4d6, jacket: 0xece4d2, glasses: false, beard: false });
+    W.add(keeper.group);
+    const smoker = group(0, 0.26, 0.1, keeper.hands[1]); smoker.rotation.x = -0.35;
+    mesh(G.cyl(0.028, 0.032, 0.07, 10), mat(0x8a8a86, { metalness: 0.5, roughness: 0.4 }), { parent: smoker });
+    const spout = mesh(G.cyl(0.011, 0.015, 0.045, 8), mat(0x6a6a66, { metalness: 0.5, roughness: 0.4 }), { y: 0.055, z: 0.025, rx: -0.3, parent: smoker });
+    game.npcs.push(new Charger(game, keeper, { x: bx, z: bz, ry: bry, cryIcon: '🐝',
+      cries: ['Calm smoke, calm bees. Works every time.', "Careful, puss — give the hive some room.", "Three jars of honey off this lot, last season."] }));
+    let smokeT = rnd.range(5, 9);
+    U.push((dt) => { smokeT -= dt; if (smokeT <= 0) { smokeT = rnd.range(7, 12); const p = V3(); spout.getWorldPosition(p); game.fx.emit(p.x, p.y, p.z, { count: 4, color: 0xe8e4da, speed: 0.15, up: 0.3, life: 1.4, gravity: -0.3, spread: 0.2 }); } }); }
 
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
