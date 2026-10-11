@@ -10420,3 +10420,37 @@ own local `r()` sequence.
 Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, 0 console warnings every time,
 Candy Land's own friend count up two to 64. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 411 — a frisbee for Sunny Shore
+
+Ball games, kites, yo-yos, hula hoops and jump ropes have all made it to the beach by now, but nobody
+on this whole coast had ever thrown a frisbee — and a beach is the one place that's actually missing.
+**A beachgoer now stands on the open dry sand south of the mancala table, flicking a disc straight up
+off the palm — it rises on a spin, hangs a beat at the top, then drops back into the hand for the next
+throw.** *"Highest throw yet, that one!"* *"Careful, puss — mind your head on the way down."* *"Wind's
+just right for this, out here."*
+
+New `FrisbeePlayer` controller (`55-npcs.js`, next to `HulaHooper`): the disc sits in a small group
+parented straight to `rig.hands[1]`, the same trick the yo-yo's own string already uses, so there's no
+held prop and no new build step — just a pale-capped disc, two meshes. The motion reuses the yo-yo's own
+eased rise-then-hover-then-fall curve (smoothstepped both ways so it never snaps), just run upward off
+the palm instead of downward on a string, with the disc's own spin speeding up the higher it climbs and
+the arm lifting to match. A solo trick, not a toss between two people — simpler to get right without a
+browser to check the catch actually lands, and there was no obvious second person to throw it back to
+here anyway.
+
+A headless probe (a scratch script built on the same stub-three harness `test/run.mjs` itself uses,
+since there's no browser here to look at it) built the real Sunny Shore (`game.load(4, 'from-hub')`,
+then `game.start('new')` so every crab, turtle, sunbather, dolphin and dog actually moved), sampled every
+NPC's and the squirrel's own position every quarter second over 300 simulated seconds, then swept a 1 m
+grid of the dry sand (ground height 0.15–2.2 m, radius 8–50, short of the radius (58) where beachRegion's
+own fill takes over) against both those samples and all 216 of the beach's own physics boxes: (-19, -14)
+came back clear by 7.60 m of the nearest box and 9.43 m of the nearest other soul, at radius 23.6 from
+the origin, well south of the mancala table (-32, -21) and clear of the yo-yo, hula-hoop and jump-rope
+kids further out on the dunes. Placed right after the mancala table, the last thing this build had
+added, so it draws from the tail of this world's own local `r()` sequence and disturbs no earlier
+wardrobe or colour pick.
+
+Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, 0 console warnings every time,
+Sunny Shore's own friend count up one to 58. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.

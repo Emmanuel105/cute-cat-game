@@ -2978,6 +2978,34 @@ class HulaHooper {
   }
 }
 
+// ---------------------------------------------------------------- frisbee player: a flat disc leaves the palm, rises on a spin, hangs a beat at the top, then drops straight back into the hand
+class FrisbeePlayer {
+  constructor(game, rig, color, { x, z, ry = 0, cries = null, cryIcon = '🥏' }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    const k = rig.k, hand = rig.hands[1];
+    this.disc = group(0, 0, 0, hand);
+    mesh(G.cyl(0.11 * k, 0.11 * k, 0.018 * k, 20), mat(color, { roughness: 0.4 }), { parent: this.disc });
+    mesh(G.cyl(0.085 * k, 0.085 * k, 0.006 * k, 20), mat(0xf7f3ec, { roughness: 0.6 }), { y: 0.011 * k, parent: this.disc });   // a pale cap on top, so the spin reads even at the peak
+    this.circle = game.physics.addCircle(this, x, z, 0.35);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig, k = rig.k;
+    rig.animate(0, false, dt, this.t);
+    // rise, a brief hang at the top (the float), drop back into the palm — eased both ways so it never snaps
+    const cyc = 1.6, hover = 0.12, ph = (this.t % cyc) / cyc;
+    let p; if (ph < 0.42) p = ph / 0.42; else if (ph < 0.42 + hover) p = 1; else p = 1 - (ph - 0.42 - hover) / (1 - 0.42 - hover);
+    p = p * p * (3 - 2 * p);
+    this.disc.position.y = p * 0.55 * k;
+    this.disc.rotation.y += dt * (3 + p * 16);
+    if (!rig.gesture) { const A = rig.arms[1]; A.sh.rotation.x = damp(A.sh.rotation.x, -0.7 + p * 0.55, 9, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.5 - p * 0.3, 9, dt); A.sh.rotation.z = -0.2; }
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- vendor: stands on their pitch holding something up in the left hand, and calls their wares
 class Vendor {
   constructor(game, rig, held, { x, z, ry = 0, cries = null, cryIcon = '\ud83c\udf88' }) {
@@ -11499,6 +11527,24 @@ function buildBeach(game, entry) {
       cries: ["Six shells to your five pebbles — I'm not losing this one.", "Careful, puss — one flick of your tail and we start the whole row over.", "Loser fetches the next round of ice lollies, same as always."] }));
     game.npcs.push(new Sitter(game, playerB, { x: seatBx, z: seatBz, ry: PI, seat: 0.3,
       cries: ["Pebbles don't lie — I'm two scoops ahead.", "Mind your paws, puss, that store's not finished filling yet.", "Best two out of three, same as every afternoon."] })); }
+  // a frisbee belongs on a beach as much as the ball game and the kite already do, and nobody on this
+  // whole coast had ever thrown one. A solo player now stands on the open dry sand well south of the
+  // mancala table, tossing a disc straight up off the palm — it rises on a spin, hangs a beat at the
+  // top, and drops back into the hand for the next throw. New `FrisbeePlayer` controller (`55-npcs.js`,
+  // next to `HulaHooper`): the disc is parented to `rig.hands[1]` like the yo-yo's own string, so no
+  // held prop and no new build step, just the one eased rise-and-drop curve the yo-yo's own drop-and-
+  // hover already uses, run upward instead of down.
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, since
+  // there's no browser here to look at it) built the real Sunny Shore (`game.load(4, 'from-hub')`, then
+  // `game.start('new')` so every crab, turtle, sunbather, dolphin and dog actually moved), sampled every
+  // NPC's and the squirrel's own position every quarter second over 300 simulated seconds, then swept a
+  // 1 m grid of the dry sand (ground height 0.15-2.2 m, radius 8-50, short of the radius (58) where
+  // beachRegion's own fill takes over) against both those samples and all 216 of the beach's own physics
+  // boxes: (-19, -14) came back clear by 7.60 m of the nearest box and 9.43 m of the nearest other soul,
+  // at radius 23.6 from the origin, well south of the mancala table (-32, -21).
+  { const fx = -19, fz = -14;
+    game.npcs.push(new FrisbeePlayer(game, beachPerson(r.chance(0.5), false), r.pick([0xff6f3c, 0xffd54a, 0x7fe0ff]), { x: fx, z: fz, ry: atan2(0 - fx, 0 - fz), cryIcon: '🥏',
+      cries: ["Highest throw yet, that one!", "Careful, puss — mind your head on the way down.", "Wind's just right for this, out here."] })); }
   // the beach dog keeps to its own patch of sand — it does not follow the cat
   const dog = makeDog(0xc8925a); W.add(dog.group); game.npcs.push(new Wanderer(game, dog, { x: -2, z: 28, speed: 1.1, leash: 7, r: 0.35, height: 0.9, step: 0.3, idle: [1.5, 4], walk: [2, 5] }));
   let woofT = rnd.range(6, 12); U.push((dt) => { woofT -= dt; if (woofT <= 0) { SFX.woof(); woofT = rnd.range(10, 20); } });

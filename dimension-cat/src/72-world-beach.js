@@ -779,6 +779,24 @@ function buildBeach(game, entry) {
       cries: ["Six shells to your five pebbles — I'm not losing this one.", "Careful, puss — one flick of your tail and we start the whole row over.", "Loser fetches the next round of ice lollies, same as always."] }));
     game.npcs.push(new Sitter(game, playerB, { x: seatBx, z: seatBz, ry: PI, seat: 0.3,
       cries: ["Pebbles don't lie — I'm two scoops ahead.", "Mind your paws, puss, that store's not finished filling yet.", "Best two out of three, same as every afternoon."] })); }
+  // a frisbee belongs on a beach as much as the ball game and the kite already do, and nobody on this
+  // whole coast had ever thrown one. A solo player now stands on the open dry sand well south of the
+  // mancala table, tossing a disc straight up off the palm — it rises on a spin, hangs a beat at the
+  // top, and drops back into the hand for the next throw. New `FrisbeePlayer` controller (`55-npcs.js`,
+  // next to `HulaHooper`): the disc is parented to `rig.hands[1]` like the yo-yo's own string, so no
+  // held prop and no new build step, just the one eased rise-and-drop curve the yo-yo's own drop-and-
+  // hover already uses, run upward instead of down.
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, since
+  // there's no browser here to look at it) built the real Sunny Shore (`game.load(4, 'from-hub')`, then
+  // `game.start('new')` so every crab, turtle, sunbather, dolphin and dog actually moved), sampled every
+  // NPC's and the squirrel's own position every quarter second over 300 simulated seconds, then swept a
+  // 1 m grid of the dry sand (ground height 0.15-2.2 m, radius 8-50, short of the radius (58) where
+  // beachRegion's own fill takes over) against both those samples and all 216 of the beach's own physics
+  // boxes: (-19, -14) came back clear by 7.60 m of the nearest box and 9.43 m of the nearest other soul,
+  // at radius 23.6 from the origin, well south of the mancala table (-32, -21).
+  { const fx = -19, fz = -14;
+    game.npcs.push(new FrisbeePlayer(game, beachPerson(r.chance(0.5), false), r.pick([0xff6f3c, 0xffd54a, 0x7fe0ff]), { x: fx, z: fz, ry: atan2(0 - fx, 0 - fz), cryIcon: '🥏',
+      cries: ["Highest throw yet, that one!", "Careful, puss — mind your head on the way down.", "Wind's just right for this, out here."] })); }
   // the beach dog keeps to its own patch of sand — it does not follow the cat
   const dog = makeDog(0xc8925a); W.add(dog.group); game.npcs.push(new Wanderer(game, dog, { x: -2, z: 28, speed: 1.1, leash: 7, r: 0.35, height: 0.9, step: 0.3, idle: [1.5, 4], walk: [2, 5] }));
   let woofT = rnd.range(6, 12); U.push((dt) => { woofT -= dt; if (woofT <= 0) { SFX.woof(); woofT = rnd.range(10, 20); } });
