@@ -9673,6 +9673,62 @@ function buildVictorian(game, entry) {
     P.addBox(px, 0.45, pz, 0.32, 0.9, 0.32, { cam: false });
     const postboxLines = ['📮 "Posted a letter in there years ago. Still waiting on a reply."', '📮 "The flap sticks a little — everyone gives it the same shove."', '📮 "Somebody\'s postcard never did make it out of that slot."'];
     game.addInteractable({ obj: post, radius: 2.2, label: () => 'Look at the postbox', onUse: () => { SFX.click(); game.toast(rnd.pick(postboxLines), 3000); } }); }
+  // the juggler, the fiddler and the painter all work the square and the plaza, but the one street
+  // entertainment the era is actually famous for — a Punch and Judy show — never turned up anywhere in
+  // the game. A striped puppet booth now stands on the quiet grass south-west of the backyards, Mr
+  // Punch and Judy popping up through its own little stage in turn, a showman standing beside it
+  // drumming up custom. No new controller for the showman — a plain `Charger`, same as the fiddler, the
+  // painter and the sweep; the puppets themselves are two small static rigs (no `makeHuman`, they're
+  // puppets, not people) riding the world clock alone in a `U.push`, so nothing here draws from this
+  // world's own seeded `r` beyond the showman's own wardrobe roll.
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real Victorian
+  // town (`game.travel(3, 'from-prev')`, then `game.start('new')` so every urchin, dancer and
+  // ball-tossing pair actually moved), sampled every NPC's and the squirrel's own position every quarter
+  // second over 300 simulated seconds, then swept this quiet south-west corner — past the backyards, past
+  // the hopscotch grid and the draughts table — against both those samples and all 304 of the town's
+  // physics boxes: (-60, -44) came back clear by 6.9 m of the nearest box (the oak at (-66, -14)) and
+  // 18.4 m of the nearest other soul, comfortably inside the radius (88) where victorianRegion's own
+  // procedural fill takes over.
+  { const bx = -60, bz = -44, showX = -62, showZ = -44, showRy = atan2(bx - showX, bz - showZ);
+    const booth = group(bx, 0, bz, W);
+    const clothA = mat(0x8b1a1a, { roughness: 0.85 }), clothB = mat(0xf7f3ec, { roughness: 0.85 }), woodM = mat(0x3f2a1a, { roughness: 0.8 });
+    for (const [px, pz] of [[-0.45, -0.45], [0.45, -0.45], [-0.45, 0.45], [0.45, 0.45]]) mesh(G.cyl(0.035, 0.035, 1.9, 8), woodM, { x: px, y: 0.95, z: pz, parent: booth });
+    for (let i = 0; i < 6; i++) mesh(G.box(0.16, 1.5, 0.02), i % 2 ? clothA : clothB, { x: -0.4 + i * 0.16, y: 0.75, z: 0.44, parent: booth });   // the front curtain — stops short of the top, leaving the stage open
+    for (const s of [-1, 1]) for (let i = 0; i < 6; i++) mesh(G.box(0.02, 1.9, 0.16), i % 2 ? clothA : clothB, { x: s * 0.44, y: 0.95, z: -0.4 + i * 0.16, parent: booth });   // the sides, full height — nobody ever sees behind a puppet booth
+    mesh(G.box(0.95, 0.07, 0.1), woodM, { y: 1.5, z: 0.46, parent: booth });   // the stage's own ledge
+    mesh(G.box(0.95, 0.07, 0.1), woodM, { y: 1.88, z: 0.46, parent: booth });  // and its top rail
+    P.addBox(bx, 0.95, bz, 0.92, 1.9, 0.92, { cam: false });
+    // Mr Punch: red pointed cap, a hooked nose, a white ruff — on his own hidden stick, parented straight to the world so its y can be driven directly
+    const punch = group(bx - 0.18, 1.42, bz + 0.3, W);
+    mesh(G.sphere(0.1, 10, 8), mat(0xffd9a0, { roughness: 0.7 }), { y: 0.2, parent: punch });
+    mesh(G.cone(0.13, 0.24, 10), mat(0xd62839, { roughness: 0.6 }), { y: 0.34, parent: punch });
+    mesh(G.cone(0.025, 0.08, 6), mat(0xffd9a0, { roughness: 0.7 }), { y: 0.21, z: 0.1, rx: PI / 2, parent: punch });
+    mesh(G.torus(0.1, 0.03, 6, 12), clothB, { y: 0.08, rx: PI / 2, parent: punch });
+    // Judy: a white bonnet, a blue collar
+    const judy = group(bx + 0.18, 1.42, bz + 0.3, W);
+    mesh(G.sphere(0.1, 10, 8), mat(0xffd9a0, { roughness: 0.7 }), { y: 0.2, parent: judy });
+    mesh(G.sphere(0.12, 10, 8), clothB, { y: 0.3, sy: 0.7, parent: judy });
+    mesh(G.torus(0.1, 0.03, 6, 12), mat(0x3a5a8a, { roughness: 0.8 }), { y: 0.08, rx: PI / 2, parent: judy });
+    const hideY = 1.42, popH = 0.42, puppetCyc = 2.6;
+    let punchClash = -1;
+    U.push((dt, t) => {
+      const kp = (t % puppetCyc) / puppetCyc, kj = ((t + puppetCyc * 0.5) % puppetCyc) / puppetCyc;
+      const pop = (k) => k < 0.45 ? sin(k / 0.45 * PI) : 0;
+      const pp = pop(kp), pj = pop(kj);
+      punch.position.y = hideY + pp * popH; judy.position.y = hideY + pj * popH;
+      punch.rotation.y = pp > 0.05 ? sin(t * 6) * 0.35 : 0; judy.rotation.y = pj > 0.05 ? sin(t * 6 + 1.7) * 0.3 : 0;
+      const cycleNo = floor(t / puppetCyc);
+      if (pp > 0.95 && cycleNo !== punchClash) { punchClash = cycleNo;
+        const c = game.cat.group.position;
+        if (dist2(bx, bz, c.x, c.z) < 400) { SFX.thunk(); game.fx.emit(punch.position.x, punch.position.y + 0.1, punch.position.z, { count: 5, color: 0xd62839, speed: 0.6, up: 0.5, life: 0.5, gravity: 2 }); }
+      }
+    });
+    const showWard = makeWardrobe(r, { shirts: [0x8b1a1a, 0x3a5a6a], pants: [0x1e1e24], shoes: [0x2a2018] });
+    const showman = makeHuman({ ...randomPerson(r, { female: r.chance(0.3), child: false, elder: r.chance(0.3), wardrobe: showWard }),
+      pants: 0x1e1e24, stripes: 0xd4af37, hat: 'top', hatColor: 0x1e1e24, hatBand: 0xd4af37, coat: false, scarf: null, jacket: null, bag: null, glasses: false });
+    W.add(showman.group);
+    game.npcs.push(new Charger(game, showman, { x: showX, z: showZ, ry: showRy, cryIcon: '🎭',
+      cries: ["Roll up, roll up, for Mr Punch and his good lady wife!", '"That\'s the way to do it!"', 'Mind your tail, puss — he bites, puppet or not.'] })); }
   victorianRegion(game, U, r, 88, VICTORIAN_LIMIT - 10);
   makeHorizon(game, r, { clear: VICTORIAN_LIMIT + 10, hills: true, hill: 0x3f4a38, rock: 0x3a3f4a, rock2: 0x4a4a58, snow: 0xcfd6e2, woodHue: [0.16, 0.26], woodLight: [0.1, 0.2], trunk: 0x3a2a1e, peaks: 30, woodCount: 420 });
   // people

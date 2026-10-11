@@ -9856,3 +9856,35 @@ jogger, pausing for breath 9.5 m off).
 Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks `ok`, 0 console warnings, two repeat runs
 after that also clean (`world 6: 56 to meet`, up from 55). Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 393 — a Punch and Judy show for Victorian
+
+The market square has a juggler, the clock tower plaza a fiddler and a painter, but the one street
+entertainment the Victorian era is actually famous for had never shown up anywhere in the game. **A
+striped puppet booth now stands on the quiet grass south-west of the backyards, Mr Punch and Judy
+popping up through its own little stage in turn**, a showman standing beside it drumming up custom.
+*"Roll up, roll up, for Mr Punch and his good lady wife!"* *"That's the way to do it!"* *"Mind your tail,
+puss — he bites, puppet or not."*
+
+No new controller for the showman — a plain `Charger`, the same one already standing in for the
+fiddler, the painter and the sweep. The puppets themselves aren't people at all, just two small static
+rigs (a head, a hat or bonnet, a ruff) riding the world clock alone in a `U.push`: each rises through the
+booth's own stage opening on its own half-cycle, offset so one is always down while the other is up, with
+a little side-to-side wobble while it's visible. Once a cycle, Punch's own peak triggers a `SFX.thunk()`
+and a small burst of sparks — the one bit of slapstick a puppet booth is for — gated the same way the
+canal ducks' quacking and the bubble-blowers' pops already are, so it never fires with the cat out of
+earshot. None of it draws from this world's own seeded `r` beyond the showman's own wardrobe roll, so it
+can't shift any later pick in this build.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real Victorian town
+(`game.travel(3, 'from-prev')`, then `game.start('new')` so every urchin, dancer and ball-tossing pair
+actually moved), sampled every NPC's and the squirrel's own position every quarter second over 300
+simulated seconds, then swept the quiet south-west corner past the backyards, the hopscotch grid and the
+draughts table against both those samples and all 304 of the town's physics boxes: (-60, -44) came back
+clear by 6.9 m of the nearest box (the oak at (-66, -14)) and 18.4 m of the nearest other soul. A separate
+standalone run drove the built world through 1800 simulated seconds straight and confirmed the cat's own
+position stayed finite throughout — no runaway puppet animation.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 273 checks `ok`, 0 console warnings, three repeat
+runs after that also clean (`world 3: 70 to meet`, up from 69). Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
