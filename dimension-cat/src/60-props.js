@@ -916,6 +916,21 @@ function makeCandyBridge(game, x, z, width, span) {
     mesh(G.box(0.1, 0.1, span), mat(0xff4f9a, { roughness: 0.4 }), { y: 0.95, parent: rail }); }
   return g;
 }
+/** A star piñata: `G.star`'s own flat body turned point-up, a pom-pom at each of its five tips, and a
+ * painted face on the front. Returned already facing +Z; hang it from a rope at its own top tip, local
+ * (0, outer, 0). */
+function makePinata(bodyColor, fringeColors) {
+  const g = new THREE.Group(), outer = 0.4, inner = 0.18, depth = 0.26;
+  mesh(G.star(outer, inner, depth), mat(bodyColor, { roughness: 0.75 }), { rz: PI, parent: g });
+  for (let i = 0; i < 5; i++) { const a = i / 5 * TAU + PI / 2;
+    mesh(G.sphere(0.075, 8, 6), mat(fringeColors[i % fringeColors.length], { roughness: 0.85 }), { x: cos(a) * outer, y: sin(a) * outer, parent: g }); }
+  const faceM = mat(0x1a1a1a, { roughness: 0.4 });
+  mesh(G.sphere(0.035, 8, 6), faceM, { x: -0.07, y: 0.02, z: depth / 2 + 0.01, parent: g });
+  mesh(G.sphere(0.035, 8, 6), faceM, { x: 0.07, y: 0.02, z: depth / 2 + 0.01, parent: g });
+  mesh(G.torus(0.06, 0.013, 5, 10, PI), faceM, { y: -0.06, z: depth / 2 + 0.01, rz: PI, parent: g });
+  mesh(G.torus(0.045, 0.011, 5, 10), mat(0xe8d9a0, { roughness: 0.9 }), { y: outer + 0.02, rx: PI / 2, parent: g });   // the rope's own loop, tied to the top tip
+  return g;
+}
 
 /** The sweet-lands' horizon: pastel hills then ice-cream mountains, all outside `clear`. */
 function makeCandyHills(parent, r, clear = 70) {

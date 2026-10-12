@@ -10644,3 +10644,36 @@ scattered in.
 Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, 274 checks `ok`, 0 console
 warnings every time, Frosty Peak's own friend count up two to 59. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 418 — a piñata for Candy Land
+
+Candy Land is the one world actually named for a party food, but it never had an actual party. **A star
+piñata now hangs from a tall post on the open sweet-lands north of the village**, swaying gently on its
+rope, with one party guest taking slow, nerve-losing practice swings at it with a stick. *"One of these
+days I'm actually going to hit it."* *"Careful, puss — swing room needed here."* *"Nearly! ...no. Still
+not yet."*
+
+It never actually bursts — being honest about that up front. The stick's downswing times a confetti puff
+to the moment of contact regardless of whether the two models are really touching, and the piñata gets a
+decaying kick on its rope at that same instant, both driven off the same clock (started at zero rather
+than the usual `rnd()`-offset every other controller uses, precisely so the two never drift apart). New
+controller, `PinataSwinger` in `55-npcs.js` — modelled on `FrisbeePlayer`'s and `YoYoer`'s held-prop
+pattern for the stick, borrowing `Chopper`'s own overhead-swing timing (slow raise and hold, one fast
+downswing) — because nothing already in the file swings something overhead at a target that isn't a
+stump or a log. The piñata itself, `makePinata()` in `60-props.js`, is `G.star()` turned point-up (the
+same geometry the star collectible already uses, never before built at piñata scale) with a pom-pom
+glued to each of its five tips and a painted face on the front.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, since
+there's no browser here) built the real Candy Land (`game.load(1, 'from-prev')`, then `game.start('new')`
+so every marching, dancing, wandering and ball-tossing gingerbread man and every doorstep resident
+actually moved), sampled every NPC's own position every quarter second over 300 simulated seconds, then
+swept the open sweet-lands against both those samples, all 1879 of the world's physics boxes and the
+sixteen gumdrop patches `makeGumdrops` scatters (which carry no physics box of their own): (14, 68) came
+back clear by 6.7 m of the nearest box (a candy-cane ring trunk), 22.8 m of the nearest other soul and
+13.0 m of the nearest gumdrop patch. Placed last of every person this build adds, after the dominoes
+players, so it draws from the tail of this world's own local `r()` sequence.
+
+Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, 274 checks `ok`, 0 console
+warnings every time, Candy Land's own friend count up one to 65. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

@@ -2320,6 +2320,60 @@ function buildCandyLand(game, entry) {
       cries: ["Eighteen pips and the lead's still mine.", 'Careful, puss — knock that chain and we start over.', "Save the double six, it's the whole game right there."] }));
     game.npcs.push(new Sitter(game, playerB, { x: tx, z: seatBz, ry: PI, seat: 0.33,
       cries: ["One more tile and it's mine, easy.", "Mind your tail, puss — that's a whole afternoon's work.", 'Lost count past twelve. Started again, obviously.'] })); }
+  // every other world that tucks a birthday or a festival detail away (Victorian's Punch and Judy,
+  // Robot City's balloon seller) is in on the party — Candy Land, the one world actually named for a
+  // party food, never had a party of its own. A star piñata now hangs from a tall post on the open
+  // sweet-lands north of the village, swaying gently on its rope, with one party guest taking slow,
+  // nerve-losing practice swings at it with a stick. *"One of these days I'm actually going to hit it."*
+  // *"Careful, puss — swing room needed here."* *"Nearly! ...no. Still not yet."* It never actually
+  // bursts: the stick's own downswing times a confetti puff to the moment of contact regardless of
+  // whether the two models are really touching, and the piñata gets a decaying kick on its rope at that
+  // same instant, both driven off the same zero-started clock so the two stay locked in step forever —
+  // honest about not simulating an impact, while still reading as one.
+  //
+  // New controller (`PinataSwinger` in `55-npcs.js`, modelled on `FrisbeePlayer`'s and `YoYoer`'s own
+  // held-prop pattern, with `Chopper`'s own overhead-swing timing: slow raise, fast strike): nothing
+  // existing already swings a stick overhead at something that isn't a stump or a log. The piñata itself
+  // (`makePinata()`, new, in `60-props.js`) is `G.star()` — already used for the star collectible, never
+  // before for anything piñata-shaped — turned point-up with a pom-pom glued to each of its five tips and
+  // a painted face on the front.
+  //
+  // A headless probe (a scratch script built on the same stub-three harness `test/run.mjs` itself uses,
+  // since there's no browser here to look at it) built the real Candy Land (`game.load(1, 'from-prev')`,
+  // then `game.start('new')` so every marching, dancing, wandering and ball-tossing gingerbread man and
+  // every doorstep resident actually moved), sampled every NPC's own position every quarter second over
+  // 300 simulated seconds, then swept a 2 m grid of the open sweet-lands (radius 30-70, inside the
+  // candy-cane ring's own 56-76 m band but short of where candyRegion's own procedural fill takes over
+  // at 92) against both those samples, all 1879 of this world's physics boxes and the sixteen gumdrop
+  // patches `makeGumdrops` scatters (which carry no physics box of their own, so a plain box sweep would
+  // have missed them): (14, 68) came back clear by 6.7 m of the nearest box (one of the candy-cane
+  // ring's own trunks), 22.8 m of the nearest other soul and 13.0 m of the nearest gumdrop patch, at
+  // radius 69.4 from the origin. Placed last of every person this build adds, after the dominoes
+  // players, so it draws from the very tail of this world's own local `r()` sequence.
+  { const px = 14, pz = 68, postH = 2.2, outer = 0.4, ropeLen = 0.45;
+    const postM = mat(0x8a5a32, { roughness: 0.9 });
+    const standG = group(px, 0, pz, W);
+    mesh(G.cyl(0.07, 0.09, postH, 8), postM, { y: postH / 2, parent: standG });
+    const pivot = group(0, postH, 0, standG);
+    mesh(G.cyl(0.012, 0.012, ropeLen, 5), mat(0xe8d9a0, { roughness: 0.9 }), { y: -ropeLen / 2, parent: pivot });
+    const pinata = makePinata(0xff4f9a, [0xffd54a, 0x7fd7ff, 0xfff3b0, 0x9affc1, 0xffffff]);
+    pinata.position.y = -(ropeLen + outer); pivot.add(pinata);
+    P.addBox(px, postH / 2, pz, 0.35, postH, 0.35, { cam: false });
+    let lt = 0;
+    standG.userData.update = (dt) => {
+      lt += dt;
+      const cyc = 2.6, ph = (lt % cyc) / cyc, sinceHit = ph < 0.65 ? (ph + 0.35) * cyc : (ph - 0.65) * cyc;
+      pivot.rotation.z = sin(lt * 0.5) * 0.04 + Math.exp(-sinceHit * 2.6) * 0.3;
+      pivot.rotation.x = sin(lt * 0.4 + 1) * 0.025;
+    };
+    U.push(standG.userData.update);
+    const sx = px, sz = pz + 1.3, sry = atan2(px - sx, pz - sz);
+    const guestWard = makeWardrobe(r, { shirts: [0xff6fb5, 0x7fd7ff, 0xffd54a, 0x9affc1], pants: [0xf5f2ea, 0x2a2420] });
+    const guest = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, wardrobe: guestWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null });
+    W.add(guest.group);
+    game.npcs.push(new PinataSwinger(game, guest, 0xc9a86a, { x: sx, z: sz, ry: sry,
+      cries: ["One of these days I'm actually going to hit it.", 'Careful, puss — swing room needed here.', 'Nearly! ...no. Still not yet.'] })); }
 
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;

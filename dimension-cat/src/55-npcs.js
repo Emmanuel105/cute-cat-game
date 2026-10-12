@@ -1192,6 +1192,33 @@ class FrisbeePlayer {
   }
 }
 
+// ---------------------------------------------------------------- piñata swinger: both hands raise a stick overhead, hold it there, then swing down hard and ease back up for another go — timed off `this.t` starting at zero rather than the usual `rnd()`-offset start, so a hanging piñata built in lockstep (its own sway driven by the same zero-based clock) always gets its kick at the exact instant the stick comes down, with no drift either way
+class PinataSwinger {
+  constructor(game, rig, stickColor, { x, z, ry = 0, cries = null, cryIcon = '🪅' }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = 0;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0; this.struck = false;
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    const k = rig.k, hand = rig.hands[1];
+    mesh(G.cyl(0.02 * k, 0.026 * k, 0.72 * k, 8), mat(stickColor, { roughness: 0.6 }), { y: 0.36 * k, z: 0.03 * k, parent: hand });
+    this.circle = game.physics.addCircle(this, x, z, 0.35);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig;
+    // up and held for most of the cycle (the wind-up/nerve-losing part), then one fast downswing
+    const cyc = 2.6, ph = (this.t % cyc) / cyc, up = ph < 0.65;
+    if (!rig.gesture) for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, up ? -2.8 : -0.55, up ? 5 : 22, dt); A.el.rotation.x = damp(A.el.rotation.x, up ? -0.5 : -0.1, up ? 5 : 22, dt); A.sh.rotation.z = (A === rig.arms[0] ? 1 : -1) * 0.1; }
+    rig.animate(0, false, dt, this.t);
+    if (!up && !this.struck) {   // the stick comes down — a puff of confetti at head height, whether or not it was really going to land
+      this.struck = true; SFX.thunk();
+      const a = rig.group.rotation.y, p = rig.group.position;
+      this.game.fx.emit(p.x + sin(a) * 0.7, p.y + 1.3 * rig.k, p.z + cos(a) * 0.7, { count: 9, colors: [0xff4fa0, 0xffd54a, 0x7fd7ff, 0xffffff], speed: 2, up: 1.4, life: 0.6, gravity: 5 });
+    } else if (up) this.struck = false;
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- vendor: stands on their pitch holding something up in the left hand, and calls their wares
 class Vendor {
   constructor(game, rig, held, { x, z, ry = 0, cries = null, cryIcon = '\ud83c\udf88' }) {
