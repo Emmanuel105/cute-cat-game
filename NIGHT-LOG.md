@@ -10894,3 +10894,31 @@ pick.
 Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, Robot City's own
 friend count up two (two new greetable robots). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 426 — quoits for Victorian
+
+The Neighborhood's had two dads pitching horseshoes at each other since round 299, and Robot City got
+its own reskin of the same game (two coupling rings between charging posts) just last round — but
+quoits, rings tossed at an iron peg, is the pub-garden game the Victorians actually played, so Victorian
+finally gets its own turn. **Two gentlemen in flatcaps now pitch a brass ring back and forth at a pair of
+iron hobs set in clay beds**, out past the terrace in the open field south-east of the canal. *"Right on
+the hob — that's a game, that is."* *"Mind your tail, puss — brass doesn't bend for anyone."* *"Best of
+eleven, same as every Sunday."*
+
+No new controller: the same `Horseshoes` class (`55-npcs.js`) both earlier rounds already use — held a
+moment, lobbed on an arc, caught, lobbed back, with its own `SFX.clang()` on landing — just a closed
+brass torus (`G.torus(0.14, 0.03, 8, 20)`, a full ring rather than the horseshoe's open arc or the
+magnet's coupling) and a pair of short iron hob pins in place of stakes.
+
+A headless probe (a scratch script built on the same stub-three harness `test/run.mjs` itself uses) built
+the real Victorian town (`game.start('new')` then `game.travel(3, 'from-prev')`, so every stroller, the
+lamplighter, the bobby, the carriage and the cyclist actually moved), sampled every NPC's own position
+every quarter second over 300 simulated seconds, then swept a 2 m grid out to radius 86 (short of the
+radius (88) where `victorianRegion`'s own procedural fill takes over) against both those samples and all
+308 of the town's physics boxes: (22, 78) came back clear by nearly 14 m of the nearest box and almost
+24 m of the nearest other soul, and both hob pins themselves — (22, 75) and (22, 81), either side of the
+6 m pitch — checked clear by the same margins.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, Victorian's own
+friend count up two (two new greetable gentlemen, 74 to meet in total now). Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -3629,6 +3629,47 @@ function buildVictorian(game, entry) {
     const dog = makeDog(0x4a362a);
     game.npcs.push(new DogWalker(game, walker, dog, { x: dwx, z: dwz, angle: PI / 2, speed: 0.75, leash: 2.0,
       cries: ["Good a walk as any, rain or not.", "Mind your paws, puss — he's particular about strangers.", "Lamp's out down this end. Nobody's ever fixed it."] })); }
+  // the Neighborhood's had two dads pitching horseshoes at each other since round 299, and Robot City
+  // got its own reskin of the same game (two coupling rings between charging posts) just last round —
+  // but quoits is the one the Victorians actually played, pub gardens and all, so Victorian gets its own
+  // turn with `Horseshoes` rather than a frisbee or a different game entirely. Two gentlemen now pitch a
+  // brass ring at an iron hob across a pair of clay beds, well out past the terrace in the open field
+  // south-east of the canal. Same `Horseshoes` controller (`55-npcs.js`, unchanged) as both earlier
+  // rounds — held a moment, lobbed on an arc, caught, lobbed back, with its own `SFX.clang()` on landing
+  // — just a closed brass torus (`G.torus(0.14, 0.03, 8, 20)`, full ring rather than the horseshoe's open
+  // arc) in place of the horseshoe or the magnet coupling, and a pair of iron hob pins in place of stakes.
+  // Own fixed shirt colours (0x5a4a3a, 0x3a4a5a), neither in this street's wardrobe bags nor the dog
+  // walker's own three just above, and placed after every other hand-built scene in this file bar the
+  // market square and the park beyond it, so it draws from the tail of this world's own local `r()` and
+  // disturbs no earlier pick.
+  // A headless probe (the stub-three harness `test/run.mjs` itself uses, driven by hand with
+  // `game.start('new')` then `game.travel(3, 'from-prev')` so every stroller, the lamplighter, the
+  // bobby, the carriage and the cyclist actually moved) sampled every NPC's own position every quarter
+  // second over 300 simulated seconds, then swept a 2 m grid out to radius 86 (short of the radius (88)
+  // where victorianRegion's own procedural fill takes over) against both those samples and all 308 of
+  // the town's physics boxes: (22, 78) came back clear by nearly 14 m of the nearest box and almost 24 m
+  // of the nearest other soul, with both hob pins themselves — (22, 75) and (22, 81), either side of the
+  // 6 m pitch — clear by the same margins, well past the canal (z=30) and everything south of it.
+  { const qcx = 22, qcz = 78, qgap = 6;
+    const clayM = mat(0xad9468, { roughness: 1, map: TEX.sand() }), hobM = mat(0x3a3a3a, { metalness: 0.6, roughness: 0.35 }), hobCapM = mat(0xc9a227, { metalness: 0.5, roughness: 0.4 });
+    for (const qz of [qcz - qgap / 2, qcz + qgap / 2]) {
+      mesh(G.box(1.5, 0.02, 1.5), clayM, { x: qcx, y: 0.012, z: qz, shadow: 'receive', parent: W });
+      mesh(G.cyl(0.02, 0.02, 0.1, 8), hobM, { x: qcx, y: 0.05, z: qz, parent: W });
+      mesh(G.sphere(0.03, 8, 6), hobCapM, { x: qcx, y: 0.1, z: qz, shadow: 'none', parent: W });
+      P.addBox(qcx, 0.05, qz, 0.1, 0.1, 0.1, { cam: false });
+    }
+    // a couple of spare quoits stacked by each hob, baked in with everything else — just set dressing
+    const spareQ = mat(0xb08d3a, { metalness: 0.65, roughness: 0.35 });
+    for (const qz of [qcz - qgap / 2, qcz + qgap / 2]) for (let i = 0; i < 2; i++)
+      mesh(G.torus(0.13, 0.025, 6, 16), spareQ, { x: qcx + 0.32, y: 0.028 + i * 0.05, z: qz + 0.1, rx: PI / 2, ry: i * 0.6, parent: W });
+    const qWardA = makeWardrobe(r, { shirts: [0x5a4a3a], pants: [0x2a2420], shoes: [0x2a2018] }), qWardB = makeWardrobe(r, { shirts: [0x3a4a5a], pants: [0x2a2420], shoes: [0x2a2018] });
+    const quoitA = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: r.chance(0.5), wardrobe: qWardA }), hat: 'flatcap', hatColor: 0x3a3327, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.3) });
+    const quoitB = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: r.chance(0.5), wardrobe: qWardB }), hat: 'flatcap', hatColor: 0x2a2a2a, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.3) });
+    W.add(quoitA.group); W.add(quoitB.group);
+    const quoit = mesh(G.torus(0.14, 0.03, 8, 20), mat(0xb08d3a, { metalness: 0.7, roughness: 0.3 }), { x: qcx, y: 1, z: qcz - qgap / 2, rx: PI / 2, parent: W });
+    const quoitLines = ["Right on the hob — that's a game, that is.", 'Mind your tail, puss — brass doesn\'t bend for anyone.', "Best of eleven, same as every Sunday."];
+    game.npcs.push(new Horseshoes(game, quoitA, quoitB, quoit, { cx: qcx, cz: qcz, gap: qgap, cries: quoitLines, cryIcon: '🎯' }));
+    greetable(game, { rig: quoitA }); greetable(game, { rig: quoitB }); }
   // the mudlark on the canal's far bank (round 365) noted the one trade "as Victorian as the chimney
   // sweep" was still missing from the whole town — it still was, past the smoke itself drifting off
   // every terrace roof since round 1. One now stands in the yard behind the house at x=-18, between
