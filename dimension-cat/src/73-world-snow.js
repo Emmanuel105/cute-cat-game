@@ -915,6 +915,47 @@ function buildSnowVillage(game, entry) {
     const frisbeeLines = ['Highest one yet, nearly over the pines!', "Careful, puss — mind your tail, this one's coming down fast.", 'Forty throws and not one lost in a drift.'];
     let frisbeeCryT = r.range(3, 7);
     U.push((dt) => { frisbeeCryT -= dt; if (frisbeeCryT <= 0) { frisbeeCryT = r.range(8, 14); const c = game.cat.group.position; if (dist2(fx, fz, c.x, c.z) < 400) { game.toast('🥏 "' + r.pick(frisbeeLines) + '"', 2400); SFX.talk(); } } }); }
+  // the Neighborhood, Robot City, Victorian, Candy Land and Sunny Shore have all had a go at the same
+  // back-garden toss game by now — a horseshoe, a magnetic coupling, a brass quoit, a gummy ring, a
+  // coil of rope — but the one world with sled dogs and reindeer harnesses to hand never got the most
+  // obvious ring of the lot. Two bundled-up villagers now lob a spare harness ring back and forth,
+  // trying to land it over a pair of hitching posts driven into the snow on the open slope south-east
+  // of the village — the same posts a sled team would tie off to, if one ever came through. "Right
+  // over the post — that's a landing!" "Careful, puss — that's good reindeer leather, not a toy."
+  // "Best of nine, loser mucks out the sled dogs."
+  // No new controller: the same `Horseshoes` class (`55-npcs.js`) every earlier reskin already uses,
+  // unchanged — held a moment, lobbed on an arc, caught, lobbed back, with its own `SFX.clang()` on
+  // landing — just two snow-capped wooden hitching posts and a stout leather ring standing in for the
+  // iron horseshoe, brass quoit, coupling or rope.
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses, driven by hand through
+  // `game.travel(5, 'from-hub')` and a real 300-simulated-second run so every reindeer, hare, arctic
+  // fox, penguin, yeti and wandering villager actually moved) sampled every NPC's own position every
+  // quarter second, then swept a 2 m grid of the open snowfield (radius 20-54, short of the radius (58)
+  // where snowRegion's own fill takes over) against both those samples and all 800 of the mountain's
+  // physics boxes: (-11, 51) came back clear by 10.4 m of the nearest box and 10.3 m of the nearest
+  // other soul, with both posts themselves — (-11, 48) and (-11, 54), either side of the 6 m pitch —
+  // clear by at least 8.8 m on both counts.
+  { const hcx = -11, hcz = 51, hgap = 6;
+    const postM = mat(0x5a4632, { roughness: 0.95 }), capM = mat(0xf2f6fb, { roughness: 0.9 });
+    for (const hz of [hcz - hgap / 2, hcz + hgap / 2]) {
+      const py = P.ground0(hcx, hz);
+      mesh(G.cyl(0.06, 0.075, 0.46, 10), postM, { x: hcx, y: py + 0.23, z: hz, parent: W });
+      mesh(G.sphere(0.09, 8, 6), capM, { x: hcx, y: py + 0.46, z: hz, sy: 0.6, shadow: 'none', parent: W });   // a cap of settled snow
+      P.addBox(hcx, py + 0.23, hz, 0.14, 0.46, 0.14, { cam: false });
+    }
+    // a couple of spare rings stacked by the near post, baked in with everything else — just set dressing
+    const spareM = mat(0x6b4226, { roughness: 0.85, metalness: 0.1 });
+    const py0 = P.ground0(hcx, hcz - hgap / 2);
+    for (let i = 0; i < 2; i++) mesh(G.torus(0.13, 0.03, 6, 16), spareM, { x: hcx + 0.3, y: py0 + 0.035 + i * 0.06, z: hcz - hgap / 2 + 0.1, rx: PI / 2, ry: i * 0.7, parent: W });
+    const tossWardA = makeWardrobe(r, { shirts: [0x8a3a3a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const tossWardB = makeWardrobe(r, { shirts: [0x3a5a6a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const tossA = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: r.chance(0.3), wardrobe: tossWardA }), hat: 'beanie', hatColor: 0x3a3a3a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a, jacket: null, bag: null, backpack: null });
+    const tossB = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: r.chance(0.3), wardrobe: tossWardB }), hat: 'beanie', hatColor: 0x8a3a3a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a, jacket: null, bag: null, backpack: null });
+    W.add(tossA.group); W.add(tossB.group);
+    const ring = mesh(G.torus(0.15, 0.04, 8, 20), mat(0x6b4226, { roughness: 0.85, metalness: 0.1 }), { x: hcx, y: py0 + 1, z: hcz - hgap / 2, rx: PI / 2, parent: W });
+    const harnessLines = ['Right over the post — that\'s a landing!', "Careful, puss — that's good reindeer leather, not a toy.", "Best of nine, loser mucks out the sled dogs."];
+    game.npcs.push(new Horseshoes(game, tossA, tossB, ring, { cx: hcx, cz: hcz, gap: hgap, cries: harnessLines, cryIcon: '🛷' }));
+    greetable(game, { rig: tossA }); greetable(game, { rig: tossB }); }
   snowRegion(game, U, r, 58, PEAK_LIMIT - 8);
   makeHorizon(game, r, { clear: PEAK_LIMIT + 8, hills: true, hill: 0xe8eef6, rock: 0x6a7a94, rock2: 0x7e8ea6, snow: 0xf6fbff, snowLine: 26, peaks: 32, peakH: [46, 110], woodCount: 300, woodHue: [0.32, 0.42], woodLight: [0.12, 0.2], trunk: 0x4a3a2a });
   // gondola home (bottom station of the village)

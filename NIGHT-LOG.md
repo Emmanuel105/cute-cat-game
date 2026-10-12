@@ -10974,3 +10974,33 @@ least 7.8 m on both counts.
 Full suite (`node test/run.mjs`) ran clean six times in a row — exit 0 and 0 console warnings every time,
 Sunny Shore's own friend count up two (60 to meet now, 99% of the ground still walkable). Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 429 — a harness ring toss for Frosty Peak
+
+The Neighborhood (395), Robot City (425), Victorian (426), Candy Land (427) and Sunny Shore (428) have
+all had a go at the same back-garden toss game by now — a horseshoe, a magnetic coupling, a brass
+quoit, a gummy ring, a coil of rope — but the one world with sled dogs and reindeer harnesses sitting
+right there never got the most obvious ring of the lot. **Two bundled-up villagers now lob a spare
+harness ring back and forth, trying to land it over a pair of hitching posts** driven into the snow on
+the open slope south-east of the village — the same posts a sled team would tie off to, if one ever
+came through. *"Right over the post — that's a landing!"* *"Careful, puss — that's good reindeer
+leather, not a toy."* *"Best of nine, loser mucks out the sled dogs."*
+
+No new controller: the same `Horseshoes` class (`55-npcs.js`) every earlier reskin already uses,
+unchanged — just two snow-capped wooden hitching posts and a stout leather ring standing in for the
+iron horseshoe, brass quoit, coupling or rope, with a couple of spare rings stacked by the near post
+for set dressing.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, this time
+actually waiting out `game.travel()`'s real 520 ms fade timer with a polling `sleep()` rather than
+spinning the frame loop straight through it — the first attempt skipped the fade entirely and swept
+the *Neighborhood's* own empty ground by mistake, which is worth remembering next time) built the real
+mountain, sampled every NPC's own position every quarter second over 300 simulated seconds, then swept
+a 2 m grid of the open snowfield (radius 20-54, short of the radius (58) where `snowRegion`'s own fill
+takes over) against both those samples and all 800 of the mountain's physics boxes: (-11, 51) came back
+clear by 10.4 m of the nearest box and 10.3 m of the nearest other soul, with both posts themselves —
+(-11, 48) and (-11, 54), either side of the 6 m pitch — clear by at least 8.8 m on both counts.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, Frosty Peak's
+own friend count up two (62 to meet now, 98% of the ground still walkable). Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
