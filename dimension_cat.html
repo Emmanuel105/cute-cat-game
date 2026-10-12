@@ -14235,6 +14235,49 @@ function buildForest(game, entry) {
   { const wx = 16, wz = -16;
     placeT(game, U, makeSpiderweb(r), wx, wz, atan2(8 - wx, -6 - wz)); }
 
+  // the Neighborhood (395), Robot City (425), Victorian (426), Candy Land (427), Sunny Shore (428) and
+  // Frosty Peak (429) have all had their own turn at the same back-garden toss game by now — a horseshoe,
+  // a magnetic coupling, a brass quoit, a gummy ring, a coil of rope, a harness ring — and Whisper Woods,
+  // with woodland stumps standing all over it already, was the one world left without a pair of stakes
+  // to throw at. Two foresters now lob a woven vine ring back and forth, trying to land it over a pair of
+  // short sawn stumps planted well out past the tree line south-west of the glade. "Right over the stump
+  // — that's a landing!" "Careful, puss — that vine's older than you are." "Best of nine, loser coils the
+  // rope."
+  // No new controller: the same `Horseshoes` class (`55-npcs.js`) every earlier reskin already uses,
+  // unchanged — held a moment, lobbed on an arc, caught, lobbed back, with its own `SFX.clang()` on
+  // landing — just two squat sawn stumps (a plain cylinder and a pale cut-top disc, the same two-mesh
+  // trick `makeStump` uses nearby, just slimmer so a 0.15 m ring can actually land over one) and a
+  // twisted vine-green torus standing in for the iron horseshoe, brass quoit, coupling, rope or harness
+  // ring, with a couple of spare rings coiled by the near stump for set dressing.
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses) built
+  // the real Whisper Woods (`game.travel(6, 'from-hub')`), sampled every NPC's own position once a second
+  // over 300 simulated seconds, then swept a 2 m grid of the open forest floor (radius 10-55, short of
+  // the radius (58) where `forestRegion`'s own fill takes over) against both those samples and all 668 of
+  // the wood's physics boxes, testing every candidate stump pair at once: (-46, -30) came back clear by
+  // 8.7 m of the nearest box and 19.3 m of the nearest other soul over the full 300 s window, with both
+  // stumps themselves — (-46, -33) and (-46, -27), either side of the 6 m pitch — clear by at least 8.7 m
+  // of the nearest box and 19.3 m of the nearest soul.
+  { const vcx = -46, vcz = -30, vgap = 6;
+    const stumpM = mat(0x5b3d24, { roughness: 1, map: TEX.bark() }), capM = mat(0xc9a86a, { roughness: 1 });
+    for (const vz of [vcz - vgap / 2, vcz + vgap / 2]) {
+      const py = P.ground0(vcx, vz);
+      mesh(G.cyl(0.09, 0.1, 0.4, 10), stumpM, { x: vcx, y: py + 0.2, z: vz, parent: W });
+      mesh(G.cyl(0.085, 0.085, 0.03, 10), capM, { x: vcx, y: py + 0.415, z: vz, shadow: 'none', parent: W });
+      boxT(game, vcx, vz, 0.14, 0.4, 0.14, { cam: false }); }
+    // a couple of spare vine rings coiled by the near stump, baked in with everything else — just set dressing
+    const spareM = mat(0x4a6a3a, { roughness: 0.85 });
+    const py0 = P.ground0(vcx, vcz - vgap / 2);
+    for (let i = 0; i < 2; i++) mesh(G.torus(0.13, 0.03, 6, 16), spareM, { x: vcx + 0.3, y: py0 + 0.035 + i * 0.06, z: vcz - vgap / 2 + 0.1, rx: PI / 2, ry: i * 0.7, parent: W });
+    const vineWardA = makeWardrobe(r, { shirts: [0x4a7a5a], pants: [0x3a4a2e, 0x4a3a2e], shoes: [0x3a2a1e, 0x2a2018] });
+    const vineWardB = makeWardrobe(r, { shirts: [0x8a6a44], pants: [0x2e4a3a, 0x3a3a3a], shoes: [0x3a2a1e, 0x2a2018] });
+    const tossA = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: r.chance(0.3), wardrobe: vineWardA }), hat: 'cap', hatColor: 0x2e4a3a, jacket: null, scarf: null, bag: null, backpack: null, glasses: false });
+    const tossB = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: r.chance(0.3), wardrobe: vineWardB }), hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: false });
+    W.add(tossA.group); W.add(tossB.group);
+    const ring = mesh(G.torus(0.15, 0.04, 8, 20), mat(0x4a6a3a, { roughness: 0.85 }), { x: vcx, y: py0 + 1, z: vcz - vgap / 2, rx: PI / 2, parent: W });
+    const vineLines = ["Right over the stump — that's a landing!", "Careful, puss — that vine's older than you are.", 'Best of nine, loser coils the rope.'];
+    game.npcs.push(new Horseshoes(game, tossA, tossB, ring, { cx: vcx, cz: vcz, gap: vgap, cries: vineLines, cryIcon: '🌿' }));
+    greetable(game, { rig: tossA }); greetable(game, { rig: tossB }); }
+
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
 

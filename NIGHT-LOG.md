@@ -11004,3 +11004,33 @@ clear by 10.4 m of the nearest box and 10.3 m of the nearest other soul, with bo
 Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, Frosty Peak's
 own friend count up two (62 to meet now, 98% of the ground still walkable). Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 430 — a vine ring toss for Whisper Woods
+
+The Neighborhood (395), Robot City (425), Victorian (426), Candy Land (427), Sunny Shore (428) and
+Frosty Peak (429) have all had their own go at the same back-garden toss game by now — a horseshoe, a
+magnetic coupling, a brass quoit, a gummy ring, a coil of rope, a harness ring — and Whisper Woods,
+already full of stumps and fallen logs, was the one world left without a pair of stakes to throw at.
+**Two foresters now lob a woven vine ring back and forth, trying to land it over a pair of short sawn
+stumps** planted well out past the tree line south-west of the glade. *"Right over the stump — that's a
+landing!"* *"Careful, puss — that vine's older than you are."* *"Best of nine, loser coils the rope."*
+
+No new controller: the same `Horseshoes` class (`55-npcs.js`) every earlier reskin already uses,
+unchanged — held a moment, lobbed on an arc, caught, lobbed back, with its own `SFX.clang()` on landing
+— just two squat sawn stumps (the same two-mesh bark-cylinder-plus-pale-cap trick `makeStump` already
+uses nearby, just slimmer so a small ring can actually land over one) and a twisted vine-green torus
+standing in for the iron horseshoe, brass quoit, coupling, rope or harness ring, with a couple of spare
+rings coiled by the near stump for set dressing.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses) built the
+real Whisper Woods (`game.travel(6, 'from-hub')`), sampled every NPC's own position once a second over
+300 simulated seconds, then swept a 2 m grid of the open forest floor (radius 10-55, short of the radius
+(58) where `forestRegion`'s own fill takes over) against both those samples and all 668 of the wood's
+physics boxes, scoring every candidate stump pair at once: (-46, -30) came back clear by 8.7 m of the
+nearest box and 19.3 m of the nearest other soul over the full 300 s window, with both stumps themselves
+— (-46, -33) and (-46, -27), either side of the 6 m pitch — clear by the same margins.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings, Whisper
+Woods' own friend count up two (62 to meet now, 98% of the ground still walkable). Every world in the
+game now has its own back-garden toss game. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.
