@@ -3277,6 +3277,29 @@ function buildRobotCity(game, entry) {
     W.add(scavenger.group);
     game.npcs.push(new Forager(game, scavenger, { x: sx, z: sz, ry, cryIcon: '🔩',
       cries: ['Every bolt the belt drops ends up back here, eventually.', "Careful, puss — mind your paws, some of these edges are sharp.", "Sector 7's whole recycling program. Just me and a bucket."] })); }
+  // Robot City's own oil seller sells to the robots on shift, but nothing in the whole city serves the
+  // people working alongside them. A synth-coffee vendor now sets up on the open floor south-west of the
+  // statue plaza, a steaming cup held up for anyone on nights. Same `Vendor` controller and held-prop
+  // pattern every other vendor in this file already uses (the oil seller here, the balloon seller and
+  // lemonade stand in the Neighborhood, Frosty Peak's own cocoa vendor) — new prop `makeSynthCoffeeCup()`
+  // in `60-props.js`, a paper cup with a cyan sleeve band instead of a china mug, cyan steam wisps instead
+  // of white, to read as this city's own brand rather than a leftover from the snow.
+  // A headless probe (a scratch script built on the same stub-three harness `test/run.mjs` itself uses)
+  // built the real Robot City (`game.load(2, 'from-prev')`, then `game.start('new')` so every wandering,
+  // patrolling, dancing and ball-tossing robot pack actually moved), sampled every NPC's own position
+  // every quarter second over 300 simulated seconds, then swept a 1 m grid of the open floor (radius
+  // 15-60, short of the radius (98) where robotRegion's own procedural fill takes over) against both
+  // those samples and every one of the city's physics boxes: (-27, -48) came back clear by 9.3 m of the
+  // nearest box and 9.3 m of the nearest other soul. Placed last of every person this build adds, after
+  // the parts scavenger, so it draws from the very tail of this world's own local `r()` sequence.
+  { const cx = -27, cz = -48, ry = atan2(-cx, -cz);
+    const coffeeWard = makeWardrobe(r, { shirts: [0xff9f43, 0x4a5a6a, 0x3a4a5a], pants: [0x232c34, 0x2a2a30] });
+    const coffeeVendor = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: coffeeWard }),
+      apron: 0x2a2f38, hat: 'cap', hatColor: 0x3a4a5a, jacket: null, scarf: null, bag: null, glasses: r.chance(0.3) });
+    W.add(coffeeVendor.group);
+    const v = new Vendor(game, coffeeVendor, makeSynthCoffeeCup(), { x: cx, z: cz, ry, cryIcon: '☕',
+      cries: ['Synth-brew, fresh off the line!', 'Careful, puss — not for cats, this one.', "Only thing that gets Sector 7 through a night shift."] });
+    game.npcs.push(v); greetable(game, v); }
   const sq = new Squirrel(game, -14, -9, 'sq-robot'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('mouse', -8, 7); C.add('star', 12, -22); C.add('fish', -18, 2); C.add('yarn', 21, 9); C.add('star', 0, -27); C.add('fish', 4, 14); C.add('mouse', 26, -18); C.add('yarn', -26, -6);

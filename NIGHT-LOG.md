@@ -10575,3 +10575,39 @@ sequence.
 Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, 0 console warnings every time,
 Robot City's own friend count up one to 67. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 416 — a synth-coffee vendor for Robot City
+
+Went looking for a world with a thin roster and found Robot City's own archive-bot already does the
+"photographer" job every other world gives a human with a box camera, so that wasn't the gap it looked
+like. The real gap: the city's oil seller serves the robots on shift, but nothing in the whole place
+serves the people working alongside them. **A synth-coffee vendor now sets up on the open floor
+south-west of the statue plaza, a steaming cup held up for anyone on nights.** *"Synth-brew, fresh off
+the line!"* *"Careful, puss — not for cats, this one."* *"Only thing that gets Sector 7 through a night
+shift."*
+
+No new controller: it's the same `Vendor` pairing the oil seller, the balloon seller and Frosty Peak's
+cocoa vendor already use. One new prop, `makeSynthCoffeeCup()` in `60-props.js` — a paper cup with a
+cyan sleeve band standing in for the cocoa mug's china, cyan steam wisps standing in for white, so it
+reads as this city's own brand rather than a leftover from the snow.
+
+A headless probe (a scratch script built on the same stub-three harness `test/run.mjs` itself uses,
+since there's no browser here to look at it) built the real Robot City (`game.load(2, 'from-prev')`,
+then `game.start('new')` so every wandering, patrolling, dancing and ball-tossing robot pack actually
+moved), sampled every NPC's own position every quarter second over 300 simulated seconds, then swept a
+1 m grid of the open floor (radius 15-60, short of the radius (98) where robotRegion's own procedural
+fill takes over) against both those samples and every one of the city's physics boxes: (-27, -48) came
+back clear by 9.3 m of the nearest box and 9.3 m of the nearest other soul. Placed last of every person
+this build adds, after the parts scavenger, so it draws from the very tail of this world's own local
+`r()` sequence.
+
+One scare along the way: a run of `node test/run.mjs` came back red with a Victorian horse-and-carriage
+timing check failing, but that check lives in a different world's build entirely and never touches
+Robot City's own code. Running ten more in a row, one at a time rather than stacked behind other
+background jobs competing for the same CPU, came back clean every time — `game.loop()` drives its delta
+time off a real `THREE.Clock`, so heavy load during the test run itself can jitter a borderline timing
+check. Not this round's bug; just a reminder the suite has one pre-existing soft spot under load.
+
+Full suite (`node test/run.mjs`) ran clean three times in a row on a quiet machine — exit 0, 274 checks
+`ok`, 0 console warnings every time, Robot City's own friend count up one to 68. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

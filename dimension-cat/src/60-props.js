@@ -551,6 +551,16 @@ function makeOilCan() {
   mesh(G.cyl(0.06, 0.06, 0.005, 12), glowMat(0x4ade80, 1.2), { y: 0.192, shadow: 'none', parent: g });
   return g;
 }
+/** A paper cup of synth-coffee with a cyan sleeve band, steam wisps drifting off the brew, for a street vendor to hold up. */
+function makeSynthCoffeeCup() {
+  const g = new THREE.Group(), cup = mat(0xdfe6ec, { roughness: 0.6 }), band = mat(0x00e5ff, { metalness: 0.3, roughness: 0.4 }), brew = mat(0x2a1f18, { roughness: 0.6 });
+  mesh(G.cyl(0.07, 0.055, 0.14, 12), cup, { y: 0.07, parent: g });
+  mesh(G.cyl(0.072, 0.072, 0.02, 12), band, { y: 0.1, shadow: 'none', parent: g });
+  mesh(G.cyl(0.06, 0.06, 0.015, 12), brew, { y: 0.145, shadow: 'none', parent: g });
+  const wisps = [0.2, 0.28].map((y0) => { const s = glowSprite(0x00e5ff, 0.12, 0.3, g); s.position.set(0, y0, 0); return { s, y0, ph: rnd() * TAU }; });
+  g.userData.update = (dt, t) => { for (const w of wisps) { const k = (sin(t * 0.6 + w.ph) + 1) / 2; w.s.position.set(sin(t * 0.9 + w.ph) * 0.02, w.y0 + k * 0.1, 0); w.s.material.opacity = 0.3 * (1 - k); } };
+  return g;
+}
 /** A kick scooter: a low deck, two small wheels and a T-handlebar on a fork. Faces +z, standing in place. */
 function makeScooter(color = 0x2f6fd6) {
   const g = new THREE.Group(), frame = mat(color, { roughness: 0.4, metalness: 0.3 }), deckM = mat(0x2a2a2a, { roughness: 0.75 }), wheelM = mat(0x1e1a18, { roughness: 0.8 }), gripM = mat(0x3a3a3a, { roughness: 0.6 });
