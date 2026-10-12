@@ -9745,6 +9745,44 @@ function buildRobotCity(game, entry) {
       cries: ["He's been saying 'last hand' for twenty minutes.", "Careful, puss — you'll knock the deck.", 'Whoever loses buys the coolant.'] }));
     let cardMoveT = rnd.range(6, 10);
     U.push((dt) => { cardMoveT -= dt; if (cardMoveT <= 0) { cardMoveT = rnd.range(7, 12); SFX.click(); game.fx.emit(tx, topY + 0.1, tz, { count: 4, color: 0x00e5ff, speed: 0.3, up: 0.3, life: 0.6, gravity: 1.2, spread: 0.4 }); } }); }
+  // nowhere in the whole game had an actual terminal screen for someone to sit and type at — Robot City
+  // has a vending machine, a charging pylon and a diagnostic cart that all flicker on their own, but no
+  // one had ever stood at a console doing the work by hand. A technician now stands at a standing data
+  // terminal on the open floor north-east of the statue plaza, hands resting on its keyboard shelf,
+  // fingers tapping away at whatever Sector 7 needs logged today. `Charger` again (stationary, already
+  // greets and cries the same as the fiddler, the drummer and the leak tester) with a world-clock-driven
+  // `U.push` override on both forearms for the tapping, same trick the drummer's drumsticks already use —
+  // unconditional, not guarded by `rig.gesture`, exactly as the drummer's own override already is.
+  // A headless probe (a scratch script built on the same stub-three harness `test/run.mjs` itself uses)
+  // built the real Robot City (`game.load(2, 'from-prev')`, then `game.start('new')` so every wandering,
+  // patrolling, dancing and ball-tossing robot pack actually moved), sampled every NPC's own position
+  // every quarter second over 300 simulated seconds, then swept a 4 m grid of the open floor (radius
+  // 15-92, short of the radius (98) where robotRegion's own procedural fill takes over) against both
+  // those samples and all 1141 of the city's physics boxes: (54, 34) came back clear by 9.9 m of the
+  // nearest box (the skyscraper at x 52.9-62.8, z 14.2-24.1, well south) and 16.2 m of the nearest other
+  // soul. Facing north (ry=0), away from that skyscraper, into the open floor.
+  { const tx = 54, tz = 34, ry = 0, cx = tx + sin(ry) * 0.7, cz = tz + cos(ry) * 0.7, consoleH = 1.0;
+    const steel = mat(0x5a6470, { metalness: 0.75, roughness: 0.35 }), dark = mat(0x232832, { roughness: 0.6 });
+    const term = group(cx, 0, cz, W); term.rotation.y = ry + PI;
+    mesh(G.cyl(0.14, 0.17, consoleH, 10), steel, { y: consoleH / 2, parent: term });
+    mesh(G.box(0.46, 0.34, 0.03), dark, { y: consoleH + 0.1, z: 0.1, rx: -0.3, parent: term });
+    const screen = mesh(G.box(0.4, 0.28, 0.01), glowMat(0x00e5ff, 1.3), { y: consoleH + 0.1, z: 0.117, rx: -0.3, shadow: 'none', parent: term });
+    const shelf = mesh(G.box(0.4, 0.03, 0.18), dark, { y: consoleH - 0.28, z: 0.14, rx: -0.15, parent: term });
+    for (let i = 0; i < 3; i++) mesh(G.cyl(0.018, 0.018, 0.02, 8), mat([0x4ade80, 0xff9f43, 0x00e5ff][i], { roughness: 0.4 }), { x: -0.14 + i * 0.14, y: consoleH + 0.28, z: 0.12, rx: PI / 2 - 0.3, parent: term });
+    P.addBox(cx, consoleH / 2, cz, 0.4, consoleH + 0.3, 0.4, { cam: false });
+    const pl = pointLight(0x00e5ff, 10, 4, cx, consoleH + 0.1, cz + sin(ry + PI) * 0.1, W);
+    U.push((dt, t) => { const k = 0.8 + max(0, sin(t * 2.7)) * 0.9; screen.material.emissiveIntensity = k; pl.intensity = 5 + k * 5; });
+    const techWard = makeWardrobe(r, { shirts: [0x4a5a6a, 0x5a4a6a, 0x3a4a5a], pants: [0x232c34, 0x2a2a30] });
+    const tech = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: techWard }),
+      hat: 'cap', hatColor: 0x3a4a5a, jacket: null, scarf: null, bag: null, glasses: r.chance(0.4) });
+    W.add(tech.group);
+    game.npcs.push(new Charger(game, tech, { x: tx, z: tz, ry, cryIcon: '💻',
+      cries: ['Logs look clean. For once.', 'Mind the cables, puss — bad time for a short.', 'Querying Sector 7 again. It never answers.'] }));
+    const A = tech.arms[0], B = tech.arms[1];
+    U.push((dt, t) => {
+      A.sh.rotation.x = -1.15; A.sh.rotation.z = 0.18; A.el.rotation.x = -0.35 + sin(t * 13) * 0.12;
+      B.sh.rotation.x = -1.15; B.sh.rotation.z = -0.18; B.el.rotation.x = -0.35 + sin(t * 13 + 1.7) * 0.12;
+    }); }
   const sq = new Squirrel(game, -14, -9, 'sq-robot'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('mouse', -8, 7); C.add('star', 12, -22); C.add('fish', -18, 2); C.add('yarn', 21, 9); C.add('star', 0, -27); C.add('fish', 4, 14); C.add('mouse', 26, -18); C.add('yarn', -26, -6);

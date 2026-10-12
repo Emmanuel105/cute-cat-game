@@ -10521,3 +10521,31 @@ sequence.
 Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, 0 console warnings every time,
 Victorian's own friend count up one to 72. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 414 — a data terminal for Robot City
+
+Robot City has had a vending machine, a charging pylon and a diagnostic cart flickering on their own for
+rounds now, but nowhere in the whole game — any of the seven worlds — had an actual console for someone
+to sit and type at. **A technician now stands at a standing data terminal on the open floor north-east of
+the statue plaza, hands on its keyboard shelf, tapping away at whatever Sector 7 needs logged today.**
+*"Logs look clean. For once."* *"Mind the cables, puss — bad time for a short."* *"Querying Sector 7
+again. It never answers."*
+
+No new controller: it's a `Charger` again (stationary, already greets and cries the same as the fiddler,
+the drummer and the leak tester), with a world-clock-driven `U.push` override on both forearms for the
+typing — same trick the drummer's drumsticks already use, unconditional rather than guarded by
+`rig.gesture`, exactly as the drummer's own override already is. The terminal itself is a new static prop
+(a post, an angled screen, a keyboard shelf, three little status lights), its screen and point light
+flickering on the world clock alone, never this world's own seeded `r`.
+
+A headless probe (a scratch script built on the same stub-three harness `test/run.mjs` itself uses) built
+the real Robot City (`game.load(2, 'from-prev')`, then `game.start('new')` so every wandering, patrolling,
+dancing and ball-tossing robot pack actually moved), sampled every NPC's own position every quarter
+second over 300 simulated seconds, then swept a 4 m grid of the open floor (radius 15-92, short of the
+radius (98) where robotRegion's own procedural fill takes over) against both those samples and all 1141
+of the city's physics boxes: (54, 34) came back clear by 9.9 m of the nearest box (a skyscraper, well
+south) and 16.2 m of the nearest other soul. Facing north, away from that skyscraper.
+
+Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, 0 console warnings every time,
+Robot City's own friend count up one to 66. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.
