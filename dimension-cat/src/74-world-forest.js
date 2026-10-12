@@ -1001,6 +1001,23 @@ function buildForest(game, entry) {
     let smokeT = rnd.range(5, 9);
     U.push((dt) => { smokeT -= dt; if (smokeT <= 0) { smokeT = rnd.range(7, 12); const p = V3(); spout.getWorldPosition(p); game.fx.emit(p.x, p.y, p.z, { count: 4, color: 0xe8e4da, speed: 0.15, up: 0.3, life: 1.4, gravity: -0.3, spread: 0.2 }); } }); }
 
+  // every creature in this glade moves with some clip or flutter — even the snail above has somewhere to
+  // be, slowly — but nothing here had ever just sat and scuttled a few inches at a time. A ladybug now
+  // rests on the open forest floor, antennae twitching, taking a short scuttling hop every few seconds
+  // and startling a little further off whenever the cat gets close. `Hopper` already does exactly this
+  // for the frogs and the fox's quarry elsewhere in these woods, just dialled down to an inch-scale hop
+  // instead of a leap, so this is a build (`makeLadybug`, new, next to `makeSnail` in `56-npcs-wild.js`)
+  // and a placement, no new controller. Drawn from the shared `rnd()` sequence only (its colour is fixed,
+  // not even a pick), never this world's own seeded `r`, so it costs no later wardrobe draw in this build.
+  // A headless probe built the real Whisper Woods (`game.travel(6, 'from-hub')`), sampled every NPC's and
+  // the squirrel's own position every quarter second over 30 simulated seconds (so nothing wandering,
+  // hopping or flying mid-leash could slip past unnoticed), then swept a 2 m grid of the open forest floor
+  // (radius <= 55, short of `forestRegion`'s own fill at 58) against both those samples and every one of
+  // the wood's physics boxes: (-28, -20) came back clear by 12.8 m of the nearest box and 13.2 m of the
+  // nearest other soul, on flat ground, outside every hand-reserved zone in this file.
+  { const rig = makeLadybug(); W.add(rig.group);
+    game.npcs.push(new Hopper(game, rig, { x: -28, z: -20, leash: 1.0, r: 0.08, dist: [0.12, 0.3], dur: 0.3, height: 0.05, idle: [1.5, 4] })); }
+
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
 

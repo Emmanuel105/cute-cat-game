@@ -10703,3 +10703,35 @@ with, not people you say hello to.
 
 Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, 274 checks `ok`, 0 console
 warnings every time. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 420 — a ladybug for Whisper Woods
+
+Every creature in these woods moves with some clip or flutter — deer bound, foxes trot, frogs hop, the
+snail glides (slowly, but somewhere) — but nothing had ever just sat in place and scuttled a few inches
+at a time. **A ladybug now rests on the open forest floor**, antennae twitching, taking a short scuttling
+hop every few seconds and startling a little further off whenever the cat wanders too close. It has no
+line of its own — it's an insect, not a person — so this is purely a background touch, same family as
+the snail and the fireflies.
+
+New build, `makeLadybug()` in `56-npcs-wild.js` right next to `makeSnail()`: a domed red shell with a
+black centre seam and six black spots, a small black head, two thread-thin antennae that twitch faster
+when it's moving, and three pairs of thread-thin legs tilted out from the body. No new controller —
+`Hopper`, the class already driving the woods' frogs and the odd bunny-sized critter elsewhere, just
+dialled down to an inch-scale hop (`dist: [0.12, 0.3]`, `height: 0.05`) instead of a real leap. Its
+colour is fixed, not even a random pick, and the placement draws nothing from this world's own seeded
+`r()` — only `Hopper`'s own internal timers off the shared `rnd()`, same as every other ambient critter —
+so it costs no later wardrobe draw anywhere in this build.
+
+A headless probe (a scratch script built on the same stub-three harness `test/run.mjs` itself uses, since
+there's no browser here to look at it) built the real Whisper Woods (`game.travel(6, 'from-hub')`, then
+`game.start('new')` so every deer, fox, frog, owl, fairy, butterfly and the beekeeper's bees actually
+moved), sampled every NPC's and the squirrel's own position every quarter second over 30 simulated
+seconds, then swept a 2 m grid of the open forest floor (radius ≤ 55, short of `forestRegion`'s own fill
+at 58) against both those samples and all 308 of the wood's physics boxes: (-28, -20) came back clear by
+12.8 m of the nearest box and 13.2 m of the nearest other soul, on flat ground, outside every hand-placed
+zone in the file.
+
+It isn't a friend to meet — same as the snail, the crabs and the fireflies — Whisper Woods' own friend
+count stays at 60. Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, 274 checks
+`ok`, 0 console warnings every time. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.

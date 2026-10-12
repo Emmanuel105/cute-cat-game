@@ -406,6 +406,28 @@ function makeSnail(shellColor = 0xc9a24a) {
   return rig;
 }
 
+// ---------------------------------------------------------------- ladybug (short Hopper scuttles; domed, seamed shell with spots, thread legs)
+function makeLadybug(color = 0xd6263a) {
+  const g = new THREE.Group(), rig = { group: g };
+  const shellM = mat(color, { roughness: 0.4 }), darkM = mat(0x171310, { roughness: 0.6 }), legM = mat(0x241f1a, { roughness: 0.7 });
+  const body = group(0, 0, 0, g); rig.body = body;
+  const shell = group(0, 0.045, -0.015, body); rig.shell = shell;
+  mesh(G.dome(0.085, 14, 8), shellM, { sy: 0.8, parent: shell });
+  mesh(G.box(0.004, 0.07, 0.17), darkM, { y: 0.03, shadow: 'none', parent: shell });   // the seam where the two wing cases meet
+  for (const side of [1, -1]) for (const sz of [0.05, 0.01, -0.035]) mesh(G.sphere(0.012, 6, 5), darkM, { x: side * 0.038, y: 0.065, z: sz, sy: 0.55, shadow: 'none', parent: shell });
+  const head = group(0, 0.025, 0.075, body); rig.head = head;
+  mesh(G.sphere(0.028, 10, 8), darkM, { sz: 0.75, parent: head });
+  for (const side of [1, -1]) { const ant = group(side * 0.012, 0.018, 0.015, head); rig['ant' + side] = ant; mesh(G.cyl(0.0035, 0.0035, 0.045, 4), legM, { y: 0.022, rx: -0.6, parent: ant }); }
+  for (const side of [1, -1]) for (const z of [0.045, 0, -0.045]) mesh(G.capsule(0.005, 0.045, 4), legM, { x: side * 0.045, y: 0.012, z, rz: side * 1.15, parent: body });
+  rig.animate = (ph, moving, dt, t = 0) => {
+    const alert = moving ? 1 : 0.65 + sin(t * 1.8) * 0.2;
+    for (const side of [1, -1]) rig['ant' + side].rotation.z = side * 0.3 * alert;
+    body.position.y = moving ? abs(sin(t * 16)) * 0.008 : 0;
+  };
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- owl (perched; only animates)
 function makeOwl() {
   const g = new THREE.Group(), rig = { group: g };

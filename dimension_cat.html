@@ -4064,6 +4064,28 @@ function makeSnail(shellColor = 0xc9a24a) {
   return rig;
 }
 
+// ---------------------------------------------------------------- ladybug (short Hopper scuttles; domed, seamed shell with spots, thread legs)
+function makeLadybug(color = 0xd6263a) {
+  const g = new THREE.Group(), rig = { group: g };
+  const shellM = mat(color, { roughness: 0.4 }), darkM = mat(0x171310, { roughness: 0.6 }), legM = mat(0x241f1a, { roughness: 0.7 });
+  const body = group(0, 0, 0, g); rig.body = body;
+  const shell = group(0, 0.045, -0.015, body); rig.shell = shell;
+  mesh(G.dome(0.085, 14, 8), shellM, { sy: 0.8, parent: shell });
+  mesh(G.box(0.004, 0.07, 0.17), darkM, { y: 0.03, shadow: 'none', parent: shell });   // the seam where the two wing cases meet
+  for (const side of [1, -1]) for (const sz of [0.05, 0.01, -0.035]) mesh(G.sphere(0.012, 6, 5), darkM, { x: side * 0.038, y: 0.065, z: sz, sy: 0.55, shadow: 'none', parent: shell });
+  const head = group(0, 0.025, 0.075, body); rig.head = head;
+  mesh(G.sphere(0.028, 10, 8), darkM, { sz: 0.75, parent: head });
+  for (const side of [1, -1]) { const ant = group(side * 0.012, 0.018, 0.015, head); rig['ant' + side] = ant; mesh(G.cyl(0.0035, 0.0035, 0.045, 4), legM, { y: 0.022, rx: -0.6, parent: ant }); }
+  for (const side of [1, -1]) for (const z of [0.045, 0, -0.045]) mesh(G.capsule(0.005, 0.045, 4), legM, { x: side * 0.045, y: 0.012, z, rz: side * 1.15, parent: body });
+  rig.animate = (ph, moving, dt, t = 0) => {
+    const alert = moving ? 1 : 0.65 + sin(t * 1.8) * 0.2;
+    for (const side of [1, -1]) rig['ant' + side].rotation.z = side * 0.3 * alert;
+    body.position.y = moving ? abs(sin(t * 16)) * 0.008 : 0;
+  };
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- owl (perched; only animates)
 function makeOwl() {
   const g = new THREE.Group(), rig = { group: g };
@@ -13856,6 +13878,23 @@ function buildForest(game, entry) {
       cries: ['Calm smoke, calm bees. Works every time.', "Careful, puss — give the hive some room.", "Three jars of honey off this lot, last season."] }));
     let smokeT = rnd.range(5, 9);
     U.push((dt) => { smokeT -= dt; if (smokeT <= 0) { smokeT = rnd.range(7, 12); const p = V3(); spout.getWorldPosition(p); game.fx.emit(p.x, p.y, p.z, { count: 4, color: 0xe8e4da, speed: 0.15, up: 0.3, life: 1.4, gravity: -0.3, spread: 0.2 }); } }); }
+
+  // every creature in this glade moves with some clip or flutter — even the snail above has somewhere to
+  // be, slowly — but nothing here had ever just sat and scuttled a few inches at a time. A ladybug now
+  // rests on the open forest floor, antennae twitching, taking a short scuttling hop every few seconds
+  // and startling a little further off whenever the cat gets close. `Hopper` already does exactly this
+  // for the frogs and the fox's quarry elsewhere in these woods, just dialled down to an inch-scale hop
+  // instead of a leap, so this is a build (`makeLadybug`, new, next to `makeSnail` in `56-npcs-wild.js`)
+  // and a placement, no new controller. Drawn from the shared `rnd()` sequence only (its colour is fixed,
+  // not even a pick), never this world's own seeded `r`, so it costs no later wardrobe draw in this build.
+  // A headless probe built the real Whisper Woods (`game.travel(6, 'from-hub')`), sampled every NPC's and
+  // the squirrel's own position every quarter second over 30 simulated seconds (so nothing wandering,
+  // hopping or flying mid-leash could slip past unnoticed), then swept a 2 m grid of the open forest floor
+  // (radius <= 55, short of `forestRegion`'s own fill at 58) against both those samples and every one of
+  // the wood's physics boxes: (-28, -20) came back clear by 12.8 m of the nearest box and 13.2 m of the
+  // nearest other soul, on flat ground, outside every hand-reserved zone in this file.
+  { const rig = makeLadybug(); W.add(rig.group);
+    game.npcs.push(new Hopper(game, rig, { x: -28, z: -20, leash: 1.0, r: 0.08, dist: [0.12, 0.3], dur: 0.3, height: 0.05, idle: [1.5, 4] })); }
 
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
