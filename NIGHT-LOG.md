@@ -10947,3 +10947,30 @@ stakes — (51, -5) and (51, 3) — checked clear by 7.6 m and 8.2 m of the near
 Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings, Candy
 Land's own friend count up two (67 to meet now). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 428 — a rope ring toss for Sunny Shore
+
+The Neighborhood (395), Robot City (425), Victorian (426) and Candy Land (427) have all had a go at the
+same back-garden toss game — a horseshoe, a magnetic coupling, a brass quoit, a gummy ring — but nobody
+on this whole stretch of coast had ever thought to toss anything. **Two beachgoers now lob a coiled
+length of ship's rope back and forth, trying to ring a pair of driftwood posts** planted in the dry sand
+well north of the huts. *"Right over the post — that's a landing!"* *"Careful, puss — you'll have that
+rope round your own tail."* *"Best of nine, loser buries the loser's feet."*
+
+No new controller: the same `Horseshoes` class (`55-npcs.js`) every earlier reskin already uses,
+unchanged — just a thick rope-coloured torus standing in for the iron horseshoe, brass quoit or gummy
+ring, and two sawn-off driftwood stumps in place of stakes, with a couple of spare rings coiled by the
+near post for set dressing.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses) built the
+real Sunny Shore, sampled every NPC's own position every quarter second over 300 simulated seconds, then
+swept a 1 m grid of the dry sand (west of the wet-sand zone that starts at x=12, radius ≤ 56, short of
+the radius (58) where `beachRegion`'s own procedural fill takes over) against both those samples and all
+194 of the beach's physics boxes: (8, 52) came back clear by 9.7 m of the nearest box and 8.9 m of the
+nearest soul over the full 300 s window — flat sand past where both the dune terrain and the shore slope
+level out — with both posts themselves, (8, 49) and (8, 55) either side of the 6 m pitch, clear by at
+least 7.8 m on both counts.
+
+Full suite (`node test/run.mjs`) ran clean six times in a row — exit 0 and 0 console warnings every time,
+Sunny Shore's own friend count up two (60 to meet now, 99% of the ground still walkable). Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

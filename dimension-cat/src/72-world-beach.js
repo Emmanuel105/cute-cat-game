@@ -887,6 +887,44 @@ function buildBeach(game, entry) {
     const bottleLines = ['📜 "The ink\'s run, but one word still reads clear: \'HELP\'. Or maybe \'KELP\'."', '📜 "No name, no date — just a wobbly little drawing of a boat."', '📜 "Whoever threw this one in clearly didn\'t expect a cat to find it first."'];
     game.addInteractable({ obj: bottle, radius: 2.2, label: () => 'Read the message in the bottle', onUse: () => { SFX.click(); game.fx.emit(bx, y0 + 0.2, bz, { count: 10, colors: [0x7fd7ff, 0xffffff, 0xe8dcb8], speed: 0.9, up: 1.0, life: 0.7, gravity: 1.6 }); game.toast(rnd.pick(bottleLines), 3000); } }); }
 
+  // the Neighborhood (395), Robot City (425), Victorian (426) and Candy Land (427) have all had a go at
+  // the same back-garden toss game by now — a horseshoe, a coupling ring, a brass quoit, a gummy ring —
+  // but nobody on this whole stretch of coast ever thought to toss anything. A coiled length of ship's
+  // rope makes the obvious ring here: two beachgoers lob it back and forth at a pair of driftwood posts
+  // planted in the dry sand well north of the huts. Same `Horseshoes` class (`55-npcs.js`) as every
+  // earlier reskin, unchanged — held a moment, lobbed on an arc, caught, lobbed back, with its own
+  // `SFX.clang()` on landing — just a thick rope-coloured torus standing in for the iron horseshoe,
+  // brass quoit or gummy ring, and two driftwood stumps in place of stakes.
+  // A headless probe (the stub-three harness `test/run.mjs` itself uses, driven by hand with
+  // `game.travel(4, 'from-hub')`) sampled every NPC's own position every quarter second over 300
+  // simulated seconds, then swept a 1 m grid of the dry sand (x ≤ 8, clear of the wet-sand zone that
+  // starts at x=12, radius ≤ 56, short of the radius (58) where beachRegion's own fill takes over)
+  // against both those samples and all 194 of the beach's physics boxes: (8, 52) came back clear by
+  // 9.7 m of the nearest box and 8.9 m of the nearest soul over the full 300 s window — flat dry sand,
+  // past where the dune terrain and the shore slope both flatten out — with both posts themselves,
+  // (8, 49) and (8, 55) either side of the 6 m pitch, clear by at least 7.8 m on both counts.
+  { const rcx = 8, rcz = 52, rgap = 6;
+    const postM = mat(0x8a6a42, { roughness: 0.95 }), capM = mat(0x6b4226, { roughness: 0.95 });
+    for (const rz of [rcz - rgap / 2, rcz + rgap / 2]) {
+      const py = P.ground0(rcx, rz);
+      mesh(G.cyl(0.055, 0.07, 0.42, 10), postM, { x: rcx, y: py + 0.21, z: rz, parent: W });
+      mesh(G.cyl(0.07, 0.07, 0.03, 10), capM, { x: rcx, y: py + 0.415, z: rz, shadow: 'none', parent: W });   // weathered, sawn-off top
+      P.addBox(rcx, py + 0.21, rz, 0.14, 0.42, 0.14, { cam: false });
+    }
+    // a couple of spare rope rings coiled by the near post, baked in with everything else — just set dressing
+    const spareR = mat(0xc2a878, { roughness: 1 });
+    const py0 = P.ground0(rcx, rcz - rgap / 2);
+    for (let i = 0; i < 2; i++) mesh(G.torus(0.14, 0.04, 6, 16), spareR, { x: rcx + 0.3, y: py0 + 0.045 + i * 0.07, z: rcz - rgap / 2 + 0.1, rx: PI / 2, ry: i * 0.7, parent: W });
+    const ringWardA = makeWardrobe(r, { shirts: [0xff7043], pants: [0x8a6a4a], shoes: [0xefe7d8, 0x8d6e63] });
+    const ringWardB = makeWardrobe(r, { shirts: [0x2e9e6e], pants: [0x3a3a3a], shoes: [0xefe7d8, 0x8d6e63] });
+    const ringA = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: r.chance(0.3), wardrobe: ringWardA }), shorts: true, hat: r.chance(0.5) ? 'cap' : null, hatColor: 0xf5f2ea, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.3) });
+    const ringB = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: r.chance(0.3), wardrobe: ringWardB }), shorts: true, hat: r.chance(0.4) ? 'sunhat' : null, hatColor: 0xd9c9a8, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.3) });
+    W.add(ringA.group); W.add(ringB.group);
+    const ring = mesh(G.torus(0.15, 0.045, 8, 20), mat(0xc2a878, { roughness: 1 }), { x: rcx, y: py0 + 1, z: rcz - rgap / 2, rx: PI / 2, parent: W });
+    const ringLines = ['Right over the post — that\'s a landing!', "Careful, puss — you'll have that rope round your own tail.", "Best of nine, loser buries the loser's feet."];
+    game.npcs.push(new Horseshoes(game, ringA, ringB, ring, { cx: rcx, cz: rcz, gap: rgap, cries: ringLines, cryIcon: '🪢' }));
+    greetable(game, { rig: ringA }); greetable(game, { rig: ringB }); }
+
   beachRegion(game, U, r, 58, SHORE_LIMIT - 8);
   // the headland behind the dunes: hills and peaks inland only, never out to sea
   makeHorizon(game, r, { clear: SHORE_LIMIT + 8, hill: 0x8c9a58, rock: 0x7a7060, rock2: 0x8a8272, snowLine: 58, peaks: 26, woodCount: 260, woodHue: [0.18, 0.28], woodLight: [0.18, 0.3], keep: (x) => x < -SHORE_LIMIT * 0.15 });
