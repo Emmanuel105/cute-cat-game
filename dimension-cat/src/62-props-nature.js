@@ -692,6 +692,45 @@ function makeStump(r = rnd) {
   for (let i = 0; i < 4; i++) mesh(G.torus(0.12 + i * 0.09, 0.008, 4, 16), mat(0x8a6a44), { y: 0.745, rx: PI / 2, shadow: 'none', parent: g });
   return g;
 }
+/**
+ * A knee-high orb web slung between two twig stakes: eight silk spokes and three concentric rings
+ * (full toruses — the web's own local plane is XY, which is exactly how a torus already sits, so the
+ * rings need no rotation at all), a handful of dew beads that glint on a slow pulse, and a small
+ * spider sitting dead centre with its legs fanned out. The whole slung disc sways a little on its own
+ * silk, independent of the two fixed stakes it hangs from. `place()`'s own `ry` then spins the pair to
+ * face whichever way looks best — the web's local Z is its face normal, same convention a picture frame
+ * or sign would use. Every spoke and ring is thin enough to need `noInk()`, same as a wind chime's own
+ * tubes or a zipline's cable. No physics box: thin twigs at ground level, same call the wind chime and
+ * the scattered mushrooms already make for anything this slight.
+ */
+function makeSpiderweb(r = rnd) {
+  const g = new THREE.Group(), twig = mat(0x4a3a28, { roughness: 0.9 }), stakeH = 0.62;
+  for (const sx of [-0.32, 0.32]) mesh(G.cyl(0.012, 0.018, stakeH, 5), twig, { x: sx, y: stakeH / 2, shadow: 'none', parent: g });
+  const web = group(0, stakeH - 0.03, 0, g);
+  const silk = mat(0xeaf0ee, { roughness: 0.3, transparent: true, opacity: 0.5 });
+  // a thin cylinder (its own axis along Y) rotated around Z so its length runs from the origin to (dx, dy)
+  const strand = (dx, dy, rad = 0.0022) => { const len = sqrt(dx * dx + dy * dy); if (len < 1e-4) return;
+    noInk(mesh(G.cyl(rad, rad, len, 4), silk, { x: dx / 2, y: dy / 2, rz: atan2(-dx, dy), shadow: 'none', parent: web })); };
+  const N = 8, R = 0.3, rim = []; for (let i = 0; i < N; i++) { const a = i / N * TAU; rim.push([cos(a) * R, sin(a) * R]); }
+  for (const [x, y] of rim) strand(x, y);
+  for (const frac of [0.38, 0.66, 0.94]) noInk(mesh(G.torus(R * frac, 0.0018, 4, 20), silk, { shadow: 'none', parent: web }));
+  // a few dew beads caught on the silk, each with its own pulse phase so they don't glint in lockstep
+  const dewSpots = [rim[0].map((v) => v * 0.66), rim[2].map((v) => v * 0.94), rim[4].map((v) => v * 0.38), rim[6].map((v) => v * 0.94)];
+  const dew = dewSpots.map(([x, y]) => { const s = glowSprite(0xdff7ff, 0.05, 0.7, web); s.position.set(x, y, 0.004); return { s, phase: r.range(0, TAU) }; });
+  // the spider: a flattened body and six thin legs fanned out, sitting just in front of the silk
+  const spider = group(0, 0, 0.006, web), bodyMat = mat(0x3a2e24, { roughness: 0.8 });
+  mesh(G.sphere(0.018, 8, 6), bodyMat, { sz: 0.6, parent: spider }); mesh(G.sphere(0.013, 8, 6), bodyMat, { x: 0.016, sz: 0.6, parent: spider });
+  const legs = [];
+  for (let i = 0; i < 6; i++) { const a = -0.9 + i * 0.36, lx = cos(a) * 0.045, ly = sin(a) * 0.045;
+    const leg = mesh(G.cyl(0.0035, 0.0035, 0.045, 4), bodyMat, { x: lx / 2, y: ly / 2, rz: atan2(-lx, ly), shadow: 'none', parent: spider });
+    legs.push({ leg, phase: i * 1.1 }); }
+  g.userData.update = (dt, t) => {
+    web.rotation.z = sin(t * 0.6) * 0.02; web.rotation.x = sin(t * 0.45 + 1.1) * 0.015;
+    for (const { s, phase } of dew) { const g2 = 0.55 + 0.45 * sin(t * 1.6 + phase); s.material.opacity = 0.3 + 0.5 * g2; s.scale.setScalar(0.04 + 0.02 * g2); }
+    for (const { leg, phase } of legs) leg.scale.y = 1 + sin(t * 2.2 + phase) * 0.04;
+  };
+  return g;
+}
 function makeLanternString(game, ax, az, bx, bz, n = 7, y = 3.2) {
   const W = game.world, ya = game.physics.ground0(ax, az) + y, yb = game.physics.ground0(bx, bz) + y;
   const pts = []; for (let i = 0; i <= 12; i++) { const k = i / 12; pts.push(V3(lerp(ax, bx, k), lerp(ya, yb, k) - sin(k * PI) * 0.6, lerp(az, bz, k))); }

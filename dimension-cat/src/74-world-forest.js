@@ -1018,6 +1018,17 @@ function buildForest(game, entry) {
   { const rig = makeLadybug(); W.add(rig.group);
     game.npcs.push(new Hopper(game, rig, { x: -28, z: -20, leash: 1.0, r: 0.08, dist: [0.12, 0.3], dur: 0.3, height: 0.05, idle: [1.5, 4] })); }
 
+  // the snail above finally gave this wood something that creeps, but nothing had ever been caught
+  // actually spinning silk. A knee-high orb web now hangs between two twig stakes in a quiet pocket of
+  // undergrowth south-east of the pond, dew beads glinting on it and a small spider sitting dead centre.
+  // Placed at (16, -16): well clear of the frog ring at (8, -6) (12.8 m, past the frogs' own 6.7 m
+  // furthest hop), the ring-dancers at (21, 0) (16.8 m) and the juggler at (28, -8) (14.4 m). Purely
+  // decorative and non-colliding — two thin twigs at ground level, same call the wind chime and the
+  // scattered mushrooms already make for anything this slight — so it needs no physics box and no
+  // keep-out probe, and changes no walkable-ground percentage.
+  { const wx = 16, wz = -16;
+    placeT(game, U, makeSpiderweb(r), wx, wz, atan2(8 - wx, -6 - wz)); }
+
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
 

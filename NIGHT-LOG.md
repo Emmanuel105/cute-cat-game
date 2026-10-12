@@ -10804,3 +10804,29 @@ this build adds, after the synth-coffee vendor, so it draws from the very tail o
 Full suite (`node test/run.mjs`) ran clean three times in a row once the global-`rnd()` fix was in —
 exit 0, 274 checks `ok`, 0 console warnings every time. Robot City's own friend count is up one to 69.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 423 — a spiderweb for Whisper Woods
+
+Every creature in these woods had already been covered — deer, foxes, frogs, owls, fairies, a snail
+creeping through the fern litter — but nothing had ever actually spun silk. **A knee-high orb web now
+hangs between two twig stakes** in a quiet pocket of undergrowth south-east of the glowing pond: eight
+silk spokes, three concentric rings (toruses, since the web's own local plane already lies exactly where
+a torus sits — no rotation needed), a few dew beads that glint on their own slow pulse, and a small
+spider sitting dead centre, legs fanned out with a faint twitch. The whole slung disc sways gently on its
+own silk, independent of the two stakes holding it up.
+
+Placed at (16, -16): 12.8 m clear of the frog ring at (8, -6), well past the frogs' own furthest hop; 16.8
+m from the ring-dancing children at (21, 0); 14.4 m from the juggler at (28, -8). Purely decorative and
+non-colliding — two thin twigs at ground level, the same call the wind chime and the scattered mushrooms
+already make for anything this slight — so it needed no physics box and no keep-out probe, and it adds
+no greetable id. Every strand and ring uses `noInk()`, same as a wind chime's tubes or the zipline's own
+cable, so none of it inks solid across the forest floor.
+
+Verified: `node test/run.mjs` twice in a row — exit 0, 274 checks `ok`, 0 console warnings, physics box
+count unchanged at 308 and Whisper Woods' own counts untouched (60 to meet, 99% of the ground walkable)
+both times — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+(This change was first built against a stale, diverged checkout of `main` that had fallen 140 rounds
+behind — the real history's own Round 283 is unrelated, "a look up at Frosty Peak's own zipline tower".
+Once the real `main` turned up on push, this same change was replayed cleanly on top of the real Round
+422 and renumbered here to 423, with no change to the code itself.)
