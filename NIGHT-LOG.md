@@ -10549,3 +10549,29 @@ south) and 16.2 m of the nearest other soul. Facing north, away from that skyscr
 Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, 0 console warnings every time,
 Robot City's own friend count up one to 66. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 415 — a parts scavenger for Robot City
+
+`Forager` has been kneeling and picking at things since early on — the Neighborhood's gardener, Sunny
+Shore's clam digger, the mushroom-pickers on both the snow and forest worlds — but Robot City, which has
+dropped crates and barrels all over its own floor since round 1, never had anyone actually picking
+through one. **A parts scavenger now kneels beside a tipped crate on the open floor south of the city,
+sorting loose bolts and washers into a bucket for the furnace rather than letting them rust where they
+fell.** *"Every bolt the belt drops ends up back here, eventually."* *"Careful, puss — mind your paws,
+some of these edges are sharp."* *"Sector 7's whole recycling program. Just me and a bucket."*
+
+No new controller: it's the same kneel-and-reach loop every other `Forager` already runs, just given a
+crate, a scatter of bolts and washers, and a bucket instead of a basket or a sand hole. A headless probe
+(a scratch script built on the same stub-three harness `test/run.mjs` itself uses) built the real Robot
+City (`game.load(2, 'from-prev')`, then `game.start('new')` so every wandering, patrolling, dancing and
+ball-tossing robot pack actually moved), sampled every NPC's own position every quarter second over 300
+simulated seconds, then swept a 0.5 m grid of the open floor (radius 15-90, short of the radius (98)
+where robotRegion's own procedural fill takes over) against both those samples and all 1142 of the
+city's physics boxes: (-9, -67) came back clear by 10.2 m of the nearest box (one of the outer skyline
+towers, south) and 10.5 m of the nearest other soul. Placed last of every person this build adds, after
+the data terminal's own technician, so it draws from the very tail of this world's own local `r()`
+sequence.
+
+Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, 0 console warnings every time,
+Robot City's own friend count up one to 67. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.

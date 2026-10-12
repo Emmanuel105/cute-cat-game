@@ -3241,6 +3241,42 @@ function buildRobotCity(game, entry) {
       A.sh.rotation.x = -1.15; A.sh.rotation.z = 0.18; A.el.rotation.x = -0.35 + sin(t * 13) * 0.12;
       B.sh.rotation.x = -1.15; B.sh.rotation.z = -0.18; B.el.rotation.x = -0.35 + sin(t * 13 + 1.7) * 0.12;
     }); }
+  // `Forager` already does duty as the Neighborhood's gardener, Sunny Shore's clam digger and both
+  // snow-world mushroom-pickers, but Robot City — which drops crates and barrels all over its own
+  // floor — never had anyone actually picking through one. A parts scavenger now kneels beside a
+  // tipped crate on the open floor south of the city, sorting loose bolts and washers back into a
+  // bucket for the furnace rather than letting them rust where they fell. No new controller: same
+  // kneel-and-reach loop every other Forager already runs.
+  // A headless probe (a scratch script built on the same stub-three harness `test/run.mjs` itself
+  // uses) built the real Robot City (`game.load(2, 'from-prev')`, then `game.start('new')` so every
+  // wandering, patrolling, dancing and ball-tossing robot pack actually moved), sampled every NPC's
+  // own position every quarter second over 300 simulated seconds, then swept a 0.5 m grid of the open
+  // floor (radius 15-90, short of the radius (98) where robotRegion's own procedural fill takes over)
+  // against both those samples and all 1142 of the city's physics boxes: (-9, -67) came back clear by
+  // 10.2 m of the nearest box (one of the outer skyline towers, south) and 10.5 m of the nearest other
+  // soul. Placed last of every person this build adds, after the data terminal's own technician, so it
+  // draws from the very tail of this world's own local `r()` sequence and disturbs no earlier wardrobe
+  // or layout pick.
+  { const sx = -9, sz = -67, ry = 0, cx = sx, cz = sz + 1.0;
+    const crateM = mat(0x8a6a3a, { roughness: 0.9, map: TEX.planks(30, 34) }), boltM = mat(0x5a6470, { metalness: 0.7, roughness: 0.4 }), washerM = mat(0xc9a227, { metalness: 0.6, roughness: 0.3 });
+    mesh(G.box(0.55, 0.5, 0.55), crateM, { x: cx, y: 0.25, z: cz, ry: 0.35, parent: W });
+    P.addBox(cx, 0.25, cz, 0.55, 0.5, 0.55, { cam: false });
+    const bits = [[0.1, 0.42], [-0.25, 0.3], [0.32, 0.22], [-0.1, 0.1], [0.05, -0.05]];
+    for (let i = 0; i < bits.length; i++) { const [bx2, bz2] = bits[i];
+      if (i % 2 === 0) mesh(G.cyl(0.025, 0.03, 0.06, 6), boltM, { x: cx + bx2, y: 0.032, z: cz + bz2, rx: PI / 2, ry: r() * TAU, shadow: 'none', parent: W });
+      else mesh(G.torus(0.035, 0.012, 6, 10), washerM, { x: cx + bx2, y: 0.015, z: cz + bz2, rx: PI / 2, shadow: 'none', parent: W }); }
+    // a bucket beside the scavenger, already half full of what she's sorted
+    const bkx = sx - 0.55, bkz = sz - 0.1;
+    mesh(G.cyl(0.14, 0.11, 0.18, 10), mat(0x5a6470, { metalness: 0.5, roughness: 0.5 }), { x: bkx, y: 0.09, z: bkz, parent: W });
+    for (let i = 0; i < 5; i++) { const a = i / 5 * TAU;
+      mesh(G.cyl(0.02, 0.022, 0.04, 6), r.pick([boltM, washerM]), { x: bkx + cos(a) * 0.06, y: 0.17, z: bkz + sin(a) * 0.06, rx: PI / 2, shadow: 'none', parent: W }); }
+    P.addBox(bkx, 0.09, bkz, 0.3, 0.18, 0.3, { cam: false });
+    const scavWard = makeWardrobe(r, { shirts: [0xff9f43, 0x4a5a6a], pants: [0x232c34, 0x2a2a30] });
+    const scavenger = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: scavWard }),
+      hat: 'cap', hatColor: 0x2a2a30, jacket: null, scarf: null, bag: null, glasses: r.chance(0.3) });
+    W.add(scavenger.group);
+    game.npcs.push(new Forager(game, scavenger, { x: sx, z: sz, ry, cryIcon: '🔩',
+      cries: ['Every bolt the belt drops ends up back here, eventually.', "Careful, puss — mind your paws, some of these edges are sharp.", "Sector 7's whole recycling program. Just me and a bucket."] })); }
   const sq = new Squirrel(game, -14, -9, 'sq-robot'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('mouse', -8, 7); C.add('star', 12, -22); C.add('fish', -18, 2); C.add('yarn', 21, 9); C.add('star', 0, -27); C.add('fish', 4, 14); C.add('mouse', 26, -18); C.add('yarn', -26, -6);
