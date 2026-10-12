@@ -4579,6 +4579,39 @@ function buildVictorian(game, entry) {
     W.add(birder.group);
     game.npcs.push(new Birder(game, birder, { x: bwx, z: bwz, ry: bwry,
       cries: ['Starlings on the chimney-pots again. Must be thirty up there.', "Careful, puss — you're not what I came out to watch.", 'Sparrows nest in every spare pot on this row. Lucky things.'] })); }
+  // the Neighborhood, Robot City, Sunny Shore and Frosty Peak all have someone tossing a disc straight
+  // up off the palm by now — Candy Land and Whisper Woods are the only other two left without one, and
+  // Victorian, for all its vendors, urchins and board-game players, never had anyone just throwing
+  // something for the fun of it either. An off-duty errand boy now stands on the open green well south
+  // of the terraces, lobbing a disc straight up — it rises on a spin, hangs a beat at the top, and
+  // drops back into his palm for the next throw. No new controller or prop: the exact same
+  // `FrisbeePlayer` class (`55-npcs.js`, next to `HulaHooper`) the Neighborhood, Robot City, the beach
+  // and the mountain already use, just this street's own `vicWard` palette on the thrower and a plain
+  // cream disc in place of beachwear, work overalls or a snowsuit.
+  // Its own built-in `cries` option is left unused on purpose, same reasoning Robot City's own reskin
+  // settled on two rounds back: that path draws its idle-chatter timer from the shared global `rnd()`,
+  // and Victorian is tested ahead of three more worlds in the same run — any extra global draw here
+  // would shift every `rnd()`-seeded pick downstream (the horse carriage among them) by one. Dialogue
+  // instead rides its own `U.push` timer below, seeded off this world's own local `r()`, costing no
+  // global draw at all.
+  // A headless probe (a scratch script built on the same stub-three harness `test/run.mjs` itself
+  // uses) built the real Victorian town (`game.load(3, 'from-prev')`, then `game.start('new')` so
+  // every urchin, dancer, duck and ball-tossing pair actually moved), sampled every physics circle's
+  // own position every quarter second over 300 simulated seconds, then swept a 2 m grid of the open
+  // green (radius 18-84, short of the radius (88) where victorianRegion's own procedural fill takes
+  // over) against both those samples and all 712 of the town's physics boxes: (-26, -76) came back
+  // clear by 24.4 m of the nearest box and 24.1 m of the nearest other soul — well south of the market
+  // square (centred (0,-34), radius 17) and clear of every terrace, fence and lamp along the street.
+  // Placed last of every person this build adds, after the birdwatcher, so it draws from the very
+  // tail of this world's own local `r()` sequence and disturbs no earlier wardrobe or colour pick.
+  { const fx = -26, fz = -76, fry = atan2(-fx, -fz);
+    const thrower = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: vicWard }),
+      pants: 0x1e1e24, hat: 'cap', hatColor: 0x3a3327, coat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.3) });
+    W.add(thrower.group);
+    game.npcs.push(new FrisbeePlayer(game, thrower, 0xf7f3ec, { x: fx, z: fz, ry: fry }));
+    const frisbeeLines = ["Errand can wait five minutes. It's a nice throw.", "Careful, puss — mind your tail, this one's coming down fast.", "Highest one yet. Don't tell the mistress I was out here."];
+    let frisbeeCryT = r.range(3, 7);
+    U.push((dt) => { frisbeeCryT -= dt; if (frisbeeCryT <= 0) { frisbeeCryT = r.range(8, 14); const c = game.cat.group.position; if (dist2(fx, fz, c.x, c.z) < 400) { game.toast('🥏 "' + r.pick(frisbeeLines) + '"', 2400); SFX.talk(); } } }); }
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);

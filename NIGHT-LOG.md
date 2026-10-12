@@ -11034,3 +11034,33 @@ Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 co
 Woods' own friend count up two (62 to meet now, 98% of the ground still walkable). Every world in the
 game now has its own back-garden toss game. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 431 — a frisbee thrower for Victorian
+
+The Neighborhood, Robot City, Sunny Shore and Frosty Peak all had someone tossing a disc straight up
+off the palm by now, but Victorian — for all its vendors, urchins and board-game players — never had
+anyone just throwing something for the fun of it. **An off-duty errand boy now stands on the open
+green well south of the market square, lobbing a plain cream disc straight up** — it rises on a spin,
+hangs a beat at the top, and drops back into his palm for the next throw. *"Errand can wait five
+minutes. It's a nice throw."* *"Highest one yet. Don't tell the mistress I was out here."*
+
+No new controller: the exact same `FrisbeePlayer` class (`55-npcs.js`) the Neighborhood, Robot City and
+the beach already use, unchanged — just the street's own `vicWard` palette on the thrower in place of
+beachwear or work overalls. Its built-in `cries` option was left unused on purpose: that path draws its
+chatter timer off the shared global `rnd()`, and Victorian is tested ahead of three more worlds in the
+same run, so any extra global draw there would shift every `rnd()`-seeded pick downstream (Robot City
+hit exactly this bug two rounds back with its own reskin). Dialogue instead rides its own `U.push`
+timer, seeded off this world's own local `r()`, costing no global draw at all.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses) built the
+real Victorian town, sampled every physics circle's own position every quarter second over 300
+simulated seconds, then swept a 2 m grid of the open green (radius 18-84, short of the radius (88)
+where `victorianRegion`'s own procedural fill takes over) against both those samples and all 712 of the
+town's physics boxes: (-26, -76) came back clear by 24.4 m of the nearest box and 24.1 m of the nearest
+other soul, well south of the market square and clear of every terrace, fence and lamp along the
+street.
+
+Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0 and 0 console warnings every
+time, Victorian's own friend count up one (75 to meet now, 95% of the ground still walkable). Candy
+Land and Whisper Woods are the only worlds left without a frisbee thrower. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
