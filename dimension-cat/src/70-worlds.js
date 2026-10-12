@@ -3523,6 +3523,39 @@ function buildRobotCity(game, entry) {
     const magnetLines = ['Clang — dead centre on the post.', 'Careful, puss — four kilos of coupling, that.', "Break's over in five. One more toss."];
     game.npcs.push(new Horseshoes(game, tossA, tossB, ring, { cx: mcx, cz: mcz, gap: mgap, cries: magnetLines }));
     greetable(game, { rig: tossA }); greetable(game, { rig: tossB }); }
+  // the Neighborhood, Candy Land, Sunny Shore, Frosty Peak, Whisper Woods and Victorian have all had a
+  // photographer with an old box camera on a tripod since round 302 — Robot City, the one world whose
+  // own skyline would actually make a decent plate, was the only one of the seven left without one. A
+  // visitor now sets up the same antique tripod on the open floor out past the magnet-toss posts,
+  // framing the ring of towers rising behind the statue plaza. No new controller or prop: the exact same
+  // `Photographer` class and `makeOldCamera()` tripod every other world already uses, just this city's
+  // own steel-and-cap worker palette on the wardrobe in place of beachwear, a flatcap or candy colours.
+  // Its own built-in `cries` option was left unused on purpose, same reason the frisbee thrower two
+  // blocks up skipped it: `Photographer.update()` only starts drawing from the shared global `rnd()`
+  // once `cries` is truthy (every reset of its chatter timer draws `rnd.range(9, 16)`, the same clock
+  // every other talking NPC in this file reads from), and the one extra draw it costs would shift every
+  // random pick downstream — the Victorian carriage check two rounds back was lost to exactly this bug.
+  // Dialogue instead rides its own `U.push` timer below, seeded off this world's own local `r()` (the
+  // same trick the frisbee thrower's own chatter already uses), so it costs no global draw at all.
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses) built
+  // the real Robot City (the start screen's own click, then `game.travel(2, 'from-prev')`, so every
+  // wandering, patrolling, dancing and ball-tossing robot pack actually moved), sampled every NPC's own
+  // position every quarter second over 300 simulated seconds, then swept the open floor (radius 15-90,
+  // short of the radius (98) where robotRegion's own procedural fill takes over) against both those
+  // samples and all of the city's physics boxes: (31.5, 58) came back clear by 10.4 m of the nearest box
+  // (one of the inner-ring skyscrapers) and well past that of the nearest other soul. Placed last of
+  // every person this build adds, after the magnet toss, so it draws from the very tail of this world's
+  // own local `r()` sequence and disturbs no earlier wardrobe or layout pick.
+  { const px = 31.5, pz = 58, pry = atan2(0 - px, 0 - pz);
+    const camWard = makeWardrobe(r, { shirts: [0x4a5a6a, 0x5a4a6a, 0x3a4a5a], pants: [0x232c34, 0x2a2a30] });
+    const snapper = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.25), wardrobe: camWard }),
+      hat: 'cap', hatColor: 0x3a4a5a, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.35) });
+    W.add(snapper.group);
+    const camera = makeOldCamera();
+    game.npcs.push(new Photographer(game, snapper, camera, { x: px, z: pz, ry: pry }));
+    const camLines = ['Everyone said bring a drone. I brought this instead.', "Careful, puss — it's only flash powder, not fire.", 'The whole skyline in one plate, if I hold it just right.'];
+    let camCryT = r.range(3, 7);
+    U.push((dt) => { camCryT -= dt; if (camCryT <= 0) { camCryT = r.range(8, 14); const c = game.cat.group.position; if (dist2(px, pz, c.x, c.z) < 400) { game.toast('📷 "' + r.pick(camLines) + '"', 2400); SFX.talk(); } } }); }
   const sq = new Squirrel(game, -14, -9, 'sq-robot'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('mouse', -8, 7); C.add('star', 12, -22); C.add('fish', -18, 2); C.add('yarn', 21, 9); C.add('star', 0, -27); C.add('fish', 4, 14); C.add('mouse', 26, -18); C.add('yarn', -26, -6);

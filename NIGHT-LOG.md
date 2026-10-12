@@ -11119,3 +11119,35 @@ Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, 274 
 warnings every time. Whisper Woods' own friend count up one (62 to 63 to meet), 98% of the ground still
 walkable, unchanged. All seven worlds now have their own frisbee thrower. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 434 — a photographer for Robot City
+
+The Neighborhood, Candy Land, Sunny Shore, Frosty Peak, Whisper Woods and Victorian have all had a
+photographer with an old box camera on a tripod since round 302 — Robot City, the one world whose own
+skyline would actually make a decent plate, was the only one of the seven left without it. **A visitor
+now sets up the same antique tripod on the open floor out past the magnet-toss posts, framing the ring
+of towers behind the statue plaza.** *"Everyone said bring a drone. I brought this instead."* *"Careful,
+puss — it's only flash powder, not fire."* *"The whole skyline in one plate, if I hold it just right."*
+
+No new controller or prop: the exact same `Photographer` class and `makeOldCamera()` tripod every other
+world already uses, just this city's own steel-and-cap worker palette on the wardrobe in place of
+beachwear, a flatcap or candy colours. Its built-in `cries` option was left unused on purpose, same
+reason the frisbee thrower and the magnet toss both skipped it a few rounds back: once `cries` is
+truthy, `Photographer.update()` starts drawing from the shared global `rnd()` every time its chatter
+timer resets, and that extra draw shifts every random pick downstream — exactly the bug that cost the
+Victorian carriage check two rounds ago. Dialogue instead rides its own `U.push` timer seeded off this
+world's own local `r()`, costing no global draw at all.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses) built the
+real Robot City with a real `start('new')` click first, so every wandering, patrolling, dancing and
+ball-tossing robot pack actually moved, sampled every NPC's own position every quarter second over 300
+simulated seconds, then swept the open floor (radius 15-90, short of the radius 98 where the
+procedural fill takes over) against both those samples and every physics box in the city: (31.5, 58)
+came back clear by 10.4 m of the nearest box and well past that of the nearest other soul.
+
+Full suite (`node test/run.mjs`) ran clean twice in a row — exit 0, all checks `ok`, 0 console warnings
+both times (a few timing-sensitive counts elsewhere — kite height, logs split, photos taken — jittered
+between runs as they already did before this change; nothing in Robot City moved). Robot City's own
+friend count is up one (71 to 72 to meet), 89% of the ground still walkable, unchanged. All seven worlds
+now have their own photographer. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.
