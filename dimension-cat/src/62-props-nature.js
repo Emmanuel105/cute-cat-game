@@ -536,6 +536,23 @@ function makeSled(color = 0xd62839) {
   for (const [x, z] of [[-0.35, -0.5], [0.35, -0.5], [-0.35, 0.5], [0.35, 0.5]]) mesh(G.box(0.05, 0.25, 0.05), wood, { x, y: 0.16, z, parent: g });
   return g;
 }
+/** A granite curling stone: a squat polished disc with a red handle on top, for sliding down the ice. */
+function makeCurlingStone() {
+  const g = new THREE.Group(), granite = mat(0x3a3a42, { roughness: 0.3, metalness: 0.15 }), handleMat = mat(0x8a1f1f, { roughness: 0.45, metalness: 0.25 });
+  mesh(G.cyl(0.14, 0.16, 0.1, 20), granite, { y: 0.05, parent: g });
+  mesh(G.cyl(0.165, 0.165, 0.015, 20), mat(0xd9d9dc, { roughness: 0.35 }), { y: 0.1, shadow: 'none', parent: g });
+  noInk(mesh(G.torus(0.045, 0.012, 6, 10), handleMat, { y: 0.19, rx: PI / 2, parent: g }));
+  noInk(mesh(G.cyl(0.012, 0.012, 0.08, 6), handleMat, { y: 0.145, parent: g }));
+  return g;
+}
+/** A curling broom for a sweeper to hold: a long carbon-look shaft and a flat synthetic head. */
+function makeBroom() {
+  const g = new THREE.Group(), shaft = mat(0x2a2a2a, { metalness: 0.4, roughness: 0.4 }), head = mat(0x2a6a8a, { roughness: 0.75 });
+  noInk(mesh(G.cyl(0.014, 0.014, 0.75, 8), shaft, { y: 0.4, parent: g }));
+  mesh(G.box(0.22, 0.05, 0.1), head, { y: 0.02, parent: g });
+  mesh(G.box(0.23, 0.015, 0.11), mat(0xeceff2, { roughness: 0.9 }), { y: 0.045, parent: g });
+  return g;
+}
 
 // ---------------------------------------------------------------- whisper woods
 function makeBigTree(r = rnd, o = {}) {

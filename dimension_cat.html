@@ -5973,6 +5973,23 @@ function makeSled(color = 0xd62839) {
   for (const [x, z] of [[-0.35, -0.5], [0.35, -0.5], [-0.35, 0.5], [0.35, 0.5]]) mesh(G.box(0.05, 0.25, 0.05), wood, { x, y: 0.16, z, parent: g });
   return g;
 }
+/** A granite curling stone: a squat polished disc with a red handle on top, for sliding down the ice. */
+function makeCurlingStone() {
+  const g = new THREE.Group(), granite = mat(0x3a3a42, { roughness: 0.3, metalness: 0.15 }), handleMat = mat(0x8a1f1f, { roughness: 0.45, metalness: 0.25 });
+  mesh(G.cyl(0.14, 0.16, 0.1, 20), granite, { y: 0.05, parent: g });
+  mesh(G.cyl(0.165, 0.165, 0.015, 20), mat(0xd9d9dc, { roughness: 0.35 }), { y: 0.1, shadow: 'none', parent: g });
+  noInk(mesh(G.torus(0.045, 0.012, 6, 10), handleMat, { y: 0.19, rx: PI / 2, parent: g }));
+  noInk(mesh(G.cyl(0.012, 0.012, 0.08, 6), handleMat, { y: 0.145, parent: g }));
+  return g;
+}
+/** A curling broom for a sweeper to hold: a long carbon-look shaft and a flat synthetic head. */
+function makeBroom() {
+  const g = new THREE.Group(), shaft = mat(0x2a2a2a, { metalness: 0.4, roughness: 0.4 }), head = mat(0x2a6a8a, { roughness: 0.75 });
+  noInk(mesh(G.cyl(0.014, 0.014, 0.75, 8), shaft, { y: 0.4, parent: g }));
+  mesh(G.box(0.22, 0.05, 0.1), head, { y: 0.02, parent: g });
+  mesh(G.box(0.23, 0.015, 0.11), mat(0xeceff2, { roughness: 0.9 }), { y: 0.045, parent: g });
+  return g;
+}
 
 // ---------------------------------------------------------------- whisper woods
 function makeBigTree(r = rnd, o = {}) {
@@ -12651,6 +12668,58 @@ function buildSnowVillage(game, entry) {
     const camera = makeOldCamera();
     game.npcs.push(new Photographer(game, snapper, camera, { x: px, z: pz, ry: pry, cryIcon: '📷',
       cries: ['Whole mountain in one shot, if the light holds.', "Careful, puss — it's only flash powder, not fire.", "The painter says a photograph has no soul. I say develop faster, then we'll talk."] })); }
+  // Victorian has a draughts table since round 354, Robot City a checkers drum since round 384, Frosty
+  // Peak itself a deck of cards since round 397 and Whisper Woods a mancala board — but no world yet had
+  // curling, the one game that is pure winter through and through. A granite stone now glides down a
+  // short, gently-sloping lane on open snow north of the village, out past the lantern path: released at
+  // the uphill hack, it eases down to a set of painted rings where a sweeper works a broom over the ice
+  // ahead of it, before the whole run resets for the next throw.
+  // No new controller: the thrower is a plain `Kneeler` (the same class every sand- and snow-patter in
+  // this build already uses) and the sweeper a `Vendor` (the same stand-and-hold class the cocoa seller
+  // just up the slope uses), holding a new `makeBroom()` in place of a mug. The stone itself
+  // (`makeCurlingStone()`, new, both in `62-props-nature.js`) is a bare prop whose own `userData.update`
+  // — set before `placeT` hands it to the world, so `place()` picks it up automatically — eases it along
+  // the lane each frame purely as a function of the world clock `t`, the same deterministic trick the
+  // campfire's flicker and the snowman's turning head already rely on: no `rnd()` draw, so it costs
+  // nothing from this world's own later sequence.
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real mountain
+  // (`game.travel(5, 'from-hub')`, then `game.start('new')` so every reindeer, hare, arctic fox, penguin,
+  // yeti and wandering villager actually moved), sampled every NPC's own position every quarter second
+  // over 300 simulated seconds, then swept a 1 m grid of the open snowfield (radius 32-55, short of the
+  // radius (58) where snowRegion's own fill takes over) against both those samples and all 669 of the
+  // mountain's physics boxes: the chosen lane, from (-29, 43.2) to (-29, 48.3), came back clear by 6.6 m
+  // of the nearest box and 6.6 m of the nearest other soul at its closest end, and by 12.1 m and 9.1 m at
+  // its far end — comfortably inside the hand-built core, well short of where the procedural fill begins.
+  { const laneX = -29, hackZ = 43.2, targetZ = 48.3, slideDur = 2.4, restDur = 2.2, cycle = slideDur + restDur;
+    const ty0 = P.ground0(laneX, targetZ);
+    const ringsG = group(laneX, ty0 + 0.01, targetZ, W);
+    const ringColors = [0xb5272a, 0xf7f3ec, 0x2f6fd6, 0xf7f3ec];
+    for (let i = 0; i < 4; i++) noInk(mesh(G.torus(0.3 + i * 0.28, 0.025, 6, 24), mat(ringColors[i], { roughness: 0.6 }), { rx: PI / 2, shadow: 'none', parent: ringsG }));
+    mesh(G.cyl(0.12, 0.12, 0.015, 16), mat(0xf7f3ec, { roughness: 0.6 }), { y: 0.001, shadow: 'none', parent: ringsG });
+    // the thrower kneels at the hack, having just sent the stone on its way
+    const curlWard = makeWardrobe(r, { shirts: [0x5a6a8a, 0x8a5a3a, 0x4a6a5a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const thrower = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: curlWard }),
+      hat: 'beanie', hatColor: 0x3a5a8a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a }); W.add(thrower.group);
+    game.npcs.push(new Kneeler(game, thrower, { x: laneX, z: hackZ, ry: 0, cryIcon: '🥌',
+      cries: ['Nice weight on that one.', 'Careful, puss — mind the sheet.', 'Needs a touch more curl, next time.'] }));
+    // the sweeper works the ice ahead of it, broom flicking side to side
+    const sweepX = laneX + 1.5, sweepZ = targetZ - 1.0;
+    const sweepWard = makeWardrobe(r, { shirts: [0x8a3a3a, 0x3a5a6a, 0x5a5a3a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const sweeper = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: sweepWard }),
+      hat: 'beanie', hatColor: 0x8a3a3a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a }); W.add(sweeper.group);
+    const sv = new Vendor(game, sweeper, makeBroom(), { x: sweepX, z: sweepZ, ry: atan2(laneX - sweepX, hackZ - sweepZ), cryIcon: '🧹',
+      cries: ['Sweep, sweep, sweep!', 'Careful, puss — stay out of the hack!', "Few more feet... there!"] });
+    game.npcs.push(sv); greetable(game, sv);
+    // the stone: eased along the lane each frame as a pure function of the clock, resting a moment in
+    // the rings before the loop resets for the next throw
+    const stone = makeCurlingStone();
+    stone.userData.update = (dt, t) => {
+      const ph = t % cycle;
+      if (ph < slideDur) { const u = ph / slideDur, ease = u * u * (3 - 2 * u), z = hackZ + (targetZ - hackZ) * ease;
+        stone.position.set(laneX, P.ground0(laneX, z) + 0.001, z); stone.rotation.y = t * 5.5; }
+      else { stone.position.set(laneX, ty0 + 0.001, targetZ); stone.rotation.y = t * 1.1; }
+    };
+    placeT(game, U, stone, laneX, hackZ, 0); }
   snowRegion(game, U, r, 58, PEAK_LIMIT - 8);
   makeHorizon(game, r, { clear: PEAK_LIMIT + 8, hills: true, hill: 0xe8eef6, rock: 0x6a7a94, rock2: 0x7e8ea6, snow: 0xf6fbff, snowLine: 26, peaks: 32, peakH: [46, 110], woodCount: 300, woodHue: [0.32, 0.42], woodLight: [0.12, 0.2], trunk: 0x4a3a2a });
   // gondola home (bottom station of the village)

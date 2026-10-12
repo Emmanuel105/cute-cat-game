@@ -10611,3 +10611,36 @@ check. Not this round's bug; just a reminder the suite has one pre-existing soft
 Full suite (`node test/run.mjs`) ran clean three times in a row on a quiet machine — exit 0, 274 checks
 `ok`, 0 console warnings every time, Robot City's own friend count up one to 68. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 417 — curling for Frosty Peak
+
+Victorian has had a draughts table since round 354, Robot City a checkers drum since round 384 and
+Frosty Peak itself a deck of cards since round 397 — but no world had ever played curling, the one game
+that is pure winter through and through, and Frosty Peak was the obvious home for it. **A granite stone
+now glides down a short, gently-sloping lane on open snow north of the village, out past the lantern
+path, from a thrower kneeling at the hack down to a set of painted rings where a sweeper works a broom
+over the ice ahead of it, before the whole run resets for the next throw.** *"Nice weight on that one."*
+*"Sweep, sweep, sweep!"* *"Needs a touch more curl, next time."*
+
+No new controller: the thrower is a plain `Kneeler` (the same class every sand- and snow-patter in this
+build already uses) and the sweeper a `Vendor` (the same stand-and-hold class the cocoa seller just up
+the slope uses), holding a new `makeBroom()` in place of a mug. The stone itself (`makeCurlingStone()`,
+new, both props in `62-props-nature.js`) is a bare prop whose own `userData.update` eases it along the
+lane each frame purely as a function of the world clock `t` — the same deterministic trick the
+campfire's flicker and the snowman's turning head already rely on, so it draws no `rnd()` and costs
+nothing from this world's own later sequence.
+
+A headless probe (a scratch script built on the same stub-three harness `test/run.mjs` itself uses,
+since there's no browser here to look at it) built the real mountain (`game.load(5, 'from-prev')`, then
+`game.start('new')` so every reindeer, hare, arctic fox, penguin, yeti and wandering villager actually
+moved), sampled every NPC's own position every quarter second over 300 simulated seconds, then swept a
+1 m grid of the open snowfield (radius 32-55, short of the radius (58) where `snowRegion`'s own
+procedural fill takes over) against both those samples and all 669 of the mountain's physics boxes: the
+chosen lane, from (-29, 43.2) to (-29, 48.3), came back clear by 6.6 m of the nearest box and 6.6 m of
+the nearest other soul at its closest end, and by 12.1 m and 9.1 m at its far end — well inside the
+hand-built core of the world, nowhere near where the outer country's own trees, cabins and ice ponds get
+scattered in.
+
+Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, 274 checks `ok`, 0 console
+warnings every time, Frosty Peak's own friend count up two to 59. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
