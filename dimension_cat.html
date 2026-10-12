@@ -9126,6 +9126,35 @@ function buildCandyLand(game, entry) {
     game.npcs.push(new Horseshoes(game, tossA, tossB, ring, { cx: gcx, cz: gcz, gap: ggap, cries: ringLines, cryIcon: '🍬' }));
     greetable(game, { rig: tossA }); greetable(game, { rig: tossB }); }
 
+  // the Neighborhood, Robot City and Victorian all have a solo thrower tossing a disc straight up off
+  // the palm by now, and Sunny Shore and Frosty Peak had it first — Candy Land and Whisper Woods are
+  // the only two worlds left without one. **A villager now stands on the open sweet-lands' far
+  // south-west corner, lobbing a gumdrop-pink disc straight up** — it rises on a spin, hangs a beat at
+  // the top, and drops back into the palm for the next throw.
+  //
+  // No new controller or prop: the exact same `FrisbeePlayer` class (`55-npcs.js`, next to
+  // `HulaHooper`) every other reskin already uses, unchanged — just this world's own candy wardrobe on
+  // the thrower in place of beachwear, work overalls or a top hat.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses) built
+  // the real Candy Land (`game.start('new')` then `game.travel(1, 'from-prev')`, so every marching,
+  // dancing and ball-tossing gingerbread man and every doorstep resident actually moved), sampled every
+  // NPC's own position every half second over 90 simulated seconds, then swept a 2 m grid of the open
+  // sweet-lands (radius 30-85, short of the radius (92) where candyRegion's own procedural fill takes
+  // over, and clear of every one of the sixteen gumdrop patches `makeGumdrops` scatters) against both
+  // those samples and all of this world's physics boxes: (-77, -35) came back clear by 13.6 m of the
+  // nearest box (one of the candy-cane forest ring's own trunks) and 26.4 m of the nearest other soul,
+  // well past the cane ring and the chocolate river's own western bank. Placed last of everyone this
+  // build adds, after the ring-toss pair, so it draws from the very tail of this world's own local
+  // `r()` sequence and disturbs no earlier pick.
+  { const fx = -77, fz = -35, fry = atan2(0 - fx, 0 - fz);
+    const frisbeeWard = makeWardrobe(r, { shirts: [0xff6fb5, 0x7fd7ff, 0xffd54a], pants: [0xf5f2ea, 0x2a2420], shoes: [0xffffff, 0x8d6e63] });
+    const thrower = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: frisbeeWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.2) });
+    W.add(thrower.group);
+    game.npcs.push(new FrisbeePlayer(game, thrower, 0xff8fc8, { x: fx, z: fz, ry: fry,
+      cries: ["Highest one yet — nearly lost it over the cane trees.", "Careful, puss — mind your tail, this one's coming down fast.", "One more throw. The gumdrops aren't going anywhere."] })); }
+
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('star', 7, -6); C.add('yarn', -9, 9); C.add('fish', -16, -13); C.add('mouse', 16, -9); C.add('star', -10, -27); C.add('yarn', 22, 4); C.add('mouse', -28, 26); C.add('fish', 14, -44); C.add('star', 0, -56); C.add('mouse', -58, 30); C.add('yarn', 60, 36);

@@ -11064,3 +11064,31 @@ Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0 and 0
 time, Victorian's own friend count up one (75 to meet now, 95% of the ground still walkable). Candy
 Land and Whisper Woods are the only worlds left without a frisbee thrower. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 432 — a frisbee thrower for Candy Land
+
+Round 431 left two worlds without a solo disc-tosser: Candy Land and Whisper Woods. **A villager now
+stands on the far south-west corner of the open sweet-lands, lobbing a gumdrop-pink disc straight up**
+— it rises on a spin, hangs a beat at the top, and drops back into the palm for the next throw.
+*"Highest one yet — nearly lost it over the cane trees."* *"Careful, puss — mind your tail, this one's
+coming down fast."* *"One more throw. The gumdrops aren't going anywhere."*
+
+No new controller: the same `FrisbeePlayer` class (`55-npcs.js`) every other world's reskin already
+uses, unchanged — just this world's own candy wardrobe (pink, cyan, lemon) on the thrower in place of
+beachwear, overalls or a top hat.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses) built the
+real Candy Land (`game.start('new')` then `game.travel(1, 'from-prev')`, so every marching, dancing and
+ball-tossing gingerbread man and every doorstep resident actually moved), sampled every NPC's own
+position every half second over 90 simulated seconds, then swept a 2 m grid of the open sweet-lands
+(radius 30-85, short of the radius (92) where `candyRegion`'s own procedural fill takes over, and clear
+of every one of the sixteen gumdrop patches `makeGumdrops` scatters) against both those samples and all
+of this world's physics boxes: (-77, -35) came back clear by 13.6 m of the nearest box (one of the
+candy-cane forest ring's own trunks) and 26.4 m of the nearest other soul, well past the cane ring and
+the chocolate river's own western bank. Placed last of everyone this build adds, after the ring-toss
+pair, so it draws from the very tail of this world's own local `r()` sequence.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings, Candy
+Land's own friend count up one (68 to meet now, 91% of the ground still walkable, unchanged). Whisper
+Woods is now the only world left without a frisbee thrower. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
