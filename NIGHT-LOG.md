@@ -11208,3 +11208,31 @@ Full suite (`node test/run.mjs`) ran clean twice in a row — exit 0, 274 checks
 both times. Candy Land's own friend count is up one (68 to 69 to meet), 91% of the ground still
 walkable, unchanged. Robot City is now the only world left without its own woodcutter. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 437 — a woodcutter for Robot City
+
+The Neighborhood, Candy Land, Victorian, Sunny Shore, Frosty Peak and Whisper Woods have all had a
+woodcutter splitting logs on a stump since round 207 — Robot City was the last world left without one.
+**A worker now splits old shipping pallets into kindling on a stump out in the east yard, feeding the
+staff break room's stove.** *"Pallets off the belt, split for the break room stove."* *"Careful, puss
+— mind the chips."* *"East yard's the only place with room to swing this thing."*
+
+No new controller or prop: the exact same `Chopper` class and `makeStump()` block every other reskin
+already uses, unchanged — same axe, same chip burst on every landed blow, same split-log pile beside
+the stump. Only the wardrobe and the story changed: a steel-toned worker in a cap, splitting the same
+planked crates (`TEX.planks()`) already stacked at every conveyor in this city, rather than firewood,
+since nobody here has a hearth.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses) built the
+real Robot City (`game.start('new')` then `game.load(2, 'from-prev')`, so every wandering, patrolling,
+dancing and ball-tossing robot pack actually moved), sampled every NPC's own position every quarter
+second over 300 simulated seconds, then swept the open floor (radius 15-90, short of the radius (98)
+where robotRegion's own procedural fill takes over) against both those samples and every one of the
+city's physics boxes: (58, -43) came back clear by 9.4 m of the nearest box (one of the outer-ring
+skyscrapers) and 12.2 m of the nearest other soul, well past the sentry's own [-15,-35]..[15,-45]
+patrol rectangle.
+
+Full suite (`node test/run.mjs`) ran clean twice in a row — exit 0, all checks `ok`, 0 console warnings
+both times. Robot City's own friend count is up one (72 to 73 to meet), 89% of the ground still
+walkable, unchanged. All seven worlds now have their own woodcutter. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

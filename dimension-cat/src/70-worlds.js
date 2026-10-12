@@ -3581,6 +3581,36 @@ function buildRobotCity(game, entry) {
     const camLines = ['Everyone said bring a drone. I brought this instead.', "Careful, puss — it's only flash powder, not fire.", 'The whole skyline in one plate, if I hold it just right.'];
     let camCryT = r.range(3, 7);
     U.push((dt) => { camCryT -= dt; if (camCryT <= 0) { camCryT = r.range(8, 14); const c = game.cat.group.position; if (dist2(px, pz, c.x, c.z) < 400) { game.toast('📷 "' + r.pick(camLines) + '"', 2400); SFX.talk(); } } }); }
+  // the Neighborhood, Candy Land, Victorian, Sunny Shore, Frosty Peak and Whisper Woods all have a
+  // woodcutter splitting logs on a stump since round 207 (Sunny Shore round 435, Candy Land round 436)
+  // — Robot City was the last world left without one. The exact same `Chopper` class and `makeStump()`
+  // block every other reskin already uses, unchanged — just this time it's a worker breaking down old
+  // shipping pallets (the same planked crates already stacked at every conveyor here, `TEX.planks()`)
+  // into kindling for the staff break room's stove, on a stump out in the open concrete of the east
+  // yard. A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real
+  // Robot City (`game.start('new')` then `game.load(2, 'from-prev')`, so every wandering, patrolling,
+  // dancing and ball-tossing robot pack actually moved), sampled every NPC's own position every quarter
+  // second over 300 simulated seconds, then swept the open floor (radius 15-90, short of the radius
+  // (98) where robotRegion's own procedural fill takes over) against both those samples and every one
+  // of the city's physics boxes: (58, -43) came back clear by 9.4 m of the nearest box (one of the
+  // outer-ring skyscrapers) and 12.2 m of the nearest other soul, well past the sentry's own
+  // [-15,-35]..[15,-45] patrol rectangle. Placed last of every person this build adds, after the
+  // photographer, so it draws from the very tail of this world's own local `r()` sequence and disturbs
+  // no earlier wardrobe or layout pick.
+  { const sx = 58, sz = -43, cx = 58, cz = -41.6;
+    place(game, U, makeStump(r), sx, sz, r() * TAU); P.addBox(sx, 0.36, sz, 0.5, 0.72, 0.5, { cam: false });
+    const splitWard = makeWardrobe(r, { shirts: [0x4a5a6a, 0x5a4a6a, 0x3a4a5a], pants: [0x232c34, 0x2a2a30] });
+    const cutter = makeHuman({ ...randomPerson(r, { female: r.chance(0.4), child: false, elder: false, wardrobe: splitWard, build: 'stout' }),
+      hat: r.chance(0.5) ? 'cap' : null, hatColor: 0x3a4a5a, jacket: null, scarf: null, bag: null, backpack: null, axe: true, glasses: r.chance(0.25) });
+    W.add(cutter.group);
+    // a few split pallet boards already down, piled beside the stump
+    const bark = mat(0x5b3d24, { roughness: 1, map: TEX.bark() }), cutFace = mat(0xc9a86a, { roughness: 1 });
+    for (const [lx, lz, lry] of [[-0.55, 0.15, 0.3], [-0.4, 0.35, -0.4], [-0.6, 0.4, 1.1]]) {
+      const log = group(sx + lx, 0.09, sz + lz, W); log.rotation.z = PI / 2; log.rotation.y = lry;
+      mesh(G.cyl(0.09, 0.09, 0.34, 8), bark, { shadow: 'both', parent: log }); mesh(G.cyl(0.089, 0.089, 0.01, 8), cutFace, { y: 0.17, shadow: 'none', parent: log }); mesh(G.cyl(0.089, 0.089, 0.01, 8), cutFace, { y: -0.17, shadow: 'none', parent: log });
+    }
+    game.npcs.push(new Chopper(game, cutter, { x: cx, z: cz, ry: atan2(sx - cx, sz - cz),
+      cries: ['Pallets off the belt, split for the break room stove.', 'Careful, puss — mind the chips.', "East yard's the only place with room to swing this thing."] })); }
   const sq = new Squirrel(game, -14, -9, 'sq-robot'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('mouse', -8, 7); C.add('star', 12, -22); C.add('fish', -18, 2); C.add('yarn', 21, 9); C.add('star', 0, -27); C.add('fish', 4, 14); C.add('mouse', 26, -18); C.add('yarn', -26, -6);
