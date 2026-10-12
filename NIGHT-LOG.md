@@ -11092,3 +11092,30 @@ Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 co
 Land's own friend count up one (68 to meet now, 91% of the ground still walkable, unchanged). Whisper
 Woods is now the only world left without a frisbee thrower. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 433 — a frisbee thrower for Whisper Woods
+
+Round 432 left exactly one world without a solo disc-tosser: Whisper Woods, the last of the seven.
+**A woodland local now stands on a quiet stretch of forest floor north-east of the glade, lobbing a
+bark-brown disc straight up** — it rises on a spin, hangs a beat at the top, and drops back into the
+palm for the next throw. *"Highest one yet — nearly caught it in the branches."* *"Careful, puss —
+mind your tail, this one is coming down fast."* *"The owls don't seem to mind."*
+
+No new controller: the same `FrisbeePlayer` class (`55-npcs.js`) every other world's reskin already
+uses, unchanged — just an earthy wardrobe on the thrower in place of beachwear, overalls or candy
+colours. Its built-in `cries` option was skipped on purpose, same as Robot City's and Victorian's own
+reskins: `test/run.mjs` rebuilds the Neighborhood again right after this world, and that path's chatter
+timer draws from the shared global `rnd()`, which would shift every random pick downstream. Dialogue
+instead rides its own `U.push` timer seeded off this world's own local `r()`, costing no global draw.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses) built the
+real Whisper Woods, sampled every NPC's and the squirrel's own position every half second over 90
+simulated seconds, then swept a 2 m grid of the open forest floor (radius 10-55, short of the radius
+(58) where `forestRegion`'s own fill takes over) against both those samples and all 694 of the wood's
+physics boxes: (13, 53) came back clear by 10.1 m of the nearest box and 15.7 m of the nearest other
+soul, east of the stepping-stone path zone and well clear of the hollow oak home.
+
+Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, 274 checks `ok`, 0 console
+warnings every time. Whisper Woods' own friend count up one (62 to 63 to meet), 98% of the ground still
+walkable, unchanged. All seven worlds now have their own frisbee thrower. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

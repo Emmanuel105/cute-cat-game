@@ -14340,6 +14340,41 @@ function buildForest(game, entry) {
     game.npcs.push(new Horseshoes(game, tossA, tossB, ring, { cx: vcx, cz: vcz, gap: vgap, cries: vineLines, cryIcon: '🌿' }));
     greetable(game, { rig: tossA }); greetable(game, { rig: tossB }); }
 
+  // Round 432 closed out Candy Land's own frisbee thrower and left Whisper Woods as the only world of
+  // the seven without one — the Neighborhood, Robot City, Victorian, Candy Land, Sunny Shore and Frosty
+  // Peak all have somebody tossing a disc straight up for the fun of it, and these woods, for all their
+  // deer, foxes, frogs and fairy rings, never got the one throw that needs nobody on the other end. **A
+  // woodland local now stands on a quiet stretch of forest floor north-east of the glade, lobbing a
+  // bark-brown disc straight up** — it rises on a spin, hangs a beat at the top, and drops back into the
+  // palm for the next throw.
+  // No new controller: the same `FrisbeePlayer` class (`55-npcs.js`, next to `HulaHooper`) every other
+  // world's reskin already uses, unchanged — just this world's own earthy wardrobe on the thrower in
+  // place of beachwear, overalls, a top hat or candy colours.
+  // Its own built-in `cries` option was left unused on purpose, same reasoning as Robot City's and
+  // Victorian's own reskins: that path draws its idle-chatter timer from the shared global `rnd()`
+  // sequence, and `test/run.mjs` rebuilds the Neighborhood again right after this world (`travel(6,
+  // 'from-hub')` then `travel(0, 'from-forest')`), so any extra global draw here would shift every
+  // `rnd()`-seeded pick in that rebuilt Neighborhood. Dialogue instead rides its own `U.push` timer,
+  // seeded off this world's own local `r()`, costing no global draw at all.
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses) built
+  // the real Whisper Woods (`game.start('new')` then `game.travel(6, 'from-hub')`, waiting out the real
+  // transition timer the same way the test does), sampled every NPC's and the squirrel's own position
+  // every half second over 90 simulated seconds — long enough for every deer, fox, frog and fairy to
+  // clear any one spot several times over — then swept a 2 m grid of the open forest floor (radius
+  // 10-55, short of the radius (58) where `forestRegion`'s own fill takes over) against both those
+  // samples and all 694 of the wood's physics boxes: (13, 53) came back clear by 10.1 m of the nearest
+  // box and 15.7 m of the nearest other soul, east of the stepping-stone path zone (which only spans
+  // x -3..3) and well clear of the hollow oak home.
+  { const fx = 13, fz = 53, fry = atan2(-fx, -fz);
+    const frisbeeWard = makeWardrobe(r, { shirts: [0x6a8a5a, 0x8a6a44, 0x5a6a44], pants: [0x3a4a2e, 0x4a3a28], shoes: [0x3a2a1e, 0x2a2018] });
+    const thrower = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: frisbeeWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.2) });
+    W.add(thrower.group);
+    game.npcs.push(new FrisbeePlayer(game, thrower, r.pick([0x8a6a44, 0x6a8a4a, 0xc9a86a]), { x: fx, z: fz, ry: fry }));
+    const frisbeeLines = ['Highest one yet — nearly caught it in the branches.', 'Careful, puss — mind your tail, this one is coming down fast.', "The owls don't seem to mind."];
+    let frisbeeCryT = r.range(3, 7);
+    U.push((dt) => { frisbeeCryT -= dt; if (frisbeeCryT <= 0) { frisbeeCryT = r.range(8, 14); const c = game.cat.group.position; if (dist2(fx, fz, c.x, c.z) < 400) { game.toast('🥏 "' + r.pick(frisbeeLines) + '"', 2400); SFX.talk(); } } }); }
+
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
 
