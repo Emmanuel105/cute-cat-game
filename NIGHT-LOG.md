@@ -10865,3 +10865,32 @@ build never touched the stale line.
 Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, 274 checks `ok`, 0 console
 warnings every time, physics box count unchanged at 308 and Frosty Peak's own friend count up one to 60.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 425 — magnet toss for Robot City
+
+The Neighborhood's had a horseshoe pit since round 299, but nobody ever gave it a robot-world
+counterpart. **Two off-shift service robots now lob a spare magnetic coupling ring back and forth
+between a pair of low charging posts** on the open floor north-east of the card table. *"Clang — dead
+centre on the post."* *"Careful, puss — four kilos of coupling, that."* *"Break's over in five. One more
+toss."*
+
+No new controller: the exact same `Horseshoes` class (`55-npcs.js`, next to `Swinger`) the Neighborhood's
+own pitchers already use, just two `makeRobot()` rigs and a dark steel ring with a cyan glint in place of
+two people and an iron horseshoe. `Horseshoes.hand()` scales the ring's resting height by `rig.k` (a
+human's own height ÷ 1.75, set by `makeHuman`); `makeRobot()` never sets it, so both rigs get
+`rig.k = 1.9 / 1.75` by hand — the same fix the catch-ball game's and the juggler's own robot rigs
+already use elsewhere in this world.
+
+A headless probe (a scratch script built on the same stub-three harness `test/run.mjs` itself uses) built
+the real Robot City (the start screen's own click, then `game.travel(2, 'from-prev')`, so every
+wandering, patrolling, dancing and ball-tossing robot pack actually moved), sampled every NPC's own
+position every quarter second over 300 simulated seconds, then swept a 1 m grid of the open floor
+(radius 15-90, short of where `robotRegion`'s own procedural fill takes over at 98) against both those
+samples and all of the city's physics boxes: (24, 86) came back clear by close to 15 m of the nearest box
+and over 28 m of the nearest other soul. Placed last of everyone this build adds, after the frisbee
+thrower, so it draws from the very tail of this world's own local `r()` sequence and disturbs no earlier
+pick.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, Robot City's own
+friend count up two (two new greetable robots). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.

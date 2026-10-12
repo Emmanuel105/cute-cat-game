@@ -3414,6 +3414,42 @@ function buildRobotCity(game, entry) {
     const frisbeeLines = ["Break's five minutes. Long enough for a throw.", "Careful, puss — mind your tail, this one's coming down fast.", "Highest one yet. Sector 7's roof isn't that close. Probably."];
     let frisbeeCryT = r.range(3, 7);
     U.push((dt) => { frisbeeCryT -= dt; if (frisbeeCryT <= 0) { frisbeeCryT = r.range(8, 14); const c = game.cat.group.position; if (dist2(fx, fz, c.x, c.z) < 400) { game.toast('🥏 "' + r.pick(frisbeeLines) + '"', 2400); SFX.talk(); } } }); }
+  // The Neighborhood's had a horseshoe pit since round 299, and nobody else ever got a game of pitch-
+  // and-catch that needs nothing but a patch of open floor and two players with nowhere else to be.
+  // Two off-shift service robots now lob a spare magnetic coupling ring back and forth between a pair
+  // of low charging posts on the open floor north-east of the card table — the exact same `Horseshoes`
+  // controller (`55-npcs.js`, next to `Swinger`) the Neighborhood's own pitchers already use, just
+  // steel charging posts and a dark coupling ring with a cyan glint in place of iron stakes and a
+  // horseshoe. `Horseshoes.hand()` scales the ring's resting height by `rig.k` (a human's own height
+  // ÷ 1.75, set by `makeHuman`); `makeRobot()` never sets it, so both rigs get `rig.k = 1.9 / 1.75` by
+  // hand, the same fix the catch-ball game's and the juggler's own robot rigs already use.
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses)
+  // built the real city (the start screen's own click, then `game.travel(2, 'from-prev')`, so every
+  // wandering, patrolling, dancing and ball-tossing robot pack actually moved), sampled every NPC's
+  // and the squirrel's own position every quarter second over 300 simulated seconds, then swept a 1 m
+  // grid of the open floor (radius 15-90, short of where robotRegion's own procedural fill takes over
+  // at 98) against both those samples and all of the city's physics boxes: (24, 86) came back clear by
+  // close to 15 m of the nearest box and over 28 m of the nearest other soul, north of the frisbee
+  // thrower and well short of where the procedural ring takes over. Placed last of everyone this
+  // build adds, after the frisbee thrower, so it draws from the very tail of this world's own local
+  // `r()` sequence and disturbs no earlier pick.
+  { const mcx = 24, mcz = 86, mgap = 8;
+    const postM = mat(0x5a6168, { metalness: 0.75, roughness: 0.35 }), capM = glowMat(0x00e5ff, 1.2);
+    for (const sz of [mcz - mgap / 2 + 0.5, mcz + mgap / 2 - 0.5]) {
+      mesh(G.cyl(0.14, 0.17, 0.5, 10), postM, { x: mcx, y: 0.25, z: sz, parent: W });
+      mesh(G.cyl(0.1, 0.1, 0.04, 10), capM, { x: mcx, y: 0.52, z: sz, shadow: 'none', parent: W });
+      P.addBox(mcx, 0.25, sz, 0.3, 0.5, 0.3, { cam: false });
+    }
+    // a couple of spare coupling rings stacked by each post, just set dressing
+    const spareM = mat(0x454b52, { metalness: 0.7, roughness: 0.35 });
+    for (const sz of [mcz - mgap / 2 + 0.5, mcz + mgap / 2 - 0.5]) for (let i = 0; i < 2; i++)
+      mesh(G.torus(0.11, 0.022, 6, 16, PI * 1.5), spareM, { x: mcx + 0.32, y: 0.025 + i * 0.05, z: sz + 0.1, rx: PI / 2, ry: i * 0.6, parent: W });
+    const tossA = makeRobot(), tossB = makeRobot(); tossA.k = tossB.k = 1.9 / 1.75;
+    W.add(tossA.group); W.add(tossB.group);
+    const ring = mesh(G.torus(0.11, 0.025, 6, 16, PI * 1.5), mat(0x3a4a52, { metalness: 0.65, roughness: 0.3, emissive: 0x00282e, emissiveIntensity: 0.5 }), { x: mcx, y: 1, z: mcz - mgap / 2, rx: PI / 2, parent: W });
+    const magnetLines = ['Clang — dead centre on the post.', 'Careful, puss — four kilos of coupling, that.', "Break's over in five. One more toss."];
+    game.npcs.push(new Horseshoes(game, tossA, tossB, ring, { cx: mcx, cz: mcz, gap: mgap, cries: magnetLines }));
+    greetable(game, { rig: tossA }); greetable(game, { rig: tossB }); }
   const sq = new Squirrel(game, -14, -9, 'sq-robot'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('mouse', -8, 7); C.add('star', 12, -22); C.add('fish', -18, 2); C.add('yarn', 21, 9); C.add('star', 0, -27); C.add('fish', 4, 14); C.add('mouse', 26, -18); C.add('yarn', -26, -6);
