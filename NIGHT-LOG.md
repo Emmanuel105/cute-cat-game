@@ -11151,3 +11151,31 @@ between runs as they already did before this change; nothing in Robot City moved
 friend count is up one (71 to 72 to meet), 89% of the ground still walkable, unchanged. All seven worlds
 now have their own photographer. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 435 — a woodcutter for Sunny Shore
+
+The Neighborhood, Victorian, Frosty Peak and Whisper Woods have all had a woodcutter splitting logs on
+a stump since round 207 — Sunny Shore, Robot City and Candy Land were the only three worlds left without
+one. **A beachcomber now splits driftwood on a sawn stump deep in the western dunes, well past the
+hammock and the dolphin's own patch, keeping tonight's beach fire fed.** *"Dry enough by sundown, with
+this sun."* *"Careful, puss — mind the chips."* *"Tonight's fire won't build itself."*
+
+No new controller or prop: the exact same `Chopper` class and `makeStump()` block every other reskin
+already uses, unchanged — same axe, same chip burst on every landed blow — just this world's own
+sun-bleached wardrobe (shorts, a teal cap) on the cutter in place of flannel or a beanie, and the
+terrain-aware `placeT`/`boxT` helpers in place of the flat-floor worlds' `place`/`P.addBox`, since Sunny
+Shore's dunes actually have a slope to sit on.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses) built the
+real Sunny Shore (`game.start('new')` then `game.travel(4, 'from-hub')`), sampled every NPC's and the
+squirrel's own position every frame over 300 simulated seconds, then swept a 1 m grid of the dry dune
+sand (radius 8-56, short of the radius (58) where `beachRegion`'s own procedural fill takes over)
+against both those samples and every physics box on the beach: (-44, -34) came back clear by 9.6 m of
+the nearest box and 10.1 m of the nearest other soul, on a gentle, near-flat stretch of dune.
+
+Full suite (`node test/run.mjs`) ran clean twice in a row — exit 0, 274 checks `ok`, 0 console warnings
+both times (the usual timing-sensitive jitter elsewhere — kite height, carriage distance, snowball
+throws — moved between runs as it already did before this change; nothing on Sunny Shore's own dunes
+did). Sunny Shore's own friend count is up one (60 to 61 to meet), 99% of the ground still walkable,
+unchanged. Robot City and Candy Land are now the only two worlds left without their own woodcutter.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

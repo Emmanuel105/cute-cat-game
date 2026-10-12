@@ -925,6 +925,28 @@ function buildBeach(game, entry) {
     game.npcs.push(new Horseshoes(game, ringA, ringB, ring, { cx: rcx, cz: rcz, gap: rgap, cries: ringLines, cryIcon: '🪢' }));
     greetable(game, { rig: ringA }); greetable(game, { rig: ringB }); }
 
+  // the Neighborhood, Victorian, Frosty Peak and Whisper Woods all have a woodcutter splitting logs on
+  // a stump by now (`makeStump()` + `Chopper`, round 207 on) — Sunny Shore, Robot City and Candy Land
+  // were the only three worlds left without one. A beachcomber now splits driftwood on a sawn stump in
+  // the western dunes, well past the hammock and the dolphin's own patch, feeding tonight's beach fire.
+  // Same `Chopper` controller (`55-npcs.js`) unchanged — same stump, same axe, same chip burst on every
+  // landed blow — just this world's own sun-bleached wardrobe on the cutter in place of flannel or a
+  // beanie, and `placeT`/`boxT` in place of the flat-floor worlds' `place`/`P.addBox` to sit the stump
+  // on the dune's own slope.
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses) built
+  // the real Sunny Shore (`game.start('new')` then `game.travel(4, 'from-hub')`), sampled every NPC's
+  // and the squirrel's own position every frame over 300 simulated seconds, then swept a 1 m grid of the
+  // dry dune sand (radius 8-56, short of the radius (58) where `beachRegion`'s own fill takes over)
+  // against both those samples and every one of the beach's physics boxes: (-44, -34) came back clear
+  // by 9.6 m of the nearest box and 10.1 m of the nearest other soul, deep in the western dunes.
+  { const sx = -44, sz = -34, cx = -44, cz = -32.7;
+    placeT(game, U, makeStump(r), sx, sz, r() * TAU); boxT(game, sx, sz, 1.0, 0.75, 1.0, { cam: false });
+    const chopWard = makeWardrobe(r, { shirts: [0xd9622a, 0x2e7d5a, 0x3a5a7a], pants: [0x5a4a3a, 0x3a3a3a], shoes: [0xefe7d8] });
+    const cutter = makeHuman({ ...randomPerson(r, { female: r.chance(0.4), child: false, elder: false, wardrobe: chopWard, build: 'stout' }),
+      hat: r.chance(0.5) ? 'cap' : null, hatColor: 0x2f4f4f, shorts: true, scarf: null, jacket: null, bag: null, backpack: null, axe: true, beard: r.chance(0.3) }); W.add(cutter.group);
+    game.npcs.push(new Chopper(game, cutter, { x: cx, z: cz, ry: atan2(sx - cx, sz - cz),
+      cries: ["Dry enough by sundown, with this sun.", 'Careful, puss — mind the chips.', "Tonight's fire won't build itself."] })); }
+
   beachRegion(game, U, r, 58, SHORE_LIMIT - 8);
   // the headland behind the dunes: hills and peaks inland only, never out to sea
   makeHorizon(game, r, { clear: SHORE_LIMIT + 8, hill: 0x8c9a58, rock: 0x7a7060, rock2: 0x8a8272, snowLine: 58, peaks: 26, woodCount: 260, woodHue: [0.18, 0.28], woodLight: [0.18, 0.3], keep: (x) => x < -SHORE_LIMIT * 0.15 });
