@@ -11179,3 +11179,32 @@ throws — moved between runs as it already did before this change; nothing on S
 did). Sunny Shore's own friend count is up one (60 to 61 to meet), 99% of the ground still walkable,
 unchanged. Robot City and Candy Land are now the only two worlds left without their own woodcutter.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 436 — a woodcutter for Candy Land
+
+The Neighborhood, Victorian, Frosty Peak, Whisper Woods and Sunny Shore have all had a woodcutter
+splitting logs on a stump since round 207 — Robot City and Candy Land were the only two worlds left
+without one. **A woodcutter now splits logs on a stump deep in the northern sweet-lands, past the cane
+forest ring, keeping the castle's gingerbread ovens fed.** *"Good dry wood, even out here past the cane
+forest."* *"Careful, puss — mind the chips."* *"The gingerbread ovens won't fire themselves."*
+
+No new controller or prop: the exact same `Chopper` class and `makeStump()` block every other reskin
+already uses, unchanged — same axe, same chip burst on every landed blow — just this world's own
+candy-bright wardrobe (pink, sky-blue and buttercup shirts) on the cutter in place of flannel or
+oilskins, and the flat-floor `place`/`P.addBox` pair this open-ground world already uses everywhere
+else (Candy Land has no slope to sit a terrain-aware stump on, unlike Sunny Shore's dunes last round).
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses) built the
+real Candy Land with a real `start('new')` click first, so every wandering, patrolling, dancing and
+ball-tossing gingerbread man and every doorstep resident actually moved, sampled every NPC's and the
+squirrel's own position every quarter second over 300 simulated seconds, then swept a 2 m grid of the
+open sweet-lands (radius 20-85, short of the radius 92 where candyRegion's own procedural fill takes
+over, clear of the river band and clear of every one of the sixteen gumdrop patches `makeGumdrops`
+scatters) against both those samples and every one of this world's physics boxes: (29, 79) came back
+clear by 17.0 m of the nearest box (a cupcake hill) and 17.9 m of the nearest other soul, well past the
+cane forest belt.
+
+Full suite (`node test/run.mjs`) ran clean twice in a row — exit 0, 274 checks `ok`, 0 console warnings
+both times. Candy Land's own friend count is up one (68 to 69 to meet), 91% of the ground still
+walkable, unchanged. Robot City is now the only world left without its own woodcutter. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

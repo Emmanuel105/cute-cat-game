@@ -2474,6 +2474,31 @@ function buildCandyLand(game, entry) {
     game.npcs.push(new FrisbeePlayer(game, thrower, 0xff8fc8, { x: fx, z: fz, ry: fry,
       cries: ["Highest one yet — nearly lost it over the cane trees.", "Careful, puss — mind your tail, this one's coming down fast.", "One more throw. The gumdrops aren't going anywhere."] })); }
 
+  // the Neighborhood, Victorian, Frosty Peak, Whisper Woods and Sunny Shore all have a woodcutter
+  // splitting logs on a stump by now (`makeStump()` + `Chopper`, round 207 on) — Robot City and Candy
+  // Land were the only two worlds left without one. A woodcutter now splits logs on a stump deep in the
+  // northern sweet-lands, past the cane forest ring, keeping the castle's gingerbread ovens fed. Same
+  // `Chopper` controller (`55-npcs.js`) unchanged — same stump, same axe, same chip burst on every
+  // landed blow — just this world's own candy-bright wardrobe on the cutter in place of flannel or
+  // oilskins, and the flat-floor `place`/`P.addBox` pair every other reskin on open ground already uses.
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses) built
+  // the real Candy Land with a real `start('new')` click first, so every wandering, patrolling, dancing
+  // and ball-tossing gingerbread man and every doorstep resident actually moved, sampled every NPC's and
+  // the squirrel's own position every quarter second over 300 simulated seconds, then swept a 2 m grid
+  // of the open sweet-lands (radius 20-85, short of the radius (92) where candyRegion's own procedural
+  // fill takes over, clear of the river band and clear of every one of the sixteen gumdrop patches
+  // `makeGumdrops` scatters, which carry no physics box of their own) against both those samples and
+  // every one of this world's physics boxes: (29, 79) came back clear by 17.0 m of the nearest box (a
+  // cupcake hill) and 17.9 m of the nearest other soul, well past the cane forest belt.
+  { const sx = 29, sz = 79, cx = 29, cz = 80.4;
+    place(game, U, makeStump(r), sx, sz, r() * TAU); P.addBox(sx, 0.36, sz, 0.5, 0.72, 0.5, { cam: false });
+    const chopWard = makeWardrobe(r, { shirts: [0xff6fb5, 0x7fd7ff, 0xffd54a], pants: [0x8d6e63, 0x5a3e2a], shoes: [0x5a3e2a, 0x8d6e63] });
+    const cutter = makeHuman({ ...randomPerson(r, { female: r.chance(0.4), child: false, elder: false, wardrobe: chopWard, build: 'stout' }),
+      hat: r.chance(0.5) ? 'flatcap' : null, hatColor: 0x8d6e63, jacket: null, scarf: null, bag: null, backpack: null, axe: true, beard: r.chance(0.3) });
+    W.add(cutter.group);
+    game.npcs.push(new Chopper(game, cutter, { x: cx, z: cz, ry: atan2(sx - cx, sz - cz),
+      cries: ["Good dry wood, even out here past the cane forest.", "Careful, puss — mind the chips.", "The gingerbread ovens won't fire themselves."] })); }
+
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('star', 7, -6); C.add('yarn', -9, 9); C.add('fish', -16, -13); C.add('mouse', 16, -9); C.add('star', -10, -27); C.add('yarn', 22, 4); C.add('mouse', -28, 26); C.add('fish', 14, -44); C.add('star', 0, -56); C.add('mouse', -58, 30); C.add('yarn', 60, 36);
