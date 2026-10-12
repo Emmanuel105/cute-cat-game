@@ -3380,6 +3380,40 @@ function buildRobotCity(game, entry) {
     const v = new Vendor(game, coffeeVendor, makeSynthCoffeeCup(), { x: cx, z: cz, ry, cryIcon: '☕',
       cries: ['Synth-brew, fresh off the line!', 'Careful, puss — not for cats, this one.', "Only thing that gets Sector 7 through a night shift."] });
     game.npcs.push(v); greetable(game, v); }
+  // Sunny Shore's had a solo frisbee thrower since round 411 and the Neighborhood picked the same
+  // throw up last round, but no other world had tried it — Robot City, with its own game of catch and
+  // tag already standing in for the children, never got the one throw that needs nobody on the other
+  // end. An off-shift worker now stands on the open floor south of the card table, tossing a disc
+  // straight up off the palm between breaks — it rises on a spin, hangs a beat at the top, and drops
+  // back into the hand for the next throw. No new controller or prop: the exact same `FrisbeePlayer`
+  // class (`55-npcs.js`, next to `HulaHooper`) both the beach and the Neighborhood already use, just
+  // this city's own cyan-and-amber accent colours on the disc in place of beachwear or street clothes.
+  // Its own built-in `cries` option was left unused on purpose: that path draws its idle-chatter timer
+  // from the shared global `rnd()` (same as every other talking NPC in this file), and the one extra
+  // draw it costs tipped the Victorian carriage check two rounds down the travel order from a pass to
+  // a fail three runs in a row — a real, reproducible shift, not a one-off flake, confirmed by diffing
+  // against the unmodified build. Dialogue instead rides its own `U.push` timer below, seeded off this
+  // world's own local `r()` (same trick the trampoline's own `bounceLines` and the leak-tester's
+  // bubbles already use), so it costs no global draw at all.
+  // A headless probe (a scratch script built on the same stub-three harness `test/run.mjs` itself
+  // uses) built the real Robot City (`game.travel(2, 'from-prev')`, then `game.start('new')` so every
+  // wandering, patrolling, dancing and ball-tossing robot pack actually moved), sampled every NPC's
+  // and the squirrel's own position every quarter second over 300 simulated seconds, then swept a 1 m
+  // grid of the open floor (radius 15-90, short of the radius (98) where robotRegion's own procedural
+  // fill takes over) against both those samples and all 1144 of the city's physics boxes: (7, -66)
+  // came back clear by 9.8 m of the nearest box and 10.0 m of the nearest other soul (the parts
+  // scavenger's own crate at (-9, -67)). Placed last of every person this build adds, after the
+  // synth-coffee vendor, so it draws from the very tail of this world's own local `r()` sequence and
+  // disturbs no earlier wardrobe or colour pick.
+  { const fx = 7, fz = -66, fry = atan2(-fx, -fz);
+    const frisbeeWard = makeWardrobe(r, { shirts: [0x4a5a6a, 0x5a4a6a, 0x3a4a5a], pants: [0x232c34, 0x2a2a30] });
+    const thrower = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: frisbeeWard }),
+      hat: 'cap', hatColor: 0x2a2a30, jacket: null, scarf: null, bag: null, glasses: r.chance(0.3) });
+    W.add(thrower.group);
+    game.npcs.push(new FrisbeePlayer(game, thrower, r.pick([0x00e5ff, 0xff9f43, 0x4ade80]), { x: fx, z: fz, ry: fry }));
+    const frisbeeLines = ["Break's five minutes. Long enough for a throw.", "Careful, puss — mind your tail, this one's coming down fast.", "Highest one yet. Sector 7's roof isn't that close. Probably."];
+    let frisbeeCryT = r.range(3, 7);
+    U.push((dt) => { frisbeeCryT -= dt; if (frisbeeCryT <= 0) { frisbeeCryT = r.range(8, 14); const c = game.cat.group.position; if (dist2(fx, fz, c.x, c.z) < 400) { game.toast('🥏 "' + r.pick(frisbeeLines) + '"', 2400); SFX.talk(); } } }); }
   const sq = new Squirrel(game, -14, -9, 'sq-robot'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('mouse', -8, 7); C.add('star', 12, -22); C.add('fish', -18, 2); C.add('yarn', 21, 9); C.add('star', 0, -27); C.add('fish', 4, 14); C.add('mouse', 26, -18); C.add('yarn', -26, -6);

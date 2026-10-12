@@ -10768,3 +10768,39 @@ Full suite (`node test/run.mjs`) ran clean five times in a row — exit 0, 0 con
 50 people on the street with 50 distinct shirt colours, physics box count unchanged at 308. The
 Neighborhood's own friend count is up one to 56. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 422 — a frisbee thrower for Robot City
+
+Sunny Shore's had a solo frisbee thrower since round 411 and the Neighborhood picked the same throw up
+last round, but no other world had tried it — Robot City, with its own game of catch and tag already
+standing in for the children, never got the one throw that needs nobody on the other end. **An off-shift
+worker now stands on the open floor south of the card table, tossing a disc straight up off the palm
+between breaks** — it rises on a spin, hangs a beat at the top, and drops back into the hand for the next
+throw. *"Break's five minutes. Long enough for a throw."* *"Careful, puss — mind your tail, this one's
+coming down fast."* *"Highest one yet. Sector 7's roof isn't that close. Probably."*
+
+No new controller: the exact same `FrisbeePlayer` class (`55-npcs.js`, next to `HulaHooper`) both the
+beach and the Neighborhood already use, just this city's own cyan-and-amber accent colours on the disc.
+Its own built-in `cries` option went unused on purpose, and that cost a real debugging detour: that path
+draws its idle-chatter timer off the shared global `rnd()` (same stream every talking NPC in the game
+pulls from), and the one extra draw it cost was enough to tip a pre-existing, already-documented flake —
+the Victorian carriage check a few worlds further down the travel order (round 219's own note) — from a
+pass to a fail, three clean runs in a row, confirmed by diffing against the unmodified build. Not a flake
+this time, a real reproducible shift. Fixed by leaving `cries` out of the constructor entirely and
+driving the dialogue off its own `U.push` timer instead, seeded from this world's own local `r()` — the
+same trick the trampoline's `bounceLines` and the leak-tester's bubbles already use — which costs no
+global draw at all.
+
+A headless probe (a scratch script built on the same stub-three harness `test/run.mjs` itself uses)
+built the real Robot City (`game.travel(2, 'from-prev')`, then `game.start('new')` so every wandering,
+patrolling, dancing and ball-tossing robot pack actually moved), sampled every NPC's and the squirrel's
+own position every quarter second over 300 simulated seconds, then swept a 1 m grid of the open floor
+(radius 15-90, short of the radius (98) where robotRegion's own procedural fill takes over) against both
+those samples and all 1144 of the city's physics boxes: (7, -66) came back clear by 9.8 m of the nearest
+box and 10.0 m of the nearest other soul (the parts scavenger's own crate). Placed last of every person
+this build adds, after the synth-coffee vendor, so it draws from the very tail of this world's own local
+`r()` sequence.
+
+Full suite (`node test/run.mjs`) ran clean three times in a row once the global-`rnd()` fix was in —
+exit 0, 274 checks `ok`, 0 console warnings every time. Robot City's own friend count is up one to 69.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
