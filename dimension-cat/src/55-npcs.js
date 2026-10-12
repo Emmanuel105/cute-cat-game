@@ -1822,6 +1822,7 @@ class Cyclist extends Vehicle {
   constructor(game, rider, bike, o) {
     super(game, bike, { ...o, length: 1.6, horn: () => SFX.bell() });
     this.rider = rider; this.bike = bike; this.t = rnd() * 10;
+    this.cries = o.cries ?? null; this.cryIcon = o.cryIcon ?? '💬'; this.cryT = this.cries ? rnd.range(4, 9) : 0;
     // seated: hips on the saddle, leaning forward to the bars
     rider.group.position.set(0, 1.0 - 0.9 * rider.k, -0.2); bike.group.add(rider.group);
     this.cf.r = 0.5; this.cb.r = 0.5;
@@ -1835,6 +1836,7 @@ class Cyclist extends Vehicle {
     if (!rig.gesture) for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -1.05, 8, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.3, 8, dt); A.sh.rotation.z = (A === rig.arms[0] ? 1 : -1) * 0.25; }
     rig.spine.rotation.x = damp(rig.spine.rotation.x, 0.32, 6, dt); rig.head.rotation.x = damp(rig.head.rotation.x, -0.25, 6, dt); rig.body.position.y = 0;
     this.rig.group.rotation.z = damp(this.rig.group.rotation.z, this.v > 0.5 ? sin(ph * 0.5) * 0.02 : 0, 6, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
   }
 }
 

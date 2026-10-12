@@ -10677,3 +10677,29 @@ players, so it draws from the tail of this world's own local `r()` sequence.
 Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, 274 checks `ok`, 0 console
 warnings every time, Candy Land's own friend count up one to 65. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 419 — a telegram boy on a bicycle for Victorian
+
+The Neighborhood has had a cyclist pedalling its own street for a long while, but no other world ever
+got a second one. **A telegram boy now races the other way along Victorian's own street, on the free
+lane the other side of centre from the horse and carriage**, satchel bouncing on his hip, ringing his
+bell for the cat. *"Telegram! Make way, make way!"* *"Ring, ring — mind your tail, puss!"* *"Can't
+stop, important business!"*
+
+No new prop or controller: he rides the same `makeBike()` the Neighborhood's own cyclist uses, driven by
+the same `Cyclist` class (itself built on `Vehicle`, which already makes the horse and carriage stop
+dead rather than collide whenever the cat — or anyone else — strays into its lane). He runs along
+z=1.3, mirroring the carriage's own z=-1.3 with the same laneW of 1.0, so the two lanes' own stop zones
+(z in [0.3, 2.3] and [-2.3, -0.3]) never overlap and the two never interfere with each other. `Cyclist`
+itself picked up `cries`/`cryIcon` for the first time this round — the Neighborhood's own rider never
+needed a line, so neither the base `Vehicle` class nor `Cyclist` had ever carried the machinery every
+other controller in the file already has. The three lines are drawn from the shared `rnd()` sequence at
+the moment he's built, exactly like every other controller's cries, never Victorian's own seeded `r()`,
+so nothing about this round can shift a later wardrobe pick in this build.
+
+He isn't a friend to meet — same as the Neighborhood's own cyclist and the horse-and-carriage driver,
+Victorian's friend count stays at 72. Vehicles in this game have always been scenery you share the road
+with, not people you say hello to.
+
+Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, 274 checks `ok`, 0 console
+warnings every time. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

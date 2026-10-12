@@ -3905,6 +3905,23 @@ function buildVictorian(game, entry) {
   // a horse and carriage, clip-clopping east along the street and round again
   { const driver = makeHuman({ ...randomPerson(r, { female: false, child: false, wardrobe: vicWard }), pants: 0x1e1e24, coat: true, hat: 'top', hatColor: 0x0c0c0c, buttons: 0xc8b878, beard: false, moustache: true, glasses: false });
     game.npcs.push(new HorseCarriage(game, driver, { z: -1.3, dir: 1, speed: 2.0, x: -50, limit: 62, laneW: 1.0 })); }   // a narrow lane check: the townsfolk stand at z = ±3
+  // the Neighborhood's had a cyclist of its own for a long while (`makeBike` + `Cyclist`, reusing
+  // `Vehicle`'s own stop-for-the-cat lane logic the carriage above relies on) but no other world ever
+  // got a second one — Victorian, with the carriage already running down the middle of the street, had
+  // the obvious free lane just the other side of centre. A telegram boy now pedals the opposite way
+  // along z=1.3 (mirroring the carriage's own z=-1.3, same laneW of 1.0, so the two lanes' own stop
+  // zones — z in [0.3,2.3] and [-2.3,-0.3] — never overlap), satchel across his chest, ringing his bell
+  // for the cat exactly as the Neighborhood's own cyclist does. `Cyclist` picks up `cries`/`cryIcon` for
+  // the first time here — it had neither before, since the Neighborhood's own rider never needed a line
+  // — drawn from the shared `rnd()` sequence at the moment each one is constructed, same as every other
+  // controller's cries in this file, never this world's own seeded `r()`, so it costs nothing from this
+  // build's later wardrobe picks. *"Telegram! Make way, make way!"* *"Ring, ring — mind your tail,
+  // puss!"* *"Can't stop, important business!"*
+  { const boy = makeHuman({ ...randomPerson(r, { female: false, child: true, wardrobe: vicWard }),
+      pants: 0x1e1e24, hat: 'flatcap', hatColor: 0x3a3327, bag: 0x5a3a1f, glasses: false });
+    const bike = makeBike(0x2a4a33); W.add(bike.group);
+    game.npcs.push(new Cyclist(game, boy, bike, { z: 1.3, dir: -1, speed: 2.6, x: 50, limit: 62, laneW: 1.0,
+      cries: ['Telegram! Make way, make way!', 'Ring, ring — mind your tail, puss!', "Can't stop, important business!"], cryIcon: '📨' })); }
   // a bobby on the beat: up one side of the street and down the other
   { const bobby = makeHuman({ ...randomPerson(r, { female: false, elder: false, child: false }), shirt: 0x1e2436, pants: 0x1e2436, shoes: 0x0c0c0c, coat: true, buttons: 0xd8d8d8, belt: 0x0c0c0c, hat: 'helmet', hatColor: 0x1e2436, moustache: true, build: 'stout', beard: false, glasses: false });
     W.add(bobby.group);
