@@ -10735,3 +10735,36 @@ It isn't a friend to meet — same as the snail, the crabs and the fireflies —
 count stays at 60. Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, 274 checks
 `ok`, 0 console warnings every time. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 421 — a frisbee thrower for the Neighborhood
+
+Sunny Shore has had a solo frisbee thrower since round 411 ("a frisbee belongs on a beach as much as the
+ball game and the kite already do"), but no other world ever picked the idea up — the Neighborhood,
+which already has its own game of catch and its own kite kid, never got the one throw that needs nobody
+standing on the other end. **A player now stands in the park's own back field, tossing a disc straight
+up off the palm** — it rises on a spin, hangs a beat at the top, and drops back into the hand for the
+next throw. *"Highest one yet — missed the roof by inches."* *"Careful, puss — mind your tail, this
+one's coming down fast."* *"Last throw before dinner. Probably."*
+
+No new controller or prop: the exact same `FrisbeePlayer` class (`55-npcs.js`, next to `HulaHooper`)
+Sunny Shore's thrower already uses, just the street's own everyday wardrobe in place of beachwear. That
+wardrobe needed a second pass — the first set of shirt colours tried all turned out to already be worn
+by someone else on the street, which the suite's own "no two neighbours wear the same shirt" check
+(checking the full cast, not just the lane the street's shared `ward` bag covers) caught immediately;
+swapped in three colours confirmed absent from all 49 existing shirts first.
+
+A headless probe (a scratch script built on the same stub-three harness `test/run.mjs` itself uses,
+since there's no browser here to look at it) started the real Neighborhood the same way the test does
+(click "enter", then `game.loop()`), sampled every NPC's own position every quarter second over 300
+simulated seconds — long enough for every wanderer, the postie, the cyclist and the dog walker to clear
+any one spot several times over — then swept a grid of the open field east of the stepping stones to
+the hollow oak against both those samples and every one of the street's own physics boxes: (39, 53) came
+back clear by 12.1 m of the nearest box and 13.0 m of the nearest other soul, a metre south of the
+stepping-stones zone and well inside the world's own 95 m movement limit. Placed last of every person
+this build adds, after the chess players, so it draws from the very tail of this world's own local
+`r()` sequence and disturbs no earlier neighbour's wardrobe or colour pick.
+
+Full suite (`node test/run.mjs`) ran clean five times in a row — exit 0, 0 console warnings every time,
+50 people on the street with 50 distinct shirt colours, physics box count unchanged at 308. The
+Neighborhood's own friend count is up one to 56. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.

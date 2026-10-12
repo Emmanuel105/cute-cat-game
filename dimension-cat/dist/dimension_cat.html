@@ -7950,6 +7950,32 @@ function buildNeighborhood(game, entry) {
       cries: ["Forty years on this street, and she still plays like that.", "Mind your tail, puss — that's a real ivory set, or near enough.", "Lost the gnome fair and square. I'll win it back by spring."] }));
   }
 
+  // Sunny Shore's had a solo frisbee thrower since round 411 ("a frisbee belongs on a beach as much as
+  // the ball game and the kite already do") but no other world ever picked it up — the Neighborhood,
+  // with its own game of catch and its own kite already up, never got the one throw that needs nobody
+  // on the other end. A player now stands in the park's own back field, tossing a disc straight up off
+  // the palm — it rises on a spin, hangs a beat at the top, and drops back into the hand for the next
+  // throw. No new controller or prop: the exact same `FrisbeePlayer` class (`55-npcs.js`, next to
+  // `HulaHooper`) Sunny Shore's thrower already uses, just the street's own everyday wardrobe in place
+  // of beachwear.
+  // A headless probe (a scratch script built on the same stub-three harness `test/run.mjs` itself
+  // uses) started the real Neighborhood the same way the test does (click "enter", then `game.loop()`),
+  // sampled every NPC's and the squirrel's own position every quarter second over 300 simulated
+  // seconds — long enough for every wanderer, the postie, the cyclist and the dog walker to clear any
+  // one spot several times over — then swept a grid of the open field east of the stepping stones to
+  // the hollow oak against both those samples and every one of the street's own physics boxes: (39, 53)
+  // came back clear by 12.1 m of the nearest box and 13.0 m of the nearest other soul, a metre south of
+  // the stepping-stones zone and well inside the world's own 95 m movement limit. Placed last of every
+  // person this build adds, after the chess players, so it draws from the very tail of this world's own
+  // local `r()` sequence and disturbs no earlier neighbour's wardrobe or colour pick.
+  { const fx = 39, fz = 53, fry = atan2(0 - fx, 0 - fz);
+    const frisbeeWard = makeWardrobe(r, { shirts: [0xc23fae, 0x3fae6a, 0xae8a3f], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0xefe7d8, 0x8d6e63] });
+    const thrower = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: frisbeeWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.2) });
+    W.add(thrower.group);
+    game.npcs.push(new FrisbeePlayer(game, thrower, r.pick([0xff6f3c, 0xffd54a, 0x7fe0ff]), { x: fx, z: fz, ry: fry, cryIcon: '🥏',
+      cries: ["Highest one yet — missed the roof by inches.", "Careful, puss — mind your tail, this one's coming down fast.", "Last throw before dinner. Probably."] })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
