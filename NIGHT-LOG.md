@@ -10922,3 +10922,28 @@ radius (88) where `victorianRegion`'s own procedural fill takes over) against bo
 Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, Victorian's own
 friend count up two (two new greetable gentlemen, 74 to meet in total now). Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 427 — a gummy ring toss for Candy Land
+
+The Neighborhood (395), Robot City (425, a magnetic coupling ring) and Victorian (426, a brass quoit)
+have all had a go at the same back-garden toss game, but the one world actually made of sweets never
+got its own turn. **Two villagers now lob a fat gummy ring back and forth, trying to land it over a
+pair of candy-cane stakes** out in the sweet-lands east of the village. *"Right over the stripe — that's
+a landing!"* *"Careful, puss — sticky if it lands on you!"* *"Best of nine, loser licks the loser's
+ring."*
+
+No new controller: the same `Horseshoes` class (`55-npcs.js`) both earlier reskins already use, just a
+pair of plain stakes wrapped in `TEX.candyCane()` (already striping every candy cane in this world) and
+a fat glossy-red torus standing in for the iron horseshoe or the brass quoit, with two spares stacked by
+each stake for set dressing.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses) built the
+real Candy Land, sampled every NPC's own position every quarter second over 300 simulated seconds, then
+swept a 2 m grid of the open sweet-lands (radius 40-80, short of where `candyRegion`'s own procedural
+fill takes over at 92) against both those samples and all 1874 of this world's physics boxes: (51, -1)
+came back clear by over 10 m of the nearest box and nearly 17 m of the nearest other soul, and both
+stakes — (51, -5) and (51, 3) — checked clear by 7.6 m and 8.2 m of the nearest box.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings, Candy
+Land's own friend count up two (67 to meet now). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
