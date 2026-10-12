@@ -10830,3 +10830,38 @@ both times — before rebuilding `dist/dimension_cat.html`, `dist/artifact.html`
 behind — the real history's own Round 283 is unrelated, "a look up at Frosty Peak's own zipline tower".
 Once the real `main` turned up on push, this same change was replayed cleanly on top of the real Round
 422 and renumbered here to 423, with no change to the code itself.)
+
+## Round 424 — a frisbee thrower for Frosty Peak
+
+Sunny Shore's had a solo frisbee thrower since round 411, the Neighborhood picked up the same throw two
+rounds later and Robot City a round after that — Frosty Peak, for all its sled run and curling lane,
+never got the one throw that needs nobody on the other end. **A bundled-up kid now tosses a disc straight
+up off the palm on the open snowfield south of the village** — it rises on a spin, hangs a beat at the
+top, and drops back into the hand for the next throw. *"Highest one yet, nearly over the pines!"*
+*"Careful, puss — mind your tail, this one's coming down fast."* *"Forty throws and not one lost in a
+drift."*
+
+No new controller: the same `FrisbeePlayer` class (`55-npcs.js`, next to `HulaHooper`) every other
+world's own thrower already uses, just this mountain's own icy palette on the disc, and this file's own
+`kid()` wardrobe helper (coat and beanie already on) in place of a bare-headed thrower. Its built-in
+`cries` option went unused on purpose — Robot City's own round hit a real regression from that path's
+extra draw on the shared global `rnd()` — so dialogue instead rides its own `U.push` timer seeded off
+this world's own local `r()`, costing no global draw at all.
+
+A headless probe (a scratch script built on the same stub-three harness `test/run.mjs` itself uses) built
+the real mountain (`game.travel(5, 'from-hub')`, then `game.start('new')` so every reindeer, hare, arctic
+fox, penguin, yeti and wandering kid actually moved), sampled every NPC's own position every quarter
+second over 300 simulated seconds, then swept a grid of the open snowfield against both those samples and
+every physics box: (-9, -40) came back clear by 15.58 m of the nearest box and 14.32 m of the nearest
+other soul — south of the village, clear of the cave's own flat approach strip and the catch-ball game
+further west, at radius 41.0 from the origin, well short of where snowRegion's own fill takes over at 58.
+
+Also found, and worth a note for whoever reads this next: the sandbox's local `main` branch had drifted
+50 commits out of sync with `origin/main` again (a stale fork from before round 423's own reconciliation).
+Checked out `origin/main` directly (detached) rather than the stale local branch, built this round on top
+of it, and will push straight to `origin/main` — no repeat of round 423's own replay needed since this
+build never touched the stale line.
+
+Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, 274 checks `ok`, 0 console
+warnings every time, physics box count unchanged at 308 and Frosty Peak's own friend count up one to 60.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

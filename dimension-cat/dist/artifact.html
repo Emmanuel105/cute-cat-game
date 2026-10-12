@@ -12949,6 +12949,35 @@ function buildSnowVillage(game, entry) {
       else { stone.position.set(laneX, ty0 + 0.001, targetZ); stone.rotation.y = t * 1.1; }
     };
     placeT(game, U, stone, laneX, hackZ, 0); }
+  // Sunny Shore's had a solo frisbee thrower since round 411, the Neighborhood picked up the same throw
+  // two rounds later and Robot City a round after that — Frosty Peak, for all its sled run and curling
+  // lane, never got the one throw that needs nobody on the other end. A bundled-up kid now tosses a disc
+  // straight up off the palm on the open snowfield south of the village, well clear of the arctic fox's
+  // own roam and the catch-ball game to the west.
+  // No new controller: the same `FrisbeePlayer` class (`55-npcs.js`, next to `HulaHooper`) every other
+  // world's own thrower already uses, just this mountain's own icy palette on the disc. Its own built-in
+  // `cries` option goes unused on purpose, the same fix Robot City's own thrower needed: that path draws
+  // its idle-chatter timer off the shared global `rnd()` (the same stream every talking NPC in the game
+  // pulls from), and the extra draw it costs risks tipping some later, already-fragile check the same way
+  // it once did for the Victorian carriage. Dialogue instead rides its own `U.push` timer, seeded off this
+  // world's own local `r()` — the same trick the trampoline's own `bounceLines` and the frost-bubble kid's
+  // own cries, just above, already use — so it costs no global draw at all. Reuses this file's own `kid()`
+  // wardrobe helper (coat and beanie already on) rather than the bare-headed throwers the other worlds
+  // build fresh.
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real mountain
+  // (`game.travel(5, 'from-hub')`, then `game.start('new')` so every reindeer, hare, arctic fox, penguin,
+  // yeti and wandering kid actually moved), sampled every NPC's own position every quarter second over 300
+  // simulated seconds, then swept a grid of the open snowfield against both those samples and every one of
+  // the mountain's physics boxes: (-9, -40) came back clear by 15.58 m of the nearest box and 14.32 m of
+  // the nearest other soul — south of the village, well clear of the cave's own flat approach strip (which
+  // only ever runs within 7 m of x=0) and the catch-ball game further west at (-24, -42), at radius 41.0
+  // from the origin and well short of the radius (58) where snowRegion's own fill takes over.
+  { const fx = -9, fz = -40, fry = atan2(0 - fx, 0 - fz);
+    const frisbeeKid = kid(r.chance(0.5));
+    game.npcs.push(new FrisbeePlayer(game, frisbeeKid, r.pick([0x9fe8ff, 0xffd54a, 0xff6f3c]), { x: fx, z: fz, ry: fry }));
+    const frisbeeLines = ['Highest one yet, nearly over the pines!', "Careful, puss — mind your tail, this one's coming down fast.", 'Forty throws and not one lost in a drift.'];
+    let frisbeeCryT = r.range(3, 7);
+    U.push((dt) => { frisbeeCryT -= dt; if (frisbeeCryT <= 0) { frisbeeCryT = r.range(8, 14); const c = game.cat.group.position; if (dist2(fx, fz, c.x, c.z) < 400) { game.toast('🥏 "' + r.pick(frisbeeLines) + '"', 2400); SFX.talk(); } } }); }
   snowRegion(game, U, r, 58, PEAK_LIMIT - 8);
   makeHorizon(game, r, { clear: PEAK_LIMIT + 8, hills: true, hill: 0xe8eef6, rock: 0x6a7a94, rock2: 0x7e8ea6, snow: 0xf6fbff, snowLine: 26, peaks: 32, peakH: [46, 110], woodCount: 300, woodHue: [0.32, 0.42], woodLight: [0.12, 0.2], trunk: 0x4a3a2a });
   // gondola home (bottom station of the village)
