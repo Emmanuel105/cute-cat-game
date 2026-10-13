@@ -11355,3 +11355,37 @@ sweet-lands.
 Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings. Nothing
 else changed: no new friend, no collectible, no change to Candy Land's own walkable percentage.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 442 — a biplane over the Neighborhood
+
+Victorian got a hot air balloon, Robot City an airship, Sunny Shore a biplane and Candy Land a
+tumbling gumball the last four rounds running — every one of those skies had something crossing it,
+but the Neighborhood's own sky, the first world anyone sees, never did. **A postal-red biplane now
+loops a slow circuit over the whole street, towing a banner that reads the village's own blurb back
+at it: "HOME SWEET HOME"**, 34 m up on a 68 m orbit. Purely decorative — nothing to greet, nothing to
+reach, no dialogue.
+
+No new controller, no physics box of its own, same reasoning as the four flying things before it: the
+tallest point in the whole village is a chimney pot at 9.1 m (the two-storey houses top out there,
+roof peak and all), so flying 25 m above it clears every rooftop by a wide margin and needs no
+keep-out check against `game.zones` or the street's own physics boxes. A 68 m orbit also sits well
+inside the 132 m radius where this world's own `makeHorizon` starts dropping mountains (`clear * 1.35`,
+`clear` being 98 here), so it never flies anywhere near the horizon either. The fuselage is one
+`G.capsule()` inside a child group rotated `PI/2` about X — the same trick the airship's hull and the
+beach's biplane both use — so its pole-to-pole axis lands on local Z (nose at +z) before the whole rig
+is ever moved onto its orbit; the wings, struts and tail fin sit straight on the outer group. The
+banner is a cloth box towed on a rope from the tail, through `noInk()` for the same reason every other
+world's ropes and propellers need it — a line that thin would otherwise ink solid across the sky —
+carrying the same double text-plane trick the gondola sign and the beach's own banner already use
+(`TEX.signText()` painted onto a plane, cloned and turned around) so the banner reads from either side
+of the loop. Postal red and white rather than the beach's canary yellow, echoing the street's own
+mailboxes instead.
+
+Drifts entirely on the world clock `t` — bob, roll, the propeller's own spin and the banner's own
+trailing sway, all keyed off `t` alone — from one fixed starting angle drawn once off this world's own
+local `r()`, so it costs no later wardrobe or layout pick. Placed last of everything this build adds,
+after the frisbee thrower, so even that one draw disturbs nothing built earlier on the street.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings. Nothing
+else changed: no new friend, no collectible, no change to the Neighborhood's own walkable percentage
+(still 96%). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

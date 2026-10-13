@@ -1334,6 +1334,69 @@ function buildNeighborhood(game, entry) {
     game.npcs.push(new FrisbeePlayer(game, thrower, r.pick([0xff6f3c, 0xffd54a, 0x7fe0ff]), { x: fx, z: fz, ry: fry, cryIcon: '🥏',
       cries: ["Highest one yet — missed the roof by inches.", "Careful, puss — mind your tail, this one's coming down fast.", "Last throw before dinner. Probably."] })); }
 
+  // Victorian's had a hot air balloon since round 438, Robot City an airship since round 439, Sunny
+  // Shore a biplane since round 440 and Candy Land a tumbling gumball since round 441 — every one of
+  // those skies had something crossing it but the Neighborhood's own, the first world anyone sees,
+  // never did. **A postal-red biplane now loops a slow circuit over the whole street, towing a banner
+  // that reads the village's own blurb back at it: "HOME SWEET HOME"**, 34 m up on a 68 m orbit.
+  // Purely decorative — nothing to greet, nothing to reach, no dialogue.
+  //
+  // No new controller, no physics box of its own, same reasoning as the three other worlds' own flying
+  // things: 25 m above the tallest chimney pot (the two-storey houses top out at 9.1 m, roof peak and
+  // all) clears every rooftop by a wide margin, so it needs no keep-out check against `game.zones` or
+  // any of the street's physics boxes. A 68 m orbit also sits well inside the 132 m radius where
+  // `makeHorizon`'s own mountains start (`clear * 1.35`, `clear` being 98 here), so it never flies
+  // anywhere near them either. The fuselage is one `G.capsule()` inside a child group rotated `PI/2`
+  // about X — the same trick the airship's hull and the beach's biplane both use — so its pole-to-pole
+  // axis lands on local Z (nose at +z) before the whole rig is ever moved onto its orbit; the wings,
+  // struts and tail fin sit directly on the outer group. The banner is a cloth box towed on a rope from
+  // the tail (`noInk()`, the same reasoning as every other world's thin ropes and propellers — a line
+  // that thin would otherwise ink solid across the sky), carrying the same double text-plane trick the
+  // gondola sign and the beach's own banner already use (`TEX.signText()` on a plane, cloned and turned
+  // around) so it reads from either side of the loop. Postal red and white, echoing the street's own
+  // mailboxes rather than the beach's canary yellow.
+  //
+  // Drifts entirely on the world clock `t` (bob, roll, the propeller's own spin and the banner's own
+  // trailing sway all keyed off `t` alone) from one fixed starting angle drawn once off this world's
+  // own local `r()`, so it costs no later wardrobe or layout pick — placed last of everything this
+  // build adds, after the frisbee thrower, so even that one draw disturbs nothing built earlier on the
+  // street.
+  { const planeR = 68, planeH = 34, planeSpeed = TAU / 150, planePhase = r() * TAU;
+    const biplane = group(0, 0, 0);
+    const hullM = mat(0xd62839, { roughness: 0.55 });
+    const hullGroup = group(0, 0, 0, biplane); hullGroup.rotation.x = PI / 2;
+    mesh(G.capsule(0.22, 1.5, 8), hullM, { shadow: 'none', parent: hullGroup });
+    const wingM = mat(0xf7f3ec, { roughness: 0.6 });
+    mesh(G.box(2.8, 0.06, 0.48), wingM, { y: -0.04, shadow: 'none', parent: biplane });
+    mesh(G.box(2.5, 0.06, 0.44), wingM, { y: 0.42, shadow: 'none', parent: biplane });
+    const strutM = mat(0x8a6a42, { roughness: 0.8 });
+    for (const sx of [-1.05, 1.05]) noInk(mesh(G.cyl(0.025, 0.025, 0.46, 6), strutM, { x: sx, y: 0.19, shadow: 'none', parent: biplane }));
+    const finM = mat(0x2e63d8, { roughness: 0.6 });
+    mesh(G.box(0.05, 0.46, 0.35), finM, { y: 0.23, z: -1.1, shadow: 'none', parent: biplane });
+    mesh(G.box(0.85, 0.05, 0.24), wingM, { z: -1.1, shadow: 'none', parent: biplane });
+    const propGroup = group(0, 0, 1.18, biplane);
+    mesh(G.cyl(0.055, 0.055, 0.12, 8), strutM, { rx: PI / 2, shadow: 'none', parent: propGroup });
+    const bladeM = mat(0x2e2a24, { roughness: 0.6 });
+    noInk(mesh(G.box(0.04, 0.68, 0.08), bladeM, { shadow: 'none', parent: propGroup }));
+    noInk(mesh(G.box(0.68, 0.04, 0.08), bladeM, { shadow: 'none', parent: propGroup }));
+    const towM = mat(0x3a2f24, { roughness: 0.9 });
+    noInk(mesh(G.cyl(0.018, 0.018, 2.0, 5), towM, { z: -2.1, rx: PI / 2, shadow: 'none', parent: biplane }));
+    const banner = group(0, 0, -3.3, biplane);
+    mesh(G.box(3.3, 0.78, 0.035), mat(0xf7f3ec, { roughness: 0.75 }), { shadow: 'none', parent: banner });
+    const bannerTex = TEX.signText('HOME SWEET HOME', '#d62839');
+    const btxt = new THREE.Mesh(G.plane(3.1, 0.7), new THREE.MeshBasicMaterial({ map: bannerTex, transparent: true })); worldBag.track(btxt.material); btxt.position.z = 0.025; banner.add(btxt);
+    const btxt2 = new THREE.Mesh(G.plane(3.1, 0.7), new THREE.MeshBasicMaterial({ map: bannerTex, transparent: true })); worldBag.track(btxt2.material); btxt2.position.z = -0.025; btxt2.rotation.y = PI; banner.add(btxt2);
+    biplane.userData.update = (dt, t) => {
+      const a = planePhase + t * planeSpeed;
+      biplane.position.set(cos(a) * planeR, planeH + sin(t * 0.21) * 1.8, sin(a) * planeR);
+      biplane.rotation.y = -a;
+      biplane.rotation.z = sin(t * 0.4) * 0.05;
+      propGroup.rotation.z += dt * 14;
+      banner.rotation.x = sin(t * 0.9) * 0.05;
+      banner.position.y = sin(t * 0.9) * 0.1;
+    };
+    place(game, U, biplane, cos(planePhase) * planeR, sin(planePhase) * planeR, 0, planeH); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
