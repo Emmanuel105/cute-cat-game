@@ -13595,6 +13595,76 @@ function buildSnowVillage(game, entry) {
     const harnessLines = ['Right over the post — that\'s a landing!', "Careful, puss — that's good reindeer leather, not a toy.", "Best of nine, loser mucks out the sled dogs."];
     game.npcs.push(new Horseshoes(game, tossA, tossB, ring, { cx: hcx, cz: hcz, gap: hgap, cries: harnessLines, cryIcon: '🛷' }));
     greetable(game, { rig: tossA }); greetable(game, { rig: tossB }); }
+  // Victorian, Robot City, Sunny Shore, Candy Land and the Neighborhood have all had something cross
+  // their own sky the last five rounds running (a hot air balloon, an airship, a biplane, a tumbling
+  // gumball, a second biplane) — Frosty Peak's own sky, past the snow buntings and the gondola cable,
+  // never had anything migrate across it. **A ragged V of seven Canada geese now flies a slow, high
+  // circuit over the whole mountain**, 65 m up on a 95 m orbit. Purely decorative: nothing to greet,
+  // nothing to reach, no dialogue and no new sound (SFX stays as it is).
+  //
+  // No new controller, no physics box of its own: this mountain's two climbable peaks (38 m at the
+  // zipline's own summit, 32 m at the second one east of it, by far the tallest things on the whole
+  // playable slope) both sit on the orbit's outer edge rather than under it — the closest the 95 m
+  // circle ever comes to either peak's own centre is 25 m and 37 m respectively, where each peak's own
+  // smooth falloff (the same `k*k*sqrt(k)` dome `T()` already uses) has already dropped to under 29 m —
+  // so flying at 65 m clears both by a comfortable margin anywhere on the loop. The gondola cable's own
+  // climb above the station, the next tallest thing in the village, tops out around 35 m. A 95 m orbit
+  // also sits well inside the 130 m radius where this world's own terrain function `T()` starts raising
+  // its own decorative rim into real mountains (`smoothstep(130, 265, d)`), so the loop never flies
+  // anywhere near the rim either, and needs no keep-out check against `game.zones` or any of this
+  // world's physics boxes.
+  //
+  // Each goose is a stretched body sphere in a grey-brown winter coat, a black neck curving up into a
+  // black head with a white cheek patch standing in for the chinstrap marking, and the same two-bone
+  // flapping wing build every other flyer in this file already uses (`makeSeagull`, `makeDove`,
+  // `makeSnowBird`, `makeCrow`), just slower and heavier to read as a bigger bird labouring along rather
+  // than gliding. Seven of them sit in a fixed V behind a lead bird — three widening pairs either side,
+  // each at its own random flap phase drawn off this world's own local `r()` so the wingbeats never line
+  // up — carried as one rigid group round the circuit, so the formation costs nothing beyond the lead
+  // bird's own transform; only the wings animate per bird, called by hand from the flock's own
+  // `userData.update` since there is no per-goose controller.
+  //
+  // Drifts entirely on the world clock `t` (the orbit and a gentle bob keyed off `t` alone) from one
+  // fixed starting angle drawn once off this world's own local `r()`, so it costs no later wardrobe or
+  // layout pick — placed last of everything this build adds, after the harness ring toss, so even that
+  // one draw disturbs nothing built earlier on the mountain.
+  { const makeGoose = (phase) => {
+      const g = new THREE.Group(), rig = { group: g, wings: [] };
+      const coat = mat(0x7a6a52, { roughness: 0.85 }), dark = mat(0x1c1c1c, { roughness: 0.6 }), cheek = mat(0xf2eee0, { roughness: 0.8 }), beakM = mat(0x2a2420, { roughness: 0.5 });
+      const body = group(0, 0, 0, g); rig.body = body;
+      mesh(G.bodySphere(14, 10), coat, { sx: 0.12, sy: 0.12, sz: 0.34, parent: body });
+      const neck = group(0, 0.06, 0.2, body); neck.rotation.x = -0.55;
+      mesh(G.capsule(0.035, 0.16, 6), dark, { y: 0.1, rx: PI / 2, parent: neck });
+      const head = group(0, 0.19, 0.03, neck);
+      mesh(G.sphere(0.05, 10, 8), dark, { parent: head });
+      mesh(G.sphere(0.022, 8, 6), cheek, { x: 0, y: -0.01, z: 0.03, sx: 1.3, sy: 0.7, sz: 0.9, shadow: 'none', parent: head });
+      mesh(G.cone(0.02, 0.07, 6), beakM, { y: -0.01, z: 0.07, rx: PI / 2, shadow: 'none', parent: head });
+      mesh(G.box(0.08, 0.02, 0.1), dark, { y: -0.01, z: -0.15, rx: 0.1, shadow: 'none', parent: body });   // tail
+      for (const side of [1, -1]) {
+        const w = group(side * 0.07, 0.03, 0.02, body);
+        mesh(G.box(0.38, 0.022, 0.16), coat, { x: side * 0.19, parent: w });
+        const tipW = group(side * 0.38, 0, 0, w); mesh(G.box(0.3, 0.02, 0.13), dark, { x: side * 0.14, parent: tipW });
+        rig.wings.push({ w, tipW, side });
+      }
+      rig.animate = (ph, moving, dt, t = 0) => {
+        const flap = sin(t * 5 + phase), glide = (sin(t * 0.22 + phase) > 0.45) ? 1 : 0;
+        for (const Wg of rig.wings) { const a = glide ? 0.16 : flap * 0.55; Wg.w.rotation.z = Wg.side * -a; Wg.tipW.rotation.z = Wg.side * -a * 0.8; }
+        body.rotation.z = sin(t * 0.6 + phase) * 0.08;
+      };
+      bakeRig(g);
+      return rig;
+    };
+    const vOffsets = [[0, 0, 0], [-1.0, -0.04, -0.9], [1.0, -0.04, -0.9], [-2.0, -0.08, -1.8], [2.0, -0.08, -1.8], [-3.0, -0.12, -2.7], [3.0, -0.12, -2.7]];
+    const flockR = 95, flockH = 65, flockSpeed = TAU / 260, flockPhase = r() * TAU;
+    const flock = group(0, 0, 0);
+    const geese = vOffsets.map(([ox, oy, oz]) => { const goose = makeGoose(r() * TAU); goose.group.position.set(ox, oy, oz); flock.add(goose.group); return goose; });
+    flock.userData.update = (dt, t) => {
+      const a = flockPhase + t * flockSpeed;
+      flock.position.set(cos(a) * flockR, flockH + sin(t * 0.17) * 3, sin(a) * flockR);
+      flock.rotation.y = -a;
+      for (const goose of geese) goose.animate(0, true, dt, t);
+    };
+    place(game, U, flock, cos(flockPhase) * flockR, sin(flockPhase) * flockR, 0, flockH); }
   snowRegion(game, U, r, 58, PEAK_LIMIT - 8);
   makeHorizon(game, r, { clear: PEAK_LIMIT + 8, hills: true, hill: 0xe8eef6, rock: 0x6a7a94, rock2: 0x7e8ea6, snow: 0xf6fbff, snowLine: 26, peaks: 32, peakH: [46, 110], woodCount: 300, woodHue: [0.32, 0.42], woodLight: [0.12, 0.2], trunk: 0x4a3a2a });
   // gondola home (bottom station of the village)

@@ -11389,3 +11389,34 @@ after the frisbee thrower, so even that one draw disturbs nothing built earlier 
 Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings. Nothing
 else changed: no new friend, no collectible, no change to the Neighborhood's own walkable percentage
 (still 96%). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 443 — a flock of migrating geese over Frosty Peak
+
+Victorian, Robot City, Sunny Shore, Candy Land and the Neighborhood have all had something cross their
+own sky the last five rounds running — a hot air balloon, an airship, two biplanes and a tumbling
+gumball — but Frosty Peak's own sky, past the snow buntings and the gondola cable, never had anything
+migrate across it. **A ragged V of seven Canada geese now flies a slow, high circuit over the whole
+mountain**, 65 m up on a 95 m orbit. Purely decorative: nothing to greet, nothing to reach, no dialogue
+and no new sound — a quieter change than the vehicle run that came before it.
+
+No new controller, no physics box of its own. This mountain's two climbable peaks (38 m at the
+zipline's own summit, 32 m at the second one east of it — the tallest things on the whole playable
+slope) both sit on the orbit's outer edge rather than directly under it: the 95 m circle's closest
+approach to either peak's own centre is about 25 m and 37 m, where each peak's own smooth falloff has
+already dropped to under 29 m, so 65 m clears both comfortably anywhere on the loop. The gondola
+cable's own climb above the station tops out around 35 m, and a 95 m orbit sits well inside the 130 m
+radius where this world's terrain starts raising its own decorative rim into real mountains, so the
+flock never flies near that either and needs no keep-out check against `game.zones` or any physics box.
+
+Each goose is a stretched body sphere in a grey-brown coat, a black neck curving up to a black head
+with a white cheek patch for the chinstrap marking, and the same two-bone flapping wing build every
+other flyer in this file already uses (the gulls, doves, snow buntings, crows) — just slower and
+heavier, so it reads as a bigger bird labouring along rather than gliding. Seven of them sit in a fixed
+V behind a lead bird, each at its own random flap phase off this world's own local `r()` so the
+wingbeats never line up, carried as one rigid group round the circuit — the formation costs nothing
+beyond the lead bird's own transform, and the wings are animated by hand from the flock's own
+`userData.update` since there's no per-goose controller to do it for them.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings. Nothing
+else changed: no new friend, no collectible, no change to Frosty Peak's own walkable percentage (still
+98%). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
