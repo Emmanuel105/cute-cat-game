@@ -11420,3 +11420,32 @@ beyond the lead bird's own transform, and the wings are animated by hand from th
 Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings. Nothing
 else changed: no new friend, no collectible, no change to Frosty Peak's own walkable percentage (still
 98%). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 444 — hawks wheeling over Whisper Woods
+
+Victorian, Robot City, Sunny Shore, Candy Land, the Neighborhood and Frosty Peak have all had something
+cross their own sky the last six rounds running — a hot air balloon, an airship, two biplanes, a
+tumbling gumball, a flock of migrating geese — and Whisper Woods was the one world left out, its own
+thick canopy the obvious reason nobody had tried, same as the kite flyer's own build note said two
+dozen rounds back. **Three hawks now wheel in slow, lazy circles high above the whole forest**, soaring
+on mostly flat wings rather than flapping, each on its own circle at a different radius (60-84 m) and
+height (42-47 m). Purely decorative: nothing to greet, nothing to reach, no dialogue and no new sound.
+
+No new controller, no physics box. The tallest thing on this world's own ground is a big tree's own
+canopy top — about 14.2 m at the very tallest for the scattered giants, 13.2 m for the fixed treehouse
+tree — so flying at 42 m or higher clears every tree by a comfortable 28 m margin everywhere on the
+ground, with no keep-out check needed against `game.zones` or any physics box. All three circles sit
+well inside the 196 m play limit and nowhere near the 275 m+ ring where this world's own horizon starts
+raising real mountains.
+
+Each hawk reuses the same stretched-sphere body every other bird in this file builds on, with a
+two-bone wing held mostly flat for a glide — a slow body-roll bank is the only constant motion, plus an
+occasional short flap when a hawk's own phase crosses its circle's windward side. Rust-brown back and
+wings, cream belly, a dark banded tail. All three birds circle the same direction, so the facing math
+stays the plain `-a` the migrating geese already use; each one draws its own radius, height, speed and
+starting phase once off this world's own local `r()`, so it costs no later mushroom hue or butterfly
+colour pick.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings. Nothing else
+changed: no new friend, no collectible, Whisper Woods' own friend count still 63, walkable percentage
+still 98%. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

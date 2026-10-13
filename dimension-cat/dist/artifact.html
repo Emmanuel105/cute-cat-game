@@ -14793,6 +14793,71 @@ function buildForest(game, entry) {
     let frisbeeCryT = r.range(3, 7);
     U.push((dt) => { frisbeeCryT -= dt; if (frisbeeCryT <= 0) { frisbeeCryT = r.range(8, 14); const c = game.cat.group.position; if (dist2(fx, fz, c.x, c.z) < 400) { game.toast('🥏 "' + r.pick(frisbeeLines) + '"', 2400); SFX.talk(); } } }); }
 
+  // Victorian, Robot City, Sunny Shore, Candy Land, the Neighborhood and Frosty Peak have all had
+  // something cross their own sky the last six rounds running — a hot air balloon, an airship, two
+  // biplanes, a tumbling gumball, a flock of migrating geese — and Whisper Woods was the one world
+  // left out, its own canopy the obvious reason nobody had tried (same reasoning the kite flyer's own
+  // build note gave two dozen rounds back). **Three hawks now wheel in slow, lazy circles high above
+  // the whole canopy**, 42-48 m up, soaring on flat wings rather than flapping. Purely decorative:
+  // nothing to greet, nothing to reach, no dialogue and no new sound.
+  //
+  // No new controller, no physics box of its own. The tallest thing anywhere on this world's own
+  // ground is a big tree's own canopy top (`makeBigTree`'s outer leaf sphere sits at `h + 1.4` with a
+  // 2.8 m radius, h up to 10 m for the scattered giants — about 14.2 m at the very tallest; the fixed
+  // treehouse tree, h = 9, tops out lower still at 13.2 m). Flying at 42 m or above clears that by a
+  // comfortable 28 m margin anywhere on the ground, so it needs no keep-out check against `game.zones`
+  // or any of this world's physics boxes. Each hawk's own circle sits at a different radius (60-84 m)
+  // and height (42-47 m), all comfortably inside the 196 m play limit and nowhere near the 275 m+ ring
+  // where this world's own horizon starts raising real mountains (`clear * r.range(1.35, 1.8)`, clear
+  // = 204 here).
+  //
+  // Reuses the same stretched-sphere body every other bird in this file already builds on, with a
+  // two-bone wing held mostly flat in a soaring glide — a slow body-roll bank is the only constant wing
+  // motion, plus an occasional short flap when a hawk crosses its own circle's windward side. Red-tail
+  // colouring: rust-brown back and wings, a cream belly, a dark banded tail. Three birds on three
+  // independent circles, same direction so the facing math stays the simple `-a` the geese already use,
+  // each at its own radius, height, speed and starting phase drawn once off this world's own local
+  // `r()`, so it costs no later mushroom hue or butterfly colour pick.
+  //
+  // Drifts entirely on the world clock `t` beyond that one draw per hawk, so it costs nothing more —
+  // placed last of everything this build adds, after the frisbee thrower, so even those draws disturb
+  // nothing built earlier in these woods.
+  { const makeHawk = (phase) => {
+      const g = new THREE.Group(), rig = { group: g, wings: [] };
+      const back = mat(0x6b4028, { roughness: 0.85 }), belly = mat(0xe8dcc0, { roughness: 0.8 }), tailM = mat(0xb5793a, { roughness: 0.8 }), dark = mat(0x241c14, { roughness: 0.6 });
+      const body = group(0, 0, 0, g); rig.body = body;
+      mesh(G.bodySphere(14, 10), back, { sx: 0.1, sy: 0.1, sz: 0.3, parent: body });
+      mesh(G.sphere(0.08, 10, 8), belly, { y: -0.03, sy: 0.7, sz: 1.5, shadow: 'none', parent: body });
+      const head = group(0, 0.02, 0.17, body);
+      mesh(G.sphere(0.045, 10, 8), back, { parent: head });
+      mesh(G.cone(0.016, 0.05, 6), dark, { y: -0.005, z: 0.05, rx: PI / 2, shadow: 'none', parent: head });
+      mesh(G.box(0.1, 0.03, 0.14), tailM, { z: -0.19, rx: 0.05, shadow: 'none', parent: body });
+      for (const side of [1, -1]) {
+        const w = group(side * 0.06, 0.02, 0, body);
+        mesh(G.box(0.46, 0.02, 0.2), back, { x: side * 0.23, parent: w });
+        const tipW = group(side * 0.46, 0, 0, w); mesh(G.box(0.3, 0.018, 0.16), dark, { x: side * 0.14, parent: tipW });
+        rig.wings.push({ w, tipW, side });
+      }
+      rig.animate = (dt, t) => {
+        const flap = sin(t * 0.5 + phase * 1.7) > 0.86 ? sin(t * 6 + phase) * 0.32 : 0;
+        for (const Wg of rig.wings) { Wg.w.rotation.z = Wg.side * (-0.07 + flap); Wg.tipW.rotation.z = Wg.side * -0.05; }
+        body.rotation.z = sin(t * 0.3 + phase) * 0.22;
+      };
+      bakeRig(g);
+      return rig;
+    };
+    const hawkDefs = [[68, 44, 0.9], [84, 47, 0.68], [60, 42, 1.08]];
+    for (const [rad, h, speedMul] of hawkDefs) {
+      const phase = r() * TAU, speed = (TAU / 300) * speedMul, hawk = makeHawk(r() * TAU), hg = hawk.group;
+      hg.userData.update = (dt, t) => {
+        const a = phase + t * speed;
+        hg.position.set(cos(a) * rad, h + sin(t * 0.19 + phase) * 1.6, sin(a) * rad);
+        hg.rotation.y = -a;
+        hawk.animate(dt, t);
+      };
+      place(game, U, hg, cos(phase) * rad, sin(phase) * rad, 0, h);
+    } }
+
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
 
