@@ -1107,6 +1107,39 @@ function buildForest(game, entry) {
     let frisbeeCryT = r.range(3, 7);
     U.push((dt) => { frisbeeCryT -= dt; if (frisbeeCryT <= 0) { frisbeeCryT = r.range(8, 14); const c = game.cat.group.position; if (dist2(fx, fz, c.x, c.z) < 400) { game.toast('🥏 "' + r.pick(frisbeeLines) + '"', 2400); SFX.talk(); } } }); }
 
+  // Sunny Shore's tide-pool anemone (round 453) pulls its tentacles in tight when the cat gets close,
+  // and this wood's own giant flower (round 442) opens instead — but nobody had ever grown the plant
+  // that gave that whole idea its name in the real world. A sensitive plant (Mimosa pudica, the actual
+  // "touch-me-not") now stands in a quiet clearing south-east of the hula hoop kid's own patch: four
+  // ferny fronds held open and reaching, a tiny pink puffball flower at one tip, until the cat brushes
+  // within 2 m — then every frond folds in tight against the short central stem, the whole plant
+  // flinching shut, before it spreads back open a few seconds after the cat moves off. Same yaw-hinge
+  // trick as the flower's petals and the anemone's tentacles (`makeSensitivePlant()`, next to
+  // `makeTidePool()` in `62-props-nature.js`), just a different shape folding a different way, and a
+  // new `SFX.rustle()` (`30-audio.js`) rather than either one's own sound, since neither a twinkle nor
+  // a wave fit leaves.
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, driven
+  // through `game.travel(6, 'from-hub')` and its own real ~520 ms portal timer) sampled every NPC's and
+  // the squirrel's own position every quarter second over 300 simulated seconds, then swept a 1 m grid
+  // of the open floor (radius 12-48, short of the radius (58) where forestRegion's own fill takes over,
+  // and clear of the stepping-stone path, the fairy-ring circle and the glowing pond's own keep-out):
+  // (15, -42) came back clear by 7.1 m of the nearest box and 9.2 m of the nearest other soul, with
+  // ground height varying only 0.06 m across the whole footprint. No physics box of its own: a low
+  // ground plant the cat walks straight over, same reasoning as the glowing pond and the tide pool.
+  { const spx = 15, spz = -42, spy0 = P.ground0(spx, spz);
+    const plant = makeSensitivePlant(r);
+    const plantLines = ['🌿 "Watch — brush past it and the whole thing folds up tight."', '🌿 "Touch-me-not, they used to call these. Not far wrong."', '🌿 "Give it a minute once you step back — it opens right back out."'];
+    let spread = 1, spNear = false;
+    plant.group.userData.update = (dt, t) => {
+      const c = game.cat.group.position, isNear = dist2(c.x, c.z, spx, spz) < 4;
+      spread = damp(spread, isNear ? 0 : 1, 6, dt);
+      for (const f of plant.fronds) f.hinge.rotation.x = 0.05 + spread * (f.spread - 0.05);
+      if (isNear && !spNear) { spNear = true; SFX.rustle(); game.toast(rnd.pick(plantLines), 3000);
+        game.fx.emit(spx, spy0 + 0.3, spz, { count: 8, colors: [0x6fae4a, 0x8ac96a, 0xff8fc8], speed: 0.6, up: 0.6, life: 0.6, gravity: 1.4 }); }
+      if (!isNear) spNear = false;
+    };
+    placeT(game, U, plant.group, spx, spz, r() * TAU); }
+
   // Victorian, Robot City, Sunny Shore, Candy Land, the Neighborhood and Frosty Peak have all had
   // something cross their own sky the last six rounds running — a hot air balloon, an airship, two
   // biplanes, a tumbling gumball, a flock of migrating geese — and Whisper Woods was the one world

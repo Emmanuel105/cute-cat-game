@@ -240,6 +240,33 @@ function makeTidePool(r = rnd, rad = 0.9) {
     tentacles.push(hinge); }
   return { group: g, water, anemone, tentacles };
 }
+/** A sensitive plant (real-life Mimosa pudica): a low clump of ferny fronds that stand up and splayed
+ *  open normally, each on its own yaw hinge exactly like the Whisper Woods flower's petals, but this
+ *  one droops — the whole frond tips down and in toward the stem rather than folding shut in place —
+ *  the way a real one collapses when brushed, not the anemone's curl or the flower's bloom. Returns
+ *  `fronds` (the hinges) so a world can drive the droop itself; a small puffball flower rides the tip
+ *  of frond 0. */
+function makeSensitivePlant(r = rnd) {
+  const g = new THREE.Group();
+  const stemM = mat(0x4a7a3a, { roughness: 0.85 }), leafA = mat(0x6fae4a, { roughness: 0.8, side: THREE.DoubleSide }), leafB = mat(0x8ac96a, { roughness: 0.8, side: THREE.DoubleSide });
+  mesh(G.cyl(0.028, 0.045, 0.16, 7), stemM, { y: 0.08, parent: g });
+  const n = 4, fronds = [];
+  for (let i = 0; i < n; i++) {
+    const ang = i / n * TAU + r.range(-0.15, 0.15);
+    const hinge = group(0, 0.15, 0, g); hinge.rotation.y = ang;
+    const len = r.range(0.3, 0.4);
+    mesh(G.cyl(0.011, 0.017, len, 5), stemM, { y: len / 2, parent: hinge });
+    for (let p = 0; p < 4; p++) { const py = (p + 0.5) / 4 * len;
+      for (const side of [1, -1]) noInk(mesh(G.sphere(0.034, 6, 5), p % 2 ? leafB : leafA, { x: side * 0.05, y: py, sx: 1.5, sy: 0.3, sz: 0.65, parent: hinge })); }
+    fronds.push({ hinge, spread: r.range(0.95, 1.2), len });
+  }
+  const flowerM = mat(0xff8fc8, { roughness: 0.6 }), tip = fronds[0];
+  const puff = group(0, tip.len, 0, tip.hinge); mesh(G.sphere(0.025, 8, 6), mat(0x7a9a5a, { roughness: 0.8 }), { parent: puff });
+  for (let i = 0; i < 7; i++) { const a = i / 7 * TAU;
+    const spike = group(0, 0, 0, puff); spike.rotation.y = a; spike.rotation.x = 1.15;
+    noInk(mesh(G.cone(0.012, 0.09, 5), flowerM, { y: 0.045, parent: spike })); }
+  return { group: g, fronds };
+}
 /** Instanced shells / pebbles scattered on the ground. spots = [[x,z,radius,count]] */
 function makeScatter(game, spots, geo, colors, r, scale = [0.6, 1.2], yOff = 0.02) {
   const pts = scatterPoints(game, spots, r, 0.3), total = pts.length;

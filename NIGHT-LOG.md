@@ -11742,3 +11742,32 @@ Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 co
 Neighborhood's own friend count, collectible count and walkable percentage (96%) are all unchanged,
 same as every other ambient prop added this way. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 455 — a sensitive plant for Whisper Woods
+
+Sunny Shore's tide-pool anemone pulls its tentacles in tight when the cat gets close, and this wood's
+own giant flower opens instead — but nobody had ever grown the plant that gave that whole idea its
+name in the real world. **A sensitive plant (Mimosa pudica, the actual "touch-me-not") now stands in a
+quiet clearing south-east of the hula hoop kid's own patch**: four ferny fronds held open and reaching,
+a tiny pink puffball flower at one tip, until the cat brushes within 2 m — then every frond folds in
+tight against the short central stem, the whole plant flinching shut, before it spreads back open a
+few seconds after the cat moves off. *"Watch — brush past it and the whole thing folds up tight."*
+*"Touch-me-not, they used to call these. Not far wrong."*
+
+Same yaw-hinge trick as the flower's own petals and the anemone's own tentacles (`makeSensitivePlant()`,
+next to `makeTidePool()` in `62-props-nature.js`), just a different shape folding a different way, and
+a new `SFX.rustle()` (`30-audio.js`) rather than either one's own sound, since neither a twinkle nor a
+wave fit leaves. No physics box of its own: a low ground plant the cat walks straight over, same
+reasoning as the glowing pond and the tide pool.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, driven
+through `game.travel(6, 'from-hub')` and its own real ~520 ms portal timer) sampled every NPC's and the
+squirrel's own position every quarter second over 300 simulated seconds, then swept a 1 m grid of the
+open floor (radius 12-48, short of the radius (58) where `forestRegion`'s own fill takes over, and
+clear of the stepping-stone path, the fairy-ring circle and the glowing pond's own keep-out): (15, -42)
+came back clear by 7.1 m of the nearest box and 9.2 m of the nearest other soul, with ground height
+varying only 0.06 m across the whole footprint.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings. Whisper
+Woods' own friend count, collectible count and walkable percentage (98%) are all unchanged. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

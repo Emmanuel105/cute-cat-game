@@ -1014,6 +1014,8 @@ class SoundKit {
   heart() { [784, 988, 1175].forEach((f, i) => this.tone({ freq: f, type: 'sine', dur: 0.3, vol: 0.12, delay: i * 0.1 })); }
   /** A woodpecker's rapid-fire knock against bark: three dry, high clicks. */
   peck() { for (let i = 0; i < 3; i++) this.tone({ freq: 1900, slide: 1400, type: 'square', dur: 0.025, vol: 0.07, delay: i * 0.075, filter: 3200 }); }
+  /** Leaves brushing and folding: a couple of short, soft high-passed noise flutters. */
+  rustle() { this.noise({ dur: 0.16, vol: 0.06, filter: 1800, type: 'bandpass', slide: 1100 }); this.noise({ dur: 0.1, vol: 0.035, filter: 2600, type: 'bandpass', delay: 0.09 }); }
 }
 const SFX = new SoundKit();
 
@@ -5814,6 +5816,33 @@ function makeTidePool(r = rnd, rad = 0.9) {
     noInk(mesh(G.cone(0.016, 0.16, 6), tentM, { y: 0.08, parent: hinge }));
     tentacles.push(hinge); }
   return { group: g, water, anemone, tentacles };
+}
+/** A sensitive plant (real-life Mimosa pudica): a low clump of ferny fronds that stand up and splayed
+ *  open normally, each on its own yaw hinge exactly like the Whisper Woods flower's petals, but this
+ *  one droops — the whole frond tips down and in toward the stem rather than folding shut in place —
+ *  the way a real one collapses when brushed, not the anemone's curl or the flower's bloom. Returns
+ *  `fronds` (the hinges) so a world can drive the droop itself; a small puffball flower rides the tip
+ *  of frond 0. */
+function makeSensitivePlant(r = rnd) {
+  const g = new THREE.Group();
+  const stemM = mat(0x4a7a3a, { roughness: 0.85 }), leafA = mat(0x6fae4a, { roughness: 0.8, side: THREE.DoubleSide }), leafB = mat(0x8ac96a, { roughness: 0.8, side: THREE.DoubleSide });
+  mesh(G.cyl(0.028, 0.045, 0.16, 7), stemM, { y: 0.08, parent: g });
+  const n = 4, fronds = [];
+  for (let i = 0; i < n; i++) {
+    const ang = i / n * TAU + r.range(-0.15, 0.15);
+    const hinge = group(0, 0.15, 0, g); hinge.rotation.y = ang;
+    const len = r.range(0.3, 0.4);
+    mesh(G.cyl(0.011, 0.017, len, 5), stemM, { y: len / 2, parent: hinge });
+    for (let p = 0; p < 4; p++) { const py = (p + 0.5) / 4 * len;
+      for (const side of [1, -1]) noInk(mesh(G.sphere(0.034, 6, 5), p % 2 ? leafB : leafA, { x: side * 0.05, y: py, sx: 1.5, sy: 0.3, sz: 0.65, parent: hinge })); }
+    fronds.push({ hinge, spread: r.range(0.95, 1.2), len });
+  }
+  const flowerM = mat(0xff8fc8, { roughness: 0.6 }), tip = fronds[0];
+  const puff = group(0, tip.len, 0, tip.hinge); mesh(G.sphere(0.025, 8, 6), mat(0x7a9a5a, { roughness: 0.8 }), { parent: puff });
+  for (let i = 0; i < 7; i++) { const a = i / 7 * TAU;
+    const spike = group(0, 0, 0, puff); spike.rotation.y = a; spike.rotation.x = 1.15;
+    noInk(mesh(G.cone(0.012, 0.09, 5), flowerM, { y: 0.045, parent: spike })); }
+  return { group: g, fronds };
 }
 /** Instanced shells / pebbles scattered on the ground. spots = [[x,z,radius,count]] */
 function makeScatter(game, spots, geo, colors, r, scale = [0.6, 1.2], yOff = 0.02) {
@@ -15189,6 +15218,39 @@ function buildForest(game, entry) {
     const frisbeeLines = ['Highest one yet — nearly caught it in the branches.', 'Careful, puss — mind your tail, this one is coming down fast.', "The owls don't seem to mind."];
     let frisbeeCryT = r.range(3, 7);
     U.push((dt) => { frisbeeCryT -= dt; if (frisbeeCryT <= 0) { frisbeeCryT = r.range(8, 14); const c = game.cat.group.position; if (dist2(fx, fz, c.x, c.z) < 400) { game.toast('🥏 "' + r.pick(frisbeeLines) + '"', 2400); SFX.talk(); } } }); }
+
+  // Sunny Shore's tide-pool anemone (round 453) pulls its tentacles in tight when the cat gets close,
+  // and this wood's own giant flower (round 442) opens instead — but nobody had ever grown the plant
+  // that gave that whole idea its name in the real world. A sensitive plant (Mimosa pudica, the actual
+  // "touch-me-not") now stands in a quiet clearing south-east of the hula hoop kid's own patch: four
+  // ferny fronds held open and reaching, a tiny pink puffball flower at one tip, until the cat brushes
+  // within 2 m — then every frond folds in tight against the short central stem, the whole plant
+  // flinching shut, before it spreads back open a few seconds after the cat moves off. Same yaw-hinge
+  // trick as the flower's petals and the anemone's tentacles (`makeSensitivePlant()`, next to
+  // `makeTidePool()` in `62-props-nature.js`), just a different shape folding a different way, and a
+  // new `SFX.rustle()` (`30-audio.js`) rather than either one's own sound, since neither a twinkle nor
+  // a wave fit leaves.
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, driven
+  // through `game.travel(6, 'from-hub')` and its own real ~520 ms portal timer) sampled every NPC's and
+  // the squirrel's own position every quarter second over 300 simulated seconds, then swept a 1 m grid
+  // of the open floor (radius 12-48, short of the radius (58) where forestRegion's own fill takes over,
+  // and clear of the stepping-stone path, the fairy-ring circle and the glowing pond's own keep-out):
+  // (15, -42) came back clear by 7.1 m of the nearest box and 9.2 m of the nearest other soul, with
+  // ground height varying only 0.06 m across the whole footprint. No physics box of its own: a low
+  // ground plant the cat walks straight over, same reasoning as the glowing pond and the tide pool.
+  { const spx = 15, spz = -42, spy0 = P.ground0(spx, spz);
+    const plant = makeSensitivePlant(r);
+    const plantLines = ['🌿 "Watch — brush past it and the whole thing folds up tight."', '🌿 "Touch-me-not, they used to call these. Not far wrong."', '🌿 "Give it a minute once you step back — it opens right back out."'];
+    let spread = 1, spNear = false;
+    plant.group.userData.update = (dt, t) => {
+      const c = game.cat.group.position, isNear = dist2(c.x, c.z, spx, spz) < 4;
+      spread = damp(spread, isNear ? 0 : 1, 6, dt);
+      for (const f of plant.fronds) f.hinge.rotation.x = 0.05 + spread * (f.spread - 0.05);
+      if (isNear && !spNear) { spNear = true; SFX.rustle(); game.toast(rnd.pick(plantLines), 3000);
+        game.fx.emit(spx, spy0 + 0.3, spz, { count: 8, colors: [0x6fae4a, 0x8ac96a, 0xff8fc8], speed: 0.6, up: 0.6, life: 0.6, gravity: 1.4 }); }
+      if (!isNear) spNear = false;
+    };
+    placeT(game, U, plant.group, spx, spz, r() * TAU); }
 
   // Victorian, Robot City, Sunny Shore, Candy Land, the Neighborhood and Frosty Peak have all had
   // something cross their own sky the last six rounds running — a hot air balloon, an airship, two

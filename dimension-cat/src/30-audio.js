@@ -106,5 +106,7 @@ class SoundKit {
   heart() { [784, 988, 1175].forEach((f, i) => this.tone({ freq: f, type: 'sine', dur: 0.3, vol: 0.12, delay: i * 0.1 })); }
   /** A woodpecker's rapid-fire knock against bark: three dry, high clicks. */
   peck() { for (let i = 0; i < 3; i++) this.tone({ freq: 1900, slide: 1400, type: 'square', dur: 0.025, vol: 0.07, delay: i * 0.075, filter: 3200 }); }
+  /** Leaves brushing and folding: a couple of short, soft high-passed noise flutters. */
+  rustle() { this.noise({ dur: 0.16, vol: 0.06, filter: 1800, type: 'bandpass', slide: 1100 }); this.noise({ dur: 0.1, vol: 0.035, filter: 2600, type: 'bandpass', delay: 0.09 }); }
 }
 const SFX = new SoundKit();
