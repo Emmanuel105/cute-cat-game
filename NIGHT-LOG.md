@@ -11649,3 +11649,30 @@ about 5.8 m at its forward-most, scrap pile included.
 Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings. No change to
 Robot City's own friend count (73), collectibles or walkable percentage (89%), the same as every other
 ambient prop in the city. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 452 — a snow angel for Frosty Peak
+
+Every other world with children already had somewhere to just lie down and relax — the
+Neighborhood's radio listener, Candy Land's sunbather, Sunny Shore's three towel people — but every
+kid on the mountain only ever wandered, snowballed, played tag or catch, danced a ring or knelt by
+something. **A girl now lies flat on her back in a patch of untouched powder between the swing set
+and the aurora cairn, having just finished a snow angel, her beanie knocked off in the snow beside
+her.** *"Perfect wings, this one."* *"Careful, puss — don't step in the middle, you'll ruin it."*
+*"Snow angel number six today. Mum says I'll catch a chill."*
+
+No new controller: the exact same `Sunbather` class (`55-npcs.js`) the radio listener, Candy Land's
+sunbather and Sunny Shore's three towel people already use, unchanged — lying flat, hands behind the
+head, same relaxed pose — just a snowsuit instead of a swimsuit and a dropped beanie (two squashed
+spheres) standing in for sunglasses on a towel.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, driven
+by hand through `game.travel(5, 'from-hub')` then `game.start('new')` so every reindeer, hare, arctic
+fox, penguin, yeti and wandering kid actually moved) sampled every NPC's own position every quarter
+second over 300 simulated seconds, then swept a 2 m grid of the open snowfield (radius 20-54, short
+of the radius 58 where snowRegion's own fill takes over, and clear of the zipline/sled-run keep-out
+strip) against both those samples and every one of the mountain's 805 physics boxes: (-32, 24) came
+back clear by 7.6 m of the nearest box and 7.5 m of the nearest other soul.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings. Frosty
+Peak's own friend count is up one (62 to 63), 98% of the ground still walkable (unchanged), 8
+collectibles unchanged. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -13336,6 +13336,33 @@ function buildSnowVillage(game, entry) {
     P.addBox(cx, cy + 0.5, cz, 0.9, 1.1, 0.9, { cam: false });
     const auroraLines = ['🌌 "Green and violet, same as every clear night."', '🌌 "The painter swears it never looks the same twice."', '🌌 "Even the yeti\'s own cave doesn\'t get a view like this."'];
     game.addInteractable({ obj: cairn, radius: 3.6, label: () => 'Look up at the aurora', onUse: () => { SFX.click(); game.fx.emit(cx, cy + 2.2, cz, { count: 14, colors: [0x4dffa0, 0x9f6fff, 0xffffff], speed: 1.0, up: 1.8, life: 1.0, gravity: 1.5 }); game.toast(rnd.pick(auroraLines), 3000); } }); }
+  // every other world with children already has somewhere to just lie down — the Neighborhood's radio
+  // listener, Candy Land's sunbather, Sunny Shore's three towel people — but every kid at Frosty Peak
+  // only ever wandered, snowballed, played tag or catch, danced a ring or knelt by something. A girl now
+  // lies flat on her back in a patch of untouched powder between the swing set and the cairn, having just
+  // finished a snow angel, catching flakes on her tongue with her beanie knocked off beside her.
+  // No new controller: the exact same `Sunbather` class (`55-npcs.js`) the radio listener, Candy Land's
+  // sunbather and Sunny Shore's three towel people already use, unchanged — lying flat, hands behind the
+  // head, same relaxed pose, just a snowsuit instead of a swimsuit and a beanie dropped in the snow
+  // instead of sunglasses on a towel.
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses, driven by hand through
+  // `game.travel(5, 'from-hub')` then `game.start('new')` so every reindeer, hare, arctic fox, penguin,
+  // yeti and wandering kid actually moved) sampled every NPC's own position every quarter second over 300
+  // simulated seconds, then swept a 2 m grid of the open snowfield (radius 20-54, short of the radius 58
+  // where snowRegion's own fill takes over, and clear of the zipline/sled-run keep-out strip) against both
+  // those samples and every one of the mountain's 805 physics boxes: (-32, 24) came back clear by 7.6 m of
+  // the nearest box and 7.5 m of the nearest other soul.
+  { const ax = -32, az = 24, ary = atan2(-ax, -az);
+    const angelWard = makeWardrobe(r, { shirts: [0x8a5acf, 0x2e9e6e, 0xd62839], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const angelKid = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, wardrobe: angelWard }),
+      hat: null, coat: true, scarf: scarfBag(), cuffs: r.pick([0xffffff, 0x3a3a3a]), bag: null, backpack: null, height: r.range(1.2, 1.45) });
+    W.add(angelKid.group);
+    const bhx = ax + cos(ary) * 0.55, bhz = az - sin(ary) * 0.55, bhy = P.ground0(bhx, bhz);
+    const beanieM = mat(0xef7d2f, { roughness: 0.85 });
+    mesh(G.sphere(0.11, 8, 6), beanieM, { x: bhx, y: bhy + 0.06, z: bhz, sy: 0.6, shadow: 'none', parent: W });
+    mesh(G.sphere(0.03, 6, 5), beanieM, { x: bhx, y: bhy + 0.14, z: bhz, shadow: 'none', parent: W });
+    game.npcs.push(new Sunbather(game, angelKid, { x: ax, z: az, ry: ary,
+      cries: ['Perfect wings, this one.', "Careful, puss — don't step in the middle, you'll ruin it.", "Snow angel number six today. Mum says I'll catch a chill."] })); }
 
   game.zones.addSpan(-7, -62, 7, -24); game.zones.addSpan(-44, -5, -6, 5); game.zones.addCircle(0, 0, 26);
   // the zipline: a tower high on the shoulder of the west peak, running down to a post above the village.
