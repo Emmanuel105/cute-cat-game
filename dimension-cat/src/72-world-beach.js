@@ -979,6 +979,45 @@ function buildBeach(game, entry) {
       hat: r.chance(0.5) ? 'cap' : null, hatColor: 0x2f4f4f, shorts: true, scarf: null, jacket: null, bag: null, backpack: null, axe: true, beard: r.chance(0.3) }); W.add(cutter.group);
     game.npcs.push(new Chopper(game, cutter, { x: cx, z: cz, ry: atan2(sx - cx, sz - cz),
       cries: ["Dry enough by sundown, with this sun.", 'Careful, puss — mind the chips.', "Tonight's fire won't build itself."] })); }
+  // every ball game on this beach so far has been an open toss back and forth — the keep-it-up pair, the
+  // frisbee, the catch down by the dunes — but no world in the whole game has ever had an actual net to
+  // play over, the one piece of beach-volleyball kit the sand itself is crying out for. **A volleyball
+  // net now stands on the open dry sand inland of the dunes, two sun-bleached posts and a low cord net,
+  // with two players lobbing a white, blue and yellow ball back and forth over it.**
+  //
+  // New `makeVolleyballNet()` (`62-props-nature.js`, right after `makeSurfboard`): two posts, a white top
+  // tape and six horizontal plus seven vertical cords, all `noInk`'d like the spiderweb's own silk
+  // strands so the thin lines don't ink solid. No new controller: the exact same `BallGame`
+  // (`55-npcs.js`) the Neighborhood's, Candy Land's, Frosty Peak's and Whisper Woods' own catch games
+  // already use, unchanged — its hand-to-hand lob already arcs 2.2 m above the throwing hand at the
+  // midpoint of its flight, more than enough clearance over a net barely 1.3 m tall, so the ball
+  // visibly clears it on every pass without the controller needing to know the net is even there. The
+  // ball itself reuses the same three-material sphere trick Frosty Peak's and Victorian's own catch
+  // balls already use (one base sphere plus two scaled overlays for a second and third colour), just
+  // white with a blue and a yellow wedge instead of orange and green, for an actual volleyball rather
+  // than a beach ball.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses, with the real beach built
+  // via `game.start('new')` then `game.travel(4, 'from-hub')`) sampled every NPC's own position every
+  // third of a second over 300 simulated seconds, then swept the dry sand west of the dunes' own inner
+  // edge (radius 18-50, short of the radius (58) where `beachRegion`'s own fill takes over) against both
+  // those samples and every one of the beach's physics boxes: (-18, -6) came back clear by 4.1 m of the
+  // nearest box and 4.5 m of the nearest other soul across the whole footprint the net and its players'
+  // own sway need (±2.5 m across, ±3.5 m along the court), with the ground flat to within 0.21 m
+  // throughout — comfortably inside the hand-built heart of the world, well clear of the palm grove at
+  // (-20, 6) and the hammock further south.
+  { const cx = -18, cz = -6, gap = 4.6;
+    const net = makeVolleyballNet(); placeT(game, U, net, cx, cz, 0);
+    for (const sx of [-1.9, 1.9]) boxT(game, cx + sx, cz, 0.16, 1.35, 0.16, { cam: false });
+    const ball = mesh(G.sphere(0.17, 12, 8), mat(0xf5f3ec, { roughness: 0.5 }), { parent: W });
+    mesh(G.sphere(0.171, 12, 8), mat(0x1f6fb0, { roughness: 0.5 }), { sx: 0.55, sz: 0.55, parent: ball });
+    mesh(G.sphere(0.171, 12, 8), mat(0xffd54a, { roughness: 0.5 }), { sx: 0.55, sz: -0.55, parent: ball });
+    ball.position.set(cx, P.ground0(cx, cz) + 0.95, cz);
+    const vbA = beachPerson(r.chance(0.5), false), vbB = beachPerson(r.chance(0.5), false);
+    const vbGame = new BallGame(game, vbA, vbB, ball, { cx, cz, gap });
+    game.npcs.push(vbGame); greetable(game, { rig: vbA }); greetable(game, { rig: vbB });
+    const netLines = ['🏐 "Out by a hair. Every single time."', '🏐 "Best two out of three. Again."', '🏐 "Mind the net, puss — it\'s not a hammock."'];
+    game.addInteractable({ obj: net, radius: 2.6, label: () => 'Watch the volleyball', onUse: () => { SFX.click(); game.toast(rnd.pick(netLines), 3000); } }); }
   // Victorian has had a hot air balloon drifting over its rooftops since round 438 and Robot City an
   // airship since round 439 — Sunny Shore's own sky, past the gulls and the lighthouse beam, never had
   // anything fly all the way across it. **A canary-yellow biplane now loops a slow circuit above the
@@ -1000,7 +1039,8 @@ function buildBeach(game, entry) {
   // Drifts entirely on the world clock `t` (bob, roll, the propeller's own spin and the banner's own
   // trailing sway all keyed off `t` alone) from one fixed starting angle drawn once off this world's
   // own local `r()`, so it costs no later wardrobe or layout pick — placed last of everything this
-  // build adds, after the woodcutter, so even that one draw disturbs nothing built earlier on the sand.
+  // build adds, after the woodcutter and the volleyball game, so even that one draw disturbs nothing
+  // built earlier on the sand.
   { const planeR = 140, planeH = 55, planeSpeed = TAU / 200, planePhase = r() * TAU;
     const biplane = group(0, 0, 0);
     const hullM = mat(0xffd54a, { roughness: 0.55 });

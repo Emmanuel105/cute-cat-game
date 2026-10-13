@@ -161,6 +161,17 @@ function makeSurfboard(color) {
   mesh(G.cone(0.09, 0.16, 8), mat(0x1e1e1e, { roughness: 0.7 }), { y: 0.05, z: -0.09, rx: -PI / 2, shadow: 'none', parent: g });
   return g;
 }
+/** A volleyball net strung between two posts along local X, with a white top tape and a loose cord mesh. Half-width `halfW`, so the whole thing spans `halfW * 2`. */
+function makeVolleyballNet(halfW = 1.9, poleColor = 0xe8e2d4) {
+  const g = new THREE.Group(), poleM = mat(poleColor, { roughness: 0.6, metalness: 0.4 });
+  const postH = 1.35, netTop = postH - 0.08, netH = 0.85;
+  for (const sx of [-halfW, halfW]) mesh(G.cyl(0.035, 0.045, postH, 8), poleM, { x: sx, y: postH / 2, parent: g });
+  mesh(G.box(halfW * 2 + 0.08, 0.05, 0.02), mat(0xffffff, { roughness: 0.8 }), { y: postH - 0.03, shadow: 'none', parent: g });
+  const cordM = mat(0x2a2a2a, { roughness: 0.9, transparent: true, opacity: 0.6 });
+  for (let i = 0; i < 6; i++) noInk(mesh(G.cyl(0.006, 0.006, halfW * 2, 6), cordM, { y: netTop - (i / 5) * netH, rz: PI / 2, shadow: 'none', parent: g }));
+  for (let j = -3; j <= 3; j++) noInk(mesh(G.cyl(0.004, 0.004, netH, 6), cordM, { x: j / 3 * halfW, y: netTop - netH / 2, shadow: 'none', parent: g }));
+  return g;
+}
 /** A ukulele sized for one hand: a waisted body (a small bout above a bigger one), a thin neck, a headstock and four strings. Faces +z (soundboard toward the cat). */
 function makeUkulele(color = 0xd9a15a) {
   const g = new THREE.Group(), wood = mat(color, { roughness: 0.55 }), dark = mat(0x2a1c12, { roughness: 0.8 }), string = mat(0xe8e0d0, { roughness: 0.5 });

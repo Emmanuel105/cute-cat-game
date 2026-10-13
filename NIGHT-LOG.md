@@ -11844,3 +11844,34 @@ timing-sensitive check, not anything this round touched.) Candy Land's own frien
 count and both guard-march and ring-dance checks are all unchanged, since the machine adds no
 greetable id and sits well clear of every road, path and other NPC's own patch. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 458 — a volleyball net for Sunny Shore
+
+Every ball game on the beach so far has been an open toss — the keep-it-up pair, the frisbee, the catch
+down by the dunes — but no world in the whole game has ever had an actual net to play over, the one
+piece of beach-volleyball kit the sand itself was missing. **A volleyball net now stands on the open dry
+sand inland of the dunes, two sun-bleached posts strung with a low cord net, and two beachgoers lobbing
+a white, blue and yellow ball back and forth over it.** Standing close gives a one-line toast of its own:
+*"Out by a hair. Every single time."* *"Best two out of three. Again."*
+
+New `makeVolleyballNet()` (`62-props-nature.js`): two posts, a white top tape, and six horizontal plus
+seven vertical cords, all `noInk`'d the same way the spiderweb's own silk strands already are so the
+thin lines don't ink solid. No new controller: the exact same `BallGame` the Neighborhood's, Candy
+Land's, Frosty Peak's and Whisper Woods' own catch games already use, completely unchanged — its
+hand-to-hand lob already arcs about 2.2 m above the throwing hand at the midpoint of its flight, which
+clears a net barely 1.3 m tall with room to spare, so the ball visibly sails over it without the
+controller needing to know the net exists. The ball itself reuses the same three-material sphere trick
+those other catch games already use for a multi-coloured ball, just recoloured white with a blue and a
+yellow wedge for an actual volleyball.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses, with the real beach built via
+`game.start('new')` then `game.travel(4, 'from-hub')`) sampled every NPC's own position every third of a
+second over 300 simulated seconds, then swept the dry sand against both those samples and every one of
+the beach's physics boxes: (-18, -6) came back clear by 4.1 m of the nearest box and 4.5 m of the nearest
+other soul across the whole footprint the net and its players' own side-to-side sway need, with the
+ground flat to within 0.21 m throughout and well inside the radius (58) where `beachRegion`'s own
+procedural fill takes over, so it needed no keep-out zone of its own.
+
+Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, all checks `ok`, 0 console
+warnings, Sunny Shore's own walkable percentage still 100% and its friend count unaffected apart from the
+two new players. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
