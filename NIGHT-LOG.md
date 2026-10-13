@@ -11449,3 +11449,31 @@ colour pick.
 Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings. Nothing else
 changed: no new friend, no collectible, Whisper Woods' own friend count still 63, walkable percentage
 still 98%. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 445 — a watchmaker on the Victorian clock tower plaza
+
+Victorian's whole town is built around its clock tower, and the fiddler and the painter have worked
+its plaza for rounds now, but nobody in the town had ever actually mended a watch — the one trade a
+story-book clock tower all but demands. **A watchmaker now sits on a stool on the plaza's quiet south
+side**, a pocket watch open in one hand and a jeweler's loupe raised to the other eye, peering into the
+works. A small pedestal table in front of him carries a green baize cloth, three more pocket watches,
+a little desk clock with its second hand actually ticking round, and a scatter of loose brass cogs.
+*"Four faces on that tower — I only ever trust the one on my own bench."* *"Careful, puss — these gears
+are smaller than your whiskers."* *"A good watch keeps its own time. A bad one keeps you waiting."*
+
+No new controller: `Sitter` already seats a rig on a stool and leaves the arms alone whenever
+`rig.gesture` isn't set (the beach's net-mender and ukulele player both lean on it the same way) — the
+loupe hand is just raised once in this build's own `U.push`, the same trick the beach musician's
+strumming arm and the backyard griller's tongs already use, guarded by `!watchmaker.gesture` so a
+greeting wave still wins over the held pose.
+
+Placement used a headless probe (the same stub-three harness `test/run.mjs` itself uses): built the
+real Victorian town, ran `game.start('new')` so the fiddler, the painter, the bobby and every wanderer
+actually moved, sampled every NPC's own position every quarter second over 300 simulated seconds, then
+swept the plaza's own 16×16 paving against both those samples and every physics box in town. (42, -6)
+came back clear by 2.25 m of the tower's own base and 5.0 m of the nearest other soul — the opposite
+corner of the plaza from the fiddler and the painter.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, Victorian's
+own friend count up one to 76. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.

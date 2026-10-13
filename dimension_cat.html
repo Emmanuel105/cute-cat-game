@@ -11091,6 +11091,59 @@ function buildVictorian(game, entry) {
     W.add(painter.group);
     game.npcs.push(new Painter(game, painter, makeEasel(), { x: px, z: pz, ry: pry,
       cries: ["Forty-three minutes past, and not a soul minds the time.", "I've painted that tower a hundred times. Never once been wrong.", "Mind the wet paint, puss — oh, you can't read, can you."] })); }
+  // the clock tower has stood over this plaza since the town was first built, and the fiddler and the
+  // painter have worked its north side for rounds now — but no one in the whole town has ever actually
+  // mended a watch, Victorian's one trade a story-book clock tower all but demands. A watchmaker now
+  // sits on a stool on the plaza's quiet south side, a pocket watch open in one hand and a jeweler's
+  // loupe raised to one eye in the other, peering into the works. A small pedestal table in front of
+  // him carries a green baize cloth, three more pocket watches laid out, a little desk clock (its second
+  // hand actually ticking round, driven off the world clock `t`), and a scatter of loose brass cogs.
+  // No new controller: `Sitter` already seats a rig on a stool and leaves the arms alone whenever
+  // `rig.gesture` isn't set (the beach's net-mender and ukulele player both already use it this way) —
+  // the loupe hand is just raised once, in this build's own `U.push`, the same trick the beach
+  // musician's strumming arm and the backyard griller's tongs both already lean on, guarded by
+  // `!watchmaker.gesture` so a greeting wave still wins over the held pose.
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real Victorian
+  // town (`game.travel(3, 'from-prev')`, then `game.start('new')` so the fiddler, the painter, the
+  // bobby and every wanderer actually moved), sampled every NPC's own position every quarter second
+  // over 300 simulated seconds, then swept the plaza's own paving (the 16×16 slab at (42, 0)) against
+  // both those samples and every one of the town's physics boxes: (42, -6) came back clear by 2.25 m of
+  // the tower's own base (half-extent 3.75, the plaza's own tightest box) and 5.0 m of the nearest
+  // other soul — the opposite corner of the plaza from the fiddler and the painter, still inside the
+  // zone circle (radius 11, centred (42, 0)) that keeps victorianRegion's own fill off the plaza
+  // entirely.
+  { const wx = 42, wz = -6, wry = 0, tz = wz + 0.42;
+    const watchmaker = makeHuman({ ...randomPerson(r, { female: r.chance(0.4), child: false, elder: r.chance(0.5), wardrobe: vicWard }),
+      pants: 0x1e1e24, apron: 0x4a3326, sleeves: true, hat: null, coat: null, scarf: null, bag: null, backpack: null, glasses: false, moustache: r.chance(0.4), build: 'slim' });
+    W.add(watchmaker.group);
+    const brass = mat(0xc9a227, { metalness: 0.65, roughness: 0.35 }), glassM = mat(0xdff3ff, { roughness: 0.1, transparent: true, opacity: 0.4 }), darkM = mat(0x2a2420, { roughness: 0.6 });
+    const watch = group(0, 0, 0.06, watchmaker.hands[0]); watch.rotation.x = -0.8;   // the open watch, held low
+    mesh(G.cyl(0.055, 0.055, 0.016, 16), brass, { parent: watch });
+    mesh(G.cyl(0.05, 0.05, 0.002, 16), glassM, { y: 0.009, parent: watch });
+    noInk(mesh(G.cyl(0.004, 0.004, 0.03, 6), brass, { x: 0.03, rz: PI / 2, parent: watch }));   // the hour hand, mid-repair
+    const loupe = group(0, 0.1, 0.1, watchmaker.hands[1]); loupe.rotation.x = -0.3;   // the loupe, raised to the eye
+    noInk(mesh(G.torus(0.028, 0.008, 6, 14), darkM, { parent: loupe }));
+    mesh(G.cyl(0.026, 0.026, 0.004, 14), glassM, { parent: loupe });
+    noInk(mesh(G.cyl(0.006, 0.006, 0.07, 6), darkM, { y: -0.04, rx: PI / 2, parent: loupe }));   // its handle, back toward the fist
+    const table = group(wx, 0, tz, W);
+    mesh(G.cyl(0.3, 0.3, 0.02, 16), mat(0x3f6b3f, { roughness: 0.85 }), { y: 0.46, shadow: 'both', parent: table });   // baize top
+    mesh(G.cyl(0.035, 0.045, 0.44, 8), mat(0x3a2a1a, { roughness: 0.8 }), { y: 0.22, shadow: 'both', parent: table }); // single pedestal leg
+    mesh(G.cyl(0.26, 0.26, 0.02, 12), mat(0x3a2a1a, { roughness: 0.8 }), { y: 0.01, shadow: 'both', parent: table });  // its foot
+    for (const [dx, dz, c] of [[-0.15, 0.08, 0xd9d9d9], [0.12, 0.1, 0xc9a227], [0.02, -0.12, 0xb8bcc0]]) mesh(G.cyl(0.045, 0.045, 0.014, 14), mat(c, { metalness: 0.55, roughness: 0.4 }), { x: dx, y: 0.48, z: dz, ry: r() * TAU, parent: table });
+    for (let i = 0; i < 5; i++) mesh(G.cyl(0.018, 0.016, 0.01, 10), mat(0xc9a227, { metalness: 0.6, roughness: 0.4 }), { x: -0.2 + i * 0.02, y: 0.475, z: 0.16 - i * 0.015, ry: r() * TAU, parent: table });   // loose cogs
+    const deskClock = group(0.18, 0.48, -0.08, table);
+    mesh(G.cyl(0.05, 0.05, 0.03, 14), brass, { parent: deskClock });
+    mesh(G.cyl(0.044, 0.044, 0.002, 14), mat(0xf2ead8, { roughness: 0.6 }), { y: 0.017, parent: deskClock });
+    const secondHand = group(0, 0.019, 0, deskClock); noInk(mesh(G.box(0.002, 0.034, 0.002), darkM, { y: 0.017, parent: secondHand }));
+    U.push((dt, t) => { secondHand.rotation.y = t * 1.2; });
+    P.addBox(wx, 0.24, tz, 0.6, 0.48, 0.6, { cam: false });
+    const stool = group(wx, 0, wz, W);
+    mesh(G.cyl(0.18, 0.18, 0.03, 14), mat(0x5a3a1f, { roughness: 0.85 }), { y: 0.405, shadow: 'both', parent: stool });
+    mesh(G.cyl(0.1, 0.07, 0.39, 10), mat(0x3a2a1a, { roughness: 0.8 }), { y: 0.195, shadow: 'both', parent: stool });
+    P.addBox(wx, 0.21, wz, 0.3, 0.42, 0.3, { cam: false });
+    game.npcs.push(new Sitter(game, watchmaker, { x: wx, z: wz, ry: wry, seat: 0.42,
+      cries: ['⌚ "Four faces on that tower — I only ever trust the one on my own bench."', '⌚ "Careful, puss — these gears are smaller than your whiskers."', '⌚ "A good watch keeps its own time. A bad one keeps you waiting."'] }));
+    U.push(() => { if (!watchmaker.gesture) { const A = watchmaker.arms[1]; A.sh.rotation.x = -1.85; A.sh.rotation.z = -0.15; A.el.rotation.x = -1.9; } }); }
   // Victorian was the one world left with neither a game of tag nor a BallGame — every other world already
   // had at least one. Two urchins now chase each other on the open grass verge past the canal's north bank,
   // well clear of the bridges (z 25–35) and everything south of them: (0, 50) is inside the radius the hand-built
