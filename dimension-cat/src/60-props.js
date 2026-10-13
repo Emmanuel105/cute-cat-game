@@ -573,6 +573,17 @@ function makeScooter(color = 0x2f6fd6) {
   for (const s of [-1, 1]) mesh(G.cyl(0.02, 0.02, 0.06, 8), gripM, { x: s * 0.2, y: 0.78, rz: PI / 2, parent: fork });
   return g;
 }
+/** A skateboard: a flat deck on two trucks of four wheels, lying on the ground. Faces +z. */
+function makeSkateboard(color = 0xff6fb5) {
+  const g = new THREE.Group(), deckM = mat(color, { roughness: 0.6 }), truckM = mat(0x8a8f96, { metalness: 0.6, roughness: 0.4 }), wheelM = mat(0xfff3b0, { roughness: 0.35 });
+  mesh(G.box(0.19, 0.025, 0.74), deckM, { y: 0.145, parent: g });
+  for (const z of [-0.26, 0.26]) {
+    const truck = group(0, 0.065, z, g);
+    mesh(G.box(0.2, 0.02, 0.04), truckM, { parent: truck });
+    for (const x of [-0.095, 0.095]) mesh(G.cyl(0.045, 0.045, 0.03, 10), wheelM, { x, rz: PI / 2, parent: truck });
+  }
+  return g;
+}
 /** A bicycle: two wheels, a frame, handlebars, a saddle and a crank. Faces +z; `wheels` and `crank` turn. */
 function makeBike(color = 0xd62839) {
   const g = new THREE.Group(), frame = mat(color, { roughness: 0.4, metalness: 0.3 }), dark = mat(0x1e1a18, { roughness: 0.8 }), rim = mat(0xc8ccd2, { metalness: 0.6, roughness: 0.4 });

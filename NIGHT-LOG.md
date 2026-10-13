@@ -11536,3 +11536,32 @@ Full suite (`node test/run.mjs`) ran clean — exit 0, every check `ok`, 0 conso
 to friend count, collectibles or walkable percentage — the hare is wildlife, not a friend to meet, the
 same as every other hare in the game. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 448 — a skateboarder for the Neighborhood
+
+Scooters, bikes, yo-yos, hula hoops, jump ropes, marbles and hopscotch have all had their turn on the
+south field by now, but no world in the whole game had ever actually had a skateboard. **A girl now
+kneels on the open field past the horseshoe court, checking her skateboard's back truck before trying
+it again.** *"Just the back truck — nearly got it."* *"Careful, puss — mind your tail, these wheels
+bite."* *"Cleared the kerb outside number twelve. Almost."*
+
+New prop `makeSkateboard()` (`60-props.js`): a flat deck sitting on two four-wheel trucks, lying on the
+ground rather than standing up the way the scooter does, since a board has no handlebar to lean it
+against. No new controller for the girl herself — `Kneeler`'s own patting motion already reads as
+checking a bolt, the same trick the scooter kid, the bootblack and the marbles kid all lean on, so this
+is a placement, not a build. Own fixed shirt colour (0xffb347), checked against both the street's
+shared 18-colour wardrobe pool and every other fixed shirt this world already hands out, so the "no two
+neighbours share a shirt" rule stays clean, and placed last of every person this build adds (right
+after the frisbee thrower, before the biplane overhead), so its own draws from the local `r()` sequence
+disturb no earlier neighbour's wardrobe or colour pick.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real Neighborhood,
+called `game.start('new')` so every stroller, the postie and the cyclist actually moved, then sampled
+every NPC's own position every quarter second over 300 simulated seconds and swept a grid of the open
+south field against both those samples and every one of the street's physics boxes: (-50, -42) came
+back clear by 6.4 m of the nearest box and 19.9 m of the nearest other soul, well inside the world's own
+95 m movement limit and clear of every road, pavement and path the test walks end to end.
+
+Full suite (`node test/run.mjs`) ran clean twice in a row — exit 0, all 274 checks `ok`, 0 console
+warnings both times. The Neighborhood's own friend count is up one, 57 to 58, 96% of the ground still
+walkable, unchanged. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
