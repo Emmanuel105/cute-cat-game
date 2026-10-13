@@ -11593,3 +11593,31 @@ overhead, so its own draws from this world's local `r()` disturb nothing placed 
 Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings. Candy
 Land's own friend count is up one, 91% of the ground still walkable, unchanged. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 450 — toy soldiers drill in Victorian
+
+Candy Land's Candy Queen's guard has been the only `Marchers` trio in the game since round 181 —
+Victorian, for all its urchins, bobby and market-square performers, never had its own drilling line.
+**Three children, dressed up as toy soldiers for tomorrow's school pageant, now march a short beat back
+and forth on the open meadow south-east of the market square, rehearsing their steps before an audience
+of nobody but the cat.** *"Hup, two, three, four — mind your dressing, Thomas!"* *"Careful, puss — mind
+the wooden bayonets."* *"Drop one more step and Miss will have us start again."*
+
+No new controller or asset: the exact same `Marchers` class the gingerbread guard already uses,
+unchanged — same lockstep gap, same lead-and-followers logic — just this street's own wardrobe (a red
+coat, gilt buttons and cuffs, a tall black hat with a red band, built off the same
+`makeHuman`/`makeWardrobe` every other Victorian adult or child already uses) on three children in
+place of three gingerbread men.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses) built the
+real Victorian town (`game.start('new')` then `game.load(3, 'from-prev')`), sampled every physics
+circle (every moving creature) every quarter second over 300 simulated seconds, then swept the drill
+line against both those samples and every one of the town's 714 physics boxes: the 6 m line from
+(26, -75) to (32, -75) came back clear by at least 21.8 m along its whole length, at radius 79.4-81.5
+from the origin, comfortably short of the radius (88) where `victorianRegion`'s own procedural fill
+takes over.
+
+Full suite (`node test/run.mjs`) ran clean twice in a row — exit 0, all 274 checks `ok`, 0 console
+warnings both times. Victorian's own friend count is up one (76 to 77 to meet, since only the lead of
+the three greets the cat, same as the gingerbread guard); 95% of the ground still walkable, unchanged.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

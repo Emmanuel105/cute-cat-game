@@ -11775,6 +11775,30 @@ function buildVictorian(game, entry) {
       basket.rotation.z = sin(t * 0.5) * 0.05;
     };
     place(game, U, balloon, cos(balPhase) * balR, sin(balPhase) * balR, 0, balH); }
+  // Candy Land's Candy Queen's guard has been the only `Marchers` trio in the game since round 181 —
+  // Victorian, for all its urchins, bobby and market-square performers, never had its own drilling
+  // line. Three children, dressed up as toy soldiers for tomorrow's school pageant, now march a short
+  // beat back and forth on the open meadow south-east of the market square, rehearsing their steps
+  // before an audience of nobody but the cat. *"Hup, two, three, four — mind your dressing, Thomas!"*
+  // *"Careful, puss — mind the wooden bayonets."* *"Drop one more step and Miss will have us start
+  // again."* No new controller: the exact same `Marchers` class the gingerbread guard already uses,
+  // unchanged — same lockstep gap, same lead-and-followers logic — just this street's own wardrobe (a
+  // red coat, gilt buttons and cuffs, a tall black hat with a red band, built off the same
+  // `makeHuman`/`makeWardrobe` every other Victorian adult or child already uses) on three children in
+  // place of three gingerbread men.
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses) built
+  // the real Victorian town (`game.start('new')` then `game.load(3, 'from-prev')`, so every urchin,
+  // dancer, duck, balloon and ball-tossing pair actually moved), sampled every physics circle (every
+  // moving creature) every quarter second over 300 simulated seconds, then swept the drill line against
+  // both those samples and every one of the town's 714 physics boxes: the 6 m line from (26, -75) to
+  // (32, -75) came back clear by at least 21.8 m along its whole length, at radius 79.4-81.5 from the
+  // origin, comfortably short of the radius (88) where victorianRegion's own procedural fill takes over.
+  { const soldierWard = makeWardrobe(r, { shirts: [0xaa1f2a], pants: [0x1a1a1c], shoes: [0x1a1a1c] });
+    const soldiers = [0, 1, 2].map(() => { const rig = makeHuman({ ...randomPerson(r, { child: true, female: r.chance(0.3), wardrobe: soldierWard }),
+      coat: true, buttons: 0xd8c8a8, cuffs: 0xd8c8a8, hat: 'top', hatColor: 0x15120f, hatBand: 0xaa1f2a, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+      W.add(rig.group); return rig; });
+    game.npcs.push(new Marchers(game, soldiers, { points: [[26, -75], [32, -75]], speed: 1.0, pause: [1, 2], r: 0.32, gap: 1.1,
+      cries: ['Hup, two, three, four — mind your dressing, Thomas!', 'Careful, puss — mind the wooden bayonets.', "Drop one more step and Miss will have us start again."], cryIcon: '💂' })); }
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
