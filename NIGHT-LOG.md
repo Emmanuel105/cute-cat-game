@@ -11325,3 +11325,33 @@ after the woodcutter, so even that one draw disturbs nothing built earlier on th
 Full suite (`node test/run.mjs`) ran clean twice in a row — exit 0, all checks `ok`, 0 console warnings
 both times. Nothing else changed: no new friend, no collectible, no change to Sunny Shore's own
 walkable percentage. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 441 — a giant gumball over Candy Land
+
+Victorian got a hot air balloon, Robot City an airship and Sunny Shore a biplane the last three
+rounds running — Candy Land, the one world actually named for candy, was the obvious next world for
+something to fly over, and the obvious next shape was not a fourth basket-and-envelope rig. **A giant
+striped gumball now drifts in a slow circuit high above the sweet-lands, tumbling gently as it goes**,
+70 m up on a 165 m orbit. Purely decorative — nothing to greet, nothing to reach, no dialogue.
+
+No new controller, no physics box of its own, same reasoning as the three flying things before it:
+70 m clears even the castle's own tallest corner tower by a wide margin (15 m wall + 6.6 m roof + a
+0.5 m finial and a 1 m pennant pole, 23.1 m all told — the tallest thing in the whole world), so it
+needs no keep-out check against `game.zones` or any of this world's physics boxes. The ball itself is
+eight latitude bands cut straight out of a sphere (`new THREE.SphereGeometry(r, 16, 2, 0, TAU,
+i * (PI/8), PI/8)`, one eighth-slice of theta each) — the same `SphereGeometry` trick the Victorian
+balloon's own gores already use (and the one `G.dome()` already uses for its own hemisphere), just
+sliced by latitude instead of longitude, so the stripes run around the ball horizontally like the
+layers of a gumball rather than up over the top of a canopy. Colours cycle through this world's own
+candy palette — pink, cyan, gold — with a plain white band between each, the eight tracked geometries
+kept in `worldBag` the same way the balloon's own eight gores are.
+
+Drifts entirely on the world clock `t` — the orbit, the bob, and a slow tumble on two separate axes,
+all keyed off `t` alone — from one fixed starting angle drawn once off this world's own local `r()`
+(never the shared `rnd()`), so it costs no later wardrobe or colour pick. Placed last of everything
+this build adds, after the woodcutter, so even that one draw disturbs nothing built earlier in the
+sweet-lands.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings. Nothing
+else changed: no new friend, no collectible, no change to Candy Land's own walkable percentage.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

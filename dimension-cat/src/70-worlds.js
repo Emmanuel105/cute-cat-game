@@ -2499,6 +2499,41 @@ function buildCandyLand(game, entry) {
     game.npcs.push(new Chopper(game, cutter, { x: cx, z: cz, ry: atan2(sx - cx, sz - cz),
       cries: ["Good dry wood, even out here past the cane forest.", "Careful, puss — mind the chips.", "The gingerbread ovens won't fire themselves."] })); }
 
+  // every other world's sky has picked up something that actually flies by now (Victorian's hot air
+  // balloon, Robot City's airship, Sunny Shore's biplane) — Candy Land, the one world actually named
+  // for candy, never got anything of its own up there. A giant striped gumball now drifts in a slow
+  // circuit high above the sweet-lands, tumbling gently as it goes, 70 m up on a 165 m orbit — well
+  // clear even of the castle's own tallest corner tower (15 m wall + 6.6 m roof + a 0.5 m finial and a
+  // 1 m pennant pole, 23.1 m in all), so it needs no keep-out check against `game.zones` or any of this
+  // world's physics boxes, and no physics box of its own either. Purely decorative: nothing to greet,
+  // nothing to reach.
+  //
+  // Eight latitude bands cut straight out of a sphere (`new THREE.SphereGeometry(r, 16, 2, 0, TAU,
+  // i * (PI / 8), PI / 8)`, one eighth-slice of theta each) — the same `SphereGeometry` trick the
+  // Victorian balloon's own gores already use (and the one `G.dome()` already uses for its own
+  // hemisphere), just sliced by latitude instead of longitude, so the stripes run around the ball like
+  // the layers of a gumball instead of up over the top of a canopy. Colours cycle through this world's
+  // own candy palette (pink, cyan, gold) with a plain white band between each, the eight tracked
+  // geometries kept in `worldBag` the same way the balloon's own eight gores are.
+  //
+  // Spins on two axes and bobs on the world clock `t` alone, from one fixed starting angle drawn once
+  // off this world's own local `r()` (never the shared `rnd()`), so it costs no later wardrobe or
+  // colour pick — placed last of everything this build adds, after the woodcutter, so it disturbs
+  // nothing built earlier in the sweet-lands.
+  { const gbR = 165, gbH = 70, gbSpeed = TAU / 230, gbPhase = r() * TAU, gbRad = 3.1, bands = 8;
+    const gumball = group(0, 0, 0);
+    const bandColors = [0xff6fb5, 0xffffff, 0x7fd7ff, 0xffffff, 0xffd54a, 0xffffff, 0xff6fb5, 0xffffff];
+    for (let i = 0; i < bands; i++) {
+      const bandGeo = new THREE.SphereGeometry(gbRad, 16, 2, 0, TAU, i * (PI / bands), PI / bands); worldBag.track(bandGeo);
+      mesh(bandGeo, mat(bandColors[i], { roughness: 0.55 }), { shadow: 'none', parent: gumball });
+    }
+    gumball.userData.update = (dt, t) => {
+      const a = gbPhase + t * gbSpeed;
+      gumball.position.set(cos(a) * gbR, gbH + sin(t * 0.21) * 3, sin(a) * gbR);
+      gumball.rotation.y = t * 0.6; gumball.rotation.x = sin(t * 0.3) * 0.25;
+    };
+    place(game, U, gumball, cos(gbPhase) * gbR, sin(gbPhase) * gbR, 0, gbH); }
+
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('star', 7, -6); C.add('yarn', -9, 9); C.add('fish', -16, -13); C.add('mouse', 16, -9); C.add('star', -10, -27); C.add('yarn', 22, 4); C.add('mouse', -28, 26); C.add('fish', 14, -44); C.add('star', 0, -56); C.add('mouse', -58, 30); C.add('yarn', 60, 36);
