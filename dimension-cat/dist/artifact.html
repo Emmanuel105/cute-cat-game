@@ -7084,6 +7084,57 @@ function buildNeighborhood(game, entry) {
       const gnomeLines = ['🧙 "Paint\'s chipped on the nose. Character, the owners call it."', '🧙 "That lantern has never once lit up. Purely for show."', '😼 "Puss, that hat is not a toy."'];
       game.addInteractable({ obj: gnome, radius: 1.8, label: () => 'Look at the garden gnome', onUse: () => { SFX.click(); game.toast(rnd.pick(gnomeLines), 3000); } });
     }
+    // the pinwheel, sprinkler, kennel, birdhouse and birdbath between them gave the street a nesting
+    // box and a drinking bowl, but no actual bird feeder — the one fixture that would draw a bird in
+    // the first place. House 12's own front yard now gets one: a tube feeder of seed hangs on a short
+    // chain from a bent iron arm, two dowel perches through its base and a green tin roof keeping the
+    // rain off, with a scatter of spilled husks on the grass below. The exact same `makeSparrow()` the
+    // birdhouse and the birdbath already use stands on the lower perch, dipping its head at the seed
+    // the same idle peck it already does at a bowl rim or a birdhouse wall. *"Chirp. (Translation:
+    // finally, seed that isn't bread.)"* *"Careful, puss — that's a good six-foot drop if you knock
+    // it."* *"Fills it every Sunday. Empty again by Wednesday."*
+    // No new rig or controller, and all geometry and colour are fixed rather than drawn from this
+    // world's own seeded `r()`, the same caution the pinwheel/gnome/birdhouse comments above spell
+    // out — nothing later in this build shifts. The whole assembly (post, arm, feeder and the nested
+    // sparrow) carries `userData.update` on its own top group, the same trick the kennel's own dog
+    // uses, so the baker leaves the nested rig alone rather than merging it into static geometry.
+    // A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real
+    // Neighborhood, sampled every NPC's own position every 1/30 s over 150 simulated seconds
+    // (strollers, the dog walker and the postie's full round all included), then checked the same
+    // yard-corner offset every other feature on this street already uses (x+4.5, z+front*4.0) against
+    // both that trace and the world's own physics boxes for every lot still without a feature: house
+    // 12's own corner (-40.5, 24) came back clear by 1.13 m of the nearest box (the porch awning, the
+    // same margin the pinwheel/birdhouse/gnome corner already accepts) and 12.3 m of the nearest
+    // wandering soul — the most daylight of any free lot on the street.
+    if (i === 12) {
+      const px = x + 4.5, pz = z + front * 4.0;
+      const hookM = mat(0x3a3a3a, { metalness: 0.4, roughness: 0.5 }), capM = mat(0x2e6a46, { roughness: 0.6 }),
+        tubeM = mat(0xd9c98a, { roughness: 0.3, transparent: true, opacity: 0.55 }), seedM = mat(0x9a7a3a, { roughness: 0.85 }),
+        trayM = mat(0x2e6a46, { roughness: 0.6 }), perchM = mat(0x6b4a2a, { roughness: 0.85 });
+      const postH = 1.3, armLen = 0.28, chainLen = 0.12, capH = 0.08, tubeH = 0.3, trayH = 0.03, tubeR = 0.085, perchLen = 0.1;
+      const feeder = group(px, 0, pz, W); feeder.rotation.y = ry;
+      mesh(G.cyl(0.02, 0.026, postH, 8), hookM, { y: postH / 2, shadow: 'both', parent: feeder });
+      mesh(G.cyl(0.016, 0.016, armLen, 8), hookM, { x: armLen / 2, y: postH, rz: PI / 2, shadow: 'none', parent: feeder });
+      mesh(G.sphere(0.018, 8, 6), hookM, { x: armLen, y: postH, shadow: 'none', parent: feeder });
+      const chain = noInk(mesh(G.cyl(0.006, 0.006, chainLen, 5), hookM, { x: armLen, y: postH - chainLen / 2, parent: feeder }));
+      const feed = group(armLen, postH - chainLen, 0, feeder);
+      mesh(G.cone(tubeR * 1.2, capH, 14), capM, { y: -capH / 2, shadow: 'both', parent: feed });
+      mesh(G.cyl(tubeR, tubeR, tubeH, 14), tubeM, { y: -capH - tubeH / 2, shadow: 'none', parent: feed });
+      mesh(G.cyl(tubeR * 0.9, tubeR * 0.9, tubeH * 0.5, 14), seedM, { y: -capH - tubeH * 0.72, shadow: 'none', parent: feed });   // seed visible through the glass, lower half full
+      mesh(G.cyl(tubeR * 1.15, tubeR * 1.2, trayH, 14), trayM, { y: -capH - tubeH - trayH / 2, shadow: 'both', parent: feed });
+      const perchYs = [-capH - tubeH * 0.32, -capH - tubeH * 0.68];
+      for (const py of perchYs) for (const pside of [-1, 1]) mesh(G.cyl(0.009, 0.009, perchLen, 6), perchM, { y: py, z: pside * (tubeR + perchLen / 2), rx: PI / 2, shadow: 'none', parent: feed });
+      P.addBox(px, postH / 2, pz, 0.08, postH, 0.08, { cam: false });
+      for (const [hx, hz] of [[-0.06, 0.04], [0.05, -0.03], [0.01, 0.07], [-0.04, -0.07]]) mesh(G.box(0.025, 0.012, 0.015), seedM, { x: armLen + hx, y: 0.006, z: hz, ry: (hx + hz) * 6, shadow: 'receive', parent: feeder });
+      const visitor = makeSparrow(); feed.add(visitor.group);
+      const perchY = perchYs[1], standZ = (tubeR + perchLen * 0.65);
+      visitor.group.position.set(0, perchY + 0.014, standZ);
+      visitor.group.rotation.y = PI;
+      feeder.userData.update = (dt, t) => visitor.animate(0, false, dt, t);
+      U.push(feeder.userData.update);
+      const feederLines = ['🐦 "Chirp. (Translation: finally, seed that isn\'t bread.)"', '🍃 "Careful, puss — that\'s a good six-foot drop if you knock it."', '🌻 "Fills it every Sunday. Empty again by Wednesday."'];
+      game.addInteractable({ obj: feeder, radius: 1.8, label: () => 'Look at the bird feeder', onUse: () => { SFX.click(); game.toast(rnd.pick(feederLines), 3000); } });
+    }
   });
   // the pinwheel, sprinkler and kennel above gave three of the street's sixteen yards their own
   // feature; lot 14's own corner now gets a fourth — a stone birdbath, a shallow bowl on a short

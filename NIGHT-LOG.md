@@ -11711,3 +11711,34 @@ reruns with and without this change — the test file's own comment documents it
 flake tied to a real wall-clock timer, since round 219.) Sunny Shore's own ground is still 99%
 walkable and its collectible count unchanged. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 454 — a bird feeder for the Neighborhood
+
+The street already had a birdhouse (round-ish, lot 9) for nesting and a birdbath (lot 14) for
+drinking, both with the same stock sparrow perched and pecking — but nowhere in the whole game had
+anyone actually set out food. **House 12's own front yard now gets a hanging tube feeder**: a green
+tin roof over an amber glass tube half full of seed, two dowel perches through its base on a chain
+off a bent iron arm, with a scatter of spilled husks on the grass below. The same `makeSparrow()` the
+birdhouse and birdbath already use stands on the lower perch, dipping its head the same idle peck it
+already does elsewhere. *"Chirp. (Translation: finally, seed that isn't bread.)"* *"Careful, puss —
+that's a good six-foot drop if you knock it."* *"Fills it every Sunday. Empty again by Wednesday."*
+
+No new rig or controller, and every colour is fixed rather than drawn from this world's own seeded
+`r()`, so nothing later in the build shifts. The whole assembly (post, arm, tube and the nested
+sparrow) carries `userData.update` on its own top group, the same trick the kennel's own dog uses, so
+the baker leaves the nested rig alone instead of merging it into static geometry.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real
+Neighborhood, sampled every NPC's own position every 1/30 s over 150 simulated seconds (strollers,
+the dog walker and the postie's full round all included), then checked the one yard-corner offset
+every other feature on this street already uses (x+4.5, z+front*4.0) against both that trace and the
+world's own physics boxes for every lot still without a feature of its own: house 12's own corner
+(-40.5, 24) came back clear by 1.13 m of the nearest box (the porch awning, the same margin the
+pinwheel/birdhouse/gnome corner already accepts) and 12.3 m of the nearest wandering soul — the most
+daylight of any free lot on the street. Re-checked after the edit landed, with the new post's own
+physics box excluded from the sweep, and the numbers held exactly.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings. The
+Neighborhood's own friend count, collectible count and walkable percentage (96%) are all unchanged,
+same as every other ambient prop added this way. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
