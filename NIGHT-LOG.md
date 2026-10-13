@@ -11516,3 +11516,23 @@ and nothing built before it moved at all.
 Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings, the
 Neighborhood's own friend count up one to 57. No change to collectibles, walkable percentage (still
 96%), or any other world. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 447 — a hare in the vegetable patch
+
+The scarecrow the Neighborhood's gardener planted a few rounds back was always going to lose this
+fight. **A hare now lives in the gap just west of the vegetable patch**, darting in for a nibble at
+the row's edge and bolting off again whenever the cat gets close — the scarecrow's own existing joke
+("Doesn't scare the gardener's carrots one bit") finally has something to point at.
+
+No new rig and no new controller: `makeHare()` and the shared `Hopper` controller are the exact same
+two Frosty Peak's and Whisper Woods' own hares already build on, just one more home point. Picked
+(12.0, -15.3) by hand from the patch bed's own already-measured box (west edge at x=13.6): `Hopper`'s
+worst-case reach from that home is its 0.8 m leash plus a 0.45 m hop plus its own 0.15 m radius, 1.4 m
+at the very most, so every hop lands at least a metre short of the bed and `Hopper.startHop`'s own
+`physics.blocked` check never has to refuse one. Shy like every other hare, so it keeps its distance
+rather than getting underfoot.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, every check `ok`, 0 console warnings. No change
+to friend count, collectibles or walkable percentage — the hare is wildlife, not a friend to meet, the
+same as every other hare in the game. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.

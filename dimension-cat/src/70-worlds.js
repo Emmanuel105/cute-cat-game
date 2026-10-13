@@ -629,6 +629,15 @@ function buildNeighborhood(game, entry) {
     // basket and 2.7 m clear of the gardener — all comfortably past this interactable's own reach.
     const scareLines = ['🌾 "Button eyes, straw for bones, and it still looks unimpressed."', '🌾 "Doesn\'t scare the gardener\'s carrots one bit. The sparrows ignore it completely."', '🌾 "That floppy hat has seen more weather than anyone else on this street."'];
     game.addInteractable({ obj: scare, radius: 2.2, label: () => 'Look at the scarecrow', onUse: () => { SFX.click(); game.toast(rnd.pick(scareLines), 3000); } }); }
+  // the scarecrow never stopped the one culprit that actually matters: a hare lives in the gap just
+  // west of the vegetable patch, darting in for a nibble at the row's edge. The exact same makeHare()
+  // Frosty Peak's and Whisper Woods' own hares already build, on one more home point for the shared
+  // Hopper controller — no new rig, no new animation. Home (12.0, -15.3) keeps every hop (leash 0.8 +
+  // up to a 0.45 m jump + its own 0.15 m radius, 1.4 m at the very most) a full metre short of the
+  // patch bed's west edge at x=13.6, so `Hopper.startHop`'s own `physics.blocked` check never has to
+  // refuse one; `Hopper` draws its own `rnd()` for its idle timer and start heading, same as the hares
+  // already do in both other worlds, so this costs no later wardrobe pick in this build's own `r`.
+  { const rig = makeHare(); game.npcs.push(new Hopper(game, rig, { x: 12.0, z: -15.3, leash: 0.8, r: 0.15, dist: [0.15, 0.45], dur: 0.3, height: 0.2, idle: [1.5, 4], onHop: () => { if (rnd.chance(0.2)) SFX.chitter(); } })); }
   // hammocks, picnic blankets and wishing wells had never shown up anywhere in the seven worlds — the
   // hammock went to Sunny Shore last round, so a picnic blanket lands here, spread on the open grass
   // south-west of the street, no owner in sight. A striped blanket, a wicker basket with its lid propped
