@@ -11565,3 +11565,31 @@ back clear by 6.4 m of the nearest box and 19.9 m of the nearest other soul, wel
 Full suite (`node test/run.mjs`) ran clean twice in a row — exit 0, all 274 checks `ok`, 0 console
 warnings both times. The Neighborhood's own friend count is up one, 57 to 58, 96% of the ground still
 walkable, unchanged. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 449 — a sunbather in the sweet-lands
+
+The Neighborhood has its radio listener flat out on a blanket and Sunny Shore has three towel-loungers,
+but Candy Land — the one world actually named for something sunny and sweet — never had anyone just
+lying in the sun. **A visitor now stretches out on a blanket in the open sweet-lands past the
+woodcutter's own stump**, sunglasses on, a half-melted ice lolly stuck upright in the grass beside her.
+*"Sugar and sunshine. Can't beat it."* *"Careful, puss — mind the lolly, it's melting fast enough
+already."* *"Five more minutes. Maybe ten."*
+
+No new controller: `Sunbather` is the exact same class the Neighborhood's radio listener and Sunny
+Shore's three towel people already use, and since it reaches into `rig.arms`/`legs`/`head`/`spine`
+(`makeHuman`'s own rig), she's a human visitor rather than a gingerbread man — the same call this
+world's painter, ukulele player and gossiping pair already made. The only new prop is the lolly itself
+(a stick, a flattened box and a drip blob, three primitives).
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real Candy Land,
+sampled every NPC's own position every 1/15 s over 300 simulated seconds — long enough for every
+wandering gingerbread man, the ring dance and both the tag and catch pairs to clear any one spot
+several times over — then swept a grid of the open sweet-lands (radius 20–85, short of the radius 92
+where `candyRegion`'s own procedural fill takes over) against both those samples and every one of the
+world's physics boxes: (76, 32) came back clear by 13.5 m of the nearest box and 22.6 m of the nearest
+other soul, at radius 82.5 from the origin. Built last of everything this world adds, after the gumball
+overhead, so its own draws from this world's local `r()` disturb nothing placed earlier.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings. Candy
+Land's own friend count is up one, 91% of the ground still walkable, unchanged. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

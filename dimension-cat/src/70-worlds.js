@@ -2655,6 +2655,34 @@ function buildCandyLand(game, entry) {
     };
     place(game, U, gumball, cos(gbPhase) * gbR, sin(gbPhase) * gbR, 0, gbH); }
 
+  // the Neighborhood has its radio listener on a blanket and Sunny Shore has three towel-loungers —
+  // Candy Land, for all its sugar and sunshine, never had anyone just lying in it. A visitor stretches
+  // out on a blanket in the open sweet-lands past the woodcutter's own stump, sunglasses on, a
+  // half-melted ice lolly stuck upright in the grass beside her. `Sunbather` reaches into
+  // rig.arms/legs/head/spine (`makeHuman`'s own rig), so this is a human visitor rather than a
+  // gingerbread man — the same choice this world's painter, ukulele player and gossiping pair already
+  // made. A headless probe (the same stub-three harness `test/run.mjs` uses) built the real Candy Land
+  // (`game.travel(1, 'from-hub')`) and sampled every NPC's own position every 1/15 s over 300 simulated
+  // seconds (so no wandering gingerbread man, ring dancer or tag/catch pair mid-turn could slip past
+  // unnoticed), then swept a grid of the open sweet-lands (radius 20-85, short of the radius (92) where
+  // candyRegion's own procedural fill takes over) against both those samples and every one of the
+  // world's physics boxes: (76, 32) came back clear by 13.5 m of the nearest box and 22.6 m of the
+  // nearest other soul, at radius 82.5 from the origin, well inside the fill radius.
+  { const bx = 76, bz = 32, ry = atan2(-bx, -bz);
+    const blanket = makeTowel(0xffb3d1); place(game, U, blanket, bx, bz, ry);
+    const lx = bx + cos(ry) * 0.65, lz = bz - sin(ry) * 0.65;
+    const stickM = mat(0xf7f3ec, { roughness: 0.8 }), lollyM = mat(0xff6fb5, { roughness: 0.35 });
+    mesh(G.cyl(0.012, 0.012, 0.22, 6), stickM, { x: lx, y: 0.11, z: lz, parent: W });
+    mesh(G.box(0.1, 0.16, 0.025), lollyM, { x: lx, y: 0.28, z: lz, parent: W });
+    mesh(G.sphere(0.018, 6, 6), lollyM, { x: lx, y: 0.21, z: lz, shadow: 'none', parent: W });
+    P.addBox(lx, 0.14, lz, 0.14, 0.28, 0.1, { cam: false });
+    const sunWard = makeWardrobe(r, { shirts: [0xffe0ea, 0xbfe7ff, 0xfff3b0, 0xff9ecf], pants: [0x7fd7ff, 0xff9ecf, 0xffffff] });
+    const sunbather = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.2), wardrobe: sunWard }),
+      glasses: true, shorts: true, hat: null, jacket: null, scarf: null, bag: null, backpack: null });
+    W.add(sunbather.group);
+    game.npcs.push(new Sunbather(game, sunbather, { x: bx, z: bz, ry,
+      cries: ['Sugar and sunshine. Can\'t beat it.', "Careful, puss — mind the lolly, it's melting fast enough already.", 'Five more minutes. Maybe ten.'] })); }
+
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('star', 7, -6); C.add('yarn', -9, 9); C.add('fish', -16, -13); C.add('mouse', 16, -9); C.add('star', -10, -27); C.add('yarn', 22, 4); C.add('mouse', -28, 26); C.add('fish', 14, -44); C.add('star', 0, -56); C.add('mouse', -58, 30); C.add('yarn', 60, 36);
