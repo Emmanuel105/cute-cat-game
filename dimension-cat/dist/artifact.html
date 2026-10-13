@@ -4949,6 +4949,27 @@ function makeCandyJar() {
   mesh(G.sphere(0.025, 8, 6), mat(0xd62839, { roughness: 0.5 }), { y: 0.25, shadow: 'none', parent: g });
   return g;
 }
+/** A free-standing coin-op gumball machine: a red cabinet, a glass globe packed with gumballs, a chrome collar and cap. */
+function makeGumballMachine(r) {
+  const g = new THREE.Group();
+  const cabM = mat(0xd62839, { roughness: 0.55, metalness: 0.1 }), chromeM = mat(0xd8dde0, { metalness: 0.75, roughness: 0.25 }), glass = mat(0xeaf6ff, { roughness: 0.1, transparent: true, opacity: 0.3 });
+  mesh(G.box(0.4, 0.5, 0.32), cabM, { y: 0.25, shadow: 'both', parent: g });                                  // the coin cabinet
+  mesh(G.box(0.14, 0.09, 0.02), mat(0x1a1a1a, { roughness: 0.6 }), { y: 0.33, z: 0.16, parent: g });          // coin slot plate
+  mesh(G.box(0.03, 0.02, 0.008), chromeM, { y: 0.335, z: 0.165, shadow: 'none', parent: g });                  // the slot itself
+  mesh(G.cyl(0.035, 0.035, 0.05, 10), chromeM, { x: 0.22, y: 0.22, rz: PI / 2, parent: g });                   // crank boss
+  mesh(G.cyl(0.015, 0.015, 0.14, 8), chromeM, { x: 0.26, y: 0.22, rz: PI / 2, parent: g });                    // crank handle
+  mesh(G.box(0.16, 0.1, 0.03), mat(0x1a1a1a, { roughness: 0.7 }), { y: 0.07, z: 0.17, parent: g });            // the dark delivery tray
+  mesh(G.cyl(0.3, 0.26, 0.07, 20), chromeM, { y: 0.535, parent: g });                                          // the collar the globe sits in
+  const flavours = [0xff6fb5, 0x7fd7ff, 0xffd54a, 0x8bc34a, 0xff8a3d, 0xffffff];
+  for (let i = 0; i < 46; i++) {
+    const a = r() * TAU, cz = r.range(-1, 1) * 0.86, cr = sqrt(max(0, 1 - cz * cz)) * r.range(0.08, 0.95) * 0.27;
+    mesh(G.sphere(0.052, 8, 6), mat(r.pick(flavours), { roughness: 0.4 }), { x: cos(a) * cr, y: 0.9 + cz * 0.27, z: sin(a) * cr, shadow: 'none', parent: g });
+  }
+  mesh(G.sphere(0.32, 20, 16), glass, { y: 0.9, shadow: 'none', parent: g });                                  // the glass globe, over the gumballs
+  mesh(G.cyl(0.08, 0.1, 0.08, 14), chromeM, { y: 1.26, parent: g });                                           // the knob the globe twists off from
+  mesh(G.sphere(0.055, 10, 8), chromeM, { y: 1.33, shadow: 'none', parent: g });
+  return g;
+}
 /** A metal oil can with a spout and a handle, its cap glowing the same green as Robot City's CHARGE sign, for a street vendor to hold up. */
 function makeOilCan() {
   const g = new THREE.Group(), tin = mat(0x3a4048, { metalness: 0.6, roughness: 0.4 });
@@ -8595,6 +8616,29 @@ function buildCandyLand(game, entry) {
     P.addBox(wx, 0.95, wz, 2.3, 1.9, 2.3);
     const wishLines = ['🪣 "No coins down here — just gumballs. Nobody\'s worked out why, exactly."', '🪣 "Toss a wish and it rolls right back out, sticky with gumdrop glaze."', '🪣 "The bucket\'s never once come up full. Someone\'s been skimming the wishes."'];
     game.addInteractable({ obj: g, radius: 2.8, label: () => 'Look at the wishing well', onUse: () => { SFX.click(); game.toast(rnd.pick(wishLines), 3000); } }); }
+  // the wishing well just south of here already has a bucket of gumballs riding its rope, but no actual
+  // gumball machine — the one fixture every candy-themed arcade or sweet-shop corner is built around —
+  // had ever turned up anywhere in the land. A free-standing one now stands on the quiet grass north of
+  // the well, red cabinet and chrome crank below a glass globe packed with forty-six gumballs
+  // (`makeGumballMachine()`, new in `60-props.js`, next to `makeCandyJar`). A press of E plays a coin-click,
+  // a gumball-sized sparkle drops out of the tray, and the cat gets told which flavour it was — no quest,
+  // no inventory, same one-off "walk up and look" shape the well beside it and the postbox back in
+  // Victorian both already use, just with its own small payoff instead of a fixed line.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` uses) built the real Candy Land
+  // (`game.start('new')` then `game.travel(1, 'from-hub')`, so every wanderer, dancer and tag pair
+  // actually moved), sampled every NPC's own position every quarter second over 300 simulated seconds,
+  // then swept a 2 m grid out past the well against both those samples and all 309 of the land's physics
+  // boxes: (-13, 83) came back clear by 8.0 m of the nearest box and nearly 40 m of the nearest wandering
+  // soul, well inside the radius (92) where candyRegion's own procedural fill takes over, past the
+  // candy-cane ring (which only ever reaches out to `d: r.range(56, 76)`) and a clear 3+ m past the edge
+  // of the cupcake-hill keep-out circle centred on (0, 80).
+  { const gx = -13, gz = 83;
+    const gm = makeGumballMachine(r);
+    gm.position.set(gx, 0, gz); W.add(gm);
+    P.addBox(gx, 0.7, gz, 0.8, 1.4, 0.8, { cam: false });
+    const gumFlavours = ['🍬 "Watermelon — or something trying hard to be."', '🍬 "Blue. Just blue. Flavour unclear."', '🍬 "Cherry, the good kind, the kind that stains your tongue."', '🍬 "A white one. Somehow always the last colour you want."', '🍬 "Green apple, sharp enough to make the whiskers twitch."'];
+    game.addInteractable({ obj: gm, radius: 2.1, label: () => 'Turn the crank', onUse: () => { SFX.click(); SFX.pickup(); game.fx.emit(gx, 1.0, gz, { count: 10, colors: [0xff6fb5, 0x7fd7ff, 0xffd54a, 0x8bc34a], speed: 1.0, up: 1.3, life: 0.8, gravity: 2.4 }); game.toast(rnd.pick(gumFlavours), 3000); } }); }
   // the Candy Queen's castle, up the lane to the north — houmoungous, and you can walk right in — with a little candy village on the approach
   game.zones.addCircle(0, 150, 27);
   for (const [hx, hz] of [[-16, 95], [16, 97], [-24, 112], [24, 114], [0, 80]]) game.zones.addCircle(hx, hz, 5);

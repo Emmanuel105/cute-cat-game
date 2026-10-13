@@ -541,6 +541,27 @@ function makeCandyJar() {
   mesh(G.sphere(0.025, 8, 6), mat(0xd62839, { roughness: 0.5 }), { y: 0.25, shadow: 'none', parent: g });
   return g;
 }
+/** A free-standing coin-op gumball machine: a red cabinet, a glass globe packed with gumballs, a chrome collar and cap. */
+function makeGumballMachine(r) {
+  const g = new THREE.Group();
+  const cabM = mat(0xd62839, { roughness: 0.55, metalness: 0.1 }), chromeM = mat(0xd8dde0, { metalness: 0.75, roughness: 0.25 }), glass = mat(0xeaf6ff, { roughness: 0.1, transparent: true, opacity: 0.3 });
+  mesh(G.box(0.4, 0.5, 0.32), cabM, { y: 0.25, shadow: 'both', parent: g });                                  // the coin cabinet
+  mesh(G.box(0.14, 0.09, 0.02), mat(0x1a1a1a, { roughness: 0.6 }), { y: 0.33, z: 0.16, parent: g });          // coin slot plate
+  mesh(G.box(0.03, 0.02, 0.008), chromeM, { y: 0.335, z: 0.165, shadow: 'none', parent: g });                  // the slot itself
+  mesh(G.cyl(0.035, 0.035, 0.05, 10), chromeM, { x: 0.22, y: 0.22, rz: PI / 2, parent: g });                   // crank boss
+  mesh(G.cyl(0.015, 0.015, 0.14, 8), chromeM, { x: 0.26, y: 0.22, rz: PI / 2, parent: g });                    // crank handle
+  mesh(G.box(0.16, 0.1, 0.03), mat(0x1a1a1a, { roughness: 0.7 }), { y: 0.07, z: 0.17, parent: g });            // the dark delivery tray
+  mesh(G.cyl(0.3, 0.26, 0.07, 20), chromeM, { y: 0.535, parent: g });                                          // the collar the globe sits in
+  const flavours = [0xff6fb5, 0x7fd7ff, 0xffd54a, 0x8bc34a, 0xff8a3d, 0xffffff];
+  for (let i = 0; i < 46; i++) {
+    const a = r() * TAU, cz = r.range(-1, 1) * 0.86, cr = sqrt(max(0, 1 - cz * cz)) * r.range(0.08, 0.95) * 0.27;
+    mesh(G.sphere(0.052, 8, 6), mat(r.pick(flavours), { roughness: 0.4 }), { x: cos(a) * cr, y: 0.9 + cz * 0.27, z: sin(a) * cr, shadow: 'none', parent: g });
+  }
+  mesh(G.sphere(0.32, 20, 16), glass, { y: 0.9, shadow: 'none', parent: g });                                  // the glass globe, over the gumballs
+  mesh(G.cyl(0.08, 0.1, 0.08, 14), chromeM, { y: 1.26, parent: g });                                           // the knob the globe twists off from
+  mesh(G.sphere(0.055, 10, 8), chromeM, { y: 1.33, shadow: 'none', parent: g });
+  return g;
+}
 /** A metal oil can with a spout and a handle, its cap glowing the same green as Robot City's CHARGE sign, for a street vendor to hold up. */
 function makeOilCan() {
   const g = new THREE.Group(), tin = mat(0x3a4048, { metalness: 0.6, roughness: 0.4 });

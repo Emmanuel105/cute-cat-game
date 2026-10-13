@@ -11805,3 +11805,42 @@ Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 consol
 count unchanged at 309. Robot City's own friend count (73), collectible count (8) and walkable
 percentage (89%) are all unchanged, since the camera adds no greetable id, no box and no zone.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 457 — a gumball machine for Candy Land
+
+The wishing well near the sweet-lands has had a bucket of gumballs riding its rope since round 376,
+but the one fixture every candy-themed corner is actually built around had never turned up anywhere
+in the seven worlds. **A free-standing coin-op gumball machine now stands on the quiet grass just
+north of the well**: a red cabinet with a chrome crank and coin slot, a glass globe packed with
+forty-six gumballs in six flavours overhead, and a little chrome cap on top. Press E to turn the
+crank — a coin-click, a sparkle of gumball colours dropping into the tray, and a one-line verdict on
+which flavour came out. *"Watermelon — or something trying hard to be."* *"Blue. Just blue. Flavour
+unclear."* *"Green apple, sharp enough to make the whiskers twitch."*
+
+New `makeGumballMachine()` in `60-props.js`, right next to `makeCandyJar()` — same glass + scattered
+small spheres trick that jar already uses for its peppermints, just blown up to full prop scale and
+mounted on a cabinet instead of held in a vendor's hand. No new controller: it's a plain one-off "walk
+up and look" interactable, same shape as the wishing well beside it and Victorian's postbox, just with
+a `game.fx.emit()` burst and a random flavour line instead of a fixed one, picked from `rnd()` at the
+moment of use rather than this world's own seeded `r()`, so it costs nothing from any later wardrobe
+draw in this build.
+
+Finding it a spot took an actual headless probe this time, not just eyeballing the hand-placed
+coordinate list: `game.travel()` only swaps a world in after a real ~520 ms `setTimeout`, so the first
+version of the probe (sampling right after the call) was still reading the Neighborhood and found a
+"clear" spot that was never checked against Candy Land at all. Fixed by awaiting that real delay
+before sampling, then building the actual world (`game.start('new')` then `game.travel(1,
+'from-hub')`), running it 300 simulated seconds so every wanderer, dancer and tag pair actually moved,
+and sweeping a 2 m grid against both those samples and all of the land's physics boxes — including
+`candyRegion`'s own procedural fill, which was missing from the first pass too. The machine's own spot,
+(-13, 83), came back clear by 9.2 m of the nearest box and 9.3 m of the nearest wandering soul once
+everything was accounted for, well inside the radius (92) where that procedural fill takes over and
+clear of the cupcake-hill keep-out circle centred on (0, 80).
+
+Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, all checks `ok`, 0 console
+warnings. (One cold run flagged the Victorian carriage's own distance check as a false alarm before
+any of this round's changes went in — reran clean twice after, so it's an existing flake in that one
+timing-sensitive check, not anything this round touched.) Candy Land's own friend count, collectible
+count and both guard-march and ring-dance checks are all unchanged, since the machine adds no
+greetable id and sits well clear of every road, path and other NPC's own patch. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
