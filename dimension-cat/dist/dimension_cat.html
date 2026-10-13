@@ -12458,6 +12458,63 @@ function buildBeach(game, entry) {
       hat: r.chance(0.5) ? 'cap' : null, hatColor: 0x2f4f4f, shorts: true, scarf: null, jacket: null, bag: null, backpack: null, axe: true, beard: r.chance(0.3) }); W.add(cutter.group);
     game.npcs.push(new Chopper(game, cutter, { x: cx, z: cz, ry: atan2(sx - cx, sz - cz),
       cries: ["Dry enough by sundown, with this sun.", 'Careful, puss — mind the chips.', "Tonight's fire won't build itself."] })); }
+  // Victorian has had a hot air balloon drifting over its rooftops since round 438 and Robot City an
+  // airship since round 439 — Sunny Shore's own sky, past the gulls and the lighthouse beam, never had
+  // anything fly all the way across it. **A canary-yellow biplane now loops a slow circuit above the
+  // whole beach, towing a banner that reads the shore's own blurb back at it: "WAVES, CRABS, COCONUTS"**,
+  // 55 m up on a 140 m orbit. Purely decorative: nothing to greet, nothing to reach, no dialogue.
+  //
+  // No new controller, no physics box of its own, same reasoning as the balloon and the airship:
+  // flying 43 m above the lighthouse (the tallest thing on the whole shore, 12 m) clears every palm
+  // and hut by a wide margin, so it needs no keep-out check against `game.zones` or any of the beach's
+  // physics boxes. The fuselage is one `G.capsule()` inside a child group rotated `PI/2` about X — the
+  // same trick the airship's own hull uses — so its pole-to-pole axis lands on local Z (nose at +z)
+  // before the whole rig is ever moved onto its orbit; the two wing boxes, the struts and the tail sit
+  // directly on the outer group, same as the airship's own tail fins. The banner is a cloth box towed
+  // on a rope from the tail (`noInk()`, same reasoning as the balloon's ropes and the airship's
+  // propeller — thin enough that the ink pass would otherwise draw a solid line), carrying the same
+  // double text-plane trick the gondola sign and the Frosty Peak welcome arch already use
+  // (`TEX.signText()` on a plane, cloned and turned around) so it reads from either side of the loop.
+  //
+  // Drifts entirely on the world clock `t` (bob, roll, the propeller's own spin and the banner's own
+  // trailing sway all keyed off `t` alone) from one fixed starting angle drawn once off this world's
+  // own local `r()`, so it costs no later wardrobe or layout pick — placed last of everything this
+  // build adds, after the woodcutter, so even that one draw disturbs nothing built earlier on the sand.
+  { const planeR = 140, planeH = 55, planeSpeed = TAU / 200, planePhase = r() * TAU;
+    const biplane = group(0, 0, 0);
+    const hullM = mat(0xffd54a, { roughness: 0.55 });
+    const hullGroup = group(0, 0, 0, biplane); hullGroup.rotation.x = PI / 2;
+    mesh(G.capsule(0.28, 2.0, 8), hullM, { shadow: 'none', parent: hullGroup });
+    const wingM = mat(0xf7f3ec, { roughness: 0.6 });
+    mesh(G.box(3.6, 0.07, 0.6), wingM, { y: -0.05, shadow: 'none', parent: biplane });
+    mesh(G.box(3.2, 0.07, 0.55), wingM, { y: 0.55, shadow: 'none', parent: biplane });
+    const strutM = mat(0x8a6a42, { roughness: 0.8 });
+    for (const sx of [-1.35, 1.35]) noInk(mesh(G.cyl(0.03, 0.03, 0.6, 6), strutM, { x: sx, y: 0.25, shadow: 'none', parent: biplane }));
+    const finM = mat(0xd62839, { roughness: 0.6 });
+    mesh(G.box(0.06, 0.6, 0.45), finM, { y: 0.3, z: -1.45, shadow: 'none', parent: biplane });
+    mesh(G.box(1.1, 0.06, 0.3), wingM, { z: -1.45, shadow: 'none', parent: biplane });
+    const propGroup = group(0, 0, 1.55, biplane);
+    mesh(G.cyl(0.07, 0.07, 0.15, 8), strutM, { rx: PI / 2, shadow: 'none', parent: propGroup });
+    const bladeM = mat(0x2e2a24, { roughness: 0.6 });
+    noInk(mesh(G.box(0.05, 0.9, 0.1), bladeM, { shadow: 'none', parent: propGroup }));
+    noInk(mesh(G.box(0.9, 0.05, 0.1), bladeM, { shadow: 'none', parent: propGroup }));
+    const towM = mat(0x3a2f24, { roughness: 0.9 });
+    noInk(mesh(G.cyl(0.02, 0.02, 2.6, 5), towM, { z: -2.75, rx: PI / 2, shadow: 'none', parent: biplane }));
+    const banner = group(0, 0, -4.3, biplane);
+    mesh(G.box(4.2, 1.0, 0.04), mat(0xffd54a, { roughness: 0.75 }), { shadow: 'none', parent: banner });
+    const bannerTex = TEX.signText('WAVES, CRABS, COCONUTS', '#1d5a7a');
+    const btxt = new THREE.Mesh(G.plane(4.0, 0.9), new THREE.MeshBasicMaterial({ map: bannerTex, transparent: true })); worldBag.track(btxt.material); btxt.position.z = 0.03; banner.add(btxt);
+    const btxt2 = new THREE.Mesh(G.plane(4.0, 0.9), new THREE.MeshBasicMaterial({ map: bannerTex, transparent: true })); worldBag.track(btxt2.material); btxt2.position.z = -0.03; btxt2.rotation.y = PI; banner.add(btxt2);
+    biplane.userData.update = (dt, t) => {
+      const a = planePhase + t * planeSpeed;
+      biplane.position.set(cos(a) * planeR, planeH + sin(t * 0.21) * 2.5, sin(a) * planeR);
+      biplane.rotation.y = -a;
+      biplane.rotation.z = sin(t * 0.4) * 0.05;
+      propGroup.rotation.z += dt * 14;
+      banner.rotation.x = sin(t * 0.9) * 0.05;
+      banner.position.y = sin(t * 0.9) * 0.12;
+    };
+    place(game, U, biplane, cos(planePhase) * planeR, sin(planePhase) * planeR, 0, planeH); }
 
   beachRegion(game, U, r, 58, SHORE_LIMIT - 8);
   // the headland behind the dunes: hills and peaks inland only, never out to sea

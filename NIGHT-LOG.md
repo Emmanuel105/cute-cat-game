@@ -11296,3 +11296,32 @@ placed last of everything this build adds, after the woodcutter, so it disturbs 
 Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings. Nothing else
 changed: no new friend, no collectible, no change to Robot City's own walkable percentage. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 440 — a biplane over Sunny Shore
+
+Victorian got a hot air balloon two rounds back and Robot City an airship last round — Sunny Shore's
+own sky, past the gulls and the lighthouse's own sweeping beam, never had anything actually fly all
+the way across it. **A canary-yellow biplane now loops a slow circuit above the whole beach, towing a
+banner that reads the shore's own blurb back at it: "WAVES, CRABS, COCONUTS"**, 55 m up on a 140 m
+orbit. Purely decorative — nothing to greet, nothing to reach, no dialogue.
+
+No new controller, no physics box of its own, same reasoning as the balloon and the airship before it:
+flying 43 m above the lighthouse (the tallest thing on the whole shore, at 12 m) clears every palm and
+beach hut by a wide margin, so it needs no keep-out check against `game.zones` or any of the beach's
+physics boxes. The fuselage is one `G.capsule()` inside a child group rotated `PI/2` about X — the
+same trick the airship's own hull used — so its pole-to-pole axis lands on local Z, nose at +z, before
+the whole rig is ever moved onto its orbit; the wings, struts and tail sit straight on the outer group,
+same as the airship's own fins. The banner is a cloth box towed on a rope off the tail, run through
+`noInk()` for the same reason the balloon's ropes and the airship's propeller needed it — a line that
+thin would otherwise ink solid across the sky — carrying the same double text-plane trick the gondola
+sign and the Frosty Peak welcome arch already use (`TEX.signText()` painted onto a plane, cloned and
+turned around) so the banner reads from either side of the loop.
+
+Drifts entirely on the world clock `t` — bob, roll, the propeller's own spin and the banner's own
+trailing sway, all keyed off `t` alone — from one fixed starting angle drawn once off this world's own
+local `r()`, so it costs no later wardrobe or layout pick. Placed last of everything this build adds,
+after the woodcutter, so even that one draw disturbs nothing built earlier on the sand.
+
+Full suite (`node test/run.mjs`) ran clean twice in a row — exit 0, all checks `ok`, 0 console warnings
+both times. Nothing else changed: no new friend, no collectible, no change to Sunny Shore's own
+walkable percentage. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
