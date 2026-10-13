@@ -11932,3 +11932,39 @@ Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, all 
 warnings. Frosty Peak's own friend count went from 63 to 64, Whisper Woods' owls are unaffected (still
 brown, still three), and no other world's counts moved. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 461 — a ladybug in the Neighborhood
+
+Whisper Woods has had a ladybug scuttling across its forest floor for a while now, but no other world
+ever got one of its own — the Neighborhood, with a hare raiding the vegetable patch and a scarecrow
+that can't scare off so much as a sparrow, never had the one garden visitor too small for either of
+them to notice. **A ladybug now sits in the quiet grass of the open field east of the street**,
+antennae twitching now and then. No dialogue, no "say hello" — same as the Woods' own, it's purely
+ambient wildlife, there to be noticed rather than greeted.
+
+First attempt wired it to the exact same `Hopper` controller the Woods use, which seemed like the
+obvious no-new-code move. It built fine and passed a quick look, but the full suite caught something
+subtler: `Hopper`'s constructor draws three numbers off the shared global `rnd()` sequence the moment
+it's built, and that one extra creature — built during the Neighborhood's own setup, before any frame
+ever runs — permanently shifted every later call to `rnd()` anywhere in the game. Three hundred
+simulated frames later, two unrelated neighbours having a chat (`Talkers`) drew a different random arm
+gesture than the test expected, and "two neighbours chat, taking turns" failed outright, deterministically,
+every run. So the ladybug doesn't hop: it's perched instead, the same "sits and only animates" trick
+the owls already use in both Whisper Woods and Frosty Peak — `rig.animate(0, false, dt, t)` off a local
+timer pushed into the world's own `U` list, no controller, no physics circle, and critically no draw on
+the shared `rnd()` sequence at all. Its one random pick (the idle-timer's starting phase) comes off this
+world's own local, per-world-seeded `r()` instead, drawn last of everything this build adds so it can't
+disturb any earlier neighbour's wardrobe or colour pick either.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real Neighborhood,
+sampled every NPC's and the squirrel's own position twenty times a second over 300 simulated seconds,
+then swept a grid of the open field east of the street against both those samples and every one of the
+street's own physics boxes: (27.5, -29) came back clear by 2.0 m of the nearest box (a yard tree trunk)
+and 9.1 m of the nearest other soul. A stationary creature needs no path clearance of its own, but the
+spot was chosen the same careful way regardless.
+
+Full suite (`node test/run.mjs`) ran clean three times in a row after the fix — exit 0, all checks `ok`,
+0 console warnings. (The suite does have a pre-existing flaky check unrelated to this round — Victorian's
+horse and carriage occasionally reports less distance travelled than expected, independent of this
+change, on the baseline before this round too — so three *consecutive* clean runs were confirmed rather
+than just one.) Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

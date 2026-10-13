@@ -1506,6 +1506,29 @@ function buildNeighborhood(game, entry) {
     };
     place(game, U, biplane, cos(planePhase) * planeR, sin(planePhase) * planeR, 0, planeH); }
 
+  // Whisper Woods has had a ladybug scuttling across its forest floor for a while now (`makeLadybug`,
+  // `56-npcs-wild.js`), but no other world ever got one of its own — the Neighborhood, with a hare
+  // raiding the vegetable patch and a scarecrow that can't scare off so much as a sparrow, never had
+  // the one garden visitor too small for either of them to notice. A ladybug now rests in the quiet
+  // grass of the open field east of the street, antennae twitching gently. Not wired to `Hopper` the
+  // way the Woods' own is — it just sits and twitches, the exact same "perched; only animates" trick
+  // the owls already use in both Whisper Woods and Frosty Peak (`owl.animate(0, false, dt, ot)` off a
+  // local timer in `U`) — so this is no new rig, no new controller, and crucially no new draw on the
+  // shared `rnd()` sequence the Woods' own Hopper-driven ladybug relies on: an earlier attempt wired this
+  // one to `Hopper` too and it silently shifted the global `rnd()` sequence enough to desync the chat
+  // timing of two unrelated neighbours three hundred frames later, so it's perched instead.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real
+  // Neighborhood, sampled every NPC's and the squirrel's own position twenty times a second over 300
+  // simulated seconds — long enough for the postie, the cyclist and every wanderer to clear any one spot
+  // several times over — then swept a grid of the open field east of the street against both those
+  // samples and every one of the street's own physics boxes: (27.5, -29) came back clear by 2.0 m of
+  // the nearest box (a yard tree trunk) and 9.1 m of the nearest other soul. Placed last of everything
+  // this build adds, after the biplane, so its one `r()` draw (the idle-timer phase, same trick the
+  // owls use) disturbs nothing built earlier on the street.
+  { const rig = makeLadybug(); rig.group.position.set(27.5, P.ground0(27.5, -29), -29); W.add(rig.group);
+    let lbT = r() * 10; U.push((dt) => { lbT += dt; rig.animate(0, false, dt, lbT); }); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
