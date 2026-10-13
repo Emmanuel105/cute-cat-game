@@ -11676,3 +11676,38 @@ back clear by 7.6 m of the nearest box and 7.5 m of the nearest other soul.
 Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings. Frosty
 Peak's own friend count is up one (62 to 63), 98% of the ground still walkable (unchanged), 8
 collectibles unchanged. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 453 — a tide pool for Sunny Shore
+
+The shell, the half-buried chest and the message in the bottle all give the cat something to stop
+and read or listen to on this coast, and Whisper Woods' giant flower (round 442) already proved a
+prop can react to the cat on its own, no `E` needed — but nothing on the whole beach had ever done
+both at once. **A shallow tide pool now sits in the dry sand south of the lighthouse**: a ring of
+weathered rocks round a disc of water, a beached starfish and a few shells on the floor, and a small
+sea anemone at the centre with its crown of tentacles splayed open — until the cat wanders within
+3 m, when they curl shut and pull in tight, same as a real one flinching from a prodding finger, then
+open again once the cat wanders off. *"Touch the water, and watch it flinch — not you, puss, the
+anemone."* *"That starfish hasn't moved all week. Starfish don't, much."*
+
+New `makeTidePool()` (`62-props-nature.js`), reusing the flower's own hinge trick for the tentacles
+and the pond's rim-of-rocks trick for the water's edge, plus `G.star` (already used for the gem
+cluster) laid flat for the starfish, same way the rosette flower-head already lies flat. The reaction
+itself runs the other way round from the flower's bloom — tentacles retract and the whole crown
+shrinks as the cat gets close, rather than opening — so it reads as a different kind of creature, not
+a reskin. No physics box, same reasoning as the glowing pond: a shallow puddle the cat walks straight
+through.
+
+A headless probe (the stub-three harness `test/run.mjs` itself uses, driven through `game.travel(4,
+'from-hub')` and its real 520 ms portal timer) built the real Sunny Shore, sampled every NPC's and the
+squirrel's own position every quarter second over 300 simulated seconds, then swept a 0.5 m grid of
+the dry sand (x in [1, 11], short of the wet-sand zone that starts at x=12) against both those samples
+and every one of the beach's 219 physics boxes: (5, -48) came back clear by 5.5 m of the nearest box
+and 5.2 m of the nearest other soul, on a near-flat stretch of sand (ground height varying only 0.06 m
+across the whole footprint).
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 274 checks `ok`, 0 console warnings. (One
+unrelated check, the Victorian horse and carriage's own timing probe, flaked once across several
+reruns with and without this change — the test file's own comment documents it as a pre-existing
+flake tied to a real wall-clock timer, since round 219.) Sunny Shore's own ground is still 99%
+walkable and its collectible count unchanged. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.

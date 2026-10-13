@@ -208,6 +208,38 @@ function makeConch() {
   mesh(G.sphere(0.2, 12, 8), inner, { y: 0.08, z: 0.18, sy: 0.4, sz: 0.55, shadow: 'none', parent: g }); // the pink mouth
   return g;
 }
+/** A shallow tide pool scooped into the sand: a ring of weathered rocks round a shallow water disc,
+ *  a beached starfish (flat, `G.star` laid in the XZ plane like the rosette flower-head trick) and a
+ *  scatter of small shells, with a sea anemone standing at its centre. The anemone's own crown of
+ *  tentacles sits on hinges exactly like the Whisper Woods flower's petals, but returned separately
+ *  (`tentacles`) so a world can curl them shut as the cat gets close — the opposite reaction to that
+ *  flower's bloom, same as a real anemone recoiling from a prodding finger rather than opening for one. */
+function makeTidePool(r = rnd, rad = 0.9) {
+  const g = new THREE.Group();
+  const water = mat(0x2e9ec8, { roughness: 0.12, metalness: 0.1, transparent: true, opacity: 0.75, map: TEX.water() });
+  mesh(G.cyl(rad, rad, 0.05, 24), water, { y: 0.02, shadow: 'receive', parent: g });
+  const rockM = mat(0x8a857a, { roughness: 1, flatShading: true });
+  for (let i = 0; i < 14; i++) { const a = i / 14 * TAU + r.range(-0.08, 0.08), d = rad + r.range(0.12, 0.3);
+    mesh(G.sphere(1, 7, 5), rockM, { x: cos(a) * d, y: r.range(0.03, 0.1), z: sin(a) * d, sx: r.range(0.18, 0.32), sy: r.range(0.1, 0.2), sz: r.range(0.18, 0.32), ry: r() * TAU, parent: g }); }
+  // the starfish, half-sunk on the pool floor
+  const starM = mat(0xff8f3c, { roughness: 0.6 });
+  const star = group(r.range(-0.3, 0.1), 0.017, r.range(-0.25, 0.15), g); star.rotation.y = r() * TAU;
+  mesh(G.star(0.16, 0.055, 0.03), starM, { rx: -PI / 2, parent: star });
+  // a couple of small shells, half-buried round the rim
+  const shellM = mat(0xf0e4c8, { roughness: 0.6 });
+  for (let i = 0; i < 3; i++) { const a = r() * TAU, d = r.range(0.35, rad - 0.1); mesh(G.sphere(0.045, 7, 5), shellM, { x: cos(a) * d, y: 0.015, z: sin(a) * d, sy: 0.55, ry: r() * TAU, parent: g }); }
+  // the anemone: a short stalk and a crown of tentacles splayed open by default
+  const stalkM = mat(0xc77fd6, { roughness: 0.5 }), tentM = mat(0xff8fd6, { roughness: 0.4 });
+  const anemone = group(0.3, 0.02, -0.15, g);
+  mesh(G.cyl(0.055, 0.07, 0.1, 10), stalkM, { y: 0.05, parent: anemone });
+  const tentacles = [];
+  const n = 10;
+  for (let i = 0; i < n; i++) { const a = i / n * TAU;
+    const hinge = group(sin(a) * 0.04, 0.1, cos(a) * 0.04, anemone); hinge.rotation.y = a; hinge.rotation.x = 1.0;
+    noInk(mesh(G.cone(0.016, 0.16, 6), tentM, { y: 0.08, parent: hinge }));
+    tentacles.push(hinge); }
+  return { group: g, water, anemone, tentacles };
+}
 /** Instanced shells / pebbles scattered on the ground. spots = [[x,z,radius,count]] */
 function makeScatter(game, spots, geo, colors, r, scale = [0.6, 1.2], yOff = 0.02) {
   const pts = scatterPoints(game, spots, r, 0.3), total = pts.length;

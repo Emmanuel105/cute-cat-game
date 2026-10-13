@@ -5783,6 +5783,38 @@ function makeConch() {
   mesh(G.sphere(0.2, 12, 8), inner, { y: 0.08, z: 0.18, sy: 0.4, sz: 0.55, shadow: 'none', parent: g }); // the pink mouth
   return g;
 }
+/** A shallow tide pool scooped into the sand: a ring of weathered rocks round a shallow water disc,
+ *  a beached starfish (flat, `G.star` laid in the XZ plane like the rosette flower-head trick) and a
+ *  scatter of small shells, with a sea anemone standing at its centre. The anemone's own crown of
+ *  tentacles sits on hinges exactly like the Whisper Woods flower's petals, but returned separately
+ *  (`tentacles`) so a world can curl them shut as the cat gets close — the opposite reaction to that
+ *  flower's bloom, same as a real anemone recoiling from a prodding finger rather than opening for one. */
+function makeTidePool(r = rnd, rad = 0.9) {
+  const g = new THREE.Group();
+  const water = mat(0x2e9ec8, { roughness: 0.12, metalness: 0.1, transparent: true, opacity: 0.75, map: TEX.water() });
+  mesh(G.cyl(rad, rad, 0.05, 24), water, { y: 0.02, shadow: 'receive', parent: g });
+  const rockM = mat(0x8a857a, { roughness: 1, flatShading: true });
+  for (let i = 0; i < 14; i++) { const a = i / 14 * TAU + r.range(-0.08, 0.08), d = rad + r.range(0.12, 0.3);
+    mesh(G.sphere(1, 7, 5), rockM, { x: cos(a) * d, y: r.range(0.03, 0.1), z: sin(a) * d, sx: r.range(0.18, 0.32), sy: r.range(0.1, 0.2), sz: r.range(0.18, 0.32), ry: r() * TAU, parent: g }); }
+  // the starfish, half-sunk on the pool floor
+  const starM = mat(0xff8f3c, { roughness: 0.6 });
+  const star = group(r.range(-0.3, 0.1), 0.017, r.range(-0.25, 0.15), g); star.rotation.y = r() * TAU;
+  mesh(G.star(0.16, 0.055, 0.03), starM, { rx: -PI / 2, parent: star });
+  // a couple of small shells, half-buried round the rim
+  const shellM = mat(0xf0e4c8, { roughness: 0.6 });
+  for (let i = 0; i < 3; i++) { const a = r() * TAU, d = r.range(0.35, rad - 0.1); mesh(G.sphere(0.045, 7, 5), shellM, { x: cos(a) * d, y: 0.015, z: sin(a) * d, sy: 0.55, ry: r() * TAU, parent: g }); }
+  // the anemone: a short stalk and a crown of tentacles splayed open by default
+  const stalkM = mat(0xc77fd6, { roughness: 0.5 }), tentM = mat(0xff8fd6, { roughness: 0.4 });
+  const anemone = group(0.3, 0.02, -0.15, g);
+  mesh(G.cyl(0.055, 0.07, 0.1, 10), stalkM, { y: 0.05, parent: anemone });
+  const tentacles = [];
+  const n = 10;
+  for (let i = 0; i < n; i++) { const a = i / n * TAU;
+    const hinge = group(sin(a) * 0.04, 0.1, cos(a) * 0.04, anemone); hinge.rotation.y = a; hinge.rotation.x = 1.0;
+    noInk(mesh(G.cone(0.016, 0.16, 6), tentM, { y: 0.08, parent: hinge }));
+    tentacles.push(hinge); }
+  return { group: g, water, anemone, tentacles };
+}
 /** Instanced shells / pebbles scattered on the ground. spots = [[x,z,radius,count]] */
 function makeScatter(game, spots, geo, colors, r, scale = [0.6, 1.2], yOff = 0.02) {
   const pts = scatterPoints(game, spots, r, 0.3), total = pts.length;
@@ -12743,6 +12775,39 @@ function buildBeach(game, entry) {
     P.addBox(bx, y0 + 0.08, bz, 0.34, 0.16, 0.2, { cam: false });
     const bottleLines = ['📜 "The ink\'s run, but one word still reads clear: \'HELP\'. Or maybe \'KELP\'."', '📜 "No name, no date — just a wobbly little drawing of a boat."', '📜 "Whoever threw this one in clearly didn\'t expect a cat to find it first."'];
     game.addInteractable({ obj: bottle, radius: 2.2, label: () => 'Read the message in the bottle', onUse: () => { SFX.click(); game.fx.emit(bx, y0 + 0.2, bz, { count: 10, colors: [0x7fd7ff, 0xffffff, 0xe8dcb8], speed: 0.9, up: 1.0, life: 0.7, gravity: 1.6 }); game.toast(rnd.pick(bottleLines), 3000); } }); }
+
+  // the shell, the chest and the bottle above are all things the cat finds and triggers with a look or
+  // an `E` — but Whisper Woods' giant flower (round 442) already proved a prop can react on its own, no
+  // button needed, just by noticing the cat get close. Nothing on this whole coast ever did that. A
+  // shallow tide pool now sits in the dry sand south of the lighthouse: a ring of weathered rocks round
+  // a disc of water, a beached starfish and a few shells on the floor, and a small sea anemone standing
+  // at the centre with its crown of tentacles splayed open — until the cat wanders within 3 m, when
+  // they curl shut and pull in tight, same as a real anemone recoiling from a prodding finger, then
+  // uncurl again once the cat wanders off. The opposite reaction to that flower's bloom, on purpose.
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses) built
+  // the real Sunny Shore (`game.travel(4, 'from-hub')`), sampled every NPC's and the squirrel's own
+  // position every quarter second over 300 simulated seconds (so no wandering crab, turtle, sunbather
+  // or dolphin mid-circuit could slip past unnoticed), then swept a 0.5 m grid of the dry sand (x in
+  // [1, 11], short of the wet-sand zone that starts at x=12) against both those samples and every one
+  // of the beach's 219 physics boxes: (5, -48) came back clear by 5.5 m of the nearest box and 5.2 m of
+  // the nearest other soul — south of the lighthouse keeper and the chip stand, on a near-flat stretch
+  // of sand (ground height varying only 0.06 m across the whole footprint). No physics box of its own,
+  // same as the glowing pond in Whisper Woods: a shallow puddle the cat can walk straight through.
+  { const tpx = 5, tpz = -48;
+    const pool = makeTidePool(r);
+    const poolLines = ['🪸 "Touch the water, and watch it flinch — not you, puss, the anemone."', '⭐ "That starfish hasn\'t moved all week. Starfish don\'t, much."', '🪸 "Pulls in tight the second a shadow crosses it. Give it a minute - it opens right back up."'];
+    let poolOpen = 1, poolNear = false;
+    pool.group.userData.update = (dt, t) => {
+      const c = game.cat.group.position, isNear = dist2(c.x, c.z, tpx, tpz) < 9;
+      poolOpen = damp(poolOpen, isNear ? 0 : 1, 5, dt);
+      for (const h of pool.tentacles) h.rotation.x = 0.15 + poolOpen * 0.85;
+      pool.anemone.scale.setScalar(0.72 + poolOpen * 0.28);
+      pool.water.map.offset.x = t * 0.01;
+      if (isNear && !poolNear) { poolNear = true; SFX.wave(); game.toast(rnd.pick(poolLines), 3000);
+        game.fx.emit(tpx, P.ground0(tpx, tpz) + 0.15, tpz, { count: 8, colors: [0xbfe8ff, 0xffffff], speed: 0.6, up: 0.6, life: 0.6, gravity: 1.5 }); }
+      if (!isNear) poolNear = false;
+    };
+    placeT(game, U, pool.group, tpx, tpz, r() * TAU); }
 
   // the Neighborhood (395), Robot City (425), Victorian (426) and Candy Land (427) have all had a go at
   // the same back-garden toss game by now — a horseshoe, a coupling ring, a brass quoit, a gummy ring —

@@ -887,6 +887,39 @@ function buildBeach(game, entry) {
     const bottleLines = ['📜 "The ink\'s run, but one word still reads clear: \'HELP\'. Or maybe \'KELP\'."', '📜 "No name, no date — just a wobbly little drawing of a boat."', '📜 "Whoever threw this one in clearly didn\'t expect a cat to find it first."'];
     game.addInteractable({ obj: bottle, radius: 2.2, label: () => 'Read the message in the bottle', onUse: () => { SFX.click(); game.fx.emit(bx, y0 + 0.2, bz, { count: 10, colors: [0x7fd7ff, 0xffffff, 0xe8dcb8], speed: 0.9, up: 1.0, life: 0.7, gravity: 1.6 }); game.toast(rnd.pick(bottleLines), 3000); } }); }
 
+  // the shell, the chest and the bottle above are all things the cat finds and triggers with a look or
+  // an `E` — but Whisper Woods' giant flower (round 442) already proved a prop can react on its own, no
+  // button needed, just by noticing the cat get close. Nothing on this whole coast ever did that. A
+  // shallow tide pool now sits in the dry sand south of the lighthouse: a ring of weathered rocks round
+  // a disc of water, a beached starfish and a few shells on the floor, and a small sea anemone standing
+  // at the centre with its crown of tentacles splayed open — until the cat wanders within 3 m, when
+  // they curl shut and pull in tight, same as a real anemone recoiling from a prodding finger, then
+  // uncurl again once the cat wanders off. The opposite reaction to that flower's bloom, on purpose.
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses) built
+  // the real Sunny Shore (`game.travel(4, 'from-hub')`), sampled every NPC's and the squirrel's own
+  // position every quarter second over 300 simulated seconds (so no wandering crab, turtle, sunbather
+  // or dolphin mid-circuit could slip past unnoticed), then swept a 0.5 m grid of the dry sand (x in
+  // [1, 11], short of the wet-sand zone that starts at x=12) against both those samples and every one
+  // of the beach's 219 physics boxes: (5, -48) came back clear by 5.5 m of the nearest box and 5.2 m of
+  // the nearest other soul — south of the lighthouse keeper and the chip stand, on a near-flat stretch
+  // of sand (ground height varying only 0.06 m across the whole footprint). No physics box of its own,
+  // same as the glowing pond in Whisper Woods: a shallow puddle the cat can walk straight through.
+  { const tpx = 5, tpz = -48;
+    const pool = makeTidePool(r);
+    const poolLines = ['🪸 "Touch the water, and watch it flinch — not you, puss, the anemone."', '⭐ "That starfish hasn\'t moved all week. Starfish don\'t, much."', '🪸 "Pulls in tight the second a shadow crosses it. Give it a minute - it opens right back up."'];
+    let poolOpen = 1, poolNear = false;
+    pool.group.userData.update = (dt, t) => {
+      const c = game.cat.group.position, isNear = dist2(c.x, c.z, tpx, tpz) < 9;
+      poolOpen = damp(poolOpen, isNear ? 0 : 1, 5, dt);
+      for (const h of pool.tentacles) h.rotation.x = 0.15 + poolOpen * 0.85;
+      pool.anemone.scale.setScalar(0.72 + poolOpen * 0.28);
+      pool.water.map.offset.x = t * 0.01;
+      if (isNear && !poolNear) { poolNear = true; SFX.wave(); game.toast(rnd.pick(poolLines), 3000);
+        game.fx.emit(tpx, P.ground0(tpx, tpz) + 0.15, tpz, { count: 8, colors: [0xbfe8ff, 0xffffff], speed: 0.6, up: 0.6, life: 0.6, gravity: 1.5 }); }
+      if (!isNear) poolNear = false;
+    };
+    placeT(game, U, pool.group, tpx, tpz, r() * TAU); }
+
   // the Neighborhood (395), Robot City (425), Victorian (426) and Candy Land (427) have all had a go at
   // the same back-garden toss game by now — a horseshoe, a coupling ring, a brass quoit, a gummy ring —
   // but nobody on this whole stretch of coast ever thought to toss anything. A coiled length of ship's
