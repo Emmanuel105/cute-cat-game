@@ -2793,6 +2793,18 @@ function buildRobotCity(game, entry) {
   // furnace itself sits 14 m off, the nearest conveyor (-12, -6) 12.2 m off.
   { const armLines = ['🦾 "Swings the same six crates all day. Never drops one, never gets bored."', '🤖 "Mind the claw, puss — it doesn\'t know you\'re not a crate."', '🦾 "Been reaching for something just out of frame since the day it was bolted down."'];
     game.addInteractable({ obj: arm, radius: 3.8, label: () => 'Look at the robot arm', onUse: () => { SFX.click(); game.toast(rnd.pick(armLines), 3000); } }); }
+  // the robot arm and the conveyors keep the factory floor busy, but nothing in the city swings
+  // anything overhead the way a real scrapyard would. A jib crane now stands out past the south
+  // skyscrapers, its magnet bobbing down to a small scrap pile and back up on a slow, endless loop. A
+  // headless probe (built the real Robot City with `game.load(2, 'from-prev')`, then sampled every
+  // NPC's own position every quarter second over 400 simulated frames) swept a grid of the open ground
+  // past the factory floor against every one of the city's physics boxes and those samples: (13, -39)
+  // came back clear by 10.2 m of the nearest box (a south skyscraper's own footprint) and 10.2 m of the
+  // nearest wandering robot, comfortably past the crane's own reach (mast radius 1.1 m, boom swinging
+  // out to about 5.8 m at its forward-most, the scrap pile included).
+  { const crane = makeScrapCrane(game, 13, -39, 0); U.push(crane.userData.update);
+    const craneLines = ['🧲 "Lifts the same six pieces of scrap all shift. Never once asked for a day off."', '🤖 "Mind the swing, puss — that magnet doesn\'t care what it grabs."', '🧲 "Nobody\'s driving it. Hasn\'t needed to, not since round one."'];
+    game.addInteractable({ obj: crane, radius: 6.5, label: () => 'Watch the scrap crane', onUse: () => { SFX.click(); game.toast(rnd.pick(craneLines), 3000); } }); }
   // every other world has an ambient sound of its own on a loop — the Victorian bell, Sunny Shore's dog,
   // Whisper Woods' owl — but the factory floor, with its furnace and conveyors already running, had never
   // once sounded a shift whistle. It blows on its own loop now, same long steam blast whatever the game

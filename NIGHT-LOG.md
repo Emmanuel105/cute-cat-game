@@ -11621,3 +11621,31 @@ Full suite (`node test/run.mjs`) ran clean twice in a row — exit 0, all 274 ch
 warnings both times. Victorian's own friend count is up one (76 to 77 to meet, since only the lead of
 the three greets the cat, same as the gingerbread guard); 95% of the ground still walkable, unchanged.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 451 — a scrap crane for Robot City
+
+The factory floor already had a swinging robot arm and a roaring furnace, both with their own
+"walk up and look" toast, but nothing in the whole city swung anything *overhead* the way a real
+scrapyard crane does. **A jib crane now stands past the south skyscrapers**, its magnet bobbing down
+to a small pile of scrap and back up on a slow, endless loop — mast, swinging boom, counterweight,
+dangling cable and all. *"Lifts the same six pieces of scrap all shift. Never once asked for a day
+off."* *"Mind the swing, puss — that magnet doesn't care what it grabs."*
+
+New prop `makeScrapCrane()` (`60-props.js`): a yellow jib on a steel base, the boom swinging gently
+side to side (`sin(t*0.18)`) while the cable stretches and the magnet dips from head height almost
+down to the scrap pile and back (`sin(t*0.6)`), the magnet's glow flaring at the bottom of each dip as
+if it's just grabbed something. No new controller, no friend, no collectible — it's ambient scenery
+like the robot arm and furnace it stands near, with the same "look" interactable pattern they use.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses, driven through the real
+`game.travel()` and its 520 ms portal timer rather than `game.load()` directly, so the city it swept
+was the one actually on screen) built the real Robot City, sampled every NPC's own position every
+quarter second over 400 simulated frames, then swept a grid of the open ground past the factory floor
+against both those samples and every one of the city's 1148 physics boxes: (13, -39) came back clear
+by 10.2 m of the nearest box (a south skyscraper's own footprint) and 10.2 m of the nearest wandering
+robot — comfortably past the crane's own reach, a mast radius of 1.1 m and a boom swinging out to
+about 5.8 m at its forward-most, scrap pile included.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings. No change to
+Robot City's own friend count (73), collectibles or walkable percentage (89%), the same as every other
+ambient prop in the city. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -5467,6 +5467,40 @@ function makeFurnace(game, x, z, ry) {
   game.physics.addBox(x, 1.6, z, abs(c) * 4 + abs(s) * 3, 3.2, abs(s) * 4 + abs(c) * 3);
   return g;
 }
+/** A jib crane swinging a magnet slowly over a scrap pile. `x,z,ry` are world-space; the scrap pile
+ * sits along local +z from the mast, so `ry` should point that side at open ground. */
+function makeScrapCrane(game, x, z, ry) {
+  const g = group(x, 0, z, game.world); g.rotation.y = ry;
+  const steel = mat(0x5a6470, { metalness: 0.75, roughness: 0.35 }), yellow = mat(0xe0a020, { roughness: 0.5, metalness: 0.4 }), dark = mat(0x2b2f36, { metalness: 0.8, roughness: 0.3 });
+  const H = 7.2;
+  mesh(G.cyl(0.9, 1.1, 0.6, 14), dark, { y: 0.3, parent: g });
+  mesh(G.cyl(0.32, 0.4, H, 10), yellow, { y: H / 2 + 0.3, parent: g });
+  const pivot = group(0, H + 0.3, 0, g);
+  mesh(G.box(0.7, 0.5, 0.7), steel, { parent: pivot });
+  const boom = group(0, 0, 0, pivot);
+  mesh(G.box(0.4, 0.4, 4.6), yellow, { z: 2.5, parent: boom });
+  mesh(G.box(0.4, 0.4, 2.0), yellow, { z: -1.1, parent: boom });
+  mesh(G.box(0.8, 0.8, 0.8), dark, { z: -2.0, y: -0.1, parent: boom });
+  const trolley = group(0, -0.1, 4.6, boom);
+  mesh(G.box(0.5, 0.3, 0.5), dark, { parent: trolley });
+  const cable = noInk(mesh(G.cyl(0.03, 0.03, 1, 6), steel, { parent: trolley }));
+  const magnet = group(0, -1, 0, trolley);
+  const magDisc = mesh(G.cyl(0.55, 0.55, 0.22, 16), glowMat(0xff6a00, 1.2), { parent: magnet });
+  mesh(G.torus(0.55, 0.05, 6, 16), dark, { rx: PI / 2, shadow: 'none', parent: magnet });
+  // a small pile of scrap sits under the magnet's swing, local +z from the mast
+  const scrapM = [mat(0x6b5a4a, { roughness: 0.9 }), mat(0x4a4f58, { roughness: 0.85, metalness: 0.3 }), mat(0x7a6a3a, { roughness: 0.9, metalness: 0.2 })];
+  for (let i = 0; i < 9; i++) { const a = i / 9 * TAU, rr = 0.4 + (i % 3) * 0.35, sx = cos(a) * rr, sz = 4.4 + sin(a) * rr * 0.6;
+    mesh(G.box(0.5 + (i % 3) * 0.15, 0.3 + (i % 2) * 0.15, 0.4 + (i % 4) * 0.1), scrapM[i % 3], { x: sx, y: 0.18, z: sz, ry: a * 2, shadow: 'both', parent: g }); }
+  game.physics.addBox(x, 0.3, z, 2.2, 0.6, 2.2, { cam: false });
+  g.userData.update = (dt, t) => {
+    pivot.rotation.y = sin(t * 0.18) * 0.5;
+    const bob = sin(t * 0.6) * 0.5 + 0.5, len = 2.0 + bob * (H - 2.0);
+    cable.scale.y = len; cable.position.y = -len / 2;
+    magnet.position.y = -len;
+    magDisc.material.emissiveIntensity = bob < 0.15 ? 2.4 : 1.0;
+  };
+  return g;
+}
 
 // ---------------------------------------------------------------- victorian
 function makeVicHouse(o, r = rnd) {
@@ -9512,6 +9546,18 @@ function buildRobotCity(game, entry) {
   // furnace itself sits 14 m off, the nearest conveyor (-12, -6) 12.2 m off.
   { const armLines = ['🦾 "Swings the same six crates all day. Never drops one, never gets bored."', '🤖 "Mind the claw, puss — it doesn\'t know you\'re not a crate."', '🦾 "Been reaching for something just out of frame since the day it was bolted down."'];
     game.addInteractable({ obj: arm, radius: 3.8, label: () => 'Look at the robot arm', onUse: () => { SFX.click(); game.toast(rnd.pick(armLines), 3000); } }); }
+  // the robot arm and the conveyors keep the factory floor busy, but nothing in the city swings
+  // anything overhead the way a real scrapyard would. A jib crane now stands out past the south
+  // skyscrapers, its magnet bobbing down to a small scrap pile and back up on a slow, endless loop. A
+  // headless probe (built the real Robot City with `game.load(2, 'from-prev')`, then sampled every
+  // NPC's own position every quarter second over 400 simulated frames) swept a grid of the open ground
+  // past the factory floor against every one of the city's physics boxes and those samples: (13, -39)
+  // came back clear by 10.2 m of the nearest box (a south skyscraper's own footprint) and 10.2 m of the
+  // nearest wandering robot, comfortably past the crane's own reach (mast radius 1.1 m, boom swinging
+  // out to about 5.8 m at its forward-most, the scrap pile included).
+  { const crane = makeScrapCrane(game, 13, -39, 0); U.push(crane.userData.update);
+    const craneLines = ['🧲 "Lifts the same six pieces of scrap all shift. Never once asked for a day off."', '🤖 "Mind the swing, puss — that magnet doesn\'t care what it grabs."', '🧲 "Nobody\'s driving it. Hasn\'t needed to, not since round one."'];
+    game.addInteractable({ obj: crane, radius: 6.5, label: () => 'Watch the scrap crane', onUse: () => { SFX.click(); game.toast(rnd.pick(craneLines), 3000); } }); }
   // every other world has an ambient sound of its own on a loop — the Victorian bell, Sunny Shore's dog,
   // Whisper Woods' owl — but the factory floor, with its furnace and conveyors already running, had never
   // once sounded a shift whistle. It blows on its own loop now, same long steam blast whatever the game

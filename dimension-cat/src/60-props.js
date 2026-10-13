@@ -1054,6 +1054,40 @@ function makeFurnace(game, x, z, ry) {
   game.physics.addBox(x, 1.6, z, abs(c) * 4 + abs(s) * 3, 3.2, abs(s) * 4 + abs(c) * 3);
   return g;
 }
+/** A jib crane swinging a magnet slowly over a scrap pile. `x,z,ry` are world-space; the scrap pile
+ * sits along local +z from the mast, so `ry` should point that side at open ground. */
+function makeScrapCrane(game, x, z, ry) {
+  const g = group(x, 0, z, game.world); g.rotation.y = ry;
+  const steel = mat(0x5a6470, { metalness: 0.75, roughness: 0.35 }), yellow = mat(0xe0a020, { roughness: 0.5, metalness: 0.4 }), dark = mat(0x2b2f36, { metalness: 0.8, roughness: 0.3 });
+  const H = 7.2;
+  mesh(G.cyl(0.9, 1.1, 0.6, 14), dark, { y: 0.3, parent: g });
+  mesh(G.cyl(0.32, 0.4, H, 10), yellow, { y: H / 2 + 0.3, parent: g });
+  const pivot = group(0, H + 0.3, 0, g);
+  mesh(G.box(0.7, 0.5, 0.7), steel, { parent: pivot });
+  const boom = group(0, 0, 0, pivot);
+  mesh(G.box(0.4, 0.4, 4.6), yellow, { z: 2.5, parent: boom });
+  mesh(G.box(0.4, 0.4, 2.0), yellow, { z: -1.1, parent: boom });
+  mesh(G.box(0.8, 0.8, 0.8), dark, { z: -2.0, y: -0.1, parent: boom });
+  const trolley = group(0, -0.1, 4.6, boom);
+  mesh(G.box(0.5, 0.3, 0.5), dark, { parent: trolley });
+  const cable = noInk(mesh(G.cyl(0.03, 0.03, 1, 6), steel, { parent: trolley }));
+  const magnet = group(0, -1, 0, trolley);
+  const magDisc = mesh(G.cyl(0.55, 0.55, 0.22, 16), glowMat(0xff6a00, 1.2), { parent: magnet });
+  mesh(G.torus(0.55, 0.05, 6, 16), dark, { rx: PI / 2, shadow: 'none', parent: magnet });
+  // a small pile of scrap sits under the magnet's swing, local +z from the mast
+  const scrapM = [mat(0x6b5a4a, { roughness: 0.9 }), mat(0x4a4f58, { roughness: 0.85, metalness: 0.3 }), mat(0x7a6a3a, { roughness: 0.9, metalness: 0.2 })];
+  for (let i = 0; i < 9; i++) { const a = i / 9 * TAU, rr = 0.4 + (i % 3) * 0.35, sx = cos(a) * rr, sz = 4.4 + sin(a) * rr * 0.6;
+    mesh(G.box(0.5 + (i % 3) * 0.15, 0.3 + (i % 2) * 0.15, 0.4 + (i % 4) * 0.1), scrapM[i % 3], { x: sx, y: 0.18, z: sz, ry: a * 2, shadow: 'both', parent: g }); }
+  game.physics.addBox(x, 0.3, z, 2.2, 0.6, 2.2, { cam: false });
+  g.userData.update = (dt, t) => {
+    pivot.rotation.y = sin(t * 0.18) * 0.5;
+    const bob = sin(t * 0.6) * 0.5 + 0.5, len = 2.0 + bob * (H - 2.0);
+    cable.scale.y = len; cable.position.y = -len / 2;
+    magnet.position.y = -len;
+    magDisc.material.emissiveIntensity = bob < 0.15 ? 2.4 : 1.0;
+  };
+  return g;
+}
 
 // ---------------------------------------------------------------- victorian
 function makeVicHouse(o, r = rnd) {
