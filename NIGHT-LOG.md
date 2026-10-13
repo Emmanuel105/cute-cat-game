@@ -11875,3 +11875,33 @@ procedural fill takes over, so it needed no keep-out zone of its own.
 Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, all checks `ok`, 0 console
 warnings, Sunny Shore's own walkable percentage still 100% and its friend count unaffected apart from the
 two new players. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 459 — a newsboy for Victorian's market square
+
+Costermonger, flower seller, pieman and cheesemonger have all called their wares across the square for
+rounds now, but the one cry every Victorian street scene is actually remembered for — "paper! read all
+about it!" — had never turned up anywhere in the whole town. **A newsboy now works the corner where the
+lane off the high street opens into the square**, a bundle of folded newspapers tucked under one arm,
+hollering a headline at anyone who passes. *"Paper! Read all about it!"* *"Clock tower strikes true
+again, shocking news!"* *"Cat spotted in the market square — you heard it here first!"*
+
+New `makeNewspaperBundle()` in `60-props.js` — six slightly-offset folded sheets tied with crossed
+string, same scale and "handed to a stall keeper" idea as the fruit basket and cheese wheel beside it.
+No new controller: it's the same `Vendor` class every other market stall already uses, just a child
+rig holding papers instead of produce, and `greetable()`'d the same way so he counts as a friend to
+meet, same as the four grown-up stallholders.
+
+Finding him a spot took an actual headless probe, not a guess: built the real town
+(`game.travel(3, 'from-prev')`), sampled every NPC's own position every third of a second over 150
+simulated seconds, then swept the grass just north of the square's own 30×26 m paving against both
+those samples and every one of the town's physics boxes. The lane mouth itself (where it opens into
+the square) turned out to be the busiest patch of ground in the whole town — wanderers pass through
+there constantly — so the spot that came back clear was a few metres east of it instead: (13, -21)
+sits 6.0 m clear of the nearest box and 3.3 m clear of the nearest wandering soul, just past the
+fountain's own 17 m hand-placed circle (so clear of `victorianRegion`'s own fill too) and well past
+the four stall keepers' own pitches and the juggler.
+
+Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, all checks `ok`, 0 console
+warnings. A targeted headless check confirmed the newsboy is in the scene graph, his "Say hi" prompt
+fires and registers him as a friend, and his position stays finite. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

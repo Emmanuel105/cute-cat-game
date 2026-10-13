@@ -4268,6 +4268,25 @@ function buildVictorian(game, entry) {
     const v4 = new Vendor(game, cheeseMonger, makeCheeseWheel(), { x: 10, z: -43.3, ry: 0, cryIcon: '🧀',
       cries: ['Cheese! Fine ripe cheese!', 'A wedge for your supper?', "None of this for cats, either."] });
     game.npcs.push(v4); greetable(game, v4); }
+  // the square had a costermonger, a flower seller, a pieman and a cheesemonger calling their wares —
+  // but the one cry every Victorian street is remembered for, "paper! read all about it!", never turned
+  // up anywhere in the whole town. A newsboy now works the corner where the lane off the high street
+  // opens out into the square, a bundle of folded papers tucked under one arm, calling out a headline
+  // to anyone passing. A headless probe (the same stub-three harness `test/run.mjs` itself uses, with
+  // the real town built via `game.travel(3, 'from-prev')`) sampled every NPC's own position every
+  // third of a second over 150 simulated seconds, then swept the grass just north of the square's own
+  // paving against both those samples and every one of the town's physics boxes: (13, -21) came back
+  // clear by 6.0 m of the nearest box and 3.3 m of the nearest wandering soul, outside the fountain's
+  // own 17 m hand-placed circle (so clear of `victorianRegion`'s own fill too) and well past the four
+  // stall keepers' own pitches, the juggler and the lane's own foot traffic.
+  { const nx = 13, nz = -21, ry = atan2(-1.2 - nx, -30 - nz);
+    const newsWard = makeWardrobe(r, { shirts: [0x6a5a4a, 0x5a4a3a, 0x4a4a5a], pants: [0x2a2420], shoes: [0x2a2018] });
+    const newsboy = makeHuman({ ...randomPerson(r, { female: r.chance(0.3), child: true, elder: false, wardrobe: newsWard }),
+      pants: 0x2a2420, hat: 'flatcap', hatColor: 0x3a3327, bag: null, jacket: null, scarf: r.chance(0.5) ? 0x7a6a5a : null });
+    W.add(newsboy.group);
+    const nb = new Vendor(game, newsboy, makeNewspaperBundle(), { x: nx, z: nz, ry, cryIcon: '📰',
+      cries: ['Paper! Read all about it!', 'Clock tower strikes true again, shocking news!', "Cat spotted in the market square — you heard it here first!"] });
+    game.npcs.push(nb); greetable(game, nb); }
   // Candy Land, Sunny Shore, Frosty Peak and Whisper Woods all have something looping overhead by now
   // (butterflies, gulls, snow buntings, fairies and more butterflies) — Victorian's own sky over the market
   // square had nothing in it at all. Five doves now wheel above the square, white against the dusk sky, the

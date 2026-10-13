@@ -530,6 +530,14 @@ function makeCheeseWheel() {
   }
   return g;
 }
+/** A tied bundle of folded newspapers, for a newsboy to hold up to the street. */
+function makeNewspaperBundle() {
+  const g = new THREE.Group(), paper = mat(0xe8e2d0, { roughness: 0.95 });
+  for (let i = 0; i < 6; i++) mesh(G.box(0.17, 0.012, 0.12), paper, { y: i * 0.013, ry: (i % 2) * 0.1 - 0.05, z: (i % 3 - 1) * 0.006, parent: g });
+  mesh(G.cyl(0.006, 0.006, 0.17, 6), mat(0x8a3a3a, { roughness: 0.7 }), { y: 0.04, rz: PI / 2, parent: g });
+  mesh(G.cyl(0.006, 0.006, 0.12, 6), mat(0x8a3a3a, { roughness: 0.7 }), { y: 0.04, rx: PI / 2, parent: g });
+  return g;
+}
 /** A glass jar of striped peppermints with a red lid, for a candy stall keeper to hold up. */
 function makeCandyJar() {
   const g = new THREE.Group(), glass = mat(0xf0f8ff, { roughness: 0.15, transparent: true, opacity: 0.35 });
