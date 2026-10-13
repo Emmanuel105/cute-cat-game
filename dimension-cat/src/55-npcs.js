@@ -1438,6 +1438,33 @@ class Birder {
   }
 }
 
+// ---------------------------------------------------------------- crossing guard: a lollipop sign lifted overhead every few seconds to halt traffic, then lowered again
+class CrossingGuard {
+  constructor(game, rig, { x, z, ry = 0, cries = null }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10; this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false;
+    this.state = 'idle'; this.timer = 0; this.cries = cries; this.cryIcon = '🛑'; this.cryT = rnd.range(4, 9); this.raised = false; this.raiseT = rnd.range(4, 7); this.reach = 0;
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    const poleM = mat(0x2a2a2a, { roughness: 0.6, metalness: 0.3 }), discM = mat(0xd62839, { roughness: 0.6 }), rimM = mat(0xf7f3ec, { roughness: 0.6 });
+    const sign = group(0, 0.14, 0.06, rig.hands[0]); sign.rotation.x = -0.25;
+    mesh(G.cyl(0.015, 0.018, 0.5, 6), poleM, { y: 0.25, parent: sign });
+    mesh(G.cyl(0.15, 0.15, 0.025, 8), discM, { y: 0.52, rx: PI / 2, parent: sign });
+    noInk(mesh(G.torus(0.15, 0.015, 5, 8), rimM, { y: 0.52, rx: PI / 2, shadow: 'none', parent: sign }));
+    this.circle = game.physics.addCircle(this, x, z, 0.35);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig;
+    rig.animate(0, false, dt, this.t);
+    this.raiseT -= dt;
+    if (this.raiseT <= 0) { this.raised = !this.raised; this.raiseT = this.raised ? rnd.range(3, 5) : rnd.range(5, 9); }
+    this.reach = damp(this.reach, this.raised ? 1 : 0, 7, dt);
+    if (!rig.gesture) for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -0.5 - this.reach * 2.1, 10, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.3 - this.reach * 0.9, 10, dt); A.sh.rotation.z = (A === rig.arms[0] ? 1 : -1) * (0.3 - this.reach * 0.15); }
+    rig.head.rotation.x = damp(rig.head.rotation.x, this.raised ? -0.15 : 0.05, 6, dt);
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- ice fisher: sits by the hole, rod dipping, and strikes every so often
 // (also used for a pier fisherman over open water — pass `seatY` when the seat isn't at ground0)
 class IceFisher {

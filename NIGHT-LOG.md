@@ -11477,3 +11477,42 @@ corner of the plaza from the fiddler and the painter.
 Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, Victorian's
 own friend count up one to 76. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 446 — a crossing guard for the Neighborhood
+
+The Neighborhood has had cars, a cyclist and the postie crossing the side road for rounds now, but
+nobody ever actually watched the junction. **A crossing guard now stands on the south pavement right
+where the side road meets the main street**, hi-vis jacket over a dark cap, a red lollipop sign lifted
+overhead every few seconds as if halting traffic, then lowered again. *"Stop, look, listen — works for
+cats too."* *"Thirty years on this corner, not a scratch."* *"No running near the kerb, now."*
+
+New controller, `CrossingGuard` in `55-npcs.js`, sitting right next to `Birder`: the exact same
+raise/lower arm cycle the binocular-raising birdwatcher already uses, just with a pole-and-disc sign
+in the hand instead of binoculars, and both arms lifting together as if holding the sign up with both
+hands. A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real
+Neighborhood, sampled every NPC's own position every 1/15 s over 300 simulated seconds — the postie's
+full round, both cars' laps and the cyclist's sweep all included — and swept (44, 10.4), the south
+pavement at the side road, against both that trace and every physics box on the street: clear by 3.9 m
+of the nearest box (a street lamp) and 16.3 m of the nearest other soul. The street's own trees already
+skip `abs(x-44)<6` along this row to leave the side road clear overhead, so nothing else was planted
+this close to the junction to collide with either.
+
+First attempt placed the guard up by the cars loop, right after the vehicles are built. That passed
+every other check but failed `a cyclist rides the westbound lane (… pedalling)` — not the distance part,
+just the hip-rotation delta, by a hair (0.039 against a 0.05 floor). Bisecting it: the new controller's
+own construction draws from the shared `rnd()` sequence (same as every other controller's `this.t =
+rnd() * 10`), and the person it shifted forward wasn't the cyclist itself but the washer a few lines
+later — now built one person later than baseline, with a different idle timer, which meant the
+upstream "a neighbour waves when the cat walks up" test's own frame-by-frame wait loop ran a different
+number of iterations before the wave fired. That shifted the total elapsed simulated time by the point
+the cyclist check takes its two snapshots, landing its wheel's accumulated rotation on a different
+point in its own sine cycle — close enough to its own starting angle 2 s later that the hip barely
+seemed to move at all, even though the bike itself had plainly travelled 7.2 m. Moving the guard to the
+very end of the people section instead — after the sunbather, before the telescope, the same "last, so
+it draws from the tail of the local RNG sequence" trick half the street's other additions already use
+— fixed it with no `rnd()` burn calls needed: nothing built after the guard depends on exact timing,
+and nothing built before it moved at all.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings, the
+Neighborhood's own friend count up one to 57. No change to collectibles, walkable percentage (still
+96%), or any other world. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

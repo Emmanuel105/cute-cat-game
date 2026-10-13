@@ -827,6 +827,29 @@ function buildNeighborhood(game, entry) {
       glasses: true, shorts: true, hat: null, jacket: null, scarf: null, bag: null, backpack: null }); W.add(lounger.group);
     game.npcs.push(new Sunbather(game, lounger, { x: bx, z: bz, ry,
       cries: ["Who needs the seaside when you've got a garden?", 'Five more minutes...', "Shout if a cloud comes over, would you?"] })); }
+  // cars, a cyclist and the postie's own round all cross the side road, but nobody ever watched the
+  // junction itself. A crossing guard now stands on the south pavement right where the side road meets
+  // the main street — hi-vis jacket, lollipop sign lifted overhead every few seconds as if halting the
+  // traffic, then lowered again (own explicit colours, not the street's shared `ward` bag, which is
+  // sized exactly to its 18 users already; placed last, after the sunbather, so it draws from the tail
+  // of the local RNG sequence and leaves every earlier neighbour's random wardrobe pick undisturbed —
+  // the first attempt placed it up by the cars instead and it shifted the wave-test neighbour's own
+  // idle timer enough to upset the cyclist's pedalling-delta check later in the same test run, found by
+  // bisecting the failure). *"Stop, look, listen — works for cats too."* *"Thirty years on this corner,
+  // not a scratch."* *"No running near the kerb, now."*
+  // New controller (`CrossingGuard`, alongside `Birder` in 55-npcs.js — same raise/lower arm cycle, a
+  // sign on a pole in place of binoculars). A headless probe built the real Neighborhood, then sampled
+  // every NPC's own position every 1/15 s over 300 simulated seconds (the postie's full round, both
+  // cars' laps and the cyclist's sweep all included) and swept (44, 10.4) — the south pavement at the
+  // side road, same pavement the street's own `Talkers` already stand on — against both that trace and
+  // every physics box in the street: clear by 3.9 m of the nearest box (a street lamp) and 16.3 m of the
+  // nearest other soul. The street trees already skip `abs(x-44)<6` here to leave the side road clear
+  // overhead, so there is nothing planted this close to the junction to collide with either.
+  { const guard = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.2) }),
+      shirt: 0x8a9aae, pants: 0x2a2a2a, shoes: r.pick([0x1e1a18, 0x2a2018]),
+      jacket: 0xf2c744, stripes: 0xe8e8e8, hat: 'cap', hatColor: 0x2a2a2a, glasses: r.chance(0.25), scarf: null, bag: null, backpack: null }); W.add(guard.group);
+    game.npcs.push(new CrossingGuard(game, guard, { x: 44, z: 10.4, ry: 0,
+      cries: ['Stop, look, listen — works for cats too.', 'Thirty years on this corner, not a scratch.', 'No running near the kerb, now.'] })); }
   // every "look up" toast so far has picked a landmark someone already built — a tower, a statue, a
   // signpost — but the Neighborhood is the one world with a real day/night cycle, and nothing in it had
   // ever pointed the cat at the sky it earns every evening. A small brass-and-wood telescope now stands

@@ -3245,6 +3245,33 @@ class Birder {
   }
 }
 
+// ---------------------------------------------------------------- crossing guard: a lollipop sign lifted overhead every few seconds to halt traffic, then lowered again
+class CrossingGuard {
+  constructor(game, rig, { x, z, ry = 0, cries = null }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10; this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false;
+    this.state = 'idle'; this.timer = 0; this.cries = cries; this.cryIcon = '🛑'; this.cryT = rnd.range(4, 9); this.raised = false; this.raiseT = rnd.range(4, 7); this.reach = 0;
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    const poleM = mat(0x2a2a2a, { roughness: 0.6, metalness: 0.3 }), discM = mat(0xd62839, { roughness: 0.6 }), rimM = mat(0xf7f3ec, { roughness: 0.6 });
+    const sign = group(0, 0.14, 0.06, rig.hands[0]); sign.rotation.x = -0.25;
+    mesh(G.cyl(0.015, 0.018, 0.5, 6), poleM, { y: 0.25, parent: sign });
+    mesh(G.cyl(0.15, 0.15, 0.025, 8), discM, { y: 0.52, rx: PI / 2, parent: sign });
+    noInk(mesh(G.torus(0.15, 0.015, 5, 8), rimM, { y: 0.52, rx: PI / 2, shadow: 'none', parent: sign }));
+    this.circle = game.physics.addCircle(this, x, z, 0.35);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig;
+    rig.animate(0, false, dt, this.t);
+    this.raiseT -= dt;
+    if (this.raiseT <= 0) { this.raised = !this.raised; this.raiseT = this.raised ? rnd.range(3, 5) : rnd.range(5, 9); }
+    this.reach = damp(this.reach, this.raised ? 1 : 0, 7, dt);
+    if (!rig.gesture) for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -0.5 - this.reach * 2.1, 10, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.3 - this.reach * 0.9, 10, dt); A.sh.rotation.z = (A === rig.arms[0] ? 1 : -1) * (0.3 - this.reach * 0.15); }
+    rig.head.rotation.x = damp(rig.head.rotation.x, this.raised ? -0.15 : 0.05, 6, dt);
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- ice fisher: sits by the hole, rod dipping, and strikes every so often
 // (also used for a pier fisherman over open water — pass `seatY` when the seat isn't at ground0)
 class IceFisher {
@@ -7501,6 +7528,29 @@ function buildNeighborhood(game, entry) {
       glasses: true, shorts: true, hat: null, jacket: null, scarf: null, bag: null, backpack: null }); W.add(lounger.group);
     game.npcs.push(new Sunbather(game, lounger, { x: bx, z: bz, ry,
       cries: ["Who needs the seaside when you've got a garden?", 'Five more minutes...', "Shout if a cloud comes over, would you?"] })); }
+  // cars, a cyclist and the postie's own round all cross the side road, but nobody ever watched the
+  // junction itself. A crossing guard now stands on the south pavement right where the side road meets
+  // the main street — hi-vis jacket, lollipop sign lifted overhead every few seconds as if halting the
+  // traffic, then lowered again (own explicit colours, not the street's shared `ward` bag, which is
+  // sized exactly to its 18 users already; placed last, after the sunbather, so it draws from the tail
+  // of the local RNG sequence and leaves every earlier neighbour's random wardrobe pick undisturbed —
+  // the first attempt placed it up by the cars instead and it shifted the wave-test neighbour's own
+  // idle timer enough to upset the cyclist's pedalling-delta check later in the same test run, found by
+  // bisecting the failure). *"Stop, look, listen — works for cats too."* *"Thirty years on this corner,
+  // not a scratch."* *"No running near the kerb, now."*
+  // New controller (`CrossingGuard`, alongside `Birder` in 55-npcs.js — same raise/lower arm cycle, a
+  // sign on a pole in place of binoculars). A headless probe built the real Neighborhood, then sampled
+  // every NPC's own position every 1/15 s over 300 simulated seconds (the postie's full round, both
+  // cars' laps and the cyclist's sweep all included) and swept (44, 10.4) — the south pavement at the
+  // side road, same pavement the street's own `Talkers` already stand on — against both that trace and
+  // every physics box in the street: clear by 3.9 m of the nearest box (a street lamp) and 16.3 m of the
+  // nearest other soul. The street trees already skip `abs(x-44)<6` here to leave the side road clear
+  // overhead, so there is nothing planted this close to the junction to collide with either.
+  { const guard = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.2) }),
+      shirt: 0x8a9aae, pants: 0x2a2a2a, shoes: r.pick([0x1e1a18, 0x2a2018]),
+      jacket: 0xf2c744, stripes: 0xe8e8e8, hat: 'cap', hatColor: 0x2a2a2a, glasses: r.chance(0.25), scarf: null, bag: null, backpack: null }); W.add(guard.group);
+    game.npcs.push(new CrossingGuard(game, guard, { x: 44, z: 10.4, ry: 0,
+      cries: ['Stop, look, listen — works for cats too.', 'Thirty years on this corner, not a scratch.', 'No running near the kerb, now.'] })); }
   // every "look up" toast so far has picked a landmark someone already built — a tower, a statue, a
   // signpost — but the Neighborhood is the one world with a real day/night cycle, and nothing in it had
   // ever pointed the cat at the sky it earns every evening. A small brass-and-wood telescope now stands
