@@ -11771,3 +11771,37 @@ varying only 0.06 m across the whole footprint.
 Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings. Whisper
 Woods' own friend count, collectible count and walkable percentage (98%) are all unchanged. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 456 — a security camera for Robot City
+
+The sentry robot has patrolled the south yard on two legs for rounds now, muttering "no unauthorized
+felines detected" as it goes — but nothing in the whole city had ever actually watched from a wall.
+**A security camera now rides a bracket bolted to the east face of the south-west skyscraper**, lens
+panning to keep the cat in frame whenever it wanders within 18 metres, swinging back to a slow,
+unhurried scan of its own patch the rest of the time. The LED over the lens burns steady red while
+it's tracking and blinks slow while it waits, with one soft electronic beep the moment it first picks
+the cat up. Stand at the tower's foot and press E to look up at it: *"Still red. Still watching. The
+foreman swears it's for security."* *"Follows anything that moves. Logged you as feline, unauthorized,
+round one."*
+
+New code only, no new rig: the camera is built inline in `buildRobotCity()` (`70-worlds.js`), bolted
+onto the same tower group the radar dish already uses for its own "look up" toast, just the other one
+of the six hand-placed towers. Its pan is clamped to a ±57° arc off its resting aim toward the yard —
+worked out with `atan2` and the same `clamp`/`wrapAngle`/`dampAngle` helpers the townsfolk's own
+head-turns already lean on — so it only ever swings away from the wall it's mounted on, never into it.
+No new physics box: the housing sits at y=4, well above the tallest NPC's own head, on the same wall
+the tower's existing footprint already covers, so it needed no ground-clearance probe of its own —
+only a check that nothing else hand-placed sits within range of its own 6.5 m "look up" radius, and
+the nearest (the sentry's patrol rectangle) stays 15+ m off.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses, with the game actually
+started so the world's own update loop runs) confirmed the lens sweeps on its own when the cat is far
+off, swings smoothly round to track it once it's within range (verified the resulting angle matches
+the one straight-line geometry predicts, to three decimal places, after accounting for the bracket's
+own offset from the tower's centre), and that standing at the tower's foot surfaces the new "Look up
+at the security camera" prompt and runs its `onUse` clean.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged at 309. Robot City's own friend count (73), collectible count (8) and walkable
+percentage (89%) are all unchanged, since the camera adds no greetable id, no box and no zone.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

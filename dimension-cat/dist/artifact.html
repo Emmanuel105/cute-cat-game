@@ -9570,7 +9570,44 @@ function buildRobotCity(game, entry) {
   // to notice from the ground.
   [[-30, -30, 7, 16], [32, -28, 8, 20], [-34, 26, 9, 14], [34, 24, 7, 18], [-38, 0, 6, 12], [38, -6, 7, 15]].forEach(([x, z, w, h], i) => {
     const b = makeSkyscraper(w, h, w, floor(abs(x + z))); place(game, U, b, x, z, 0); P.addBox(x, h / 2, z, w, h, w);
-    if (i === 1) {
+    if (i === 0) {
+      // the sentry already patrols this yard on two legs, logging "no unauthorized felines detected"
+      // as it goes, but nothing in the city had ever actually watched from a wall. A security camera
+      // now rides a bracket on this tower's own east face, panning to keep the cat in frame within an
+      // 18 m radius — clamped to a ±57° arc off its resting aim toward the yard, so it only ever swings
+      // away from the wall, never into it — and sweeping that same arc on a slow idle scan the rest of
+      // the time. The LED over its lens burns steady red while it tracks and blinks slow while it
+      // waits, with one soft beep the moment it first picks the cat up. No new physics box and no
+      // clearance probe of its own: the housing sits at y=4, well above the tallest NPC's own head, on
+      // the same wall this tower's own footprint already covers, and the "look up" toast below reuses
+      // the tower group `b` exactly as the radar dish's own interactable already does — the nearest
+      // other hand-placed prop (the sentry's own patrol rectangle, [-15,-35]..[15,-45]) stays 15+ m off.
+      const camY = 4, mountX = w / 2 + 0.42, baseAngle = atan2(0 - x, -40 - z), cone = 1.0;
+      const steel = mat(0x5a6470, { metalness: 0.8, roughness: 0.35 }), dark = mat(0x16181e, { roughness: 0.6 }), lensM = mat(0x0c0c0c, { metalness: 0.5, roughness: 0.3 });
+      mesh(G.box(0.08, 0.5, 0.08), steel, { x: w / 2, y: camY - 0.25, parent: b });
+      mesh(G.cyl(0.03, 0.05, 0.42, 8), steel, { x: w / 2 + 0.21, y: camY, rz: PI / 2, parent: b });
+      const pivot = group(mountX, camY, 0, b); pivot.rotation.y = baseAngle;
+      mesh(G.box(0.22, 0.2, 0.34), dark, { parent: pivot });
+      mesh(G.cyl(0.1, 0.09, 0.22, 14), lensM, { z: 0.22, rx: PI / 2, parent: pivot });
+      const led = mesh(G.sphere(0.03, 8, 6), glowMat(0xff3b3b, 0.8), { y: 0.07, z: 0.17, shadow: 'none', parent: pivot });
+      let tracking = false;
+      U.push((dt, t) => {
+        const cat = game.cat.group.position, dx = cat.x - (x + mountX), dz = cat.z - z;
+        if (dx * dx + dz * dz < 324) {
+          const target = baseAngle + clamp(wrapAngle(atan2(dx, dz) - baseAngle), -cone, cone);
+          pivot.rotation.y = dampAngle(pivot.rotation.y, target, 4, dt);
+          if (!tracking) SFX.beep();
+          tracking = true;
+          led.material.emissiveIntensity = 2.4;
+        } else {
+          pivot.rotation.y = dampAngle(pivot.rotation.y, baseAngle + sin(t * 0.4) * cone, 2, dt);
+          tracking = false;
+          led.material.emissiveIntensity = 0.5 + max(0, sin(t * 1.1)) * 0.9;
+        }
+      });
+      const camLines = ['📷 "Still red. Still watching. The foreman swears it\'s for security."', '📷 "Follows anything that moves. Logged you as feline, unauthorized, round one."', '📷 "No tape in that thing for years. Nobody\'s told maintenance."'];
+      game.addInteractable({ obj: b, radius: 6.5, label: () => 'Look up at the security camera', onUse: () => { SFX.click(); game.toast(rnd.pick(camLines), 3000); } });
+    } else if (i === 1) {
       addRadarDish(b, h); U.push(b.userData.update);
       // every other landmark in the city got a one-off "walk up and look" toast by now (the statue, the
       // zipline towers elsewhere) but the one thing in Robot City that actually moves on its own against
