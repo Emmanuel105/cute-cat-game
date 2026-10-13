@@ -11267,3 +11267,32 @@ exactly the neck's own bottom (y = 0.69) with no gap either.
 Full suite (`node test/run.mjs`) ran clean twice in a row — exit 0, all 274 checks `ok`, 0 console
 warnings both times. Nothing else changed: no new friend, no collectible, no change to Victorian's own
 walkable percentage. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 439 — an airship over Robot City
+
+Every world's sky has had shooting stars since round 406, and Victorian picked up its own hot air
+balloon just last round — Robot City's sky, for all its skyline of beacon-topped towers, never had
+anything actually fly over it. **A riveted grey airship — a glowing cyan stripe round its middle, a
+blinking nose light and a spinning tail propeller — now circles the whole city, 100 m up on a slow
+170 m orbit**, well clear of even the tallest beacon-topped tower (61 m). Purely decorative: nothing
+to greet, nothing to reach, no dialogue.
+
+No new controller, no physics box at all, same reasoning as the balloon: flying 39 m above the
+tallest rooftop clears every skyscraper by a wide margin, so it needed no keep-out check against
+`game.zones` or any of the city's physics boxes. The hull is one raw `THREE.CapsuleGeometry` (hand-
+tracked with `worldBag.track()` since it skips the cached `G.*` helpers), built pole-to-pole along
+its own local Y axis and carried by a child group rotated `PI/2` about X so that axis lands on local
+Z — nose at +z, tail at -z — before the assembly is ever moved onto its orbit. Rotating the outer
+group by `-a` (the orbit's own angle) always points local +z along the orbit's own direction of
+travel, the same identity the balloon's own heading trick happens to satisfy for any circular path,
+so no separate heading math was needed. The tail fins are a flat-box cross and the propeller is a hub
+plus two thin crossed blades, through `noInk()` for the same reason the balloon's ropes needed it —
+thin enough that the ink pass would otherwise draw a solid line instead of a spinning blur.
+
+Drifts entirely on the world clock `t` (bob, roll, the nose light's blink and the propeller's spin
+all keyed off `t` alone) from one fixed starting angle drawn once off this world's own local `r()`,
+placed last of everything this build adds, after the woodcutter, so it disturbs no earlier pick.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings. Nothing else
+changed: no new friend, no collectible, no change to Robot City's own walkable percentage. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

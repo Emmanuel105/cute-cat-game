@@ -10285,6 +10285,63 @@ function buildRobotCity(game, entry) {
     }
     game.npcs.push(new Chopper(game, cutter, { x: cx, z: cz, ry: atan2(sx - cx, sz - cz),
       cries: ['Pallets off the belt, split for the break room stove.', 'Careful, puss — mind the chips.', "East yard's the only place with room to swing this thing."] })); }
+  // every world's sky has had shooting stars since round 406, and Victorian's own hot air balloon
+  // has circled its rooftops since round 438 — Robot City's sky, for all its skyline of beacon-
+  // topped towers, never had anything actually fly over it. **A riveted grey airship — a glowing
+  // cyan stripe round its middle, a blinking nose light and a spinning tail propeller — now circles
+  // the whole city, 100 m up on a slow 170 m orbit**, well clear of even the tallest beacon-topped
+  // tower (61 m). Purely decorative: nothing to greet, nothing to reach, no dialogue.
+  //
+  // No new controller, no physics box of its own: flying 39 m above the tallest rooftop clears
+  // every skyscraper and beacon by a wide margin, so — exactly like the balloon — it needs no
+  // keep-out check against `game.zones` or any of the city's physics boxes the way anything on the
+  // ground does. The hull is one raw `THREE.CapsuleGeometry` (tracked by hand with `worldBag.track()`
+  // since it bypasses the cached `G.*` helpers), built pole-to-pole along its own local Y axis like
+  // any capsule, carried by a child group rotated `PI/2` about X so that axis lands on local Z —
+  // nose at +z, tail at -z — before the whole assembly is ever moved onto its orbit; scale and
+  // rotation on a single object always compose local-space-first, so the capsule's long axis survives
+  // that one rotation intact regardless of whatever yaw the outer group gets each frame afterward.
+  // The tail fins (a vertical fin and two horizontal ones, the same flat-box cross every real airship
+  // uses) and the single pusher propeller sit at the -z end; the blinking nose light sits at +z.
+  // Rotating the outer group by `-a` (`a` being the orbit's own angle) always points local +z along
+  // the orbit's own direction of travel — the same identity the balloon's own `rotation.y = -a`
+  // happens to satisfy for any circular path, so no separate heading calculation is needed. The
+  // propeller blades are thin flat boxes, the same order of thinness as the balloon's own ropes, so
+  // they go through `noInk()` for the same reason: a pixel or two wide and the ink pass would draw a
+  // solid line across the sky instead of a spinning blur.
+  //
+  // Drifts entirely on the world clock `t` (bob, roll, the nose light's blink and the propeller's own
+  // spin all keyed off `t` alone) from one fixed starting angle drawn once off this world's own local
+  // `r()`, so it costs no later wardrobe or layout pick — placed last of everything this build adds,
+  // after the woodcutter, so even that one draw disturbs nothing built earlier in the city.
+  { const airR = 170, airH = 100, airSpeed = TAU / 260, airPhase = r() * TAU;
+    const airship = group(0, 0, 0);
+    const hullM = mat(0x6b7480, { metalness: 0.5, roughness: 0.4 });
+    const envGroup = group(0, 0, 0, airship); envGroup.rotation.x = PI / 2;
+    const envGeo = new THREE.CapsuleGeometry(1.7, 6.2, 4, 12); worldBag.track(envGeo);
+    mesh(envGeo, hullM, { shadow: 'none', parent: envGroup });
+    mesh(G.cyl(1.72, 1.72, 0.35, 16), glowMat(0x00e5ff, 1.4), { shadow: 'none', parent: envGroup });
+    mesh(G.box(1.5, 0.75, 2.2), mat(0x3a3f48, { roughness: 0.6 }), { y: -2.3, z: 0.3, shadow: 'none', parent: airship });
+    mesh(G.box(1.46, 0.22, 0.12), glowMat(0x00e5ff, 1.2), { y: -2.3, z: 1.4, shadow: 'none', parent: airship });
+    const nose = mesh(G.sphere(0.22, 8, 6), glowMat(0xffffff, 2.6), { z: 4.9, shadow: 'none', parent: airship });
+    const finM = mat(0x454b56, { roughness: 0.7 });
+    mesh(G.box(0.1, 2.0, 1.3), finM, { z: -3.9, shadow: 'none', parent: airship });
+    mesh(G.box(2.0, 0.1, 1.3), finM, { y: 0.55, z: -3.9, shadow: 'none', parent: airship });
+    mesh(G.box(2.0, 0.1, 1.3), finM, { y: -0.55, z: -3.9, shadow: 'none', parent: airship });
+    const propGroup = group(0, 0, -4.1, airship);
+    mesh(G.cyl(0.12, 0.12, 0.3, 8), finM, { rx: PI / 2, shadow: 'none', parent: propGroup });
+    const bladeM = mat(0x2e323a, { roughness: 0.6 });
+    noInk(mesh(G.box(0.06, 1.1, 0.16), bladeM, { shadow: 'none', parent: propGroup }));
+    noInk(mesh(G.box(1.1, 0.06, 0.16), bladeM, { shadow: 'none', parent: propGroup }));
+    airship.userData.update = (dt, t) => {
+      const a = airPhase + t * airSpeed;
+      airship.position.set(cos(a) * airR, airH + sin(t * 0.11) * 2.5, sin(a) * airR);
+      airship.rotation.y = -a;
+      airship.rotation.z = sin(t * 0.3) * 0.02;
+      propGroup.rotation.z += dt * 9;
+      nose.material.emissiveIntensity = sin(t * 2.2) > 0 ? 2.6 : 0.3;
+    };
+    place(game, U, airship, cos(airPhase) * airR, sin(airPhase) * airR, 0, airH); }
   const sq = new Squirrel(game, -14, -9, 'sq-robot'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('mouse', -8, 7); C.add('star', 12, -22); C.add('fish', -18, 2); C.add('yarn', 21, 9); C.add('star', 0, -27); C.add('fish', 4, 14); C.add('mouse', 26, -18); C.add('yarn', -26, -6);
