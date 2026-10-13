@@ -11905,3 +11905,30 @@ Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, all 
 warnings. A targeted headless check confirmed the newsboy is in the scene graph, his "Say hi" prompt
 fires and registers him as a friend, and his position stays finite. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 460 — a snowy owl for Frosty Peak
+
+Whisper Woods has had three tawny owls hooting back at the cat since early on, but no other world ever
+got one of its own, and a mountain forest without a single owl in it felt like an oversight. **A snowy
+owl now perches on the pine already standing at the edge of the ring, white and pale grey instead of
+brown, blinking and turning its head to watch the cat go by.** Say hello and it hoots back: *"Who?
+...Still just you. Still cold."*
+
+`makeOwl()` in `56-npcs-wild.js` took no colour arguments before this round — every call baked in the
+same tawny-brown-and-cream rig. It now takes an optional `{ body, face }` override; the three Whisper
+Woods calls are untouched (and so still brown), and Frosty Peak's new one passes a pale off-white pair
+instead. No new geometry, no new controller — same perched-and-blinking rig, same branch mesh nailed to
+the trunk, same `game.namedFriend()` + `addInteractable()` "say hello" pattern the forest's owls
+already use, just recoloured and given its own hoot timer.
+
+Placement needed no new probe: the pine at (30, 26) was already one of the mountain's hand-placed ring
+trees, already carrying its own ground-level physics box from that planting line, and the owl sits 6.6 m
+up on an offset branch, the same height and offset the forest build already uses for its three. A perched
+creature up a tree doesn't block any road or path check at ground level, and doesn't collide with the
+deer wandering underneath it either, so the existing tree was enough — nothing at ground level needed
+re-checking.
+
+Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, all checks `ok`, 0 console
+warnings. Frosty Peak's own friend count went from 63 to 64, Whisper Woods' owls are unaffected (still
+brown, still three), and no other world's counts moved. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

@@ -183,6 +183,19 @@ function buildSnowVillage(game, entry) {
   // ring — south of the reindeer and the searcher's sweep, well clear of the cave tunnel's flat strip
   // (which only ever runs within 9 m of x=0) and the sled run's corridor further west
   { const rig = makeArcticFox(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x: 12, z: -48, speed: 1.1, leash: 8, r: 0.3, height: 0.7, step: 0.3, idle: [1, 3], walk: [2, 5] })); }
+  // a snowy owl perches on the pine already standing at (30, 26) — one of the hand-placed ring trees
+  // above — the exact same perched-and-blinking rig Whisper Woods' three owls use (`makeOwl()` in
+  // 56-npcs-wild.js, which now takes an optional colour override), just recoloured white and pale grey
+  // instead of tawny brown. No new tree, no new physics box: the pine's own trunk collision (placed a
+  // few lines up) already covers the ground below it, and the owl sits 6.6 m up, same height and same
+  // branch-offset trick the forest build already uses, so nothing at ground level needs checking twice.
+  { const ox = 30, oz = 26, oy = P.ground0(ox, oz) + 6.6;
+    const owl = makeOwl({ body: 0xf4f5f8, face: 0xe3e8f0 }); owl.group.position.set(ox + 1.8, oy, oz); owl.group.rotation.y = atan2(-ox, -oz); W.add(owl.group);
+    mesh(G.cyl(0.08, 0.1, 1.6, 6), mat(0x4a3323), { x: ox + 1.2, y: oy - 0.05, z: oz, rz: PI / 2, parent: W });
+    let ot = r() * 10; U.push((dt) => { ot += dt; owl.animate(0, false, dt, ot); });
+    let hootT = 7; U.push((dt) => { hootT -= dt; if (hootT <= 0) { SFX.hoot(); hootT = rnd.range(9, 17); } });
+    const oid = game.namedFriend('snowyOwl');
+    game.addInteractable({ obj: owl.group, radius: 3.4, label: () => 'Say hello to the owl', onUse: () => { game.befriend(oid); SFX.hoot(); game.hearts(owl.group.position.x, owl.group.position.y - 0.4, owl.group.position.z, 3); game.toast('🦉 "Who? ...Still just you. Still cold."'); } }); }
   // a reindeer keeper kneels by the herd's middle spot, checking harness bells before the next run
   { const dx = -18, dz = -12, kx = dx + 2.1, kz = dz + 0.4;
     const keeperWard = makeWardrobe(r, { shirts: [0x5a4a3a, 0x3a5a4a, 0x4a3a5a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });

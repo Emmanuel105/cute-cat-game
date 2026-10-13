@@ -429,9 +429,11 @@ function makeLadybug(color = 0xd6263a) {
 }
 
 // ---------------------------------------------------------------- owl (perched; only animates)
-function makeOwl() {
+// `o.body`/`o.face` recolour it (a snowy owl for Frosty Peak); omitted, it's the brown tawny owl
+// Whisper Woods has always had, so every existing call is unaffected.
+function makeOwl(o = {}) {
   const g = new THREE.Group(), rig = { group: g };
-  const brown = mat(0x6d4c2f, { roughness: 1 }), cream = mat(0xe8d4b0, { roughness: 1 }), dark = mat(0x111111), amber = glowMat(0xffb300, 0.9);
+  const brown = mat(o.body ?? 0x6d4c2f, { roughness: 1 }), cream = mat(o.face ?? 0xe8d4b0, { roughness: 1 }), dark = mat(0x111111), amber = glowMat(0xffb300, 0.9);
   const body = group(0, 0, 0, g); rig.body = body;
   mesh(G.capsule(0.13, 0.16, 12), brown, { y: 0.24, parent: body });
   mesh(G.capsule(0.09, 0.12, 12), cream, { y: 0.21, z: 0.07, shadow: 'none', parent: body });
