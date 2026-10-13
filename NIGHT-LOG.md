@@ -11236,3 +11236,34 @@ Full suite (`node test/run.mjs`) ran clean twice in a row — exit 0, all checks
 both times. Robot City's own friend count is up one (72 to 73 to meet), 89% of the ground still
 walkable, unchanged. All seven worlds now have their own woodcutter. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 438 — a hot air balloon over Victorian
+
+Every world's sky has had gradient, stars, a moon and the odd kite line by now, but nothing anywhere
+had ever actually drifted up there on its own. **A candy-striped hot air balloon — crimson and cream
+canvas gores over a wicker basket, hung on four ropes — now circles the whole Victorian town, 70 m up
+on a slow 150 m orbit**, rising and sinking a few metres as it goes and turning gently as it travels.
+It is purely decorative: nothing to greet, nothing to reach, no dialogue.
+
+No new controller, no physics box at all: flying 70 m up clears the tallest terrace roof (9 m) and
+every lamp post by a wide margin, so for once nothing needed checking against `game.zones` or any of
+the town's 308 physics boxes the way everything on the ground does. The envelope is eight alternating
+gore panels cut straight out of a sphere (`new THREE.SphereGeometry(r, 3, 10, phiStart, phiLength, 0,
+PI)`, one eighth-slice each) — the same trick `makeUmbrella()` already uses for its own canopy wedges,
+just spheres instead of cones, with the two new geometries tracked in `worldBag` the same way. The
+basket's four ropes reuse `makeBike()`'s own `tube()` helper (a midpoint group, `lookAt()` the far
+end, a cylinder rotated to match) — built before the balloon was moved out onto its orbit, since
+`lookAt()` wants its target in the same space the whole rig was still sitting in at that point, not
+wherever the finished orbit happens to place it. Drifts entirely on the world clock `t`, from one fixed
+starting angle drawn off this world's own local `r()` (never the shared `rnd()`), so it costs no later
+wardrobe or colour pick — placed last of everything this build adds, after the frisbee thrower.
+
+No headless probe this time — nothing on the ground to sweep against, since the whole thing floats
+clear of every zone and box in the world by design. Checked the geometry arithmetic by hand instead:
+the envelope's gores span y = 1.38–7.62 (local), the neck y = 0.69–1.44 (overlapping the envelope's
+own underside by 6 cm, not gapping it), and the four ropes rise from the basket's own top (y = 0.5) to
+exactly the neck's own bottom (y = 0.69) with no gap either.
+
+Full suite (`node test/run.mjs`) ran clean twice in a row — exit 0, all 274 checks `ok`, 0 console
+warnings both times. Nothing else changed: no new friend, no collectible, no change to Victorian's own
+walkable percentage. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
