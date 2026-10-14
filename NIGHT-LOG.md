@@ -12429,3 +12429,28 @@ whoever picks this up next.
 Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, physics boxes
 unchanged at 313 (no new collider — the tower's own box already existed). Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 478 — a look up at Candy Land's back corner tower
+
+Two of the castle's four corner towers now have their own "look up" toast — both on the front wall,
+flanking the gate. The other two, on the back wall facing away from the lane, were still bare.
+**One of them, where the back wall meets the east wall, now answers a look too**, with one of three
+lines: *"The quiet side of the castle — nobody ever comes round the back to look."* / *"Same fifteen
+metres as the front towers, just facing the wrong way to get noticed."* / *"Her Majesty's flag flies
+here too, for an audience of nobody but the sweet-lands."*
+
+Same trick as the last two rounds, no new mesh and no new physics box: `castle.towers[0]` — the first
+corner tower `makeCandyCastle` hands back, world (17, 165) — is reused directly as the interactable's
+own `obj`. The back wall sits the same 15 m from the castle's centre as the front wall, just on the far
+side, so the clearance already measured for the front corner mirrors straight across: (21.5, 165) sits
+on open ground past this wall's own outside corner, 1.4 m clear of the tower's box and 4.5 m from its
+centre, comfortably inside the 5.5 m radius. A headless probe (`game.load(1, 'from-hub')`, the same
+stub-three harness `test/run.mjs` itself uses, then 1200 simulated frames sampling every NPC's own
+position throughout) found nothing wandering within 19 m of that point. One corner tower left bare, on
+the back wall's west side, for whoever picks this up next.
+
+Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, all 274 checks `ok`, 0 console
+warnings, physics boxes unchanged at 313 (no new collider — the tower's own box already existed). Also
+ran the unmodified code five times over to confirm a stray Victorian horse-and-carriage timing failure
+seen once mid-session was a pre-existing flake, unrelated to this change. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
