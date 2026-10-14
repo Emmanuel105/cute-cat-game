@@ -11968,3 +11968,41 @@ Full suite (`node test/run.mjs`) ran clean three times in a row after the fix �
 horse and carriage occasionally reports less distance travelled than expected, independent of this
 change, on the baseline before this round too — so three *consecutive* clean runs were confirmed rather
 than just one.) Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 462 — a "lost cat" notice on the park lamp
+
+Pretty much every obvious patch of the Neighborhood has a story by now — a pinwheel, a sprinkler, a
+kennel, a birdhouse and a birdbath on the street's own front yards, a mailbox with its own joke, a
+scarecrow, a crossing guard, a skateboarder. Nobody had ever stapled anything to one of the street
+lamps themselves, though, and there's an obvious joke sitting right there: **the lone park lamp by the
+bench and the pond now carries a "lost cat" notice**, cream paper in a dark frame with a crude cat
+silhouette and a row of tear-off phone-number tabs along the bottom (one already gone). Read it and the
+cat looks it over, entirely unmoved: *"LOST CAT — answers to Mittens. Doesn't answer to much else,
+either."* The cat has no idea who Mittens is, and no plans to find out.
+
+New prop, `makePosterNotice()` in `60-props.js` — a dark backing box, a cream paper box, a sphere head
+and two cone ears for the silhouette, and five little paper tabs along the bottom edge with the middle
+one skipped — four meshes and a sphere, same scale of build as the mailbox's own flag or the wind
+chime's tubes. No new controller, no animation: it's a flat sheet of paper, same precedent as the
+mailbox flag and the lamp basket's own static leaves. It's mounted as a plain child of the park lamp's
+own group (`buildNeighborhood()` had only ever thrown that lamp away inline as
+`place(game, U, makeLamp('modern'), -4, 38, PI / 2)` — now kept in `parkLamp` so the notice, and the
+interactable, can hang off it), so it inherits the lamp's placement and rotation for free and needs no
+physics box of its own: a 0.012 m-thick sheet of paper blocks nothing the lamp's existing 0.3 x 4 x 0.3
+post box wasn't already clearing, and `game.addInteractable` keys off the lamp group itself rather than
+a dedicated anchor mesh, the same shortcut every other lamp-post prop in this game already takes.
+
+Checked with a standalone headless probe (the same stub-three harness `test/run.mjs` itself uses,
+clicking through the start screen the way the real game does): the notice mesh is in the scene graph
+under the lamp, walking the cat to (-4, 36.2) — 1.8 m short of the lamp — makes it `game.nearest` with
+the label "Read the notice", and `game.interact()` fires one of the three toast lines. First pass of
+that probe showed `game.nearest` staying null even standing right next to it; turned out to be the probe
+never clicking the start-screen "Enter" button the real game's own `index.html` always clicks before
+`game.loop()` does anything per-frame, not a bug in the notice itself.
+
+Full suite (`node test/run.mjs`) ran clean six times in a row — exit 0, all 274 checks `ok`, 0 console
+warnings, 309 physics boxes unchanged (the notice adds none). One of the runs during this round's own
+testing came back `exit 1` with no `FAIL:` line printed at all — almost certainly the same pre-existing
+flake these logs have been tracking on Victorian's horse and carriage, caught mid-build rather than
+caused by this round's change, since a bare re-run and five further runs straight after all came back
+clean. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

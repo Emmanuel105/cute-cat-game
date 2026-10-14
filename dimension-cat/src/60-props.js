@@ -742,6 +742,20 @@ function makeMailbox(color, o = {}) {
   return g;
 }
 /**
+ * A "lost cat" notice stapled to a post: a dark frame behind a cream paper square, a crude cat
+ * silhouette (one sphere head, two cone ears) near the top, and a row of tear-off phone-number tabs
+ * along the bottom edge — one of them already gone.
+ */
+function makePosterNotice() {
+  const g = new THREE.Group(), paper = mat(0xf2e8d0, { roughness: 0.9 }), dark = mat(0x1c1c22, { roughness: 0.7 });
+  mesh(G.box(0.46, 0.58, 0.012), dark, { z: -0.005, shadow: 'none', parent: g });
+  mesh(G.box(0.42, 0.54, 0.01), paper, { shadow: 'none', parent: g });
+  mesh(G.sphere(0.055, 10, 8), dark, { y: 0.12, z: 0.016, shadow: 'none', parent: g });
+  for (const sx of [-1, 1]) mesh(G.cone(0.026, 0.05, 6), dark, { x: sx * 0.042, y: 0.165, z: 0.016, rz: sx * 0.5, shadow: 'none', parent: g });
+  for (let i = 0; i < 5; i++) { if (i === 2) continue; mesh(G.box(0.06, 0.09, 0.01), paper, { x: -0.16 + i * 0.08, y: -0.315, z: 0.006, shadow: 'none', parent: g }); }
+  return g;
+}
+/**
  * A wind chime hung from an eave: a wooden disc with a handful of metal tubes dangling at different
  * lengths, a wind-catcher on a thread below them. `userData.update` sways the whole thing and, now and
  * then, rings a few soft notes if the cat is close enough to hear.

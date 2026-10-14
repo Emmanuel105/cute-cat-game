@@ -5159,6 +5159,20 @@ function makeMailbox(color, o = {}) {
   return g;
 }
 /**
+ * A "lost cat" notice stapled to a post: a dark frame behind a cream paper square, a crude cat
+ * silhouette (one sphere head, two cone ears) near the top, and a row of tear-off phone-number tabs
+ * along the bottom edge — one of them already gone.
+ */
+function makePosterNotice() {
+  const g = new THREE.Group(), paper = mat(0xf2e8d0, { roughness: 0.9 }), dark = mat(0x1c1c22, { roughness: 0.7 });
+  mesh(G.box(0.46, 0.58, 0.012), dark, { z: -0.005, shadow: 'none', parent: g });
+  mesh(G.box(0.42, 0.54, 0.01), paper, { shadow: 'none', parent: g });
+  mesh(G.sphere(0.055, 10, 8), dark, { y: 0.12, z: 0.016, shadow: 'none', parent: g });
+  for (const sx of [-1, 1]) mesh(G.cone(0.026, 0.05, 6), dark, { x: sx * 0.042, y: 0.165, z: 0.016, rz: sx * 0.5, shadow: 'none', parent: g });
+  for (let i = 0; i < 5; i++) { if (i === 2) continue; mesh(G.box(0.06, 0.09, 0.01), paper, { x: -0.16 + i * 0.08, y: -0.315, z: 0.006, shadow: 'none', parent: g }); }
+  return g;
+}
+/**
  * A wind chime hung from an eave: a wooden disc with a handful of metal tubes dangling at different
  * lengths, a wind-catcher on a thread below them. `userData.update` sways the whole thing and, now and
  * then, rings a few soft notes if the cat is close enough to hear.
@@ -7304,7 +7318,20 @@ function buildNeighborhood(game, entry) {
     } });
     let quackT = 6; U.push((dt) => { quackT -= dt; if (quackT <= 0) { SFX.squawk(); quackT = rnd.range(10, 18); } }); }
   const bench = makeBench(); place(game, U, bench, 6, 40, PI); P.addBox(6, 0.4, 40, 1.9, 0.8, 0.6, { cam: false });
-  place(game, U, makeLamp('modern'), -4, 38, PI / 2); P.addBox(-4, 2, 38, 0.3, 4, 0.3, { cam: false });
+  const parkLamp = makeLamp('modern'); place(game, U, parkLamp, -4, 38, PI / 2); P.addBox(-4, 2, 38, 0.3, 4, 0.3, { cam: false });
+  // the street's own lamp posts have gone bare since the Neighborhood was first built; this one, the
+  // lone park lamp by the bench and the pond rather than one of the repeating streetLamps[] loop below,
+  // gets a "lost cat" notice stapled to its pole — paper, frame and tabs are a child of the lamp's own
+  // group, so they inherit its placement and world rotation for free and need no new physics box (a
+  // flat sheet of paper 0.012 m thick blocks nothing a 0.3 x 4 x 0.3 lamppost box wasn't already clearing).
+  // Mounted at local (0.1, 1.55, 0) facing local +z, read-height on the post and well under the lamp
+  // arm at y=4.5; `game.addInteractable` keys off the lamp group itself, same as every lamp-post prop
+  // before it that never needed a dedicated anchor mesh.
+  { const notice = makePosterNotice(); notice.position.set(0.1, 1.55, 0); parkLamp.add(notice);
+    const posterLines = ['📋 "LOST CAT — answers to Mittens. Doesn\'t answer to much else, either." The cat reads it twice, entirely unmoved.',
+      '📋 "REWARD IF FOUND." No amount given. The cat decides it still isn\'t worth the trouble.',
+      '📋 Someone has already torn off one of the little phone-number tabs. The cat has no idea who Mittens is, and no plans to ask.'];
+    game.addInteractable({ obj: parkLamp, radius: 2.2, label: () => 'Read the notice', onUse: () => { SFX.click(); game.toast(rnd.pick(posterLines), 3000); } }); }
   const swingSet = makeSwingSet({ color: 0x2e63d8 }); place(game, U, swingSet, -7, 42.5, PI); Z.add(-7, 42.5, 3.4, 3.2);
   Z.add(3.2, 34.3, 1.6, 1.6);   // the balloon seller's pitch, south of the park path
   Z.add(-17.5, 43, 3, 3);       // the painter and her easel, by the pond

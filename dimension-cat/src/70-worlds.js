@@ -448,7 +448,20 @@ function buildNeighborhood(game, entry) {
     } });
     let quackT = 6; U.push((dt) => { quackT -= dt; if (quackT <= 0) { SFX.squawk(); quackT = rnd.range(10, 18); } }); }
   const bench = makeBench(); place(game, U, bench, 6, 40, PI); P.addBox(6, 0.4, 40, 1.9, 0.8, 0.6, { cam: false });
-  place(game, U, makeLamp('modern'), -4, 38, PI / 2); P.addBox(-4, 2, 38, 0.3, 4, 0.3, { cam: false });
+  const parkLamp = makeLamp('modern'); place(game, U, parkLamp, -4, 38, PI / 2); P.addBox(-4, 2, 38, 0.3, 4, 0.3, { cam: false });
+  // the street's own lamp posts have gone bare since the Neighborhood was first built; this one, the
+  // lone park lamp by the bench and the pond rather than one of the repeating streetLamps[] loop below,
+  // gets a "lost cat" notice stapled to its pole — paper, frame and tabs are a child of the lamp's own
+  // group, so they inherit its placement and world rotation for free and need no new physics box (a
+  // flat sheet of paper 0.012 m thick blocks nothing a 0.3 x 4 x 0.3 lamppost box wasn't already clearing).
+  // Mounted at local (0.1, 1.55, 0) facing local +z, read-height on the post and well under the lamp
+  // arm at y=4.5; `game.addInteractable` keys off the lamp group itself, same as every lamp-post prop
+  // before it that never needed a dedicated anchor mesh.
+  { const notice = makePosterNotice(); notice.position.set(0.1, 1.55, 0); parkLamp.add(notice);
+    const posterLines = ['📋 "LOST CAT — answers to Mittens. Doesn\'t answer to much else, either." The cat reads it twice, entirely unmoved.',
+      '📋 "REWARD IF FOUND." No amount given. The cat decides it still isn\'t worth the trouble.',
+      '📋 Someone has already torn off one of the little phone-number tabs. The cat has no idea who Mittens is, and no plans to ask.'];
+    game.addInteractable({ obj: parkLamp, radius: 2.2, label: () => 'Read the notice', onUse: () => { SFX.click(); game.toast(rnd.pick(posterLines), 3000); } }); }
   const swingSet = makeSwingSet({ color: 0x2e63d8 }); place(game, U, swingSet, -7, 42.5, PI); Z.add(-7, 42.5, 3.4, 3.2);
   Z.add(3.2, 34.3, 1.6, 1.6);   // the balloon seller's pitch, south of the park path
   Z.add(-17.5, 43, 3, 3);       // the painter and her easel, by the pond
