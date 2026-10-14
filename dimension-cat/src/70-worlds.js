@@ -2972,6 +2972,51 @@ function buildRobotCity(game, entry) {
       // than 9.5 m, comfortably past this interactable's 6.5 m radius.
       const radarLines = ['📡 "Sweeps the whole skyline every few seconds. Still hasn\'t found anything."', '📡 "Nobody remembers what it\'s listening for. It just keeps listening."', '📡 "Tallest point in the east yard, and the view is mostly more skyline."'];
       game.addInteractable({ obj: b, radius: 6.5, label: () => 'Look up at the radar dish', onUse: () => { SFX.click(); game.toast(rnd.pick(radarLines), 3000); } });
+    } else if (i === 2) {
+      // the camera, the radar dish and (two indices on) the missing-unit notice and the hologram
+      // billboard have each claimed one of these six towers' own roofs by now — this one, the last
+      // bare roof left in the east yard, gets a steam vent instead: a short riveted stack tucked into
+      // one roof corner, puffing pale vapour on a timer, the same rise-drift-fade beat the bubble pipe
+      // and the beekeeper's smoker already use elsewhere in this game, just vertical instead of drifting
+      // sideways, and with no payoff on each cycle (no sparkle, no fx burst) — it's a vent, not a wish.
+      // No new controller, no physics box of its own: the vent sits at local y = h+0.35..0.72, tucked at
+      // local (x=w/2-1.3, z=w/2-1.3) — 4.5 m off the roof centre on the diagonal, clear of the rooftop
+      // block `makeSkyscraper` itself already builds there (half-extent 1.8 m) — well above the tallest
+      // NPC's own head and above this tower's own existing box (half-height h/2, from the `P.addBox`
+      // three lines up), so nothing on the ground can ever reach it bodily. `addInteractable`'s radius
+      // (6.5) just clears this tower's own 6.36 m diagonal corner (half-extent 4.5 m on a square
+      // footprint), the same margin the camera and the radar dish above already bank on, and the
+      // nearest other interactable (the statue at (-44, 22), whose own radius is 3.6) stays 10.77 m off
+      // from this tower's centre — 0.67 m clear of both radii stacked together.
+      // A headless probe (`game.start('new')` then `game.load(2, 'from-prev')`, 300 simulated seconds
+      // so every wandering, patrolling, dancing and ball-tossing robot pack actually moved) swept this
+      // tower's own footprint and interactable radius against every physics box and every quarter-
+      // second NPC sample: the nearest other box (one of the randomly placed inner-ring skyscrapers)
+      // stayed 7.1 m clear and the nearest wandering soul never closer than 11 m, both past the 6.5 m
+      // radius once this tower's own 4.5 m half-extent is added in.
+      const ventX = w / 2 - 1.3, ventZ = w / 2 - 1.3, ventY = h;
+      const steel = mat(0x454b52, { metalness: 0.75, roughness: 0.4 });
+      mesh(G.cyl(0.26, 0.3, 0.7, 12), steel, { x: ventX, y: ventY + 0.35, z: ventZ, parent: b });
+      mesh(G.cyl(0.33, 0.26, 0.12, 12), steel, { x: ventX, y: ventY + 0.72, z: ventZ, shadow: 'none', parent: b });
+      const tipX = x + ventX, tipZ = z + ventZ, tipY = ventY + 0.82;
+      const puffs = [0, 1, 2].map((pi) => ({ m: mesh(G.sphere(0.14, 8, 6), mat(0xdfe6ea, { roughness: 0.9, transparent: true, opacity: 0.45 }), { shadow: 'none', parent: W }), ph: pi * 1.9 }));
+      const cyc = 3.4;
+      let hissT = r.range(2, 4);
+      U.push((dt, t) => {
+        for (const p of puffs) {
+          const k = ((t + p.ph) % cyc) / cyc;
+          p.m.visible = k < 0.95;
+          if (p.m.visible) {
+            p.m.position.set(tipX + sin(t * 0.5 + p.ph) * 0.3 * k, tipY + k * 2.6, tipZ + cos(t * 0.4 + p.ph) * 0.22 * k);
+            p.m.scale.setScalar(0.5 + k * 1.8);
+            p.m.material.opacity = 0.45 * (1 - k);
+          }
+        }
+        hissT -= dt;
+        if (hissT <= 0) { hissT = r.range(5, 9); const c = game.cat.group.position; if (dist2(tipX, tipZ, c.x, c.z) < 400) SFX.noise({ dur: 0.4, vol: 0.03, filter: 2200, type: 'lowpass' }); }
+      });
+      const ventLines = ['💨 "Vented since the city went up. Nobody\'s ever traced the pipe to anything."', '💨 "Warmer up here than down on the floor, if you don\'t mind the hiss."', '💨 "Just steam. The foreman\'s checked. Twice."'];
+      game.addInteractable({ obj: b, radius: 6.5, label: () => 'Look up at the steam vent', onUse: () => { SFX.click(); game.toast(rnd.pick(ventLines), 3000); } });
     } else if (i === 4) {
       // the camera and the radar dish both got their own one-off toast on a hand-placed tower, but every
       // other quiet tower in this yard stayed bare. This one's own east wall faces the open floor the

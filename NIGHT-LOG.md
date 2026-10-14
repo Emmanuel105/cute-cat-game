@@ -12333,3 +12333,25 @@ the nearest box and 13.6 m of the nearest wandering soul — well past the detec
 Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings, physics
 boxes 311 → 313 (the two posts, the only new ones). Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 474 — a steam vent for Robot City's last bare rooftop
+
+Six hand-placed towers stand in the east yard; four of them had already picked up their own feature
+(a security camera, a sweeping radar dish, a "missing unit" notice, last round's hologram billboard),
+leaving two bare roofs. **One of those now vents pale steam** from a short riveted stack tucked into a
+roof corner — a slow rise-drift-fade loop, puffing every few seconds, with an occasional soft hiss if
+the cat happens to be nearby. A look up gets one of three lines: *"Vented since the city went up.
+Nobody's ever traced the pipe to anything."* / *"Warmer up here than down on the floor, if you don't
+mind the hiss."* / *"Just steam. The foreman's checked. Twice."*
+
+No new controller and no new physics box: the vent sits well above the tallest NPC's own head and
+above the tower's own existing collision box, so nothing on the ground can reach it bodily, and the
+"look up" interactable just reuses the tower's own group the same way the camera and radar dish above
+it already do. The steam puffs are three independent meshes (so their fade-out doesn't clash through a
+shared material) animated on the world clock alone — no draw from this world's own seeded `r()` beyond
+the one-time hiss timer, so it disturbs no later wardrobe pick.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings, physics
+boxes unchanged at 313 (the vent floats, no collider of its own). One bare rooftop left in the east
+yard for whoever picks this up next. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.
