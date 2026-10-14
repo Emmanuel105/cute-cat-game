@@ -7334,6 +7334,38 @@ function buildNeighborhood(game, entry) {
       const feederLines = ['🐦 "Chirp. (Translation: finally, seed that isn\'t bread.)"', '🍃 "Careful, puss — that\'s a good six-foot drop if you knock it."', '🌻 "Fills it every Sunday. Empty again by Wednesday."'];
       game.addInteractable({ obj: feeder, radius: 1.8, label: () => 'Look at the bird feeder', onUse: () => { SFX.click(); game.toast(rnd.pick(feederLines), 3000); } });
     }
+    // the pinwheel, sprinkler, kennel, birdhouse, gnome and feeder gave six yards their own fixture;
+    // every one of them was a garden ornament or a creature's own home, and the single most ordinary
+    // object any front yard actually has — the bin put out for collection — had never shown up on this
+    // street at all. House 15's own front lawn now gets a plastic wheelie bin, standing by itself a
+    // little apart from the porch: a tall box body on two rear wheels, a flat lid sat not quite square
+    // on top (the hinge is a stub cylinder, the lid itself just tipped a few degrees off level), and a
+    // moulded handle bar across the front face. No controller, no animation, and no draw from this
+    // world's own seeded `r` — every dimension and colour below is a fixed literal, the same caution
+    // the gnome's and feeder's own comments above spell out, so nothing later in this build shifts.
+    // A headless probe (the same stub-three harness `test/run.mjs` uses, `game.start('new')` then 60
+    // simulated seconds of every NPC's own sampled position) swept the usual yard-corner offset
+    // (x+4.5, z+front*4.0) against the three lots this street's own features hadn't already claimed
+    // on the back row: lot 15's own corner (67.5, 24) — the mirror, on the opposite side of the street,
+    // of the kennel's own safe lot 13 — came back clear by 8.60 m of the nearest wandering soul and the
+    // usual 0.90 m of the house's own porch-awning box every other feature in this exact corner already
+    // accepts as plenty of room for a sub-metre prop.
+    if (i === 15) {
+      const px = x + 4.5, pz = z + front * 4.0;
+      const bodyW = 0.42, bodyD = 0.38, bodyH = 0.62, lidH = 0.05, wheelR = 0.07;
+      const bodyM = mat(0x3a4a3a, { roughness: 0.75 }), lidM = mat(0x2e3a2e, { roughness: 0.7 }),
+        wheelM = mat(0x1a1a1a, { roughness: 0.8 }), handleM = mat(0x1a1a1a, { roughness: 0.6 });
+      const bin = group(px, 0, pz, W); bin.rotation.y = ry;
+      mesh(G.box(bodyW, bodyH, bodyD), bodyM, { y: bodyH / 2 + wheelR * 0.4, shadow: 'both', parent: bin });
+      for (const wx2 of [-bodyW / 2 + 0.05, bodyW / 2 - 0.05]) mesh(G.cyl(wheelR, wheelR, 0.05, 10), wheelM, { x: wx2, y: wheelR * 0.4, z: -bodyD / 2 + 0.04, rz: PI / 2, shadow: 'both', parent: bin });
+      const lidHinge = group(0, bodyH + wheelR * 0.4, -bodyD / 2 + 0.03, bin);
+      mesh(G.cyl(0.02, 0.02, bodyW - 0.06, 8), lidM, { rz: PI / 2, shadow: 'none', parent: lidHinge });
+      mesh(G.box(bodyW - 0.015, lidH, bodyD - 0.01), lidM, { y: lidH / 2, z: bodyD / 2 - 0.005, rx: -0.09, shadow: 'both', parent: lidHinge });
+      mesh(G.cyl(0.012, 0.012, bodyW * 0.3, 8), handleM, { y: bodyH * 0.72 + wheelR * 0.4, z: bodyD / 2 + 0.01, rz: PI / 2, shadow: 'none', parent: bin });
+      P.addBox(px, (bodyH + wheelR * 0.4) / 2, pz, bodyW / 2 + 0.02, bodyH + wheelR * 0.4, bodyD / 2 + 0.02, { cam: false });
+      const binLines = ['🗑️ "Bin day\'s Tuesday. Somehow it still smells like today."', '🗑️ "Lid never sits quite flat. Nobody\'s ever minded."', '😼 "Puss, whatever that smell is, it is not for you."'];
+      game.addInteractable({ obj: bin, radius: 1.6, label: () => 'Sniff the bin', onUse: () => { SFX.click(); game.toast(rnd.pick(binLines), 3000); } });
+    }
   });
   // the pinwheel, sprinkler and kennel above gave three of the street's sixteen yards their own
   // feature; lot 14's own corner now gets a fourth — a stone birdbath, a shallow bowl on a short

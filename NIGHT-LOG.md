@@ -12279,3 +12279,30 @@ threw and left the sign readable again each time it climbed back up.
 Full suite (`node test/run.mjs`) ran clean — exit 0, all 273 checks `ok`, 0 console warnings, physics
 boxes unchanged at 310 (the sign floats, no collider of its own). Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 472 — a wheelie bin for the Neighborhood street
+
+Six of the street's sixteen front yards had already picked up their own fixture — a pinwheel, a
+sprinkler, a kennel, a birdhouse, a garden gnome, a bird feeder — every one of them an ornament or
+somebody's home. The single most ordinary object any real front yard has, the bin put out for
+collection, had never shown up anywhere on this street. **House 15's own lawn now gets a plastic
+wheelie bin**, stood a little apart from the porch: a tall box body on two rear wheels, a flat lid
+sat not quite square on top, and a handle bar moulded across the front. A sniff gets one of three
+lines: *"Bin day's Tuesday. Somehow it still smells like today."* / *"Lid never sits quite flat.
+Nobody's ever minded."* / *"Puss, whatever that smell is, it is not for you."*
+
+No new controller, no animation, and nothing drawn from this world's own seeded `r` — every dimension
+and colour is a fixed literal, same caution the gnome's and feeder's own comments already spell out,
+so nothing later in this build shifts. Built inline in `buildNeighborhood()`'s own `lots.forEach` in
+`70-worlds.js`, right after the bird feeder's `if (i === 12)` block.
+
+A headless probe (the same stub-three harness `test/run.mjs` uses, `game.start('new')` then 60
+simulated seconds sampling every NPC's own position) swept the street's usual yard-corner offset
+(`x+4.5, z+front*4.0`) against every lot this street's features hadn't already claimed: lot 15 — the
+mirror, across the street, of the kennel's own safe lot 13 — came back clearest of the lot, 8.60 m
+from the nearest wandering soul and the usual 0.90 m from the house's own porch-awning box that every
+other yard fixture in this same corner already accepts as plenty of room.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings, physics
+boxes 310 → 311 (the bin's own, the only new one). Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
