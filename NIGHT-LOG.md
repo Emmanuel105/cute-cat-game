@@ -12478,3 +12478,29 @@ have their own line.
 Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings, physics
 boxes unchanged at 313 (no new collider — the tower's own box already existed). Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 480 — a seal for Frosty Peak
+
+Seven worlds, and not one of them had a seal, the single most obvious arctic animal missing from a
+mountain with penguins, reindeer, a yeti and an ice-fishing hole already in place. **A seal now hauls
+out on a small frozen tarn of its own**, high on the open slope east of the forest ring, flippers
+tucked, head turning slow, whiskers twitching now and then, with an occasional bark if the cat comes
+close.
+
+`makeSeal()` (new, next to the penguin build in `56-npcs-wild.js`) is a lying-down capsule body,
+whiskered head and four flat flipper/fin boxes, animated by hand — breathing, a slow head turn, a
+flipper flap — the same "perched; only animates" trick the owls and the Neighborhood's own ladybug
+already use, so it needed no new controller. The tarn under it just reuses `makeIcePond()`, already
+built for the village pond, called again at a third its radius rather than given new geometry.
+
+The obvious spot was the village pond itself, right by the existing angler and skaters, but a headless
+probe (sampling every NPC's own position every quarter second over 300 simulated seconds) found a
+wandering penguin or reindeer within a metre or two of almost anywhere near that water — the flock's
+own roam radius reaches well past it. The seal went instead to a quiet spot on the open slope,
+(33, -15): 6.39 m clear of the nearest physics box (a pine trunk in the forest ring) and 12.45 m clear
+of the nearest other soul, 5.8 m past the star collectible at (30, -20). No new physics box of its own
+— it lies flat on its own ice, same as the owls sitting in their branches need none either.
+
+Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, all 274 checks `ok`, 0
+console warnings, physics boxes unchanged at 313 (the seal and its tarn add no collider). Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

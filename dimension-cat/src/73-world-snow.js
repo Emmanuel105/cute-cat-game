@@ -1105,6 +1105,36 @@ function buildSnowVillage(game, entry) {
   for (const [x, z] of [[-28, 4.5], [-20, -4.5], [-14, 4.5]]) { const c = makeIceCrystal(r, r.pick([0x9fe8ff, 0xbfa8ff])); placeT(game, U, c, x, z, 0); boxT(game, x, z, 0.6, 1.6, 0.6, { cam: false }); }
   for (const [x, z] of [[-26, -6], [-18, 6]]) { const p = makeSnowPine(r); placeT(game, U, p, x, z, 0); boxT(game, x, z, 1.2 * p.scale.x, 5, 1.2 * p.scale.x, { cam: false }); }
   for (let i = 0; i < 6; i++) { const x = -30 + i * 4, z = (i % 2 ? 1 : -1) * 3.2; mesh(G.sphere(1, 8, 6), mat(0xf6f9fc, { roughness: 1 }), { x, y: P.ground0(x, z), z, sx: r.range(0.8, 1.4), sy: r.range(0.4, 0.7), sz: r.range(0.8, 1.4), shadow: 'none', parent: W }); }   // snow banks
+  // the village pond has had an angler, two would-be skaters and a birdwatcher round its own edge
+  // since round one, but nothing has ever actually lived in the water itself, and the whole mountain
+  // never had the one animal that's obviously supposed to be here. A seal now hauls out on a small
+  // frozen tarn of its own, high on the open slope east of the forest ring, flippers tucked, head
+  // turning slow, whiskers twitching now and then. The tarn just reuses `makeIcePond()` — already
+  // built for the village pond, called again here at a third its radius rather than given a new mesh
+  // of its own — and the seal is `makeSeal()` (new, next to the penguin build in
+  // `56-npcs-wild.js`). Not wired to any controller: the same "perched; only animates" trick the owls
+  // and the Neighborhood's own ladybug already use (`seal.animate(0, false, dt, st)` off a local
+  // timer in `U`), so this costs no new physics box — it lies flat on its own ice, well under
+  // anything a collider would catch, same as those two. An occasional bark (`SFX.bark()`, already
+  // heard from every dog in this game) plays if the cat is close.
+  // Tried near the village pond itself first, but every spot there turned up a wandering penguin or
+  // reindeer within a metre or two inside 300 simulated seconds — the flock's own roam radius reaches
+  // well past the water. A headless probe (the same stub-three harness `test/run.mjs` itself uses)
+  // built the real mountain, sampled every NPC's own position every quarter second over 300 simulated
+  // seconds (so no wandering penguin, deer, hare, fox or patrolling villager mid-leash could slip past
+  // unnoticed), then swept a grid of the open slope east of the forest ring (radius 26-50, clear of
+  // the village's own keep-out circle and short of where snowRegion's own fill takes over at 58)
+  // against both those samples and every one of the mountain's physics boxes: (33, -15) came back
+  // 6.39 m clear of the nearest box (a pine trunk in the forest ring) and 12.45 m clear of the
+  // nearest other soul, 5.8 m past the star collectible at (30, -20), with ground height varying under
+  // 0.6 m across the tarn's own small footprint.
+  { const sx = 33, sz = -15;
+    makeIcePond(game, sx, sz, 1.8, r);
+    const sy = P.ground0(sx, sz) + 0.06;
+    const seal = makeSeal(); seal.group.position.set(sx, sy, sz); seal.group.rotation.y = r() * TAU; W.add(seal.group);
+    let st = r() * 10, barkT = rnd.range(8, 14);
+    U.push((dt) => { st += dt; seal.animate(0, false, dt, st);
+      barkT -= dt; if (barkT <= 0) { barkT = rnd.range(10, 18); const c = game.cat.group.position; if (dist2(sx, sz, c.x, c.z) < 225) SFX.bark(); } }); }
   const C = game.collectibles;
   C.add('fish', 18, 8); C.add('star', 0, -30); C.add('yarn', -16, 4); C.add('mouse', 12, 20); C.add('star', 30, -20); C.add('fish', -30, 16); C.add('yarn', 22, -6); C.add('mouse', -6, 26);
   game.fx.setAmbient({ count: 480, radius: 22, colors: [0xffffff, 0xeaf4ff, 0xdfe8ff], rise: -1.0, drift: 0.5, life: 9, height: 12, yMin: 2 });

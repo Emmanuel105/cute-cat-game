@@ -274,6 +274,34 @@ function makePenguin(o = {}) {
   return rig;
 }
 
+// ---------------------------------------------------------------- seal (basks on the ice; perched, only animates — breathing, a head turn, a flipper slap)
+function makeSeal(o = {}) {
+  const g = new THREE.Group(), rig = { group: g };
+  const skin = mat(o.color ?? 0x7a7568, { roughness: 0.75 }), belly = mat(o.belly ?? 0xc2bba8, { roughness: 0.8 }), dark = mat(0x18160f);
+  const body = group(0, 0, 0, g); rig.body = body;
+  mesh(G.capsule(0.19, 0.5, 12), skin, { y: 0.19, rx: PI / 2, parent: body });
+  mesh(G.capsule(0.13, 0.36, 12), belly, { y: 0.1, z: 0.03, rx: PI / 2, shadow: 'none', parent: body });
+  const head = group(0, 0.2, 0.44, body); rig.head = head;
+  mesh(G.sphere(0.13, 12, 9), skin, { sz: 1.1, parent: head });
+  for (const side of [1, -1]) {
+    mesh(G.sphere(0.017, 6, 6), dark, { x: side * 0.065, y: 0.05, z: 0.1, shadow: 'none', parent: head });
+    for (const wz of [-0.025, 0, 0.025]) noInk(mesh(G.cyl(0.0025, 0.0025, 0.12, 4), dark, { x: side * 0.09, y: wz, z: 0.1, rz: PI / 2, ry: side * 0.2 + wz, shadow: 'none', parent: head }));
+  }
+  mesh(G.sphere(0.022, 8, 6), dark, { y: -0.02, z: 0.13, shadow: 'none', parent: head });
+  for (const side of [1, -1]) { const f = group(side * 0.2, 0.02, 0.1, body); rig['fin' + side] = f; mesh(G.box(0.22, 0.03, 0.13), skin, { x: side * 0.1, rz: side * -0.25, parent: f }); }
+  const tail = group(0, 0.05, -0.42, body); rig.tail = tail;
+  for (const side of [1, -1]) mesh(G.box(0.1, 0.03, 0.1), skin, { x: side * 0.08, ry: side * 0.3, parent: tail });
+  rig.animate = (ph, moving, dt, t = 0) => {
+    body.scale.y = 1 + sin(t * 1.3) * 0.03;    // breathing
+    head.rotation.x = -0.1 + sin(t * 0.3) * 0.12;
+    head.rotation.y = sin(t * 0.22) * 0.3;
+    for (const side of [1, -1]) rig['fin' + side].rotation.z = side * (0.08 + max(0, sin(t * 0.5 + side)) * 0.18);
+    tail.rotation.x = sin(t * 0.4) * 0.08;
+  };
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- yeti (friendly biped)
 /**
  * The Frosty Peak yeti: a big shaggy softie. Shaggy silhouette (tufts of fur all over the body),
