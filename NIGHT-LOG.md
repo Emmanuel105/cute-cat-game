@@ -12226,3 +12226,28 @@ and the nearest NPC and interactable (the same wandering soul and its own "Say h
 Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, 309 physics
 boxes unchanged (the notice adds none, same shortcut every notice before it took). Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 470 — a fire hydrant for the Neighborhood street
+
+Lamps, mailboxes, bins and flower beds line the Neighborhood's street by now, but the one piece of
+curbside furniture every real street has had never showed up: a fire hydrant. **One now sits on the
+grass strip between two front-row houses**, squat and classic red, chrome collar and bonnet bolt on top,
+two side nozzle caps and one facing the road. A sniff gets a shrug of a line: *"Bone dry and bolted
+shut. The cat gives the base a sniff anyway."*
+
+New prop, `makeFireHydrant()` in `60-props.js`, right after `makeMailbox` — nine meshes, no moving
+parts, so it bakes flat like the lamps and mailboxes around it. Dropped at (-27, 9.2) in `70-worlds.js`,
+right after the `streetLamps` loop: 0.4 m south of the street's own zone (`Z.addSpan(-100, 9.6, 100,
+18.4)`), in the gap between the lamps at x=-32 and x=-12, with its own small box (half-extent 0.19 in x
+and z) never reaching the sidewalk.
+
+A headless probe (the same stub-three harness `test/run.mjs` uses, `game.start('new')` then the "enter"
+click to actually start the loop) let 30 simulated seconds of every stroller, cyclist and the postie's
+round run before sweeping the gap: (-27, 9.2) came back clear by 2.09 m of the nearest physics box and
+3.85 m of the nearest soul. Standing the cat within 1.8 m turned up "Sniff the fire hydrant" and firing
+it worked; backing off past the radius dropped the prompt, and a clean sweep of the south pavement at
+z=10.4 confirmed the hydrant's own box never reaches it.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings, physics
+boxes 309 → 310 (the hydrant's own, the only new one). Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

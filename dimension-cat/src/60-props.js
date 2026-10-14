@@ -741,6 +741,18 @@ function makeMailbox(color, o = {}) {
   }
   return g;
 }
+/** A squat red fire hydrant: flanged base, domed cap with a bolt, two side nozzle caps and one facing front. */
+function makeFireHydrant() {
+  const g = new THREE.Group(), red = mat(0xc8222f, { roughness: 0.55, metalness: 0.1 }), chrome = mat(0xcfd4d8, { roughness: 0.3, metalness: 0.6 });
+  mesh(G.cyl(0.17, 0.19, 0.06, 14), red, { y: 0.03, shadow: 'both', parent: g });
+  mesh(G.cyl(0.13, 0.14, 0.5, 14), red, { y: 0.31, shadow: 'both', parent: g });
+  mesh(G.cyl(0.145, 0.145, 0.04, 14), chrome, { y: 0.56, shadow: 'none', parent: g });   // collar
+  mesh(G.sphere(0.145, 14, 10), red, { y: 0.66, sy: 0.6, parent: g });
+  mesh(G.box(0.07, 0.09, 0.07), chrome, { y: 0.78, parent: g });   // the bolt on top
+  for (const side of [-1, 1]) mesh(G.cyl(0.055, 0.055, 0.1, 10), chrome, { x: side * 0.155, y: 0.38, rz: PI / 2, shadow: 'none', parent: g });
+  mesh(G.cyl(0.05, 0.05, 0.09, 10), chrome, { z: 0.155, y: 0.42, rx: PI / 2, shadow: 'none', parent: g });
+  return g;
+}
 /**
  * A "lost cat" notice stapled to a post: a dark frame behind a cream paper square, a crude cat
  * silhouette (one sphere head, two cone ears) near the top, and a row of tear-off phone-number tabs

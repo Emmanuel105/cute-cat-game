@@ -5158,6 +5158,18 @@ function makeMailbox(color, o = {}) {
   }
   return g;
 }
+/** A squat red fire hydrant: flanged base, domed cap with a bolt, two side nozzle caps and one facing front. */
+function makeFireHydrant() {
+  const g = new THREE.Group(), red = mat(0xc8222f, { roughness: 0.55, metalness: 0.1 }), chrome = mat(0xcfd4d8, { roughness: 0.3, metalness: 0.6 });
+  mesh(G.cyl(0.17, 0.19, 0.06, 14), red, { y: 0.03, shadow: 'both', parent: g });
+  mesh(G.cyl(0.13, 0.14, 0.5, 14), red, { y: 0.31, shadow: 'both', parent: g });
+  mesh(G.cyl(0.145, 0.145, 0.04, 14), chrome, { y: 0.56, shadow: 'none', parent: g });   // collar
+  mesh(G.sphere(0.145, 14, 10), red, { y: 0.66, sy: 0.6, parent: g });
+  mesh(G.box(0.07, 0.09, 0.07), chrome, { y: 0.78, parent: g });   // the bolt on top
+  for (const side of [-1, 1]) mesh(G.cyl(0.055, 0.055, 0.1, 10), chrome, { x: side * 0.155, y: 0.38, rz: PI / 2, shadow: 'none', parent: g });
+  mesh(G.cyl(0.05, 0.05, 0.09, 10), chrome, { z: 0.155, y: 0.42, rx: PI / 2, shadow: 'none', parent: g });
+  return g;
+}
 /**
  * A "lost cat" notice stapled to a post: a dark frame behind a cream paper square, a crude cat
  * silhouette (one sphere head, two cone ears) near the top, and a row of tear-off phone-number tabs
@@ -7433,6 +7445,19 @@ function buildNeighborhood(game, entry) {
   for (const sx of [-1.3, 1.3]) P.addBox(-7 + sx, 1.4, 42.5, 0.4, 2.8, 1.3, { cam: false });
   const streetLamps = [];
   for (const [x, z, ry] of [[-32, 9.6, PI], [-12, 9.6, PI], [8, 9.6, PI], [28, 9.6, PI], [-22, 18.4, 0], [18, 18.4, 0], [47.9, 30, PI / 2], [-52, 9.6, PI], [-72, 9.6, PI], [48, 9.6, PI], [68, 9.6, PI], [-58, 18.4, 0], [58, 18.4, 0], [-36, 18.4, 0], [36, 18.4, 0]]) { const lamp = makeLamp('modern'); streetLamps.push(lamp); place(game, U, lamp, x, z, ry); P.addBox(x, 2, z, 0.3, 4, 0.3, { cam: false }); }
+  // every street in the Neighborhood has had lamps, mailboxes and bins for a long time, but never a
+  // fire hydrant — the one piece of curbside furniture every real street has. One now sits on the grass
+  // strip between two front-row houses, south of the sidewalk. A headless probe built the real
+  // Neighborhood, let 30 simulated seconds of every stroller, cyclist and the postie's round actually
+  // move, then swept the gap between the lamps at x=-32 and x=-12 (both z=9.6): (-27, 9.2) came back
+  // clear by 2.09 m of the nearest physics box and 3.85 m of the nearest soul, a full 0.4 m south of the
+  // street's own zone (`Z.addSpan(-100, 9.6, 100, 18.4)`), so its own small box never reaches the
+  // sidewalk the "south pavement" sweep test walks.
+  { const hx = -27, hz = 9.2;
+    const hydrant = place(game, U, makeFireHydrant(), hx, hz);
+    P.addBox(hx, 0.3, hz, 0.19, 0.6, 0.19, { cam: false });
+    const hydrantLines = ['🚒 Bone dry and bolted shut. The cat gives the base a sniff anyway.', '🚒 Somebody\'s painted over the chain marks a dozen times. Still rusts through.', '🚒 Classic red, classic curb. Not a drop leaking today.'];
+    game.addInteractable({ obj: hydrant, radius: 1.8, label: () => 'Sniff the fire hydrant', onUse: () => { SFX.click(); game.toast(rnd.pick(hydrantLines), 3000); } }); }
   makeFlowers(game, [[-3.6, 6.2, 1.3, 40], [4.8, 6.4, 1.2, 36], [-18, 6, 2, 50], [18, 6, 2, 50], [8, 46, 3, 90], [-6, 52, 2.5, 60], [-36, 6, 2, 40], [36, 6, 2, 40], [-9, 34, 1.5, 30], [14, 36, 1.5, 30], [-54, 6, 2, 40], [54, 6, 2, 40], [-72, 6, 2, 40], [72, 6, 2, 40], [-45, 22, 2, 40], [51.5, 17, 2.5, 40], [-16, 46, 3, 70], [24, 48, 2.5, 60]], r);
   makeGrass(game, [[0, -6, 8, 120], [-18, -6, 5, 60], [18, -6, 5, 60], [-36, -6, 5, 50], [36, -6, 5, 50], [-54, -6, 5, 50], [54, -6, 5, 50], [-72, -6, 5, 50], [72, -6, 5, 50], [8, 44, 11, 200], [-12, 40, 8, 120], [-27, 34, 5, 60], [27, 34, 5, 60], [-45, 34, 5, 60], [45, 34, 5, 60], [-34, -34, 10, 110], [60, -40, 14, 160], [-70, 60, 12, 120], [40, 70, 10, 100], [66, 50, 12, 90]], r);
   const arch = makeRingPortal(0x37e5a0, { frame: 0x6d6f7a, radius: 1.15, engrave: PORTAL_GEMS }); place(game, U, arch, 0, 50, 0);
