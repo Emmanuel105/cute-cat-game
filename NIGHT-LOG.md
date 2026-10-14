@@ -12528,3 +12528,33 @@ own seeded `r`, so no later mushroom hue or butterfly colour pick anywhere else 
 
 Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, all 274 checks `ok`, 0 console
 warnings, no regressions. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 482 — a sundial for the Neighborhood
+
+Seven yards on the street already had their own fixture — a pinwheel, a sprinkler, a kennel, a
+birdhouse, a garden gnome, a bird feeder, a wheelie bin — but not one of them, nor anything else on the
+whole street, actually marked the time of day, odd for a village with a park lamp and a clock on half
+its own ovens. **House 5's own front yard now gets a garden sundial**: a tapered stone column on a
+square plinth, a round dial plate ringed with twelve bronze hour-marks, and a flattened bronze gnomon
+tilted back off its centre. *"No numbers, no hands — just a shadow and a steady guess."* / *"Works a
+treat, so long as the sun actually shows up."* / *"Puss, chasing the shadow around it doesn't count as
+telling the time."*
+
+Pure decor: static geometry built inline in `buildNeighborhood` (`70-worlds.js`), the gnomon reusing
+`G.earCone()` — the same flattened-spike shape this file already uses for ears and spikes — just in
+bronze. No controller, no new SFX, and no draw from this world's own seeded `r`, so nothing later in
+this build shifts. It sits on the same yard-corner offset (`x+4.5, z+front*4.0`) every other yard
+fixture already uses, so the house's own wall and porch-awning clearance carried straight over — except
+the first lot tried, house 6, which turned out to sit close enough to a Wanderer's own route: a headless
+probe (`game.start('new')`, then 9000 simulated frames at the stub clock's real 1/60 s step — the
+quarter-second sampling rate alone would have missed this — tracking every NPC's own position every
+frame) caught one passing within 0.54 m of that spot. The same probe swept every other free lot on the
+street in one pass; house 5's own corner (-4.5, 24) came back the clear winner, 7.29 m from the nearest
+wandering soul over the full 150 simulated seconds, and 0.90 m clear of the house's own wall box, same
+margin every other yard fixture in this corner already accepts.
+
+Full suite (`node test/run.mjs`) ran clean five times out of six — exit 0, all 274 checks `ok`, 0
+console warnings, physics boxes up by one (313 → 314, the sundial's own collider). The one failure
+(the Victorian horse-and-carriage timing check) reproduced the same pre-existing flake this log has
+already caught before, unrelated to tonight's change — a world away from the Neighborhood and nothing
+this round touched. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

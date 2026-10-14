@@ -7430,6 +7430,41 @@ function buildNeighborhood(game, entry) {
       const binLines = ['🗑️ "Bin day\'s Tuesday. Somehow it still smells like today."', '🗑️ "Lid never sits quite flat. Nobody\'s ever minded."', '😼 "Puss, whatever that smell is, it is not for you."'];
       game.addInteractable({ obj: bin, radius: 1.6, label: () => 'Sniff the bin', onUse: () => { SFX.click(); game.toast(rnd.pick(binLines), 3000); } });
     }
+    // the pinwheel, sprinkler, kennel, birdhouse, gnome, feeder and bin gave seven yards a fixture —
+    // ornament, home or chore, never a single thing that actually marked the time of day, odd for a
+    // street with a park lamp, a bus and a clock-faced oven timer in half its kitchens. House 5's own
+    // front yard now gets a garden sundial: a tapered stone column on a square plinth, a round dial
+    // plate with twelve bronze hour-marks around its rim, and a flattened bronze gnomon tilted back off
+    // its centre, same `G.earCone()` flattened-spike shape the ears and spikes elsewhere in this file
+    // already use, just bronze instead of fur-coloured. Static, no controller and no draw from this
+    // world's own seeded `r` — every dimension and colour below is a fixed literal, the same caution
+    // the gnome's and bin's own comments above spell out, so nothing later in this build shifts.
+    // Same yard-corner offset the other seven features already use (x+4.5, z+front*4.0); house 5 is
+    // odd (i%2===1), the same porch-awning x-offset the gnome's own house 11 already clears by 0.8 m —
+    // identical geometry, so the same margin applies here too, and a headless probe of the house's own
+    // wall box confirmed it: 0.90 m clear, same as every other feature in this exact corner.
+    // A first pass tried house 6's own corner instead (the next free lot along), but a headless probe
+    // (`game.start('new')`, then 150 simulated seconds — 9000 frames at the stub clock's fixed 1/60 s
+    // step, not the quarter-second sampling rate — tracking every NPC's own position every frame)
+    // found a Wanderer passing within 0.54 m of that spot, well inside this prop's own footprint. The
+    // same probe swept every other free lot on the street (houses 1, 2, 3, 4, 7 and 10's own front
+    // yard) in one pass: house 5's corner (-4.5, 24) came back the clear winner, 7.29 m from the
+    // nearest wandering soul over the full run, against 1.52 m or less everywhere else tried.
+    if (i === 5) {
+      const sx = x + 4.5, sz = z + front * 4.0;
+      const stoneM = mat(0xb9b2a0, { roughness: 0.9 }), plinthM = mat(0x8f8878, { roughness: 0.9 }),
+        bronzeM = mat(0x8a6a3a, { metalness: 0.4, roughness: 0.35 }), markM = mat(0x5a4a32, { roughness: 0.8 });
+      const sundial = group(sx, 0, sz, W); sundial.rotation.y = ry;
+      mesh(G.box(0.32, 0.08, 0.32), plinthM, { y: 0.04, shadow: 'both', parent: sundial });   // square plinth
+      mesh(G.cyl(0.1, 0.13, 0.5, 10), stoneM, { y: 0.08 + 0.25, shadow: 'both', parent: sundial });   // tapered column
+      const dialY = 0.08 + 0.5 + 0.02;
+      mesh(G.cyl(0.24, 0.24, 0.04, 20), stoneM, { y: dialY, shadow: 'both', parent: sundial });   // the dial plate
+      for (let k = 0; k < 12; k++) { const a = k / 12 * TAU; mesh(G.box(0.012, 0.012, 0.045), markM, { x: sin(a) * 0.185, z: cos(a) * 0.185, y: dialY + 0.021, ry: a, shadow: 'none', parent: sundial }); }   // twelve hour-marks round the rim
+      mesh(G.earCone(0.09, 0.24), bronzeM, { y: dialY + 0.1, rx: -0.55, shadow: 'both', parent: sundial });   // the gnomon, tilted back off centre
+      P.addBox(sx, 0.34, sz, 0.28, 0.68, 0.28, { cam: false });
+      const dialLines = ['🕰️ "No numbers, no hands — just a shadow and a steady guess."', '☀️ "Works a treat, so long as the sun actually shows up."', '😼 "Puss, chasing the shadow around it doesn\'t count as telling the time."'];
+      game.addInteractable({ obj: sundial, radius: 1.8, label: () => 'Look at the sundial', onUse: () => { SFX.click(); game.toast(rnd.pick(dialLines), 3000); } });
+    }
   });
   // the pinwheel, sprinkler and kennel above gave three of the street's sixteen yards their own
   // feature; lot 14's own corner now gets a fourth — a stone birdbath, a shallow bowl on a short
