@@ -12251,3 +12251,31 @@ z=10.4 confirmed the hydrant's own box never reaches it.
 Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings, physics
 boxes 309 → 310 (the hydrant's own, the only new one). Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 471 — a hologram billboard over Robot City
+
+Six hand-placed towers stand in the east yard; three of them had already picked up their own feature
+(a security camera, a sweeping radar dish, a "missing unit" notice), and three stayed bare roofs doing
+nothing but holding up the skyline. **One of the three now carries a flickering holographic ad**,
+beamed up off a small projector dish bolted to the roof — a violet sign reading ROBOT CITY that spins
+slowly on the world clock and stutters out to near-nothing every few seconds before climbing back to
+full brightness, with a crackle of static each time it drops. A look up gets a shrug of a line: *"Been
+glitching since round one. The foreman calls it 'atmosphere.'"*
+
+No new prop function — the sign reuses `TEX.neonText()`, the same canvas-painted texture every neon sign
+in the city already draws from, just additive and half-transparent instead of solid, mounted on a plain
+cylinder mast the same way the radar dish's own mast already sits on its tower. No new physics box
+either: it floats 20 m up (`h + 2`, well above the tallest NPC's head and above this tower's own existing
+collision box), so nothing on the ground can ever reach it; `game.addInteractable`'s 5 m radius just
+clears the tower's own 4.95 m diagonal corner, the same margin the missing-unit notice next door already
+relies on. The flicker timer draws from this world's own seeded `r()`, read only in the runtime tick after
+every NPC in this build is already placed, so it can't shift any later wardrobe pick.
+
+A headless probe (`game.start('new')` then `game.travel(2, 'from-hub')`, 300 simulated frames) found the
+tower at its expected (34, 0, 24), the nearest other physics box 10.0 m clear and the nearest NPC 10.2 m
+clear, both well past the interactable's own radius; firing `onUse` through five full flicker cycles never
+threw and left the sign readable again each time it climbed back up.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all 273 checks `ok`, 0 console warnings, physics
+boxes unchanged at 310 (the sign floats, no collider of its own). Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

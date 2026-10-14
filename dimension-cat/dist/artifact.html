@@ -9909,6 +9909,35 @@ function buildRobotCity(game, entry) {
       const poster = makeMissingUnitPoster(); poster.position.set(mountX, noteY, 0); poster.rotation.y = PI / 2; b.add(poster);
       const noticeLines = ['📋 "MISSING: UNIT 47. Last seen chasing a loose bolt. Reward: one (1) oil can."', '📋 "Answers to a diagnostic ping. Doesn\'t answer to much else."', '📋 Someone has stapled a replacement notice over the last replacement notice.'];
       game.addInteractable({ obj: b, radius: 4.3, label: () => 'Read the notice', onUse: () => { SFX.click(); game.toast(rnd.pick(noticeLines), 3000); } });
+    } else if (i === 3) {
+      // the camera, the radar dish and the missing-unit notice each claimed one of these six towers'
+      // own faces by now — this one's bare roof gets a holographic billboard instead, beamed up off a
+      // small projector dish the way a real rooftop ad would work. The panel reuses `TEX.neonText()`,
+      // the same canvas-painted texture every neon sign in the city already draws from, just additive
+      // and half-transparent rather than solid — and its own opacity stutters out and climbs back on a
+      // short timer rather than holding steady, since a hologram that never flickers wouldn't read as
+      // one. No new physics box: it floats at y = h + 2 (20 m up), well clear of the tallest NPC's own
+      // head and above this tower's own existing box (half-height h/2 = 9, from the `P.addBox` three
+      // lines up), so nothing on the ground can ever reach it; `addInteractable`'s radius (5.0) just
+      // clears this tower's own 4.95 m diagonal corner, the same margin the missing-unit notice kept
+      // past its own footprint, and the nearest other interactable (the oil vendor at (24, 26)) stays
+      // 10.2 m off.
+      const dishY = h + 0.12, holoY = h + 2.0;
+      const steel = mat(0x5a6470, { metalness: 0.8, roughness: 0.35 }), holoColor = 0xb388ff;
+      mesh(G.cyl(0.46, 0.4, 0.16, 16), steel, { y: dishY, parent: b });
+      mesh(G.cyl(0.05, 0.08, holoY - dishY, 10), steel, { y: (dishY + holoY) / 2, parent: b });
+      const holo = group(0, holoY, 0, b);
+      const sign = mesh(G.plane(2.6, 0.65), basic(0xffffff, { map: TEX.neonText('ROBOT CITY', '#b388ff'), transparent: true, opacity: 0.75, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }), { shadow: 'none', parent: holo });
+      const pl = pointLight(holoColor, 26, 9, 0, holoY, 0, b);
+      let glitchT = r.range(2.5, 5);
+      U.push((dt, t) => {
+        holo.rotation.y = t * 0.3;
+        glitchT -= dt;
+        if (glitchT <= 0) { glitchT = r.range(3, 7); sign.material.opacity = 0.1; pl.intensity = 6; SFX.crackle(); }
+        else { sign.material.opacity = min(0.78, sign.material.opacity + dt * 2.2); pl.intensity = min(26, pl.intensity + dt * 30); }
+      });
+      const holoLines = ['📡 "ROBOT CITY. Flickers every few seconds. Nobody\'s called it in."', '📡 "Been glitching since round one. The foreman calls it \'atmosphere\'."', '📡 "Hard to read from the ground. Easier from the gondola."'];
+      game.addInteractable({ obj: b, radius: 5.0, label: () => 'Look up at the hologram', onUse: () => { SFX.click(); game.toast(rnd.pick(holoLines), 3000); } });
     }
   });
   // east yard: a second factory line, a plaza with a giant robot statue to the west, more lights and neon
