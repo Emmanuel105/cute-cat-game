@@ -4095,6 +4095,22 @@ function buildVictorian(game, entry) {
   // whole outer-country fill, and an update tick on every one of those would have added up fast.
   const basketHues = [0xd6487a, 0xe0a030, 0xc9516a, 0xd98a2a];
   vicLamps.forEach((lamp, i) => place(game, U, makeLampBasket(basketHues[i % basketHues.length]), lamp.position.x, lamp.position.z, 0, 2.55));
+  // the Neighborhood's own park lamp has carried a "lost cat" notice since round 462, and Robot City
+  // a "missing unit" bulletin of its own since round 463 — Victorian, the one world with a dozen bare
+  // lamp posts already standing, had neither. `vicLamps[8]` (x=34.5, z=6.4, the north-row lamp between
+  // the market-square lane and the east end of the street) carries a "lost pocket watch" notice, read
+  // height on the post same as the Neighborhood's own, and well clear of that same post's own flower
+  // basket, which hangs a metre higher at y=2.55. A plain reskin of `makePosterNotice()` — brass watch
+  // case and fob chain instead of the cat silhouette, one wax seal instead of tear-off tabs — parented
+  // straight onto the lamp group so it inherits the post's own placement, and needs no physics box of
+  // its own: a 0.012 m sheet of paper blocks nothing the post's existing 0.4 x 4 x 0.4 box wasn't
+  // already clearing. `game.addInteractable` keys off the lamp group itself, same trick the park
+  // lamp's own notice and every bare-lamp prop before it already relied on.
+  { const watchLamp = vicLamps[8]; const notice = makeLostWatchNotice(); notice.position.set(0.09, 1.55, 0); watchLamp.add(notice);
+    const watchLines = ['🕰️ "LOST: a gentleman\'s pocket watch, silver chain, stopped at twenty past four." The cat has never once arrived anywhere on time and sees no reason to start.',
+      '🕰️ "REWARD OFFERED — handsomely." No sum is named. The cat suspects it would be paid in buttons.',
+      '🕰️ A wax seal, unbroken, over a watch apparently worth sealing a notice for. The cat has no pockets, and therefore no further opinion.'];
+    game.addInteractable({ obj: watchLamp, radius: 2.4, label: () => 'Read the notice', onUse: () => { SFX.click(); game.toast(rnd.pick(watchLines), 3000); } }); }
   // the Neighborhood's porch, Frosty Peak's first cabin and Whisper Woods' treehouse all sway a wind
   // chime of their own by now, but no door on Victorian's own terraced street had one — a town with
   // lamp baskets and hanging flowers on every post felt like it was missing the one sound a doorway

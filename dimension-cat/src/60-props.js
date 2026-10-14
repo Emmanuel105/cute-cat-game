@@ -771,6 +771,22 @@ function makeMissingUnitPoster() {
   return g;
 }
 /**
+ * A "lost pocket watch" notice stapled to a lamp post: the same dark-frame-and-paper build as the
+ * other two notices, aged to a deeper cream, with a brass watch case and a short loop of fob chain
+ * standing in for the cat's silhouette and a single wax seal along the bottom instead of tear tabs or
+ * hazard tape.
+ */
+function makeLostWatchNotice() {
+  const g = new THREE.Group(), paper = mat(0xe8dcc0, { roughness: 0.9 }), dark = mat(0x2a1f14, { roughness: 0.7 }), brass = mat(0xc9a227, { roughness: 0.4, metalness: 0.6 }), wax = mat(0x8a1f1f, { roughness: 0.6 });
+  mesh(G.box(0.46, 0.58, 0.012), dark, { z: -0.005, shadow: 'none', parent: g });
+  mesh(G.box(0.42, 0.54, 0.01), paper, { shadow: 'none', parent: g });
+  mesh(G.cyl(0.07, 0.07, 0.012, 16), brass, { y: 0.13, z: 0.016, rx: PI / 2, shadow: 'none', parent: g });
+  mesh(G.cyl(0.012, 0.012, 0.03, 6), brass, { y: 0.21, z: 0.016, shadow: 'none', parent: g });
+  for (let i = 0; i < 3; i++) mesh(G.sphere(0.012, 6, 5), brass, { x: -0.02 - i * 0.018, y: 0.225 + i * 0.012, z: 0.016, shadow: 'none', parent: g });
+  mesh(G.cyl(0.045, 0.045, 0.012, 10), wax, { y: -0.26, z: 0.012, rx: PI / 2, shadow: 'none', parent: g });
+  return g;
+}
+/**
  * A wind chime hung from an eave: a wooden disc with a handful of metal tubes dangling at different
  * lengths, a wind-catcher on a thread below them. `userData.update` sways the whole thing and, now and
  * then, rings a few soft notes if the cat is close enough to hear.

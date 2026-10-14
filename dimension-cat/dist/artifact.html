@@ -5181,6 +5181,22 @@ function makeMissingUnitPoster() {
   return g;
 }
 /**
+ * A "lost pocket watch" notice stapled to a lamp post: the same dark-frame-and-paper build as the
+ * other two notices, aged to a deeper cream, with a brass watch case and a short loop of fob chain
+ * standing in for the cat's silhouette and a single wax seal along the bottom instead of tear tabs or
+ * hazard tape.
+ */
+function makeLostWatchNotice() {
+  const g = new THREE.Group(), paper = mat(0xe8dcc0, { roughness: 0.9 }), dark = mat(0x2a1f14, { roughness: 0.7 }), brass = mat(0xc9a227, { roughness: 0.4, metalness: 0.6 }), wax = mat(0x8a1f1f, { roughness: 0.6 });
+  mesh(G.box(0.46, 0.58, 0.012), dark, { z: -0.005, shadow: 'none', parent: g });
+  mesh(G.box(0.42, 0.54, 0.01), paper, { shadow: 'none', parent: g });
+  mesh(G.cyl(0.07, 0.07, 0.012, 16), brass, { y: 0.13, z: 0.016, rx: PI / 2, shadow: 'none', parent: g });
+  mesh(G.cyl(0.012, 0.012, 0.03, 6), brass, { y: 0.21, z: 0.016, shadow: 'none', parent: g });
+  for (let i = 0; i < 3; i++) mesh(G.sphere(0.012, 6, 5), brass, { x: -0.02 - i * 0.018, y: 0.225 + i * 0.012, z: 0.016, shadow: 'none', parent: g });
+  mesh(G.cyl(0.045, 0.045, 0.012, 10), wax, { y: -0.26, z: 0.012, rx: PI / 2, shadow: 'none', parent: g });
+  return g;
+}
+/**
  * A wind chime hung from an eave: a wooden disc with a handful of metal tubes dangling at different
  * lengths, a wind-catcher on a thread below them. `userData.update` sways the whole thing and, now and
  * then, rings a few soft notes if the cat is close enough to hear.
@@ -10973,6 +10989,22 @@ function buildVictorian(game, entry) {
   // whole outer-country fill, and an update tick on every one of those would have added up fast.
   const basketHues = [0xd6487a, 0xe0a030, 0xc9516a, 0xd98a2a];
   vicLamps.forEach((lamp, i) => place(game, U, makeLampBasket(basketHues[i % basketHues.length]), lamp.position.x, lamp.position.z, 0, 2.55));
+  // the Neighborhood's own park lamp has carried a "lost cat" notice since round 462, and Robot City
+  // a "missing unit" bulletin of its own since round 463 — Victorian, the one world with a dozen bare
+  // lamp posts already standing, had neither. `vicLamps[8]` (x=34.5, z=6.4, the north-row lamp between
+  // the market-square lane and the east end of the street) carries a "lost pocket watch" notice, read
+  // height on the post same as the Neighborhood's own, and well clear of that same post's own flower
+  // basket, which hangs a metre higher at y=2.55. A plain reskin of `makePosterNotice()` — brass watch
+  // case and fob chain instead of the cat silhouette, one wax seal instead of tear-off tabs — parented
+  // straight onto the lamp group so it inherits the post's own placement, and needs no physics box of
+  // its own: a 0.012 m sheet of paper blocks nothing the post's existing 0.4 x 4 x 0.4 box wasn't
+  // already clearing. `game.addInteractable` keys off the lamp group itself, same trick the park
+  // lamp's own notice and every bare-lamp prop before it already relied on.
+  { const watchLamp = vicLamps[8]; const notice = makeLostWatchNotice(); notice.position.set(0.09, 1.55, 0); watchLamp.add(notice);
+    const watchLines = ['🕰️ "LOST: a gentleman\'s pocket watch, silver chain, stopped at twenty past four." The cat has never once arrived anywhere on time and sees no reason to start.',
+      '🕰️ "REWARD OFFERED — handsomely." No sum is named. The cat suspects it would be paid in buttons.',
+      '🕰️ A wax seal, unbroken, over a watch apparently worth sealing a notice for. The cat has no pockets, and therefore no further opinion.'];
+    game.addInteractable({ obj: watchLamp, radius: 2.4, label: () => 'Read the notice', onUse: () => { SFX.click(); game.toast(rnd.pick(watchLines), 3000); } }); }
   // the Neighborhood's porch, Frosty Peak's first cabin and Whisper Woods' treehouse all sway a wind
   // chime of their own by now, but no door on Victorian's own terraced street had one — a town with
   // lamp baskets and hanging flowers on every post felt like it was missing the one sound a doorway

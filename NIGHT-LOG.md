@@ -12042,3 +12042,33 @@ round's own probe already reaches for.)
 Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, 309 physics
 boxes unchanged (the notice adds none, same as the render count climbing by only the poster's own
 handful of meshes). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 464 — a "lost pocket watch" notice in Victorian
+
+The Neighborhood's park lamp has carried a "lost cat" notice since round 462, and one of Robot City's
+skyscrapers a "missing unit" bulletin since round 463 — Victorian, the one world with a full dozen
+hand-placed lamp posts already standing bare below their flower baskets, had neither. **The ninth lamp
+along the main street (x=34.5, on the north-row pavement, between the market-square lane and the east
+end of town) now carries a "lost pocket watch" notice**, stapled below its basket at a read height on
+the post. Read it and the cat gets one of three lines: *"LOST: a gentleman's pocket watch, silver
+chain, stopped at twenty past four." The cat has never once arrived anywhere on time and sees no reason
+to start.*
+
+New prop, `makeLostWatchNotice()` in `60-props.js`, built on the same dark-frame-and-paper skeleton as
+the other two notices — aged cream paper, a brass watch case with a stubby crown and a three-link fob
+chain standing in for the cat's silhouette or the robot's antenna rods, and a single red wax seal along
+the bottom in place of tear-off tabs or hazard tape. It's parented straight onto the lamp group itself
+(`vicLamps[8]`) at local (0.09, 1.55, 0) — well clear of that same post's own hanging basket, which
+sways a metre higher at y=2.55 — so no new mesh group and no new physics box: the sheet is 0.012 m
+thick and sits comfortably inside the post's existing 0.4 x 4 x 0.4 collision box. `game.addInteractable`
+keys off the lamp group, same trick the other two notices and every bare-lamp prop before them relied on.
+
+Checked with a standalone headless probe (`game.start('new')` then `game.load(3, 'from-prev')`, the
+synchronous path the last two notices' own probes used): standing at (34.59, 6.7) shows "Read the
+notice" and firing it prints the pocket-watch toast; standing back at the far end of the street (-60,
+-6.4) shows a different prompt ("Say hello") instead, confirming the notice's own 2.4 m radius doesn't
+leak across the town.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, 309 physics
+boxes unchanged (the notice adds none). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.
