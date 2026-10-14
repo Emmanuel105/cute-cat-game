@@ -12454,3 +12454,27 @@ warnings, physics boxes unchanged at 313 (no new collider — the tower's own bo
 ran the unmodified code five times over to confirm a stray Victorian horse-and-carriage timing failure
 seen once mid-session was a pre-existing flake, unrelated to this change. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 479 — a look up at Candy Land's last corner tower
+
+Five of the castle's six towers (the two flanking the gate, three of the four corners) picked up their
+own "look up" toast over the last several rounds. **The sixth and last one — where the back wall meets
+the west wall, world (-17, 165) — now answers a look too**, finishing the set. One of three lines:
+*"Last of the six — every tower in the castle finally has something to say."* / *"Same fifteen metres as
+its twin across the back wall, stripe for stripe."* / *"Her Majesty's flag again. Six towers, six flags,
+not one of them ever lowered."*
+
+Same trick as every round in this run: `castle.towers[1]` — the one remaining tower `makeCandyCastle`
+hands back — is reused directly as the interactable's own `obj`, no new mesh, no new box. The plaza is
+symmetric about x = 0, so the clearance measured for tower 0 (its mirror across the back wall, done last
+round) carries straight across. Rather than just trust the mirror argument, I wrote a standalone headless
+probe reusing `test/run.mjs`'s own stub-three bundling: it travelled to Candy Land, located the new
+interactable (confirmed its `obj` resolves to the right tower), measured (-21.5, 165) at exactly 1.4 m
+clear of the tower's physics box and 4.5 m from its centre (comfortably inside the 5.5 m radius given
+here), confirmed that point isn't itself blocked, and then ran 1200 simulated frames sampling all 69
+NPCs' positions throughout — nothing wandered closer than 19.0 m. All six of the castle's towers now
+have their own line.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings, physics
+boxes unchanged at 313 (no new collider — the tower's own box already existed). Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

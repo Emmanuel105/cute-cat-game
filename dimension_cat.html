@@ -9048,6 +9048,17 @@ function buildCandyLand(game, entry) {
   // of that point — well past the radius once the tower's own half-extent is added in.
   { const lines0 = ['🍬 "The quiet side of the castle — nobody ever comes round the back to look."', '🍬 "Same fifteen metres as the front towers, just facing the wrong way to get noticed."', '🍬 "Her Majesty\'s flag flies here too, for an audience of nobody but the sweet-lands."'];
     game.addInteractable({ obj: castle.towers[0], radius: 5.5, label: () => 'Look up at the back corner tower', onUse: () => { SFX.click(); game.toast(rnd.pick(lines0), 3000); } }); }
+  // tower 0 (back wall meets east wall, world (17, 165)) got its own look last round; its mirror image
+  // across the castle's own centre line — tower 1, where the back wall meets the west wall, world
+  // (-17, 165) — is the last of the six towers still untouched. `castle.towers[1]` is the second corner
+  // tower `makeCandyCastle` hands back: same mesh, same existing box, no new geometry. The plaza's own
+  // symmetry about x = 0 (used for towers 2 and 3 above, and again for tower 0's own clearance) maps
+  // tower 0 straight onto tower 1, so the clearance already measured there mirrors across: (-21.5, 165)
+  // sits on open ground just past this wall's outside corner, 1.4 m clear of the tower's box, 4.5 m from
+  // its centre — comfortably inside the same 5.5 m radius — and, by that same radial symmetry, never
+  // within 19 m of anything that wanders Candy Land. All six of the castle's towers now answer a look.
+  { const lines1 = ['🍬 "Last of the six — every tower in the castle finally has something to say."', '🍬 "Same fifteen metres as its twin across the back wall, stripe for stripe."', '🍬 "Her Majesty\'s flag again. Six towers, six flags, not one of them ever lowered."'];
+    game.addInteractable({ obj: castle.towers[1], radius: 5.5, label: () => 'Look up at the last corner tower', onUse: () => { SFX.click(); game.toast(rnd.pick(lines1), 3000); } }); }
   candyRegion(game, U, r, 92, CANDY_LIMIT - 8);
   for (const [x, z] of [[-14, 18], [18, 16], [-8, -10], [10, -12], [-28, 8], [30, 4], [-22, 30], [22, 32], [-34, -32], [34, -36], [2, -30]]) { const b = makeMarshmallowBush(r); b.position.set(x, 0, z); W.add(b); P.addBox(x, 0.5, z, 1.2, 1, 1.2, { cam: false }); }
   for (const [x, z, ry, c] of [[-16, 8, 0.3, 0xff6fb5], [20, -8, -0.8, 0x7fd7ff], [0, 26, 1.5, 0xffd54a]]) { const d = makeDonut(c); d.position.set(x, 0, z); d.rotation.y = ry; W.add(d); addRotBox(game, x, 1.2, z, 0.6, 2.4, 3.4, ry, { cam: false }); }
