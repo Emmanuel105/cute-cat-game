@@ -2001,6 +2001,19 @@ function buildCandyLand(game, entry) {
   // and leaves the guard and the jester exactly where they were. A 4.5 m radius is just as reachable here.
   { const lines4 = ['🍬 "No guard troubles this one — Her Majesty only ever posted the one."', '🍬 "Mirror image of its neighbour across the arch, down to the last candy stripe."', '🍬 "Quietest tower in the castle. Nobody\'s ever been told why it matters less."'];
     game.addInteractable({ obj: castle.towers[4], radius: 4.5, label: () => 'Look up at the other tower', onUse: () => { SFX.click(); game.toast(rnd.pick(lines4), 3000); } }); }
+  // the two gate towers got their own "look up" two rounds back, but the four larger corner towers that
+  // actually anchor the castle's walls — 15 m tall against the gate towers' 13, same candy-cane stripe and
+  // gold finial — never got a glance of their own, despite `makeCandyCastle` handing all six back in
+  // `castle.towers` (build order: the four corner towers first, then the two gate towers). `castle.towers[2]`
+  // is the corner where the front wall meets the east wall, world (17, 135) — reused directly as the
+  // interactable's own `obj`, no new mesh, no new box. Its own box (half-extent 3.1 m, `68-regions.js`)
+  // sits flush against both wall boxes on its inside, so the only open approach is from outside the
+  // castle: a headless probe found (21.5, 135) — on the open ground past the wall's own corner — clear of
+  // the tower's box by 1.4 m and only 4.5 m from its centre, comfortably inside a 5.5 m radius here; the
+  // same probe swept 1200 simulated frames of every NPC in Candy Land and found nothing wandering within
+  // 15 m of this corner.
+  { const lines2 = ['🍬 "Fifteen metres, corner to crown — a good two taller than the ones guarding the gate."', '🍬 "Holds up its own corner of wall, same as the other three."', '🍬 "Her Majesty\'s flag again, same stripe, same gold finial. Nobody\'s ever climbed up to check it\'s not just the one flag moved around."'];
+    game.addInteractable({ obj: castle.towers[2], radius: 5.5, label: () => 'Look up at the corner tower', onUse: () => { SFX.click(); game.toast(rnd.pick(lines2), 3000); } }); }
   candyRegion(game, U, r, 92, CANDY_LIMIT - 8);
   for (const [x, z] of [[-14, 18], [18, 16], [-8, -10], [10, -12], [-28, 8], [30, 4], [-22, 30], [22, 32], [-34, -32], [34, -36], [2, -30]]) { const b = makeMarshmallowBush(r); b.position.set(x, 0, z); W.add(b); P.addBox(x, 0.5, z, 1.2, 1, 1.2, { cam: false }); }
   for (const [x, z, ry, c] of [[-16, 8, 0.3, 0xff6fb5], [20, -8, -0.8, 0x7fd7ff], [0, 26, 1.5, 0xffd54a]]) { const d = makeDonut(c); d.position.set(x, 0, z); d.rotation.y = ry; W.add(d); addRotBox(game, x, 1.2, z, 0.6, 2.4, 3.4, ry, { cam: false }); }

@@ -12382,3 +12382,29 @@ the tower's own half-extent is added in.
 Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings, physics
 boxes unchanged at 313 (the rig rides a rail, no collider of its own). All six east-yard towers now
 have their own feature. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 476 — a look up at Candy Land's own corner tower
+
+The castle's two gate towers both got their own "look up" toast a couple of rounds back, but the four
+taller towers that actually anchor its walls — 15 m against the gate towers' 13, same candy-cane
+stripe and gold finial — had stood since round one without a single word said about them. **One of the
+four corner towers, where the front wall meets the east wall, now answers a look with one of three
+lines**: *"Fifteen metres, corner to crown — a good two taller than the ones guarding the gate."* /
+*"Holds up its own corner of wall, same as the other three."* / *"Her Majesty's flag again, same
+stripe, same gold finial. Nobody's ever climbed up to check it's not just the one flag moved around."*
+
+No new mesh and no new physics box: `makeCandyCastle` (`68-regions.js`) already hands back all six
+tower cylinders as `castle.towers`, in build order (four corner towers, then the two gate towers), so
+`castle.towers[2]` — the tower itself — is reused directly as `addInteractable`'s own `obj`, the same
+trick the gate towers' own toasts already used. That tower's own box (half-extent 3.1 m) sits flush
+against both wall boxes on its inside corner, so the only open approach is from outside the castle. A
+headless probe (the same stub-three harness `test/run.mjs` uses, travelled into Candy Land and run 1200
+simulated frames with every NPC's position sampled throughout) found (21.5, 135) — open ground just
+past the wall's own outside corner — clear of the tower's box by 1.4 m, 4.5 m from the tower's centre
+(comfortably inside the 5.5 m radius given here), and never within 15 m of anything that moves; standing
+there and checking `game.nearest` confirmed it resolves to exactly this new interactable, nothing else.
+The other three corner towers are still untouched, for whoever picks this up next.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings, physics
+boxes unchanged at 313 (no new collider — the tower's own box already existed). Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
