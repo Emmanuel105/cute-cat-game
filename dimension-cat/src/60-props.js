@@ -834,6 +834,23 @@ function makeSnowNotice() {
   return g;
 }
 /**
+ * A "lost lollipop" notice stapled to a candy-cane post: the same dark-frame-and-paper build as the
+ * other six, with a candy-cane-striped plank standing in for the dark frame, driftwood, bark, wood or
+ * pine, a round sucker head on a short stick standing in for the cat's silhouette, the robot's head,
+ * the watch's case, the pinecone, the crab or the mitten, and a row of small gumdrops along the
+ * bottom instead of tear-off tabs, hazard tape, a wax seal, nail heads, pebbles or icicles.
+ */
+function makeCandyNotice() {
+  const g = new THREE.Group(), stripe = mat(0xffffff, { roughness: 0.4, map: TEX.candyCane() }), paper = mat(0xfff6e0, { roughness: 0.85 }), ink = mat(0x3a2410, { roughness: 0.7 });
+  mesh(G.box(0.46, 0.58, 0.012), stripe, { z: -0.005, shadow: 'none', parent: g });
+  mesh(G.box(0.4, 0.52, 0.01), paper, { shadow: 'none', parent: g });
+  mesh(G.sphere(0.065, 10, 8), ink, { y: 0.17, z: 0.016, shadow: 'none', parent: g });
+  mesh(G.cyl(0.018, 0.018, 0.1, 6), ink, { y: 0.07, z: 0.016, shadow: 'none', parent: g });
+  const gumHues = [0xff6fb5, 0x7fd7ff, 0xffd54a, 0x8bc34a, 0xffffff];
+  for (let i = 0; i < 5; i++) mesh(G.sphere(0.024, 7, 6), mat(gumHues[i], { roughness: 0.5 }), { x: -0.15 + i * 0.075, y: -0.26, z: 0.012, shadow: 'none', parent: g });
+  return g;
+}
+/**
  * A wind chime hung from an eave: a wooden disc with a handful of metal tubes dangling at different
  * lengths, a wind-catcher on a thread below them. `userData.update` sways the whole thing and, now and
  * then, rings a few soft notes if the cat is close enough to hear.

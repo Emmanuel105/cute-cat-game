@@ -1788,7 +1788,36 @@ function buildCandyLand(game, entry) {
 
   // candy canes, lollipops, gumdrops, cotton candy
   const canes = [[-6, 6], [7, 3], [-14, -4], [15, -8], [-22, 8], [24, 12], [-30, -2], [30, -4], [-10, 22], [12, 24], [-26, 20], [26, 24], [-18, -30], [16, -32], [-8, -40], [8, -42], [-36, -14], [34, -20], [-40, 26], [40, 30], [-28, -38], [26, -40], [-44, 4], [44, 8], [-2, 30], [4, -26], [-20, -12], [20, -14]];
-  for (const [x, z] of canes) { const h = r.range(2.6, 4.2), c = makeCandyCane(h); c.position.set(x, 0, z); c.rotation.y = r() * TAU; W.add(c); P.addBox(x, h / 2, z, 0.5, h, 0.5, { cam: false }); }
+  let noticeCane = null;
+  for (const [x, z] of canes) { const h = r.range(2.6, 4.2), c = makeCandyCane(h); c.position.set(x, 0, z); c.rotation.y = r() * TAU; W.add(c); P.addBox(x, h / 2, z, 0.5, h, 0.5, { cam: false }); if (x === -44 && z === 4) noticeCane = c; }
+  // the Neighborhood, Robot City, Victorian, Whisper Woods, Sunny Shore and Frosty Peak have all carried
+  // a stapled notice by now (rounds 462-468) — Candy Land was the one world left out, and the quietest
+  // candy cane in the whole inner belt, out past the west bridge at (-44, 4) with nothing else placed
+  // within many metres of it, had a bare striped post and nothing else competing for the spot.
+  // `makeCandyNotice()` (new, next to the other six in `60-props.js`) is parented onto this one cane's
+  // own group — no new mesh group, no new physics box: the cane's own 0.5 x h x 0.5 box three lines up
+  // already covers the 0.012 m sheet pinned to it. Mounted at local (0.16, 1.6, 0), just outside the
+  // cane's own 0.13 m-radius stick and well below its hooked top (the torus sits at local y = h, and
+  // every cane in this list has h >= 2.6), so the sheet reads as pinned to the straight shaft whatever
+  // the cane's own random `rotation.y` turned out to be — `game.addInteractable` keys off the notice
+  // mesh itself (`obj: notice`), same trick the Frosty Peak mitten notice already relied on, so the
+  // prompt tracks the sheet's real world position through that rotation rather than the cane's own.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` uses) built the real Candy Land
+  // (`game.start('new')` then `game.load(1, 'from-prev')`), read the notice's own world position
+  // straight off its `getWorldPosition` (the cane's random rotation turned out to land it at
+  // (-44.1, 1.6, 4.12)), then swept it against all 1957 of the land's physics boxes and every NPC's
+  // own position sampled every quarter second over 20 simulated seconds: the nearest box other than the
+  // cane's own mount (the one it reports 0 m from, exactly as built) stayed 12.55 m clear, and the
+  // nearest NPC and interactable both turned out to be the same soul and the same "Say hello" prompt,
+  // also 12.55 m off — this corner of the map, past the west bridge and short of the cane-forest ring,
+  // has nothing else hand-placed anywhere near it, so the notice's own "Read the notice" prompt never
+  // has to compete for the spot.
+  { const notice = makeCandyNotice(); notice.position.set(0.16, 1.6, 0); noticeCane.add(notice);
+    const lollipopLines = ['🍭 "LOST: one strawberry lollipop, barely licked. Reward: a gumdrop, already a little fuzzy."',
+      '🍭 "Finder keeps the stick either way." The cat has no plans to go looking.',
+      '🍭 Someone has tied a scrap of licorice string to the corner, as if that proves anything. The cat sniffs it anyway.'];
+    game.addInteractable({ obj: notice, radius: 2.2, label: () => 'Read the notice', onUse: () => { SFX.click(); game.toast(rnd.pick(lollipopLines), 3000); } }); }
   for (const [x, z] of [[-12, 12], [14, 10], [-24, -8], [22, -26], [-34, 16], [36, 18], [-16, 32], [18, 34], [-40, -8], [40, -12], [-6, -34], [6, -48]]) { const s = r.range(1.1, 1.8), l = makeLollipop(s, r.pick([330, 0, 200, 50, 280, 120]), r.range(2.6, 4)); l.position.set(x, 0, z); l.rotation.y = r() * TAU; W.add(l); P.addBox(x, 1.5, z, 0.4, 3, 0.4, { cam: false }); }
   for (let i = 0; i < 40; i++) { const x = r.range(-45, 45), z = r.range(-50, 40); if (abs(z + 18) < 5 || (abs(x) < 3 && abs(z) < 3)) continue; const l = makeLollipop(0.28, r.pick([330, 0, 200, 50, 280, 120]), r.range(0.5, 0.8)); l.position.set(x, 0, z); l.rotation.y = r() * TAU; W.add(l); }
   makeGumdrops(game, [[-8, 14, 4, 14], [10, -6, 4, 12], [-20, 2, 5, 16], [22, 6, 5, 16], [-30, -30, 6, 18], [30, -32, 6, 18], [0, 22, 6, 20], [-40, 20, 5, 14], [40, -2, 5, 14], [-52, 8, 7, 22], [54, 12, 7, 22], [-20, 50, 8, 24], [26, 52, 7, 20], [-50, -34, 6, 16], [52, -36, 6, 16], [10, -50, 6, 18]], r);

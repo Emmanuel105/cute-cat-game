@@ -12195,3 +12195,34 @@ Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 consol
 boxes unchanged (the notice adds none, same shortcut every notice before it took). Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 469 — a "lost lollipop" notice for Candy Land's quietest candy cane
+
+The Neighborhood, Robot City, Victorian, Whisper Woods, Sunny Shore and Frosty Peak have all carried a
+stapled notice by now (rounds 462-468) — Candy Land, the one world named for the stuff, was the last one
+left out. **One candy cane out past the west bridge, at (-44, 4), now carries a notice of its own**:
+*"LOST: one strawberry lollipop, barely licked. Reward: a gumdrop, already a little fuzzy."* Underneath,
+smaller writing adds that the finder keeps the stick either way, and somebody's tied a scrap of licorice
+string to the corner "as if that proves anything."
+
+New prop, `makeCandyNotice()` in `60-props.js`, right after the other six — a candy-cane-striped plank
+instead of a dark frame, driftwood, bark, wood or pine, a round sucker head on a short stick standing in
+for the cat's silhouette, the robot's head, the watch's case, the pinecone, the crab or the mitten, and a
+row of five small gumdrops along the bottom instead of tear-off tabs, hazard tape, a wax seal, nail heads
+or icicles. It's parented straight onto one specific candy cane's own group — the 28-cane loop in
+`buildCandyLand` now keeps a reference to the cane at (-44, 4) as it builds — at local (0.16, 1.6, 0),
+just outside the cane's own 0.13 m stick and well under its hooked top: no new mesh group, no new physics
+box, since the cane's own 0.5 x h x 0.5 collision box three lines up already covers it. `game.addInteractable`
+keys off the notice mesh itself rather than the cane's group, so the prompt tracks the sheet's real world
+position through the cane's own random rotation, same trick the Frosty Peak mitten notice already used.
+
+A headless probe (`game.start('new')` then `game.load(1, 'from-prev')`) read the notice's real world
+position straight off its `getWorldPosition` — the cane's rotation landed it at (-44.1, 1.6, 4.12) — then
+swept it against all 1957 of the land's physics boxes and every NPC's own position sampled every quarter
+second over 20 simulated seconds: the nearest box other than the cane's own mount stayed 12.55 m clear,
+and the nearest NPC and interactable (the same wandering soul and its own "Say hello" prompt) stayed
+12.55 m off too — nothing else is hand-placed anywhere near this quiet corner past the west bridge.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, 309 physics
+boxes unchanged (the notice adds none, same shortcut every notice before it took). Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
