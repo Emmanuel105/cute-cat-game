@@ -12355,3 +12355,30 @@ Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 co
 boxes unchanged at 313 (the vent floats, no collider of its own). One bare rooftop left in the east
 yard for whoever picks this up next. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 475 — a window washer for Robot City's last bare tower
+
+The camera, the radar dish, the steam vent, the missing-unit notice and the hologram billboard had
+claimed five of the six hand-placed towers in the east yard; the sixth stood bare since round one.
+**A small drone now rides a rail bolted to its east wall**, sliding slowly between a third of the way
+up and the roofline and back down, buffer pad swinging side to side as it goes, a soft squeak at each
+turn if the cat happens to be nearby. A look up gets one of three lines: *"Same four windows, every
+shift. The glass never even gets dirty."* / *"Nobody's told it the tower doesn't open."* / *"Polishes
+the same stretch of wall, round trip, since the day it was bolted on."*
+
+No new controller class and no new physics box: the rail and rig are built straight into the tower's
+own group (`else if (i === 5)` in the forEach that already builds the other five), driven only by the
+world clock `t`, and the whole travel range (local y = h·0.35 to h·0.92, i.e. 5.25–13.8 m) sits well
+above both the tallest NPC's own head and this tower's own existing collision box, so nothing on the
+ground can ever reach it. `addInteractable`'s radius (6.5) reuses the tower group `b` as its own
+object, the same trick every other tower feature here already uses.
+
+A headless probe (`game.travel(2, 'from-hub')`, then 1200 simulated frames continuously sampled so no
+wandering or patrolling robot could slip past unnoticed) swept this tower's own footprint against
+every one of the city's physics boxes and every one of those NPC samples: the nearest other box stayed
+11.7 m clear and the nearest wandering soul never closer than 14.3 m, both well past this radius once
+the tower's own half-extent is added in.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings, physics
+boxes unchanged at 313 (the rig rides a rail, no collider of its own). All six east-yard towers now
+have their own feature. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

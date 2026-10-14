@@ -10062,6 +10062,43 @@ function buildRobotCity(game, entry) {
       });
       const holoLines = ['📡 "ROBOT CITY. Flickers every few seconds. Nobody\'s called it in."', '📡 "Been glitching since round one. The foreman calls it \'atmosphere\'."', '📡 "Hard to read from the ground. Easier from the gondola."'];
       game.addInteractable({ obj: b, radius: 5.0, label: () => 'Look up at the hologram', onUse: () => { SFX.click(); game.toast(rnd.pick(holoLines), 3000); } });
+    } else if (i === 5) {
+      // the camera, the radar dish, the steam vent, the missing-unit notice and the hologram have each
+      // claimed one of these six towers' own faces or roofs by now — this one, the last of the six, gets
+      // a window-washing rig instead: a small drone riding a rail bolted to the east wall, sliding slowly
+      // from a third of the way up to near the roofline and back down, its buffer pad swinging side to
+      // side as it goes. No new physics box and no clearance probe of its own: the whole rail sits
+      // between local y = h*0.35 (5.25) and h*0.92 (13.8), well above the tallest NPC's own head (the
+      // camera on tower 0 banked on the same clearance at y=4) and above this tower's own existing box
+      // (half-height h/2 = 7.5, from the `P.addBox` call that opens this forEach), so nothing on the
+      // ground can ever reach it bodily. `addInteractable`'s radius (6.5) just clears this tower's own
+      // 4.95 m diagonal corner, the same margin the camera and the radar dish already bank on; a headless
+      // probe (`game.travel(2, 'from-hub')`, then 1200 simulated frames continuously sampled so no
+      // wandering or patrolling robot could slip past unnoticed) swept this tower's own footprint against
+      // every one of the city's physics boxes and every one of those NPC samples: the nearest other box
+      // stayed 11.7 m clear and the nearest wandering soul never closer than 14.3 m, both well past this
+      // radius once this tower's own half-extent is added in.
+      const railY0 = h * 0.35, railY1 = h * 0.92, mountX = w / 2 + 0.03;
+      const steel = mat(0x5a6470, { metalness: 0.78, roughness: 0.35 }), dark = mat(0x1c1f26, { roughness: 0.55, metalness: 0.4 });
+      mesh(G.box(0.05, railY1 - railY0, 0.05), steel, { x: mountX, y: (railY0 + railY1) / 2, parent: b });
+      const rig = group(mountX + 0.17, railY0, 0, b);
+      mesh(G.box(0.3, 0.2, 0.28), dark, { parent: rig });
+      mesh(G.cyl(0.05, 0.05, 0.14, 8), steel, { x: -0.17, rz: PI / 2, parent: rig });
+      const padPivot = group(0, -0.07, 0.17, rig);
+      mesh(G.box(0.2, 0.04, 0.04), steel, { parent: padPivot });
+      mesh(G.box(0.16, 0.16, 0.02), mat(0xcfe6ff, { transparent: true, opacity: 0.5, roughness: 0.2 }), { z: 0.03, parent: padPivot });
+      const led = mesh(G.sphere(0.025, 8, 6), glowMat(0x4ade80, 1.4), { y: 0.1, z: 0.14, shadow: 'none', parent: rig });
+      const cyc = 11, tipX = x + mountX, tipZ = z;
+      let wasUp = true;
+      U.push((dt, t) => {
+        const k = (t % cyc) / cyc, up = k < 0.5, kk = up ? k * 2 : (1 - k) * 2;
+        rig.position.y = railY0 + kk * (railY1 - railY0);
+        padPivot.rotation.y = sin(t * 6) * 0.5;
+        led.material.emissiveIntensity = 1.0 + max(0, sin(t * 3)) * 0.8;
+        if (up !== wasUp) { wasUp = up; const c = game.cat.group.position; if (dist2(tipX, tipZ, c.x, c.z) < 324) SFX.noise({ dur: 0.08, vol: 0.04, filter: 2600, type: 'bandpass' }); }
+      });
+      const washerLines = ['🪟 "Same four windows, every shift. The glass never even gets dirty."', '🪟 "Nobody\'s told it the tower doesn\'t open."', '🪟 "Polishes the same stretch of wall, round trip, since the day it was bolted on."'];
+      game.addInteractable({ obj: b, radius: 6.5, label: () => 'Look up at the window washer', onUse: () => { SFX.click(); game.toast(rnd.pick(washerLines), 3000); } });
     }
   });
   // east yard: a second factory line, a plaza with a giant robot statue to the west, more lights and neon
