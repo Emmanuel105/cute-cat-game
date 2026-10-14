@@ -802,6 +802,22 @@ function makeForestNotice() {
   return g;
 }
 /**
+ * A "lost bucket and spade" notice pinned to a swim-flag pole: the same dark-frame-and-paper build as
+ * the other four, with a sun-bleached driftwood plank standing in for the frame, a flattened-sphere
+ * crab body and two claw cones for the cat's silhouette, the robot's head, the watch's case or the
+ * pinecone, and a row of beach pebbles along the bottom instead of tear-off tabs, hazard tape, a wax
+ * seal or nail heads.
+ */
+function makeBeachNotice() {
+  const g = new THREE.Group(), wood = mat(0xc9b89a, { roughness: 0.9 }), paper = mat(0xeee2c4, { roughness: 0.85 }), ink = mat(0x2a2a2a, { roughness: 0.75 }), pebble = mat(0x9a9284, { roughness: 0.95 });
+  mesh(G.box(0.46, 0.58, 0.012), wood, { z: -0.005, shadow: 'none', parent: g });
+  mesh(G.box(0.4, 0.52, 0.01), paper, { shadow: 'none', parent: g });
+  mesh(G.sphere(0.07, 10, 8), ink, { y: 0.14, z: 0.016, sx: 1.3, sy: 0.55, shadow: 'none', parent: g });
+  for (const sx of [-1, 1]) mesh(G.cone(0.022, 0.06, 6), ink, { x: sx * 0.09, y: 0.16, z: 0.016, rz: sx * -0.9, shadow: 'none', parent: g });
+  for (let i = 0; i < 5; i++) mesh(G.sphere(0.022 + (i % 2) * 0.006, 7, 6), pebble, { x: -0.16 + i * 0.08, y: -0.28, z: 0.012 + (i % 2) * 0.004, shadow: 'none', parent: g });
+  return g;
+}
+/**
  * A wind chime hung from an eave: a wooden disc with a handful of metal tubes dangling at different
  * lengths, a wind-catcher on a thread below them. `userData.update` sways the whole thing and, now and
  * then, rings a few soft notes if the cat is close enough to hear.

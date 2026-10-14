@@ -12135,3 +12135,32 @@ well past the 5.5 m radius and past the 3.68 m worst-case corner of the hill's o
 Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, 309 physics
 boxes unchanged (the sniff adds none). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 467 — a "lost bucket and spade" notice on Sunny Shore's swim flag
+
+The Neighborhood's park lamp, a Robot City tower, a Victorian lamp post and a Whisper Woods tree have
+all carried a stapled notice by now (rounds 462-465) — Sunny Shore was the one world left out, and also
+the one with the most obvious ready-made post standing around doing nothing but holding up a flag.
+**The south swim flag beside the lifeguard's chair, at (13, 18), now carries its own notice**: *"LOST:
+one bucket and spade, bright red. Last seen somewhere under all this sand."* The cat reads it twice and
+isn't tempted by the reward (a seashell, slightly chipped), and notices somebody's drawn a little crab
+next to the handwriting in case the point wasn't clear enough.
+
+New prop, `makeBeachNotice()` in `60-props.js`, right after the other four — driftwood plank instead of
+a dark frame, a flattened-sphere crab body and two claw cones standing in for the cat's silhouette, the
+robot's head, the watch's case or the pinecone the other four used, and a row of beach pebbles along
+the bottom instead of tear-off tabs, hazard tape, a wax seal or nail heads. It's parented straight onto
+the flag pole's own group (captured from `placeT`'s own return value, which the swim-flag loop in
+`72-world-beach.js` had always thrown away) at local (0.14, 1.3, 0) — no new mesh group, no new physics
+box: the pole already carries a 0.3 x 2.3 x 0.3 collision box from the very next line, same dimensions
+the Neighborhood's own park lamp box used for its notice. `game.addInteractable` keys off the pole group
+by distance, same trick every notice before it relied on.
+
+A headless probe (`game.start('new')` then `game.load(4, 'from-prev')`) stood the cat at (13, 0, 18):
+`game.nearest` came back "Read the notice" and firing it worked; the lifeguard's own "Say hello" sits
+5.17 m off, outside the notice's 2.2 m radius, so standing at the flag never steals the guard's prompt.
+Standing out at (80, 80) showed no prompt of either kind.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, 309 physics
+boxes unchanged (the notice adds none, same shortcut every notice before it took). Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
