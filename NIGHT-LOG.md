@@ -12408,3 +12408,24 @@ The other three corner towers are still untouched, for whoever picks this up nex
 Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings, physics
 boxes unchanged at 313 (no new collider — the tower's own box already existed). Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 477 — a look up at Candy Land's far corner tower
+
+Last round gave one of the castle's four corner towers its own "look up" toast, leaving three of the
+four untouched. **The corner directly across the gate from it — where the front wall meets the west
+wall — now answers a look too**, with one of three lines: *"Same fifteen metres as its twin across the
+gate, mirrored stripe for stripe."* / *"Holds up the west corner, same as the other three hold up
+theirs."* / *"Her Majesty's flag flies here too — nobody's ever said why one corner needs four flags
+and not three."*
+
+No new mesh and no new physics box, same as last round: `castle.towers[3]` — the fourth tower
+`makeCandyCastle` hands back — is reused directly as the interactable's own `obj`. The castle plaza is
+symmetric about x = 0 (the guard's patrol, the jester, the radial fill ring outside), so last round's
+own measured clearance at tower 2 mirrors straight across: (-21.5, 135) sits on open ground past this
+wall's outside corner, 1.4 m clear of the tower's box and 4.5 m from its centre, well inside the same
+5.5 m radius, and never within 15 m of anything that wanders. Two corner towers down, two to go for
+whoever picks this up next.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, physics boxes
+unchanged at 313 (no new collider — the tower's own box already existed). Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
