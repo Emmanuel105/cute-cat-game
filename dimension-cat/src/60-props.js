@@ -787,6 +787,21 @@ function makeLostWatchNotice() {
   return g;
 }
 /**
+ * A "lost acorn stash" notice nailed straight to a tree trunk: the same dark-frame-and-paper build as
+ * the other three, with a weathered bark-plank backing standing in for the frame, a carved pinecone
+ * for the cat's silhouette, the robot's head or the watch's case, and four iron nail heads along the
+ * bottom instead of tear-off tabs, hazard tape or a wax seal.
+ */
+function makeForestNotice() {
+  const g = new THREE.Group(), bark = mat(0x3a2a1a, { roughness: 0.95 }), paper = mat(0xd8c9a0, { roughness: 0.9 }), ink = mat(0x3a2e22, { roughness: 0.8 }), iron = mat(0x2a2a28, { roughness: 0.6, metalness: 0.4 });
+  mesh(G.box(0.46, 0.58, 0.014), bark, { z: -0.007, shadow: 'none', parent: g });
+  mesh(G.box(0.4, 0.52, 0.01), paper, { shadow: 'none', parent: g });
+  mesh(G.cone(0.05, 0.1, 8), ink, { y: 0.17, z: 0.016, shadow: 'none', parent: g });
+  mesh(G.sphere(0.06, 10, 8), ink, { y: 0.07, z: 0.016, sy: 1.25, shadow: 'none', parent: g });
+  for (let i = 0; i < 4; i++) mesh(G.sphere(0.014, 6, 5), iron, { x: -0.16 + i * 0.1, y: -0.3, z: 0.013, shadow: 'none', parent: g });
+  return g;
+}
+/**
  * A wind chime hung from an eave: a wooden disc with a handful of metal tubes dangling at different
  * lengths, a wind-catcher on a thread below them. `userData.update` sways the whole thing and, now and
  * then, rings a few soft notes if the cat is close enough to hear.

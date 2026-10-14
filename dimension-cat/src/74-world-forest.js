@@ -67,7 +67,34 @@ function buildForest(game, entry) {
   // trees: a ring at the edge and scattered giants
   for (let i = 0; i < 40; i++) { const a = i / 40 * TAU + r.range(-0.06, 0.06), d = r.range(40, 54); treeAt(cos(a) * d, sin(a) * d, { simple: true }); }
   const inner = [[-30, -10], [-28, 12], [-12, 30], [12, 32], [30, 22], [34, -12], [22, -30], [-6, -34], [-34, -30], [26, 4], [-16, -26], [0, 34]];
-  for (const [x, z] of inner) treeAt(x, z, { lanterns: r.chance(0.5) });
+  let noticeTree = null;
+  for (const [x, z] of inner) { const t = treeAt(x, z, { lanterns: r.chance(0.5) }); if (x === 26 && z === 4) noticeTree = t; }
+  // the Neighborhood's park lamp (round 462), one of Robot City's towers (round 463) and a Victorian
+  // lamp post (round 464) have all carried a stapled notice by now, but nobody had ever nailed anything
+  // to one of these woods' own trees. The inner-ring tree at (26, 4) now carries one: a weathered
+  // bark-plank backing in place of the frame, a carved pinecone standing in for the cat silhouette,
+  // the robot head or the watch case, and four iron nail heads along the bottom instead of tear tabs,
+  // hazard tape or a wax seal (`makeForestNotice()`, new, next to the other three in `60-props.js`).
+  // Read it and the cat gets one of three lines, same "toast on interact" trick every notice before it
+  // used. `noticeTree` is the exact group the `inner` loop above already builds and places, captured
+  // without touching that loop's own `r.chance(0.5)` draw per tree, so no later wardrobe or colour pick
+  // anywhere else in this world shifts. The notice is mounted dead-centre on the trunk, offset outward
+  // along local +z by `treeW / 2.2` (the tree's own base radius `R`, recovered from `userData.col[0] =
+  // R * 2.2`) plus 2 cm — since the trunk tapers from `R` at the base to `R * 0.55` at the crown, that
+  // offset clears the actual (smaller) radius at the notice's own height everywhere up the taper, so
+  // the sheet sits proud of the bark rather than buried inside it. It inherits the tree's own random
+  // `r() * TAU` world rotation (set inside `makeBigTree` itself) along with everything else parented to
+  // it, so it ends up facing whichever way that one tree happens to be turned — fine, since the physics
+  // box `treeAt` already gave this tree (axis-aligned, half-extent `w * 0.7`) doesn't rotate with it,
+  // and a flat sheet needs no new box of its own regardless of which face it ends up on. That box's own
+  // half-extent (`w * 0.7`, 1.08-1.54 m for a tree this size) sets a 2.18 m worst-case corner diagonal;
+  // `game.addInteractable`'s 3.4 m radius clears it by at least a metre on every side.
+  { const treeW = noticeTree.userData.col[0], standoff = treeW / 2.2 + 0.02;
+    const notice = makeForestNotice(); notice.position.set(0, 1.9, standoff); noticeTree.add(notice);
+    const forestNoticeLines = ['🐿️ "LOST: one entire winter\'s stash of acorns. If found, please panic as much as I am. — A Squirrel." The cat reads it twice and still isn\'t sure which squirrel.',
+      '🐿️ Scrawled underneath in smaller letters: "Reward: half the stash, once it turns up." The cat does not apply.',
+      '🐿️ Someone has already chewed one corner of the notice clean off. The cat decides not to ask who.'];
+    game.addInteractable({ obj: noticeTree, radius: 3.4, label: () => 'Read the notice', onUse: () => { SFX.click(); game.toast(rnd.pick(forestNoticeLines), 3000); } }); }
   const treehouse = makeTreehouse(game, -18, 14, r);
   // a wind chime under the treehouse's own back eave, away from the ladder and lit window on the front
   // side — reuses the Neighborhood porch's makeWindChime() with a mossier, woodland palette

@@ -12072,3 +12072,42 @@ leak across the town.
 Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, 309 physics
 boxes unchanged (the notice adds none). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 465 — a "lost acorn stash" notice in Whisper Woods
+
+The Neighborhood's park lamp, one of Robot City's towers and a Victorian lamp post have all carried a
+stapled notice by now (rounds 462-464) — Whisper Woods, the one world left out of that running joke and
+also the one world that had gone the longest (nine rounds) without anything new at all, never got one.
+**One of the inner-ring trees, at (26, 4), now carries a notice nailed straight to its own trunk**:
+weathered bark-plank backing standing in for the frame, a carved pinecone for the cat silhouette, the
+robot head or the watch case the other three use, and four iron nail heads along the bottom in place of
+tear-off tabs, hazard tape or a wax seal. Read it and the cat gets one of three lines: *"LOST: one
+entire winter's stash of acorns. If found, please panic as much as I am. — A Squirrel."* The cat reads
+it twice and still isn't sure which squirrel.
+
+New prop, `makeForestNotice()` in `60-props.js`, built on the same skeleton as the other three. No new
+controller. The tricky part was mounting it on a tree rather than a lamp post or a tower wall: a tree
+trunk is a tapered cylinder (`makeBigTree`'s own `G.cyl(R * 0.55, R, h, 10)`, wide at the base and
+narrower at the crown), not a flat-sided post, so a notice centred on the trunk at any height would sit
+buried inside the bark rather than on top of it. The fix reads the tree's own base radius back out of
+`userData.col[0]` (`= R * 2.2`, set by `makeBigTree` itself) and offsets the notice outward by `R +
+0.02 m` — always past the actual (smaller) radius at any height further up the taper, so it clears the
+surface everywhere above the base. The tree itself is `noticeTree`, captured from the `inner` array's
+own placement loop (`74-world-forest.js`) without changing that loop's own `r.chance(0.5)` draw per
+tree, so nothing about the shared `r()` sequence shifts and no later wardrobe or colour pick in this
+world moves. The notice inherits the tree's own random `r() * TAU` world rotation along with everything
+else parented to it, so it ends up facing whichever way that one tree happens to be turned — harmless,
+since `game.addInteractable` keys off the tree group by distance alone, and the tree's own physics box
+(axis-aligned, set by `treeAt` before any of this) never rotates with the visual mesh anyway.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses) built the
+real Whisper Woods (`game.start('new')` then `game.load(6, 'from-hub')`), found the one "Read the
+notice" interactable and its tree: half-width 1.75 m, so a 2.18 m worst-case corner diagonal, well
+inside this round's own 3.4 m radius. The nearest other physics box stayed 7.65 m clear of the tree's
+centre and the nearest NPC, sampled every frame over 300 simulated seconds, never closer than 4.6 m —
+both past the radius, so nothing else's own prompt competes with it. Standing beside the tree turned up
+"Read the notice" and fired a toast; standing 50 m off showed no prompt at all.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, 309 physics
+boxes unchanged (the notice adds none, same shortcut every lamp and tower notice before it took).
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
