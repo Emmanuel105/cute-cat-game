@@ -599,6 +599,18 @@ function makeAurora(parent, r = rnd) {
   g.userData.update = (dt, t) => { u.time.value = t; };
   return g;
 }
+/** Rainbow: seven concentric half-torus colour bands, a static backdrop far beyond the walkable limit. */
+function makeRainbowArc(parent, o = {}) {
+  const g = new THREE.Group(); g.position.set(o.x ?? 0, o.y ?? 0, o.z ?? 0); parent.add(g);
+  const colors = [0xe53935, 0xfb8c00, 0xfdd835, 0x66bb6a, 0x42a5f5, 0x5c6bc0, 0x8e24aa];
+  const R = o.r ?? 90, band = o.band ?? 3.4, tube = band * 0.48;
+  for (let i = 0; i < colors.length; i++) {
+    const m = glowMat(colors[i], 0.3, { transparent: true, opacity: 0.5, side: THREE.DoubleSide, fog: false });
+    const t = mesh(G.torus(R + i * band, tube, 5, 48, PI), m, { shadow: 'none', parent: g });
+    t.frustumCulled = false;
+  }
+  return g;
+}
 function makeSled(color = 0xd62839) {
   const g = new THREE.Group(), wood = mat(0x8a5a32, { roughness: 0.9, map: TEX.planks(28, 32) }), rail = mat(color, { metalness: 0.5, roughness: 0.4 });
   for (const s of [-1, 1]) { mesh(G.box(0.06, 0.06, 1.6), rail, { x: s * 0.35, y: 0.05, parent: g }); mesh(G.torus(0.2, 0.03, 6, 12, PI), rail, { x: s * 0.35, y: 0.25, z: 0.8, ry: PI / 2, rx: -PI / 2, shadow: 'none', parent: g }); }

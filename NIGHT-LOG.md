@@ -12504,3 +12504,27 @@ of the nearest other soul, 5.8 m past the star collectible at (30, -20). No new 
 Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, all 274 checks `ok`, 0
 console warnings, physics boxes unchanged at 313 (the seal and its tarn add no collider). Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 481 — a rainbow over Whisper Woods
+
+Frosty Peak has had its aurora since round 283 and the Neighborhood picked up a telescope more
+recently, but Whisper Woods — the one world actually built around fairies and wishes — never had a sky
+worth looking up at. **A rainbow now arcs high over the treetops**, as if a shower has just cleared, and
+a small ring of mossy stones in a clearing between the treehouse and the hollow-log path gives the cat
+somewhere to stop and look up at it: *"The fairies say there's a pot of something at the end of it.
+Nobody's ever found the end."* / *"Seven bands, same as the fairy ring has mushrooms. Coincidence,
+probably."* / *"Must have rained somewhere, sometime. These woods never quite dry out."*
+
+`makeRainbowArc()` (new, next to `makeAurora` in `62-props-nature.js`) builds seven concentric
+half-torus colour bands — the same "flat backdrop far beyond the walkable limit" trick the aurora
+curtains already use. It's centred 9 m past `WOODS_LIMIT` (196) itself, so its span crosses no keep-out
+zone and needs no physics box of its own, same as the aurora. The stone ring the cat actually interacts
+with is new geometry, styled after Frosty Peak's own aurora cairn, with one small physics box of its own
+(half-extent 0.6/0.35/0.6). A headless probe (`game.load(6, 'from-hub')`, then 3000 simulated frames
+sampling every NPC's own position every single frame) found (-10, 22) clear by 7.51 m of the nearest
+physics box and 7.21 m of the nearest soul (a wandering detectorist) throughout — comfortably past the
+new interactable's own 2.8 m radius. Fixed coordinates and colours throughout, no draw from this world's
+own seeded `r`, so no later mushroom hue or butterfly colour pick anywhere else shifts.
+
+Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, all 274 checks `ok`, 0 console
+warnings, no regressions. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

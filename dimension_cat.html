@@ -6387,6 +6387,18 @@ function makeAurora(parent, r = rnd) {
   g.userData.update = (dt, t) => { u.time.value = t; };
   return g;
 }
+/** Rainbow: seven concentric half-torus colour bands, a static backdrop far beyond the walkable limit. */
+function makeRainbowArc(parent, o = {}) {
+  const g = new THREE.Group(); g.position.set(o.x ?? 0, o.y ?? 0, o.z ?? 0); parent.add(g);
+  const colors = [0xe53935, 0xfb8c00, 0xfdd835, 0x66bb6a, 0x42a5f5, 0x5c6bc0, 0x8e24aa];
+  const R = o.r ?? 90, band = o.band ?? 3.4, tube = band * 0.48;
+  for (let i = 0; i < colors.length; i++) {
+    const m = glowMat(colors[i], 0.3, { transparent: true, opacity: 0.5, side: THREE.DoubleSide, fog: false });
+    const t = mesh(G.torus(R + i * band, tube, 5, 48, PI), m, { shadow: 'none', parent: g });
+    t.frustumCulled = false;
+  }
+  return g;
+}
 function makeSled(color = 0xd62839) {
   const g = new THREE.Group(), wood = mat(0x8a5a32, { roughness: 0.9, map: TEX.planks(28, 32) }), rail = mat(color, { metalness: 0.5, roughness: 0.4 });
   for (const s of [-1, 1]) { mesh(G.box(0.06, 0.06, 1.6), rail, { x: s * 0.35, y: 0.05, parent: g }); mesh(G.torus(0.2, 0.03, 6, 12, PI), rail, { x: s * 0.35, y: 0.25, z: 0.8, ry: PI / 2, rx: -PI / 2, shadow: 'none', parent: g }); }
@@ -14931,6 +14943,30 @@ function buildForest(game, entry) {
   // closer than 8.0 m, well past this interactable's 3.6 m radius — only passing butterflies and fairies,
   // flying well overhead, ever come closer, which is no obstruction at all.
   game.addInteractable({ obj: bigMushroom, radius: 3.6, label: () => 'Look up at the mushroom', onUse: () => { SFX.click(); game.toast(rnd.pick(['🍄 "Taller than the treehouse ladder, nearly. And it just sits there glowing."', "🍄 \"Nobody's ever eaten this one. Nobody's brave enough to find out why it glows.\"", '🍄 "The cap alone could shelter a whole family of frogs."']), 3000); } });
+  // Frosty Peak has had its aurora since round 283 and the Neighborhood its own telescope more recently,
+  // but these woods — the one world actually built around fairies and wishes — never had a sky worth
+  // looking up at. `makeRainbowArc()` (new, next to `makeAurora` in `62-props-nature.js`) is seven
+  // concentric half-torus bands, the same "flat backdrop far beyond the walkable limit" trick the
+  // aurora curtains already use: centred 9 m past `WOODS_LIMIT` (196) itself, so its span crosses no
+  // keep-out zone and needs no physics box of its own, the same as the aurora. A small ring of mossy
+  // stones, styled after Frosty Peak's own aurora cairn, now sits in a quiet clearing between the
+  // treehouse and the hollow-log path, giving the cat somewhere to actually stop and look up. A headless
+  // probe (`game.load(6, 'from-hub')`, then 3000 simulated frames sampling every NPC's own position every
+  // frame) found (-10, 22) clear by 7.51 m of the nearest physics box and 7.21 m of the nearest soul (a
+  // wandering detectorist) throughout — comfortably past this interactable's own 2.8 m radius and the
+  // stone ring's own half-metre footprint. Fixed coordinates and colours throughout, no draw from this
+  // world's own seeded `r`, so no later mushroom hue or butterfly colour pick anywhere else shifts.
+  { const cx = -10, cz = 22, cy = P.ground0(cx, cz);
+    const cairn = group(cx, cy, cz, W), stoneM = mat(0x7a8a74, { roughness: 0.95, flatShading: true });
+    mesh(G.sphere(0.32, 7, 5), stoneM, { x: -0.3, y: 0.16, ry: 0.6, parent: cairn });
+    mesh(G.sphere(0.26, 7, 5), stoneM, { x: 0.28, y: 0.14, ry: 2.1, parent: cairn });
+    mesh(G.sphere(0.22, 6, 5), stoneM, { z: 0.3, y: 0.12, ry: 4.0, parent: cairn });
+    P.addBox(cx, cy + 0.15, cz, 0.6, 0.35, 0.6, { cam: false });
+    const rainbowLines = ['🌈 "Must have rained somewhere, sometime. These woods never quite dry out."',
+      '🌈 "The fairies say there\'s a pot of something at the end of it. Nobody\'s ever found the end."',
+      '🌈 "Seven bands, same as the fairy ring has mushrooms. Coincidence, probably."'];
+    game.addInteractable({ obj: cairn, radius: 2.8, label: () => 'Look up at the rainbow', onUse: () => { SFX.click(); game.fx.emit(cx, cy + 1.4, cz, { count: 14, colors: [0xff6f6f, 0xffd54a, 0x6fdc6f, 0x6fa8ff], speed: 1.0, up: 1.6, life: 1.0, gravity: 1.5 }); game.toast(rnd.pick(rainbowLines), 3000); } }); }
+  makeRainbowArc(W, { x: -10, y: 18, z: -205, r: 85 });
   for (let i = 0; i < 30; i++) { const x = r.range(-40, 40), z = r.range(-40, 40); if (dist2(x, z, 8, -6) < 36) continue; placeT(game, U, makeMushroom(r.range(0.25, 0.6), r.pick([0, 20, 200, 300, 40]), r, r.chance(0.4)), x, z, 0); }
   // trees: a ring at the edge and scattered giants
   for (let i = 0; i < 40; i++) { const a = i / 40 * TAU + r.range(-0.06, 0.06), d = r.range(40, 54); treeAt(cos(a) * d, sin(a) * d, { simple: true }); }
