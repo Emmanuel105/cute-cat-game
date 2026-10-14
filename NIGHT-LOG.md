@@ -12631,3 +12631,28 @@ Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, all 
 warnings, physics boxes up by one (315 → 316, the post's own collider). No visual check was possible in
 this environment (no browser, no Playwright) — only the headless probe above and the stub-three test
 suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 485 — a pelican on Sunny Shore's pier
+
+The fisherman at the end of Sunny Shore's own pier has had nothing but "not a nibble all morning" since
+round one, and the one bird that would actually be good at his job never showed up. **A pelican now
+perches on the pier's own handrail**, partway out between the landward "look out over the pier" spot and
+the angler's own stool, standing on folded legs, turning its head slowly to scan the water and, every so
+often, tipping its jaw open and shut as if it has just swallowed something — no dialogue, no interaction,
+the same quiet ambient read as Frosty Peak's seal or the Neighborhood's ladybug.
+
+`makePelican()` (new, in `56-npcs-wild.js` right after the seagull) is a capsule body, folded wings dark
+at the tip, a long neck and a flat hooked bill with a separately hinged lower jaw and pouch so the "gulp"
+gag can open just the bottom half. No new controller: `pelican.animate(0, false, dt, pt)` is called
+directly off a local timer in a `U.push` closure, the same "perched; only animates" trick the owls and
+the seal already use, so it costs no new physics box at all — it stands well above the deck the cat
+actually walks on. It's added as a child of the pier's own group rather than positioned in world space,
+so it inherits the pier's own rotation for free and sits at local (1.45, 1.56, 5) — exactly the rail the
+posts are built on, at the rail's own top height — without any trig of its own; the pier's "look out"
+interactable (radius 4 around its landward end) and the angler's own 2.1 m greet circle both stay several
+metres clear of that spot.
+
+Full suite (`node test/run.mjs`) ran clean several times in a row — exit 0, all 274 checks `ok`, 0
+console warnings, physics boxes unchanged at 316 (the pelican adds no collider of its own, same as the
+seal and the owls). No visual check was possible in this environment (no browser, no Playwright) — only
+the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

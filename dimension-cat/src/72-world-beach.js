@@ -38,6 +38,19 @@ function buildBeach(game, entry) {
   // this world's own seeded `r` at build time, so it costs no later wardrobe or colour draw.
   { const pierLines = ['🌊 "Water as far as the eye can go. Somewhere under it, fish."', '🪵 "Salt-bleached boards, creaking the whole way out."', '🎣 "Best seat in the house for watching somebody else not catch anything."'];
     game.addInteractable({ obj: pier, radius: 4, label: () => 'Look out over the pier', onUse: () => { SFX.click(); game.toast(rnd.pick(pierLines), 3000); } }); }
+  // the fisherman at the far end has never caught a thing, but the one creature who'd actually beat him
+  // to it never showed up. A pelican now perches on the pier's own handrail partway out, between the
+  // "look out" spot at the landward end and the angler's own greet circle at the far end, well clear of
+  // both. `makePelican()` (new, next to the seagull in `56-npcs-wild.js`) stands on folded legs, scanning
+  // the water with a slow head-turn and, every so often, tipping its jaw open and shut as if it's just
+  // swallowed something — the fisherman never gets that satisfaction. Added as a child of the pier's own
+  // group rather than positioned in world space, so it inherits the pier's rotation for free and sits
+  // exactly on the real rail geometry (local x=1.45, the same rail the posts are built on, y=1.56 at the
+  // rail's own top) without any trig of its own. No new physics box — perched above head height, the
+  // same "perched; only animates" trick the owls and Frosty Peak's seal already use — so it can't block
+  // the deck the cat actually walks.
+  { const pelican = makePelican(); pelican.group.position.set(1.45, 1.56, 5); pier.add(pelican.group);
+    let pt = r() * 10; U.push((dt) => { pt += dt; pelican.animate(0, false, dt, pt); }); }
   const lighthouse = makeLighthouse(game, 12, -46); U.push(lighthouse.userData.update);
   // the Victorian bell tolls, the factory whistle blows, Whisper Woods' owl hoots — but Sunny Shore's
   // own lighthouse, sweeping its beam every second since the world was first built, had never once

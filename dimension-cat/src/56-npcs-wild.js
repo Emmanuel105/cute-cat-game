@@ -61,6 +61,42 @@ function makeSeagull(o = {}) {
   return rig;
 }
 
+// ---------------------------------------------------------------- pelican (perched: stands still on a rail or post; only animates, the same "perched" trick as the owls and the seal)
+function makePelican(o = {}) {
+  const g = new THREE.Group(), rig = { group: g };
+  const plume = mat(o.body ?? 0xe8e3d4, { roughness: 0.85 }), wing = mat(0x8c8273, { roughness: 0.8 }),
+    tip = mat(0x2a2620, { roughness: 0.75 }), bill = mat(o.bill ?? 0xd99a4a, { roughness: 0.6 }),
+    pouch = mat(0xc77a3a, { roughness: 0.75 }), dark = mat(0x161412), legM = mat(0x8a7a56, { roughness: 0.7 });
+  const body = group(0, 0.26, 0, g); rig.body = body;
+  mesh(G.capsule(0.17, 0.5, 12), plume, { rx: PI / 2, parent: body });
+  for (const side of [1, -1]) {   // folded wings along the flanks, dark at the tip
+    const w = group(side * 0.14, 0.02, -0.04, body); rig['wing' + side] = w;
+    mesh(G.box(0.1, 0.22, 0.46), wing, { x: side * 0.05, ry: side * 0.1, parent: w });
+    mesh(G.box(0.08, 0.1, 0.18), tip, { x: side * 0.09, z: -0.22, ry: side * 0.1, shadow: 'none', parent: w });
+  }
+  const neck = group(0, 0.14, 0.27, body); rig.neck = neck;
+  mesh(G.capsule(0.08, 0.2, 10), plume, { y: 0.1, rx: PI / 2 - 0.5, parent: neck });
+  const head = group(0, 0.26, 0.09, neck); rig.head = head;
+  mesh(G.sphere(0.11, 12, 10), plume, { sz: 1.1, parent: head });
+  for (const side of [1, -1]) mesh(G.sphere(0.017, 6, 6), dark, { x: side * 0.065, y: 0.03, z: 0.08, shadow: 'none', parent: head });
+  mesh(G.box(0.07, 0.035, 0.32), bill, { y: 0.015, z: 0.17, shadow: 'none', parent: head });   // the long flat upper bill
+  mesh(G.cone(0.028, 0.07, 6), bill, { y: 0.015, z: 0.33, rx: PI / 2, shadow: 'none', parent: head });   // its hooked tip
+  const jaw = group(0, -0.01, 0.1, head); rig.jaw = jaw;   // lower bill + pouch, hinged to mime a gulp
+  mesh(G.box(0.06, 0.03, 0.3), bill, { y: 0, z: 0.14, shadow: 'none', parent: jaw });
+  mesh(G.sphere(0.05, 10, 8), pouch, { y: -0.025, z: 0.12, sy: 0.55, sz: 1.2, shadow: 'none', parent: jaw });
+  for (const side of [1, -1]) mesh(G.cyl(0.016, 0.018, 0.16, 6), legM, { x: side * 0.09, y: -0.15, parent: body });   // short legs down to the rail
+  rig.animate = (ph, moving, dt, t = 0) => {
+    body.scale.y = 1 + sin(t * 1.1) * 0.025;   // breathing
+    neck.rotation.x = -0.15 + sin(t * 0.26) * 0.18;
+    head.rotation.y = sin(t * 0.21) * 0.35;   // scanning the water
+    const gulp = max(0, sin(t * 0.33 + 1)) > 0.93 ? 1 : 0;   // an occasional silent "swallowed a fish" mime
+    jaw.rotation.x = damp(jaw.rotation.x, gulp * 0.4, 8, dt);
+    for (const side of [1, -1]) rig['wing' + side].rotation.z = side * sin(t * 0.5) * 0.03;   // a slow resettle
+  };
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- sea turtle
 function makeTurtle() {
   const g = new THREE.Group(), rig = { group: g, fins: [] };
