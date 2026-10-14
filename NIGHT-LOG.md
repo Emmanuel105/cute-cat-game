@@ -12162,5 +12162,36 @@ A headless probe (`game.start('new')` then `game.load(4, 'from-prev')`) stood th
 Standing out at (80, 80) showed no prompt of either kind.
 
 Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, 309 physics
+boxes unchanged (the notice adds none, same shortcut every notice before it took).
+
+## Round 468 — a "lost mitten" notice on Frosty Peak's welcome arch
+
+The Neighborhood, Robot City, Victorian, Whisper Woods and Sunny Shore have all had a stapled notice by
+now — Frosty Peak was the one world left out, and the log-post welcome arch at the top of the gondola,
+standing right on the path every arriving cat already walks, had two ready-made posts and nothing of its
+own competing for the spot. **One of the arch's posts now carries a "lost mitten" notice**: *"LOST: one
+mitten, hand-knit, red with white snowflakes. Left hand only — the right one's long gone."* Underneath,
+smaller writing adds that the other one probably isn't worth much either, and somebody's pinned a single
+loose strand of red wool to the corner "as if that proves anything."
+
+New prop, `makeSnowNotice()` in `60-props.js`, right after the other five — a frost-pale pine plank, a
+squashed-sphere mitten body with a stubby thumb cone standing in for the cat's silhouette, the robot's
+head, the watch's case, the pinecone or the crab, and a row of small icicles hanging off the bottom edge
+instead of tear tabs, hazard tape, a wax seal, nail heads or pebbles. `makeWelcomeArch` builds its two
+log posts as plain meshes with no group of their own, so the notice reaches in by local offset instead
+of a captured reference: parented straight onto the arch's own group at local (2.4, 1.5, 0), which lands
+on the post's own surface with a 2 cm gap (the post tapers from a 0.2 m to a 0.16 m radius over its
+height, ~0.184 m at notice height) — no new mesh group, no new physics box, since the post's own
+half-extent-0.45 collision box already covers it.
+
+A headless probe (`game.start('new')` then `game.load(5, 'from-hub')`) found the notice lands at world
+(-31.5, -2.4) — the arch's own rotation turns the local offset south rather than along +z — and swept it
+against every physics box, NPC and interactable in the built world: the nearest other soul stayed 6.77 m
+clear, well past the notice's own 2.2 m radius, and the only box closer than that is the post it's
+mounted on (0.2 m, exactly the clearance it was built for). Standing at the arch turned up "Read the
+notice" and fired a toast; standing out at (0, 60) showed no prompt at all.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, 309 physics
 boxes unchanged (the notice adds none, same shortcut every notice before it took). Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

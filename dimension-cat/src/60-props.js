@@ -818,6 +818,22 @@ function makeBeachNotice() {
   return g;
 }
 /**
+ * A "lost mitten" notice nailed to a frost-pale log post: the same dark-frame-and-paper build as the
+ * other five, with a weathered pine plank standing in for the dark frame, driftwood or bark, a
+ * squashed-sphere mitten body and a stubby thumb cone standing in for the cat's silhouette, the robot's
+ * head, the watch's case, the pinecone or the crab, and a row of small icicles hanging off the bottom
+ * edge instead of tear-off tabs, hazard tape, a wax seal, nail heads or pebbles.
+ */
+function makeSnowNotice() {
+  const g = new THREE.Group(), wood = mat(0x8a97a0, { roughness: 0.92 }), paper = mat(0xeef3f7, { roughness: 0.85 }), ink = mat(0x33404a, { roughness: 0.7 }), ice = mat(0xcdeeff, { roughness: 0.2, transparent: true, opacity: 0.85 });
+  mesh(G.box(0.46, 0.58, 0.012), wood, { z: -0.005, shadow: 'none', parent: g });
+  mesh(G.box(0.4, 0.52, 0.01), paper, { shadow: 'none', parent: g });
+  mesh(G.sphere(0.065, 10, 8), ink, { y: 0.15, z: 0.016, sx: 1.15, sy: 0.85, shadow: 'none', parent: g });
+  mesh(G.cone(0.026, 0.06, 6), ink, { x: 0.08, y: 0.2, z: 0.016, rz: -0.75, shadow: 'none', parent: g });
+  for (let i = 0; i < 4; i++) mesh(G.cone(0.016, 0.05 + (i % 2) * 0.02, 5), ice, { x: -0.15 + i * 0.1, y: -0.27, z: 0.012, rx: PI, shadow: 'none', parent: g });
+  return g;
+}
+/**
  * A wind chime hung from an eave: a wooden disc with a handful of metal tubes dangling at different
  * lengths, a wind-catcher on a thread below them. `userData.update` sways the whole thing and, now and
  * then, rings a few soft notes if the cat is close enough to hear.

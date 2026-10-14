@@ -1071,7 +1071,36 @@ function buildSnowVillage(game, entry) {
   // gondola home (bottom station of the village)
   const station = makeGondolaStation(game, -40, 0, PI / 2, () => game.travel(0, 'from-snow'), 'Ride the gondola home', 'NEIGHBORHOOD  ↓');
   station.position.y = P.ground0(-40, 0); U.push(station.userData.update);
-  makeWelcomeArch(game, -31.5, 0, PI / 2);
+  const welcomeArch = makeWelcomeArch(game, -31.5, 0, PI / 2);
+  // the Neighborhood's park lamp, Robot City's tower, a Victorian lamp post, a Whisper Woods tree and
+  // Sunny Shore's swim flag have all carried a stapled notice by now (rounds 462-467) — Frosty Peak was
+  // the one world left out, and the welcome arch at the top of the gondola, standing right on the path
+  // every arriving cat already walks, had two ready-made log posts and no interactable of its own to
+  // compete with. `makeSnowNotice()` (new, next to the other five in `60-props.js`) is parented onto the
+  // arch's own right-hand post (`makeWelcomeArch`'s loop builds both posts at local x = ±2.2, y = 1.9,
+  // z = 0, as plain meshes with no handle of their own, so this reaches in by local offset rather than a
+  // captured reference) at local (2.4, 1.5, 0) — 1.5 m up is squarely inside the post's own 0-3.8 m
+  // span and well under the beam at y = 3.55, and 2.4 = 2.2 + 0.2 clears the post's own radius at that
+  // height (it tapers from 0.2 at the base to 0.16 at the top; at y = 1.5 that interpolates to ~0.184 m,
+  // so a 0.2 m offset leaves a 2 cm gap) plus the panel's own 1.2 cm thickness. `rotation.y = PI / 2`
+  // turns the panel's default +z face to +x, so it looks back along the offset instead of edge-on to
+  // anyone walking up from that side. No new physics box: the post's own (half-extent 0.45) already
+  // covers it, same shortcut every notice before it took.
+  // `game.addInteractable` resolves distance from the notice's own object via `getWorldPosition`, not
+  // the arch's, so it needn't worry about the gondola station's own "Ride the gondola home" hub prompt
+  // 8.5 m away at (-40, 0) — far outside both radii, no overlap there even before accounting for this.
+  // A headless probe (`game.start('new')` then `game.load(5, 'from-hub')`) found the notice lands at
+  // world (-31.5, -2.4) — the arch's own ry = PI/2 turns the local +x offset south, not the +z this
+  // comment's own local coordinates might suggest — and swept it against every physics box, NPC and
+  // interactable in the built world: the nearest of either (a wandering villager) stayed 6.77 m clear,
+  // well past the notice's own 2.2 m radius; the only box closer than that is the post it's mounted on
+  // (0.2 m, exactly the clearance this was built for). Standing at (-31.5, -2.4) turned up "Read the
+  // notice" and fired a toast; standing out at (0, 60) showed no prompt at all.
+  { const notice = makeSnowNotice(); notice.position.set(2.4, 1.5, 0); notice.rotation.y = PI / 2; welcomeArch.add(notice);
+    const mittenLines = ['🧤 "LOST: one mitten, hand-knit, red with white snowflakes. Left hand only — the right one\'s long gone." The cat has four mittens built in and loses none of them, and isn\'t shy about it.',
+      '🧤 Underneath, in smaller writing: "If found, the other one probably isn\'t worth much either." The cat has to agree.',
+      '🧤 Someone has pinned a single loose strand of red wool to the corner, as if that proves anything. The cat sniffs it anyway.'];
+    game.addInteractable({ obj: notice, radius: 2.2, label: () => 'Read the notice', onUse: () => { SFX.click(); game.toast(rnd.pick(mittenLines), 3000); } }); }
   makeLanternPath(game, -29, 0, -8, 0, 6);
   for (const [x, z] of [[-28, 4.5], [-20, -4.5], [-14, 4.5]]) { const c = makeIceCrystal(r, r.pick([0x9fe8ff, 0xbfa8ff])); placeT(game, U, c, x, z, 0); boxT(game, x, z, 0.6, 1.6, 0.6, { cam: false }); }
   for (const [x, z] of [[-26, -6], [-18, 6]]) { const p = makeSnowPine(r); placeT(game, U, p, x, z, 0); boxT(game, x, z, 1.2 * p.scale.x, 5, 1.2 * p.scale.x, { cam: false }); }
