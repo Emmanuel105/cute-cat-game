@@ -12006,3 +12006,39 @@ testing came back `exit 1` with no `FAIL:` line printed at all — almost certai
 flake these logs have been tracking on Victorian's horse and carriage, caught mid-build rather than
 caused by this round's change, since a bare re-run and five further runs straight after all came back
 clean. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 463 — a "missing unit" notice in Robot City
+
+Robot City hadn't had anything new added to it in six rounds — the longest dry spell of the seven
+worlds — despite already being the densest of them all. The Neighborhood's own lamp post has carried a
+"lost cat" notice since round 462; Robot City now gets the same joke the other way round. **One of the
+six hand-placed skyscrapers in the east yard (the one at (-38, 0), between the camera tower and the
+radar dish's own tower) now carries a "missing unit" bulletin bolted flush to its east wall** — the same
+dark-frame-and-cream-paper build as the lost-cat notice, just reskinned with a boxy robot-head silhouette
+(two antenna rods standing in for ears) and a strip of hazard tape instead of tear-off phone tabs. Read
+it and the cat gets one of three lines: *"MISSING: UNIT 47. Last seen chasing a loose bolt. Reward: one
+(1) oil can."*
+
+New prop, `makeMissingUnitPoster()` in `60-props.js`, built as a near-verbatim copy of `makePosterNotice()`
+with the cat silhouette swapped for a robot one and the paper tabs swapped for a hazard-tape strip. It's
+parented straight onto the tower's own group (`b`) inside the skyscraper-placing `forEach` in
+`buildRobotCity()`, mounted 0.02 m clear of the tower's existing 6×6 footprint and rotated 90° to face the
+wall's outward normal — no new mesh group of its own beyond the poster, and critically no new physics box:
+a 0.012 m-thick sheet blocks nothing the tower's own collision box wasn't already clearing, the same
+shortcut the lamp notice took. `game.addInteractable` keys off the tower group itself, same trick the
+camera and radar dish mounted on the other two towers already use, with a 4.3 m radius — just past the
+tower's own 4.24 m diagonal corner, so it's reachable flush against the wall from any angle without
+reaching the statue's own interactable 22.8 m away.
+
+Checked with a standalone headless probe (the same stub-three harness `test/run.mjs` itself uses,
+`game.load(2, 'from-prev')` then clicking the start screen's own "Enter" the way the real game does):
+`game.nearest` picks up "Read the notice" with the cat standing 0.6 m off the wall, stays null well
+past the interactable's own radius, and `game.interact()` fires one of the three toast lines. (An
+earlier pass of the same probe used `game.travel()` instead of `game.load()` and saw nothing at all —
+`travel()` only queues the world swap behind a `setTimeout` for the real game's fade transition, which
+never fires with nothing driving Node's event loop; `game.load()` is the synchronous one every other
+round's own probe already reaches for.)
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, 309 physics
+boxes unchanged (the notice adds none, same as the render count climbing by only the poster's own
+handful of meshes). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

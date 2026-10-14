@@ -2872,6 +2872,21 @@ function buildRobotCity(game, entry) {
       // than 9.5 m, comfortably past this interactable's 6.5 m radius.
       const radarLines = ['📡 "Sweeps the whole skyline every few seconds. Still hasn\'t found anything."', '📡 "Nobody remembers what it\'s listening for. It just keeps listening."', '📡 "Tallest point in the east yard, and the view is mostly more skyline."'];
       game.addInteractable({ obj: b, radius: 6.5, label: () => 'Look up at the radar dish', onUse: () => { SFX.click(); game.toast(rnd.pick(radarLines), 3000); } });
+    } else if (i === 4) {
+      // the camera and the radar dish both got their own one-off toast on a hand-placed tower, but every
+      // other quiet tower in this yard stayed bare. This one's own east wall faces the open floor the
+      // wandering robots cross, so a "missing unit" bulletin now hangs flush on it — the same
+      // `makePosterNotice`-style dark-frame-and-paper build the Neighborhood's own lost-pet notice uses
+      // (round 462), just reskinned with a robot-head silhouette and a strip of hazard tape in place of
+      // the cat's ears and tear-off phone tabs. No new physics box: the sheet is 0.012 m thick, mounted
+      // 0.02 m clear of this tower's own existing 6x6 footprint, the same margin the lamp notice itself
+      // kept past its post; `addInteractable`'s radius (4.3) clears that footprint's own 4.24 m diagonal
+      // corner by a hair, reachable from any angle without reaching the nearest other interactable (the
+      // statue at (-44, 22), 22.8 m off).
+      const noteY = 1.5, mountX = w / 2 + 0.02;
+      const poster = makeMissingUnitPoster(); poster.position.set(mountX, noteY, 0); poster.rotation.y = PI / 2; b.add(poster);
+      const noticeLines = ['📋 "MISSING: UNIT 47. Last seen chasing a loose bolt. Reward: one (1) oil can."', '📋 "Answers to a diagnostic ping. Doesn\'t answer to much else."', '📋 Someone has stapled a replacement notice over the last replacement notice.'];
+      game.addInteractable({ obj: b, radius: 4.3, label: () => 'Read the notice', onUse: () => { SFX.click(); game.toast(rnd.pick(noticeLines), 3000); } });
     }
   });
   // east yard: a second factory line, a plaza with a giant robot statue to the west, more lights and neon

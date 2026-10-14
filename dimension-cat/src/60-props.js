@@ -756,6 +756,21 @@ function makePosterNotice() {
   return g;
 }
 /**
+ * A "missing unit" bulletin bolted to a wall: the same dark-frame-and-paper build as the lost-cat
+ * notice, but with a robot-head silhouette (a box head, two antenna rods) standing in for the cat's
+ * sphere-and-ears, and a strip of hazard tape along the bottom instead of tear-off phone tabs.
+ */
+function makeMissingUnitPoster() {
+  const g = new THREE.Group(), paper = mat(0xc9d6de, { roughness: 0.85 }), dark = mat(0x1c1c22, { roughness: 0.6, metalness: 0.4 }), amber = mat(0xff9f43, { roughness: 0.6 });
+  mesh(G.box(0.46, 0.58, 0.012), dark, { z: -0.005, shadow: 'none', parent: g });
+  mesh(G.box(0.42, 0.54, 0.01), paper, { shadow: 'none', parent: g });
+  mesh(G.box(0.1, 0.09, 0.012), dark, { y: 0.14, z: 0.016, shadow: 'none', parent: g });
+  for (const sx of [-1, 1]) mesh(G.cyl(0.006, 0.006, 0.07, 6), dark, { x: sx * 0.03, y: 0.205, z: 0.016, shadow: 'none', parent: g });
+  mesh(G.box(0.4, 0.05, 0.011), amber, { y: -0.26, z: 0.006, shadow: 'none', parent: g });
+  for (let i = 0; i < 5; i++) mesh(G.box(0.07, 0.05, 0.013), dark, { x: -0.16 + i * 0.08, y: -0.26, z: 0.007, shadow: 'none', parent: g });
+  return g;
+}
+/**
  * A wind chime hung from an eave: a wooden disc with a handful of metal tubes dangling at different
  * lengths, a wind-catcher on a thread below them. `userData.update` sways the whole thing and, now and
  * then, rings a few soft notes if the cat is close enough to hear.
