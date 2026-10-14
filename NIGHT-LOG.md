@@ -12111,3 +12111,27 @@ both past the radius, so nothing else's own prompt competes with it. Standing be
 Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, 309 physics
 boxes unchanged (the notice adds none, same shortcut every lamp and tower notice before it took).
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 466 — a third cupcake hill gets its own sniff
+
+Candy Land's sweet-lands are ringed by seven cupcake hills (`cupcakeHills[0..6]` in `70-worlds.js`),
+and two of them — index 5 (the sixth in the list, near the swing set) and index 1 (second in the list,
+out past the painter's meadow) — picked up their own "Sniff the cupcake hill" toast a few rounds back.
+The other five never got the same treatment. **`cupcakeHills[6]`, the last hill in the list at (34,
+-66), now gets a sniff too**, with its own trio of lines: *"Purple icing, this time. They really do
+just pick a colour and go."* / *"Last hill in the ring, and somehow still has sprinkles left over."* /
+*"That cherry wobbles if you look at it funny. The cat looks at it funny."*
+
+Same trick as the first two: `cupcakeHills[6]` is the group the existing build loop already constructed
+(icing, sprinkles, cherry and all), handed straight to `game.addInteractable` with a 5.5 m radius — no
+new mesh, no new physics box. A headless probe built the real Candy Land (`game.start('new')` then
+`game.load(1, 'from-prev')`) and swept this hill's coordinates against every physics box, NPC and
+interactable in the world: the nearest other box (a candy-cane trunk at the edge of the outer belt)
+stayed 9.35 m clear, and the nearest NPC or interactable (the hula-hoop kid's patch) 12.08 m clear, both
+well past the 5.5 m radius and past the 3.68 m worst-case corner of the hill's own box. Standing at (34,
+0, -66) turns up "Sniff the cupcake hill" and firing it toasts one of the three lines; standing out at
+(80, 80) shows no prompt at all.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, 309 physics
+boxes unchanged (the sniff adds none). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.

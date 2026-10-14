@@ -8615,6 +8615,16 @@ function buildCandyLand(game, entry) {
   // soul (the painter at (60, 48)) 12 m clear, both well past this radius.
   { const lines1 = ['🧁 "Blue icing on a cupcake. Someone\'s very proud of that food dye."', '🧁 "Smells like blueberries. Tastes like more blueberries, probably."', '🧁 "Second-tallest hill in the sweet-lands, and it knows it."'];
     game.addInteractable({ obj: cupcakeHills[1], radius: 5.5, label: () => 'Sniff the cupcake hill', onUse: () => { SFX.click(); game.toast(rnd.pick(lines1), 3000); } }); }
+  // two of the seven hills (indices 5 and 1) have had their own sniff for a few rounds now; the last
+  // in the list, at (34, -66) out past the hula-hoop kid's own patch, never did. Same trick a third
+  // time: `cupcakeHills[6]` is the group the loop above already built, handed straight to
+  // `addInteractable` — no new mesh, no new box, same 5.5 m radius the other two already use to clear
+  // this hill's own box's 3.68 m corner. A headless probe swept this exact point against every one of
+  // the world's physics boxes and every NPC's own position: the nearest other box (a candy-cane trunk
+  // out at the edge of the cane belt) stayed 9.35 m clear and the nearest soul (the hula-hoop kid at
+  // (39, -77)) 12.08 m clear, both well past this radius.
+  { const lines6 = ['🧁 "Purple icing, this time. They really do just pick a colour and go."', '🧁 "Last hill in the ring, and somehow still has sprinkles left over."', '🧁 "That cherry wobbles if you look at it funny. The cat looks at it funny."'];
+    game.addInteractable({ obj: cupcakeHills[6], radius: 5.5, label: () => 'Sniff the cupcake hill', onUse: () => { SFX.click(); game.toast(rnd.pick(lines6), 3000); } }); }
   { const gh = group(0, 0, -62, W), cookie = mat(0xc27b3a, { roughness: 0.95 }), icing = mat(0xfffdf7, { roughness: 0.35 });   // gingerbread cottage
     mesh(G.box(7, 4, 6), cookie, { y: 2, shadow: 'both', parent: gh }); mesh(G.gable(6.8, 2.8, 7.6), mat(0x8a4a2a, { roughness: 0.9 }), { y: 4, ry: PI / 2, parent: gh });
     for (let k = 0; k < 8; k++) for (const s of [-1, 1]) mesh(G.sphere(0.32, 8, 6), icing, { x: -3.5 + k * 1.0, y: 4.4 + k * 0.0, z: s * 3.4 - s * (k * 0.0), sy: 0.5, shadow: 'none', parent: gh });
