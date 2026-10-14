@@ -7465,6 +7465,61 @@ function buildNeighborhood(game, entry) {
       const dialLines = ['🕰️ "No numbers, no hands — just a shadow and a steady guess."', '☀️ "Works a treat, so long as the sun actually shows up."', '😼 "Puss, chasing the shadow around it doesn\'t count as telling the time."'];
       game.addInteractable({ obj: sundial, radius: 1.8, label: () => 'Look at the sundial', onUse: () => { SFX.click(); game.toast(rnd.pick(dialLines), 3000); } });
     }
+    // the pinwheel, sprinkler, kennel, birdhouse, gnome, feeder, bin and sundial gave eight of the
+    // street's sixteen yards their own fixture, but nothing on the whole street has ever actually
+    // caught a drop of rain, odd for a village with a sprinkler watering the grass two doors down.
+    // House 10's own front yard now gets a rain barrel: a bulging oak cask (two stacked tapered
+    // cylinders rather than one straight one, so it actually bows out at the middle), two iron hoops,
+    // a flat lid with a dark fill-hole and a glimpse of water through it, and a brass tap low on the
+    // front face. An occasional drop plinks off the tap into a shallow puddle below, timed off the
+    // world clock `t` alone, never `game.fx.emit` (which draws from the shared `rnd()` on every call)
+    // or this world's own seeded `r` — the same caution the duck pond's and the sprinkler's own
+    // comments above already spell out, since the Neighborhood is the one world every test travel
+    // starts from. No `userData.update` needed either: `fillRing()` in `68-regions.js` is the only
+    // thing in this whole game that ever calls `bakeDeep()`, and it only runs on the procedural outer
+    // ring, never on this hand-built core, so the drop and puddle meshes (both plain children of the
+    // barrel group) just get moved directly from a closure in `U.push`, nothing more needed to keep
+    // them animating.
+    // A headless probe (the same stub-three harness `test/run.mjs` itself uses, `game.start('new')`
+    // then 9000 simulated frames at the stub clock's real 1/60 s step — the sundial's own round above
+    // found the quarter-second sampling rate alone can miss a passing Wanderer, so this used the finer
+    // one throughout, tracking every NPC's own position every frame) swept a slightly widened version
+    // of the usual yard-corner offset (x+5.5, z+front*4.0 — a metre further from the porch than the
+    // x+4.5 the other eight features use, to clear this prop's own wider footprint) against the six
+    // lots the sundial's own round above left free (houses 1, 2, 3, 4, 7 and 10): house 10's own
+    // corner (-66.5, 4) came back the clear winner, 4.50 m from the nearest wandering soul over the
+    // full 150 simulated seconds and 1.97 m clear of the nearest physics box (the house's own wall) —
+    // more daylight on both counts than any of the standard x+4.5 corners the other eight features
+    // already accepted.
+    if (i === 10) {
+      const px = x + 5.5, pz = z + front * 4.0;
+      const woodM = mat(0x6b4426, { roughness: 0.9 }), hoopM = mat(0x2a2a2a, { metalness: 0.4, roughness: 0.55 }),
+        lidM = mat(0x5a3a1e, { roughness: 0.85 }), holeM = mat(0x18120c, { roughness: 1 }),
+        tapM = mat(0xc9a84a, { metalness: 0.6, roughness: 0.3 }), waterM = mat(0x4a7aa8, { transparent: true, opacity: 0.55, roughness: 0.2 });
+      const barrelH = 0.62, rBase = 0.22, rMid = 0.27, rTopR = 0.23;
+      const barrel = group(px, 0, pz, W); barrel.rotation.y = ry;
+      mesh(G.cyl(rMid, rBase, barrelH / 2, 14), woodM, { y: barrelH / 4, shadow: 'both', parent: barrel });          // lower half, bulging up to the middle
+      mesh(G.cyl(rTopR, rMid, barrelH / 2, 14), woodM, { y: barrelH * 0.75, shadow: 'both', parent: barrel });       // upper half, tapering back in
+      for (const hy of [barrelH * 0.28, barrelH * 0.72]) mesh(G.cyl(rMid * 1.04, rMid * 1.02, 0.045, 14), hoopM, { y: hy, shadow: 'none', parent: barrel });
+      mesh(G.cyl(rTopR * 1.03, rTopR * 1.03, 0.03, 14), lidM, { y: barrelH + 0.015, shadow: 'both', parent: barrel });
+      mesh(G.cyl(0.045, 0.045, 0.01, 10), holeM, { y: barrelH + 0.031, z: -0.06, shadow: 'none', parent: barrel });      // fill-hole in the lid
+      mesh(G.cyl(rTopR * 0.9, rTopR * 0.9, 0.01, 14), waterM, { y: barrelH - 0.03, shadow: 'none', parent: barrel });    // waterline, glimpsed through the hole
+      const tapY = 0.12, tapR = (rMid + rBase) / 2;
+      mesh(G.cyl(0.018, 0.018, 0.07, 8), tapM, { y: tapY, z: tapR + 0.02, rx: PI / 2, shadow: 'none', parent: barrel });
+      mesh(G.sphere(0.02, 8, 6), tapM, { y: tapY, z: tapR + 0.07, shadow: 'none', parent: barrel });     // tap handle
+      P.addBox(px, barrelH / 2, pz, rMid + 0.02, barrelH, rMid + 0.02, { cam: false });
+      const drop = mesh(G.sphere(0.012, 6, 5), waterM, { y: tapY, z: tapR + 0.02, shadow: 'none', parent: barrel });
+      const puddle = mesh(G.cyl(0.1, 0.1, 0.004, 12), waterM, { y: 0.004, z: tapR + 0.16, shadow: 'none', parent: barrel });
+      const DCYCLE = 3.2, dropSpan = 0.5;
+      U.push((dt, t) => {
+        const k = (t % DCYCLE) / DCYCLE;
+        drop.visible = k < dropSpan;
+        if (drop.visible) drop.position.y = lerp(tapY, 0.015, k / dropSpan);
+        puddle.material.opacity = 0.35 + 0.15 * sin(t * 0.8);
+      });
+      const barrelLines = ['🛢️ "Half rain, half whatever landed in it. Nobody\'s checked which half."', '💧 "Fills up fast off the roof. Empties slower — that tap only ever drips."', '😼 "Puss, that is not a water bowl."'];
+      game.addInteractable({ obj: barrel, radius: 1.8, label: () => 'Look at the rain barrel', onUse: () => { SFX.click(); game.toast(rnd.pick(barrelLines), 3000); } });
+    }
   });
   // the pinwheel, sprinkler and kennel above gave three of the street's sixteen yards their own
   // feature; lot 14's own corner now gets a fourth — a stone birdbath, a shallow bowl on a short

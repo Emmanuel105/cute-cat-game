@@ -12558,3 +12558,44 @@ console warnings, physics boxes up by one (313 → 314, the sundial's own collid
 (the Victorian horse-and-carriage timing check) reproduced the same pre-existing flake this log has
 already caught before, unrelated to tonight's change — a world away from the Neighborhood and nothing
 this round touched. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 483 — a rain barrel for the Neighborhood
+
+The pinwheel, sprinkler, kennel, birdhouse, gnome, feeder, bin and sundial have between them given
+eight of the street's sixteen yards their own fixture over the last several dozen rounds, but nothing
+on the whole street had ever actually caught a drop of rain — a little odd for a village with a lawn
+sprinkler running two doors down. **House 10's own front yard now gets a rain barrel**: a bulging oak
+cask built from two stacked tapered cylinders rather than one straight one, so it genuinely bows out at
+the middle, two iron hoops, a flat lid with a dark fill-hole and a glimpse of blue water through it, and
+a brass tap low on the front face. An occasional drop plinks off the tap and falls into a shallow puddle
+below, on a fixed three-second loop. A look gets one of three lines: *"Half rain, half whatever landed
+in it. Nobody's checked which half."* / *"Fills up fast off the roof. Empties slower — that tap only
+ever drips."* / *"Puss, that is not a water bowl."*
+
+No new controller: the drop and puddle are plain child meshes of the barrel's own group, moved directly
+from a closure in `U.push` off the world clock `t` alone — never `game.fx.emit` (which draws from the
+shared `rnd()` on every call) or this world's own seeded `r`, the same caution the duck pond's and the
+sprinkler's own comments already spell out, since the Neighborhood is the one world every test travel
+starts from. No `userData.update` tag was needed either: checking confirmed `fillRing()` in
+`68-regions.js` is the only place in this whole game that ever calls `bakeDeep()`, and it only runs on
+the procedural outer ring, never on this hand-built core, so nothing here risks getting baked solid.
+
+Round 482's own probe had already swept the street's six remaining free yard-corners (houses 1, 2, 3,
+4, 7 and 10 — house 6 stays ruled out from two rounds before that) at the standard `(x+4.5, z+front*4.0)`
+corner offset and found them all within 1.52 m of a wandering soul at closest. Rather than settle for
+that, I widened the offset half a metre further out, to `(x+5.5, z+front*4.0)` — room enough for this
+prop's own wider footprint — and reran the sweep with a fresh headless probe (the same stub-three
+harness `test/run.mjs` uses, `game.start('new')` then 9000 simulated frames at the stub clock's real
+1/60 s step, sampling every NPC's own position every single frame) across all six lots at both the
+standard and the widened offset. House 10's own corner, at the wider offset, came back the clear
+winner: world (-66.5, 4), 4.50 m clear of the nearest wandering soul over the full 150 simulated seconds
+and 1.97 m clear of the nearest physics box (the house's own wall) — more daylight on both counts than
+any of the standard corners the earlier eight features already accepted. A follow-up check confirmed
+`game.zones` has nothing at that point either (the house, porch and front-path zones for lot 10 all fall
+short of x=-66.5 by at least 1.6 m), and a second script teleported the cat there directly and confirmed
+`game.nearest._label` resolves to `"Look at the rain barrel"`, with nothing at all 56 m away.
+
+Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, all 274 checks `ok`, 0 console
+warnings, physics boxes up by one (314 → 315, the barrel's own collider). No visual check was possible
+in this environment (no browser, no Playwright) — only the headless probes above and the stub-three test
+suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
