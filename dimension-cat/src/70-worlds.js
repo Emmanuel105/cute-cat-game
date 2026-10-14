@@ -790,6 +790,22 @@ function buildNeighborhood(game, entry) {
       hat: r.chance(0.5) ? 'cap' : null, hatColor: 0x4a5a4a, jacket: null, scarf: null, bag: null, backpack: null }); W.add(digger.group);
     game.npcs.push(new Detectorist(game, digger, { x: 60, z: -9, ry: -1.6,
       cries: ["Just a bottle cap. Every time.", "Careful, puss — mind the headphones cable.", "One day it'll be buried gold."] })); }
+  // washing day, somewhere behind the houses: no yard in the whole Neighborhood had ever strung up a
+  // clothesline, for all its sprinklers, bird feeders, gnomes and wheelie bins. Two posts, a line strung
+  // between them, and three items of washing — a shirt, a bedsheet, a pair of trousers — pegged along it,
+  // each rocking on its own peg at a different phase so the line never sways in lockstep. No owner in
+  // sight; nobody's `rnd()` is drawn here, so nothing later in this build shifts.
+  // (a headless probe — the same stub-three harness `test/run.mjs` uses, built the real Neighborhood,
+  // clicked through to the started game, then sampled every NPC's own position every quarter second over
+  // 30 simulated seconds — swept a grid of the open grass south of the street against every physics box
+  // and every one of those samples: (40, -22) came back clear by 10.9 m of the nearest box and 13.6 m of
+  // the nearest wandering soul, well past the detectorist's own patch at (60, -9) and the vegetable
+  // patch's own cluster back at x=14.5)
+  { const lx = 40, lz = -22;
+    const line = makeClothesline(); place(game, U, line, lx, lz, 0);
+    for (const px of [lx - 1.1, lx + 1.1]) P.addBox(px, 0.85, lz, 0.08, 0.85, 0.08, { cam: false });
+    const lineLines = ['🧺 "Shirt, sheet, trousers. In that order, every week."', '🧺 "Still damp. Whoever hung these isn\'t back yet."', '🧺 "The wind\'s doing half the work today."'];
+    game.addInteractable({ obj: line, radius: 2.2, label: () => 'Sniff the washing', onUse: () => { SFX.click(); game.toast(rnd.pick(lineLines), 3000); } }); }
   // a juggler works the open grass east of the park, three balls climbing and falling in a loop —
   // already doing duty in Victorian, on Sunny Shore and at Frosty Peak, its first outing in the
   // Neighborhood, which otherwise has nobody actually performing (own explicit colours, not the

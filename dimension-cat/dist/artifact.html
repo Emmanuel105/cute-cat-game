@@ -5164,6 +5164,37 @@ function makeFireHydrant() {
   return g;
 }
 /**
+ * A backyard clothesline: two T-posts strung with a line, three items of washing pegged along it
+ * (a shirt, a pair of trousers, a flat bedsheet) swaying gently as if a breeze keeps catching them.
+ * `g.userData.update` rocks each item on its own peg — a fixed phase offset per item so they never
+ * swing in lockstep — driven only by the world clock `t`, never the shared `rnd()` or a world's own
+ * seeded `r`, so it costs no later draw anywhere else in this build.
+ */
+function makeClothesline() {
+  const g = new THREE.Group(), postMat = mat(0x6b6b6b, { roughness: 0.7, metalness: 0.3 }), lineMat = mat(0xcfc6b0, { roughness: 0.85 });
+  for (const side of [-1, 1]) {
+    const post = group(side * 1.1, 0, 0, g);
+    mesh(G.cyl(0.028, 0.034, 1.7, 8), postMat, { y: 0.85, shadow: 'both', parent: post });
+    mesh(G.cyl(0.018, 0.018, 0.5, 6), postMat, { y: 1.62, rz: PI / 2, shadow: 'none', parent: post });   // crossbar
+  }
+  noInk(mesh(G.cyl(0.007, 0.007, 2.2, 5), lineMat, { y: 1.66, rz: PI / 2, parent: g }));
+  const pegs = [];
+  const peg = (relx, build) => { const pivot = group(relx, 1.66, 0, g); build(pivot); pegs.push(pivot); };
+  peg(-0.72, (p) => {   // a shirt, pegged by the shoulders
+    mesh(G.box(0.34, 0.4, 0.02), mat(0xe8e2d4, { roughness: 0.85 }), { y: -0.22, parent: p });
+    for (const sx of [-1, 1]) mesh(G.box(0.12, 0.2, 0.02), mat(0xe8e2d4, { roughness: 0.85 }), { x: sx * 0.21, y: -0.08, rz: sx * 0.3, parent: p });
+  });
+  peg(0, (p) => {   // a flat bedsheet, the widest and heaviest-swaying of the three
+    mesh(G.box(0.62, 0.52, 0.015), mat(0xf4f0e6, { roughness: 0.8 }), { y: -0.27, parent: p });
+  });
+  peg(0.72, (p) => {   // a pair of trousers, pegged at the waistband
+    for (const lx of [-1, 1]) mesh(G.box(0.14, 0.46, 0.02), mat(0x3a4a6a, { roughness: 0.85 }), { x: lx * 0.085, y: -0.24, parent: p });
+  });
+  for (const p of pegs) mesh(G.sphere(0.018, 6, 5), mat(0x4a3a2a, { roughness: 0.9 }), { y: 0.005, shadow: 'none', parent: p });   // the peg itself
+  g.userData.update = (dt, t) => { pegs.forEach((p, i) => { p.rotation.z = sin(t * 1.3 + i * 2.1) * 0.1; p.rotation.x = sin(t * 0.9 + i * 1.4) * 0.03; }); };
+  return g;
+}
+/**
  * A "lost cat" notice stapled to a post: a dark frame behind a cream paper square, a crude cat
  * silhouette (one sphere head, two cone ears) near the top, and a row of tear-off phone-number tabs
  * along the bottom edge — one of them already gone.
@@ -7760,6 +7791,22 @@ function buildNeighborhood(game, entry) {
       hat: r.chance(0.5) ? 'cap' : null, hatColor: 0x4a5a4a, jacket: null, scarf: null, bag: null, backpack: null }); W.add(digger.group);
     game.npcs.push(new Detectorist(game, digger, { x: 60, z: -9, ry: -1.6,
       cries: ["Just a bottle cap. Every time.", "Careful, puss — mind the headphones cable.", "One day it'll be buried gold."] })); }
+  // washing day, somewhere behind the houses: no yard in the whole Neighborhood had ever strung up a
+  // clothesline, for all its sprinklers, bird feeders, gnomes and wheelie bins. Two posts, a line strung
+  // between them, and three items of washing — a shirt, a bedsheet, a pair of trousers — pegged along it,
+  // each rocking on its own peg at a different phase so the line never sways in lockstep. No owner in
+  // sight; nobody's `rnd()` is drawn here, so nothing later in this build shifts.
+  // (a headless probe — the same stub-three harness `test/run.mjs` uses, built the real Neighborhood,
+  // clicked through to the started game, then sampled every NPC's own position every quarter second over
+  // 30 simulated seconds — swept a grid of the open grass south of the street against every physics box
+  // and every one of those samples: (40, -22) came back clear by 10.9 m of the nearest box and 13.6 m of
+  // the nearest wandering soul, well past the detectorist's own patch at (60, -9) and the vegetable
+  // patch's own cluster back at x=14.5)
+  { const lx = 40, lz = -22;
+    const line = makeClothesline(); place(game, U, line, lx, lz, 0);
+    for (const px of [lx - 1.1, lx + 1.1]) P.addBox(px, 0.85, lz, 0.08, 0.85, 0.08, { cam: false });
+    const lineLines = ['🧺 "Shirt, sheet, trousers. In that order, every week."', '🧺 "Still damp. Whoever hung these isn\'t back yet."', '🧺 "The wind\'s doing half the work today."'];
+    game.addInteractable({ obj: line, radius: 2.2, label: () => 'Sniff the washing', onUse: () => { SFX.click(); game.toast(rnd.pick(lineLines), 3000); } }); }
   // a juggler works the open grass east of the park, three balls climbing and falling in a loop —
   // already doing duty in Victorian, on Sunny Shore and at Frosty Peak, its first outing in the
   // Neighborhood, which otherwise has nobody actually performing (own explicit colours, not the

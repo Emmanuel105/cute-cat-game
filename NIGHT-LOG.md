@@ -12306,3 +12306,30 @@ other yard fixture in this same corner already accepts as plenty of room.
 Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings, physics
 boxes 310 → 311 (the bin's own, the only new one). Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 473 — a clothesline for the Neighborhood backyard
+
+Sprinklers, bins, gnomes, bird feeders — the street's front yards have steadily filled in, but no
+backyard in the whole Neighborhood had ever strung up the single most ordinary chore of them all:
+washing day. **Two posts now stand in the open grass south of the street, a line strung taut between
+them**, with a shirt, a bedsheet and a pair of trousers pegged along it, each rocking gently on its own
+peg at its own phase so the line never sways in lockstep. No owner in sight. A sniff gets one of three
+lines: *"Shirt, sheet, trousers. In that order, every week."* / *"Still damp. Whoever hung these isn't
+back yet."* / *"The wind's doing half the work today."*
+
+New prop, `makeClothesline()` in `60-props.js`, right after `makeFireHydrant` — two post groups, a
+strung line (`noInk`'d, like every other thin rope in this game), and three pegged items swaying off
+`g.userData.update`, driven only by the world clock `t`, so it draws nothing from the shared `rnd()` or
+this world's own seeded `r`. Dropped at (40, -22) in `70-worlds.js`, right after the detectorist's own
+patch, with a small physics box on each post (`cam: false`) and a "Sniff the washing" interactable on
+the line itself.
+
+A headless probe (the same stub-three harness `test/run.mjs` uses, clicked through to the started game,
+then 30 simulated seconds sampling every NPC's own position every quarter second) swept the open grass
+south of the street against every physics box and every sample: (40, -22) came back clear by 10.9 m of
+the nearest box and 13.6 m of the nearest wandering soul — well past the detectorist's own patch at
+(60, -9) and the vegetable patch's cluster back at x=14.5.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings, physics
+boxes 311 → 313 (the two posts, the only new ones). Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

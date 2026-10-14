@@ -754,6 +754,37 @@ function makeFireHydrant() {
   return g;
 }
 /**
+ * A backyard clothesline: two T-posts strung with a line, three items of washing pegged along it
+ * (a shirt, a pair of trousers, a flat bedsheet) swaying gently as if a breeze keeps catching them.
+ * `g.userData.update` rocks each item on its own peg — a fixed phase offset per item so they never
+ * swing in lockstep — driven only by the world clock `t`, never the shared `rnd()` or a world's own
+ * seeded `r`, so it costs no later draw anywhere else in this build.
+ */
+function makeClothesline() {
+  const g = new THREE.Group(), postMat = mat(0x6b6b6b, { roughness: 0.7, metalness: 0.3 }), lineMat = mat(0xcfc6b0, { roughness: 0.85 });
+  for (const side of [-1, 1]) {
+    const post = group(side * 1.1, 0, 0, g);
+    mesh(G.cyl(0.028, 0.034, 1.7, 8), postMat, { y: 0.85, shadow: 'both', parent: post });
+    mesh(G.cyl(0.018, 0.018, 0.5, 6), postMat, { y: 1.62, rz: PI / 2, shadow: 'none', parent: post });   // crossbar
+  }
+  noInk(mesh(G.cyl(0.007, 0.007, 2.2, 5), lineMat, { y: 1.66, rz: PI / 2, parent: g }));
+  const pegs = [];
+  const peg = (relx, build) => { const pivot = group(relx, 1.66, 0, g); build(pivot); pegs.push(pivot); };
+  peg(-0.72, (p) => {   // a shirt, pegged by the shoulders
+    mesh(G.box(0.34, 0.4, 0.02), mat(0xe8e2d4, { roughness: 0.85 }), { y: -0.22, parent: p });
+    for (const sx of [-1, 1]) mesh(G.box(0.12, 0.2, 0.02), mat(0xe8e2d4, { roughness: 0.85 }), { x: sx * 0.21, y: -0.08, rz: sx * 0.3, parent: p });
+  });
+  peg(0, (p) => {   // a flat bedsheet, the widest and heaviest-swaying of the three
+    mesh(G.box(0.62, 0.52, 0.015), mat(0xf4f0e6, { roughness: 0.8 }), { y: -0.27, parent: p });
+  });
+  peg(0.72, (p) => {   // a pair of trousers, pegged at the waistband
+    for (const lx of [-1, 1]) mesh(G.box(0.14, 0.46, 0.02), mat(0x3a4a6a, { roughness: 0.85 }), { x: lx * 0.085, y: -0.24, parent: p });
+  });
+  for (const p of pegs) mesh(G.sphere(0.018, 6, 5), mat(0x4a3a2a, { roughness: 0.9 }), { y: 0.005, shadow: 'none', parent: p });   // the peg itself
+  g.userData.update = (dt, t) => { pegs.forEach((p, i) => { p.rotation.z = sin(t * 1.3 + i * 2.1) * 0.1; p.rotation.x = sin(t * 0.9 + i * 1.4) * 0.03; }); };
+  return g;
+}
+/**
  * A "lost cat" notice stapled to a post: a dark frame behind a cream paper square, a crude cat
  * silhouette (one sphere head, two cone ears) near the top, and a row of tear-off phone-number tabs
  * along the bottom edge — one of them already gone.
