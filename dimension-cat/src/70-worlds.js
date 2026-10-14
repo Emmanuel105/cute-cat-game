@@ -479,6 +479,52 @@ function buildNeighborhood(game, entry) {
       const barrelLines = ['🛢️ "Half rain, half whatever landed in it. Nobody\'s checked which half."', '💧 "Fills up fast off the roof. Empties slower — that tap only ever drips."', '😼 "Puss, that is not a water bowl."'];
       game.addInteractable({ obj: barrel, radius: 1.8, label: () => 'Look at the rain barrel', onUse: () => { SFX.click(); game.toast(rnd.pick(barrelLines), 3000); } });
     }
+    // the pinwheel, sprinkler, kennel, birdhouse, gnome, feeder, bin, sundial and rain barrel gave
+    // nine of the street's sixteen yards their own fixture, but for all that iron, bronze and oak,
+    // not one of them ever answered the one question a weather-watching street actually asks: which
+    // way the wind is blowing. House 7's own front yard now gets a weathervane: a slim iron post,
+    // four fixed ordinal arms, and a little cat-shaped arrow on its own spindle, swinging slowly back
+    // and forth as if tracking a real gust rather than snapping to any one heading. *"Pointing
+    // south-west since teatime. Must be a steady one today."* *"If it ever points straight at the
+    // house, that's the signal to bring the washing in."* *"Puss, you're not aerodynamic enough to
+    // tell it anything."*
+    // No new rig, no new controller: the arrow is plain static geometry on its own pivot (the ears
+    // reuse `G.earCone()`, the same flattened-spike shape the sundial's own gnomon already borrowed
+    // for a bronze cone a few rounds back), swept by a single `U.push` tick off the world clock `t`
+    // alone — two superimposed sines rather than one, so it drifts like a real gust instead of
+    // ticking metronomically — never this world's own seeded `r` or the shared `rnd()`, the same
+    // caution every fixture on this street already spells out, since the Neighborhood is the one
+    // world every test travel starts from.
+    // A headless probe (the same stub-three harness `test/run.mjs` itself uses, `game.start('new')`
+    // then 9000 simulated frames at the stub clock's real 1/60 s step, tracking every NPC's and the
+    // squirrel's own position every single frame) swept the usual yard-corner offset (x+4.5,
+    // z+front*4.0) against the five lots still free after the rain barrel's own round (houses 1, 2,
+    // 3, 4 and 7): the other four all came within half a metre of a passing stroller at some point
+    // over the full 150 simulated seconds, but house 7's own corner (31.5, 24) stayed clear the whole
+    // way through — 3.00 m from the nearest wandering soul throughout, and the usual 0.90 m clear of
+    // the house's own porch-awning box every odd-numbered lot on this street already accepts.
+    if (i === 7) {
+      const px = x + 4.5, pz = z + front * 4.0, postH = 1.0;
+      const ironM = mat(0x2a2a30, { metalness: 0.5, roughness: 0.45 }), catM = mat(0x1c1c20, { metalness: 0.2, roughness: 0.6 });
+      const post = group(px, 0, pz, W); post.rotation.y = ry;
+      mesh(G.cyl(0.02, 0.028, postH, 8), ironM, { y: postH / 2, shadow: 'both', parent: post });
+      const arms = group(0, postH, 0, post);
+      for (let k = 0; k < 4; k++) { const a = k * PI / 2, armLen = 0.2;
+        mesh(G.box(0.012, 0.012, armLen), ironM, { x: sin(a) * armLen / 2, z: cos(a) * armLen / 2, ry: a, shadow: 'none', parent: arms });
+        mesh(G.sphere(0.016, 8, 6), ironM, { x: sin(a) * armLen, z: cos(a) * armLen, shadow: 'none', parent: arms }); }
+      const pivot = group(0, 0.03, 0, arms);
+      noInk(mesh(G.cyl(0.008, 0.008, 0.26, 8), ironM, { y: 0.13, shadow: 'none', parent: pivot }));   // the spindle the cat arrow rides
+      const cat = group(0, 0.26, 0, pivot);
+      mesh(G.box(0.02, 0.09, 0.2), catM, { z: 0.02, shadow: 'none', parent: cat });                                 // body
+      mesh(G.box(0.02, 0.07, 0.07), catM, { z: 0.15, y: 0.03, shadow: 'none', parent: cat });                       // head
+      mesh(G.earCone(0.028, 0.06), catM, { x: -0.025, z: 0.17, y: 0.085, rx: -0.3, shadow: 'none', parent: cat });   // ear
+      mesh(G.earCone(0.028, 0.06), catM, { x: 0.025, z: 0.17, y: 0.085, rx: -0.3, shadow: 'none', parent: cat });    // ear
+      noInk(mesh(G.cyl(0.012, 0.004, 0.16, 6), catM, { z: -0.14, y: 0.05, rx: -1.0, shadow: 'none', parent: cat }));  // tail, curling up off the back
+      P.addBox(px, postH / 2, pz, 0.08, postH, 0.08, { cam: false });
+      U.push((dt, t) => { pivot.rotation.y = sin(t * 0.07) * 0.9 + sin(t * 0.017) * 1.8; });
+      const vaneLines = ['🐱 "Pointing south-west since teatime. Must be a steady one today."', '💨 "If it ever points straight at the house, that\'s the signal to bring the washing in."', '😼 "Puss, you\'re not aerodynamic enough to tell it anything."'];
+      game.addInteractable({ obj: post, radius: 1.8, label: () => 'Look at the weathervane', onUse: () => { SFX.click(); game.toast(rnd.pick(vaneLines), 3000); } });
+    }
   });
   // the pinwheel, sprinkler and kennel above gave three of the street's sixteen yards their own
   // feature; lot 14's own corner now gets a fourth — a stone birdbath, a shallow bowl on a short

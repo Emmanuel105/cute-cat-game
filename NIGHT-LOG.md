@@ -12599,3 +12599,35 @@ Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, all 
 warnings, physics boxes up by one (314 → 315, the barrel's own collider). No visual check was possible
 in this environment (no browser, no Playwright) — only the headless probes above and the stub-three test
 suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 484 — a weathervane for the Neighborhood
+
+The pinwheel, sprinkler, kennel, birdhouse, gnome, feeder, bin, sundial and rain barrel between them
+have given nine of the street's sixteen yards their own fixture, but for all that iron, bronze and oak,
+not one of them ever answered the one question a weather-watching street actually asks: which way the
+wind is blowing. **House 7's own front yard now gets a weathervane**: a slim iron post, four fixed
+ordinal arms, and a little cat-shaped arrow on its own spindle, swinging slowly back and forth as if
+tracking a real gust rather than snapping to one heading. *"Pointing south-west since teatime. Must be a
+steady one today."* / *"If it ever points straight at the house, that's the signal to bring the washing
+in."* / *"Puss, you're not aerodynamic enough to tell it anything."*
+
+Pure decor, no new rig or controller: the arrow is static geometry on its own pivot, swept by a single
+`U.push` tick off the world clock `t` alone — two superimposed sines rather than one, so it drifts
+rather than ticking metronomically — never this world's own seeded `r` or the shared `rnd()`, since the
+Neighborhood is the one world every test travel starts from. The ears reuse `G.earCone()`, the same
+flattened-spike shape the sundial's own gnomon already borrowed a couple of rounds back, and the thin
+spindle and curling tail both got the usual `noInk()` wrap so they don't pick up a stray ink outline.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses, `game.start('new')` then 9000
+simulated frames at the stub clock's real 1/60 s step, tracking every NPC's and the squirrel's own
+position every single frame) swept the usual yard-corner offset (`x+4.5, z+front*4.0`) against the five
+lots still free after the rain barrel's own round (houses 1, 2, 3, 4 and 7): the other four all came
+within half a metre of a passing stroller at some point over the full 150 simulated seconds, but house
+7's own corner (31.5, 24) stayed clear the whole way through — 3.00 m from the nearest wandering soul
+throughout, and the usual 0.90 m clear of the house's own porch-awning box every odd-numbered lot on
+this street already accepts.
+
+Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, all 274 checks `ok`, 0 console
+warnings, physics boxes up by one (315 → 316, the post's own collider). No visual check was possible in
+this environment (no browser, no Playwright) — only the headless probe above and the stub-three test
+suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
