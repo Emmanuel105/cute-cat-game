@@ -12885,3 +12885,36 @@ warnings, physics boxes 320 → 321 (the one new box). House 6 is now the only l
 still without a fixture of its own. No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 493 — a garden hose reel for the Neighborhood's last bare yard
+
+House 6 was the only one of the street's sixteen yards left without a fixture of its own. **It now has
+a wall-mounted hose reel**: a post with two round flanges and a drum of coiled hose wound between them,
+a nozzle dangling off the loose end on a short swaying length, and a dark damp patch in the grass below
+where it drips. *"Drip. Drip. Somebody's definitely not screwed that tap all the way off."* *"Puss,
+that's a hose, not a snake. Leave it coiled."* *"Half the street waters by watering can. This one
+cheats."*
+
+Built from the same primitives as every other yard fixture on this street — cylinders for the post,
+drum and nozzle, a `G.torus()` ring repeated five times at growing radius for the coiled hose, a flat
+dark box for the damp patch. Static apart from two small touches driven off the world clock `t` alone
+(never this world's own seeded `r` or the shared `rnd()`, for the reason every fixture round since the
+sundial's has had to spell out): the dangling nozzle end sways a couple of degrees on a `sin(t)`, and
+one pooled droplet mesh falls and fades on a fixed ~2.6 s cycle, the same trick the sprinkler's own
+spray and the birdbath's own ripples already use.
+
+The standard yard-corner offset (x+4.5, z+front*4.0) was the one an old round-5 probe found a Wanderer
+brushing within half a metre of — the reason this lot sat empty so long — but that finding was from
+before a dozen later fixtures reshaped where this street's walkers go, so it got a fresh look rather
+than a trust: a new headless probe (`game.start('new')`, 9000 simulated frames at the stub clock's real
+1/60 s step, every NPC's and the squirrel's own position sampled every frame) found that corner clear
+now too, 6.57 m from the nearest wandering soul. The far corner (x-4.5, same z, the quiet side away
+from the mailbox and path — the same mirror the flamingos' own round used on house 2) scored better
+still, 9.86 m clear of the nearest wanderer and 0.90 m clear of the house's own wall box, so that's the
+one that got built.
+
+Full suite (`node test/run.mjs`) ran clean on 4 of 4 runs: exit 0, all 274 checks `ok`, 0 console
+warnings, physics boxes 321 → 322 (the one new box). Every one of the Neighborhood's sixteen front
+yards now has a fixture of its own. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.

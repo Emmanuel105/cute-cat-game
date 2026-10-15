@@ -696,6 +696,61 @@ function buildNeighborhood(game, entry) {
       const bikeLines = ['🚲 "Kickstand\'s doing all the work. Has been since breakfast."', '⛑️ "That helmet\'s seen better days — scuffs, mostly. No actual crashes, allegedly."', '😼 "Puss, those spokes are not a scratching post."'];
       game.addInteractable({ obj: bike.group, radius: 1.8, label: () => 'Look at the parked bike', onUse: () => { SFX.bell(); game.toast(rnd.pick(bikeLines), 3000); } });
     }
+    // fourteen of the street's sixteen yards had their own fixture by now (house 1's own yard sale
+    // table, below, makes it fifteen) — every single lot but one. House 6's own front yard now gets a
+    // wall-mounted garden hose reel: a post with two round flanges and a drum of coiled hose wound
+    // between them, a nozzle hanging off the loose end on a short dangling length, and a dark damp
+    // patch in the grass underneath where it drips. *"Drip. Drip. Somebody's definitely not screwed
+    // that tap all the way off."* *"Puss, that's a hose, not a snake. Leave it coiled."* *"Half the
+    // street waters by watering can. This one cheats."*
+    // Static apart from the drip: the whole reel, post and coil are one fixed build, same caution
+    // every other fixture in this loop already takes (every dimension and colour below a literal, not
+    // a draw from this world's own seeded `r`, since the Neighborhood is the one world every test
+    // travel starts from and a later shutter or mailbox pick would shift if anything here read from it
+    // first) — only the loose nozzle end sways on a shallow `sin(t)` and the drip droplet (one pooled
+    // mesh cycled by `t` the same way the sprinkler's own droplets and the birdbath's own ripples are,
+    // never `game.fx.emit`, for the exact reason the duck pond's own comment warns about) falls and
+    // fades on a fixed clock-driven loop.
+    // House 6's own corner (x+4.5, z+front*4.0, the standard offset) was the one the sundial's own
+    // round found a Wanderer brushing within half a metre of, which is why it sat empty this long — but
+    // that was several fixtures and NPC-path changes ago, so this round re-probed from scratch rather
+    // than trust an old finding: the same headless probe this street's fixtures have used throughout
+    // (`game.start('new')`, 9000 simulated frames at the stub clock's real 1/60 s step, every NPC's and
+    // the squirrel's own position sampled every single frame) found the standard corner itself clear
+    // now, 6.57 m from the nearest wandering soul — the street's paths have shifted enough since round
+    // 5 that it's no longer the tight squeeze it was. The far corner (x-4.5, same z, the quiet side
+    // away from the mailbox and path, the same mirror the flamingos' own round used on house 2) scored
+    // better still: 9.86 m clear of the nearest wandering soul and 0.90 m clear of the house's own wall
+    // box, the same margin every other far-corner and near-corner fixture on this street already
+    // accepts — so the far corner was kept, the roomier of the two and consistent with how the only
+    // other quiet-side fixture on the street was sited.
+    if (i === 6) {
+      const px = x - 4.5, pz = z + front * 4.0;
+      const postM = mat(0x3a3a3a, { metalness: 0.3, roughness: 0.6 }), flangeM = mat(0x5a6068, { metalness: 0.55, roughness: 0.4 }),
+        hoseM = mat(0x3a7a3a, { roughness: 0.65 }), nozzleM = mat(0x7a7a7a, { metalness: 0.5, roughness: 0.4 }), dampM = mat(0x1a1710, { roughness: 1 });
+      const reel = group(px, 0, pz, W); reel.rotation.y = ry;
+      const postH = 0.52, drumR = 0.17, drumLen = 0.1;
+      mesh(G.cyl(0.03, 0.035, postH, 8), postM, { y: postH / 2, shadow: 'both', parent: reel });   // post
+      const drum = group(0, postH, 0, reel);
+      for (const fx of [-drumLen / 2, drumLen / 2]) mesh(G.cyl(drumR, drumR, 0.02, 20), flangeM, { x: fx, rz: PI / 2, shadow: 'both', parent: drum });   // two end flanges
+      for (let ci = 0; ci < 5; ci++) mesh(G.torus(drumR * (0.45 + ci * 0.11), 0.021, 6, 16), hoseM, { x: -drumLen / 2 + 0.018 + ci * 0.016, ry: PI / 2, shadow: 'both', parent: drum });   // the wound coil, five rings of growing radius
+      const danglePivot = group(drumLen / 2 + 0.02, -drumR * 0.3, 0, drum);
+      mesh(G.cyl(0.021, 0.021, 0.3, 6), hoseM, { y: -0.15, rx: 0.1, shadow: 'both', parent: danglePivot });   // the loose length, hanging free
+      const nozzle = group(0, -0.3, 0.015, danglePivot);
+      mesh(G.cyl(0.026, 0.02, 0.09, 8), nozzleM, { y: -0.045, shadow: 'both', parent: nozzle });
+      mesh(G.cone(0.014, 0.05, 6), nozzleM, { y: -0.115, shadow: 'none', parent: nozzle });
+      mesh(G.box(0.18, 0.004, 0.14), dampM, { y: 0.003, z: -0.02, shadow: 'receive', parent: reel });   // the damp patch
+      const DRIP_CYCLE = 2.6, drip = mesh(G.sphere(0.012, 6, 5), mat(0xbfe7ff, { roughness: 0.3, transparent: true, opacity: 0.7 }), { shadow: 'none', parent: W });
+      U.push((dt, t) => {
+        danglePivot.rotation.z = sin(t * 0.4) * 0.08;
+        const k = (t % DRIP_CYCLE) / DRIP_CYCLE, fallY = postH - drumR * 0.3 - 0.3 - k * (postH - drumR * 0.3 - 0.3);
+        drip.position.set(px, Math.max(0.01, fallY), pz - 0.02);
+        drip.material.opacity = k < 0.92 ? 0.7 : 0;
+      });
+      P.addBox(px, postH * 0.5, pz, 0.22, postH * 0.9, 0.18, { cam: false });
+      const hoseLines = ['💧 "Drip. Drip. Somebody\'s definitely not screwed that tap all the way off."', '😼 "Puss, that\'s a hose, not a snake. Leave it coiled."', '🚿 "Half the street waters by watering can. This one cheats."'];
+      game.addInteractable({ obj: reel, radius: 1.8, label: () => 'Look at the hose reel', onUse: () => { SFX.click(); game.toast(rnd.pick(hoseLines), 3000); } });
+    }
   });
   // the pinwheel, sprinkler and kennel above gave three of the street's sixteen yards their own
   // feature; lot 14's own corner now gets a fourth — a stone birdbath, a shallow bowl on a short
