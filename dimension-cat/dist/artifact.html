@@ -7693,6 +7693,70 @@ function buildNeighborhood(game, entry) {
       const vaneLines = ['🐱 "Pointing south-west since teatime. Must be a steady one today."', '💨 "If it ever points straight at the house, that\'s the signal to bring the washing in."', '😼 "Puss, you\'re not aerodynamic enough to tell it anything."'];
       game.addInteractable({ obj: post, radius: 1.8, label: () => 'Look at the weathervane', onUse: () => { SFX.click(); game.toast(rnd.pick(vaneLines), 3000); } });
     }
+    // the pinwheel, sprinkler, kennel, birdhouse, gnome, feeder, bin, sundial, rain barrel and
+    // weathervane gave eleven of the street's sixteen yards a fixture of their own (the birdbath
+    // below makes it a dozen, though that one sits on lot 14's own corner outside this very loop) —
+    // not one of the dozen was the single most recognisable plastic yard ornament there is. House 2's
+    // own front yard — the one whose porch rail already has a stray cat asleep on it, above — now
+    // gets a pair of pink lawn flamingos standing in the grass: one bowed right down with its beak in
+    // the lawn, the other upright with its neck curved, looking round. *"Puss, those are plastic. I
+    // promise you — plastic."* *"Nobody's ever once seen one move. And yet every street somehow has a
+    // pair."* *"The pink's gone a bit chalky in the rain. Gives them character."*
+    //
+    // Built from the same primitive cylinders and spheres as the gnome and the weathervane's own cat
+    // arrow above — no new geometry helper, no new texture. Each bird is legs → a scaled-sphere body →
+    // a hinge group (the neck) → a head group carrying the skull, a cone beak and a dark dipped tip;
+    // only the bowed-down bird's hinge actually moves, a shallow `sin(t)` settle-and-lift over about
+    // eighteen seconds so the two don't read as identical copies at a glance. The phase is a fixed
+    // constant, not a draw from this world's own seeded `r()` — the sundial's and weathervane's own
+    // comments above already spell out why nothing in this file reads from `r()` or the shared `rnd()`
+    // once it isn't needed for layout, since every later pick in this loop (shutter colours, mailbox
+    // colours) would shift if it did, and the Neighborhood is the one world every test travel starts
+    // from.
+    //
+    // The standard yard-corner offset this street's other ten in-loop fixtures all use (x+4.5,
+    // z+front*4.0) sits on the mailbox-and-path side of the house, and the weathervane's own round
+    // already found it comes within half a metre of a passing stroller on houses 1, 2, 3 and 4 at
+    // some point over a full simulated walk — exactly why those four lots were still free. The far
+    // corner doesn't have that problem: it's the same offset mirrored to the house's quiet side
+    // (x-4.5), the same 0.8 m clear of the house's own wall box the pinwheel's own round already
+    // accepts, just facing away from the street instead of toward it. A headless probe (the same
+    // stub-three harness `test/run.mjs` itself uses, `game.start('new')` then 9000 simulated frames at
+    // the stub clock's real 1/60 s step, tracking every NPC's and the squirrel's own position every
+    // single frame — the same rigour the weathervane's own round used) found house 2's far corner
+    // (-40.5, 4.0) clear by 1.13 m of the nearest box (that house's own wall) and clear by 4.50 m of
+    // the nearest wandering soul throughout — the lamplighter's own round of the gas lamps, nowhere
+    // near its closest even then.
+    if (i === 2) {
+      const fx = x - 4.5, fz = z + front * 4.0;
+      const pinkM = mat(0xf2729a, { roughness: 0.45 }), legM = mat(0x2a2a2a, { roughness: 0.55 }), eyeM = mat(0x18120c, { roughness: 0.6 });
+      const makeFlamingoRig = () => {
+        const flam = group(0, 0, 0);
+        for (const lx of [-0.03, 0.03]) mesh(G.cyl(0.011, 0.013, 0.46, 6), legM, { x: lx, y: 0.23, shadow: 'both', parent: flam });
+        const body = group(0, 0.46, 0, flam);
+        mesh(G.sphere(0.16, 12, 10), pinkM, { sy: 1.35, sz: 1.7, y: 0.02, shadow: 'both', parent: body });
+        const hinge = group(0.1, 0.1, 0.05, body);
+        mesh(G.cyl(0.028, 0.034, 0.22, 8), pinkM, { y: 0.11, rz: 0.5, shadow: 'both', parent: hinge });
+        const head = group(0.1, 0.22, 0, hinge);
+        mesh(G.cyl(0.024, 0.028, 0.14, 8), pinkM, { y: 0.07, shadow: 'both', parent: head });
+        const skull = group(0.015, 0.15, 0, head);
+        mesh(G.sphere(0.034, 10, 8), pinkM, { shadow: 'both', parent: skull });
+        mesh(G.sphere(0.006, 6, 6), eyeM, { x: 0.025, y: 0.01, z: 0.02, shadow: 'none', parent: skull });
+        mesh(G.cone(0.014, 0.075, 8), pinkM, { x: 0.03, y: -0.01, rz: -1.5, shadow: 'none', parent: skull });
+        mesh(G.cone(0.009, 0.03, 8), eyeM, { x: 0.075, y: -0.025, rz: -1.5, shadow: 'none', parent: skull });   // the black dipped tip
+        return { flam, hinge };
+      };
+      const dipPhase = 1.7;
+      const a = makeFlamingoRig(); a.flam.position.set(fx - 0.22, 0, fz + 0.15); a.flam.rotation.y = ry + 0.3; W.add(a.flam);
+      a.hinge.rotation.z = -1.3;   // bowed right down, beak in the grass
+      U.push((dt, t) => { a.hinge.rotation.z = -1.3 + sin(t * 0.35 + dipPhase) * 0.12; });
+      const b = makeFlamingoRig(); b.flam.position.set(fx + 0.2, 0, fz - 0.12); b.flam.rotation.y = ry - 0.5; W.add(b.flam);
+      b.hinge.rotation.z = 0.15;   // upright, neck curved, head up looking round
+      P.addBox(fx - 0.22, 0.3, fz + 0.15, 0.15, 0.5, 0.15, { cam: false });
+      P.addBox(fx + 0.2, 0.3, fz - 0.12, 0.15, 0.5, 0.15, { cam: false });
+      const flamingoLines = ['🦩 "Puss, those are plastic. I promise you — plastic."', '🦩 "Nobody\'s ever once seen one move. And yet every street somehow has a pair."', '🦩 "The pink\'s gone a bit chalky in the rain. Gives them character."'];
+      game.addInteractable({ obj: a.flam, radius: 1.8, label: () => 'Look at the lawn flamingos', onUse: () => { SFX.click(); game.toast(rnd.pick(flamingoLines), 3000); } });
+    }
   });
   // the pinwheel, sprinkler and kennel above gave three of the street's sixteen yards their own
   // feature; lot 14's own corner now gets a fourth — a stone birdbath, a shallow bowl on a short

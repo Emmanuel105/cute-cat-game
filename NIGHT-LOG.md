@@ -12786,3 +12786,37 @@ Full suite (`node test/run.mjs`) ran clean on 6 of 6 runs: exit 0, all 274 check
 warnings, physics boxes 316 → 317 (the one new box, for the table). No visual check was possible in
 this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 490 — a pair of lawn flamingos for the Neighborhood
+
+Eleven of the street's sixteen yards had their own fixture by now — pinwheel, sprinkler, kennel,
+birdhouse, gnome, feeder, bin, sundial, rain barrel, weathervane, birdbath — but not one of them was
+the single most recognisable plastic yard ornament there is. **House 2's own front yard — the one
+whose porch rail already has a stray cat asleep on it — now has a pair of pink lawn flamingos**: one
+bowed right down with its beak in the grass, the other upright with its neck curved, looking round.
+*"Puss, those are plastic. I promise you — plastic."* *"Nobody's ever once seen one move. And yet
+every street somehow has a pair."* *"The pink's gone a bit chalky in the rain. Gives them character."*
+
+Built from the same primitive cylinders and spheres as the gnome and the weathervane's own cat arrow:
+legs → a scaled-sphere body → a neck hinge → a head with a cone beak and a dark dipped tip. Only the
+bowed-down bird's hinge actually moves, a shallow `sin(t)` settle-and-lift so the two don't read as
+identical copies. The phase is a fixed constant, not a draw from this world's own seeded `r()` — the
+sundial's and weathervane's own comments already explain why nothing here reads from `r()` or the
+shared `rnd()` once it isn't needed for layout, since every later shutter or mailbox colour pick in
+this same loop would shift if it did.
+
+Placement needed a rethink, not just a reuse: the standard yard-corner offset (x+4.5, z+front*4.0)
+is the mailbox-and-path side of the house, and the weathervane's own round already found it comes
+within half a metre of a passing stroller on houses 1, 2, 3 and 4 at some point over a full simulated
+walk — exactly why those four lots were still free. The far corner doesn't have that problem: the
+same offset mirrored to the house's quiet side (x-4.5), 0.8 m clear of the house's own wall box same
+as the pinwheel already accepts, just facing away from the street. A headless probe (`game.start`
+`('new')` then 9000 simulated frames at the stub clock's real 1/60 s step, every NPC's and the
+squirrel's own position sampled every single frame) found house 2's far corner (-40.5, 4.0) clear by
+1.13 m of the nearest box and 4.50 m of the nearest wandering soul throughout.
+
+Full suite (`node test/run.mjs`) ran clean on 6 of 6 runs: exit 0, all 274 checks `ok`, 0 console
+warnings, physics boxes 317 → 319 (one for each bird). Houses 3, 4 and 6 are now the only three of the
+street's sixteen yards left without a fixture of their own. No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
