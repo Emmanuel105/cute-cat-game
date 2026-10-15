@@ -9310,7 +9310,7 @@ function buildCandyLand(game, entry) {
   const river = flatPlane(game, 1000, 7, choc, 0, -18, 0, 0.03);
   for (const s of [-1, 1]) { mesh(G.box(1000, 0.2, 0.8), mat(0xd9a066, { roughness: 0.9 }), { y: 0.05, z: -18 + s * 3.7, shadow: 'receive', parent: W }); }
   for (const [cx, w] of [[-262, 500], [-24, 40], [26, 40], [264, 500]]) P.addBox(cx, 3, -18, w, 6, 6.8, { walk: false, cam: false });   // the river, open only at the three bridges
-  const midBridge = makeCandyBridge(game, 0, -18, 3.2, 9); const westBridge = makeCandyBridge(game, -44, -18, 3.2, 9); makeCandyBridge(game, 46, -18, 3.2, 9);
+  const midBridge = makeCandyBridge(game, 0, -18, 3.2, 9); const westBridge = makeCandyBridge(game, -44, -18, 3.2, 9); const eastBridge = makeCandyBridge(game, 46, -18, 3.2, 9);
   U.push((dt) => { choc.map.offset.x -= dt * 0.03; });
   // the lighthouse, the pier, both gate towers, the cupcake hills and the gingerbread cottage have all
   // had a one-off "walk up and look" toast for rounds now, but the three wafer bridges over the
@@ -9334,6 +9334,17 @@ function buildCandyLand(game, entry) {
   // bridge at (46, -18) is still untouched and could get the same treatment next.
   { const westLines = ['🌉 "Same river, same wafers — this end just has a longer walk back to the castle."', '🍫 "Chocolate runs the same colour under every bridge in this land, it turns out."', '🍬 "Quietest crossing in the sweet-lands. Nobody comes out this far just to look at a railing."'];
     game.addInteractable({ obj: westBridge, radius: 5.8, label: () => 'Look over the railing', onUse: () => { SFX.click(); game.toast(rnd.pick(westLines), 3000); } }); }
+  // the last of the three crossings: the east bridge at (46, -18), the same `makeCandyBridge(game, 46,
+  // -18, 3.2, 9)` call up top — identical deck box (half-extent 1.6 m in x, 4.5 m in z, 4.78 m diagonal
+  // at the corners), so the same 5.8 m radius clears it by the same margin the other two already use.
+  // Nothing hand-placed sits anywhere close: the nearest fixed cane ([34, -20]) is 12.17 m off, the
+  // nearest fixed lollipop ([40, -12]) is 8.49 m off, the river angler at (26, -13) is 20.6 m off, and
+  // the swimming duck pair orbits x=61-79 at this same z — 9.2 m clear of the radius's own outer edge
+  // (51.8). The cane-forest ring (radius 56-76 from the origin, skipping the whole `abs(z + 18) < 5`
+  // band) never reaches this far in either — (46, -18) is only 49.4 m out. All three wafer bridges now
+  // have their own toast.
+  { const eastLines = ['🌉 "Three bridges, one river, the same chocolate smell at every one of them."', '🍬 "Furthest crossing from the castle gate. Worth the walk, if only for the quiet."', '🍫 "Last bridge on this river. The cat has now looked over every railing in the land."'];
+    game.addInteractable({ obj: eastBridge, radius: 5.8, label: () => 'Look over the railing', onUse: () => { SFX.click(); game.toast(rnd.pick(eastLines), 3000); } }); }
   // every other body of water in the game already has an angler dipping a line in it — the Neighborhood's
   // lake jetty, Frosty Peak's ice hole, Sunny Shore's pier, Whisper Woods' glowing pond — but the chocolate
   // river itself never did. A headless probe swept the south bank in 2 m steps, well clear of all three

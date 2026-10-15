@@ -13129,3 +13129,25 @@ Full suite (`node test/run.mjs`) ran clean on 2 of 2 runs: exit 0, all 274 check
 warnings, box count unchanged (322 — the toast adds no physics box of its own). No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 502 — a look over Candy Land's east bridge
+
+Rounds 497 and 501 gave the middle and west wafer bridges over the chocolate river their own
+"look over the railing" toast and flagged the east bridge, out at (46, -18), as the last crossing
+still untouched. **It now gets the same treatment**: *"Last bridge on this river. The cat has now
+looked over every railing in the land."* `makeCandyBridge(game, 46, -18, 3.2, 9)`'s own return value
+— previously discarded like the other two used to be — is now kept in a variable (`eastBridge`) and
+handed straight to `game.addInteractable`, no new mesh, no new physics box.
+
+Same deck box as the other two bridges (half-extent 1.6 m in x, 4.5 m in z, 4.78 m diagonal at the
+corners), so the same 5.8 m radius clears it by the same margin. Checked against everything nearby:
+the nearest fixed cane ([34, -20]) is 12.17 m off, the nearest fixed lollipop ([40, -12]) is 8.49 m
+off, the river angler at (26, -13) is 20.6 m off, and the swimming duck pair (orbiting x=61-79 at this
+same z) stays 9.2 m clear of the radius's own outer edge. The cane-forest ring (56-76 m out from the
+origin, skipping the whole `abs(z + 18) < 5` band) never reaches this far in either — the bridge
+itself is only 49.4 m from centre. All three wafer bridges now have their own toast.
+
+Full suite (`node test/run.mjs`) ran clean on 2 of 2 runs: exit 0, all checks `ok`, 0 console
+warnings, box count unchanged (322 — the toast adds no physics box of its own). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
