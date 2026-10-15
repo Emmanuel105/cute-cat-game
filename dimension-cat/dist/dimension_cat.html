@@ -15792,8 +15792,8 @@ function buildForest(game, entry) {
     game.addInteractable({ obj: ringCenter, radius: 7, label: () => 'Turn three times in the fairy ring', onUse: () => {
       SFX.twinkle(); game.fx.emit(rcx, ry0 + 0.3, rcz, { count: 16, colors: [0xa8ff9a, 0xffd1ff, 0x9fe8ff], speed: 1.1, up: 1.4, life: 1.0, gravity: 2 });
       game.toast(rnd.pick(ringWishes)); } }); }
-  let bigMushroom = null;
-  for (const [x, z, s, hue] of [[-14, -14, 2.6, 0], [16, 12, 3.2, 200], [-20, 0, 2.2, 300], [14, -20, 2.4, 40], [-2, -22, 2.9, 0], [24, -4, 2.0, 280], [-24, 20, 2.6, 200], [4, 24, 2.3, 0]]) { const m = makeMushroom(s, hue, r, true); placeT(game, U, m, x, z, 0); boxT(game, x, z, 0.5 * s, 1.3 * s, 0.5 * s, { cam: false }); U.push(m.userData.update); if (x === 14 && z === -20) bigMushroom = m; }
+  let bigMushroom = null, farMushroom = null;
+  for (const [x, z, s, hue] of [[-14, -14, 2.6, 0], [16, 12, 3.2, 200], [-20, 0, 2.2, 300], [14, -20, 2.4, 40], [-2, -22, 2.9, 0], [24, -4, 2.0, 280], [-24, 20, 2.6, 200], [4, 24, 2.3, 0]]) { const m = makeMushroom(s, hue, r, true); placeT(game, U, m, x, z, 0); boxT(game, x, z, 0.5 * s, 1.3 * s, 0.5 * s, { cam: false }); U.push(m.userData.update); if (x === 14 && z === -20) bigMushroom = m; if (x === -24 && z === 20) farMushroom = m; }
   // the fairy ring, the zipline tower and the treehouse have all had a one-off "walk up and look" toast
   // for rounds now, but none of the eight giant glowing mushrooms scattered round the glade ever got one
   // — the one real landmark shape unique to these woods, and the cat could only ever walk past it. The
@@ -15806,6 +15806,17 @@ function buildForest(game, entry) {
   // closer than 8.0 m, well past this interactable's 3.6 m radius — only passing butterflies and fairies,
   // flying well overhead, ever come closer, which is no obstruction at all.
   game.addInteractable({ obj: bigMushroom, radius: 3.6, label: () => 'Look up at the mushroom', onUse: () => { SFX.click(); game.toast(rnd.pick(['🍄 "Taller than the treehouse ladder, nearly. And it just sits there glowing."', "🍄 \"Nobody's ever eaten this one. Nobody's brave enough to find out why it glows.\"", '🍄 "The cap alone could shelter a whole family of frogs."']), 3000); } });
+  // the mushroom at (14, -20) got its own toast two rounds back, but it was never the only one worth a
+  // look — seven more of the glade's eight giant mushrooms still stood mute, and the one furthest out,
+  // at (-24, 20) past the deer path, is the loneliest of the lot. Same trick again: `farMushroom`,
+  // captured from the very same build loop above, goes straight into `addInteractable` as `obj` — no new
+  // mesh, no new physics box, no fresh baking exemption needed (this whole set already carries `glow: true`
+  // and its own `userData.update`). A headless probe (`game.load(6, 'from-hub')`, 3000 simulated frames,
+  // every NPC's own position sampled every frame) swept this point against every physics box and every
+  // sample: the nearest other box stayed 6.0 m clear and the nearest grounded wanderer (a deer on its own
+  // leash near the treehouse) never closer than 11.1 m — only a passing fairy or butterfly, flying well
+  // overhead, ever came nearer, same as the first mushroom's own case.
+  game.addInteractable({ obj: farMushroom, radius: 3.9, label: () => 'Look up at the mushroom', onUse: () => { SFX.click(); game.toast(rnd.pick(['🍄 "Furthest one from the ring. Still glows just as bright out here alone."', '🍄 "The deer give this one a wide berth. Nobody\'s sure why."', '🍄 "Grows a little lopsided, out here with no others to lean on."']), 3000); } });
   // Frosty Peak has had its aurora since round 283 and the Neighborhood its own telescope more recently,
   // but these woods — the one world actually built around fairies and wishes — never had a sky worth
   // looking up at. `makeRainbowArc()` (new, next to `makeAurora` in `62-props-nature.js`) is seven

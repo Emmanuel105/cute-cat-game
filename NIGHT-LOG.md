@@ -13296,3 +13296,30 @@ Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console w
 Victorian rose from 80 to 86 for the six new dancers, as expected). No visual check was possible in this
 environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 509 — a look up for Whisper Woods' farthest mushroom
+
+The glade's eight giant glowing mushrooms were the one landmark shape unique to these woods, and round
+508's own survey only ever closed the gap on one of them — the one at (14, -20) got a "walk up and
+look" toast two rounds back, but the other seven, including the one standing furthest out at (-24, 20)
+past the deer path, stayed mute. **It now answers E too**: *"Furthest one from the ring. Still glows
+just as bright out here alone."*
+
+Same trick as the first: `farMushroom` is captured straight from the loop in `buildForest()` that
+already builds all eight (mesh, `glow: true`, its own `userData.update` for the pulsing cap light, and
+a `boxT` physics box) — handed directly to `game.addInteractable` as `obj`. No new mesh, no new
+physics box, nothing drawn from this world's own seeded `r` for the dialogue (picked fresh with
+`rnd.pick()` at use time, same as the other mushroom's own lines).
+
+A scratch headless probe (the same stub-three harness `test/run.mjs` itself uses, `game.load(6,
+'from-hub')` then 3000 simulated frames) swept this point against every one of the woods' physics
+boxes and every NPC's own position sampled every frame: the nearest other box stayed 6.0 m clear and
+the nearest grounded wanderer (a deer) never closer than 11.1 m — well past the 3.9 m radius chosen
+(scaled off this mushroom's own size, same ratio the first mushroom's 3.6 m used for its own). Only
+passing fairies and butterflies, flying well overhead, ever came nearer, the same "no obstruction"
+case the first mushroom's own round already banked on. Six of the eight mushrooms are still mute.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged (322 — the toast adds no physics box of its own). No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
