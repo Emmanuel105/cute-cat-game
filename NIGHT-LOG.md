@@ -12692,3 +12692,33 @@ and no change to Victorian at all. All other runs: exit 0, all 274 checks `ok`, 
 physics boxes unchanged at 316 (the nap cat adds no collider, same as the seal, the owls and the
 pelican). No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 487 — a bootblack boy for Victorian's market square
+
+The square now has four stall keepers, a newsboy, a juggler, a crumb-feeder with her pigeons and a
+rat in the shadows — every cry a real Victorian market square had, except the one that went with
+every one of them: the bootblack working the crowd for custom. **A boy now kneels on the open cobbles
+south of the fountain, a low shine box set down in front of him, scrubbing away at an unseen boot.**
+"Shine your boots, sir? Tuppence a shine!"
+
+New `makeShineBox()` in `60-props.js`: a low wooden stand with a curved foot rest on top (where a
+customer's boot would go), a tin of polish and a brush left lying on the lid — built from the same
+primitive boxes and cylinders as the market's other hand-held props, just static on the ground instead
+of tucked in a hand. The boy himself reuses `Kneeler` outright, the same controller already doing duty
+for the square's own crumb-feeder and the woods' mushroom-picker: its two-handed "patting" idle motion
+needed no changes at all to read as brushing the box in front of him.
+
+Placed at (2, -41), facing the fountain, with the shine box set 0.32 m further along that same facing
+direction so it sits in front of his knees rather than through them. Checked by hand against every
+hand-placed thing already in the square rather than a live probe: 7.0 m clear of the fountain's own
+box (half-extent 3.4 m, centred (0,-34)), well past both south stalls at (±10, -42) (half-extent 1.6 m,
+over 6 m off on x alone before z even matters), the lamp at (0, -46), the juggler at (-6, -34) and the
+alley rat's own 1.3 m hop leash at (-13, -45) — the one open patch of cobble left between the fountain
+and the canal.
+
+Full suite (`node test/run.mjs`) ran clean on 7 of 8 consecutive runs — the one short run (273 of 274
+checks, still exit 0) was the same pre-existing travel-timer flake noted in the round above and in the
+test file's own comment since round 219, nothing to do with the market square. All other runs: exit 0,
+all 274 checks `ok`, 0 console warnings. No visual check was possible in this environment (no browser,
+no Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.

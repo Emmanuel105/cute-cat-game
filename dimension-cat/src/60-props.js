@@ -538,6 +538,17 @@ function makeNewspaperBundle() {
   mesh(G.cyl(0.006, 0.006, 0.12, 6), mat(0x8a3a3a, { roughness: 0.7 }), { y: 0.04, rx: PI / 2, parent: g });
   return g;
 }
+/** A bootblack's shine box: a low wooden stand with a curved foot rest on top, a tin of polish and a brush left lying on the lid. Sits on the ground beside a kneeling bootblack. */
+function makeShineBox() {
+  const g = new THREE.Group(), wood = mat(0x6a4426, { roughness: 0.9, map: TEX.planks(20, 20) }), dark = mat(0x3a2414, { roughness: 0.85 });
+  mesh(G.box(0.3, 0.16, 0.22), wood, { y: 0.08, parent: g });
+  mesh(G.box(0.3, 0.02, 0.22), dark, { y: 0.17, parent: g });
+  mesh(G.box(0.22, 0.03, 0.05), dark, { y: 0.21, z: 0.03, rx: 0.05, parent: g });   // the curved foot rest a boot goes up on
+  mesh(G.cyl(0.035, 0.035, 0.025, 12), mat(0x2a2a2a, { roughness: 0.5, metalness: 0.3 }), { x: -0.08, y: 0.195, z: -0.03, parent: g });   // tin of polish
+  mesh(G.cyl(0.012, 0.012, 0.14, 8), mat(0x8a5a32, { roughness: 0.8 }), { x: 0.06, y: 0.185, z: 0.02, rz: PI / 2, ry: 0.3, parent: g });   // brush handle
+  mesh(G.box(0.05, 0.02, 0.05), mat(0x2a1a10, { roughness: 0.95 }), { x: 0.12, y: 0.185, z: 0.03, parent: g });   // brush bristles
+  return g;
+}
 /** A glass jar of striped peppermints with a red lid, for a candy stall keeper to hold up. */
 function makeCandyJar() {
   const g = new THREE.Group(), glass = mat(0xf0f8ff, { roughness: 0.15, transparent: true, opacity: 0.35 });

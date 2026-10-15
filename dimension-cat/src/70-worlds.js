@@ -4820,6 +4820,26 @@ function buildVictorian(game, entry) {
     W.add(juggler.group);
     game.npcs.push(new Juggler(game, juggler, [0xffd54a, 0x2e9e6e, 0xf7f3ec], { x: jx, z: jz, ry: atan2(0 - jx, -34 - jz),
       cries: ['Three balls, never four - not since Tuesday.', "Watch the hands, not the cat, sir!", "One coin in the hat, if you liked that."] })); }
+  // the market square now has four stall keepers, a newsboy, a juggler and a crumb-feeder with her
+  // pigeons — but nobody minding the puddle of boot-blacking every real Victorian square had. A
+  // bootblack boy now kneels on the open cobbles south of the fountain, a low shine box set down in
+  // front of him, scrubbing at an unseen boot. Reuses Kneeler exactly as the crumb-feeder above and
+  // the woods' mushroom-picker do — its own two-handed "patting" idle motion doubles here as
+  // brushing the box. New `makeShineBox()` in `60-props.js`: a low wooden stand with a curved foot
+  // rest on top (where a customer's boot would go), a tin of polish and a brush left on the lid.
+  // Placed at (2, -41), facing the fountain: 7.0 m clear of the fountain's own box (half-extent 3.4
+  // m, centred (0,-34)), well past both south stalls at (±10, -42) (half-extent 1.6 m, over 6 m off
+  // on x alone), the lamp at (0, -46) and the alley rat's own 1.3 m hop leash at (-13, -45).
+  { const bx = 2, bz = -41, ry = atan2(0 - bx, -34 - bz);
+    const shineWard = makeWardrobe(r, { shirts: [0x6a5a4a, 0x5a4a3a, 0x7a6a5a], pants: [0x3a3327], shoes: [0x2a2018] });
+    const bootblack = makeHuman({ ...randomPerson(r, { female: false, child: true, elder: false, wardrobe: shineWard }),
+      pants: 0x3a3327, hat: 'flatcap', hatColor: 0x3a3327, bag: null, jacket: null, scarf: null });
+    W.add(bootblack.group);
+    const boxX = bx + sin(ry) * 0.32, boxZ = bz + cos(ry) * 0.32;
+    place(game, U, makeShineBox(), boxX, boxZ, ry);
+    P.addBox(boxX, 0.11, boxZ, 0.32, 0.22, 0.24, { cam: false });
+    game.npcs.push(new Kneeler(game, bootblack, { x: bx, z: bz, ry, cryIcon: '👞',
+      cries: ['Shine your boots, sir? Tuppence a shine!', 'Mind your paws on the polish, puss.', 'Mirror finish — well, mirror-ish.'] })); }
   for (const [x, z] of [[-14, -34], [14, -34], [0, -46]]) { place(game, U, makeLamp('victorian'), x, z, 0); P.addBox(x, 2, z, 0.4, 4, 0.4, { cam: false }); }
   { const CL = VICTORIAN_LIMIT * 2 + 20;   // the canal runs the whole width of the town
     const water = flatPlane(game, CL, 8, mat(0x1f4f6a, { roughness: 0.15, metalness: 0.2, transparent: true, opacity: 0.85, emissive: 0x0a2a3a, emissiveIntensity: 0.3, map: TEX.water() }), 0, 30, 0, -0.35); U.push((dt) => { water.material.map.offset.x += dt * 0.01; });
