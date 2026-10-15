@@ -13217,3 +13217,26 @@ Full suite (`node test/run.mjs`) ran clean on 2 of 2 runs: exit 0, all checks `o
 warnings, box count unchanged (322 — the toast adds no physics box of its own). No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 506 — a sniff for Candy Land's fourth cupcake hill
+
+Round 505's own log entry claimed "all seven cupcake hills now have their own toast" — it was wrong.
+Checking the actual `addInteractable` calls in `buildCandyLand()` turned up only five of the seven
+(indices 5, 1, 6, 2 and 0): the fourth hill in the list, at (58, -46) with green icing, had never been
+wired up. **It now answers E with a line about that icing**: *"Green icing, this one — someone
+finally remembered mint exists, then buried it under sprinkles anyway."* Same trick as the other five:
+`cupcakeHills[3]` is the group the build loop already constructs (icing, sprinkles, cherry and all),
+handed straight to `game.addInteractable` — no new mesh, no new physics box.
+
+Same 5.5 m radius the other five hills use to clear their shared box's 3.68 m corner. This hill sits
+74.0 m out from the origin, inside the candy-cane-forest ring's own 56-76 m band like the others near
+that ring, so the same kind of cane-trunk box sitting just inside the radius (already accepted for
+hill index 0's own round) is expected here too. Checked against every hand-placed soul nearby: the
+ukulele player at (49, -39) stays 11.4 m clear, the kite-flying kid at (51, -33) 14.8 m clear, and the
+hula-hoop kid at (39, -77) 36.4 m clear — all well past the trigger radius. Only one hill (index 4, at
+(4, 64), purple icing) is left untouched now.
+
+Full suite (`node test/run.mjs`) ran clean on 3 of 3 runs: exit 0, all checks `ok`, 0 console warnings,
+box count unchanged (322 — the toast adds no physics box of its own). No visual check was possible in
+this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

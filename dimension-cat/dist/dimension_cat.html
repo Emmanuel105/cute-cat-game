@@ -9445,6 +9445,18 @@ function buildCandyLand(game, entry) {
   // hills now have their own toast.
   { const lines0 = ['🧁 "Strawberry-pink icing. The cherry on top looks almost embarrassed by it."', '🧁 "First hill in the ring, and the only one close enough to the cane forest to lean on one."', '🧁 "Sprinkles catch the pink sky here better than on any of the other six."'];
     game.addInteractable({ obj: cupcakeHills[0], radius: 5.5, label: () => 'Sniff the cupcake hill', onUse: () => { SFX.click(); game.toast(rnd.pick(lines0), 3000); } }); }
+  // round 505's own log entry claimed all seven hills had their toast by then, but it was wrong: only
+  // five of the seven (indices 5, 1, 6, 2 and 0) ever got one. The fourth in the list, at (58, -46),
+  // never did. Same trick a sixth time: `cupcakeHills[3]` is the group the loop above already built,
+  // handed straight to `addInteractable` — no new mesh, no new box, same 5.5 m radius the other five
+  // already use to clear this hill's own box's 3.68 m corner. This hill sits 74.0 m out from the
+  // origin, inside the ring's own 56-76 m band like the others, so the same kind of cane-trunk box
+  // sitting inside the radius (the precedent every near-ring hill already accepted) is expected here
+  // too. The nearest other souls are the ukulele player at (49, -39), 11.4 m clear, the kite-flying kid
+  // at (51, -33), 14.8 m clear, and the hula-hoop kid at (39, -77), 36.4 m clear — all well past this
+  // radius.
+  { const lines3 = ['🧁 "Green icing, this one — someone finally remembered mint exists, then buried it under sprinkles anyway."', '🧁 "Fourth hill in the ring. The cherry sits a little crooked, like nobody checked."', '🧁 "Mint-green all the way up. It smells like nothing at all, which is somehow worse."'];
+    game.addInteractable({ obj: cupcakeHills[3], radius: 5.5, label: () => 'Sniff the cupcake hill', onUse: () => { SFX.click(); game.toast(rnd.pick(lines3), 3000); } }); }
   { const gh = group(0, 0, -62, W), cookie = mat(0xc27b3a, { roughness: 0.95 }), icing = mat(0xfffdf7, { roughness: 0.35 });   // gingerbread cottage
     mesh(G.box(7, 4, 6), cookie, { y: 2, shadow: 'both', parent: gh }); mesh(G.gable(6.8, 2.8, 7.6), mat(0x8a4a2a, { roughness: 0.9 }), { y: 4, ry: PI / 2, parent: gh });
     for (let k = 0; k < 8; k++) for (const s of [-1, 1]) mesh(G.sphere(0.32, 8, 6), icing, { x: -3.5 + k * 1.0, y: 4.4 + k * 0.0, z: s * 3.4 - s * (k * 0.0), sy: 0.5, shadow: 'none', parent: gh });
