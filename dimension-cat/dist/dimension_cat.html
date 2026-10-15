@@ -12343,6 +12343,20 @@ function buildVictorian(game, entry) {
     const v2 = new Vendor(game, flowerSeller, makeFlowerBouquet(), { x: 10, z: -29.3, ry: 0, cryIcon: '💐',
       cries: ['Flowers, fresh flowers!', 'Roses, tuppence a bunch!', 'Something pretty for the windowsill?'] });
     game.npcs.push(v2); greetable(game, v2); }
+  // the Neighborhood and Whisper Woods both have a ladybug resting somewhere by now, but Victorian's own
+  // market square, flowers piled on a stall since round 1, never had one land on them. One now sits on
+  // the flower seller's own counter, among her blooms, antennae twitching — the exact same perched-only
+  // trick the Neighborhood's field ladybug uses (`rig.animate(0, false, dt, lbT)` off a local timer in
+  // `U`), not the Woods' own `Hopper`: wiring a hop onto this counter risks the same shared-`rnd()`
+  // desync the Neighborhood's own comment already warns about, and the counter itself (half-extent 1.6 x
+  // 0.45 x 0.8, centred (10, -28)) is small enough a hop would carry it clean off the edge in a stride or
+  // two anyway. Sits at (10.9, 0.93, -27.7), the counter's own back corner, away from both the flower
+  // seller (standing at -29.3, the front) and the aisle the cat would use to reach her — just above the
+  // counter's own top (y=0.9) and well inside its existing physics box, so it needs no box of its own,
+  // same reasoning the stall's own flowers already rely on just to sit on the wood. Drawn from this
+  // world's own local `r` only for its one-time idle phase, same as the Neighborhood's.
+  { const rig = makeLadybug(); rig.group.position.set(10.9, 0.93, -27.7); W.add(rig.group);
+    let lbT = r() * 10; U.push((dt) => { lbT += dt; rig.animate(0, false, dt, lbT); }); }
   // a third: a pieman on the red-striped pitch, tray of meat pies held up
   { const pieWard = makeWardrobe(r, { shirts: [0x6a4a3a, 0x5a3a2a, 0x7a5a3a], pants: [0x2a2420], shoes: [0x2a2018] });
     const pieman = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: r.chance(0.35), wardrobe: pieWard }),

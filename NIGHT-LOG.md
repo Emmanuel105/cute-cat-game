@@ -13172,3 +13172,25 @@ Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 conso
 count unchanged (322 — the toast adds no physics box of its own). No visual check was possible in
 this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 504 — a ladybug for Victorian's flower stall
+
+The Neighborhood and Whisper Woods have both had a resting ladybug for a while now, but Victorian's
+own market square — flowers piled on a stall since round 1 — never had one actually land on them.
+**One now sits on the flower seller's own counter, among her blooms, antennae twitching.**
+
+No new rig: reuses `makeLadybug()` from `56-npcs-wild.js` as-is. And no new controller either — this
+uses the exact same perched-only trick the Neighborhood's own field ladybug relies on
+(`rig.animate(0, false, dt, lbT)` off a local timer pushed into `U`), not the Woods' own `Hopper`:
+that controller drives a tiny scuttling hop, and wiring one onto a stall counter barely 3.2 x 1.6 m
+across risked both the same shared-`rnd()` desync the Neighborhood's own comment already warns about,
+and simply hopping the bug clean off the edge in a stride or two. Sits at (10.9, 0.93, -27.7) — the
+counter's own back corner, just above its top surface (y=0.9) and well inside its existing physics
+box, so it needs no box of its own (the same reasoning the stall's own flower props already lean on
+to sit there), away from both the flower seller herself (standing out front at z=-29.3) and the aisle
+the cat would use to reach her.
+
+Full suite (`node test/run.mjs`) ran clean on 2 of 2 runs: exit 0, all checks `ok`, 0 console
+warnings, box count unchanged (322 — nothing here needed a physics box of its own). No visual check
+was possible in this environment (no browser, no Playwright) — only the stub-three test suite.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
