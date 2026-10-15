@@ -13086,3 +13086,25 @@ Full suite (`node test/run.mjs`) ran clean on 2 of 2 runs: exit 0, all 274 check
 warnings, box count unchanged (322 — the sign adds no physics box of its own). No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 500 — a look at Whisper Woods' own spiderweb
+
+Whisper Woods' knee-high orb web, strung between two twig stakes south-east of the pond since an
+earlier round, had dew beads and a small spider sitting dead centre but nothing to say for itself —
+the wind chime and the big glowing mushroom nearby both already had their own look/listen toast, and
+the web never got one. **Walking up to it and pressing E now answers with a line about the silk**:
+*"Dew beads strung on silk, and a spider holding dead centre — not a single strand out of place."*
+No new mesh, no new physics box: `makeSpiderweb`'s own return value, previously discarded right after
+`placeT`, is now kept in a variable and handed straight to `game.addInteractable`, the same trick the
+Robot City's own factory sign already used.
+
+An Explore subagent found the gap: of everything finished and decorative in this glade, the web was
+the one piece nobody had ever wired up. Its real footprint is under a metre across, so a 1.8 m
+interactable radius stays clear of the frog ring (12.8 m off), the ring-dancers (16.8 m) and the
+juggler (14.4 m) by the same wide margins the web's own placement comment had already worked out when
+it was first built — nothing new to probe.
+
+Full suite (`node test/run.mjs`) ran clean on 2 of 2 runs: exit 0, all checks `ok`, 0 console warnings,
+box count unchanged (322 — the toast adds no physics box of its own). No visual check was possible in
+this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

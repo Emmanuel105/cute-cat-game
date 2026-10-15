@@ -16667,8 +16667,19 @@ function buildForest(game, entry) {
   // decorative and non-colliding — two thin twigs at ground level, same call the wind chime and the
   // scattered mushrooms already make for anything this slight — so it needs no physics box and no
   // keep-out probe, and changes no walkable-ground percentage.
+  //
+  // that web sat there for a few rounds with nothing to say for itself — every other finished prop in
+  // these woods (the wind chime, the flower) had already earned a look/listen toast, and this one never
+  // had. `makeSpiderweb`'s own return value, previously discarded right after `placeT`, is now kept in
+  // `web` and handed straight to `game.addInteractable`, the same trick the factory sign and the robot
+  // arm already used over in Robot City. No new mesh, no new physics box: the web's own footprint is
+  // under a metre across, so a 1.8 m radius stays clear of the frog ring (12.8 m off), the ring-dancers
+  // (16.8 m) and the juggler (14.4 m) by the same wide margins the placement comment above already
+  // worked out.
   { const wx = 16, wz = -16;
-    placeT(game, U, makeSpiderweb(r), wx, wz, atan2(8 - wx, -6 - wz)); }
+    const web = placeT(game, U, makeSpiderweb(r), wx, wz, atan2(8 - wx, -6 - wz));
+    const webLines = ['🕸️ "Dew beads strung on silk, and a spider holding dead centre — not a single strand out of place."', '🐛 "Whatever built this wove it between two twigs and never came back to check it."', '✨ "The morning dew only shows the web off for an hour or two before it dries."'];
+    game.addInteractable({ obj: web, radius: 1.8, label: () => 'Look at the web', onUse: () => { SFX.click(); game.toast(rnd.pick(webLines), 3000); } }); }
 
   // the Neighborhood (395), Robot City (425), Victorian (426), Candy Land (427), Sunny Shore (428) and
   // Frosty Peak (429) have all had their own turn at the same back-garden toss game by now — a horseshoe,
