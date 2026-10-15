@@ -13065,3 +13065,24 @@ friend count ticked up by one, to 80 to meet), 0 console warnings, box count unc
 the run (322 — that figure is Neighborhood's own count, the world the suite ends on, not Victorian's).
 No visual check was possible in this environment (no browser, no Playwright) — only the stub-three
 test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 499 — a look up at Robot City's own name-brand sign
+
+Five neon signs light up the factory floor by now, and the furnace, the robot arm and the scrap crane
+have all had a one-off "look" toast for rounds — but **ROBOT WORKS, the biggest piece of neon in the
+whole city**, hung dead centre over the floor since round 1, never got so much as a glance. *"Lights
+the whole floor pink after dark. Nobody's complained yet."* No new mesh, no new physics box:
+`makeNeonSign`'s own return value, previously discarded right after `.position.set()`, is now kept in
+a variable and handed straight to `game.addInteractable`, the same trick the furnace and the arm
+already used.
+
+An Explore subagent found the gap: of the five neon signs in Robot City, none was ever wired up as an
+interactable, and ROBOT WORKS — the one with its own support poles and the most legible name — was the
+obvious pick. Its two support poles carry no collider of their own, so there was nothing to clear; a
+4.5 m radius stays well inside the 9.4 m gap to the robot arm's interactable and the 11.4 m gap to the
+furnace's, no overlap with either.
+
+Full suite (`node test/run.mjs`) ran clean on 2 of 2 runs: exit 0, all 274 checks `ok`, 0 console
+warnings, box count unchanged (322 — the sign adds no physics box of its own). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

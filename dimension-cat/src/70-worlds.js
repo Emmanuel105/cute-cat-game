@@ -3703,7 +3703,17 @@ function buildRobotCity(game, entry) {
   // 4.2 m away) and both neon signs; makeWindChime() itself adds no collider, so it needed no box of its
   // own either.
   place(game, U, makeWindChime(game, { wood: 0x3a4048, metal: 0xc9a227 }), -13, -23, 0, 3.6);
-  makeNeonSign('ROBOT WORKS', '#ff2d95', 9, W).position.set(0, 6.5, -24);
+  // the furnace, the robot arm, the scrap crane and the wind chime have all had a one-off look/listen
+  // toast for a while, but the factory's own name-brand sign overhead — the biggest piece of neon in the
+  // whole city, hung since round 1 — never got so much as a glance. `makeNeonSign`'s own return value,
+  // previously discarded right after `.position.set()`, is now kept in `factorySign` and handed straight
+  // to `game.addInteractable`, same trick as the furnace and the arm. No new mesh, no new box: both
+  // support poles ([-5, 3.2, -24] and [5, 3.2, -24]) carry no collider of their own, so there was nothing
+  // to clear. A 4.5 m radius stays well inside the 9.4 m gap to the robot arm's own interactable (-5, -16,
+  // radius 3.8) and the 11.4 m gap to the furnace's (9, -17, radius 3.6) — no overlap with either.
+  const factorySign = makeNeonSign('ROBOT WORKS', '#ff2d95', 9, W); factorySign.position.set(0, 6.5, -24);
+  { const signLines = ['🏭 "ROBOT WORKS. Same sign, same buzz, since the city went up."', '✨ "Half the bulbs in that sign have outlasted the robots that installed them."', '🤖 "Lights the whole floor pink after dark. Nobody\'s complained yet."'];
+    game.addInteractable({ obj: factorySign, radius: 4.5, label: () => 'Look at the factory sign', onUse: () => { SFX.click(); game.toast(rnd.pick(signLines), 3000); } }); }
   const sign2 = makeNeonSign('SECTOR 7', '#00e5ff', 6, W); sign2.position.set(-18, 5, 6); sign2.rotation.y = PI / 2;
   makeNeonSign('CAT?', '#ffe040', 4, W).position.set(19, 5.6, -13);
   for (const [x, z] of [[-18, 6], [19, -13]]) { mesh(G.cyl(0.12, 0.16, 5, 8), pipe, { x, y: 2.5, z, parent: W }); P.addBox(x, 2.5, z, 0.4, 5, 0.4, { cam: false }); }
