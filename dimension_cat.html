@@ -12239,6 +12239,37 @@ function buildVictorian(game, entry) {
     W.add(sweep.group);
     game.npcs.push(new Charger(game, sweep, { x: sx, z: sz, ry, cryIcon: '🧹',
       cries: ["Every grate on this street feeds a flue, and every flue's mine sooner or later.", "Mind your paws, puss — soot never washes out of white fur.", "Thirty feet of brick, straight up, and not one of them the same shape twice."] })); }
+  // the mudlark's own line (round 365) called the chimney sweep "as Victorian as" it gets, but every
+  // one of those flues the sweep works has to be fed first — no coalman had ever actually delivered
+  // any. The south row has eleven back yards and only three were ever filled in (the laundress at
+  // x=-48, the woodcutter at x=-28, the sweep at x=-18); the house at x=52 never got one at all. A
+  // coalman now tips sacks down a hinged iron chute set into that house's own back wall (half-extent
+  // 3.5 m, centred z=-11.5, so its back face sits at z=-15, same wall every other yard's own scene
+  // backs onto), two sacks and a scatter of spilled lumps at the foot of it, the coalman himself
+  // standing a few steps off. `Charger`, already standing in for the sweep, the fiddler and the
+  // painter, needs no new controller. x=52 sits 55.7 m from the origin at this yard's own depth —
+  // comfortably inside the radius (88) where victorianRegion's own procedural fill is kept off
+  // entirely — and the nearest other soul (the night watchman's bench at (36, -30)) stays better than
+  // 19 m off throughout, so nothing here was ever going to collide with anything else in the town.
+  { const chuteX = 52, chuteZ = -15.3, sx = 52, sz = -19.0;
+    const ironM = mat(0x2a2a2e, { metalness: 0.5, roughness: 0.5 }), coalM = mat(0x16141a, { roughness: 0.4 }), sackM = mat(0x3a332c, { roughness: 0.95 });
+    const chute = group(chuteX, 0.55, chuteZ, W); chute.rotation.x = -0.7;   // hinged flap, propped open into the cellar
+    mesh(G.box(0.62, 0.5, 0.05), ironM, { parent: chute });
+    mesh(G.box(0.62, 0.06, 0.05), mat(0x1a1a1c, { metalness: 0.6, roughness: 0.4 }), { y: 0.22, z: 0.03, parent: chute });   // a crossbar
+    P.addBox(chuteX, 0.55, chuteZ - 0.3, 0.4, 0.5, 0.35, { cam: false });
+    for (const [lx, lz, s] of [[-0.35, -0.5, 1], [0.3, -0.7, 0.8], [-0.1, -0.6, 0.9], [0.45, -0.4, 0.7]]) mesh(G.box(0.12 * s, 0.1 * s, 0.1 * s), coalM, { x: chuteX + lx, y: 0.05 * s, z: chuteZ + lz, ry: r() * TAU, shadow: 'both', parent: W });
+    for (const dx of [-0.6, 0.25]) {
+      const sack = group(chuteX + dx, 0, sz + 0.6, W);
+      mesh(G.cyl(0.22, 0.28, 0.66, 10), sackM, { y: 0.33, shadow: 'both', parent: sack });
+      mesh(G.torus(0.13, 0.02, 5, 10), mat(0x2a2420, { roughness: 0.8 }), { y: 0.63, rx: PI / 2, shadow: 'none', parent: sack });
+      P.addBox(chuteX + dx, 0.33, sz + 0.6, 0.3, 0.66, 0.3, { cam: false });
+    }
+    const coalWard = makeWardrobe(r, { shirts: [0x3a3a3e, 0x2e2e32] });
+    const coalman = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: false, wardrobe: coalWard, build: 'stout' }),
+      pants: 0x1e1e20, apron: 0x2a2420, hat: 'flatcap', hatColor: 0x2a2a2e, jacket: null, scarf: null, bag: null, backpack: null, beard: r.chance(0.3), glasses: false });
+    W.add(coalman.group);
+    game.npcs.push(new Charger(game, coalman, { x: sx, z: sz, ry: 0, cryIcon: '🪨',
+      cries: ["Two hundredweight down the chute, same as every Tuesday — mind your paws, puss, it's filthy stuff.", "Every grate on this street, sooner or later, and every one of them mine to fill.", "Black on the hands, black on the boots — never comes out, not properly."] })); }
   // market square (north): cobbled plaza, a fountain, striped stalls, gas lamps; a canal with a stone bridge (south)
   flatPlane(game, 30, 26, pave, 0, -34, 0, 0.015);
   { const f = group(0, 0, -34, W), stone = mat(0x8c8377, { roughness: 0.95, map: TEX.stone(30) }); mesh(G.cyl(3.2, 3.4, 0.7, 24), stone, { y: 0.35, parent: f }); mesh(G.cyl(2.8, 2.8, 0.1, 24), mat(0x3d8fd1, { roughness: 0.1, transparent: true, opacity: 0.85, emissive: 0x1a4a7a, emissiveIntensity: 0.3 }), { y: 0.72, shadow: 'none', parent: f }); mesh(G.cyl(0.4, 0.6, 2.2, 12), stone, { y: 1.8, parent: f }); mesh(G.cyl(1.2, 1.1, 0.15, 18), stone, { y: 2.9, parent: f }); mesh(G.sphere(0.4, 12, 9), mat(0xd4af37, { metalness: 0.9, roughness: 0.3 }), { y: 3.3, parent: f });

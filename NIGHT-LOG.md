@@ -13037,3 +13037,31 @@ the suite, not something this round introduced): exit 0, all checks `ok`, 0 cons
 unchanged (322 — the toast adds no new box). No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 498 — a coalman for Victorian's south row
+
+Victorian's terrace houses have had back yards since the street was first built, but only three of
+the eleven on the south row ever got anything in them: a laundress at x=-48, a woodcutter at x=-28,
+and the chimney sweep at x=-18 (round 365's mudlark line called the sweep "as Victorian as" a trade
+gets, but never addressed what actually feeds all those flues). **A coalman now tips sacks down a
+hinged iron chute set into the back wall of the one house that never got a yard scene at all, x=52**
+— two sacks and a scatter of spilled lumps at the foot of the chute, the coalman standing a few steps
+off. *"Two hundredweight down the chute, same as every Tuesday — mind your paws, puss, it's filthy
+stuff."* Same `Charger` controller as the sweep, the fiddler and the painter already use, so he's a
+new friend to meet like the rest of them — no new controller needed.
+
+An Explore subagent did the legwork of finding this gap: with 497 rounds already in Victorian alone
+(fountain, clock tower, carriage, postbox, canal, market square — all with their own toasts or
+scenes), every obvious landmark was taken. It grepped every `52` in the file to confirm the yard
+behind that one house had never been touched by anything else, and checked distances: the chute sits
+flush with the house's own back wall (half-extent 3.5 m, centred z=-11.5, back face at z=-15, the
+same wall every other yard's scene backs onto), and the nearest other soul (the night watchman's
+bench at (36, -30)) stays better than 19 m off throughout. x=52 is 55.7 m from the origin at this
+yard's own depth, comfortably inside the radius (88) where victorianRegion's own procedural fill is
+kept off entirely, so nothing else was ever going to end up out here either.
+
+Full suite (`node test/run.mjs`) ran clean on 3 of 3 runs: exit 0, all checks `ok` (Victorian's own
+friend count ticked up by one, to 80 to meet), 0 console warnings, box count unchanged at the end of
+the run (322 — that figure is Neighborhood's own count, the world the suite ends on, not Victorian's).
+No visual check was possible in this environment (no browser, no Playwright) — only the stub-three
+test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
