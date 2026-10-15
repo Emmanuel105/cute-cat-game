@@ -13262,3 +13262,37 @@ seven cupcake hills now genuinely have their own toast.
 Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings, box count
 unchanged (322). No visual check was possible in this environment (no browser, no Playwright) — only
 the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 508 — a maypole for Victorian
+
+Tetherball, badminton, tug-of-war, archery, sack races — a whole shelf of playground games this game
+has never tried once, in any of its seven worlds — and nobody had ever put up a maypole, the one dance
+that actually needs something in the middle. **Six children in their Sunday best now circle a
+candy-striped pole on the open green deep in Victorian's south field**, each one trailing a ribbon up
+to a little flower wreath at the top. *"Don't let go of your ribbon, Thomas!"* *"Nobody remembers how
+the pattern's meant to come out."*
+
+No new controller: the ring itself is the exact same `RingDance` every other world's own circle of
+dancers already uses. The ribbons are the only genuinely new bit — they're not rigged to the dancers'
+actual hands (the walk-cycle `RingDance` drives has no "arms up" pose to hang from), but to each
+dancer's own circle position with a fixed chest-height lift, recomputed fresh every frame straight off
+`dance.dancers[i].rig.group.position` — safe to read because `80-game.js`'s own main loop runs every
+NPC's `update()` (the ring dance included) before the world's own per-frame hooks fire. Each ribbon is
+one box mesh stretched between pole-top and dancer with the same trick the kite string and the
+balloon's own ropes already use for a two-ends-move-independently segment: positioned at the midpoint,
+turned with `lookAt`, scaled on its own local Z to the live distance. All six dancers are greetable,
+same as every other ring dance's own friends.
+
+A scratch headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real
+Victorian town, sampled every physics circle's own position every 1/30 s over 300 simulated seconds (so
+no wandering urchin, dancer, duck or ball-tossing pair mid-circuit could slip past unnoticed), then
+swept the open green against both that trace and every one of the town's physics boxes, staying short
+of the radius (88) where victorianRegion's own procedural fill takes over: (0, -84) came back clear by
+31.4 m of the nearest box and 25.5 m of the nearest other soul — well south of the market square, the
+draughts table, the photographer and the toy soldiers' own drill line, with plenty of room for the pole,
+the 2 m ring of dancers and every ribbon between them.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings (friend count in
+Victorian rose from 80 to 86 for the six new dancers, as expected). No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

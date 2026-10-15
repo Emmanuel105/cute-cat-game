@@ -6181,6 +6181,65 @@ function buildVictorian(game, entry) {
       W.add(rig.group); return rig; });
     game.npcs.push(new Marchers(game, soldiers, { points: [[26, -75], [32, -75]], speed: 1.0, pause: [1, 2], r: 0.32, gap: 1.1,
       cries: ['Hup, two, three, four — mind your dressing, Thomas!', 'Careful, puss — mind the wooden bayonets.', "Drop one more step and Miss will have us start again."], cryIcon: '💂' })); }
+  // tetherball, badminton, tug-of-war, archery, sack races — a whole shelf of playground games this
+  // game has never tried once, in any of the seven worlds — and a maypole, the one dance that actually
+  // needs a prop in the middle, had never come up either. Six children in Sunday best now circle a
+  // ribboned pole on the open green deep in the south field, each one trailing a ribbon up to the
+  // wreath at the top. No new controller: the ring itself is the exact same `RingDance` every other
+  // world's own circle of dancers already uses, unchanged — the ribbons are the only new part, and
+  // they're not rigged to the dancers' own hands (the walk-cycle `RingDance.place()` drives has no
+  // "arms raised" pose to hang from) but to each dancer's own circle position a chest-height lift off
+  // the ground, recomputed fresh every frame from `dance.dancers[i].rig.group.position` — the same
+  // position `RingDance.place()` itself just set a moment earlier this frame, since `80-game.js`'s own
+  // main loop runs every `npcs[].update()` (RingDance included) before `worldCtl.update()`, which is
+  // where every world's own `U` array — this one included — actually fires. Each ribbon is a single
+  // box mesh stretched between two fixed-length-1 ends: positioned at the midpoint of pole-top and
+  // dancer, turned with `lookAt` and scaled on its own local Z to the live distance between them — the
+  // exact trick the kite string and the balloon's own ropes already use for a segment whose two ends
+  // move independently every frame. `noInk()` for the same reason those got it: ribbon width (0.06 m)
+  // against a length of several metres reads as a flat line to the outline pass without it.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses) built
+  // the real Victorian town (`game.start('new')` then `game.load(3, 'from-hub')`), sampled every one of
+  // its physics circles' own position every 1/30 s over 300 simulated seconds (so no wandering urchin,
+  // dancer, duck or ball-tossing pair mid-circuit could slip past unnoticed), then swept a grid of the
+  // open green against both that trace and every one of the town's physics boxes, keeping the whole
+  // grid inside the hand-built heart (radius 15-84, short of the radius (88) where victorianRegion's
+  // own procedural fill takes over): (0, -84) came back clear by 31.4 m of the nearest box and 25.5 m
+  // of the nearest other soul — well south of the market square (centred (0,-34), radius 17), the
+  // draughts table, the photographer and the drill line above, with room to spare for the pole, the
+  // 2 m ring and every ribbon between them.
+  { const mx = 0, mz = -84, poleH = 2.6, ringR = 2.0, nRibbons = 6;
+    const poleM = mat(0xf0ece4, { roughness: 0.65 }), stripeM = mat(0xaa1f2a, { roughness: 0.65 });
+    const pole = group(mx, 0, mz, W);
+    mesh(G.cyl(0.07, 0.09, poleH, 10), poleM, { y: poleH / 2, parent: pole });
+    for (let i = 0; i < 6; i++) mesh(G.cyl(0.072, 0.072, poleH / 6 * 0.9, 10), i % 2 ? stripeM : poleM, { y: poleH / 6 * (i + 0.5), parent: pole });
+    mesh(G.torus(0.15, 0.03, 8, 16), mat(0x5a8a4a, { roughness: 0.85 }), { y: poleH, rx: PI / 2, shadow: 'none', parent: pole });
+    for (let i = 0; i < 8; i++) { const a = i / 8 * TAU; mesh(G.sphere(0.028, 6, 5), mat(r.pick([0xff6fb5, 0xffd54a, 0x7fd7ff, 0xf7f3ec]), { roughness: 0.5 }), { x: cos(a) * 0.15, y: poleH, z: sin(a) * 0.15, shadow: 'none', parent: pole }); }
+    P.addBox(mx, poleH / 2, mz, 0.22, poleH, 0.22, { cam: false });
+    const poleLines = ['🎀 "Ribbons new this year — last year\'s went green in the rain."', '🎀 "Nobody\'s quite sure who ties the wreath. Never the same colour twice."', '🎀 "Six ribbons, six children, and somehow it never once tangles."'];
+    game.addInteractable({ obj: pole, radius: 3.4, label: () => 'Look at the maypole', onUse: () => { SFX.click(); game.toast(rnd.pick(poleLines), 3000); } });
+
+    const maypoleWard = makeWardrobe(r, { shirts: [0xf7f3ec, 0xffd54a, 0x7fd7ff, 0xff9fb0, 0x8bc34a], pants: [0x2a2a24, 0x3a3327], shoes: [0x2a2018, 0x1e1a16] });
+    const dancers = [];
+    for (let i = 0; i < nRibbons; i++) { const rig = makeHuman({ ...randomPerson(r, { child: true, female: i % 2 === 0, wardrobe: maypoleWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false }); W.add(rig.group); dancers.push(rig); }
+    const dance = new RingDance(game, dancers, { cx: mx, cz: mz, r: ringR, speed: 0.55, turnEvery: 11, cryIcon: '🎀',
+      cries: ["Don't let go of your ribbon, Thomas!", "Round and round — mind you don't trip on it!", "Nobody remembers how the pattern's meant to come out.", 'Mind the cat, everyone — small paws, quick feet!'] });
+    game.npcs.push(dance);
+
+    const ribbonColors = [0xaa1f2a, 0xf7f3ec];
+    const ribbons = dancers.map((_, i) => mesh(G.box(0.06, 0.015, 1), mat(ribbonColors[i % 2], { roughness: 0.7 }), { parent: W }));
+    for (const rib of ribbons) noInk(rib);
+    const topX = mx, topY = poleH, topZ = mz, handY = 0.95;
+    U.push(() => {
+      for (let i = 0; i < nRibbons; i++) {
+        const dp = dance.dancers[i].rig.group.position, rib = ribbons[i];
+        const hx = dp.x, hy = dp.y + handY, hz = dp.z, len = Math.hypot(hx - topX, hy - topY, hz - topZ);
+        rib.position.set((topX + hx) / 2, (topY + hy) / 2, (topZ + hz) / 2);
+        rib.lookAt(hx, hy, hz);
+        rib.scale.set(1, 1, max(0.01, len));
+      }
+    }); }
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
