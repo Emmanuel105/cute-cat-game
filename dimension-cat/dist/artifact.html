@@ -7806,6 +7806,49 @@ function buildNeighborhood(game, entry) {
       const barrowLines = ['🛒 "Half soil, half rust. Does the job either way."', '🌱 "Those seedlings won\'t pot themselves — allegedly. No rush, by the look of it."', '😼 "Puss, that trowel is not a toy, and neither is the soil."'];
       game.addInteractable({ obj: barrow, radius: 1.8, label: () => 'Look at the wheelbarrow', onUse: () => { SFX.click(); game.toast(rnd.pick(barrowLines), 3000); } });
     }
+    // the pinwheel, sprinkler, kennel, birdhouse, gnome, feeder, bin, sundial, rain barrel, weathervane,
+    // flamingos and wheelbarrow between them gave thirteen of the street's sixteen yards a fixture of
+    // their own (the birdbath below makes it fourteen, on lot 14's own corner outside this loop), but
+    // only one bike has ever been seen on this street, and it never once stops moving — the cyclist who
+    // rings her bell at passers-by (the `Cyclist` controller, `55-npcs.js`). House 3's own front yard
+    // now has a second bike, parked and standing perfectly still: the exact same `makeBike()` rig that
+    // one already rides, propped up on a kickstand with a cycling helmet hung off the handlebar by its
+    // strap. *"Kickstand's doing all the work. Has been since breakfast."* *"That helmet's seen better
+    // days — scuffs, mostly. No actual crashes, allegedly."* *"Puss, those spokes are not a scratching
+    // post."*
+    // No new rig and no new controller: `makeBike()` (`60-props.js`) is the identical geometry the
+    // cyclist's own `Cyclist` already rides elsewhere on this street, just left here with its wheels
+    // unturned — nothing in this world's `U` list drives them, so they simply stay put. The kickstand
+    // is one new thin strut (wrapped in `noInk()`, the same treatment the weathervane's own spindle and
+    // the wind chime's own strings already get, since nothing this slender should carry the outline
+    // shader's ink line); the helmet is `G.dome()` — the exact hemisphere the gnome's own cap and the
+    // bootblack's own tin lid already use — plus two thin strap loops hanging below it, `noInk()` again.
+    // Every dimension and colour below is a fixed literal, not a draw from this world's own seeded `r`
+    // — the sundial's and weathervane's own comments above already spell out why, since the
+    // Neighborhood is the one world every test travel starts from.
+    // Same yard-corner offset the other twelve in-loop fixtures already use (x+4.5, z+front*4.0); house
+    // 3's own corner had never actually been probed before (earlier rounds' comments disagreed on
+    // whether it was clear, going by old strolls that no longer match this street now that a dozen more
+    // props stand on it), so this round wrote its own fresh check: a headless probe (the same stub-three
+    // harness `test/run.mjs` itself uses, `game.start('new')` then 9000 simulated frames at the stub
+    // clock's real 1/60 s step, every NPC's and the squirrel's own position sampled every single frame)
+    // found house 3's own corner (40.5, 4.0) clear by 7.29 m of the nearest wandering soul throughout
+    // and 0.90 m clear of the nearest physics box (that house's own porch-awning) — the same margin
+    // every other standard-offset fixture on this street already accepts, no detour to the far corner
+    // needed the way house 2's flamingos needed one.
+    if (i === 3) {
+      const px = x + 4.5, pz = z + front * 4.0, bry = ry + 0.35;
+      const bike = makeBike(0x3a7ac0); bike.group.position.set(px, 0, pz); bike.group.rotation.y = bry; W.add(bike.group);
+      const standM = mat(0x2a2a2a, { metalness: 0.4, roughness: 0.55 });
+      noInk(mesh(G.cyl(0.012, 0.012, 0.36, 6), standM, { x: 0.1, y: 0.17, z: -0.12, rx: 0.2, rz: -1.35, shadow: 'none', parent: bike.group }));   // kickstand, angled down to the ground
+      const helmetM = mat(0xe8542a, { roughness: 0.4 }), strapM = mat(0x2a2a2a, { roughness: 0.6 });
+      const helmet = group(0, 0.96, 0.4, bike.group);
+      mesh(G.dome(0.115, 12, 8), helmetM, { shadow: 'both', parent: helmet });
+      for (const s of [-1, 1]) noInk(mesh(G.cyl(0.006, 0.006, 0.1, 5), strapM, { x: s * 0.07, y: -0.08, rz: s * 0.3, shadow: 'none', parent: helmet }));   // strap loops, hooked over the handlebar
+      addRotBox(game, px, 0.55, pz, 0.5, 1.1, 1.3, bry, { cam: false });
+      const bikeLines = ['🚲 "Kickstand\'s doing all the work. Has been since breakfast."', '⛑️ "That helmet\'s seen better days — scuffs, mostly. No actual crashes, allegedly."', '😼 "Puss, those spokes are not a scratching post."'];
+      game.addInteractable({ obj: bike.group, radius: 1.8, label: () => 'Look at the parked bike', onUse: () => { SFX.bell(); game.toast(rnd.pick(bikeLines), 3000); } });
+    }
   });
   // the pinwheel, sprinkler and kennel above gave three of the street's sixteen yards their own
   // feature; lot 14's own corner now gets a fourth — a stone birdbath, a shallow bowl on a short

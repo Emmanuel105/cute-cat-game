@@ -12854,3 +12854,34 @@ Full suite (`node test/run.mjs`) ran clean on 3 of 3 runs: exit 0, all 274 check
 warnings, physics boxes 319 → 320 (the one new box). No visual check was possible in this environment
 (no browser, no Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 492 — a parked bike for the Neighborhood
+
+Thirteen of the street's sixteen yards had their own fixture by now, but the only bike anyone had ever
+seen on this street was the cyclist's, and hers never stops moving. **House 3's own front yard now has
+a second bike, parked and standing still**: the exact same `makeBike()` rig the cyclist already rides,
+propped up on a kickstand with a cycling helmet hung off the handlebar by its strap. *"Kickstand's
+doing all the work. Has been since breakfast."* *"That helmet's seen better days — scuffs, mostly. No
+actual crashes, allegedly."* *"Puss, those spokes are not a scratching post."*
+
+No new rig and no new controller: `makeBike()` (`60-props.js`) is the identical geometry the cyclist's
+own `Cyclist` controller already animates elsewhere on this street, just left here with its wheels
+unturned since nothing in this world's `U` list drives them. Two small additions: a thin kickstand
+strut (wrapped in `noInk()`, same treatment the weathervane's spindle gets) and a helmet built from
+`G.dome()` plus two thin strap loops. Looking at it costs a bicycle-bell `SFX.bell()` instead of the
+usual `SFX.click()`, since it's sitting right there to ring.
+
+House 3's own yard corner had never actually been probed in any earlier round — the comments on past
+rounds disagreed with each other about whether the standard offset was clear there, going by strolls
+that no longer match this street now that a dozen more props stand on it. A fresh headless probe (the
+same stub-three harness `test/run.mjs` itself uses, `game.start('new')` then 9000 simulated frames at
+the stub clock's real 1/60 s step, every NPC's and the squirrel's own position sampled every single
+frame) found house 3's own corner (40.5, 4.0) clear by 7.29 m of the nearest wandering soul throughout
+and 0.90 m clear of the nearest physics box (the house's own porch-awning) — the usual margin every
+other standard-offset fixture on this street already accepts, no detour to the far corner needed.
+
+Full suite (`node test/run.mjs`) ran clean on 4 of 4 runs: exit 0, all 274 checks `ok`, 0 console
+warnings, physics boxes 320 → 321 (the one new box). House 6 is now the only lot on the whole street
+still without a fixture of its own. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
