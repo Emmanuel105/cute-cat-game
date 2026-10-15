@@ -13151,3 +13151,24 @@ Full suite (`node test/run.mjs`) ran clean on 2 of 2 runs: exit 0, all checks `o
 warnings, box count unchanged (322 — the toast adds no physics box of its own). No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 503 — a sniff for Candy Land's fourth cupcake hill
+
+Rounds 497-500ish gave three of the seven cupcake hills ringing the sweet-lands their own "walk up
+and look" toast; the comments on the last one flagged the remaining four as untouched. **The third
+hill in the list, out at (-62, -44) in the quietest corner of the land, now gets the same treatment**:
+*"Mint icing, out here where nobody's around to see it."* `cupcakeHills[2]` — the group the build
+loop already constructs, icing, sprinkles, cherry and all — is handed straight to `game.addInteractable`,
+no new mesh, no new physics box.
+
+Same 5.5 m radius the other three hills already use to clear their shared box's 3.68 m corner. A
+headless probe (the stub-three harness driving the real game) sampled every NPC's position every
+quarter second over 300 simulated seconds and swept this point against all 1958 of the land's physics
+boxes: the nearest other box (a candy-cane trunk at the edge of the cane belt) stayed 7.90 m clear and
+the nearest soul ever sampled 16.47 m clear — plenty of margin past the radius. Three hills (indices
+0, 3 and 4) are still untouched and could get the same toast in future rounds.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings, box
+count unchanged (322 — the toast adds no physics box of its own). No visual check was possible in
+this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
