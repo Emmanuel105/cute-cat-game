@@ -13011,3 +13011,29 @@ Full suite (`node test/run.mjs`) ran clean on 3 of 3 runs: exit 0, all 274 check
 warnings, box count unchanged (the scrap-bug adds no physics box of its own). No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 497 — a look over Candy Land's middle bridge
+
+The lighthouse, the pier, both gate towers, the cupcake hills and the gingerbread cottage have all had
+a one-off "walk up and look" toast for rounds now, but the three wafer bridges over the chocolate
+river — the only crossings in the whole land — never got so much as a glance. **The middle one, dead
+centre at (0, -18), now answers E with a line about the fudge-brown water underneath**: *"Fudge-brown
+water under wafer boards. The cat is not tempted to swim."* No new mesh, no new physics box —
+`makeCandyBridge`'s own return value (the deck, the chocolate wafers, both candy-cane railings),
+already discarded before, is now kept in a variable and handed straight to `game.addInteractable`.
+
+The deck's own box (half-extent 1.6 m in x, 4.5 m in z, a 4.78 m diagonal at the corners) keeps the cat
+that far off dead-on; a 5.8 m radius clears that corner by just over a metre. Checked by eye against
+every coordinate already hand-placed near the river: the chocolate-river angler sits 26.5 m off at
+(26, -13), the swimming duck pair paddle 61-79 m east, and both the hand-placed cane/lollipop lists and
+the scattered small lollipops explicitly skip the whole `abs(z + 18) < 5` band around every bridge, so
+nothing else competes for the prompt here. The other two bridges, 44-46 m off to either side, are
+untouched and could get the same treatment in a future round.
+
+Full suite (`node test/run.mjs`) ran clean on 10 of 10 runs (5 with this change, 5 on the prior commit
+as a flakiness baseline — one earlier one-off run on this change had come back `exit 1` with every
+check still printing `ok`, which the baseline comparison confirms is pre-existing timing flakiness in
+the suite, not something this round introduced): exit 0, all checks `ok`, 0 console warnings, box count
+unchanged (322 — the toast adds no new box). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

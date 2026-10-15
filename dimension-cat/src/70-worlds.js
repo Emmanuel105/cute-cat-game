@@ -2102,8 +2102,21 @@ function buildCandyLand(game, entry) {
   const river = flatPlane(game, 1000, 7, choc, 0, -18, 0, 0.03);
   for (const s of [-1, 1]) { mesh(G.box(1000, 0.2, 0.8), mat(0xd9a066, { roughness: 0.9 }), { y: 0.05, z: -18 + s * 3.7, shadow: 'receive', parent: W }); }
   for (const [cx, w] of [[-262, 500], [-24, 40], [26, 40], [264, 500]]) P.addBox(cx, 3, -18, w, 6, 6.8, { walk: false, cam: false });   // the river, open only at the three bridges
-  makeCandyBridge(game, 0, -18, 3.2, 9); makeCandyBridge(game, -44, -18, 3.2, 9); makeCandyBridge(game, 46, -18, 3.2, 9);
+  const midBridge = makeCandyBridge(game, 0, -18, 3.2, 9); makeCandyBridge(game, -44, -18, 3.2, 9); makeCandyBridge(game, 46, -18, 3.2, 9);
   U.push((dt) => { choc.map.offset.x -= dt * 0.03; });
+  // the lighthouse, the pier, both gate towers, the cupcake hills and the gingerbread cottage have all
+  // had a one-off "walk up and look" toast for rounds now, but the three wafer bridges over the
+  // chocolate river — the only crossings in the whole land — never got so much as a glance. The middle
+  // one, dead centre at (0, -18) with nothing else hand-placed anywhere near it (the hand-placed cane
+  // and lollipop lists both skip the whole `abs(z + 18) < 5` band, and the scattered small lollipops do
+  // too), gets one. `midBridge` is the group `makeCandyBridge` already built and returned (the deck, the
+  // chocolate wafers, both candy-cane railings) two lines up, handed straight to `game.addInteractable`
+  // — no new mesh, no new box. Its own deck box (half-extent 1.6 m in x, 4.5 m in z, a 4.78 m diagonal
+  // at the corners) keeps the cat that far off dead-on; a 5.8 m radius clears that corner by just over a
+  // metre without reaching the river angler 26.5 m off at (26, -13) or either of the other two bridges,
+  // 44-46 m off to either side.
+  { const bridgeLines = ['🍫 "Fudge-brown water under wafer boards. The cat is not tempted to swim."', '🍬 "Candy-cane railings on both sides, in case anyone forgets which land this is."', '🌉 "Shortest crossing in the sweet-lands, and it still smells like chocolate the whole way over."'];
+    game.addInteractable({ obj: midBridge, radius: 5.8, label: () => 'Look over the railing', onUse: () => { SFX.click(); game.toast(rnd.pick(bridgeLines), 3000); } }); }
   // every other body of water in the game already has an angler dipping a line in it — the Neighborhood's
   // lake jetty, Frosty Peak's ice hole, Sunny Shore's pier, Whisper Woods' glowing pond — but the chocolate
   // river itself never did. A headless probe swept the south bank in 2 m steps, well clear of all three
