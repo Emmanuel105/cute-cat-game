@@ -549,6 +549,45 @@ function makeShineBox() {
   mesh(G.box(0.05, 0.02, 0.05), mat(0x2a1a10, { roughness: 0.95 }), { x: 0.12, y: 0.185, z: 0.03, parent: g });   // brush bristles
   return g;
 }
+/** A small brass table lamp, bell-shaded, for the yard sale table below. */
+function makeOldLamp() {
+  const g = new THREE.Group(), brass = mat(0xc9a84a, { metalness: 0.5, roughness: 0.4 }), shade = mat(0xe8dcc0, { roughness: 0.85 });
+  mesh(G.cyl(0.045, 0.05, 0.015, 12), brass, { y: 0.0075, parent: g });                          // base
+  mesh(G.cyl(0.01, 0.014, 0.12, 8), brass, { y: 0.075, parent: g });                              // stem
+  mesh(G.cyl(0.055, 0.075, 0.09, 12), shade, { y: 0.19, parent: g });                               // the shade
+  mesh(G.sphere(0.018, 8, 6), glowMat(0xfff3c4, 0.7), { y: 0.15, shadow: 'none', parent: g });     // bulb glowing faintly inside
+  return g;
+}
+/** A yard sale table: a trestle table with a chipped teapot, a stack of old books, a leaning picture frame,
+    a small brass lamp and a crate of odds and ends, plus a cardboard box of more junk left on the ground
+    beside it. No seller minding it — just the table, propped against the fence that borders every lawn. */
+function makeYardSaleTable() {
+  const g = new THREE.Group(), topY = 0.72, wood = mat(0x8a6a42, { roughness: 0.9, map: TEX.planks(22, 18) }), leg = mat(0x5a4428, { roughness: 0.85 });
+  mesh(G.box(1.0, 0.04, 0.6), wood, { y: topY, shadow: 'both', parent: g });
+  for (const [lx, lz] of [[-0.44, -0.24], [0.44, -0.24], [-0.44, 0.24], [0.44, 0.24]]) mesh(G.cyl(0.02, 0.024, topY - 0.02, 8), leg, { x: lx, y: (topY - 0.02) / 2, z: lz, parent: g });
+  // a stack of three old books, each a slightly different colour and size, slumping a little off-true
+  const bookColors = [0x6a3a3a, 0x3a5a6a, 0x4a6a3a];
+  for (let i = 0; i < 3; i++) mesh(G.box(0.16 - i * 0.01, 0.035, 0.12 - i * 0.008), mat(bookColors[i], { roughness: 0.8 }), { x: -0.32, y: topY + 0.02 + 0.0175 + i * 0.035, z: -0.12, ry: (i - 1) * 0.08, parent: g });
+  // a chipped teapot, lid slightly askew
+  const pot = mat(0xcfc3a8, { roughness: 0.6 });
+  mesh(G.sphere(0.07, 12, 8), pot, { x: 0.05, y: topY + 0.02 + 0.06, z: 0.1, sy: 0.82, parent: g });
+  mesh(G.cyl(0.028, 0.024, 0.025, 10), pot, { x: 0.05, y: topY + 0.02 + 0.115, z: 0.1, ry: 0.3, parent: g });
+  mesh(G.cyl(0.016, 0.01, 0.1, 8), pot, { x: 0.12, y: topY + 0.02 + 0.075, z: 0.08, rz: PI / 2.4, parent: g });   // spout
+  noInk(mesh(G.torus(0.035, 0.009, 6, 10), pot, { x: -0.02, y: topY + 0.02 + 0.06, z: 0.1, ry: PI / 2, parent: g }));   // handle
+  // a picture frame, propped up leaning against the far edge of the table
+  mesh(G.box(0.22, 0.28, 0.018), mat(0x3a2a18, { roughness: 0.8 }), { x: 0.28, y: topY + 0.02 + 0.13, z: -0.26, rx: -0.3, parent: g });
+  mesh(G.box(0.17, 0.22, 0.004), mat(0xdcd3bd, { roughness: 0.9 }), { x: 0.28, y: topY + 0.02 + 0.135, z: -0.249, rx: -0.3, parent: g });
+  // the brass lamp, standing between the books and the teapot
+  const lamp = makeOldLamp(); lamp.position.set(-0.1, topY + 0.02, -0.02); g.add(lamp);
+  // a shallow wooden crate of odds and ends
+  mesh(G.box(0.22, 0.1, 0.16), leg, { x: -0.1, y: topY + 0.02 + 0.05, z: 0.18, parent: g });
+  for (const [cx, cz, c] of [[-0.04, 0.16, 0x8a3a3a], [-0.14, 0.2, 0x3a6a8a], [-0.1, 0.1, 0xd9c9a8]]) mesh(G.sphere(0.03, 6, 5), mat(c, { roughness: 0.7 }), { x: cx, y: topY + 0.02 + 0.105, z: cz, shadow: 'none', parent: g });
+  // a cardboard box of further junk, left on the ground by the near-side leg
+  const card = mat(0xc9a86a, { roughness: 0.95 });
+  mesh(G.box(0.34, 0.26, 0.3), card, { x: -0.5, y: 0.13, z: 0.4, ry: -0.12, shadow: 'both', parent: g });
+  mesh(G.box(0.34, 0.03, 0.3), mat(0xb08a52, { roughness: 0.95 }), { x: -0.5, y: 0.265, z: 0.4, ry: -0.12, shadow: 'none', parent: g });
+  return g;
+}
 /** A glass jar of striped peppermints with a red lid, for a candy stall keeper to hold up. */
 function makeCandyJar() {
   const g = new THREE.Group(), glass = mat(0xf0f8ff, { roughness: 0.15, transparent: true, opacity: 0.35 });

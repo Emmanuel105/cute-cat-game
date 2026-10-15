@@ -12748,3 +12748,41 @@ checks `ok`, 0 console warnings, physics boxes unchanged at 316 (the toad adds o
 circle via `Hopper`, no new box). No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 489 — a yard sale table for the Neighborhood
+
+House 0 got a pinwheel, house 8 a sprinkler, house 13 a kennel — house 1's own lawn, on the grass west
+of its front path, had never had a feature of its own. **A yard sale table now sits there**: a chipped
+teapot, a stack of old books, a picture frame propped against the far edge and a small brass lamp, plus
+a crate of odds and ends and a cardboard box of further junk left at its foot. New `makeYardSaleTable()`
+and `makeOldLamp()` in `60-props.js`, built from the same primitive boxes, cylinders and spheres as the
+market stalls' own hand-held props.
+
+The first version had a seller standing behind the table, built with `makeHuman()` and wrapped in a
+`Vendor` for the "everything's up for grabs" cries. It broke a wholly unrelated test: two neighbours
+stopped taking turns talking to each other three hundred frames later. The cause is the same one the
+previous round's own ladybug comment already flagged — `makeHuman()` draws three values off the *shared*
+`rnd()` sequence unconditionally (a blink timer, an idle-gesture timer, a standing sway) before any of
+this file's own code runs, and `Vendor` draws a fourth for its own cry timer. That shift reaches every
+later draw from the same global sequence, including the one two established neighbours use mid-test to
+decide when to swap who's talking. Tried moving the construction to the very end of the world's own
+build (after everything else, so nothing built earlier could be affected) — made no difference, since
+the broken draw happens at runtime, not at construction, and by then the global sequence is already
+offset for good. Stripping `Vendor` down to a bare static `makeHuman()` with no controller at all still
+broke it, which settles it: there is no way to add a *person* to the Neighborhood under this exact seed
+without that shift. So the table stays unsold — no seller, just the table, with a single "look" prompt
+and three flavour lines on a timer-free, player-triggered toast.
+
+Placement: (13.0, 6.0), on the open lawn west of house 1's own front path, built last of everything this
+world adds (right after the ladybug) so even its own construction-time draws against the per-world
+seeded `r()` land after every other object has already taken what it needs. A headless probe (the real
+Neighborhood, every NPC's own position sampled every fifth frame over 60 simulated seconds — the postie,
+both dog walkers, the strollers and the cyclist's own lane all included) swept the lawn against both that
+trace and the world's physics boxes: this spot came back 2.15 m clear of the nearest box (the lot's own
+back fence, the same one every lot gets past its own front path) and 8.26 m clear of the nearest
+wandering soul.
+
+Full suite (`node test/run.mjs`) ran clean on 6 of 6 runs: exit 0, all 274 checks `ok`, 0 console
+warnings, physics boxes 316 → 317 (the one new box, for the table). No visual check was possible in
+this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

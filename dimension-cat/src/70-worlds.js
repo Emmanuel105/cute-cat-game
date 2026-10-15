@@ -1754,6 +1754,30 @@ function buildNeighborhood(game, entry) {
   { const rig = makeLadybug(); rig.group.position.set(27.5, P.ground0(27.5, -29), -29); W.add(rig.group);
     let lbT = r() * 10; U.push((dt) => { lbT += dt; rig.animate(0, false, dt, lbT); }); }
 
+  // house 0's pinwheel, house 8's sprinkler and house 13's kennel each gave their own lawn a feature —
+  // house 1's own corner, on the open grass west of its front path, never got one. A yard sale table
+  // now sits there: a chipped teapot, a stack of old books, a picture frame propped against the far
+  // edge and a small brass lamp, plus a crate of odds and ends and a cardboard box of further junk at
+  // its foot. No seller minding it — every attempt at one (`makeHuman()`, with or without a `Vendor`
+  // wrapped round it) silently desynced the chat timing between two unrelated neighbours three hundred
+  // frames later, the exact bug the ladybug's own comment just above already warns about: `makeHuman()`
+  // itself draws three values off the *shared* `rnd()` sequence unconditionally, for the blink timer,
+  // the idle-gesture timer and the standing sway, before a single line of this file's own code runs —
+  // there is no way to add a person to the Neighborhood without that shift. So this stays a prop, like
+  // the rain barrel and the sundial before it, built last of everything this world adds so its own
+  // placement disturbs nothing built earlier on the street.
+  // A headless probe (`game.start('new')`, the real Neighborhood, every NPC's own position sampled
+  // every fifth frame over 60 simulated seconds — the postie, both dog walkers, the strollers and the
+  // cyclist's own lane all included) swept the lawn west of house 1's own front path against both that
+  // trace and the world's physics boxes: (13.0, 6.0) came back 2.15 m clear of the nearest box (that
+  // lot's own back fence, the same one every lot gets past its own front path) and 8.26 m clear of the
+  // nearest wandering soul — short of the porch, the path and the bush that lot already places.
+  { const tx = 13.0, tz = 6.0;
+    const saleTable = place(game, U, makeYardSaleTable(), tx, tz, 0);
+    P.addBox(tx, 0.4, tz, 1.0, 0.8, 0.6, { cam: false });
+    const saleLines = ['🏷️ "Everything on the table\'s up for grabs — fifty cents, no haggling." A scrap of card is propped against the lamp, the price scrawled in pencil.', '📦 "A teapot, a stack of old books and whatever\'s left in that crate." The cardboard box at the leg has been there since Tuesday, still half full.', '🖼️ "That lamp still works, mostly." The frame leaning on the far edge is worth more than the picture in it, honestly.'];
+    game.addInteractable({ obj: saleTable, radius: 2.0, label: () => 'Look at the yard sale table', onUse: () => { SFX.click(); game.toast(rnd.pick(saleLines), 3000); } }); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
