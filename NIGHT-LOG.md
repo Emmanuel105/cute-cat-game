@@ -13108,3 +13108,24 @@ Full suite (`node test/run.mjs`) ran clean on 2 of 2 runs: exit 0, all checks `o
 box count unchanged (322 — the toast adds no physics box of its own). No visual check was possible in
 this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 501 — a look over Candy Land's west bridge
+
+Round 497 gave the middle wafer bridge over the chocolate river its own "look over the railing" toast
+and flagged the other two crossings as untouched. **The west bridge, out at (-44, -18), now gets the
+same treatment**: *"Same river, same wafers — this end just has a longer walk back to the castle."*
+`makeCandyBridge(game, -44, -18, 3.2, 9)`'s own return value — previously discarded like the middle
+bridge's used to be — is now kept in a variable (`westBridge`) and handed straight to
+`game.addInteractable`, no new mesh, no new physics box.
+
+Same deck box as the middle bridge (half-extent 1.6 m in x, 4.5 m in z, 4.78 m diagonal at the
+corners), so the same 5.8 m radius clears it by the same margin it always has. Checked against
+everything hand-placed nearby: the Candy Land notice pinned to a cane at (-44, 4) sits 22 m off, the
+closest hand-placed cane/lollipop at (-40, -8) is 10.77 m off, and the outer candy-cane forest ring
+(56-76 m out from the origin) never reaches this far in — the bridge itself is only 47.6 m from centre.
+The east bridge at (46, -18) is still untouched and could get the same toast in a future round.
+
+Full suite (`node test/run.mjs`) ran clean on 2 of 2 runs: exit 0, all 274 checks `ok`, 0 console
+warnings, box count unchanged (322 — the toast adds no physics box of its own). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
