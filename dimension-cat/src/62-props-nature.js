@@ -423,7 +423,7 @@ function makeCave(game, U, x, z0, len, r = rnd) {
   mesh(G.box((denW + 1.6) * 2, Hh + 2, 1.6), rock, { x, y: y0 + Hh / 2 + 0.6, z: zEnd - 0.8, parent: game.world }); P.addBox(x, y0 + Hh / 2, zEnd - 0.8, (denW + 1.6) * 2, Hh + 2, 1.6);
   // ribs (arches) every few metres, the mouth a little bigger, plus boulders around the entrance
   for (let zz = z0 - 1; zz > denZ + 4.5; zz -= 3.2) mesh(G.torus(W + 0.3, 0.42, 7, 16, PI), dark, { x, y: y0 + 0.9, z: zz, parent: game.world });
-  mesh(G.torus(W + 0.9, 0.6, 8, 18, PI), rock, { x, y: y0 + 0.7, z: z0 + 0.4, parent: game.world });
+  const mouthArch = mesh(G.torus(W + 0.9, 0.6, 8, 18, PI), rock, { x, y: y0 + 0.7, z: z0 + 0.4, parent: game.world });
   for (let i = 0; i < 10; i++) { const a = r.range(-0.4, 0.4) + (i % 2 ? 0 : PI), d = r.range(3.2, 5.5), bx = x + sin(a) * d, bz = z0 + cos(a) * 1.5 + r.range(-1, 2); placeT(game, U, makeRock(r, 0x6b6f76, r.range(1.0, 2.2)), bx, bz, 0); }
   mesh(G.box(20, 8, 8), rock, { x, y: y0 + Hh + 4.5, z: zEnd - 2, shadow: 'both', parent: game.world });   // the hill the cave burrows into
   // inside: crystals, gems, a few lights, moss
@@ -433,7 +433,7 @@ function makeCave(game, U, x, z0, len, r = rnd) {
   for (let i = 0; i < 3; i++) { const zz = z0 - 6 - i * ((len - 12) / 3); pointLight(0x9fd8ff, 8, 9, x, y0 + Hh - 0.4, zz, game.world); }
   pointLight(0xffd9a0, 12, 10, x, y0 + Hh - 0.5, denZ, game.world);
   for (let i = 0; i < 12; i++) mesh(G.sphere(1, 7, 5), mat(0x5f9a3a, { roughness: 1 }), { x: x + r.range(-W + 0.3, W - 0.3), y: y0 + 0.02, z: z0 - r.range(1, len - 3), sx: r.range(0.2, 0.5), sy: 0.06, sz: r.range(0.2, 0.5), shadow: 'none', parent: game.world });   // moss
-  return { den: [x, denZ], mouth: [x, z0] };
+  return { den: [x, denZ], mouth: [x, z0], mouthArch };
 }
 /** A huge hollow oak whose hollow glows: the way into Whisper Woods. */
 function makeHollowOak(game, x, z, ry, onEnter, prompt = 'Crawl into the hollow oak') {

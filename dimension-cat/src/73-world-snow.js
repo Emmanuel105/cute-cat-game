@@ -341,6 +341,21 @@ function buildSnowVillage(game, entry) {
       cries: ['Prints this big? Has to be the yeti.', "Careful, puss — don't smudge them.", 'Heading straight for the cave, these are.'] })); }
   // the yeti's cave: a long tunnel north into the mountain, lit by gems, with the yeti in its den at the far end
   const cave = makeCave(game, U, 0, -29, 27, r);
+  // the clock tower, the fountain, the carriage and plenty more have all had a "walk up and look" toast
+  // for rounds now, but the one landmark Frosty Peak is actually built around — the cave mouth the
+  // tracker's own paw prints lead straight to — never got one of its own, past the yeti's befriend
+  // trigger 6 m further in. `makeCave`'s own rock-arch mesh over the entrance (previously built and
+  // discarded) now comes back as `mouthArch`, handed straight to `game.addInteractable`: no new mesh,
+  // no new physics box. A headless probe (the same stub-three harness `test/run.mjs` itself uses,
+  // `game.start('new')` then `game.load(5, 'from-hub')`) swept the arch's own world position — (0,
+  // 1.2, -28.6) — against every one of the mountain's physics boxes and every NPC's own position: the
+  // nearest body-level box (not the overhead ceiling, which the walk test already ignores) stayed 2.3
+  // m clear and the nearest soul (the tracker, reading the prints that lead here) stayed 9.8 m off, so
+  // the open approach up the centre of the snowfield from the south reaches the full 4.2 m radius
+  // without the cat ever needing to round a corner — well short of the yeti's own 6 m "RAAAWR" trigger
+  // further inside.
+  const caveLines = ['🏔️ Cold air rolling straight out of the dark. Something in there is breathing an awful lot of it.', '💎 Even from out here the walls are glowing — someone in there has been busy with the gemstones.', '🐾 The tracks really do go straight in. The cat has decided that is a problem for its paws to solve later.'];
+  game.addInteractable({ obj: cave.mouthArch, radius: 4.2, label: () => 'Look into the cave', onUse: () => { SFX.click(); game.toast(rnd.pick(caveLines), 3000); } });
   for (const [x, z] of [[-9, -24], [9, -25]]) { const p = makeSnowPine(r); placeT(game, U, p, x, z, 0); boxT(game, x, z, 1.2 * p.scale.x, 5, 1.2 * p.scale.x, { cam: false }); }
   const yeti = makeYeti(); W.add(yeti.group); game.npcs.push(new Wanderer(game, yeti, { x: cave.den[0], z: cave.den[1] + 0.5, speed: 0.4, leash: 2.2, r: 0.9, height: 3, step: 0.4, idle: [2, 5], walk: [1, 3] }));
   makeGemCluster(game, U, 18, 3.5, 5, [0x9fe8ff, 0xbfa8ff, 0xa8ffe8], r, 1.2);

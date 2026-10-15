@@ -13323,3 +13323,28 @@ Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console w
 unchanged (322 — the toast adds no physics box of its own). No visual check was possible in this
 environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 510 — a look into Frosty Peak's own cave
+
+Every world's big landmark has had a "walk up and look" toast for rounds now — the clock tower, the
+fountain, the carriage, Candy Land's corner towers and bridges, Robot City's own sign, Whisper Woods'
+mushrooms and spiderweb — but Frosty Peak's own yeti cave, the one landmark the tracker's paw prints
+point straight at, never got one of its own, past the yeti's befriend trigger six metres further in.
+**Stand at the mouth and the cat looks in**: *"Cold air rolling straight out of the dark. Something in
+there is breathing an awful lot of it."* Two more lines rotate in, one about the glowing gem walls and
+one about the paw prints.
+
+No new mesh, no new physics box: `makeCave()` (`62-props-nature.js`) built a rock arch over the
+entrance already and threw the reference away — it now comes back as `mouthArch` on the cave's own
+return value, handed straight to `game.addInteractable`. A headless probe (the same stub-three harness
+`test/run.mjs` itself uses, `game.start('new')` then `game.load(5, 'from-hub')`) swept the arch's own
+world position, (0, 1.2, -28.6), against every one of the mountain's physics boxes and every NPC's own
+position: the nearest body-level box (not the overhead ceiling box, which the walk test already
+ignores) stayed 2.3 m clear and the nearest soul — the tracker, kneeling over the prints that lead
+here — stayed 9.8 m off, so the open approach up the centre of the snowfield reaches the chosen 4.2 m
+radius without the cat rounding any corner.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged (322 — a toast on an existing mesh costs no new collider). No visual check was possible in
+this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
