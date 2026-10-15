@@ -12918,3 +12918,35 @@ warnings, physics boxes 321 → 322 (the one new box). Every one of the Neighbor
 yards now has a fixture of its own. No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 494 — a carousel for Candy Land's sweet-lands
+
+No world in the game has ever had a carousel, in 493 rounds of jugglers, buskers, ring dances and
+swing sets. **Candy Land now has a small one of its own**, turning quietly on the grass east of the
+cane-forest belt: a candy-striped floor and canopy on a centre pole, a red finial on top, and six
+gumdrop seats in pink, cyan, gold, green, orange and purple riding candy-cane poles round the rim.
+Nobody's ever riding it. *"Round and round, and not a single rider to show for it."* *"Six empty seats
+and the music's only in your head."* *"Spins on its own, somehow. Nobody's ever seen it stop."*
+
+`makeCarousel()` (new in `60-props.js`) builds the whole thing as one `pivot` group — floor, pole,
+canopy, finial and all six seats — and hands it back together with its own unmoving outer `group`, so
+the caller just spins the pivot on the world clock `t` alone (`pivot.rotation.y = t * 0.45`, the same
+trick every pinwheel and weathervane before it uses): no draw from this world's own seeded `r`, so no
+later colour pick anywhere else in this build shifts. It's a one-off "walk up and look" landmark, same
+shape as the wishing well and the gumball machine beside it, not a ride — E plays a click and a toast,
+nothing more.
+
+A headless probe (`game.start('new')` then `game.travel(1, 'from-hub')`, 1800 simulated frames
+sampling every NPC's own position every fifth frame) swept a grid of candidate points against all of
+Candy Land's own physics boxes and those samples: (35, 60) came back clearest, 16.1 m from the nearest
+box (a candy-cane trunk in the 56-76 m forest ring) and 8.1 m from the nearest wandering soul — between
+two trunks rather than past the whole ring, short of the butterflies' own flight box (x ≤ 32) and the
+gumdrop patch at (26, 52), and well inside the 92 m radius where `candyRegion`'s own procedural fill
+takes over.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings (the printed
+box count, 322, is whatever world the suite last travels to — the Neighborhood, untouched here — so it
+doesn't move; Candy Land's own box count, checked directly in the probe above, went up by the one new
+box the carousel's base adds). No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.

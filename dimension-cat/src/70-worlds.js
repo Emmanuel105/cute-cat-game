@@ -2347,6 +2347,27 @@ function buildCandyLand(game, entry) {
     P.addBox(gx, 0.7, gz, 0.8, 1.4, 0.8, { cam: false });
     const gumFlavours = ['🍬 "Watermelon — or something trying hard to be."', '🍬 "Blue. Just blue. Flavour unclear."', '🍬 "Cherry, the good kind, the kind that stains your tongue."', '🍬 "A white one. Somehow always the last colour you want."', '🍬 "Green apple, sharp enough to make the whiskers twitch."'];
     game.addInteractable({ obj: gm, radius: 2.1, label: () => 'Turn the crank', onUse: () => { SFX.click(); SFX.pickup(); game.fx.emit(gx, 1.0, gz, { count: 10, colors: [0xff6fb5, 0x7fd7ff, 0xffd54a, 0x8bc34a], speed: 1.0, up: 1.3, life: 0.8, gravity: 2.4 }); game.toast(rnd.pick(gumFlavours), 3000); } }); }
+  // no world in the game has ever had a carousel, and nowhere fits one better than the sweet-lands. A
+  // small one now turns on the quiet grass east of the cane-forest belt: a candy-striped floor and
+  // canopy on a centre pole, six gumdrop seats on candy-cane poles round the rim, the whole thing
+  // (`makeCarousel()`, new in `60-props.js`) one `pivot` group spinning slowly on the world clock `t`
+  // alone — the same trick every pinwheel and weathervane before it uses, so it draws nothing from this
+  // world's own seeded `r` and costs no later colour pick anywhere else in this build.
+  //
+  // A headless probe (`game.start('new')` then `game.travel(1, 'from-hub')`, 1800 simulated frames
+  // sampling every NPC's own position every fifth frame) swept a grid of candidate points against all
+  // of Candy Land's own physics boxes and those samples: (35, 60) came back clearest of the lot, 16.1 m
+  // from the nearest box (a candy-cane trunk in the 56-76 m forest ring) and 8.1 m from the nearest
+  // wandering soul — inside the ring's own radius band but between two trunks, well short of the
+  // butterflies' own flight box (x ≤ 32) and the gumdrop patch at (26, 52) (12 m off), inside the 92 m
+  // radius where `candyRegion`'s own procedural fill takes over.
+  { const cx = 35, cz = 60;
+    const carousel = makeCarousel();
+    carousel.group.position.set(cx, 0, cz); W.add(carousel.group);
+    U.push((dt, t) => { carousel.pivot.rotation.y = t * 0.45; });
+    P.addBox(cx, 0.5, cz, 4.0, 1.0, 4.0);
+    const carouselLines = ['🎠 "Round and round, and not a single rider to show for it."', '🎠 "Six empty seats and the music\'s only in your head."', '🎠 "Spins on its own, somehow. Nobody\'s ever seen it stop."'];
+    game.addInteractable({ obj: carousel.group, radius: 3.4, label: () => 'Look at the carousel', onUse: () => { SFX.click(); game.toast(rnd.pick(carouselLines), 3000); } }); }
   // the Candy Queen's castle, up the lane to the north — houmoungous, and you can walk right in — with a little candy village on the approach
   game.zones.addCircle(0, 150, 27);
   for (const [hx, hz] of [[-16, 95], [16, 97], [-24, 112], [24, 114], [0, 80]]) game.zones.addCircle(hx, hz, 5);

@@ -620,6 +620,30 @@ function makeGumballMachine(r) {
   mesh(G.sphere(0.055, 10, 8), chromeM, { y: 1.33, shadow: 'none', parent: g });
   return g;
 }
+/**
+ * A small candy-striped carousel: a round floor, a striped canopy on a centre pole, and six gumdrop
+ * seats on candy-cane poles round the rim. Returns { group, pivot } — `group` never moves, `pivot`
+ * (the floor, pole, canopy and every seat, all one piece) is the caller's to spin on the world clock.
+ */
+function makeCarousel() {
+  const g = new THREE.Group();
+  const pivot = group(0, 0, 0, g);
+  const stripe = mat(0xffffff, { roughness: 0.4, map: TEX.candyCane() });
+  const poleMat = mat(0xc27b3a, { roughness: 0.85 }), trimMat = mat(0xd62839, { roughness: 0.5 });
+  mesh(G.cyl(1.8, 1.8, 0.14, 24), stripe, { y: 0.07, shadow: 'both', parent: pivot });                       // the floor
+  noInk(mesh(G.torus(1.8, 0.07, 6, 24), trimMat, { y: 0.14, parent: pivot }));                                // its rim
+  mesh(G.cyl(0.09, 0.11, 2.4, 10), poleMat, { y: 1.34, shadow: 'both', parent: pivot });                      // the centre pole
+  mesh(G.cone(1.5, 0.95, 16), stripe, { y: 2.54 + 0.475, shadow: 'both', parent: pivot });                    // the canopy
+  noInk(mesh(G.torus(1.5, 0.05, 6, 16), trimMat, { y: 2.54, parent: pivot }));                                 // canopy base trim
+  mesh(G.sphere(0.16, 10, 8), trimMat, { y: 2.54 + 0.95 + 0.1, shadow: 'none', parent: pivot });              // the finial
+  const seatHues = [0xff6fb5, 0x7fd7ff, 0xffd54a, 0x8bc34a, 0xff8a3d, 0xc08bf5];
+  for (let i = 0; i < 6; i++) {
+    const a = i / 6 * TAU, sx = cos(a) * 1.3, sz = sin(a) * 1.3;
+    mesh(G.cyl(0.035, 0.035, 0.38, 8), stripe, { x: sx, y: 0.14 + 0.19, z: sz, shadow: 'none', parent: pivot });
+    mesh(G.sphere(0.22, 12, 9), mat(seatHues[i], { roughness: 0.4 }), { x: sx, y: 0.14 + 0.38 + 0.12, z: sz, sy: 0.75, shadow: 'both', parent: pivot });
+  }
+  return { group: g, pivot };
+}
 /** A metal oil can with a spout and a handle, its cap glowing the same green as Robot City's CHARGE sign, for a street vendor to hold up. */
 function makeOilCan() {
   const g = new THREE.Group(), tin = mat(0x3a4048, { metalness: 0.6, roughness: 0.4 });
