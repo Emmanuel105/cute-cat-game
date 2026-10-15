@@ -12820,3 +12820,37 @@ warnings, physics boxes 317 → 319 (one for each bird). Houses 3, 4 and 6 are n
 street's sixteen yards left without a fixture of their own. No visual check was possible in this
 environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 491 — a wheelbarrow for the Neighborhood
+
+Twelve of the street's sixteen yards had their own fixture by now — a pinwheel, a sprinkler, a kennel,
+a birdhouse, a gnome, a feeder, a bin, a sundial, a rain barrel, a weathervane, a birdbath and a pair of
+flamingos — and every single one was an ornament, a creature's home, a chore or a weather-reader; nobody
+had ever actually been doing the gardening. **House 4's own front yard now has a parked wheelbarrow**:
+a riveted metal tub on a single front wheel and two rear legs, handles trailing back into the grass, a
+scoop of soil in the tub, two potted seedlings and a trowel propped against the rim, left sitting there
+mid-job. *"Half soil, half rust. Does the job either way."* *"Those seedlings won't pot themselves —
+allegedly. No rush, by the look of it."* *"Puss, that trowel is not a toy, and neither is the soil."*
+
+Static, no controller, no draw from this world's own seeded `r` or the shared `rnd()` sequence at build
+time — same caution every fixture on this street has needed since the yard-sale table's own round found
+out the hard way what happens to a shared RNG sequence if something draws from it unconditionally.
+Built deliberately toy-scale (well under a metre, tub to handle-tip) rather than true wheelbarrow
+proportions, the same compression the gnome and the kennel both already accept, to keep its footprint
+inside this corner's own margin.
+
+Placement reused the same yard-corner offset (x+4.5, z+front*4.0) every other in-loop fixture on this
+street already uses. The weathervane's own round had found that offset catches a passing stroller on
+houses 1, 2, 3 and 6 at some point, leaving only houses 1 (since claimed by the yard-sale table) and 4
+free; house 2 solved this by flipping to the yard's quiet corner instead, but a real probe was wanted
+before trusting a mirror of someone else's old finding, so this round wrote its own: a small headless
+script loaded the actual game through `test/run.mjs`'s own stub-three harness, built the real
+Neighborhood, then ran 9000 simulated frames (150 s at the stub clock's real 1/60 s step), sampling
+every single NPC's own `rig.group.position` every frame. House 4's own corner (-22.5, 24) came back
+clear by 1.13 m of the nearest physics box (that house's own wall) and 9.86 m of the nearest wandering
+soul throughout — comfortably past this prop's own compact footprint.
+
+Full suite (`node test/run.mjs`) ran clean on 3 of 3 runs: exit 0, all 274 checks `ok`, 0 console
+warnings, physics boxes 319 → 320 (the one new box). No visual check was possible in this environment
+(no browser, no Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

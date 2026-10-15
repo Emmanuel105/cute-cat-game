@@ -7764,6 +7764,55 @@ function buildNeighborhood(game, entry) {
       const flamingoLines = ['🦩 "Puss, those are plastic. I promise you — plastic."', '🦩 "Nobody\'s ever once seen one move. And yet every street somehow has a pair."', '🦩 "The pink\'s gone a bit chalky in the rain. Gives them character."'];
       game.addInteractable({ obj: a.flam, radius: 1.8, label: () => 'Look at the lawn flamingos', onUse: () => { SFX.click(); game.toast(rnd.pick(flamingoLines), 3000); } });
     }
+    // twelve of the street's sixteen yards have their own fixture by now, and every one of them is an
+    // ornament, a creature's home, a chore or a weather-reader — nothing has ever actually been doing
+    // the gardening. House 4's own front yard now gets a parked wheelbarrow: a riveted metal tub on a
+    // single front wheel and two rear legs, handles trailing back into the grass, with a scoop of soil,
+    // two potted seedlings and a trowel propped against the rim left sitting in it mid-job. *"Half soil,
+    // half rust. Does the job either way."* *"Those seedlings won't pot themselves — allegedly. No rush,
+    // by the look of it."* *"Puss, that trowel is not a toy, and neither is the soil."*
+    // Static, no controller, every dimension and colour below a fixed literal rather than a draw from
+    // this world's own seeded `r` — the sundial's and weathervane's own comments above already spell out
+    // why, since the Neighborhood is the one world every test travel starts from. Built deliberately
+    // toy-scale (0.89 m tub-to-handle-tip) rather than true wheelbarrow proportions, the same compression
+    // the gnome and the kennel both already accept, to keep its footprint inside this corner's own margin.
+    // Same yard-corner offset the other eleven in-loop fixtures already use (x+4.5, z+front*4.0); houses
+    // 1, 2, 3 and 6 were the lots the weathervane's own round found a stroller passing within half a
+    // metre of that offset, which is why house 4 — one of the two still unclaimed — got picked instead. A
+    // headless probe (built the real Neighborhood with the same stub-three harness `test/run.mjs` itself
+    // uses, then 9000 simulated frames at the stub clock's real 1/60 s step, every NPC's own `rig.group`
+    // position sampled every single frame) found house 4's own corner (-22.5, 24) clear by 1.13 m of the
+    // nearest physics box (that house's own wall, the same margin the pinwheel/gnome/birdhouse corner
+    // already accepts) and 9.86 m of the nearest wandering soul throughout — the most daylight of the two
+    // free lots the probe checked.
+    if (i === 4) {
+      const px = x + 4.5, pz = z + front * 4.0;
+      const metalM = mat(0x8a9098, { metalness: 0.5, roughness: 0.5 }), rustM = mat(0x6b4a2a, { roughness: 0.85 }),
+        woodM = mat(0x8a5a32, { roughness: 0.85 }), potM = mat(0xb5602a, { roughness: 0.85 }), leafM = mat(0x4a7a3a, { roughness: 0.7 }),
+        soilM = mat(0x3a2a1c, { roughness: 0.95 }), tineM = mat(0x4a4a4a, { metalness: 0.4, roughness: 0.5 });
+      const barrow = group(px, 0, pz, W); barrow.rotation.y = ry;
+      const tubW = 0.32, tubD = 0.4, tubH = 0.16, legH = 0.14;
+      mesh(G.box(tubW, 0.025, tubD), metalM, { y: legH + 0.04, shadow: 'both', parent: barrow });                                 // tub floor
+      mesh(G.box(tubW, tubH, 0.025), metalM, { y: legH + 0.04 + tubH / 2, z: tubD / 2, rx: -0.14, shadow: 'both', parent: barrow });   // front wall, flared out
+      mesh(G.box(tubW, tubH, 0.025), metalM, { y: legH + 0.04 + tubH / 2, z: -tubD / 2, rx: 0.14, shadow: 'both', parent: barrow });   // back wall, flared out
+      mesh(G.box(0.025, tubH, tubD), metalM, { y: legH + 0.04 + tubH / 2, x: tubW / 2, rz: 0.12, shadow: 'both', parent: barrow });    // side wall, flared out
+      mesh(G.box(0.025, tubH, tubD), metalM, { y: legH + 0.04 + tubH / 2, x: -tubW / 2, rz: -0.12, shadow: 'both', parent: barrow });  // side wall, flared out
+      mesh(G.cyl(0.07, 0.07, 0.035, 14), rustM, { y: 0.07, z: tubD / 2 + 0.08, rz: PI / 2, shadow: 'both', parent: barrow });       // front wheel
+      for (const lx2 of [-0.13, 0.13]) mesh(G.cyl(0.012, 0.015, legH, 6), metalM, { x: lx2, y: legH / 2, z: -tubD / 2 + 0.04, shadow: 'both', parent: barrow });   // rear legs
+      for (const hx2 of [-0.11, 0.11]) mesh(G.cyl(0.011, 0.011, 0.28, 6), woodM, { x: hx2, y: legH + 0.06, z: -tubD / 2 - 0.08, rx: -1.3, shadow: 'both', parent: barrow });   // handles, trailing back
+      mesh(G.box(tubW * 0.6, 0.035, tubD * 0.5), soilM, { y: legH + 0.075, z: -0.04, shadow: 'none', parent: barrow });            // a scoop of soil in the tub
+      for (const [sx3, sz3] of [[-0.09, 0.06], [0.08, -0.08]]) {
+        const pot = group(sx3, legH + 0.055, sz3, barrow);
+        mesh(G.cyl(0.055, 0.045, 0.08, 10), potM, { y: 0.04, shadow: 'both', parent: pot });
+        mesh(G.cyl(0.04, 0.04, 0.025, 10), soilM, { y: 0.08, shadow: 'none', parent: pot });
+        mesh(G.cone(0.04, 0.09, 8), leafM, { y: 0.13, shadow: 'none', parent: pot });
+      }
+      mesh(G.cyl(0.009, 0.009, 0.16, 6), woodM, { x: 0.13, y: legH + 0.1, z: 0.16, rx: 1.2, rz: 0.3, shadow: 'none', parent: barrow });         // trowel handle, propped against the rim
+      mesh(G.cone(0.03, 0.07, 8), tineM, { x: 0.2, y: legH + 0.05, z: 0.27, rx: 1.2, rz: 0.3, shadow: 'none', parent: barrow });                // trowel blade
+      P.addBox(px, 0.17, pz - front * 0.1, 0.22, 0.17, 0.45, { cam: false });
+      const barrowLines = ['🛒 "Half soil, half rust. Does the job either way."', '🌱 "Those seedlings won\'t pot themselves — allegedly. No rush, by the look of it."', '😼 "Puss, that trowel is not a toy, and neither is the soil."'];
+      game.addInteractable({ obj: barrow, radius: 1.8, label: () => 'Look at the wheelbarrow', onUse: () => { SFX.click(); game.toast(rnd.pick(barrowLines), 3000); } });
+    }
   });
   // the pinwheel, sprinkler and kennel above gave three of the street's sixteen yards their own
   // feature; lot 14's own corner now gets a fourth — a stone birdbath, a shallow bowl on a short
