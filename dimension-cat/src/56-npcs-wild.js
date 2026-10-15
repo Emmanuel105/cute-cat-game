@@ -338,6 +338,32 @@ function makeSeal(o = {}) {
   return rig;
 }
 
+// ---------------------------------------------------------------- nap cat (curled asleep, ambient only)
+/** A stray cat curled up asleep in a loaf, tail wrapped round to the nose. Breathes; never greets, never moves. */
+function makeNapCat(o = {}) {
+  const g = new THREE.Group(), rig = { group: g };
+  const fur = mat(o.color ?? 0xd9823b, { roughness: 0.85 }), fur2 = mat(o.color2 ?? 0xf3e3c8, { roughness: 0.9 }), dark = mat(0x2a2016, { roughness: 0.6 }), pink = mat(0xe9a0a8, { roughness: 0.6 });
+  const body = group(0, 0, 0, g); rig.body = body;
+  mesh(G.sphere(0.2, 14, 10), fur, { y: 0.16, sx: 1.15, sy: 0.82, sz: 1.3, parent: body });
+  mesh(G.sphere(0.2, 14, 10), fur2, { y: 0.05, z: 0.1, sx: 0.8, sy: 0.5, sz: 0.85, shadow: 'none', parent: body });
+  const head = group(0.08, 0.22, 0.2, body); rig.head = head;
+  mesh(G.sphere(0.12, 14, 10), fur, { sz: 0.92, parent: head });
+  for (const side of [1, -1]) mesh(G.earCone(0.045, 0.1), fur, { x: side * 0.075, y: 0.095, z: -0.02, rz: side * -0.3, parent: head });
+  mesh(G.sphere(0.018, 6, 6), pink, { y: -0.03, z: 0.1, shadow: 'none', parent: head });
+  for (const side of [1, -1]) noInk(mesh(G.box(0.045, 0.006, 0.012), dark, { x: side * 0.045, y: 0.01, z: 0.1, ry: side * 0.15, shadow: 'none', parent: head }));   // shut eyes
+  const tail = group(0, 0.1, -0.16, body); rig.tail = tail;
+  const segs = 6;
+  for (let i = 0; i < segs; i++) { const a = i / (segs - 1) * 2.3, rr = 0.24 - i * 0.012;
+    mesh(G.sphere(0.055 - i * 0.004, 8, 6), i === segs - 1 ? fur2 : fur, { x: sin(a) * rr, y: 0.02 + i * 0.002, z: -cos(a) * rr * 0.9, parent: tail }); }
+  rig.animate = (ph, moving, dt, t = 0) => {
+    body.scale.y = 1 + sin(t * 0.9) * 0.025;
+    head.rotation.z = sin(t * 0.4) * 0.03;
+    tail.rotation.y = sin(t * 0.6) > 0.96 ? sin(t * 9) * 0.04 : 0;
+  };
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- yeti (friendly biped)
 /**
  * The Frosty Peak yeti: a big shaggy softie. Shaggy silhouette (tufts of fur all over the body),

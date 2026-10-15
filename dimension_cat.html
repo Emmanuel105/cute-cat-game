@@ -4025,6 +4025,32 @@ function makeSeal(o = {}) {
   return rig;
 }
 
+// ---------------------------------------------------------------- nap cat (curled asleep, ambient only)
+/** A stray cat curled up asleep in a loaf, tail wrapped round to the nose. Breathes; never greets, never moves. */
+function makeNapCat(o = {}) {
+  const g = new THREE.Group(), rig = { group: g };
+  const fur = mat(o.color ?? 0xd9823b, { roughness: 0.85 }), fur2 = mat(o.color2 ?? 0xf3e3c8, { roughness: 0.9 }), dark = mat(0x2a2016, { roughness: 0.6 }), pink = mat(0xe9a0a8, { roughness: 0.6 });
+  const body = group(0, 0, 0, g); rig.body = body;
+  mesh(G.sphere(0.2, 14, 10), fur, { y: 0.16, sx: 1.15, sy: 0.82, sz: 1.3, parent: body });
+  mesh(G.sphere(0.2, 14, 10), fur2, { y: 0.05, z: 0.1, sx: 0.8, sy: 0.5, sz: 0.85, shadow: 'none', parent: body });
+  const head = group(0.08, 0.22, 0.2, body); rig.head = head;
+  mesh(G.sphere(0.12, 14, 10), fur, { sz: 0.92, parent: head });
+  for (const side of [1, -1]) mesh(G.earCone(0.045, 0.1), fur, { x: side * 0.075, y: 0.095, z: -0.02, rz: side * -0.3, parent: head });
+  mesh(G.sphere(0.018, 6, 6), pink, { y: -0.03, z: 0.1, shadow: 'none', parent: head });
+  for (const side of [1, -1]) noInk(mesh(G.box(0.045, 0.006, 0.012), dark, { x: side * 0.045, y: 0.01, z: 0.1, ry: side * 0.15, shadow: 'none', parent: head }));   // shut eyes
+  const tail = group(0, 0.1, -0.16, body); rig.tail = tail;
+  const segs = 6;
+  for (let i = 0; i < segs; i++) { const a = i / (segs - 1) * 2.3, rr = 0.24 - i * 0.012;
+    mesh(G.sphere(0.055 - i * 0.004, 8, 6), i === segs - 1 ? fur2 : fur, { x: sin(a) * rr, y: 0.02 + i * 0.002, z: -cos(a) * rr * 0.9, parent: tail }); }
+  rig.animate = (ph, moving, dt, t = 0) => {
+    body.scale.y = 1 + sin(t * 0.9) * 0.025;
+    head.rotation.z = sin(t * 0.4) * 0.03;
+    tail.rotation.y = sin(t * 0.6) > 0.96 ? sin(t * 9) * 0.04 : 0;
+  };
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- yeti (friendly biped)
 /**
  * The Frosty Peak yeti: a big shaggy softie. Shaggy silhouette (tufts of fur all over the body),
@@ -7210,6 +7236,21 @@ function buildNeighborhood(game, entry) {
     const [wall, roof] = palette[i % palette.length], storeys = i % 3 === 1 ? 2 : 1, h = makeHouse({ wall, roof, doorRight: i % 2 === 1, lit: i % 3 === 0, roofH: 2 + (i % 3) * 0.4, storeys, shutter: r.pick([0x3f5573, 0x2f4f2f, 0x5a3a3a, 0xffffff]) }, r);
     place(game, U, h, x, z, ry); P.addBox(x, h.userData.h / 2, z, 7.4, h.userData.h, 6.4); P.addBox(x + (i % 2 === 1 ? 2.1 : 0), 1.2, z + (ry === 0 ? 1 : -1) * 4.35, 3.0, 2.4, 1.5, { cam: false });
     { const ch = h.userData.chimney; addChimneySmoke(game, U, x + ch[0] * cos(ry) + ch[2] * sin(ry), ch[1], z - ch[0] * sin(ry) + ch[2] * cos(ry)); }
+    if (i === 2) {
+      // Every porch on this street has carried the same bare rail since round 1 — this one now has a stray
+      // cat curled up asleep on it. Added as a child of this house's own group (`h`) rather than placed in
+      // world space: it only needs the LOCAL porch coordinates `makeHouse` itself already builds the rail's
+      // top cap at (`dx + s*1.35, 0.9, d/2 + 0.75`, with this house's own `d` defaulting to 6 and `doorRight`
+      // false so `dx` is 0), and it inherits the house's own world position and rotation for free — the same
+      // trick the pier's own pelican uses for its handrail. No physics box, same reasoning as the pelican and
+      // the owls: well above the porch deck the cat actually crosses to reach the door, and nothing up there
+      // to bump into anyway.
+      const napCat = makeNapCat();
+      napCat.group.position.set(1.35, 0.93, 3.75);
+      napCat.group.rotation.y = 0.3;
+      h.add(napCat.group);
+      let napT = 4; U.push((dt) => { napT += dt; napCat.animate(0, false, dt, napT); });
+    }
     const front = ry === 0 ? 1 : -1, fz = z + front * 8;
     for (const [cx, len] of [[-2.2, 3.6], [2.5, 3]]) { const f = makeFence(len, r.pick([0x2e63d8, 0x2e63d8, 0xffffff, 0x4a8ad8])); f.position.set(x + cx, 0, fz); f.rotation.y = ry; W.add(f); P.addBox(x + cx, 0.5, fz, len, 1, 0.2, { cam: false }); }
     place(game, U, makeMailbox(r.pick([0x2e63d8, 0xd62839, 0x2f4f4f])), x + 1.6, fz + front * 1.3, ry);

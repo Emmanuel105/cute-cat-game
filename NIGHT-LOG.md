@@ -12656,3 +12656,39 @@ Full suite (`node test/run.mjs`) ran clean several times in a row — exit 0, al
 console warnings, physics boxes unchanged at 316 (the pelican adds no collider of its own, same as the
 seal and the owls). No visual check was possible in this environment (no browser, no Playwright) — only
 the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 486 — a stray cat asleep on a porch rail
+
+Dimension Cat is a game about a cat, and for 485 rounds the only other cat anywhere in it was the Candy
+Queen's own candy-striped boss rig — not one ordinary cat anywhere on the street, in any yard, on any
+roof. **House 2's own porch rail (world (-34.65, 0, 3.75), the lot at (-36, 0)) now has a stray tabby
+curled up asleep on it**, loaf-shaped, tail wrapped round to its own nose, breathing slowly. No
+dialogue, no interaction, nothing to greet — the same quiet ambient read as the seal, the owls or last
+round's pelican.
+
+New `makeNapCat()` in `56-npcs-wild.js`, right after `makeSeal` (the other lying-down rig): an oval
+"loaf" body, a small head with cone ears and shut eyes (two short dark bars, `noInk()`'d so they don't
+pick up a stray outline), and a tail built as six shrinking spheres swept along an arc from the back
+round to the front — the same stacked-sphere trick `makeFox`'s own bushy tail already uses, just curled
+the other way. `rig.animate()` only does a slow breathing scale on the body and, once in a while, a
+tiny tail-tip twitch; it's driven off a local timer in a `U.push` closure exactly like the seal and the
+owls, never a controller of its own.
+
+Placement needed no probe at all, unlike almost every round before it: the cat is added as a *child* of
+house 2's own group (`h`, already sitting at (-36, 0, 0) via `place()`) rather than positioned in world
+space, at the exact local spot (`dx + 1.35, 0.93, d/2 + 0.75`) `makeHouse` itself already builds that
+porch's own top rail cap — the same trick the pier's own pelican uses for its handrail. Since it rides
+on the house's existing transform, it's automatically clear of every zone and physics box the street
+already has, on the far side of the rail from the porch light and the house number (both near the door
+at the opposite corner). No physics box of its own, same reasoning as the pelican and the owls: well
+above the porch deck the cat actually crosses to reach the door.
+
+Full suite (`node test/run.mjs`) ran clean on 8 of 9 consecutive runs — the one failure was the
+Victorian horse-and-carriage check, which the test file's own comment already documents as a
+pre-existing flake since round 219 (it races a real `sleep()` timer during the travel-settling poll,
+nothing to do with the Neighborhood); three baseline runs on the unmodified code before this change
+showed the same test passing every time, and the cat's own build adds no draw on the shared `rnd()`
+and no change to Victorian at all. All other runs: exit 0, all 274 checks `ok`, 0 console warnings,
+physics boxes unchanged at 316 (the nap cat adds no collider, same as the seal, the owls and the
+pelican). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
