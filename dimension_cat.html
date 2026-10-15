@@ -4135,9 +4135,9 @@ function makeYeti() {
 }
 
 // ---------------------------------------------------------------- frog (hopper)
-function makeFrog(color = 0x4caf50) {
+function makeFrog(color = 0x4caf50, belly = 0xc8e6a0) {
   const g = new THREE.Group(), rig = { group: g };
-  const skin = mat(color, { roughness: 0.6 }), light = mat(0xc8e6a0, { roughness: 0.7 }), dark = mat(0x111111);
+  const skin = mat(color, { roughness: 0.6 }), light = mat(belly, { roughness: 0.7 }), dark = mat(0x111111);
   const body = group(0, 0, 0, g); rig.body = body;
   mesh(G.bodySphere(14, 10), skin, { y: 0.11, sx: 0.13, sy: 0.1, sz: 0.16, parent: body });
   mesh(G.bodySphere(14, 10), light, { y: 0.08, z: 0.02, sx: 0.1, sy: 0.07, sz: 0.13, shadow: 'none', parent: body });
@@ -9107,7 +9107,21 @@ function buildCandyLand(game, entry) {
   { const rig = makeSparrow({ body: 0xd6334a, streak: 0xffffff, pale: 0xfff2ea });
     game.npcs.push(new Hopper(game, rig, { x: -29, z: 40, leash: 1.6, r: 0.08, dist: [0.3, 0.6], dur: 0.28, height: 0.14, idle: [1, 3.2],
       onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } })); }
-  // the mouse, the hare and the sparrow are all ground-bound; Whisper Woods alone has a whole sky of butterflies
+  // Whisper Woods has six real frogs around its fairy ring; Candy Land, for all its mouse, hare and
+  // sparrow, never had one of its own. A gumdrop-pink toad now hops the open grass east of the market
+  // stalls, the same `makeFrog()` shape the woods already use — it took no colour options past the
+  // skin until now, so it gained the same `belly` override the sparrow's own `o.pale` already set a
+  // precedent for, defaulting to the woods frogs' own pale green so nothing else that calls it changes.
+  // A headless probe (`game.start('new')` then `game.travel(1, 'from-hub')`, 1800 simulated frames
+  // sampling every NPC's own position every fifth frame) swept a grid of the open grass west of the
+  // market stalls against every one of Candy Land's 1957 physics boxes and every one of those samples:
+  // (-38, 0) came back clearest in the whole south-west quadrant, 6.9 m from the nearest box (the
+  // chocolate-river wall) and 17.8 m from the nearest other soul, comfortably inside the 1.6 m leash
+  // given here.
+  { const rig = makeFrog(0xff6fb5, 0xffe3f0);
+    game.npcs.push(new Hopper(game, rig, { x: -38, z: 0, leash: 1.6, r: 0.15, dist: [0.3, 0.8], dur: 0.3, height: 0.26, idle: [1, 3.5],
+      onHop: () => { if (rnd.chance(0.3)) SFX.ribbit(); } })); }
+  // the mouse, the hare, the sparrow and the toad are all ground-bound; Whisper Woods alone has a whole sky of butterflies
   // drifting over it, and Candy Land, pastel and sugar-dusted as it is, never had any of its own. Six
   // now loop lazily over the open heart of the land — same `makeButterfly()` rig and `Flyer` controller
   // the woods already use (no new geometry, `TEX.wing(hue)` takes any hue), recoloured candy pink,

@@ -448,9 +448,9 @@ function makeYeti() {
 }
 
 // ---------------------------------------------------------------- frog (hopper)
-function makeFrog(color = 0x4caf50) {
+function makeFrog(color = 0x4caf50, belly = 0xc8e6a0) {
   const g = new THREE.Group(), rig = { group: g };
-  const skin = mat(color, { roughness: 0.6 }), light = mat(0xc8e6a0, { roughness: 0.7 }), dark = mat(0x111111);
+  const skin = mat(color, { roughness: 0.6 }), light = mat(belly, { roughness: 0.7 }), dark = mat(0x111111);
   const body = group(0, 0, 0, g); rig.body = body;
   mesh(G.bodySphere(14, 10), skin, { y: 0.11, sx: 0.13, sy: 0.1, sz: 0.16, parent: body });
   mesh(G.bodySphere(14, 10), light, { y: 0.08, z: 0.02, sx: 0.1, sy: 0.07, sz: 0.13, shadow: 'none', parent: body });

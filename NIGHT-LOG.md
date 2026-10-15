@@ -12722,3 +12722,29 @@ test file's own comment since round 219, nothing to do with the market square. A
 all 274 checks `ok`, 0 console warnings. No visual check was possible in this environment (no browser,
 no Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 488 — a gumdrop toad for Candy Land
+
+Whisper Woods has had six real frogs hopping round its fairy ring since early on; Candy Land, for all
+its sugar mouse, mint hare and peppermint sparrow, never had one of its own. **A gumdrop-pink toad now
+hops the open grass west of the market stalls, pale pink-frosted belly and all.**
+
+Reuses `makeFrog()` outright (`56-npcs-wild.js`) — it only ever took a skin colour before, so it gained
+a second `belly` parameter defaulting to the woods frogs' own pale green, the same kind of override
+`makeSparrow`'s own `o.pale` already set a precedent for; every existing call (the woods' own six frogs,
+the cat's own "frog" photo-mode form) is untouched since both keep the old default. Same `Hopper`
+controller as the mouse, hare and sparrow, same occasional `SFX.ribbit()` the woods frogs already use.
+
+Placement needed a live probe rather than reading the source by eye, since Candy Land's own hand-placed
+props by now run to 1957 physics boxes: a scratch script on the same stub-three harness `test/run.mjs`
+itself uses built the real world (`game.start('new')` then `game.travel(1, 'from-hub')`), ran 1800
+simulated frames sampling every NPC's own position every fifth frame, then swept a grid of the open
+grass in the south-west quadrant against both those samples and every physics box. (-38, 0) came back
+clearest of the lot — 6.9 m from the nearest box (the chocolate river's own wall) and 17.8 m from the
+nearest other soul — comfortably inside the 1.6 m leash given here.
+
+Full suite (`node test/run.mjs`) ran clean on 3 of 3 runs plus one more baseline check: exit 0, all 274
+checks `ok`, 0 console warnings, physics boxes unchanged at 316 (the toad adds only a small physics
+circle via `Hopper`, no new box). No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
