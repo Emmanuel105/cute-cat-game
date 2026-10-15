@@ -12950,3 +12950,34 @@ doesn't move; Candy Land's own box count, checked directly in the probe above, w
 box the carousel's base adds). No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 495 — a raccoon at house 15's bin
+
+Every front yard on the street has its own fixture by now, but house 15's wheelie bin had stood there
+untroubled since the round that built it — the single most ordinary thing to go wrong with a bin never
+had. **A raccoon now works at its far side**, drawn by whatever it can smell through the lid. New
+`makeRaccoon()` in `56-npcs-wild.js`, the same `makeQuadruped()` preset every other small mammal in the
+game already comes from (the hedgehog, the hares, the foxes), just grey with dark ear and tail-tip
+accents. It's pure ambient wildlife, the same trick the hedgehog and the hare already use: a `Hopper`
+on a short leash, no greeting, no effect on the friend count.
+
+The first attempt built it right next to the bin, inside the house loop — and broke a different,
+unrelated check three hundred-odd lines later: the two-neighbours-chat timing test started failing
+intermittently because `Hopper`'s own constructor draws three values off the *shared* `rnd()` sequence
+unconditionally (idle timer, idle phase, starting heading), and that shift reached the Talkers pair's
+own turn-timer before it was built. This is the exact bug the ladybug's and the yard sale table's own
+comments already warn future rounds about for `makeHuman()` — turns out `Hopper` has the same
+unconditional draw. Fixed by building the raccoon dead last in the Neighborhood's own build order,
+after the yard sale table, right before `makeDayNight()` — the same place those two props park
+themselves for the same reason — so its draw disturbs nothing built earlier on the street.
+
+A headless probe (`game.start('new')`, then 9000 simulated frames at the stub clock's real 1/60 s
+step, every NPC's own position sampled every 15th frame) swept a handful of points around the bin's
+own box at (67.5, 24) against both it and every other box and wandering soul on the street: (68.2,
+24.6) came back clearest, 0.77 m from the nearest box and 11.79 m from the nearest wandering soul,
+comfortably past the 0.5 m leash given here.
+
+Full suite (`node test/run.mjs`) ran clean on 3 of 3 runs after the fix: exit 0, all 274 checks `ok`,
+0 console warnings, box count unchanged (the raccoon adds no physics box of its own). No visual check
+was possible in this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

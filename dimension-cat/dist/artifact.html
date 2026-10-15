@@ -3855,6 +3855,7 @@ const makeSugarMouse = () => makeQuadruped({ color: 0xf7ecd9, color2: 0xffffff, 
 const makeFactoryMouse = () => makeQuadruped({ color: 0x6e6559, color2: 0x453f35, belly: 0x9a9080, ears: 'round', tail: 'long', bodyY: 0.09, length: 0.15, scale: 0.24, wag: 2.5 });
 const makeAlleyRat = () => makeQuadruped({ color: 0x5c5448, color2: 0x322d26, belly: 0x847a68, ears: 'round', tail: 'long', bodyY: 0.1, length: 0.18, scale: 0.27, wag: 2.2 });
 const makeMintHare = () => makeQuadruped({ color: 0xcdf2e0, color2: 0xffffff, belly: 0xffffff, ears: 'big', tail: 'stub', bodyY: 0.2, length: 0.3, scale: 0.55, wag: 2 });
+const makeRaccoon = () => makeQuadruped({ color: 0x6b6b6b, color2: 0x2a2a2a, belly: 0xcfc9ba, ears: 'round', tail: 'bushy', bodyY: 0.22, length: 0.36, scale: 0.6, wag: 2 });
 
 // ---------------------------------------------------------------- sandpiper (small shorebird, two legs, darts along the tideline)
 function makeSandpiper() {
@@ -9165,6 +9166,29 @@ function buildNeighborhood(game, entry) {
     P.addBox(tx, 0.4, tz, 1.0, 0.8, 0.6, { cam: false });
     const saleLines = ['🏷️ "Everything on the table\'s up for grabs — fifty cents, no haggling." A scrap of card is propped against the lamp, the price scrawled in pencil.', '📦 "A teapot, a stack of old books and whatever\'s left in that crate." The cardboard box at the leg has been there since Tuesday, still half full.', '🖼️ "That lamp still works, mostly." The frame leaning on the far edge is worth more than the picture in it, honestly.'];
     game.addInteractable({ obj: saleTable, radius: 2.0, label: () => 'Look at the yard sale table', onUse: () => { SFX.click(); game.toast(rnd.pick(saleLines), 3000); } }); }
+
+  // house 15's own wheelie bin (above) never had a reason for anything to bother it — a raccoon now
+  // works at its far side, drawn by whatever it can smell through the lid. `makeRaccoon()` (new in
+  // 56-npcs-wild.js, the same `makeQuadruped()` preset every other small mammal in this game already
+  // comes from, just grey with dark ear and tail-tip accents) is pure ambient wildlife, the same trick
+  // the hedgehog and the hare already use elsewhere: a `Hopper` on a short leash, no greeting, no
+  // effect on the friend count. Built here, dead last, rather than inside the house loop next to the
+  // bin itself: `Hopper`'s own constructor draws three values off the *shared* `rnd()` sequence
+  // unconditionally (the idle timer, the idle phase and the starting heading), the exact bug the
+  // ladybug's and the yard sale table's own comments above already warn about — built any earlier on
+  // this street, that shift reaches the two-neighbours-chat timing a few hundred lines up and desyncs
+  // it. Built last of everything this world adds, after the yard sale table, its own draw disturbs
+  // nothing built earlier.
+  // The bin itself sits at (67.5, 24) (house 15's own corner offset, x+4.5/z+front*4.0, with x=63,
+  // z=28, front=-1). A headless probe (`game.start('new')`, then 9000 simulated frames at the stub
+  // clock's real 1/60 s step, every NPC's own position sampled every 15th frame) swept a handful of
+  // points around the bin's own box against both it and every other box and wandering soul on the
+  // street: (68.2, 24.6) came back clearest, 0.77 m from the nearest box and 11.79 m from the nearest
+  // wandering soul, comfortably past the 0.5 m leash given here — and `Hopper`'s own collision check
+  // means it simply won't hop into the bin's box even on a bad roll.
+  { const rig = makeRaccoon();
+    game.npcs.push(new Hopper(game, rig, { x: 68.2, z: 24.6, leash: 0.5, r: 0.14, dist: [0.15, 0.4], dur: 0.3, height: 0.16, idle: [1.5, 4],
+      onHop: () => { if (rnd.chance(0.2)) SFX.chitter(); } })); }
 
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
