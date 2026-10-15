@@ -4731,6 +4731,32 @@ function buildRobotCity(game, entry) {
       nose.material.emissiveIntensity = sin(t * 2.2) > 0 ? 2.6 : 0.3;
     };
     place(game, U, airship, cos(airPhase) * airR, sin(airPhase) * airR, 0, airH); }
+  // the Neighborhood has had a raccoon at a bin for a while now, the Woods a ladybug, Candy Land a
+  // gumdrop toad — every world's own small, unregarded floor-level creature except Robot City, whose
+  // one ambient critter (the factory mouse, west of the belts) never had company anywhere else on the
+  // open floor. **A scrap-bug now scuttles the quiet concrete north-east of the city** — new
+  // `makeScrapBug()` in `56-npcs-wild.js`, the mechanical cousin of the ladybug's own rig: the same
+  // domed shell and thread-thin feelers, just steel instead of lacquer, with a small blue lens for a
+  // head and no spots. Wired to the same `Hopper` controller every other tiny ground creature already
+  // uses, short scuttles with a lens that brightens on the move and pulses slowly at rest. Pure
+  // ambient wildlife — no greeting, no effect on the friend count, nothing it adds to collect.
+  //
+  // A headless probe (`game.start('new')` then `game.travel(2, 'from-hub')`, 9000 simulated frames at
+  // the stub clock's real step, every NPC's own position sampled every 10th frame) swept a few open
+  // pockets of this city's own flat floor against both every physics box and every one of those
+  // samples: (34, 11) came back clearest, 13.5 m from the nearest box (an east-side skyscraper's own
+  // footprint) and 8.6 m from the nearest wandering soul (one of the five patrol robots, on its own
+  // 9 m leash out of (18, 8)) — comfortably past the 1.1 m leash given here, and far from every hand-
+  // placed table, patrol beat and ring in this build.
+  //
+  // Built dead last of everything this world adds, after the airship, so `Hopper`'s own three
+  // unconditional draws off the *shared* `rnd()` sequence (idle timer, idle phase, starting heading —
+  // the same draws the raccoon's own comment already warns about) land after every other NPC in this
+  // city that times itself off that same sequence, the off-shift gossiping pair included, and disturb
+  // nothing built earlier on the factory floor.
+  { const rig = makeScrapBug();
+    game.npcs.push(new Hopper(game, rig, { x: 34, z: 11, leash: 1.1, r: 0.1, dist: [0.2, 0.5], dur: 0.26, height: 0.1, idle: [1.2, 3.6],
+      onHop: () => { if (rnd.chance(0.25)) SFX.click(); } })); }
   const sq = new Squirrel(game, -14, -9, 'sq-robot'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('mouse', -8, 7); C.add('star', 12, -22); C.add('fish', -18, 2); C.add('yarn', 21, 9); C.add('star', 0, -27); C.add('fish', 4, 14); C.add('mouse', 26, -18); C.add('yarn', -26, -6);

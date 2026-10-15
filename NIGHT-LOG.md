@@ -12981,3 +12981,33 @@ Full suite (`node test/run.mjs`) ran clean on 3 of 3 runs after the fix: exit 0,
 0 console warnings, box count unchanged (the raccoon adds no physics box of its own). No visual check
 was possible in this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 496 — a scrap-bug for Robot City's factory floor
+
+The Neighborhood has a raccoon at a bin, the Woods a ladybug, Candy Land a gumdrop toad — every world
+had its own small, unregarded floor-level creature except Robot City, whose one ambient critter (the
+factory mouse, west of the belts) never had company anywhere else on the open floor. **A scrap-bug now
+scuttles the quiet concrete north-east of the city.** New `makeScrapBug()` in `56-npcs-wild.js` is the
+mechanical cousin of the ladybug's own rig — the same domed shell and thread-thin feelers, just steel
+instead of lacquer, with a small blue lens for a head instead of spots. Wired to the exact same `Hopper`
+controller every other tiny ground creature already uses: short scuttles, a lens that brightens on the
+move and pulses slowly at rest, an occasional mechanical click as it hops. Pure ambient wildlife — no
+greeting, no effect on the friend count, nothing new to collect.
+
+A headless probe (`game.start('new')` then `game.travel(2, 'from-hub')`, 9000 simulated frames at the
+stub clock's real step, every NPC's own position sampled every 10th frame) swept a few open pockets of
+the city's own flat floor against both every physics box and every one of those samples: (34, 11) came
+back clearest, 13.5 m from the nearest box and 8.6 m from the nearest wandering soul (one of the five
+patrol robots, on its own 9 m leash out of (18, 8)) — comfortably past the 1.1 m leash given here, and
+far from every hand-placed table, patrol beat and ring in this city's build.
+
+Built dead last of everything this world adds, after the airship, so `Hopper`'s own three unconditional
+draws off the *shared* `rnd()` sequence (idle timer, idle phase, starting heading — the same draws the
+raccoon's own comment already warned future rounds about) land after every other NPC in this city that
+times itself off that same sequence, the off-shift gossiping robot pair included, and disturb nothing
+built earlier on the factory floor.
+
+Full suite (`node test/run.mjs`) ran clean on 3 of 3 runs: exit 0, all 274 checks `ok`, 0 console
+warnings, box count unchanged (the scrap-bug adds no physics box of its own). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

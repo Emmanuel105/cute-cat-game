@@ -497,6 +497,29 @@ function makeSnail(shellColor = 0xc9a24a) {
   return rig;
 }
 
+// ---------------------------------------------------------------- scrap-bug (Robot City's answer to the ladybug: a palm-sized scavenger-bot, same short Hopper scuttle, metal dome shell and a blinking lens instead of antennae-and-spots)
+function makeScrapBug(color = 0x6b7480) {
+  const g = new THREE.Group(), rig = { group: g };
+  const shellM = mat(color, { metalness: 0.75, roughness: 0.35 }), darkM = mat(0x24282e, { metalness: 0.6, roughness: 0.5 }), legM = mat(0x3a3f48, { metalness: 0.5, roughness: 0.6 }), eyeM = glowMat(0x00e5ff, 2.2);
+  const body = group(0, 0, 0, g); rig.body = body;
+  const shell = group(0, 0.05, -0.01, body); rig.shell = shell;
+  mesh(G.dome(0.07, 10, 6), shellM, { sy: 0.65, parent: shell });
+  mesh(G.box(0.1, 0.012, 0.03), darkM, { y: 0.04, shadow: 'none', parent: shell });   // the rivet seam down the shell's spine
+  const head = group(0, 0.02, 0.065, body); rig.head = head;
+  mesh(G.box(0.045, 0.03, 0.03), darkM, { parent: head });
+  rig.eye = mesh(G.sphere(0.012, 8, 6), eyeM, { z: 0.02, shadow: 'none', parent: head });
+  for (const side of [1, -1]) { const ant = group(side * 0.015, 0.02, 0.01, head); rig['ant' + side] = ant; mesh(G.cyl(0.003, 0.003, 0.05, 4), legM, { y: 0.025, rx: -0.5, parent: ant }); }   // whisker-thin sensor feelers, the ladybug's antennae in steel
+  for (const side of [1, -1]) for (const z of [0.035, 0, -0.035]) mesh(G.cyl(0.004, 0.004, 0.05, 4), legM, { x: side * 0.04, y: 0.01, z, rz: side * 1.2, parent: body });
+  rig.animate = (ph, moving, dt, t = 0) => {
+    const alert = moving ? 1 : 0.6 + sin(t * 2.2) * 0.25;
+    for (const side of [1, -1]) rig['ant' + side].rotation.z = side * 0.3 * alert;
+    body.position.y = moving ? abs(sin(t * 18)) * 0.007 : 0;
+    rig.eye.material.emissiveIntensity = moving ? 2.6 : 1.2 + max(0, sin(t * 1.6)) * 1.4;
+  };
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- ladybug (short Hopper scuttles; domed, seamed shell with spots, thread legs)
 function makeLadybug(color = 0xd6263a) {
   const g = new THREE.Group(), rig = { group: g };
