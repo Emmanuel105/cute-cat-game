@@ -9450,6 +9450,22 @@ function buildCandyLand(game, entry) {
   // radius.
   { const lines3 = ['🧁 "Green icing, this one — someone finally remembered mint exists, then buried it under sprinkles anyway."', '🧁 "Fourth hill in the ring. The cherry sits a little crooked, like nobody checked."', '🧁 "Mint-green all the way up. It smells like nothing at all, which is somehow worse."'];
     game.addInteractable({ obj: cupcakeHills[3], radius: 5.5, label: () => 'Sniff the cupcake hill', onUse: () => { SFX.click(); game.toast(rnd.pick(lines3), 3000); } }); }
+  // six of the seven hills (indices 5, 1, 6, 2, 0 and 3) have had their own sniff for a few rounds now;
+  // the last untouched one, at (4, 64) with purple icing, sits in the open meadow near the wishing well
+  // and the gumball machine, not out by the cane-forest ring like most of the others. Same trick a
+  // seventh time: `cupcakeHills[4]` is the group the loop above already built, handed straight to
+  // `addInteractable` — no new mesh, no new box, same 5.5 m radius the other six already use to clear
+  // this hill's own box's 3.68 m corner. A headless probe (the same stub-three harness `test/run.mjs`
+  // uses) built the real Candy Land (`game.start('new')` then `game.load(1, 'from-prev')`), swept this
+  // exact point against all 1958 of the land's physics boxes, and sampled every NPC's own position
+  // every 15th frame over 1200 simulated frames: the nearest other box (one of the loose lollipop stems
+  // scattered through this meadow) stayed 4.24 m clear — inside the radius, the same precedent the
+  // near-ring hills already accepted for their own cane trunks — and the nearest soul ever sampled (a
+  // pinata swinger) stayed 11.32 m clear, well past this radius. The wishing well 8.9 m south and the
+  // gumball machine 23 m north both clear it by a wider margin still. All seven hills now have their
+  // own toast.
+  { const lines4 = ['🧁 "Purple icing, out here in the open where everyone can see it."', '🧁 "Closest hill to the castle road, and the only one not hiding behind the cane forest."', '🧁 "Grape, maybe. Or just purple for purple\'s sake — hard to tell with icing."'];
+    game.addInteractable({ obj: cupcakeHills[4], radius: 5.5, label: () => 'Sniff the cupcake hill', onUse: () => { SFX.click(); game.toast(rnd.pick(lines4), 3000); } }); }
   { const gh = group(0, 0, -62, W), cookie = mat(0xc27b3a, { roughness: 0.95 }), icing = mat(0xfffdf7, { roughness: 0.35 });   // gingerbread cottage
     mesh(G.box(7, 4, 6), cookie, { y: 2, shadow: 'both', parent: gh }); mesh(G.gable(6.8, 2.8, 7.6), mat(0x8a4a2a, { roughness: 0.9 }), { y: 4, ry: PI / 2, parent: gh });
     for (let k = 0; k < 8; k++) for (const s of [-1, 1]) mesh(G.sphere(0.32, 8, 6), icing, { x: -3.5 + k * 1.0, y: 4.4 + k * 0.0, z: s * 3.4 - s * (k * 0.0), sy: 0.5, shadow: 'none', parent: gh });

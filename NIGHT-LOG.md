@@ -13240,3 +13240,25 @@ Full suite (`node test/run.mjs`) ran clean on 3 of 3 runs: exit 0, all checks `o
 box count unchanged (322 — the toast adds no physics box of its own). No visual check was possible in
 this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 507 — a sniff for Candy Land's last cupcake hill
+
+Round 506 got the count right this time: six of the seven cupcake hills (indices 5, 1, 6, 2, 0 and 3)
+had their own "walk up and look" toast, and only one was still untouched — the fifth in the list, at
+(4, 64) with purple icing, out in the open meadow near the wishing well rather than the cane-forest
+ring most of the others hide behind. **It now answers E too**: *"Purple icing, out here in the open
+where everyone can see it."* Same trick as the other six: `cupcakeHills[4]` — the group the build loop
+already constructs — goes straight to `game.addInteractable`, no new mesh, no new physics box.
+
+Same 5.5 m radius the other six use to clear their shared box's 3.68 m corner. A headless probe (the
+stub-three harness driving the real game, `game.start('new')` then the synchronous `game.load(1,
+'from-prev')` rather than the async `travel()`, which only finishes on a real timer) swept this exact
+point against all 1958 of the land's physics boxes and sampled every NPC's own position every 15th
+frame over 1200 simulated frames: the nearest other box (a loose lollipop stem in this meadow) stayed
+4.24 m clear — inside the radius, the same precedent the near-ring hills already accepted for their
+own cane trunks — and the nearest soul ever sampled (a pinata swinger) stayed 11.32 m clear. All
+seven cupcake hills now genuinely have their own toast.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged (322). No visual check was possible in this environment (no browser, no Playwright) — only
+the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
