@@ -9431,6 +9431,20 @@ function buildCandyLand(game, entry) {
   // 7.90 m clear and the nearest soul ever sampled 16.47 m clear, both well past this radius.
   { const lines2 = ['🧁 "Mint icing, out here where nobody\'s around to see it."', '🧁 "Furthest hill from the castle, and somehow still the quietest."', '🧁 "Sprinkles all the way round. Someone was thorough with this one."'];
     game.addInteractable({ obj: cupcakeHills[2], radius: 5.5, label: () => 'Sniff the cupcake hill', onUse: () => { SFX.click(); game.toast(rnd.pick(lines2), 3000); } }); }
+  // four of the seven hills (indices 5, 1, 6 and 2) have had their own sniff for a few rounds now;
+  // the first in the list, at (-58, 30), never did. Same trick a fifth time: `cupcakeHills[0]` is the
+  // group the loop above already built, handed straight to `addInteractable` — no new mesh, no new
+  // box, same 5.5 m radius the other four already use to clear this hill's own box's 3.68 m corner.
+  // This hill sits closer to the inner edge of the candy-cane-forest ring than the others (it's 65.3 m
+  // out from the origin, against the ring's own 56-76 m band), so a headless probe built the real
+  // Candy Land and swept this exact point against all 1958 of the land's physics boxes and every NPC's
+  // own position sampled every 0.25 s over 20 simulated seconds: the nearest other box (one of those
+  // cane trunks) sits 4.65 m clear — inside the radius, same as a cane trunk sitting inside the radius
+  // of any of the other three hills near the ring, just closer than those — and the nearest soul ever
+  // sampled (the carousel barker at [-46, 34]) stayed 12.65 m clear, well past this radius. All seven
+  // hills now have their own toast.
+  { const lines0 = ['🧁 "Strawberry-pink icing. The cherry on top looks almost embarrassed by it."', '🧁 "First hill in the ring, and the only one close enough to the cane forest to lean on one."', '🧁 "Sprinkles catch the pink sky here better than on any of the other six."'];
+    game.addInteractable({ obj: cupcakeHills[0], radius: 5.5, label: () => 'Sniff the cupcake hill', onUse: () => { SFX.click(); game.toast(rnd.pick(lines0), 3000); } }); }
   { const gh = group(0, 0, -62, W), cookie = mat(0xc27b3a, { roughness: 0.95 }), icing = mat(0xfffdf7, { roughness: 0.35 });   // gingerbread cottage
     mesh(G.box(7, 4, 6), cookie, { y: 2, shadow: 'both', parent: gh }); mesh(G.gable(6.8, 2.8, 7.6), mat(0x8a4a2a, { roughness: 0.9 }), { y: 4, ry: PI / 2, parent: gh });
     for (let k = 0; k < 8; k++) for (const s of [-1, 1]) mesh(G.sphere(0.32, 8, 6), icing, { x: -3.5 + k * 1.0, y: 4.4 + k * 0.0, z: s * 3.4 - s * (k * 0.0), sy: 0.5, shadow: 'none', parent: gh });
