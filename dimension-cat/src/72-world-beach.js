@@ -1105,6 +1105,23 @@ function buildBeach(game, entry) {
     };
     place(game, U, biplane, cos(planePhase) * planeR, sin(planePhase) * planeR, 0, planeH); }
 
+  // the dry sand well south-west of everything else — past the volleyball court, short of the dune
+  // ridge — has sat empty since the beach was first built. A kid now bounces in place on a pogo stick
+  // out there, new `PogoHopper` (`55-npcs.js`, right after `FrisbeePlayer`): the same grounded,
+  // in-place bounce `Bouncer`'s trampoline already uses, minus the trampoline — the pole is parented
+  // straight to the body and hops with it, its own coiled spring squashing at the bottom of each hop
+  // and stretching at the top.
+  // Placed at (-28, -20): a headless probe (the same stub-three harness `test/run.mjs` itself uses,
+  // `game.start('new')` then `game.travel(4, 'from-hub')`) sampled every NPC's own position every
+  // quarter second over 300 simulated seconds, then swept the dry sand west of the volleyball court
+  // (radius 20-45, short of the radius (58) where `beachRegion`'s own fill takes over) against both
+  // those samples and every one of the beach's physics boxes: (-28, -20) came back clear by 12.77 m of
+  // the nearest box and 14.07 m of the nearest other soul, with the ground flat to 0.000 m across the
+  // kid's own footprint.
+  { const pogoKid = beachPerson(r.chance(0.5), true);
+    game.npcs.push(new PogoHopper(game, pogoKid, r.pick([0xff6f3c, 0x3fae9a, 0xf2c744]), { x: -28, z: -20, ry: r.range(0, TAU),
+      cries: ['Boing! Boing! Boing!', "One thousand bounces. Not stopping to count again.", "Don't look — actually, look, I'm good at this."] })); }
+
   beachRegion(game, U, r, 58, SHORE_LIMIT - 8);
   // the headland behind the dunes: hills and peaks inland only, never out to sea
   makeHorizon(game, r, { clear: SHORE_LIMIT + 8, hill: 0x8c9a58, rock: 0x7a7060, rock2: 0x8a8272, snowLine: 58, peaks: 26, woodCount: 260, woodHue: [0.18, 0.28], woodLight: [0.18, 0.3], keep: (x) => x < -SHORE_LIMIT * 0.15 });

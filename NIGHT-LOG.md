@@ -13856,3 +13856,37 @@ Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 conso
 counts unchanged everywhere. No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite and the two headless probes above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 527 — a pogo stick for Sunny Shore
+
+Every other bouncy-toy idea in this game so far needed a shared prop: `Bouncer` needs a trampoline,
+`Swinger` a swing, `Seesaw` a seesaw. Nobody had ever just bounced on their own two feet. **A kid on
+Sunny Shore's own dry sand now hops in place on a pogo stick**, out past the volleyball court where
+nothing else was standing. *"Boing! Boing! Boing!"* *"One thousand bounces. Not stopping to count
+again."* *"Don't look — actually, look, I'm good at this."*
+
+New `PogoHopper` class (`55-npcs.js`, right after `FrisbeePlayer`): the same up-and-down arc
+`Bouncer`'s own trampoline already does — `sin(phase * PI)` for the rise and fall, a brief squat at
+touchdown — but grounded rather than needing a trampoline mesh at all: the pole, handlebar and a
+five-ring coiled spring are parented straight to `rig.body`, so the whole rig (kid and pogo stick
+together) rides the same arc as one rigid unit. The only animated flourish beyond the arc itself is the
+coil's own `scale.y`, squashed at the bottom of each hop and stretched at the top, so the spring reads
+as doing the work rather than just along for the ride. Legs hold a fixed crouch (feet planted on
+footrests that were never modelled separately — the ankle's existing shoe mesh stands in for them) and
+arms grip the handlebar in a fixed low-and-forward pose, both damped rather than animated frame to
+frame, the same shortcut `HulaHooper`'s hip-sway and `YoYoer`'s wrist already take.
+
+Placed at (-28, -20): a headless probe (the same stub-three harness `test/run.mjs` itself uses,
+`game.start('new')` then `game.travel(4, 'from-hub')`) sampled every NPC's own position every quarter
+second over 300 simulated seconds, then swept the dry sand west of the volleyball court (radius 20-45,
+short of the radius (58) where `beachRegion`'s own fill takes over) against both those samples and
+every one of the beach's physics boxes: (-28, -20) came back clear by 12.77 m of the nearest box and
+14.07 m of the nearest other soul, with the ground flat to 0.000 m across the whole footprint the hop
+needs. A second probe ran the real kid for 300 simulated seconds: position stayed finite throughout,
+the bounce amplitude came out at 0.418 m against an intended 0.42 m, and walking the cat up and firing
+the "Say hi" prompt raised the friend count by one as expected.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings, Sunny
+Shore's own friend count up from 63 to 64. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the two headless probes above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

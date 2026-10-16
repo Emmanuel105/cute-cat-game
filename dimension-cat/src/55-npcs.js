@@ -1250,6 +1250,39 @@ class FrisbeePlayer {
   }
 }
 
+// ---------------------------------------------------------------- pogo hopper: stands put over a spring-loaded stick, the whole rig arcing up and down with a brief crouch at the bottom of each bounce, same shape as `Bouncer`'s own trampoline arc but grounded — no separate prop to share, the pole is parented straight to the body and hops with it
+class PogoHopper {
+  constructor(game, rig, color, { x, z, ry = 0, height = 0.42, cycle = 0.72, cries = null, cryIcon = '🤸' }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.height = height; this.cycle = cycle; this.t = rnd() * cycle;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    this.base = game.physics.ground0(x, z);
+    rig.group.position.set(x, this.base, z); rig.group.rotation.y = ry;
+    const k = rig.k, poleM = mat(color, { roughness: 0.4, metalness: 0.3 }), coilM = mat(0x9a9a9a, { metalness: 0.7, roughness: 0.4 });
+    this.pogo = group(0, 0.78 * k, 0.1 * k, rig.body);
+    mesh(G.cyl(0.024 * k, 0.03 * k, 0.56 * k, 8), poleM, { y: -0.14 * k, parent: this.pogo });
+    mesh(G.box(0.26 * k, 0.05 * k, 0.1 * k), mat(0x2a2a2a, { roughness: 0.8 }), { y: 0.18 * k, parent: this.pogo });   // handlebar bar
+    for (const sx of [-0.14, 0.14]) mesh(G.cyl(0.018 * k, 0.018 * k, 0.1 * k, 6), mat(0x2a2a2a), { x: sx * k, y: 0.18 * k, rz: PI / 2, parent: this.pogo });
+    this.coil = group(0, -0.42 * k, 0, this.pogo);
+    for (let i = 0; i < 5; i++) mesh(G.torus(0.045 * k, 0.01 * k, 6, 10), coilM, { y: i * 0.04 * k, shadow: 'none', parent: this.coil });
+    mesh(G.cyl(0.07 * k, 0.05 * k, 0.03 * k, 10), mat(0x2a2a2a, { roughness: 0.8 }), { y: -0.22 * k, parent: this.pogo });   // ground tip
+    this.circle = game.physics.addCircle(this, x, z, 0.4);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t = (this.t + dt) % this.cycle; const rig = this.rig, ph = this.t / this.cycle;
+    const k = sin(ph * PI);
+    rig.group.position.y = this.base + k * this.height;
+    this.coil.scale.y = 0.45 + 0.55 * k;   // the spring squashes as the rig nears the ground, stretches at the top of the hop
+    const land = min(ph, 1 - ph), squat = land < 0.08 ? 1 - land / 0.08 : 0;
+    rig.group.scale.y = 1 - squat * 0.12;
+    rig.animate(0, false, dt, this.t);
+    for (const L of rig.legs) { L.hip.rotation.x = -0.2; L.knee.rotation.x = 0.6; L.ankle.rotation.x = 0.12; }   // a fixed crouch, feet planted on the footrests
+    if (!rig.gesture) for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -0.95, 8, dt); A.sh.rotation.z = damp(A.sh.rotation.z, (A === rig.arms[0] ? 1 : -1) * 0.18, 8, dt); A.el.rotation.x = damp(A.el.rotation.x, -1.15, 8, dt); }
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- piñata swinger: both hands raise a stick overhead, hold it there, then swing down hard and ease back up for another go — timed off `this.t` starting at zero rather than the usual `rnd()`-offset start, so a hanging piñata built in lockstep (its own sway driven by the same zero-based clock) always gets its kick at the exact instant the stick comes down, with no drift either way
 class PinataSwinger {
   constructor(game, rig, stickColor, { x, z, ry = 0, cries = null, cryIcon = '🪅' }) {
