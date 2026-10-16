@@ -13559,3 +13559,39 @@ unchanged (322 — same as every other mushroom in this set, a toast on an exist
 collider). No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite and the headless probe. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 519 — a roller skater for the Neighborhood's boardwalk
+
+The boardwalk out to the beach gate — the one straight run of planks in the whole Neighborhood street
+— has carried the cat back and forth since round 1 and never carried anyone else, for all its gate,
+its arch and its gem half-buried in the middle of it. **A girl on roller skates now glides its length**,
+turning on her heels at each end rather than stopping dead. *"Four wheels, no brakes — don't tell my
+mum."* *"Careful, puss — these don't stop on sand."* *"Straight boardwalk, dead easy. The road's the
+hard part."*
+
+No new controller: `Patroller` (already doing duty for the Victorian bobby, the woods' hiker and the
+gas lamplighter) needed no change at all — `points: [[50, 22], [70, 22]]` just runs the straight line
+the boardwalk already is, turning at each end instead of pausing long, and its own `greetable()` call
+makes her a friend like any other. The only new geometry is a pair of roller skates — four small
+wheels and a dark plate under each shoe — built the same way `makeBike`'s own wheels hang off its
+frame, parented straight to `leg.ankle` so they ride the rig's existing walk-cycle foot animation for
+free and need no `userData.update` or `userData.keep` of their own. No new physics box either:
+`Patroller` only ever claims a circle, never a static box, so `test/run.mjs`'s own boardwalk walk
+(`46,22 → 74,22`) stays exactly as clear as it always was.
+
+Built dead last in `buildNeighborhood()`, after the raccoon at house 15's bin, for the same reason
+that raccoon's and the yard sale table's own comments already give: `makeHuman()` draws three values
+off the *shared* `rnd()` sequence unconditionally before a line of this file's own code runs, and
+placed any earlier on this huge street build, that shift reaches the two-neighbours-chat timing test
+a thousand-odd lines up and desyncs it — exactly what happened on the first attempt this round, caught
+by the suite before anything was committed, then fixed by moving the whole block to the true end of
+the function. A disposable headless probe (the same stub-three harness `test/run.mjs` itself uses,
+loading the real Neighborhood and stepping 3600 simulated frames) confirmed the skater's own position
+stayed finite throughout, her patrol never leaves the 50–70 m stretch of boardwalk given here, and the
+nearest physics box stayed 7.6 m clear and the nearest other soul 9.6 m clear the whole time.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged (322 — a `Patroller` costs no new collider), shirt colours still all 53 unique for 53
+people, the two-neighbours-chat timing intact. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

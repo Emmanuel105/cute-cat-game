@@ -9213,6 +9213,34 @@ function buildNeighborhood(game, entry) {
     game.npcs.push(new Hopper(game, rig, { x: 68.2, z: 24.6, leash: 0.5, r: 0.14, dist: [0.15, 0.4], dur: 0.3, height: 0.16, idle: [1.5, 4],
       onHop: () => { if (rnd.chance(0.2)) SFX.chitter(); } })); }
 
+  // the boardwalk out to the beach gate — the one straight run of planks on the whole street — has
+  // carried the cat back and forth since round 1 and never carried anyone else. A girl on roller skates
+  // now glides its length, turning on her heels at each end rather than stopping dead, well short of the
+  // gate's own posts on one side (x=76.4/79.6) and the zone's own edge on the other (x=45), so she never
+  // leaves the planks for the grass. `Patroller` (already doing duty for the bobby, the hiker and the
+  // lamplighter) needed no change at all: `points` just runs the straight line the boardwalk already is,
+  // and its own `greetable()` call makes her a friend like any other. No new mesh beyond a pair of roller
+  // skates — four small wheels and a plate under each shoe, parented straight to `leg.ankle` the same way
+  // `makeBike`'s own wheels hang off its frame, so they ride the existing walk-cycle's own foot animation
+  // for free and need no `userData.update` or `userData.keep`. No new physics box either: `Patroller`
+  // only ever claims a circle, never a static box, so the boardwalk stays exactly as clear end to end as
+  // `test/run.mjs` already walks it. Built dead last, after the raccoon, for the same reason the yard
+  // sale table and the raccoon's own comments give: `makeHuman()` draws three values off the *shared*
+  // `rnd()` sequence unconditionally before a line of this file's own code runs, and built any earlier on
+  // this street that shift reaches the two-neighbours-chat timing a few hundred lines up and desyncs it.
+  { const skateWard = makeWardrobe(r, { shirts: [0xff6fb5, 0x5ad1e6, 0xffd54a], pants: [0x2a2a2a, 0x3a3a46] });
+    const skater = makeHuman({ ...randomPerson(r, { female: true, child: true, wardrobe: skateWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, hairStyle: 'pony' });
+    W.add(skater.group);
+    const wheelM = mat(0xfff3b0, { roughness: 0.35 }), plateM = mat(0x2a2a2a, { roughness: 0.6 });
+    for (const L of skater.legs) {
+      mesh(G.box(0.11, 0.025, 0.24), plateM, { y: -0.108, z: 0.05, parent: L.ankle });
+      for (const [sx, sz] of [[-0.055, -0.04], [0.055, -0.04], [-0.055, 0.14], [0.055, 0.14]])
+        mesh(G.cyl(0.032, 0.032, 0.028, 10), wheelM, { x: sx, y: -0.13, z: sz, rz: PI / 2, shadow: 'none', parent: L.ankle });
+    }
+    game.npcs.push(new Patroller(game, skater, { points: [[50, 22], [70, 22]], speed: 1.7, pause: [0.3, 0.6], height: 1.3,
+      cries: ['Four wheels, no brakes — don’t tell my mum.', 'Careful, puss — these don’t stop on sand.', 'Straight boardwalk, dead easy. The road’s the hard part.'] })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
