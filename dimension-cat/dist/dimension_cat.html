@@ -10996,6 +10996,19 @@ function buildRobotCity(game, entry) {
   { const signLines = ['🏭 "ROBOT WORKS. Same sign, same buzz, since the city went up."', '✨ "Half the bulbs in that sign have outlasted the robots that installed them."', '🤖 "Lights the whole floor pink after dark. Nobody\'s complained yet."'];
     game.addInteractable({ obj: factorySign, radius: 4.5, label: () => 'Look at the factory sign', onUse: () => { SFX.click(); game.toast(rnd.pick(signLines), 3000); } }); }
   const sign2 = makeNeonSign('SECTOR 7', '#00e5ff', 6, W); sign2.position.set(-18, 5, 6); sign2.rotation.y = PI / 2;
+  // ROBOT WORKS got its own "look" toast back in round 499, but that round's own comment counted five
+  // neon signs on this floor and wired up only the biggest one — SECTOR 7, CHARGE and CAT? all stayed
+  // mute. This one, the closest of the three to the factory floor's own crates and the Sector 8
+  // conveyor, goes first: `sign2` is already kept in a variable (unlike the others, never discarded),
+  // so it goes straight to `game.addInteractable` — no new mesh, no new box. Its own support pole
+  // ([-18, 6], added in the loop below as a 0.4×5×0.4 box) is the only thing anchored here; a headless
+  // probe (`game.start('new')` then the real game's own synchronous `game.load(2, 'from-prev')`, 1800
+  // simulated frames sampling every NPC's own position every frame) found the nearest other box (one of
+  // the loose crates, at [-22, 4]) 3.81 m clear and the nearest wandering soul (a scrap-bug skittering
+  // past) 4.12 m off — both comfortably past the 3.4 m radius chosen, and the nearest other interactable
+  // (the portal back to Candy Land at (-10, 12)) stays 10.0 m off.
+  { const sign2Lines = ['💡 "SECTOR 7. Same blue buzz it\'s always had, crates or no crates."', '✨ "Half the sign flickers if you stand under it long enough. The other half never has."', '🤖 "Marks the sector, not much else. The crates don\'t read."'];
+    game.addInteractable({ obj: sign2, radius: 3.4, label: () => 'Look at the sign', onUse: () => { SFX.click(); game.toast(rnd.pick(sign2Lines), 3000); } }); }
   makeNeonSign('CAT?', '#ffe040', 4, W).position.set(19, 5.6, -13);
   for (const [x, z] of [[-18, 6], [19, -13]]) { mesh(G.cyl(0.12, 0.16, 5, 8), pipe, { x, y: 2.5, z, parent: W }); P.addBox(x, 2.5, z, 0.4, 5, 0.4, { cam: false }); }
   mesh(G.cyl(0.12, 0.16, 6.4, 8), pipe, { x: -5, y: 3.2, z: -24, parent: W }); mesh(G.cyl(0.12, 0.16, 6.4, 8), pipe, { x: 5, y: 3.2, z: -24, parent: W });

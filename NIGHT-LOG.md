@@ -13422,3 +13422,28 @@ Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console w
 unchanged (322 — a toast on an existing mesh costs no new collider). Four of the eight mushrooms are
 still mute. No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 514 — a look at Robot City's SECTOR 7 sign
+
+Round 499 gave ROBOT WORKS, the factory floor's biggest piece of neon, its own "look" toast — and
+flagged that of the city's five neon signs, only that one had ever been wired up. SECTOR 7, hung over
+the crates on a pole at (-18, 6), **now answers too**: *"SECTOR 7. Same blue buzz it's always had,
+crates or no crates."* Unlike CHARGE and CAT?, whose `makeNeonSign` calls discard their own return
+value, `sign2` was already kept in a variable for its own `.rotation.y` assignment — so this one goes
+straight to `game.addInteractable`, no new mesh, no new physics box, same trick ROBOT WORKS used.
+
+A headless probe (the stub-three harness `test/run.mjs` itself uses, `game.start('new')` then the
+real game's own synchronous `game.load(2, 'from-prev')`, 1800 simulated frames sampling every NPC's
+own position every frame) swept (-18, 6) against every one of the city's physics boxes and every
+sample: the sign's own support pole aside (a 0.4×5×0.4 box underneath it), the nearest other box (a
+loose crate at [-22, 4]) stayed 3.81 m clear and the nearest wandering soul (a scrap-bug skittering
+past) never closer than 4.12 m — both past the 3.4 m radius chosen. The nearest other interactable
+(the portal back to Candy Land at (-10, 12)) stays 10.0 m off. CHARGE and CAT? are still mute and
+could get the same treatment in a future round — CHARGE at (-44, 22) hangs right by the giant robot
+statue's own plaza, so that one will need its own careful check against the statue's interactable
+first.
+
+Full suite (`node test/run.mjs`) ran clean on 3 of 3 runs: exit 0, all 274 checks `ok`, 0 console
+warnings, box count unchanged (322 — the toast adds no physics box of its own). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
