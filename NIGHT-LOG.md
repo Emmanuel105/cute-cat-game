@@ -13595,3 +13595,40 @@ unchanged (322 — a `Patroller` costs no new collider), shirt colours still all
 people, the two-neighbours-chat timing intact. No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite and the headless probe. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 520 — Frosty Peak's own tug-of-war
+
+Round 508's own maypole comment named five playground games this whole game had never tried once, in
+any of the seven worlds: tetherball, badminton, tug-of-war, archery, sack races. **This is the first of
+them anywhere**: two bundled-up villagers now dig their heels into the snow on the open mountainside and
+heave on a rope between them, both pulling in time with each other — that's the actual point of the
+game — rather than taking turns the way every other duo vignette in this game does. *"Heave! Heave!
+Nobody's budging an inch!"* *"Careful, puss — mind the rope, it bites worse than a snowball."* *"Dead
+heat again. Always is, with these two."*
+
+New `TugOfWar` class, right after `Talkers` in `55-npcs.js` since it's the nearest relative (two facing
+rigs, each its own circle and its own friend id) — built as a new, generic controller rather than a
+reskin of an existing one, since the whole point was that this mechanic didn't exist yet. It hands back
+nothing but a slow `tension` drift (bounded well short of either end, so nobody ever actually wins) for
+whoever calls it to slide their own rope's own marker — the same split between generic controller and
+world-built scenery `BallGame` and `Horseshoes` already use for their own ball and shoe. The rope and
+its little red flag are plain static geometry in `73-world-snow.js` between the two fixed hand spots the
+constructor works out itself, `noInk()`'d like every other thin cable in this game; only the flag needs
+a `U.push` to slide each frame.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real mountain
+(`game.start('new')` then `game.load(5, 'from-hub')`, so every reindeer, hare, arctic fox, penguin, yeti
+and wandering villager actually moved), sampled every NPC's own position every 1/30 s over 300 simulated
+seconds, then swept a 5 m grid of the open snowfield (radius 15-54, short of the radius (58) where
+snowRegion's own fill takes over) against both those samples and every one of the mountain's 742 physics
+boxes: (50, 20) came back clear by 7.85 m of the nearest box and 7.55 m of the nearest other soul, ground
+height varying under 0.3 m across the whole footprint. A second probe ran the real constructed pair for
+300 simulated seconds on its own, watching `tension` for anything non-finite (none, it stayed inside
+±0.90 the whole time, never reaching the ±1 bound) and the greet flow for both haulers (walking the cat
+up to the first and firing its interactable's `onUse` registered a new Frosty Peak friend, as expected).
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings, box count
+unchanged (322 — two new NPCs cost two physics circles, not boxes, same as every other greetable duo in
+this game). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite and the two headless probes above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

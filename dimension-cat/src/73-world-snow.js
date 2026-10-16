@@ -1150,6 +1150,43 @@ function buildSnowVillage(game, entry) {
     let st = r() * 10, barkT = rnd.range(8, 14);
     U.push((dt) => { st += dt; seal.animate(0, false, dt, st);
       barkT -= dt; if (barkT <= 0) { barkT = rnd.range(10, 18); const c = game.cat.group.position; if (dist2(sx, sz, c.x, c.z) < 225) SFX.bark(); } }); }
+  // Victorian's own round-up of playground games this game had never tried once in any of the seven
+  // worlds (tetherball, badminton, tug-of-war, archery, sack races) named five; this is the first of
+  // them anywhere. Two bundled-up villagers now dig their heels into the snow and heave on a rope
+  // between them — new `TugOfWar` (`55-npcs.js`, right after `Talkers`, its nearest relative: two
+  // facing rigs, each its own circle and its own friend id), built generic on purpose, since it's a new
+  // mechanic rather than a reskin of one of this game's existing controllers. Both players heave in
+  // time with each other rather than taking turns — that's the actual point of the game — while the
+  // rope's own tug-of-war never settles either way: the class hands back a slow `tension` drift
+  // (bounded well short of either end) for whoever calls it to slide their own rope's own marker, same
+  // separation of generic-controller from world-built-scenery `BallGame` and `Horseshoes` already use
+  // for their own ball and shoe. The rope and its little red flag are built here, straight-line static
+  // geometry between the two fixed hand spots the constructor itself works out (`tug.ctls[i].x/z`),
+  // `noInk()`'d like every other thin cable in this game, with the flag alone needing a `U.push` to
+  // slide it each frame — too far out (radius 53.9) for `fillRing`'s own `bakeDeep` to ever reach it.
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real mountain
+  // (`game.start('new')` then `game.load(5, 'from-hub')`, so every reindeer, hare, arctic fox, penguin,
+  // yeti and wandering villager actually moved), sampled every NPC's own position every 1/30 s over
+  // 300 simulated seconds, then swept a 5 m grid of the open snowfield (radius 15-54, short of the
+  // radius (58) where snowRegion's own fill takes over) against both those samples and every one of
+  // the mountain's 742 physics boxes: (50, 20) came back clear by 7.85 m of the nearest box and 7.55 m
+  // of the nearest other soul, with the ground varying under 0.3 m across the whole footprint — open
+  // snowfield east of the card table and the yo-yo kid, with nothing else anywhere near it.
+  { const tugWard = makeWardrobe(r, { shirts: [0x8a3a3a, 0x3a5a6a, 0x4a6a4a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const haulerA = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: tugWard }),
+      hat: 'beanie', hatColor: 0x8a3a3a, coat: true, scarf: 0xf2ead8, cuffs: 0x3a3a3a }); W.add(haulerA.group);
+    const haulerB = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: tugWard }),
+      hat: 'beanie', hatColor: 0x3a5a6a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a }); W.add(haulerB.group);
+    const tug = new TugOfWar(game, haulerA, haulerB, { x: 50, z: 20, ry: PI / 2, gap: 2.6,
+      cries: ["Heave! Heave! Nobody's budging an inch!", 'Careful, puss — mind the rope, it bites worse than a snowball.', "Dead heat again. Always is, with these two."] });
+    game.npcs.push(tug);
+    const [A, B] = tug.ctls, ropeM = mat(0x8a6a42, { roughness: 0.9 }), ay = P.ground0(A.x, A.z) + 0.75, by = P.ground0(B.x, B.z) + 0.75;
+    const ropeGroup = group((A.x + B.x) / 2, (ay + by) / 2, (A.z + B.z) / 2, W);
+    ropeGroup.lookAt(B.x, by, B.z);
+    noInk(mesh(G.cyl(0.035, 0.035, Math.hypot(B.x - A.x, by - ay, B.z - A.z), 8), ropeM, { rx: PI / 2, parent: ropeGroup }));
+    const flag = group(0, 0, 0, W); noInk(mesh(G.box(0.03, 0.14, 0.4), mat(0xd62839, { roughness: 0.7 }), { parent: flag }));
+    U.push(() => { const frac = 0.5 + clamp(tug.tension, -1, 1) * 0.12;
+      flag.position.set(lerp(A.x, B.x, frac), lerp(ay, by, frac) + 0.03, lerp(A.z, B.z, frac)); flag.rotation.y = ropeGroup.rotation.y; }); }
   const C = game.collectibles;
   C.add('fish', 18, 8); C.add('star', 0, -30); C.add('yarn', -16, 4); C.add('mouse', 12, 20); C.add('star', 30, -20); C.add('fish', -30, 16); C.add('yarn', 22, -6); C.add('mouse', -6, 26);
   game.fx.setAmbient({ count: 480, radius: 22, colors: [0xffffff, 0xeaf4ff, 0xdfe8ff], rise: -1.0, drift: 0.5, life: 9, height: 12, yMin: 2 });

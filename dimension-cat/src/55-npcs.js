@@ -1558,6 +1558,41 @@ class Talkers {
   }
 }
 
+// ---------------------------------------------------------------- tug of war: two players dig in and heave on a rope between them, in time with each other rather than taking turns, never quite settling who's ahead. `tension` (-1..1, a slow drift that never nears either end) is the only thing the caller needs to read back, to slide its own rope's own flag or marker \u2014 the rope itself is just scenery, built by whoever calls this, same as `BallGame`'s own ball or `Horseshoes`' own shoe.
+class TugOfWar {
+  constructor(game, rigA, rigB, { x, z, ry = 0, gap = 2.6, cries = null, cryIcon = '\ud83e\udea2' }) {
+    this.game = game; this.rigs = [rigA, rigB]; this.x = x; this.z = z; this.t = rnd() * 10; this.tension = 0;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(5, 10) : 0;
+    this.ctls = this.rigs.map((rig, i) => {
+      const side = i ? 1 : -1, px = x + sin(ry) * side * (gap / 2), pz = z + cos(ry) * side * (gap / 2);
+      rig.group.position.set(px, game.physics.ground0(px, pz), pz); rig.group.rotation.y = ry + (i ? PI : 0);   // arranged along the rope, facing each other down its length
+      const ctl = { game, rig, x: px, z: pz, look: 0, lookW: 0, tipT: 0, tipped: false, circle: game.physics.addCircle(this, px, pz, 0.3) };
+      greetable(game, ctl); return ctl;
+    });
+    this.rig = rigA;
+  }
+  update(dt) {
+    this.t += dt;
+    // both heave together, not in turn \u2014 that's the point of the game \u2014 while the rope's own "who's
+    // winning" drifts on a much slower, unrelated beat, bounded well short of either end so nobody ever
+    // actually wins
+    const heave = sin(this.t * 2.1) * 0.5 + 0.5;
+    this.tension = sin(this.t * 0.23) * 0.6 + sin(this.t * 0.071 + 1.7) * 0.3;
+    this.rigs.forEach((rig, i) => {
+      rig.animate(0, false, dt, this.t);
+      if (!rig.gesture) {
+        const lean = -0.55 - heave * 0.35, elbow = -1.0 - heave * 0.2;
+        const A = rig.arms[0], B = rig.arms[1];
+        A.sh.rotation.x = damp(A.sh.rotation.x, lean, 9, dt); A.el.rotation.x = damp(A.el.rotation.x, elbow, 9, dt); A.sh.rotation.z = 0.12;
+        B.sh.rotation.x = damp(B.sh.rotation.x, lean, 9, dt); B.el.rotation.x = damp(B.el.rotation.x, elbow, 9, dt); B.sh.rotation.z = -0.12;
+        rig.head.rotation.x = damp(rig.head.rotation.x, -heave * 0.12, 8, dt);
+      }
+      Wanderer.prototype.lookAtCat.call(this.ctls[i], dt);
+    });
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- painter: at an easel, brush in one hand, palette in the other, the picture filling in as the cat watches
 class Painter {
   constructor(game, rig, easel, { x, z, ry = 0, cries = null }) {
