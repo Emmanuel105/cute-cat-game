@@ -13923,3 +13923,36 @@ Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 conso
 Victorian's own friend count up from 88 to 89. No visual check was possible in this environment
 (no browser, no Playwright) — only the stub-three test suite and the headless probe above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 529 — a cable tug-of-war for Robot City
+
+Frosty Peak's haulers and Whisper Woods' hunting party have both used the `TugOfWar` class
+(`55-npcs.js`) for a straining, never-resolving contest by now; Robot City had robots standing,
+wandering and marching in step, but no two of them had ever been pitted against each other.
+**Two factory units now strain against a thick power cable a few metres north of the east
+yard's own marching patrol**, heaving in time forever, with a little amber indicator light
+riding the cable and brightening as the tension swings. *"Tug protocol: engaged. Neither unit
+yields."* *"Careful, puss — mind the cable, it still has some charge in it."* *"Query: why do
+we do this every shift? Answer: unresolved."*
+
+No new class: `TugOfWar` already does the heave-together, nobody-wins logic for the snow
+haulers and the forest's rope-pullers; this round just hands it two plain `makeRobot()` rigs
+and swaps the rope for a dark cable with glowing cyan end-caps. The one new touch is the status
+light — a small sphere riding the same tension-driven position the rope worlds use for their
+flag, but pulsing brighter instead of just moving, since a robot yard wanted an indicator lamp
+more than a scrap of bunting.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+`game.travel(2, 'from-hub')`, then the cat teleported right next to the candidate spot so
+nothing the engine culls by distance could hide a box) sampled every NPC's own position every
+quarter second over 500 simulated frames, then swept the two robots' own stations and a
+half-metre margin either side against both those samples and every one of the city's 323
+physics boxes: (46, -8) came back clear by 5.19 m of the nearest box and 8.76 m of the nearest
+other soul — just north of the marching patrol's own beat (46, -18)-(46, -26) and well short of
+the radius (98) where robotRegion's own procedural fill takes over.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings,
+Robot City's own friend count up from 74 to 76 (both robots count, same as every other
+`TugOfWar` pair). No visual check was possible in this environment (no browser, no Playwright)
+— only the stub-three test suite and the headless probe above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

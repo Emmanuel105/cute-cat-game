@@ -12431,6 +12431,33 @@ function buildRobotCity(game, entry) {
   { const marchers = [0, 1, 2].map(() => { const rig = makeRobot(); W.add(rig.group); return rig; });
     game.npcs.push(new Marchers(game, marchers, { points: [[46, -18], [46, -26]], speed: 1.0, pause: [1, 2], pauseAll: true, loop: false, r: 0.42, height: 1.9, gap: 1.2,
       cries: ['Shift patrol: sector clear.', 'In step. Always in step.', 'Unauthorized feline logged. Proceeding.'], cryIcon: '🛡️' })); }
+  // Frosty Peak's own haulers (round 526-ish) and now the penguin colony have both used `TugOfWar`
+  // (55-npcs.js) for a straining, never-resolving contest; Robot City had plenty of robots standing,
+  // wandering or marching, but no two of them ever pitted against each other. Two factory units now
+  // strain against a thick power cable a few metres north of the east yard's own marching patrol,
+  // same heave-and-never-win logic, unchanged — just `makeRobot()` rigs and a cable in place of rope.
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, built
+  // the real city with `game.travel(2, 'from-hub')`, then teleported the cat itself next to the
+  // candidate spot so nothing the engine culls by distance could hide a box) sampled every NPC's own
+  // position every quarter second over 500 simulated frames, then swept the two robots' own stations
+  // and a half-metre margin either side of them against both those samples and every one of the city's
+  // 323 physics boxes: (46, -8) came back clear by 5.19 m of the nearest box and 8.76 m of the nearest
+  // other soul — just north of the marching patrol's own beat (46, -18)-(46, -26) and short of the
+  // radius (98) where robotRegion's own procedural fill takes over.
+  { const haulerA = makeRobot(); W.add(haulerA.group); const haulerB = makeRobot(); W.add(haulerB.group);
+    const tug = new TugOfWar(game, haulerA, haulerB, { x: 46, z: -8, ry: 0, gap: 2.6,
+      cries: ['Tug protocol: engaged. Neither unit yields.', 'Careful, puss — mind the cable, it still has some charge in it.', 'Query: why do we do this every shift? Answer: unresolved.'] });
+    game.npcs.push(tug);
+    const [A, B] = tug.ctls, cableM = mat(0x24262b, { roughness: 0.85 }), capM = glowMat(0x00e5ff, 1.4);
+    const ay = P.ground0(A.x, A.z) + 0.75, by = P.ground0(B.x, B.z) + 0.75;
+    const cableGroup = group((A.x + B.x) / 2, (ay + by) / 2, (A.z + B.z) / 2, W);
+    cableGroup.lookAt(B.x, by, B.z);
+    noInk(mesh(G.cyl(0.045, 0.045, Math.hypot(B.x - A.x, by - ay, B.z - A.z), 10), cableM, { rx: PI / 2, parent: cableGroup }));
+    for (const s of [-0.9, 0.9]) noInk(mesh(G.cyl(0.055, 0.055, 0.1, 10), capM, { z: s, rx: PI / 2, shadow: 'none', parent: cableGroup }));
+    const bulb = mesh(G.sphere(0.05, 8, 6), glowMat(0xffb04a, 1), { parent: W });
+    U.push(() => { const frac = 0.5 + clamp(tug.tension, -1, 1) * 0.14;
+      bulb.position.set(lerp(A.x, B.x, frac), lerp(ay, by, frac) + 0.04, lerp(A.z, B.z, frac));
+      bulb.material.emissiveIntensity = 0.6 + abs(tug.tension) * 1.8; }); }
   const sq = new Squirrel(game, -14, -9, 'sq-robot'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('mouse', -8, 7); C.add('star', 12, -22); C.add('fish', -18, 2); C.add('yarn', 21, 9); C.add('star', 0, -27); C.add('fish', 4, 14); C.add('mouse', 26, -18); C.add('yarn', -26, -6);
