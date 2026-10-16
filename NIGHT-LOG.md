@@ -13534,3 +13534,28 @@ prompt there needs a smaller radius or a different approach, same as last round 
 (322 — a toast on an existing mesh costs no new collider). No visual check was possible in this
 environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 518 — the last of Whisper Woods' eight mushrooms
+
+Round 517 closed out seven of the glade's eight giant mushrooms and left the last one, at (-20, 0),
+for a future round — a headless probe back then found a "Say hello" prompt sitting unusually close.
+**It answers now**: *"Last one left mute. Grows right by the acorn-feeder's own spot."* *"Pink as the
+fairy ring's own glow, just out here on its own."* All eight of the glade's mushrooms have something
+to say now.
+
+A fresh headless probe confirmed exactly who the tight neighbour is: the woman who kneels scattering
+acorns for the western deer, at (-21.8, 3) — just 3.5 m from this mushroom's own centre, tighter than
+any of the other seven faced. Rather than lean on the game's own "closest centre wins" tie-break (the
+same one every earlier mushroom in this set already relies on, per `80-game.js`'s prompt loop), this
+one plays it safe: radius 2.6 m, under the usual 1.5x-scale ratio its own 2.2 scale would give (3.3 m),
+so the mushroom's whole circle stays on its own side of the midpoint between the two. Same trick as
+all seven before it: `pinkMushroom`, captured straight from the loop in `buildForest()` that builds
+all eight (mesh, `glow: true`, its own `userData.update`, a `boxT` box already in place), handed
+directly to `game.addInteractable` — no new mesh, no new physics box. The same probe found the nearest
+other physics box a clear 5.5 m off.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged (322 — same as every other mushroom in this set, a toast on an existing mesh costs no new
+collider). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite and the headless probe. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
