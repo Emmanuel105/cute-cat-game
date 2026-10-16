@@ -1941,6 +1941,11 @@ function makeHuman(o = {}) {
     mesh(G.box(0.094, 0.05, 0.075), shoeM, { y: -0.018, z: -0.008, parent: ankle });                                  // heel cup
     rig.legs.push({ hip, knee, ankle });
   }
+  if (o.sack) {   // a sack race: both legs bound together from the ankles to the waist, narrower where it's tied, wider round the feet
+    const sackM = mat(o.sack, { roughness: 0.95 });
+    mesh(G.cyl(0.15 * girth, 0.24 * girth, 0.74, 10), sackM, { y: 0.52, parent: body });
+    mesh(G.torus(0.165 * girth, 0.026, 6, 14), sackM, { y: 0.88, rx: PI / 2, shadow: 'none', parent: body });   // the drawstring, cinched at the waist
+  }
   // ---- pelvis + torso: a chest that tapers to a waist, not a slab
   const spine = group(0, 0.9, 0, body); rig.spine = spine;   // the upper body pivots here: leaning, stooping, bowing
   mesh(G.capsule(0.13 * girth, 0.1, 12), o.skirt ? mat(o.skirt) : pantsM, { y: 0.97, sz: 0.62, rz: PI / 2, parent: body });
@@ -3529,6 +3534,44 @@ class Archer {
       this.timer -= dt; if (this.timer <= 0) { this.state = 'draw'; this.timer = rnd.range(0.8, 1.8); }
     }
     Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
+// ---------------------------------------------------------------- sack race: two racers hop down a short straight track, both legs bound together in a sack (`makeHuman`'s own `o.sack`) so there's no scissor-stride — the legs kick in step, not in a walk's alternating phase. Each hops back and forth between the two ends of the track independently, like `Patroller` but hopping instead of walking, at its own pace drawn once at construction, so the lead keeps changing hands but nobody ever actually crosses a line to win.
+class SackRace {
+  constructor(game, rigA, rigB, { x, z, ry = 0, length = 5, gap = 1.1, cries = null, cryIcon = '🛍️' }) {
+    this.game = game; this.x = x; this.z = z; this.length = length; this.t = rnd() * 10;
+    this.fx = sin(ry); this.fz = cos(ry); this.ry = ry;
+    const sx = cos(ry), sz = -sin(ry);
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(5, 10) : 0;
+    this.racers = [rigA, rigB].map((rig, i) => {
+      const side = i ? 1 : -1, bx = x + side * (gap / 2) * sx, bz = z + side * (gap / 2) * sz;
+      const ctl = { game, rig, bx, bz, x: bx, z: bz, look: 0, lookW: 0, prog: rnd.range(0, length), dir: rnd.chance(0.5) ? 1 : -1, hop: rnd() * 0.5, speed: rnd.range(0.82, 1.18), circle: game.physics.addCircle(this, bx, bz, 0.32) };
+      greetable(game, ctl); return ctl;
+    });
+    this.rig = rigA;
+  }
+  update(dt) {
+    this.t += dt;
+    for (const rc of this.racers) {
+      const rig = rc.rig, cyc = 0.58 / rc.speed, prev = rc.hop;
+      rc.hop = (rc.hop + dt) % cyc; const ph = rc.hop / cyc;
+      if (rc.hop < prev) {   // a hop landed: step along the track, turning round at either end
+        rc.prog += rc.dir * 0.4 * rc.speed;
+        if (rc.prog > this.length) { rc.prog = this.length; rc.dir = -1; } else if (rc.prog < 0) { rc.prog = 0; rc.dir = 1; }
+      }
+      const k = sin(ph * PI);   // 0 at landing and launch, 1 at the top of the hop
+      const px = rc.bx + this.fx * rc.prog, pz = rc.bz + this.fz * rc.prog;
+      rig.group.position.set(px, this.game.physics.ground0(px, pz) + k * 0.2, pz);
+      rig.group.rotation.y = this.ry + (rc.dir < 0 ? PI : 0);
+      rc.circle.x = px; rc.circle.z = pz; rc.x = px; rc.z = pz;
+      rig.animate(0, false, dt, this.t);
+      for (const L of rig.legs) { L.hip.rotation.x = -0.1 - k * 0.35; L.knee.rotation.x = 0.1 + k * 0.6; L.ankle.rotation.x = 0.05; }
+      if (!rig.gesture) for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -0.3 - k * 0.25, 10, dt); A.el.rotation.x = damp(A.el.rotation.x, -1.3, 10, dt); }
+      rig.spine.rotation.x = damp(rig.spine.rotation.x, -k * 0.1, 7, dt);
+      Wanderer.prototype.lookAtCat.call(rc, dt);
+    }
     if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
   }
 }
@@ -10889,6 +10932,43 @@ function buildCandyLand(game, entry) {
     W.add(sunbather.group);
     game.npcs.push(new Sunbather(game, sunbather, { x: bx, z: bz, ry,
       cries: ['Sugar and sunshine. Can\'t beat it.', "Careful, puss — mind the lolly, it's melting fast enough already.", 'Five more minutes. Maybe ten.'] })); }
+
+  // round 508's own list of playground games this whole game had never tried (tetherball, badminton,
+  // tug-of-war, archery, sack races) is down to its last entry now: round 520 gave Frosty Peak a
+  // tug-of-war, round 521 the Neighborhood a tetherball pole, round 522 Victorian a badminton net, round
+  // 523 Whisper Woods an archery range, and **this one gives Candy Land a sack race** — two children
+  // bound ankle-to-waist in burlap sacks, hopping a short lane out in the quiet sweet-lands well past
+  // the sunbather's own blanket.
+  //
+  // New `SackRace` class in `55-npcs.js`, right after `Archer`, its nearest relative among this run of
+  // playground games for the same reason Archer was Badminton's: a controller with no second player
+  // interacting with the first, just two independent racers on the same lane. Unlike every earlier
+  // two-person game here, there's no shared prop at all — each racer hops on its own clock, turning
+  // round at either end of a 5 m lane like `Patroller` walking a beat, except hopping rather than
+  // striding, so the lead keeps changing hands without either one ever actually reaching a line that
+  // would end it. New `o.sack` option on `makeHuman` (`55-npcs.js`, right after the leg loop): one
+  // cylinder and a drawstring torus parented to `body`, covering both legs from the ankles to the
+  // waist in one piece — the one new mesh this round costs, since the sack hides the stride rather
+  // than needing a new one.
+  //
+  // Placed at (-83, 7), the lane running along world Z: a headless probe (the same stub-three harness
+  // `test/run.mjs` itself uses, `game.start('new')` then `game.load(1, 'from-hub')`) sampled every
+  // gingerbread man's, dancer's and tag/catch pair's own circle position every 1/10 s over 300 simulated
+  // seconds, then swept both racers' own full lane (5 m long, 1.1 m apart) against both those samples
+  // and every one of the sweet-lands' physics boxes, staying short of the radius (92) where
+  // `candyRegion`'s own procedural fill takes over: the worst point on the whole lane came back clear
+  // by 16.5 m in every direction tried — open, flat candy-cane ground near the edge of the hand-built
+  // heart, past the sunbather, the woodcutter's stump and the gumball drifting overhead, with the
+  // ground itself flat to within rounding across the whole footprint.
+  { const rx = -83, rz = 7, rry = 0;
+    const sackWard = makeWardrobe(r, { shirts: [0xff8fc8, 0x7fd7ff, 0xffd54a], pants: [0x5a4a3a] });
+    const sackA = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, elder: false, wardrobe: sackWard }),
+      sack: 0xc9a46a, hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: false });
+    const sackB = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, elder: false, wardrobe: sackWard }),
+      sack: 0xc9a46a, hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: false });
+    W.add(sackA.group); W.add(sackB.group);
+    game.npcs.push(new SackRace(game, sackA, sackB, { x: rx, z: rz, ry: rry,
+      cries: ['Hop faster, I\'m gaining!', "Tripped twice and still ahead — don't ask me how.", 'Best of three. Fourth, actually. Nobody\'s counting.'] })); }
 
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;

@@ -3523,6 +3523,43 @@ function buildCandyLand(game, entry) {
     game.npcs.push(new Sunbather(game, sunbather, { x: bx, z: bz, ry,
       cries: ['Sugar and sunshine. Can\'t beat it.', "Careful, puss — mind the lolly, it's melting fast enough already.", 'Five more minutes. Maybe ten.'] })); }
 
+  // round 508's own list of playground games this whole game had never tried (tetherball, badminton,
+  // tug-of-war, archery, sack races) is down to its last entry now: round 520 gave Frosty Peak a
+  // tug-of-war, round 521 the Neighborhood a tetherball pole, round 522 Victorian a badminton net, round
+  // 523 Whisper Woods an archery range, and **this one gives Candy Land a sack race** — two children
+  // bound ankle-to-waist in burlap sacks, hopping a short lane out in the quiet sweet-lands well past
+  // the sunbather's own blanket.
+  //
+  // New `SackRace` class in `55-npcs.js`, right after `Archer`, its nearest relative among this run of
+  // playground games for the same reason Archer was Badminton's: a controller with no second player
+  // interacting with the first, just two independent racers on the same lane. Unlike every earlier
+  // two-person game here, there's no shared prop at all — each racer hops on its own clock, turning
+  // round at either end of a 5 m lane like `Patroller` walking a beat, except hopping rather than
+  // striding, so the lead keeps changing hands without either one ever actually reaching a line that
+  // would end it. New `o.sack` option on `makeHuman` (`55-npcs.js`, right after the leg loop): one
+  // cylinder and a drawstring torus parented to `body`, covering both legs from the ankles to the
+  // waist in one piece — the one new mesh this round costs, since the sack hides the stride rather
+  // than needing a new one.
+  //
+  // Placed at (-83, 7), the lane running along world Z: a headless probe (the same stub-three harness
+  // `test/run.mjs` itself uses, `game.start('new')` then `game.load(1, 'from-hub')`) sampled every
+  // gingerbread man's, dancer's and tag/catch pair's own circle position every 1/10 s over 300 simulated
+  // seconds, then swept both racers' own full lane (5 m long, 1.1 m apart) against both those samples
+  // and every one of the sweet-lands' physics boxes, staying short of the radius (92) where
+  // `candyRegion`'s own procedural fill takes over: the worst point on the whole lane came back clear
+  // by 16.5 m in every direction tried — open, flat candy-cane ground near the edge of the hand-built
+  // heart, past the sunbather, the woodcutter's stump and the gumball drifting overhead, with the
+  // ground itself flat to within rounding across the whole footprint.
+  { const rx = -83, rz = 7, rry = 0;
+    const sackWard = makeWardrobe(r, { shirts: [0xff8fc8, 0x7fd7ff, 0xffd54a], pants: [0x5a4a3a] });
+    const sackA = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, elder: false, wardrobe: sackWard }),
+      sack: 0xc9a46a, hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: false });
+    const sackB = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, elder: false, wardrobe: sackWard }),
+      sack: 0xc9a46a, hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: false });
+    W.add(sackA.group); W.add(sackB.group);
+    game.npcs.push(new SackRace(game, sackA, sackB, { x: rx, z: rz, ry: rry,
+      cries: ['Hop faster, I\'m gaining!', "Tripped twice and still ahead — don't ask me how.", 'Best of three. Fourth, actually. Nobody\'s counting.'] })); }
+
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('star', 7, -6); C.add('yarn', -9, 9); C.add('fish', -16, -13); C.add('mouse', 16, -9); C.add('star', -10, -27); C.add('yarn', 22, 4); C.add('mouse', -28, 26); C.add('fish', 14, -44); C.add('star', 0, -56); C.add('mouse', -58, 30); C.add('yarn', 60, 36);

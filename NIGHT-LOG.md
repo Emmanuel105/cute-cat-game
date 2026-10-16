@@ -13751,3 +13751,42 @@ human and controller already cost, following the same caution this file's own fr
 spelled out for exactly this reason. No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite and the two headless probes above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 524 — a sack race for Candy Land
+
+Round 508's own list of playground games this whole game had never tried (tetherball, badminton,
+tug-of-war, archery, sack races) is down to its last entry now: round 520 gave Frosty Peak a
+tug-of-war, round 521 the Neighborhood a tetherball pole, round 522 Victorian a badminton net, round 523
+Whisper Woods an archery range, and **this one gives Candy Land a sack race** — two children bound
+ankle-to-waist in burlap sacks, hopping a short lane in the quiet sweet-lands well past the sunbather's
+own blanket, neither one ever quite winning. *"Hop faster, I'm gaining!"* *"Tripped twice and still
+ahead — don't ask me how."* *"Best of three. Fourth, actually. Nobody's counting."*
+
+New `SackRace` class in `55-npcs.js`, right after `Archer`, its nearest relative among this run of
+playground games for the same reason Archer was Badminton's: a controller with no shared prop and no
+second player actually interacting with the first, just two racers on the same lane, each hopping on its
+own clock. Unlike every earlier game here, there's nothing held or thrown at all: each racer simply turns
+round at either end of a 5 m lane the way `Patroller` walks a beat, except hopping rather than striding, at
+its own pace drawn once at construction, so the lead keeps changing hands without either one ever
+actually reaching a line that would end it. `makeHuman` gets a new `o.sack` option (right after the leg
+loop) — one cylinder and a drawstring torus parented to the body, covering both legs from the ankles to
+the waist in a single piece, which is the only new mesh this round costs, since the sack hides the stride
+rather than needing a new one; the legs underneath still kick (both in step, no scissor action, unlike a
+walk's alternating phase) but mostly out of sight.
+
+Placed at (-83, 7), the lane running along world Z: a headless probe (the same stub-three harness
+`test/run.mjs` itself uses, `game.start('new')` then `game.load(1, 'from-hub')`) sampled every
+gingerbread man's, dancer's and tag/catch pair's own circle position every 1/10 s over 300 simulated
+seconds, then swept both racers' own full lane (5 m long, 1.1 m apart) against both those samples and
+every one of the sweet-lands' physics boxes, staying short of the radius (92) where `candyRegion`'s own
+procedural fill takes over: the worst point on the whole lane came back clear by 16.5 m in every
+direction tried — open, flat candy-cane ground near the edge of the hand-built heart, past the
+sunbather, the woodcutter's stump and the gumball drifting overhead. A second probe ran the real pair for
+300 simulated seconds: both racers' positions stayed finite throughout, their progress along the lane
+never left its 0–5 m bounds, they reversed direction 80 times between them (about right for a ~0.5 s hop
+cycle crossing a 5 m lane), and walking the cat up to one and firing its "Say hi" prompt ran clean.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings, Candy Land's
+own friend count up from 70 to 72 for the two new racers. No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite and the two headless probes
+above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
