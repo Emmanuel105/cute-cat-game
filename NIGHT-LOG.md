@@ -13503,3 +13503,34 @@ hello" prompt almost on top of it) and are left for a future round with a smalle
 different approach. No visual check was possible in this environment (no browser, no Playwright) —
 only the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 517 — a look at Whisper Woods' teal mushroom
+
+Round 516 wired up the den-side mushroom and left two of the glade's eight giant mushrooms mute: one
+at (16, 12), one at (-20, 0). **The one at (16, 12) answers now**: *"Only teal one out this way — the
+rest of its colour stayed back at the ring."* *"Grows closest to the whittler's bench. He's never
+once looked up at it."* It's the only mushroom in the set painted hue 200 out this far east of the
+fairy ring, past the whittler sitting at his bench.
+
+Same trick as the six before it: `blueMushroom` is captured straight from the loop in `buildForest()`
+that builds all eight (mesh, `glow: true`, its own `userData.update` for the pulsing cap light, and a
+`boxT` physics box already in place), handed directly to `game.addInteractable` — no new mesh, no new
+physics box.
+
+A scratch headless probe (the same stub-three harness `test/run.mjs` itself uses, `game.load(6,
+'from-hub')` then 4000 simulated frames) swept this point against every one of the woods' physics
+boxes, every other interactable, and every NPC's own position sampled every frame. The nearest box
+stayed 3.5 m clear, the nearest other interactable (a "Say hello" prompt, 2.1 m of its own reach) sat
+4.5 m off, and the only thing that ever came closer was a wandering flyer at 2.6 m — a butterfly or
+fairy drifting through, no obstruction at all in this glade. The interactable radius chosen, 3.0 m, is
+a tighter ratio than this set's usual 1.5×-scale rule (off this mushroom's own 3.2 scale that would be
+4.8 m) since the glade is more crowded out this way; the game's nearest-interactable logic picks
+whichever centre is closer at each point anyway, so a little overlap with the greet prompt's own
+circle costs nothing — the mushroom still wins everywhere nearer to it than to the person.
+
+The last mute mushroom, at (-20, 0), is left for a future round — a near-neighbouring "Say hello"
+prompt there needs a smaller radius or a different approach, same as last round found. Full suite
+(`node test/run.mjs`) ran clean: exit 0, all 273 checks `ok`, 0 console warnings, box count unchanged
+(322 — a toast on an existing mesh costs no new collider). No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

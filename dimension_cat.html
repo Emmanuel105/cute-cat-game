@@ -15834,8 +15834,8 @@ function buildForest(game, entry) {
     game.addInteractable({ obj: ringCenter, radius: 7, label: () => 'Turn three times in the fairy ring', onUse: () => {
       SFX.twinkle(); game.fx.emit(rcx, ry0 + 0.3, rcz, { count: 16, colors: [0xa8ff9a, 0xffd1ff, 0x9fe8ff], speed: 1.1, up: 1.4, life: 1.0, gravity: 2 });
       game.toast(rnd.pick(ringWishes)); } }); }
-  let bigMushroom = null, farMushroom = null, violetMushroom = null, southMushroom = null, northMushroom = null, denMushroom = null;
-  for (const [x, z, s, hue] of [[-14, -14, 2.6, 0], [16, 12, 3.2, 200], [-20, 0, 2.2, 300], [14, -20, 2.4, 40], [-2, -22, 2.9, 0], [24, -4, 2.0, 280], [-24, 20, 2.6, 200], [4, 24, 2.3, 0]]) { const m = makeMushroom(s, hue, r, true); placeT(game, U, m, x, z, 0); boxT(game, x, z, 0.5 * s, 1.3 * s, 0.5 * s, { cam: false }); U.push(m.userData.update); if (x === 14 && z === -20) bigMushroom = m; if (x === -24 && z === 20) farMushroom = m; if (x === 24 && z === -4) violetMushroom = m; if (x === -2 && z === -22) southMushroom = m; if (x === 4 && z === 24) northMushroom = m; if (x === -14 && z === -14) denMushroom = m; }
+  let bigMushroom = null, farMushroom = null, violetMushroom = null, southMushroom = null, northMushroom = null, denMushroom = null, blueMushroom = null;
+  for (const [x, z, s, hue] of [[-14, -14, 2.6, 0], [16, 12, 3.2, 200], [-20, 0, 2.2, 300], [14, -20, 2.4, 40], [-2, -22, 2.9, 0], [24, -4, 2.0, 280], [-24, 20, 2.6, 200], [4, 24, 2.3, 0]]) { const m = makeMushroom(s, hue, r, true); placeT(game, U, m, x, z, 0); boxT(game, x, z, 0.5 * s, 1.3 * s, 0.5 * s, { cam: false }); U.push(m.userData.update); if (x === 14 && z === -20) bigMushroom = m; if (x === -24 && z === 20) farMushroom = m; if (x === 24 && z === -4) violetMushroom = m; if (x === -2 && z === -22) southMushroom = m; if (x === 4 && z === 24) northMushroom = m; if (x === -14 && z === -14) denMushroom = m; if (x === 16 && z === 12) blueMushroom = m; }
   // the fairy ring, the zipline tower and the treehouse have all had a one-off "walk up and look" toast
   // for rounds now, but none of the eight giant glowing mushrooms scattered round the glade ever got one
   // — the one real landmark shape unique to these woods, and the cat could only ever walk past it. The
@@ -15903,6 +15903,17 @@ function buildForest(game, entry) {
   // radius chosen (a touch tighter than this mushroom's own 1.5×-scale ratio, since the den sits
   // closer here than at any of the other five).
   game.addInteractable({ obj: denMushroom, radius: 3.5, label: () => 'Look up at the mushroom', onUse: () => { SFX.click(); game.toast(rnd.pick(['🍄 "Closest one to the fox\'s den. The fox never pays it any mind."', '🍄 "Grows right where the glade meets the den-side thicket."', '🍄 "No ring out here either, just this one cap glowing on its own."']), 3000); } });
+  // seven of the eight now answer; one still stands mute, left for a future round since a headless
+  // probe found it tighter than any of the others — a wandering flyer drifts within 2.6 m of it, but
+  // that is no obstruction (butterflies and fairies cross everywhere in this glade). The one at (16,
+  // 12) is the only teal-hued cap east of the ring, past the whittler's own bench. Same trick a
+  // seventh time: `blueMushroom`, captured from the same build loop, straight into `addInteractable`
+  // as `obj` — no new mesh, no new physics box. A headless probe (`game.load(6, 'from-hub')`, 4000
+  // simulated frames, every NPC's own position sampled every frame) swept this point against every
+  // physics box and every sample: the nearest other box stayed 3.5 m clear and the nearest other
+  // interactable (a "Say hello" prompt) 4.5 m off — both past the 3.0 m radius chosen, a tighter
+  // 0.94×-scale ratio than this set's usual 1.5× since the glade is more crowded out this way.
+  game.addInteractable({ obj: blueMushroom, radius: 3.0, label: () => 'Look up at the mushroom', onUse: () => { SFX.click(); game.toast(rnd.pick(['🍄 "Only teal one out this way — the rest of its colour stayed back at the ring."', '🍄 "Grows closest to the whittler\'s bench. He\'s never once looked up at it."', '🍄 "No fairy ring out here either, just this one cap and the quiet."']), 3000); } });
   // Frosty Peak has had its aurora since round 283 and the Neighborhood its own telescope more recently,
   // but these woods — the one world actually built around fairies and wishes — never had a sky worth
   // looking up at. `makeRainbowArc()` (new, next to `makeAurora` in `62-props-nature.js`) is seven
