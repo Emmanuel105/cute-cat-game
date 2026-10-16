@@ -13395,3 +13395,30 @@ Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console w
 unchanged (322 — a toast on an existing mesh costs no new collider). Four of the eight mushrooms are
 still mute. No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 513 — a look north for Whisper Woods' farthest mushroom
+
+Four of the glade's eight giant mushrooms could already be looked up at; four still stood mute. **The
+one at (4, 24) gets its turn** — the furthest north of the whole set, past the ring, just shy of the
+third owl's tree. *"Furthest north of the ring. Even the owl up the tree keeps half an eye on it."*
+
+Same trick as the first four: `northMushroom` is captured straight from the loop in `buildForest()`
+that already builds all eight (mesh, `glow: true`, its own `userData.update` for the pulsing cap
+light, and a `boxT` physics box), handed directly to `game.addInteractable`. No new mesh, no new
+physics box, nothing drawn from this world's own seeded `r` for the dialogue (picked fresh with
+`rnd.pick()` at use time, same as the other four mushrooms' own lines).
+
+A scratch headless probe (the same stub-three harness `test/run.mjs` itself uses, `game.load(6,
+'from-hub')` then 3000 simulated frames) swept this point against every one of the woods' physics
+boxes and every NPC's own position sampled every frame: the nearest other box (a stray
+scatter-mushroom at x 4.8-5.5, z 19.4-19.9) stayed 4.2 m clear and the nearest soul (the painter at
+their easel, stationary) never closer than 4.5 m — both well past the 3.45 m radius chosen (the same
+1.5×-scale ratio the first three mushrooms used, off this one's own 2.3 scale). The probe also swept
+the other three remaining mute candidates — (-14, -14), (16, 12) and (-20, 0) — as runners-up for a
+future round; the (16, 12) mushroom (the biggest in the set) came back tightest again, same as round
+511 found.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged (322 — a toast on an existing mesh costs no new collider). Four of the eight mushrooms are
+still mute. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
