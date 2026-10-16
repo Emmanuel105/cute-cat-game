@@ -4967,6 +4967,21 @@ function buildRobotCity(game, entry) {
   { const rig = makeScrapBug();
     game.npcs.push(new Hopper(game, rig, { x: 34, z: 11, leash: 1.1, r: 0.1, dist: [0.2, 0.5], dur: 0.26, height: 0.1, idle: [1.2, 3.6],
       onHop: () => { if (rnd.chance(0.25)) SFX.click(); } })); }
+  // Candy Land's gingerbread guard (round 300-ish) and Victorian's drill line both already use `Marchers`
+  // (55-npcs.js) for a lockstep patrol; Robot City has its own sentry and RoboDog, each one robot walking
+  // alone, but never a squad in step. A three-robot security detail now beats a strict north-south line
+  // in the gap between two of the east yard's own towers, same lockstep-and-follow logic as both earlier
+  // marches, unchanged — just `makeRobot()` rigs in place of gingerbread men or children.
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses) built
+  // the real city (`game.travel(2, 'from-hub')`), sampled every NPC's own position every quarter second
+  // over 400 simulated frames (so no wandering robot, tag/catch pair or ring dancer mid-turn could slip
+  // past unnoticed), then swept a short list of candidate lines against both those samples and every one
+  // of the city's 1191 physics boxes: the 8 m line from (46, -18) to (46, -26) came back clear by 6.73 m
+  // of the nearest box and 12.0 m of the nearest other soul along its whole length, at radius 49-53 from
+  // the origin — deep in the east yard's own tower cluster but clear of every one of them.
+  { const marchers = [0, 1, 2].map(() => { const rig = makeRobot(); W.add(rig.group); return rig; });
+    game.npcs.push(new Marchers(game, marchers, { points: [[46, -18], [46, -26]], speed: 1.0, pause: [1, 2], pauseAll: true, loop: false, r: 0.42, height: 1.9, gap: 1.2,
+      cries: ['Shift patrol: sector clear.', 'In step. Always in step.', 'Unauthorized feline logged. Proceeding.'], cryIcon: '🛡️' })); }
   const sq = new Squirrel(game, -14, -9, 'sq-robot'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('mouse', -8, 7); C.add('star', 12, -22); C.add('fish', -18, 2); C.add('yarn', 21, 9); C.add('star', 0, -27); C.add('fish', 4, 14); C.add('mouse', 26, -18); C.add('yarn', -26, -6);

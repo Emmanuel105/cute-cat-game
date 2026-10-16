@@ -13790,3 +13790,31 @@ Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 conso
 own friend count up from 70 to 72 for the two new racers. No visual check was possible in this
 environment (no browser, no Playwright) — only the stub-three test suite and the two headless probes
 above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 525 — Robot City's own marching patrol
+
+Candy Land's gingerbread guard and Victorian's drill line have both used the `Marchers` class
+(`55-npcs.js`) for a lockstep patrol since early on; Robot City had its own sentry and RoboDog, but each
+one is a single robot wandering or patrolling alone — nobody there ever marched in step. **A three-robot
+security detail now beats a strict north-south line in the gap between two of the east yard's own
+towers**, turning at each end and pausing a beat before heading back. *"Shift patrol: sector clear."*
+*"In step. Always in step."* *"Unauthorized feline logged. Proceeding."*
+
+No new class and no new mesh: three plain `makeRobot()` rigs, handed straight to the exact same
+`Marchers` constructor the gingerbread guard and the toy soldiers already use, unchanged — one leads on
+a `Patroller` route, the other two hold a fixed gap behind it in lockstep. Only the lead robot becomes a
+friend (`Patroller`'s own constructor calls `greetable()` on itself; the two followers are plain scenery,
+same as it is for the three gingerbread men and the three children elsewhere).
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, built the
+real city with `game.travel(2, 'from-hub')`) sampled every NPC's own position every quarter second over
+400 simulated frames so no wandering robot, tag/catch pair or ring dancer mid-turn could slip past
+unnoticed, then swept a short list of candidate lines against both those samples and every one of the
+city's 1191 physics boxes. The 8 m line from (46, -18) to (46, -26) came back clearest: 6.73 m from the
+nearest box and 12.0 m from the nearest other soul along its whole length, at radius 49-53 m from the
+origin — deep in the east yard's own tower cluster but clear of every one of them.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings, Robot City's
+own friend count up from 73 to 74 for the patrol's lead robot. No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite and the headless probe above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
