@@ -13473,3 +13473,33 @@ Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 conso
 unchanged (322). No visual check was possible in this environment (no browser, no Playwright) — only
 the stub-three test suite and a hand-written headless probe sampling the nearest-interactable logic
 directly. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 516 — a look at Whisper Woods' den-side mushroom
+
+Round 513 flagged three of the glade's eight giant mushrooms as still mute and named (-14, -14) as a
+future candidate. **It answers now**: *"Closest one to the fox's den. The fox never pays it any
+mind."* *"Grows right where the glade meets the den-side thicket."* It's the one of the eight
+sitting nearest the fox's own den at (-26, -14) — about 12 m off, just past the fox's own 10 m wander
+leash.
+
+Same trick as the five mushrooms before it: `denMushroom` is captured straight from the loop in
+`buildForest()` that builds all eight (mesh, `glow: true`, its own `userData.update` for the pulsing
+cap light, and a `boxT` physics box already in place), handed directly to `game.addInteractable` — no
+new mesh, no new physics box, no fresh baking exemption needed.
+
+A scratch headless probe (the same stub-three harness `test/run.mjs` itself uses, `game.load(6,
+'from-hub')` then 4000 simulated frames) swept this point against every one of the woods' physics
+boxes and every ground NPC's own position sampled every frame (flyers excluded — butterflies and
+fairies drift everywhere in this glade and are no obstruction). The nearest other box stayed 6.2 m
+clear, the nearest other interactable 7.2 m off, and the fox on its own wander never closer than
+3.9 m — all past the 3.5 m radius chosen, a touch tighter than this set's usual 1.5×-scale ratio since
+the den sits closer here than at any of the other five already wired up.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings, box
+count unchanged (322 — a toast on an existing mesh costs no new collider). Two of the eight mushrooms
+are still mute, at (16, 12) and (-20, 0) — both came back tighter in this round's own probe (nearest
+other interactable only 3.5 m off at (-20, 0), where the mushroom-patch forager already holds a "Say
+hello" prompt almost on top of it) and are left for a future round with a smaller radius or a
+different approach. No visual check was possible in this environment (no browser, no Playwright) —
+only the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.
