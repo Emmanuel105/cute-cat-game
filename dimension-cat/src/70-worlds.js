@@ -2040,6 +2040,28 @@ function buildNeighborhood(game, entry) {
     game.npcs.push(new Patroller(game, skater, { points: [[50, 22], [70, 22]], speed: 1.7, pause: [0.3, 0.6], height: 1.3,
       cries: ['Four wheels, no brakes — don’t tell my mum.', 'Careful, puss — these don’t stop on sand.', 'Straight boardwalk, dead easy. The road’s the hard part.'] })); }
 
+  // the park already has a swing and a seesaw but nothing with an actual rally to it — a tetherball pole
+  // now stands on the open grass east of the park path, two kids batting the ball round it in an endless
+  // back-and-forth. `Tetherball` (new in 55-npcs.js, right after `Horseshoes` since it is the same
+  // held-then-struck idea but circling instead of flying) needs no world-specific code beyond the two
+  // rigs and a spot: the pole, ball and rope are all built inside the constructor.
+  // Placed at (18, 40), well clear of everything else already standing in the park: the seesaw's own box
+  // at (11, 45) is 5.85 m off at its nearest corner, the bench's box at (6, 40) 9 m off, the flower bed at
+  // (14, 36) 4.5 m off (decorative, no box of its own), and the park path itself (`Z.addSpan(-13, 35.2,
+  // 13, 36.8)`) doesn't reach past x=13. The two kids stand at (18, 38) and (18, 42), 2 m either side of
+  // the pole — well outside the ball's own 0.95 m orbit — so `test/run.mjs`'s own park-path walk, which
+  // never comes this far east, stays exactly as clear as it always was.
+  // Built dead last, after the roller skater, for the same reason every other addition at the end of this
+  // function already gives: `makeHuman()` draws three values off the *shared* `rnd()` sequence
+  // unconditionally, and two more rigs built any earlier on this street would shift that sequence and
+  // desync the two-neighbours-chat timing test a thousand-odd lines up.
+  { const tetherWard = makeWardrobe(r, { shirts: [0x3fae9a, 0xe08a3f], pants: [0x2c3140, 0x5a4634] });
+    const boy = makeHuman({ ...randomPerson(r, { female: false, child: true, wardrobe: tetherWard }), hat: null, jacket: null, scarf: null, bag: null, backpack: null });
+    const girl = makeHuman({ ...randomPerson(r, { female: true, child: true, wardrobe: tetherWard }), hat: null, jacket: null, scarf: null, bag: null, backpack: null, hairStyle: 'braids' });
+    W.add(boy.group); W.add(girl.group);
+    game.npcs.push(new Tetherball(game, boy, girl, { x: 18, z: 40,
+      cries: ['Round and round, never stops!', 'Watch it, puss — that thing\'s got a mean swing.', 'I\'m up to forty wraps. I think.'] })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

@@ -13632,3 +13632,40 @@ unchanged (322 — two new NPCs cost two physics circles, not boxes, same as eve
 this game). No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite and the two headless probes above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 521 — a tetherball pole for the Neighborhood park
+
+Round 508's own list of playground games this whole game had never tried (tetherball, badminton,
+archery, sack races) lost its first entry to round 520's tug-of-war; **this is the second**: a pole now
+stands on the open grass east of the park path, a ball on a rope circling it as two kids bat it back and
+forth, the ball's own direction flipping each time one of them connects — an endless rally rather than
+the held-then-lobbed shape every other two-player game here uses. *"Round and round, never stops!"*
+*"Watch it, puss — that thing's got a mean swing."* *"I'm up to forty wraps. I think."*
+
+New `Tetherball` class in `55-npcs.js`, right after `Horseshoes` since it's the nearest relative (two
+facing rigs either side of a fixed point) — but a generic controller rather than a reskin, since nothing
+in this game span a prop on a cord around a centre before. It builds its own pole, cap, ball and rope
+(the rope stretched and aimed every frame between a fixed top anchor and the ball's own orbit position,
+the same `position.copy().lerp()` / `lookAt()` / `scale.set()` trick `KiteFlyer`'s kite string already
+uses), takes a steady orbit speed that reverses every 1.6–2.6 s, and swings whichever kid's turn it is
+through an arm-raise timed to the reversal. The pole gets one physics box; each kid gets a circle and a
+`greetable()` call, same as `TugOfWar`'s own pair.
+
+Placed at (18, 40): a fresh headless probe (the same stub-three harness `test/run.mjs` itself uses,
+`game.start('new')` then 300 simulated seconds of real play) found the pole's own box 7.27 m clear of
+every other box in the Neighborhood the whole time, the ball's position finite throughout, and both
+kids' own "Say hi" prompts firing a new friend each on interact. The park's existing fixtures are all
+further off still: the seesaw's own box at (11, 45) by 5.85 m, the bench's at (6, 40) by 9 m, and the
+park path itself (`Z.addSpan(-13, 35.2, 13, 36.8)`) doesn't reach past x=13. Built dead last in
+`buildNeighborhood()`, after the roller skater, for the reason every other addition at the end of this
+function already gives: `makeHuman()` draws three values off the *shared* `rnd()` sequence
+unconditionally, and two more rigs built any earlier would shift it and desync the two-neighbours-chat
+timing test. The first attempt's own custom wardrobe colours (picked without checking) collided with an
+existing shirt elsewhere on the street and tripped the "no two neighbours wear the same shirt" check
+before anything was committed — fixed by grepping every hex colour already used in `buildNeighborhood()`
+and picking two that weren't among them.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings, box count up
+by one (323 — the pole's own box, same cost as any other static post in this game). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
+headless probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

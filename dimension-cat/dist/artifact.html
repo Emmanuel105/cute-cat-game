@@ -2641,6 +2641,47 @@ class Horseshoes {
   }
 }
 
+// ---------------------------------------------------------------- tetherball: two kids either side of a pole, the ball on its rope circling steadily and reversing direction each time one of them "hits" it, same held-and-struck idea as Horseshoes but an endless rally instead of a back-and-forth lob
+class Tetherball {
+  constructor(game, rigA, rigB, { x, z, ry = 0, gap = 4, poleH = 2.3, cries = null, cryIcon = '🏐' }) {
+    this.game = game; this.rigs = [rigA, rigB]; this.x = x; this.z = z; this.poleH = poleH;
+    this.t = rnd() * 10; this.ang = ry; this.dir = 1; this.hitT = rnd.range(1.4, 2.2); this.hitSide = 0; this.hitK = 0;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(5, 10) : 0;
+    const gy = game.physics.ground0(x, z);
+    this.pole = mesh(G.cyl(0.045, 0.06, poleH, 8), mat(0x8a8f98, { metalness: 0.3, roughness: 0.55 }), { x, y: gy + poleH / 2, z, parent: game.world });
+    mesh(G.cyl(0.09, 0.09, 0.05, 8), mat(0x5a5f68), { y: poleH / 2 - 0.02, parent: this.pole });   // cap
+    this.ball = mesh(G.sphere(0.17, 10, 8), mat(0xe0503c), { x, y: gy + poleH * 0.42, z: z + 0.95, parent: game.world });
+    this.rope = group(0, 0, 0, game.world); noInk(mesh(G.cyl(0.007, 0.007, 1, 4), mat(0xece6d8, { roughness: 1 }), { rx: PI / 2, shadow: 'none', parent: this.rope }));
+    this.top = V3(x, gy + poleH - 0.04, z);
+    this.ctls = this.rigs.map((rig, i) => {
+      const side = i ? 1 : -1, px = x + sin(ry) * side * (gap / 2), pz = z + cos(ry) * side * (gap / 2);
+      rig.group.position.set(px, game.physics.ground0(px, pz), pz); rig.group.rotation.y = ry + (i ? PI : 0);   // arranged either side of the pole, facing across it
+      const ctl = { game, rig, x: px, z: pz, look: 0, lookW: 0, tipT: 0, tipped: false, circle: game.physics.addCircle(this, px, pz, 0.3) };
+      greetable(game, ctl); return ctl;
+    });
+    this.rig = rigA; game.physics.addBox(x, poleH / 2, z, 0.18, poleH, 0.18, { cam: false });
+  }
+  update(dt) {
+    this.t += dt; this.hitT -= dt; this.ang += dt * this.dir * 1.7;
+    if (this.hitT <= 0) { this.dir *= -1; this.hitSide = this.dir > 0 ? 0 : 1; this.hitK = 1; this.hitT = rnd.range(1.6, 2.6); SFX.bounce(); }
+    if (this.hitK > 0) this.hitK = max(0, this.hitK - dt * 2.2);
+    const gy = this.game.physics.ground0(this.x, this.z), orbit = 0.95;
+    this.ball.position.set(this.x + sin(this.ang) * orbit, gy + this.poleH * 0.42, this.z + cos(this.ang) * orbit);
+    this.rope.position.copy(this.top).lerp(this.ball.position, 0.5); this.rope.lookAt(this.ball.position); this.rope.scale.set(1, 1, max(0.01, this.top.distanceTo(this.ball.position)));
+    this.rigs.forEach((rig, i) => {
+      rig.animate(0, false, dt, this.t);
+      if (!rig.gesture) {
+        const swing = this.hitSide === i ? this.hitK : 0;
+        const A = rig.arms[i];
+        A.sh.rotation.x = damp(A.sh.rotation.x, -0.5 - swing * 1.4, 10, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.3 - swing * 0.7, 10, dt); A.sh.rotation.z = (i ? -1 : 1) * 0.1;
+        rig.spine.rotation.y = damp(rig.spine.rotation.y, (i ? -1 : 1) * swing * 0.25, 8, dt);
+      }
+      Wanderer.prototype.lookAtCat.call(this.ctls[i], dt);
+    });
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- swinger: a child on the park swing, legs kicking at the top of each arc
 class Swinger {
   constructor(game, rig, swingSet, { x, z, ry = 0 }) {
@@ -9275,6 +9316,28 @@ function buildNeighborhood(game, entry) {
     }
     game.npcs.push(new Patroller(game, skater, { points: [[50, 22], [70, 22]], speed: 1.7, pause: [0.3, 0.6], height: 1.3,
       cries: ['Four wheels, no brakes — don’t tell my mum.', 'Careful, puss — these don’t stop on sand.', 'Straight boardwalk, dead easy. The road’s the hard part.'] })); }
+
+  // the park already has a swing and a seesaw but nothing with an actual rally to it — a tetherball pole
+  // now stands on the open grass east of the park path, two kids batting the ball round it in an endless
+  // back-and-forth. `Tetherball` (new in 55-npcs.js, right after `Horseshoes` since it is the same
+  // held-then-struck idea but circling instead of flying) needs no world-specific code beyond the two
+  // rigs and a spot: the pole, ball and rope are all built inside the constructor.
+  // Placed at (18, 40), well clear of everything else already standing in the park: the seesaw's own box
+  // at (11, 45) is 5.85 m off at its nearest corner, the bench's box at (6, 40) 9 m off, the flower bed at
+  // (14, 36) 4.5 m off (decorative, no box of its own), and the park path itself (`Z.addSpan(-13, 35.2,
+  // 13, 36.8)`) doesn't reach past x=13. The two kids stand at (18, 38) and (18, 42), 2 m either side of
+  // the pole — well outside the ball's own 0.95 m orbit — so `test/run.mjs`'s own park-path walk, which
+  // never comes this far east, stays exactly as clear as it always was.
+  // Built dead last, after the roller skater, for the same reason every other addition at the end of this
+  // function already gives: `makeHuman()` draws three values off the *shared* `rnd()` sequence
+  // unconditionally, and two more rigs built any earlier on this street would shift that sequence and
+  // desync the two-neighbours-chat timing test a thousand-odd lines up.
+  { const tetherWard = makeWardrobe(r, { shirts: [0x3fae9a, 0xe08a3f], pants: [0x2c3140, 0x5a4634] });
+    const boy = makeHuman({ ...randomPerson(r, { female: false, child: true, wardrobe: tetherWard }), hat: null, jacket: null, scarf: null, bag: null, backpack: null });
+    const girl = makeHuman({ ...randomPerson(r, { female: true, child: true, wardrobe: tetherWard }), hat: null, jacket: null, scarf: null, bag: null, backpack: null, hairStyle: 'braids' });
+    W.add(boy.group); W.add(girl.group);
+    game.npcs.push(new Tetherball(game, boy, girl, { x: 18, z: 40,
+      cries: ['Round and round, never stops!', 'Watch it, puss — that thing\'s got a mean swing.', 'I\'m up to forty wraps. I think.'] })); }
 
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);

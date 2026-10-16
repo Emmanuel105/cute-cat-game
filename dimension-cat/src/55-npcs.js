@@ -832,6 +832,47 @@ class Horseshoes {
   }
 }
 
+// ---------------------------------------------------------------- tetherball: two kids either side of a pole, the ball on its rope circling steadily and reversing direction each time one of them "hits" it, same held-and-struck idea as Horseshoes but an endless rally instead of a back-and-forth lob
+class Tetherball {
+  constructor(game, rigA, rigB, { x, z, ry = 0, gap = 4, poleH = 2.3, cries = null, cryIcon = '🏐' }) {
+    this.game = game; this.rigs = [rigA, rigB]; this.x = x; this.z = z; this.poleH = poleH;
+    this.t = rnd() * 10; this.ang = ry; this.dir = 1; this.hitT = rnd.range(1.4, 2.2); this.hitSide = 0; this.hitK = 0;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(5, 10) : 0;
+    const gy = game.physics.ground0(x, z);
+    this.pole = mesh(G.cyl(0.045, 0.06, poleH, 8), mat(0x8a8f98, { metalness: 0.3, roughness: 0.55 }), { x, y: gy + poleH / 2, z, parent: game.world });
+    mesh(G.cyl(0.09, 0.09, 0.05, 8), mat(0x5a5f68), { y: poleH / 2 - 0.02, parent: this.pole });   // cap
+    this.ball = mesh(G.sphere(0.17, 10, 8), mat(0xe0503c), { x, y: gy + poleH * 0.42, z: z + 0.95, parent: game.world });
+    this.rope = group(0, 0, 0, game.world); noInk(mesh(G.cyl(0.007, 0.007, 1, 4), mat(0xece6d8, { roughness: 1 }), { rx: PI / 2, shadow: 'none', parent: this.rope }));
+    this.top = V3(x, gy + poleH - 0.04, z);
+    this.ctls = this.rigs.map((rig, i) => {
+      const side = i ? 1 : -1, px = x + sin(ry) * side * (gap / 2), pz = z + cos(ry) * side * (gap / 2);
+      rig.group.position.set(px, game.physics.ground0(px, pz), pz); rig.group.rotation.y = ry + (i ? PI : 0);   // arranged either side of the pole, facing across it
+      const ctl = { game, rig, x: px, z: pz, look: 0, lookW: 0, tipT: 0, tipped: false, circle: game.physics.addCircle(this, px, pz, 0.3) };
+      greetable(game, ctl); return ctl;
+    });
+    this.rig = rigA; game.physics.addBox(x, poleH / 2, z, 0.18, poleH, 0.18, { cam: false });
+  }
+  update(dt) {
+    this.t += dt; this.hitT -= dt; this.ang += dt * this.dir * 1.7;
+    if (this.hitT <= 0) { this.dir *= -1; this.hitSide = this.dir > 0 ? 0 : 1; this.hitK = 1; this.hitT = rnd.range(1.6, 2.6); SFX.bounce(); }
+    if (this.hitK > 0) this.hitK = max(0, this.hitK - dt * 2.2);
+    const gy = this.game.physics.ground0(this.x, this.z), orbit = 0.95;
+    this.ball.position.set(this.x + sin(this.ang) * orbit, gy + this.poleH * 0.42, this.z + cos(this.ang) * orbit);
+    this.rope.position.copy(this.top).lerp(this.ball.position, 0.5); this.rope.lookAt(this.ball.position); this.rope.scale.set(1, 1, max(0.01, this.top.distanceTo(this.ball.position)));
+    this.rigs.forEach((rig, i) => {
+      rig.animate(0, false, dt, this.t);
+      if (!rig.gesture) {
+        const swing = this.hitSide === i ? this.hitK : 0;
+        const A = rig.arms[i];
+        A.sh.rotation.x = damp(A.sh.rotation.x, -0.5 - swing * 1.4, 10, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.3 - swing * 0.7, 10, dt); A.sh.rotation.z = (i ? -1 : 1) * 0.1;
+        rig.spine.rotation.y = damp(rig.spine.rotation.y, (i ? -1 : 1) * swing * 0.25, 8, dt);
+      }
+      Wanderer.prototype.lookAtCat.call(this.ctls[i], dt);
+    });
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- swinger: a child on the park swing, legs kicking at the top of each arc
 class Swinger {
   constructor(game, rig, swingSet, { x, z, ry = 0 }) {
