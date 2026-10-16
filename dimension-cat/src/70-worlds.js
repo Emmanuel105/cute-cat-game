@@ -2062,6 +2062,35 @@ function buildNeighborhood(game, entry) {
     game.npcs.push(new Tetherball(game, boy, girl, { x: 18, z: 40,
       cries: ['Round and round, never stops!', 'Watch it, puss — that thing\'s got a mean swing.', 'I\'m up to forty wraps. I think.'] })); }
 
+  // Candy Land's had a sack race since round 524 — the oldest pavement-game list it was pulled from
+  // (tetherball, badminton, tug-of-war, archery, sack races) started right here, in the open south field
+  // the yo-yo kid, the hula hooper, the jump-roper and the marbles kid already share, and never actually
+  // got its own entry. Two more kids now hop the same 5 m lane `SackRace` already knows how to run,
+  // ankle-to-waist in burlap, neither ever quite winning. No new class and no new mesh: `SackRace`
+  // (`55-npcs.js`) and `makeHuman`'s own `o.sack` option are both exactly what Candy Land's pair already
+  // built.
+  // Placed at (-10, -40), the lane running along world X (`ry = PI/2`): a headless probe (the same
+  // stub-three harness `test/run.mjs` itself uses, `game.start('new')`) sampled every NPC's and the
+  // squirrel's own position every 5th frame over 300 simulated seconds — long enough for the yo-yo kid,
+  // the hula hooper, the jump-roper, the scooter kid, the bubble-blower, the marbles kid and every
+  // wandering stroller to range fully — then swept both racers' own full lane (5 m long, 1.1 m apart)
+  // against both those samples and every one of the street's own physics boxes: the worst point on the
+  // whole lane came back clear by 13.85 m of the nearest box and 13.45 m of the nearest other soul, dead
+  // centre of the clearing between all of them.
+  // Built dead last, after the tetherball pole, for the same reason every other addition at the end of
+  // this function already gives: `makeHuman()` draws three values off the *shared* `rnd()` sequence
+  // unconditionally, and two more rigs built any earlier on this street would shift that sequence and
+  // desync the two-neighbours-chat timing test a thousand-odd lines up.
+  { const rx = -10, rz = -40, rry = PI / 2;
+    const sackWard = makeWardrobe(r, { shirts: [0x5ad1e6, 0xffb6d9, 0x9ad66a], pants: [0x3a3a3a, 0x4a3a2a] });
+    const sackA = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, elder: false, wardrobe: sackWard }),
+      sack: 0xa8785a, hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: false });
+    const sackB = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, elder: false, wardrobe: sackWard }),
+      sack: 0xa8785a, hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: false });
+    W.add(sackA.group); W.add(sackB.group);
+    game.npcs.push(new SackRace(game, sackA, sackB, { x: rx, z: rz, ry: rry,
+      cries: ['Nearly went over that time!', 'Careful, puss — these sacks smell like old potatoes.', "Best of three. I'm up two to one, whatever he says."] })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

@@ -14050,3 +14050,33 @@ Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 conso
 Peak's own friend count up from 66 to 67 (the archer counts, same as the woods' own). No visual check
 was possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
 headless probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 533 — a sack race for the Neighborhood
+
+Round 508's own list of playground games this game had never tried (tetherball, badminton, tug-of-war,
+archery, sack races) started right in the Neighborhood's own open south field — the yo-yo kid, the hula
+hooper, the jump-roper, the scooter kid and the marbles kid all share that clearing — but the sack race
+itself ended up going to Candy Land instead (round 524), and the street that gave the list its name never
+got one of its own. **Two more kids now hop a short lane through the same clearing, bound ankle-to-waist
+in burlap sacks, neither one ever quite winning.** *"Nearly went over that time!"* *"Careful, puss — these
+sacks smell like old potatoes."* *"Best of three. I'm up two to one, whatever he says."*
+
+No new class and no new mesh: the exact same `SackRace` (`55-npcs.js`) and `o.sack` wardrobe option Candy
+Land's own racers already use, just a fresh pair of kids and a spot. `SackRace` needs no shared prop and
+no second player actually reacting to the first — each racer just hops its own 5 m lane on its own clock,
+turning round at either end, so the lead keeps changing without either one ever reaching a line that would
+end it.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses, `game.start('new')`) sampled
+every NPC's and the squirrel's own position every 5th frame over 300 simulated seconds — long enough for
+the whole south field's wandering and looping cast to range fully — then swept both racers' own full lane
+(5 m long, 1.1 m apart, running along world X) against both those samples and every one of the street's
+323 physics boxes: the worst point on the whole lane came back clear by 13.85 m of the nearest box and
+13.45 m of the nearest other soul at (-10, -40), dead centre of the clearing between the yo-yo kid, the
+jump-roper, the hula hooper, the scooter kid, the marbles kid and the bubble-blower.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings, the
+Neighborhood's own friend count up from 61 to 63 for the two new racers (confirmed against the
+pre-change build with `git stash`). No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
