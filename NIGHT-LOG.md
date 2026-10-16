@@ -13818,3 +13818,41 @@ Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 conso
 own friend count up from 73 to 74 for the patrol's lead robot. No visual check was possible in this
 environment (no browser, no Playwright) — only the stub-three test suite and the headless probe above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 526 — Frosty Peak's own marching line of penguins
+
+Candy Land's gingerbread guard, Victorian's drill line and round 525's own Robot City security detail
+have all used the `Marchers` class (`55-npcs.js`) for a lockstep patrol — Frosty Peak's own colony, 50
+wandering penguins' worth of lines up in this same file, only ever shuffles loose by the pond. Real
+penguins actually do the opposite: they file into a tight single line and march. **Three penguins now
+hold a strict column on an 8 m stretch of open snowfield**, waddling to one end, turning in place, and
+waddling straight back. *"Waddle. Waddle. Precision waddle."* *"Mind the queue, puss — we've drilled
+this."* *"Column of three. Nobody elected a leader; the ice did."*
+
+No new class and no new mesh: three plain `makePenguin()` rigs, handed straight to the exact same
+`Marchers` constructor the gingerbread guard, the toy soldiers and the robot patrol already use,
+unchanged — one leads on a `Patroller` route, the other two hold a fixed gap behind it in lockstep.
+`Patroller`'s own constructor calls `greetable()` on the lead automatically, same as every earlier
+march, but `greetable()` only wires up a friend prompt when the rig carries `.look`, `.robot` or
+`.cookie` — a bare `makePenguin()` rig has none of the three, so the call quietly no-ops. Checked this
+wasn't a mistake by standing the cat next to both the new march's lead and one of the existing wandering
+colony penguins: neither showed a greet prompt, confirming penguins have always been ambient wildlife
+here, same as the deer and hares, not friend characters — this march just files that same wildlife into
+formation instead of leaving it to wander. Frosty Peak's own friend count is unchanged.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, built the
+real mountain with `game.start('new')` then `game.travel(5, 'from-hub')`) sampled every NPC's own rig
+position every quarter second over 300 simulated seconds (so no wandering penguin, deer, hare, arctic
+fox or patrolling villager mid-leash could slip past unnoticed), then swept the 8 m line from (55, -5) to
+(55, 3) against both those samples and every one of the mountain's 742 physics boxes: the line came back
+clear by 6.33 m of the nearest box along its whole length and 5.33 m of the nearest other soul, at radius
+55 m — well east of the pond colony at (18, 8) and the hare trio at (45-48, 0±2), short of the radius
+(58) where `snowRegion`'s own procedural fill takes over. A second probe ran the real march for 300
+simulated seconds: the lead reversed direction 23 times (about right for a short, slow waddle crossing
+an 8 m lane), its z position stayed within the lane's own -5 to 3 m bounds, and every rig's position
+stayed finite and in the scene graph throughout.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings, friend
+counts unchanged everywhere. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite and the two headless probes above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

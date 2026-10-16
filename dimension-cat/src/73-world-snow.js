@@ -1187,6 +1187,40 @@ function buildSnowVillage(game, entry) {
     const flag = group(0, 0, 0, W); noInk(mesh(G.box(0.03, 0.14, 0.4), mat(0xd62839, { roughness: 0.7 }), { parent: flag }));
     U.push(() => { const frac = 0.5 + clamp(tug.tension, -1, 1) * 0.12;
       flag.position.set(lerp(A.x, B.x, frac), lerp(ay, by, frac) + 0.03, lerp(A.z, B.z, frac)); flag.rotation.y = ropeGroup.rotation.y; }); }
+  // Candy Land's gingerbread guard, Victorian's drill line and Robot City's own security detail have
+  // all used `Marchers` (55-npcs.js) for a lockstep patrol by now — Frosty Peak's own colony, 50-odd
+  // lines up, only ever wanders loose by the pond. Real penguins actually do the opposite: they file
+  // into a tight single line and march. **Three penguins now hold a strict column on an 8 m stretch of
+  // open snowfield**, waddling to one end, turning in place, and waddling straight back. *"Waddle.
+  // Waddle. Precision waddle."* *"Mind the queue, puss — we've drilled this."* *"Column of three.
+  // Nobody elected a leader; the ice did."*
+  //
+  // No new class and no new mesh: three plain `makePenguin()` rigs, handed straight to the exact same
+  // `Marchers` constructor the gingerbread guard, the toy soldiers and the robot patrol already use,
+  // unchanged — one leads on a `Patroller` route, the other two hold a fixed gap behind it in lockstep.
+  // `Patroller`'s own constructor calls `greetable()` on the lead automatically, same as every earlier
+  // march, but `greetable()` itself only wires up a friend prompt when the rig carries `.look`, `.robot`
+  // or `.cookie` — a bare `makePenguin()` rig has none of the three, so the call quietly no-ops. That's
+  // not a bug here: it's the same thing that already keeps the pond colony's own `Wanderer`s and the
+  // bolder `Follower` penguin from counting as friends, and this march is the same ambient wildlife as
+  // both, just filed into formation instead of wandering loose. No change to this world's own friend
+  // total.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, built
+  // the real mountain with `game.start('new')` then `game.travel(5, 'from-hub')`) sampled every NPC's
+  // own rig position every quarter second over 300 simulated seconds (so no wandering penguin, deer,
+  // hare, arctic fox or patrolling villager mid-leash could slip past unnoticed), then swept the 8 m
+  // line from (55, -5) to (55, 3) against both those samples and every one of the mountain's 742
+  // physics boxes: the line came back clear by 6.33 m of the nearest box along its whole length and
+  // 5.33 m of the nearest other soul, at radius 55 m — well east of the pond colony at (18, 8) and the
+  // hare trio at (45-48, 0±2), short of the radius (58) where snowRegion's own procedural fill takes
+  // over. Placed last of everything this build adds, after the tug-of-war, so the three unconditional
+  // draws `Patroller`'s own constructor makes off the shared `rnd()` sequence (heading phase, idle
+  // clock, cry timer) land after every other timed NPC in this world and disturb no earlier wardrobe or
+  // layout pick.
+  { const marchers = [0, 1, 2].map(() => { const rig = makePenguin({ scale: r.range(0.85, 1.05) }); W.add(rig.group); return rig; });
+    game.npcs.push(new Marchers(game, marchers, { points: [[55, -5], [55, 3]], speed: 0.65, pause: [1, 2], r: 0.3, height: 0.9, gap: 0.9,
+      cries: ['Waddle. Waddle. Precision waddle.', "Mind the queue, puss — we've drilled this.", 'Column of three. Nobody elected a leader; the ice did.'], cryIcon: '🐧' })); }
   const C = game.collectibles;
   C.add('fish', 18, 8); C.add('star', 0, -30); C.add('yarn', -16, 4); C.add('mouse', 12, 20); C.add('star', 30, -20); C.add('fish', -30, 16); C.add('yarn', 22, -6); C.add('mouse', -6, 26);
   game.fx.setAmbient({ count: 480, radius: 22, colors: [0xffffff, 0xeaf4ff, 0xdfe8ff], rise: -1.0, drift: 0.5, life: 9, height: 12, yMin: 2 });
