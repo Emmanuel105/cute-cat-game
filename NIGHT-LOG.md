@@ -14021,3 +14021,32 @@ Whisper Woods' own friend count up from 64 to 66 (both kids count, same as every
 `TugOfWar` pair). No visual check was possible in this environment (no browser, no Playwright)
 — only the stub-three test suite and the headless probe above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 532 — an archery range for Frosty Peak
+
+Whisper Woods has had the game's only archery range since round 525; Frosty Peak's own hunting-lodge
+feel — the trapper by the fire, the ice fisher out on the pond — never got a firing line of its own.
+**A lone archer now draws and looses at a straw target on a quiet stretch of snowfield southwest of
+the village, breath steady, never once hurried.** *"Steadiest hands on the mountain, mine."* *"Mind
+the arrows, puss — none of them are aimed at you."* *"Wind off the peak throws every shot wide, but I
+keep trying."*
+
+No new class and no new prop: the exact same `Archer` (`55-npcs.js`) and straw-boss-and-rings target
+Whisper Woods' own range already builds, just a winter wardrobe (`coat: true`, beanie, scarf) in place
+of the woods' cap and jacket, and `bow: true` for the same longbow prop `makeHuman` already knows how
+to hold.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+`game.start('new')` then `game.travel(5, 'from-hub')`, with the cat teleported right next to the
+candidate spot so nothing the engine's own distance culling could hide) sampled every NPC's own
+position every 7th frame over 2400 simulated frames, then swept the firing line from (-30, -15) to
+(-30, -25) — archer facing south (`ry = PI`) — against both those samples and every one of the
+mountain's 323 physics boxes: the line came back clear by 7.28 m of the nearest box along its whole
+length and 8.61 m of the nearest other soul, at radius 36 m — well south of the fish collectible at
+(-30, 16) and clear across the map from the tug-of-war (50, 20) and the penguin march (55, -5) to
+(55, 3), short of the radius (58) where snowRegion's own procedural fill takes over.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings, Frosty
+Peak's own friend count up from 66 to 67 (the archer counts, same as the woods' own). No visual check
+was possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
+headless probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

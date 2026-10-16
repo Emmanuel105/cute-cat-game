@@ -1221,6 +1221,47 @@ function buildSnowVillage(game, entry) {
   { const marchers = [0, 1, 2].map(() => { const rig = makePenguin({ scale: r.range(0.85, 1.05) }); W.add(rig.group); return rig; });
     game.npcs.push(new Marchers(game, marchers, { points: [[55, -5], [55, 3]], speed: 0.65, pause: [1, 2], r: 0.3, height: 0.9, gap: 0.9,
       cries: ['Waddle. Waddle. Precision waddle.', "Mind the queue, puss — we've drilled this.", 'Column of three. Nobody elected a leader; the ice did.'], cryIcon: '🐧' })); }
+  // Whisper Woods got the first archery range (round 525, `Archer`, 55-npcs.js) and nobody else's had
+  // one since — Frosty Peak's own hunting lodge feel (the trapper by the fire, the ice fisher on the
+  // pond) never got a firing line of its own. **A lone archer now draws and looses at a straw target
+  // on a quiet stretch of snowfield southwest of the village**, breath steady, never once hurried.
+  // *"Steadiest hands on the mountain, mine."* *"Mind the arrows, puss — none of them are aimed at
+  // you."* *"Wind off the peak throws every shot wide, but I keep trying."*
+  //
+  // No new class and no new prop: the exact same `Archer` (55-npcs.js) and straw-boss-and-rings target
+  // Whisper Woods' own range already builds, just a winter wardrobe (`coat: true`, beanie, scarf) in
+  // place of the woods' cap and jacket, and `bow: true` for the same longbow prop `makeHuman` already
+  // knows how to hold.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // `game.start('new')` then `game.travel(5, 'from-hub')`, with the cat teleported right next to the
+  // candidate spot so nothing the engine's own distance culling could hide) sampled every NPC's own
+  // position every 7th frame over 2400 simulated frames, then swept the firing line from (-30, -15) to
+  // (-30, -25) — archer facing south (`ry = PI`) — against both those samples and every one of the
+  // mountain's 323 physics boxes: the line came back clear by 7.28 m of the nearest box along its whole
+  // length and 8.61 m of the nearest other soul, at radius 36 m — well south of the fish collectible at
+  // (-30, 16) and clear across the map from the tug-of-war (50, 20) and the penguin march (55, -5) to
+  // (55, 3), short of the radius (58) where snowRegion's own procedural fill takes over.
+  { const ax = -30, az = -15, ary = PI, adist = 10;
+    const tx = ax + sin(ary) * adist, tz = az + cos(ary) * adist, ty0 = P.ground0(tx, tz);
+    const target = group(tx, ty0, tz, W);
+    mesh(G.cyl(0.46, 0.46, 0.22, 16), mat(0xd9c28a, { roughness: 0.95 }), { y: 1.0, rx: PI / 2, parent: target });   // the straw boss
+    const ringSpecs = [[0.42, 0xf3f0e6], [0.33, 0x1c1c1c], [0.24, 0x2d6fd6], [0.15, 0xd62839], [0.065, 0xf2c744]];
+    ringSpecs.forEach(([rad, c], i) => mesh(G.cyl(rad, rad, 0.02, 20), mat(c, { roughness: 0.7 }), { y: 1.0, z: 0.1 + i * 0.004, rx: PI / 2, shadow: 'none', parent: target }));
+    const standM = mat(0x5b3d24, { roughness: 1 });
+    for (const s of [1, -1]) mesh(G.cyl(0.02, 0.025, 1.0, 6), standM, { x: s * 0.36, y: 0.55, z: -0.2, rx: 0.3, rz: s * 0.22, parent: target });
+    game.physics.addBox(tx, ty0 + 1.0, tz, 0.95, 1.0, 0.3, { cam: false });
+    const bowWard = makeWardrobe(r, { shirts: [0x6a5a4a, 0x4a5a6a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const archer = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.2), wardrobe: bowWard }),
+      hat: 'beanie', hatColor: 0x4a5a6a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a, bag: null, backpack: null, glasses: false, bow: true });
+    W.add(archer.group);
+    const arrow = group(0, 0, 0, W);
+    mesh(G.cyl(0.012, 0.012, 0.62, 6), mat(0x8a6a3a, { roughness: 0.8 }), { rx: PI / 2, parent: arrow });   // shaft
+    mesh(G.cone(0.022, 0.08, 6), mat(0x9aa3ad, { metalness: 0.6, roughness: 0.35 }), { z: -0.35, rx: -PI / 2, parent: arrow });   // head, at local -Z so lookAt() faces it forward
+    const fletchM = mat(0xd62839, { roughness: 0.9 });
+    for (let fi = 0; fi < 3; fi++) mesh(G.box(0.1, 0.002, 0.05), fletchM, { z: 0.26, rz: fi / 3 * TAU, shadow: 'none', parent: arrow });   // tail fletching
+    game.npcs.push(new Archer(game, archer, arrow, { x: ax, z: az, ry: ary, dist: adist,
+      cries: ['Steadiest hands on the mountain, mine.', 'Mind the arrows, puss — none of them are aimed at you.', 'Wind off the peak throws every shot wide, but I keep trying.'] })); }
   const C = game.collectibles;
   C.add('fish', 18, 8); C.add('star', 0, -30); C.add('yarn', -16, 4); C.add('mouse', 12, 20); C.add('star', 30, -20); C.add('fish', -30, 16); C.add('yarn', 22, -6); C.add('mouse', -6, 26);
   game.fx.setAmbient({ count: 480, radius: 22, colors: [0xffffff, 0xeaf4ff, 0xdfe8ff], rise: -1.0, drift: 0.5, life: 9, height: 12, yMin: 2 });
