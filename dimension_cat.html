@@ -2005,6 +2005,12 @@ function makeHuman(o = {}) {
       const stringM = mat(0xece6d8, { roughness: 0.6, transparent: true, opacity: 0.65 });
       for (let si = -2; si <= 2; si++) { noInk(mesh(G.cyl(0.004, 0.004, 0.19, 4), stringM, { x: si * 0.035, y: 0.48, z: 0.03, parent: hand })); noInk(mesh(G.cyl(0.004, 0.004, 0.19, 4), stringM, { x: 0, y: 0.48 + si * 0.035, z: 0.03, rz: PI / 2, parent: hand })); }
     }
+    if (o.bow && side === -1) {   // an archer's longbow: a grip and two tapering limbs, held upright at rest
+      const bowM = mat(0x5a3c22, { roughness: 0.75 });
+      mesh(G.cyl(0.02, 0.022, 0.16, 6), bowM, { y: 0.42, z: 0.02, parent: hand });
+      for (const s of [1, -1]) mesh(G.cyl(0.016, 0.006, 0.42, 6), bowM, { y: 0.42 + s * 0.29, z: 0.02, rz: s * 0.09, parent: hand });
+      noInk(mesh(G.cyl(0.003, 0.003, 0.84, 4), mat(0xece6d8, { roughness: 0.6 }), { y: 0.42, z: 0.02, parent: hand }));
+    }
     rig.arms.push({ sh, el });
   }
   mesh(G.cyl(0.05, 0.058, 0.14, 8), skinM, { y: 0.63, parent: spine });            // neck: 5 cm of it shows between the collar and the chin
@@ -3485,6 +3491,45 @@ class Badminton {
       hitter.rig.gesture = 'throw'; hitter.rig.gT = 0.22; SFX.bounce();
     }
     if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.cx, this.cz, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
+// ---------------------------------------------------------------- archer: at the firing line, drawing and loosing a longbow at a straw target downrange — one shot at a time, never held mid-flight, the arrow always nocked, flying or stuck
+class Archer {
+  constructor(game, rig, arrow, { x, z, ry = 0, dist = 10, dur = 0.5, arc = 0.3, cries = null, cryIcon = '🏹' }) {
+    this.game = game; this.rig = rig; this.arrow = arrow; this.x = x; this.z = z; this.ry = ry; this.dur = dur; this.arc = arc;
+    this.t = rnd() * 10; this.state = 'draw'; this.timer = rnd.range(0.6, 1.6); this.flight = 0; this.shots = 0;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(5, 10) : 0;
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    this.target = V3(x + sin(ry) * dist, game.physics.ground0(x, z) + 0.95 * rig.k + 0.15, z + cos(ry) * dist);
+    this.from = V3(); this.to = V3();
+    this.circle = game.physics.addCircle(this, x, z, 0.35);
+    greetable(game, this);
+  }
+  hand(v) { return v.set(this.x + sin(this.ry) * 0.16, this.game.physics.ground0(this.x, this.z) + 0.95 * this.rig.k + 0.22, this.z + cos(this.ry) * 0.16); }
+  update(dt) {
+    this.t += dt; const rig = this.rig;
+    rig.animate(0, false, dt, this.t);
+    if (!rig.gesture) {   // the bow arm stays out straight; the string arm holds the nock back, near the cheek
+      const bow = rig.arms[1], string = rig.arms[0];
+      bow.sh.rotation.x = damp(bow.sh.rotation.x, -1.25, 10, dt); bow.sh.rotation.z = damp(bow.sh.rotation.z, -0.1, 10, dt); bow.el.rotation.x = damp(bow.el.rotation.x, -0.1, 10, dt);
+      string.sh.rotation.x = damp(string.sh.rotation.x, -0.95, 10, dt); string.sh.rotation.z = damp(string.sh.rotation.z, 0.15, 10, dt); string.el.rotation.x = damp(string.el.rotation.x, -1.6, 10, dt);
+    }
+    if (this.state === 'draw') {
+      this.timer -= dt; this.hand(this.arrow.position); this.arrow.lookAt(this.target);
+      if (this.timer <= 0) { this.state = 'flight'; this.flight = 0; this.from.copy(this.arrow.position); this.to.copy(this.target); rig.gesture = 'throw'; rig.gT = 0.22; SFX.bounce(); }
+    } else if (this.state === 'flight') {
+      this.flight += dt; const u = min(1, this.flight / this.dur);
+      this.arrow.position.copy(this.from).lerp(this.to, u); this.arrow.position.y += sin(u * PI) * this.arc; this.arrow.lookAt(this.to);
+      if (u >= 1) {
+        this.state = 'stuck'; this.timer = rnd.range(2.2, 3.4); this.shots++; SFX.thunk();
+        this.game.fx.emit(this.to.x, this.to.y, this.to.z, { count: 5, colors: [0xd9c9a0, 0xffffff], speed: 0.6, up: 0.4, life: 0.4, gravity: 2.5, spread: 0.6 });
+      }
+    } else {   // stuck: a pause at the target before the next arrow is drawn
+      this.timer -= dt; if (this.timer <= 0) { this.state = 'draw'; this.timer = rnd.range(0.8, 1.8); }
+    }
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
   }
 }
 
@@ -17374,6 +17419,54 @@ function buildForest(game, entry) {
       };
       place(game, U, hg, cos(phase) * rad, sin(phase) * rad, 0, h);
     } }
+
+  // round 508's own list of playground games this whole game had never tried (tetherball, badminton,
+  // tug-of-war, archery, sack races) is down to its last entry now — round 520 gave Frosty Peak a
+  // tug-of-war, round 521 the Neighborhood a tetherball pole, round 522 Victorian a badminton net, and
+  // **this one gives Whisper Woods its own archery range**: a lone archer at a firing line of open
+  // ground north of the glade, drawing a longbow and loosing one arrow at a straw target downrange,
+  // never pausing to go fetch it back.
+  //
+  // New `Archer` controller (`55-npcs.js`, right after `Badminton`, its nearest relative among this
+  // run's own playground games) and a new `o.bow` hand prop for `makeHuman` — a grip and two tapering
+  // limbs strung with a straight cylinder, the same spot on the body `axe`, `pole` and `brush` already
+  // use, just on the off hand rather than the side those swing from, since a bow is held steady, not
+  // swung. Unlike every earlier toss or rally game here, there is no second player: the arrow is its
+  // own free mesh, the same trick Horseshoes' shoe and Badminton's shuttle already use, carried at the
+  // bow hand while nocked, loosed on a short, shallow-arced flight, then left standing in the target a
+  // couple of seconds before the next one is drawn. `arrow.lookAt()` keeps its own head pointed exactly
+  // where it is actually travelling — nocked, in flight and stuck alike — rather than the fixed flutter
+  // the shuttlecock settles for.
+  //
+  // The target is new too: a round straw boss painted in flat rings (white, black, blue, red, gold, the
+  // same scheme a real target face uses) on a pair of crossed legs, one physics box over the boss
+  // standing in for both.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses, `game.start('new')` then
+  // `game.load(6, 'from-hub')`) swept the firing line and the ten metres downrange to the target
+  // against every one of the wood's physics boxes and found it clear by 3.3 m or more along its whole
+  // length; every wandering deer's and fox's own leash falls short of the spot by 5.7 m or more (the
+  // nearest, the fox denned at (14, 6), by its own 10 m leash alone), the nearest collectible (the
+  // mouse at (-30, 26)) sits 14.3 m off, and the treehouse (-18, 14) 10.2 m off.
+  { const ax = -16, az = 24, ary = 0, adist = 10;
+    const tx = ax + sin(ary) * adist, tz = az + cos(ary) * adist, ty0 = P.ground0(tx, tz);
+    const target = group(tx, ty0, tz, W);
+    mesh(G.cyl(0.46, 0.46, 0.22, 16), mat(0xd9c28a, { roughness: 0.95 }), { y: 1.0, rx: PI / 2, parent: target });   // the straw boss
+    const ringSpecs = [[0.42, 0xf3f0e6], [0.33, 0x1c1c1c], [0.24, 0x2d6fd6], [0.15, 0xd62839], [0.065, 0xf2c744]];
+    ringSpecs.forEach(([rad, c], i) => mesh(G.cyl(rad, rad, 0.02, 20), mat(c, { roughness: 0.7 }), { y: 1.0, z: 0.1 + i * 0.004, rx: PI / 2, shadow: 'none', parent: target }));
+    const standM = mat(0x5b3d24, { roughness: 1 });
+    for (const s of [1, -1]) mesh(G.cyl(0.02, 0.025, 1.0, 6), standM, { x: s * 0.36, y: 0.55, z: -0.2, rx: 0.3, rz: s * 0.22, parent: target });
+    game.physics.addBox(tx, ty0 + 1.0, tz, 0.95, 1.0, 0.3, { cam: false });
+    const bowWard = makeWardrobe(r, { shirts: [0x4a6a3a], pants: [0x3a3327, 0x2a2a24], shoes: [0x3a2a1e, 0x2a2018] });
+    const archer = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.25), wardrobe: bowWard }),
+      hat: 'cap', hatColor: 0x3a4a2e, jacket: null, scarf: null, bag: null, backpack: null, glasses: false, bow: true });
+    W.add(archer.group);
+    const arrow = group(0, 0, 0, W);
+    mesh(G.cyl(0.012, 0.012, 0.62, 6), mat(0x8a6a3a, { roughness: 0.8 }), { rx: PI / 2, parent: arrow });   // shaft
+    mesh(G.cone(0.022, 0.08, 6), mat(0x9aa3ad, { metalness: 0.6, roughness: 0.35 }), { z: -0.35, rx: -PI / 2, parent: arrow });   // head, at local -Z so lookAt() faces it forward
+    const fletchM = mat(0xd62839, { roughness: 0.9 });
+    for (let fi = 0; fi < 3; fi++) mesh(G.box(0.1, 0.002, 0.05), fletchM, { z: 0.26, rz: fi / 3 * TAU, shadow: 'none', parent: arrow });   // tail fletching
+    game.npcs.push(new Archer(game, archer, arrow, { x: ax, z: az, ry: ary, dist: adist })); }
 
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });

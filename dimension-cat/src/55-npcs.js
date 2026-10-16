@@ -189,6 +189,12 @@ function makeHuman(o = {}) {
       const stringM = mat(0xece6d8, { roughness: 0.6, transparent: true, opacity: 0.65 });
       for (let si = -2; si <= 2; si++) { noInk(mesh(G.cyl(0.004, 0.004, 0.19, 4), stringM, { x: si * 0.035, y: 0.48, z: 0.03, parent: hand })); noInk(mesh(G.cyl(0.004, 0.004, 0.19, 4), stringM, { x: 0, y: 0.48 + si * 0.035, z: 0.03, rz: PI / 2, parent: hand })); }
     }
+    if (o.bow && side === -1) {   // an archer's longbow: a grip and two tapering limbs, held upright at rest
+      const bowM = mat(0x5a3c22, { roughness: 0.75 });
+      mesh(G.cyl(0.02, 0.022, 0.16, 6), bowM, { y: 0.42, z: 0.02, parent: hand });
+      for (const s of [1, -1]) mesh(G.cyl(0.016, 0.006, 0.42, 6), bowM, { y: 0.42 + s * 0.29, z: 0.02, rz: s * 0.09, parent: hand });
+      noInk(mesh(G.cyl(0.003, 0.003, 0.84, 4), mat(0xece6d8, { roughness: 0.6 }), { y: 0.42, z: 0.02, parent: hand }));
+    }
     rig.arms.push({ sh, el });
   }
   mesh(G.cyl(0.05, 0.058, 0.14, 8), skinM, { y: 0.63, parent: spine });            // neck: 5 cm of it shows between the collar and the chin
@@ -1669,6 +1675,45 @@ class Badminton {
       hitter.rig.gesture = 'throw'; hitter.rig.gT = 0.22; SFX.bounce();
     }
     if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.cx, this.cz, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
+// ---------------------------------------------------------------- archer: at the firing line, drawing and loosing a longbow at a straw target downrange — one shot at a time, never held mid-flight, the arrow always nocked, flying or stuck
+class Archer {
+  constructor(game, rig, arrow, { x, z, ry = 0, dist = 10, dur = 0.5, arc = 0.3, cries = null, cryIcon = '🏹' }) {
+    this.game = game; this.rig = rig; this.arrow = arrow; this.x = x; this.z = z; this.ry = ry; this.dur = dur; this.arc = arc;
+    this.t = rnd() * 10; this.state = 'draw'; this.timer = rnd.range(0.6, 1.6); this.flight = 0; this.shots = 0;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(5, 10) : 0;
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    this.target = V3(x + sin(ry) * dist, game.physics.ground0(x, z) + 0.95 * rig.k + 0.15, z + cos(ry) * dist);
+    this.from = V3(); this.to = V3();
+    this.circle = game.physics.addCircle(this, x, z, 0.35);
+    greetable(game, this);
+  }
+  hand(v) { return v.set(this.x + sin(this.ry) * 0.16, this.game.physics.ground0(this.x, this.z) + 0.95 * this.rig.k + 0.22, this.z + cos(this.ry) * 0.16); }
+  update(dt) {
+    this.t += dt; const rig = this.rig;
+    rig.animate(0, false, dt, this.t);
+    if (!rig.gesture) {   // the bow arm stays out straight; the string arm holds the nock back, near the cheek
+      const bow = rig.arms[1], string = rig.arms[0];
+      bow.sh.rotation.x = damp(bow.sh.rotation.x, -1.25, 10, dt); bow.sh.rotation.z = damp(bow.sh.rotation.z, -0.1, 10, dt); bow.el.rotation.x = damp(bow.el.rotation.x, -0.1, 10, dt);
+      string.sh.rotation.x = damp(string.sh.rotation.x, -0.95, 10, dt); string.sh.rotation.z = damp(string.sh.rotation.z, 0.15, 10, dt); string.el.rotation.x = damp(string.el.rotation.x, -1.6, 10, dt);
+    }
+    if (this.state === 'draw') {
+      this.timer -= dt; this.hand(this.arrow.position); this.arrow.lookAt(this.target);
+      if (this.timer <= 0) { this.state = 'flight'; this.flight = 0; this.from.copy(this.arrow.position); this.to.copy(this.target); rig.gesture = 'throw'; rig.gT = 0.22; SFX.bounce(); }
+    } else if (this.state === 'flight') {
+      this.flight += dt; const u = min(1, this.flight / this.dur);
+      this.arrow.position.copy(this.from).lerp(this.to, u); this.arrow.position.y += sin(u * PI) * this.arc; this.arrow.lookAt(this.to);
+      if (u >= 1) {
+        this.state = 'stuck'; this.timer = rnd.range(2.2, 3.4); this.shots++; SFX.thunk();
+        this.game.fx.emit(this.to.x, this.to.y, this.to.z, { count: 5, colors: [0xd9c9a0, 0xffffff], speed: 0.6, up: 0.4, life: 0.4, gravity: 2.5, spread: 0.6 });
+      }
+    } else {   // stuck: a pause at the target before the next arrow is drawn
+      this.timer -= dt; if (this.timer <= 0) { this.state = 'draw'; this.timer = rnd.range(0.8, 1.8); }
+    }
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
   }
 }
 

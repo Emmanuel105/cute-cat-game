@@ -1346,6 +1346,54 @@ function buildForest(game, entry) {
       place(game, U, hg, cos(phase) * rad, sin(phase) * rad, 0, h);
     } }
 
+  // round 508's own list of playground games this whole game had never tried (tetherball, badminton,
+  // tug-of-war, archery, sack races) is down to its last entry now — round 520 gave Frosty Peak a
+  // tug-of-war, round 521 the Neighborhood a tetherball pole, round 522 Victorian a badminton net, and
+  // **this one gives Whisper Woods its own archery range**: a lone archer at a firing line of open
+  // ground north of the glade, drawing a longbow and loosing one arrow at a straw target downrange,
+  // never pausing to go fetch it back.
+  //
+  // New `Archer` controller (`55-npcs.js`, right after `Badminton`, its nearest relative among this
+  // run's own playground games) and a new `o.bow` hand prop for `makeHuman` — a grip and two tapering
+  // limbs strung with a straight cylinder, the same spot on the body `axe`, `pole` and `brush` already
+  // use, just on the off hand rather than the side those swing from, since a bow is held steady, not
+  // swung. Unlike every earlier toss or rally game here, there is no second player: the arrow is its
+  // own free mesh, the same trick Horseshoes' shoe and Badminton's shuttle already use, carried at the
+  // bow hand while nocked, loosed on a short, shallow-arced flight, then left standing in the target a
+  // couple of seconds before the next one is drawn. `arrow.lookAt()` keeps its own head pointed exactly
+  // where it is actually travelling — nocked, in flight and stuck alike — rather than the fixed flutter
+  // the shuttlecock settles for.
+  //
+  // The target is new too: a round straw boss painted in flat rings (white, black, blue, red, gold, the
+  // same scheme a real target face uses) on a pair of crossed legs, one physics box over the boss
+  // standing in for both.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses, `game.start('new')` then
+  // `game.load(6, 'from-hub')`) swept the firing line and the ten metres downrange to the target
+  // against every one of the wood's physics boxes and found it clear by 3.3 m or more along its whole
+  // length; every wandering deer's and fox's own leash falls short of the spot by 5.7 m or more (the
+  // nearest, the fox denned at (14, 6), by its own 10 m leash alone), the nearest collectible (the
+  // mouse at (-30, 26)) sits 14.3 m off, and the treehouse (-18, 14) 10.2 m off.
+  { const ax = -16, az = 24, ary = 0, adist = 10;
+    const tx = ax + sin(ary) * adist, tz = az + cos(ary) * adist, ty0 = P.ground0(tx, tz);
+    const target = group(tx, ty0, tz, W);
+    mesh(G.cyl(0.46, 0.46, 0.22, 16), mat(0xd9c28a, { roughness: 0.95 }), { y: 1.0, rx: PI / 2, parent: target });   // the straw boss
+    const ringSpecs = [[0.42, 0xf3f0e6], [0.33, 0x1c1c1c], [0.24, 0x2d6fd6], [0.15, 0xd62839], [0.065, 0xf2c744]];
+    ringSpecs.forEach(([rad, c], i) => mesh(G.cyl(rad, rad, 0.02, 20), mat(c, { roughness: 0.7 }), { y: 1.0, z: 0.1 + i * 0.004, rx: PI / 2, shadow: 'none', parent: target }));
+    const standM = mat(0x5b3d24, { roughness: 1 });
+    for (const s of [1, -1]) mesh(G.cyl(0.02, 0.025, 1.0, 6), standM, { x: s * 0.36, y: 0.55, z: -0.2, rx: 0.3, rz: s * 0.22, parent: target });
+    game.physics.addBox(tx, ty0 + 1.0, tz, 0.95, 1.0, 0.3, { cam: false });
+    const bowWard = makeWardrobe(r, { shirts: [0x4a6a3a], pants: [0x3a3327, 0x2a2a24], shoes: [0x3a2a1e, 0x2a2018] });
+    const archer = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.25), wardrobe: bowWard }),
+      hat: 'cap', hatColor: 0x3a4a2e, jacket: null, scarf: null, bag: null, backpack: null, glasses: false, bow: true });
+    W.add(archer.group);
+    const arrow = group(0, 0, 0, W);
+    mesh(G.cyl(0.012, 0.012, 0.62, 6), mat(0x8a6a3a, { roughness: 0.8 }), { rx: PI / 2, parent: arrow });   // shaft
+    mesh(G.cone(0.022, 0.08, 6), mat(0x9aa3ad, { metalness: 0.6, roughness: 0.35 }), { z: -0.35, rx: -PI / 2, parent: arrow });   // head, at local -Z so lookAt() faces it forward
+    const fletchM = mat(0xd62839, { roughness: 0.9 });
+    for (let fi = 0; fi < 3; fi++) mesh(G.box(0.1, 0.002, 0.05), fletchM, { z: 0.26, rz: fi / 3 * TAU, shadow: 'none', parent: arrow });   // tail fletching
+    game.npcs.push(new Archer(game, archer, arrow, { x: ax, z: az, ry: ary, dist: adist })); }
+
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
 

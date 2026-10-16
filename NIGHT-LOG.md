@@ -13710,3 +13710,44 @@ box count up by two (587 → 589 — the net's own two posts, same cost as the b
 No visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
 suite and the two headless probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 523 — an archery range for Whisper Woods
+
+Round 508's own list of playground games this whole game had never tried is down to its last entry now:
+round 520 gave Frosty Peak a tug-of-war, round 521 the Neighborhood a tetherball pole, round 522 Victorian
+a badminton net, and **this one gives Whisper Woods an archery range** — a lone archer on a quiet stretch
+of open ground north of the glade, drawing a longbow and loosing one arrow at a straw target downrange,
+over and over, never pausing to go fetch it back.
+
+New `Archer` class in `55-npcs.js`, right after `Badminton`, its nearest relative among this run of
+playground games, and a new `o.bow` hand prop for `makeHuman` — a grip and two tapering limbs strung with
+a straight cylinder, the same spot on the body `axe`, `pole` and `brush` already use, just on the off hand
+rather than the side those swing from, since a bow is held steady rather than swung. Unlike every earlier
+toss or rally game here there's no second player: the arrow is its own free mesh, the same trick
+Horseshoes' shoe and Badminton's shuttle already use — carried at the bow hand while nocked, loosed on a
+short, shallow-arced flight, then left standing in the target a couple of seconds before the next one is
+drawn. `arrow.lookAt()` keeps its head pointed exactly where it's actually travelling, nocked, in flight
+and stuck alike. The target is new too: a round straw boss painted in flat rings (white, black, blue, red,
+gold, the same scheme a real target face uses) on a pair of crossed legs, with one physics box over the
+boss standing in for both.
+
+Placed at (-16, 24), firing ten metres north to the target at (-16, 34): a headless probe (the same
+stub-three harness `test/run.mjs` itself uses, `game.start('new')` then `game.load(6, 'from-hub')`) swept
+the firing line and the ground between it and the target against every one of the wood's physics boxes and
+found it clear by 3.3 m or more along its whole length; every wandering deer's and fox's own leash falls
+short of the spot by 5.7 m or more (the nearest, the fox denned at (14, 6), by its own 10 m leash alone),
+the nearest collectible (the mouse at (-30, 26)) sits 14.3 m off, and the treehouse (-18, 14) 10.2 m off. A
+second probe ran the real archer for 100 simulated seconds: the arrow's position stayed finite throughout,
+cycled through draw/flight/stuck states as expected, fired 22 shots, and the "Say hello" prompt registered
+a new Whisper Woods friend on interact.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings. Whisper Woods' own
+box count moved from 647 to 709 — only one of those boxes is the target itself; the rest is
+`forestRegion`'s own randomised tree/bush/rock fill reacting to the three extra `rnd()` draws every new
+`makeHuman()` call costs (blink timer, idle timer, sway), shifting everything this world's own local `r()`
+sequence places afterward, the same kind of fill-count drift earlier rounds in this file have already
+noted. No dialogue was given to the archer (no `cries`) to keep this round's shift to the minimum a new
+human and controller already cost, following the same caution this file's own frisbee-thrower round
+spelled out for exactly this reason. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite and the two headless probes above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
