@@ -13956,3 +13956,34 @@ Robot City's own friend count up from 74 to 76 (both robots count, same as every
 `TugOfWar` pair). No visual check was possible in this environment (no browser, no Playwright)
 — only the stub-three test suite and the headless probe above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 530 — beach badminton for Sunny Shore
+
+Victorian has had a shuttlecock rallying over a low net since round 525, but Sunny Shore —
+with every open-toss ball game going (keep-it-up, frisbee, catch, volleyball) — never had a
+net game of its own on dry land. **A badminton net now stands on a quiet stretch of sand south
+of the volleyball court, two players in bright beach shirts and shorts knocking a shuttlecock
+back and forth, bare feet in the sand.** *"Careful, the wind off the water adds a wobble."*
+*"Sand's terrible for footwork, wonderful for falling."* *"That one nearly went in the sea."*
+
+No new code at all: the same `Badminton` class (`55-npcs.js`) and `makeVolleyballNet()`
+(`62-props-nature.js`) Victorian's own rally already uses, just swapped to `placeT`/`boxT` in
+place of the flat-floor town's `place`/`P.addBox`, since the sand here has real slope under it
+the same way every other hand-placed prop on this beach already accounts for — plus a fresh
+`makeWardrobe` of beach-bright colours instead of the town's muted ones, `shorts: true` instead
+of trousers, no hat or jacket, just a `racket` in each hand.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses, `game.start('new')`
+then `game.travel(4, 'from-hub')`) sampled every NPC's own position every quarter second over
+300 simulated seconds, then swept the net and both players' own footprint (±1.8 m across,
+±3.4 m along the court) against both those samples and every one of the beach's 323 physics
+boxes: (-18, -38) came back clear by 9.18 m of the nearest box and 9.57 m of the nearest other
+soul across the whole footprint, with the ground flat underfoot — well south of the hammock
+(-10, -40) and the pogo-stick kid, short of the radius (58) where `beachRegion`'s own fill
+takes over.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings,
+Sunny Shore's own friend count up from 64 to 66 (both players count, same as every other
+`Badminton` pair). No visual check was possible in this environment (no browser, no Playwright)
+— only the stub-three test suite and the headless probe above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
