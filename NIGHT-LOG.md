@@ -13372,3 +13372,26 @@ Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console w
 unchanged (322 — a toast on an existing mesh costs no new collider). Five of the eight mushrooms are
 still mute. No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 512 — a look south for Whisper Woods' loneliest mushroom
+
+Three of the glade's eight giant mushrooms could already be looked up at; five still stood mute. **The
+one at (-2, -22) gets its turn** — the furthest south of the whole set, well past the hare clearing,
+with no other mushroom anywhere near it. *"Grew up alone - no ring, no neighbours, just the hares for
+company."*
+
+Same trick as the first three: `southMushroom` is captured straight from the loop in `buildForest()`
+that already builds all eight (mesh, `glow: true`, its own `userData.update` for the pulsing cap light,
+and a `boxT` physics box), handed directly to `game.addInteractable`. No new mesh, no new physics box.
+
+A scratch headless probe (`game.load(6, 'from-hub')`, 3000 simulated frames, every NPC's own position
+sampled every frame) swept this point against every physics box and every sample: the nearest other
+box (a rock at x -8.7..-7.3, z -18.7..-17.3) stayed 6.2 m clear, the nearest grounded soul (a deer
+wandering off its leash from (-10, -30)) never closer than 4.5 m, and the nearest flying one (a
+butterfly or fairy passing overhead, no obstruction) came as close as 3.5 m — all clear of the 2.9 m
+radius chosen (same scale ratio the others used).
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged (322 — a toast on an existing mesh costs no new collider). Four of the eight mushrooms are
+still mute. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
