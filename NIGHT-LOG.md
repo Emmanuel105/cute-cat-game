@@ -13447,3 +13447,29 @@ Full suite (`node test/run.mjs`) ran clean on 3 of 3 runs: exit 0, all 274 check
 warnings, box count unchanged (322 — the toast adds no physics box of its own). No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 515 — a look at Robot City's CAT? sign
+
+Round 514 wired up SECTOR 7 and flagged CHARGE and CAT? as the factory floor's last two mute neon
+signs, with CAT? needing its own careful check before it could get the same treatment. **It's answered
+now too**: *"CAT? Nobody in this city has ever worked out what it was advertising."* *"The robots
+assumed it was a warning. Turns out it just means cat."*
+
+The reason it was left for last: CAT?'s own support pole sits at (19, -13), only 2.0 m from the little
+wooden door's own group position (19, -15) — the door Robot City leads out through to Victorian — and
+that door's own "Open the wooden door" interactable already reaches 2.4 m, past the sign's own spot.
+Since both share x = 19, the line equidistant between them is the horizontal z = -14, exactly 1.0 m
+from each. Giving the sign a radius under that (0.9 m) keeps its whole circle strictly on its own side
+of that line, so standing anywhere inside it the sign's prompt always wins and the door keeps its own
+prompt everywhere else — no fighting over which one shows, confirmed by walking a line from the sign to
+the door in 0.1 m steps in a headless probe and watching the prompt hand off cleanly exactly at z =
+-14, no overlap, no tie. No new mesh, no new physics box: `signCat` (`makeNeonSign`'s own return value,
+previously discarded right after `.position.set()`) is handed straight to `game.addInteractable`, same
+trick SECTOR 7 and the factory sign already used. CHARGE, hung directly above the giant robot statue at
+the exact same (x, z), stays mute — that one's a harder problem, since its circle can't avoid the
+statue's at all, only shrink which side wins.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings, box count
+unchanged (322). No visual check was possible in this environment (no browser, no Playwright) — only
+the stub-three test suite and a hand-written headless probe sampling the nearest-interactable logic
+directly. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

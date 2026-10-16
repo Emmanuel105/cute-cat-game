@@ -11002,7 +11002,21 @@ function buildRobotCity(game, entry) {
   // (the portal back to Candy Land at (-10, 12)) stays 10.0 m off.
   { const sign2Lines = ['💡 "SECTOR 7. Same blue buzz it\'s always had, crates or no crates."', '✨ "Half the sign flickers if you stand under it long enough. The other half never has."', '🤖 "Marks the sector, not much else. The crates don\'t read."'];
     game.addInteractable({ obj: sign2, radius: 3.4, label: () => 'Look at the sign', onUse: () => { SFX.click(); game.toast(rnd.pick(sign2Lines), 3000); } }); }
-  makeNeonSign('CAT?', '#ffe040', 4, W).position.set(19, 5.6, -13);
+  const signCat = makeNeonSign('CAT?', '#ffe040', 4, W); signCat.position.set(19, 5.6, -13);
+  // SECTOR 7 got its own "look" toast last round, leaving CAT? the last of the factory floor's three
+  // mute neon signs — left for last because of where it sits. Its own support pole (the loop just below
+  // this, [19, -13] in that list) is only 2.0 m north of the little wooden door's own group position
+  // (19, -15), the door Robot City leads out through to Victorian, whose "Open the wooden door"
+  // interactable already reaches a generous 2.4 m — past the sign's own spot, since both share x = 19
+  // and the door's radius alone covers 2.4 m of that 2.0 m gap. Rather than compete with it for the
+  // prompt, this one keeps to a tight 0.9 m: since both signs share the same x, the line equidistant
+  // between them is the horizontal z = -14 (1.0 m from each), so a circle under 1.0 m stays entirely on
+  // the sign's own side of that line — every point inside it is strictly nearer the sign than the door,
+  // and the door keeps its own prompt everywhere else, no fighting over which one shows. No new mesh,
+  // no new box: `signCat` is kept instead of discarded, same trick SECTOR 7 and the factory sign upstream
+  // already used.
+  { const signCatLines = ['❓ "CAT? Nobody in this city has ever worked out what it was advertising."', '🤖 "The robots assumed it was a warning. Turns out it just means cat."', '✨ "Flickers yellow all night for a question nobody around here can answer."'];
+    game.addInteractable({ obj: signCat, radius: 0.9, label: () => 'Look at the sign', onUse: () => { SFX.click(); game.toast(rnd.pick(signCatLines), 3000); } }); }
   for (const [x, z] of [[-18, 6], [19, -13]]) { mesh(G.cyl(0.12, 0.16, 5, 8), pipe, { x, y: 2.5, z, parent: W }); P.addBox(x, 2.5, z, 0.4, 5, 0.4, { cam: false }); }
   mesh(G.cyl(0.12, 0.16, 6.4, 8), pipe, { x: -5, y: 3.2, z: -24, parent: W }); mesh(G.cyl(0.12, 0.16, 6.4, 8), pipe, { x: 5, y: 3.2, z: -24, parent: W });
   // crates & barrels around
