@@ -13987,3 +13987,37 @@ Sunny Shore's own friend count up from 64 to 66 (both players count, same as eve
 `Badminton` pair). No visual check was possible in this environment (no browser, no Playwright)
 — only the stub-three test suite and the headless probe above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 531 — a vine tug-of-war for Whisper Woods
+
+Round 520's own round-up of five playground games this game had never tried once (tetherball,
+badminton, tug-of-war, archery, sack races) left Whisper Woods with the archery range; Frosty
+Peak's haulers and Robot City's factory pair have since both pitted two rigs against a rope or
+cable of their own, but no two souls in these woods had ever heaved against each other. **Two
+forest kids now dig their heels into the leaf litter south of the glade and haul on a thick,
+knotted vine stretched between them, neither ever quite winning.** *"Heave! Heave! Nobody's
+budging!"* *"Careful, puss — mind the vine, it's tougher than it looks."* *"Best of... however
+many we've lost count of."*
+
+No new class: the same heave-together, nobody-wins `TugOfWar` (`55-npcs.js`) the Frosty Peak
+haulers and the Robot City factory pair already use, just two plain `makeHuman()` kids and a
+mossy-green vine with a few leaf tufts in place of rope or cable, plus a small drifting glow
+bead riding the vine's own tension instead of a flag or indicator lamp — the glade already has
+fireflies of its own ambient sparkle, so one more `glowMat()` bead reads as one of them rather
+than a new fixture.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+`game.start('new')` then `game.travel(6, 'from-hub')`, with the cat teleported right next to the
+candidate spot so nothing the engine's own distance culling could hide) sampled every NPC's own
+position every frame over 4000 simulated frames (66 seconds, long enough for every deer and
+fox's own wander to range fully), then swept the two kids' own stations and the vine's own
+midpoint against both those samples and every one of the wood's 323 physics boxes: (-10, -40)
+came back clear by 14.9 m of the nearest box and 14.1 m of the nearest other soul (a wandering
+yo-yo kid) — well south of the jump-roper's own clearing at (8, -48) and short of the radius
+(58) where forestRegion's own procedural fill takes over.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings,
+Whisper Woods' own friend count up from 64 to 66 (both kids count, same as every other
+`TugOfWar` pair). No visual check was possible in this environment (no browser, no Playwright)
+— only the stub-three test suite and the headless probe above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

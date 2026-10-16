@@ -17763,6 +17763,49 @@ function buildForest(game, entry) {
     for (let fi = 0; fi < 3; fi++) mesh(G.box(0.1, 0.002, 0.05), fletchM, { z: 0.26, rz: fi / 3 * TAU, shadow: 'none', parent: arrow });   // tail fletching
     game.npcs.push(new Archer(game, archer, arrow, { x: ax, z: az, ry: ary, dist: adist })); }
 
+  // round 520's own round-up of five playground games this whole game had never tried (tetherball,
+  // badminton, tug-of-war, archery, sack races) left Whisper Woods with the archery range just above;
+  // Frosty Peak's haulers (round 520) and Robot City's factory pair (round 529) have since both
+  // pitted two rigs against a rope or cable of their own (`TugOfWar`, 55-npcs.js), but no two souls in
+  // these woods had ever heaved against each other. **Two forest kids now dig their heels into the
+  // leaf litter and haul on a thick, knotted vine stretched between them**, well south of the glade.
+  // *"Heave! Heave! Nobody's budging!"* *"Careful, puss — mind the vine, it's tougher than it looks."*
+  // *"Best of... however many we've lost count of."*
+  //
+  // No new class: the same heave-together, nobody-wins `TugOfWar` the haulers and the factory pair
+  // already use, just two plain `makeHuman()` kids and a vine (a mossy-green cylinder with a few leaf
+  // tufts, `noInk()`'d like every other thin cable in this game) in place of rope or cable, plus a
+  // small drifting glow riding the vine's own tension instead of a flag or indicator lamp — this
+  // glade already has fireflies of its own ambient sparkle, so a single `glowMat()` bead reads as one
+  // of them rather than a new fixture.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // `game.start('new')` then `game.travel(6, 'from-hub')`, with the cat teleported right next to the
+  // candidate spot so nothing the engine culls by distance could hide anything) sampled every NPC's
+  // own position every frame over 4000 simulated frames (66 seconds, long enough for every deer and
+  // fox's own wander to range fully), then swept the two kids' own stations and the vine's own
+  // midpoint against both those samples and every one of the wood's 323 physics boxes: (-10, -40)
+  // came back clear by 14.9 m of the nearest box and 14.1 m of the nearest other soul (a wandering
+  // yo-yo kid) — well south of the jump-roper's own clearing at (8, -48) and short of the radius (58)
+  // where forestRegion's own procedural fill takes over.
+  { const vineWard = makeWardrobe(r, { shirts: [0xff8a3d, 0x6fa8ff], pants: [0x3a3327, 0x2a2a24], shoes: [0x3a2a1e, 0x2a2018] });
+    const haulerA = makeHuman({ ...randomPerson(r, { female: false, child: true, wardrobe: vineWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    const haulerB = makeHuman({ ...randomPerson(r, { female: true, child: true, wardrobe: vineWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(haulerA.group); W.add(haulerB.group);
+    const tug = new TugOfWar(game, haulerA, haulerB, { x: -10, z: -40, ry: 0, gap: 2.6,
+      cries: ["Heave! Heave! Nobody's budging!", "Careful, puss — mind the vine, it's tougher than it looks.", "Best of... however many we've lost count of."] });
+    game.npcs.push(tug);
+    const [A, B] = tug.ctls, vineM = mat(0x4a6a2e, { roughness: 0.95 }), leafM = mat(0x5a8a3a, { roughness: 0.9 });
+    const ay = P.ground0(A.x, A.z) + 0.75, by = P.ground0(B.x, B.z) + 0.75;
+    const vineGroup = group((A.x + B.x) / 2, (ay + by) / 2, (A.z + B.z) / 2, W);
+    vineGroup.lookAt(B.x, by, B.z);
+    noInk(mesh(G.cyl(0.05, 0.05, Math.hypot(B.x - A.x, by - ay, B.z - A.z), 10), vineM, { rx: PI / 2, parent: vineGroup }));
+    for (const s of [-0.7, 0, 0.7]) mesh(G.sphere(0.07, 6, 5), leafM, { z: s, x: 0.08, rz: 0.4, shadow: 'none', parent: vineGroup });
+    const glow = mesh(G.sphere(0.045, 8, 6), glowMat(0xa8ff9a, 1.2), { parent: W });
+    U.push(() => { const frac = 0.5 + clamp(tug.tension, -1, 1) * 0.14;
+      glow.position.set(lerp(A.x, B.x, frac), lerp(ay, by, frac) + 0.08, lerp(A.z, B.z, frac));
+      glow.material.emissiveIntensity = 1.0 + abs(tug.tension) * 1.5; }); }
+
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
 
