@@ -1992,6 +1992,12 @@ function makeHuman(o = {}) {
       const bristleM = mat(0x18181a, { roughness: 0.95 });
       for (let bi = 0; bi < 7; bi++) { const ba = bi / 7 * TAU; mesh(G.cyl(0.006, 0.011, 0.24, 4), bristleM, { x: cos(ba) * 0.045, y: 1.32, z: 0.04 + sin(ba) * 0.045, rx: sin(ba) * 0.3, rz: cos(ba) * 0.3, parent: hand }); }
     }
+    if (o.racket && side === 1) {   // a badminton racket: handle, strung oval hoop, held up ready for a swing
+      mesh(G.cyl(0.013, 0.016, 0.22, 8), mat(0x2a2420, { roughness: 0.7 }), { y: 0.26, z: 0.03, parent: hand });
+      mesh(G.torus(0.1, 0.012, 6, 16), mat(0xd8d8d8, { metalness: 0.4, roughness: 0.4 }), { y: 0.48, z: 0.03, parent: hand });
+      const stringM = mat(0xece6d8, { roughness: 0.6, transparent: true, opacity: 0.65 });
+      for (let si = -2; si <= 2; si++) { noInk(mesh(G.cyl(0.004, 0.004, 0.19, 4), stringM, { x: si * 0.035, y: 0.48, z: 0.03, parent: hand })); noInk(mesh(G.cyl(0.004, 0.004, 0.19, 4), stringM, { x: 0, y: 0.48 + si * 0.035, z: 0.03, rz: PI / 2, parent: hand })); }
+    }
     rig.arms.push({ sh, el });
   }
   mesh(G.cyl(0.05, 0.058, 0.14, 8), skinM, { y: 0.63, parent: spine });            // neck: 5 cm of it shows between the collar and the chin
@@ -3440,6 +3446,38 @@ class TugOfWar {
       Wanderer.prototype.lookAtCat.call(this.ctls[i], dt);
     });
     if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
+// ---------------------------------------------------------------- badminton: a continuous rally over a low net — the shuttlecock never pauses in anyone's hand the way `BallGame`'s and `Horseshoes`' own catch-then-throw cycle does, it reverses the instant it reaches a racket and is straight back on its way, both players swinging to the beat the shuttle sets rather than taking turns holding it. The net and racket-bearing rigs are built by whoever calls this, same as `BallGame`'s own ball or `Horseshoes`' own shoe; the shuttlecock (`shuttle`) is passed in the same way.
+class Badminton {
+  constructor(game, rigA, rigB, shuttle, { cx, cz, gap = 6, arc = 1.3, cries = null, cryIcon = '🏸' }) {
+    this.game = game; this.shuttle = shuttle; this.cx = cx; this.cz = cz; this.t = 0; this.flight = 0; this.dur = 0.85; this.arc = arc; this.fromIdx = 0; this.rallies = 0;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(5, 10) : 0;
+    this.players = [rigA, rigB].map((rig, i) => {
+      const x = cx, z = cz + (i ? gap / 2 : -gap / 2);
+      rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = i ? PI : 0;   // facing each other across the net
+      const ctl = { game, rig, x, z, look: 0, lookW: 0, tipT: 0, tipped: false, circle: game.physics.addCircle(this, x, z, 0.3) };
+      greetable(game, ctl); return ctl;
+    });
+    this.from = V3(); this.to = V3(); this.rig = rigA;
+    this.hand(this.players[0], this.from); this.hand(this.players[1], this.to);
+    this.players[0].rig.gesture = 'throw'; this.players[0].rig.gT = 0.22;   // the serve
+  }
+  hand(p, v) { return v.set(p.x, this.game.physics.ground0(p.x, p.z) + 0.95 * p.rig.k + 0.3, p.z); }
+  update(dt) {
+    this.t += dt;
+    for (const p of this.players) { p.rig.animate(0, false, dt, this.t); Wanderer.prototype.lookAtCat.call(p, dt); }
+    this.flight += dt; const u = min(1, this.flight / this.dur);
+    this.shuttle.position.copy(this.from).lerp(this.to, u); this.shuttle.position.y += sin(u * PI) * this.arc;
+    this.shuttle.rotation.z = sin(this.t * 7) * 0.12; this.shuttle.rotation.x = sin(this.t * 5 + 1) * 0.08;   // a gentle flutter, nose staying roughly down the whole flight, same as a real shuttlecock's own drag-stabilised fall
+    if (u >= 1) {
+      this.fromIdx = 1 - this.fromIdx;
+      const hitter = this.players[this.fromIdx], other = this.players[1 - this.fromIdx];
+      this.from.copy(this.to); this.hand(other, this.to); this.flight = 0; this.rallies++;
+      hitter.rig.gesture = 'throw'; hitter.rig.gT = 0.22; SFX.bounce();
+    }
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.cx, this.cz, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
   }
 }
 
@@ -6178,10 +6216,10 @@ function makeSurfboard(color) {
   mesh(G.cone(0.09, 0.16, 8), mat(0x1e1e1e, { roughness: 0.7 }), { y: 0.05, z: -0.09, rx: -PI / 2, shadow: 'none', parent: g });
   return g;
 }
-/** A volleyball net strung between two posts along local X, with a white top tape and a loose cord mesh. Half-width `halfW`, so the whole thing spans `halfW * 2`. */
-function makeVolleyballNet(halfW = 1.9, poleColor = 0xe8e2d4) {
+/** A volleyball net strung between two posts along local X, with a white top tape and a loose cord mesh. Half-width `halfW`, so the whole thing spans `halfW * 2`. `postH`/`netH` default to volleyball's own proportions but can be overridden — badminton's own net (round 522) reuses this same rig at a lower, shallower size instead of a second near-identical function. */
+function makeVolleyballNet(halfW = 1.9, poleColor = 0xe8e2d4, { postH = 1.35, netH = 0.85 } = {}) {
   const g = new THREE.Group(), poleM = mat(poleColor, { roughness: 0.6, metalness: 0.4 });
-  const postH = 1.35, netTop = postH - 0.08, netH = 0.85;
+  const netTop = postH - 0.08;
   for (const sx of [-halfW, halfW]) mesh(G.cyl(0.035, 0.045, postH, 8), poleM, { x: sx, y: postH / 2, parent: g });
   mesh(G.box(halfW * 2 + 0.08, 0.05, 0.02), mat(0xffffff, { roughness: 0.8 }), { y: postH - 0.03, shadow: 'none', parent: g });
   const cordM = mat(0x2a2a2a, { roughness: 0.9, transparent: true, opacity: 0.6 });
@@ -12867,6 +12905,49 @@ function buildVictorian(game, entry) {
     W.add(showman.group);
     game.npcs.push(new Charger(game, showman, { x: showX, z: showZ, ry: showRy, cryIcon: '🎭',
       cries: ["Roll up, roll up, for Mr Punch and his good lady wife!", '"That\'s the way to do it!"', 'Mind your tail, puss — he bites, puppet or not.'] })); }
+  // round 508's own list of playground games this whole game had never tried (tetherball, badminton,
+  // tug-of-war, archery, sack races) is down to two: round 520 gave Frosty Peak a tug-of-war and round
+  // 521 gave the Neighborhood a tetherball pole. **Badminton — the one the Victorians actually took up
+  // in their own back gardens — now has a net of its own**, on the quiet grass between the market square
+  // and the maypole's own field, two players in their Sunday clothes batting a shuttlecock back and
+  // forth over it in a rally that never actually stops.
+  //
+  // New `Badminton` controller (`55-npcs.js`, right after `TugOfWar`, its nearest relative among this
+  // round's own run of new playground games) — the one thing setting it apart from `BallGame`'s and
+  // `Horseshoes`' own hold-then-catch-then-throw cycle is that the shuttle is never held at all: it
+  // reverses the instant it reaches a racket and is straight back on its way, so the rally never
+  // actually pauses, closer to `Tetherball`'s own never-held rule than to either of those. `makeHuman`
+  // gets a new `o.racket` hand prop — a handle and a strung oval hoop, same spot on the body `axe`,
+  // `pole` and `brush` already use — and `makeVolleyballNet` (`62-props-nature.js`) picks up optional
+  // `postH`/`netH` overrides rather than a second near-identical net function: badminton's own net sits
+  // lower and shallower than the beach's own volleyball net, closer to the real game's proportions
+  // (posts a little over head height, the net itself under a metre deep).
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real Victorian
+  // town (`game.start('new')` then `game.travel(3, 'from-prev')`, so every urchin, dancer, duck and
+  // ball game already in this town actually moved), sampled every one of its physics circles' own
+  // position every tenth of a second over 300 simulated seconds, then swept a grid around this stretch
+  // of grass against both that trace and every one of the town's physics boxes, keeping short of the
+  // radius (88) where victorianRegion's own procedural fill takes over: (-10, -55) and the eight points
+  // ±2–3.5 m around it (the net posts, both players' own spots) all came back clear by 8.6 m or more in
+  // every direction, comfortably between the market square (centred (0, -34), radius 17) and the
+  // maypole's own field further south at (0, -84).
+  { const cx = -10, cz = -55, gap = 5.6, halfW = 1.6;
+    const net = makeVolleyballNet(halfW, 0xf0ece4, { postH: 1.6, netH: 0.78 });
+    place(game, U, net, cx, cz, 0);
+    for (const sx of [-halfW, halfW]) P.addBox(cx + sx, 0.8, cz, 0.16, 1.6, 0.16, { cam: false });
+    // the shuttlecock: a pale cork and a flared cone standing in for the feathers, nose staying down
+    const shuttle = group(cx, 0, cz, W);
+    mesh(G.sphere(0.045, 10, 8), mat(0xf0ead6, { roughness: 0.6 }), { y: 0, parent: shuttle });
+    mesh(G.cone(0.075, 0.16, 10), mat(0xfbfaf4, { roughness: 0.8 }), { y: 0.11, rx: PI, parent: shuttle });
+    const bmWard = makeWardrobe(r, { shirts: [0x5a4a6a, 0x4a6a5a], pants: [0x2a2a24, 0x3a3327], shoes: [0x2a2018, 0x1e1a16] });
+    const bA = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: bmWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.2), racket: true });
+    const bB = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: bmWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.2), racket: true });
+    W.add(bA.group); W.add(bB.group);
+    const badmintonLines = ['Sixty-one, by my count — more than we\'ve ever got to.', 'Mind your whiskers, puss, that net won\'t stop a determined paw.', 'Lost count again. Call it a draw, same as always.'];
+    game.npcs.push(new Badminton(game, bA, bB, shuttle, { cx, cz, gap, cries: badmintonLines })); }
   victorianRegion(game, U, r, 88, VICTORIAN_LIMIT - 10);
   makeHorizon(game, r, { clear: VICTORIAN_LIMIT + 10, hills: true, hill: 0x3f4a38, rock: 0x3a3f4a, rock2: 0x4a4a58, snow: 0xcfd6e2, woodHue: [0.16, 0.26], woodLight: [0.1, 0.2], trunk: 0x3a2a1e, peaks: 30, woodCount: 420 });
   // people

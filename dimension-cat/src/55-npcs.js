@@ -183,6 +183,12 @@ function makeHuman(o = {}) {
       const bristleM = mat(0x18181a, { roughness: 0.95 });
       for (let bi = 0; bi < 7; bi++) { const ba = bi / 7 * TAU; mesh(G.cyl(0.006, 0.011, 0.24, 4), bristleM, { x: cos(ba) * 0.045, y: 1.32, z: 0.04 + sin(ba) * 0.045, rx: sin(ba) * 0.3, rz: cos(ba) * 0.3, parent: hand }); }
     }
+    if (o.racket && side === 1) {   // a badminton racket: handle, strung oval hoop, held up ready for a swing
+      mesh(G.cyl(0.013, 0.016, 0.22, 8), mat(0x2a2420, { roughness: 0.7 }), { y: 0.26, z: 0.03, parent: hand });
+      mesh(G.torus(0.1, 0.012, 6, 16), mat(0xd8d8d8, { metalness: 0.4, roughness: 0.4 }), { y: 0.48, z: 0.03, parent: hand });
+      const stringM = mat(0xece6d8, { roughness: 0.6, transparent: true, opacity: 0.65 });
+      for (let si = -2; si <= 2; si++) { noInk(mesh(G.cyl(0.004, 0.004, 0.19, 4), stringM, { x: si * 0.035, y: 0.48, z: 0.03, parent: hand })); noInk(mesh(G.cyl(0.004, 0.004, 0.19, 4), stringM, { x: 0, y: 0.48 + si * 0.035, z: 0.03, rz: PI / 2, parent: hand })); }
+    }
     rig.arms.push({ sh, el });
   }
   mesh(G.cyl(0.05, 0.058, 0.14, 8), skinM, { y: 0.63, parent: spine });            // neck: 5 cm of it shows between the collar and the chin
@@ -1631,6 +1637,38 @@ class TugOfWar {
       Wanderer.prototype.lookAtCat.call(this.ctls[i], dt);
     });
     if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
+// ---------------------------------------------------------------- badminton: a continuous rally over a low net — the shuttlecock never pauses in anyone's hand the way `BallGame`'s and `Horseshoes`' own catch-then-throw cycle does, it reverses the instant it reaches a racket and is straight back on its way, both players swinging to the beat the shuttle sets rather than taking turns holding it. The net and racket-bearing rigs are built by whoever calls this, same as `BallGame`'s own ball or `Horseshoes`' own shoe; the shuttlecock (`shuttle`) is passed in the same way.
+class Badminton {
+  constructor(game, rigA, rigB, shuttle, { cx, cz, gap = 6, arc = 1.3, cries = null, cryIcon = '🏸' }) {
+    this.game = game; this.shuttle = shuttle; this.cx = cx; this.cz = cz; this.t = 0; this.flight = 0; this.dur = 0.85; this.arc = arc; this.fromIdx = 0; this.rallies = 0;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(5, 10) : 0;
+    this.players = [rigA, rigB].map((rig, i) => {
+      const x = cx, z = cz + (i ? gap / 2 : -gap / 2);
+      rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = i ? PI : 0;   // facing each other across the net
+      const ctl = { game, rig, x, z, look: 0, lookW: 0, tipT: 0, tipped: false, circle: game.physics.addCircle(this, x, z, 0.3) };
+      greetable(game, ctl); return ctl;
+    });
+    this.from = V3(); this.to = V3(); this.rig = rigA;
+    this.hand(this.players[0], this.from); this.hand(this.players[1], this.to);
+    this.players[0].rig.gesture = 'throw'; this.players[0].rig.gT = 0.22;   // the serve
+  }
+  hand(p, v) { return v.set(p.x, this.game.physics.ground0(p.x, p.z) + 0.95 * p.rig.k + 0.3, p.z); }
+  update(dt) {
+    this.t += dt;
+    for (const p of this.players) { p.rig.animate(0, false, dt, this.t); Wanderer.prototype.lookAtCat.call(p, dt); }
+    this.flight += dt; const u = min(1, this.flight / this.dur);
+    this.shuttle.position.copy(this.from).lerp(this.to, u); this.shuttle.position.y += sin(u * PI) * this.arc;
+    this.shuttle.rotation.z = sin(this.t * 7) * 0.12; this.shuttle.rotation.x = sin(this.t * 5 + 1) * 0.08;   // a gentle flutter, nose staying roughly down the whole flight, same as a real shuttlecock's own drag-stabilised fall
+    if (u >= 1) {
+      this.fromIdx = 1 - this.fromIdx;
+      const hitter = this.players[this.fromIdx], other = this.players[1 - this.fromIdx];
+      this.from.copy(this.to); this.hand(other, this.to); this.flight = 0; this.rallies++;
+      hitter.rig.gesture = 'throw'; hitter.rig.gT = 0.22; SFX.bounce();
+    }
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.cx, this.cz, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
   }
 }
 

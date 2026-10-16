@@ -13669,3 +13669,44 @@ Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 conso
 by one (323 — the pole's own box, same cost as any other static post in this game). No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
 headless probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 522 — a badminton net for Victorian
+
+Round 508's own list of playground games this whole game had never tried is down to two now: round 520
+gave Frosty Peak a tug-of-war, round 521 gave the Neighborhood a tetherball pole, and **this one gives
+Victorian a badminton net** — the back-garden game the era's own gentry actually played, on the quiet
+grass between the market square and the maypole's own field. Two players in Sunday clothes, rackets in
+hand, bat a shuttlecock back and forth over a low net in a rally that never once pauses. *"Sixty-one, by
+my count — more than we've ever got to."* *"Mind your whiskers, puss, that net won't stop a determined
+paw."* *"Lost count again. Call it a draw, same as always."*
+
+New `Badminton` class in `55-npcs.js`, right after `TugOfWar`. What sets it apart from `BallGame`'s and
+`Horseshoes`' own catch-then-throw cycle — the shape every earlier toss game in this game already uses —
+is that the shuttle is never actually held: the instant it reaches a racket it reverses and is straight
+back on its way, closer to `Tetherball`'s own never-held rule than to a toss at all, so the rally runs
+forever rather than resetting after each catch. `makeHuman` gets a new `o.racket` hand prop (a handle and
+a strung oval hoop, parked on the body the same way `axe`/`pole`/`brush` already are), and
+`makeVolleyballNet` (`62-props-nature.js`) picks up optional `postH`/`netH` overrides instead of a second
+near-duplicate net function — badminton's own net sits lower and shallower than the beach's own volleyball
+net. The shuttlecock itself is a small cork sphere and a flared cone standing in for the feathers, kept
+upright with only a gentle wobble rather than tumbling, since a real shuttle stays drag-stabilised
+nose-down through its whole flight.
+
+Placed at (-10, -55), with the two players' hands 5.6 m apart and the shuttle's own flight arcing a
+peak 1.3 m above hand height right over the net — comfortably above its 1.52 m top for every build this
+world's own wardrobe roll can produce. A headless probe (the same stub-three harness `test/run.mjs`
+itself uses, `game.start('new')` then `game.load(3, 'from-prev')` so every urchin, dancer, duck and ball
+game already in this town actually moved) swept this stretch of grass against every one of the town's
+physics boxes and found it clear by 8.6 m or more in every direction tested, between the market square
+(centred (0, -34), radius 17) and the maypole's own field further south at (0, -84). A second probe ran
+the real pair for 300 simulated seconds: the shuttle's position stayed finite throughout, never dipped
+below hand height or above its own arc peak (1.22–2.54 m, the net's own top at 1.52 m sitting squarely
+inside that range only at the edges of the swing, never where the shuttle actually crosses it), completed
+352 rallies without ever pausing, and both players' own "Say hello" prompts registered a new Victorian
+friend on interact.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings, Victorian's own
+box count up by two (587 → 589 — the net's own two posts, same cost as the beach's own volleyball net).
+No visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
+suite and the two headless probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.

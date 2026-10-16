@@ -161,10 +161,10 @@ function makeSurfboard(color) {
   mesh(G.cone(0.09, 0.16, 8), mat(0x1e1e1e, { roughness: 0.7 }), { y: 0.05, z: -0.09, rx: -PI / 2, shadow: 'none', parent: g });
   return g;
 }
-/** A volleyball net strung between two posts along local X, with a white top tape and a loose cord mesh. Half-width `halfW`, so the whole thing spans `halfW * 2`. */
-function makeVolleyballNet(halfW = 1.9, poleColor = 0xe8e2d4) {
+/** A volleyball net strung between two posts along local X, with a white top tape and a loose cord mesh. Half-width `halfW`, so the whole thing spans `halfW * 2`. `postH`/`netH` default to volleyball's own proportions but can be overridden — badminton's own net (round 522) reuses this same rig at a lower, shallower size instead of a second near-identical function. */
+function makeVolleyballNet(halfW = 1.9, poleColor = 0xe8e2d4, { postH = 1.35, netH = 0.85 } = {}) {
   const g = new THREE.Group(), poleM = mat(poleColor, { roughness: 0.6, metalness: 0.4 });
-  const postH = 1.35, netTop = postH - 0.08, netH = 0.85;
+  const netTop = postH - 0.08;
   for (const sx of [-halfW, halfW]) mesh(G.cyl(0.035, 0.045, postH, 8), poleM, { x: sx, y: postH / 2, parent: g });
   mesh(G.box(halfW * 2 + 0.08, 0.05, 0.02), mat(0xffffff, { roughness: 0.8 }), { y: postH - 0.03, shadow: 'none', parent: g });
   const cordM = mat(0x2a2a2a, { roughness: 0.9, transparent: true, opacity: 0.6 });

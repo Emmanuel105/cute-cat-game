@@ -5590,6 +5590,49 @@ function buildVictorian(game, entry) {
     W.add(showman.group);
     game.npcs.push(new Charger(game, showman, { x: showX, z: showZ, ry: showRy, cryIcon: '🎭',
       cries: ["Roll up, roll up, for Mr Punch and his good lady wife!", '"That\'s the way to do it!"', 'Mind your tail, puss — he bites, puppet or not.'] })); }
+  // round 508's own list of playground games this whole game had never tried (tetherball, badminton,
+  // tug-of-war, archery, sack races) is down to two: round 520 gave Frosty Peak a tug-of-war and round
+  // 521 gave the Neighborhood a tetherball pole. **Badminton — the one the Victorians actually took up
+  // in their own back gardens — now has a net of its own**, on the quiet grass between the market square
+  // and the maypole's own field, two players in their Sunday clothes batting a shuttlecock back and
+  // forth over it in a rally that never actually stops.
+  //
+  // New `Badminton` controller (`55-npcs.js`, right after `TugOfWar`, its nearest relative among this
+  // round's own run of new playground games) — the one thing setting it apart from `BallGame`'s and
+  // `Horseshoes`' own hold-then-catch-then-throw cycle is that the shuttle is never held at all: it
+  // reverses the instant it reaches a racket and is straight back on its way, so the rally never
+  // actually pauses, closer to `Tetherball`'s own never-held rule than to either of those. `makeHuman`
+  // gets a new `o.racket` hand prop — a handle and a strung oval hoop, same spot on the body `axe`,
+  // `pole` and `brush` already use — and `makeVolleyballNet` (`62-props-nature.js`) picks up optional
+  // `postH`/`netH` overrides rather than a second near-identical net function: badminton's own net sits
+  // lower and shallower than the beach's own volleyball net, closer to the real game's proportions
+  // (posts a little over head height, the net itself under a metre deep).
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real Victorian
+  // town (`game.start('new')` then `game.travel(3, 'from-prev')`, so every urchin, dancer, duck and
+  // ball game already in this town actually moved), sampled every one of its physics circles' own
+  // position every tenth of a second over 300 simulated seconds, then swept a grid around this stretch
+  // of grass against both that trace and every one of the town's physics boxes, keeping short of the
+  // radius (88) where victorianRegion's own procedural fill takes over: (-10, -55) and the eight points
+  // ±2–3.5 m around it (the net posts, both players' own spots) all came back clear by 8.6 m or more in
+  // every direction, comfortably between the market square (centred (0, -34), radius 17) and the
+  // maypole's own field further south at (0, -84).
+  { const cx = -10, cz = -55, gap = 5.6, halfW = 1.6;
+    const net = makeVolleyballNet(halfW, 0xf0ece4, { postH: 1.6, netH: 0.78 });
+    place(game, U, net, cx, cz, 0);
+    for (const sx of [-halfW, halfW]) P.addBox(cx + sx, 0.8, cz, 0.16, 1.6, 0.16, { cam: false });
+    // the shuttlecock: a pale cork and a flared cone standing in for the feathers, nose staying down
+    const shuttle = group(cx, 0, cz, W);
+    mesh(G.sphere(0.045, 10, 8), mat(0xf0ead6, { roughness: 0.6 }), { y: 0, parent: shuttle });
+    mesh(G.cone(0.075, 0.16, 10), mat(0xfbfaf4, { roughness: 0.8 }), { y: 0.11, rx: PI, parent: shuttle });
+    const bmWard = makeWardrobe(r, { shirts: [0x5a4a6a, 0x4a6a5a], pants: [0x2a2a24, 0x3a3327], shoes: [0x2a2018, 0x1e1a16] });
+    const bA = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: bmWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.2), racket: true });
+    const bB = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: bmWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.2), racket: true });
+    W.add(bA.group); W.add(bB.group);
+    const badmintonLines = ['Sixty-one, by my count — more than we\'ve ever got to.', 'Mind your whiskers, puss, that net won\'t stop a determined paw.', 'Lost count again. Call it a draw, same as always.'];
+    game.npcs.push(new Badminton(game, bA, bB, shuttle, { cx, cz, gap, cries: badmintonLines })); }
   victorianRegion(game, U, r, 88, VICTORIAN_LIMIT - 10);
   makeHorizon(game, r, { clear: VICTORIAN_LIMIT + 10, hills: true, hill: 0x3f4a38, rock: 0x3a3f4a, rock2: 0x4a4a58, snow: 0xcfd6e2, woodHue: [0.16, 0.26], woodLight: [0.1, 0.2], trunk: 0x3a2a1e, peaks: 30, woodCount: 420 });
   // people
