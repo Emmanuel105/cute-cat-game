@@ -13890,3 +13890,36 @@ Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 conso
 Shore's own friend count up from 63 to 64. No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite and the two headless probes above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 528 — a stilt-walker for Victorian
+
+Victorian's market square has a fruit stall, a flower stall, a newsboy, a juggler, pigeons and a
+rat by now, but the one classic fairground turn the town never had was someone up on stilts.
+**A performer in candy-striped trousers now paces a short beat on the quiet green south-west of
+the market square, towering half again his own height.** *"Mind your tail, puss — I can't exactly
+hop out of the way up here!"* *"Eleven years on these. Fell twice. Both before breakfast."* *"Best
+seat in the house, this — shame it only seats one."*
+
+No new rig: `makeHuman()` builds him exactly like anyone else in the street, and the stilts
+themselves are two plain poles with a strap loop and a footrest peg, parented straight onto each
+ankle joint — the same joint the trouser cuff and shoe already hang from — so they swing with the
+walk cycle for free, local lengths divided by `rig.k` so the poles come out the same true size
+whatever height `randomPerson()` rolled for him. New `StiltWalker` class (`55-npcs.js`, right
+after `Patroller`): literally `extends Patroller`, adding nothing but a constant vertical offset
+re-applied after every position write, in the constructor and every `update()` alike, since
+`Patroller` only sometimes rewrites the rig's own position in a given frame (paused at an end, or
+standing to let the cat go by) and otherwise leaves the previous frame's value — offset already
+included — standing.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+`game.start('new')` then `game.load(3, 'from-prev')`) sampled every NPC's own rig position every
+quarter second over 300 simulated seconds, then swept the 6 m line from (-18, -80) to (-12, -80)
+against both those samples and every one of the town's 589 physics boxes: the whole line came back
+clear by at least 12.5 m of the nearest box and 8.9 m of the nearest other soul, at radius
+80.9-82.0 from the origin — well south-west of the market square (centred (0, -34), radius 17) and
+short of the radius (88) where victorianRegion's own procedural fill takes over.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings,
+Victorian's own friend count up from 88 to 89. No visual check was possible in this environment
+(no browser, no Playwright) — only the stub-three test suite and the headless probe above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

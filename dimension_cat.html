@@ -2853,6 +2853,19 @@ class Patroller {
   }
 }
 
+// ---------------------------------------------------------------- stilt walker: an ordinary Patroller, raised a fixed height off the ground it actually paces
+class StiltWalker extends Patroller {
+  constructor(game, rig, o) {
+    super(game, rig, o);
+    this.stiltH = o.stiltH ?? 0.8;
+    rig.group.position.y += this.stiltH;
+  }
+  update(dt) {
+    super.update(dt);
+    this.rig.group.position.y += this.stiltH;
+  }
+}
+
 // ---------------------------------------------------------------- loader: a robot at the end of a conveyor, lifting each crate off as it arrives
 class Loader {
   constructor(game, rig, conveyor) {
@@ -13855,6 +13868,44 @@ function buildVictorian(game, entry) {
         rib.scale.set(1, 1, max(0.01, len));
       }
     }); }
+  // every stall-keeper, newsboy, juggler and fortune in the market square keeps two feet on the
+  // ground — the one classic fairground turn this town never had was someone up on stilts. A
+  // performer in candy-striped trousers now paces a short line on the quiet green south-west of
+  // the square, towering half again his own height. *"Mind your tail, puss — I can't exactly hop
+  // out of the way up here!"* *"Eleven years on these. Fell twice. Both before breakfast."* *"Best
+  // seat in the house, this — shame it only seats one."*
+  // No new rig: `makeHuman()` builds him exactly like anyone else in the street, and the stilts
+  // themselves are two plain poles with a strap loop and a footrest peg, parented straight onto
+  // each ankle joint — the same joint the trouser cuff and shoe already hang from — so they swing
+  // with the walk cycle for free. Local lengths are divided by `rig.k` so the poles come out the
+  // same true size whatever height `randomPerson()` happened to roll for him.
+  // New `StiltWalker` class (55-npcs.js, right after `Patroller`): literally `extends Patroller`,
+  // adding nothing but a constant vertical offset applied after every position write — both in the
+  // constructor and every `update()` — since `Patroller` only sometimes rewrites the rig's own
+  // position in a given frame (paused at an end, or standing to let the cat go by) and sometimes
+  // leaves the previous frame's value standing, so the offset has to be re-applied unconditionally
+  // rather than folded once into a y-coordinate `Patroller` itself would otherwise overwrite.
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // `game.start('new')` then `game.load(3, 'from-prev')`) sampled every NPC's own rig position
+  // every quarter second over 300 simulated seconds, then swept the 6 m line from (-18, -80) to
+  // (-12, -80) against both those samples and every one of the town's 589 physics boxes: the whole
+  // line came back clear by at least 12.5 m of the nearest box and 8.9 m of the nearest other soul,
+  // at radius 80.9-82.0 from the origin — well south-west of the market square (centred (0, -34),
+  // radius 17) and short of the radius (88) where victorianRegion's own procedural fill takes over.
+  { const stiltH = 0.8;
+    const performer = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: false }),
+      stripes: 0xaa1f2a, hat: 'top', hatColor: 0x151015, hatBand: 0xf7f3ec, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(performer.group);
+    const poleM = mat(0x8a6a44, { roughness: 0.8 }), strapM = mat(0x3a2a1a, { roughness: 0.9 }), pegM = mat(0x5a4228, { roughness: 0.75 });
+    for (const L of performer.legs) {
+      const len = stiltH / performer.k;
+      const stilt = group(0, 0.22, 0.01, L.ankle);
+      mesh(G.cyl(0.026, 0.03, len + 0.3, 8), poleM, { y: -(len + 0.3) / 2 + 0.07, parent: stilt });
+      mesh(G.torus(0.09, 0.018, 6, 10), strapM, { y: 0, rx: PI / 2, parent: stilt });
+      mesh(G.box(0.15, 0.035, 0.09), pegM, { y: -0.17, z: 0.07, parent: stilt });
+    }
+    game.npcs.push(new StiltWalker(game, performer, { points: [[-18, -80], [-12, -80]], speed: 0.55, pause: [1.5, 3], r: 0.4, height: 2.6, stiltH,
+      cries: ["Mind your tail, puss — I can't exactly hop out of the way up here!", 'Eleven years on these. Fell twice. Both before breakfast.', 'Best seat in the house, this — shame it only seats one.'], cryIcon: '🎪' })); }
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);

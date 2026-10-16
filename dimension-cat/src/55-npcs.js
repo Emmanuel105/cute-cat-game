@@ -1037,6 +1037,19 @@ class Patroller {
   }
 }
 
+// ---------------------------------------------------------------- stilt walker: an ordinary Patroller, raised a fixed height off the ground it actually paces
+class StiltWalker extends Patroller {
+  constructor(game, rig, o) {
+    super(game, rig, o);
+    this.stiltH = o.stiltH ?? 0.8;
+    rig.group.position.y += this.stiltH;
+  }
+  update(dt) {
+    super.update(dt);
+    this.rig.group.position.y += this.stiltH;
+  }
+}
+
 // ---------------------------------------------------------------- loader: a robot at the end of a conveyor, lifting each crate off as it arrives
 class Loader {
   constructor(game, rig, conveyor) {
