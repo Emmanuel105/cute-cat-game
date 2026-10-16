@@ -13348,3 +13348,27 @@ Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console w
 unchanged (322 — a toast on an existing mesh costs no new collider). No visual check was possible in
 this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 511 — a look at Whisper Woods' violet mushroom
+
+Two of the glade's eight giant mushrooms had their own "walk up and look" toast; six still stood mute.
+**The one at (24, -4) gets its turn** — the only mushroom in the whole set painted hue 280 (violet,
+against everyone else's reds, pinks and golds), out past the fox den where it never sees the fairy
+ring at all. *"Only purple one in the whole glade. Wonder why it came out different."*
+
+Same trick as the first two: `violetMushroom` is captured straight from the loop in `buildForest()`
+that already builds all eight (mesh, `glow: true`, its own `userData.update`, and a `boxT` physics
+box) and handed directly to `game.addInteractable`. No new mesh, no new physics box.
+
+A scratch headless probe (`game.load(6, 'from-hub')`, 3000 simulated frames, every NPC's own position
+sampled every frame) swept this point against every physics box and every sample: the nearest other
+box stayed 7.5 m clear and nothing — grounded or flying — ever came nearer than 3.6 m. The first
+candidate tried, the biggest mushroom in the set at (16, 12), came back worse on the same probe (a
+stray scatter-mushroom box only 3.55 m off, a wanderer passing as close as 2.8 m), so this one — safer
+on both counts — was picked instead, with a 3.0 m radius (the same 1.5×-scale ratio the first two used,
+off this one's 2.0 scale) kept clear on every side.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged (322 — a toast on an existing mesh costs no new collider). Five of the eight mushrooms are
+still mute. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

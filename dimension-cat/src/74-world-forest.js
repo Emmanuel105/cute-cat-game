@@ -49,8 +49,8 @@ function buildForest(game, entry) {
     game.addInteractable({ obj: ringCenter, radius: 7, label: () => 'Turn three times in the fairy ring', onUse: () => {
       SFX.twinkle(); game.fx.emit(rcx, ry0 + 0.3, rcz, { count: 16, colors: [0xa8ff9a, 0xffd1ff, 0x9fe8ff], speed: 1.1, up: 1.4, life: 1.0, gravity: 2 });
       game.toast(rnd.pick(ringWishes)); } }); }
-  let bigMushroom = null, farMushroom = null;
-  for (const [x, z, s, hue] of [[-14, -14, 2.6, 0], [16, 12, 3.2, 200], [-20, 0, 2.2, 300], [14, -20, 2.4, 40], [-2, -22, 2.9, 0], [24, -4, 2.0, 280], [-24, 20, 2.6, 200], [4, 24, 2.3, 0]]) { const m = makeMushroom(s, hue, r, true); placeT(game, U, m, x, z, 0); boxT(game, x, z, 0.5 * s, 1.3 * s, 0.5 * s, { cam: false }); U.push(m.userData.update); if (x === 14 && z === -20) bigMushroom = m; if (x === -24 && z === 20) farMushroom = m; }
+  let bigMushroom = null, farMushroom = null, violetMushroom = null;
+  for (const [x, z, s, hue] of [[-14, -14, 2.6, 0], [16, 12, 3.2, 200], [-20, 0, 2.2, 300], [14, -20, 2.4, 40], [-2, -22, 2.9, 0], [24, -4, 2.0, 280], [-24, 20, 2.6, 200], [4, 24, 2.3, 0]]) { const m = makeMushroom(s, hue, r, true); placeT(game, U, m, x, z, 0); boxT(game, x, z, 0.5 * s, 1.3 * s, 0.5 * s, { cam: false }); U.push(m.userData.update); if (x === 14 && z === -20) bigMushroom = m; if (x === -24 && z === 20) farMushroom = m; if (x === 24 && z === -4) violetMushroom = m; }
   // the fairy ring, the zipline tower and the treehouse have all had a one-off "walk up and look" toast
   // for rounds now, but none of the eight giant glowing mushrooms scattered round the glade ever got one
   // — the one real landmark shape unique to these woods, and the cat could only ever walk past it. The
@@ -74,6 +74,16 @@ function buildForest(game, entry) {
   // leash near the treehouse) never closer than 11.1 m — only a passing fairy or butterfly, flying well
   // overhead, ever came nearer, same as the first mushroom's own case.
   game.addInteractable({ obj: farMushroom, radius: 3.9, label: () => 'Look up at the mushroom', onUse: () => { SFX.click(); game.toast(rnd.pick(['🍄 "Furthest one from the ring. Still glows just as bright out here alone."', '🍄 "The deer give this one a wide berth. Nobody\'s sure why."', '🍄 "Grows a little lopsided, out here with no others to lean on."']), 3000); } });
+  // (14, -20) and (-24, 20) got their own toast; six of the glade's eight giant mushrooms still stand
+  // mute. The one at (24, -4) is the only one in the set painted hue 280 (violet, against everyone
+  // else's reds, pinks and golds) and sits furthest east of the ring, past the fox den. Same trick a
+  // third time: `violetMushroom`, captured from the same build loop, goes straight into
+  // `addInteractable` — no new mesh, no new physics box. A headless probe (`game.load(6, 'from-hub')`,
+  // 3000 simulated frames, every NPC's own position sampled every frame) swept this point against every
+  // physics box and every sample: the nearest other box stayed 7.5 m clear and nothing — grounded or
+  // flying — ever came nearer than 3.6 m, so the 3.0 m radius (the same 1.5×-scale ratio the first two
+  // mushrooms used, off this one's own 2.0 scale) stays clear on every side.
+  game.addInteractable({ obj: violetMushroom, radius: 3.0, label: () => 'Look up at the mushroom', onUse: () => { SFX.click(); game.toast(rnd.pick(['🍄 "Only purple one in the whole glade. Wonder why it came out different."', '🍄 "Out here past the fox den, this one never sees the fairy ring at all."', '🍄 "Cap\'s gone a deep violet — not a shade any of its neighbours share."']), 3000); } });
   // Frosty Peak has had its aurora since round 283 and the Neighborhood its own telescope more recently,
   // but these woods — the one world actually built around fairies and wishes — never had a sky worth
   // looking up at. `makeRainbowArc()` (new, next to `makeAurora` in `62-props-nature.js`) is seven
