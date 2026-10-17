@@ -9547,6 +9547,50 @@ function buildNeighborhood(game, entry) {
     game.npcs.push(new SackRace(game, sackA, sackB, { x: rx, z: rz, ry: rry,
       cries: ['Nearly went over that time!', 'Careful, puss — these sacks smell like old potatoes.', "Best of three. I'm up two to one, whatever he says."] })); }
 
+  // Round 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack races)
+  // had by now gone round Candy Land, Robot City, Sunny Shore, Frosty Peak, Whisper Woods and
+  // Victorian — the Neighborhood itself, for all its own tetherball pole and sack race above, never
+  // had the one contest with no ball, shoe or shuttle to send back and forth. Two off-duty neighbours
+  // now dig their heels into the open lawn north of the cat's own house, between the lake and the
+  // lantern path to the gondola, and heave on a length of garden rope between them, never quite
+  // settling either way. *"Heave, Barb — I had this last summer and I'll have it again!"* *"Mind your
+  // tail, puss, we're mid-match here."* *"Dead even, same as always. Rematch next weekend?"*
+  //
+  // No new class and no new mesh: the exact same `TugOfWar` (`55-npcs.js`) the other six worlds
+  // already use, with the same rope-and-flag dressing those six already build around it — just two
+  // fresh `makeHuman` neighbours in casual wear rather than overalls, beachwear or a snowsuit.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses —
+  // click the real start button, run the stub clock forward 2400 simulated frames, no `game.travel()`
+  // needed since the Neighborhood is the world every test run already starts on) sampled every NPC's
+  // own position every fifth frame, then swept the quiet stretch of open lawn north of the house —
+  // between the lake (its own circle centred (-34,-48), radius 8.4) and the lantern path to the
+  // gondola (x -67..-49, z -36..-11) — against both those samples and every one of the street's
+  // physics boxes: (-8, -42) came back clear by 15.3 m of the nearest box (the lake jetty's own post,
+  // at (2,-54)) and 16.2 m of the nearest other soul at its own centre, with both neighbours' own
+  // stations 1.3 m either side of it (rope running north-south) clear by 14.3 m and 15.6 m of the
+  // nearest box and 15.2 m of the nearest other soul on both sides.
+  // Built dead last, after the sack race, for the same reason every other addition at the end of this
+  // function already gives: `makeHuman()` draws three values off the *shared* `rnd()` sequence
+  // unconditionally, and two more rigs built any earlier on this street would shift that sequence and
+  // desync the two-neighbours-chat timing test a thousand-odd lines up.
+  { const tugWard = makeWardrobe(r, { shirts: [0x4a7a5a, 0x5a5a8a, 0x8a5a4a], pants: [0x2a2a30, 0x3a342a], shoes: [0x2a2018, 0x1e1a16] });
+    const haulerA = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: false, wardrobe: tugWard }),
+      hat: 'cap', hatColor: 0x2e4a3a, jacket: null, coat: null, scarf: null, bag: null, backpack: null, sleeves: true, glasses: false });
+    const haulerB = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: false, wardrobe: tugWard, hairStyle: 'pony' }),
+      hat: null, jacket: null, coat: null, scarf: null, bag: null, backpack: null, sleeves: true, glasses: false });
+    W.add(haulerA.group); W.add(haulerB.group);
+    const tug = new TugOfWar(game, haulerA, haulerB, { x: -8, z: -42, ry: 0, gap: 2.6,
+      cries: ["Heave, Barb — I had this last summer and I'll have it again!", "Mind your tail, puss, we're mid-match here.", 'Dead even, same as always. Rematch next weekend?'] });
+    game.npcs.push(tug);
+    const [A, B] = tug.ctls, ropeM = mat(0x8a6a42, { roughness: 0.9 }), ay = P.ground0(A.x, A.z) + 0.75, by = P.ground0(B.x, B.z) + 0.75;
+    const ropeGroup = group((A.x + B.x) / 2, (ay + by) / 2, (A.z + B.z) / 2, W);
+    ropeGroup.lookAt(B.x, by, B.z);
+    noInk(mesh(G.cyl(0.035, 0.035, Math.hypot(B.x - A.x, by - ay, B.z - A.z), 8), ropeM, { rx: PI / 2, parent: ropeGroup }));
+    const flag = group(0, 0, 0, W); noInk(mesh(G.box(0.03, 0.14, 0.4), mat(0x8b1a1a, { roughness: 0.7 }), { parent: flag }));
+    U.push(() => { const frac = 0.5 + clamp(tug.tension, -1, 1) * 0.12;
+      flag.position.set(lerp(A.x, B.x, frac), lerp(ay, by, frac) + 0.03, lerp(A.z, B.z, frac)); flag.rotation.y = ropeGroup.rotation.y; }); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

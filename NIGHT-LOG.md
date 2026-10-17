@@ -14250,3 +14250,38 @@ own friend count up from 74 to 76 for the two new stall hands (confirmed against
 with `git stash`). No visual check was possible in this environment (no browser, no Playwright) — only
 the stub-three test suite and the headless probe above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 539 — a tug-of-war for the Neighborhood
+
+Round 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack races) had
+by now gone round Candy Land, Robot City, Sunny Shore, Frosty Peak, Whisper Woods and Victorian — the
+Neighborhood itself, for all its own tetherball pole and sack race in the park, never had the one
+contest with no ball, shoe or shuttle to send back and forth. **Two off-duty neighbours now dig their
+heels into the open lawn north of the cat's own house, between the lake and the lantern path to the
+gondola, and heave on a length of garden rope between them, never quite settling either way.**
+*"Heave, Barb — I had this last summer and I'll have it again!"* *"Mind your tail, puss, we're
+mid-match here."* *"Dead even, same as always. Rematch next weekend?"*
+
+No new class and no new mesh: the exact same `TugOfWar` (`55-npcs.js`) the other six worlds already
+use, with the same rope-and-flag dressing those six already build around it — just two fresh
+`makeHuman` neighbours in casual wear rather than overalls, beachwear or a snowsuit.
+
+Finding the spot took two tries. A headless probe (a scratch script on the same stub-three harness
+`test/run.mjs` itself uses — click the real start button, run the stub clock forward 2400 simulated
+frames, no `game.travel()` needed since the Neighborhood is the world every test run already starts
+on) sampled every NPC's own position every fifth frame, then swept the quiet stretch of open lawn
+north of the house, between the lake and the lantern path to the gondola, against both those samples
+and every physics box on the street: (-8, -42) came back clear by 15.3 m of the nearest box and
+16.2 m of the nearest other soul, with both neighbours' own stations clear by 14.3–15.6 m of the
+nearest box and 15.2 m of the nearest other soul on both sides. The first attempt built the pair
+right after the duck pond, well before the park section — and broke a test: the Neighborhood is the
+one world every run starts on, and its own "a neighbour waves when the cat walks up to them" check
+depends on the *exact* number of shared `rnd()` draws every earlier fixture already makes, the same
+trap the ladybug's, the yard sale table's and the raccoon's own comments in `70-worlds.js` already
+warn about. Moving the whole block to dead last — after the sack race, right before `makeDayNight` —
+fixed it: nothing built earlier on the street has its draw count shifted.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings. The
+Neighborhood's own friend count up from 63 to 65 for the two new neighbours. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
+headless probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
