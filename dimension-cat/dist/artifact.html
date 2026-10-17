@@ -18290,6 +18290,36 @@ function buildForest(game, entry) {
       glow.position.set(lerp(A.x, B.x, frac), lerp(ay, by, frac) + 0.08, lerp(A.z, B.z, frac));
       glow.material.emissiveIntensity = 1.0 + abs(tug.tension) * 1.5; }); }
 
+  // The Neighborhood, Candy Land, Robot City, Victorian, Sunny Shore and Frosty Peak have all had a
+  // tetherball pole since round 508's own list of playground games (tetherball, badminton, tug-of-war,
+  // archery, sack races) went round every world in turn — Whisper Woods got its own archery range and
+  // tug-of-war out of that same list, but never the one game played standing still, swinging a ball on
+  // a rope round and round a post. **Two forest kids now keep a rally going on open ground east of the
+  // glade**, well clear of every mushroom, the tug-of-war and the jump-roper's own clearing.
+  // *"Round and round — same as every other game in these woods, just leafier."* *"Mind the rope,
+  // puss — it doesn't care whose tail is in the way."* *"I'm up to twenty wraps. No, I lost count
+  // again."*
+  //
+  // No new class and no new mesh: the exact same `Tetherball` (`55-npcs.js`) the other six worlds
+  // already use, unchanged — it already asks `game.physics.ground0()` for its own pole, ball and each
+  // player's footing every frame, so the gentle slope out here costs nothing extra. Two plain
+  // `makeHuman()` kids, the same way Robot City's workers and Candy Land's own pair are built, since
+  // this world has no single child helper every kid already comes from the way Frosty Peak's `kid()`
+  // or the beach's `beachPerson()` do.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // `game.start('new')` then `game.travel(6, 'from-hub')`) sampled every NPC's own position every 7th
+  // frame over 2400 simulated frames, then swept a grid of the open woodland floor (radius 12-56, short
+  // of the radius (58) where `forestRegion`'s own procedural fill takes over) against both those
+  // samples and every one of the wood's 323 physics boxes: (41, -27) came back clear by 18.3 m at its
+  // tightest point — east of every hand-placed mushroom, well short of the tug-of-war vine at (-10,
+  // -40) and the jump-roper's own clearing at (8, -48), and inside the radius where the fill takes over.
+  { const tA = makeHuman({ ...randomPerson(r, { female: false, child: true }), shirt: 0xd4823a, pants: 0x3a4a3a, shoes: 0x3a2a1e, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    const tB = makeHuman({ ...randomPerson(r, { female: true, child: true }), shirt: 0x5ac4a0, pants: 0x3a4a3a, shoes: 0x3a2a1e, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(tA.group); W.add(tB.group);
+    game.npcs.push(new Tetherball(game, tA, tB, { x: 41, z: -27,
+      cries: ['Round and round — same as every other game in these woods, just leafier.', "Mind the rope, puss — it doesn't care whose tail is in the way.", "I'm up to twenty wraps. No, I lost count again."] })); }
+
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
 

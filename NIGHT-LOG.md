@@ -14476,3 +14476,31 @@ too; three clean reruns of both the modified and unmodified code back it up. Fro
 count rises from 67 to 69 with the two new kids. No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 546 — a tetherball pole for Whisper Woods
+
+Round 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack races) had
+left exactly one gap after round 545: six worlds now had a tetherball pole, but Whisper Woods, for all
+its archery range and vine tug-of-war, never got the one game played standing still, swinging a ball on
+a rope round and round a post. **Two forest kids now keep a rally going on open ground east of the
+glade**, well clear of every mushroom, the tug-of-war vine and the jump-roper's own clearing. *"Round
+and round — same as every other game in these woods, just leafier."* *"Mind the rope, puss — it
+doesn't care whose tail is in the way."* *"I'm up to twenty wraps. No, I lost count again."*
+
+No new class and no new mesh: the exact same `Tetherball` (`55-npcs.js`) the other six worlds already
+use, unchanged. Two plain `makeHuman()` kids, built and `W.add()`'d the same way Robot City's workers
+and Candy Land's own pair already are, since Whisper Woods has no single child helper every kid comes
+from the way Frosty Peak's `kid()` or the beach's `beachPerson()` do.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+`game.start('new')` then `game.travel(6, 'from-hub')`) sampled every NPC's own position every 7th frame
+over 2400 simulated frames, then swept a grid of the open woodland floor (radius 12-56, short of the
+radius (58) where `forestRegion`'s own procedural fill takes over) against both those samples and every
+one of the wood's 323 physics boxes: (41, -27) came back clear by 18.3 m at its tightest point — well
+east of every hand-placed mushroom and south of the tug-of-war vine at (-10, -40).
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings, 98% of
+Whisper Woods' own ground still walkable. Whisper Woods' own friend count rises to 68 with the two new
+kids — tetherball is now in all seven worlds. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
