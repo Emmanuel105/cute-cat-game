@@ -14311,3 +14311,36 @@ Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 conso
 count unaffected, since a sign isn't greetable. No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 541 — a tiger beetle for Sunny Shore
+
+The Neighborhood has a raccoon at a bin, Robot City a scrap-bug, Candy Land a gumdrop toad and
+Whisper Woods a ladybug — every world had its own small, unregarded floor-level creature except
+Sunny Shore and Frosty Peak. **A tiger beetle now scuttles the dry dune sand west of the beach's own
+tug-of-war**, a few inches at a time, pale diagonal markings catching the light on an otherwise
+iridescent green-gold shell. It has no line of its own — it's an insect, not a person — so this is
+purely a background touch, same family as the ladybug and the fireflies.
+
+New build, `makeTigerBeetle()` in `56-npcs-wild.js` right next to `makeLadybug()`: that same rig's
+sun-bleached cousin — longer and flatter, a pale diagonal marking per side standing in for the
+ladybug's spots, and longer running legs, since real tiger beetles are among the fastest animals
+alive relative to their own size. No new controller: `Hopper`, the class already driving the scrap-bug
+and every other tiny ground creature, just dialled down to an inch-scale scuttle (`dist: [0.15, 0.35]`,
+`height: 0.05`) the same way the ladybug's own hop was.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+`game.start('new')` then `game.load(4, 'from-hub')` straight to Sunny Shore, 1200 simulated frames,
+every NPC's own position sampled every fifth frame) swept the dry dune sand (x ≤ 10, west of the
+wet-sand zone that starts at x=12, radius ≤ 54, short of the radius (58) where `beachRegion`'s own
+fill takes over) against both every one of the beach's 217 physics boxes and those samples: (-8, 24)
+came back clear by 8.8 m of the nearest box and 6.1 m of the nearest wandering soul, comfortably past
+the 0.1 m leash given here, and well off every hand-placed game and hut on this beach. Built dead last
+of everything this world adds, after the tug-of-war, so `Hopper`'s own three unconditional draws off
+the shared `rnd()` sequence land after every other NPC in this world that times itself off that same
+sequence, and disturb nothing built earlier on the sand.
+
+It isn't a friend to meet — same as the ladybug, the sandpipers and the fireflies — Sunny Shore's own
+friend count stays at 68. Full suite (`node test/run.mjs`) ran clean twice in a row: exit 0, all 274
+checks `ok`, 0 console warnings both times, 99% of the ground still walkable. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
+headless probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

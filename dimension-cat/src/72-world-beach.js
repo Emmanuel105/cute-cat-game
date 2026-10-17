@@ -1212,6 +1212,32 @@ function buildBeach(game, entry) {
   C.add('fish', 31, -10, 0.6); C.add('star', 12, -40); C.add('yarn', -18, 30); C.add('mouse', 2, 14); C.add('fish', 20, 30); C.add('star', -36, -26); C.add('yarn', -8, -36); C.add('mouse', -40, 20);
   game.fx.setAmbient({ count: 40, radius: 20, colors: [0xffffff, 0xfff6d5], rise: 0.4, drift: 0.5, life: 3, height: 2.5, yMin: 0.3 });
   makeDayNight(game, U, W);
+  // the Neighborhood has a raccoon at a bin, Robot City a scrap-bug, Candy Land a gumdrop toad and
+  // Whisper Woods a ladybug — every world had its own small, unregarded floor-level creature except
+  // this one and Frosty Peak. A tiger beetle now scuttles the dry dune sand west of the tug-of-war.
+  // `makeTigerBeetle()` in `56-npcs-wild.js`, right after `makeLadybug()`, is that same rig's
+  // sun-bleached cousin: longer and flatter, an iridescent green-gold shell with a pale diagonal
+  // marking per side instead of spots, and longer running legs — real tiger beetles are among the
+  // fastest animals alive relative to their own size. Wired to the same `Hopper` controller every
+  // other tiny ground creature already uses. Pure ambient wildlife — no greeting, no effect on the
+  // friend count, nothing new to collect.
+  //
+  // A headless probe (`game.start('new')` then `game.load(4, 'from-hub')`, 1200 simulated frames,
+  // every NPC's own position sampled every fifth frame) swept the dry dune sand (x ≤ 10, west of the
+  // wet-sand zone that starts at x=12, radius ≤ 54, short of the radius (58) where `beachRegion`'s own
+  // fill takes over) against both every one of the beach's 217 physics boxes and those samples:
+  // (-8, 24) came back clear by 8.8 m of the nearest box and 6.1 m of the nearest wandering soul,
+  // comfortably past the 0.1 m leash given here, and well off every hand-placed game and hut on this
+  // beach.
+  //
+  // Built dead last of everything this world adds, after the tug-of-war, so `Hopper`'s own three
+  // unconditional draws off the *shared* `rnd()` sequence (idle timer, idle phase, starting heading —
+  // the same draws the raccoon's and the scrap-bug's own comments already warned future rounds about)
+  // land after every other NPC in this world that times itself off that same sequence, and disturb
+  // nothing built earlier on the sand.
+  { const rig = makeTigerBeetle();
+    game.npcs.push(new Hopper(game, rig, { x: -8, z: 24, leash: 1.0, r: 0.08, dist: [0.15, 0.35], dur: 0.22, height: 0.05, idle: [1, 3],
+      onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } })); }
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

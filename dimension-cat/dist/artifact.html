@@ -4470,6 +4470,28 @@ function makeLadybug(color = 0xd6263a) {
   return rig;
 }
 
+// ---------------------------------------------------------------- tiger beetle (the ladybug's sun-bleached cousin on dry sand: longer, flatter, iridescent green-gold shell with a pale diagonal marking per side rather than spots, longer running legs)
+function makeTigerBeetle(color = 0x2e6b4a) {
+  const g = new THREE.Group(), rig = { group: g };
+  const shellM = mat(color, { roughness: 0.25, metalness: 0.2 }), darkM = mat(0x14120f, { roughness: 0.6 }), legM = mat(0x241f1a, { roughness: 0.7 }), markM = mat(0xe8dcc0, { roughness: 0.5 });
+  const body = group(0, 0, 0, g); rig.body = body;
+  const shell = group(0, 0.038, -0.01, body); rig.shell = shell;
+  mesh(G.dome(0.07, 12, 7), shellM, { sy: 0.55, sz: 1.35, parent: shell });
+  mesh(G.box(0.003, 0.05, 0.14), darkM, { y: 0.026, shadow: 'none', parent: shell });   // the seam where the two wing cases meet
+  for (const side of [1, -1]) mesh(G.box(0.03, 0.01, 0.045), markM, { x: side * 0.034, y: 0.045, z: 0.015, ry: side * 0.55, shadow: 'none', parent: shell });   // the pale diagonal marking real tiger beetles carry
+  const head = group(0, 0.02, 0.095, body); rig.head = head;
+  mesh(G.box(0.032, 0.026, 0.028), darkM, { parent: head });
+  for (const side of [1, -1]) { const ant = group(side * 0.012, 0.016, 0.012, head); rig['ant' + side] = ant; mesh(G.cyl(0.003, 0.003, 0.05, 4), legM, { y: 0.025, rx: -0.5, parent: ant }); }
+  for (const side of [1, -1]) for (const z of [0.05, 0.005, -0.04]) mesh(G.capsule(0.0038, 0.06, 4), legM, { x: side * 0.042, y: 0.013, z, rz: side * 1.1, parent: body });   // long, quick legs — tiger beetles outrun almost anything their size
+  rig.animate = (ph, moving, dt, t = 0) => {
+    const alert = moving ? 1 : 0.6 + sin(t * 2.4) * 0.25;
+    for (const side of [1, -1]) rig['ant' + side].rotation.z = side * 0.3 * alert;
+    body.position.y = moving ? abs(sin(t * 22)) * 0.006 : 0;
+  };
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- owl (perched; only animates)
 // `o.body`/`o.face` recolour it (a snowy owl for Frosty Peak); omitted, it's the brown tawny owl
 // Whisper Woods has always had, so every existing call is unaffected.
@@ -15377,6 +15399,32 @@ function buildBeach(game, entry) {
   C.add('fish', 31, -10, 0.6); C.add('star', 12, -40); C.add('yarn', -18, 30); C.add('mouse', 2, 14); C.add('fish', 20, 30); C.add('star', -36, -26); C.add('yarn', -8, -36); C.add('mouse', -40, 20);
   game.fx.setAmbient({ count: 40, radius: 20, colors: [0xffffff, 0xfff6d5], rise: 0.4, drift: 0.5, life: 3, height: 2.5, yMin: 0.3 });
   makeDayNight(game, U, W);
+  // the Neighborhood has a raccoon at a bin, Robot City a scrap-bug, Candy Land a gumdrop toad and
+  // Whisper Woods a ladybug — every world had its own small, unregarded floor-level creature except
+  // this one and Frosty Peak. A tiger beetle now scuttles the dry dune sand west of the tug-of-war.
+  // `makeTigerBeetle()` in `56-npcs-wild.js`, right after `makeLadybug()`, is that same rig's
+  // sun-bleached cousin: longer and flatter, an iridescent green-gold shell with a pale diagonal
+  // marking per side instead of spots, and longer running legs — real tiger beetles are among the
+  // fastest animals alive relative to their own size. Wired to the same `Hopper` controller every
+  // other tiny ground creature already uses. Pure ambient wildlife — no greeting, no effect on the
+  // friend count, nothing new to collect.
+  //
+  // A headless probe (`game.start('new')` then `game.load(4, 'from-hub')`, 1200 simulated frames,
+  // every NPC's own position sampled every fifth frame) swept the dry dune sand (x ≤ 10, west of the
+  // wet-sand zone that starts at x=12, radius ≤ 54, short of the radius (58) where `beachRegion`'s own
+  // fill takes over) against both every one of the beach's 217 physics boxes and those samples:
+  // (-8, 24) came back clear by 8.8 m of the nearest box and 6.1 m of the nearest wandering soul,
+  // comfortably past the 0.1 m leash given here, and well off every hand-placed game and hut on this
+  // beach.
+  //
+  // Built dead last of everything this world adds, after the tug-of-war, so `Hopper`'s own three
+  // unconditional draws off the *shared* `rnd()` sequence (idle timer, idle phase, starting heading —
+  // the same draws the raccoon's and the scrap-bug's own comments already warned future rounds about)
+  // land after every other NPC in this world that times itself off that same sequence, and disturb
+  // nothing built earlier on the sand.
+  { const rig = makeTigerBeetle();
+    game.npcs.push(new Hopper(game, rig, { x: -8, z: 24, leash: 1.0, r: 0.08, dist: [0.15, 0.35], dur: 0.22, height: 0.05, idle: [1, 3],
+      onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } })); }
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

@@ -542,6 +542,28 @@ function makeLadybug(color = 0xd6263a) {
   return rig;
 }
 
+// ---------------------------------------------------------------- tiger beetle (the ladybug's sun-bleached cousin on dry sand: longer, flatter, iridescent green-gold shell with a pale diagonal marking per side rather than spots, longer running legs)
+function makeTigerBeetle(color = 0x2e6b4a) {
+  const g = new THREE.Group(), rig = { group: g };
+  const shellM = mat(color, { roughness: 0.25, metalness: 0.2 }), darkM = mat(0x14120f, { roughness: 0.6 }), legM = mat(0x241f1a, { roughness: 0.7 }), markM = mat(0xe8dcc0, { roughness: 0.5 });
+  const body = group(0, 0, 0, g); rig.body = body;
+  const shell = group(0, 0.038, -0.01, body); rig.shell = shell;
+  mesh(G.dome(0.07, 12, 7), shellM, { sy: 0.55, sz: 1.35, parent: shell });
+  mesh(G.box(0.003, 0.05, 0.14), darkM, { y: 0.026, shadow: 'none', parent: shell });   // the seam where the two wing cases meet
+  for (const side of [1, -1]) mesh(G.box(0.03, 0.01, 0.045), markM, { x: side * 0.034, y: 0.045, z: 0.015, ry: side * 0.55, shadow: 'none', parent: shell });   // the pale diagonal marking real tiger beetles carry
+  const head = group(0, 0.02, 0.095, body); rig.head = head;
+  mesh(G.box(0.032, 0.026, 0.028), darkM, { parent: head });
+  for (const side of [1, -1]) { const ant = group(side * 0.012, 0.016, 0.012, head); rig['ant' + side] = ant; mesh(G.cyl(0.003, 0.003, 0.05, 4), legM, { y: 0.025, rx: -0.5, parent: ant }); }
+  for (const side of [1, -1]) for (const z of [0.05, 0.005, -0.04]) mesh(G.capsule(0.0038, 0.06, 4), legM, { x: side * 0.042, y: 0.013, z, rz: side * 1.1, parent: body });   // long, quick legs — tiger beetles outrun almost anything their size
+  rig.animate = (ph, moving, dt, t = 0) => {
+    const alert = moving ? 1 : 0.6 + sin(t * 2.4) * 0.25;
+    for (const side of [1, -1]) rig['ant' + side].rotation.z = side * 0.3 * alert;
+    body.position.y = moving ? abs(sin(t * 22)) * 0.006 : 0;
+  };
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- owl (perched; only animates)
 // `o.body`/`o.face` recolour it (a snowy owl for Frosty Peak); omitted, it's the brown tawny owl
 // Whisper Woods has always had, so every existing call is unaffected.
