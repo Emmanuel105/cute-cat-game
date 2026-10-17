@@ -13617,6 +13617,43 @@ function buildVictorian(game, entry) {
     W.add(workerA.group); W.add(workerB.group);
     game.npcs.push(new Tetherball(game, workerA, workerB, { x: -70, z: -30,
       cries: ['Forty-one, and she\'s still mine!', "Mind your tail, puss — that ball's got more swing in it than it looks.", "Groom'll want us back inside in a minute. One more go."] })); }
+  // round 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack races)
+  // is down to its last three worlds now the Neighborhood, Candy Land and Robot City have all had a
+  // `SackRace` of their own — Victorian, for all its badminton net, tug-of-war and tetherball pole,
+  // never had the one race run two hops at a time with both ankles tied together. **Two errand boys
+  // now hop a short lane on the open grass south of the market square**, borrowed flour sacks from the
+  // grocer's cart knotted at the waist, neither one ever quite winning. *"Lost me cap in that last
+  // tumble!"* *"Mind your tail, puss — this sack's still got flour in the seams."* *"Best of three —
+  // and I'm not owning up to losing again."*
+  //
+  // No new class and no new mesh: the exact same `SackRace` (`55-npcs.js`) and `makeHuman`'s own
+  // `o.sack` option the other three worlds already use, just two fresh errand boys in flatcaps and
+  // rolled sleeves rather than a snowsuit, factory overalls or beachwear.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // clicking the real start button and then `game.travel(3, 'from-prev')`, waiting out both the load
+  // and the fade-lock timers) sampled every physics circle's own position every 10th frame over 2400
+  // simulated frames (40 s, long enough for every urchin, dancer, duck and ball game in this town to
+  // range fully), then swept a grid of candidate lanes (5 m long, 1.1 m apart, both orientations)
+  // against both those samples and every one of the town's 580 physics boxes, keeping short of the
+  // radius (88) where `victorianRegion`'s own procedural fill takes over: (4, -66), lane running along
+  // world X (`ry = PI/2`), came back clearest at 15.6 m from the nearest box or soul at its tightest
+  // point — a good 22 m inside the region-fill radius, and well south of the market square (0, -34,
+  // radius 17), the badminton net (-10, -55) and the maypole's own field (0, -84).
+  //
+  // Built dead last, right after the tetherball pole, for the same reason every other addition at the
+  // end of this function already gives: `makeHuman()` draws three values off the *shared* `rnd()`
+  // sequence unconditionally, and a fresh pair of rigs built any earlier in this town would shift that
+  // sequence and desync every other timing-sensitive pick already placed above.
+  { const rx = 4, rz = -66, rry = PI / 2;
+    const sackWard = makeWardrobe(r, { shirts: [0x6a7a5a, 0x7a6a4a, 0x5a6a7a], pants: [0x2a2420, 0x2a2a30], shoes: [0x2a2018, 0x1e1a16] });
+    const sackA = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, elder: false, wardrobe: sackWard }),
+      sack: 0xa8785a, hat: 'flatcap', hatColor: 0x3a3327, coat: null, jacket: null, scarf: null, bag: null, backpack: null, sleeves: true, glasses: false });
+    const sackB = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, elder: false, wardrobe: sackWard }),
+      sack: 0xa8785a, hat: 'flatcap', hatColor: 0x2a2a2a, coat: null, jacket: null, scarf: null, bag: null, backpack: null, sleeves: true, glasses: false });
+    W.add(sackA.group); W.add(sackB.group);
+    game.npcs.push(new SackRace(game, sackA, sackB, { x: rx, z: rz, ry: rry,
+      cries: ['Lost me cap in that last tumble!', "Mind your tail, puss — this sack's still got flour in the seams.", "Best of three — and I'm not owning up to losing again."] })); }
   victorianRegion(game, U, r, 88, VICTORIAN_LIMIT - 10);
   makeHorizon(game, r, { clear: VICTORIAN_LIMIT + 10, hills: true, hill: 0x3f4a38, rock: 0x3a3f4a, rock2: 0x4a4a58, snow: 0xcfd6e2, woodHue: [0.16, 0.26], woodLight: [0.1, 0.2], trunk: 0x3a2a1e, peaks: 30, woodCount: 420 });
   // people

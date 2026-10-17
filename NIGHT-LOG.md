@@ -14725,3 +14725,42 @@ seven worlds (the Neighborhood, Candy Land, Robot City); Victorian, Sunny Shore,
 Woods are left to get one of their own. No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 553 — a sack race for Victorian
+
+Round 508's own list of playground games is down to its last three worlds now that the Neighborhood,
+Candy Land and Robot City have all had a `SackRace` of their own — Victorian, for all its badminton
+net, tug-of-war and tetherball pole, never had the one race run two hops at a time with both ankles
+tied together. **Two errand boys now hop a short lane on the open grass south of the market square**,
+borrowed flour sacks from the grocer's cart knotted at the waist, neither one ever quite winning.
+*"Lost me cap in that last tumble!"* *"Mind your tail, puss — this sack's still got flour in the
+seams."* *"Best of three — and I'm not owning up to losing again."*
+
+No new class and no new mesh: the exact same `SackRace` (`55-npcs.js`) and `makeHuman`'s own `o.sack`
+option the other three worlds already use, just two fresh errand boys in flatcaps and rolled sleeves
+rather than a snowsuit, factory overalls or beachwear.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, clicking
+the real start button and then `game.travel(3, 'from-prev')`, waiting out both the load and the
+fade-lock timers) sampled every physics circle's own position every 10th frame over 2400 simulated
+frames (40 s, long enough for every urchin, dancer, duck and ball game in this town to range fully),
+then swept a grid of candidate lanes (5 m long, 1.1 m apart, both orientations) against both those
+samples and every one of the town's 580 physics boxes, keeping short of the radius (88) where
+`victorianRegion`'s own procedural fill takes over: (4, -66), lane running along world X (`ry = PI/2`),
+came back clearest at 15.6 m from the nearest box or soul at its tightest point — a good 22 m inside
+the region-fill radius, and well south of the market square (0, -34, radius 17), the badminton net
+(-10, -55) and the maypole's own field (0, -84).
+
+Built dead last, right after the tetherball pole, for the same reason every other addition at the end
+of this function already gives: `makeHuman()` draws three values off the shared `rnd()` sequence
+unconditionally, and a fresh pair of rigs built any earlier in this town would shift that sequence and
+desync every other timing-sensitive pick already placed above.
+
+Full suite (`node test/run.mjs`) ran clean on three separate runs: exit 0, all checks `ok`, 0 console
+warnings. Victorian's own friend count rises from 93 to 95 with the two new errand boys (confirmed
+against the unmodified base with `git stash`); ground walkable dips from 95% to 94%, the expected cost
+of the two new colliders. `SackRace` is now in four of the seven worlds (the Neighborhood, Candy Land,
+Robot City, Victorian); Sunny Shore, Frosty Peak and Whisper Woods are left to get one of their own. No
+visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
+suite and the headless probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.
