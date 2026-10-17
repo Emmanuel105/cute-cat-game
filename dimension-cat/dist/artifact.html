@@ -13432,6 +13432,35 @@ function buildVictorian(game, entry) {
     const flag = group(0, 0, 0, W); noInk(mesh(G.box(0.03, 0.14, 0.4), mat(0x8b1a1a, { roughness: 0.7 }), { parent: flag }));
     U.push(() => { const frac = 0.5 + clamp(tug.tension, -1, 1) * 0.12;
       flag.position.set(lerp(A.x, B.x, frac), lerp(ay, by, frac) + 0.03, lerp(A.z, B.z, frac)); flag.rotation.y = ropeGroup.rotation.y; }); }
+  // the Neighborhood, Candy Land and Robot City have all had their own `Tetherball` (55-npcs.js) since
+  // round 508's own list of playground games went round every world in turn — Victorian, for all its
+  // badminton net and its tug-of-war, never got the one game played standing still, swinging a ball on
+  // a rope round and round a post. Two off-duty stable hands now keep a rally going on the quiet grass
+  // west of the pinwheel's own garden, well clear of the bootblack and the juggler working the lane
+  // below. *"Forty-one, and she's still mine!"* *"Mind your tail, puss — that ball's got more swing in
+  // it than it looks."* *"Groom'll want us back inside in a minute. One more go."*
+  //
+  // No new class and no new mesh: the exact same `Tetherball` the other three worlds already use, just
+  // a fresh pair of workers and a spot. Reuses `makeHuman` the way every other Victorian NPC does —
+  // unlike Robot City's own pair, this town has no `makeRobot()` rig to work around.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // clicking the real start button and then `game.travel(3, 'from-prev')`, waiting out both the load
+  // and the fade-lock timers rather than guessing a frame count) sampled every NPC's own position
+  // every fifth frame over 1200 simulated frames, then swept the pole at (-70, -30) and both workers'
+  // own stations two metres either side of it against both those samples and every one of the town's
+  // 577 physics boxes: the worst of the three points came back clear by 13.0 m of the nearest box and
+  // 16.1 m of the nearest other soul — short of the radius (88) where `victorianRegion`'s own
+  // procedural fill takes over, and well off the pinwheel (-60.5, -7.5), the bootblack (-48, -20) and
+  // the juggler (-28, -20.3).
+  { const tetherWard = makeWardrobe(r, { shirts: [0x6a7a5a, 0x5a6a7a, 0x7a6a4a], pants: [0x2a2420, 0x2a2a30], shoes: [0x2a2018, 0x1e1a16] });
+    const workerA = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: tetherWard }),
+      hat: 'flatcap', hatColor: 0x3a3327, coat: null, jacket: null, scarf: null, bag: null, backpack: null, sleeves: true, glasses: r.chance(0.2) });
+    const workerB = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: tetherWard }),
+      hat: 'flatcap', hatColor: 0x2a2a2a, coat: null, jacket: null, scarf: null, bag: null, backpack: null, sleeves: true, glasses: r.chance(0.2) });
+    W.add(workerA.group); W.add(workerB.group);
+    game.npcs.push(new Tetherball(game, workerA, workerB, { x: -70, z: -30,
+      cries: ['Forty-one, and she\'s still mine!', "Mind your tail, puss — that ball's got more swing in it than it looks.", "Groom'll want us back inside in a minute. One more go."] })); }
   victorianRegion(game, U, r, 88, VICTORIAN_LIMIT - 10);
   makeHorizon(game, r, { clear: VICTORIAN_LIMIT + 10, hills: true, hill: 0x3f4a38, rock: 0x3a3f4a, rock2: 0x4a4a58, snow: 0xcfd6e2, woodHue: [0.16, 0.26], woodLight: [0.1, 0.2], trunk: 0x3a2a1e, peaks: 30, woodCount: 420 });
   // people

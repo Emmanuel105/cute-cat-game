@@ -14381,3 +14381,33 @@ this round's changes and re-running four times against the prior commit); it's a
 timing-based flake in that check, not a regression from tonight's round. No visual check was possible
 in this environment (no browser, no Playwright) — only the stub-three test suite and the headless
 probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 543 — a tetherball pole for Victorian
+
+The Neighborhood, Candy Land and Robot City have all had their own tetherball pole since round 508's
+own list of playground games (tetherball, badminton, tug-of-war, archery, sack races) went round every
+world in turn — Victorian, for all its badminton net and its tug-of-war, never got the one game played
+standing still, swinging a ball on a rope round and round a post. **Two off-duty stable hands now keep
+a rally going on the quiet grass west of the pinwheel's own garden**, well clear of the bootblack and
+the juggler working the lane below. *"Forty-one, and she's still mine!"* *"Mind your tail, puss — that
+ball's got more swing in it than it looks."* *"Groom'll want us back inside in a minute. One more go."*
+
+No new class and no new mesh: the exact same `Tetherball` (`55-npcs.js`) the other three worlds already
+use, unchanged, just a fresh pair of `makeHuman` workers in flatcaps and shirtsleeves and a spot —
+unlike Robot City's own pair, Victorian has no `makeRobot()` rig to work around, so this is plain
+`makeHuman` the way every other NPC in this town already is.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, clicking
+the real start button and then `game.travel(3, 'from-prev')`, waiting out both the load and the
+fade-lock timers rather than guessing a frame count) sampled every NPC's own position every fifth frame
+over 1200 simulated frames, then swept the pole at (-70, -30) and both workers' own stations two metres
+either side of it against both those samples and every one of the town's 577 physics boxes: the worst
+of the three points came back clear by 13.0 m of the nearest box and 16.1 m of the nearest other soul —
+short of the radius (88) where `victorianRegion`'s own procedural fill takes over, and well off the
+pinwheel (-60.5, -7.5), the bootblack (-48, -20) and the juggler (-28, -20.3).
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings, 95% of
+Victorian's own ground still walkable. Victorian's own friend count rises to 93 with the two new
+stable hands. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite and the headless probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
