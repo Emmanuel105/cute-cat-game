@@ -14344,3 +14344,40 @@ friend count stays at 68. Full suite (`node test/run.mjs`) ran clean twice in a 
 checks `ok`, 0 console warnings both times, 99% of the ground still walkable. No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
 headless probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 542 — a frost beetle for Frosty Peak
+
+The Neighborhood has a raccoon, Candy Land a gumdrop toad, Robot City a scrap-bug, Victorian and
+Whisper Woods both a ladybug, Sunny Shore a tiger beetle (last round) — every world had its own
+small, unregarded floor-level creature except Frosty Peak. **A frost beetle now picks its way across
+the open snow east of the village**, a stockier, paler cousin of the ladybug and tiger beetle: a
+frosted blue-grey shell with a pair of icy-white markings standing in for spots, picking across the
+packed snow at a slower, steadier pace than its sand- and garden-dwelling cousins. It has no line of
+its own — it's an insect, not a person — so this is purely a background touch, same family as the
+ladybug and the fireflies.
+
+New build, `makeFrostBeetle()` in `56-npcs-wild.js` right after `makeTigerBeetle()`: the same rig,
+recoloured and slowed — a lower hop (`height: 0.06`), a longer `idle` window and a gentler antenna
+twitch than the tiger beetle's hot-sand scurry. No new controller: `Hopper`, already driving every
+other tiny ground creature in this game, just dialled down the same way.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+`game.start('new')` then `game.load(5, 'from-hub')`, 1200 simulated frames, every NPC's own position
+sampled every 5th frame) swept the open snowfield east of the village (roughly -40..40 in x, -20..30
+in z) against both every one of this world's 743 physics boxes and those samples: (38, 8) came back
+clear by 7.29 m of the nearest box and 8.25 m of the nearest wandering soul, well off the fish
+collectible at (18, 8), the hares at (45-48, ±2) and every hand-placed prop in the village and
+archery range — ground there reads a gentle 0.68 m, no slope. Built dead last of everything this
+world adds, right after the day/night cycle and before the squirrel spawn point (which draws no
+`rnd()` of its own), so `Hopper`'s own three unconditional draws off the shared `rnd()` sequence land
+after every other NPC in this world that times itself off that same sequence, disturbing nothing
+built earlier on the mountain.
+
+It isn't a friend to meet — same as the ladybug and the tiger beetle — Frosty Peak's own friend count
+is unaffected. Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console
+warnings. One unrelated check — Sunny Shore's kite-flying height/line-length assertion — flickers
+between pass and fail run to run on both this code and the unmodified original (confirmed by stashing
+this round's changes and re-running four times against the prior commit); it's a pre-existing,
+timing-based flake in that check, not a regression from tonight's round. No visual check was possible
+in this environment (no browser, no Playwright) — only the stub-three test suite and the headless
+probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -1266,6 +1266,38 @@ function buildSnowVillage(game, entry) {
   C.add('fish', 18, 8); C.add('star', 0, -30); C.add('yarn', -16, 4); C.add('mouse', 12, 20); C.add('star', 30, -20); C.add('fish', -30, 16); C.add('yarn', 22, -6); C.add('mouse', -6, 26);
   game.fx.setAmbient({ count: 480, radius: 22, colors: [0xffffff, 0xeaf4ff, 0xdfe8ff], rise: -1.0, drift: 0.5, life: 9, height: 12, yMin: 2 });
   makeDayNight(game, U, W);
+  // The Neighborhood has a raccoon, Candy Land a gumdrop toad, Robot City a scrap-bug, Victorian and
+  // Whisper Woods both a ladybug, Sunny Shore a tiger beetle — every world had its own small,
+  // unregarded floor-level creature except Frosty Peak. A frost beetle now picks its way across the
+  // open snow east of the village, a stockier, paler cousin of the ladybug and tiger beetle with a
+  // frosted blue-grey shell and a pair of icy-white markings in place of spots. It has no line of its
+  // own — it's an insect, not a person — so this is purely a background touch, same family as the
+  // ladybug and the fireflies.
+  //
+  // New build, `makeFrostBeetle()` in `56-npcs-wild.js` right after `makeTigerBeetle()`: the same rig,
+  // recoloured and slowed down (a steadier `idle` window and a lower hop, since it's picking across
+  // packed snow rather than scurrying on hot sand). No new controller: `Hopper`, already driving every
+  // other tiny ground creature in this game, just dialled down the same way the tiger beetle's own hop
+  // was.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // `game.start('new')` then `game.load(5, 'from-hub')`, 1200 simulated frames, every NPC's own position
+  // sampled every 5th frame) swept the open snowfield east of the village (roughly -40..40 in x,
+  // -20..30 in z) against both every one of this world's 743 physics boxes and those samples: (38, 8)
+  // came back clear by 7.29 m of the nearest box and 8.25 m of the nearest wandering soul — comfortably
+  // past the leash given here, well off the fish collectible at (18, 8), the hares at (45-48, ±2) and
+  // every hand-placed prop in the village and archery range. The ground there reads a gentle 0.68 m,
+  // consistent with the rest of this stretch of snowfield, not a slope. Built dead last of everything
+  // this world adds, right after the day/night cycle and before the squirrel spawn point (which draws
+  // no `rnd()` of its own), so `Hopper`'s own three unconditional draws off the shared `rnd()` sequence
+  // land after every other NPC in this world that times itself off that same sequence, and disturb
+  // nothing built earlier on the mountain.
+  //
+  // It isn't a friend to meet — same as the ladybug and the tiger beetle — Frosty Peak's own friend
+  // count is unaffected.
+  { const rig = makeFrostBeetle();
+    game.npcs.push(new Hopper(game, rig, { x: 38, z: 8, leash: 1.0, r: 0.08, dist: [0.15, 0.4], dur: 0.26, height: 0.06, idle: [1.5, 4],
+      onHop: () => { if (rnd.chance(0.2)) SFX.chitter(); } })); }
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
