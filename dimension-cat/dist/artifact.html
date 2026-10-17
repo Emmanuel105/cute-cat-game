@@ -15439,6 +15439,31 @@ function buildBeach(game, entry) {
     U.push(() => { const frac = 0.5 + clamp(tug.tension, -1, 1) * 0.12;
       flag.position.set(lerp(A.x, B.x, frac), lerp(ay, by, frac) + 0.03, lerp(A.z, B.z, frac)); flag.rotation.y = ropeGroup.rotation.y; }); }
 
+  // the Neighborhood, Candy Land, Robot City and Victorian have all had a tetherball pole since round
+  // 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack races) went
+  // round every world in turn — Sunny Shore, for all its net games and open-toss games, never got the
+  // one played standing still, swinging a ball on a rope round and round a post. Two kids now keep a
+  // rally going on the dry dune sand well inland of the vendor's stand and the marbles ring.
+  //
+  // No new class and no new mesh: the exact same `Tetherball` (`55-npcs.js`) the other four worlds
+  // already use, unchanged — it already asks `game.physics.ground0()` for its own pole, ball and each
+  // player's footing every frame, so the real slope under this dune cost nothing extra. Two
+  // `beachPerson(child)` kids stand in for the other worlds' own fresh `makeHuman` pairs, since every
+  // other child on this beach already comes from that one helper (which adds each rig to the scene
+  // itself, so no separate `W.add()` here).
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // `game.travel(4, 'from-hub')` then 1200 simulated frames, every NPC's and the squirrel's own
+  // position sampled every 15th frame) swept a grid of the dry dune sand (x ≤ 10, radius 20-50, short
+  // of the radius (58) where `beachRegion`'s own fill takes over) against both those samples and every
+  // one of the beach's 217 physics boxes, checking the pole's own spot and both players' footing two
+  // metres either side of it: (-26, 2) came back clear by just over 6 m at its tightest point, inland
+  // of the balloon vendor at (-25, -6) and well short of the marbles ring at (-33, 20).
+  { const boy = beachPerson(false, true);
+    const girl = beachPerson(true, true);
+    game.npcs.push(new Tetherball(game, boy, girl, { x: -26, z: 2,
+      cries: ["Round and round — same as every other game on this coast, just sandier.", 'Watch the rope, puss — mind your tail.', "I'm up to thirty wraps. I think I lost count."] })); }
+
   beachRegion(game, U, r, 58, SHORE_LIMIT - 8);
   // the headland behind the dunes: hills and peaks inland only, never out to sea
   makeHorizon(game, r, { clear: SHORE_LIMIT + 8, hill: 0x8c9a58, rock: 0x7a7060, rock2: 0x8a8272, snowLine: 58, peaks: 26, woodCount: 260, woodHue: [0.18, 0.28], woodLight: [0.18, 0.3], keep: (x) => x < -SHORE_LIMIT * 0.15 });

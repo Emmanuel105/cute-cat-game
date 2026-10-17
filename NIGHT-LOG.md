@@ -14411,3 +14411,34 @@ Victorian's own ground still walkable. Victorian's own friend count rises to 93 
 stable hands. No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite and the headless probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 544 — a tetherball pole for Sunny Shore
+
+Round 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack races) gave
+the Neighborhood, Candy Land, Robot City and Victorian a tetherball pole each — Sunny Shore, for all its
+volleyball net and beach badminton, never got the one game played standing still, swinging a ball on a
+rope round and round a post. **Two kids now keep a rally going on the dry dune sand well inland of the
+balloon vendor.** *"Round and round — same as every other game on this coast, just sandier."* *"Watch
+the rope, puss — mind your tail."* *"I'm up to thirty wraps. I think I lost count."*
+
+No new class and no new mesh: the exact same `Tetherball` (`55-npcs.js`) the other four worlds already
+use, unchanged — it already asks `game.physics.ground0()` for its own pole, ball and each player's
+footing every single frame, so the real slope under this dune cost nothing extra, unlike the volleyball
+net and tug-of-war rope that needed `placeT`/`boxT` to follow the ground. The two players are just
+`beachPerson(child)` kids, the same helper every other child on this beach already comes from (which
+adds its own rig to the scene, so no separate `W.add()` call was needed here).
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+`game.travel(4, 'from-hub')` then 1200 simulated frames with every NPC's and the squirrel's own
+position sampled every 15th frame) swept a grid of the dry dune sand (x ≤ 10, radius 20-50, short of
+the radius (58) where `beachRegion`'s own procedural fill takes over) against both those samples and
+every one of the beach's 217 physics boxes, checking the pole's own spot and both players' footing two
+metres either side of it: (-26, 2) came back clear by just over 6 m at its tightest point — tighter
+than some earlier rounds, since this beach is one of the most crowded worlds by now, but still clear
+of the balloon vendor's stand at (-25, -6) and well short of the marbles ring at (-33, 20).
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings, 99% of
+Sunny Shore's own ground still walkable. Sunny Shore's own friend count rises to 70 with the two new
+kids. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite and the headless probe above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
