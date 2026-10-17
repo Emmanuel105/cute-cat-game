@@ -14764,3 +14764,33 @@ Robot City, Victorian); Sunny Shore, Frosty Peak and Whisper Woods are left to g
 visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
 suite and the headless probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 554 — a sack race for Sunny Shore
+
+`SackRace`'s own tour of the seven worlds is down to two now — the Neighborhood, Candy Land, Robot
+City and Victorian all have one, and Sunny Shore, for every net game and open-toss ball game already
+dotted along this coast, never had the one hopped in a borrowed sack. **Two kids now race a short lane
+on a quiet stretch of dry sand**, feet bound ankle to waist, neither ever quite winning. *"Sand in the
+sack already — this is going to chafe."* *"Mind your tail, puss, I can't steer in this thing."* *"Best
+of three. I'm not losing to the tide as an excuse."*
+
+No new class and no new mesh: the exact same `SackRace` (`55-npcs.js`) and `makeHuman`'s own `o.sack`
+option the other four worlds already use. It already calls `game.physics.ground0()` for each racer's
+own footing every frame, the same way this beach's tetherball and tug-of-war handle the real slope
+underfoot, so nothing extra was needed for terrain.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+`game.travel(4, 'from-hub')` then 2400 simulated frames, every NPC's and the squirrel's own position
+sampled every 10th frame) swept a grid of the dry sand (radius 4-50, short of the radius (58) where
+`beachRegion`'s own fill takes over, both lane orientations) against both those samples and every one
+of the beach's 223 physics boxes: (-37, -13), lane running along world Z, came back clearest at 6.53 m
+from the nearest box or soul at its tightest point — well clear of the mancala table (-30, 10), the
+ring-dance (-42, -22) and the digger (-6, 18).
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings. Sunny Shore's
+own friend count rises from 70 to 72 with the two new racers (confirmed against the unmodified base
+with `git stash`); ground walkable holds at 99%, unchanged. `SackRace` is now in five of the seven
+worlds (the Neighborhood, Candy Land, Robot City, Victorian, Sunny Shore); Frosty Peak and Whisper
+Woods are left to get one of their own. No visual check was possible in this environment (no browser,
+no Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

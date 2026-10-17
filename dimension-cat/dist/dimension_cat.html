@@ -15657,6 +15657,31 @@ function buildBeach(game, entry) {
     game.npcs.push(new Tetherball(game, boy, girl, { x: -26, z: 2,
       cries: ["Round and round — same as every other game on this coast, just sandier.", 'Watch the rope, puss — mind your tail.', "I'm up to thirty wraps. I think I lost count."] })); }
 
+  // the Neighborhood, Candy Land, Robot City and Victorian all have a SackRace by now (55-npcs.js) —
+  // Sunny Shore, for every other game on this coast, never had the one hopped two-footed in a borrowed
+  // sack. Two kids now race a short lane on a quiet stretch of dry sand, feet bound ankle to waist in
+  // beach towels instead of flour sacks.
+  //
+  // No new class: the same `SackRace` and `makeHuman`'s own `o.sack` option the other four worlds
+  // already use; it calls `game.physics.ground0()` for each racer's own footing every frame, same as
+  // this beach's tetherball and tug-of-war above, so the real slope underfoot costs nothing extra.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // `game.travel(4, 'from-hub')` then 2400 simulated frames, every NPC's and the squirrel's own
+  // position sampled every 10th frame) swept a grid of the dry sand (radius 4-50, short of the radius
+  // (58) where `beachRegion`'s own fill takes over, both lane orientations) against both those samples
+  // and every one of the beach's 223 physics boxes: (-37, -13), lane along world Z, came back clearest
+  // at 6.53 m from the nearest box or soul at its tightest point — well clear of the mancala table
+  // (-30, 10), the ring-dance (-42, -22) and the digger (-6, 18).
+  { const sackWard = makeWardrobe(r, { shirts: [0xff8a5c, 0x4fc3f7, 0xf4d35e], pants: [0x2a3a4a, 0x3a2a24] });
+    const sackA = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, elder: false, wardrobe: sackWard }),
+      sack: 0xe8d9b0, hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: false });
+    const sackB = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, elder: false, wardrobe: sackWard }),
+      sack: 0xe8d9b0, hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: false });
+    W.add(sackA.group); W.add(sackB.group);
+    game.npcs.push(new SackRace(game, sackA, sackB, { x: -37, z: -13, ry: 0,
+      cries: ['Sand in the sack already — this is going to chafe.', 'Mind your tail, puss, I can\'t steer in this thing.', "Best of three. I'm not losing to the tide as an excuse."] })); }
+
   beachRegion(game, U, r, 58, SHORE_LIMIT - 8);
   // the headland behind the dunes: hills and peaks inland only, never out to sea
   makeHorizon(game, r, { clear: SHORE_LIMIT + 8, hill: 0x8c9a58, rock: 0x7a7060, rock2: 0x8a8272, snowLine: 58, peaks: 26, woodCount: 260, woodHue: [0.18, 0.28], woodLight: [0.18, 0.3], keep: (x) => x < -SHORE_LIMIT * 0.15 });
