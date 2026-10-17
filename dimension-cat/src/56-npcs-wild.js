@@ -61,6 +61,42 @@ function makeSeagull(o = {}) {
   return rig;
 }
 
+// ---------------------------------------------------------------- pelican (perched: stands still on a rail or post; only animates, the same "perched" trick as the owls and the seal)
+function makePelican(o = {}) {
+  const g = new THREE.Group(), rig = { group: g };
+  const plume = mat(o.body ?? 0xe8e3d4, { roughness: 0.85 }), wing = mat(0x8c8273, { roughness: 0.8 }),
+    tip = mat(0x2a2620, { roughness: 0.75 }), bill = mat(o.bill ?? 0xd99a4a, { roughness: 0.6 }),
+    pouch = mat(0xc77a3a, { roughness: 0.75 }), dark = mat(0x161412), legM = mat(0x8a7a56, { roughness: 0.7 });
+  const body = group(0, 0.26, 0, g); rig.body = body;
+  mesh(G.capsule(0.17, 0.5, 12), plume, { rx: PI / 2, parent: body });
+  for (const side of [1, -1]) {   // folded wings along the flanks, dark at the tip
+    const w = group(side * 0.14, 0.02, -0.04, body); rig['wing' + side] = w;
+    mesh(G.box(0.1, 0.22, 0.46), wing, { x: side * 0.05, ry: side * 0.1, parent: w });
+    mesh(G.box(0.08, 0.1, 0.18), tip, { x: side * 0.09, z: -0.22, ry: side * 0.1, shadow: 'none', parent: w });
+  }
+  const neck = group(0, 0.14, 0.27, body); rig.neck = neck;
+  mesh(G.capsule(0.08, 0.2, 10), plume, { y: 0.1, rx: PI / 2 - 0.5, parent: neck });
+  const head = group(0, 0.26, 0.09, neck); rig.head = head;
+  mesh(G.sphere(0.11, 12, 10), plume, { sz: 1.1, parent: head });
+  for (const side of [1, -1]) mesh(G.sphere(0.017, 6, 6), dark, { x: side * 0.065, y: 0.03, z: 0.08, shadow: 'none', parent: head });
+  mesh(G.box(0.07, 0.035, 0.32), bill, { y: 0.015, z: 0.17, shadow: 'none', parent: head });   // the long flat upper bill
+  mesh(G.cone(0.028, 0.07, 6), bill, { y: 0.015, z: 0.33, rx: PI / 2, shadow: 'none', parent: head });   // its hooked tip
+  const jaw = group(0, -0.01, 0.1, head); rig.jaw = jaw;   // lower bill + pouch, hinged to mime a gulp
+  mesh(G.box(0.06, 0.03, 0.3), bill, { y: 0, z: 0.14, shadow: 'none', parent: jaw });
+  mesh(G.sphere(0.05, 10, 8), pouch, { y: -0.025, z: 0.12, sy: 0.55, sz: 1.2, shadow: 'none', parent: jaw });
+  for (const side of [1, -1]) mesh(G.cyl(0.016, 0.018, 0.16, 6), legM, { x: side * 0.09, y: -0.15, parent: body });   // short legs down to the rail
+  rig.animate = (ph, moving, dt, t = 0) => {
+    body.scale.y = 1 + sin(t * 1.1) * 0.025;   // breathing
+    neck.rotation.x = -0.15 + sin(t * 0.26) * 0.18;
+    head.rotation.y = sin(t * 0.21) * 0.35;   // scanning the water
+    const gulp = max(0, sin(t * 0.33 + 1)) > 0.93 ? 1 : 0;   // an occasional silent "swallowed a fish" mime
+    jaw.rotation.x = damp(jaw.rotation.x, gulp * 0.4, 8, dt);
+    for (const side of [1, -1]) rig['wing' + side].rotation.z = side * sin(t * 0.5) * 0.03;   // a slow resettle
+  };
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- sea turtle
 function makeTurtle() {
   const g = new THREE.Group(), rig = { group: g, fins: [] };
@@ -139,6 +175,7 @@ const makeSugarMouse = () => makeQuadruped({ color: 0xf7ecd9, color2: 0xffffff, 
 const makeFactoryMouse = () => makeQuadruped({ color: 0x6e6559, color2: 0x453f35, belly: 0x9a9080, ears: 'round', tail: 'long', bodyY: 0.09, length: 0.15, scale: 0.24, wag: 2.5 });
 const makeAlleyRat = () => makeQuadruped({ color: 0x5c5448, color2: 0x322d26, belly: 0x847a68, ears: 'round', tail: 'long', bodyY: 0.1, length: 0.18, scale: 0.27, wag: 2.2 });
 const makeMintHare = () => makeQuadruped({ color: 0xcdf2e0, color2: 0xffffff, belly: 0xffffff, ears: 'big', tail: 'stub', bodyY: 0.2, length: 0.3, scale: 0.55, wag: 2 });
+const makeRaccoon = () => makeQuadruped({ color: 0x6b6b6b, color2: 0x2a2a2a, belly: 0xcfc9ba, ears: 'round', tail: 'bushy', bodyY: 0.22, length: 0.36, scale: 0.6, wag: 2 });
 
 // ---------------------------------------------------------------- sandpiper (small shorebird, two legs, darts along the tideline)
 function makeSandpiper() {
@@ -274,6 +311,60 @@ function makePenguin(o = {}) {
   return rig;
 }
 
+// ---------------------------------------------------------------- seal (basks on the ice; perched, only animates — breathing, a head turn, a flipper slap)
+function makeSeal(o = {}) {
+  const g = new THREE.Group(), rig = { group: g };
+  const skin = mat(o.color ?? 0x7a7568, { roughness: 0.75 }), belly = mat(o.belly ?? 0xc2bba8, { roughness: 0.8 }), dark = mat(0x18160f);
+  const body = group(0, 0, 0, g); rig.body = body;
+  mesh(G.capsule(0.19, 0.5, 12), skin, { y: 0.19, rx: PI / 2, parent: body });
+  mesh(G.capsule(0.13, 0.36, 12), belly, { y: 0.1, z: 0.03, rx: PI / 2, shadow: 'none', parent: body });
+  const head = group(0, 0.2, 0.44, body); rig.head = head;
+  mesh(G.sphere(0.13, 12, 9), skin, { sz: 1.1, parent: head });
+  for (const side of [1, -1]) {
+    mesh(G.sphere(0.017, 6, 6), dark, { x: side * 0.065, y: 0.05, z: 0.1, shadow: 'none', parent: head });
+    for (const wz of [-0.025, 0, 0.025]) noInk(mesh(G.cyl(0.0025, 0.0025, 0.12, 4), dark, { x: side * 0.09, y: wz, z: 0.1, rz: PI / 2, ry: side * 0.2 + wz, shadow: 'none', parent: head }));
+  }
+  mesh(G.sphere(0.022, 8, 6), dark, { y: -0.02, z: 0.13, shadow: 'none', parent: head });
+  for (const side of [1, -1]) { const f = group(side * 0.2, 0.02, 0.1, body); rig['fin' + side] = f; mesh(G.box(0.22, 0.03, 0.13), skin, { x: side * 0.1, rz: side * -0.25, parent: f }); }
+  const tail = group(0, 0.05, -0.42, body); rig.tail = tail;
+  for (const side of [1, -1]) mesh(G.box(0.1, 0.03, 0.1), skin, { x: side * 0.08, ry: side * 0.3, parent: tail });
+  rig.animate = (ph, moving, dt, t = 0) => {
+    body.scale.y = 1 + sin(t * 1.3) * 0.03;    // breathing
+    head.rotation.x = -0.1 + sin(t * 0.3) * 0.12;
+    head.rotation.y = sin(t * 0.22) * 0.3;
+    for (const side of [1, -1]) rig['fin' + side].rotation.z = side * (0.08 + max(0, sin(t * 0.5 + side)) * 0.18);
+    tail.rotation.x = sin(t * 0.4) * 0.08;
+  };
+  bakeRig(g);
+  return rig;
+}
+
+// ---------------------------------------------------------------- nap cat (curled asleep, ambient only)
+/** A stray cat curled up asleep in a loaf, tail wrapped round to the nose. Breathes; never greets, never moves. */
+function makeNapCat(o = {}) {
+  const g = new THREE.Group(), rig = { group: g };
+  const fur = mat(o.color ?? 0xd9823b, { roughness: 0.85 }), fur2 = mat(o.color2 ?? 0xf3e3c8, { roughness: 0.9 }), dark = mat(0x2a2016, { roughness: 0.6 }), pink = mat(0xe9a0a8, { roughness: 0.6 });
+  const body = group(0, 0, 0, g); rig.body = body;
+  mesh(G.sphere(0.2, 14, 10), fur, { y: 0.16, sx: 1.15, sy: 0.82, sz: 1.3, parent: body });
+  mesh(G.sphere(0.2, 14, 10), fur2, { y: 0.05, z: 0.1, sx: 0.8, sy: 0.5, sz: 0.85, shadow: 'none', parent: body });
+  const head = group(0.08, 0.22, 0.2, body); rig.head = head;
+  mesh(G.sphere(0.12, 14, 10), fur, { sz: 0.92, parent: head });
+  for (const side of [1, -1]) mesh(G.earCone(0.045, 0.1), fur, { x: side * 0.075, y: 0.095, z: -0.02, rz: side * -0.3, parent: head });
+  mesh(G.sphere(0.018, 6, 6), pink, { y: -0.03, z: 0.1, shadow: 'none', parent: head });
+  for (const side of [1, -1]) noInk(mesh(G.box(0.045, 0.006, 0.012), dark, { x: side * 0.045, y: 0.01, z: 0.1, ry: side * 0.15, shadow: 'none', parent: head }));   // shut eyes
+  const tail = group(0, 0.1, -0.16, body); rig.tail = tail;
+  const segs = 6;
+  for (let i = 0; i < segs; i++) { const a = i / (segs - 1) * 2.3, rr = 0.24 - i * 0.012;
+    mesh(G.sphere(0.055 - i * 0.004, 8, 6), i === segs - 1 ? fur2 : fur, { x: sin(a) * rr, y: 0.02 + i * 0.002, z: -cos(a) * rr * 0.9, parent: tail }); }
+  rig.animate = (ph, moving, dt, t = 0) => {
+    body.scale.y = 1 + sin(t * 0.9) * 0.025;
+    head.rotation.z = sin(t * 0.4) * 0.03;
+    tail.rotation.y = sin(t * 0.6) > 0.96 ? sin(t * 9) * 0.04 : 0;
+  };
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- yeti (friendly biped)
 /**
  * The Frosty Peak yeti: a big shaggy softie. Shaggy silhouette (tufts of fur all over the body),
@@ -358,9 +449,9 @@ function makeYeti() {
 }
 
 // ---------------------------------------------------------------- frog (hopper)
-function makeFrog(color = 0x4caf50) {
+function makeFrog(color = 0x4caf50, belly = 0xc8e6a0) {
   const g = new THREE.Group(), rig = { group: g };
-  const skin = mat(color, { roughness: 0.6 }), light = mat(0xc8e6a0, { roughness: 0.7 }), dark = mat(0x111111);
+  const skin = mat(color, { roughness: 0.6 }), light = mat(belly, { roughness: 0.7 }), dark = mat(0x111111);
   const body = group(0, 0, 0, g); rig.body = body;
   mesh(G.bodySphere(14, 10), skin, { y: 0.11, sx: 0.13, sy: 0.1, sz: 0.16, parent: body });
   mesh(G.bodySphere(14, 10), light, { y: 0.08, z: 0.02, sx: 0.1, sy: 0.07, sz: 0.13, shadow: 'none', parent: body });
@@ -406,6 +497,29 @@ function makeSnail(shellColor = 0xc9a24a) {
   return rig;
 }
 
+// ---------------------------------------------------------------- scrap-bug (Robot City's answer to the ladybug: a palm-sized scavenger-bot, same short Hopper scuttle, metal dome shell and a blinking lens instead of antennae-and-spots)
+function makeScrapBug(color = 0x6b7480) {
+  const g = new THREE.Group(), rig = { group: g };
+  const shellM = mat(color, { metalness: 0.75, roughness: 0.35 }), darkM = mat(0x24282e, { metalness: 0.6, roughness: 0.5 }), legM = mat(0x3a3f48, { metalness: 0.5, roughness: 0.6 }), eyeM = glowMat(0x00e5ff, 2.2);
+  const body = group(0, 0, 0, g); rig.body = body;
+  const shell = group(0, 0.05, -0.01, body); rig.shell = shell;
+  mesh(G.dome(0.07, 10, 6), shellM, { sy: 0.65, parent: shell });
+  mesh(G.box(0.1, 0.012, 0.03), darkM, { y: 0.04, shadow: 'none', parent: shell });   // the rivet seam down the shell's spine
+  const head = group(0, 0.02, 0.065, body); rig.head = head;
+  mesh(G.box(0.045, 0.03, 0.03), darkM, { parent: head });
+  rig.eye = mesh(G.sphere(0.012, 8, 6), eyeM, { z: 0.02, shadow: 'none', parent: head });
+  for (const side of [1, -1]) { const ant = group(side * 0.015, 0.02, 0.01, head); rig['ant' + side] = ant; mesh(G.cyl(0.003, 0.003, 0.05, 4), legM, { y: 0.025, rx: -0.5, parent: ant }); }   // whisker-thin sensor feelers, the ladybug's antennae in steel
+  for (const side of [1, -1]) for (const z of [0.035, 0, -0.035]) mesh(G.cyl(0.004, 0.004, 0.05, 4), legM, { x: side * 0.04, y: 0.01, z, rz: side * 1.2, parent: body });
+  rig.animate = (ph, moving, dt, t = 0) => {
+    const alert = moving ? 1 : 0.6 + sin(t * 2.2) * 0.25;
+    for (const side of [1, -1]) rig['ant' + side].rotation.z = side * 0.3 * alert;
+    body.position.y = moving ? abs(sin(t * 18)) * 0.007 : 0;
+    rig.eye.material.emissiveIntensity = moving ? 2.6 : 1.2 + max(0, sin(t * 1.6)) * 1.4;
+  };
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- ladybug (short Hopper scuttles; domed, seamed shell with spots, thread legs)
 function makeLadybug(color = 0xd6263a) {
   const g = new THREE.Group(), rig = { group: g };
@@ -428,10 +542,56 @@ function makeLadybug(color = 0xd6263a) {
   return rig;
 }
 
-// ---------------------------------------------------------------- owl (perched; only animates)
-function makeOwl() {
+// ---------------------------------------------------------------- tiger beetle (the ladybug's sun-bleached cousin on dry sand: longer, flatter, iridescent green-gold shell with a pale diagonal marking per side rather than spots, longer running legs)
+function makeTigerBeetle(color = 0x2e6b4a) {
   const g = new THREE.Group(), rig = { group: g };
-  const brown = mat(0x6d4c2f, { roughness: 1 }), cream = mat(0xe8d4b0, { roughness: 1 }), dark = mat(0x111111), amber = glowMat(0xffb300, 0.9);
+  const shellM = mat(color, { roughness: 0.25, metalness: 0.2 }), darkM = mat(0x14120f, { roughness: 0.6 }), legM = mat(0x241f1a, { roughness: 0.7 }), markM = mat(0xe8dcc0, { roughness: 0.5 });
+  const body = group(0, 0, 0, g); rig.body = body;
+  const shell = group(0, 0.038, -0.01, body); rig.shell = shell;
+  mesh(G.dome(0.07, 12, 7), shellM, { sy: 0.55, sz: 1.35, parent: shell });
+  mesh(G.box(0.003, 0.05, 0.14), darkM, { y: 0.026, shadow: 'none', parent: shell });   // the seam where the two wing cases meet
+  for (const side of [1, -1]) mesh(G.box(0.03, 0.01, 0.045), markM, { x: side * 0.034, y: 0.045, z: 0.015, ry: side * 0.55, shadow: 'none', parent: shell });   // the pale diagonal marking real tiger beetles carry
+  const head = group(0, 0.02, 0.095, body); rig.head = head;
+  mesh(G.box(0.032, 0.026, 0.028), darkM, { parent: head });
+  for (const side of [1, -1]) { const ant = group(side * 0.012, 0.016, 0.012, head); rig['ant' + side] = ant; mesh(G.cyl(0.003, 0.003, 0.05, 4), legM, { y: 0.025, rx: -0.5, parent: ant }); }
+  for (const side of [1, -1]) for (const z of [0.05, 0.005, -0.04]) mesh(G.capsule(0.0038, 0.06, 4), legM, { x: side * 0.042, y: 0.013, z, rz: side * 1.1, parent: body });   // long, quick legs — tiger beetles outrun almost anything their size
+  rig.animate = (ph, moving, dt, t = 0) => {
+    const alert = moving ? 1 : 0.6 + sin(t * 2.4) * 0.25;
+    for (const side of [1, -1]) rig['ant' + side].rotation.z = side * 0.3 * alert;
+    body.position.y = moving ? abs(sin(t * 22)) * 0.006 : 0;
+  };
+  bakeRig(g);
+  return rig;
+}
+
+// ---------------------------------------------------------------- frost beetle (the ladybug's and tiger beetle's cousin for the snow: a stockier, paler shell with a frosted sheen and a pair of icy-white markings instead of spots, short slow legs for picking across packed snow)
+function makeFrostBeetle(color = 0x4a6a8a) {
+  const g = new THREE.Group(), rig = { group: g };
+  const shellM = mat(color, { roughness: 0.2, metalness: 0.1 }), darkM = mat(0x1a2230, { roughness: 0.6 }), legM = mat(0x232a36, { roughness: 0.7 }), frostM = mat(0xeaf4ff, { roughness: 0.3 });
+  const body = group(0, 0, 0, g); rig.body = body;
+  const shell = group(0, 0.042, -0.012, body); rig.shell = shell;
+  mesh(G.dome(0.08, 13, 7), shellM, { sy: 0.72, parent: shell });
+  mesh(G.box(0.0035, 0.06, 0.155), darkM, { y: 0.028, shadow: 'none', parent: shell });   // the seam where the two wing cases meet
+  for (const side of [1, -1]) mesh(G.sphere(0.016, 7, 6), frostM, { x: side * 0.03, y: 0.05, z: 0.01, sy: 0.6, shadow: 'none', parent: shell });   // a pair of frost-white markings in place of the ladybug's spots
+  const head = group(0, 0.022, 0.085, body); rig.head = head;
+  mesh(G.sphere(0.03, 10, 8), darkM, { sz: 0.75, parent: head });
+  for (const side of [1, -1]) { const ant = group(side * 0.013, 0.018, 0.015, head); rig['ant' + side] = ant; mesh(G.cyl(0.0035, 0.0035, 0.042, 4), legM, { y: 0.02, rx: -0.55, parent: ant }); }
+  for (const side of [1, -1]) for (const z of [0.045, 0, -0.04]) mesh(G.capsule(0.005, 0.042, 4), legM, { x: side * 0.045, y: 0.012, z, rz: side * 1.15, parent: body });
+  rig.animate = (ph, moving, dt, t = 0) => {
+    const alert = moving ? 1 : 0.65 + sin(t * 1.6) * 0.2;
+    for (const side of [1, -1]) rig['ant' + side].rotation.z = side * 0.3 * alert;
+    body.position.y = moving ? abs(sin(t * 14)) * 0.007 : 0;
+  };
+  bakeRig(g);
+  return rig;
+}
+
+// ---------------------------------------------------------------- owl (perched; only animates)
+// `o.body`/`o.face` recolour it (a snowy owl for Frosty Peak); omitted, it's the brown tawny owl
+// Whisper Woods has always had, so every existing call is unaffected.
+function makeOwl(o = {}) {
+  const g = new THREE.Group(), rig = { group: g };
+  const brown = mat(o.body ?? 0x6d4c2f, { roughness: 1 }), cream = mat(o.face ?? 0xe8d4b0, { roughness: 1 }), dark = mat(0x111111), amber = glowMat(0xffb300, 0.9);
   const body = group(0, 0, 0, g); rig.body = body;
   mesh(G.capsule(0.13, 0.16, 12), brown, { y: 0.24, parent: body });
   mesh(G.capsule(0.09, 0.12, 12), cream, { y: 0.21, z: 0.07, shadow: 'none', parent: body });

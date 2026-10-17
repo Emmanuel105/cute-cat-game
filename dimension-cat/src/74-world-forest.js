@@ -49,8 +49,8 @@ function buildForest(game, entry) {
     game.addInteractable({ obj: ringCenter, radius: 7, label: () => 'Turn three times in the fairy ring', onUse: () => {
       SFX.twinkle(); game.fx.emit(rcx, ry0 + 0.3, rcz, { count: 16, colors: [0xa8ff9a, 0xffd1ff, 0x9fe8ff], speed: 1.1, up: 1.4, life: 1.0, gravity: 2 });
       game.toast(rnd.pick(ringWishes)); } }); }
-  let bigMushroom = null;
-  for (const [x, z, s, hue] of [[-14, -14, 2.6, 0], [16, 12, 3.2, 200], [-20, 0, 2.2, 300], [14, -20, 2.4, 40], [-2, -22, 2.9, 0], [24, -4, 2.0, 280], [-24, 20, 2.6, 200], [4, 24, 2.3, 0]]) { const m = makeMushroom(s, hue, r, true); placeT(game, U, m, x, z, 0); boxT(game, x, z, 0.5 * s, 1.3 * s, 0.5 * s, { cam: false }); U.push(m.userData.update); if (x === 14 && z === -20) bigMushroom = m; }
+  let bigMushroom = null, farMushroom = null, violetMushroom = null, southMushroom = null, northMushroom = null, denMushroom = null, blueMushroom = null, pinkMushroom = null;
+  for (const [x, z, s, hue] of [[-14, -14, 2.6, 0], [16, 12, 3.2, 200], [-20, 0, 2.2, 300], [14, -20, 2.4, 40], [-2, -22, 2.9, 0], [24, -4, 2.0, 280], [-24, 20, 2.6, 200], [4, 24, 2.3, 0]]) { const m = makeMushroom(s, hue, r, true); placeT(game, U, m, x, z, 0); boxT(game, x, z, 0.5 * s, 1.3 * s, 0.5 * s, { cam: false }); U.push(m.userData.update); if (x === 14 && z === -20) bigMushroom = m; if (x === -24 && z === 20) farMushroom = m; if (x === 24 && z === -4) violetMushroom = m; if (x === -2 && z === -22) southMushroom = m; if (x === 4 && z === 24) northMushroom = m; if (x === -14 && z === -14) denMushroom = m; if (x === 16 && z === 12) blueMushroom = m; if (x === -20 && z === 0) pinkMushroom = m; }
   // the fairy ring, the zipline tower and the treehouse have all had a one-off "walk up and look" toast
   // for rounds now, but none of the eight giant glowing mushrooms scattered round the glade ever got one
   // — the one real landmark shape unique to these woods, and the cat could only ever walk past it. The
@@ -63,11 +63,141 @@ function buildForest(game, entry) {
   // closer than 8.0 m, well past this interactable's 3.6 m radius — only passing butterflies and fairies,
   // flying well overhead, ever come closer, which is no obstruction at all.
   game.addInteractable({ obj: bigMushroom, radius: 3.6, label: () => 'Look up at the mushroom', onUse: () => { SFX.click(); game.toast(rnd.pick(['🍄 "Taller than the treehouse ladder, nearly. And it just sits there glowing."', "🍄 \"Nobody's ever eaten this one. Nobody's brave enough to find out why it glows.\"", '🍄 "The cap alone could shelter a whole family of frogs."']), 3000); } });
+  // the mushroom at (14, -20) got its own toast two rounds back, but it was never the only one worth a
+  // look — seven more of the glade's eight giant mushrooms still stood mute, and the one furthest out,
+  // at (-24, 20) past the deer path, is the loneliest of the lot. Same trick again: `farMushroom`,
+  // captured from the very same build loop above, goes straight into `addInteractable` as `obj` — no new
+  // mesh, no new physics box, no fresh baking exemption needed (this whole set already carries `glow: true`
+  // and its own `userData.update`). A headless probe (`game.load(6, 'from-hub')`, 3000 simulated frames,
+  // every NPC's own position sampled every frame) swept this point against every physics box and every
+  // sample: the nearest other box stayed 6.0 m clear and the nearest grounded wanderer (a deer on its own
+  // leash near the treehouse) never closer than 11.1 m — only a passing fairy or butterfly, flying well
+  // overhead, ever came nearer, same as the first mushroom's own case.
+  game.addInteractable({ obj: farMushroom, radius: 3.9, label: () => 'Look up at the mushroom', onUse: () => { SFX.click(); game.toast(rnd.pick(['🍄 "Furthest one from the ring. Still glows just as bright out here alone."', '🍄 "The deer give this one a wide berth. Nobody\'s sure why."', '🍄 "Grows a little lopsided, out here with no others to lean on."']), 3000); } });
+  // (14, -20) and (-24, 20) got their own toast; six of the glade's eight giant mushrooms still stand
+  // mute. The one at (24, -4) is the only one in the set painted hue 280 (violet, against everyone
+  // else's reds, pinks and golds) and sits furthest east of the ring, past the fox den. Same trick a
+  // third time: `violetMushroom`, captured from the same build loop, goes straight into
+  // `addInteractable` — no new mesh, no new physics box. A headless probe (`game.load(6, 'from-hub')`,
+  // 3000 simulated frames, every NPC's own position sampled every frame) swept this point against every
+  // physics box and every sample: the nearest other box stayed 7.5 m clear and nothing — grounded or
+  // flying — ever came nearer than 3.6 m, so the 3.0 m radius (the same 1.5×-scale ratio the first two
+  // mushrooms used, off this one's own 2.0 scale) stays clear on every side.
+  game.addInteractable({ obj: violetMushroom, radius: 3.0, label: () => 'Look up at the mushroom', onUse: () => { SFX.click(); game.toast(rnd.pick(['🍄 "Only purple one in the whole glade. Wonder why it came out different."', '🍄 "Out here past the fox den, this one never sees the fairy ring at all."', '🍄 "Cap\'s gone a deep violet — not a shade any of its neighbours share."']), 3000); } });
+  // three of the eight now answer; five still stand mute. The one at (-2, -22) is the loneliest of the
+  // remaining five — well south of the glade, past the hare clearing, with no other mushroom anywhere
+  // near it. Same trick again: `southMushroom`, captured from the same build loop, straight into
+  // `addInteractable` as `obj` — no new mesh, no new physics box, no fresh baking exemption (this whole
+  // set already carries `glow: true` and its own `userData.update`). A headless probe (`game.load(6,
+  // 'from-hub')`, 3000 simulated frames, every NPC's own position sampled every frame) swept this point
+  // against every physics box and every sample: the nearest other box (a rock at x -8.7..-7.3, z
+  // -18.7..-17.3) stayed 6.2 m clear and the nearest grounded soul, a deer wandering off its leash from
+  // (-10, -30), never closer than 4.5 m — both well past the 2.9 m radius chosen (the same ratio the
+  // others used, off this one's own 2.9 scale) — only a passing butterfly or fairy, flying well
+  // overhead, ever came nearer (3.5 m, no obstruction at all).
+  game.addInteractable({ obj: southMushroom, radius: 2.9, label: () => 'Look up at the mushroom', onUse: () => { SFX.click(); game.toast(rnd.pick(['🍄 "Furthest south of the whole glade. Nobody comes down this way much."', '🍄 "Grew up alone - no ring, no neighbours, just the hares for company."', '🍄 "Still glows the same, even out here where nobody\'s looking."']), 3000); } });
+  // four of the eight now answer; four still stand mute. The one at (4, 24) is the furthest north of
+  // the whole set, well past the ring, just shy of the third owl's tree at (12, 32). Same trick a
+  // fifth time: `northMushroom`, captured from the same build loop, straight into `addInteractable` as
+  // `obj` — no new mesh, no new physics box, no fresh baking exemption (this whole set already carries
+  // `glow: true` and its own `userData.update`). A headless probe (`game.load(6, 'from-hub')`, 3000
+  // simulated frames, every NPC's own position sampled every frame) swept this point against every
+  // physics box and every sample: the nearest other box (a stray scatter-mushroom at x 4.8..5.5, z
+  // 19.4..19.9) stayed 4.2 m clear and the nearest soul (the painter at their easel, stationary) never
+  // closer than 4.5 m — both well past the 3.45 m radius chosen (the same 1.5×-scale ratio the first
+  // three used, off this one's own 2.3 scale).
+  game.addInteractable({ obj: northMushroom, radius: 3.45, label: () => 'Look up at the mushroom', onUse: () => { SFX.click(); game.toast(rnd.pick(['🍄 "Furthest north of the ring. Even the owl up the tree keeps half an eye on it."', '🍄 "Stands alone up here - no fairy ring, no company, just the lanterns off in the distance."', '🍄 "Still glowing, same as the others, just with a longer walk to see it."']), 3000); } });
+  // five of the eight now answer; three still stand mute. The one at (-14, -14) is the closest of the
+  // whole set to the fox's own den at (-26, -14) — 12 m off, just past its wander leash. Same trick a
+  // sixth time: `denMushroom`, captured from the same build loop, straight into `addInteractable` as
+  // `obj` — no new mesh, no new physics box. A headless probe (`game.load(6, 'from-hub')`, 4000
+  // simulated frames, every ground NPC's own position sampled every frame, flyers aside — butterflies
+  // and fairies drift everywhere in this glade and are no obstruction) swept this point against every
+  // physics box and every sample: the nearest other box stayed 6.2 m clear, the nearest other
+  // interactable 7.2 m off, and the fox on its own wander never closer than 3.9 m — all past the 3.5 m
+  // radius chosen (a touch tighter than this mushroom's own 1.5×-scale ratio, since the den sits
+  // closer here than at any of the other five).
+  game.addInteractable({ obj: denMushroom, radius: 3.5, label: () => 'Look up at the mushroom', onUse: () => { SFX.click(); game.toast(rnd.pick(['🍄 "Closest one to the fox\'s den. The fox never pays it any mind."', '🍄 "Grows right where the glade meets the den-side thicket."', '🍄 "No ring out here either, just this one cap glowing on its own."']), 3000); } });
+  // seven of the eight now answer; one still stands mute, left for a future round since a headless
+  // probe found it tighter than any of the others — a wandering flyer drifts within 2.6 m of it, but
+  // that is no obstruction (butterflies and fairies cross everywhere in this glade). The one at (16,
+  // 12) is the only teal-hued cap east of the ring, past the whittler's own bench. Same trick a
+  // seventh time: `blueMushroom`, captured from the same build loop, straight into `addInteractable`
+  // as `obj` — no new mesh, no new physics box. A headless probe (`game.load(6, 'from-hub')`, 4000
+  // simulated frames, every NPC's own position sampled every frame) swept this point against every
+  // physics box and every sample: the nearest other box stayed 3.5 m clear and the nearest other
+  // interactable (a "Say hello" prompt) 4.5 m off — both past the 3.0 m radius chosen, a tighter
+  // 0.94×-scale ratio than this set's usual 1.5× since the glade is more crowded out this way.
+  game.addInteractable({ obj: blueMushroom, radius: 3.0, label: () => 'Look up at the mushroom', onUse: () => { SFX.click(); game.toast(rnd.pick(['🍄 "Only teal one out this way — the rest of its colour stayed back at the ring."', '🍄 "Grows closest to the whittler\'s bench. He\'s never once looked up at it."', '🍄 "No fairy ring out here either, just this one cap and the quiet."']), 3000); } });
+  // the last of the eight, at (-20, 0), was left mute last round over its own tight neighbour — the
+  // nearest other interactable, the acorn-feeder's own "Say hello" prompt (she kneels at (-21.8, 3)
+  // scattering acorns for the western deer), sits just 3.5 m from this mushroom's own centre.
+  // `game.nearest` always resolves to whichever centre is actually closest (`80-game.js`'s own prompt
+  // loop checks every interactable's own radius, then picks the smallest distance among the ones that
+  // match), so a smaller radius here is about staying tidy rather than avoiding any real conflict:
+  // 2.6 m, under this mushroom's own 2.2 scale's usual 1.5x ratio (which would reach 3.3 m, past the
+  // midpoint between the two), keeps the mushroom's whole circle on its own side of that midpoint.
+  // Same trick an eighth time: `pinkMushroom`, captured from the same build loop above, goes straight
+  // into `addInteractable` as `obj` — no new mesh, no new physics box (a headless probe confirmed the
+  // nearest OTHER physics box stays 5.5 m clear, well past this radius). All eight of the glade's
+  // giant mushrooms answer now.
+  game.addInteractable({ obj: pinkMushroom, radius: 2.6, label: () => 'Look up at the mushroom', onUse: () => { SFX.click(); game.toast(rnd.pick(['🍄 "Last one left mute. Grows right by the acorn-feeder\'s own spot."', '🍄 "Pink as the fairy ring\'s own glow, just out here on its own."', '🍄 "Every cap in this glade answers now. Even this one, tucked up against the fringe."']), 3000); } });
+  // Frosty Peak has had its aurora since round 283 and the Neighborhood its own telescope more recently,
+  // but these woods — the one world actually built around fairies and wishes — never had a sky worth
+  // looking up at. `makeRainbowArc()` (new, next to `makeAurora` in `62-props-nature.js`) is seven
+  // concentric half-torus bands, the same "flat backdrop far beyond the walkable limit" trick the
+  // aurora curtains already use: centred 9 m past `WOODS_LIMIT` (196) itself, so its span crosses no
+  // keep-out zone and needs no physics box of its own, the same as the aurora. A small ring of mossy
+  // stones, styled after Frosty Peak's own aurora cairn, now sits in a quiet clearing between the
+  // treehouse and the hollow-log path, giving the cat somewhere to actually stop and look up. A headless
+  // probe (`game.load(6, 'from-hub')`, then 3000 simulated frames sampling every NPC's own position every
+  // frame) found (-10, 22) clear by 7.51 m of the nearest physics box and 7.21 m of the nearest soul (a
+  // wandering detectorist) throughout — comfortably past this interactable's own 2.8 m radius and the
+  // stone ring's own half-metre footprint. Fixed coordinates and colours throughout, no draw from this
+  // world's own seeded `r`, so no later mushroom hue or butterfly colour pick anywhere else shifts.
+  { const cx = -10, cz = 22, cy = P.ground0(cx, cz);
+    const cairn = group(cx, cy, cz, W), stoneM = mat(0x7a8a74, { roughness: 0.95, flatShading: true });
+    mesh(G.sphere(0.32, 7, 5), stoneM, { x: -0.3, y: 0.16, ry: 0.6, parent: cairn });
+    mesh(G.sphere(0.26, 7, 5), stoneM, { x: 0.28, y: 0.14, ry: 2.1, parent: cairn });
+    mesh(G.sphere(0.22, 6, 5), stoneM, { z: 0.3, y: 0.12, ry: 4.0, parent: cairn });
+    P.addBox(cx, cy + 0.15, cz, 0.6, 0.35, 0.6, { cam: false });
+    const rainbowLines = ['🌈 "Must have rained somewhere, sometime. These woods never quite dry out."',
+      '🌈 "The fairies say there\'s a pot of something at the end of it. Nobody\'s ever found the end."',
+      '🌈 "Seven bands, same as the fairy ring has mushrooms. Coincidence, probably."'];
+    game.addInteractable({ obj: cairn, radius: 2.8, label: () => 'Look up at the rainbow', onUse: () => { SFX.click(); game.fx.emit(cx, cy + 1.4, cz, { count: 14, colors: [0xff6f6f, 0xffd54a, 0x6fdc6f, 0x6fa8ff], speed: 1.0, up: 1.6, life: 1.0, gravity: 1.5 }); game.toast(rnd.pick(rainbowLines), 3000); } }); }
+  makeRainbowArc(W, { x: -10, y: 18, z: -205, r: 85 });
   for (let i = 0; i < 30; i++) { const x = r.range(-40, 40), z = r.range(-40, 40); if (dist2(x, z, 8, -6) < 36) continue; placeT(game, U, makeMushroom(r.range(0.25, 0.6), r.pick([0, 20, 200, 300, 40]), r, r.chance(0.4)), x, z, 0); }
   // trees: a ring at the edge and scattered giants
   for (let i = 0; i < 40; i++) { const a = i / 40 * TAU + r.range(-0.06, 0.06), d = r.range(40, 54); treeAt(cos(a) * d, sin(a) * d, { simple: true }); }
   const inner = [[-30, -10], [-28, 12], [-12, 30], [12, 32], [30, 22], [34, -12], [22, -30], [-6, -34], [-34, -30], [26, 4], [-16, -26], [0, 34]];
-  for (const [x, z] of inner) treeAt(x, z, { lanterns: r.chance(0.5) });
+  let noticeTree = null;
+  for (const [x, z] of inner) { const t = treeAt(x, z, { lanterns: r.chance(0.5) }); if (x === 26 && z === 4) noticeTree = t; }
+  // the Neighborhood's park lamp (round 462), one of Robot City's towers (round 463) and a Victorian
+  // lamp post (round 464) have all carried a stapled notice by now, but nobody had ever nailed anything
+  // to one of these woods' own trees. The inner-ring tree at (26, 4) now carries one: a weathered
+  // bark-plank backing in place of the frame, a carved pinecone standing in for the cat silhouette,
+  // the robot head or the watch case, and four iron nail heads along the bottom instead of tear tabs,
+  // hazard tape or a wax seal (`makeForestNotice()`, new, next to the other three in `60-props.js`).
+  // Read it and the cat gets one of three lines, same "toast on interact" trick every notice before it
+  // used. `noticeTree` is the exact group the `inner` loop above already builds and places, captured
+  // without touching that loop's own `r.chance(0.5)` draw per tree, so no later wardrobe or colour pick
+  // anywhere else in this world shifts. The notice is mounted dead-centre on the trunk, offset outward
+  // along local +z by `treeW / 2.2` (the tree's own base radius `R`, recovered from `userData.col[0] =
+  // R * 2.2`) plus 2 cm — since the trunk tapers from `R` at the base to `R * 0.55` at the crown, that
+  // offset clears the actual (smaller) radius at the notice's own height everywhere up the taper, so
+  // the sheet sits proud of the bark rather than buried inside it. It inherits the tree's own random
+  // `r() * TAU` world rotation (set inside `makeBigTree` itself) along with everything else parented to
+  // it, so it ends up facing whichever way that one tree happens to be turned — fine, since the physics
+  // box `treeAt` already gave this tree (axis-aligned, half-extent `w * 0.7`) doesn't rotate with it,
+  // and a flat sheet needs no new box of its own regardless of which face it ends up on. That box's own
+  // half-extent (`w * 0.7`, 1.08-1.54 m for a tree this size) sets a 2.18 m worst-case corner diagonal;
+  // `game.addInteractable`'s 3.4 m radius clears it by at least a metre on every side.
+  { const treeW = noticeTree.userData.col[0], standoff = treeW / 2.2 + 0.02;
+    const notice = makeForestNotice(); notice.position.set(0, 1.9, standoff); noticeTree.add(notice);
+    const forestNoticeLines = ['🐿️ "LOST: one entire winter\'s stash of acorns. If found, please panic as much as I am. — A Squirrel." The cat reads it twice and still isn\'t sure which squirrel.',
+      '🐿️ Scrawled underneath in smaller letters: "Reward: half the stash, once it turns up." The cat does not apply.',
+      '🐿️ Someone has already chewed one corner of the notice clean off. The cat decides not to ask who.'];
+    game.addInteractable({ obj: noticeTree, radius: 3.4, label: () => 'Read the notice', onUse: () => { SFX.click(); game.toast(rnd.pick(forestNoticeLines), 3000); } }); }
   const treehouse = makeTreehouse(game, -18, 14, r);
   // a wind chime under the treehouse's own back eave, away from the ladder and lit window on the front
   // side — reuses the Neighborhood porch's makeWindChime() with a mossier, woodland palette
@@ -1026,8 +1156,19 @@ function buildForest(game, entry) {
   // decorative and non-colliding — two thin twigs at ground level, same call the wind chime and the
   // scattered mushrooms already make for anything this slight — so it needs no physics box and no
   // keep-out probe, and changes no walkable-ground percentage.
+  //
+  // that web sat there for a few rounds with nothing to say for itself — every other finished prop in
+  // these woods (the wind chime, the flower) had already earned a look/listen toast, and this one never
+  // had. `makeSpiderweb`'s own return value, previously discarded right after `placeT`, is now kept in
+  // `web` and handed straight to `game.addInteractable`, the same trick the factory sign and the robot
+  // arm already used over in Robot City. No new mesh, no new physics box: the web's own footprint is
+  // under a metre across, so a 1.8 m radius stays clear of the frog ring (12.8 m off), the ring-dancers
+  // (16.8 m) and the juggler (14.4 m) by the same wide margins the placement comment above already
+  // worked out.
   { const wx = 16, wz = -16;
-    placeT(game, U, makeSpiderweb(r), wx, wz, atan2(8 - wx, -6 - wz)); }
+    const web = placeT(game, U, makeSpiderweb(r), wx, wz, atan2(8 - wx, -6 - wz));
+    const webLines = ['🕸️ "Dew beads strung on silk, and a spider holding dead centre — not a single strand out of place."', '🐛 "Whatever built this wove it between two twigs and never came back to check it."', '✨ "The morning dew only shows the web off for an hour or two before it dries."'];
+    game.addInteractable({ obj: web, radius: 1.8, label: () => 'Look at the web', onUse: () => { SFX.click(); game.toast(rnd.pick(webLines), 3000); } }); }
 
   // the Neighborhood (395), Robot City (425), Victorian (426), Candy Land (427), Sunny Shore (428) and
   // Frosty Peak (429) have all had their own turn at the same back-garden toss game by now — a horseshoe,
@@ -1106,6 +1247,225 @@ function buildForest(game, entry) {
     const frisbeeLines = ['Highest one yet — nearly caught it in the branches.', 'Careful, puss — mind your tail, this one is coming down fast.', "The owls don't seem to mind."];
     let frisbeeCryT = r.range(3, 7);
     U.push((dt) => { frisbeeCryT -= dt; if (frisbeeCryT <= 0) { frisbeeCryT = r.range(8, 14); const c = game.cat.group.position; if (dist2(fx, fz, c.x, c.z) < 400) { game.toast('🥏 "' + r.pick(frisbeeLines) + '"', 2400); SFX.talk(); } } }); }
+
+  // Sunny Shore's tide-pool anemone (round 453) pulls its tentacles in tight when the cat gets close,
+  // and this wood's own giant flower (round 442) opens instead — but nobody had ever grown the plant
+  // that gave that whole idea its name in the real world. A sensitive plant (Mimosa pudica, the actual
+  // "touch-me-not") now stands in a quiet clearing south-east of the hula hoop kid's own patch: four
+  // ferny fronds held open and reaching, a tiny pink puffball flower at one tip, until the cat brushes
+  // within 2 m — then every frond folds in tight against the short central stem, the whole plant
+  // flinching shut, before it spreads back open a few seconds after the cat moves off. Same yaw-hinge
+  // trick as the flower's petals and the anemone's tentacles (`makeSensitivePlant()`, next to
+  // `makeTidePool()` in `62-props-nature.js`), just a different shape folding a different way, and a
+  // new `SFX.rustle()` (`30-audio.js`) rather than either one's own sound, since neither a twinkle nor
+  // a wave fit leaves.
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, driven
+  // through `game.travel(6, 'from-hub')` and its own real ~520 ms portal timer) sampled every NPC's and
+  // the squirrel's own position every quarter second over 300 simulated seconds, then swept a 1 m grid
+  // of the open floor (radius 12-48, short of the radius (58) where forestRegion's own fill takes over,
+  // and clear of the stepping-stone path, the fairy-ring circle and the glowing pond's own keep-out):
+  // (15, -42) came back clear by 7.1 m of the nearest box and 9.2 m of the nearest other soul, with
+  // ground height varying only 0.06 m across the whole footprint. No physics box of its own: a low
+  // ground plant the cat walks straight over, same reasoning as the glowing pond and the tide pool.
+  { const spx = 15, spz = -42, spy0 = P.ground0(spx, spz);
+    const plant = makeSensitivePlant(r);
+    const plantLines = ['🌿 "Watch — brush past it and the whole thing folds up tight."', '🌿 "Touch-me-not, they used to call these. Not far wrong."', '🌿 "Give it a minute once you step back — it opens right back out."'];
+    let spread = 1, spNear = false;
+    plant.group.userData.update = (dt, t) => {
+      const c = game.cat.group.position, isNear = dist2(c.x, c.z, spx, spz) < 4;
+      spread = damp(spread, isNear ? 0 : 1, 6, dt);
+      for (const f of plant.fronds) f.hinge.rotation.x = 0.05 + spread * (f.spread - 0.05);
+      if (isNear && !spNear) { spNear = true; SFX.rustle(); game.toast(rnd.pick(plantLines), 3000);
+        game.fx.emit(spx, spy0 + 0.3, spz, { count: 8, colors: [0x6fae4a, 0x8ac96a, 0xff8fc8], speed: 0.6, up: 0.6, life: 0.6, gravity: 1.4 }); }
+      if (!isNear) spNear = false;
+    };
+    placeT(game, U, plant.group, spx, spz, r() * TAU); }
+
+  // Victorian, Robot City, Sunny Shore, Candy Land, the Neighborhood and Frosty Peak have all had
+  // something cross their own sky the last six rounds running — a hot air balloon, an airship, two
+  // biplanes, a tumbling gumball, a flock of migrating geese — and Whisper Woods was the one world
+  // left out, its own canopy the obvious reason nobody had tried (same reasoning the kite flyer's own
+  // build note gave two dozen rounds back). **Three hawks now wheel in slow, lazy circles high above
+  // the whole canopy**, 42-48 m up, soaring on flat wings rather than flapping. Purely decorative:
+  // nothing to greet, nothing to reach, no dialogue and no new sound.
+  //
+  // No new controller, no physics box of its own. The tallest thing anywhere on this world's own
+  // ground is a big tree's own canopy top (`makeBigTree`'s outer leaf sphere sits at `h + 1.4` with a
+  // 2.8 m radius, h up to 10 m for the scattered giants — about 14.2 m at the very tallest; the fixed
+  // treehouse tree, h = 9, tops out lower still at 13.2 m). Flying at 42 m or above clears that by a
+  // comfortable 28 m margin anywhere on the ground, so it needs no keep-out check against `game.zones`
+  // or any of this world's physics boxes. Each hawk's own circle sits at a different radius (60-84 m)
+  // and height (42-47 m), all comfortably inside the 196 m play limit and nowhere near the 275 m+ ring
+  // where this world's own horizon starts raising real mountains (`clear * r.range(1.35, 1.8)`, clear
+  // = 204 here).
+  //
+  // Reuses the same stretched-sphere body every other bird in this file already builds on, with a
+  // two-bone wing held mostly flat in a soaring glide — a slow body-roll bank is the only constant wing
+  // motion, plus an occasional short flap when a hawk crosses its own circle's windward side. Red-tail
+  // colouring: rust-brown back and wings, a cream belly, a dark banded tail. Three birds on three
+  // independent circles, same direction so the facing math stays the simple `-a` the geese already use,
+  // each at its own radius, height, speed and starting phase drawn once off this world's own local
+  // `r()`, so it costs no later mushroom hue or butterfly colour pick.
+  //
+  // Drifts entirely on the world clock `t` beyond that one draw per hawk, so it costs nothing more —
+  // placed last of everything this build adds, after the frisbee thrower, so even those draws disturb
+  // nothing built earlier in these woods.
+  { const makeHawk = (phase) => {
+      const g = new THREE.Group(), rig = { group: g, wings: [] };
+      const back = mat(0x6b4028, { roughness: 0.85 }), belly = mat(0xe8dcc0, { roughness: 0.8 }), tailM = mat(0xb5793a, { roughness: 0.8 }), dark = mat(0x241c14, { roughness: 0.6 });
+      const body = group(0, 0, 0, g); rig.body = body;
+      mesh(G.bodySphere(14, 10), back, { sx: 0.1, sy: 0.1, sz: 0.3, parent: body });
+      mesh(G.sphere(0.08, 10, 8), belly, { y: -0.03, sy: 0.7, sz: 1.5, shadow: 'none', parent: body });
+      const head = group(0, 0.02, 0.17, body);
+      mesh(G.sphere(0.045, 10, 8), back, { parent: head });
+      mesh(G.cone(0.016, 0.05, 6), dark, { y: -0.005, z: 0.05, rx: PI / 2, shadow: 'none', parent: head });
+      mesh(G.box(0.1, 0.03, 0.14), tailM, { z: -0.19, rx: 0.05, shadow: 'none', parent: body });
+      for (const side of [1, -1]) {
+        const w = group(side * 0.06, 0.02, 0, body);
+        mesh(G.box(0.46, 0.02, 0.2), back, { x: side * 0.23, parent: w });
+        const tipW = group(side * 0.46, 0, 0, w); mesh(G.box(0.3, 0.018, 0.16), dark, { x: side * 0.14, parent: tipW });
+        rig.wings.push({ w, tipW, side });
+      }
+      rig.animate = (dt, t) => {
+        const flap = sin(t * 0.5 + phase * 1.7) > 0.86 ? sin(t * 6 + phase) * 0.32 : 0;
+        for (const Wg of rig.wings) { Wg.w.rotation.z = Wg.side * (-0.07 + flap); Wg.tipW.rotation.z = Wg.side * -0.05; }
+        body.rotation.z = sin(t * 0.3 + phase) * 0.22;
+      };
+      bakeRig(g);
+      return rig;
+    };
+    const hawkDefs = [[68, 44, 0.9], [84, 47, 0.68], [60, 42, 1.08]];
+    for (const [rad, h, speedMul] of hawkDefs) {
+      const phase = r() * TAU, speed = (TAU / 300) * speedMul, hawk = makeHawk(r() * TAU), hg = hawk.group;
+      hg.userData.update = (dt, t) => {
+        const a = phase + t * speed;
+        hg.position.set(cos(a) * rad, h + sin(t * 0.19 + phase) * 1.6, sin(a) * rad);
+        hg.rotation.y = -a;
+        hawk.animate(dt, t);
+      };
+      place(game, U, hg, cos(phase) * rad, sin(phase) * rad, 0, h);
+    } }
+
+  // round 508's own list of playground games this whole game had never tried (tetherball, badminton,
+  // tug-of-war, archery, sack races) is down to its last entry now — round 520 gave Frosty Peak a
+  // tug-of-war, round 521 the Neighborhood a tetherball pole, round 522 Victorian a badminton net, and
+  // **this one gives Whisper Woods its own archery range**: a lone archer at a firing line of open
+  // ground north of the glade, drawing a longbow and loosing one arrow at a straw target downrange,
+  // never pausing to go fetch it back.
+  //
+  // New `Archer` controller (`55-npcs.js`, right after `Badminton`, its nearest relative among this
+  // run's own playground games) and a new `o.bow` hand prop for `makeHuman` — a grip and two tapering
+  // limbs strung with a straight cylinder, the same spot on the body `axe`, `pole` and `brush` already
+  // use, just on the off hand rather than the side those swing from, since a bow is held steady, not
+  // swung. Unlike every earlier toss or rally game here, there is no second player: the arrow is its
+  // own free mesh, the same trick Horseshoes' shoe and Badminton's shuttle already use, carried at the
+  // bow hand while nocked, loosed on a short, shallow-arced flight, then left standing in the target a
+  // couple of seconds before the next one is drawn. `arrow.lookAt()` keeps its own head pointed exactly
+  // where it is actually travelling — nocked, in flight and stuck alike — rather than the fixed flutter
+  // the shuttlecock settles for.
+  //
+  // The target is new too: a round straw boss painted in flat rings (white, black, blue, red, gold, the
+  // same scheme a real target face uses) on a pair of crossed legs, one physics box over the boss
+  // standing in for both.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses, `game.start('new')` then
+  // `game.load(6, 'from-hub')`) swept the firing line and the ten metres downrange to the target
+  // against every one of the wood's physics boxes and found it clear by 3.3 m or more along its whole
+  // length; every wandering deer's and fox's own leash falls short of the spot by 5.7 m or more (the
+  // nearest, the fox denned at (14, 6), by its own 10 m leash alone), the nearest collectible (the
+  // mouse at (-30, 26)) sits 14.3 m off, and the treehouse (-18, 14) 10.2 m off.
+  { const ax = -16, az = 24, ary = 0, adist = 10;
+    const tx = ax + sin(ary) * adist, tz = az + cos(ary) * adist, ty0 = P.ground0(tx, tz);
+    const target = group(tx, ty0, tz, W);
+    mesh(G.cyl(0.46, 0.46, 0.22, 16), mat(0xd9c28a, { roughness: 0.95 }), { y: 1.0, rx: PI / 2, parent: target });   // the straw boss
+    const ringSpecs = [[0.42, 0xf3f0e6], [0.33, 0x1c1c1c], [0.24, 0x2d6fd6], [0.15, 0xd62839], [0.065, 0xf2c744]];
+    ringSpecs.forEach(([rad, c], i) => mesh(G.cyl(rad, rad, 0.02, 20), mat(c, { roughness: 0.7 }), { y: 1.0, z: 0.1 + i * 0.004, rx: PI / 2, shadow: 'none', parent: target }));
+    const standM = mat(0x5b3d24, { roughness: 1 });
+    for (const s of [1, -1]) mesh(G.cyl(0.02, 0.025, 1.0, 6), standM, { x: s * 0.36, y: 0.55, z: -0.2, rx: 0.3, rz: s * 0.22, parent: target });
+    game.physics.addBox(tx, ty0 + 1.0, tz, 0.95, 1.0, 0.3, { cam: false });
+    const bowWard = makeWardrobe(r, { shirts: [0x4a6a3a], pants: [0x3a3327, 0x2a2a24], shoes: [0x3a2a1e, 0x2a2018] });
+    const archer = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.25), wardrobe: bowWard }),
+      hat: 'cap', hatColor: 0x3a4a2e, jacket: null, scarf: null, bag: null, backpack: null, glasses: false, bow: true });
+    W.add(archer.group);
+    const arrow = group(0, 0, 0, W);
+    mesh(G.cyl(0.012, 0.012, 0.62, 6), mat(0x8a6a3a, { roughness: 0.8 }), { rx: PI / 2, parent: arrow });   // shaft
+    mesh(G.cone(0.022, 0.08, 6), mat(0x9aa3ad, { metalness: 0.6, roughness: 0.35 }), { z: -0.35, rx: -PI / 2, parent: arrow });   // head, at local -Z so lookAt() faces it forward
+    const fletchM = mat(0xd62839, { roughness: 0.9 });
+    for (let fi = 0; fi < 3; fi++) mesh(G.box(0.1, 0.002, 0.05), fletchM, { z: 0.26, rz: fi / 3 * TAU, shadow: 'none', parent: arrow });   // tail fletching
+    game.npcs.push(new Archer(game, archer, arrow, { x: ax, z: az, ry: ary, dist: adist })); }
+
+  // round 520's own round-up of five playground games this whole game had never tried (tetherball,
+  // badminton, tug-of-war, archery, sack races) left Whisper Woods with the archery range just above;
+  // Frosty Peak's haulers (round 520) and Robot City's factory pair (round 529) have since both
+  // pitted two rigs against a rope or cable of their own (`TugOfWar`, 55-npcs.js), but no two souls in
+  // these woods had ever heaved against each other. **Two forest kids now dig their heels into the
+  // leaf litter and haul on a thick, knotted vine stretched between them**, well south of the glade.
+  // *"Heave! Heave! Nobody's budging!"* *"Careful, puss — mind the vine, it's tougher than it looks."*
+  // *"Best of... however many we've lost count of."*
+  //
+  // No new class: the same heave-together, nobody-wins `TugOfWar` the haulers and the factory pair
+  // already use, just two plain `makeHuman()` kids and a vine (a mossy-green cylinder with a few leaf
+  // tufts, `noInk()`'d like every other thin cable in this game) in place of rope or cable, plus a
+  // small drifting glow riding the vine's own tension instead of a flag or indicator lamp — this
+  // glade already has fireflies of its own ambient sparkle, so a single `glowMat()` bead reads as one
+  // of them rather than a new fixture.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // `game.start('new')` then `game.travel(6, 'from-hub')`, with the cat teleported right next to the
+  // candidate spot so nothing the engine culls by distance could hide anything) sampled every NPC's
+  // own position every frame over 4000 simulated frames (66 seconds, long enough for every deer and
+  // fox's own wander to range fully), then swept the two kids' own stations and the vine's own
+  // midpoint against both those samples and every one of the wood's 323 physics boxes: (-10, -40)
+  // came back clear by 14.9 m of the nearest box and 14.1 m of the nearest other soul (a wandering
+  // yo-yo kid) — well south of the jump-roper's own clearing at (8, -48) and short of the radius (58)
+  // where forestRegion's own procedural fill takes over.
+  { const vineWard = makeWardrobe(r, { shirts: [0xff8a3d, 0x6fa8ff], pants: [0x3a3327, 0x2a2a24], shoes: [0x3a2a1e, 0x2a2018] });
+    const haulerA = makeHuman({ ...randomPerson(r, { female: false, child: true, wardrobe: vineWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    const haulerB = makeHuman({ ...randomPerson(r, { female: true, child: true, wardrobe: vineWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(haulerA.group); W.add(haulerB.group);
+    const tug = new TugOfWar(game, haulerA, haulerB, { x: -10, z: -40, ry: 0, gap: 2.6,
+      cries: ["Heave! Heave! Nobody's budging!", "Careful, puss — mind the vine, it's tougher than it looks.", "Best of... however many we've lost count of."] });
+    game.npcs.push(tug);
+    const [A, B] = tug.ctls, vineM = mat(0x4a6a2e, { roughness: 0.95 }), leafM = mat(0x5a8a3a, { roughness: 0.9 });
+    const ay = P.ground0(A.x, A.z) + 0.75, by = P.ground0(B.x, B.z) + 0.75;
+    const vineGroup = group((A.x + B.x) / 2, (ay + by) / 2, (A.z + B.z) / 2, W);
+    vineGroup.lookAt(B.x, by, B.z);
+    noInk(mesh(G.cyl(0.05, 0.05, Math.hypot(B.x - A.x, by - ay, B.z - A.z), 10), vineM, { rx: PI / 2, parent: vineGroup }));
+    for (const s of [-0.7, 0, 0.7]) mesh(G.sphere(0.07, 6, 5), leafM, { z: s, x: 0.08, rz: 0.4, shadow: 'none', parent: vineGroup });
+    const glow = mesh(G.sphere(0.045, 8, 6), glowMat(0xa8ff9a, 1.2), { parent: W });
+    U.push(() => { const frac = 0.5 + clamp(tug.tension, -1, 1) * 0.14;
+      glow.position.set(lerp(A.x, B.x, frac), lerp(ay, by, frac) + 0.08, lerp(A.z, B.z, frac));
+      glow.material.emissiveIntensity = 1.0 + abs(tug.tension) * 1.5; }); }
+
+  // The Neighborhood, Candy Land, Robot City, Victorian, Sunny Shore and Frosty Peak have all had a
+  // tetherball pole since round 508's own list of playground games (tetherball, badminton, tug-of-war,
+  // archery, sack races) went round every world in turn — Whisper Woods got its own archery range and
+  // tug-of-war out of that same list, but never the one game played standing still, swinging a ball on
+  // a rope round and round a post. **Two forest kids now keep a rally going on open ground east of the
+  // glade**, well clear of every mushroom, the tug-of-war and the jump-roper's own clearing.
+  // *"Round and round — same as every other game in these woods, just leafier."* *"Mind the rope,
+  // puss — it doesn't care whose tail is in the way."* *"I'm up to twenty wraps. No, I lost count
+  // again."*
+  //
+  // No new class and no new mesh: the exact same `Tetherball` (`55-npcs.js`) the other six worlds
+  // already use, unchanged — it already asks `game.physics.ground0()` for its own pole, ball and each
+  // player's footing every frame, so the gentle slope out here costs nothing extra. Two plain
+  // `makeHuman()` kids, the same way Robot City's workers and Candy Land's own pair are built, since
+  // this world has no single child helper every kid already comes from the way Frosty Peak's `kid()`
+  // or the beach's `beachPerson()` do.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // `game.start('new')` then `game.travel(6, 'from-hub')`) sampled every NPC's own position every 7th
+  // frame over 2400 simulated frames, then swept a grid of the open woodland floor (radius 12-56, short
+  // of the radius (58) where `forestRegion`'s own procedural fill takes over) against both those
+  // samples and every one of the wood's 323 physics boxes: (41, -27) came back clear by 18.3 m at its
+  // tightest point — east of every hand-placed mushroom, well short of the tug-of-war vine at (-10,
+  // -40) and the jump-roper's own clearing at (8, -48), and inside the radius where the fill takes over.
+  { const tA = makeHuman({ ...randomPerson(r, { female: false, child: true }), shirt: 0xd4823a, pants: 0x3a4a3a, shoes: 0x3a2a1e, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    const tB = makeHuman({ ...randomPerson(r, { female: true, child: true }), shirt: 0x5ac4a0, pants: 0x3a4a3a, shoes: 0x3a2a1e, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(tA.group); W.add(tB.group);
+    game.npcs.push(new Tetherball(game, tA, tB, { x: 41, z: -27,
+      cries: ['Round and round — same as every other game in these woods, just leafier.', "Mind the rope, puss — it doesn't care whose tail is in the way.", "I'm up to twenty wraps. No, I lost count again."] })); }
 
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });

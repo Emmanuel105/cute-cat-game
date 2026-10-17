@@ -183,6 +183,19 @@ function buildSnowVillage(game, entry) {
   // ring — south of the reindeer and the searcher's sweep, well clear of the cave tunnel's flat strip
   // (which only ever runs within 9 m of x=0) and the sled run's corridor further west
   { const rig = makeArcticFox(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x: 12, z: -48, speed: 1.1, leash: 8, r: 0.3, height: 0.7, step: 0.3, idle: [1, 3], walk: [2, 5] })); }
+  // a snowy owl perches on the pine already standing at (30, 26) — one of the hand-placed ring trees
+  // above — the exact same perched-and-blinking rig Whisper Woods' three owls use (`makeOwl()` in
+  // 56-npcs-wild.js, which now takes an optional colour override), just recoloured white and pale grey
+  // instead of tawny brown. No new tree, no new physics box: the pine's own trunk collision (placed a
+  // few lines up) already covers the ground below it, and the owl sits 6.6 m up, same height and same
+  // branch-offset trick the forest build already uses, so nothing at ground level needs checking twice.
+  { const ox = 30, oz = 26, oy = P.ground0(ox, oz) + 6.6;
+    const owl = makeOwl({ body: 0xf4f5f8, face: 0xe3e8f0 }); owl.group.position.set(ox + 1.8, oy, oz); owl.group.rotation.y = atan2(-ox, -oz); W.add(owl.group);
+    mesh(G.cyl(0.08, 0.1, 1.6, 6), mat(0x4a3323), { x: ox + 1.2, y: oy - 0.05, z: oz, rz: PI / 2, parent: W });
+    let ot = r() * 10; U.push((dt) => { ot += dt; owl.animate(0, false, dt, ot); });
+    let hootT = 7; U.push((dt) => { hootT -= dt; if (hootT <= 0) { SFX.hoot(); hootT = rnd.range(9, 17); } });
+    const oid = game.namedFriend('snowyOwl');
+    game.addInteractable({ obj: owl.group, radius: 3.4, label: () => 'Say hello to the owl', onUse: () => { game.befriend(oid); SFX.hoot(); game.hearts(owl.group.position.x, owl.group.position.y - 0.4, owl.group.position.z, 3); game.toast('🦉 "Who? ...Still just you. Still cold."'); } }); }
   // a reindeer keeper kneels by the herd's middle spot, checking harness bells before the next run
   { const dx = -18, dz = -12, kx = dx + 2.1, kz = dz + 0.4;
     const keeperWard = makeWardrobe(r, { shirts: [0x5a4a3a, 0x3a5a4a, 0x4a3a5a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
@@ -328,6 +341,21 @@ function buildSnowVillage(game, entry) {
       cries: ['Prints this big? Has to be the yeti.', "Careful, puss — don't smudge them.", 'Heading straight for the cave, these are.'] })); }
   // the yeti's cave: a long tunnel north into the mountain, lit by gems, with the yeti in its den at the far end
   const cave = makeCave(game, U, 0, -29, 27, r);
+  // the clock tower, the fountain, the carriage and plenty more have all had a "walk up and look" toast
+  // for rounds now, but the one landmark Frosty Peak is actually built around — the cave mouth the
+  // tracker's own paw prints lead straight to — never got one of its own, past the yeti's befriend
+  // trigger 6 m further in. `makeCave`'s own rock-arch mesh over the entrance (previously built and
+  // discarded) now comes back as `mouthArch`, handed straight to `game.addInteractable`: no new mesh,
+  // no new physics box. A headless probe (the same stub-three harness `test/run.mjs` itself uses,
+  // `game.start('new')` then `game.load(5, 'from-hub')`) swept the arch's own world position — (0,
+  // 1.2, -28.6) — against every one of the mountain's physics boxes and every NPC's own position: the
+  // nearest body-level box (not the overhead ceiling, which the walk test already ignores) stayed 2.3
+  // m clear and the nearest soul (the tracker, reading the prints that lead here) stayed 9.8 m off, so
+  // the open approach up the centre of the snowfield from the south reaches the full 4.2 m radius
+  // without the cat ever needing to round a corner — well short of the yeti's own 6 m "RAAAWR" trigger
+  // further inside.
+  const caveLines = ['🏔️ Cold air rolling straight out of the dark. Something in there is breathing an awful lot of it.', '💎 Even from out here the walls are glowing — someone in there has been busy with the gemstones.', '🐾 The tracks really do go straight in. The cat has decided that is a problem for its paws to solve later.'];
+  game.addInteractable({ obj: cave.mouthArch, radius: 4.2, label: () => 'Look into the cave', onUse: () => { SFX.click(); game.toast(rnd.pick(caveLines), 3000); } });
   for (const [x, z] of [[-9, -24], [9, -25]]) { const p = makeSnowPine(r); placeT(game, U, p, x, z, 0); boxT(game, x, z, 1.2 * p.scale.x, 5, 1.2 * p.scale.x, { cam: false }); }
   const yeti = makeYeti(); W.add(yeti.group); game.npcs.push(new Wanderer(game, yeti, { x: cave.den[0], z: cave.den[1] + 0.5, speed: 0.4, leash: 2.2, r: 0.9, height: 3, step: 0.4, idle: [2, 5], walk: [1, 3] }));
   makeGemCluster(game, U, 18, 3.5, 5, [0x9fe8ff, 0xbfa8ff, 0xa8ffe8], r, 1.2);
@@ -443,6 +471,33 @@ function buildSnowVillage(game, entry) {
     P.addBox(cx, cy + 0.5, cz, 0.9, 1.1, 0.9, { cam: false });
     const auroraLines = ['🌌 "Green and violet, same as every clear night."', '🌌 "The painter swears it never looks the same twice."', '🌌 "Even the yeti\'s own cave doesn\'t get a view like this."'];
     game.addInteractable({ obj: cairn, radius: 3.6, label: () => 'Look up at the aurora', onUse: () => { SFX.click(); game.fx.emit(cx, cy + 2.2, cz, { count: 14, colors: [0x4dffa0, 0x9f6fff, 0xffffff], speed: 1.0, up: 1.8, life: 1.0, gravity: 1.5 }); game.toast(rnd.pick(auroraLines), 3000); } }); }
+  // every other world with children already has somewhere to just lie down — the Neighborhood's radio
+  // listener, Candy Land's sunbather, Sunny Shore's three towel people — but every kid at Frosty Peak
+  // only ever wandered, snowballed, played tag or catch, danced a ring or knelt by something. A girl now
+  // lies flat on her back in a patch of untouched powder between the swing set and the cairn, having just
+  // finished a snow angel, catching flakes on her tongue with her beanie knocked off beside her.
+  // No new controller: the exact same `Sunbather` class (`55-npcs.js`) the radio listener, Candy Land's
+  // sunbather and Sunny Shore's three towel people already use, unchanged — lying flat, hands behind the
+  // head, same relaxed pose, just a snowsuit instead of a swimsuit and a beanie dropped in the snow
+  // instead of sunglasses on a towel.
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses, driven by hand through
+  // `game.travel(5, 'from-hub')` then `game.start('new')` so every reindeer, hare, arctic fox, penguin,
+  // yeti and wandering kid actually moved) sampled every NPC's own position every quarter second over 300
+  // simulated seconds, then swept a 2 m grid of the open snowfield (radius 20-54, short of the radius 58
+  // where snowRegion's own fill takes over, and clear of the zipline/sled-run keep-out strip) against both
+  // those samples and every one of the mountain's 805 physics boxes: (-32, 24) came back clear by 7.6 m of
+  // the nearest box and 7.5 m of the nearest other soul.
+  { const ax = -32, az = 24, ary = atan2(-ax, -az);
+    const angelWard = makeWardrobe(r, { shirts: [0x8a5acf, 0x2e9e6e, 0xd62839], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const angelKid = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, wardrobe: angelWard }),
+      hat: null, coat: true, scarf: scarfBag(), cuffs: r.pick([0xffffff, 0x3a3a3a]), bag: null, backpack: null, height: r.range(1.2, 1.45) });
+    W.add(angelKid.group);
+    const bhx = ax + cos(ary) * 0.55, bhz = az - sin(ary) * 0.55, bhy = P.ground0(bhx, bhz);
+    const beanieM = mat(0xef7d2f, { roughness: 0.85 });
+    mesh(G.sphere(0.11, 8, 6), beanieM, { x: bhx, y: bhy + 0.06, z: bhz, sy: 0.6, shadow: 'none', parent: W });
+    mesh(G.sphere(0.03, 6, 5), beanieM, { x: bhx, y: bhy + 0.14, z: bhz, shadow: 'none', parent: W });
+    game.npcs.push(new Sunbather(game, angelKid, { x: ax, z: az, ry: ary,
+      cries: ['Perfect wings, this one.', "Careful, puss — don't step in the middle, you'll ruin it.", "Snow angel number six today. Mum says I'll catch a chill."] })); }
 
   game.zones.addSpan(-7, -62, 7, -24); game.zones.addSpan(-44, -5, -6, 5); game.zones.addCircle(0, 0, 26);
   // the zipline: a tower high on the shoulder of the west peak, running down to a post above the village.
@@ -956,20 +1011,319 @@ function buildSnowVillage(game, entry) {
     const harnessLines = ['Right over the post — that\'s a landing!', "Careful, puss — that's good reindeer leather, not a toy.", "Best of nine, loser mucks out the sled dogs."];
     game.npcs.push(new Horseshoes(game, tossA, tossB, ring, { cx: hcx, cz: hcz, gap: hgap, cries: harnessLines, cryIcon: '🛷' }));
     greetable(game, { rig: tossA }); greetable(game, { rig: tossB }); }
+  // Victorian, Robot City, Sunny Shore, Candy Land and the Neighborhood have all had something cross
+  // their own sky the last five rounds running (a hot air balloon, an airship, a biplane, a tumbling
+  // gumball, a second biplane) — Frosty Peak's own sky, past the snow buntings and the gondola cable,
+  // never had anything migrate across it. **A ragged V of seven Canada geese now flies a slow, high
+  // circuit over the whole mountain**, 65 m up on a 95 m orbit. Purely decorative: nothing to greet,
+  // nothing to reach, no dialogue and no new sound (SFX stays as it is).
+  //
+  // No new controller, no physics box of its own: this mountain's two climbable peaks (38 m at the
+  // zipline's own summit, 32 m at the second one east of it, by far the tallest things on the whole
+  // playable slope) both sit on the orbit's outer edge rather than under it — the closest the 95 m
+  // circle ever comes to either peak's own centre is 25 m and 37 m respectively, where each peak's own
+  // smooth falloff (the same `k*k*sqrt(k)` dome `T()` already uses) has already dropped to under 29 m —
+  // so flying at 65 m clears both by a comfortable margin anywhere on the loop. The gondola cable's own
+  // climb above the station, the next tallest thing in the village, tops out around 35 m. A 95 m orbit
+  // also sits well inside the 130 m radius where this world's own terrain function `T()` starts raising
+  // its own decorative rim into real mountains (`smoothstep(130, 265, d)`), so the loop never flies
+  // anywhere near the rim either, and needs no keep-out check against `game.zones` or any of this
+  // world's physics boxes.
+  //
+  // Each goose is a stretched body sphere in a grey-brown winter coat, a black neck curving up into a
+  // black head with a white cheek patch standing in for the chinstrap marking, and the same two-bone
+  // flapping wing build every other flyer in this file already uses (`makeSeagull`, `makeDove`,
+  // `makeSnowBird`, `makeCrow`), just slower and heavier to read as a bigger bird labouring along rather
+  // than gliding. Seven of them sit in a fixed V behind a lead bird — three widening pairs either side,
+  // each at its own random flap phase drawn off this world's own local `r()` so the wingbeats never line
+  // up — carried as one rigid group round the circuit, so the formation costs nothing beyond the lead
+  // bird's own transform; only the wings animate per bird, called by hand from the flock's own
+  // `userData.update` since there is no per-goose controller.
+  //
+  // Drifts entirely on the world clock `t` (the orbit and a gentle bob keyed off `t` alone) from one
+  // fixed starting angle drawn once off this world's own local `r()`, so it costs no later wardrobe or
+  // layout pick — placed last of everything this build adds, after the harness ring toss, so even that
+  // one draw disturbs nothing built earlier on the mountain.
+  { const makeGoose = (phase) => {
+      const g = new THREE.Group(), rig = { group: g, wings: [] };
+      const coat = mat(0x7a6a52, { roughness: 0.85 }), dark = mat(0x1c1c1c, { roughness: 0.6 }), cheek = mat(0xf2eee0, { roughness: 0.8 }), beakM = mat(0x2a2420, { roughness: 0.5 });
+      const body = group(0, 0, 0, g); rig.body = body;
+      mesh(G.bodySphere(14, 10), coat, { sx: 0.12, sy: 0.12, sz: 0.34, parent: body });
+      const neck = group(0, 0.06, 0.2, body); neck.rotation.x = -0.55;
+      mesh(G.capsule(0.035, 0.16, 6), dark, { y: 0.1, rx: PI / 2, parent: neck });
+      const head = group(0, 0.19, 0.03, neck);
+      mesh(G.sphere(0.05, 10, 8), dark, { parent: head });
+      mesh(G.sphere(0.022, 8, 6), cheek, { x: 0, y: -0.01, z: 0.03, sx: 1.3, sy: 0.7, sz: 0.9, shadow: 'none', parent: head });
+      mesh(G.cone(0.02, 0.07, 6), beakM, { y: -0.01, z: 0.07, rx: PI / 2, shadow: 'none', parent: head });
+      mesh(G.box(0.08, 0.02, 0.1), dark, { y: -0.01, z: -0.15, rx: 0.1, shadow: 'none', parent: body });   // tail
+      for (const side of [1, -1]) {
+        const w = group(side * 0.07, 0.03, 0.02, body);
+        mesh(G.box(0.38, 0.022, 0.16), coat, { x: side * 0.19, parent: w });
+        const tipW = group(side * 0.38, 0, 0, w); mesh(G.box(0.3, 0.02, 0.13), dark, { x: side * 0.14, parent: tipW });
+        rig.wings.push({ w, tipW, side });
+      }
+      rig.animate = (ph, moving, dt, t = 0) => {
+        const flap = sin(t * 5 + phase), glide = (sin(t * 0.22 + phase) > 0.45) ? 1 : 0;
+        for (const Wg of rig.wings) { const a = glide ? 0.16 : flap * 0.55; Wg.w.rotation.z = Wg.side * -a; Wg.tipW.rotation.z = Wg.side * -a * 0.8; }
+        body.rotation.z = sin(t * 0.6 + phase) * 0.08;
+      };
+      bakeRig(g);
+      return rig;
+    };
+    const vOffsets = [[0, 0, 0], [-1.0, -0.04, -0.9], [1.0, -0.04, -0.9], [-2.0, -0.08, -1.8], [2.0, -0.08, -1.8], [-3.0, -0.12, -2.7], [3.0, -0.12, -2.7]];
+    const flockR = 95, flockH = 65, flockSpeed = TAU / 260, flockPhase = r() * TAU;
+    const flock = group(0, 0, 0);
+    const geese = vOffsets.map(([ox, oy, oz]) => { const goose = makeGoose(r() * TAU); goose.group.position.set(ox, oy, oz); flock.add(goose.group); return goose; });
+    flock.userData.update = (dt, t) => {
+      const a = flockPhase + t * flockSpeed;
+      flock.position.set(cos(a) * flockR, flockH + sin(t * 0.17) * 3, sin(a) * flockR);
+      flock.rotation.y = -a;
+      for (const goose of geese) goose.animate(0, true, dt, t);
+    };
+    place(game, U, flock, cos(flockPhase) * flockR, sin(flockPhase) * flockR, 0, flockH); }
   snowRegion(game, U, r, 58, PEAK_LIMIT - 8);
   makeHorizon(game, r, { clear: PEAK_LIMIT + 8, hills: true, hill: 0xe8eef6, rock: 0x6a7a94, rock2: 0x7e8ea6, snow: 0xf6fbff, snowLine: 26, peaks: 32, peakH: [46, 110], woodCount: 300, woodHue: [0.32, 0.42], woodLight: [0.12, 0.2], trunk: 0x4a3a2a });
   // gondola home (bottom station of the village)
   const station = makeGondolaStation(game, -40, 0, PI / 2, () => game.travel(0, 'from-snow'), 'Ride the gondola home', 'NEIGHBORHOOD  ↓');
   station.position.y = P.ground0(-40, 0); U.push(station.userData.update);
-  makeWelcomeArch(game, -31.5, 0, PI / 2);
+  const welcomeArch = makeWelcomeArch(game, -31.5, 0, PI / 2);
+  // the Neighborhood's park lamp, Robot City's tower, a Victorian lamp post, a Whisper Woods tree and
+  // Sunny Shore's swim flag have all carried a stapled notice by now (rounds 462-467) — Frosty Peak was
+  // the one world left out, and the welcome arch at the top of the gondola, standing right on the path
+  // every arriving cat already walks, had two ready-made log posts and no interactable of its own to
+  // compete with. `makeSnowNotice()` (new, next to the other five in `60-props.js`) is parented onto the
+  // arch's own right-hand post (`makeWelcomeArch`'s loop builds both posts at local x = ±2.2, y = 1.9,
+  // z = 0, as plain meshes with no handle of their own, so this reaches in by local offset rather than a
+  // captured reference) at local (2.4, 1.5, 0) — 1.5 m up is squarely inside the post's own 0-3.8 m
+  // span and well under the beam at y = 3.55, and 2.4 = 2.2 + 0.2 clears the post's own radius at that
+  // height (it tapers from 0.2 at the base to 0.16 at the top; at y = 1.5 that interpolates to ~0.184 m,
+  // so a 0.2 m offset leaves a 2 cm gap) plus the panel's own 1.2 cm thickness. `rotation.y = PI / 2`
+  // turns the panel's default +z face to +x, so it looks back along the offset instead of edge-on to
+  // anyone walking up from that side. No new physics box: the post's own (half-extent 0.45) already
+  // covers it, same shortcut every notice before it took.
+  // `game.addInteractable` resolves distance from the notice's own object via `getWorldPosition`, not
+  // the arch's, so it needn't worry about the gondola station's own "Ride the gondola home" hub prompt
+  // 8.5 m away at (-40, 0) — far outside both radii, no overlap there even before accounting for this.
+  // A headless probe (`game.start('new')` then `game.load(5, 'from-hub')`) found the notice lands at
+  // world (-31.5, -2.4) — the arch's own ry = PI/2 turns the local +x offset south, not the +z this
+  // comment's own local coordinates might suggest — and swept it against every physics box, NPC and
+  // interactable in the built world: the nearest of either (a wandering villager) stayed 6.77 m clear,
+  // well past the notice's own 2.2 m radius; the only box closer than that is the post it's mounted on
+  // (0.2 m, exactly the clearance this was built for). Standing at (-31.5, -2.4) turned up "Read the
+  // notice" and fired a toast; standing out at (0, 60) showed no prompt at all.
+  { const notice = makeSnowNotice(); notice.position.set(2.4, 1.5, 0); notice.rotation.y = PI / 2; welcomeArch.add(notice);
+    const mittenLines = ['🧤 "LOST: one mitten, hand-knit, red with white snowflakes. Left hand only — the right one\'s long gone." The cat has four mittens built in and loses none of them, and isn\'t shy about it.',
+      '🧤 Underneath, in smaller writing: "If found, the other one probably isn\'t worth much either." The cat has to agree.',
+      '🧤 Someone has pinned a single loose strand of red wool to the corner, as if that proves anything. The cat sniffs it anyway.'];
+    game.addInteractable({ obj: notice, radius: 2.2, label: () => 'Read the notice', onUse: () => { SFX.click(); game.toast(rnd.pick(mittenLines), 3000); } }); }
   makeLanternPath(game, -29, 0, -8, 0, 6);
   for (const [x, z] of [[-28, 4.5], [-20, -4.5], [-14, 4.5]]) { const c = makeIceCrystal(r, r.pick([0x9fe8ff, 0xbfa8ff])); placeT(game, U, c, x, z, 0); boxT(game, x, z, 0.6, 1.6, 0.6, { cam: false }); }
   for (const [x, z] of [[-26, -6], [-18, 6]]) { const p = makeSnowPine(r); placeT(game, U, p, x, z, 0); boxT(game, x, z, 1.2 * p.scale.x, 5, 1.2 * p.scale.x, { cam: false }); }
   for (let i = 0; i < 6; i++) { const x = -30 + i * 4, z = (i % 2 ? 1 : -1) * 3.2; mesh(G.sphere(1, 8, 6), mat(0xf6f9fc, { roughness: 1 }), { x, y: P.ground0(x, z), z, sx: r.range(0.8, 1.4), sy: r.range(0.4, 0.7), sz: r.range(0.8, 1.4), shadow: 'none', parent: W }); }   // snow banks
+  // the village pond has had an angler, two would-be skaters and a birdwatcher round its own edge
+  // since round one, but nothing has ever actually lived in the water itself, and the whole mountain
+  // never had the one animal that's obviously supposed to be here. A seal now hauls out on a small
+  // frozen tarn of its own, high on the open slope east of the forest ring, flippers tucked, head
+  // turning slow, whiskers twitching now and then. The tarn just reuses `makeIcePond()` — already
+  // built for the village pond, called again here at a third its radius rather than given a new mesh
+  // of its own — and the seal is `makeSeal()` (new, next to the penguin build in
+  // `56-npcs-wild.js`). Not wired to any controller: the same "perched; only animates" trick the owls
+  // and the Neighborhood's own ladybug already use (`seal.animate(0, false, dt, st)` off a local
+  // timer in `U`), so this costs no new physics box — it lies flat on its own ice, well under
+  // anything a collider would catch, same as those two. An occasional bark (`SFX.bark()`, already
+  // heard from every dog in this game) plays if the cat is close.
+  // Tried near the village pond itself first, but every spot there turned up a wandering penguin or
+  // reindeer within a metre or two inside 300 simulated seconds — the flock's own roam radius reaches
+  // well past the water. A headless probe (the same stub-three harness `test/run.mjs` itself uses)
+  // built the real mountain, sampled every NPC's own position every quarter second over 300 simulated
+  // seconds (so no wandering penguin, deer, hare, fox or patrolling villager mid-leash could slip past
+  // unnoticed), then swept a grid of the open slope east of the forest ring (radius 26-50, clear of
+  // the village's own keep-out circle and short of where snowRegion's own fill takes over at 58)
+  // against both those samples and every one of the mountain's physics boxes: (33, -15) came back
+  // 6.39 m clear of the nearest box (a pine trunk in the forest ring) and 12.45 m clear of the
+  // nearest other soul, 5.8 m past the star collectible at (30, -20), with ground height varying under
+  // 0.6 m across the tarn's own small footprint.
+  { const sx = 33, sz = -15;
+    makeIcePond(game, sx, sz, 1.8, r);
+    const sy = P.ground0(sx, sz) + 0.06;
+    const seal = makeSeal(); seal.group.position.set(sx, sy, sz); seal.group.rotation.y = r() * TAU; W.add(seal.group);
+    let st = r() * 10, barkT = rnd.range(8, 14);
+    U.push((dt) => { st += dt; seal.animate(0, false, dt, st);
+      barkT -= dt; if (barkT <= 0) { barkT = rnd.range(10, 18); const c = game.cat.group.position; if (dist2(sx, sz, c.x, c.z) < 225) SFX.bark(); } }); }
+  // Victorian's own round-up of playground games this game had never tried once in any of the seven
+  // worlds (tetherball, badminton, tug-of-war, archery, sack races) named five; this is the first of
+  // them anywhere. Two bundled-up villagers now dig their heels into the snow and heave on a rope
+  // between them — new `TugOfWar` (`55-npcs.js`, right after `Talkers`, its nearest relative: two
+  // facing rigs, each its own circle and its own friend id), built generic on purpose, since it's a new
+  // mechanic rather than a reskin of one of this game's existing controllers. Both players heave in
+  // time with each other rather than taking turns — that's the actual point of the game — while the
+  // rope's own tug-of-war never settles either way: the class hands back a slow `tension` drift
+  // (bounded well short of either end) for whoever calls it to slide their own rope's own marker, same
+  // separation of generic-controller from world-built-scenery `BallGame` and `Horseshoes` already use
+  // for their own ball and shoe. The rope and its little red flag are built here, straight-line static
+  // geometry between the two fixed hand spots the constructor itself works out (`tug.ctls[i].x/z`),
+  // `noInk()`'d like every other thin cable in this game, with the flag alone needing a `U.push` to
+  // slide it each frame — too far out (radius 53.9) for `fillRing`'s own `bakeDeep` to ever reach it.
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real mountain
+  // (`game.start('new')` then `game.load(5, 'from-hub')`, so every reindeer, hare, arctic fox, penguin,
+  // yeti and wandering villager actually moved), sampled every NPC's own position every 1/30 s over
+  // 300 simulated seconds, then swept a 5 m grid of the open snowfield (radius 15-54, short of the
+  // radius (58) where snowRegion's own fill takes over) against both those samples and every one of
+  // the mountain's 742 physics boxes: (50, 20) came back clear by 7.85 m of the nearest box and 7.55 m
+  // of the nearest other soul, with the ground varying under 0.3 m across the whole footprint — open
+  // snowfield east of the card table and the yo-yo kid, with nothing else anywhere near it.
+  { const tugWard = makeWardrobe(r, { shirts: [0x8a3a3a, 0x3a5a6a, 0x4a6a4a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const haulerA = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: tugWard }),
+      hat: 'beanie', hatColor: 0x8a3a3a, coat: true, scarf: 0xf2ead8, cuffs: 0x3a3a3a }); W.add(haulerA.group);
+    const haulerB = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: tugWard }),
+      hat: 'beanie', hatColor: 0x3a5a6a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a }); W.add(haulerB.group);
+    const tug = new TugOfWar(game, haulerA, haulerB, { x: 50, z: 20, ry: PI / 2, gap: 2.6,
+      cries: ["Heave! Heave! Nobody's budging an inch!", 'Careful, puss — mind the rope, it bites worse than a snowball.', "Dead heat again. Always is, with these two."] });
+    game.npcs.push(tug);
+    const [A, B] = tug.ctls, ropeM = mat(0x8a6a42, { roughness: 0.9 }), ay = P.ground0(A.x, A.z) + 0.75, by = P.ground0(B.x, B.z) + 0.75;
+    const ropeGroup = group((A.x + B.x) / 2, (ay + by) / 2, (A.z + B.z) / 2, W);
+    ropeGroup.lookAt(B.x, by, B.z);
+    noInk(mesh(G.cyl(0.035, 0.035, Math.hypot(B.x - A.x, by - ay, B.z - A.z), 8), ropeM, { rx: PI / 2, parent: ropeGroup }));
+    const flag = group(0, 0, 0, W); noInk(mesh(G.box(0.03, 0.14, 0.4), mat(0xd62839, { roughness: 0.7 }), { parent: flag }));
+    U.push(() => { const frac = 0.5 + clamp(tug.tension, -1, 1) * 0.12;
+      flag.position.set(lerp(A.x, B.x, frac), lerp(ay, by, frac) + 0.03, lerp(A.z, B.z, frac)); flag.rotation.y = ropeGroup.rotation.y; }); }
+  // Candy Land's gingerbread guard, Victorian's drill line and Robot City's own security detail have
+  // all used `Marchers` (55-npcs.js) for a lockstep patrol by now — Frosty Peak's own colony, 50-odd
+  // lines up, only ever wanders loose by the pond. Real penguins actually do the opposite: they file
+  // into a tight single line and march. **Three penguins now hold a strict column on an 8 m stretch of
+  // open snowfield**, waddling to one end, turning in place, and waddling straight back. *"Waddle.
+  // Waddle. Precision waddle."* *"Mind the queue, puss — we've drilled this."* *"Column of three.
+  // Nobody elected a leader; the ice did."*
+  //
+  // No new class and no new mesh: three plain `makePenguin()` rigs, handed straight to the exact same
+  // `Marchers` constructor the gingerbread guard, the toy soldiers and the robot patrol already use,
+  // unchanged — one leads on a `Patroller` route, the other two hold a fixed gap behind it in lockstep.
+  // `Patroller`'s own constructor calls `greetable()` on the lead automatically, same as every earlier
+  // march, but `greetable()` itself only wires up a friend prompt when the rig carries `.look`, `.robot`
+  // or `.cookie` — a bare `makePenguin()` rig has none of the three, so the call quietly no-ops. That's
+  // not a bug here: it's the same thing that already keeps the pond colony's own `Wanderer`s and the
+  // bolder `Follower` penguin from counting as friends, and this march is the same ambient wildlife as
+  // both, just filed into formation instead of wandering loose. No change to this world's own friend
+  // total.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, built
+  // the real mountain with `game.start('new')` then `game.travel(5, 'from-hub')`) sampled every NPC's
+  // own rig position every quarter second over 300 simulated seconds (so no wandering penguin, deer,
+  // hare, arctic fox or patrolling villager mid-leash could slip past unnoticed), then swept the 8 m
+  // line from (55, -5) to (55, 3) against both those samples and every one of the mountain's 742
+  // physics boxes: the line came back clear by 6.33 m of the nearest box along its whole length and
+  // 5.33 m of the nearest other soul, at radius 55 m — well east of the pond colony at (18, 8) and the
+  // hare trio at (45-48, 0±2), short of the radius (58) where snowRegion's own procedural fill takes
+  // over. Placed last of everything this build adds, after the tug-of-war, so the three unconditional
+  // draws `Patroller`'s own constructor makes off the shared `rnd()` sequence (heading phase, idle
+  // clock, cry timer) land after every other timed NPC in this world and disturb no earlier wardrobe or
+  // layout pick.
+  { const marchers = [0, 1, 2].map(() => { const rig = makePenguin({ scale: r.range(0.85, 1.05) }); W.add(rig.group); return rig; });
+    game.npcs.push(new Marchers(game, marchers, { points: [[55, -5], [55, 3]], speed: 0.65, pause: [1, 2], r: 0.3, height: 0.9, gap: 0.9,
+      cries: ['Waddle. Waddle. Precision waddle.', "Mind the queue, puss — we've drilled this.", 'Column of three. Nobody elected a leader; the ice did.'], cryIcon: '🐧' })); }
+  // The Neighborhood, Candy Land, Robot City, Victorian and Sunny Shore have all had a tetherball pole
+  // since round 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack
+  // races) went round every world in turn — Frosty Peak, for all its tug-of-war, archery range,
+  // horseshoes and curling, never got the one game played standing still, swinging a ball on a rope
+  // round and round a post. **Two kids keep a rally going on open snow east of the marching penguins'
+  // own stretch of ice.** *"Round and round — same as every other game on the mountain, just colder."*
+  // *"Mind the rope, puss — mittens or not, it still stings."* *"Forty wraps. No, forty-one. I keep
+  // losing count in the cold."*
+  //
+  // No new class and no new mesh: the exact same `Tetherball` (`55-npcs.js`) the other five worlds
+  // already use, unchanged — it asks `game.physics.ground0()` for its own pole, ball and each player's
+  // footing every frame, so the gentle slope out here costs nothing extra. Both kids come from this
+  // file's own `kid()` helper, the same one every other Frosty Peak child already comes from (which
+  // already adds its own rig to the scene, so no separate `W.add()` call was needed here).
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, built
+  // the real mountain with `game.start('new')` then `game.travel(5, 'from-hub')`) sampled every NPC's
+  // own position every 5th frame over 1500 simulated frames, then swept a grid of the open snowfield
+  // (radius 12-56, short of the radius (58) where snowRegion's own fill takes over) against both those
+  // samples and every one of the mountain's 388 body-height physics boxes, checking the pole's own spot
+  // and both kids' footing 2 m either side of it: (21, -52) came back clear by 9.1 m at its tightest
+  // point, east of the marching penguins' own line ((55, -5)-(55, 3)) and well short of where the fill
+  // takes over.
+  { const tA = kid(false), tB = kid(true);
+    game.npcs.push(new Tetherball(game, tA, tB, { x: 21, z: -52,
+      cries: ['Round and round — same as every other game on the mountain, just colder.', 'Mind the rope, puss — mittens or not, it still stings.', "Forty wraps. No, forty-one. I keep losing count in the cold."] })); }
+  // Whisper Woods got the first archery range (round 525, `Archer`, 55-npcs.js) and nobody else's had
+  // one since — Frosty Peak's own hunting lodge feel (the trapper by the fire, the ice fisher on the
+  // pond) never got a firing line of its own. **A lone archer now draws and looses at a straw target
+  // on a quiet stretch of snowfield southwest of the village**, breath steady, never once hurried.
+  // *"Steadiest hands on the mountain, mine."* *"Mind the arrows, puss — none of them are aimed at
+  // you."* *"Wind off the peak throws every shot wide, but I keep trying."*
+  //
+  // No new class and no new prop: the exact same `Archer` (55-npcs.js) and straw-boss-and-rings target
+  // Whisper Woods' own range already builds, just a winter wardrobe (`coat: true`, beanie, scarf) in
+  // place of the woods' cap and jacket, and `bow: true` for the same longbow prop `makeHuman` already
+  // knows how to hold.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // `game.start('new')` then `game.travel(5, 'from-hub')`, with the cat teleported right next to the
+  // candidate spot so nothing the engine's own distance culling could hide) sampled every NPC's own
+  // position every 7th frame over 2400 simulated frames, then swept the firing line from (-30, -15) to
+  // (-30, -25) — archer facing south (`ry = PI`) — against both those samples and every one of the
+  // mountain's 323 physics boxes: the line came back clear by 7.28 m of the nearest box along its whole
+  // length and 8.61 m of the nearest other soul, at radius 36 m — well south of the fish collectible at
+  // (-30, 16) and clear across the map from the tug-of-war (50, 20) and the penguin march (55, -5) to
+  // (55, 3), short of the radius (58) where snowRegion's own procedural fill takes over.
+  { const ax = -30, az = -15, ary = PI, adist = 10;
+    const tx = ax + sin(ary) * adist, tz = az + cos(ary) * adist, ty0 = P.ground0(tx, tz);
+    const target = group(tx, ty0, tz, W);
+    mesh(G.cyl(0.46, 0.46, 0.22, 16), mat(0xd9c28a, { roughness: 0.95 }), { y: 1.0, rx: PI / 2, parent: target });   // the straw boss
+    const ringSpecs = [[0.42, 0xf3f0e6], [0.33, 0x1c1c1c], [0.24, 0x2d6fd6], [0.15, 0xd62839], [0.065, 0xf2c744]];
+    ringSpecs.forEach(([rad, c], i) => mesh(G.cyl(rad, rad, 0.02, 20), mat(c, { roughness: 0.7 }), { y: 1.0, z: 0.1 + i * 0.004, rx: PI / 2, shadow: 'none', parent: target }));
+    const standM = mat(0x5b3d24, { roughness: 1 });
+    for (const s of [1, -1]) mesh(G.cyl(0.02, 0.025, 1.0, 6), standM, { x: s * 0.36, y: 0.55, z: -0.2, rx: 0.3, rz: s * 0.22, parent: target });
+    game.physics.addBox(tx, ty0 + 1.0, tz, 0.95, 1.0, 0.3, { cam: false });
+    const bowWard = makeWardrobe(r, { shirts: [0x6a5a4a, 0x4a5a6a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const archer = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.2), wardrobe: bowWard }),
+      hat: 'beanie', hatColor: 0x4a5a6a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a, bag: null, backpack: null, glasses: false, bow: true });
+    W.add(archer.group);
+    const arrow = group(0, 0, 0, W);
+    mesh(G.cyl(0.012, 0.012, 0.62, 6), mat(0x8a6a3a, { roughness: 0.8 }), { rx: PI / 2, parent: arrow });   // shaft
+    mesh(G.cone(0.022, 0.08, 6), mat(0x9aa3ad, { metalness: 0.6, roughness: 0.35 }), { z: -0.35, rx: -PI / 2, parent: arrow });   // head, at local -Z so lookAt() faces it forward
+    const fletchM = mat(0xd62839, { roughness: 0.9 });
+    for (let fi = 0; fi < 3; fi++) mesh(G.box(0.1, 0.002, 0.05), fletchM, { z: 0.26, rz: fi / 3 * TAU, shadow: 'none', parent: arrow });   // tail fletching
+    game.npcs.push(new Archer(game, archer, arrow, { x: ax, z: az, ry: ary, dist: adist,
+      cries: ['Steadiest hands on the mountain, mine.', 'Mind the arrows, puss — none of them are aimed at you.', 'Wind off the peak throws every shot wide, but I keep trying.'] })); }
   const C = game.collectibles;
   C.add('fish', 18, 8); C.add('star', 0, -30); C.add('yarn', -16, 4); C.add('mouse', 12, 20); C.add('star', 30, -20); C.add('fish', -30, 16); C.add('yarn', 22, -6); C.add('mouse', -6, 26);
   game.fx.setAmbient({ count: 480, radius: 22, colors: [0xffffff, 0xeaf4ff, 0xdfe8ff], rise: -1.0, drift: 0.5, life: 9, height: 12, yMin: 2 });
   makeDayNight(game, U, W);
+  // The Neighborhood has a raccoon, Candy Land a gumdrop toad, Robot City a scrap-bug, Victorian and
+  // Whisper Woods both a ladybug, Sunny Shore a tiger beetle — every world had its own small,
+  // unregarded floor-level creature except Frosty Peak. A frost beetle now picks its way across the
+  // open snow east of the village, a stockier, paler cousin of the ladybug and tiger beetle with a
+  // frosted blue-grey shell and a pair of icy-white markings in place of spots. It has no line of its
+  // own — it's an insect, not a person — so this is purely a background touch, same family as the
+  // ladybug and the fireflies.
+  //
+  // New build, `makeFrostBeetle()` in `56-npcs-wild.js` right after `makeTigerBeetle()`: the same rig,
+  // recoloured and slowed down (a steadier `idle` window and a lower hop, since it's picking across
+  // packed snow rather than scurrying on hot sand). No new controller: `Hopper`, already driving every
+  // other tiny ground creature in this game, just dialled down the same way the tiger beetle's own hop
+  // was.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // `game.start('new')` then `game.load(5, 'from-hub')`, 1200 simulated frames, every NPC's own position
+  // sampled every 5th frame) swept the open snowfield east of the village (roughly -40..40 in x,
+  // -20..30 in z) against both every one of this world's 743 physics boxes and those samples: (38, 8)
+  // came back clear by 7.29 m of the nearest box and 8.25 m of the nearest wandering soul — comfortably
+  // past the leash given here, well off the fish collectible at (18, 8), the hares at (45-48, ±2) and
+  // every hand-placed prop in the village and archery range. The ground there reads a gentle 0.68 m,
+  // consistent with the rest of this stretch of snowfield, not a slope. Built dead last of everything
+  // this world adds, right after the day/night cycle and before the squirrel spawn point (which draws
+  // no `rnd()` of its own), so `Hopper`'s own three unconditional draws off the shared `rnd()` sequence
+  // land after every other NPC in this world that times itself off that same sequence, and disturb
+  // nothing built earlier on the mountain.
+  //
+  // It isn't a friend to meet — same as the ladybug and the tiger beetle — Frosty Peak's own friend
+  // count is unaffected.
+  { const rig = makeFrostBeetle();
+    game.npcs.push(new Hopper(game, rig, { x: 38, z: 8, leash: 1.0, r: 0.08, dist: [0.15, 0.4], dur: 0.26, height: 0.06, idle: [1.5, 4],
+      onHop: () => { if (rnd.chance(0.2)) SFX.chitter(); } })); }
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

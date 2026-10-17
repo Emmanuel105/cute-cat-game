@@ -11325,3 +11325,3212 @@ after the woodcutter, so even that one draw disturbs nothing built earlier on th
 Full suite (`node test/run.mjs`) ran clean twice in a row — exit 0, all checks `ok`, 0 console warnings
 both times. Nothing else changed: no new friend, no collectible, no change to Sunny Shore's own
 walkable percentage. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 441 — a giant gumball over Candy Land
+
+Victorian got a hot air balloon, Robot City an airship and Sunny Shore a biplane the last three
+rounds running — Candy Land, the one world actually named for candy, was the obvious next world for
+something to fly over, and the obvious next shape was not a fourth basket-and-envelope rig. **A giant
+striped gumball now drifts in a slow circuit high above the sweet-lands, tumbling gently as it goes**,
+70 m up on a 165 m orbit. Purely decorative — nothing to greet, nothing to reach, no dialogue.
+
+No new controller, no physics box of its own, same reasoning as the three flying things before it:
+70 m clears even the castle's own tallest corner tower by a wide margin (15 m wall + 6.6 m roof + a
+0.5 m finial and a 1 m pennant pole, 23.1 m all told — the tallest thing in the whole world), so it
+needs no keep-out check against `game.zones` or any of this world's physics boxes. The ball itself is
+eight latitude bands cut straight out of a sphere (`new THREE.SphereGeometry(r, 16, 2, 0, TAU,
+i * (PI/8), PI/8)`, one eighth-slice of theta each) — the same `SphereGeometry` trick the Victorian
+balloon's own gores already use (and the one `G.dome()` already uses for its own hemisphere), just
+sliced by latitude instead of longitude, so the stripes run around the ball horizontally like the
+layers of a gumball rather than up over the top of a canopy. Colours cycle through this world's own
+candy palette — pink, cyan, gold — with a plain white band between each, the eight tracked geometries
+kept in `worldBag` the same way the balloon's own eight gores are.
+
+Drifts entirely on the world clock `t` — the orbit, the bob, and a slow tumble on two separate axes,
+all keyed off `t` alone — from one fixed starting angle drawn once off this world's own local `r()`
+(never the shared `rnd()`), so it costs no later wardrobe or colour pick. Placed last of everything
+this build adds, after the woodcutter, so even that one draw disturbs nothing built earlier in the
+sweet-lands.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings. Nothing
+else changed: no new friend, no collectible, no change to Candy Land's own walkable percentage.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 442 — a biplane over the Neighborhood
+
+Victorian got a hot air balloon, Robot City an airship, Sunny Shore a biplane and Candy Land a
+tumbling gumball the last four rounds running — every one of those skies had something crossing it,
+but the Neighborhood's own sky, the first world anyone sees, never did. **A postal-red biplane now
+loops a slow circuit over the whole street, towing a banner that reads the village's own blurb back
+at it: "HOME SWEET HOME"**, 34 m up on a 68 m orbit. Purely decorative — nothing to greet, nothing to
+reach, no dialogue.
+
+No new controller, no physics box of its own, same reasoning as the four flying things before it: the
+tallest point in the whole village is a chimney pot at 9.1 m (the two-storey houses top out there,
+roof peak and all), so flying 25 m above it clears every rooftop by a wide margin and needs no
+keep-out check against `game.zones` or the street's own physics boxes. A 68 m orbit also sits well
+inside the 132 m radius where this world's own `makeHorizon` starts dropping mountains (`clear * 1.35`,
+`clear` being 98 here), so it never flies anywhere near the horizon either. The fuselage is one
+`G.capsule()` inside a child group rotated `PI/2` about X — the same trick the airship's hull and the
+beach's biplane both use — so its pole-to-pole axis lands on local Z (nose at +z) before the whole rig
+is ever moved onto its orbit; the wings, struts and tail fin sit straight on the outer group. The
+banner is a cloth box towed on a rope from the tail, through `noInk()` for the same reason every other
+world's ropes and propellers need it — a line that thin would otherwise ink solid across the sky —
+carrying the same double text-plane trick the gondola sign and the beach's own banner already use
+(`TEX.signText()` painted onto a plane, cloned and turned around) so the banner reads from either side
+of the loop. Postal red and white rather than the beach's canary yellow, echoing the street's own
+mailboxes instead.
+
+Drifts entirely on the world clock `t` — bob, roll, the propeller's own spin and the banner's own
+trailing sway, all keyed off `t` alone — from one fixed starting angle drawn once off this world's own
+local `r()`, so it costs no later wardrobe or layout pick. Placed last of everything this build adds,
+after the frisbee thrower, so even that one draw disturbs nothing built earlier on the street.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings. Nothing
+else changed: no new friend, no collectible, no change to the Neighborhood's own walkable percentage
+(still 96%). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 443 — a flock of migrating geese over Frosty Peak
+
+Victorian, Robot City, Sunny Shore, Candy Land and the Neighborhood have all had something cross their
+own sky the last five rounds running — a hot air balloon, an airship, two biplanes and a tumbling
+gumball — but Frosty Peak's own sky, past the snow buntings and the gondola cable, never had anything
+migrate across it. **A ragged V of seven Canada geese now flies a slow, high circuit over the whole
+mountain**, 65 m up on a 95 m orbit. Purely decorative: nothing to greet, nothing to reach, no dialogue
+and no new sound — a quieter change than the vehicle run that came before it.
+
+No new controller, no physics box of its own. This mountain's two climbable peaks (38 m at the
+zipline's own summit, 32 m at the second one east of it — the tallest things on the whole playable
+slope) both sit on the orbit's outer edge rather than directly under it: the 95 m circle's closest
+approach to either peak's own centre is about 25 m and 37 m, where each peak's own smooth falloff has
+already dropped to under 29 m, so 65 m clears both comfortably anywhere on the loop. The gondola
+cable's own climb above the station tops out around 35 m, and a 95 m orbit sits well inside the 130 m
+radius where this world's terrain starts raising its own decorative rim into real mountains, so the
+flock never flies near that either and needs no keep-out check against `game.zones` or any physics box.
+
+Each goose is a stretched body sphere in a grey-brown coat, a black neck curving up to a black head
+with a white cheek patch for the chinstrap marking, and the same two-bone flapping wing build every
+other flyer in this file already uses (the gulls, doves, snow buntings, crows) — just slower and
+heavier, so it reads as a bigger bird labouring along rather than gliding. Seven of them sit in a fixed
+V behind a lead bird, each at its own random flap phase off this world's own local `r()` so the
+wingbeats never line up, carried as one rigid group round the circuit — the formation costs nothing
+beyond the lead bird's own transform, and the wings are animated by hand from the flock's own
+`userData.update` since there's no per-goose controller to do it for them.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings. Nothing
+else changed: no new friend, no collectible, no change to Frosty Peak's own walkable percentage (still
+98%). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 444 — hawks wheeling over Whisper Woods
+
+Victorian, Robot City, Sunny Shore, Candy Land, the Neighborhood and Frosty Peak have all had something
+cross their own sky the last six rounds running — a hot air balloon, an airship, two biplanes, a
+tumbling gumball, a flock of migrating geese — and Whisper Woods was the one world left out, its own
+thick canopy the obvious reason nobody had tried, same as the kite flyer's own build note said two
+dozen rounds back. **Three hawks now wheel in slow, lazy circles high above the whole forest**, soaring
+on mostly flat wings rather than flapping, each on its own circle at a different radius (60-84 m) and
+height (42-47 m). Purely decorative: nothing to greet, nothing to reach, no dialogue and no new sound.
+
+No new controller, no physics box. The tallest thing on this world's own ground is a big tree's own
+canopy top — about 14.2 m at the very tallest for the scattered giants, 13.2 m for the fixed treehouse
+tree — so flying at 42 m or higher clears every tree by a comfortable 28 m margin everywhere on the
+ground, with no keep-out check needed against `game.zones` or any physics box. All three circles sit
+well inside the 196 m play limit and nowhere near the 275 m+ ring where this world's own horizon starts
+raising real mountains.
+
+Each hawk reuses the same stretched-sphere body every other bird in this file builds on, with a
+two-bone wing held mostly flat for a glide — a slow body-roll bank is the only constant motion, plus an
+occasional short flap when a hawk's own phase crosses its circle's windward side. Rust-brown back and
+wings, cream belly, a dark banded tail. All three birds circle the same direction, so the facing math
+stays the plain `-a` the migrating geese already use; each one draws its own radius, height, speed and
+starting phase once off this world's own local `r()`, so it costs no later mushroom hue or butterfly
+colour pick.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings. Nothing else
+changed: no new friend, no collectible, Whisper Woods' own friend count still 63, walkable percentage
+still 98%. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 445 — a watchmaker on the Victorian clock tower plaza
+
+Victorian's whole town is built around its clock tower, and the fiddler and the painter have worked
+its plaza for rounds now, but nobody in the town had ever actually mended a watch — the one trade a
+story-book clock tower all but demands. **A watchmaker now sits on a stool on the plaza's quiet south
+side**, a pocket watch open in one hand and a jeweler's loupe raised to the other eye, peering into the
+works. A small pedestal table in front of him carries a green baize cloth, three more pocket watches,
+a little desk clock with its second hand actually ticking round, and a scatter of loose brass cogs.
+*"Four faces on that tower — I only ever trust the one on my own bench."* *"Careful, puss — these gears
+are smaller than your whiskers."* *"A good watch keeps its own time. A bad one keeps you waiting."*
+
+No new controller: `Sitter` already seats a rig on a stool and leaves the arms alone whenever
+`rig.gesture` isn't set (the beach's net-mender and ukulele player both lean on it the same way) — the
+loupe hand is just raised once in this build's own `U.push`, the same trick the beach musician's
+strumming arm and the backyard griller's tongs already use, guarded by `!watchmaker.gesture` so a
+greeting wave still wins over the held pose.
+
+Placement used a headless probe (the same stub-three harness `test/run.mjs` itself uses): built the
+real Victorian town, ran `game.start('new')` so the fiddler, the painter, the bobby and every wanderer
+actually moved, sampled every NPC's own position every quarter second over 300 simulated seconds, then
+swept the plaza's own 16×16 paving against both those samples and every physics box in town. (42, -6)
+came back clear by 2.25 m of the tower's own base and 5.0 m of the nearest other soul — the opposite
+corner of the plaza from the fiddler and the painter.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, Victorian's
+own friend count up one to 76. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.
+
+## Round 446 — a crossing guard for the Neighborhood
+
+The Neighborhood has had cars, a cyclist and the postie crossing the side road for rounds now, but
+nobody ever actually watched the junction. **A crossing guard now stands on the south pavement right
+where the side road meets the main street**, hi-vis jacket over a dark cap, a red lollipop sign lifted
+overhead every few seconds as if halting traffic, then lowered again. *"Stop, look, listen — works for
+cats too."* *"Thirty years on this corner, not a scratch."* *"No running near the kerb, now."*
+
+New controller, `CrossingGuard` in `55-npcs.js`, sitting right next to `Birder`: the exact same
+raise/lower arm cycle the binocular-raising birdwatcher already uses, just with a pole-and-disc sign
+in the hand instead of binoculars, and both arms lifting together as if holding the sign up with both
+hands. A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real
+Neighborhood, sampled every NPC's own position every 1/15 s over 300 simulated seconds — the postie's
+full round, both cars' laps and the cyclist's sweep all included — and swept (44, 10.4), the south
+pavement at the side road, against both that trace and every physics box on the street: clear by 3.9 m
+of the nearest box (a street lamp) and 16.3 m of the nearest other soul. The street's own trees already
+skip `abs(x-44)<6` along this row to leave the side road clear overhead, so nothing else was planted
+this close to the junction to collide with either.
+
+First attempt placed the guard up by the cars loop, right after the vehicles are built. That passed
+every other check but failed `a cyclist rides the westbound lane (… pedalling)` — not the distance part,
+just the hip-rotation delta, by a hair (0.039 against a 0.05 floor). Bisecting it: the new controller's
+own construction draws from the shared `rnd()` sequence (same as every other controller's `this.t =
+rnd() * 10`), and the person it shifted forward wasn't the cyclist itself but the washer a few lines
+later — now built one person later than baseline, with a different idle timer, which meant the
+upstream "a neighbour waves when the cat walks up" test's own frame-by-frame wait loop ran a different
+number of iterations before the wave fired. That shifted the total elapsed simulated time by the point
+the cyclist check takes its two snapshots, landing its wheel's accumulated rotation on a different
+point in its own sine cycle — close enough to its own starting angle 2 s later that the hip barely
+seemed to move at all, even though the bike itself had plainly travelled 7.2 m. Moving the guard to the
+very end of the people section instead — after the sunbather, before the telescope, the same "last, so
+it draws from the tail of the local RNG sequence" trick half the street's other additions already use
+— fixed it with no `rnd()` burn calls needed: nothing built after the guard depends on exact timing,
+and nothing built before it moved at all.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings, the
+Neighborhood's own friend count up one to 57. No change to collectibles, walkable percentage (still
+96%), or any other world. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 447 — a hare in the vegetable patch
+
+The scarecrow the Neighborhood's gardener planted a few rounds back was always going to lose this
+fight. **A hare now lives in the gap just west of the vegetable patch**, darting in for a nibble at
+the row's edge and bolting off again whenever the cat gets close — the scarecrow's own existing joke
+("Doesn't scare the gardener's carrots one bit") finally has something to point at.
+
+No new rig and no new controller: `makeHare()` and the shared `Hopper` controller are the exact same
+two Frosty Peak's and Whisper Woods' own hares already build on, just one more home point. Picked
+(12.0, -15.3) by hand from the patch bed's own already-measured box (west edge at x=13.6): `Hopper`'s
+worst-case reach from that home is its 0.8 m leash plus a 0.45 m hop plus its own 0.15 m radius, 1.4 m
+at the very most, so every hop lands at least a metre short of the bed and `Hopper.startHop`'s own
+`physics.blocked` check never has to refuse one. Shy like every other hare, so it keeps its distance
+rather than getting underfoot.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, every check `ok`, 0 console warnings. No change
+to friend count, collectibles or walkable percentage — the hare is wildlife, not a friend to meet, the
+same as every other hare in the game. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.
+
+## Round 448 — a skateboarder for the Neighborhood
+
+Scooters, bikes, yo-yos, hula hoops, jump ropes, marbles and hopscotch have all had their turn on the
+south field by now, but no world in the whole game had ever actually had a skateboard. **A girl now
+kneels on the open field past the horseshoe court, checking her skateboard's back truck before trying
+it again.** *"Just the back truck — nearly got it."* *"Careful, puss — mind your tail, these wheels
+bite."* *"Cleared the kerb outside number twelve. Almost."*
+
+New prop `makeSkateboard()` (`60-props.js`): a flat deck sitting on two four-wheel trucks, lying on the
+ground rather than standing up the way the scooter does, since a board has no handlebar to lean it
+against. No new controller for the girl herself — `Kneeler`'s own patting motion already reads as
+checking a bolt, the same trick the scooter kid, the bootblack and the marbles kid all lean on, so this
+is a placement, not a build. Own fixed shirt colour (0xffb347), checked against both the street's
+shared 18-colour wardrobe pool and every other fixed shirt this world already hands out, so the "no two
+neighbours share a shirt" rule stays clean, and placed last of every person this build adds (right
+after the frisbee thrower, before the biplane overhead), so its own draws from the local `r()` sequence
+disturb no earlier neighbour's wardrobe or colour pick.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real Neighborhood,
+called `game.start('new')` so every stroller, the postie and the cyclist actually moved, then sampled
+every NPC's own position every quarter second over 300 simulated seconds and swept a grid of the open
+south field against both those samples and every one of the street's physics boxes: (-50, -42) came
+back clear by 6.4 m of the nearest box and 19.9 m of the nearest other soul, well inside the world's own
+95 m movement limit and clear of every road, pavement and path the test walks end to end.
+
+Full suite (`node test/run.mjs`) ran clean twice in a row — exit 0, all 274 checks `ok`, 0 console
+warnings both times. The Neighborhood's own friend count is up one, 57 to 58, 96% of the ground still
+walkable, unchanged. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 449 — a sunbather in the sweet-lands
+
+The Neighborhood has its radio listener flat out on a blanket and Sunny Shore has three towel-loungers,
+but Candy Land — the one world actually named for something sunny and sweet — never had anyone just
+lying in the sun. **A visitor now stretches out on a blanket in the open sweet-lands past the
+woodcutter's own stump**, sunglasses on, a half-melted ice lolly stuck upright in the grass beside her.
+*"Sugar and sunshine. Can't beat it."* *"Careful, puss — mind the lolly, it's melting fast enough
+already."* *"Five more minutes. Maybe ten."*
+
+No new controller: `Sunbather` is the exact same class the Neighborhood's radio listener and Sunny
+Shore's three towel people already use, and since it reaches into `rig.arms`/`legs`/`head`/`spine`
+(`makeHuman`'s own rig), she's a human visitor rather than a gingerbread man — the same call this
+world's painter, ukulele player and gossiping pair already made. The only new prop is the lolly itself
+(a stick, a flattened box and a drip blob, three primitives).
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real Candy Land,
+sampled every NPC's own position every 1/15 s over 300 simulated seconds — long enough for every
+wandering gingerbread man, the ring dance and both the tag and catch pairs to clear any one spot
+several times over — then swept a grid of the open sweet-lands (radius 20–85, short of the radius 92
+where `candyRegion`'s own procedural fill takes over) against both those samples and every one of the
+world's physics boxes: (76, 32) came back clear by 13.5 m of the nearest box and 22.6 m of the nearest
+other soul, at radius 82.5 from the origin. Built last of everything this world adds, after the gumball
+overhead, so its own draws from this world's local `r()` disturb nothing placed earlier.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings. Candy
+Land's own friend count is up one, 91% of the ground still walkable, unchanged. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 450 — toy soldiers drill in Victorian
+
+Candy Land's Candy Queen's guard has been the only `Marchers` trio in the game since round 181 —
+Victorian, for all its urchins, bobby and market-square performers, never had its own drilling line.
+**Three children, dressed up as toy soldiers for tomorrow's school pageant, now march a short beat back
+and forth on the open meadow south-east of the market square, rehearsing their steps before an audience
+of nobody but the cat.** *"Hup, two, three, four — mind your dressing, Thomas!"* *"Careful, puss — mind
+the wooden bayonets."* *"Drop one more step and Miss will have us start again."*
+
+No new controller or asset: the exact same `Marchers` class the gingerbread guard already uses,
+unchanged — same lockstep gap, same lead-and-followers logic — just this street's own wardrobe (a red
+coat, gilt buttons and cuffs, a tall black hat with a red band, built off the same
+`makeHuman`/`makeWardrobe` every other Victorian adult or child already uses) on three children in
+place of three gingerbread men.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses) built the
+real Victorian town (`game.start('new')` then `game.load(3, 'from-prev')`), sampled every physics
+circle (every moving creature) every quarter second over 300 simulated seconds, then swept the drill
+line against both those samples and every one of the town's 714 physics boxes: the 6 m line from
+(26, -75) to (32, -75) came back clear by at least 21.8 m along its whole length, at radius 79.4-81.5
+from the origin, comfortably short of the radius (88) where `victorianRegion`'s own procedural fill
+takes over.
+
+Full suite (`node test/run.mjs`) ran clean twice in a row — exit 0, all 274 checks `ok`, 0 console
+warnings both times. Victorian's own friend count is up one (76 to 77 to meet, since only the lead of
+the three greets the cat, same as the gingerbread guard); 95% of the ground still walkable, unchanged.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 451 — a scrap crane for Robot City
+
+The factory floor already had a swinging robot arm and a roaring furnace, both with their own
+"walk up and look" toast, but nothing in the whole city swung anything *overhead* the way a real
+scrapyard crane does. **A jib crane now stands past the south skyscrapers**, its magnet bobbing down
+to a small pile of scrap and back up on a slow, endless loop — mast, swinging boom, counterweight,
+dangling cable and all. *"Lifts the same six pieces of scrap all shift. Never once asked for a day
+off."* *"Mind the swing, puss — that magnet doesn't care what it grabs."*
+
+New prop `makeScrapCrane()` (`60-props.js`): a yellow jib on a steel base, the boom swinging gently
+side to side (`sin(t*0.18)`) while the cable stretches and the magnet dips from head height almost
+down to the scrap pile and back (`sin(t*0.6)`), the magnet's glow flaring at the bottom of each dip as
+if it's just grabbed something. No new controller, no friend, no collectible — it's ambient scenery
+like the robot arm and furnace it stands near, with the same "look" interactable pattern they use.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses, driven through the real
+`game.travel()` and its 520 ms portal timer rather than `game.load()` directly, so the city it swept
+was the one actually on screen) built the real Robot City, sampled every NPC's own position every
+quarter second over 400 simulated frames, then swept a grid of the open ground past the factory floor
+against both those samples and every one of the city's 1148 physics boxes: (13, -39) came back clear
+by 10.2 m of the nearest box (a south skyscraper's own footprint) and 10.2 m of the nearest wandering
+robot — comfortably past the crane's own reach, a mast radius of 1.1 m and a boom swinging out to
+about 5.8 m at its forward-most, scrap pile included.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings. No change to
+Robot City's own friend count (73), collectibles or walkable percentage (89%), the same as every other
+ambient prop in the city. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 452 — a snow angel for Frosty Peak
+
+Every other world with children already had somewhere to just lie down and relax — the
+Neighborhood's radio listener, Candy Land's sunbather, Sunny Shore's three towel people — but every
+kid on the mountain only ever wandered, snowballed, played tag or catch, danced a ring or knelt by
+something. **A girl now lies flat on her back in a patch of untouched powder between the swing set
+and the aurora cairn, having just finished a snow angel, her beanie knocked off in the snow beside
+her.** *"Perfect wings, this one."* *"Careful, puss — don't step in the middle, you'll ruin it."*
+*"Snow angel number six today. Mum says I'll catch a chill."*
+
+No new controller: the exact same `Sunbather` class (`55-npcs.js`) the radio listener, Candy Land's
+sunbather and Sunny Shore's three towel people already use, unchanged — lying flat, hands behind the
+head, same relaxed pose — just a snowsuit instead of a swimsuit and a dropped beanie (two squashed
+spheres) standing in for sunglasses on a towel.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, driven
+by hand through `game.travel(5, 'from-hub')` then `game.start('new')` so every reindeer, hare, arctic
+fox, penguin, yeti and wandering kid actually moved) sampled every NPC's own position every quarter
+second over 300 simulated seconds, then swept a 2 m grid of the open snowfield (radius 20-54, short
+of the radius 58 where snowRegion's own fill takes over, and clear of the zipline/sled-run keep-out
+strip) against both those samples and every one of the mountain's 805 physics boxes: (-32, 24) came
+back clear by 7.6 m of the nearest box and 7.5 m of the nearest other soul.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings. Frosty
+Peak's own friend count is up one (62 to 63), 98% of the ground still walkable (unchanged), 8
+collectibles unchanged. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 453 — a tide pool for Sunny Shore
+
+The shell, the half-buried chest and the message in the bottle all give the cat something to stop
+and read or listen to on this coast, and Whisper Woods' giant flower (round 442) already proved a
+prop can react to the cat on its own, no `E` needed — but nothing on the whole beach had ever done
+both at once. **A shallow tide pool now sits in the dry sand south of the lighthouse**: a ring of
+weathered rocks round a disc of water, a beached starfish and a few shells on the floor, and a small
+sea anemone at the centre with its crown of tentacles splayed open — until the cat wanders within
+3 m, when they curl shut and pull in tight, same as a real one flinching from a prodding finger, then
+open again once the cat wanders off. *"Touch the water, and watch it flinch — not you, puss, the
+anemone."* *"That starfish hasn't moved all week. Starfish don't, much."*
+
+New `makeTidePool()` (`62-props-nature.js`), reusing the flower's own hinge trick for the tentacles
+and the pond's rim-of-rocks trick for the water's edge, plus `G.star` (already used for the gem
+cluster) laid flat for the starfish, same way the rosette flower-head already lies flat. The reaction
+itself runs the other way round from the flower's bloom — tentacles retract and the whole crown
+shrinks as the cat gets close, rather than opening — so it reads as a different kind of creature, not
+a reskin. No physics box, same reasoning as the glowing pond: a shallow puddle the cat walks straight
+through.
+
+A headless probe (the stub-three harness `test/run.mjs` itself uses, driven through `game.travel(4,
+'from-hub')` and its real 520 ms portal timer) built the real Sunny Shore, sampled every NPC's and the
+squirrel's own position every quarter second over 300 simulated seconds, then swept a 0.5 m grid of
+the dry sand (x in [1, 11], short of the wet-sand zone that starts at x=12) against both those samples
+and every one of the beach's 219 physics boxes: (5, -48) came back clear by 5.5 m of the nearest box
+and 5.2 m of the nearest other soul, on a near-flat stretch of sand (ground height varying only 0.06 m
+across the whole footprint).
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, 274 checks `ok`, 0 console warnings. (One
+unrelated check, the Victorian horse and carriage's own timing probe, flaked once across several
+reruns with and without this change — the test file's own comment documents it as a pre-existing
+flake tied to a real wall-clock timer, since round 219.) Sunny Shore's own ground is still 99%
+walkable and its collectible count unchanged. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
+
+## Round 454 — a bird feeder for the Neighborhood
+
+The street already had a birdhouse (round-ish, lot 9) for nesting and a birdbath (lot 14) for
+drinking, both with the same stock sparrow perched and pecking — but nowhere in the whole game had
+anyone actually set out food. **House 12's own front yard now gets a hanging tube feeder**: a green
+tin roof over an amber glass tube half full of seed, two dowel perches through its base on a chain
+off a bent iron arm, with a scatter of spilled husks on the grass below. The same `makeSparrow()` the
+birdhouse and birdbath already use stands on the lower perch, dipping its head the same idle peck it
+already does elsewhere. *"Chirp. (Translation: finally, seed that isn't bread.)"* *"Careful, puss —
+that's a good six-foot drop if you knock it."* *"Fills it every Sunday. Empty again by Wednesday."*
+
+No new rig or controller, and every colour is fixed rather than drawn from this world's own seeded
+`r()`, so nothing later in the build shifts. The whole assembly (post, arm, tube and the nested
+sparrow) carries `userData.update` on its own top group, the same trick the kennel's own dog uses, so
+the baker leaves the nested rig alone instead of merging it into static geometry.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real
+Neighborhood, sampled every NPC's own position every 1/30 s over 150 simulated seconds (strollers,
+the dog walker and the postie's full round all included), then checked the one yard-corner offset
+every other feature on this street already uses (x+4.5, z+front*4.0) against both that trace and the
+world's own physics boxes for every lot still without a feature of its own: house 12's own corner
+(-40.5, 24) came back clear by 1.13 m of the nearest box (the porch awning, the same margin the
+pinwheel/birdhouse/gnome corner already accepts) and 12.3 m of the nearest wandering soul — the most
+daylight of any free lot on the street. Re-checked after the edit landed, with the new post's own
+physics box excluded from the sweep, and the numbers held exactly.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings. The
+Neighborhood's own friend count, collectible count and walkable percentage (96%) are all unchanged,
+same as every other ambient prop added this way. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
+
+## Round 455 — a sensitive plant for Whisper Woods
+
+Sunny Shore's tide-pool anemone pulls its tentacles in tight when the cat gets close, and this wood's
+own giant flower opens instead — but nobody had ever grown the plant that gave that whole idea its
+name in the real world. **A sensitive plant (Mimosa pudica, the actual "touch-me-not") now stands in a
+quiet clearing south-east of the hula hoop kid's own patch**: four ferny fronds held open and reaching,
+a tiny pink puffball flower at one tip, until the cat brushes within 2 m — then every frond folds in
+tight against the short central stem, the whole plant flinching shut, before it spreads back open a
+few seconds after the cat moves off. *"Watch — brush past it and the whole thing folds up tight."*
+*"Touch-me-not, they used to call these. Not far wrong."*
+
+Same yaw-hinge trick as the flower's own petals and the anemone's own tentacles (`makeSensitivePlant()`,
+next to `makeTidePool()` in `62-props-nature.js`), just a different shape folding a different way, and
+a new `SFX.rustle()` (`30-audio.js`) rather than either one's own sound, since neither a twinkle nor a
+wave fit leaves. No physics box of its own: a low ground plant the cat walks straight over, same
+reasoning as the glowing pond and the tide pool.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, driven
+through `game.travel(6, 'from-hub')` and its own real ~520 ms portal timer) sampled every NPC's and the
+squirrel's own position every quarter second over 300 simulated seconds, then swept a 1 m grid of the
+open floor (radius 12-48, short of the radius (58) where `forestRegion`'s own fill takes over, and
+clear of the stepping-stone path, the fairy-ring circle and the glowing pond's own keep-out): (15, -42)
+came back clear by 7.1 m of the nearest box and 9.2 m of the nearest other soul, with ground height
+varying only 0.06 m across the whole footprint.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings. Whisper
+Woods' own friend count, collectible count and walkable percentage (98%) are all unchanged. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 456 — a security camera for Robot City
+
+The sentry robot has patrolled the south yard on two legs for rounds now, muttering "no unauthorized
+felines detected" as it goes — but nothing in the whole city had ever actually watched from a wall.
+**A security camera now rides a bracket bolted to the east face of the south-west skyscraper**, lens
+panning to keep the cat in frame whenever it wanders within 18 metres, swinging back to a slow,
+unhurried scan of its own patch the rest of the time. The LED over the lens burns steady red while
+it's tracking and blinks slow while it waits, with one soft electronic beep the moment it first picks
+the cat up. Stand at the tower's foot and press E to look up at it: *"Still red. Still watching. The
+foreman swears it's for security."* *"Follows anything that moves. Logged you as feline, unauthorized,
+round one."*
+
+New code only, no new rig: the camera is built inline in `buildRobotCity()` (`70-worlds.js`), bolted
+onto the same tower group the radar dish already uses for its own "look up" toast, just the other one
+of the six hand-placed towers. Its pan is clamped to a ±57° arc off its resting aim toward the yard —
+worked out with `atan2` and the same `clamp`/`wrapAngle`/`dampAngle` helpers the townsfolk's own
+head-turns already lean on — so it only ever swings away from the wall it's mounted on, never into it.
+No new physics box: the housing sits at y=4, well above the tallest NPC's own head, on the same wall
+the tower's existing footprint already covers, so it needed no ground-clearance probe of its own —
+only a check that nothing else hand-placed sits within range of its own 6.5 m "look up" radius, and
+the nearest (the sentry's patrol rectangle) stays 15+ m off.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses, with the game actually
+started so the world's own update loop runs) confirmed the lens sweeps on its own when the cat is far
+off, swings smoothly round to track it once it's within range (verified the resulting angle matches
+the one straight-line geometry predicts, to three decimal places, after accounting for the bracket's
+own offset from the tower's centre), and that standing at the tower's foot surfaces the new "Look up
+at the security camera" prompt and runs its `onUse` clean.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged at 309. Robot City's own friend count (73), collectible count (8) and walkable
+percentage (89%) are all unchanged, since the camera adds no greetable id, no box and no zone.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 457 — a gumball machine for Candy Land
+
+The wishing well near the sweet-lands has had a bucket of gumballs riding its rope since round 376,
+but the one fixture every candy-themed corner is actually built around had never turned up anywhere
+in the seven worlds. **A free-standing coin-op gumball machine now stands on the quiet grass just
+north of the well**: a red cabinet with a chrome crank and coin slot, a glass globe packed with
+forty-six gumballs in six flavours overhead, and a little chrome cap on top. Press E to turn the
+crank — a coin-click, a sparkle of gumball colours dropping into the tray, and a one-line verdict on
+which flavour came out. *"Watermelon — or something trying hard to be."* *"Blue. Just blue. Flavour
+unclear."* *"Green apple, sharp enough to make the whiskers twitch."*
+
+New `makeGumballMachine()` in `60-props.js`, right next to `makeCandyJar()` — same glass + scattered
+small spheres trick that jar already uses for its peppermints, just blown up to full prop scale and
+mounted on a cabinet instead of held in a vendor's hand. No new controller: it's a plain one-off "walk
+up and look" interactable, same shape as the wishing well beside it and Victorian's postbox, just with
+a `game.fx.emit()` burst and a random flavour line instead of a fixed one, picked from `rnd()` at the
+moment of use rather than this world's own seeded `r()`, so it costs nothing from any later wardrobe
+draw in this build.
+
+Finding it a spot took an actual headless probe this time, not just eyeballing the hand-placed
+coordinate list: `game.travel()` only swaps a world in after a real ~520 ms `setTimeout`, so the first
+version of the probe (sampling right after the call) was still reading the Neighborhood and found a
+"clear" spot that was never checked against Candy Land at all. Fixed by awaiting that real delay
+before sampling, then building the actual world (`game.start('new')` then `game.travel(1,
+'from-hub')`), running it 300 simulated seconds so every wanderer, dancer and tag pair actually moved,
+and sweeping a 2 m grid against both those samples and all of the land's physics boxes — including
+`candyRegion`'s own procedural fill, which was missing from the first pass too. The machine's own spot,
+(-13, 83), came back clear by 9.2 m of the nearest box and 9.3 m of the nearest wandering soul once
+everything was accounted for, well inside the radius (92) where that procedural fill takes over and
+clear of the cupcake-hill keep-out circle centred on (0, 80).
+
+Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, all checks `ok`, 0 console
+warnings. (One cold run flagged the Victorian carriage's own distance check as a false alarm before
+any of this round's changes went in — reran clean twice after, so it's an existing flake in that one
+timing-sensitive check, not anything this round touched.) Candy Land's own friend count, collectible
+count and both guard-march and ring-dance checks are all unchanged, since the machine adds no
+greetable id and sits well clear of every road, path and other NPC's own patch. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 458 — a volleyball net for Sunny Shore
+
+Every ball game on the beach so far has been an open toss — the keep-it-up pair, the frisbee, the catch
+down by the dunes — but no world in the whole game has ever had an actual net to play over, the one
+piece of beach-volleyball kit the sand itself was missing. **A volleyball net now stands on the open dry
+sand inland of the dunes, two sun-bleached posts strung with a low cord net, and two beachgoers lobbing
+a white, blue and yellow ball back and forth over it.** Standing close gives a one-line toast of its own:
+*"Out by a hair. Every single time."* *"Best two out of three. Again."*
+
+New `makeVolleyballNet()` (`62-props-nature.js`): two posts, a white top tape, and six horizontal plus
+seven vertical cords, all `noInk`'d the same way the spiderweb's own silk strands already are so the
+thin lines don't ink solid. No new controller: the exact same `BallGame` the Neighborhood's, Candy
+Land's, Frosty Peak's and Whisper Woods' own catch games already use, completely unchanged — its
+hand-to-hand lob already arcs about 2.2 m above the throwing hand at the midpoint of its flight, which
+clears a net barely 1.3 m tall with room to spare, so the ball visibly sails over it without the
+controller needing to know the net exists. The ball itself reuses the same three-material sphere trick
+those other catch games already use for a multi-coloured ball, just recoloured white with a blue and a
+yellow wedge for an actual volleyball.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses, with the real beach built via
+`game.start('new')` then `game.travel(4, 'from-hub')`) sampled every NPC's own position every third of a
+second over 300 simulated seconds, then swept the dry sand against both those samples and every one of
+the beach's physics boxes: (-18, -6) came back clear by 4.1 m of the nearest box and 4.5 m of the nearest
+other soul across the whole footprint the net and its players' own side-to-side sway need, with the
+ground flat to within 0.21 m throughout and well inside the radius (58) where `beachRegion`'s own
+procedural fill takes over, so it needed no keep-out zone of its own.
+
+Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, all checks `ok`, 0 console
+warnings, Sunny Shore's own walkable percentage still 100% and its friend count unaffected apart from the
+two new players. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 459 — a newsboy for Victorian's market square
+
+Costermonger, flower seller, pieman and cheesemonger have all called their wares across the square for
+rounds now, but the one cry every Victorian street scene is actually remembered for — "paper! read all
+about it!" — had never turned up anywhere in the whole town. **A newsboy now works the corner where the
+lane off the high street opens into the square**, a bundle of folded newspapers tucked under one arm,
+hollering a headline at anyone who passes. *"Paper! Read all about it!"* *"Clock tower strikes true
+again, shocking news!"* *"Cat spotted in the market square — you heard it here first!"*
+
+New `makeNewspaperBundle()` in `60-props.js` — six slightly-offset folded sheets tied with crossed
+string, same scale and "handed to a stall keeper" idea as the fruit basket and cheese wheel beside it.
+No new controller: it's the same `Vendor` class every other market stall already uses, just a child
+rig holding papers instead of produce, and `greetable()`'d the same way so he counts as a friend to
+meet, same as the four grown-up stallholders.
+
+Finding him a spot took an actual headless probe, not a guess: built the real town
+(`game.travel(3, 'from-prev')`), sampled every NPC's own position every third of a second over 150
+simulated seconds, then swept the grass just north of the square's own 30×26 m paving against both
+those samples and every one of the town's physics boxes. The lane mouth itself (where it opens into
+the square) turned out to be the busiest patch of ground in the whole town — wanderers pass through
+there constantly — so the spot that came back clear was a few metres east of it instead: (13, -21)
+sits 6.0 m clear of the nearest box and 3.3 m clear of the nearest wandering soul, just past the
+fountain's own 17 m hand-placed circle (so clear of `victorianRegion`'s own fill too) and well past
+the four stall keepers' own pitches and the juggler.
+
+Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, all checks `ok`, 0 console
+warnings. A targeted headless check confirmed the newsboy is in the scene graph, his "Say hi" prompt
+fires and registers him as a friend, and his position stays finite. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
+
+## Round 460 — a snowy owl for Frosty Peak
+
+Whisper Woods has had three tawny owls hooting back at the cat since early on, but no other world ever
+got one of its own, and a mountain forest without a single owl in it felt like an oversight. **A snowy
+owl now perches on the pine already standing at the edge of the ring, white and pale grey instead of
+brown, blinking and turning its head to watch the cat go by.** Say hello and it hoots back: *"Who?
+...Still just you. Still cold."*
+
+`makeOwl()` in `56-npcs-wild.js` took no colour arguments before this round — every call baked in the
+same tawny-brown-and-cream rig. It now takes an optional `{ body, face }` override; the three Whisper
+Woods calls are untouched (and so still brown), and Frosty Peak's new one passes a pale off-white pair
+instead. No new geometry, no new controller — same perched-and-blinking rig, same branch mesh nailed to
+the trunk, same `game.namedFriend()` + `addInteractable()` "say hello" pattern the forest's owls
+already use, just recoloured and given its own hoot timer.
+
+Placement needed no new probe: the pine at (30, 26) was already one of the mountain's hand-placed ring
+trees, already carrying its own ground-level physics box from that planting line, and the owl sits 6.6 m
+up on an offset branch, the same height and offset the forest build already uses for its three. A perched
+creature up a tree doesn't block any road or path check at ground level, and doesn't collide with the
+deer wandering underneath it either, so the existing tree was enough — nothing at ground level needed
+re-checking.
+
+Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, all checks `ok`, 0 console
+warnings. Frosty Peak's own friend count went from 63 to 64, Whisper Woods' owls are unaffected (still
+brown, still three), and no other world's counts moved. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
+
+## Round 461 — a ladybug in the Neighborhood
+
+Whisper Woods has had a ladybug scuttling across its forest floor for a while now, but no other world
+ever got one of its own — the Neighborhood, with a hare raiding the vegetable patch and a scarecrow
+that can't scare off so much as a sparrow, never had the one garden visitor too small for either of
+them to notice. **A ladybug now sits in the quiet grass of the open field east of the street**,
+antennae twitching now and then. No dialogue, no "say hello" — same as the Woods' own, it's purely
+ambient wildlife, there to be noticed rather than greeted.
+
+First attempt wired it to the exact same `Hopper` controller the Woods use, which seemed like the
+obvious no-new-code move. It built fine and passed a quick look, but the full suite caught something
+subtler: `Hopper`'s constructor draws three numbers off the shared global `rnd()` sequence the moment
+it's built, and that one extra creature — built during the Neighborhood's own setup, before any frame
+ever runs — permanently shifted every later call to `rnd()` anywhere in the game. Three hundred
+simulated frames later, two unrelated neighbours having a chat (`Talkers`) drew a different random arm
+gesture than the test expected, and "two neighbours chat, taking turns" failed outright, deterministically,
+every run. So the ladybug doesn't hop: it's perched instead, the same "sits and only animates" trick
+the owls already use in both Whisper Woods and Frosty Peak — `rig.animate(0, false, dt, t)` off a local
+timer pushed into the world's own `U` list, no controller, no physics circle, and critically no draw on
+the shared `rnd()` sequence at all. Its one random pick (the idle-timer's starting phase) comes off this
+world's own local, per-world-seeded `r()` instead, drawn last of everything this build adds so it can't
+disturb any earlier neighbour's wardrobe or colour pick either.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real Neighborhood,
+sampled every NPC's and the squirrel's own position twenty times a second over 300 simulated seconds,
+then swept a grid of the open field east of the street against both those samples and every one of the
+street's own physics boxes: (27.5, -29) came back clear by 2.0 m of the nearest box (a yard tree trunk)
+and 9.1 m of the nearest other soul. A stationary creature needs no path clearance of its own, but the
+spot was chosen the same careful way regardless.
+
+Full suite (`node test/run.mjs`) ran clean three times in a row after the fix — exit 0, all checks `ok`,
+0 console warnings. (The suite does have a pre-existing flaky check unrelated to this round — Victorian's
+horse and carriage occasionally reports less distance travelled than expected, independent of this
+change, on the baseline before this round too — so three *consecutive* clean runs were confirmed rather
+than just one.) Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 462 — a "lost cat" notice on the park lamp
+
+Pretty much every obvious patch of the Neighborhood has a story by now — a pinwheel, a sprinkler, a
+kennel, a birdhouse and a birdbath on the street's own front yards, a mailbox with its own joke, a
+scarecrow, a crossing guard, a skateboarder. Nobody had ever stapled anything to one of the street
+lamps themselves, though, and there's an obvious joke sitting right there: **the lone park lamp by the
+bench and the pond now carries a "lost cat" notice**, cream paper in a dark frame with a crude cat
+silhouette and a row of tear-off phone-number tabs along the bottom (one already gone). Read it and the
+cat looks it over, entirely unmoved: *"LOST CAT — answers to Mittens. Doesn't answer to much else,
+either."* The cat has no idea who Mittens is, and no plans to find out.
+
+New prop, `makePosterNotice()` in `60-props.js` — a dark backing box, a cream paper box, a sphere head
+and two cone ears for the silhouette, and five little paper tabs along the bottom edge with the middle
+one skipped — four meshes and a sphere, same scale of build as the mailbox's own flag or the wind
+chime's tubes. No new controller, no animation: it's a flat sheet of paper, same precedent as the
+mailbox flag and the lamp basket's own static leaves. It's mounted as a plain child of the park lamp's
+own group (`buildNeighborhood()` had only ever thrown that lamp away inline as
+`place(game, U, makeLamp('modern'), -4, 38, PI / 2)` — now kept in `parkLamp` so the notice, and the
+interactable, can hang off it), so it inherits the lamp's placement and rotation for free and needs no
+physics box of its own: a 0.012 m-thick sheet of paper blocks nothing the lamp's existing 0.3 x 4 x 0.3
+post box wasn't already clearing, and `game.addInteractable` keys off the lamp group itself rather than
+a dedicated anchor mesh, the same shortcut every other lamp-post prop in this game already takes.
+
+Checked with a standalone headless probe (the same stub-three harness `test/run.mjs` itself uses,
+clicking through the start screen the way the real game does): the notice mesh is in the scene graph
+under the lamp, walking the cat to (-4, 36.2) — 1.8 m short of the lamp — makes it `game.nearest` with
+the label "Read the notice", and `game.interact()` fires one of the three toast lines. First pass of
+that probe showed `game.nearest` staying null even standing right next to it; turned out to be the probe
+never clicking the start-screen "Enter" button the real game's own `index.html` always clicks before
+`game.loop()` does anything per-frame, not a bug in the notice itself.
+
+Full suite (`node test/run.mjs`) ran clean six times in a row — exit 0, all 274 checks `ok`, 0 console
+warnings, 309 physics boxes unchanged (the notice adds none). One of the runs during this round's own
+testing came back `exit 1` with no `FAIL:` line printed at all — almost certainly the same pre-existing
+flake these logs have been tracking on Victorian's horse and carriage, caught mid-build rather than
+caused by this round's change, since a bare re-run and five further runs straight after all came back
+clean. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 463 — a "missing unit" notice in Robot City
+
+Robot City hadn't had anything new added to it in six rounds — the longest dry spell of the seven
+worlds — despite already being the densest of them all. The Neighborhood's own lamp post has carried a
+"lost cat" notice since round 462; Robot City now gets the same joke the other way round. **One of the
+six hand-placed skyscrapers in the east yard (the one at (-38, 0), between the camera tower and the
+radar dish's own tower) now carries a "missing unit" bulletin bolted flush to its east wall** — the same
+dark-frame-and-cream-paper build as the lost-cat notice, just reskinned with a boxy robot-head silhouette
+(two antenna rods standing in for ears) and a strip of hazard tape instead of tear-off phone tabs. Read
+it and the cat gets one of three lines: *"MISSING: UNIT 47. Last seen chasing a loose bolt. Reward: one
+(1) oil can."*
+
+New prop, `makeMissingUnitPoster()` in `60-props.js`, built as a near-verbatim copy of `makePosterNotice()`
+with the cat silhouette swapped for a robot one and the paper tabs swapped for a hazard-tape strip. It's
+parented straight onto the tower's own group (`b`) inside the skyscraper-placing `forEach` in
+`buildRobotCity()`, mounted 0.02 m clear of the tower's existing 6×6 footprint and rotated 90° to face the
+wall's outward normal — no new mesh group of its own beyond the poster, and critically no new physics box:
+a 0.012 m-thick sheet blocks nothing the tower's own collision box wasn't already clearing, the same
+shortcut the lamp notice took. `game.addInteractable` keys off the tower group itself, same trick the
+camera and radar dish mounted on the other two towers already use, with a 4.3 m radius — just past the
+tower's own 4.24 m diagonal corner, so it's reachable flush against the wall from any angle without
+reaching the statue's own interactable 22.8 m away.
+
+Checked with a standalone headless probe (the same stub-three harness `test/run.mjs` itself uses,
+`game.load(2, 'from-prev')` then clicking the start screen's own "Enter" the way the real game does):
+`game.nearest` picks up "Read the notice" with the cat standing 0.6 m off the wall, stays null well
+past the interactable's own radius, and `game.interact()` fires one of the three toast lines. (An
+earlier pass of the same probe used `game.travel()` instead of `game.load()` and saw nothing at all —
+`travel()` only queues the world swap behind a `setTimeout` for the real game's fade transition, which
+never fires with nothing driving Node's event loop; `game.load()` is the synchronous one every other
+round's own probe already reaches for.)
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, 309 physics
+boxes unchanged (the notice adds none, same as the render count climbing by only the poster's own
+handful of meshes). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 464 — a "lost pocket watch" notice in Victorian
+
+The Neighborhood's park lamp has carried a "lost cat" notice since round 462, and one of Robot City's
+skyscrapers a "missing unit" bulletin since round 463 — Victorian, the one world with a full dozen
+hand-placed lamp posts already standing bare below their flower baskets, had neither. **The ninth lamp
+along the main street (x=34.5, on the north-row pavement, between the market-square lane and the east
+end of town) now carries a "lost pocket watch" notice**, stapled below its basket at a read height on
+the post. Read it and the cat gets one of three lines: *"LOST: a gentleman's pocket watch, silver
+chain, stopped at twenty past four." The cat has never once arrived anywhere on time and sees no reason
+to start.*
+
+New prop, `makeLostWatchNotice()` in `60-props.js`, built on the same dark-frame-and-paper skeleton as
+the other two notices — aged cream paper, a brass watch case with a stubby crown and a three-link fob
+chain standing in for the cat's silhouette or the robot's antenna rods, and a single red wax seal along
+the bottom in place of tear-off tabs or hazard tape. It's parented straight onto the lamp group itself
+(`vicLamps[8]`) at local (0.09, 1.55, 0) — well clear of that same post's own hanging basket, which
+sways a metre higher at y=2.55 — so no new mesh group and no new physics box: the sheet is 0.012 m
+thick and sits comfortably inside the post's existing 0.4 x 4 x 0.4 collision box. `game.addInteractable`
+keys off the lamp group, same trick the other two notices and every bare-lamp prop before them relied on.
+
+Checked with a standalone headless probe (`game.start('new')` then `game.load(3, 'from-prev')`, the
+synchronous path the last two notices' own probes used): standing at (34.59, 6.7) shows "Read the
+notice" and firing it prints the pocket-watch toast; standing back at the far end of the street (-60,
+-6.4) shows a different prompt ("Say hello") instead, confirming the notice's own 2.4 m radius doesn't
+leak across the town.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, 309 physics
+boxes unchanged (the notice adds none). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.
+
+## Round 465 — a "lost acorn stash" notice in Whisper Woods
+
+The Neighborhood's park lamp, one of Robot City's towers and a Victorian lamp post have all carried a
+stapled notice by now (rounds 462-464) — Whisper Woods, the one world left out of that running joke and
+also the one world that had gone the longest (nine rounds) without anything new at all, never got one.
+**One of the inner-ring trees, at (26, 4), now carries a notice nailed straight to its own trunk**:
+weathered bark-plank backing standing in for the frame, a carved pinecone for the cat silhouette, the
+robot head or the watch case the other three use, and four iron nail heads along the bottom in place of
+tear-off tabs, hazard tape or a wax seal. Read it and the cat gets one of three lines: *"LOST: one
+entire winter's stash of acorns. If found, please panic as much as I am. — A Squirrel."* The cat reads
+it twice and still isn't sure which squirrel.
+
+New prop, `makeForestNotice()` in `60-props.js`, built on the same skeleton as the other three. No new
+controller. The tricky part was mounting it on a tree rather than a lamp post or a tower wall: a tree
+trunk is a tapered cylinder (`makeBigTree`'s own `G.cyl(R * 0.55, R, h, 10)`, wide at the base and
+narrower at the crown), not a flat-sided post, so a notice centred on the trunk at any height would sit
+buried inside the bark rather than on top of it. The fix reads the tree's own base radius back out of
+`userData.col[0]` (`= R * 2.2`, set by `makeBigTree` itself) and offsets the notice outward by `R +
+0.02 m` — always past the actual (smaller) radius at any height further up the taper, so it clears the
+surface everywhere above the base. The tree itself is `noticeTree`, captured from the `inner` array's
+own placement loop (`74-world-forest.js`) without changing that loop's own `r.chance(0.5)` draw per
+tree, so nothing about the shared `r()` sequence shifts and no later wardrobe or colour pick in this
+world moves. The notice inherits the tree's own random `r() * TAU` world rotation along with everything
+else parented to it, so it ends up facing whichever way that one tree happens to be turned — harmless,
+since `game.addInteractable` keys off the tree group by distance alone, and the tree's own physics box
+(axis-aligned, set by `treeAt` before any of this) never rotates with the visual mesh anyway.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses) built the
+real Whisper Woods (`game.start('new')` then `game.load(6, 'from-hub')`), found the one "Read the
+notice" interactable and its tree: half-width 1.75 m, so a 2.18 m worst-case corner diagonal, well
+inside this round's own 3.4 m radius. The nearest other physics box stayed 7.65 m clear of the tree's
+centre and the nearest NPC, sampled every frame over 300 simulated seconds, never closer than 4.6 m —
+both past the radius, so nothing else's own prompt competes with it. Standing beside the tree turned up
+"Read the notice" and fired a toast; standing 50 m off showed no prompt at all.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, 309 physics
+boxes unchanged (the notice adds none, same shortcut every lamp and tower notice before it took).
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 466 — a third cupcake hill gets its own sniff
+
+Candy Land's sweet-lands are ringed by seven cupcake hills (`cupcakeHills[0..6]` in `70-worlds.js`),
+and two of them — index 5 (the sixth in the list, near the swing set) and index 1 (second in the list,
+out past the painter's meadow) — picked up their own "Sniff the cupcake hill" toast a few rounds back.
+The other five never got the same treatment. **`cupcakeHills[6]`, the last hill in the list at (34,
+-66), now gets a sniff too**, with its own trio of lines: *"Purple icing, this time. They really do
+just pick a colour and go."* / *"Last hill in the ring, and somehow still has sprinkles left over."* /
+*"That cherry wobbles if you look at it funny. The cat looks at it funny."*
+
+Same trick as the first two: `cupcakeHills[6]` is the group the existing build loop already constructed
+(icing, sprinkles, cherry and all), handed straight to `game.addInteractable` with a 5.5 m radius — no
+new mesh, no new physics box. A headless probe built the real Candy Land (`game.start('new')` then
+`game.load(1, 'from-prev')`) and swept this hill's coordinates against every physics box, NPC and
+interactable in the world: the nearest other box (a candy-cane trunk at the edge of the outer belt)
+stayed 9.35 m clear, and the nearest NPC or interactable (the hula-hoop kid's patch) 12.08 m clear, both
+well past the 5.5 m radius and past the 3.68 m worst-case corner of the hill's own box. Standing at (34,
+0, -66) turns up "Sniff the cupcake hill" and firing it toasts one of the three lines; standing out at
+(80, 80) shows no prompt at all.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, 309 physics
+boxes unchanged (the sniff adds none). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.
+
+## Round 467 — a "lost bucket and spade" notice on Sunny Shore's swim flag
+
+The Neighborhood's park lamp, a Robot City tower, a Victorian lamp post and a Whisper Woods tree have
+all carried a stapled notice by now (rounds 462-465) — Sunny Shore was the one world left out, and also
+the one with the most obvious ready-made post standing around doing nothing but holding up a flag.
+**The south swim flag beside the lifeguard's chair, at (13, 18), now carries its own notice**: *"LOST:
+one bucket and spade, bright red. Last seen somewhere under all this sand."* The cat reads it twice and
+isn't tempted by the reward (a seashell, slightly chipped), and notices somebody's drawn a little crab
+next to the handwriting in case the point wasn't clear enough.
+
+New prop, `makeBeachNotice()` in `60-props.js`, right after the other four — driftwood plank instead of
+a dark frame, a flattened-sphere crab body and two claw cones standing in for the cat's silhouette, the
+robot's head, the watch's case or the pinecone the other four used, and a row of beach pebbles along
+the bottom instead of tear-off tabs, hazard tape, a wax seal or nail heads. It's parented straight onto
+the flag pole's own group (captured from `placeT`'s own return value, which the swim-flag loop in
+`72-world-beach.js` had always thrown away) at local (0.14, 1.3, 0) — no new mesh group, no new physics
+box: the pole already carries a 0.3 x 2.3 x 0.3 collision box from the very next line, same dimensions
+the Neighborhood's own park lamp box used for its notice. `game.addInteractable` keys off the pole group
+by distance, same trick every notice before it relied on.
+
+A headless probe (`game.start('new')` then `game.load(4, 'from-prev')`) stood the cat at (13, 0, 18):
+`game.nearest` came back "Read the notice" and firing it worked; the lifeguard's own "Say hello" sits
+5.17 m off, outside the notice's 2.2 m radius, so standing at the flag never steals the guard's prompt.
+Standing out at (80, 80) showed no prompt of either kind.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, 309 physics
+boxes unchanged (the notice adds none, same shortcut every notice before it took).
+
+## Round 468 — a "lost mitten" notice on Frosty Peak's welcome arch
+
+The Neighborhood, Robot City, Victorian, Whisper Woods and Sunny Shore have all had a stapled notice by
+now — Frosty Peak was the one world left out, and the log-post welcome arch at the top of the gondola,
+standing right on the path every arriving cat already walks, had two ready-made posts and nothing of its
+own competing for the spot. **One of the arch's posts now carries a "lost mitten" notice**: *"LOST: one
+mitten, hand-knit, red with white snowflakes. Left hand only — the right one's long gone."* Underneath,
+smaller writing adds that the other one probably isn't worth much either, and somebody's pinned a single
+loose strand of red wool to the corner "as if that proves anything."
+
+New prop, `makeSnowNotice()` in `60-props.js`, right after the other five — a frost-pale pine plank, a
+squashed-sphere mitten body with a stubby thumb cone standing in for the cat's silhouette, the robot's
+head, the watch's case, the pinecone or the crab, and a row of small icicles hanging off the bottom edge
+instead of tear tabs, hazard tape, a wax seal, nail heads or pebbles. `makeWelcomeArch` builds its two
+log posts as plain meshes with no group of their own, so the notice reaches in by local offset instead
+of a captured reference: parented straight onto the arch's own group at local (2.4, 1.5, 0), which lands
+on the post's own surface with a 2 cm gap (the post tapers from a 0.2 m to a 0.16 m radius over its
+height, ~0.184 m at notice height) — no new mesh group, no new physics box, since the post's own
+half-extent-0.45 collision box already covers it.
+
+A headless probe (`game.start('new')` then `game.load(5, 'from-hub')`) found the notice lands at world
+(-31.5, -2.4) — the arch's own rotation turns the local offset south rather than along +z — and swept it
+against every physics box, NPC and interactable in the built world: the nearest other soul stayed 6.77 m
+clear, well past the notice's own 2.2 m radius, and the only box closer than that is the post it's
+mounted on (0.2 m, exactly the clearance it was built for). Standing at the arch turned up "Read the
+notice" and fired a toast; standing out at (0, 60) showed no prompt at all.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, 309 physics
+boxes unchanged (the notice adds none, same shortcut every notice before it took). Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 469 — a "lost lollipop" notice for Candy Land's quietest candy cane
+
+The Neighborhood, Robot City, Victorian, Whisper Woods, Sunny Shore and Frosty Peak have all carried a
+stapled notice by now (rounds 462-468) — Candy Land, the one world named for the stuff, was the last one
+left out. **One candy cane out past the west bridge, at (-44, 4), now carries a notice of its own**:
+*"LOST: one strawberry lollipop, barely licked. Reward: a gumdrop, already a little fuzzy."* Underneath,
+smaller writing adds that the finder keeps the stick either way, and somebody's tied a scrap of licorice
+string to the corner "as if that proves anything."
+
+New prop, `makeCandyNotice()` in `60-props.js`, right after the other six — a candy-cane-striped plank
+instead of a dark frame, driftwood, bark, wood or pine, a round sucker head on a short stick standing in
+for the cat's silhouette, the robot's head, the watch's case, the pinecone, the crab or the mitten, and a
+row of five small gumdrops along the bottom instead of tear-off tabs, hazard tape, a wax seal, nail heads
+or icicles. It's parented straight onto one specific candy cane's own group — the 28-cane loop in
+`buildCandyLand` now keeps a reference to the cane at (-44, 4) as it builds — at local (0.16, 1.6, 0),
+just outside the cane's own 0.13 m stick and well under its hooked top: no new mesh group, no new physics
+box, since the cane's own 0.5 x h x 0.5 collision box three lines up already covers it. `game.addInteractable`
+keys off the notice mesh itself rather than the cane's group, so the prompt tracks the sheet's real world
+position through the cane's own random rotation, same trick the Frosty Peak mitten notice already used.
+
+A headless probe (`game.start('new')` then `game.load(1, 'from-prev')`) read the notice's real world
+position straight off its `getWorldPosition` — the cane's rotation landed it at (-44.1, 1.6, 4.12) — then
+swept it against all 1957 of the land's physics boxes and every NPC's own position sampled every quarter
+second over 20 simulated seconds: the nearest box other than the cane's own mount stayed 12.55 m clear,
+and the nearest NPC and interactable (the same wandering soul and its own "Say hello" prompt) stayed
+12.55 m off too — nothing else is hand-placed anywhere near this quiet corner past the west bridge.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, 309 physics
+boxes unchanged (the notice adds none, same shortcut every notice before it took). Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 470 — a fire hydrant for the Neighborhood street
+
+Lamps, mailboxes, bins and flower beds line the Neighborhood's street by now, but the one piece of
+curbside furniture every real street has had never showed up: a fire hydrant. **One now sits on the
+grass strip between two front-row houses**, squat and classic red, chrome collar and bonnet bolt on top,
+two side nozzle caps and one facing the road. A sniff gets a shrug of a line: *"Bone dry and bolted
+shut. The cat gives the base a sniff anyway."*
+
+New prop, `makeFireHydrant()` in `60-props.js`, right after `makeMailbox` — nine meshes, no moving
+parts, so it bakes flat like the lamps and mailboxes around it. Dropped at (-27, 9.2) in `70-worlds.js`,
+right after the `streetLamps` loop: 0.4 m south of the street's own zone (`Z.addSpan(-100, 9.6, 100,
+18.4)`), in the gap between the lamps at x=-32 and x=-12, with its own small box (half-extent 0.19 in x
+and z) never reaching the sidewalk.
+
+A headless probe (the same stub-three harness `test/run.mjs` uses, `game.start('new')` then the "enter"
+click to actually start the loop) let 30 simulated seconds of every stroller, cyclist and the postie's
+round run before sweeping the gap: (-27, 9.2) came back clear by 2.09 m of the nearest physics box and
+3.85 m of the nearest soul. Standing the cat within 1.8 m turned up "Sniff the fire hydrant" and firing
+it worked; backing off past the radius dropped the prompt, and a clean sweep of the south pavement at
+z=10.4 confirmed the hydrant's own box never reaches it.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings, physics
+boxes 309 → 310 (the hydrant's own, the only new one). Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
+
+## Round 471 — a hologram billboard over Robot City
+
+Six hand-placed towers stand in the east yard; three of them had already picked up their own feature
+(a security camera, a sweeping radar dish, a "missing unit" notice), and three stayed bare roofs doing
+nothing but holding up the skyline. **One of the three now carries a flickering holographic ad**,
+beamed up off a small projector dish bolted to the roof — a violet sign reading ROBOT CITY that spins
+slowly on the world clock and stutters out to near-nothing every few seconds before climbing back to
+full brightness, with a crackle of static each time it drops. A look up gets a shrug of a line: *"Been
+glitching since round one. The foreman calls it 'atmosphere.'"*
+
+No new prop function — the sign reuses `TEX.neonText()`, the same canvas-painted texture every neon sign
+in the city already draws from, just additive and half-transparent instead of solid, mounted on a plain
+cylinder mast the same way the radar dish's own mast already sits on its tower. No new physics box
+either: it floats 20 m up (`h + 2`, well above the tallest NPC's head and above this tower's own existing
+collision box), so nothing on the ground can ever reach it; `game.addInteractable`'s 5 m radius just
+clears the tower's own 4.95 m diagonal corner, the same margin the missing-unit notice next door already
+relies on. The flicker timer draws from this world's own seeded `r()`, read only in the runtime tick after
+every NPC in this build is already placed, so it can't shift any later wardrobe pick.
+
+A headless probe (`game.start('new')` then `game.travel(2, 'from-hub')`, 300 simulated frames) found the
+tower at its expected (34, 0, 24), the nearest other physics box 10.0 m clear and the nearest NPC 10.2 m
+clear, both well past the interactable's own radius; firing `onUse` through five full flicker cycles never
+threw and left the sign readable again each time it climbed back up.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all 273 checks `ok`, 0 console warnings, physics
+boxes unchanged at 310 (the sign floats, no collider of its own). Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
+
+## Round 472 — a wheelie bin for the Neighborhood street
+
+Six of the street's sixteen front yards had already picked up their own fixture — a pinwheel, a
+sprinkler, a kennel, a birdhouse, a garden gnome, a bird feeder — every one of them an ornament or
+somebody's home. The single most ordinary object any real front yard has, the bin put out for
+collection, had never shown up anywhere on this street. **House 15's own lawn now gets a plastic
+wheelie bin**, stood a little apart from the porch: a tall box body on two rear wheels, a flat lid
+sat not quite square on top, and a handle bar moulded across the front. A sniff gets one of three
+lines: *"Bin day's Tuesday. Somehow it still smells like today."* / *"Lid never sits quite flat.
+Nobody's ever minded."* / *"Puss, whatever that smell is, it is not for you."*
+
+No new controller, no animation, and nothing drawn from this world's own seeded `r` — every dimension
+and colour is a fixed literal, same caution the gnome's and feeder's own comments already spell out,
+so nothing later in this build shifts. Built inline in `buildNeighborhood()`'s own `lots.forEach` in
+`70-worlds.js`, right after the bird feeder's `if (i === 12)` block.
+
+A headless probe (the same stub-three harness `test/run.mjs` uses, `game.start('new')` then 60
+simulated seconds sampling every NPC's own position) swept the street's usual yard-corner offset
+(`x+4.5, z+front*4.0`) against every lot this street's features hadn't already claimed: lot 15 — the
+mirror, across the street, of the kennel's own safe lot 13 — came back clearest of the lot, 8.60 m
+from the nearest wandering soul and the usual 0.90 m from the house's own porch-awning box that every
+other yard fixture in this same corner already accepts as plenty of room.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings, physics
+boxes 310 → 311 (the bin's own, the only new one). Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
+
+## Round 473 — a clothesline for the Neighborhood backyard
+
+Sprinklers, bins, gnomes, bird feeders — the street's front yards have steadily filled in, but no
+backyard in the whole Neighborhood had ever strung up the single most ordinary chore of them all:
+washing day. **Two posts now stand in the open grass south of the street, a line strung taut between
+them**, with a shirt, a bedsheet and a pair of trousers pegged along it, each rocking gently on its own
+peg at its own phase so the line never sways in lockstep. No owner in sight. A sniff gets one of three
+lines: *"Shirt, sheet, trousers. In that order, every week."* / *"Still damp. Whoever hung these isn't
+back yet."* / *"The wind's doing half the work today."*
+
+New prop, `makeClothesline()` in `60-props.js`, right after `makeFireHydrant` — two post groups, a
+strung line (`noInk`'d, like every other thin rope in this game), and three pegged items swaying off
+`g.userData.update`, driven only by the world clock `t`, so it draws nothing from the shared `rnd()` or
+this world's own seeded `r`. Dropped at (40, -22) in `70-worlds.js`, right after the detectorist's own
+patch, with a small physics box on each post (`cam: false`) and a "Sniff the washing" interactable on
+the line itself.
+
+A headless probe (the same stub-three harness `test/run.mjs` uses, clicked through to the started game,
+then 30 simulated seconds sampling every NPC's own position every quarter second) swept the open grass
+south of the street against every physics box and every sample: (40, -22) came back clear by 10.9 m of
+the nearest box and 13.6 m of the nearest wandering soul — well past the detectorist's own patch at
+(60, -9) and the vegetable patch's cluster back at x=14.5.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings, physics
+boxes 311 → 313 (the two posts, the only new ones). Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
+
+## Round 474 — a steam vent for Robot City's last bare rooftop
+
+Six hand-placed towers stand in the east yard; four of them had already picked up their own feature
+(a security camera, a sweeping radar dish, a "missing unit" notice, last round's hologram billboard),
+leaving two bare roofs. **One of those now vents pale steam** from a short riveted stack tucked into a
+roof corner — a slow rise-drift-fade loop, puffing every few seconds, with an occasional soft hiss if
+the cat happens to be nearby. A look up gets one of three lines: *"Vented since the city went up.
+Nobody's ever traced the pipe to anything."* / *"Warmer up here than down on the floor, if you don't
+mind the hiss."* / *"Just steam. The foreman's checked. Twice."*
+
+No new controller and no new physics box: the vent sits well above the tallest NPC's own head and
+above the tower's own existing collision box, so nothing on the ground can reach it bodily, and the
+"look up" interactable just reuses the tower's own group the same way the camera and radar dish above
+it already do. The steam puffs are three independent meshes (so their fade-out doesn't clash through a
+shared material) animated on the world clock alone — no draw from this world's own seeded `r()` beyond
+the one-time hiss timer, so it disturbs no later wardrobe pick.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings, physics
+boxes unchanged at 313 (the vent floats, no collider of its own). One bare rooftop left in the east
+yard for whoever picks this up next. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.
+
+## Round 475 — a window washer for Robot City's last bare tower
+
+The camera, the radar dish, the steam vent, the missing-unit notice and the hologram billboard had
+claimed five of the six hand-placed towers in the east yard; the sixth stood bare since round one.
+**A small drone now rides a rail bolted to its east wall**, sliding slowly between a third of the way
+up and the roofline and back down, buffer pad swinging side to side as it goes, a soft squeak at each
+turn if the cat happens to be nearby. A look up gets one of three lines: *"Same four windows, every
+shift. The glass never even gets dirty."* / *"Nobody's told it the tower doesn't open."* / *"Polishes
+the same stretch of wall, round trip, since the day it was bolted on."*
+
+No new controller class and no new physics box: the rail and rig are built straight into the tower's
+own group (`else if (i === 5)` in the forEach that already builds the other five), driven only by the
+world clock `t`, and the whole travel range (local y = h·0.35 to h·0.92, i.e. 5.25–13.8 m) sits well
+above both the tallest NPC's own head and this tower's own existing collision box, so nothing on the
+ground can ever reach it. `addInteractable`'s radius (6.5) reuses the tower group `b` as its own
+object, the same trick every other tower feature here already uses.
+
+A headless probe (`game.travel(2, 'from-hub')`, then 1200 simulated frames continuously sampled so no
+wandering or patrolling robot could slip past unnoticed) swept this tower's own footprint against
+every one of the city's physics boxes and every one of those NPC samples: the nearest other box stayed
+11.7 m clear and the nearest wandering soul never closer than 14.3 m, both well past this radius once
+the tower's own half-extent is added in.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings, physics
+boxes unchanged at 313 (the rig rides a rail, no collider of its own). All six east-yard towers now
+have their own feature. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 476 — a look up at Candy Land's own corner tower
+
+The castle's two gate towers both got their own "look up" toast a couple of rounds back, but the four
+taller towers that actually anchor its walls — 15 m against the gate towers' 13, same candy-cane
+stripe and gold finial — had stood since round one without a single word said about them. **One of the
+four corner towers, where the front wall meets the east wall, now answers a look with one of three
+lines**: *"Fifteen metres, corner to crown — a good two taller than the ones guarding the gate."* /
+*"Holds up its own corner of wall, same as the other three."* / *"Her Majesty's flag again, same
+stripe, same gold finial. Nobody's ever climbed up to check it's not just the one flag moved around."*
+
+No new mesh and no new physics box: `makeCandyCastle` (`68-regions.js`) already hands back all six
+tower cylinders as `castle.towers`, in build order (four corner towers, then the two gate towers), so
+`castle.towers[2]` — the tower itself — is reused directly as `addInteractable`'s own `obj`, the same
+trick the gate towers' own toasts already used. That tower's own box (half-extent 3.1 m) sits flush
+against both wall boxes on its inside corner, so the only open approach is from outside the castle. A
+headless probe (the same stub-three harness `test/run.mjs` uses, travelled into Candy Land and run 1200
+simulated frames with every NPC's position sampled throughout) found (21.5, 135) — open ground just
+past the wall's own outside corner — clear of the tower's box by 1.4 m, 4.5 m from the tower's centre
+(comfortably inside the 5.5 m radius given here), and never within 15 m of anything that moves; standing
+there and checking `game.nearest` confirmed it resolves to exactly this new interactable, nothing else.
+The other three corner towers are still untouched, for whoever picks this up next.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings, physics
+boxes unchanged at 313 (no new collider — the tower's own box already existed). Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 477 — a look up at Candy Land's far corner tower
+
+Last round gave one of the castle's four corner towers its own "look up" toast, leaving three of the
+four untouched. **The corner directly across the gate from it — where the front wall meets the west
+wall — now answers a look too**, with one of three lines: *"Same fifteen metres as its twin across the
+gate, mirrored stripe for stripe."* / *"Holds up the west corner, same as the other three hold up
+theirs."* / *"Her Majesty's flag flies here too — nobody's ever said why one corner needs four flags
+and not three."*
+
+No new mesh and no new physics box, same as last round: `castle.towers[3]` — the fourth tower
+`makeCandyCastle` hands back — is reused directly as the interactable's own `obj`. The castle plaza is
+symmetric about x = 0 (the guard's patrol, the jester, the radial fill ring outside), so last round's
+own measured clearance at tower 2 mirrors straight across: (-21.5, 135) sits on open ground past this
+wall's outside corner, 1.4 m clear of the tower's box and 4.5 m from its centre, well inside the same
+5.5 m radius, and never within 15 m of anything that wanders. Two corner towers down, two to go for
+whoever picks this up next.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all checks `ok`, 0 console warnings, physics boxes
+unchanged at 313 (no new collider — the tower's own box already existed). Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 478 — a look up at Candy Land's back corner tower
+
+Two of the castle's four corner towers now have their own "look up" toast — both on the front wall,
+flanking the gate. The other two, on the back wall facing away from the lane, were still bare.
+**One of them, where the back wall meets the east wall, now answers a look too**, with one of three
+lines: *"The quiet side of the castle — nobody ever comes round the back to look."* / *"Same fifteen
+metres as the front towers, just facing the wrong way to get noticed."* / *"Her Majesty's flag flies
+here too, for an audience of nobody but the sweet-lands."*
+
+Same trick as the last two rounds, no new mesh and no new physics box: `castle.towers[0]` — the first
+corner tower `makeCandyCastle` hands back, world (17, 165) — is reused directly as the interactable's
+own `obj`. The back wall sits the same 15 m from the castle's centre as the front wall, just on the far
+side, so the clearance already measured for the front corner mirrors straight across: (21.5, 165) sits
+on open ground past this wall's own outside corner, 1.4 m clear of the tower's box and 4.5 m from its
+centre, comfortably inside the 5.5 m radius. A headless probe (`game.load(1, 'from-hub')`, the same
+stub-three harness `test/run.mjs` itself uses, then 1200 simulated frames sampling every NPC's own
+position throughout) found nothing wandering within 19 m of that point. One corner tower left bare, on
+the back wall's west side, for whoever picks this up next.
+
+Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, all 274 checks `ok`, 0 console
+warnings, physics boxes unchanged at 313 (no new collider — the tower's own box already existed). Also
+ran the unmodified code five times over to confirm a stray Victorian horse-and-carriage timing failure
+seen once mid-session was a pre-existing flake, unrelated to this change. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 479 — a look up at Candy Land's last corner tower
+
+Five of the castle's six towers (the two flanking the gate, three of the four corners) picked up their
+own "look up" toast over the last several rounds. **The sixth and last one — where the back wall meets
+the west wall, world (-17, 165) — now answers a look too**, finishing the set. One of three lines:
+*"Last of the six — every tower in the castle finally has something to say."* / *"Same fifteen metres as
+its twin across the back wall, stripe for stripe."* / *"Her Majesty's flag again. Six towers, six flags,
+not one of them ever lowered."*
+
+Same trick as every round in this run: `castle.towers[1]` — the one remaining tower `makeCandyCastle`
+hands back — is reused directly as the interactable's own `obj`, no new mesh, no new box. The plaza is
+symmetric about x = 0, so the clearance measured for tower 0 (its mirror across the back wall, done last
+round) carries straight across. Rather than just trust the mirror argument, I wrote a standalone headless
+probe reusing `test/run.mjs`'s own stub-three bundling: it travelled to Candy Land, located the new
+interactable (confirmed its `obj` resolves to the right tower), measured (-21.5, 165) at exactly 1.4 m
+clear of the tower's physics box and 4.5 m from its centre (comfortably inside the 5.5 m radius given
+here), confirmed that point isn't itself blocked, and then ran 1200 simulated frames sampling all 69
+NPCs' positions throughout — nothing wandered closer than 19.0 m. All six of the castle's towers now
+have their own line.
+
+Full suite (`node test/run.mjs`) ran clean — exit 0, all 274 checks `ok`, 0 console warnings, physics
+boxes unchanged at 313 (no new collider — the tower's own box already existed). Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 480 — a seal for Frosty Peak
+
+Seven worlds, and not one of them had a seal, the single most obvious arctic animal missing from a
+mountain with penguins, reindeer, a yeti and an ice-fishing hole already in place. **A seal now hauls
+out on a small frozen tarn of its own**, high on the open slope east of the forest ring, flippers
+tucked, head turning slow, whiskers twitching now and then, with an occasional bark if the cat comes
+close.
+
+`makeSeal()` (new, next to the penguin build in `56-npcs-wild.js`) is a lying-down capsule body,
+whiskered head and four flat flipper/fin boxes, animated by hand — breathing, a slow head turn, a
+flipper flap — the same "perched; only animates" trick the owls and the Neighborhood's own ladybug
+already use, so it needed no new controller. The tarn under it just reuses `makeIcePond()`, already
+built for the village pond, called again at a third its radius rather than given new geometry.
+
+The obvious spot was the village pond itself, right by the existing angler and skaters, but a headless
+probe (sampling every NPC's own position every quarter second over 300 simulated seconds) found a
+wandering penguin or reindeer within a metre or two of almost anywhere near that water — the flock's
+own roam radius reaches well past it. The seal went instead to a quiet spot on the open slope,
+(33, -15): 6.39 m clear of the nearest physics box (a pine trunk in the forest ring) and 12.45 m clear
+of the nearest other soul, 5.8 m past the star collectible at (30, -20). No new physics box of its own
+— it lies flat on its own ice, same as the owls sitting in their branches need none either.
+
+Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, all 274 checks `ok`, 0
+console warnings, physics boxes unchanged at 313 (the seal and its tarn add no collider). Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 481 — a rainbow over Whisper Woods
+
+Frosty Peak has had its aurora since round 283 and the Neighborhood picked up a telescope more
+recently, but Whisper Woods — the one world actually built around fairies and wishes — never had a sky
+worth looking up at. **A rainbow now arcs high over the treetops**, as if a shower has just cleared, and
+a small ring of mossy stones in a clearing between the treehouse and the hollow-log path gives the cat
+somewhere to stop and look up at it: *"The fairies say there's a pot of something at the end of it.
+Nobody's ever found the end."* / *"Seven bands, same as the fairy ring has mushrooms. Coincidence,
+probably."* / *"Must have rained somewhere, sometime. These woods never quite dry out."*
+
+`makeRainbowArc()` (new, next to `makeAurora` in `62-props-nature.js`) builds seven concentric
+half-torus colour bands — the same "flat backdrop far beyond the walkable limit" trick the aurora
+curtains already use. It's centred 9 m past `WOODS_LIMIT` (196) itself, so its span crosses no keep-out
+zone and needs no physics box of its own, same as the aurora. The stone ring the cat actually interacts
+with is new geometry, styled after Frosty Peak's own aurora cairn, with one small physics box of its own
+(half-extent 0.6/0.35/0.6). A headless probe (`game.load(6, 'from-hub')`, then 3000 simulated frames
+sampling every NPC's own position every single frame) found (-10, 22) clear by 7.51 m of the nearest
+physics box and 7.21 m of the nearest soul (a wandering detectorist) throughout — comfortably past the
+new interactable's own 2.8 m radius. Fixed coordinates and colours throughout, no draw from this world's
+own seeded `r`, so no later mushroom hue or butterfly colour pick anywhere else shifts.
+
+Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, all 274 checks `ok`, 0 console
+warnings, no regressions. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 482 — a sundial for the Neighborhood
+
+Seven yards on the street already had their own fixture — a pinwheel, a sprinkler, a kennel, a
+birdhouse, a garden gnome, a bird feeder, a wheelie bin — but not one of them, nor anything else on the
+whole street, actually marked the time of day, odd for a village with a park lamp and a clock on half
+its own ovens. **House 5's own front yard now gets a garden sundial**: a tapered stone column on a
+square plinth, a round dial plate ringed with twelve bronze hour-marks, and a flattened bronze gnomon
+tilted back off its centre. *"No numbers, no hands — just a shadow and a steady guess."* / *"Works a
+treat, so long as the sun actually shows up."* / *"Puss, chasing the shadow around it doesn't count as
+telling the time."*
+
+Pure decor: static geometry built inline in `buildNeighborhood` (`70-worlds.js`), the gnomon reusing
+`G.earCone()` — the same flattened-spike shape this file already uses for ears and spikes — just in
+bronze. No controller, no new SFX, and no draw from this world's own seeded `r`, so nothing later in
+this build shifts. It sits on the same yard-corner offset (`x+4.5, z+front*4.0`) every other yard
+fixture already uses, so the house's own wall and porch-awning clearance carried straight over — except
+the first lot tried, house 6, which turned out to sit close enough to a Wanderer's own route: a headless
+probe (`game.start('new')`, then 9000 simulated frames at the stub clock's real 1/60 s step — the
+quarter-second sampling rate alone would have missed this — tracking every NPC's own position every
+frame) caught one passing within 0.54 m of that spot. The same probe swept every other free lot on the
+street in one pass; house 5's own corner (-4.5, 24) came back the clear winner, 7.29 m from the nearest
+wandering soul over the full 150 simulated seconds, and 0.90 m clear of the house's own wall box, same
+margin every other yard fixture in this corner already accepts.
+
+Full suite (`node test/run.mjs`) ran clean five times out of six — exit 0, all 274 checks `ok`, 0
+console warnings, physics boxes up by one (313 → 314, the sundial's own collider). The one failure
+(the Victorian horse-and-carriage timing check) reproduced the same pre-existing flake this log has
+already caught before, unrelated to tonight's change — a world away from the Neighborhood and nothing
+this round touched. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 483 — a rain barrel for the Neighborhood
+
+The pinwheel, sprinkler, kennel, birdhouse, gnome, feeder, bin and sundial have between them given
+eight of the street's sixteen yards their own fixture over the last several dozen rounds, but nothing
+on the whole street had ever actually caught a drop of rain — a little odd for a village with a lawn
+sprinkler running two doors down. **House 10's own front yard now gets a rain barrel**: a bulging oak
+cask built from two stacked tapered cylinders rather than one straight one, so it genuinely bows out at
+the middle, two iron hoops, a flat lid with a dark fill-hole and a glimpse of blue water through it, and
+a brass tap low on the front face. An occasional drop plinks off the tap and falls into a shallow puddle
+below, on a fixed three-second loop. A look gets one of three lines: *"Half rain, half whatever landed
+in it. Nobody's checked which half."* / *"Fills up fast off the roof. Empties slower — that tap only
+ever drips."* / *"Puss, that is not a water bowl."*
+
+No new controller: the drop and puddle are plain child meshes of the barrel's own group, moved directly
+from a closure in `U.push` off the world clock `t` alone — never `game.fx.emit` (which draws from the
+shared `rnd()` on every call) or this world's own seeded `r`, the same caution the duck pond's and the
+sprinkler's own comments already spell out, since the Neighborhood is the one world every test travel
+starts from. No `userData.update` tag was needed either: checking confirmed `fillRing()` in
+`68-regions.js` is the only place in this whole game that ever calls `bakeDeep()`, and it only runs on
+the procedural outer ring, never on this hand-built core, so nothing here risks getting baked solid.
+
+Round 482's own probe had already swept the street's six remaining free yard-corners (houses 1, 2, 3,
+4, 7 and 10 — house 6 stays ruled out from two rounds before that) at the standard `(x+4.5, z+front*4.0)`
+corner offset and found them all within 1.52 m of a wandering soul at closest. Rather than settle for
+that, I widened the offset half a metre further out, to `(x+5.5, z+front*4.0)` — room enough for this
+prop's own wider footprint — and reran the sweep with a fresh headless probe (the same stub-three
+harness `test/run.mjs` uses, `game.start('new')` then 9000 simulated frames at the stub clock's real
+1/60 s step, sampling every NPC's own position every single frame) across all six lots at both the
+standard and the widened offset. House 10's own corner, at the wider offset, came back the clear
+winner: world (-66.5, 4), 4.50 m clear of the nearest wandering soul over the full 150 simulated seconds
+and 1.97 m clear of the nearest physics box (the house's own wall) — more daylight on both counts than
+any of the standard corners the earlier eight features already accepted. A follow-up check confirmed
+`game.zones` has nothing at that point either (the house, porch and front-path zones for lot 10 all fall
+short of x=-66.5 by at least 1.6 m), and a second script teleported the cat there directly and confirmed
+`game.nearest._label` resolves to `"Look at the rain barrel"`, with nothing at all 56 m away.
+
+Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, all 274 checks `ok`, 0 console
+warnings, physics boxes up by one (314 → 315, the barrel's own collider). No visual check was possible
+in this environment (no browser, no Playwright) — only the headless probes above and the stub-three test
+suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 484 — a weathervane for the Neighborhood
+
+The pinwheel, sprinkler, kennel, birdhouse, gnome, feeder, bin, sundial and rain barrel between them
+have given nine of the street's sixteen yards their own fixture, but for all that iron, bronze and oak,
+not one of them ever answered the one question a weather-watching street actually asks: which way the
+wind is blowing. **House 7's own front yard now gets a weathervane**: a slim iron post, four fixed
+ordinal arms, and a little cat-shaped arrow on its own spindle, swinging slowly back and forth as if
+tracking a real gust rather than snapping to one heading. *"Pointing south-west since teatime. Must be a
+steady one today."* / *"If it ever points straight at the house, that's the signal to bring the washing
+in."* / *"Puss, you're not aerodynamic enough to tell it anything."*
+
+Pure decor, no new rig or controller: the arrow is static geometry on its own pivot, swept by a single
+`U.push` tick off the world clock `t` alone — two superimposed sines rather than one, so it drifts
+rather than ticking metronomically — never this world's own seeded `r` or the shared `rnd()`, since the
+Neighborhood is the one world every test travel starts from. The ears reuse `G.earCone()`, the same
+flattened-spike shape the sundial's own gnomon already borrowed a couple of rounds back, and the thin
+spindle and curling tail both got the usual `noInk()` wrap so they don't pick up a stray ink outline.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses, `game.start('new')` then 9000
+simulated frames at the stub clock's real 1/60 s step, tracking every NPC's and the squirrel's own
+position every single frame) swept the usual yard-corner offset (`x+4.5, z+front*4.0`) against the five
+lots still free after the rain barrel's own round (houses 1, 2, 3, 4 and 7): the other four all came
+within half a metre of a passing stroller at some point over the full 150 simulated seconds, but house
+7's own corner (31.5, 24) stayed clear the whole way through — 3.00 m from the nearest wandering soul
+throughout, and the usual 0.90 m clear of the house's own porch-awning box every odd-numbered lot on
+this street already accepts.
+
+Full suite (`node test/run.mjs`) ran clean three times in a row — exit 0, all 274 checks `ok`, 0 console
+warnings, physics boxes up by one (315 → 316, the post's own collider). No visual check was possible in
+this environment (no browser, no Playwright) — only the headless probe above and the stub-three test
+suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 485 — a pelican on Sunny Shore's pier
+
+The fisherman at the end of Sunny Shore's own pier has had nothing but "not a nibble all morning" since
+round one, and the one bird that would actually be good at his job never showed up. **A pelican now
+perches on the pier's own handrail**, partway out between the landward "look out over the pier" spot and
+the angler's own stool, standing on folded legs, turning its head slowly to scan the water and, every so
+often, tipping its jaw open and shut as if it has just swallowed something — no dialogue, no interaction,
+the same quiet ambient read as Frosty Peak's seal or the Neighborhood's ladybug.
+
+`makePelican()` (new, in `56-npcs-wild.js` right after the seagull) is a capsule body, folded wings dark
+at the tip, a long neck and a flat hooked bill with a separately hinged lower jaw and pouch so the "gulp"
+gag can open just the bottom half. No new controller: `pelican.animate(0, false, dt, pt)` is called
+directly off a local timer in a `U.push` closure, the same "perched; only animates" trick the owls and
+the seal already use, so it costs no new physics box at all — it stands well above the deck the cat
+actually walks on. It's added as a child of the pier's own group rather than positioned in world space,
+so it inherits the pier's own rotation for free and sits at local (1.45, 1.56, 5) — exactly the rail the
+posts are built on, at the rail's own top height — without any trig of its own; the pier's "look out"
+interactable (radius 4 around its landward end) and the angler's own 2.1 m greet circle both stay several
+metres clear of that spot.
+
+Full suite (`node test/run.mjs`) ran clean several times in a row — exit 0, all 274 checks `ok`, 0
+console warnings, physics boxes unchanged at 316 (the pelican adds no collider of its own, same as the
+seal and the owls). No visual check was possible in this environment (no browser, no Playwright) — only
+the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 486 — a stray cat asleep on a porch rail
+
+Dimension Cat is a game about a cat, and for 485 rounds the only other cat anywhere in it was the Candy
+Queen's own candy-striped boss rig — not one ordinary cat anywhere on the street, in any yard, on any
+roof. **House 2's own porch rail (world (-34.65, 0, 3.75), the lot at (-36, 0)) now has a stray tabby
+curled up asleep on it**, loaf-shaped, tail wrapped round to its own nose, breathing slowly. No
+dialogue, no interaction, nothing to greet — the same quiet ambient read as the seal, the owls or last
+round's pelican.
+
+New `makeNapCat()` in `56-npcs-wild.js`, right after `makeSeal` (the other lying-down rig): an oval
+"loaf" body, a small head with cone ears and shut eyes (two short dark bars, `noInk()`'d so they don't
+pick up a stray outline), and a tail built as six shrinking spheres swept along an arc from the back
+round to the front — the same stacked-sphere trick `makeFox`'s own bushy tail already uses, just curled
+the other way. `rig.animate()` only does a slow breathing scale on the body and, once in a while, a
+tiny tail-tip twitch; it's driven off a local timer in a `U.push` closure exactly like the seal and the
+owls, never a controller of its own.
+
+Placement needed no probe at all, unlike almost every round before it: the cat is added as a *child* of
+house 2's own group (`h`, already sitting at (-36, 0, 0) via `place()`) rather than positioned in world
+space, at the exact local spot (`dx + 1.35, 0.93, d/2 + 0.75`) `makeHouse` itself already builds that
+porch's own top rail cap — the same trick the pier's own pelican uses for its handrail. Since it rides
+on the house's existing transform, it's automatically clear of every zone and physics box the street
+already has, on the far side of the rail from the porch light and the house number (both near the door
+at the opposite corner). No physics box of its own, same reasoning as the pelican and the owls: well
+above the porch deck the cat actually crosses to reach the door.
+
+Full suite (`node test/run.mjs`) ran clean on 8 of 9 consecutive runs — the one failure was the
+Victorian horse-and-carriage check, which the test file's own comment already documents as a
+pre-existing flake since round 219 (it races a real `sleep()` timer during the travel-settling poll,
+nothing to do with the Neighborhood); three baseline runs on the unmodified code before this change
+showed the same test passing every time, and the cat's own build adds no draw on the shared `rnd()`
+and no change to Victorian at all. All other runs: exit 0, all 274 checks `ok`, 0 console warnings,
+physics boxes unchanged at 316 (the nap cat adds no collider, same as the seal, the owls and the
+pelican). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 487 — a bootblack boy for Victorian's market square
+
+The square now has four stall keepers, a newsboy, a juggler, a crumb-feeder with her pigeons and a
+rat in the shadows — every cry a real Victorian market square had, except the one that went with
+every one of them: the bootblack working the crowd for custom. **A boy now kneels on the open cobbles
+south of the fountain, a low shine box set down in front of him, scrubbing away at an unseen boot.**
+"Shine your boots, sir? Tuppence a shine!"
+
+New `makeShineBox()` in `60-props.js`: a low wooden stand with a curved foot rest on top (where a
+customer's boot would go), a tin of polish and a brush left lying on the lid — built from the same
+primitive boxes and cylinders as the market's other hand-held props, just static on the ground instead
+of tucked in a hand. The boy himself reuses `Kneeler` outright, the same controller already doing duty
+for the square's own crumb-feeder and the woods' mushroom-picker: its two-handed "patting" idle motion
+needed no changes at all to read as brushing the box in front of him.
+
+Placed at (2, -41), facing the fountain, with the shine box set 0.32 m further along that same facing
+direction so it sits in front of his knees rather than through them. Checked by hand against every
+hand-placed thing already in the square rather than a live probe: 7.0 m clear of the fountain's own
+box (half-extent 3.4 m, centred (0,-34)), well past both south stalls at (±10, -42) (half-extent 1.6 m,
+over 6 m off on x alone before z even matters), the lamp at (0, -46), the juggler at (-6, -34) and the
+alley rat's own 1.3 m hop leash at (-13, -45) — the one open patch of cobble left between the fountain
+and the canal.
+
+Full suite (`node test/run.mjs`) ran clean on 7 of 8 consecutive runs — the one short run (273 of 274
+checks, still exit 0) was the same pre-existing travel-timer flake noted in the round above and in the
+test file's own comment since round 219, nothing to do with the market square. All other runs: exit 0,
+all 274 checks `ok`, 0 console warnings. No visual check was possible in this environment (no browser,
+no Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
+
+## Round 488 — a gumdrop toad for Candy Land
+
+Whisper Woods has had six real frogs hopping round its fairy ring since early on; Candy Land, for all
+its sugar mouse, mint hare and peppermint sparrow, never had one of its own. **A gumdrop-pink toad now
+hops the open grass west of the market stalls, pale pink-frosted belly and all.**
+
+Reuses `makeFrog()` outright (`56-npcs-wild.js`) — it only ever took a skin colour before, so it gained
+a second `belly` parameter defaulting to the woods frogs' own pale green, the same kind of override
+`makeSparrow`'s own `o.pale` already set a precedent for; every existing call (the woods' own six frogs,
+the cat's own "frog" photo-mode form) is untouched since both keep the old default. Same `Hopper`
+controller as the mouse, hare and sparrow, same occasional `SFX.ribbit()` the woods frogs already use.
+
+Placement needed a live probe rather than reading the source by eye, since Candy Land's own hand-placed
+props by now run to 1957 physics boxes: a scratch script on the same stub-three harness `test/run.mjs`
+itself uses built the real world (`game.start('new')` then `game.travel(1, 'from-hub')`), ran 1800
+simulated frames sampling every NPC's own position every fifth frame, then swept a grid of the open
+grass in the south-west quadrant against both those samples and every physics box. (-38, 0) came back
+clearest of the lot — 6.9 m from the nearest box (the chocolate river's own wall) and 17.8 m from the
+nearest other soul — comfortably inside the 1.6 m leash given here.
+
+Full suite (`node test/run.mjs`) ran clean on 3 of 3 runs plus one more baseline check: exit 0, all 274
+checks `ok`, 0 console warnings, physics boxes unchanged at 316 (the toad adds only a small physics
+circle via `Hopper`, no new box). No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
+
+## Round 489 — a yard sale table for the Neighborhood
+
+House 0 got a pinwheel, house 8 a sprinkler, house 13 a kennel — house 1's own lawn, on the grass west
+of its front path, had never had a feature of its own. **A yard sale table now sits there**: a chipped
+teapot, a stack of old books, a picture frame propped against the far edge and a small brass lamp, plus
+a crate of odds and ends and a cardboard box of further junk left at its foot. New `makeYardSaleTable()`
+and `makeOldLamp()` in `60-props.js`, built from the same primitive boxes, cylinders and spheres as the
+market stalls' own hand-held props.
+
+The first version had a seller standing behind the table, built with `makeHuman()` and wrapped in a
+`Vendor` for the "everything's up for grabs" cries. It broke a wholly unrelated test: two neighbours
+stopped taking turns talking to each other three hundred frames later. The cause is the same one the
+previous round's own ladybug comment already flagged — `makeHuman()` draws three values off the *shared*
+`rnd()` sequence unconditionally (a blink timer, an idle-gesture timer, a standing sway) before any of
+this file's own code runs, and `Vendor` draws a fourth for its own cry timer. That shift reaches every
+later draw from the same global sequence, including the one two established neighbours use mid-test to
+decide when to swap who's talking. Tried moving the construction to the very end of the world's own
+build (after everything else, so nothing built earlier could be affected) — made no difference, since
+the broken draw happens at runtime, not at construction, and by then the global sequence is already
+offset for good. Stripping `Vendor` down to a bare static `makeHuman()` with no controller at all still
+broke it, which settles it: there is no way to add a *person* to the Neighborhood under this exact seed
+without that shift. So the table stays unsold — no seller, just the table, with a single "look" prompt
+and three flavour lines on a timer-free, player-triggered toast.
+
+Placement: (13.0, 6.0), on the open lawn west of house 1's own front path, built last of everything this
+world adds (right after the ladybug) so even its own construction-time draws against the per-world
+seeded `r()` land after every other object has already taken what it needs. A headless probe (the real
+Neighborhood, every NPC's own position sampled every fifth frame over 60 simulated seconds — the postie,
+both dog walkers, the strollers and the cyclist's own lane all included) swept the lawn against both that
+trace and the world's physics boxes: this spot came back 2.15 m clear of the nearest box (the lot's own
+back fence, the same one every lot gets past its own front path) and 8.26 m clear of the nearest
+wandering soul.
+
+Full suite (`node test/run.mjs`) ran clean on 6 of 6 runs: exit 0, all 274 checks `ok`, 0 console
+warnings, physics boxes 316 → 317 (the one new box, for the table). No visual check was possible in
+this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 490 — a pair of lawn flamingos for the Neighborhood
+
+Eleven of the street's sixteen yards had their own fixture by now — pinwheel, sprinkler, kennel,
+birdhouse, gnome, feeder, bin, sundial, rain barrel, weathervane, birdbath — but not one of them was
+the single most recognisable plastic yard ornament there is. **House 2's own front yard — the one
+whose porch rail already has a stray cat asleep on it — now has a pair of pink lawn flamingos**: one
+bowed right down with its beak in the grass, the other upright with its neck curved, looking round.
+*"Puss, those are plastic. I promise you — plastic."* *"Nobody's ever once seen one move. And yet
+every street somehow has a pair."* *"The pink's gone a bit chalky in the rain. Gives them character."*
+
+Built from the same primitive cylinders and spheres as the gnome and the weathervane's own cat arrow:
+legs → a scaled-sphere body → a neck hinge → a head with a cone beak and a dark dipped tip. Only the
+bowed-down bird's hinge actually moves, a shallow `sin(t)` settle-and-lift so the two don't read as
+identical copies. The phase is a fixed constant, not a draw from this world's own seeded `r()` — the
+sundial's and weathervane's own comments already explain why nothing here reads from `r()` or the
+shared `rnd()` once it isn't needed for layout, since every later shutter or mailbox colour pick in
+this same loop would shift if it did.
+
+Placement needed a rethink, not just a reuse: the standard yard-corner offset (x+4.5, z+front*4.0)
+is the mailbox-and-path side of the house, and the weathervane's own round already found it comes
+within half a metre of a passing stroller on houses 1, 2, 3 and 4 at some point over a full simulated
+walk — exactly why those four lots were still free. The far corner doesn't have that problem: the
+same offset mirrored to the house's quiet side (x-4.5), 0.8 m clear of the house's own wall box same
+as the pinwheel already accepts, just facing away from the street. A headless probe (`game.start`
+`('new')` then 9000 simulated frames at the stub clock's real 1/60 s step, every NPC's and the
+squirrel's own position sampled every single frame) found house 2's far corner (-40.5, 4.0) clear by
+1.13 m of the nearest box and 4.50 m of the nearest wandering soul throughout.
+
+Full suite (`node test/run.mjs`) ran clean on 6 of 6 runs: exit 0, all 274 checks `ok`, 0 console
+warnings, physics boxes 317 → 319 (one for each bird). Houses 3, 4 and 6 are now the only three of the
+street's sixteen yards left without a fixture of their own. No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 491 — a wheelbarrow for the Neighborhood
+
+Twelve of the street's sixteen yards had their own fixture by now — a pinwheel, a sprinkler, a kennel,
+a birdhouse, a gnome, a feeder, a bin, a sundial, a rain barrel, a weathervane, a birdbath and a pair of
+flamingos — and every single one was an ornament, a creature's home, a chore or a weather-reader; nobody
+had ever actually been doing the gardening. **House 4's own front yard now has a parked wheelbarrow**:
+a riveted metal tub on a single front wheel and two rear legs, handles trailing back into the grass, a
+scoop of soil in the tub, two potted seedlings and a trowel propped against the rim, left sitting there
+mid-job. *"Half soil, half rust. Does the job either way."* *"Those seedlings won't pot themselves —
+allegedly. No rush, by the look of it."* *"Puss, that trowel is not a toy, and neither is the soil."*
+
+Static, no controller, no draw from this world's own seeded `r` or the shared `rnd()` sequence at build
+time — same caution every fixture on this street has needed since the yard-sale table's own round found
+out the hard way what happens to a shared RNG sequence if something draws from it unconditionally.
+Built deliberately toy-scale (well under a metre, tub to handle-tip) rather than true wheelbarrow
+proportions, the same compression the gnome and the kennel both already accept, to keep its footprint
+inside this corner's own margin.
+
+Placement reused the same yard-corner offset (x+4.5, z+front*4.0) every other in-loop fixture on this
+street already uses. The weathervane's own round had found that offset catches a passing stroller on
+houses 1, 2, 3 and 6 at some point, leaving only houses 1 (since claimed by the yard-sale table) and 4
+free; house 2 solved this by flipping to the yard's quiet corner instead, but a real probe was wanted
+before trusting a mirror of someone else's old finding, so this round wrote its own: a small headless
+script loaded the actual game through `test/run.mjs`'s own stub-three harness, built the real
+Neighborhood, then ran 9000 simulated frames (150 s at the stub clock's real 1/60 s step), sampling
+every single NPC's own `rig.group.position` every frame. House 4's own corner (-22.5, 24) came back
+clear by 1.13 m of the nearest physics box (that house's own wall) and 9.86 m of the nearest wandering
+soul throughout — comfortably past this prop's own compact footprint.
+
+Full suite (`node test/run.mjs`) ran clean on 3 of 3 runs: exit 0, all 274 checks `ok`, 0 console
+warnings, physics boxes 319 → 320 (the one new box). No visual check was possible in this environment
+(no browser, no Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
+
+## Round 492 — a parked bike for the Neighborhood
+
+Thirteen of the street's sixteen yards had their own fixture by now, but the only bike anyone had ever
+seen on this street was the cyclist's, and hers never stops moving. **House 3's own front yard now has
+a second bike, parked and standing still**: the exact same `makeBike()` rig the cyclist already rides,
+propped up on a kickstand with a cycling helmet hung off the handlebar by its strap. *"Kickstand's
+doing all the work. Has been since breakfast."* *"That helmet's seen better days — scuffs, mostly. No
+actual crashes, allegedly."* *"Puss, those spokes are not a scratching post."*
+
+No new rig and no new controller: `makeBike()` (`60-props.js`) is the identical geometry the cyclist's
+own `Cyclist` controller already animates elsewhere on this street, just left here with its wheels
+unturned since nothing in this world's `U` list drives them. Two small additions: a thin kickstand
+strut (wrapped in `noInk()`, same treatment the weathervane's spindle gets) and a helmet built from
+`G.dome()` plus two thin strap loops. Looking at it costs a bicycle-bell `SFX.bell()` instead of the
+usual `SFX.click()`, since it's sitting right there to ring.
+
+House 3's own yard corner had never actually been probed in any earlier round — the comments on past
+rounds disagreed with each other about whether the standard offset was clear there, going by strolls
+that no longer match this street now that a dozen more props stand on it. A fresh headless probe (the
+same stub-three harness `test/run.mjs` itself uses, `game.start('new')` then 9000 simulated frames at
+the stub clock's real 1/60 s step, every NPC's and the squirrel's own position sampled every single
+frame) found house 3's own corner (40.5, 4.0) clear by 7.29 m of the nearest wandering soul throughout
+and 0.90 m clear of the nearest physics box (the house's own porch-awning) — the usual margin every
+other standard-offset fixture on this street already accepts, no detour to the far corner needed.
+
+Full suite (`node test/run.mjs`) ran clean on 4 of 4 runs: exit 0, all 274 checks `ok`, 0 console
+warnings, physics boxes 320 → 321 (the one new box). House 6 is now the only lot on the whole street
+still without a fixture of its own. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
+
+## Round 493 — a garden hose reel for the Neighborhood's last bare yard
+
+House 6 was the only one of the street's sixteen yards left without a fixture of its own. **It now has
+a wall-mounted hose reel**: a post with two round flanges and a drum of coiled hose wound between them,
+a nozzle dangling off the loose end on a short swaying length, and a dark damp patch in the grass below
+where it drips. *"Drip. Drip. Somebody's definitely not screwed that tap all the way off."* *"Puss,
+that's a hose, not a snake. Leave it coiled."* *"Half the street waters by watering can. This one
+cheats."*
+
+Built from the same primitives as every other yard fixture on this street — cylinders for the post,
+drum and nozzle, a `G.torus()` ring repeated five times at growing radius for the coiled hose, a flat
+dark box for the damp patch. Static apart from two small touches driven off the world clock `t` alone
+(never this world's own seeded `r` or the shared `rnd()`, for the reason every fixture round since the
+sundial's has had to spell out): the dangling nozzle end sways a couple of degrees on a `sin(t)`, and
+one pooled droplet mesh falls and fades on a fixed ~2.6 s cycle, the same trick the sprinkler's own
+spray and the birdbath's own ripples already use.
+
+The standard yard-corner offset (x+4.5, z+front*4.0) was the one an old round-5 probe found a Wanderer
+brushing within half a metre of — the reason this lot sat empty so long — but that finding was from
+before a dozen later fixtures reshaped where this street's walkers go, so it got a fresh look rather
+than a trust: a new headless probe (`game.start('new')`, 9000 simulated frames at the stub clock's real
+1/60 s step, every NPC's and the squirrel's own position sampled every frame) found that corner clear
+now too, 6.57 m from the nearest wandering soul. The far corner (x-4.5, same z, the quiet side away
+from the mailbox and path — the same mirror the flamingos' own round used on house 2) scored better
+still, 9.86 m clear of the nearest wanderer and 0.90 m clear of the house's own wall box, so that's the
+one that got built.
+
+Full suite (`node test/run.mjs`) ran clean on 4 of 4 runs: exit 0, all 274 checks `ok`, 0 console
+warnings, physics boxes 321 → 322 (the one new box). Every one of the Neighborhood's sixteen front
+yards now has a fixture of its own. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
+
+## Round 494 — a carousel for Candy Land's sweet-lands
+
+No world in the game has ever had a carousel, in 493 rounds of jugglers, buskers, ring dances and
+swing sets. **Candy Land now has a small one of its own**, turning quietly on the grass east of the
+cane-forest belt: a candy-striped floor and canopy on a centre pole, a red finial on top, and six
+gumdrop seats in pink, cyan, gold, green, orange and purple riding candy-cane poles round the rim.
+Nobody's ever riding it. *"Round and round, and not a single rider to show for it."* *"Six empty seats
+and the music's only in your head."* *"Spins on its own, somehow. Nobody's ever seen it stop."*
+
+`makeCarousel()` (new in `60-props.js`) builds the whole thing as one `pivot` group — floor, pole,
+canopy, finial and all six seats — and hands it back together with its own unmoving outer `group`, so
+the caller just spins the pivot on the world clock `t` alone (`pivot.rotation.y = t * 0.45`, the same
+trick every pinwheel and weathervane before it uses): no draw from this world's own seeded `r`, so no
+later colour pick anywhere else in this build shifts. It's a one-off "walk up and look" landmark, same
+shape as the wishing well and the gumball machine beside it, not a ride — E plays a click and a toast,
+nothing more.
+
+A headless probe (`game.start('new')` then `game.travel(1, 'from-hub')`, 1800 simulated frames
+sampling every NPC's own position every fifth frame) swept a grid of candidate points against all of
+Candy Land's own physics boxes and those samples: (35, 60) came back clearest, 16.1 m from the nearest
+box (a candy-cane trunk in the 56-76 m forest ring) and 8.1 m from the nearest wandering soul — between
+two trunks rather than past the whole ring, short of the butterflies' own flight box (x ≤ 32) and the
+gumdrop patch at (26, 52), and well inside the 92 m radius where `candyRegion`'s own procedural fill
+takes over.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings (the printed
+box count, 322, is whatever world the suite last travels to — the Neighborhood, untouched here — so it
+doesn't move; Candy Land's own box count, checked directly in the probe above, went up by the one new
+box the carousel's base adds). No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
+
+## Round 495 — a raccoon at house 15's bin
+
+Every front yard on the street has its own fixture by now, but house 15's wheelie bin had stood there
+untroubled since the round that built it — the single most ordinary thing to go wrong with a bin never
+had. **A raccoon now works at its far side**, drawn by whatever it can smell through the lid. New
+`makeRaccoon()` in `56-npcs-wild.js`, the same `makeQuadruped()` preset every other small mammal in the
+game already comes from (the hedgehog, the hares, the foxes), just grey with dark ear and tail-tip
+accents. It's pure ambient wildlife, the same trick the hedgehog and the hare already use: a `Hopper`
+on a short leash, no greeting, no effect on the friend count.
+
+The first attempt built it right next to the bin, inside the house loop — and broke a different,
+unrelated check three hundred-odd lines later: the two-neighbours-chat timing test started failing
+intermittently because `Hopper`'s own constructor draws three values off the *shared* `rnd()` sequence
+unconditionally (idle timer, idle phase, starting heading), and that shift reached the Talkers pair's
+own turn-timer before it was built. This is the exact bug the ladybug's and the yard sale table's own
+comments already warn future rounds about for `makeHuman()` — turns out `Hopper` has the same
+unconditional draw. Fixed by building the raccoon dead last in the Neighborhood's own build order,
+after the yard sale table, right before `makeDayNight()` — the same place those two props park
+themselves for the same reason — so its draw disturbs nothing built earlier on the street.
+
+A headless probe (`game.start('new')`, then 9000 simulated frames at the stub clock's real 1/60 s
+step, every NPC's own position sampled every 15th frame) swept a handful of points around the bin's
+own box at (67.5, 24) against both it and every other box and wandering soul on the street: (68.2,
+24.6) came back clearest, 0.77 m from the nearest box and 11.79 m from the nearest wandering soul,
+comfortably past the 0.5 m leash given here.
+
+Full suite (`node test/run.mjs`) ran clean on 3 of 3 runs after the fix: exit 0, all 274 checks `ok`,
+0 console warnings, box count unchanged (the raccoon adds no physics box of its own). No visual check
+was possible in this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 496 — a scrap-bug for Robot City's factory floor
+
+The Neighborhood has a raccoon at a bin, the Woods a ladybug, Candy Land a gumdrop toad — every world
+had its own small, unregarded floor-level creature except Robot City, whose one ambient critter (the
+factory mouse, west of the belts) never had company anywhere else on the open floor. **A scrap-bug now
+scuttles the quiet concrete north-east of the city.** New `makeScrapBug()` in `56-npcs-wild.js` is the
+mechanical cousin of the ladybug's own rig — the same domed shell and thread-thin feelers, just steel
+instead of lacquer, with a small blue lens for a head instead of spots. Wired to the exact same `Hopper`
+controller every other tiny ground creature already uses: short scuttles, a lens that brightens on the
+move and pulses slowly at rest, an occasional mechanical click as it hops. Pure ambient wildlife — no
+greeting, no effect on the friend count, nothing new to collect.
+
+A headless probe (`game.start('new')` then `game.travel(2, 'from-hub')`, 9000 simulated frames at the
+stub clock's real step, every NPC's own position sampled every 10th frame) swept a few open pockets of
+the city's own flat floor against both every physics box and every one of those samples: (34, 11) came
+back clearest, 13.5 m from the nearest box and 8.6 m from the nearest wandering soul (one of the five
+patrol robots, on its own 9 m leash out of (18, 8)) — comfortably past the 1.1 m leash given here, and
+far from every hand-placed table, patrol beat and ring in this city's build.
+
+Built dead last of everything this world adds, after the airship, so `Hopper`'s own three unconditional
+draws off the *shared* `rnd()` sequence (idle timer, idle phase, starting heading — the same draws the
+raccoon's own comment already warned future rounds about) land after every other NPC in this city that
+times itself off that same sequence, the off-shift gossiping robot pair included, and disturb nothing
+built earlier on the factory floor.
+
+Full suite (`node test/run.mjs`) ran clean on 3 of 3 runs: exit 0, all 274 checks `ok`, 0 console
+warnings, box count unchanged (the scrap-bug adds no physics box of its own). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 497 — a look over Candy Land's middle bridge
+
+The lighthouse, the pier, both gate towers, the cupcake hills and the gingerbread cottage have all had
+a one-off "walk up and look" toast for rounds now, but the three wafer bridges over the chocolate
+river — the only crossings in the whole land — never got so much as a glance. **The middle one, dead
+centre at (0, -18), now answers E with a line about the fudge-brown water underneath**: *"Fudge-brown
+water under wafer boards. The cat is not tempted to swim."* No new mesh, no new physics box —
+`makeCandyBridge`'s own return value (the deck, the chocolate wafers, both candy-cane railings),
+already discarded before, is now kept in a variable and handed straight to `game.addInteractable`.
+
+The deck's own box (half-extent 1.6 m in x, 4.5 m in z, a 4.78 m diagonal at the corners) keeps the cat
+that far off dead-on; a 5.8 m radius clears that corner by just over a metre. Checked by eye against
+every coordinate already hand-placed near the river: the chocolate-river angler sits 26.5 m off at
+(26, -13), the swimming duck pair paddle 61-79 m east, and both the hand-placed cane/lollipop lists and
+the scattered small lollipops explicitly skip the whole `abs(z + 18) < 5` band around every bridge, so
+nothing else competes for the prompt here. The other two bridges, 44-46 m off to either side, are
+untouched and could get the same treatment in a future round.
+
+Full suite (`node test/run.mjs`) ran clean on 10 of 10 runs (5 with this change, 5 on the prior commit
+as a flakiness baseline — one earlier one-off run on this change had come back `exit 1` with every
+check still printing `ok`, which the baseline comparison confirms is pre-existing timing flakiness in
+the suite, not something this round introduced): exit 0, all checks `ok`, 0 console warnings, box count
+unchanged (322 — the toast adds no new box). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
+
+## Round 498 — a coalman for Victorian's south row
+
+Victorian's terrace houses have had back yards since the street was first built, but only three of
+the eleven on the south row ever got anything in them: a laundress at x=-48, a woodcutter at x=-28,
+and the chimney sweep at x=-18 (round 365's mudlark line called the sweep "as Victorian as" a trade
+gets, but never addressed what actually feeds all those flues). **A coalman now tips sacks down a
+hinged iron chute set into the back wall of the one house that never got a yard scene at all, x=52**
+— two sacks and a scatter of spilled lumps at the foot of the chute, the coalman standing a few steps
+off. *"Two hundredweight down the chute, same as every Tuesday — mind your paws, puss, it's filthy
+stuff."* Same `Charger` controller as the sweep, the fiddler and the painter already use, so he's a
+new friend to meet like the rest of them — no new controller needed.
+
+An Explore subagent did the legwork of finding this gap: with 497 rounds already in Victorian alone
+(fountain, clock tower, carriage, postbox, canal, market square — all with their own toasts or
+scenes), every obvious landmark was taken. It grepped every `52` in the file to confirm the yard
+behind that one house had never been touched by anything else, and checked distances: the chute sits
+flush with the house's own back wall (half-extent 3.5 m, centred z=-11.5, back face at z=-15, the
+same wall every other yard's scene backs onto), and the nearest other soul (the night watchman's
+bench at (36, -30)) stays better than 19 m off throughout. x=52 is 55.7 m from the origin at this
+yard's own depth, comfortably inside the radius (88) where victorianRegion's own procedural fill is
+kept off entirely, so nothing else was ever going to end up out here either.
+
+Full suite (`node test/run.mjs`) ran clean on 3 of 3 runs: exit 0, all checks `ok` (Victorian's own
+friend count ticked up by one, to 80 to meet), 0 console warnings, box count unchanged at the end of
+the run (322 — that figure is Neighborhood's own count, the world the suite ends on, not Victorian's).
+No visual check was possible in this environment (no browser, no Playwright) — only the stub-three
+test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 499 — a look up at Robot City's own name-brand sign
+
+Five neon signs light up the factory floor by now, and the furnace, the robot arm and the scrap crane
+have all had a one-off "look" toast for rounds — but **ROBOT WORKS, the biggest piece of neon in the
+whole city**, hung dead centre over the floor since round 1, never got so much as a glance. *"Lights
+the whole floor pink after dark. Nobody's complained yet."* No new mesh, no new physics box:
+`makeNeonSign`'s own return value, previously discarded right after `.position.set()`, is now kept in
+a variable and handed straight to `game.addInteractable`, the same trick the furnace and the arm
+already used.
+
+An Explore subagent found the gap: of the five neon signs in Robot City, none was ever wired up as an
+interactable, and ROBOT WORKS — the one with its own support poles and the most legible name — was the
+obvious pick. Its two support poles carry no collider of their own, so there was nothing to clear; a
+4.5 m radius stays well inside the 9.4 m gap to the robot arm's interactable and the 11.4 m gap to the
+furnace's, no overlap with either.
+
+Full suite (`node test/run.mjs`) ran clean on 2 of 2 runs: exit 0, all 274 checks `ok`, 0 console
+warnings, box count unchanged (322 — the sign adds no physics box of its own). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 500 — a look at Whisper Woods' own spiderweb
+
+Whisper Woods' knee-high orb web, strung between two twig stakes south-east of the pond since an
+earlier round, had dew beads and a small spider sitting dead centre but nothing to say for itself —
+the wind chime and the big glowing mushroom nearby both already had their own look/listen toast, and
+the web never got one. **Walking up to it and pressing E now answers with a line about the silk**:
+*"Dew beads strung on silk, and a spider holding dead centre — not a single strand out of place."*
+No new mesh, no new physics box: `makeSpiderweb`'s own return value, previously discarded right after
+`placeT`, is now kept in a variable and handed straight to `game.addInteractable`, the same trick the
+Robot City's own factory sign already used.
+
+An Explore subagent found the gap: of everything finished and decorative in this glade, the web was
+the one piece nobody had ever wired up. Its real footprint is under a metre across, so a 1.8 m
+interactable radius stays clear of the frog ring (12.8 m off), the ring-dancers (16.8 m) and the
+juggler (14.4 m) by the same wide margins the web's own placement comment had already worked out when
+it was first built — nothing new to probe.
+
+Full suite (`node test/run.mjs`) ran clean on 2 of 2 runs: exit 0, all checks `ok`, 0 console warnings,
+box count unchanged (322 — the toast adds no physics box of its own). No visual check was possible in
+this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 501 — a look over Candy Land's west bridge
+
+Round 497 gave the middle wafer bridge over the chocolate river its own "look over the railing" toast
+and flagged the other two crossings as untouched. **The west bridge, out at (-44, -18), now gets the
+same treatment**: *"Same river, same wafers — this end just has a longer walk back to the castle."*
+`makeCandyBridge(game, -44, -18, 3.2, 9)`'s own return value — previously discarded like the middle
+bridge's used to be — is now kept in a variable (`westBridge`) and handed straight to
+`game.addInteractable`, no new mesh, no new physics box.
+
+Same deck box as the middle bridge (half-extent 1.6 m in x, 4.5 m in z, 4.78 m diagonal at the
+corners), so the same 5.8 m radius clears it by the same margin it always has. Checked against
+everything hand-placed nearby: the Candy Land notice pinned to a cane at (-44, 4) sits 22 m off, the
+closest hand-placed cane/lollipop at (-40, -8) is 10.77 m off, and the outer candy-cane forest ring
+(56-76 m out from the origin) never reaches this far in — the bridge itself is only 47.6 m from centre.
+The east bridge at (46, -18) is still untouched and could get the same toast in a future round.
+
+Full suite (`node test/run.mjs`) ran clean on 2 of 2 runs: exit 0, all 274 checks `ok`, 0 console
+warnings, box count unchanged (322 — the toast adds no physics box of its own). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 502 — a look over Candy Land's east bridge
+
+Rounds 497 and 501 gave the middle and west wafer bridges over the chocolate river their own
+"look over the railing" toast and flagged the east bridge, out at (46, -18), as the last crossing
+still untouched. **It now gets the same treatment**: *"Last bridge on this river. The cat has now
+looked over every railing in the land."* `makeCandyBridge(game, 46, -18, 3.2, 9)`'s own return value
+— previously discarded like the other two used to be — is now kept in a variable (`eastBridge`) and
+handed straight to `game.addInteractable`, no new mesh, no new physics box.
+
+Same deck box as the other two bridges (half-extent 1.6 m in x, 4.5 m in z, 4.78 m diagonal at the
+corners), so the same 5.8 m radius clears it by the same margin. Checked against everything nearby:
+the nearest fixed cane ([34, -20]) is 12.17 m off, the nearest fixed lollipop ([40, -12]) is 8.49 m
+off, the river angler at (26, -13) is 20.6 m off, and the swimming duck pair (orbiting x=61-79 at this
+same z) stays 9.2 m clear of the radius's own outer edge. The cane-forest ring (56-76 m out from the
+origin, skipping the whole `abs(z + 18) < 5` band) never reaches this far in either — the bridge
+itself is only 49.4 m from centre. All three wafer bridges now have their own toast.
+
+Full suite (`node test/run.mjs`) ran clean on 2 of 2 runs: exit 0, all checks `ok`, 0 console
+warnings, box count unchanged (322 — the toast adds no physics box of its own). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 503 — a sniff for Candy Land's fourth cupcake hill
+
+Rounds 497-500ish gave three of the seven cupcake hills ringing the sweet-lands their own "walk up
+and look" toast; the comments on the last one flagged the remaining four as untouched. **The third
+hill in the list, out at (-62, -44) in the quietest corner of the land, now gets the same treatment**:
+*"Mint icing, out here where nobody's around to see it."* `cupcakeHills[2]` — the group the build
+loop already constructs, icing, sprinkles, cherry and all — is handed straight to `game.addInteractable`,
+no new mesh, no new physics box.
+
+Same 5.5 m radius the other three hills already use to clear their shared box's 3.68 m corner. A
+headless probe (the stub-three harness driving the real game) sampled every NPC's position every
+quarter second over 300 simulated seconds and swept this point against all 1958 of the land's physics
+boxes: the nearest other box (a candy-cane trunk at the edge of the cane belt) stayed 7.90 m clear and
+the nearest soul ever sampled 16.47 m clear — plenty of margin past the radius. Three hills (indices
+0, 3 and 4) are still untouched and could get the same toast in future rounds.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings, box
+count unchanged (322 — the toast adds no physics box of its own). No visual check was possible in
+this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 504 — a ladybug for Victorian's flower stall
+
+The Neighborhood and Whisper Woods have both had a resting ladybug for a while now, but Victorian's
+own market square — flowers piled on a stall since round 1 — never had one actually land on them.
+**One now sits on the flower seller's own counter, among her blooms, antennae twitching.**
+
+No new rig: reuses `makeLadybug()` from `56-npcs-wild.js` as-is. And no new controller either — this
+uses the exact same perched-only trick the Neighborhood's own field ladybug relies on
+(`rig.animate(0, false, dt, lbT)` off a local timer pushed into `U`), not the Woods' own `Hopper`:
+that controller drives a tiny scuttling hop, and wiring one onto a stall counter barely 3.2 x 1.6 m
+across risked both the same shared-`rnd()` desync the Neighborhood's own comment already warns about,
+and simply hopping the bug clean off the edge in a stride or two. Sits at (10.9, 0.93, -27.7) — the
+counter's own back corner, just above its top surface (y=0.9) and well inside its existing physics
+box, so it needs no box of its own (the same reasoning the stall's own flower props already lean on
+to sit there), away from both the flower seller herself (standing out front at z=-29.3) and the aisle
+the cat would use to reach her.
+
+Full suite (`node test/run.mjs`) ran clean on 2 of 2 runs: exit 0, all checks `ok`, 0 console
+warnings, box count unchanged (322 — nothing here needed a physics box of its own). No visual check
+was possible in this environment (no browser, no Playwright) — only the stub-three test suite.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 505 — a sniff for Candy Land's first cupcake hill
+
+Rounds 497-503 gave four of the seven cupcake hills ringing the sweet-lands (indices 5, 1, 6 and 2)
+their own "walk up and look" toast; the first hill in the list, out at (-58, 30), was still untouched.
+**It now gets the same treatment**: *"Strawberry-pink icing. The cherry on top looks almost
+embarrassed by it."* `cupcakeHills[0]` — the group the build loop already constructs, icing,
+sprinkles, cherry and all — is handed straight to `game.addInteractable`, no new mesh, no new
+physics box.
+
+Same 5.5 m radius the other four hills use to clear their shared box's 3.68 m corner. This one sits
+closer to the inner edge of the candy-cane-forest ring than the rest — 65.3 m out from the origin,
+against the ring's own 56-76 m band — so a headless probe built the real Candy Land and swept this
+exact point against all 1958 of the land's physics boxes and every NPC's own position sampled every
+quarter second over 20 simulated seconds: the nearest other box (a cane trunk) sits 4.65 m clear
+(inside the trigger radius, same as the other hills near the ring, just a touch closer) and the
+nearest soul ever sampled (the carousel barker at [-46, 34]) stayed 12.65 m clear. All seven cupcake
+hills now have their own toast.
+
+Full suite (`node test/run.mjs`) ran clean on 2 of 2 runs: exit 0, all checks `ok`, 0 console
+warnings, box count unchanged (322 — the toast adds no physics box of its own). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 506 — a sniff for Candy Land's fourth cupcake hill
+
+Round 505's own log entry claimed "all seven cupcake hills now have their own toast" — it was wrong.
+Checking the actual `addInteractable` calls in `buildCandyLand()` turned up only five of the seven
+(indices 5, 1, 6, 2 and 0): the fourth hill in the list, at (58, -46) with green icing, had never been
+wired up. **It now answers E with a line about that icing**: *"Green icing, this one — someone
+finally remembered mint exists, then buried it under sprinkles anyway."* Same trick as the other five:
+`cupcakeHills[3]` is the group the build loop already constructs (icing, sprinkles, cherry and all),
+handed straight to `game.addInteractable` — no new mesh, no new physics box.
+
+Same 5.5 m radius the other five hills use to clear their shared box's 3.68 m corner. This hill sits
+74.0 m out from the origin, inside the candy-cane-forest ring's own 56-76 m band like the others near
+that ring, so the same kind of cane-trunk box sitting just inside the radius (already accepted for
+hill index 0's own round) is expected here too. Checked against every hand-placed soul nearby: the
+ukulele player at (49, -39) stays 11.4 m clear, the kite-flying kid at (51, -33) 14.8 m clear, and the
+hula-hoop kid at (39, -77) 36.4 m clear — all well past the trigger radius. Only one hill (index 4, at
+(4, 64), purple icing) is left untouched now.
+
+Full suite (`node test/run.mjs`) ran clean on 3 of 3 runs: exit 0, all checks `ok`, 0 console warnings,
+box count unchanged (322 — the toast adds no physics box of its own). No visual check was possible in
+this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 507 — a sniff for Candy Land's last cupcake hill
+
+Round 506 got the count right this time: six of the seven cupcake hills (indices 5, 1, 6, 2, 0 and 3)
+had their own "walk up and look" toast, and only one was still untouched — the fifth in the list, at
+(4, 64) with purple icing, out in the open meadow near the wishing well rather than the cane-forest
+ring most of the others hide behind. **It now answers E too**: *"Purple icing, out here in the open
+where everyone can see it."* Same trick as the other six: `cupcakeHills[4]` — the group the build loop
+already constructs — goes straight to `game.addInteractable`, no new mesh, no new physics box.
+
+Same 5.5 m radius the other six use to clear their shared box's 3.68 m corner. A headless probe (the
+stub-three harness driving the real game, `game.start('new')` then the synchronous `game.load(1,
+'from-prev')` rather than the async `travel()`, which only finishes on a real timer) swept this exact
+point against all 1958 of the land's physics boxes and sampled every NPC's own position every 15th
+frame over 1200 simulated frames: the nearest other box (a loose lollipop stem in this meadow) stayed
+4.24 m clear — inside the radius, the same precedent the near-ring hills already accepted for their
+own cane trunks — and the nearest soul ever sampled (a pinata swinger) stayed 11.32 m clear. All
+seven cupcake hills now genuinely have their own toast.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged (322). No visual check was possible in this environment (no browser, no Playwright) — only
+the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 508 — a maypole for Victorian
+
+Tetherball, badminton, tug-of-war, archery, sack races — a whole shelf of playground games this game
+has never tried once, in any of its seven worlds — and nobody had ever put up a maypole, the one dance
+that actually needs something in the middle. **Six children in their Sunday best now circle a
+candy-striped pole on the open green deep in Victorian's south field**, each one trailing a ribbon up
+to a little flower wreath at the top. *"Don't let go of your ribbon, Thomas!"* *"Nobody remembers how
+the pattern's meant to come out."*
+
+No new controller: the ring itself is the exact same `RingDance` every other world's own circle of
+dancers already uses. The ribbons are the only genuinely new bit — they're not rigged to the dancers'
+actual hands (the walk-cycle `RingDance` drives has no "arms up" pose to hang from), but to each
+dancer's own circle position with a fixed chest-height lift, recomputed fresh every frame straight off
+`dance.dancers[i].rig.group.position` — safe to read because `80-game.js`'s own main loop runs every
+NPC's `update()` (the ring dance included) before the world's own per-frame hooks fire. Each ribbon is
+one box mesh stretched between pole-top and dancer with the same trick the kite string and the
+balloon's own ropes already use for a two-ends-move-independently segment: positioned at the midpoint,
+turned with `lookAt`, scaled on its own local Z to the live distance. All six dancers are greetable,
+same as every other ring dance's own friends.
+
+A scratch headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real
+Victorian town, sampled every physics circle's own position every 1/30 s over 300 simulated seconds (so
+no wandering urchin, dancer, duck or ball-tossing pair mid-circuit could slip past unnoticed), then
+swept the open green against both that trace and every one of the town's physics boxes, staying short
+of the radius (88) where victorianRegion's own procedural fill takes over: (0, -84) came back clear by
+31.4 m of the nearest box and 25.5 m of the nearest other soul — well south of the market square, the
+draughts table, the photographer and the toy soldiers' own drill line, with plenty of room for the pole,
+the 2 m ring of dancers and every ribbon between them.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings (friend count in
+Victorian rose from 80 to 86 for the six new dancers, as expected). No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 509 — a look up for Whisper Woods' farthest mushroom
+
+The glade's eight giant glowing mushrooms were the one landmark shape unique to these woods, and round
+508's own survey only ever closed the gap on one of them — the one at (14, -20) got a "walk up and
+look" toast two rounds back, but the other seven, including the one standing furthest out at (-24, 20)
+past the deer path, stayed mute. **It now answers E too**: *"Furthest one from the ring. Still glows
+just as bright out here alone."*
+
+Same trick as the first: `farMushroom` is captured straight from the loop in `buildForest()` that
+already builds all eight (mesh, `glow: true`, its own `userData.update` for the pulsing cap light, and
+a `boxT` physics box) — handed directly to `game.addInteractable` as `obj`. No new mesh, no new
+physics box, nothing drawn from this world's own seeded `r` for the dialogue (picked fresh with
+`rnd.pick()` at use time, same as the other mushroom's own lines).
+
+A scratch headless probe (the same stub-three harness `test/run.mjs` itself uses, `game.load(6,
+'from-hub')` then 3000 simulated frames) swept this point against every one of the woods' physics
+boxes and every NPC's own position sampled every frame: the nearest other box stayed 6.0 m clear and
+the nearest grounded wanderer (a deer) never closer than 11.1 m — well past the 3.9 m radius chosen
+(scaled off this mushroom's own size, same ratio the first mushroom's 3.6 m used for its own). Only
+passing fairies and butterflies, flying well overhead, ever came nearer, the same "no obstruction"
+case the first mushroom's own round already banked on. Six of the eight mushrooms are still mute.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged (322 — the toast adds no physics box of its own). No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 510 — a look into Frosty Peak's own cave
+
+Every world's big landmark has had a "walk up and look" toast for rounds now — the clock tower, the
+fountain, the carriage, Candy Land's corner towers and bridges, Robot City's own sign, Whisper Woods'
+mushrooms and spiderweb — but Frosty Peak's own yeti cave, the one landmark the tracker's paw prints
+point straight at, never got one of its own, past the yeti's befriend trigger six metres further in.
+**Stand at the mouth and the cat looks in**: *"Cold air rolling straight out of the dark. Something in
+there is breathing an awful lot of it."* Two more lines rotate in, one about the glowing gem walls and
+one about the paw prints.
+
+No new mesh, no new physics box: `makeCave()` (`62-props-nature.js`) built a rock arch over the
+entrance already and threw the reference away — it now comes back as `mouthArch` on the cave's own
+return value, handed straight to `game.addInteractable`. A headless probe (the same stub-three harness
+`test/run.mjs` itself uses, `game.start('new')` then `game.load(5, 'from-hub')`) swept the arch's own
+world position, (0, 1.2, -28.6), against every one of the mountain's physics boxes and every NPC's own
+position: the nearest body-level box (not the overhead ceiling box, which the walk test already
+ignores) stayed 2.3 m clear and the nearest soul — the tracker, kneeling over the prints that lead
+here — stayed 9.8 m off, so the open approach up the centre of the snowfield reaches the chosen 4.2 m
+radius without the cat rounding any corner.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged (322 — a toast on an existing mesh costs no new collider). No visual check was possible in
+this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 511 — a look at Whisper Woods' violet mushroom
+
+Two of the glade's eight giant mushrooms had their own "walk up and look" toast; six still stood mute.
+**The one at (24, -4) gets its turn** — the only mushroom in the whole set painted hue 280 (violet,
+against everyone else's reds, pinks and golds), out past the fox den where it never sees the fairy
+ring at all. *"Only purple one in the whole glade. Wonder why it came out different."*
+
+Same trick as the first two: `violetMushroom` is captured straight from the loop in `buildForest()`
+that already builds all eight (mesh, `glow: true`, its own `userData.update`, and a `boxT` physics
+box) and handed directly to `game.addInteractable`. No new mesh, no new physics box.
+
+A scratch headless probe (`game.load(6, 'from-hub')`, 3000 simulated frames, every NPC's own position
+sampled every frame) swept this point against every physics box and every sample: the nearest other
+box stayed 7.5 m clear and nothing — grounded or flying — ever came nearer than 3.6 m. The first
+candidate tried, the biggest mushroom in the set at (16, 12), came back worse on the same probe (a
+stray scatter-mushroom box only 3.55 m off, a wanderer passing as close as 2.8 m), so this one — safer
+on both counts — was picked instead, with a 3.0 m radius (the same 1.5×-scale ratio the first two used,
+off this one's 2.0 scale) kept clear on every side.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged (322 — a toast on an existing mesh costs no new collider). Five of the eight mushrooms are
+still mute. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 512 — a look south for Whisper Woods' loneliest mushroom
+
+Three of the glade's eight giant mushrooms could already be looked up at; five still stood mute. **The
+one at (-2, -22) gets its turn** — the furthest south of the whole set, well past the hare clearing,
+with no other mushroom anywhere near it. *"Grew up alone - no ring, no neighbours, just the hares for
+company."*
+
+Same trick as the first three: `southMushroom` is captured straight from the loop in `buildForest()`
+that already builds all eight (mesh, `glow: true`, its own `userData.update` for the pulsing cap light,
+and a `boxT` physics box), handed directly to `game.addInteractable`. No new mesh, no new physics box.
+
+A scratch headless probe (`game.load(6, 'from-hub')`, 3000 simulated frames, every NPC's own position
+sampled every frame) swept this point against every physics box and every sample: the nearest other
+box (a rock at x -8.7..-7.3, z -18.7..-17.3) stayed 6.2 m clear, the nearest grounded soul (a deer
+wandering off its leash from (-10, -30)) never closer than 4.5 m, and the nearest flying one (a
+butterfly or fairy passing overhead, no obstruction) came as close as 3.5 m — all clear of the 2.9 m
+radius chosen (same scale ratio the others used).
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged (322 — a toast on an existing mesh costs no new collider). Four of the eight mushrooms are
+still mute. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 513 — a look north for Whisper Woods' farthest mushroom
+
+Four of the glade's eight giant mushrooms could already be looked up at; four still stood mute. **The
+one at (4, 24) gets its turn** — the furthest north of the whole set, past the ring, just shy of the
+third owl's tree. *"Furthest north of the ring. Even the owl up the tree keeps half an eye on it."*
+
+Same trick as the first four: `northMushroom` is captured straight from the loop in `buildForest()`
+that already builds all eight (mesh, `glow: true`, its own `userData.update` for the pulsing cap
+light, and a `boxT` physics box), handed directly to `game.addInteractable`. No new mesh, no new
+physics box, nothing drawn from this world's own seeded `r` for the dialogue (picked fresh with
+`rnd.pick()` at use time, same as the other four mushrooms' own lines).
+
+A scratch headless probe (the same stub-three harness `test/run.mjs` itself uses, `game.load(6,
+'from-hub')` then 3000 simulated frames) swept this point against every one of the woods' physics
+boxes and every NPC's own position sampled every frame: the nearest other box (a stray
+scatter-mushroom at x 4.8-5.5, z 19.4-19.9) stayed 4.2 m clear and the nearest soul (the painter at
+their easel, stationary) never closer than 4.5 m — both well past the 3.45 m radius chosen (the same
+1.5×-scale ratio the first three mushrooms used, off this one's own 2.3 scale). The probe also swept
+the other three remaining mute candidates — (-14, -14), (16, 12) and (-20, 0) — as runners-up for a
+future round; the (16, 12) mushroom (the biggest in the set) came back tightest again, same as round
+511 found.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged (322 — a toast on an existing mesh costs no new collider). Four of the eight mushrooms are
+still mute. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 514 — a look at Robot City's SECTOR 7 sign
+
+Round 499 gave ROBOT WORKS, the factory floor's biggest piece of neon, its own "look" toast — and
+flagged that of the city's five neon signs, only that one had ever been wired up. SECTOR 7, hung over
+the crates on a pole at (-18, 6), **now answers too**: *"SECTOR 7. Same blue buzz it's always had,
+crates or no crates."* Unlike CHARGE and CAT?, whose `makeNeonSign` calls discard their own return
+value, `sign2` was already kept in a variable for its own `.rotation.y` assignment — so this one goes
+straight to `game.addInteractable`, no new mesh, no new physics box, same trick ROBOT WORKS used.
+
+A headless probe (the stub-three harness `test/run.mjs` itself uses, `game.start('new')` then the
+real game's own synchronous `game.load(2, 'from-prev')`, 1800 simulated frames sampling every NPC's
+own position every frame) swept (-18, 6) against every one of the city's physics boxes and every
+sample: the sign's own support pole aside (a 0.4×5×0.4 box underneath it), the nearest other box (a
+loose crate at [-22, 4]) stayed 3.81 m clear and the nearest wandering soul (a scrap-bug skittering
+past) never closer than 4.12 m — both past the 3.4 m radius chosen. The nearest other interactable
+(the portal back to Candy Land at (-10, 12)) stays 10.0 m off. CHARGE and CAT? are still mute and
+could get the same treatment in a future round — CHARGE at (-44, 22) hangs right by the giant robot
+statue's own plaza, so that one will need its own careful check against the statue's interactable
+first.
+
+Full suite (`node test/run.mjs`) ran clean on 3 of 3 runs: exit 0, all 274 checks `ok`, 0 console
+warnings, box count unchanged (322 — the toast adds no physics box of its own). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 515 — a look at Robot City's CAT? sign
+
+Round 514 wired up SECTOR 7 and flagged CHARGE and CAT? as the factory floor's last two mute neon
+signs, with CAT? needing its own careful check before it could get the same treatment. **It's answered
+now too**: *"CAT? Nobody in this city has ever worked out what it was advertising."* *"The robots
+assumed it was a warning. Turns out it just means cat."*
+
+The reason it was left for last: CAT?'s own support pole sits at (19, -13), only 2.0 m from the little
+wooden door's own group position (19, -15) — the door Robot City leads out through to Victorian — and
+that door's own "Open the wooden door" interactable already reaches 2.4 m, past the sign's own spot.
+Since both share x = 19, the line equidistant between them is the horizontal z = -14, exactly 1.0 m
+from each. Giving the sign a radius under that (0.9 m) keeps its whole circle strictly on its own side
+of that line, so standing anywhere inside it the sign's prompt always wins and the door keeps its own
+prompt everywhere else — no fighting over which one shows, confirmed by walking a line from the sign to
+the door in 0.1 m steps in a headless probe and watching the prompt hand off cleanly exactly at z =
+-14, no overlap, no tie. No new mesh, no new physics box: `signCat` (`makeNeonSign`'s own return value,
+previously discarded right after `.position.set()`) is handed straight to `game.addInteractable`, same
+trick SECTOR 7 and the factory sign already used. CHARGE, hung directly above the giant robot statue at
+the exact same (x, z), stays mute — that one's a harder problem, since its circle can't avoid the
+statue's at all, only shrink which side wins.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings, box count
+unchanged (322). No visual check was possible in this environment (no browser, no Playwright) — only
+the stub-three test suite and a hand-written headless probe sampling the nearest-interactable logic
+directly. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 516 — a look at Whisper Woods' den-side mushroom
+
+Round 513 flagged three of the glade's eight giant mushrooms as still mute and named (-14, -14) as a
+future candidate. **It answers now**: *"Closest one to the fox's den. The fox never pays it any
+mind."* *"Grows right where the glade meets the den-side thicket."* It's the one of the eight
+sitting nearest the fox's own den at (-26, -14) — about 12 m off, just past the fox's own 10 m wander
+leash.
+
+Same trick as the five mushrooms before it: `denMushroom` is captured straight from the loop in
+`buildForest()` that builds all eight (mesh, `glow: true`, its own `userData.update` for the pulsing
+cap light, and a `boxT` physics box already in place), handed directly to `game.addInteractable` — no
+new mesh, no new physics box, no fresh baking exemption needed.
+
+A scratch headless probe (the same stub-three harness `test/run.mjs` itself uses, `game.load(6,
+'from-hub')` then 4000 simulated frames) swept this point against every one of the woods' physics
+boxes and every ground NPC's own position sampled every frame (flyers excluded — butterflies and
+fairies drift everywhere in this glade and are no obstruction). The nearest other box stayed 6.2 m
+clear, the nearest other interactable 7.2 m off, and the fox on its own wander never closer than
+3.9 m — all past the 3.5 m radius chosen, a touch tighter than this set's usual 1.5×-scale ratio since
+the den sits closer here than at any of the other five already wired up.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings, box
+count unchanged (322 — a toast on an existing mesh costs no new collider). Two of the eight mushrooms
+are still mute, at (16, 12) and (-20, 0) — both came back tighter in this round's own probe (nearest
+other interactable only 3.5 m off at (-20, 0), where the mushroom-patch forager already holds a "Say
+hello" prompt almost on top of it) and are left for a future round with a smaller radius or a
+different approach. No visual check was possible in this environment (no browser, no Playwright) —
+only the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.
+
+## Round 517 — a look at Whisper Woods' teal mushroom
+
+Round 516 wired up the den-side mushroom and left two of the glade's eight giant mushrooms mute: one
+at (16, 12), one at (-20, 0). **The one at (16, 12) answers now**: *"Only teal one out this way — the
+rest of its colour stayed back at the ring."* *"Grows closest to the whittler's bench. He's never
+once looked up at it."* It's the only mushroom in the set painted hue 200 out this far east of the
+fairy ring, past the whittler sitting at his bench.
+
+Same trick as the six before it: `blueMushroom` is captured straight from the loop in `buildForest()`
+that builds all eight (mesh, `glow: true`, its own `userData.update` for the pulsing cap light, and a
+`boxT` physics box already in place), handed directly to `game.addInteractable` — no new mesh, no new
+physics box.
+
+A scratch headless probe (the same stub-three harness `test/run.mjs` itself uses, `game.load(6,
+'from-hub')` then 4000 simulated frames) swept this point against every one of the woods' physics
+boxes, every other interactable, and every NPC's own position sampled every frame. The nearest box
+stayed 3.5 m clear, the nearest other interactable (a "Say hello" prompt, 2.1 m of its own reach) sat
+4.5 m off, and the only thing that ever came closer was a wandering flyer at 2.6 m — a butterfly or
+fairy drifting through, no obstruction at all in this glade. The interactable radius chosen, 3.0 m, is
+a tighter ratio than this set's usual 1.5×-scale rule (off this mushroom's own 3.2 scale that would be
+4.8 m) since the glade is more crowded out this way; the game's nearest-interactable logic picks
+whichever centre is closer at each point anyway, so a little overlap with the greet prompt's own
+circle costs nothing — the mushroom still wins everywhere nearer to it than to the person.
+
+The last mute mushroom, at (-20, 0), is left for a future round — a near-neighbouring "Say hello"
+prompt there needs a smaller radius or a different approach, same as last round found. Full suite
+(`node test/run.mjs`) ran clean: exit 0, all 273 checks `ok`, 0 console warnings, box count unchanged
+(322 — a toast on an existing mesh costs no new collider). No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 518 — the last of Whisper Woods' eight mushrooms
+
+Round 517 closed out seven of the glade's eight giant mushrooms and left the last one, at (-20, 0),
+for a future round — a headless probe back then found a "Say hello" prompt sitting unusually close.
+**It answers now**: *"Last one left mute. Grows right by the acorn-feeder's own spot."* *"Pink as the
+fairy ring's own glow, just out here on its own."* All eight of the glade's mushrooms have something
+to say now.
+
+A fresh headless probe confirmed exactly who the tight neighbour is: the woman who kneels scattering
+acorns for the western deer, at (-21.8, 3) — just 3.5 m from this mushroom's own centre, tighter than
+any of the other seven faced. Rather than lean on the game's own "closest centre wins" tie-break (the
+same one every earlier mushroom in this set already relies on, per `80-game.js`'s prompt loop), this
+one plays it safe: radius 2.6 m, under the usual 1.5x-scale ratio its own 2.2 scale would give (3.3 m),
+so the mushroom's whole circle stays on its own side of the midpoint between the two. Same trick as
+all seven before it: `pinkMushroom`, captured straight from the loop in `buildForest()` that builds
+all eight (mesh, `glow: true`, its own `userData.update`, a `boxT` box already in place), handed
+directly to `game.addInteractable` — no new mesh, no new physics box. The same probe found the nearest
+other physics box a clear 5.5 m off.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged (322 — same as every other mushroom in this set, a toast on an existing mesh costs no new
+collider). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite and the headless probe. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
+
+## Round 519 — a roller skater for the Neighborhood's boardwalk
+
+The boardwalk out to the beach gate — the one straight run of planks in the whole Neighborhood street
+— has carried the cat back and forth since round 1 and never carried anyone else, for all its gate,
+its arch and its gem half-buried in the middle of it. **A girl on roller skates now glides its length**,
+turning on her heels at each end rather than stopping dead. *"Four wheels, no brakes — don't tell my
+mum."* *"Careful, puss — these don't stop on sand."* *"Straight boardwalk, dead easy. The road's the
+hard part."*
+
+No new controller: `Patroller` (already doing duty for the Victorian bobby, the woods' hiker and the
+gas lamplighter) needed no change at all — `points: [[50, 22], [70, 22]]` just runs the straight line
+the boardwalk already is, turning at each end instead of pausing long, and its own `greetable()` call
+makes her a friend like any other. The only new geometry is a pair of roller skates — four small
+wheels and a dark plate under each shoe — built the same way `makeBike`'s own wheels hang off its
+frame, parented straight to `leg.ankle` so they ride the rig's existing walk-cycle foot animation for
+free and need no `userData.update` or `userData.keep` of their own. No new physics box either:
+`Patroller` only ever claims a circle, never a static box, so `test/run.mjs`'s own boardwalk walk
+(`46,22 → 74,22`) stays exactly as clear as it always was.
+
+Built dead last in `buildNeighborhood()`, after the raccoon at house 15's bin, for the same reason
+that raccoon's and the yard sale table's own comments already give: `makeHuman()` draws three values
+off the *shared* `rnd()` sequence unconditionally before a line of this file's own code runs, and
+placed any earlier on this huge street build, that shift reaches the two-neighbours-chat timing test
+a thousand-odd lines up and desyncs it — exactly what happened on the first attempt this round, caught
+by the suite before anything was committed, then fixed by moving the whole block to the true end of
+the function. A disposable headless probe (the same stub-three harness `test/run.mjs` itself uses,
+loading the real Neighborhood and stepping 3600 simulated frames) confirmed the skater's own position
+stayed finite throughout, her patrol never leaves the 50–70 m stretch of boardwalk given here, and the
+nearest physics box stayed 7.6 m clear and the nearest other soul 9.6 m clear the whole time.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged (322 — a `Patroller` costs no new collider), shirt colours still all 53 unique for 53
+people, the two-neighbours-chat timing intact. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 520 — Frosty Peak's own tug-of-war
+
+Round 508's own maypole comment named five playground games this whole game had never tried once, in
+any of the seven worlds: tetherball, badminton, tug-of-war, archery, sack races. **This is the first of
+them anywhere**: two bundled-up villagers now dig their heels into the snow on the open mountainside and
+heave on a rope between them, both pulling in time with each other — that's the actual point of the
+game — rather than taking turns the way every other duo vignette in this game does. *"Heave! Heave!
+Nobody's budging an inch!"* *"Careful, puss — mind the rope, it bites worse than a snowball."* *"Dead
+heat again. Always is, with these two."*
+
+New `TugOfWar` class, right after `Talkers` in `55-npcs.js` since it's the nearest relative (two facing
+rigs, each its own circle and its own friend id) — built as a new, generic controller rather than a
+reskin of an existing one, since the whole point was that this mechanic didn't exist yet. It hands back
+nothing but a slow `tension` drift (bounded well short of either end, so nobody ever actually wins) for
+whoever calls it to slide their own rope's own marker — the same split between generic controller and
+world-built scenery `BallGame` and `Horseshoes` already use for their own ball and shoe. The rope and
+its little red flag are plain static geometry in `73-world-snow.js` between the two fixed hand spots the
+constructor works out itself, `noInk()`'d like every other thin cable in this game; only the flag needs
+a `U.push` to slide each frame.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real mountain
+(`game.start('new')` then `game.load(5, 'from-hub')`, so every reindeer, hare, arctic fox, penguin, yeti
+and wandering villager actually moved), sampled every NPC's own position every 1/30 s over 300 simulated
+seconds, then swept a 5 m grid of the open snowfield (radius 15-54, short of the radius (58) where
+snowRegion's own fill takes over) against both those samples and every one of the mountain's 742 physics
+boxes: (50, 20) came back clear by 7.85 m of the nearest box and 7.55 m of the nearest other soul, ground
+height varying under 0.3 m across the whole footprint. A second probe ran the real constructed pair for
+300 simulated seconds on its own, watching `tension` for anything non-finite (none, it stayed inside
+±0.90 the whole time, never reaching the ±1 bound) and the greet flow for both haulers (walking the cat
+up to the first and firing its interactable's `onUse` registered a new Frosty Peak friend, as expected).
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings, box count
+unchanged (322 — two new NPCs cost two physics circles, not boxes, same as every other greetable duo in
+this game). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite and the two headless probes above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
+
+## Round 521 — a tetherball pole for the Neighborhood park
+
+Round 508's own list of playground games this whole game had never tried (tetherball, badminton,
+archery, sack races) lost its first entry to round 520's tug-of-war; **this is the second**: a pole now
+stands on the open grass east of the park path, a ball on a rope circling it as two kids bat it back and
+forth, the ball's own direction flipping each time one of them connects — an endless rally rather than
+the held-then-lobbed shape every other two-player game here uses. *"Round and round, never stops!"*
+*"Watch it, puss — that thing's got a mean swing."* *"I'm up to forty wraps. I think."*
+
+New `Tetherball` class in `55-npcs.js`, right after `Horseshoes` since it's the nearest relative (two
+facing rigs either side of a fixed point) — but a generic controller rather than a reskin, since nothing
+in this game span a prop on a cord around a centre before. It builds its own pole, cap, ball and rope
+(the rope stretched and aimed every frame between a fixed top anchor and the ball's own orbit position,
+the same `position.copy().lerp()` / `lookAt()` / `scale.set()` trick `KiteFlyer`'s kite string already
+uses), takes a steady orbit speed that reverses every 1.6–2.6 s, and swings whichever kid's turn it is
+through an arm-raise timed to the reversal. The pole gets one physics box; each kid gets a circle and a
+`greetable()` call, same as `TugOfWar`'s own pair.
+
+Placed at (18, 40): a fresh headless probe (the same stub-three harness `test/run.mjs` itself uses,
+`game.start('new')` then 300 simulated seconds of real play) found the pole's own box 7.27 m clear of
+every other box in the Neighborhood the whole time, the ball's position finite throughout, and both
+kids' own "Say hi" prompts firing a new friend each on interact. The park's existing fixtures are all
+further off still: the seesaw's own box at (11, 45) by 5.85 m, the bench's at (6, 40) by 9 m, and the
+park path itself (`Z.addSpan(-13, 35.2, 13, 36.8)`) doesn't reach past x=13. Built dead last in
+`buildNeighborhood()`, after the roller skater, for the reason every other addition at the end of this
+function already gives: `makeHuman()` draws three values off the *shared* `rnd()` sequence
+unconditionally, and two more rigs built any earlier would shift it and desync the two-neighbours-chat
+timing test. The first attempt's own custom wardrobe colours (picked without checking) collided with an
+existing shirt elsewhere on the street and tripped the "no two neighbours wear the same shirt" check
+before anything was committed — fixed by grepping every hex colour already used in `buildNeighborhood()`
+and picking two that weren't among them.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings, box count up
+by one (323 — the pole's own box, same cost as any other static post in this game). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
+headless probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 522 — a badminton net for Victorian
+
+Round 508's own list of playground games this whole game had never tried is down to two now: round 520
+gave Frosty Peak a tug-of-war, round 521 gave the Neighborhood a tetherball pole, and **this one gives
+Victorian a badminton net** — the back-garden game the era's own gentry actually played, on the quiet
+grass between the market square and the maypole's own field. Two players in Sunday clothes, rackets in
+hand, bat a shuttlecock back and forth over a low net in a rally that never once pauses. *"Sixty-one, by
+my count — more than we've ever got to."* *"Mind your whiskers, puss, that net won't stop a determined
+paw."* *"Lost count again. Call it a draw, same as always."*
+
+New `Badminton` class in `55-npcs.js`, right after `TugOfWar`. What sets it apart from `BallGame`'s and
+`Horseshoes`' own catch-then-throw cycle — the shape every earlier toss game in this game already uses —
+is that the shuttle is never actually held: the instant it reaches a racket it reverses and is straight
+back on its way, closer to `Tetherball`'s own never-held rule than to a toss at all, so the rally runs
+forever rather than resetting after each catch. `makeHuman` gets a new `o.racket` hand prop (a handle and
+a strung oval hoop, parked on the body the same way `axe`/`pole`/`brush` already are), and
+`makeVolleyballNet` (`62-props-nature.js`) picks up optional `postH`/`netH` overrides instead of a second
+near-duplicate net function — badminton's own net sits lower and shallower than the beach's own volleyball
+net. The shuttlecock itself is a small cork sphere and a flared cone standing in for the feathers, kept
+upright with only a gentle wobble rather than tumbling, since a real shuttle stays drag-stabilised
+nose-down through its whole flight.
+
+Placed at (-10, -55), with the two players' hands 5.6 m apart and the shuttle's own flight arcing a
+peak 1.3 m above hand height right over the net — comfortably above its 1.52 m top for every build this
+world's own wardrobe roll can produce. A headless probe (the same stub-three harness `test/run.mjs`
+itself uses, `game.start('new')` then `game.load(3, 'from-prev')` so every urchin, dancer, duck and ball
+game already in this town actually moved) swept this stretch of grass against every one of the town's
+physics boxes and found it clear by 8.6 m or more in every direction tested, between the market square
+(centred (0, -34), radius 17) and the maypole's own field further south at (0, -84). A second probe ran
+the real pair for 300 simulated seconds: the shuttle's position stayed finite throughout, never dipped
+below hand height or above its own arc peak (1.22–2.54 m, the net's own top at 1.52 m sitting squarely
+inside that range only at the edges of the swing, never where the shuttle actually crosses it), completed
+352 rallies without ever pausing, and both players' own "Say hello" prompts registered a new Victorian
+friend on interact.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings, Victorian's own
+box count up by two (587 → 589 — the net's own two posts, same cost as the beach's own volleyball net).
+No visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
+suite and the two headless probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.
+
+## Round 523 — an archery range for Whisper Woods
+
+Round 508's own list of playground games this whole game had never tried is down to its last entry now:
+round 520 gave Frosty Peak a tug-of-war, round 521 the Neighborhood a tetherball pole, round 522 Victorian
+a badminton net, and **this one gives Whisper Woods an archery range** — a lone archer on a quiet stretch
+of open ground north of the glade, drawing a longbow and loosing one arrow at a straw target downrange,
+over and over, never pausing to go fetch it back.
+
+New `Archer` class in `55-npcs.js`, right after `Badminton`, its nearest relative among this run of
+playground games, and a new `o.bow` hand prop for `makeHuman` — a grip and two tapering limbs strung with
+a straight cylinder, the same spot on the body `axe`, `pole` and `brush` already use, just on the off hand
+rather than the side those swing from, since a bow is held steady rather than swung. Unlike every earlier
+toss or rally game here there's no second player: the arrow is its own free mesh, the same trick
+Horseshoes' shoe and Badminton's shuttle already use — carried at the bow hand while nocked, loosed on a
+short, shallow-arced flight, then left standing in the target a couple of seconds before the next one is
+drawn. `arrow.lookAt()` keeps its head pointed exactly where it's actually travelling, nocked, in flight
+and stuck alike. The target is new too: a round straw boss painted in flat rings (white, black, blue, red,
+gold, the same scheme a real target face uses) on a pair of crossed legs, with one physics box over the
+boss standing in for both.
+
+Placed at (-16, 24), firing ten metres north to the target at (-16, 34): a headless probe (the same
+stub-three harness `test/run.mjs` itself uses, `game.start('new')` then `game.load(6, 'from-hub')`) swept
+the firing line and the ground between it and the target against every one of the wood's physics boxes and
+found it clear by 3.3 m or more along its whole length; every wandering deer's and fox's own leash falls
+short of the spot by 5.7 m or more (the nearest, the fox denned at (14, 6), by its own 10 m leash alone),
+the nearest collectible (the mouse at (-30, 26)) sits 14.3 m off, and the treehouse (-18, 14) 10.2 m off. A
+second probe ran the real archer for 100 simulated seconds: the arrow's position stayed finite throughout,
+cycled through draw/flight/stuck states as expected, fired 22 shots, and the "Say hello" prompt registered
+a new Whisper Woods friend on interact.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings. Whisper Woods' own
+box count moved from 647 to 709 — only one of those boxes is the target itself; the rest is
+`forestRegion`'s own randomised tree/bush/rock fill reacting to the three extra `rnd()` draws every new
+`makeHuman()` call costs (blink timer, idle timer, sway), shifting everything this world's own local `r()`
+sequence places afterward, the same kind of fill-count drift earlier rounds in this file have already
+noted. No dialogue was given to the archer (no `cries`) to keep this round's shift to the minimum a new
+human and controller already cost, following the same caution this file's own frisbee-thrower round
+spelled out for exactly this reason. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite and the two headless probes above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 524 — a sack race for Candy Land
+
+Round 508's own list of playground games this whole game had never tried (tetherball, badminton,
+tug-of-war, archery, sack races) is down to its last entry now: round 520 gave Frosty Peak a
+tug-of-war, round 521 the Neighborhood a tetherball pole, round 522 Victorian a badminton net, round 523
+Whisper Woods an archery range, and **this one gives Candy Land a sack race** — two children bound
+ankle-to-waist in burlap sacks, hopping a short lane in the quiet sweet-lands well past the sunbather's
+own blanket, neither one ever quite winning. *"Hop faster, I'm gaining!"* *"Tripped twice and still
+ahead — don't ask me how."* *"Best of three. Fourth, actually. Nobody's counting."*
+
+New `SackRace` class in `55-npcs.js`, right after `Archer`, its nearest relative among this run of
+playground games for the same reason Archer was Badminton's: a controller with no shared prop and no
+second player actually interacting with the first, just two racers on the same lane, each hopping on its
+own clock. Unlike every earlier game here, there's nothing held or thrown at all: each racer simply turns
+round at either end of a 5 m lane the way `Patroller` walks a beat, except hopping rather than striding, at
+its own pace drawn once at construction, so the lead keeps changing hands without either one ever
+actually reaching a line that would end it. `makeHuman` gets a new `o.sack` option (right after the leg
+loop) — one cylinder and a drawstring torus parented to the body, covering both legs from the ankles to
+the waist in a single piece, which is the only new mesh this round costs, since the sack hides the stride
+rather than needing a new one; the legs underneath still kick (both in step, no scissor action, unlike a
+walk's alternating phase) but mostly out of sight.
+
+Placed at (-83, 7), the lane running along world Z: a headless probe (the same stub-three harness
+`test/run.mjs` itself uses, `game.start('new')` then `game.load(1, 'from-hub')`) sampled every
+gingerbread man's, dancer's and tag/catch pair's own circle position every 1/10 s over 300 simulated
+seconds, then swept both racers' own full lane (5 m long, 1.1 m apart) against both those samples and
+every one of the sweet-lands' physics boxes, staying short of the radius (92) where `candyRegion`'s own
+procedural fill takes over: the worst point on the whole lane came back clear by 16.5 m in every
+direction tried — open, flat candy-cane ground near the edge of the hand-built heart, past the
+sunbather, the woodcutter's stump and the gumball drifting overhead. A second probe ran the real pair for
+300 simulated seconds: both racers' positions stayed finite throughout, their progress along the lane
+never left its 0–5 m bounds, they reversed direction 80 times between them (about right for a ~0.5 s hop
+cycle crossing a 5 m lane), and walking the cat up to one and firing its "Say hi" prompt ran clean.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings, Candy Land's
+own friend count up from 70 to 72 for the two new racers. No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite and the two headless probes
+above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 525 — Robot City's own marching patrol
+
+Candy Land's gingerbread guard and Victorian's drill line have both used the `Marchers` class
+(`55-npcs.js`) for a lockstep patrol since early on; Robot City had its own sentry and RoboDog, but each
+one is a single robot wandering or patrolling alone — nobody there ever marched in step. **A three-robot
+security detail now beats a strict north-south line in the gap between two of the east yard's own
+towers**, turning at each end and pausing a beat before heading back. *"Shift patrol: sector clear."*
+*"In step. Always in step."* *"Unauthorized feline logged. Proceeding."*
+
+No new class and no new mesh: three plain `makeRobot()` rigs, handed straight to the exact same
+`Marchers` constructor the gingerbread guard and the toy soldiers already use, unchanged — one leads on
+a `Patroller` route, the other two hold a fixed gap behind it in lockstep. Only the lead robot becomes a
+friend (`Patroller`'s own constructor calls `greetable()` on itself; the two followers are plain scenery,
+same as it is for the three gingerbread men and the three children elsewhere).
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, built the
+real city with `game.travel(2, 'from-hub')`) sampled every NPC's own position every quarter second over
+400 simulated frames so no wandering robot, tag/catch pair or ring dancer mid-turn could slip past
+unnoticed, then swept a short list of candidate lines against both those samples and every one of the
+city's 1191 physics boxes. The 8 m line from (46, -18) to (46, -26) came back clearest: 6.73 m from the
+nearest box and 12.0 m from the nearest other soul along its whole length, at radius 49-53 m from the
+origin — deep in the east yard's own tower cluster but clear of every one of them.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings, Robot City's
+own friend count up from 73 to 74 for the patrol's lead robot. No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite and the headless probe above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 526 — Frosty Peak's own marching line of penguins
+
+Candy Land's gingerbread guard, Victorian's drill line and round 525's own Robot City security detail
+have all used the `Marchers` class (`55-npcs.js`) for a lockstep patrol — Frosty Peak's own colony, 50
+wandering penguins' worth of lines up in this same file, only ever shuffles loose by the pond. Real
+penguins actually do the opposite: they file into a tight single line and march. **Three penguins now
+hold a strict column on an 8 m stretch of open snowfield**, waddling to one end, turning in place, and
+waddling straight back. *"Waddle. Waddle. Precision waddle."* *"Mind the queue, puss — we've drilled
+this."* *"Column of three. Nobody elected a leader; the ice did."*
+
+No new class and no new mesh: three plain `makePenguin()` rigs, handed straight to the exact same
+`Marchers` constructor the gingerbread guard, the toy soldiers and the robot patrol already use,
+unchanged — one leads on a `Patroller` route, the other two hold a fixed gap behind it in lockstep.
+`Patroller`'s own constructor calls `greetable()` on the lead automatically, same as every earlier
+march, but `greetable()` only wires up a friend prompt when the rig carries `.look`, `.robot` or
+`.cookie` — a bare `makePenguin()` rig has none of the three, so the call quietly no-ops. Checked this
+wasn't a mistake by standing the cat next to both the new march's lead and one of the existing wandering
+colony penguins: neither showed a greet prompt, confirming penguins have always been ambient wildlife
+here, same as the deer and hares, not friend characters — this march just files that same wildlife into
+formation instead of leaving it to wander. Frosty Peak's own friend count is unchanged.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, built the
+real mountain with `game.start('new')` then `game.travel(5, 'from-hub')`) sampled every NPC's own rig
+position every quarter second over 300 simulated seconds (so no wandering penguin, deer, hare, arctic
+fox or patrolling villager mid-leash could slip past unnoticed), then swept the 8 m line from (55, -5) to
+(55, 3) against both those samples and every one of the mountain's 742 physics boxes: the line came back
+clear by 6.33 m of the nearest box along its whole length and 5.33 m of the nearest other soul, at radius
+55 m — well east of the pond colony at (18, 8) and the hare trio at (45-48, 0±2), short of the radius
+(58) where `snowRegion`'s own procedural fill takes over. A second probe ran the real march for 300
+simulated seconds: the lead reversed direction 23 times (about right for a short, slow waddle crossing
+an 8 m lane), its z position stayed within the lane's own -5 to 3 m bounds, and every rig's position
+stayed finite and in the scene graph throughout.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings, friend
+counts unchanged everywhere. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite and the two headless probes above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 527 — a pogo stick for Sunny Shore
+
+Every other bouncy-toy idea in this game so far needed a shared prop: `Bouncer` needs a trampoline,
+`Swinger` a swing, `Seesaw` a seesaw. Nobody had ever just bounced on their own two feet. **A kid on
+Sunny Shore's own dry sand now hops in place on a pogo stick**, out past the volleyball court where
+nothing else was standing. *"Boing! Boing! Boing!"* *"One thousand bounces. Not stopping to count
+again."* *"Don't look — actually, look, I'm good at this."*
+
+New `PogoHopper` class (`55-npcs.js`, right after `FrisbeePlayer`): the same up-and-down arc
+`Bouncer`'s own trampoline already does — `sin(phase * PI)` for the rise and fall, a brief squat at
+touchdown — but grounded rather than needing a trampoline mesh at all: the pole, handlebar and a
+five-ring coiled spring are parented straight to `rig.body`, so the whole rig (kid and pogo stick
+together) rides the same arc as one rigid unit. The only animated flourish beyond the arc itself is the
+coil's own `scale.y`, squashed at the bottom of each hop and stretched at the top, so the spring reads
+as doing the work rather than just along for the ride. Legs hold a fixed crouch (feet planted on
+footrests that were never modelled separately — the ankle's existing shoe mesh stands in for them) and
+arms grip the handlebar in a fixed low-and-forward pose, both damped rather than animated frame to
+frame, the same shortcut `HulaHooper`'s hip-sway and `YoYoer`'s wrist already take.
+
+Placed at (-28, -20): a headless probe (the same stub-three harness `test/run.mjs` itself uses,
+`game.start('new')` then `game.travel(4, 'from-hub')`) sampled every NPC's own position every quarter
+second over 300 simulated seconds, then swept the dry sand west of the volleyball court (radius 20-45,
+short of the radius (58) where `beachRegion`'s own fill takes over) against both those samples and
+every one of the beach's physics boxes: (-28, -20) came back clear by 12.77 m of the nearest box and
+14.07 m of the nearest other soul, with the ground flat to 0.000 m across the whole footprint the hop
+needs. A second probe ran the real kid for 300 simulated seconds: position stayed finite throughout,
+the bounce amplitude came out at 0.418 m against an intended 0.42 m, and walking the cat up and firing
+the "Say hi" prompt raised the friend count by one as expected.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings, Sunny
+Shore's own friend count up from 63 to 64. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the two headless probes above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 528 — a stilt-walker for Victorian
+
+Victorian's market square has a fruit stall, a flower stall, a newsboy, a juggler, pigeons and a
+rat by now, but the one classic fairground turn the town never had was someone up on stilts.
+**A performer in candy-striped trousers now paces a short beat on the quiet green south-west of
+the market square, towering half again his own height.** *"Mind your tail, puss — I can't exactly
+hop out of the way up here!"* *"Eleven years on these. Fell twice. Both before breakfast."* *"Best
+seat in the house, this — shame it only seats one."*
+
+No new rig: `makeHuman()` builds him exactly like anyone else in the street, and the stilts
+themselves are two plain poles with a strap loop and a footrest peg, parented straight onto each
+ankle joint — the same joint the trouser cuff and shoe already hang from — so they swing with the
+walk cycle for free, local lengths divided by `rig.k` so the poles come out the same true size
+whatever height `randomPerson()` rolled for him. New `StiltWalker` class (`55-npcs.js`, right
+after `Patroller`): literally `extends Patroller`, adding nothing but a constant vertical offset
+re-applied after every position write, in the constructor and every `update()` alike, since
+`Patroller` only sometimes rewrites the rig's own position in a given frame (paused at an end, or
+standing to let the cat go by) and otherwise leaves the previous frame's value — offset already
+included — standing.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+`game.start('new')` then `game.load(3, 'from-prev')`) sampled every NPC's own rig position every
+quarter second over 300 simulated seconds, then swept the 6 m line from (-18, -80) to (-12, -80)
+against both those samples and every one of the town's 589 physics boxes: the whole line came back
+clear by at least 12.5 m of the nearest box and 8.9 m of the nearest other soul, at radius
+80.9-82.0 from the origin — well south-west of the market square (centred (0, -34), radius 17) and
+short of the radius (88) where victorianRegion's own procedural fill takes over.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings,
+Victorian's own friend count up from 88 to 89. No visual check was possible in this environment
+(no browser, no Playwright) — only the stub-three test suite and the headless probe above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 529 — a cable tug-of-war for Robot City
+
+Frosty Peak's haulers and Whisper Woods' hunting party have both used the `TugOfWar` class
+(`55-npcs.js`) for a straining, never-resolving contest by now; Robot City had robots standing,
+wandering and marching in step, but no two of them had ever been pitted against each other.
+**Two factory units now strain against a thick power cable a few metres north of the east
+yard's own marching patrol**, heaving in time forever, with a little amber indicator light
+riding the cable and brightening as the tension swings. *"Tug protocol: engaged. Neither unit
+yields."* *"Careful, puss — mind the cable, it still has some charge in it."* *"Query: why do
+we do this every shift? Answer: unresolved."*
+
+No new class: `TugOfWar` already does the heave-together, nobody-wins logic for the snow
+haulers and the forest's rope-pullers; this round just hands it two plain `makeRobot()` rigs
+and swaps the rope for a dark cable with glowing cyan end-caps. The one new touch is the status
+light — a small sphere riding the same tension-driven position the rope worlds use for their
+flag, but pulsing brighter instead of just moving, since a robot yard wanted an indicator lamp
+more than a scrap of bunting.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+`game.travel(2, 'from-hub')`, then the cat teleported right next to the candidate spot so
+nothing the engine culls by distance could hide a box) sampled every NPC's own position every
+quarter second over 500 simulated frames, then swept the two robots' own stations and a
+half-metre margin either side against both those samples and every one of the city's 323
+physics boxes: (46, -8) came back clear by 5.19 m of the nearest box and 8.76 m of the nearest
+other soul — just north of the marching patrol's own beat (46, -18)-(46, -26) and well short of
+the radius (98) where robotRegion's own procedural fill takes over.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings,
+Robot City's own friend count up from 74 to 76 (both robots count, same as every other
+`TugOfWar` pair). No visual check was possible in this environment (no browser, no Playwright)
+— only the stub-three test suite and the headless probe above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
+
+## Round 530 — beach badminton for Sunny Shore
+
+Victorian has had a shuttlecock rallying over a low net since round 525, but Sunny Shore —
+with every open-toss ball game going (keep-it-up, frisbee, catch, volleyball) — never had a
+net game of its own on dry land. **A badminton net now stands on a quiet stretch of sand south
+of the volleyball court, two players in bright beach shirts and shorts knocking a shuttlecock
+back and forth, bare feet in the sand.** *"Careful, the wind off the water adds a wobble."*
+*"Sand's terrible for footwork, wonderful for falling."* *"That one nearly went in the sea."*
+
+No new code at all: the same `Badminton` class (`55-npcs.js`) and `makeVolleyballNet()`
+(`62-props-nature.js`) Victorian's own rally already uses, just swapped to `placeT`/`boxT` in
+place of the flat-floor town's `place`/`P.addBox`, since the sand here has real slope under it
+the same way every other hand-placed prop on this beach already accounts for — plus a fresh
+`makeWardrobe` of beach-bright colours instead of the town's muted ones, `shorts: true` instead
+of trousers, no hat or jacket, just a `racket` in each hand.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses, `game.start('new')`
+then `game.travel(4, 'from-hub')`) sampled every NPC's own position every quarter second over
+300 simulated seconds, then swept the net and both players' own footprint (±1.8 m across,
+±3.4 m along the court) against both those samples and every one of the beach's 323 physics
+boxes: (-18, -38) came back clear by 9.18 m of the nearest box and 9.57 m of the nearest other
+soul across the whole footprint, with the ground flat underfoot — well south of the hammock
+(-10, -40) and the pogo-stick kid, short of the radius (58) where `beachRegion`'s own fill
+takes over.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings,
+Sunny Shore's own friend count up from 64 to 66 (both players count, same as every other
+`Badminton` pair). No visual check was possible in this environment (no browser, no Playwright)
+— only the stub-three test suite and the headless probe above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
+
+## Round 531 — a vine tug-of-war for Whisper Woods
+
+Round 520's own round-up of five playground games this game had never tried once (tetherball,
+badminton, tug-of-war, archery, sack races) left Whisper Woods with the archery range; Frosty
+Peak's haulers and Robot City's factory pair have since both pitted two rigs against a rope or
+cable of their own, but no two souls in these woods had ever heaved against each other. **Two
+forest kids now dig their heels into the leaf litter south of the glade and haul on a thick,
+knotted vine stretched between them, neither ever quite winning.** *"Heave! Heave! Nobody's
+budging!"* *"Careful, puss — mind the vine, it's tougher than it looks."* *"Best of... however
+many we've lost count of."*
+
+No new class: the same heave-together, nobody-wins `TugOfWar` (`55-npcs.js`) the Frosty Peak
+haulers and the Robot City factory pair already use, just two plain `makeHuman()` kids and a
+mossy-green vine with a few leaf tufts in place of rope or cable, plus a small drifting glow
+bead riding the vine's own tension instead of a flag or indicator lamp — the glade already has
+fireflies of its own ambient sparkle, so one more `glowMat()` bead reads as one of them rather
+than a new fixture.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+`game.start('new')` then `game.travel(6, 'from-hub')`, with the cat teleported right next to the
+candidate spot so nothing the engine's own distance culling could hide) sampled every NPC's own
+position every frame over 4000 simulated frames (66 seconds, long enough for every deer and
+fox's own wander to range fully), then swept the two kids' own stations and the vine's own
+midpoint against both those samples and every one of the wood's 323 physics boxes: (-10, -40)
+came back clear by 14.9 m of the nearest box and 14.1 m of the nearest other soul (a wandering
+yo-yo kid) — well south of the jump-roper's own clearing at (8, -48) and short of the radius
+(58) where forestRegion's own procedural fill takes over.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings,
+Whisper Woods' own friend count up from 64 to 66 (both kids count, same as every other
+`TugOfWar` pair). No visual check was possible in this environment (no browser, no Playwright)
+— only the stub-three test suite and the headless probe above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
+
+## Round 532 — an archery range for Frosty Peak
+
+Whisper Woods has had the game's only archery range since round 525; Frosty Peak's own hunting-lodge
+feel — the trapper by the fire, the ice fisher out on the pond — never got a firing line of its own.
+**A lone archer now draws and looses at a straw target on a quiet stretch of snowfield southwest of
+the village, breath steady, never once hurried.** *"Steadiest hands on the mountain, mine."* *"Mind
+the arrows, puss — none of them are aimed at you."* *"Wind off the peak throws every shot wide, but I
+keep trying."*
+
+No new class and no new prop: the exact same `Archer` (`55-npcs.js`) and straw-boss-and-rings target
+Whisper Woods' own range already builds, just a winter wardrobe (`coat: true`, beanie, scarf) in place
+of the woods' cap and jacket, and `bow: true` for the same longbow prop `makeHuman` already knows how
+to hold.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+`game.start('new')` then `game.travel(5, 'from-hub')`, with the cat teleported right next to the
+candidate spot so nothing the engine's own distance culling could hide) sampled every NPC's own
+position every 7th frame over 2400 simulated frames, then swept the firing line from (-30, -15) to
+(-30, -25) — archer facing south (`ry = PI`) — against both those samples and every one of the
+mountain's 323 physics boxes: the line came back clear by 7.28 m of the nearest box along its whole
+length and 8.61 m of the nearest other soul, at radius 36 m — well south of the fish collectible at
+(-30, 16) and clear across the map from the tug-of-war (50, 20) and the penguin march (55, -5) to
+(55, 3), short of the radius (58) where snowRegion's own procedural fill takes over.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings, Frosty
+Peak's own friend count up from 66 to 67 (the archer counts, same as the woods' own). No visual check
+was possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
+headless probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 533 — a sack race for the Neighborhood
+
+Round 508's own list of playground games this game had never tried (tetherball, badminton, tug-of-war,
+archery, sack races) started right in the Neighborhood's own open south field — the yo-yo kid, the hula
+hooper, the jump-roper, the scooter kid and the marbles kid all share that clearing — but the sack race
+itself ended up going to Candy Land instead (round 524), and the street that gave the list its name never
+got one of its own. **Two more kids now hop a short lane through the same clearing, bound ankle-to-waist
+in burlap sacks, neither one ever quite winning.** *"Nearly went over that time!"* *"Careful, puss — these
+sacks smell like old potatoes."* *"Best of three. I'm up two to one, whatever he says."*
+
+No new class and no new mesh: the exact same `SackRace` (`55-npcs.js`) and `o.sack` wardrobe option Candy
+Land's own racers already use, just a fresh pair of kids and a spot. `SackRace` needs no shared prop and
+no second player actually reacting to the first — each racer just hops its own 5 m lane on its own clock,
+turning round at either end, so the lead keeps changing without either one ever reaching a line that would
+end it.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses, `game.start('new')`) sampled
+every NPC's and the squirrel's own position every 5th frame over 300 simulated seconds — long enough for
+the whole south field's wandering and looping cast to range fully — then swept both racers' own full lane
+(5 m long, 1.1 m apart, running along world X) against both those samples and every one of the street's
+323 physics boxes: the worst point on the whole lane came back clear by 13.85 m of the nearest box and
+13.45 m of the nearest other soul at (-10, -40), dead centre of the clearing between the yo-yo kid, the
+jump-roper, the hula hooper, the scooter kid, the marbles kid and the bubble-blower.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings, the
+Neighborhood's own friend count up from 61 to 63 for the two new racers (confirmed against the
+pre-change build with `git stash`). No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 534 — a tetherball pole for Candy Land
+
+Round 508's own list of playground games this whole game had never tried (tetherball, badminton,
+tug-of-war, archery, sack races) handed every other sweet-land its own entry by now — the Neighborhood,
+Victorian, Robot City and Frosty Peak have all got a pole, net or rope — but Candy Land's own sack race
+(round 524) never came with a tetherball to go alongside it. **Two gingerbread-sweet kids now bat a ball
+round a pole out on the quiet grass east of the chocolate river**, sharing the field with the ukulele
+player and the kite-flying kid. *"Round and round — same as every other sweet-land game, just
+stickier."* *"Watch the rope, puss, it's had my fingers twice already."* *"Fifty wraps and counting. I
+always lose count past fifty."*
+
+No new class and no new mesh: the exact same `Tetherball` (`55-npcs.js`) the Neighborhood's own park
+pole already uses, just a fresh pair of kids and a spot — the pole, ball and rope are all built inside
+the constructor, and the ball's own orbit and rope-stretch logic needed nothing extra for a second copy.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses, `game.travel(1, 'from-hub')`,
+then every NPC's own position sampled every 5th frame over 1800 simulated frames, long enough for the
+ukulele player, the kite-flying kid, the gossiping pair and every wandering gingerbread man and dancer
+to range fully) swept the pole at (50, -30) and both kids' own stations two metres either side of it,
+(48, -30) and (52, -30), against both those samples and every one of the land's own physics boxes: the
+worst of the three points came back clear by 6.68 m of the nearest box (a candy-cane-forest trunk, the
+ring reaching in to radius 56 here) and 9.85 m of the nearest other soul (the kite-flying kid at
+(51, -33)) — short of the ukulele player at (49, -39), further off still, and well inside the radius
+(92) where candyRegion's own procedural fill takes over.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings (one
+re-run flagged the Victorian horse-and-carriage check, but it also flakes on an unmodified tree under
+load — `THREE.Clock.getDelta()` reads real wall-clock time in this harness, so a couple of leg-rotation
+and kite-height checks race a real timer rather than the fixed simulated step every other check uses;
+several clean re-runs, and a run against the pre-change build with `git stash`, both confirmed it has
+nothing to do with this round's change). Candy Land's own friend count up from 72 to 74 for the two new
+kids (also confirmed against the pre-change build). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 535 — a tetherball pole for Robot City
+
+Round 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack races) had
+by now gone round every other world — the Neighborhood, Candy Land, Victorian, Sunny Shore, Frosty Peak
+and Whisper Woods all have their own tetherball pole — except Robot City, which had a break-room sitter
+and two haulers straining on a cable but nothing actually played as a game by people rather than
+robots. **Two off-shift factory workers now bat a ball round a pole on a quiet stretch of concrete
+east of the yard.** *"Five minutes. This is how I spend every one of them."* *"Careful, puss — that
+thing's got a mean swing."* *"Foreman says it's bad for morale. Foreman's never won a point."*
+
+No new class and no new mesh: the exact same `Tetherball` (`55-npcs.js`) every other world already
+uses. The pair are human, not robot — `Tetherball` reaches into `rig.spine`, which `makeRobot()`'s rig
+never sets, the same reason the mechanic, painter, oil vendor and break-room worker already in this
+city are all humans — so this reuses a factory-worker wardrobe rather than a new robot vignette.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses, the real city built with
+`game.travel(2, 'from-hub')` and settled out past its own real-timer fade before anything was sampled —
+an earlier pass that skipped that wait found none of the skyline's own tall towers in the physics list
+and nearly placed this one right on top of one) sampled every NPC's own position every 5th frame over
+3600 simulated frames, then swept the pole at (29, -16), both workers' own stations two metres either
+side of it and the ball's own orbit extremes against both those samples and every one of the city's
+1193 physics boxes: the worst of the five points came back clear by 7.05 m of the nearest box and
+7.38 m of the nearest other soul — short of the tug-of-war haulers at (46, -8), the marching patrol's
+own beat and the squirrel, and well inside the radius where robotRegion's own procedural fill takes over.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings. Robot
+City's own friend count up from 76 to 78 for the two new workers (confirmed against the pre-change
+build with `git stash`). No visual check was possible in this environment (no browser, no Playwright)
+— only the stub-three test suite and the headless probe above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
+
+## Round 536 — a tug-of-war for Sunny Shore
+
+Frosty Peak, Robot City and Whisper Woods have all had two haulers dig in and heave on a rope by now
+(`TugOfWar`, 55-npcs.js) — Sunny Shore, for all its badminton and volleyball nets and its open-toss
+ball games, never had one. **Two beachgoers now heel into the dry sand on a quiet dune north-west of
+the huts and heave on a length of ship's rope between them, never quite settling either way.**
+*"Heave! Heave! Nobody's budging an inch!"* *"Careful, puss — mind the rope, it bites worse than a
+crab."* *"Dead heat again. Sand's no easier to dig into than snow, turns out."*
+
+No new class and no new mesh beyond the rope and its little flag: the exact same `TugOfWar` the other
+three worlds already use, unchanged, with the same rope-and-flag dressing those three already build
+around it — just two fresh `makeHuman` haulers in a beach wardrobe (shorts, no hat or jacket) in place
+of a snowsuit or factory overalls.
+
+Sunny Shore's own hand-built heart turned out to be far more crowded than its three siblings — by my
+count this beach alone carries something like forty hand-placed NPCs and props before this round, so
+rather than eyeball a gap from the source the way earlier rounds did, I wrote a scratch probe on the
+same stub-three harness `test/run.mjs` itself uses: it built the real Sunny Shore (`game.start('new')`
+then `game.load(4, 'from-hub')`), sampled every NPC's and the squirrel's own position every fifth
+frame over 900 simulated frames (long enough for every crab, turtle, sunbather, dolphin, dog and
+dancer on this whole shore to range fully), then swept a 2 m grid of the dry dune sand (x ≤ 10, clear
+of the wet-sand zone that starts at x=12; radius 5-54, short of the radius (58) where `beachRegion`'s
+own fill takes over) against both those samples and every one of the beach's own physics boxes,
+ranking every cell by its worst-case clearance. (-50, 20) came out clearest at its own centre: 7.92 m
+from the nearest box and 8.08 m from the nearest other soul. With both haulers' own stations placed
+1.3 m either side of it (rope running along world X), the two actual footprints came back clear by
+6.68 m and 8.32 m of the nearest box and 8.00 m and 8.35 m of the nearest other soul — north-west of
+the furthest dune palms, ground height varying only about 0.1 m across the whole span.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings. Sunny
+Shore's own friend count up from 66 to 68 for the two new haulers (confirmed against the pre-change
+build with `git stash`). No visual check was possible in this environment (no browser, no Playwright)
+— only the stub-three test suite and the scratch headless probe above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
+
+## Round 537 — a tug-of-war for Victorian
+
+Round 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack races) had
+by now given Frosty Peak, Robot City, Sunny Shore and Whisper Woods their own `TugOfWar` — Victorian,
+for all its quoits and its badminton net, had never had the one contest with no ball, shoe or shuttle
+to send back and forth. **Two off-duty draymen now dig their heels into the open grass east of the
+coalman's own yard and heave on a length of cart rope between them, never quite settling either way.**
+*"Heave away, lads — she won't give an inch!"* *"Mind your tail, puss, that rope's seen rougher use
+than this."* *"Best of however many we've lost count of — same as every Sunday."*
+
+No new class and no new mesh: the exact same `TugOfWar` (`55-npcs.js`) the other four worlds already
+use, unchanged, with the same rope-and-flag dressing those four already build around it — just two
+fresh `makeHuman` draymen in shirtsleeves and braces rather than a snowsuit, factory overalls or
+beachwear.
+
+Finding a clear spot turned out to need more care than usual: an earlier scratch probe that skipped
+the real `game.travel()`'s own 520 ms fade timer (driving `game.loop()` straight through without
+waiting for `load()` to actually fire) sampled a half-built, stale scene — the quoits court, the
+badminton net and dozens of other hand-placed NPCs simply weren't there yet, which would have put the
+new rope right on top of them. Redone the way `test/run.mjs` itself does it — click the real start
+button, call `game.travel(3, 'from-prev')`, then poll `game.transitioning` with a real `setTimeout`
+sleep between frames rather than guessing a frame count — the probe sampled every NPC's own position
+every fifth frame over 2400 simulated frames, then swept a grid of the town's quiet east corner (clear
+of the main street's own keep-out band, |z|<20, and short of the radius (88) where `victorianRegion`'s
+own procedural fill takes over) against both those samples and all 589 of the town's physics boxes:
+(75, -29) came back clear by 16.9 m of the nearest box and 25.1 m of the nearest other soul at its own
+centre, with both draymen's own stations 1.3 m either side of it (rope running north-south) clear by
+15.9–18.0 m of the nearest box and 24.6–25.6 m of the nearest other soul — well east of the coalman's
+own chute (52, -15) and the night watchman's bench (36, -30).
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings. Victorian's
+own friend count up from 89 to 91 for the two new draymen (confirmed against the pre-change build with
+`git stash`). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite and the corrected headless probe above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
+
+## Round 538 — a tug-of-war for Candy Land
+
+Round 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack races) had
+by now gone round Frosty Peak, Robot City, Sunny Shore, Whisper Woods and Victorian — Candy Land, for
+all its tetherball pole and its carousel, never had the one contest with no ball, shoe or shuttle to
+send back and forth. **Two market hands in candy-striped aprons now dig their heels into the open grass
+far out past the east cane-forest belt and heave on a length of liquorice rope between them, never
+quite settling either way.** *"Heave! That liquorice won't give an inch, and neither will I!"* *"Mind
+your tail, puss — this rope's stickier than it looks."* *"Dead heat again. Sugar makes for a slippery
+grip, some days."*
+
+No new class and no new mesh: the exact same `TugOfWar` (`55-npcs.js`) the other five worlds already
+use, with the same rope-and-flag dressing those five already build around it — just two fresh
+`makeHuman` stall hands rather than a snowsuit, factory overalls or beachwear (the gingerbread rig's
+own arms have no shoulder/elbow sub-joints for `TugOfWar` to pose, so this stayed with `makeHuman` like
+every other world's pair, rather than dressing it up as two gingerbread men).
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses — click
+the real start button, `game.travel(1, 'from-prev')`, then poll `game.worldIndex` with a real
+`setTimeout` sleep between frames rather than guessing a frame count) sampled every NPC's own position
+every fifth frame over 1800 simulated frames, then swept a 2 m grid of the land's own quiet south-east
+corner — short of the 92 m radius where `candyRegion`'s own procedural fill takes over, clear of the
+chocolate river's own band, the cane-forest ring and the castle's own approach — against both those
+samples and all 1959 of the land's physics boxes: (77, -41) came back clearest of the lot, 16.57 m from
+the nearest box and 20.89 m from the nearest other soul at its own centre, with both hands' own
+stations clear by 16.39–16.44 m of the nearest box and 20.22–21.62 m of the nearest other soul.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings. Candy Land's
+own friend count up from 74 to 76 for the two new stall hands (confirmed against the pre-change build
+with `git stash`). No visual check was possible in this environment (no browser, no Playwright) — only
+the stub-three test suite and the headless probe above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
+
+## Round 539 — a tug-of-war for the Neighborhood
+
+Round 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack races) had
+by now gone round Candy Land, Robot City, Sunny Shore, Frosty Peak, Whisper Woods and Victorian — the
+Neighborhood itself, for all its own tetherball pole and sack race in the park, never had the one
+contest with no ball, shoe or shuttle to send back and forth. **Two off-duty neighbours now dig their
+heels into the open lawn north of the cat's own house, between the lake and the lantern path to the
+gondola, and heave on a length of garden rope between them, never quite settling either way.**
+*"Heave, Barb — I had this last summer and I'll have it again!"* *"Mind your tail, puss, we're
+mid-match here."* *"Dead even, same as always. Rematch next weekend?"*
+
+No new class and no new mesh: the exact same `TugOfWar` (`55-npcs.js`) the other six worlds already
+use, with the same rope-and-flag dressing those six already build around it — just two fresh
+`makeHuman` neighbours in casual wear rather than overalls, beachwear or a snowsuit.
+
+Finding the spot took two tries. A headless probe (a scratch script on the same stub-three harness
+`test/run.mjs` itself uses — click the real start button, run the stub clock forward 2400 simulated
+frames, no `game.travel()` needed since the Neighborhood is the world every test run already starts
+on) sampled every NPC's own position every fifth frame, then swept the quiet stretch of open lawn
+north of the house, between the lake and the lantern path to the gondola, against both those samples
+and every physics box on the street: (-8, -42) came back clear by 15.3 m of the nearest box and
+16.2 m of the nearest other soul, with both neighbours' own stations clear by 14.3–15.6 m of the
+nearest box and 15.2 m of the nearest other soul on both sides. The first attempt built the pair
+right after the duck pond, well before the park section — and broke a test: the Neighborhood is the
+one world every run starts on, and its own "a neighbour waves when the cat walks up to them" check
+depends on the *exact* number of shared `rnd()` draws every earlier fixture already makes, the same
+trap the ladybug's, the yard sale table's and the raccoon's own comments in `70-worlds.js` already
+warn about. Moving the whole block to dead last — after the sack race, right before `makeDayNight` —
+fixed it: nothing built earlier on the street has its draw count shifted.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings. The
+Neighborhood's own friend count up from 63 to 65 for the two new neighbours. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
+headless probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 540 — a look at Robot City's SECTOR 8 sign
+
+Robot City's east yard flies five neon signs: ROBOT WORKS, SECTOR 7 and CAT? all earned their own
+"walk up and look" toast over past rounds, and CHARGE got an actual customer (a robot plugged in at
+its pylon) — but SECTOR 8, hanging over the belt and crate pile the quality inspector tends, was the
+last of the five nobody had ever actually looked at. **Walking up to it now brings up a toast:**
+*"🟠 SECTOR 8. Orange, same as the crates it watches over."* *"✨ Nobody's re-lettered it since the
+line was Sector 3. Cheaper to rename the floor."* *"📦 Marks the belt, not much else. The inspector
+reads the paperwork instead."*
+
+No new mesh and no new physics box: `sign3` (`makeNeonSign('SECTOR 8', ...)`) was already kept in a
+variable rather than discarded, so it went straight to `game.addInteractable`. The tight corner it
+sits in — the conveyor belt, its own crate pile and the inspector's greet circle all crowd this part
+of the yard — meant a small radius was called for. A headless probe (the same stub-three harness
+`test/run.mjs` itself uses, `game.travel(2, 'from-prev')` then waited out the real fade timer with a
+`setTimeout` sleep between frames) read every interactable's own centre and radius straight from
+`game.interactables` rather than guessing: the conveyor's own "Look at the conveyor belt" (centre
+(44, 12), radius 5.5) cleared by 1.4 m after both radii, the inspector's "Say hello" (centre
+(47.6, 19.1), radius 2.1) by 0.5 m, and the crate pile's own physics box sat 1.23 m clear of the
+sign's chosen 1.1 m radius — tight, but with no overlap anywhere.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings — friend
+count unaffected, since a sign isn't greetable. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 541 — a tiger beetle for Sunny Shore
+
+The Neighborhood has a raccoon at a bin, Robot City a scrap-bug, Candy Land a gumdrop toad and
+Whisper Woods a ladybug — every world had its own small, unregarded floor-level creature except
+Sunny Shore and Frosty Peak. **A tiger beetle now scuttles the dry dune sand west of the beach's own
+tug-of-war**, a few inches at a time, pale diagonal markings catching the light on an otherwise
+iridescent green-gold shell. It has no line of its own — it's an insect, not a person — so this is
+purely a background touch, same family as the ladybug and the fireflies.
+
+New build, `makeTigerBeetle()` in `56-npcs-wild.js` right next to `makeLadybug()`: that same rig's
+sun-bleached cousin — longer and flatter, a pale diagonal marking per side standing in for the
+ladybug's spots, and longer running legs, since real tiger beetles are among the fastest animals
+alive relative to their own size. No new controller: `Hopper`, the class already driving the scrap-bug
+and every other tiny ground creature, just dialled down to an inch-scale scuttle (`dist: [0.15, 0.35]`,
+`height: 0.05`) the same way the ladybug's own hop was.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+`game.start('new')` then `game.load(4, 'from-hub')` straight to Sunny Shore, 1200 simulated frames,
+every NPC's own position sampled every fifth frame) swept the dry dune sand (x ≤ 10, west of the
+wet-sand zone that starts at x=12, radius ≤ 54, short of the radius (58) where `beachRegion`'s own
+fill takes over) against both every one of the beach's 217 physics boxes and those samples: (-8, 24)
+came back clear by 8.8 m of the nearest box and 6.1 m of the nearest wandering soul, comfortably past
+the 0.1 m leash given here, and well off every hand-placed game and hut on this beach. Built dead last
+of everything this world adds, after the tug-of-war, so `Hopper`'s own three unconditional draws off
+the shared `rnd()` sequence land after every other NPC in this world that times itself off that same
+sequence, and disturb nothing built earlier on the sand.
+
+It isn't a friend to meet — same as the ladybug, the sandpipers and the fireflies — Sunny Shore's own
+friend count stays at 68. Full suite (`node test/run.mjs`) ran clean twice in a row: exit 0, all 274
+checks `ok`, 0 console warnings both times, 99% of the ground still walkable. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
+headless probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 542 — a frost beetle for Frosty Peak
+
+The Neighborhood has a raccoon, Candy Land a gumdrop toad, Robot City a scrap-bug, Victorian and
+Whisper Woods both a ladybug, Sunny Shore a tiger beetle (last round) — every world had its own
+small, unregarded floor-level creature except Frosty Peak. **A frost beetle now picks its way across
+the open snow east of the village**, a stockier, paler cousin of the ladybug and tiger beetle: a
+frosted blue-grey shell with a pair of icy-white markings standing in for spots, picking across the
+packed snow at a slower, steadier pace than its sand- and garden-dwelling cousins. It has no line of
+its own — it's an insect, not a person — so this is purely a background touch, same family as the
+ladybug and the fireflies.
+
+New build, `makeFrostBeetle()` in `56-npcs-wild.js` right after `makeTigerBeetle()`: the same rig,
+recoloured and slowed — a lower hop (`height: 0.06`), a longer `idle` window and a gentler antenna
+twitch than the tiger beetle's hot-sand scurry. No new controller: `Hopper`, already driving every
+other tiny ground creature in this game, just dialled down the same way.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+`game.start('new')` then `game.load(5, 'from-hub')`, 1200 simulated frames, every NPC's own position
+sampled every 5th frame) swept the open snowfield east of the village (roughly -40..40 in x, -20..30
+in z) against both every one of this world's 743 physics boxes and those samples: (38, 8) came back
+clear by 7.29 m of the nearest box and 8.25 m of the nearest wandering soul, well off the fish
+collectible at (18, 8), the hares at (45-48, ±2) and every hand-placed prop in the village and
+archery range — ground there reads a gentle 0.68 m, no slope. Built dead last of everything this
+world adds, right after the day/night cycle and before the squirrel spawn point (which draws no
+`rnd()` of its own), so `Hopper`'s own three unconditional draws off the shared `rnd()` sequence land
+after every other NPC in this world that times itself off that same sequence, disturbing nothing
+built earlier on the mountain.
+
+It isn't a friend to meet — same as the ladybug and the tiger beetle — Frosty Peak's own friend count
+is unaffected. Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console
+warnings. One unrelated check — Sunny Shore's kite-flying height/line-length assertion — flickers
+between pass and fail run to run on both this code and the unmodified original (confirmed by stashing
+this round's changes and re-running four times against the prior commit); it's a pre-existing,
+timing-based flake in that check, not a regression from tonight's round. No visual check was possible
+in this environment (no browser, no Playwright) — only the stub-three test suite and the headless
+probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 543 — a tetherball pole for Victorian
+
+The Neighborhood, Candy Land and Robot City have all had their own tetherball pole since round 508's
+own list of playground games (tetherball, badminton, tug-of-war, archery, sack races) went round every
+world in turn — Victorian, for all its badminton net and its tug-of-war, never got the one game played
+standing still, swinging a ball on a rope round and round a post. **Two off-duty stable hands now keep
+a rally going on the quiet grass west of the pinwheel's own garden**, well clear of the bootblack and
+the juggler working the lane below. *"Forty-one, and she's still mine!"* *"Mind your tail, puss — that
+ball's got more swing in it than it looks."* *"Groom'll want us back inside in a minute. One more go."*
+
+No new class and no new mesh: the exact same `Tetherball` (`55-npcs.js`) the other three worlds already
+use, unchanged, just a fresh pair of `makeHuman` workers in flatcaps and shirtsleeves and a spot —
+unlike Robot City's own pair, Victorian has no `makeRobot()` rig to work around, so this is plain
+`makeHuman` the way every other NPC in this town already is.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, clicking
+the real start button and then `game.travel(3, 'from-prev')`, waiting out both the load and the
+fade-lock timers rather than guessing a frame count) sampled every NPC's own position every fifth frame
+over 1200 simulated frames, then swept the pole at (-70, -30) and both workers' own stations two metres
+either side of it against both those samples and every one of the town's 577 physics boxes: the worst
+of the three points came back clear by 13.0 m of the nearest box and 16.1 m of the nearest other soul —
+short of the radius (88) where `victorianRegion`'s own procedural fill takes over, and well off the
+pinwheel (-60.5, -7.5), the bootblack (-48, -20) and the juggler (-28, -20.3).
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings, 95% of
+Victorian's own ground still walkable. Victorian's own friend count rises to 93 with the two new
+stable hands. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite and the headless probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
+
+## Round 544 — a tetherball pole for Sunny Shore
+
+Round 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack races) gave
+the Neighborhood, Candy Land, Robot City and Victorian a tetherball pole each — Sunny Shore, for all its
+volleyball net and beach badminton, never got the one game played standing still, swinging a ball on a
+rope round and round a post. **Two kids now keep a rally going on the dry dune sand well inland of the
+balloon vendor.** *"Round and round — same as every other game on this coast, just sandier."* *"Watch
+the rope, puss — mind your tail."* *"I'm up to thirty wraps. I think I lost count."*
+
+No new class and no new mesh: the exact same `Tetherball` (`55-npcs.js`) the other four worlds already
+use, unchanged — it already asks `game.physics.ground0()` for its own pole, ball and each player's
+footing every single frame, so the real slope under this dune cost nothing extra, unlike the volleyball
+net and tug-of-war rope that needed `placeT`/`boxT` to follow the ground. The two players are just
+`beachPerson(child)` kids, the same helper every other child on this beach already comes from (which
+adds its own rig to the scene, so no separate `W.add()` call was needed here).
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+`game.travel(4, 'from-hub')` then 1200 simulated frames with every NPC's and the squirrel's own
+position sampled every 15th frame) swept a grid of the dry dune sand (x ≤ 10, radius 20-50, short of
+the radius (58) where `beachRegion`'s own procedural fill takes over) against both those samples and
+every one of the beach's 217 physics boxes, checking the pole's own spot and both players' footing two
+metres either side of it: (-26, 2) came back clear by just over 6 m at its tightest point — tighter
+than some earlier rounds, since this beach is one of the most crowded worlds by now, but still clear
+of the balloon vendor's stand at (-25, -6) and well short of the marbles ring at (-33, 20).
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings, 99% of
+Sunny Shore's own ground still walkable. Sunny Shore's own friend count rises to 70 with the two new
+kids. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite and the headless probe above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
+
+## Round 545 — a tetherball pole for Frosty Peak
+
+The Neighborhood, Candy Land, Robot City, Victorian and Sunny Shore have all had a tetherball pole
+since round 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack
+races) went round every world in turn — Frosty Peak, for all its tug-of-war, archery range, horseshoes
+and curling, never got the one game played standing still, swinging a ball on a rope round and round a
+post. **Two kids now keep a rally going on open snow east of the marching penguins' own drill line.**
+*"Round and round — same as every other game on the mountain, just colder."* *"Mind the rope, puss —
+mittens or not, it still stings."* *"Forty wraps. No, forty-one. I keep losing count in the cold."*
+
+No new class and no new mesh: the exact same `Tetherball` (`55-npcs.js`) the other five worlds already
+use, unchanged — it already asks `game.physics.ground0()` for its own pole, ball and each player's
+footing every frame, so the gentle slope out here cost nothing extra. Both kids come from this world's
+own `kid()` helper, the same one every other Frosty Peak child already comes from, which already adds
+its own rig to the scene, so no separate `W.add()` call was needed here.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, built the
+real mountain with `game.start('new')` then `game.travel(5, 'from-hub')`) sampled every NPC's own
+position every 5th frame over 1500 simulated frames, then swept a grid of the open snowfield (radius
+12-56, short of the radius (58) where `snowRegion`'s own procedural fill takes over) against both those
+samples and every one of the mountain's physics boxes, checking the pole's own spot and both kids'
+footing two metres either side of it: (21, -52) came back clear by 9.1 m at its tightest point, east of
+the marching penguins' own line ((55, -5)-(55, 3)) and well short of where the fill takes over.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings. One
+unrelated failure showed up on a single run out of several (`Victorian: the horse and carriage are in
+the world and on the move`) — the pre-existing, timing-based flake the test file's own comments have
+documented since round 219 (the bobby's patrol crossing the carriage lane mid-measurement), confirmed
+by reverting this round's change and seeing the exact same intermittent failure on the unmodified code
+too; three clean reruns of both the modified and unmodified code back it up. Frosty Peak's own friend
+count rises from 67 to 69 with the two new kids. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 546 — a tetherball pole for Whisper Woods
+
+Round 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack races) had
+left exactly one gap after round 545: six worlds now had a tetherball pole, but Whisper Woods, for all
+its archery range and vine tug-of-war, never got the one game played standing still, swinging a ball on
+a rope round and round a post. **Two forest kids now keep a rally going on open ground east of the
+glade**, well clear of every mushroom, the tug-of-war vine and the jump-roper's own clearing. *"Round
+and round — same as every other game in these woods, just leafier."* *"Mind the rope, puss — it
+doesn't care whose tail is in the way."* *"I'm up to twenty wraps. No, I lost count again."*
+
+No new class and no new mesh: the exact same `Tetherball` (`55-npcs.js`) the other six worlds already
+use, unchanged. Two plain `makeHuman()` kids, built and `W.add()`'d the same way Robot City's workers
+and Candy Land's own pair already are, since Whisper Woods has no single child helper every kid comes
+from the way Frosty Peak's `kid()` or the beach's `beachPerson()` do.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+`game.start('new')` then `game.travel(6, 'from-hub')`) sampled every NPC's own position every 7th frame
+over 2400 simulated frames, then swept a grid of the open woodland floor (radius 12-56, short of the
+radius (58) where `forestRegion`'s own procedural fill takes over) against both those samples and every
+one of the wood's 323 physics boxes: (41, -27) came back clear by 18.3 m at its tightest point — well
+east of every hand-placed mushroom and south of the tug-of-war vine at (-10, -40).
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings, 98% of
+Whisper Woods' own ground still walkable. Whisper Woods' own friend count rises to 68 with the two new
+kids — tetherball is now in all seven worlds. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 547 — a badminton net for Robot City
+
+Round 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack races) had
+one gap left in `Badminton`'s own column: Victorian and Sunny Shore both have a net, but Robot City,
+for all its tetherball pole and its two haulers straining on a power cable, never got the other racket
+game. **Two off-shift contractors now keep a shuttlecock going over a low net** on the bare concrete
+well south-west of the city, past the last ring of towers. *"Quietest spot in the whole city. That's
+the appeal."* *"Careful, puss — that net's the only thing out here taller than you."* *"Forty-one. No —
+forty-two. The wind off the vents keeps nudging my count."*
+
+No new class and no new mesh: the exact same `Badminton` (`55-npcs.js`) and `makeVolleyballNet`
+(`62-props-nature.js`) Victorian and Sunny Shore already use. `Badminton` reaches into `rig.spine`,
+which `makeRobot()`'s rig never sets — the same reason the tetherball pair, mechanic, painter and every
+other break-room worker in this city are human contractors rather than robots — so this pair is human
+too, on a fresh wardrobe.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, the real
+city built with `game.start('new')` then `game.travel(2, 'from-hub')`) sampled every NPC's own position
+every 6th frame over 2400 simulated frames, then swept the net at (-28, -86) and both players' own
+stations (±2.8 m either side of it) and the net posts (±1.6 m) against both those samples and all 300
+of the city's physics boxes: the worst of the five points came back clear by 16.3 m — one of the gaps
+between the ring of towers out past radius 72, short of the radius (98) where robotRegion's own
+procedural fill takes over.
+
+Full suite (`node test/run.mjs`) ran clean on two separate runs: exit 0, all 274 checks `ok`, 0 console
+warnings, 88% of Robot City's own ground still walkable. Robot City's own friend count rises from 78 to
+80 with the two new contractors. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

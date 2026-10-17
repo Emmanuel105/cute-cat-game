@@ -38,6 +38,19 @@ function buildBeach(game, entry) {
   // this world's own seeded `r` at build time, so it costs no later wardrobe or colour draw.
   { const pierLines = ['🌊 "Water as far as the eye can go. Somewhere under it, fish."', '🪵 "Salt-bleached boards, creaking the whole way out."', '🎣 "Best seat in the house for watching somebody else not catch anything."'];
     game.addInteractable({ obj: pier, radius: 4, label: () => 'Look out over the pier', onUse: () => { SFX.click(); game.toast(rnd.pick(pierLines), 3000); } }); }
+  // the fisherman at the far end has never caught a thing, but the one creature who'd actually beat him
+  // to it never showed up. A pelican now perches on the pier's own handrail partway out, between the
+  // "look out" spot at the landward end and the angler's own greet circle at the far end, well clear of
+  // both. `makePelican()` (new, next to the seagull in `56-npcs-wild.js`) stands on folded legs, scanning
+  // the water with a slow head-turn and, every so often, tipping its jaw open and shut as if it's just
+  // swallowed something — the fisherman never gets that satisfaction. Added as a child of the pier's own
+  // group rather than positioned in world space, so it inherits the pier's rotation for free and sits
+  // exactly on the real rail geometry (local x=1.45, the same rail the posts are built on, y=1.56 at the
+  // rail's own top) without any trig of its own. No new physics box — perched above head height, the
+  // same "perched; only animates" trick the owls and Frosty Peak's seal already use — so it can't block
+  // the deck the cat actually walks.
+  { const pelican = makePelican(); pelican.group.position.set(1.45, 1.56, 5); pier.add(pelican.group);
+    let pt = r() * 10; U.push((dt) => { pt += dt; pelican.animate(0, false, dt, pt); }); }
   const lighthouse = makeLighthouse(game, 12, -46); U.push(lighthouse.userData.update);
   // the Victorian bell tolls, the factory whistle blows, Whisper Woods' owl hoots — but Sunny Shore's
   // own lighthouse, sweeping its beam every second since the world was first built, had never once
@@ -92,7 +105,22 @@ function buildBeach(game, entry) {
     game.npcs.push(new Sitter(game, guard, { x: 13, z: 24, ry: PI / 2, seat: 1.87, cryIcon: '🛟',
       cries: ['Swim between the flags, please!', 'Not a cloud in the sky today.', "Mind that current, puss — respect the sea."] })); }
   // the guard's own flags marking the swim zone, one either side of the chair — she names them, but they never actually stood there before
-  for (const [fx, fz, ph] of [[13, 18, 0], [13, 30, 2.1]]) { placeT(game, U, makeSwimFlag(ph), fx, fz, 0); boxT(game, fx, fz, 0.3, 2.3, 0.3, { cam: false }); }
+  let swimFlags = [];
+  for (const [fx, fz, ph] of [[13, 18, 0], [13, 30, 2.1]]) { swimFlags.push(placeT(game, U, makeSwimFlag(ph), fx, fz, 0)); boxT(game, fx, fz, 0.3, 2.3, 0.3, { cam: false }); }
+  // the Neighborhood's park lamp, a Robot City tower, a Victorian lamp post and a Whisper Woods tree
+  // have all carried a stapled notice by now (rounds 462-465) — Sunny Shore, the only world with a
+  // ready-made post *and* no notice at all, finally gets one. `makeBeachNotice()` (new, right after
+  // `makeForestNotice()` in `60-props.js`) is parented onto the south flag's own pole, the same
+  // "child of an existing group" trick every notice before it used: no new mesh, no new physics box —
+  // the pole's own 0.3 x 2.3 x 0.3 box two lines up already covers the 0.012 m sheet pinned to it.
+  // `game.addInteractable` keys off the flag pole group itself; the north flag is 12 m off and the
+  // lifeguard chair's own box (half-extent 0.55 m in z, centred six metres further north at z=24)
+  // stays well clear of this radius too.
+  { const notice = makeBeachNotice(); notice.position.set(0.14, 1.3, 0); swimFlags[0].add(notice);
+    const beachLines = ['🏖️ "LOST: one bucket and spade, bright red. Last seen somewhere under all this sand."',
+      '🏖️ "Reward: a seashell, slightly chipped." The cat still isn\'t tempted.',
+      '🏖️ Someone has drawn a little crab next to the handwriting, in case the point wasn\'t clear enough.'];
+    game.addInteractable({ obj: swimFlags[0], radius: 2.2, label: () => 'Read the notice', onUse: () => { SFX.click(); game.toast(rnd.pick(beachLines), 3000); } }); }
   for (let i = 0; i < 12; i++) { const a = r() * TAU, d = r.range(2.6, 6); placeT(game, U, makeRock(r, 0x8a857a, r.range(0.8, 1.8)), 12 + cos(a) * d, -46 + sin(a) * d, 0); }
   // an artist sets up an easel on the clear sand south of the lighthouse, painting its red-and-white bands — Sunny Shore never had one
   { const px = 0, pz = -40, ry = atan2(12 - px, -46 - pz);
@@ -887,6 +915,39 @@ function buildBeach(game, entry) {
     const bottleLines = ['📜 "The ink\'s run, but one word still reads clear: \'HELP\'. Or maybe \'KELP\'."', '📜 "No name, no date — just a wobbly little drawing of a boat."', '📜 "Whoever threw this one in clearly didn\'t expect a cat to find it first."'];
     game.addInteractable({ obj: bottle, radius: 2.2, label: () => 'Read the message in the bottle', onUse: () => { SFX.click(); game.fx.emit(bx, y0 + 0.2, bz, { count: 10, colors: [0x7fd7ff, 0xffffff, 0xe8dcb8], speed: 0.9, up: 1.0, life: 0.7, gravity: 1.6 }); game.toast(rnd.pick(bottleLines), 3000); } }); }
 
+  // the shell, the chest and the bottle above are all things the cat finds and triggers with a look or
+  // an `E` — but Whisper Woods' giant flower (round 442) already proved a prop can react on its own, no
+  // button needed, just by noticing the cat get close. Nothing on this whole coast ever did that. A
+  // shallow tide pool now sits in the dry sand south of the lighthouse: a ring of weathered rocks round
+  // a disc of water, a beached starfish and a few shells on the floor, and a small sea anemone standing
+  // at the centre with its crown of tentacles splayed open — until the cat wanders within 3 m, when
+  // they curl shut and pull in tight, same as a real anemone recoiling from a prodding finger, then
+  // uncurl again once the cat wanders off. The opposite reaction to that flower's bloom, on purpose.
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses) built
+  // the real Sunny Shore (`game.travel(4, 'from-hub')`), sampled every NPC's and the squirrel's own
+  // position every quarter second over 300 simulated seconds (so no wandering crab, turtle, sunbather
+  // or dolphin mid-circuit could slip past unnoticed), then swept a 0.5 m grid of the dry sand (x in
+  // [1, 11], short of the wet-sand zone that starts at x=12) against both those samples and every one
+  // of the beach's 219 physics boxes: (5, -48) came back clear by 5.5 m of the nearest box and 5.2 m of
+  // the nearest other soul — south of the lighthouse keeper and the chip stand, on a near-flat stretch
+  // of sand (ground height varying only 0.06 m across the whole footprint). No physics box of its own,
+  // same as the glowing pond in Whisper Woods: a shallow puddle the cat can walk straight through.
+  { const tpx = 5, tpz = -48;
+    const pool = makeTidePool(r);
+    const poolLines = ['🪸 "Touch the water, and watch it flinch — not you, puss, the anemone."', '⭐ "That starfish hasn\'t moved all week. Starfish don\'t, much."', '🪸 "Pulls in tight the second a shadow crosses it. Give it a minute - it opens right back up."'];
+    let poolOpen = 1, poolNear = false;
+    pool.group.userData.update = (dt, t) => {
+      const c = game.cat.group.position, isNear = dist2(c.x, c.z, tpx, tpz) < 9;
+      poolOpen = damp(poolOpen, isNear ? 0 : 1, 5, dt);
+      for (const h of pool.tentacles) h.rotation.x = 0.15 + poolOpen * 0.85;
+      pool.anemone.scale.setScalar(0.72 + poolOpen * 0.28);
+      pool.water.map.offset.x = t * 0.01;
+      if (isNear && !poolNear) { poolNear = true; SFX.wave(); game.toast(rnd.pick(poolLines), 3000);
+        game.fx.emit(tpx, P.ground0(tpx, tpz) + 0.15, tpz, { count: 8, colors: [0xbfe8ff, 0xffffff], speed: 0.6, up: 0.6, life: 0.6, gravity: 1.5 }); }
+      if (!isNear) poolNear = false;
+    };
+    placeT(game, U, pool.group, tpx, tpz, r() * TAU); }
+
   // the Neighborhood (395), Robot City (425), Victorian (426) and Candy Land (427) have all had a go at
   // the same back-garden toss game by now — a horseshoe, a coupling ring, a brass quoit, a gummy ring —
   // but nobody on this whole stretch of coast ever thought to toss anything. A coiled length of ship's
@@ -946,6 +1007,45 @@ function buildBeach(game, entry) {
       hat: r.chance(0.5) ? 'cap' : null, hatColor: 0x2f4f4f, shorts: true, scarf: null, jacket: null, bag: null, backpack: null, axe: true, beard: r.chance(0.3) }); W.add(cutter.group);
     game.npcs.push(new Chopper(game, cutter, { x: cx, z: cz, ry: atan2(sx - cx, sz - cz),
       cries: ["Dry enough by sundown, with this sun.", 'Careful, puss — mind the chips.', "Tonight's fire won't build itself."] })); }
+  // every ball game on this beach so far has been an open toss back and forth — the keep-it-up pair, the
+  // frisbee, the catch down by the dunes — but no world in the whole game has ever had an actual net to
+  // play over, the one piece of beach-volleyball kit the sand itself is crying out for. **A volleyball
+  // net now stands on the open dry sand inland of the dunes, two sun-bleached posts and a low cord net,
+  // with two players lobbing a white, blue and yellow ball back and forth over it.**
+  //
+  // New `makeVolleyballNet()` (`62-props-nature.js`, right after `makeSurfboard`): two posts, a white top
+  // tape and six horizontal plus seven vertical cords, all `noInk`'d like the spiderweb's own silk
+  // strands so the thin lines don't ink solid. No new controller: the exact same `BallGame`
+  // (`55-npcs.js`) the Neighborhood's, Candy Land's, Frosty Peak's and Whisper Woods' own catch games
+  // already use, unchanged — its hand-to-hand lob already arcs 2.2 m above the throwing hand at the
+  // midpoint of its flight, more than enough clearance over a net barely 1.3 m tall, so the ball
+  // visibly clears it on every pass without the controller needing to know the net is even there. The
+  // ball itself reuses the same three-material sphere trick Frosty Peak's and Victorian's own catch
+  // balls already use (one base sphere plus two scaled overlays for a second and third colour), just
+  // white with a blue and a yellow wedge instead of orange and green, for an actual volleyball rather
+  // than a beach ball.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses, with the real beach built
+  // via `game.start('new')` then `game.travel(4, 'from-hub')`) sampled every NPC's own position every
+  // third of a second over 300 simulated seconds, then swept the dry sand west of the dunes' own inner
+  // edge (radius 18-50, short of the radius (58) where `beachRegion`'s own fill takes over) against both
+  // those samples and every one of the beach's physics boxes: (-18, -6) came back clear by 4.1 m of the
+  // nearest box and 4.5 m of the nearest other soul across the whole footprint the net and its players'
+  // own sway need (±2.5 m across, ±3.5 m along the court), with the ground flat to within 0.21 m
+  // throughout — comfortably inside the hand-built heart of the world, well clear of the palm grove at
+  // (-20, 6) and the hammock further south.
+  { const cx = -18, cz = -6, gap = 4.6;
+    const net = makeVolleyballNet(); placeT(game, U, net, cx, cz, 0);
+    for (const sx of [-1.9, 1.9]) boxT(game, cx + sx, cz, 0.16, 1.35, 0.16, { cam: false });
+    const ball = mesh(G.sphere(0.17, 12, 8), mat(0xf5f3ec, { roughness: 0.5 }), { parent: W });
+    mesh(G.sphere(0.171, 12, 8), mat(0x1f6fb0, { roughness: 0.5 }), { sx: 0.55, sz: 0.55, parent: ball });
+    mesh(G.sphere(0.171, 12, 8), mat(0xffd54a, { roughness: 0.5 }), { sx: 0.55, sz: -0.55, parent: ball });
+    ball.position.set(cx, P.ground0(cx, cz) + 0.95, cz);
+    const vbA = beachPerson(r.chance(0.5), false), vbB = beachPerson(r.chance(0.5), false);
+    const vbGame = new BallGame(game, vbA, vbB, ball, { cx, cz, gap });
+    game.npcs.push(vbGame); greetable(game, { rig: vbA }); greetable(game, { rig: vbB });
+    const netLines = ['🏐 "Out by a hair. Every single time."', '🏐 "Best two out of three. Again."', '🏐 "Mind the net, puss — it\'s not a hammock."'];
+    game.addInteractable({ obj: net, radius: 2.6, label: () => 'Watch the volleyball', onUse: () => { SFX.click(); game.toast(rnd.pick(netLines), 3000); } }); }
   // Victorian has had a hot air balloon drifting over its rooftops since round 438 and Robot City an
   // airship since round 439 — Sunny Shore's own sky, past the gulls and the lighthouse beam, never had
   // anything fly all the way across it. **A canary-yellow biplane now loops a slow circuit above the
@@ -967,7 +1067,8 @@ function buildBeach(game, entry) {
   // Drifts entirely on the world clock `t` (bob, roll, the propeller's own spin and the banner's own
   // trailing sway all keyed off `t` alone) from one fixed starting angle drawn once off this world's
   // own local `r()`, so it costs no later wardrobe or layout pick — placed last of everything this
-  // build adds, after the woodcutter, so even that one draw disturbs nothing built earlier on the sand.
+  // build adds, after the woodcutter and the volleyball game, so even that one draw disturbs nothing
+  // built earlier on the sand.
   { const planeR = 140, planeH = 55, planeSpeed = TAU / 200, planePhase = r() * TAU;
     const biplane = group(0, 0, 0);
     const hullM = mat(0xffd54a, { roughness: 0.55 });
@@ -1004,6 +1105,127 @@ function buildBeach(game, entry) {
     };
     place(game, U, biplane, cos(planePhase) * planeR, sin(planePhase) * planeR, 0, planeH); }
 
+  // the dry sand well south-west of everything else — past the volleyball court, short of the dune
+  // ridge — has sat empty since the beach was first built. A kid now bounces in place on a pogo stick
+  // out there, new `PogoHopper` (`55-npcs.js`, right after `FrisbeePlayer`): the same grounded,
+  // in-place bounce `Bouncer`'s trampoline already uses, minus the trampoline — the pole is parented
+  // straight to the body and hops with it, its own coiled spring squashing at the bottom of each hop
+  // and stretching at the top.
+  // Placed at (-28, -20): a headless probe (the same stub-three harness `test/run.mjs` itself uses,
+  // `game.start('new')` then `game.travel(4, 'from-hub')`) sampled every NPC's own position every
+  // quarter second over 300 simulated seconds, then swept the dry sand west of the volleyball court
+  // (radius 20-45, short of the radius (58) where `beachRegion`'s own fill takes over) against both
+  // those samples and every one of the beach's physics boxes: (-28, -20) came back clear by 12.77 m of
+  // the nearest box and 14.07 m of the nearest other soul, with the ground flat to 0.000 m across the
+  // kid's own footprint.
+  { const pogoKid = beachPerson(r.chance(0.5), true);
+    game.npcs.push(new PogoHopper(game, pogoKid, r.pick([0xff6f3c, 0x3fae9a, 0xf2c744]), { x: -28, z: -20, ry: r.range(0, TAU),
+      cries: ['Boing! Boing! Boing!', "One thousand bounces. Not stopping to count again.", "Don't look — actually, look, I'm good at this."] })); }
+  // Victorian has had a rally over a low net since round 525 — the exact rhythm beach badminton
+  // plays at in real life, shuttle and all, just on sand instead of a town green. Sunny Shore had
+  // every open-toss ball game (keep-it-up, frisbee, catch, volleyball) but never a net game of its
+  // own on dry land. **A badminton net now stands on a quiet stretch of dry sand south of the
+  // volleyball court, two players in beach wear knocking a shuttlecock back and forth over it,
+  // feet bare in the sand.**
+  //
+  // No new code at all: the same `Badminton` class (`55-npcs.js`) and `makeVolleyballNet()`
+  // (`62-props-nature.js`) Victorian's own rally already uses, just with `placeT`/`boxT` in place
+  // of the flat-floor town's `place`/`P.addBox`, since the sand underfoot here has real slope the
+  // same way every other hand-placed prop on this beach already accounts for — and a fresh
+  // `makeWardrobe` of beach-bright shirts instead of the town's muted ones, `shorts: true` instead
+  // of trousers, no hat, jacket or bag, just a `racket` in each hand.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses, `game.start('new')`
+  // then `game.travel(4, 'from-hub')`) sampled every NPC's own position every quarter second over
+  // 300 simulated seconds, then swept the net and both players' own footprint (±1.8 m across,
+  // ±3.4 m along the court) against both those samples and every one of the beach's 323 physics
+  // boxes: (-18, -38) came back clear by 9.18 m of the nearest box and 9.57 m of the nearest other
+  // soul across the whole footprint, with the ground flat underfoot — well south of the hammock
+  // (-10, -40) and the pogo kid above, short of the radius (58) where `beachRegion`'s own fill
+  // takes over.
+  { const cx = -18, cz = -38, gap = 5.6, halfW = 1.8;
+    const net = makeVolleyballNet(halfW, 0xf0ece4, { postH: 1.6, netH: 0.78 });
+    placeT(game, U, net, cx, cz, 0);
+    for (const sx of [-halfW, halfW]) boxT(game, cx + sx, cz, 0.16, 1.6, 0.16, { cam: false });
+    // the shuttlecock: a pale cork and a flared cone standing in for the feathers, nose staying down
+    const shuttle = group(cx, 0, cz, W);
+    mesh(G.sphere(0.045, 10, 8), mat(0xf0ead6, { roughness: 0.6 }), { y: 0, parent: shuttle });
+    mesh(G.cone(0.075, 0.16, 10), mat(0xfbfaf4, { roughness: 0.8 }), { y: 0.11, rx: PI, parent: shuttle });
+    const bmWard = makeWardrobe(r, { shirts: [0xff7043, 0x4fc3f7, 0xfff176], pants: [0x2f6fd6, 0xd62839, 0x2e9e6e], shoes: [0xefe7d8, 0xd7a86e] });
+    const bA = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: bmWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, shorts: true, glasses: r.chance(0.4), glassColor: 0x203040, racket: true });
+    const bB = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: bmWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, shorts: true, glasses: r.chance(0.4), glassColor: 0x203040, racket: true });
+    W.add(bA.group); W.add(bB.group);
+    const beachBadmintonLines = ['🏸 "Careful, the wind off the water adds a wobble."', '🏸 "Sand\'s terrible for footwork, wonderful for falling."', '🏸 "That one nearly went in the sea."'];
+    game.npcs.push(new Badminton(game, bA, bB, shuttle, { cx, cz, gap, cries: beachBadmintonLines })); }
+
+  // Frosty Peak, Robot City and Whisper Woods have all had two haulers dig in and heave on a rope by
+  // now (`TugOfWar`, 55-npcs.js) — Sunny Shore, for all its net games and open-toss ball games, never
+  // had one. **Two beachgoers now heel into the dry sand on the quiet dune north-west of the huts and
+  // heave on a length of ship's rope between them, never quite settling either way.** "Heave! Heave!
+  // Nobody's budging an inch!" "Careful, puss — mind the rope, it bites worse than a crab." "Dead
+  // heat again. Sand's no easier to dig into than snow, turns out."
+  //
+  // No new class and no new mesh beyond the rope and its little flag: the exact same `TugOfWar`
+  // (`55-npcs.js`) Frosty Peak's, Robot City's and Whisper Woods' own tug-of-war already use,
+  // unchanged, with the same rope-and-flag dressing those three already build around it — just two
+  // `makeHuman` haulers in a fresh beach wardrobe (shorts, no hat or jacket) rather than a snowsuit
+  // or factory overalls.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // since there's no browser here to look at it) built the real Sunny Shore (`game.start('new')` then
+  // `game.load(4, 'from-hub')`), sampled every NPC's and the squirrel's own position every fifth frame
+  // over 900 simulated frames (long enough for every crab, turtle, sunbather, dolphin, dog and dancer
+  // on this whole shore to range fully), then swept a grid of the dry dune sand (x ≤ 10, clear of the
+  // wet-sand zone that starts at x=12, radius 5-54, short of the radius (58) where `beachRegion`'s own
+  // fill takes over) against both those samples and every one of the beach's own physics boxes:
+  // (-50, 20) came back clear by 7.92 m of the nearest box and 8.08 m of the nearest other soul at its
+  // own centre, with both haulers' own stations 1.3 m either side of it (rope along world X) clear by
+  // 6.68 m and 8.32 m of the nearest box and 8.00 m and 8.35 m of the nearest other soul, ground height
+  // varying only about 0.1 m across the whole footprint — north-west of the furthest dune palms, well
+  // short of every other hand-placed game on this beach.
+  { const tugWard = makeWardrobe(r, { shirts: [0x8a3a3a, 0x3a5a6a, 0x4a6a4a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0xefe7d8, 0x8d6e63] });
+    const haulerA = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: tugWard }),
+      shorts: true, hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.3) }); W.add(haulerA.group);
+    const haulerB = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: tugWard }),
+      shorts: true, hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.3) }); W.add(haulerB.group);
+    const tug = new TugOfWar(game, haulerA, haulerB, { x: -50, z: 20, ry: PI / 2, gap: 2.6,
+      cries: ["Heave! Heave! Nobody's budging an inch!", 'Careful, puss — mind the rope, it bites worse than a crab.', "Dead heat again. Sand's no easier to dig into than snow, turns out."] });
+    game.npcs.push(tug);
+    const [A, B] = tug.ctls, ropeM = mat(0x8a6a42, { roughness: 0.9 }), ay = P.ground0(A.x, A.z) + 0.75, by = P.ground0(B.x, B.z) + 0.75;
+    const ropeGroup = group((A.x + B.x) / 2, (ay + by) / 2, (A.z + B.z) / 2, W);
+    ropeGroup.lookAt(B.x, by, B.z);
+    noInk(mesh(G.cyl(0.035, 0.035, Math.hypot(B.x - A.x, by - ay, B.z - A.z), 8), ropeM, { rx: PI / 2, parent: ropeGroup }));
+    const flag = group(0, 0, 0, W); noInk(mesh(G.box(0.03, 0.14, 0.4), mat(0xd62839, { roughness: 0.7 }), { parent: flag }));
+    U.push(() => { const frac = 0.5 + clamp(tug.tension, -1, 1) * 0.12;
+      flag.position.set(lerp(A.x, B.x, frac), lerp(ay, by, frac) + 0.03, lerp(A.z, B.z, frac)); flag.rotation.y = ropeGroup.rotation.y; }); }
+
+  // the Neighborhood, Candy Land, Robot City and Victorian have all had a tetherball pole since round
+  // 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack races) went
+  // round every world in turn — Sunny Shore, for all its net games and open-toss games, never got the
+  // one played standing still, swinging a ball on a rope round and round a post. Two kids now keep a
+  // rally going on the dry dune sand well inland of the vendor's stand and the marbles ring.
+  //
+  // No new class and no new mesh: the exact same `Tetherball` (`55-npcs.js`) the other four worlds
+  // already use, unchanged — it already asks `game.physics.ground0()` for its own pole, ball and each
+  // player's footing every frame, so the real slope under this dune cost nothing extra. Two
+  // `beachPerson(child)` kids stand in for the other worlds' own fresh `makeHuman` pairs, since every
+  // other child on this beach already comes from that one helper (which adds each rig to the scene
+  // itself, so no separate `W.add()` here).
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // `game.travel(4, 'from-hub')` then 1200 simulated frames, every NPC's and the squirrel's own
+  // position sampled every 15th frame) swept a grid of the dry dune sand (x ≤ 10, radius 20-50, short
+  // of the radius (58) where `beachRegion`'s own fill takes over) against both those samples and every
+  // one of the beach's 217 physics boxes, checking the pole's own spot and both players' footing two
+  // metres either side of it: (-26, 2) came back clear by just over 6 m at its tightest point, inland
+  // of the balloon vendor at (-25, -6) and well short of the marbles ring at (-33, 20).
+  { const boy = beachPerson(false, true);
+    const girl = beachPerson(true, true);
+    game.npcs.push(new Tetherball(game, boy, girl, { x: -26, z: 2,
+      cries: ["Round and round — same as every other game on this coast, just sandier.", 'Watch the rope, puss — mind your tail.', "I'm up to thirty wraps. I think I lost count."] })); }
+
   beachRegion(game, U, r, 58, SHORE_LIMIT - 8);
   // the headland behind the dunes: hills and peaks inland only, never out to sea
   makeHorizon(game, r, { clear: SHORE_LIMIT + 8, hill: 0x8c9a58, rock: 0x7a7060, rock2: 0x8a8272, snowLine: 58, peaks: 26, woodCount: 260, woodHue: [0.18, 0.28], woodLight: [0.18, 0.3], keep: (x) => x < -SHORE_LIMIT * 0.15 });
@@ -1015,6 +1237,32 @@ function buildBeach(game, entry) {
   C.add('fish', 31, -10, 0.6); C.add('star', 12, -40); C.add('yarn', -18, 30); C.add('mouse', 2, 14); C.add('fish', 20, 30); C.add('star', -36, -26); C.add('yarn', -8, -36); C.add('mouse', -40, 20);
   game.fx.setAmbient({ count: 40, radius: 20, colors: [0xffffff, 0xfff6d5], rise: 0.4, drift: 0.5, life: 3, height: 2.5, yMin: 0.3 });
   makeDayNight(game, U, W);
+  // the Neighborhood has a raccoon at a bin, Robot City a scrap-bug, Candy Land a gumdrop toad and
+  // Whisper Woods a ladybug — every world had its own small, unregarded floor-level creature except
+  // this one and Frosty Peak. A tiger beetle now scuttles the dry dune sand west of the tug-of-war.
+  // `makeTigerBeetle()` in `56-npcs-wild.js`, right after `makeLadybug()`, is that same rig's
+  // sun-bleached cousin: longer and flatter, an iridescent green-gold shell with a pale diagonal
+  // marking per side instead of spots, and longer running legs — real tiger beetles are among the
+  // fastest animals alive relative to their own size. Wired to the same `Hopper` controller every
+  // other tiny ground creature already uses. Pure ambient wildlife — no greeting, no effect on the
+  // friend count, nothing new to collect.
+  //
+  // A headless probe (`game.start('new')` then `game.load(4, 'from-hub')`, 1200 simulated frames,
+  // every NPC's own position sampled every fifth frame) swept the dry dune sand (x ≤ 10, west of the
+  // wet-sand zone that starts at x=12, radius ≤ 54, short of the radius (58) where `beachRegion`'s own
+  // fill takes over) against both every one of the beach's 217 physics boxes and those samples:
+  // (-8, 24) came back clear by 8.8 m of the nearest box and 6.1 m of the nearest wandering soul,
+  // comfortably past the 0.1 m leash given here, and well off every hand-placed game and hut on this
+  // beach.
+  //
+  // Built dead last of everything this world adds, after the tug-of-war, so `Hopper`'s own three
+  // unconditional draws off the *shared* `rnd()` sequence (idle timer, idle phase, starting heading —
+  // the same draws the raccoon's and the scrap-bug's own comments already warned future rounds about)
+  // land after every other NPC in this world that times itself off that same sequence, and disturb
+  // nothing built earlier on the sand.
+  { const rig = makeTigerBeetle();
+    game.npcs.push(new Hopper(game, rig, { x: -8, z: 24, leash: 1.0, r: 0.08, dist: [0.15, 0.35], dur: 0.22, height: 0.05, idle: [1, 3],
+      onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } })); }
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

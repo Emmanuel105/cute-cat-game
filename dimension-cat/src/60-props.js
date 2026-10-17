@@ -530,6 +530,64 @@ function makeCheeseWheel() {
   }
   return g;
 }
+/** A tied bundle of folded newspapers, for a newsboy to hold up to the street. */
+function makeNewspaperBundle() {
+  const g = new THREE.Group(), paper = mat(0xe8e2d0, { roughness: 0.95 });
+  for (let i = 0; i < 6; i++) mesh(G.box(0.17, 0.012, 0.12), paper, { y: i * 0.013, ry: (i % 2) * 0.1 - 0.05, z: (i % 3 - 1) * 0.006, parent: g });
+  mesh(G.cyl(0.006, 0.006, 0.17, 6), mat(0x8a3a3a, { roughness: 0.7 }), { y: 0.04, rz: PI / 2, parent: g });
+  mesh(G.cyl(0.006, 0.006, 0.12, 6), mat(0x8a3a3a, { roughness: 0.7 }), { y: 0.04, rx: PI / 2, parent: g });
+  return g;
+}
+/** A bootblack's shine box: a low wooden stand with a curved foot rest on top, a tin of polish and a brush left lying on the lid. Sits on the ground beside a kneeling bootblack. */
+function makeShineBox() {
+  const g = new THREE.Group(), wood = mat(0x6a4426, { roughness: 0.9, map: TEX.planks(20, 20) }), dark = mat(0x3a2414, { roughness: 0.85 });
+  mesh(G.box(0.3, 0.16, 0.22), wood, { y: 0.08, parent: g });
+  mesh(G.box(0.3, 0.02, 0.22), dark, { y: 0.17, parent: g });
+  mesh(G.box(0.22, 0.03, 0.05), dark, { y: 0.21, z: 0.03, rx: 0.05, parent: g });   // the curved foot rest a boot goes up on
+  mesh(G.cyl(0.035, 0.035, 0.025, 12), mat(0x2a2a2a, { roughness: 0.5, metalness: 0.3 }), { x: -0.08, y: 0.195, z: -0.03, parent: g });   // tin of polish
+  mesh(G.cyl(0.012, 0.012, 0.14, 8), mat(0x8a5a32, { roughness: 0.8 }), { x: 0.06, y: 0.185, z: 0.02, rz: PI / 2, ry: 0.3, parent: g });   // brush handle
+  mesh(G.box(0.05, 0.02, 0.05), mat(0x2a1a10, { roughness: 0.95 }), { x: 0.12, y: 0.185, z: 0.03, parent: g });   // brush bristles
+  return g;
+}
+/** A small brass table lamp, bell-shaded, for the yard sale table below. */
+function makeOldLamp() {
+  const g = new THREE.Group(), brass = mat(0xc9a84a, { metalness: 0.5, roughness: 0.4 }), shade = mat(0xe8dcc0, { roughness: 0.85 });
+  mesh(G.cyl(0.045, 0.05, 0.015, 12), brass, { y: 0.0075, parent: g });                          // base
+  mesh(G.cyl(0.01, 0.014, 0.12, 8), brass, { y: 0.075, parent: g });                              // stem
+  mesh(G.cyl(0.055, 0.075, 0.09, 12), shade, { y: 0.19, parent: g });                               // the shade
+  mesh(G.sphere(0.018, 8, 6), glowMat(0xfff3c4, 0.7), { y: 0.15, shadow: 'none', parent: g });     // bulb glowing faintly inside
+  return g;
+}
+/** A yard sale table: a trestle table with a chipped teapot, a stack of old books, a leaning picture frame,
+    a small brass lamp and a crate of odds and ends, plus a cardboard box of more junk left on the ground
+    beside it. No seller minding it — just the table, propped against the fence that borders every lawn. */
+function makeYardSaleTable() {
+  const g = new THREE.Group(), topY = 0.72, wood = mat(0x8a6a42, { roughness: 0.9, map: TEX.planks(22, 18) }), leg = mat(0x5a4428, { roughness: 0.85 });
+  mesh(G.box(1.0, 0.04, 0.6), wood, { y: topY, shadow: 'both', parent: g });
+  for (const [lx, lz] of [[-0.44, -0.24], [0.44, -0.24], [-0.44, 0.24], [0.44, 0.24]]) mesh(G.cyl(0.02, 0.024, topY - 0.02, 8), leg, { x: lx, y: (topY - 0.02) / 2, z: lz, parent: g });
+  // a stack of three old books, each a slightly different colour and size, slumping a little off-true
+  const bookColors = [0x6a3a3a, 0x3a5a6a, 0x4a6a3a];
+  for (let i = 0; i < 3; i++) mesh(G.box(0.16 - i * 0.01, 0.035, 0.12 - i * 0.008), mat(bookColors[i], { roughness: 0.8 }), { x: -0.32, y: topY + 0.02 + 0.0175 + i * 0.035, z: -0.12, ry: (i - 1) * 0.08, parent: g });
+  // a chipped teapot, lid slightly askew
+  const pot = mat(0xcfc3a8, { roughness: 0.6 });
+  mesh(G.sphere(0.07, 12, 8), pot, { x: 0.05, y: topY + 0.02 + 0.06, z: 0.1, sy: 0.82, parent: g });
+  mesh(G.cyl(0.028, 0.024, 0.025, 10), pot, { x: 0.05, y: topY + 0.02 + 0.115, z: 0.1, ry: 0.3, parent: g });
+  mesh(G.cyl(0.016, 0.01, 0.1, 8), pot, { x: 0.12, y: topY + 0.02 + 0.075, z: 0.08, rz: PI / 2.4, parent: g });   // spout
+  noInk(mesh(G.torus(0.035, 0.009, 6, 10), pot, { x: -0.02, y: topY + 0.02 + 0.06, z: 0.1, ry: PI / 2, parent: g }));   // handle
+  // a picture frame, propped up leaning against the far edge of the table
+  mesh(G.box(0.22, 0.28, 0.018), mat(0x3a2a18, { roughness: 0.8 }), { x: 0.28, y: topY + 0.02 + 0.13, z: -0.26, rx: -0.3, parent: g });
+  mesh(G.box(0.17, 0.22, 0.004), mat(0xdcd3bd, { roughness: 0.9 }), { x: 0.28, y: topY + 0.02 + 0.135, z: -0.249, rx: -0.3, parent: g });
+  // the brass lamp, standing between the books and the teapot
+  const lamp = makeOldLamp(); lamp.position.set(-0.1, topY + 0.02, -0.02); g.add(lamp);
+  // a shallow wooden crate of odds and ends
+  mesh(G.box(0.22, 0.1, 0.16), leg, { x: -0.1, y: topY + 0.02 + 0.05, z: 0.18, parent: g });
+  for (const [cx, cz, c] of [[-0.04, 0.16, 0x8a3a3a], [-0.14, 0.2, 0x3a6a8a], [-0.1, 0.1, 0xd9c9a8]]) mesh(G.sphere(0.03, 6, 5), mat(c, { roughness: 0.7 }), { x: cx, y: topY + 0.02 + 0.105, z: cz, shadow: 'none', parent: g });
+  // a cardboard box of further junk, left on the ground by the near-side leg
+  const card = mat(0xc9a86a, { roughness: 0.95 });
+  mesh(G.box(0.34, 0.26, 0.3), card, { x: -0.5, y: 0.13, z: 0.4, ry: -0.12, shadow: 'both', parent: g });
+  mesh(G.box(0.34, 0.03, 0.3), mat(0xb08a52, { roughness: 0.95 }), { x: -0.5, y: 0.265, z: 0.4, ry: -0.12, shadow: 'none', parent: g });
+  return g;
+}
 /** A glass jar of striped peppermints with a red lid, for a candy stall keeper to hold up. */
 function makeCandyJar() {
   const g = new THREE.Group(), glass = mat(0xf0f8ff, { roughness: 0.15, transparent: true, opacity: 0.35 });
@@ -540,6 +598,51 @@ function makeCandyJar() {
   mesh(G.cyl(0.1, 0.1, 0.03, 14), mat(0xd62839, { roughness: 0.5 }), { y: 0.215, parent: g });
   mesh(G.sphere(0.025, 8, 6), mat(0xd62839, { roughness: 0.5 }), { y: 0.25, shadow: 'none', parent: g });
   return g;
+}
+/** A free-standing coin-op gumball machine: a red cabinet, a glass globe packed with gumballs, a chrome collar and cap. */
+function makeGumballMachine(r) {
+  const g = new THREE.Group();
+  const cabM = mat(0xd62839, { roughness: 0.55, metalness: 0.1 }), chromeM = mat(0xd8dde0, { metalness: 0.75, roughness: 0.25 }), glass = mat(0xeaf6ff, { roughness: 0.1, transparent: true, opacity: 0.3 });
+  mesh(G.box(0.4, 0.5, 0.32), cabM, { y: 0.25, shadow: 'both', parent: g });                                  // the coin cabinet
+  mesh(G.box(0.14, 0.09, 0.02), mat(0x1a1a1a, { roughness: 0.6 }), { y: 0.33, z: 0.16, parent: g });          // coin slot plate
+  mesh(G.box(0.03, 0.02, 0.008), chromeM, { y: 0.335, z: 0.165, shadow: 'none', parent: g });                  // the slot itself
+  mesh(G.cyl(0.035, 0.035, 0.05, 10), chromeM, { x: 0.22, y: 0.22, rz: PI / 2, parent: g });                   // crank boss
+  mesh(G.cyl(0.015, 0.015, 0.14, 8), chromeM, { x: 0.26, y: 0.22, rz: PI / 2, parent: g });                    // crank handle
+  mesh(G.box(0.16, 0.1, 0.03), mat(0x1a1a1a, { roughness: 0.7 }), { y: 0.07, z: 0.17, parent: g });            // the dark delivery tray
+  mesh(G.cyl(0.3, 0.26, 0.07, 20), chromeM, { y: 0.535, parent: g });                                          // the collar the globe sits in
+  const flavours = [0xff6fb5, 0x7fd7ff, 0xffd54a, 0x8bc34a, 0xff8a3d, 0xffffff];
+  for (let i = 0; i < 46; i++) {
+    const a = r() * TAU, cz = r.range(-1, 1) * 0.86, cr = sqrt(max(0, 1 - cz * cz)) * r.range(0.08, 0.95) * 0.27;
+    mesh(G.sphere(0.052, 8, 6), mat(r.pick(flavours), { roughness: 0.4 }), { x: cos(a) * cr, y: 0.9 + cz * 0.27, z: sin(a) * cr, shadow: 'none', parent: g });
+  }
+  mesh(G.sphere(0.32, 20, 16), glass, { y: 0.9, shadow: 'none', parent: g });                                  // the glass globe, over the gumballs
+  mesh(G.cyl(0.08, 0.1, 0.08, 14), chromeM, { y: 1.26, parent: g });                                           // the knob the globe twists off from
+  mesh(G.sphere(0.055, 10, 8), chromeM, { y: 1.33, shadow: 'none', parent: g });
+  return g;
+}
+/**
+ * A small candy-striped carousel: a round floor, a striped canopy on a centre pole, and six gumdrop
+ * seats on candy-cane poles round the rim. Returns { group, pivot } — `group` never moves, `pivot`
+ * (the floor, pole, canopy and every seat, all one piece) is the caller's to spin on the world clock.
+ */
+function makeCarousel() {
+  const g = new THREE.Group();
+  const pivot = group(0, 0, 0, g);
+  const stripe = mat(0xffffff, { roughness: 0.4, map: TEX.candyCane() });
+  const poleMat = mat(0xc27b3a, { roughness: 0.85 }), trimMat = mat(0xd62839, { roughness: 0.5 });
+  mesh(G.cyl(1.8, 1.8, 0.14, 24), stripe, { y: 0.07, shadow: 'both', parent: pivot });                       // the floor
+  noInk(mesh(G.torus(1.8, 0.07, 6, 24), trimMat, { y: 0.14, parent: pivot }));                                // its rim
+  mesh(G.cyl(0.09, 0.11, 2.4, 10), poleMat, { y: 1.34, shadow: 'both', parent: pivot });                      // the centre pole
+  mesh(G.cone(1.5, 0.95, 16), stripe, { y: 2.54 + 0.475, shadow: 'both', parent: pivot });                    // the canopy
+  noInk(mesh(G.torus(1.5, 0.05, 6, 16), trimMat, { y: 2.54, parent: pivot }));                                 // canopy base trim
+  mesh(G.sphere(0.16, 10, 8), trimMat, { y: 2.54 + 0.95 + 0.1, shadow: 'none', parent: pivot });              // the finial
+  const seatHues = [0xff6fb5, 0x7fd7ff, 0xffd54a, 0x8bc34a, 0xff8a3d, 0xc08bf5];
+  for (let i = 0; i < 6; i++) {
+    const a = i / 6 * TAU, sx = cos(a) * 1.3, sz = sin(a) * 1.3;
+    mesh(G.cyl(0.035, 0.035, 0.38, 8), stripe, { x: sx, y: 0.14 + 0.19, z: sz, shadow: 'none', parent: pivot });
+    mesh(G.sphere(0.22, 12, 9), mat(seatHues[i], { roughness: 0.4 }), { x: sx, y: 0.14 + 0.38 + 0.12, z: sz, sy: 0.75, shadow: 'both', parent: pivot });
+  }
+  return { group: g, pivot };
 }
 /** A metal oil can with a spout and a handle, its cap glowing the same green as Robot City's CHARGE sign, for a street vendor to hold up. */
 function makeOilCan() {
@@ -571,6 +674,17 @@ function makeScooter(color = 0x2f6fd6) {
   mesh(G.cyl(0.018, 0.018, 0.75, 6), frame, { y: 0.4, parent: fork });
   mesh(G.cyl(0.014, 0.014, 0.42, 6), frame, { y: 0.78, rz: PI / 2, parent: fork });
   for (const s of [-1, 1]) mesh(G.cyl(0.02, 0.02, 0.06, 8), gripM, { x: s * 0.2, y: 0.78, rz: PI / 2, parent: fork });
+  return g;
+}
+/** A skateboard: a flat deck on two trucks of four wheels, lying on the ground. Faces +z. */
+function makeSkateboard(color = 0xff6fb5) {
+  const g = new THREE.Group(), deckM = mat(color, { roughness: 0.6 }), truckM = mat(0x8a8f96, { metalness: 0.6, roughness: 0.4 }), wheelM = mat(0xfff3b0, { roughness: 0.35 });
+  mesh(G.box(0.19, 0.025, 0.74), deckM, { y: 0.145, parent: g });
+  for (const z of [-0.26, 0.26]) {
+    const truck = group(0, 0.065, z, g);
+    mesh(G.box(0.2, 0.02, 0.04), truckM, { parent: truck });
+    for (const x of [-0.095, 0.095]) mesh(G.cyl(0.045, 0.045, 0.03, 10), wheelM, { x, rz: PI / 2, parent: truck });
+  }
   return g;
 }
 /** A bicycle: two wheels, a frame, handlebars, a saddle and a crank. Faces +z; `wheels` and `crank` turn. */
@@ -699,6 +813,158 @@ function makeMailbox(color, o = {}) {
   } else {
     mesh(G.box(0.03, 0.2, 0.08), mat(0xd62839), { x: 0.17, y: 1.45, z: 0.1, shadow: 'none', parent: g });
   }
+  return g;
+}
+/** A squat red fire hydrant: flanged base, domed cap with a bolt, two side nozzle caps and one facing front. */
+function makeFireHydrant() {
+  const g = new THREE.Group(), red = mat(0xc8222f, { roughness: 0.55, metalness: 0.1 }), chrome = mat(0xcfd4d8, { roughness: 0.3, metalness: 0.6 });
+  mesh(G.cyl(0.17, 0.19, 0.06, 14), red, { y: 0.03, shadow: 'both', parent: g });
+  mesh(G.cyl(0.13, 0.14, 0.5, 14), red, { y: 0.31, shadow: 'both', parent: g });
+  mesh(G.cyl(0.145, 0.145, 0.04, 14), chrome, { y: 0.56, shadow: 'none', parent: g });   // collar
+  mesh(G.sphere(0.145, 14, 10), red, { y: 0.66, sy: 0.6, parent: g });
+  mesh(G.box(0.07, 0.09, 0.07), chrome, { y: 0.78, parent: g });   // the bolt on top
+  for (const side of [-1, 1]) mesh(G.cyl(0.055, 0.055, 0.1, 10), chrome, { x: side * 0.155, y: 0.38, rz: PI / 2, shadow: 'none', parent: g });
+  mesh(G.cyl(0.05, 0.05, 0.09, 10), chrome, { z: 0.155, y: 0.42, rx: PI / 2, shadow: 'none', parent: g });
+  return g;
+}
+/**
+ * A backyard clothesline: two T-posts strung with a line, three items of washing pegged along it
+ * (a shirt, a pair of trousers, a flat bedsheet) swaying gently as if a breeze keeps catching them.
+ * `g.userData.update` rocks each item on its own peg — a fixed phase offset per item so they never
+ * swing in lockstep — driven only by the world clock `t`, never the shared `rnd()` or a world's own
+ * seeded `r`, so it costs no later draw anywhere else in this build.
+ */
+function makeClothesline() {
+  const g = new THREE.Group(), postMat = mat(0x6b6b6b, { roughness: 0.7, metalness: 0.3 }), lineMat = mat(0xcfc6b0, { roughness: 0.85 });
+  for (const side of [-1, 1]) {
+    const post = group(side * 1.1, 0, 0, g);
+    mesh(G.cyl(0.028, 0.034, 1.7, 8), postMat, { y: 0.85, shadow: 'both', parent: post });
+    mesh(G.cyl(0.018, 0.018, 0.5, 6), postMat, { y: 1.62, rz: PI / 2, shadow: 'none', parent: post });   // crossbar
+  }
+  noInk(mesh(G.cyl(0.007, 0.007, 2.2, 5), lineMat, { y: 1.66, rz: PI / 2, parent: g }));
+  const pegs = [];
+  const peg = (relx, build) => { const pivot = group(relx, 1.66, 0, g); build(pivot); pegs.push(pivot); };
+  peg(-0.72, (p) => {   // a shirt, pegged by the shoulders
+    mesh(G.box(0.34, 0.4, 0.02), mat(0xe8e2d4, { roughness: 0.85 }), { y: -0.22, parent: p });
+    for (const sx of [-1, 1]) mesh(G.box(0.12, 0.2, 0.02), mat(0xe8e2d4, { roughness: 0.85 }), { x: sx * 0.21, y: -0.08, rz: sx * 0.3, parent: p });
+  });
+  peg(0, (p) => {   // a flat bedsheet, the widest and heaviest-swaying of the three
+    mesh(G.box(0.62, 0.52, 0.015), mat(0xf4f0e6, { roughness: 0.8 }), { y: -0.27, parent: p });
+  });
+  peg(0.72, (p) => {   // a pair of trousers, pegged at the waistband
+    for (const lx of [-1, 1]) mesh(G.box(0.14, 0.46, 0.02), mat(0x3a4a6a, { roughness: 0.85 }), { x: lx * 0.085, y: -0.24, parent: p });
+  });
+  for (const p of pegs) mesh(G.sphere(0.018, 6, 5), mat(0x4a3a2a, { roughness: 0.9 }), { y: 0.005, shadow: 'none', parent: p });   // the peg itself
+  g.userData.update = (dt, t) => { pegs.forEach((p, i) => { p.rotation.z = sin(t * 1.3 + i * 2.1) * 0.1; p.rotation.x = sin(t * 0.9 + i * 1.4) * 0.03; }); };
+  return g;
+}
+/**
+ * A "lost cat" notice stapled to a post: a dark frame behind a cream paper square, a crude cat
+ * silhouette (one sphere head, two cone ears) near the top, and a row of tear-off phone-number tabs
+ * along the bottom edge — one of them already gone.
+ */
+function makePosterNotice() {
+  const g = new THREE.Group(), paper = mat(0xf2e8d0, { roughness: 0.9 }), dark = mat(0x1c1c22, { roughness: 0.7 });
+  mesh(G.box(0.46, 0.58, 0.012), dark, { z: -0.005, shadow: 'none', parent: g });
+  mesh(G.box(0.42, 0.54, 0.01), paper, { shadow: 'none', parent: g });
+  mesh(G.sphere(0.055, 10, 8), dark, { y: 0.12, z: 0.016, shadow: 'none', parent: g });
+  for (const sx of [-1, 1]) mesh(G.cone(0.026, 0.05, 6), dark, { x: sx * 0.042, y: 0.165, z: 0.016, rz: sx * 0.5, shadow: 'none', parent: g });
+  for (let i = 0; i < 5; i++) { if (i === 2) continue; mesh(G.box(0.06, 0.09, 0.01), paper, { x: -0.16 + i * 0.08, y: -0.315, z: 0.006, shadow: 'none', parent: g }); }
+  return g;
+}
+/**
+ * A "missing unit" bulletin bolted to a wall: the same dark-frame-and-paper build as the lost-cat
+ * notice, but with a robot-head silhouette (a box head, two antenna rods) standing in for the cat's
+ * sphere-and-ears, and a strip of hazard tape along the bottom instead of tear-off phone tabs.
+ */
+function makeMissingUnitPoster() {
+  const g = new THREE.Group(), paper = mat(0xc9d6de, { roughness: 0.85 }), dark = mat(0x1c1c22, { roughness: 0.6, metalness: 0.4 }), amber = mat(0xff9f43, { roughness: 0.6 });
+  mesh(G.box(0.46, 0.58, 0.012), dark, { z: -0.005, shadow: 'none', parent: g });
+  mesh(G.box(0.42, 0.54, 0.01), paper, { shadow: 'none', parent: g });
+  mesh(G.box(0.1, 0.09, 0.012), dark, { y: 0.14, z: 0.016, shadow: 'none', parent: g });
+  for (const sx of [-1, 1]) mesh(G.cyl(0.006, 0.006, 0.07, 6), dark, { x: sx * 0.03, y: 0.205, z: 0.016, shadow: 'none', parent: g });
+  mesh(G.box(0.4, 0.05, 0.011), amber, { y: -0.26, z: 0.006, shadow: 'none', parent: g });
+  for (let i = 0; i < 5; i++) mesh(G.box(0.07, 0.05, 0.013), dark, { x: -0.16 + i * 0.08, y: -0.26, z: 0.007, shadow: 'none', parent: g });
+  return g;
+}
+/**
+ * A "lost pocket watch" notice stapled to a lamp post: the same dark-frame-and-paper build as the
+ * other two notices, aged to a deeper cream, with a brass watch case and a short loop of fob chain
+ * standing in for the cat's silhouette and a single wax seal along the bottom instead of tear tabs or
+ * hazard tape.
+ */
+function makeLostWatchNotice() {
+  const g = new THREE.Group(), paper = mat(0xe8dcc0, { roughness: 0.9 }), dark = mat(0x2a1f14, { roughness: 0.7 }), brass = mat(0xc9a227, { roughness: 0.4, metalness: 0.6 }), wax = mat(0x8a1f1f, { roughness: 0.6 });
+  mesh(G.box(0.46, 0.58, 0.012), dark, { z: -0.005, shadow: 'none', parent: g });
+  mesh(G.box(0.42, 0.54, 0.01), paper, { shadow: 'none', parent: g });
+  mesh(G.cyl(0.07, 0.07, 0.012, 16), brass, { y: 0.13, z: 0.016, rx: PI / 2, shadow: 'none', parent: g });
+  mesh(G.cyl(0.012, 0.012, 0.03, 6), brass, { y: 0.21, z: 0.016, shadow: 'none', parent: g });
+  for (let i = 0; i < 3; i++) mesh(G.sphere(0.012, 6, 5), brass, { x: -0.02 - i * 0.018, y: 0.225 + i * 0.012, z: 0.016, shadow: 'none', parent: g });
+  mesh(G.cyl(0.045, 0.045, 0.012, 10), wax, { y: -0.26, z: 0.012, rx: PI / 2, shadow: 'none', parent: g });
+  return g;
+}
+/**
+ * A "lost acorn stash" notice nailed straight to a tree trunk: the same dark-frame-and-paper build as
+ * the other three, with a weathered bark-plank backing standing in for the frame, a carved pinecone
+ * for the cat's silhouette, the robot's head or the watch's case, and four iron nail heads along the
+ * bottom instead of tear-off tabs, hazard tape or a wax seal.
+ */
+function makeForestNotice() {
+  const g = new THREE.Group(), bark = mat(0x3a2a1a, { roughness: 0.95 }), paper = mat(0xd8c9a0, { roughness: 0.9 }), ink = mat(0x3a2e22, { roughness: 0.8 }), iron = mat(0x2a2a28, { roughness: 0.6, metalness: 0.4 });
+  mesh(G.box(0.46, 0.58, 0.014), bark, { z: -0.007, shadow: 'none', parent: g });
+  mesh(G.box(0.4, 0.52, 0.01), paper, { shadow: 'none', parent: g });
+  mesh(G.cone(0.05, 0.1, 8), ink, { y: 0.17, z: 0.016, shadow: 'none', parent: g });
+  mesh(G.sphere(0.06, 10, 8), ink, { y: 0.07, z: 0.016, sy: 1.25, shadow: 'none', parent: g });
+  for (let i = 0; i < 4; i++) mesh(G.sphere(0.014, 6, 5), iron, { x: -0.16 + i * 0.1, y: -0.3, z: 0.013, shadow: 'none', parent: g });
+  return g;
+}
+/**
+ * A "lost bucket and spade" notice pinned to a swim-flag pole: the same dark-frame-and-paper build as
+ * the other four, with a sun-bleached driftwood plank standing in for the frame, a flattened-sphere
+ * crab body and two claw cones for the cat's silhouette, the robot's head, the watch's case or the
+ * pinecone, and a row of beach pebbles along the bottom instead of tear-off tabs, hazard tape, a wax
+ * seal or nail heads.
+ */
+function makeBeachNotice() {
+  const g = new THREE.Group(), wood = mat(0xc9b89a, { roughness: 0.9 }), paper = mat(0xeee2c4, { roughness: 0.85 }), ink = mat(0x2a2a2a, { roughness: 0.75 }), pebble = mat(0x9a9284, { roughness: 0.95 });
+  mesh(G.box(0.46, 0.58, 0.012), wood, { z: -0.005, shadow: 'none', parent: g });
+  mesh(G.box(0.4, 0.52, 0.01), paper, { shadow: 'none', parent: g });
+  mesh(G.sphere(0.07, 10, 8), ink, { y: 0.14, z: 0.016, sx: 1.3, sy: 0.55, shadow: 'none', parent: g });
+  for (const sx of [-1, 1]) mesh(G.cone(0.022, 0.06, 6), ink, { x: sx * 0.09, y: 0.16, z: 0.016, rz: sx * -0.9, shadow: 'none', parent: g });
+  for (let i = 0; i < 5; i++) mesh(G.sphere(0.022 + (i % 2) * 0.006, 7, 6), pebble, { x: -0.16 + i * 0.08, y: -0.28, z: 0.012 + (i % 2) * 0.004, shadow: 'none', parent: g });
+  return g;
+}
+/**
+ * A "lost mitten" notice nailed to a frost-pale log post: the same dark-frame-and-paper build as the
+ * other five, with a weathered pine plank standing in for the dark frame, driftwood or bark, a
+ * squashed-sphere mitten body and a stubby thumb cone standing in for the cat's silhouette, the robot's
+ * head, the watch's case, the pinecone or the crab, and a row of small icicles hanging off the bottom
+ * edge instead of tear-off tabs, hazard tape, a wax seal, nail heads or pebbles.
+ */
+function makeSnowNotice() {
+  const g = new THREE.Group(), wood = mat(0x8a97a0, { roughness: 0.92 }), paper = mat(0xeef3f7, { roughness: 0.85 }), ink = mat(0x33404a, { roughness: 0.7 }), ice = mat(0xcdeeff, { roughness: 0.2, transparent: true, opacity: 0.85 });
+  mesh(G.box(0.46, 0.58, 0.012), wood, { z: -0.005, shadow: 'none', parent: g });
+  mesh(G.box(0.4, 0.52, 0.01), paper, { shadow: 'none', parent: g });
+  mesh(G.sphere(0.065, 10, 8), ink, { y: 0.15, z: 0.016, sx: 1.15, sy: 0.85, shadow: 'none', parent: g });
+  mesh(G.cone(0.026, 0.06, 6), ink, { x: 0.08, y: 0.2, z: 0.016, rz: -0.75, shadow: 'none', parent: g });
+  for (let i = 0; i < 4; i++) mesh(G.cone(0.016, 0.05 + (i % 2) * 0.02, 5), ice, { x: -0.15 + i * 0.1, y: -0.27, z: 0.012, rx: PI, shadow: 'none', parent: g });
+  return g;
+}
+/**
+ * A "lost lollipop" notice stapled to a candy-cane post: the same dark-frame-and-paper build as the
+ * other six, with a candy-cane-striped plank standing in for the dark frame, driftwood, bark, wood or
+ * pine, a round sucker head on a short stick standing in for the cat's silhouette, the robot's head,
+ * the watch's case, the pinecone, the crab or the mitten, and a row of small gumdrops along the
+ * bottom instead of tear-off tabs, hazard tape, a wax seal, nail heads, pebbles or icicles.
+ */
+function makeCandyNotice() {
+  const g = new THREE.Group(), stripe = mat(0xffffff, { roughness: 0.4, map: TEX.candyCane() }), paper = mat(0xfff6e0, { roughness: 0.85 }), ink = mat(0x3a2410, { roughness: 0.7 });
+  mesh(G.box(0.46, 0.58, 0.012), stripe, { z: -0.005, shadow: 'none', parent: g });
+  mesh(G.box(0.4, 0.52, 0.01), paper, { shadow: 'none', parent: g });
+  mesh(G.sphere(0.065, 10, 8), ink, { y: 0.17, z: 0.016, shadow: 'none', parent: g });
+  mesh(G.cyl(0.018, 0.018, 0.1, 6), ink, { y: 0.07, z: 0.016, shadow: 'none', parent: g });
+  const gumHues = [0xff6fb5, 0x7fd7ff, 0xffd54a, 0x8bc34a, 0xffffff];
+  for (let i = 0; i < 5; i++) mesh(G.sphere(0.024, 7, 6), mat(gumHues[i], { roughness: 0.5 }), { x: -0.15 + i * 0.075, y: -0.26, z: 0.012, shadow: 'none', parent: g });
   return g;
 }
 /**
@@ -1041,6 +1307,40 @@ function makeFurnace(game, x, z, ry) {
   g.userData.update = (dt, t) => { l.intensity = 22 + sin(t * 11) * 4 + sin(t * 23) * 2;
     if (rnd.chance(dt * 4)) game.fx.emit(smokeX, 6.1, smokeZ, { count: 1, color: 0x55585f, speed: 0.2, up: 1.1, life: 3, gravity: -0.15, spread: 0.25 }); };
   game.physics.addBox(x, 1.6, z, abs(c) * 4 + abs(s) * 3, 3.2, abs(s) * 4 + abs(c) * 3);
+  return g;
+}
+/** A jib crane swinging a magnet slowly over a scrap pile. `x,z,ry` are world-space; the scrap pile
+ * sits along local +z from the mast, so `ry` should point that side at open ground. */
+function makeScrapCrane(game, x, z, ry) {
+  const g = group(x, 0, z, game.world); g.rotation.y = ry;
+  const steel = mat(0x5a6470, { metalness: 0.75, roughness: 0.35 }), yellow = mat(0xe0a020, { roughness: 0.5, metalness: 0.4 }), dark = mat(0x2b2f36, { metalness: 0.8, roughness: 0.3 });
+  const H = 7.2;
+  mesh(G.cyl(0.9, 1.1, 0.6, 14), dark, { y: 0.3, parent: g });
+  mesh(G.cyl(0.32, 0.4, H, 10), yellow, { y: H / 2 + 0.3, parent: g });
+  const pivot = group(0, H + 0.3, 0, g);
+  mesh(G.box(0.7, 0.5, 0.7), steel, { parent: pivot });
+  const boom = group(0, 0, 0, pivot);
+  mesh(G.box(0.4, 0.4, 4.6), yellow, { z: 2.5, parent: boom });
+  mesh(G.box(0.4, 0.4, 2.0), yellow, { z: -1.1, parent: boom });
+  mesh(G.box(0.8, 0.8, 0.8), dark, { z: -2.0, y: -0.1, parent: boom });
+  const trolley = group(0, -0.1, 4.6, boom);
+  mesh(G.box(0.5, 0.3, 0.5), dark, { parent: trolley });
+  const cable = noInk(mesh(G.cyl(0.03, 0.03, 1, 6), steel, { parent: trolley }));
+  const magnet = group(0, -1, 0, trolley);
+  const magDisc = mesh(G.cyl(0.55, 0.55, 0.22, 16), glowMat(0xff6a00, 1.2), { parent: magnet });
+  mesh(G.torus(0.55, 0.05, 6, 16), dark, { rx: PI / 2, shadow: 'none', parent: magnet });
+  // a small pile of scrap sits under the magnet's swing, local +z from the mast
+  const scrapM = [mat(0x6b5a4a, { roughness: 0.9 }), mat(0x4a4f58, { roughness: 0.85, metalness: 0.3 }), mat(0x7a6a3a, { roughness: 0.9, metalness: 0.2 })];
+  for (let i = 0; i < 9; i++) { const a = i / 9 * TAU, rr = 0.4 + (i % 3) * 0.35, sx = cos(a) * rr, sz = 4.4 + sin(a) * rr * 0.6;
+    mesh(G.box(0.5 + (i % 3) * 0.15, 0.3 + (i % 2) * 0.15, 0.4 + (i % 4) * 0.1), scrapM[i % 3], { x: sx, y: 0.18, z: sz, ry: a * 2, shadow: 'both', parent: g }); }
+  game.physics.addBox(x, 0.3, z, 2.2, 0.6, 2.2, { cam: false });
+  g.userData.update = (dt, t) => {
+    pivot.rotation.y = sin(t * 0.18) * 0.5;
+    const bob = sin(t * 0.6) * 0.5 + 0.5, len = 2.0 + bob * (H - 2.0);
+    cable.scale.y = len; cable.position.y = -len / 2;
+    magnet.position.y = -len;
+    magDisc.material.emissiveIntensity = bob < 0.15 ? 2.4 : 1.0;
+  };
   return g;
 }
 

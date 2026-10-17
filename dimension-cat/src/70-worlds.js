@@ -126,6 +126,21 @@ function buildNeighborhood(game, entry) {
     const [wall, roof] = palette[i % palette.length], storeys = i % 3 === 1 ? 2 : 1, h = makeHouse({ wall, roof, doorRight: i % 2 === 1, lit: i % 3 === 0, roofH: 2 + (i % 3) * 0.4, storeys, shutter: r.pick([0x3f5573, 0x2f4f2f, 0x5a3a3a, 0xffffff]) }, r);
     place(game, U, h, x, z, ry); P.addBox(x, h.userData.h / 2, z, 7.4, h.userData.h, 6.4); P.addBox(x + (i % 2 === 1 ? 2.1 : 0), 1.2, z + (ry === 0 ? 1 : -1) * 4.35, 3.0, 2.4, 1.5, { cam: false });
     { const ch = h.userData.chimney; addChimneySmoke(game, U, x + ch[0] * cos(ry) + ch[2] * sin(ry), ch[1], z - ch[0] * sin(ry) + ch[2] * cos(ry)); }
+    if (i === 2) {
+      // Every porch on this street has carried the same bare rail since round 1 — this one now has a stray
+      // cat curled up asleep on it. Added as a child of this house's own group (`h`) rather than placed in
+      // world space: it only needs the LOCAL porch coordinates `makeHouse` itself already builds the rail's
+      // top cap at (`dx + s*1.35, 0.9, d/2 + 0.75`, with this house's own `d` defaulting to 6 and `doorRight`
+      // false so `dx` is 0), and it inherits the house's own world position and rotation for free — the same
+      // trick the pier's own pelican uses for its handrail. No physics box, same reasoning as the pelican and
+      // the owls: well above the porch deck the cat actually crosses to reach the door, and nothing up there
+      // to bump into anyway.
+      const napCat = makeNapCat();
+      napCat.group.position.set(1.35, 0.93, 3.75);
+      napCat.group.rotation.y = 0.3;
+      h.add(napCat.group);
+      let napT = 4; U.push((dt) => { napT += dt; napCat.animate(0, false, dt, napT); });
+    }
     const front = ry === 0 ? 1 : -1, fz = z + front * 8;
     for (const [cx, len] of [[-2.2, 3.6], [2.5, 3]]) { const f = makeFence(len, r.pick([0x2e63d8, 0x2e63d8, 0xffffff, 0x4a8ad8])); f.position.set(x + cx, 0, fz); f.rotation.y = ry; W.add(f); P.addBox(x + cx, 0.5, fz, len, 1, 0.2, { cam: false }); }
     place(game, U, makeMailbox(r.pick([0x2e63d8, 0xd62839, 0x2f4f4f])), x + 1.6, fz + front * 1.3, ry);
@@ -306,6 +321,436 @@ function buildNeighborhood(game, entry) {
       const gnomeLines = ['🧙 "Paint\'s chipped on the nose. Character, the owners call it."', '🧙 "That lantern has never once lit up. Purely for show."', '😼 "Puss, that hat is not a toy."'];
       game.addInteractable({ obj: gnome, radius: 1.8, label: () => 'Look at the garden gnome', onUse: () => { SFX.click(); game.toast(rnd.pick(gnomeLines), 3000); } });
     }
+    // the pinwheel, sprinkler, kennel, birdhouse and birdbath between them gave the street a nesting
+    // box and a drinking bowl, but no actual bird feeder — the one fixture that would draw a bird in
+    // the first place. House 12's own front yard now gets one: a tube feeder of seed hangs on a short
+    // chain from a bent iron arm, two dowel perches through its base and a green tin roof keeping the
+    // rain off, with a scatter of spilled husks on the grass below. The exact same `makeSparrow()` the
+    // birdhouse and the birdbath already use stands on the lower perch, dipping its head at the seed
+    // the same idle peck it already does at a bowl rim or a birdhouse wall. *"Chirp. (Translation:
+    // finally, seed that isn't bread.)"* *"Careful, puss — that's a good six-foot drop if you knock
+    // it."* *"Fills it every Sunday. Empty again by Wednesday."*
+    // No new rig or controller, and all geometry and colour are fixed rather than drawn from this
+    // world's own seeded `r()`, the same caution the pinwheel/gnome/birdhouse comments above spell
+    // out — nothing later in this build shifts. The whole assembly (post, arm, feeder and the nested
+    // sparrow) carries `userData.update` on its own top group, the same trick the kennel's own dog
+    // uses, so the baker leaves the nested rig alone rather than merging it into static geometry.
+    // A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real
+    // Neighborhood, sampled every NPC's own position every 1/30 s over 150 simulated seconds
+    // (strollers, the dog walker and the postie's full round all included), then checked the same
+    // yard-corner offset every other feature on this street already uses (x+4.5, z+front*4.0) against
+    // both that trace and the world's own physics boxes for every lot still without a feature: house
+    // 12's own corner (-40.5, 24) came back clear by 1.13 m of the nearest box (the porch awning, the
+    // same margin the pinwheel/birdhouse/gnome corner already accepts) and 12.3 m of the nearest
+    // wandering soul — the most daylight of any free lot on the street.
+    if (i === 12) {
+      const px = x + 4.5, pz = z + front * 4.0;
+      const hookM = mat(0x3a3a3a, { metalness: 0.4, roughness: 0.5 }), capM = mat(0x2e6a46, { roughness: 0.6 }),
+        tubeM = mat(0xd9c98a, { roughness: 0.3, transparent: true, opacity: 0.55 }), seedM = mat(0x9a7a3a, { roughness: 0.85 }),
+        trayM = mat(0x2e6a46, { roughness: 0.6 }), perchM = mat(0x6b4a2a, { roughness: 0.85 });
+      const postH = 1.3, armLen = 0.28, chainLen = 0.12, capH = 0.08, tubeH = 0.3, trayH = 0.03, tubeR = 0.085, perchLen = 0.1;
+      const feeder = group(px, 0, pz, W); feeder.rotation.y = ry;
+      mesh(G.cyl(0.02, 0.026, postH, 8), hookM, { y: postH / 2, shadow: 'both', parent: feeder });
+      mesh(G.cyl(0.016, 0.016, armLen, 8), hookM, { x: armLen / 2, y: postH, rz: PI / 2, shadow: 'none', parent: feeder });
+      mesh(G.sphere(0.018, 8, 6), hookM, { x: armLen, y: postH, shadow: 'none', parent: feeder });
+      const chain = noInk(mesh(G.cyl(0.006, 0.006, chainLen, 5), hookM, { x: armLen, y: postH - chainLen / 2, parent: feeder }));
+      const feed = group(armLen, postH - chainLen, 0, feeder);
+      mesh(G.cone(tubeR * 1.2, capH, 14), capM, { y: -capH / 2, shadow: 'both', parent: feed });
+      mesh(G.cyl(tubeR, tubeR, tubeH, 14), tubeM, { y: -capH - tubeH / 2, shadow: 'none', parent: feed });
+      mesh(G.cyl(tubeR * 0.9, tubeR * 0.9, tubeH * 0.5, 14), seedM, { y: -capH - tubeH * 0.72, shadow: 'none', parent: feed });   // seed visible through the glass, lower half full
+      mesh(G.cyl(tubeR * 1.15, tubeR * 1.2, trayH, 14), trayM, { y: -capH - tubeH - trayH / 2, shadow: 'both', parent: feed });
+      const perchYs = [-capH - tubeH * 0.32, -capH - tubeH * 0.68];
+      for (const py of perchYs) for (const pside of [-1, 1]) mesh(G.cyl(0.009, 0.009, perchLen, 6), perchM, { y: py, z: pside * (tubeR + perchLen / 2), rx: PI / 2, shadow: 'none', parent: feed });
+      P.addBox(px, postH / 2, pz, 0.08, postH, 0.08, { cam: false });
+      for (const [hx, hz] of [[-0.06, 0.04], [0.05, -0.03], [0.01, 0.07], [-0.04, -0.07]]) mesh(G.box(0.025, 0.012, 0.015), seedM, { x: armLen + hx, y: 0.006, z: hz, ry: (hx + hz) * 6, shadow: 'receive', parent: feeder });
+      const visitor = makeSparrow(); feed.add(visitor.group);
+      const perchY = perchYs[1], standZ = (tubeR + perchLen * 0.65);
+      visitor.group.position.set(0, perchY + 0.014, standZ);
+      visitor.group.rotation.y = PI;
+      feeder.userData.update = (dt, t) => visitor.animate(0, false, dt, t);
+      U.push(feeder.userData.update);
+      const feederLines = ['🐦 "Chirp. (Translation: finally, seed that isn\'t bread.)"', '🍃 "Careful, puss — that\'s a good six-foot drop if you knock it."', '🌻 "Fills it every Sunday. Empty again by Wednesday."'];
+      game.addInteractable({ obj: feeder, radius: 1.8, label: () => 'Look at the bird feeder', onUse: () => { SFX.click(); game.toast(rnd.pick(feederLines), 3000); } });
+    }
+    // the pinwheel, sprinkler, kennel, birdhouse, gnome and feeder gave six yards their own fixture;
+    // every one of them was a garden ornament or a creature's own home, and the single most ordinary
+    // object any front yard actually has — the bin put out for collection — had never shown up on this
+    // street at all. House 15's own front lawn now gets a plastic wheelie bin, standing by itself a
+    // little apart from the porch: a tall box body on two rear wheels, a flat lid sat not quite square
+    // on top (the hinge is a stub cylinder, the lid itself just tipped a few degrees off level), and a
+    // moulded handle bar across the front face. No controller, no animation, and no draw from this
+    // world's own seeded `r` — every dimension and colour below is a fixed literal, the same caution
+    // the gnome's and feeder's own comments above spell out, so nothing later in this build shifts.
+    // A headless probe (the same stub-three harness `test/run.mjs` uses, `game.start('new')` then 60
+    // simulated seconds of every NPC's own sampled position) swept the usual yard-corner offset
+    // (x+4.5, z+front*4.0) against the three lots this street's own features hadn't already claimed
+    // on the back row: lot 15's own corner (67.5, 24) — the mirror, on the opposite side of the street,
+    // of the kennel's own safe lot 13 — came back clear by 8.60 m of the nearest wandering soul and the
+    // usual 0.90 m of the house's own porch-awning box every other feature in this exact corner already
+    // accepts as plenty of room for a sub-metre prop.
+    if (i === 15) {
+      const px = x + 4.5, pz = z + front * 4.0;
+      const bodyW = 0.42, bodyD = 0.38, bodyH = 0.62, lidH = 0.05, wheelR = 0.07;
+      const bodyM = mat(0x3a4a3a, { roughness: 0.75 }), lidM = mat(0x2e3a2e, { roughness: 0.7 }),
+        wheelM = mat(0x1a1a1a, { roughness: 0.8 }), handleM = mat(0x1a1a1a, { roughness: 0.6 });
+      const bin = group(px, 0, pz, W); bin.rotation.y = ry;
+      mesh(G.box(bodyW, bodyH, bodyD), bodyM, { y: bodyH / 2 + wheelR * 0.4, shadow: 'both', parent: bin });
+      for (const wx2 of [-bodyW / 2 + 0.05, bodyW / 2 - 0.05]) mesh(G.cyl(wheelR, wheelR, 0.05, 10), wheelM, { x: wx2, y: wheelR * 0.4, z: -bodyD / 2 + 0.04, rz: PI / 2, shadow: 'both', parent: bin });
+      const lidHinge = group(0, bodyH + wheelR * 0.4, -bodyD / 2 + 0.03, bin);
+      mesh(G.cyl(0.02, 0.02, bodyW - 0.06, 8), lidM, { rz: PI / 2, shadow: 'none', parent: lidHinge });
+      mesh(G.box(bodyW - 0.015, lidH, bodyD - 0.01), lidM, { y: lidH / 2, z: bodyD / 2 - 0.005, rx: -0.09, shadow: 'both', parent: lidHinge });
+      mesh(G.cyl(0.012, 0.012, bodyW * 0.3, 8), handleM, { y: bodyH * 0.72 + wheelR * 0.4, z: bodyD / 2 + 0.01, rz: PI / 2, shadow: 'none', parent: bin });
+      P.addBox(px, (bodyH + wheelR * 0.4) / 2, pz, bodyW / 2 + 0.02, bodyH + wheelR * 0.4, bodyD / 2 + 0.02, { cam: false });
+      const binLines = ['🗑️ "Bin day\'s Tuesday. Somehow it still smells like today."', '🗑️ "Lid never sits quite flat. Nobody\'s ever minded."', '😼 "Puss, whatever that smell is, it is not for you."'];
+      game.addInteractable({ obj: bin, radius: 1.6, label: () => 'Sniff the bin', onUse: () => { SFX.click(); game.toast(rnd.pick(binLines), 3000); } });
+    }
+    // the pinwheel, sprinkler, kennel, birdhouse, gnome, feeder and bin gave seven yards a fixture —
+    // ornament, home or chore, never a single thing that actually marked the time of day, odd for a
+    // street with a park lamp, a bus and a clock-faced oven timer in half its kitchens. House 5's own
+    // front yard now gets a garden sundial: a tapered stone column on a square plinth, a round dial
+    // plate with twelve bronze hour-marks around its rim, and a flattened bronze gnomon tilted back off
+    // its centre, same `G.earCone()` flattened-spike shape the ears and spikes elsewhere in this file
+    // already use, just bronze instead of fur-coloured. Static, no controller and no draw from this
+    // world's own seeded `r` — every dimension and colour below is a fixed literal, the same caution
+    // the gnome's and bin's own comments above spell out, so nothing later in this build shifts.
+    // Same yard-corner offset the other seven features already use (x+4.5, z+front*4.0); house 5 is
+    // odd (i%2===1), the same porch-awning x-offset the gnome's own house 11 already clears by 0.8 m —
+    // identical geometry, so the same margin applies here too, and a headless probe of the house's own
+    // wall box confirmed it: 0.90 m clear, same as every other feature in this exact corner.
+    // A first pass tried house 6's own corner instead (the next free lot along), but a headless probe
+    // (`game.start('new')`, then 150 simulated seconds — 9000 frames at the stub clock's fixed 1/60 s
+    // step, not the quarter-second sampling rate — tracking every NPC's own position every frame)
+    // found a Wanderer passing within 0.54 m of that spot, well inside this prop's own footprint. The
+    // same probe swept every other free lot on the street (houses 1, 2, 3, 4, 7 and 10's own front
+    // yard) in one pass: house 5's corner (-4.5, 24) came back the clear winner, 7.29 m from the
+    // nearest wandering soul over the full run, against 1.52 m or less everywhere else tried.
+    if (i === 5) {
+      const sx = x + 4.5, sz = z + front * 4.0;
+      const stoneM = mat(0xb9b2a0, { roughness: 0.9 }), plinthM = mat(0x8f8878, { roughness: 0.9 }),
+        bronzeM = mat(0x8a6a3a, { metalness: 0.4, roughness: 0.35 }), markM = mat(0x5a4a32, { roughness: 0.8 });
+      const sundial = group(sx, 0, sz, W); sundial.rotation.y = ry;
+      mesh(G.box(0.32, 0.08, 0.32), plinthM, { y: 0.04, shadow: 'both', parent: sundial });   // square plinth
+      mesh(G.cyl(0.1, 0.13, 0.5, 10), stoneM, { y: 0.08 + 0.25, shadow: 'both', parent: sundial });   // tapered column
+      const dialY = 0.08 + 0.5 + 0.02;
+      mesh(G.cyl(0.24, 0.24, 0.04, 20), stoneM, { y: dialY, shadow: 'both', parent: sundial });   // the dial plate
+      for (let k = 0; k < 12; k++) { const a = k / 12 * TAU; mesh(G.box(0.012, 0.012, 0.045), markM, { x: sin(a) * 0.185, z: cos(a) * 0.185, y: dialY + 0.021, ry: a, shadow: 'none', parent: sundial }); }   // twelve hour-marks round the rim
+      mesh(G.earCone(0.09, 0.24), bronzeM, { y: dialY + 0.1, rx: -0.55, shadow: 'both', parent: sundial });   // the gnomon, tilted back off centre
+      P.addBox(sx, 0.34, sz, 0.28, 0.68, 0.28, { cam: false });
+      const dialLines = ['🕰️ "No numbers, no hands — just a shadow and a steady guess."', '☀️ "Works a treat, so long as the sun actually shows up."', '😼 "Puss, chasing the shadow around it doesn\'t count as telling the time."'];
+      game.addInteractable({ obj: sundial, radius: 1.8, label: () => 'Look at the sundial', onUse: () => { SFX.click(); game.toast(rnd.pick(dialLines), 3000); } });
+    }
+    // the pinwheel, sprinkler, kennel, birdhouse, gnome, feeder, bin and sundial gave eight of the
+    // street's sixteen yards their own fixture, but nothing on the whole street has ever actually
+    // caught a drop of rain, odd for a village with a sprinkler watering the grass two doors down.
+    // House 10's own front yard now gets a rain barrel: a bulging oak cask (two stacked tapered
+    // cylinders rather than one straight one, so it actually bows out at the middle), two iron hoops,
+    // a flat lid with a dark fill-hole and a glimpse of water through it, and a brass tap low on the
+    // front face. An occasional drop plinks off the tap into a shallow puddle below, timed off the
+    // world clock `t` alone, never `game.fx.emit` (which draws from the shared `rnd()` on every call)
+    // or this world's own seeded `r` — the same caution the duck pond's and the sprinkler's own
+    // comments above already spell out, since the Neighborhood is the one world every test travel
+    // starts from. No `userData.update` needed either: `fillRing()` in `68-regions.js` is the only
+    // thing in this whole game that ever calls `bakeDeep()`, and it only runs on the procedural outer
+    // ring, never on this hand-built core, so the drop and puddle meshes (both plain children of the
+    // barrel group) just get moved directly from a closure in `U.push`, nothing more needed to keep
+    // them animating.
+    // A headless probe (the same stub-three harness `test/run.mjs` itself uses, `game.start('new')`
+    // then 9000 simulated frames at the stub clock's real 1/60 s step — the sundial's own round above
+    // found the quarter-second sampling rate alone can miss a passing Wanderer, so this used the finer
+    // one throughout, tracking every NPC's own position every frame) swept a slightly widened version
+    // of the usual yard-corner offset (x+5.5, z+front*4.0 — a metre further from the porch than the
+    // x+4.5 the other eight features use, to clear this prop's own wider footprint) against the six
+    // lots the sundial's own round above left free (houses 1, 2, 3, 4, 7 and 10): house 10's own
+    // corner (-66.5, 4) came back the clear winner, 4.50 m from the nearest wandering soul over the
+    // full 150 simulated seconds and 1.97 m clear of the nearest physics box (the house's own wall) —
+    // more daylight on both counts than any of the standard x+4.5 corners the other eight features
+    // already accepted.
+    if (i === 10) {
+      const px = x + 5.5, pz = z + front * 4.0;
+      const woodM = mat(0x6b4426, { roughness: 0.9 }), hoopM = mat(0x2a2a2a, { metalness: 0.4, roughness: 0.55 }),
+        lidM = mat(0x5a3a1e, { roughness: 0.85 }), holeM = mat(0x18120c, { roughness: 1 }),
+        tapM = mat(0xc9a84a, { metalness: 0.6, roughness: 0.3 }), waterM = mat(0x4a7aa8, { transparent: true, opacity: 0.55, roughness: 0.2 });
+      const barrelH = 0.62, rBase = 0.22, rMid = 0.27, rTopR = 0.23;
+      const barrel = group(px, 0, pz, W); barrel.rotation.y = ry;
+      mesh(G.cyl(rMid, rBase, barrelH / 2, 14), woodM, { y: barrelH / 4, shadow: 'both', parent: barrel });          // lower half, bulging up to the middle
+      mesh(G.cyl(rTopR, rMid, barrelH / 2, 14), woodM, { y: barrelH * 0.75, shadow: 'both', parent: barrel });       // upper half, tapering back in
+      for (const hy of [barrelH * 0.28, barrelH * 0.72]) mesh(G.cyl(rMid * 1.04, rMid * 1.02, 0.045, 14), hoopM, { y: hy, shadow: 'none', parent: barrel });
+      mesh(G.cyl(rTopR * 1.03, rTopR * 1.03, 0.03, 14), lidM, { y: barrelH + 0.015, shadow: 'both', parent: barrel });
+      mesh(G.cyl(0.045, 0.045, 0.01, 10), holeM, { y: barrelH + 0.031, z: -0.06, shadow: 'none', parent: barrel });      // fill-hole in the lid
+      mesh(G.cyl(rTopR * 0.9, rTopR * 0.9, 0.01, 14), waterM, { y: barrelH - 0.03, shadow: 'none', parent: barrel });    // waterline, glimpsed through the hole
+      const tapY = 0.12, tapR = (rMid + rBase) / 2;
+      mesh(G.cyl(0.018, 0.018, 0.07, 8), tapM, { y: tapY, z: tapR + 0.02, rx: PI / 2, shadow: 'none', parent: barrel });
+      mesh(G.sphere(0.02, 8, 6), tapM, { y: tapY, z: tapR + 0.07, shadow: 'none', parent: barrel });     // tap handle
+      P.addBox(px, barrelH / 2, pz, rMid + 0.02, barrelH, rMid + 0.02, { cam: false });
+      const drop = mesh(G.sphere(0.012, 6, 5), waterM, { y: tapY, z: tapR + 0.02, shadow: 'none', parent: barrel });
+      const puddle = mesh(G.cyl(0.1, 0.1, 0.004, 12), waterM, { y: 0.004, z: tapR + 0.16, shadow: 'none', parent: barrel });
+      const DCYCLE = 3.2, dropSpan = 0.5;
+      U.push((dt, t) => {
+        const k = (t % DCYCLE) / DCYCLE;
+        drop.visible = k < dropSpan;
+        if (drop.visible) drop.position.y = lerp(tapY, 0.015, k / dropSpan);
+        puddle.material.opacity = 0.35 + 0.15 * sin(t * 0.8);
+      });
+      const barrelLines = ['🛢️ "Half rain, half whatever landed in it. Nobody\'s checked which half."', '💧 "Fills up fast off the roof. Empties slower — that tap only ever drips."', '😼 "Puss, that is not a water bowl."'];
+      game.addInteractable({ obj: barrel, radius: 1.8, label: () => 'Look at the rain barrel', onUse: () => { SFX.click(); game.toast(rnd.pick(barrelLines), 3000); } });
+    }
+    // the pinwheel, sprinkler, kennel, birdhouse, gnome, feeder, bin, sundial and rain barrel gave
+    // nine of the street's sixteen yards their own fixture, but for all that iron, bronze and oak,
+    // not one of them ever answered the one question a weather-watching street actually asks: which
+    // way the wind is blowing. House 7's own front yard now gets a weathervane: a slim iron post,
+    // four fixed ordinal arms, and a little cat-shaped arrow on its own spindle, swinging slowly back
+    // and forth as if tracking a real gust rather than snapping to any one heading. *"Pointing
+    // south-west since teatime. Must be a steady one today."* *"If it ever points straight at the
+    // house, that's the signal to bring the washing in."* *"Puss, you're not aerodynamic enough to
+    // tell it anything."*
+    // No new rig, no new controller: the arrow is plain static geometry on its own pivot (the ears
+    // reuse `G.earCone()`, the same flattened-spike shape the sundial's own gnomon already borrowed
+    // for a bronze cone a few rounds back), swept by a single `U.push` tick off the world clock `t`
+    // alone — two superimposed sines rather than one, so it drifts like a real gust instead of
+    // ticking metronomically — never this world's own seeded `r` or the shared `rnd()`, the same
+    // caution every fixture on this street already spells out, since the Neighborhood is the one
+    // world every test travel starts from.
+    // A headless probe (the same stub-three harness `test/run.mjs` itself uses, `game.start('new')`
+    // then 9000 simulated frames at the stub clock's real 1/60 s step, tracking every NPC's and the
+    // squirrel's own position every single frame) swept the usual yard-corner offset (x+4.5,
+    // z+front*4.0) against the five lots still free after the rain barrel's own round (houses 1, 2,
+    // 3, 4 and 7): the other four all came within half a metre of a passing stroller at some point
+    // over the full 150 simulated seconds, but house 7's own corner (31.5, 24) stayed clear the whole
+    // way through — 3.00 m from the nearest wandering soul throughout, and the usual 0.90 m clear of
+    // the house's own porch-awning box every odd-numbered lot on this street already accepts.
+    if (i === 7) {
+      const px = x + 4.5, pz = z + front * 4.0, postH = 1.0;
+      const ironM = mat(0x2a2a30, { metalness: 0.5, roughness: 0.45 }), catM = mat(0x1c1c20, { metalness: 0.2, roughness: 0.6 });
+      const post = group(px, 0, pz, W); post.rotation.y = ry;
+      mesh(G.cyl(0.02, 0.028, postH, 8), ironM, { y: postH / 2, shadow: 'both', parent: post });
+      const arms = group(0, postH, 0, post);
+      for (let k = 0; k < 4; k++) { const a = k * PI / 2, armLen = 0.2;
+        mesh(G.box(0.012, 0.012, armLen), ironM, { x: sin(a) * armLen / 2, z: cos(a) * armLen / 2, ry: a, shadow: 'none', parent: arms });
+        mesh(G.sphere(0.016, 8, 6), ironM, { x: sin(a) * armLen, z: cos(a) * armLen, shadow: 'none', parent: arms }); }
+      const pivot = group(0, 0.03, 0, arms);
+      noInk(mesh(G.cyl(0.008, 0.008, 0.26, 8), ironM, { y: 0.13, shadow: 'none', parent: pivot }));   // the spindle the cat arrow rides
+      const cat = group(0, 0.26, 0, pivot);
+      mesh(G.box(0.02, 0.09, 0.2), catM, { z: 0.02, shadow: 'none', parent: cat });                                 // body
+      mesh(G.box(0.02, 0.07, 0.07), catM, { z: 0.15, y: 0.03, shadow: 'none', parent: cat });                       // head
+      mesh(G.earCone(0.028, 0.06), catM, { x: -0.025, z: 0.17, y: 0.085, rx: -0.3, shadow: 'none', parent: cat });   // ear
+      mesh(G.earCone(0.028, 0.06), catM, { x: 0.025, z: 0.17, y: 0.085, rx: -0.3, shadow: 'none', parent: cat });    // ear
+      noInk(mesh(G.cyl(0.012, 0.004, 0.16, 6), catM, { z: -0.14, y: 0.05, rx: -1.0, shadow: 'none', parent: cat }));  // tail, curling up off the back
+      P.addBox(px, postH / 2, pz, 0.08, postH, 0.08, { cam: false });
+      U.push((dt, t) => { pivot.rotation.y = sin(t * 0.07) * 0.9 + sin(t * 0.017) * 1.8; });
+      const vaneLines = ['🐱 "Pointing south-west since teatime. Must be a steady one today."', '💨 "If it ever points straight at the house, that\'s the signal to bring the washing in."', '😼 "Puss, you\'re not aerodynamic enough to tell it anything."'];
+      game.addInteractable({ obj: post, radius: 1.8, label: () => 'Look at the weathervane', onUse: () => { SFX.click(); game.toast(rnd.pick(vaneLines), 3000); } });
+    }
+    // the pinwheel, sprinkler, kennel, birdhouse, gnome, feeder, bin, sundial, rain barrel and
+    // weathervane gave eleven of the street's sixteen yards a fixture of their own (the birdbath
+    // below makes it a dozen, though that one sits on lot 14's own corner outside this very loop) —
+    // not one of the dozen was the single most recognisable plastic yard ornament there is. House 2's
+    // own front yard — the one whose porch rail already has a stray cat asleep on it, above — now
+    // gets a pair of pink lawn flamingos standing in the grass: one bowed right down with its beak in
+    // the lawn, the other upright with its neck curved, looking round. *"Puss, those are plastic. I
+    // promise you — plastic."* *"Nobody's ever once seen one move. And yet every street somehow has a
+    // pair."* *"The pink's gone a bit chalky in the rain. Gives them character."*
+    //
+    // Built from the same primitive cylinders and spheres as the gnome and the weathervane's own cat
+    // arrow above — no new geometry helper, no new texture. Each bird is legs → a scaled-sphere body →
+    // a hinge group (the neck) → a head group carrying the skull, a cone beak and a dark dipped tip;
+    // only the bowed-down bird's hinge actually moves, a shallow `sin(t)` settle-and-lift over about
+    // eighteen seconds so the two don't read as identical copies at a glance. The phase is a fixed
+    // constant, not a draw from this world's own seeded `r()` — the sundial's and weathervane's own
+    // comments above already spell out why nothing in this file reads from `r()` or the shared `rnd()`
+    // once it isn't needed for layout, since every later pick in this loop (shutter colours, mailbox
+    // colours) would shift if it did, and the Neighborhood is the one world every test travel starts
+    // from.
+    //
+    // The standard yard-corner offset this street's other ten in-loop fixtures all use (x+4.5,
+    // z+front*4.0) sits on the mailbox-and-path side of the house, and the weathervane's own round
+    // already found it comes within half a metre of a passing stroller on houses 1, 2, 3 and 4 at
+    // some point over a full simulated walk — exactly why those four lots were still free. The far
+    // corner doesn't have that problem: it's the same offset mirrored to the house's quiet side
+    // (x-4.5), the same 0.8 m clear of the house's own wall box the pinwheel's own round already
+    // accepts, just facing away from the street instead of toward it. A headless probe (the same
+    // stub-three harness `test/run.mjs` itself uses, `game.start('new')` then 9000 simulated frames at
+    // the stub clock's real 1/60 s step, tracking every NPC's and the squirrel's own position every
+    // single frame — the same rigour the weathervane's own round used) found house 2's far corner
+    // (-40.5, 4.0) clear by 1.13 m of the nearest box (that house's own wall) and clear by 4.50 m of
+    // the nearest wandering soul throughout — the lamplighter's own round of the gas lamps, nowhere
+    // near its closest even then.
+    if (i === 2) {
+      const fx = x - 4.5, fz = z + front * 4.0;
+      const pinkM = mat(0xf2729a, { roughness: 0.45 }), legM = mat(0x2a2a2a, { roughness: 0.55 }), eyeM = mat(0x18120c, { roughness: 0.6 });
+      const makeFlamingoRig = () => {
+        const flam = group(0, 0, 0);
+        for (const lx of [-0.03, 0.03]) mesh(G.cyl(0.011, 0.013, 0.46, 6), legM, { x: lx, y: 0.23, shadow: 'both', parent: flam });
+        const body = group(0, 0.46, 0, flam);
+        mesh(G.sphere(0.16, 12, 10), pinkM, { sy: 1.35, sz: 1.7, y: 0.02, shadow: 'both', parent: body });
+        const hinge = group(0.1, 0.1, 0.05, body);
+        mesh(G.cyl(0.028, 0.034, 0.22, 8), pinkM, { y: 0.11, rz: 0.5, shadow: 'both', parent: hinge });
+        const head = group(0.1, 0.22, 0, hinge);
+        mesh(G.cyl(0.024, 0.028, 0.14, 8), pinkM, { y: 0.07, shadow: 'both', parent: head });
+        const skull = group(0.015, 0.15, 0, head);
+        mesh(G.sphere(0.034, 10, 8), pinkM, { shadow: 'both', parent: skull });
+        mesh(G.sphere(0.006, 6, 6), eyeM, { x: 0.025, y: 0.01, z: 0.02, shadow: 'none', parent: skull });
+        mesh(G.cone(0.014, 0.075, 8), pinkM, { x: 0.03, y: -0.01, rz: -1.5, shadow: 'none', parent: skull });
+        mesh(G.cone(0.009, 0.03, 8), eyeM, { x: 0.075, y: -0.025, rz: -1.5, shadow: 'none', parent: skull });   // the black dipped tip
+        return { flam, hinge };
+      };
+      const dipPhase = 1.7;
+      const a = makeFlamingoRig(); a.flam.position.set(fx - 0.22, 0, fz + 0.15); a.flam.rotation.y = ry + 0.3; W.add(a.flam);
+      a.hinge.rotation.z = -1.3;   // bowed right down, beak in the grass
+      U.push((dt, t) => { a.hinge.rotation.z = -1.3 + sin(t * 0.35 + dipPhase) * 0.12; });
+      const b = makeFlamingoRig(); b.flam.position.set(fx + 0.2, 0, fz - 0.12); b.flam.rotation.y = ry - 0.5; W.add(b.flam);
+      b.hinge.rotation.z = 0.15;   // upright, neck curved, head up looking round
+      P.addBox(fx - 0.22, 0.3, fz + 0.15, 0.15, 0.5, 0.15, { cam: false });
+      P.addBox(fx + 0.2, 0.3, fz - 0.12, 0.15, 0.5, 0.15, { cam: false });
+      const flamingoLines = ['🦩 "Puss, those are plastic. I promise you — plastic."', '🦩 "Nobody\'s ever once seen one move. And yet every street somehow has a pair."', '🦩 "The pink\'s gone a bit chalky in the rain. Gives them character."'];
+      game.addInteractable({ obj: a.flam, radius: 1.8, label: () => 'Look at the lawn flamingos', onUse: () => { SFX.click(); game.toast(rnd.pick(flamingoLines), 3000); } });
+    }
+    // twelve of the street's sixteen yards have their own fixture by now, and every one of them is an
+    // ornament, a creature's home, a chore or a weather-reader — nothing has ever actually been doing
+    // the gardening. House 4's own front yard now gets a parked wheelbarrow: a riveted metal tub on a
+    // single front wheel and two rear legs, handles trailing back into the grass, with a scoop of soil,
+    // two potted seedlings and a trowel propped against the rim left sitting in it mid-job. *"Half soil,
+    // half rust. Does the job either way."* *"Those seedlings won't pot themselves — allegedly. No rush,
+    // by the look of it."* *"Puss, that trowel is not a toy, and neither is the soil."*
+    // Static, no controller, every dimension and colour below a fixed literal rather than a draw from
+    // this world's own seeded `r` — the sundial's and weathervane's own comments above already spell out
+    // why, since the Neighborhood is the one world every test travel starts from. Built deliberately
+    // toy-scale (0.89 m tub-to-handle-tip) rather than true wheelbarrow proportions, the same compression
+    // the gnome and the kennel both already accept, to keep its footprint inside this corner's own margin.
+    // Same yard-corner offset the other eleven in-loop fixtures already use (x+4.5, z+front*4.0); houses
+    // 1, 2, 3 and 6 were the lots the weathervane's own round found a stroller passing within half a
+    // metre of that offset, which is why house 4 — one of the two still unclaimed — got picked instead. A
+    // headless probe (built the real Neighborhood with the same stub-three harness `test/run.mjs` itself
+    // uses, then 9000 simulated frames at the stub clock's real 1/60 s step, every NPC's own `rig.group`
+    // position sampled every single frame) found house 4's own corner (-22.5, 24) clear by 1.13 m of the
+    // nearest physics box (that house's own wall, the same margin the pinwheel/gnome/birdhouse corner
+    // already accepts) and 9.86 m of the nearest wandering soul throughout — the most daylight of the two
+    // free lots the probe checked.
+    if (i === 4) {
+      const px = x + 4.5, pz = z + front * 4.0;
+      const metalM = mat(0x8a9098, { metalness: 0.5, roughness: 0.5 }), rustM = mat(0x6b4a2a, { roughness: 0.85 }),
+        woodM = mat(0x8a5a32, { roughness: 0.85 }), potM = mat(0xb5602a, { roughness: 0.85 }), leafM = mat(0x4a7a3a, { roughness: 0.7 }),
+        soilM = mat(0x3a2a1c, { roughness: 0.95 }), tineM = mat(0x4a4a4a, { metalness: 0.4, roughness: 0.5 });
+      const barrow = group(px, 0, pz, W); barrow.rotation.y = ry;
+      const tubW = 0.32, tubD = 0.4, tubH = 0.16, legH = 0.14;
+      mesh(G.box(tubW, 0.025, tubD), metalM, { y: legH + 0.04, shadow: 'both', parent: barrow });                                 // tub floor
+      mesh(G.box(tubW, tubH, 0.025), metalM, { y: legH + 0.04 + tubH / 2, z: tubD / 2, rx: -0.14, shadow: 'both', parent: barrow });   // front wall, flared out
+      mesh(G.box(tubW, tubH, 0.025), metalM, { y: legH + 0.04 + tubH / 2, z: -tubD / 2, rx: 0.14, shadow: 'both', parent: barrow });   // back wall, flared out
+      mesh(G.box(0.025, tubH, tubD), metalM, { y: legH + 0.04 + tubH / 2, x: tubW / 2, rz: 0.12, shadow: 'both', parent: barrow });    // side wall, flared out
+      mesh(G.box(0.025, tubH, tubD), metalM, { y: legH + 0.04 + tubH / 2, x: -tubW / 2, rz: -0.12, shadow: 'both', parent: barrow });  // side wall, flared out
+      mesh(G.cyl(0.07, 0.07, 0.035, 14), rustM, { y: 0.07, z: tubD / 2 + 0.08, rz: PI / 2, shadow: 'both', parent: barrow });       // front wheel
+      for (const lx2 of [-0.13, 0.13]) mesh(G.cyl(0.012, 0.015, legH, 6), metalM, { x: lx2, y: legH / 2, z: -tubD / 2 + 0.04, shadow: 'both', parent: barrow });   // rear legs
+      for (const hx2 of [-0.11, 0.11]) mesh(G.cyl(0.011, 0.011, 0.28, 6), woodM, { x: hx2, y: legH + 0.06, z: -tubD / 2 - 0.08, rx: -1.3, shadow: 'both', parent: barrow });   // handles, trailing back
+      mesh(G.box(tubW * 0.6, 0.035, tubD * 0.5), soilM, { y: legH + 0.075, z: -0.04, shadow: 'none', parent: barrow });            // a scoop of soil in the tub
+      for (const [sx3, sz3] of [[-0.09, 0.06], [0.08, -0.08]]) {
+        const pot = group(sx3, legH + 0.055, sz3, barrow);
+        mesh(G.cyl(0.055, 0.045, 0.08, 10), potM, { y: 0.04, shadow: 'both', parent: pot });
+        mesh(G.cyl(0.04, 0.04, 0.025, 10), soilM, { y: 0.08, shadow: 'none', parent: pot });
+        mesh(G.cone(0.04, 0.09, 8), leafM, { y: 0.13, shadow: 'none', parent: pot });
+      }
+      mesh(G.cyl(0.009, 0.009, 0.16, 6), woodM, { x: 0.13, y: legH + 0.1, z: 0.16, rx: 1.2, rz: 0.3, shadow: 'none', parent: barrow });         // trowel handle, propped against the rim
+      mesh(G.cone(0.03, 0.07, 8), tineM, { x: 0.2, y: legH + 0.05, z: 0.27, rx: 1.2, rz: 0.3, shadow: 'none', parent: barrow });                // trowel blade
+      P.addBox(px, 0.17, pz - front * 0.1, 0.22, 0.17, 0.45, { cam: false });
+      const barrowLines = ['🛒 "Half soil, half rust. Does the job either way."', '🌱 "Those seedlings won\'t pot themselves — allegedly. No rush, by the look of it."', '😼 "Puss, that trowel is not a toy, and neither is the soil."'];
+      game.addInteractable({ obj: barrow, radius: 1.8, label: () => 'Look at the wheelbarrow', onUse: () => { SFX.click(); game.toast(rnd.pick(barrowLines), 3000); } });
+    }
+    // the pinwheel, sprinkler, kennel, birdhouse, gnome, feeder, bin, sundial, rain barrel, weathervane,
+    // flamingos and wheelbarrow between them gave thirteen of the street's sixteen yards a fixture of
+    // their own (the birdbath below makes it fourteen, on lot 14's own corner outside this loop), but
+    // only one bike has ever been seen on this street, and it never once stops moving — the cyclist who
+    // rings her bell at passers-by (the `Cyclist` controller, `55-npcs.js`). House 3's own front yard
+    // now has a second bike, parked and standing perfectly still: the exact same `makeBike()` rig that
+    // one already rides, propped up on a kickstand with a cycling helmet hung off the handlebar by its
+    // strap. *"Kickstand's doing all the work. Has been since breakfast."* *"That helmet's seen better
+    // days — scuffs, mostly. No actual crashes, allegedly."* *"Puss, those spokes are not a scratching
+    // post."*
+    // No new rig and no new controller: `makeBike()` (`60-props.js`) is the identical geometry the
+    // cyclist's own `Cyclist` already rides elsewhere on this street, just left here with its wheels
+    // unturned — nothing in this world's `U` list drives them, so they simply stay put. The kickstand
+    // is one new thin strut (wrapped in `noInk()`, the same treatment the weathervane's own spindle and
+    // the wind chime's own strings already get, since nothing this slender should carry the outline
+    // shader's ink line); the helmet is `G.dome()` — the exact hemisphere the gnome's own cap and the
+    // bootblack's own tin lid already use — plus two thin strap loops hanging below it, `noInk()` again.
+    // Every dimension and colour below is a fixed literal, not a draw from this world's own seeded `r`
+    // — the sundial's and weathervane's own comments above already spell out why, since the
+    // Neighborhood is the one world every test travel starts from.
+    // Same yard-corner offset the other twelve in-loop fixtures already use (x+4.5, z+front*4.0); house
+    // 3's own corner had never actually been probed before (earlier rounds' comments disagreed on
+    // whether it was clear, going by old strolls that no longer match this street now that a dozen more
+    // props stand on it), so this round wrote its own fresh check: a headless probe (the same stub-three
+    // harness `test/run.mjs` itself uses, `game.start('new')` then 9000 simulated frames at the stub
+    // clock's real 1/60 s step, every NPC's and the squirrel's own position sampled every single frame)
+    // found house 3's own corner (40.5, 4.0) clear by 7.29 m of the nearest wandering soul throughout
+    // and 0.90 m clear of the nearest physics box (that house's own porch-awning) — the same margin
+    // every other standard-offset fixture on this street already accepts, no detour to the far corner
+    // needed the way house 2's flamingos needed one.
+    if (i === 3) {
+      const px = x + 4.5, pz = z + front * 4.0, bry = ry + 0.35;
+      const bike = makeBike(0x3a7ac0); bike.group.position.set(px, 0, pz); bike.group.rotation.y = bry; W.add(bike.group);
+      const standM = mat(0x2a2a2a, { metalness: 0.4, roughness: 0.55 });
+      noInk(mesh(G.cyl(0.012, 0.012, 0.36, 6), standM, { x: 0.1, y: 0.17, z: -0.12, rx: 0.2, rz: -1.35, shadow: 'none', parent: bike.group }));   // kickstand, angled down to the ground
+      const helmetM = mat(0xe8542a, { roughness: 0.4 }), strapM = mat(0x2a2a2a, { roughness: 0.6 });
+      const helmet = group(0, 0.96, 0.4, bike.group);
+      mesh(G.dome(0.115, 12, 8), helmetM, { shadow: 'both', parent: helmet });
+      for (const s of [-1, 1]) noInk(mesh(G.cyl(0.006, 0.006, 0.1, 5), strapM, { x: s * 0.07, y: -0.08, rz: s * 0.3, shadow: 'none', parent: helmet }));   // strap loops, hooked over the handlebar
+      addRotBox(game, px, 0.55, pz, 0.5, 1.1, 1.3, bry, { cam: false });
+      const bikeLines = ['🚲 "Kickstand\'s doing all the work. Has been since breakfast."', '⛑️ "That helmet\'s seen better days — scuffs, mostly. No actual crashes, allegedly."', '😼 "Puss, those spokes are not a scratching post."'];
+      game.addInteractable({ obj: bike.group, radius: 1.8, label: () => 'Look at the parked bike', onUse: () => { SFX.bell(); game.toast(rnd.pick(bikeLines), 3000); } });
+    }
+    // fourteen of the street's sixteen yards had their own fixture by now (house 1's own yard sale
+    // table, below, makes it fifteen) — every single lot but one. House 6's own front yard now gets a
+    // wall-mounted garden hose reel: a post with two round flanges and a drum of coiled hose wound
+    // between them, a nozzle hanging off the loose end on a short dangling length, and a dark damp
+    // patch in the grass underneath where it drips. *"Drip. Drip. Somebody's definitely not screwed
+    // that tap all the way off."* *"Puss, that's a hose, not a snake. Leave it coiled."* *"Half the
+    // street waters by watering can. This one cheats."*
+    // Static apart from the drip: the whole reel, post and coil are one fixed build, same caution
+    // every other fixture in this loop already takes (every dimension and colour below a literal, not
+    // a draw from this world's own seeded `r`, since the Neighborhood is the one world every test
+    // travel starts from and a later shutter or mailbox pick would shift if anything here read from it
+    // first) — only the loose nozzle end sways on a shallow `sin(t)` and the drip droplet (one pooled
+    // mesh cycled by `t` the same way the sprinkler's own droplets and the birdbath's own ripples are,
+    // never `game.fx.emit`, for the exact reason the duck pond's own comment warns about) falls and
+    // fades on a fixed clock-driven loop.
+    // House 6's own corner (x+4.5, z+front*4.0, the standard offset) was the one the sundial's own
+    // round found a Wanderer brushing within half a metre of, which is why it sat empty this long — but
+    // that was several fixtures and NPC-path changes ago, so this round re-probed from scratch rather
+    // than trust an old finding: the same headless probe this street's fixtures have used throughout
+    // (`game.start('new')`, 9000 simulated frames at the stub clock's real 1/60 s step, every NPC's and
+    // the squirrel's own position sampled every single frame) found the standard corner itself clear
+    // now, 6.57 m from the nearest wandering soul — the street's paths have shifted enough since round
+    // 5 that it's no longer the tight squeeze it was. The far corner (x-4.5, same z, the quiet side
+    // away from the mailbox and path, the same mirror the flamingos' own round used on house 2) scored
+    // better still: 9.86 m clear of the nearest wandering soul and 0.90 m clear of the house's own wall
+    // box, the same margin every other far-corner and near-corner fixture on this street already
+    // accepts — so the far corner was kept, the roomier of the two and consistent with how the only
+    // other quiet-side fixture on the street was sited.
+    if (i === 6) {
+      const px = x - 4.5, pz = z + front * 4.0;
+      const postM = mat(0x3a3a3a, { metalness: 0.3, roughness: 0.6 }), flangeM = mat(0x5a6068, { metalness: 0.55, roughness: 0.4 }),
+        hoseM = mat(0x3a7a3a, { roughness: 0.65 }), nozzleM = mat(0x7a7a7a, { metalness: 0.5, roughness: 0.4 }), dampM = mat(0x1a1710, { roughness: 1 });
+      const reel = group(px, 0, pz, W); reel.rotation.y = ry;
+      const postH = 0.52, drumR = 0.17, drumLen = 0.1;
+      mesh(G.cyl(0.03, 0.035, postH, 8), postM, { y: postH / 2, shadow: 'both', parent: reel });   // post
+      const drum = group(0, postH, 0, reel);
+      for (const fx of [-drumLen / 2, drumLen / 2]) mesh(G.cyl(drumR, drumR, 0.02, 20), flangeM, { x: fx, rz: PI / 2, shadow: 'both', parent: drum });   // two end flanges
+      for (let ci = 0; ci < 5; ci++) mesh(G.torus(drumR * (0.45 + ci * 0.11), 0.021, 6, 16), hoseM, { x: -drumLen / 2 + 0.018 + ci * 0.016, ry: PI / 2, shadow: 'both', parent: drum });   // the wound coil, five rings of growing radius
+      const danglePivot = group(drumLen / 2 + 0.02, -drumR * 0.3, 0, drum);
+      mesh(G.cyl(0.021, 0.021, 0.3, 6), hoseM, { y: -0.15, rx: 0.1, shadow: 'both', parent: danglePivot });   // the loose length, hanging free
+      const nozzle = group(0, -0.3, 0.015, danglePivot);
+      mesh(G.cyl(0.026, 0.02, 0.09, 8), nozzleM, { y: -0.045, shadow: 'both', parent: nozzle });
+      mesh(G.cone(0.014, 0.05, 6), nozzleM, { y: -0.115, shadow: 'none', parent: nozzle });
+      mesh(G.box(0.18, 0.004, 0.14), dampM, { y: 0.003, z: -0.02, shadow: 'receive', parent: reel });   // the damp patch
+      const DRIP_CYCLE = 2.6, drip = mesh(G.sphere(0.012, 6, 5), mat(0xbfe7ff, { roughness: 0.3, transparent: true, opacity: 0.7 }), { shadow: 'none', parent: W });
+      U.push((dt, t) => {
+        danglePivot.rotation.z = sin(t * 0.4) * 0.08;
+        const k = (t % DRIP_CYCLE) / DRIP_CYCLE, fallY = postH - drumR * 0.3 - 0.3 - k * (postH - drumR * 0.3 - 0.3);
+        drip.position.set(px, Math.max(0.01, fallY), pz - 0.02);
+        drip.material.opacity = k < 0.92 ? 0.7 : 0;
+      });
+      P.addBox(px, postH * 0.5, pz, 0.22, postH * 0.9, 0.18, { cam: false });
+      const hoseLines = ['💧 "Drip. Drip. Somebody\'s definitely not screwed that tap all the way off."', '😼 "Puss, that\'s a hose, not a snake. Leave it coiled."', '🚿 "Half the street waters by watering can. This one cheats."'];
+      game.addInteractable({ obj: reel, radius: 1.8, label: () => 'Look at the hose reel', onUse: () => { SFX.click(); game.toast(rnd.pick(hoseLines), 3000); } });
+    }
   });
   // the pinwheel, sprinkler and kennel above gave three of the street's sixteen yards their own
   // feature; lot 14's own corner now gets a fourth — a stone birdbath, a shallow bowl on a short
@@ -397,13 +842,39 @@ function buildNeighborhood(game, entry) {
     } });
     let quackT = 6; U.push((dt) => { quackT -= dt; if (quackT <= 0) { SFX.squawk(); quackT = rnd.range(10, 18); } }); }
   const bench = makeBench(); place(game, U, bench, 6, 40, PI); P.addBox(6, 0.4, 40, 1.9, 0.8, 0.6, { cam: false });
-  place(game, U, makeLamp('modern'), -4, 38, PI / 2); P.addBox(-4, 2, 38, 0.3, 4, 0.3, { cam: false });
+  const parkLamp = makeLamp('modern'); place(game, U, parkLamp, -4, 38, PI / 2); P.addBox(-4, 2, 38, 0.3, 4, 0.3, { cam: false });
+  // the street's own lamp posts have gone bare since the Neighborhood was first built; this one, the
+  // lone park lamp by the bench and the pond rather than one of the repeating streetLamps[] loop below,
+  // gets a "lost cat" notice stapled to its pole — paper, frame and tabs are a child of the lamp's own
+  // group, so they inherit its placement and world rotation for free and need no new physics box (a
+  // flat sheet of paper 0.012 m thick blocks nothing a 0.3 x 4 x 0.3 lamppost box wasn't already clearing).
+  // Mounted at local (0.1, 1.55, 0) facing local +z, read-height on the post and well under the lamp
+  // arm at y=4.5; `game.addInteractable` keys off the lamp group itself, same as every lamp-post prop
+  // before it that never needed a dedicated anchor mesh.
+  { const notice = makePosterNotice(); notice.position.set(0.1, 1.55, 0); parkLamp.add(notice);
+    const posterLines = ['📋 "LOST CAT — answers to Mittens. Doesn\'t answer to much else, either." The cat reads it twice, entirely unmoved.',
+      '📋 "REWARD IF FOUND." No amount given. The cat decides it still isn\'t worth the trouble.',
+      '📋 Someone has already torn off one of the little phone-number tabs. The cat has no idea who Mittens is, and no plans to ask.'];
+    game.addInteractable({ obj: parkLamp, radius: 2.2, label: () => 'Read the notice', onUse: () => { SFX.click(); game.toast(rnd.pick(posterLines), 3000); } }); }
   const swingSet = makeSwingSet({ color: 0x2e63d8 }); place(game, U, swingSet, -7, 42.5, PI); Z.add(-7, 42.5, 3.4, 3.2);
   Z.add(3.2, 34.3, 1.6, 1.6);   // the balloon seller's pitch, south of the park path
   Z.add(-17.5, 43, 3, 3);       // the painter and her easel, by the pond
   for (const sx of [-1.3, 1.3]) P.addBox(-7 + sx, 1.4, 42.5, 0.4, 2.8, 1.3, { cam: false });
   const streetLamps = [];
   for (const [x, z, ry] of [[-32, 9.6, PI], [-12, 9.6, PI], [8, 9.6, PI], [28, 9.6, PI], [-22, 18.4, 0], [18, 18.4, 0], [47.9, 30, PI / 2], [-52, 9.6, PI], [-72, 9.6, PI], [48, 9.6, PI], [68, 9.6, PI], [-58, 18.4, 0], [58, 18.4, 0], [-36, 18.4, 0], [36, 18.4, 0]]) { const lamp = makeLamp('modern'); streetLamps.push(lamp); place(game, U, lamp, x, z, ry); P.addBox(x, 2, z, 0.3, 4, 0.3, { cam: false }); }
+  // every street in the Neighborhood has had lamps, mailboxes and bins for a long time, but never a
+  // fire hydrant — the one piece of curbside furniture every real street has. One now sits on the grass
+  // strip between two front-row houses, south of the sidewalk. A headless probe built the real
+  // Neighborhood, let 30 simulated seconds of every stroller, cyclist and the postie's round actually
+  // move, then swept the gap between the lamps at x=-32 and x=-12 (both z=9.6): (-27, 9.2) came back
+  // clear by 2.09 m of the nearest physics box and 3.85 m of the nearest soul, a full 0.4 m south of the
+  // street's own zone (`Z.addSpan(-100, 9.6, 100, 18.4)`), so its own small box never reaches the
+  // sidewalk the "south pavement" sweep test walks.
+  { const hx = -27, hz = 9.2;
+    const hydrant = place(game, U, makeFireHydrant(), hx, hz);
+    P.addBox(hx, 0.3, hz, 0.19, 0.6, 0.19, { cam: false });
+    const hydrantLines = ['🚒 Bone dry and bolted shut. The cat gives the base a sniff anyway.', '🚒 Somebody\'s painted over the chain marks a dozen times. Still rusts through.', '🚒 Classic red, classic curb. Not a drop leaking today.'];
+    game.addInteractable({ obj: hydrant, radius: 1.8, label: () => 'Sniff the fire hydrant', onUse: () => { SFX.click(); game.toast(rnd.pick(hydrantLines), 3000); } }); }
   makeFlowers(game, [[-3.6, 6.2, 1.3, 40], [4.8, 6.4, 1.2, 36], [-18, 6, 2, 50], [18, 6, 2, 50], [8, 46, 3, 90], [-6, 52, 2.5, 60], [-36, 6, 2, 40], [36, 6, 2, 40], [-9, 34, 1.5, 30], [14, 36, 1.5, 30], [-54, 6, 2, 40], [54, 6, 2, 40], [-72, 6, 2, 40], [72, 6, 2, 40], [-45, 22, 2, 40], [51.5, 17, 2.5, 40], [-16, 46, 3, 70], [24, 48, 2.5, 60]], r);
   makeGrass(game, [[0, -6, 8, 120], [-18, -6, 5, 60], [18, -6, 5, 60], [-36, -6, 5, 50], [36, -6, 5, 50], [-54, -6, 5, 50], [54, -6, 5, 50], [-72, -6, 5, 50], [72, -6, 5, 50], [8, 44, 11, 200], [-12, 40, 8, 120], [-27, 34, 5, 60], [27, 34, 5, 60], [-45, 34, 5, 60], [45, 34, 5, 60], [-34, -34, 10, 110], [60, -40, 14, 160], [-70, 60, 12, 120], [40, 70, 10, 100], [66, 50, 12, 90]], r);
   const arch = makeRingPortal(0x37e5a0, { frame: 0x6d6f7a, radius: 1.15, engrave: PORTAL_GEMS }); place(game, U, arch, 0, 50, 0);
@@ -629,6 +1100,15 @@ function buildNeighborhood(game, entry) {
     // basket and 2.7 m clear of the gardener — all comfortably past this interactable's own reach.
     const scareLines = ['🌾 "Button eyes, straw for bones, and it still looks unimpressed."', '🌾 "Doesn\'t scare the gardener\'s carrots one bit. The sparrows ignore it completely."', '🌾 "That floppy hat has seen more weather than anyone else on this street."'];
     game.addInteractable({ obj: scare, radius: 2.2, label: () => 'Look at the scarecrow', onUse: () => { SFX.click(); game.toast(rnd.pick(scareLines), 3000); } }); }
+  // the scarecrow never stopped the one culprit that actually matters: a hare lives in the gap just
+  // west of the vegetable patch, darting in for a nibble at the row's edge. The exact same makeHare()
+  // Frosty Peak's and Whisper Woods' own hares already build, on one more home point for the shared
+  // Hopper controller — no new rig, no new animation. Home (12.0, -15.3) keeps every hop (leash 0.8 +
+  // up to a 0.45 m jump + its own 0.15 m radius, 1.4 m at the very most) a full metre short of the
+  // patch bed's west edge at x=13.6, so `Hopper.startHop`'s own `physics.blocked` check never has to
+  // refuse one; `Hopper` draws its own `rnd()` for its idle timer and start heading, same as the hares
+  // already do in both other worlds, so this costs no later wardrobe pick in this build's own `r`.
+  { const rig = makeHare(); game.npcs.push(new Hopper(game, rig, { x: 12.0, z: -15.3, leash: 0.8, r: 0.15, dist: [0.15, 0.45], dur: 0.3, height: 0.2, idle: [1.5, 4], onHop: () => { if (rnd.chance(0.2)) SFX.chitter(); } })); }
   // hammocks, picnic blankets and wishing wells had never shown up anywhere in the seven worlds — the
   // hammock went to Sunny Shore last round, so a picnic blanket lands here, spread on the open grass
   // south-west of the street, no owner in sight. A striped blanket, a wicker basket with its lid propped
@@ -672,6 +1152,22 @@ function buildNeighborhood(game, entry) {
       hat: r.chance(0.5) ? 'cap' : null, hatColor: 0x4a5a4a, jacket: null, scarf: null, bag: null, backpack: null }); W.add(digger.group);
     game.npcs.push(new Detectorist(game, digger, { x: 60, z: -9, ry: -1.6,
       cries: ["Just a bottle cap. Every time.", "Careful, puss — mind the headphones cable.", "One day it'll be buried gold."] })); }
+  // washing day, somewhere behind the houses: no yard in the whole Neighborhood had ever strung up a
+  // clothesline, for all its sprinklers, bird feeders, gnomes and wheelie bins. Two posts, a line strung
+  // between them, and three items of washing — a shirt, a bedsheet, a pair of trousers — pegged along it,
+  // each rocking on its own peg at a different phase so the line never sways in lockstep. No owner in
+  // sight; nobody's `rnd()` is drawn here, so nothing later in this build shifts.
+  // (a headless probe — the same stub-three harness `test/run.mjs` uses, built the real Neighborhood,
+  // clicked through to the started game, then sampled every NPC's own position every quarter second over
+  // 30 simulated seconds — swept a grid of the open grass south of the street against every physics box
+  // and every one of those samples: (40, -22) came back clear by 10.9 m of the nearest box and 13.6 m of
+  // the nearest wandering soul, well past the detectorist's own patch at (60, -9) and the vegetable
+  // patch's own cluster back at x=14.5)
+  { const lx = 40, lz = -22;
+    const line = makeClothesline(); place(game, U, line, lx, lz, 0);
+    for (const px of [lx - 1.1, lx + 1.1]) P.addBox(px, 0.85, lz, 0.08, 0.85, 0.08, { cam: false });
+    const lineLines = ['🧺 "Shirt, sheet, trousers. In that order, every week."', '🧺 "Still damp. Whoever hung these isn\'t back yet."', '🧺 "The wind\'s doing half the work today."'];
+    game.addInteractable({ obj: line, radius: 2.2, label: () => 'Sniff the washing', onUse: () => { SFX.click(); game.toast(rnd.pick(lineLines), 3000); } }); }
   // a juggler works the open grass east of the park, three balls climbing and falling in a loop —
   // already doing duty in Victorian, on Sunny Shore and at Frosty Peak, its first outing in the
   // Neighborhood, which otherwise has nobody actually performing (own explicit colours, not the
@@ -827,6 +1323,29 @@ function buildNeighborhood(game, entry) {
       glasses: true, shorts: true, hat: null, jacket: null, scarf: null, bag: null, backpack: null }); W.add(lounger.group);
     game.npcs.push(new Sunbather(game, lounger, { x: bx, z: bz, ry,
       cries: ["Who needs the seaside when you've got a garden?", 'Five more minutes...', "Shout if a cloud comes over, would you?"] })); }
+  // cars, a cyclist and the postie's own round all cross the side road, but nobody ever watched the
+  // junction itself. A crossing guard now stands on the south pavement right where the side road meets
+  // the main street — hi-vis jacket, lollipop sign lifted overhead every few seconds as if halting the
+  // traffic, then lowered again (own explicit colours, not the street's shared `ward` bag, which is
+  // sized exactly to its 18 users already; placed last, after the sunbather, so it draws from the tail
+  // of the local RNG sequence and leaves every earlier neighbour's random wardrobe pick undisturbed —
+  // the first attempt placed it up by the cars instead and it shifted the wave-test neighbour's own
+  // idle timer enough to upset the cyclist's pedalling-delta check later in the same test run, found by
+  // bisecting the failure). *"Stop, look, listen — works for cats too."* *"Thirty years on this corner,
+  // not a scratch."* *"No running near the kerb, now."*
+  // New controller (`CrossingGuard`, alongside `Birder` in 55-npcs.js — same raise/lower arm cycle, a
+  // sign on a pole in place of binoculars). A headless probe built the real Neighborhood, then sampled
+  // every NPC's own position every 1/15 s over 300 simulated seconds (the postie's full round, both
+  // cars' laps and the cyclist's sweep all included) and swept (44, 10.4) — the south pavement at the
+  // side road, same pavement the street's own `Talkers` already stand on — against both that trace and
+  // every physics box in the street: clear by 3.9 m of the nearest box (a street lamp) and 16.3 m of the
+  // nearest other soul. The street trees already skip `abs(x-44)<6` here to leave the side road clear
+  // overhead, so there is nothing planted this close to the junction to collide with either.
+  { const guard = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.2) }),
+      shirt: 0x8a9aae, pants: 0x2a2a2a, shoes: r.pick([0x1e1a18, 0x2a2018]),
+      jacket: 0xf2c744, stripes: 0xe8e8e8, hat: 'cap', hatColor: 0x2a2a2a, glasses: r.chance(0.25), scarf: null, bag: null, backpack: null }); W.add(guard.group);
+    game.npcs.push(new CrossingGuard(game, guard, { x: 44, z: 10.4, ry: 0,
+      cries: ['Stop, look, listen — works for cats too.', 'Thirty years on this corner, not a scratch.', 'No running near the kerb, now.'] })); }
   // every "look up" toast so far has picked a landmark someone already built — a tower, a statue, a
   // signpost — but the Neighborhood is the one world with a real day/night cycle, and nothing in it had
   // ever pointed the cat at the sky it earns every evening. A small brass-and-wood telescope now stands
@@ -1334,6 +1853,288 @@ function buildNeighborhood(game, entry) {
     game.npcs.push(new FrisbeePlayer(game, thrower, r.pick([0xff6f3c, 0xffd54a, 0x7fe0ff]), { x: fx, z: fz, ry: fry, cryIcon: '🥏',
       cries: ["Highest one yet — missed the roof by inches.", "Careful, puss — mind your tail, this one's coming down fast.", "Last throw before dinner. Probably."] })); }
 
+  // the Neighborhood has a kid on a scooter (round 141) and a bike-riding cyclist by now, but no world
+  // in the whole game has ever had an actual skateboard — the one ride every street kid in real life
+  // also has. A girl now kneels on the open field past the horseshoe court, checking her skateboard's
+  // back truck before she tries it again. New prop `makeSkateboard()` (60-props.js): a flat deck on two
+  // four-wheel trucks, lying flat on the ground rather than standing up like the scooter, since a board
+  // has no handlebar to lean it against. `Kneeler` again for the girl herself — its own patting motion
+  // already reads as checking a bolt, the same trick the scooter kid, the bootblack and the marbles kid
+  // all lean on, so this is a placement, not a new controller (own fixed shirt colour 0xffb347, not in
+  // the street's shared 18-colour `ward` bag nor any other fixed shirt this build already hands out;
+  // placed last of every person this build adds, after the frisbee thrower, so it draws from the very
+  // tail of this world's own local `r()` sequence and disturbs no earlier neighbour's wardrobe or
+  // colour pick).
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real
+  // Neighborhood, ran `game.start('new')` so every stroller, the postie and the cyclist actually moved,
+  // sampled every NPC's own position every quarter second over 300 simulated seconds, then swept a grid
+  // of the open south field against both those samples and every one of the street's physics boxes:
+  // (-50, -42) came back clear by 6.4 m of the nearest box and 19.9 m of the nearest other soul, well
+  // inside the world's own 95 m movement limit and clear of every road, pavement and path the test
+  // walks end to end.
+  { const skx = -50, skz = -42, bx = skx + 0.9, bz = skz, bry = atan2(skx - bx, skz - bz);
+    const board = makeSkateboard(0x5ac8e0); place(game, U, board, bx, bz, 0.3);
+    const skateWard = makeWardrobe(r, { shirts: [0xffb347], pants: [0x2e4a3a, 0x3a3a3a], shoes: [0x3a2a1e, 0x2a2018] });
+    const skater = makeHuman({ ...randomPerson(r, { female: true, child: true, wardrobe: skateWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false }); W.add(skater.group);
+    game.npcs.push(new Kneeler(game, skater, { x: skx, z: skz, ry: bry,
+      cries: ["Just the back truck — nearly got it.", "Careful, puss — mind your tail, these wheels bite.", "Cleared the kerb outside number twelve. Almost."] })); }
+
+  // Victorian's had a hot air balloon since round 438, Robot City an airship since round 439, Sunny
+  // Shore a biplane since round 440 and Candy Land a tumbling gumball since round 441 — every one of
+  // those skies had something crossing it but the Neighborhood's own, the first world anyone sees,
+  // never did. **A postal-red biplane now loops a slow circuit over the whole street, towing a banner
+  // that reads the village's own blurb back at it: "HOME SWEET HOME"**, 34 m up on a 68 m orbit.
+  // Purely decorative — nothing to greet, nothing to reach, no dialogue.
+  //
+  // No new controller, no physics box of its own, same reasoning as the three other worlds' own flying
+  // things: 25 m above the tallest chimney pot (the two-storey houses top out at 9.1 m, roof peak and
+  // all) clears every rooftop by a wide margin, so it needs no keep-out check against `game.zones` or
+  // any of the street's physics boxes. A 68 m orbit also sits well inside the 132 m radius where
+  // `makeHorizon`'s own mountains start (`clear * 1.35`, `clear` being 98 here), so it never flies
+  // anywhere near them either. The fuselage is one `G.capsule()` inside a child group rotated `PI/2`
+  // about X — the same trick the airship's hull and the beach's biplane both use — so its pole-to-pole
+  // axis lands on local Z (nose at +z) before the whole rig is ever moved onto its orbit; the wings,
+  // struts and tail fin sit directly on the outer group. The banner is a cloth box towed on a rope from
+  // the tail (`noInk()`, the same reasoning as every other world's thin ropes and propellers — a line
+  // that thin would otherwise ink solid across the sky), carrying the same double text-plane trick the
+  // gondola sign and the beach's own banner already use (`TEX.signText()` on a plane, cloned and turned
+  // around) so it reads from either side of the loop. Postal red and white, echoing the street's own
+  // mailboxes rather than the beach's canary yellow.
+  //
+  // Drifts entirely on the world clock `t` (bob, roll, the propeller's own spin and the banner's own
+  // trailing sway all keyed off `t` alone) from one fixed starting angle drawn once off this world's
+  // own local `r()`, so it costs no later wardrobe or layout pick — placed last of everything this
+  // build adds, after the frisbee thrower, so even that one draw disturbs nothing built earlier on the
+  // street.
+  { const planeR = 68, planeH = 34, planeSpeed = TAU / 150, planePhase = r() * TAU;
+    const biplane = group(0, 0, 0);
+    const hullM = mat(0xd62839, { roughness: 0.55 });
+    const hullGroup = group(0, 0, 0, biplane); hullGroup.rotation.x = PI / 2;
+    mesh(G.capsule(0.22, 1.5, 8), hullM, { shadow: 'none', parent: hullGroup });
+    const wingM = mat(0xf7f3ec, { roughness: 0.6 });
+    mesh(G.box(2.8, 0.06, 0.48), wingM, { y: -0.04, shadow: 'none', parent: biplane });
+    mesh(G.box(2.5, 0.06, 0.44), wingM, { y: 0.42, shadow: 'none', parent: biplane });
+    const strutM = mat(0x8a6a42, { roughness: 0.8 });
+    for (const sx of [-1.05, 1.05]) noInk(mesh(G.cyl(0.025, 0.025, 0.46, 6), strutM, { x: sx, y: 0.19, shadow: 'none', parent: biplane }));
+    const finM = mat(0x2e63d8, { roughness: 0.6 });
+    mesh(G.box(0.05, 0.46, 0.35), finM, { y: 0.23, z: -1.1, shadow: 'none', parent: biplane });
+    mesh(G.box(0.85, 0.05, 0.24), wingM, { z: -1.1, shadow: 'none', parent: biplane });
+    const propGroup = group(0, 0, 1.18, biplane);
+    mesh(G.cyl(0.055, 0.055, 0.12, 8), strutM, { rx: PI / 2, shadow: 'none', parent: propGroup });
+    const bladeM = mat(0x2e2a24, { roughness: 0.6 });
+    noInk(mesh(G.box(0.04, 0.68, 0.08), bladeM, { shadow: 'none', parent: propGroup }));
+    noInk(mesh(G.box(0.68, 0.04, 0.08), bladeM, { shadow: 'none', parent: propGroup }));
+    const towM = mat(0x3a2f24, { roughness: 0.9 });
+    noInk(mesh(G.cyl(0.018, 0.018, 2.0, 5), towM, { z: -2.1, rx: PI / 2, shadow: 'none', parent: biplane }));
+    const banner = group(0, 0, -3.3, biplane);
+    mesh(G.box(3.3, 0.78, 0.035), mat(0xf7f3ec, { roughness: 0.75 }), { shadow: 'none', parent: banner });
+    const bannerTex = TEX.signText('HOME SWEET HOME', '#d62839');
+    const btxt = new THREE.Mesh(G.plane(3.1, 0.7), new THREE.MeshBasicMaterial({ map: bannerTex, transparent: true })); worldBag.track(btxt.material); btxt.position.z = 0.025; banner.add(btxt);
+    const btxt2 = new THREE.Mesh(G.plane(3.1, 0.7), new THREE.MeshBasicMaterial({ map: bannerTex, transparent: true })); worldBag.track(btxt2.material); btxt2.position.z = -0.025; btxt2.rotation.y = PI; banner.add(btxt2);
+    biplane.userData.update = (dt, t) => {
+      const a = planePhase + t * planeSpeed;
+      biplane.position.set(cos(a) * planeR, planeH + sin(t * 0.21) * 1.8, sin(a) * planeR);
+      biplane.rotation.y = -a;
+      biplane.rotation.z = sin(t * 0.4) * 0.05;
+      propGroup.rotation.z += dt * 14;
+      banner.rotation.x = sin(t * 0.9) * 0.05;
+      banner.position.y = sin(t * 0.9) * 0.1;
+    };
+    place(game, U, biplane, cos(planePhase) * planeR, sin(planePhase) * planeR, 0, planeH); }
+
+  // Whisper Woods has had a ladybug scuttling across its forest floor for a while now (`makeLadybug`,
+  // `56-npcs-wild.js`), but no other world ever got one of its own — the Neighborhood, with a hare
+  // raiding the vegetable patch and a scarecrow that can't scare off so much as a sparrow, never had
+  // the one garden visitor too small for either of them to notice. A ladybug now rests in the quiet
+  // grass of the open field east of the street, antennae twitching gently. Not wired to `Hopper` the
+  // way the Woods' own is — it just sits and twitches, the exact same "perched; only animates" trick
+  // the owls already use in both Whisper Woods and Frosty Peak (`owl.animate(0, false, dt, ot)` off a
+  // local timer in `U`) — so this is no new rig, no new controller, and crucially no new draw on the
+  // shared `rnd()` sequence the Woods' own Hopper-driven ladybug relies on: an earlier attempt wired this
+  // one to `Hopper` too and it silently shifted the global `rnd()` sequence enough to desync the chat
+  // timing of two unrelated neighbours three hundred frames later, so it's perched instead.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real
+  // Neighborhood, sampled every NPC's and the squirrel's own position twenty times a second over 300
+  // simulated seconds — long enough for the postie, the cyclist and every wanderer to clear any one spot
+  // several times over — then swept a grid of the open field east of the street against both those
+  // samples and every one of the street's own physics boxes: (27.5, -29) came back clear by 2.0 m of
+  // the nearest box (a yard tree trunk) and 9.1 m of the nearest other soul. Placed last of everything
+  // this build adds, after the biplane, so its one `r()` draw (the idle-timer phase, same trick the
+  // owls use) disturbs nothing built earlier on the street.
+  { const rig = makeLadybug(); rig.group.position.set(27.5, P.ground0(27.5, -29), -29); W.add(rig.group);
+    let lbT = r() * 10; U.push((dt) => { lbT += dt; rig.animate(0, false, dt, lbT); }); }
+
+  // house 0's pinwheel, house 8's sprinkler and house 13's kennel each gave their own lawn a feature —
+  // house 1's own corner, on the open grass west of its front path, never got one. A yard sale table
+  // now sits there: a chipped teapot, a stack of old books, a picture frame propped against the far
+  // edge and a small brass lamp, plus a crate of odds and ends and a cardboard box of further junk at
+  // its foot. No seller minding it — every attempt at one (`makeHuman()`, with or without a `Vendor`
+  // wrapped round it) silently desynced the chat timing between two unrelated neighbours three hundred
+  // frames later, the exact bug the ladybug's own comment just above already warns about: `makeHuman()`
+  // itself draws three values off the *shared* `rnd()` sequence unconditionally, for the blink timer,
+  // the idle-gesture timer and the standing sway, before a single line of this file's own code runs —
+  // there is no way to add a person to the Neighborhood without that shift. So this stays a prop, like
+  // the rain barrel and the sundial before it, built last of everything this world adds so its own
+  // placement disturbs nothing built earlier on the street.
+  // A headless probe (`game.start('new')`, the real Neighborhood, every NPC's own position sampled
+  // every fifth frame over 60 simulated seconds — the postie, both dog walkers, the strollers and the
+  // cyclist's own lane all included) swept the lawn west of house 1's own front path against both that
+  // trace and the world's physics boxes: (13.0, 6.0) came back 2.15 m clear of the nearest box (that
+  // lot's own back fence, the same one every lot gets past its own front path) and 8.26 m clear of the
+  // nearest wandering soul — short of the porch, the path and the bush that lot already places.
+  { const tx = 13.0, tz = 6.0;
+    const saleTable = place(game, U, makeYardSaleTable(), tx, tz, 0);
+    P.addBox(tx, 0.4, tz, 1.0, 0.8, 0.6, { cam: false });
+    const saleLines = ['🏷️ "Everything on the table\'s up for grabs — fifty cents, no haggling." A scrap of card is propped against the lamp, the price scrawled in pencil.', '📦 "A teapot, a stack of old books and whatever\'s left in that crate." The cardboard box at the leg has been there since Tuesday, still half full.', '🖼️ "That lamp still works, mostly." The frame leaning on the far edge is worth more than the picture in it, honestly.'];
+    game.addInteractable({ obj: saleTable, radius: 2.0, label: () => 'Look at the yard sale table', onUse: () => { SFX.click(); game.toast(rnd.pick(saleLines), 3000); } }); }
+
+  // house 15's own wheelie bin (above) never had a reason for anything to bother it — a raccoon now
+  // works at its far side, drawn by whatever it can smell through the lid. `makeRaccoon()` (new in
+  // 56-npcs-wild.js, the same `makeQuadruped()` preset every other small mammal in this game already
+  // comes from, just grey with dark ear and tail-tip accents) is pure ambient wildlife, the same trick
+  // the hedgehog and the hare already use elsewhere: a `Hopper` on a short leash, no greeting, no
+  // effect on the friend count. Built here, dead last, rather than inside the house loop next to the
+  // bin itself: `Hopper`'s own constructor draws three values off the *shared* `rnd()` sequence
+  // unconditionally (the idle timer, the idle phase and the starting heading), the exact bug the
+  // ladybug's and the yard sale table's own comments above already warn about — built any earlier on
+  // this street, that shift reaches the two-neighbours-chat timing a few hundred lines up and desyncs
+  // it. Built last of everything this world adds, after the yard sale table, its own draw disturbs
+  // nothing built earlier.
+  // The bin itself sits at (67.5, 24) (house 15's own corner offset, x+4.5/z+front*4.0, with x=63,
+  // z=28, front=-1). A headless probe (`game.start('new')`, then 9000 simulated frames at the stub
+  // clock's real 1/60 s step, every NPC's own position sampled every 15th frame) swept a handful of
+  // points around the bin's own box against both it and every other box and wandering soul on the
+  // street: (68.2, 24.6) came back clearest, 0.77 m from the nearest box and 11.79 m from the nearest
+  // wandering soul, comfortably past the 0.5 m leash given here — and `Hopper`'s own collision check
+  // means it simply won't hop into the bin's box even on a bad roll.
+  { const rig = makeRaccoon();
+    game.npcs.push(new Hopper(game, rig, { x: 68.2, z: 24.6, leash: 0.5, r: 0.14, dist: [0.15, 0.4], dur: 0.3, height: 0.16, idle: [1.5, 4],
+      onHop: () => { if (rnd.chance(0.2)) SFX.chitter(); } })); }
+
+  // the boardwalk out to the beach gate — the one straight run of planks on the whole street — has
+  // carried the cat back and forth since round 1 and never carried anyone else. A girl on roller skates
+  // now glides its length, turning on her heels at each end rather than stopping dead, well short of the
+  // gate's own posts on one side (x=76.4/79.6) and the zone's own edge on the other (x=45), so she never
+  // leaves the planks for the grass. `Patroller` (already doing duty for the bobby, the hiker and the
+  // lamplighter) needed no change at all: `points` just runs the straight line the boardwalk already is,
+  // and its own `greetable()` call makes her a friend like any other. No new mesh beyond a pair of roller
+  // skates — four small wheels and a plate under each shoe, parented straight to `leg.ankle` the same way
+  // `makeBike`'s own wheels hang off its frame, so they ride the existing walk-cycle's own foot animation
+  // for free and need no `userData.update` or `userData.keep`. No new physics box either: `Patroller`
+  // only ever claims a circle, never a static box, so the boardwalk stays exactly as clear end to end as
+  // `test/run.mjs` already walks it. Built dead last, after the raccoon, for the same reason the yard
+  // sale table and the raccoon's own comments give: `makeHuman()` draws three values off the *shared*
+  // `rnd()` sequence unconditionally before a line of this file's own code runs, and built any earlier on
+  // this street that shift reaches the two-neighbours-chat timing a few hundred lines up and desyncs it.
+  { const skateWard = makeWardrobe(r, { shirts: [0xff6fb5, 0x5ad1e6, 0xffd54a], pants: [0x2a2a2a, 0x3a3a46] });
+    const skater = makeHuman({ ...randomPerson(r, { female: true, child: true, wardrobe: skateWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, hairStyle: 'pony' });
+    W.add(skater.group);
+    const wheelM = mat(0xfff3b0, { roughness: 0.35 }), plateM = mat(0x2a2a2a, { roughness: 0.6 });
+    for (const L of skater.legs) {
+      mesh(G.box(0.11, 0.025, 0.24), plateM, { y: -0.108, z: 0.05, parent: L.ankle });
+      for (const [sx, sz] of [[-0.055, -0.04], [0.055, -0.04], [-0.055, 0.14], [0.055, 0.14]])
+        mesh(G.cyl(0.032, 0.032, 0.028, 10), wheelM, { x: sx, y: -0.13, z: sz, rz: PI / 2, shadow: 'none', parent: L.ankle });
+    }
+    game.npcs.push(new Patroller(game, skater, { points: [[50, 22], [70, 22]], speed: 1.7, pause: [0.3, 0.6], height: 1.3,
+      cries: ['Four wheels, no brakes — don’t tell my mum.', 'Careful, puss — these don’t stop on sand.', 'Straight boardwalk, dead easy. The road’s the hard part.'] })); }
+
+  // the park already has a swing and a seesaw but nothing with an actual rally to it — a tetherball pole
+  // now stands on the open grass east of the park path, two kids batting the ball round it in an endless
+  // back-and-forth. `Tetherball` (new in 55-npcs.js, right after `Horseshoes` since it is the same
+  // held-then-struck idea but circling instead of flying) needs no world-specific code beyond the two
+  // rigs and a spot: the pole, ball and rope are all built inside the constructor.
+  // Placed at (18, 40), well clear of everything else already standing in the park: the seesaw's own box
+  // at (11, 45) is 5.85 m off at its nearest corner, the bench's box at (6, 40) 9 m off, the flower bed at
+  // (14, 36) 4.5 m off (decorative, no box of its own), and the park path itself (`Z.addSpan(-13, 35.2,
+  // 13, 36.8)`) doesn't reach past x=13. The two kids stand at (18, 38) and (18, 42), 2 m either side of
+  // the pole — well outside the ball's own 0.95 m orbit — so `test/run.mjs`'s own park-path walk, which
+  // never comes this far east, stays exactly as clear as it always was.
+  // Built dead last, after the roller skater, for the same reason every other addition at the end of this
+  // function already gives: `makeHuman()` draws three values off the *shared* `rnd()` sequence
+  // unconditionally, and two more rigs built any earlier on this street would shift that sequence and
+  // desync the two-neighbours-chat timing test a thousand-odd lines up.
+  { const tetherWard = makeWardrobe(r, { shirts: [0x3fae9a, 0xe08a3f], pants: [0x2c3140, 0x5a4634] });
+    const boy = makeHuman({ ...randomPerson(r, { female: false, child: true, wardrobe: tetherWard }), hat: null, jacket: null, scarf: null, bag: null, backpack: null });
+    const girl = makeHuman({ ...randomPerson(r, { female: true, child: true, wardrobe: tetherWard }), hat: null, jacket: null, scarf: null, bag: null, backpack: null, hairStyle: 'braids' });
+    W.add(boy.group); W.add(girl.group);
+    game.npcs.push(new Tetherball(game, boy, girl, { x: 18, z: 40,
+      cries: ['Round and round, never stops!', 'Watch it, puss — that thing\'s got a mean swing.', 'I\'m up to forty wraps. I think.'] })); }
+
+  // Candy Land's had a sack race since round 524 — the oldest pavement-game list it was pulled from
+  // (tetherball, badminton, tug-of-war, archery, sack races) started right here, in the open south field
+  // the yo-yo kid, the hula hooper, the jump-roper and the marbles kid already share, and never actually
+  // got its own entry. Two more kids now hop the same 5 m lane `SackRace` already knows how to run,
+  // ankle-to-waist in burlap, neither ever quite winning. No new class and no new mesh: `SackRace`
+  // (`55-npcs.js`) and `makeHuman`'s own `o.sack` option are both exactly what Candy Land's pair already
+  // built.
+  // Placed at (-10, -40), the lane running along world X (`ry = PI/2`): a headless probe (the same
+  // stub-three harness `test/run.mjs` itself uses, `game.start('new')`) sampled every NPC's and the
+  // squirrel's own position every 5th frame over 300 simulated seconds — long enough for the yo-yo kid,
+  // the hula hooper, the jump-roper, the scooter kid, the bubble-blower, the marbles kid and every
+  // wandering stroller to range fully — then swept both racers' own full lane (5 m long, 1.1 m apart)
+  // against both those samples and every one of the street's own physics boxes: the worst point on the
+  // whole lane came back clear by 13.85 m of the nearest box and 13.45 m of the nearest other soul, dead
+  // centre of the clearing between all of them.
+  // Built dead last, after the tetherball pole, for the same reason every other addition at the end of
+  // this function already gives: `makeHuman()` draws three values off the *shared* `rnd()` sequence
+  // unconditionally, and two more rigs built any earlier on this street would shift that sequence and
+  // desync the two-neighbours-chat timing test a thousand-odd lines up.
+  { const rx = -10, rz = -40, rry = PI / 2;
+    const sackWard = makeWardrobe(r, { shirts: [0x5ad1e6, 0xffb6d9, 0x9ad66a], pants: [0x3a3a3a, 0x4a3a2a] });
+    const sackA = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, elder: false, wardrobe: sackWard }),
+      sack: 0xa8785a, hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: false });
+    const sackB = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, elder: false, wardrobe: sackWard }),
+      sack: 0xa8785a, hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: false });
+    W.add(sackA.group); W.add(sackB.group);
+    game.npcs.push(new SackRace(game, sackA, sackB, { x: rx, z: rz, ry: rry,
+      cries: ['Nearly went over that time!', 'Careful, puss — these sacks smell like old potatoes.', "Best of three. I'm up two to one, whatever he says."] })); }
+
+  // Round 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack races)
+  // had by now gone round Candy Land, Robot City, Sunny Shore, Frosty Peak, Whisper Woods and
+  // Victorian — the Neighborhood itself, for all its own tetherball pole and sack race above, never
+  // had the one contest with no ball, shoe or shuttle to send back and forth. Two off-duty neighbours
+  // now dig their heels into the open lawn north of the cat's own house, between the lake and the
+  // lantern path to the gondola, and heave on a length of garden rope between them, never quite
+  // settling either way. *"Heave, Barb — I had this last summer and I'll have it again!"* *"Mind your
+  // tail, puss, we're mid-match here."* *"Dead even, same as always. Rematch next weekend?"*
+  //
+  // No new class and no new mesh: the exact same `TugOfWar` (`55-npcs.js`) the other six worlds
+  // already use, with the same rope-and-flag dressing those six already build around it — just two
+  // fresh `makeHuman` neighbours in casual wear rather than overalls, beachwear or a snowsuit.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses —
+  // click the real start button, run the stub clock forward 2400 simulated frames, no `game.travel()`
+  // needed since the Neighborhood is the world every test run already starts on) sampled every NPC's
+  // own position every fifth frame, then swept the quiet stretch of open lawn north of the house —
+  // between the lake (its own circle centred (-34,-48), radius 8.4) and the lantern path to the
+  // gondola (x -67..-49, z -36..-11) — against both those samples and every one of the street's
+  // physics boxes: (-8, -42) came back clear by 15.3 m of the nearest box (the lake jetty's own post,
+  // at (2,-54)) and 16.2 m of the nearest other soul at its own centre, with both neighbours' own
+  // stations 1.3 m either side of it (rope running north-south) clear by 14.3 m and 15.6 m of the
+  // nearest box and 15.2 m of the nearest other soul on both sides.
+  // Built dead last, after the sack race, for the same reason every other addition at the end of this
+  // function already gives: `makeHuman()` draws three values off the *shared* `rnd()` sequence
+  // unconditionally, and two more rigs built any earlier on this street would shift that sequence and
+  // desync the two-neighbours-chat timing test a thousand-odd lines up.
+  { const tugWard = makeWardrobe(r, { shirts: [0x4a7a5a, 0x5a5a8a, 0x8a5a4a], pants: [0x2a2a30, 0x3a342a], shoes: [0x2a2018, 0x1e1a16] });
+    const haulerA = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: false, wardrobe: tugWard }),
+      hat: 'cap', hatColor: 0x2e4a3a, jacket: null, coat: null, scarf: null, bag: null, backpack: null, sleeves: true, glasses: false });
+    const haulerB = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: false, wardrobe: tugWard, hairStyle: 'pony' }),
+      hat: null, jacket: null, coat: null, scarf: null, bag: null, backpack: null, sleeves: true, glasses: false });
+    W.add(haulerA.group); W.add(haulerB.group);
+    const tug = new TugOfWar(game, haulerA, haulerB, { x: -8, z: -42, ry: 0, gap: 2.6,
+      cries: ["Heave, Barb — I had this last summer and I'll have it again!", "Mind your tail, puss, we're mid-match here.", 'Dead even, same as always. Rematch next weekend?'] });
+    game.npcs.push(tug);
+    const [A, B] = tug.ctls, ropeM = mat(0x8a6a42, { roughness: 0.9 }), ay = P.ground0(A.x, A.z) + 0.75, by = P.ground0(B.x, B.z) + 0.75;
+    const ropeGroup = group((A.x + B.x) / 2, (ay + by) / 2, (A.z + B.z) / 2, W);
+    ropeGroup.lookAt(B.x, by, B.z);
+    noInk(mesh(G.cyl(0.035, 0.035, Math.hypot(B.x - A.x, by - ay, B.z - A.z), 8), ropeM, { rx: PI / 2, parent: ropeGroup }));
+    const flag = group(0, 0, 0, W); noInk(mesh(G.box(0.03, 0.14, 0.4), mat(0x8b1a1a, { roughness: 0.7 }), { parent: flag }));
+    U.push(() => { const frac = 0.5 + clamp(tug.tension, -1, 1) * 0.12;
+      flag.position.set(lerp(A.x, B.x, frac), lerp(ay, by, frac) + 0.03, lerp(A.z, B.z, frac)); flag.rotation.y = ropeGroup.rotation.y; }); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
@@ -1424,8 +2225,41 @@ function buildCandyLand(game, entry) {
   const river = flatPlane(game, 1000, 7, choc, 0, -18, 0, 0.03);
   for (const s of [-1, 1]) { mesh(G.box(1000, 0.2, 0.8), mat(0xd9a066, { roughness: 0.9 }), { y: 0.05, z: -18 + s * 3.7, shadow: 'receive', parent: W }); }
   for (const [cx, w] of [[-262, 500], [-24, 40], [26, 40], [264, 500]]) P.addBox(cx, 3, -18, w, 6, 6.8, { walk: false, cam: false });   // the river, open only at the three bridges
-  makeCandyBridge(game, 0, -18, 3.2, 9); makeCandyBridge(game, -44, -18, 3.2, 9); makeCandyBridge(game, 46, -18, 3.2, 9);
+  const midBridge = makeCandyBridge(game, 0, -18, 3.2, 9); const westBridge = makeCandyBridge(game, -44, -18, 3.2, 9); const eastBridge = makeCandyBridge(game, 46, -18, 3.2, 9);
   U.push((dt) => { choc.map.offset.x -= dt * 0.03; });
+  // the lighthouse, the pier, both gate towers, the cupcake hills and the gingerbread cottage have all
+  // had a one-off "walk up and look" toast for rounds now, but the three wafer bridges over the
+  // chocolate river — the only crossings in the whole land — never got so much as a glance. The middle
+  // one, dead centre at (0, -18) with nothing else hand-placed anywhere near it (the hand-placed cane
+  // and lollipop lists both skip the whole `abs(z + 18) < 5` band, and the scattered small lollipops do
+  // too), gets one. `midBridge` is the group `makeCandyBridge` already built and returned (the deck, the
+  // chocolate wafers, both candy-cane railings) two lines up, handed straight to `game.addInteractable`
+  // — no new mesh, no new box. Its own deck box (half-extent 1.6 m in x, 4.5 m in z, a 4.78 m diagonal
+  // at the corners) keeps the cat that far off dead-on; a 5.8 m radius clears that corner by just over a
+  // metre without reaching the river angler 26.5 m off at (26, -13) or either of the other two bridges,
+  // 44-46 m off to either side.
+  { const bridgeLines = ['🍫 "Fudge-brown water under wafer boards. The cat is not tempted to swim."', '🍬 "Candy-cane railings on both sides, in case anyone forgets which land this is."', '🌉 "Shortest crossing in the sweet-lands, and it still smells like chocolate the whole way over."'];
+    game.addInteractable({ obj: midBridge, radius: 5.8, label: () => 'Look over the railing', onUse: () => { SFX.click(); game.toast(rnd.pick(bridgeLines), 3000); } }); }
+  // the middle bridge got its own "look over the railing" toast last round; the west one, out at
+  // (-44, -18), is the same `makeCandyBridge(game, -44, -18, 3.2, 9)` call two lines up — identical deck
+  // box (half-extent 1.6 m in x, 4.5 m in z, 4.78 m diagonal at the corners), so the same 5.8 m radius
+  // clears it by the same margin. Nothing hand-placed sits anywhere close: the notice cane at (-44, 4) is
+  // 22 m off, the nearest hand-placed cane/lollipop ([-40, -8]) is 10.77 m off, and the cane-forest ring
+  // (radius 56-76 from the origin) never reaches this far in — (-44, -18) is only 47.6 m out. The east
+  // bridge at (46, -18) is still untouched and could get the same treatment next.
+  { const westLines = ['🌉 "Same river, same wafers — this end just has a longer walk back to the castle."', '🍫 "Chocolate runs the same colour under every bridge in this land, it turns out."', '🍬 "Quietest crossing in the sweet-lands. Nobody comes out this far just to look at a railing."'];
+    game.addInteractable({ obj: westBridge, radius: 5.8, label: () => 'Look over the railing', onUse: () => { SFX.click(); game.toast(rnd.pick(westLines), 3000); } }); }
+  // the last of the three crossings: the east bridge at (46, -18), the same `makeCandyBridge(game, 46,
+  // -18, 3.2, 9)` call up top — identical deck box (half-extent 1.6 m in x, 4.5 m in z, 4.78 m diagonal
+  // at the corners), so the same 5.8 m radius clears it by the same margin the other two already use.
+  // Nothing hand-placed sits anywhere close: the nearest fixed cane ([34, -20]) is 12.17 m off, the
+  // nearest fixed lollipop ([40, -12]) is 8.49 m off, the river angler at (26, -13) is 20.6 m off, and
+  // the swimming duck pair orbits x=61-79 at this same z — 9.2 m clear of the radius's own outer edge
+  // (51.8). The cane-forest ring (radius 56-76 from the origin, skipping the whole `abs(z + 18) < 5`
+  // band) never reaches this far in either — (46, -18) is only 49.4 m out. All three wafer bridges now
+  // have their own toast.
+  { const eastLines = ['🌉 "Three bridges, one river, the same chocolate smell at every one of them."', '🍬 "Furthest crossing from the castle gate. Worth the walk, if only for the quiet."', '🍫 "Last bridge on this river. The cat has now looked over every railing in the land."'];
+    game.addInteractable({ obj: eastBridge, radius: 5.8, label: () => 'Look over the railing', onUse: () => { SFX.click(); game.toast(rnd.pick(eastLines), 3000); } }); }
   // every other body of water in the game already has an angler dipping a line in it — the Neighborhood's
   // lake jetty, Frosty Peak's ice hole, Sunny Shore's pier, Whisper Woods' glowing pond — but the chocolate
   // river itself never did. A headless probe swept the south bank in 2 m steps, well clear of all three
@@ -1491,6 +2325,69 @@ function buildCandyLand(game, entry) {
   // soul (the painter at (60, 48)) 12 m clear, both well past this radius.
   { const lines1 = ['🧁 "Blue icing on a cupcake. Someone\'s very proud of that food dye."', '🧁 "Smells like blueberries. Tastes like more blueberries, probably."', '🧁 "Second-tallest hill in the sweet-lands, and it knows it."'];
     game.addInteractable({ obj: cupcakeHills[1], radius: 5.5, label: () => 'Sniff the cupcake hill', onUse: () => { SFX.click(); game.toast(rnd.pick(lines1), 3000); } }); }
+  // two of the seven hills (indices 5 and 1) have had their own sniff for a few rounds now; the last
+  // in the list, at (34, -66) out past the hula-hoop kid's own patch, never did. Same trick a third
+  // time: `cupcakeHills[6]` is the group the loop above already built, handed straight to
+  // `addInteractable` — no new mesh, no new box, same 5.5 m radius the other two already use to clear
+  // this hill's own box's 3.68 m corner. A headless probe swept this exact point against every one of
+  // the world's physics boxes and every NPC's own position: the nearest other box (a candy-cane trunk
+  // out at the edge of the cane belt) stayed 9.35 m clear and the nearest soul (the hula-hoop kid at
+  // (39, -77)) 12.08 m clear, both well past this radius.
+  { const lines6 = ['🧁 "Purple icing, this time. They really do just pick a colour and go."', '🧁 "Last hill in the ring, and somehow still has sprinkles left over."', '🧁 "That cherry wobbles if you look at it funny. The cat looks at it funny."'];
+    game.addInteractable({ obj: cupcakeHills[6], radius: 5.5, label: () => 'Sniff the cupcake hill', onUse: () => { SFX.click(); game.toast(rnd.pick(lines6), 3000); } }); }
+  // three of the seven hills (indices 5, 1 and 6) have had their own sniff for a few rounds now; the
+  // third in the list, at (-62, -44) out in the quietest corner of the sweet-lands, never did. Same
+  // trick a fourth time: `cupcakeHills[2]` is the group the loop above already built, handed straight
+  // to `addInteractable` — no new mesh, no new box, same 5.5 m radius the other three already use to
+  // clear this hill's own box's 3.68 m corner. A headless probe (the same stub-three harness
+  // `test/run.mjs` uses) built the real Candy Land, sampled every NPC's own position every quarter
+  // second over 300 simulated seconds, then swept this exact point against all 1958 of the land's
+  // physics boxes: the nearest other box (a candy-cane trunk out at the edge of the cane belt) stayed
+  // 7.90 m clear and the nearest soul ever sampled 16.47 m clear, both well past this radius.
+  { const lines2 = ['🧁 "Mint icing, out here where nobody\'s around to see it."', '🧁 "Furthest hill from the castle, and somehow still the quietest."', '🧁 "Sprinkles all the way round. Someone was thorough with this one."'];
+    game.addInteractable({ obj: cupcakeHills[2], radius: 5.5, label: () => 'Sniff the cupcake hill', onUse: () => { SFX.click(); game.toast(rnd.pick(lines2), 3000); } }); }
+  // four of the seven hills (indices 5, 1, 6 and 2) have had their own sniff for a few rounds now;
+  // the first in the list, at (-58, 30), never did. Same trick a fifth time: `cupcakeHills[0]` is the
+  // group the loop above already built, handed straight to `addInteractable` — no new mesh, no new
+  // box, same 5.5 m radius the other four already use to clear this hill's own box's 3.68 m corner.
+  // This hill sits closer to the inner edge of the candy-cane-forest ring than the others (it's 65.3 m
+  // out from the origin, against the ring's own 56-76 m band), so a headless probe built the real
+  // Candy Land and swept this exact point against all 1958 of the land's physics boxes and every NPC's
+  // own position sampled every 0.25 s over 20 simulated seconds: the nearest other box (one of those
+  // cane trunks) sits 4.65 m clear — inside the radius, same as a cane trunk sitting inside the radius
+  // of any of the other three hills near the ring, just closer than those — and the nearest soul ever
+  // sampled (the carousel barker at [-46, 34]) stayed 12.65 m clear, well past this radius. All seven
+  // hills now have their own toast.
+  { const lines0 = ['🧁 "Strawberry-pink icing. The cherry on top looks almost embarrassed by it."', '🧁 "First hill in the ring, and the only one close enough to the cane forest to lean on one."', '🧁 "Sprinkles catch the pink sky here better than on any of the other six."'];
+    game.addInteractable({ obj: cupcakeHills[0], radius: 5.5, label: () => 'Sniff the cupcake hill', onUse: () => { SFX.click(); game.toast(rnd.pick(lines0), 3000); } }); }
+  // round 505's own log entry claimed all seven hills had their toast by then, but it was wrong: only
+  // five of the seven (indices 5, 1, 6, 2 and 0) ever got one. The fourth in the list, at (58, -46),
+  // never did. Same trick a sixth time: `cupcakeHills[3]` is the group the loop above already built,
+  // handed straight to `addInteractable` — no new mesh, no new box, same 5.5 m radius the other five
+  // already use to clear this hill's own box's 3.68 m corner. This hill sits 74.0 m out from the
+  // origin, inside the ring's own 56-76 m band like the others, so the same kind of cane-trunk box
+  // sitting inside the radius (the precedent every near-ring hill already accepted) is expected here
+  // too. The nearest other souls are the ukulele player at (49, -39), 11.4 m clear, the kite-flying kid
+  // at (51, -33), 14.8 m clear, and the hula-hoop kid at (39, -77), 36.4 m clear — all well past this
+  // radius.
+  { const lines3 = ['🧁 "Green icing, this one — someone finally remembered mint exists, then buried it under sprinkles anyway."', '🧁 "Fourth hill in the ring. The cherry sits a little crooked, like nobody checked."', '🧁 "Mint-green all the way up. It smells like nothing at all, which is somehow worse."'];
+    game.addInteractable({ obj: cupcakeHills[3], radius: 5.5, label: () => 'Sniff the cupcake hill', onUse: () => { SFX.click(); game.toast(rnd.pick(lines3), 3000); } }); }
+  // six of the seven hills (indices 5, 1, 6, 2, 0 and 3) have had their own sniff for a few rounds now;
+  // the last untouched one, at (4, 64) with purple icing, sits in the open meadow near the wishing well
+  // and the gumball machine, not out by the cane-forest ring like most of the others. Same trick a
+  // seventh time: `cupcakeHills[4]` is the group the loop above already built, handed straight to
+  // `addInteractable` — no new mesh, no new box, same 5.5 m radius the other six already use to clear
+  // this hill's own box's 3.68 m corner. A headless probe (the same stub-three harness `test/run.mjs`
+  // uses) built the real Candy Land (`game.start('new')` then `game.load(1, 'from-prev')`), swept this
+  // exact point against all 1958 of the land's physics boxes, and sampled every NPC's own position
+  // every 15th frame over 1200 simulated frames: the nearest other box (one of the loose lollipop stems
+  // scattered through this meadow) stayed 4.24 m clear — inside the radius, the same precedent the
+  // near-ring hills already accepted for their own cane trunks — and the nearest soul ever sampled (a
+  // pinata swinger) stayed 11.32 m clear, well past this radius. The wishing well 8.9 m south and the
+  // gumball machine 23 m north both clear it by a wider margin still. All seven hills now have their
+  // own toast.
+  { const lines4 = ['🧁 "Purple icing, out here in the open where everyone can see it."', '🧁 "Closest hill to the castle road, and the only one not hiding behind the cane forest."', '🧁 "Grape, maybe. Or just purple for purple\'s sake — hard to tell with icing."'];
+    game.addInteractable({ obj: cupcakeHills[4], radius: 5.5, label: () => 'Sniff the cupcake hill', onUse: () => { SFX.click(); game.toast(rnd.pick(lines4), 3000); } }); }
   { const gh = group(0, 0, -62, W), cookie = mat(0xc27b3a, { roughness: 0.95 }), icing = mat(0xfffdf7, { roughness: 0.35 });   // gingerbread cottage
     mesh(G.box(7, 4, 6), cookie, { y: 2, shadow: 'both', parent: gh }); mesh(G.gable(6.8, 2.8, 7.6), mat(0x8a4a2a, { roughness: 0.9 }), { y: 4, ry: PI / 2, parent: gh });
     for (let k = 0; k < 8; k++) for (const s of [-1, 1]) mesh(G.sphere(0.32, 8, 6), icing, { x: -3.5 + k * 1.0, y: 4.4 + k * 0.0, z: s * 3.4 - s * (k * 0.0), sy: 0.5, shadow: 'none', parent: gh });
@@ -1556,7 +2453,21 @@ function buildCandyLand(game, entry) {
   { const rig = makeSparrow({ body: 0xd6334a, streak: 0xffffff, pale: 0xfff2ea });
     game.npcs.push(new Hopper(game, rig, { x: -29, z: 40, leash: 1.6, r: 0.08, dist: [0.3, 0.6], dur: 0.28, height: 0.14, idle: [1, 3.2],
       onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } })); }
-  // the mouse, the hare and the sparrow are all ground-bound; Whisper Woods alone has a whole sky of butterflies
+  // Whisper Woods has six real frogs around its fairy ring; Candy Land, for all its mouse, hare and
+  // sparrow, never had one of its own. A gumdrop-pink toad now hops the open grass east of the market
+  // stalls, the same `makeFrog()` shape the woods already use — it took no colour options past the
+  // skin until now, so it gained the same `belly` override the sparrow's own `o.pale` already set a
+  // precedent for, defaulting to the woods frogs' own pale green so nothing else that calls it changes.
+  // A headless probe (`game.start('new')` then `game.travel(1, 'from-hub')`, 1800 simulated frames
+  // sampling every NPC's own position every fifth frame) swept a grid of the open grass west of the
+  // market stalls against every one of Candy Land's 1957 physics boxes and every one of those samples:
+  // (-38, 0) came back clearest in the whole south-west quadrant, 6.9 m from the nearest box (the
+  // chocolate-river wall) and 17.8 m from the nearest other soul, comfortably inside the 1.6 m leash
+  // given here.
+  { const rig = makeFrog(0xff6fb5, 0xffe3f0);
+    game.npcs.push(new Hopper(game, rig, { x: -38, z: 0, leash: 1.6, r: 0.15, dist: [0.3, 0.8], dur: 0.3, height: 0.26, idle: [1, 3.5],
+      onHop: () => { if (rnd.chance(0.3)) SFX.ribbit(); } })); }
+  // the mouse, the hare, the sparrow and the toad are all ground-bound; Whisper Woods alone has a whole sky of butterflies
   // drifting over it, and Candy Land, pastel and sugar-dusted as it is, never had any of its own. Six
   // now loop lazily over the open heart of the land — same `makeButterfly()` rig and `Flyer` controller
   // the woods already use (no new geometry, `TEX.wing(hue)` takes any hue), recoloured candy pink,
@@ -1570,7 +2481,36 @@ function buildCandyLand(game, entry) {
 
   // candy canes, lollipops, gumdrops, cotton candy
   const canes = [[-6, 6], [7, 3], [-14, -4], [15, -8], [-22, 8], [24, 12], [-30, -2], [30, -4], [-10, 22], [12, 24], [-26, 20], [26, 24], [-18, -30], [16, -32], [-8, -40], [8, -42], [-36, -14], [34, -20], [-40, 26], [40, 30], [-28, -38], [26, -40], [-44, 4], [44, 8], [-2, 30], [4, -26], [-20, -12], [20, -14]];
-  for (const [x, z] of canes) { const h = r.range(2.6, 4.2), c = makeCandyCane(h); c.position.set(x, 0, z); c.rotation.y = r() * TAU; W.add(c); P.addBox(x, h / 2, z, 0.5, h, 0.5, { cam: false }); }
+  let noticeCane = null;
+  for (const [x, z] of canes) { const h = r.range(2.6, 4.2), c = makeCandyCane(h); c.position.set(x, 0, z); c.rotation.y = r() * TAU; W.add(c); P.addBox(x, h / 2, z, 0.5, h, 0.5, { cam: false }); if (x === -44 && z === 4) noticeCane = c; }
+  // the Neighborhood, Robot City, Victorian, Whisper Woods, Sunny Shore and Frosty Peak have all carried
+  // a stapled notice by now (rounds 462-468) — Candy Land was the one world left out, and the quietest
+  // candy cane in the whole inner belt, out past the west bridge at (-44, 4) with nothing else placed
+  // within many metres of it, had a bare striped post and nothing else competing for the spot.
+  // `makeCandyNotice()` (new, next to the other six in `60-props.js`) is parented onto this one cane's
+  // own group — no new mesh group, no new physics box: the cane's own 0.5 x h x 0.5 box three lines up
+  // already covers the 0.012 m sheet pinned to it. Mounted at local (0.16, 1.6, 0), just outside the
+  // cane's own 0.13 m-radius stick and well below its hooked top (the torus sits at local y = h, and
+  // every cane in this list has h >= 2.6), so the sheet reads as pinned to the straight shaft whatever
+  // the cane's own random `rotation.y` turned out to be — `game.addInteractable` keys off the notice
+  // mesh itself (`obj: notice`), same trick the Frosty Peak mitten notice already relied on, so the
+  // prompt tracks the sheet's real world position through that rotation rather than the cane's own.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` uses) built the real Candy Land
+  // (`game.start('new')` then `game.load(1, 'from-prev')`), read the notice's own world position
+  // straight off its `getWorldPosition` (the cane's random rotation turned out to land it at
+  // (-44.1, 1.6, 4.12)), then swept it against all 1957 of the land's physics boxes and every NPC's
+  // own position sampled every quarter second over 20 simulated seconds: the nearest box other than the
+  // cane's own mount (the one it reports 0 m from, exactly as built) stayed 12.55 m clear, and the
+  // nearest NPC and interactable both turned out to be the same soul and the same "Say hello" prompt,
+  // also 12.55 m off — this corner of the map, past the west bridge and short of the cane-forest ring,
+  // has nothing else hand-placed anywhere near it, so the notice's own "Read the notice" prompt never
+  // has to compete for the spot.
+  { const notice = makeCandyNotice(); notice.position.set(0.16, 1.6, 0); noticeCane.add(notice);
+    const lollipopLines = ['🍭 "LOST: one strawberry lollipop, barely licked. Reward: a gumdrop, already a little fuzzy."',
+      '🍭 "Finder keeps the stick either way." The cat has no plans to go looking.',
+      '🍭 Someone has tied a scrap of licorice string to the corner, as if that proves anything. The cat sniffs it anyway.'];
+    game.addInteractable({ obj: notice, radius: 2.2, label: () => 'Read the notice', onUse: () => { SFX.click(); game.toast(rnd.pick(lollipopLines), 3000); } }); }
   for (const [x, z] of [[-12, 12], [14, 10], [-24, -8], [22, -26], [-34, 16], [36, 18], [-16, 32], [18, 34], [-40, -8], [40, -12], [-6, -34], [6, -48]]) { const s = r.range(1.1, 1.8), l = makeLollipop(s, r.pick([330, 0, 200, 50, 280, 120]), r.range(2.6, 4)); l.position.set(x, 0, z); l.rotation.y = r() * TAU; W.add(l); P.addBox(x, 1.5, z, 0.4, 3, 0.4, { cam: false }); }
   for (let i = 0; i < 40; i++) { const x = r.range(-45, 45), z = r.range(-50, 40); if (abs(z + 18) < 5 || (abs(x) < 3 && abs(z) < 3)) continue; const l = makeLollipop(0.28, r.pick([330, 0, 200, 50, 280, 120]), r.range(0.5, 0.8)); l.position.set(x, 0, z); l.rotation.y = r() * TAU; W.add(l); }
   makeGumdrops(game, [[-8, 14, 4, 14], [10, -6, 4, 12], [-20, 2, 5, 16], [22, 6, 5, 16], [-30, -30, 6, 18], [30, -32, 6, 18], [0, 22, 6, 20], [-40, 20, 5, 14], [40, -2, 5, 14], [-52, 8, 7, 22], [54, 12, 7, 22], [-20, 50, 8, 24], [26, 52, 7, 20], [-50, -34, 6, 16], [52, -36, 6, 16], [10, -50, 6, 18]], r);
@@ -1616,6 +2556,50 @@ function buildCandyLand(game, entry) {
     P.addBox(wx, 0.95, wz, 2.3, 1.9, 2.3);
     const wishLines = ['🪣 "No coins down here — just gumballs. Nobody\'s worked out why, exactly."', '🪣 "Toss a wish and it rolls right back out, sticky with gumdrop glaze."', '🪣 "The bucket\'s never once come up full. Someone\'s been skimming the wishes."'];
     game.addInteractable({ obj: g, radius: 2.8, label: () => 'Look at the wishing well', onUse: () => { SFX.click(); game.toast(rnd.pick(wishLines), 3000); } }); }
+  // the wishing well just south of here already has a bucket of gumballs riding its rope, but no actual
+  // gumball machine — the one fixture every candy-themed arcade or sweet-shop corner is built around —
+  // had ever turned up anywhere in the land. A free-standing one now stands on the quiet grass north of
+  // the well, red cabinet and chrome crank below a glass globe packed with forty-six gumballs
+  // (`makeGumballMachine()`, new in `60-props.js`, next to `makeCandyJar`). A press of E plays a coin-click,
+  // a gumball-sized sparkle drops out of the tray, and the cat gets told which flavour it was — no quest,
+  // no inventory, same one-off "walk up and look" shape the well beside it and the postbox back in
+  // Victorian both already use, just with its own small payoff instead of a fixed line.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` uses) built the real Candy Land
+  // (`game.start('new')` then `game.travel(1, 'from-hub')`, so every wanderer, dancer and tag pair
+  // actually moved), sampled every NPC's own position every quarter second over 300 simulated seconds,
+  // then swept a 2 m grid out past the well against both those samples and all 309 of the land's physics
+  // boxes: (-13, 83) came back clear by 8.0 m of the nearest box and nearly 40 m of the nearest wandering
+  // soul, well inside the radius (92) where candyRegion's own procedural fill takes over, past the
+  // candy-cane ring (which only ever reaches out to `d: r.range(56, 76)`) and a clear 3+ m past the edge
+  // of the cupcake-hill keep-out circle centred on (0, 80).
+  { const gx = -13, gz = 83;
+    const gm = makeGumballMachine(r);
+    gm.position.set(gx, 0, gz); W.add(gm);
+    P.addBox(gx, 0.7, gz, 0.8, 1.4, 0.8, { cam: false });
+    const gumFlavours = ['🍬 "Watermelon — or something trying hard to be."', '🍬 "Blue. Just blue. Flavour unclear."', '🍬 "Cherry, the good kind, the kind that stains your tongue."', '🍬 "A white one. Somehow always the last colour you want."', '🍬 "Green apple, sharp enough to make the whiskers twitch."'];
+    game.addInteractable({ obj: gm, radius: 2.1, label: () => 'Turn the crank', onUse: () => { SFX.click(); SFX.pickup(); game.fx.emit(gx, 1.0, gz, { count: 10, colors: [0xff6fb5, 0x7fd7ff, 0xffd54a, 0x8bc34a], speed: 1.0, up: 1.3, life: 0.8, gravity: 2.4 }); game.toast(rnd.pick(gumFlavours), 3000); } }); }
+  // no world in the game has ever had a carousel, and nowhere fits one better than the sweet-lands. A
+  // small one now turns on the quiet grass east of the cane-forest belt: a candy-striped floor and
+  // canopy on a centre pole, six gumdrop seats on candy-cane poles round the rim, the whole thing
+  // (`makeCarousel()`, new in `60-props.js`) one `pivot` group spinning slowly on the world clock `t`
+  // alone — the same trick every pinwheel and weathervane before it uses, so it draws nothing from this
+  // world's own seeded `r` and costs no later colour pick anywhere else in this build.
+  //
+  // A headless probe (`game.start('new')` then `game.travel(1, 'from-hub')`, 1800 simulated frames
+  // sampling every NPC's own position every fifth frame) swept a grid of candidate points against all
+  // of Candy Land's own physics boxes and those samples: (35, 60) came back clearest of the lot, 16.1 m
+  // from the nearest box (a candy-cane trunk in the 56-76 m forest ring) and 8.1 m from the nearest
+  // wandering soul — inside the ring's own radius band but between two trunks, well short of the
+  // butterflies' own flight box (x ≤ 32) and the gumdrop patch at (26, 52) (12 m off), inside the 92 m
+  // radius where `candyRegion`'s own procedural fill takes over.
+  { const cx = 35, cz = 60;
+    const carousel = makeCarousel();
+    carousel.group.position.set(cx, 0, cz); W.add(carousel.group);
+    U.push((dt, t) => { carousel.pivot.rotation.y = t * 0.45; });
+    P.addBox(cx, 0.5, cz, 4.0, 1.0, 4.0);
+    const carouselLines = ['🎠 "Round and round, and not a single rider to show for it."', '🎠 "Six empty seats and the music\'s only in your head."', '🎠 "Spins on its own, somehow. Nobody\'s ever seen it stop."'];
+    game.addInteractable({ obj: carousel.group, radius: 3.4, label: () => 'Look at the carousel', onUse: () => { SFX.click(); game.toast(rnd.pick(carouselLines), 3000); } }); }
   // the Candy Queen's castle, up the lane to the north — houmoungous, and you can walk right in — with a little candy village on the approach
   game.zones.addCircle(0, 150, 27);
   for (const [hx, hz] of [[-16, 95], [16, 97], [-24, 112], [24, 114], [0, 80]]) game.zones.addCircle(hx, hz, 5);
@@ -1670,6 +2654,99 @@ function buildCandyLand(game, entry) {
   // and leaves the guard and the jester exactly where they were. A 4.5 m radius is just as reachable here.
   { const lines4 = ['🍬 "No guard troubles this one — Her Majesty only ever posted the one."', '🍬 "Mirror image of its neighbour across the arch, down to the last candy stripe."', '🍬 "Quietest tower in the castle. Nobody\'s ever been told why it matters less."'];
     game.addInteractable({ obj: castle.towers[4], radius: 4.5, label: () => 'Look up at the other tower', onUse: () => { SFX.click(); game.toast(rnd.pick(lines4), 3000); } }); }
+  // the two gate towers got their own "look up" two rounds back, but the four larger corner towers that
+  // actually anchor the castle's walls — 15 m tall against the gate towers' 13, same candy-cane stripe and
+  // gold finial — never got a glance of their own, despite `makeCandyCastle` handing all six back in
+  // `castle.towers` (build order: the four corner towers first, then the two gate towers). `castle.towers[2]`
+  // is the corner where the front wall meets the east wall, world (17, 135) — reused directly as the
+  // interactable's own `obj`, no new mesh, no new box. Its own box (half-extent 3.1 m, `68-regions.js`)
+  // sits flush against both wall boxes on its inside, so the only open approach is from outside the
+  // castle: a headless probe found (21.5, 135) — on the open ground past the wall's own corner — clear of
+  // the tower's box by 1.4 m and only 4.5 m from its centre, comfortably inside a 5.5 m radius here; the
+  // same probe swept 1200 simulated frames of every NPC in Candy Land and found nothing wandering within
+  // 15 m of this corner.
+  { const lines2 = ['🍬 "Fifteen metres, corner to crown — a good two taller than the ones guarding the gate."', '🍬 "Holds up its own corner of wall, same as the other three."', '🍬 "Her Majesty\'s flag again, same stripe, same gold finial. Nobody\'s ever climbed up to check it\'s not just the one flag moved around."'];
+    game.addInteractable({ obj: castle.towers[2], radius: 5.5, label: () => 'Look up at the corner tower', onUse: () => { SFX.click(); game.toast(rnd.pick(lines2), 3000); } }); }
+  // tower 2 (front wall meets east wall, world (17, 135)) got its own look last round; its mirror image
+  // across the castle's own centre line — tower 3, where the front wall meets the west wall, world
+  // (-17, 135) — never got one. `castle.towers[3]` is the fourth corner tower `makeCandyCastle` hands
+  // back: same mesh, same existing box, no new geometry. The whole plaza is symmetric about x = 0 (the
+  // guard's patrol spans gx-1.5..gx+1.5, the jester sits at x=0, the fill ring outside is purely radial
+  // from the world origin), so reflecting tower 2's own clearance about that line maps it straight onto
+  // tower 3: (-21.5, 135) sits on the open ground just past this wall's outside corner, 1.4 m clear of
+  // the tower's box, 4.5 m from its centre — comfortably inside the same 5.5 m radius used for tower 2 —
+  // and, by that same radial symmetry, never within 15 m of anything that wanders Candy Land.
+  { const lines3 = ['🍬 "Same fifteen metres as its twin across the gate, mirrored stripe for stripe."', '🍬 "Holds up the west corner, same as the other three hold up theirs."', '🍬 "Her Majesty\'s flag flies here too — nobody\'s ever said why one corner needs four flags and not three."'];
+    game.addInteractable({ obj: castle.towers[3], radius: 5.5, label: () => 'Look up at the far corner tower', onUse: () => { SFX.click(); game.toast(rnd.pick(lines3), 3000); } }); }
+  // towers 2 and 3 (the two corners flanking the gate, where the front wall meets east and west) got
+  // their own look in the last two rounds; the two corners on the castle's far side, where the back
+  // wall meets the side walls, were still untouched. `castle.towers[0]` is the first corner tower
+  // `makeCandyCastle` hands back (build order: four corner towers, back-left/back-right/front-left/
+  // front-right, then the two gate towers) — world (17, 165), the back wall's own east corner, same
+  // mesh and existing box as every other tower here, no new geometry. The back wall sits the same 15 m
+  // (`HD`) from the castle's own centre (0, 150) as the front wall does, just on the far side, so the
+  // clearance already measured for tower 2 at its mirror point mirrors straight across the back wall
+  // too: (21.5, 165) sits on open ground just past this wall's own outside corner, 1.4 m clear of the
+  // tower's box and 4.5 m from its centre, comfortably inside the same 5.5 m radius. A headless probe
+  // (`game.load(1, 'from-hub')`, the same stub-three harness `test/run.mjs` itself uses, then 1200
+  // simulated frames sampling every NPC's own position throughout) found nothing wandering within 19 m
+  // of that point — well past the radius once the tower's own half-extent is added in.
+  { const lines0 = ['🍬 "The quiet side of the castle — nobody ever comes round the back to look."', '🍬 "Same fifteen metres as the front towers, just facing the wrong way to get noticed."', '🍬 "Her Majesty\'s flag flies here too, for an audience of nobody but the sweet-lands."'];
+    game.addInteractable({ obj: castle.towers[0], radius: 5.5, label: () => 'Look up at the back corner tower', onUse: () => { SFX.click(); game.toast(rnd.pick(lines0), 3000); } }); }
+  // tower 0 (back wall meets east wall, world (17, 165)) got its own look last round; its mirror image
+  // across the castle's own centre line — tower 1, where the back wall meets the west wall, world
+  // (-17, 165) — is the last of the six towers still untouched. `castle.towers[1]` is the second corner
+  // tower `makeCandyCastle` hands back: same mesh, same existing box, no new geometry. The plaza's own
+  // symmetry about x = 0 (used for towers 2 and 3 above, and again for tower 0's own clearance) maps
+  // tower 0 straight onto tower 1, so the clearance already measured there mirrors across: (-21.5, 165)
+  // sits on open ground just past this wall's outside corner, 1.4 m clear of the tower's box, 4.5 m from
+  // its centre — comfortably inside the same 5.5 m radius — and, by that same radial symmetry, never
+  // within 19 m of anything that wanders Candy Land. All six of the castle's towers now answer a look.
+  { const lines1 = ['🍬 "Last of the six — every tower in the castle finally has something to say."', '🍬 "Same fifteen metres as its twin across the back wall, stripe for stripe."', '🍬 "Her Majesty\'s flag again. Six towers, six flags, not one of them ever lowered."'];
+    game.addInteractable({ obj: castle.towers[1], radius: 5.5, label: () => 'Look up at the last corner tower', onUse: () => { SFX.click(); game.toast(rnd.pick(lines1), 3000); } }); }
+  // round 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack races)
+  // has by now gone round every other world — Frosty Peak, Robot City, Sunny Shore, Whisper Woods and
+  // Victorian have all had two rigs strain against a rope of their own (`TugOfWar`, 55-npcs.js) — but
+  // Candy Land, for all its tetherball pole and its carousel, never had the one contest with no ball,
+  // shoe or shuttle to send back and forth. Two market hands now dig their heels into the open grass
+  // far out past the east cane-forest belt and heave on a length of liquorice rope between them, never
+  // quite settling either way. *"Heave! That liquorice won't give an inch, and neither will I!"*
+  // *"Mind your tail, puss — this rope's stickier than it looks."* *"Dead heat again. Sugar makes for
+  // a slippery grip, some days."*
+  //
+  // No new class and no new mesh: the exact same `TugOfWar` the other five worlds already use,
+  // unchanged, with the same rope-and-flag dressing those five already build around it — just two
+  // fresh `makeHuman` stall hands in candy-striped aprons rather than a snowsuit, factory overalls or
+  // beachwear (the gingerbread rig's own arms have no shoulder/elbow sub-joints for `TugOfWar` to pose,
+  // so this stays with `makeHuman` like every other world's pair).
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses —
+  // click the real start button, `game.travel(1, 'from-prev')`, then poll `game.worldIndex` with a real
+  // `setTimeout` sleep between frames rather than guessing a frame count) sampled every NPC's own
+  // position every fifth frame over 1800 simulated frames, then swept a 2 m grid of the land's own
+  // quiet south-east corner — short of the 92 m radius where `candyRegion`'s own procedural fill takes
+  // over, clear of the chocolate river's own band (|z+18|<8), the cane-forest ring (54–78 m out) and
+  // the castle's own approach (z>65) — against both those samples and all 1959 of the land's physics
+  // boxes: (77, -41) came back clearest of the lot, 16.57 m from the nearest box and 20.89 m from the
+  // nearest other soul at its own centre, with both hands' own stations 1.3 m either side of it (rope
+  // running north-south) clear by 16.39–16.44 m of the nearest box and 20.22–21.62 m of the nearest
+  // other soul — well past the cupcake hill at (58, -46) and the gumdrop patch at (52, -36).
+  { const tugWard = makeWardrobe(r, { shirts: [0xffffff, 0xfff3e0], pants: [0xff6fb5, 0x7fd7ff], shoes: [0xffffff, 0xf5f2ea] });
+    const handA = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: tugWard, build: 'stout' }),
+      hat: 'cap', hatColor: 0xff6fb5, apron: 0xffffff, jacket: null, coat: null, scarf: null, bag: null, backpack: null, sleeves: true, glasses: false });
+    const handB = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: tugWard, build: 'stout' }),
+      hat: 'cap', hatColor: 0x7fd7ff, apron: 0xffffff, jacket: null, coat: null, scarf: null, bag: null, backpack: null, sleeves: true, glasses: false });
+    W.add(handA.group); W.add(handB.group);
+    const tug = new TugOfWar(game, handA, handB, { x: 77, z: -41, ry: 0, gap: 2.6,
+      cries: ["Heave! That liquorice won't give an inch, and neither will I!", "Mind your tail, puss — this rope's stickier than it looks.", 'Dead heat again. Sugar makes for a slippery grip, some days.'] });
+    game.npcs.push(tug);
+    const [A, B] = tug.ctls, ropeM = mat(0x2a1a14, { roughness: 0.6 }), ay = P.ground0(A.x, A.z) + 0.75, by = P.ground0(B.x, B.z) + 0.75;
+    const ropeGroup = group((A.x + B.x) / 2, (ay + by) / 2, (A.z + B.z) / 2, W);
+    ropeGroup.lookAt(B.x, by, B.z);
+    noInk(mesh(G.cyl(0.035, 0.035, Math.hypot(B.x - A.x, by - ay, B.z - A.z), 8), ropeM, { rx: PI / 2, parent: ropeGroup }));
+    const flag = group(0, 0, 0, W); noInk(mesh(G.box(0.03, 0.14, 0.4), mat(0xff6fb5, { roughness: 0.7 }), { parent: flag }));
+    U.push(() => { const frac = 0.5 + clamp(tug.tension, -1, 1) * 0.12;
+      flag.position.set(lerp(A.x, B.x, frac), lerp(ay, by, frac) + 0.03, lerp(A.z, B.z, frac)); flag.rotation.y = ropeGroup.rotation.y; }); }
   candyRegion(game, U, r, 92, CANDY_LIMIT - 8);
   for (const [x, z] of [[-14, 18], [18, 16], [-8, -10], [10, -12], [-28, 8], [30, 4], [-22, 30], [22, 32], [-34, -32], [34, -36], [2, -30]]) { const b = makeMarshmallowBush(r); b.position.set(x, 0, z); W.add(b); P.addBox(x, 0.5, z, 1.2, 1, 1.2, { cam: false }); }
   for (const [x, z, ry, c] of [[-16, 8, 0.3, 0xff6fb5], [20, -8, -0.8, 0x7fd7ff], [0, 26, 1.5, 0xffd54a]]) { const d = makeDonut(c); d.position.set(x, 0, z); d.rotation.y = ry; W.add(d); addRotBox(game, x, 1.2, z, 0.6, 2.4, 3.4, ry, { cam: false }); }
@@ -2499,6 +3576,132 @@ function buildCandyLand(game, entry) {
     game.npcs.push(new Chopper(game, cutter, { x: cx, z: cz, ry: atan2(sx - cx, sz - cz),
       cries: ["Good dry wood, even out here past the cane forest.", "Careful, puss — mind the chips.", "The gingerbread ovens won't fire themselves."] })); }
 
+  // every other world's sky has picked up something that actually flies by now (Victorian's hot air
+  // balloon, Robot City's airship, Sunny Shore's biplane) — Candy Land, the one world actually named
+  // for candy, never got anything of its own up there. A giant striped gumball now drifts in a slow
+  // circuit high above the sweet-lands, tumbling gently as it goes, 70 m up on a 165 m orbit — well
+  // clear even of the castle's own tallest corner tower (15 m wall + 6.6 m roof + a 0.5 m finial and a
+  // 1 m pennant pole, 23.1 m in all), so it needs no keep-out check against `game.zones` or any of this
+  // world's physics boxes, and no physics box of its own either. Purely decorative: nothing to greet,
+  // nothing to reach.
+  //
+  // Eight latitude bands cut straight out of a sphere (`new THREE.SphereGeometry(r, 16, 2, 0, TAU,
+  // i * (PI / 8), PI / 8)`, one eighth-slice of theta each) — the same `SphereGeometry` trick the
+  // Victorian balloon's own gores already use (and the one `G.dome()` already uses for its own
+  // hemisphere), just sliced by latitude instead of longitude, so the stripes run around the ball like
+  // the layers of a gumball instead of up over the top of a canopy. Colours cycle through this world's
+  // own candy palette (pink, cyan, gold) with a plain white band between each, the eight tracked
+  // geometries kept in `worldBag` the same way the balloon's own eight gores are.
+  //
+  // Spins on two axes and bobs on the world clock `t` alone, from one fixed starting angle drawn once
+  // off this world's own local `r()` (never the shared `rnd()`), so it costs no later wardrobe or
+  // colour pick — placed last of everything this build adds, after the woodcutter, so it disturbs
+  // nothing built earlier in the sweet-lands.
+  { const gbR = 165, gbH = 70, gbSpeed = TAU / 230, gbPhase = r() * TAU, gbRad = 3.1, bands = 8;
+    const gumball = group(0, 0, 0);
+    const bandColors = [0xff6fb5, 0xffffff, 0x7fd7ff, 0xffffff, 0xffd54a, 0xffffff, 0xff6fb5, 0xffffff];
+    for (let i = 0; i < bands; i++) {
+      const bandGeo = new THREE.SphereGeometry(gbRad, 16, 2, 0, TAU, i * (PI / bands), PI / bands); worldBag.track(bandGeo);
+      mesh(bandGeo, mat(bandColors[i], { roughness: 0.55 }), { shadow: 'none', parent: gumball });
+    }
+    gumball.userData.update = (dt, t) => {
+      const a = gbPhase + t * gbSpeed;
+      gumball.position.set(cos(a) * gbR, gbH + sin(t * 0.21) * 3, sin(a) * gbR);
+      gumball.rotation.y = t * 0.6; gumball.rotation.x = sin(t * 0.3) * 0.25;
+    };
+    place(game, U, gumball, cos(gbPhase) * gbR, sin(gbPhase) * gbR, 0, gbH); }
+
+  // the Neighborhood has its radio listener on a blanket and Sunny Shore has three towel-loungers —
+  // Candy Land, for all its sugar and sunshine, never had anyone just lying in it. A visitor stretches
+  // out on a blanket in the open sweet-lands past the woodcutter's own stump, sunglasses on, a
+  // half-melted ice lolly stuck upright in the grass beside her. `Sunbather` reaches into
+  // rig.arms/legs/head/spine (`makeHuman`'s own rig), so this is a human visitor rather than a
+  // gingerbread man — the same choice this world's painter, ukulele player and gossiping pair already
+  // made. A headless probe (the same stub-three harness `test/run.mjs` uses) built the real Candy Land
+  // (`game.travel(1, 'from-hub')`) and sampled every NPC's own position every 1/15 s over 300 simulated
+  // seconds (so no wandering gingerbread man, ring dancer or tag/catch pair mid-turn could slip past
+  // unnoticed), then swept a grid of the open sweet-lands (radius 20-85, short of the radius (92) where
+  // candyRegion's own procedural fill takes over) against both those samples and every one of the
+  // world's physics boxes: (76, 32) came back clear by 13.5 m of the nearest box and 22.6 m of the
+  // nearest other soul, at radius 82.5 from the origin, well inside the fill radius.
+  { const bx = 76, bz = 32, ry = atan2(-bx, -bz);
+    const blanket = makeTowel(0xffb3d1); place(game, U, blanket, bx, bz, ry);
+    const lx = bx + cos(ry) * 0.65, lz = bz - sin(ry) * 0.65;
+    const stickM = mat(0xf7f3ec, { roughness: 0.8 }), lollyM = mat(0xff6fb5, { roughness: 0.35 });
+    mesh(G.cyl(0.012, 0.012, 0.22, 6), stickM, { x: lx, y: 0.11, z: lz, parent: W });
+    mesh(G.box(0.1, 0.16, 0.025), lollyM, { x: lx, y: 0.28, z: lz, parent: W });
+    mesh(G.sphere(0.018, 6, 6), lollyM, { x: lx, y: 0.21, z: lz, shadow: 'none', parent: W });
+    P.addBox(lx, 0.14, lz, 0.14, 0.28, 0.1, { cam: false });
+    const sunWard = makeWardrobe(r, { shirts: [0xffe0ea, 0xbfe7ff, 0xfff3b0, 0xff9ecf], pants: [0x7fd7ff, 0xff9ecf, 0xffffff] });
+    const sunbather = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.2), wardrobe: sunWard }),
+      glasses: true, shorts: true, hat: null, jacket: null, scarf: null, bag: null, backpack: null });
+    W.add(sunbather.group);
+    game.npcs.push(new Sunbather(game, sunbather, { x: bx, z: bz, ry,
+      cries: ['Sugar and sunshine. Can\'t beat it.', "Careful, puss — mind the lolly, it's melting fast enough already.", 'Five more minutes. Maybe ten.'] })); }
+
+  // round 508's own list of playground games this whole game had never tried (tetherball, badminton,
+  // tug-of-war, archery, sack races) is down to its last entry now: round 520 gave Frosty Peak a
+  // tug-of-war, round 521 the Neighborhood a tetherball pole, round 522 Victorian a badminton net, round
+  // 523 Whisper Woods an archery range, and **this one gives Candy Land a sack race** — two children
+  // bound ankle-to-waist in burlap sacks, hopping a short lane out in the quiet sweet-lands well past
+  // the sunbather's own blanket.
+  //
+  // New `SackRace` class in `55-npcs.js`, right after `Archer`, its nearest relative among this run of
+  // playground games for the same reason Archer was Badminton's: a controller with no second player
+  // interacting with the first, just two independent racers on the same lane. Unlike every earlier
+  // two-person game here, there's no shared prop at all — each racer hops on its own clock, turning
+  // round at either end of a 5 m lane like `Patroller` walking a beat, except hopping rather than
+  // striding, so the lead keeps changing hands without either one ever actually reaching a line that
+  // would end it. New `o.sack` option on `makeHuman` (`55-npcs.js`, right after the leg loop): one
+  // cylinder and a drawstring torus parented to `body`, covering both legs from the ankles to the
+  // waist in one piece — the one new mesh this round costs, since the sack hides the stride rather
+  // than needing a new one.
+  //
+  // Placed at (-83, 7), the lane running along world Z: a headless probe (the same stub-three harness
+  // `test/run.mjs` itself uses, `game.start('new')` then `game.load(1, 'from-hub')`) sampled every
+  // gingerbread man's, dancer's and tag/catch pair's own circle position every 1/10 s over 300 simulated
+  // seconds, then swept both racers' own full lane (5 m long, 1.1 m apart) against both those samples
+  // and every one of the sweet-lands' physics boxes, staying short of the radius (92) where
+  // `candyRegion`'s own procedural fill takes over: the worst point on the whole lane came back clear
+  // by 16.5 m in every direction tried — open, flat candy-cane ground near the edge of the hand-built
+  // heart, past the sunbather, the woodcutter's stump and the gumball drifting overhead, with the
+  // ground itself flat to within rounding across the whole footprint.
+  { const rx = -83, rz = 7, rry = 0;
+    const sackWard = makeWardrobe(r, { shirts: [0xff8fc8, 0x7fd7ff, 0xffd54a], pants: [0x5a4a3a] });
+    const sackA = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, elder: false, wardrobe: sackWard }),
+      sack: 0xc9a46a, hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: false });
+    const sackB = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, elder: false, wardrobe: sackWard }),
+      sack: 0xc9a46a, hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: false });
+    W.add(sackA.group); W.add(sackB.group);
+    game.npcs.push(new SackRace(game, sackA, sackB, { x: rx, z: rz, ry: rry,
+      cries: ['Hop faster, I\'m gaining!', "Tripped twice and still ahead — don't ask me how.", 'Best of three. Fourth, actually. Nobody\'s counting.'] })); }
+
+  // the Neighborhood (round 521), Victorian (522), Robot City (529) and Frosty Peak (520) all got a
+  // tetherball pole or a tug-of-war rope off round 508's own list of playground games this whole game
+  // had never tried — Candy Land got a sack race (524) and a carousel of its own, but the one pole-and-
+  // rope rally never made it to the sweet-lands. Two gingerbread-sweet kids now bat a ball round a pole
+  // out on the quiet grass east of the river, well clear of the ukulele player and the kite-flying kid
+  // sharing this same stretch of field. No new class and no new mesh: the exact same `Tetherball`
+  // (`55-npcs.js`) the Neighborhood's own park pole already uses, just a fresh pair of kids and a spot —
+  // the pole, ball and rope are all built inside the constructor.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses, `game.travel(1,
+  // 'from-hub')`, then every NPC's own position sampled every 5th frame over 1800 simulated frames, long
+  // enough for the ukulele player, the kite-flying kid, the gossiping pair and every wandering
+  // gingerbread man and dancer to range fully) swept (50, -30) — the pole itself — and both kids' own
+  // stations two metres either side of it, (48, -30) and (52, -30), against both those samples and every
+  // one of the land's own physics boxes: the worst of the three points came back clear by 6.68 m of the
+  // nearest box (one of the candy-cane-forest trunks, the ring reaching in to radius 56 here) and 9.85 m
+  // of the nearest other soul (the kite-flying kid at (51, -33)) — short of the ukulele player at
+  // (49, -39), 11.4 m further off still, and well past the radius (92) where candyRegion's own procedural
+  // fill takes over.
+  { const tetherWard = makeWardrobe(r, { shirts: [0xffd54a, 0x7fd7ff], pants: [0xff6fb5, 0x8d6e63] });
+    const boy = makeHuman({ ...randomPerson(r, { female: false, child: true, wardrobe: tetherWard }), hat: null, jacket: null, scarf: null, bag: null, backpack: null });
+    const girl = makeHuman({ ...randomPerson(r, { female: true, child: true, wardrobe: tetherWard }), hat: null, jacket: null, scarf: null, bag: null, backpack: null, hairStyle: 'braids' });
+    W.add(boy.group); W.add(girl.group);
+    game.npcs.push(new Tetherball(game, boy, girl, { x: 50, z: -30,
+      cries: ['Round and round — same as every other sweet-land game, just stickier.', 'Watch the rope, puss, it\'s had my fingers twice already.', 'Fifty wraps and counting. I always lose count past fifty.'] })); }
+
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('star', 7, -6); C.add('yarn', -9, 9); C.add('fish', -16, -13); C.add('mouse', 16, -9); C.add('star', -10, -27); C.add('yarn', 22, 4); C.add('mouse', -28, 26); C.add('fish', 14, -44); C.add('star', 0, -56); C.add('mouse', -58, 30); C.add('yarn', 60, 36);
@@ -2528,7 +3731,44 @@ function buildRobotCity(game, entry) {
   // to notice from the ground.
   [[-30, -30, 7, 16], [32, -28, 8, 20], [-34, 26, 9, 14], [34, 24, 7, 18], [-38, 0, 6, 12], [38, -6, 7, 15]].forEach(([x, z, w, h], i) => {
     const b = makeSkyscraper(w, h, w, floor(abs(x + z))); place(game, U, b, x, z, 0); P.addBox(x, h / 2, z, w, h, w);
-    if (i === 1) {
+    if (i === 0) {
+      // the sentry already patrols this yard on two legs, logging "no unauthorized felines detected"
+      // as it goes, but nothing in the city had ever actually watched from a wall. A security camera
+      // now rides a bracket on this tower's own east face, panning to keep the cat in frame within an
+      // 18 m radius — clamped to a ±57° arc off its resting aim toward the yard, so it only ever swings
+      // away from the wall, never into it — and sweeping that same arc on a slow idle scan the rest of
+      // the time. The LED over its lens burns steady red while it tracks and blinks slow while it
+      // waits, with one soft beep the moment it first picks the cat up. No new physics box and no
+      // clearance probe of its own: the housing sits at y=4, well above the tallest NPC's own head, on
+      // the same wall this tower's own footprint already covers, and the "look up" toast below reuses
+      // the tower group `b` exactly as the radar dish's own interactable already does — the nearest
+      // other hand-placed prop (the sentry's own patrol rectangle, [-15,-35]..[15,-45]) stays 15+ m off.
+      const camY = 4, mountX = w / 2 + 0.42, baseAngle = atan2(0 - x, -40 - z), cone = 1.0;
+      const steel = mat(0x5a6470, { metalness: 0.8, roughness: 0.35 }), dark = mat(0x16181e, { roughness: 0.6 }), lensM = mat(0x0c0c0c, { metalness: 0.5, roughness: 0.3 });
+      mesh(G.box(0.08, 0.5, 0.08), steel, { x: w / 2, y: camY - 0.25, parent: b });
+      mesh(G.cyl(0.03, 0.05, 0.42, 8), steel, { x: w / 2 + 0.21, y: camY, rz: PI / 2, parent: b });
+      const pivot = group(mountX, camY, 0, b); pivot.rotation.y = baseAngle;
+      mesh(G.box(0.22, 0.2, 0.34), dark, { parent: pivot });
+      mesh(G.cyl(0.1, 0.09, 0.22, 14), lensM, { z: 0.22, rx: PI / 2, parent: pivot });
+      const led = mesh(G.sphere(0.03, 8, 6), glowMat(0xff3b3b, 0.8), { y: 0.07, z: 0.17, shadow: 'none', parent: pivot });
+      let tracking = false;
+      U.push((dt, t) => {
+        const cat = game.cat.group.position, dx = cat.x - (x + mountX), dz = cat.z - z;
+        if (dx * dx + dz * dz < 324) {
+          const target = baseAngle + clamp(wrapAngle(atan2(dx, dz) - baseAngle), -cone, cone);
+          pivot.rotation.y = dampAngle(pivot.rotation.y, target, 4, dt);
+          if (!tracking) SFX.beep();
+          tracking = true;
+          led.material.emissiveIntensity = 2.4;
+        } else {
+          pivot.rotation.y = dampAngle(pivot.rotation.y, baseAngle + sin(t * 0.4) * cone, 2, dt);
+          tracking = false;
+          led.material.emissiveIntensity = 0.5 + max(0, sin(t * 1.1)) * 0.9;
+        }
+      });
+      const camLines = ['📷 "Still red. Still watching. The foreman swears it\'s for security."', '📷 "Follows anything that moves. Logged you as feline, unauthorized, round one."', '📷 "No tape in that thing for years. Nobody\'s told maintenance."'];
+      game.addInteractable({ obj: b, radius: 6.5, label: () => 'Look up at the security camera', onUse: () => { SFX.click(); game.toast(rnd.pick(camLines), 3000); } });
+    } else if (i === 1) {
       addRadarDish(b, h); U.push(b.userData.update);
       // every other landmark in the city got a one-off "walk up and look" toast by now (the statue, the
       // zipline towers elsewhere) but the one thing in Robot City that actually moves on its own against
@@ -2541,6 +3781,132 @@ function buildRobotCity(game, entry) {
       // than 9.5 m, comfortably past this interactable's 6.5 m radius.
       const radarLines = ['📡 "Sweeps the whole skyline every few seconds. Still hasn\'t found anything."', '📡 "Nobody remembers what it\'s listening for. It just keeps listening."', '📡 "Tallest point in the east yard, and the view is mostly more skyline."'];
       game.addInteractable({ obj: b, radius: 6.5, label: () => 'Look up at the radar dish', onUse: () => { SFX.click(); game.toast(rnd.pick(radarLines), 3000); } });
+    } else if (i === 2) {
+      // the camera, the radar dish and (two indices on) the missing-unit notice and the hologram
+      // billboard have each claimed one of these six towers' own roofs by now — this one, the last
+      // bare roof left in the east yard, gets a steam vent instead: a short riveted stack tucked into
+      // one roof corner, puffing pale vapour on a timer, the same rise-drift-fade beat the bubble pipe
+      // and the beekeeper's smoker already use elsewhere in this game, just vertical instead of drifting
+      // sideways, and with no payoff on each cycle (no sparkle, no fx burst) — it's a vent, not a wish.
+      // No new controller, no physics box of its own: the vent sits at local y = h+0.35..0.72, tucked at
+      // local (x=w/2-1.3, z=w/2-1.3) — 4.5 m off the roof centre on the diagonal, clear of the rooftop
+      // block `makeSkyscraper` itself already builds there (half-extent 1.8 m) — well above the tallest
+      // NPC's own head and above this tower's own existing box (half-height h/2, from the `P.addBox`
+      // three lines up), so nothing on the ground can ever reach it bodily. `addInteractable`'s radius
+      // (6.5) just clears this tower's own 6.36 m diagonal corner (half-extent 4.5 m on a square
+      // footprint), the same margin the camera and the radar dish above already bank on, and the
+      // nearest other interactable (the statue at (-44, 22), whose own radius is 3.6) stays 10.77 m off
+      // from this tower's centre — 0.67 m clear of both radii stacked together.
+      // A headless probe (`game.start('new')` then `game.load(2, 'from-prev')`, 300 simulated seconds
+      // so every wandering, patrolling, dancing and ball-tossing robot pack actually moved) swept this
+      // tower's own footprint and interactable radius against every physics box and every quarter-
+      // second NPC sample: the nearest other box (one of the randomly placed inner-ring skyscrapers)
+      // stayed 7.1 m clear and the nearest wandering soul never closer than 11 m, both past the 6.5 m
+      // radius once this tower's own 4.5 m half-extent is added in.
+      const ventX = w / 2 - 1.3, ventZ = w / 2 - 1.3, ventY = h;
+      const steel = mat(0x454b52, { metalness: 0.75, roughness: 0.4 });
+      mesh(G.cyl(0.26, 0.3, 0.7, 12), steel, { x: ventX, y: ventY + 0.35, z: ventZ, parent: b });
+      mesh(G.cyl(0.33, 0.26, 0.12, 12), steel, { x: ventX, y: ventY + 0.72, z: ventZ, shadow: 'none', parent: b });
+      const tipX = x + ventX, tipZ = z + ventZ, tipY = ventY + 0.82;
+      const puffs = [0, 1, 2].map((pi) => ({ m: mesh(G.sphere(0.14, 8, 6), mat(0xdfe6ea, { roughness: 0.9, transparent: true, opacity: 0.45 }), { shadow: 'none', parent: W }), ph: pi * 1.9 }));
+      const cyc = 3.4;
+      let hissT = r.range(2, 4);
+      U.push((dt, t) => {
+        for (const p of puffs) {
+          const k = ((t + p.ph) % cyc) / cyc;
+          p.m.visible = k < 0.95;
+          if (p.m.visible) {
+            p.m.position.set(tipX + sin(t * 0.5 + p.ph) * 0.3 * k, tipY + k * 2.6, tipZ + cos(t * 0.4 + p.ph) * 0.22 * k);
+            p.m.scale.setScalar(0.5 + k * 1.8);
+            p.m.material.opacity = 0.45 * (1 - k);
+          }
+        }
+        hissT -= dt;
+        if (hissT <= 0) { hissT = r.range(5, 9); const c = game.cat.group.position; if (dist2(tipX, tipZ, c.x, c.z) < 400) SFX.noise({ dur: 0.4, vol: 0.03, filter: 2200, type: 'lowpass' }); }
+      });
+      const ventLines = ['💨 "Vented since the city went up. Nobody\'s ever traced the pipe to anything."', '💨 "Warmer up here than down on the floor, if you don\'t mind the hiss."', '💨 "Just steam. The foreman\'s checked. Twice."'];
+      game.addInteractable({ obj: b, radius: 6.5, label: () => 'Look up at the steam vent', onUse: () => { SFX.click(); game.toast(rnd.pick(ventLines), 3000); } });
+    } else if (i === 4) {
+      // the camera and the radar dish both got their own one-off toast on a hand-placed tower, but every
+      // other quiet tower in this yard stayed bare. This one's own east wall faces the open floor the
+      // wandering robots cross, so a "missing unit" bulletin now hangs flush on it — the same
+      // `makePosterNotice`-style dark-frame-and-paper build the Neighborhood's own lost-pet notice uses
+      // (round 462), just reskinned with a robot-head silhouette and a strip of hazard tape in place of
+      // the cat's ears and tear-off phone tabs. No new physics box: the sheet is 0.012 m thick, mounted
+      // 0.02 m clear of this tower's own existing 6x6 footprint, the same margin the lamp notice itself
+      // kept past its post; `addInteractable`'s radius (4.3) clears that footprint's own 4.24 m diagonal
+      // corner by a hair, reachable from any angle without reaching the nearest other interactable (the
+      // statue at (-44, 22), 22.8 m off).
+      const noteY = 1.5, mountX = w / 2 + 0.02;
+      const poster = makeMissingUnitPoster(); poster.position.set(mountX, noteY, 0); poster.rotation.y = PI / 2; b.add(poster);
+      const noticeLines = ['📋 "MISSING: UNIT 47. Last seen chasing a loose bolt. Reward: one (1) oil can."', '📋 "Answers to a diagnostic ping. Doesn\'t answer to much else."', '📋 Someone has stapled a replacement notice over the last replacement notice.'];
+      game.addInteractable({ obj: b, radius: 4.3, label: () => 'Read the notice', onUse: () => { SFX.click(); game.toast(rnd.pick(noticeLines), 3000); } });
+    } else if (i === 3) {
+      // the camera, the radar dish and the missing-unit notice each claimed one of these six towers'
+      // own faces by now — this one's bare roof gets a holographic billboard instead, beamed up off a
+      // small projector dish the way a real rooftop ad would work. The panel reuses `TEX.neonText()`,
+      // the same canvas-painted texture every neon sign in the city already draws from, just additive
+      // and half-transparent rather than solid — and its own opacity stutters out and climbs back on a
+      // short timer rather than holding steady, since a hologram that never flickers wouldn't read as
+      // one. No new physics box: it floats at y = h + 2 (20 m up), well clear of the tallest NPC's own
+      // head and above this tower's own existing box (half-height h/2 = 9, from the `P.addBox` three
+      // lines up), so nothing on the ground can ever reach it; `addInteractable`'s radius (5.0) just
+      // clears this tower's own 4.95 m diagonal corner, the same margin the missing-unit notice kept
+      // past its own footprint, and the nearest other interactable (the oil vendor at (24, 26)) stays
+      // 10.2 m off.
+      const dishY = h + 0.12, holoY = h + 2.0;
+      const steel = mat(0x5a6470, { metalness: 0.8, roughness: 0.35 }), holoColor = 0xb388ff;
+      mesh(G.cyl(0.46, 0.4, 0.16, 16), steel, { y: dishY, parent: b });
+      mesh(G.cyl(0.05, 0.08, holoY - dishY, 10), steel, { y: (dishY + holoY) / 2, parent: b });
+      const holo = group(0, holoY, 0, b);
+      const sign = mesh(G.plane(2.6, 0.65), basic(0xffffff, { map: TEX.neonText('ROBOT CITY', '#b388ff'), transparent: true, opacity: 0.75, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide }), { shadow: 'none', parent: holo });
+      const pl = pointLight(holoColor, 26, 9, 0, holoY, 0, b);
+      let glitchT = r.range(2.5, 5);
+      U.push((dt, t) => {
+        holo.rotation.y = t * 0.3;
+        glitchT -= dt;
+        if (glitchT <= 0) { glitchT = r.range(3, 7); sign.material.opacity = 0.1; pl.intensity = 6; SFX.crackle(); }
+        else { sign.material.opacity = min(0.78, sign.material.opacity + dt * 2.2); pl.intensity = min(26, pl.intensity + dt * 30); }
+      });
+      const holoLines = ['📡 "ROBOT CITY. Flickers every few seconds. Nobody\'s called it in."', '📡 "Been glitching since round one. The foreman calls it \'atmosphere\'."', '📡 "Hard to read from the ground. Easier from the gondola."'];
+      game.addInteractable({ obj: b, radius: 5.0, label: () => 'Look up at the hologram', onUse: () => { SFX.click(); game.toast(rnd.pick(holoLines), 3000); } });
+    } else if (i === 5) {
+      // the camera, the radar dish, the steam vent, the missing-unit notice and the hologram have each
+      // claimed one of these six towers' own faces or roofs by now — this one, the last of the six, gets
+      // a window-washing rig instead: a small drone riding a rail bolted to the east wall, sliding slowly
+      // from a third of the way up to near the roofline and back down, its buffer pad swinging side to
+      // side as it goes. No new physics box and no clearance probe of its own: the whole rail sits
+      // between local y = h*0.35 (5.25) and h*0.92 (13.8), well above the tallest NPC's own head (the
+      // camera on tower 0 banked on the same clearance at y=4) and above this tower's own existing box
+      // (half-height h/2 = 7.5, from the `P.addBox` call that opens this forEach), so nothing on the
+      // ground can ever reach it bodily. `addInteractable`'s radius (6.5) just clears this tower's own
+      // 4.95 m diagonal corner, the same margin the camera and the radar dish already bank on; a headless
+      // probe (`game.travel(2, 'from-hub')`, then 1200 simulated frames continuously sampled so no
+      // wandering or patrolling robot could slip past unnoticed) swept this tower's own footprint against
+      // every one of the city's physics boxes and every one of those NPC samples: the nearest other box
+      // stayed 11.7 m clear and the nearest wandering soul never closer than 14.3 m, both well past this
+      // radius once this tower's own half-extent is added in.
+      const railY0 = h * 0.35, railY1 = h * 0.92, mountX = w / 2 + 0.03;
+      const steel = mat(0x5a6470, { metalness: 0.78, roughness: 0.35 }), dark = mat(0x1c1f26, { roughness: 0.55, metalness: 0.4 });
+      mesh(G.box(0.05, railY1 - railY0, 0.05), steel, { x: mountX, y: (railY0 + railY1) / 2, parent: b });
+      const rig = group(mountX + 0.17, railY0, 0, b);
+      mesh(G.box(0.3, 0.2, 0.28), dark, { parent: rig });
+      mesh(G.cyl(0.05, 0.05, 0.14, 8), steel, { x: -0.17, rz: PI / 2, parent: rig });
+      const padPivot = group(0, -0.07, 0.17, rig);
+      mesh(G.box(0.2, 0.04, 0.04), steel, { parent: padPivot });
+      mesh(G.box(0.16, 0.16, 0.02), mat(0xcfe6ff, { transparent: true, opacity: 0.5, roughness: 0.2 }), { z: 0.03, parent: padPivot });
+      const led = mesh(G.sphere(0.025, 8, 6), glowMat(0x4ade80, 1.4), { y: 0.1, z: 0.14, shadow: 'none', parent: rig });
+      const cyc = 11, tipX = x + mountX, tipZ = z;
+      let wasUp = true;
+      U.push((dt, t) => {
+        const k = (t % cyc) / cyc, up = k < 0.5, kk = up ? k * 2 : (1 - k) * 2;
+        rig.position.y = railY0 + kk * (railY1 - railY0);
+        padPivot.rotation.y = sin(t * 6) * 0.5;
+        led.material.emissiveIntensity = 1.0 + max(0, sin(t * 3)) * 0.8;
+        if (up !== wasUp) { wasUp = up; const c = game.cat.group.position; if (dist2(tipX, tipZ, c.x, c.z) < 324) SFX.noise({ dur: 0.08, vol: 0.04, filter: 2600, type: 'bandpass' }); }
+      });
+      const washerLines = ['🪟 "Same four windows, every shift. The glass never even gets dirty."', '🪟 "Nobody\'s told it the tower doesn\'t open."', '🪟 "Polishes the same stretch of wall, round trip, since the day it was bolted on."'];
+      game.addInteractable({ obj: b, radius: 6.5, label: () => 'Look up at the window washer', onUse: () => { SFX.click(); game.toast(rnd.pick(washerLines), 3000); } });
     }
   });
   // east yard: a second factory line, a plaza with a giant robot statue to the west, more lights and neon
@@ -2568,6 +3934,17 @@ function buildRobotCity(game, entry) {
     game.npcs.push(new Kneeler(game, inspector, { x: kx, z: kz, ry: atan2(cx - kx, cz - kz),
       cries: ['Every crate off Sector 8 gets a look before it leaves.', "Careful, puss — don't dent the paperwork.", "Line's running smooth today, for once."] })); }
   const sign3 = makeNeonSign('SECTOR 8', '#ff9f43', 6, W); sign3.position.set(44, 5.5, 20); sign3.rotation.y = PI;
+  // ROBOT WORKS, SECTOR 7 and CAT? all got their own "look" toast over the last few rounds, and CHARGE
+  // got an actual customer at its pylon — SECTOR 8 was the last of the city's five neon signs still mute.
+  // `sign3` is already kept in a variable rather than discarded, so it goes straight to
+  // `game.addInteractable`: no new mesh, no new box. A tight 1.1 m radius keeps clear of every neighbour
+  // sharing this corner of the east yard: 2.0 m short of conv2's own physics box edge (its belt spans
+  // z 6..18 at this x), 2.5 m inside the gap to conv2's own "Look at the conveyor belt" circle (centre
+  // (44, 12), radius 5.5), 1.2 m clear of the crate pile's physics box, and 1.6 m inside the gap to the
+  // quality inspector's own greet circle (radius 2.1, centred on her kneeling spot at (47.6, 19.1)) — no
+  // prompt here ever competes with another.
+  { const sign3Lines = ['🟠 "SECTOR 8. Orange, same as the crates it watches over."', '✨ "Nobody\'s re-lettered it since the line was Sector 3. Cheaper to rename the floor."', '📦 "Marks the belt, not much else. The inspector reads the paperwork instead."'];
+    game.addInteractable({ obj: sign3, radius: 1.1, label: () => 'Look at the sign', onUse: () => { SFX.click(); game.toast(rnd.pick(sign3Lines), 3000); } }); }
   const sign4 = makeNeonSign('CHARGE', '#4ade80', 5, W); sign4.position.set(-44, 6, 22); sign4.rotation.y = PI / 2;
   // the throne in Candy Land and the fountain in Victorian both got a one-off toast for walking up and
   // looking, but the plaza's own giant robot statue — the city's one proper landmark — never got so
@@ -2609,6 +3986,18 @@ function buildRobotCity(game, entry) {
   // furnace itself sits 14 m off, the nearest conveyor (-12, -6) 12.2 m off.
   { const armLines = ['🦾 "Swings the same six crates all day. Never drops one, never gets bored."', '🤖 "Mind the claw, puss — it doesn\'t know you\'re not a crate."', '🦾 "Been reaching for something just out of frame since the day it was bolted down."'];
     game.addInteractable({ obj: arm, radius: 3.8, label: () => 'Look at the robot arm', onUse: () => { SFX.click(); game.toast(rnd.pick(armLines), 3000); } }); }
+  // the robot arm and the conveyors keep the factory floor busy, but nothing in the city swings
+  // anything overhead the way a real scrapyard would. A jib crane now stands out past the south
+  // skyscrapers, its magnet bobbing down to a small scrap pile and back up on a slow, endless loop. A
+  // headless probe (built the real Robot City with `game.load(2, 'from-prev')`, then sampled every
+  // NPC's own position every quarter second over 400 simulated frames) swept a grid of the open ground
+  // past the factory floor against every one of the city's physics boxes and those samples: (13, -39)
+  // came back clear by 10.2 m of the nearest box (a south skyscraper's own footprint) and 10.2 m of the
+  // nearest wandering robot, comfortably past the crane's own reach (mast radius 1.1 m, boom swinging
+  // out to about 5.8 m at its forward-most, the scrap pile included).
+  { const crane = makeScrapCrane(game, 13, -39, 0); U.push(crane.userData.update);
+    const craneLines = ['🧲 "Lifts the same six pieces of scrap all shift. Never once asked for a day off."', '🤖 "Mind the swing, puss — that magnet doesn\'t care what it grabs."', '🧲 "Nobody\'s driving it. Hasn\'t needed to, not since round one."'];
+    game.addInteractable({ obj: crane, radius: 6.5, label: () => 'Watch the scrap crane', onUse: () => { SFX.click(); game.toast(rnd.pick(craneLines), 3000); } }); }
   // every other world has an ambient sound of its own on a loop — the Victorian bell, Sunny Shore's dog,
   // Whisper Woods' owl — but the factory floor, with its furnace and conveyors already running, had never
   // once sounded a shift whistle. It blows on its own loop now, same long steam blast whatever the game
@@ -2627,9 +4016,46 @@ function buildRobotCity(game, entry) {
   // 4.2 m away) and both neon signs; makeWindChime() itself adds no collider, so it needed no box of its
   // own either.
   place(game, U, makeWindChime(game, { wood: 0x3a4048, metal: 0xc9a227 }), -13, -23, 0, 3.6);
-  makeNeonSign('ROBOT WORKS', '#ff2d95', 9, W).position.set(0, 6.5, -24);
+  // the furnace, the robot arm, the scrap crane and the wind chime have all had a one-off look/listen
+  // toast for a while, but the factory's own name-brand sign overhead — the biggest piece of neon in the
+  // whole city, hung since round 1 — never got so much as a glance. `makeNeonSign`'s own return value,
+  // previously discarded right after `.position.set()`, is now kept in `factorySign` and handed straight
+  // to `game.addInteractable`, same trick as the furnace and the arm. No new mesh, no new box: both
+  // support poles ([-5, 3.2, -24] and [5, 3.2, -24]) carry no collider of their own, so there was nothing
+  // to clear. A 4.5 m radius stays well inside the 9.4 m gap to the robot arm's own interactable (-5, -16,
+  // radius 3.8) and the 11.4 m gap to the furnace's (9, -17, radius 3.6) — no overlap with either.
+  const factorySign = makeNeonSign('ROBOT WORKS', '#ff2d95', 9, W); factorySign.position.set(0, 6.5, -24);
+  { const signLines = ['🏭 "ROBOT WORKS. Same sign, same buzz, since the city went up."', '✨ "Half the bulbs in that sign have outlasted the robots that installed them."', '🤖 "Lights the whole floor pink after dark. Nobody\'s complained yet."'];
+    game.addInteractable({ obj: factorySign, radius: 4.5, label: () => 'Look at the factory sign', onUse: () => { SFX.click(); game.toast(rnd.pick(signLines), 3000); } }); }
   const sign2 = makeNeonSign('SECTOR 7', '#00e5ff', 6, W); sign2.position.set(-18, 5, 6); sign2.rotation.y = PI / 2;
-  makeNeonSign('CAT?', '#ffe040', 4, W).position.set(19, 5.6, -13);
+  // ROBOT WORKS got its own "look" toast back in round 499, but that round's own comment counted five
+  // neon signs on this floor and wired up only the biggest one — SECTOR 7, CHARGE and CAT? all stayed
+  // mute. This one, the closest of the three to the factory floor's own crates and the Sector 8
+  // conveyor, goes first: `sign2` is already kept in a variable (unlike the others, never discarded),
+  // so it goes straight to `game.addInteractable` — no new mesh, no new box. Its own support pole
+  // ([-18, 6], added in the loop below as a 0.4×5×0.4 box) is the only thing anchored here; a headless
+  // probe (`game.start('new')` then the real game's own synchronous `game.load(2, 'from-prev')`, 1800
+  // simulated frames sampling every NPC's own position every frame) found the nearest other box (one of
+  // the loose crates, at [-22, 4]) 3.81 m clear and the nearest wandering soul (a scrap-bug skittering
+  // past) 4.12 m off — both comfortably past the 3.4 m radius chosen, and the nearest other interactable
+  // (the portal back to Candy Land at (-10, 12)) stays 10.0 m off.
+  { const sign2Lines = ['💡 "SECTOR 7. Same blue buzz it\'s always had, crates or no crates."', '✨ "Half the sign flickers if you stand under it long enough. The other half never has."', '🤖 "Marks the sector, not much else. The crates don\'t read."'];
+    game.addInteractable({ obj: sign2, radius: 3.4, label: () => 'Look at the sign', onUse: () => { SFX.click(); game.toast(rnd.pick(sign2Lines), 3000); } }); }
+  const signCat = makeNeonSign('CAT?', '#ffe040', 4, W); signCat.position.set(19, 5.6, -13);
+  // SECTOR 7 got its own "look" toast last round, leaving CAT? the last of the factory floor's three
+  // mute neon signs — left for last because of where it sits. Its own support pole (the loop just below
+  // this, [19, -13] in that list) is only 2.0 m north of the little wooden door's own group position
+  // (19, -15), the door Robot City leads out through to Victorian, whose "Open the wooden door"
+  // interactable already reaches a generous 2.4 m — past the sign's own spot, since both share x = 19
+  // and the door's radius alone covers 2.4 m of that 2.0 m gap. Rather than compete with it for the
+  // prompt, this one keeps to a tight 0.9 m: since both signs share the same x, the line equidistant
+  // between them is the horizontal z = -14 (1.0 m from each), so a circle under 1.0 m stays entirely on
+  // the sign's own side of that line — every point inside it is strictly nearer the sign than the door,
+  // and the door keeps its own prompt everywhere else, no fighting over which one shows. No new mesh,
+  // no new box: `signCat` is kept instead of discarded, same trick SECTOR 7 and the factory sign upstream
+  // already used.
+  { const signCatLines = ['❓ "CAT? Nobody in this city has ever worked out what it was advertising."', '🤖 "The robots assumed it was a warning. Turns out it just means cat."', '✨ "Flickers yellow all night for a question nobody around here can answer."'];
+    game.addInteractable({ obj: signCat, radius: 0.9, label: () => 'Look at the sign', onUse: () => { SFX.click(); game.toast(rnd.pick(signCatLines), 3000); } }); }
   for (const [x, z] of [[-18, 6], [19, -13]]) { mesh(G.cyl(0.12, 0.16, 5, 8), pipe, { x, y: 2.5, z, parent: W }); P.addBox(x, 2.5, z, 0.4, 5, 0.4, { cam: false }); }
   mesh(G.cyl(0.12, 0.16, 6.4, 8), pipe, { x: -5, y: 3.2, z: -24, parent: W }); mesh(G.cyl(0.12, 0.16, 6.4, 8), pipe, { x: 5, y: 3.2, z: -24, parent: W });
   // crates & barrels around
@@ -3668,6 +5094,143 @@ function buildRobotCity(game, entry) {
       nose.material.emissiveIntensity = sin(t * 2.2) > 0 ? 2.6 : 0.3;
     };
     place(game, U, airship, cos(airPhase) * airR, sin(airPhase) * airR, 0, airH); }
+  // the Neighborhood has had a raccoon at a bin for a while now, the Woods a ladybug, Candy Land a
+  // gumdrop toad — every world's own small, unregarded floor-level creature except Robot City, whose
+  // one ambient critter (the factory mouse, west of the belts) never had company anywhere else on the
+  // open floor. **A scrap-bug now scuttles the quiet concrete north-east of the city** — new
+  // `makeScrapBug()` in `56-npcs-wild.js`, the mechanical cousin of the ladybug's own rig: the same
+  // domed shell and thread-thin feelers, just steel instead of lacquer, with a small blue lens for a
+  // head and no spots. Wired to the same `Hopper` controller every other tiny ground creature already
+  // uses, short scuttles with a lens that brightens on the move and pulses slowly at rest. Pure
+  // ambient wildlife — no greeting, no effect on the friend count, nothing it adds to collect.
+  //
+  // A headless probe (`game.start('new')` then `game.travel(2, 'from-hub')`, 9000 simulated frames at
+  // the stub clock's real step, every NPC's own position sampled every 10th frame) swept a few open
+  // pockets of this city's own flat floor against both every physics box and every one of those
+  // samples: (34, 11) came back clearest, 13.5 m from the nearest box (an east-side skyscraper's own
+  // footprint) and 8.6 m from the nearest wandering soul (one of the five patrol robots, on its own
+  // 9 m leash out of (18, 8)) — comfortably past the 1.1 m leash given here, and far from every hand-
+  // placed table, patrol beat and ring in this build.
+  //
+  // Built dead last of everything this world adds, after the airship, so `Hopper`'s own three
+  // unconditional draws off the *shared* `rnd()` sequence (idle timer, idle phase, starting heading —
+  // the same draws the raccoon's own comment already warns about) land after every other NPC in this
+  // city that times itself off that same sequence, the off-shift gossiping pair included, and disturb
+  // nothing built earlier on the factory floor.
+  { const rig = makeScrapBug();
+    game.npcs.push(new Hopper(game, rig, { x: 34, z: 11, leash: 1.1, r: 0.1, dist: [0.2, 0.5], dur: 0.26, height: 0.1, idle: [1.2, 3.6],
+      onHop: () => { if (rnd.chance(0.25)) SFX.click(); } })); }
+  // Candy Land's gingerbread guard (round 300-ish) and Victorian's drill line both already use `Marchers`
+  // (55-npcs.js) for a lockstep patrol; Robot City has its own sentry and RoboDog, each one robot walking
+  // alone, but never a squad in step. A three-robot security detail now beats a strict north-south line
+  // in the gap between two of the east yard's own towers, same lockstep-and-follow logic as both earlier
+  // marches, unchanged — just `makeRobot()` rigs in place of gingerbread men or children.
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses) built
+  // the real city (`game.travel(2, 'from-hub')`), sampled every NPC's own position every quarter second
+  // over 400 simulated frames (so no wandering robot, tag/catch pair or ring dancer mid-turn could slip
+  // past unnoticed), then swept a short list of candidate lines against both those samples and every one
+  // of the city's 1191 physics boxes: the 8 m line from (46, -18) to (46, -26) came back clear by 6.73 m
+  // of the nearest box and 12.0 m of the nearest other soul along its whole length, at radius 49-53 from
+  // the origin — deep in the east yard's own tower cluster but clear of every one of them.
+  { const marchers = [0, 1, 2].map(() => { const rig = makeRobot(); W.add(rig.group); return rig; });
+    game.npcs.push(new Marchers(game, marchers, { points: [[46, -18], [46, -26]], speed: 1.0, pause: [1, 2], pauseAll: true, loop: false, r: 0.42, height: 1.9, gap: 1.2,
+      cries: ['Shift patrol: sector clear.', 'In step. Always in step.', 'Unauthorized feline logged. Proceeding.'], cryIcon: '🛡️' })); }
+  // Frosty Peak's own haulers (round 526-ish) and now the penguin colony have both used `TugOfWar`
+  // (55-npcs.js) for a straining, never-resolving contest; Robot City had plenty of robots standing,
+  // wandering or marching, but no two of them ever pitted against each other. Two factory units now
+  // strain against a thick power cable a few metres north of the east yard's own marching patrol,
+  // same heave-and-never-win logic, unchanged — just `makeRobot()` rigs and a cable in place of rope.
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, built
+  // the real city with `game.travel(2, 'from-hub')`, then teleported the cat itself next to the
+  // candidate spot so nothing the engine culls by distance could hide a box) sampled every NPC's own
+  // position every quarter second over 500 simulated frames, then swept the two robots' own stations
+  // and a half-metre margin either side of them against both those samples and every one of the city's
+  // 323 physics boxes: (46, -8) came back clear by 5.19 m of the nearest box and 8.76 m of the nearest
+  // other soul — just north of the marching patrol's own beat (46, -18)-(46, -26) and short of the
+  // radius (98) where robotRegion's own procedural fill takes over.
+  { const haulerA = makeRobot(); W.add(haulerA.group); const haulerB = makeRobot(); W.add(haulerB.group);
+    const tug = new TugOfWar(game, haulerA, haulerB, { x: 46, z: -8, ry: 0, gap: 2.6,
+      cries: ['Tug protocol: engaged. Neither unit yields.', 'Careful, puss — mind the cable, it still has some charge in it.', 'Query: why do we do this every shift? Answer: unresolved.'] });
+    game.npcs.push(tug);
+    const [A, B] = tug.ctls, cableM = mat(0x24262b, { roughness: 0.85 }), capM = glowMat(0x00e5ff, 1.4);
+    const ay = P.ground0(A.x, A.z) + 0.75, by = P.ground0(B.x, B.z) + 0.75;
+    const cableGroup = group((A.x + B.x) / 2, (ay + by) / 2, (A.z + B.z) / 2, W);
+    cableGroup.lookAt(B.x, by, B.z);
+    noInk(mesh(G.cyl(0.045, 0.045, Math.hypot(B.x - A.x, by - ay, B.z - A.z), 10), cableM, { rx: PI / 2, parent: cableGroup }));
+    for (const s of [-0.9, 0.9]) noInk(mesh(G.cyl(0.055, 0.055, 0.1, 10), capM, { z: s, rx: PI / 2, shadow: 'none', parent: cableGroup }));
+    const bulb = mesh(G.sphere(0.05, 8, 6), glowMat(0xffb04a, 1), { parent: W });
+    U.push(() => { const frac = 0.5 + clamp(tug.tension, -1, 1) * 0.14;
+      bulb.position.set(lerp(A.x, B.x, frac), lerp(ay, by, frac) + 0.04, lerp(A.z, B.z, frac));
+      bulb.material.emissiveIntensity = 0.6 + abs(tug.tension) * 1.8; }); }
+  // the Neighborhood, Candy Land, Victorian, Sunny Shore, Frosty Peak and Whisper Woods have all had
+  // their own `Tetherball` (`55-npcs.js`) since round 508's own list of playground games went round
+  // every other world in turn — Robot City, for all its break-room sitter and its two haulers above
+  // straining on a cable, never got the one game actually played by people rather than robots. Two
+  // off-shift factory workers now bat a ball round a pole on a quiet stretch of concrete east of the
+  // yard. **A tetherball pole for Robot City.** *"Five minutes. This is how I spend every one of
+  // them."* *"Careful, puss — that thing's got a mean swing."* *"Foreman says it's bad for morale.
+  // Foreman's never won a point."*
+  //
+  // No new class and no new mesh: the exact same `Tetherball` the other six worlds already use, just a
+  // fresh pair of workers and a spot. `Tetherball` reaches into `rig.spine`, which `makeRobot()`'s rig
+  // never sets — the same reason the mechanic, painter, oil vendor and break-room worker already built
+  // earlier in this city are human contractors rather than robots — so this pair is human too, break-
+  // room `makeWardrobe` colours reused rather than a kid's.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, the
+  // real city built with `game.travel(2, 'from-hub')` and settled out past its own real-timer fade
+  // before anything was sampled) sampled every NPC's own position every 5th frame over 3600 simulated
+  // frames, then swept the pole at (29, -16) and both workers' own stations two metres either side of
+  // it, (31, -16) and (27, -16), plus the ball's own orbit extremes, against both those samples and
+  // every one of the city's 1193 physics boxes: the worst of the five points came back clear by 7.05 m
+  // of the nearest box and 7.38 m of the nearest other soul — short of the tug-of-war haulers above at
+  // (46, -8), the marching patrol's own beat and the squirrel below, and well inside the radius where
+  // robotRegion's own procedural fill takes over.
+  { const tetherWard = makeWardrobe(r, { shirts: [0x4a5a6a, 0x5a4a6a, 0x8a6a3a], pants: [0x232c34, 0x2a2a30] });
+    const workerA = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: tetherWard }),
+      hat: 'cap', hatColor: 0x3a4a5a, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.3) });
+    const workerB = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: tetherWard }),
+      hat: 'cap', hatColor: 0x3a4a5a, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.3) });
+    W.add(workerA.group); W.add(workerB.group);
+    game.npcs.push(new Tetherball(game, workerA, workerB, { x: 29, z: -16,
+      cries: ['Five minutes. This is how I spend every one of them.', "Careful, puss — that thing's got a mean swing.", "Foreman says it's bad for morale. Foreman's never won a point."] })); }
+  // the Neighborhood, Candy Land, Frosty Peak and Whisper Woods still owe round 508's own playground
+  // list a `Badminton` net (`55-npcs.js`) — Victorian and Sunny Shore have had one for a while — but
+  // Robot City, for all its tetherball pole and its two haulers on a cable, is the one place in the
+  // city proper where a rally could actually use the open floor rather than fight the yard's own
+  // towers for space. Two off-shift contractors now keep a shuttlecock going over a low net on the bare
+  // concrete well past the last skyscraper on the south-west side. *"Quietest spot in the whole city.
+  // That's the appeal."* *"Careful, puss — that net's the only thing out here taller than you."*
+  // *"Forty-one. No — forty-two. The wind off the vents keeps nudging my count."*
+  //
+  // No new class and no new mesh: the exact same `Badminton` (`55-npcs.js`) and `makeVolleyballNet`
+  // (`62-props-nature.js`) Victorian and Sunny Shore already use. `Badminton` reaches into `rig.spine`,
+  // which `makeRobot()`'s rig never sets — the same reason the tetherball pair above and every other
+  // break-room worker in this city are human contractors rather than robots — so this pair is human
+  // too, a fresh wardrobe rather than the tetherball pair's own.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, the
+  // real city built with `game.start('new')` then `game.travel(2, 'from-hub')`) sampled every NPC's
+  // own position every 6th frame over 2400 simulated frames, then swept the net at (-28, -86) and both
+  // players' own stations (±2.8 m either side of it) and the net posts (±1.6 m) against both those
+  // samples and all 300 of the city's physics boxes: the worst of the five points came back clear by
+  // 16.3 m of the nearest box or soul — one of the gaps between the ring of towers out past radius 72,
+  // and well short of the radius (98) where robotRegion's own procedural fill takes over.
+  { const cx = -28, cz = -86, gap = 5.6, halfW = 1.6;
+    const net = makeVolleyballNet(halfW, 0x6a7078, { postH: 1.6, netH: 0.78 });
+    place(game, U, net, cx, cz, 0);
+    for (const sx of [-halfW, halfW]) P.addBox(cx + sx, 0.8, cz, 0.16, 1.6, 0.16, { cam: false });
+    const shuttle = group(cx, 0, cz, W);
+    mesh(G.sphere(0.045, 10, 8), mat(0xf0ead6, { roughness: 0.6 }), { y: 0, parent: shuttle });
+    mesh(G.cone(0.075, 0.16, 10), mat(0xfbfaf4, { roughness: 0.8 }), { y: 0.11, rx: PI, parent: shuttle });
+    const badWard = makeWardrobe(r, { shirts: [0x4a5a6a, 0x5a4a6a, 0x3a5a4a], pants: [0x232c34, 0x2a2a30], shoes: [0x1a1a20, 0x201c18] });
+    const bA = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.2), wardrobe: badWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.25), racket: true });
+    const bB = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.2), wardrobe: badWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.25), racket: true });
+    W.add(bA.group); W.add(bB.group);
+    const badmintonLines = ['Quietest spot in the whole city. That\'s the appeal.', "Careful, puss — that net's the only thing out here taller than you.", 'Forty-one. No — forty-two. The wind off the vents keeps nudging my count.'];
+    game.npcs.push(new Badminton(game, bA, bB, shuttle, { cx, cz, gap, cries: badmintonLines })); }
   const sq = new Squirrel(game, -14, -9, 'sq-robot'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('mouse', -8, 7); C.add('star', 12, -22); C.add('fish', -18, 2); C.add('yarn', 21, 9); C.add('star', 0, -27); C.add('fish', 4, 14); C.add('mouse', 26, -18); C.add('yarn', -26, -6);
@@ -3737,6 +5300,22 @@ function buildVictorian(game, entry) {
   // whole outer-country fill, and an update tick on every one of those would have added up fast.
   const basketHues = [0xd6487a, 0xe0a030, 0xc9516a, 0xd98a2a];
   vicLamps.forEach((lamp, i) => place(game, U, makeLampBasket(basketHues[i % basketHues.length]), lamp.position.x, lamp.position.z, 0, 2.55));
+  // the Neighborhood's own park lamp has carried a "lost cat" notice since round 462, and Robot City
+  // a "missing unit" bulletin of its own since round 463 — Victorian, the one world with a dozen bare
+  // lamp posts already standing, had neither. `vicLamps[8]` (x=34.5, z=6.4, the north-row lamp between
+  // the market-square lane and the east end of the street) carries a "lost pocket watch" notice, read
+  // height on the post same as the Neighborhood's own, and well clear of that same post's own flower
+  // basket, which hangs a metre higher at y=2.55. A plain reskin of `makePosterNotice()` — brass watch
+  // case and fob chain instead of the cat silhouette, one wax seal instead of tear-off tabs — parented
+  // straight onto the lamp group so it inherits the post's own placement, and needs no physics box of
+  // its own: a 0.012 m sheet of paper blocks nothing the post's existing 0.4 x 4 x 0.4 box wasn't
+  // already clearing. `game.addInteractable` keys off the lamp group itself, same trick the park
+  // lamp's own notice and every bare-lamp prop before it already relied on.
+  { const watchLamp = vicLamps[8]; const notice = makeLostWatchNotice(); notice.position.set(0.09, 1.55, 0); watchLamp.add(notice);
+    const watchLines = ['🕰️ "LOST: a gentleman\'s pocket watch, silver chain, stopped at twenty past four." The cat has never once arrived anywhere on time and sees no reason to start.',
+      '🕰️ "REWARD OFFERED — handsomely." No sum is named. The cat suspects it would be paid in buttons.',
+      '🕰️ A wax seal, unbroken, over a watch apparently worth sealing a notice for. The cat has no pockets, and therefore no further opinion.'];
+    game.addInteractable({ obj: watchLamp, radius: 2.4, label: () => 'Read the notice', onUse: () => { SFX.click(); game.toast(rnd.pick(watchLines), 3000); } }); }
   // the Neighborhood's porch, Frosty Peak's first cabin and Whisper Woods' treehouse all sway a wind
   // chime of their own by now, but no door on Victorian's own terraced street had one — a town with
   // lamp baskets and hanging flowers on every post felt like it was missing the one sound a doorway
@@ -3913,6 +5492,37 @@ function buildVictorian(game, entry) {
     W.add(sweep.group);
     game.npcs.push(new Charger(game, sweep, { x: sx, z: sz, ry, cryIcon: '🧹',
       cries: ["Every grate on this street feeds a flue, and every flue's mine sooner or later.", "Mind your paws, puss — soot never washes out of white fur.", "Thirty feet of brick, straight up, and not one of them the same shape twice."] })); }
+  // the mudlark's own line (round 365) called the chimney sweep "as Victorian as" it gets, but every
+  // one of those flues the sweep works has to be fed first — no coalman had ever actually delivered
+  // any. The south row has eleven back yards and only three were ever filled in (the laundress at
+  // x=-48, the woodcutter at x=-28, the sweep at x=-18); the house at x=52 never got one at all. A
+  // coalman now tips sacks down a hinged iron chute set into that house's own back wall (half-extent
+  // 3.5 m, centred z=-11.5, so its back face sits at z=-15, same wall every other yard's own scene
+  // backs onto), two sacks and a scatter of spilled lumps at the foot of it, the coalman himself
+  // standing a few steps off. `Charger`, already standing in for the sweep, the fiddler and the
+  // painter, needs no new controller. x=52 sits 55.7 m from the origin at this yard's own depth —
+  // comfortably inside the radius (88) where victorianRegion's own procedural fill is kept off
+  // entirely — and the nearest other soul (the night watchman's bench at (36, -30)) stays better than
+  // 19 m off throughout, so nothing here was ever going to collide with anything else in the town.
+  { const chuteX = 52, chuteZ = -15.3, sx = 52, sz = -19.0;
+    const ironM = mat(0x2a2a2e, { metalness: 0.5, roughness: 0.5 }), coalM = mat(0x16141a, { roughness: 0.4 }), sackM = mat(0x3a332c, { roughness: 0.95 });
+    const chute = group(chuteX, 0.55, chuteZ, W); chute.rotation.x = -0.7;   // hinged flap, propped open into the cellar
+    mesh(G.box(0.62, 0.5, 0.05), ironM, { parent: chute });
+    mesh(G.box(0.62, 0.06, 0.05), mat(0x1a1a1c, { metalness: 0.6, roughness: 0.4 }), { y: 0.22, z: 0.03, parent: chute });   // a crossbar
+    P.addBox(chuteX, 0.55, chuteZ - 0.3, 0.4, 0.5, 0.35, { cam: false });
+    for (const [lx, lz, s] of [[-0.35, -0.5, 1], [0.3, -0.7, 0.8], [-0.1, -0.6, 0.9], [0.45, -0.4, 0.7]]) mesh(G.box(0.12 * s, 0.1 * s, 0.1 * s), coalM, { x: chuteX + lx, y: 0.05 * s, z: chuteZ + lz, ry: r() * TAU, shadow: 'both', parent: W });
+    for (const dx of [-0.6, 0.25]) {
+      const sack = group(chuteX + dx, 0, sz + 0.6, W);
+      mesh(G.cyl(0.22, 0.28, 0.66, 10), sackM, { y: 0.33, shadow: 'both', parent: sack });
+      mesh(G.torus(0.13, 0.02, 5, 10), mat(0x2a2420, { roughness: 0.8 }), { y: 0.63, rx: PI / 2, shadow: 'none', parent: sack });
+      P.addBox(chuteX + dx, 0.33, sz + 0.6, 0.3, 0.66, 0.3, { cam: false });
+    }
+    const coalWard = makeWardrobe(r, { shirts: [0x3a3a3e, 0x2e2e32] });
+    const coalman = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: false, wardrobe: coalWard, build: 'stout' }),
+      pants: 0x1e1e20, apron: 0x2a2420, hat: 'flatcap', hatColor: 0x2a2a2e, jacket: null, scarf: null, bag: null, backpack: null, beard: r.chance(0.3), glasses: false });
+    W.add(coalman.group);
+    game.npcs.push(new Charger(game, coalman, { x: sx, z: sz, ry: 0, cryIcon: '🪨',
+      cries: ["Two hundredweight down the chute, same as every Tuesday — mind your paws, puss, it's filthy stuff.", "Every grate on this street, sooner or later, and every one of them mine to fill.", "Black on the hands, black on the boots — never comes out, not properly."] })); }
   // market square (north): cobbled plaza, a fountain, striped stalls, gas lamps; a canal with a stone bridge (south)
   flatPlane(game, 30, 26, pave, 0, -34, 0, 0.015);
   { const f = group(0, 0, -34, W), stone = mat(0x8c8377, { roughness: 0.95, map: TEX.stone(30) }); mesh(G.cyl(3.2, 3.4, 0.7, 24), stone, { y: 0.35, parent: f }); mesh(G.cyl(2.8, 2.8, 0.1, 24), mat(0x3d8fd1, { roughness: 0.1, transparent: true, opacity: 0.85, emissive: 0x1a4a7a, emissiveIntensity: 0.3 }), { y: 0.72, shadow: 'none', parent: f }); mesh(G.cyl(0.4, 0.6, 2.2, 12), stone, { y: 1.8, parent: f }); mesh(G.cyl(1.2, 1.1, 0.15, 18), stone, { y: 2.9, parent: f }); mesh(G.sphere(0.4, 12, 9), mat(0xd4af37, { metalness: 0.9, roughness: 0.3 }), { y: 3.3, parent: f });
@@ -3945,6 +5555,20 @@ function buildVictorian(game, entry) {
     const v2 = new Vendor(game, flowerSeller, makeFlowerBouquet(), { x: 10, z: -29.3, ry: 0, cryIcon: '💐',
       cries: ['Flowers, fresh flowers!', 'Roses, tuppence a bunch!', 'Something pretty for the windowsill?'] });
     game.npcs.push(v2); greetable(game, v2); }
+  // the Neighborhood and Whisper Woods both have a ladybug resting somewhere by now, but Victorian's own
+  // market square, flowers piled on a stall since round 1, never had one land on them. One now sits on
+  // the flower seller's own counter, among her blooms, antennae twitching — the exact same perched-only
+  // trick the Neighborhood's field ladybug uses (`rig.animate(0, false, dt, lbT)` off a local timer in
+  // `U`), not the Woods' own `Hopper`: wiring a hop onto this counter risks the same shared-`rnd()`
+  // desync the Neighborhood's own comment already warns about, and the counter itself (half-extent 1.6 x
+  // 0.45 x 0.8, centred (10, -28)) is small enough a hop would carry it clean off the edge in a stride or
+  // two anyway. Sits at (10.9, 0.93, -27.7), the counter's own back corner, away from both the flower
+  // seller (standing at -29.3, the front) and the aisle the cat would use to reach her — just above the
+  // counter's own top (y=0.9) and well inside its existing physics box, so it needs no box of its own,
+  // same reasoning the stall's own flowers already rely on just to sit on the wood. Drawn from this
+  // world's own local `r` only for its one-time idle phase, same as the Neighborhood's.
+  { const rig = makeLadybug(); rig.group.position.set(10.9, 0.93, -27.7); W.add(rig.group);
+    let lbT = r() * 10; U.push((dt) => { lbT += dt; rig.animate(0, false, dt, lbT); }); }
   // a third: a pieman on the red-striped pitch, tray of meat pies held up
   { const pieWard = makeWardrobe(r, { shirts: [0x6a4a3a, 0x5a3a2a, 0x7a5a3a], pants: [0x2a2420], shoes: [0x2a2018] });
     const pieman = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: r.chance(0.35), wardrobe: pieWard }),
@@ -3961,6 +5585,25 @@ function buildVictorian(game, entry) {
     const v4 = new Vendor(game, cheeseMonger, makeCheeseWheel(), { x: 10, z: -43.3, ry: 0, cryIcon: '🧀',
       cries: ['Cheese! Fine ripe cheese!', 'A wedge for your supper?', "None of this for cats, either."] });
     game.npcs.push(v4); greetable(game, v4); }
+  // the square had a costermonger, a flower seller, a pieman and a cheesemonger calling their wares —
+  // but the one cry every Victorian street is remembered for, "paper! read all about it!", never turned
+  // up anywhere in the whole town. A newsboy now works the corner where the lane off the high street
+  // opens out into the square, a bundle of folded papers tucked under one arm, calling out a headline
+  // to anyone passing. A headless probe (the same stub-three harness `test/run.mjs` itself uses, with
+  // the real town built via `game.travel(3, 'from-prev')`) sampled every NPC's own position every
+  // third of a second over 150 simulated seconds, then swept the grass just north of the square's own
+  // paving against both those samples and every one of the town's physics boxes: (13, -21) came back
+  // clear by 6.0 m of the nearest box and 3.3 m of the nearest wandering soul, outside the fountain's
+  // own 17 m hand-placed circle (so clear of `victorianRegion`'s own fill too) and well past the four
+  // stall keepers' own pitches, the juggler and the lane's own foot traffic.
+  { const nx = 13, nz = -21, ry = atan2(-1.2 - nx, -30 - nz);
+    const newsWard = makeWardrobe(r, { shirts: [0x6a5a4a, 0x5a4a3a, 0x4a4a5a], pants: [0x2a2420], shoes: [0x2a2018] });
+    const newsboy = makeHuman({ ...randomPerson(r, { female: r.chance(0.3), child: true, elder: false, wardrobe: newsWard }),
+      pants: 0x2a2420, hat: 'flatcap', hatColor: 0x3a3327, bag: null, jacket: null, scarf: r.chance(0.5) ? 0x7a6a5a : null });
+    W.add(newsboy.group);
+    const nb = new Vendor(game, newsboy, makeNewspaperBundle(), { x: nx, z: nz, ry, cryIcon: '📰',
+      cries: ['Paper! Read all about it!', 'Clock tower strikes true again, shocking news!', "Cat spotted in the market square — you heard it here first!"] });
+    game.npcs.push(nb); greetable(game, nb); }
   // Candy Land, Sunny Shore, Frosty Peak and Whisper Woods all have something looping overhead by now
   // (butterflies, gulls, snow buntings, fairies and more butterflies) — Victorian's own sky over the market
   // square had nothing in it at all. Five doves now wheel above the square, white against the dusk sky, the
@@ -4015,6 +5658,26 @@ function buildVictorian(game, entry) {
     W.add(juggler.group);
     game.npcs.push(new Juggler(game, juggler, [0xffd54a, 0x2e9e6e, 0xf7f3ec], { x: jx, z: jz, ry: atan2(0 - jx, -34 - jz),
       cries: ['Three balls, never four - not since Tuesday.', "Watch the hands, not the cat, sir!", "One coin in the hat, if you liked that."] })); }
+  // the market square now has four stall keepers, a newsboy, a juggler and a crumb-feeder with her
+  // pigeons — but nobody minding the puddle of boot-blacking every real Victorian square had. A
+  // bootblack boy now kneels on the open cobbles south of the fountain, a low shine box set down in
+  // front of him, scrubbing at an unseen boot. Reuses Kneeler exactly as the crumb-feeder above and
+  // the woods' mushroom-picker do — its own two-handed "patting" idle motion doubles here as
+  // brushing the box. New `makeShineBox()` in `60-props.js`: a low wooden stand with a curved foot
+  // rest on top (where a customer's boot would go), a tin of polish and a brush left on the lid.
+  // Placed at (2, -41), facing the fountain: 7.0 m clear of the fountain's own box (half-extent 3.4
+  // m, centred (0,-34)), well past both south stalls at (±10, -42) (half-extent 1.6 m, over 6 m off
+  // on x alone), the lamp at (0, -46) and the alley rat's own 1.3 m hop leash at (-13, -45).
+  { const bx = 2, bz = -41, ry = atan2(0 - bx, -34 - bz);
+    const shineWard = makeWardrobe(r, { shirts: [0x6a5a4a, 0x5a4a3a, 0x7a6a5a], pants: [0x3a3327], shoes: [0x2a2018] });
+    const bootblack = makeHuman({ ...randomPerson(r, { female: false, child: true, elder: false, wardrobe: shineWard }),
+      pants: 0x3a3327, hat: 'flatcap', hatColor: 0x3a3327, bag: null, jacket: null, scarf: null });
+    W.add(bootblack.group);
+    const boxX = bx + sin(ry) * 0.32, boxZ = bz + cos(ry) * 0.32;
+    place(game, U, makeShineBox(), boxX, boxZ, ry);
+    P.addBox(boxX, 0.11, boxZ, 0.32, 0.22, 0.24, { cam: false });
+    game.npcs.push(new Kneeler(game, bootblack, { x: bx, z: bz, ry, cryIcon: '👞',
+      cries: ['Shine your boots, sir? Tuppence a shine!', 'Mind your paws on the polish, puss.', 'Mirror finish — well, mirror-ish.'] })); }
   for (const [x, z] of [[-14, -34], [14, -34], [0, -46]]) { place(game, U, makeLamp('victorian'), x, z, 0); P.addBox(x, 2, z, 0.4, 4, 0.4, { cam: false }); }
   { const CL = VICTORIAN_LIMIT * 2 + 20;   // the canal runs the whole width of the town
     const water = flatPlane(game, CL, 8, mat(0x1f4f6a, { roughness: 0.15, metalness: 0.2, transparent: true, opacity: 0.85, emissive: 0x0a2a3a, emissiveIntensity: 0.3, map: TEX.water() }), 0, 30, 0, -0.35); U.push((dt) => { water.material.map.offset.x += dt * 0.01; });
@@ -4228,6 +5891,120 @@ function buildVictorian(game, entry) {
     W.add(showman.group);
     game.npcs.push(new Charger(game, showman, { x: showX, z: showZ, ry: showRy, cryIcon: '🎭',
       cries: ["Roll up, roll up, for Mr Punch and his good lady wife!", '"That\'s the way to do it!"', 'Mind your tail, puss — he bites, puppet or not.'] })); }
+  // round 508's own list of playground games this whole game had never tried (tetherball, badminton,
+  // tug-of-war, archery, sack races) is down to two: round 520 gave Frosty Peak a tug-of-war and round
+  // 521 gave the Neighborhood a tetherball pole. **Badminton — the one the Victorians actually took up
+  // in their own back gardens — now has a net of its own**, on the quiet grass between the market square
+  // and the maypole's own field, two players in their Sunday clothes batting a shuttlecock back and
+  // forth over it in a rally that never actually stops.
+  //
+  // New `Badminton` controller (`55-npcs.js`, right after `TugOfWar`, its nearest relative among this
+  // round's own run of new playground games) — the one thing setting it apart from `BallGame`'s and
+  // `Horseshoes`' own hold-then-catch-then-throw cycle is that the shuttle is never held at all: it
+  // reverses the instant it reaches a racket and is straight back on its way, so the rally never
+  // actually pauses, closer to `Tetherball`'s own never-held rule than to either of those. `makeHuman`
+  // gets a new `o.racket` hand prop — a handle and a strung oval hoop, same spot on the body `axe`,
+  // `pole` and `brush` already use — and `makeVolleyballNet` (`62-props-nature.js`) picks up optional
+  // `postH`/`netH` overrides rather than a second near-identical net function: badminton's own net sits
+  // lower and shallower than the beach's own volleyball net, closer to the real game's proportions
+  // (posts a little over head height, the net itself under a metre deep).
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real Victorian
+  // town (`game.start('new')` then `game.travel(3, 'from-prev')`, so every urchin, dancer, duck and
+  // ball game already in this town actually moved), sampled every one of its physics circles' own
+  // position every tenth of a second over 300 simulated seconds, then swept a grid around this stretch
+  // of grass against both that trace and every one of the town's physics boxes, keeping short of the
+  // radius (88) where victorianRegion's own procedural fill takes over: (-10, -55) and the eight points
+  // ±2–3.5 m around it (the net posts, both players' own spots) all came back clear by 8.6 m or more in
+  // every direction, comfortably between the market square (centred (0, -34), radius 17) and the
+  // maypole's own field further south at (0, -84).
+  { const cx = -10, cz = -55, gap = 5.6, halfW = 1.6;
+    const net = makeVolleyballNet(halfW, 0xf0ece4, { postH: 1.6, netH: 0.78 });
+    place(game, U, net, cx, cz, 0);
+    for (const sx of [-halfW, halfW]) P.addBox(cx + sx, 0.8, cz, 0.16, 1.6, 0.16, { cam: false });
+    // the shuttlecock: a pale cork and a flared cone standing in for the feathers, nose staying down
+    const shuttle = group(cx, 0, cz, W);
+    mesh(G.sphere(0.045, 10, 8), mat(0xf0ead6, { roughness: 0.6 }), { y: 0, parent: shuttle });
+    mesh(G.cone(0.075, 0.16, 10), mat(0xfbfaf4, { roughness: 0.8 }), { y: 0.11, rx: PI, parent: shuttle });
+    const bmWard = makeWardrobe(r, { shirts: [0x5a4a6a, 0x4a6a5a], pants: [0x2a2a24, 0x3a3327], shoes: [0x2a2018, 0x1e1a16] });
+    const bA = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: bmWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.2), racket: true });
+    const bB = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: bmWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.2), racket: true });
+    W.add(bA.group); W.add(bB.group);
+    const badmintonLines = ['Sixty-one, by my count — more than we\'ve ever got to.', 'Mind your whiskers, puss, that net won\'t stop a determined paw.', 'Lost count again. Call it a draw, same as always.'];
+    game.npcs.push(new Badminton(game, bA, bB, shuttle, { cx, cz, gap, cries: badmintonLines })); }
+  // round 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack races)
+  // has long since gone round the other six worlds — Frosty Peak, Robot City, Sunny Shore and Whisper
+  // Woods have all had two rigs strain against a rope of their own (`TugOfWar`, 55-npcs.js) — but
+  // Victorian, for all its quoits and its badminton net, never had the one contest with no ball, shoe
+  // or shuttle to send back and forth. Two off-duty draymen now dig their heels into the open grass
+  // east of the coalman's own yard and heave on a length of cart rope between them, never quite
+  // settling either way. *"Heave away, lads — she won't give an inch!"* *"Mind your tail, puss, that
+  // rope's seen rougher use than this."* *"Best of however many we've lost count of — same as every
+  // Sunday."*
+  //
+  // No new class and no new mesh: the exact same `TugOfWar` the other four worlds already use,
+  // unchanged, with the same rope-and-flag dressing those four already build around it — just two
+  // fresh `makeHuman` draymen in shirtsleeves and braces rather than a snowsuit, factory overalls or
+  // beachwear.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // clicking the real start button and then `game.travel(3, 'from-prev')`, waiting out both the load
+  // and the fade-lock timers rather than guessing a frame count) sampled every NPC's own position
+  // every fifth frame over 2400 simulated frames, then swept a grid of this quiet east corner — clear
+  // of the main street's own keep-out band (|z|<20) and short of the radius (88) where
+  // `victorianRegion`'s own procedural fill takes over — against both those samples and every one of
+  // the town's 589 physics boxes: (75, -29) came back clear by 16.9 m of the nearest box and 25.1 m of
+  // the nearest other soul at its own centre, with both draymen's own stations 1.3 m either side of it
+  // (rope running north-south) clear by 15.9 m and 18.0 m of the nearest box and 24.6 m and 25.6 m of
+  // the nearest other soul — well east of the coalman's own chute (52, -15) and the night watchman's
+  // bench (36, -30).
+  { const tugWard = makeWardrobe(r, { shirts: [0x6a5a4a, 0x4a5a6a, 0x5a6a4a], pants: [0x2a2420, 0x2a2a30], shoes: [0x2a2018, 0x1e1a16] });
+    const haulerA = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: false, wardrobe: tugWard, build: 'stout' }),
+      hat: 'flatcap', hatColor: 0x3a3327, jacket: null, coat: null, scarf: null, bag: null, backpack: null, sleeves: true, glasses: false });
+    const haulerB = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: false, wardrobe: tugWard, build: 'stout' }),
+      hat: 'flatcap', hatColor: 0x2a2a2a, jacket: null, coat: null, scarf: null, bag: null, backpack: null, sleeves: true, glasses: false });
+    W.add(haulerA.group); W.add(haulerB.group);
+    const tug = new TugOfWar(game, haulerA, haulerB, { x: 75, z: -29, ry: 0, gap: 2.6,
+      cries: ['Heave away, lads — she won\'t give an inch!', "Mind your tail, puss, that rope's seen rougher use than this.", "Best of however many we've lost count of — same as every Sunday."] });
+    game.npcs.push(tug);
+    const [A, B] = tug.ctls, ropeM = mat(0x8a6a42, { roughness: 0.9 }), ay = P.ground0(A.x, A.z) + 0.75, by = P.ground0(B.x, B.z) + 0.75;
+    const ropeGroup = group((A.x + B.x) / 2, (ay + by) / 2, (A.z + B.z) / 2, W);
+    ropeGroup.lookAt(B.x, by, B.z);
+    noInk(mesh(G.cyl(0.035, 0.035, Math.hypot(B.x - A.x, by - ay, B.z - A.z), 8), ropeM, { rx: PI / 2, parent: ropeGroup }));
+    const flag = group(0, 0, 0, W); noInk(mesh(G.box(0.03, 0.14, 0.4), mat(0x8b1a1a, { roughness: 0.7 }), { parent: flag }));
+    U.push(() => { const frac = 0.5 + clamp(tug.tension, -1, 1) * 0.12;
+      flag.position.set(lerp(A.x, B.x, frac), lerp(ay, by, frac) + 0.03, lerp(A.z, B.z, frac)); flag.rotation.y = ropeGroup.rotation.y; }); }
+  // the Neighborhood, Candy Land and Robot City have all had their own `Tetherball` (55-npcs.js) since
+  // round 508's own list of playground games went round every world in turn — Victorian, for all its
+  // badminton net and its tug-of-war, never got the one game played standing still, swinging a ball on
+  // a rope round and round a post. Two off-duty stable hands now keep a rally going on the quiet grass
+  // west of the pinwheel's own garden, well clear of the bootblack and the juggler working the lane
+  // below. *"Forty-one, and she's still mine!"* *"Mind your tail, puss — that ball's got more swing in
+  // it than it looks."* *"Groom'll want us back inside in a minute. One more go."*
+  //
+  // No new class and no new mesh: the exact same `Tetherball` the other three worlds already use, just
+  // a fresh pair of workers and a spot. Reuses `makeHuman` the way every other Victorian NPC does —
+  // unlike Robot City's own pair, this town has no `makeRobot()` rig to work around.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // clicking the real start button and then `game.travel(3, 'from-prev')`, waiting out both the load
+  // and the fade-lock timers rather than guessing a frame count) sampled every NPC's own position
+  // every fifth frame over 1200 simulated frames, then swept the pole at (-70, -30) and both workers'
+  // own stations two metres either side of it against both those samples and every one of the town's
+  // 577 physics boxes: the worst of the three points came back clear by 13.0 m of the nearest box and
+  // 16.1 m of the nearest other soul — short of the radius (88) where `victorianRegion`'s own
+  // procedural fill takes over, and well off the pinwheel (-60.5, -7.5), the bootblack (-48, -20) and
+  // the juggler (-28, -20.3).
+  { const tetherWard = makeWardrobe(r, { shirts: [0x6a7a5a, 0x5a6a7a, 0x7a6a4a], pants: [0x2a2420, 0x2a2a30], shoes: [0x2a2018, 0x1e1a16] });
+    const workerA = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: tetherWard }),
+      hat: 'flatcap', hatColor: 0x3a3327, coat: null, jacket: null, scarf: null, bag: null, backpack: null, sleeves: true, glasses: r.chance(0.2) });
+    const workerB = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: tetherWard }),
+      hat: 'flatcap', hatColor: 0x2a2a2a, coat: null, jacket: null, scarf: null, bag: null, backpack: null, sleeves: true, glasses: r.chance(0.2) });
+    W.add(workerA.group); W.add(workerB.group);
+    game.npcs.push(new Tetherball(game, workerA, workerB, { x: -70, z: -30,
+      cries: ['Forty-one, and she\'s still mine!', "Mind your tail, puss — that ball's got more swing in it than it looks.", "Groom'll want us back inside in a minute. One more go."] })); }
   victorianRegion(game, U, r, 88, VICTORIAN_LIMIT - 10);
   makeHorizon(game, r, { clear: VICTORIAN_LIMIT + 10, hills: true, hill: 0x3f4a38, rock: 0x3a3f4a, rock2: 0x4a4a58, snow: 0xcfd6e2, woodHue: [0.16, 0.26], woodLight: [0.1, 0.2], trunk: 0x3a2a1e, peaks: 30, woodCount: 420 });
   // people
@@ -4312,6 +6089,59 @@ function buildVictorian(game, entry) {
     W.add(painter.group);
     game.npcs.push(new Painter(game, painter, makeEasel(), { x: px, z: pz, ry: pry,
       cries: ["Forty-three minutes past, and not a soul minds the time.", "I've painted that tower a hundred times. Never once been wrong.", "Mind the wet paint, puss — oh, you can't read, can you."] })); }
+  // the clock tower has stood over this plaza since the town was first built, and the fiddler and the
+  // painter have worked its north side for rounds now — but no one in the whole town has ever actually
+  // mended a watch, Victorian's one trade a story-book clock tower all but demands. A watchmaker now
+  // sits on a stool on the plaza's quiet south side, a pocket watch open in one hand and a jeweler's
+  // loupe raised to one eye in the other, peering into the works. A small pedestal table in front of
+  // him carries a green baize cloth, three more pocket watches laid out, a little desk clock (its second
+  // hand actually ticking round, driven off the world clock `t`), and a scatter of loose brass cogs.
+  // No new controller: `Sitter` already seats a rig on a stool and leaves the arms alone whenever
+  // `rig.gesture` isn't set (the beach's net-mender and ukulele player both already use it this way) —
+  // the loupe hand is just raised once, in this build's own `U.push`, the same trick the beach
+  // musician's strumming arm and the backyard griller's tongs both already lean on, guarded by
+  // `!watchmaker.gesture` so a greeting wave still wins over the held pose.
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real Victorian
+  // town (`game.travel(3, 'from-prev')`, then `game.start('new')` so the fiddler, the painter, the
+  // bobby and every wanderer actually moved), sampled every NPC's own position every quarter second
+  // over 300 simulated seconds, then swept the plaza's own paving (the 16×16 slab at (42, 0)) against
+  // both those samples and every one of the town's physics boxes: (42, -6) came back clear by 2.25 m of
+  // the tower's own base (half-extent 3.75, the plaza's own tightest box) and 5.0 m of the nearest
+  // other soul — the opposite corner of the plaza from the fiddler and the painter, still inside the
+  // zone circle (radius 11, centred (42, 0)) that keeps victorianRegion's own fill off the plaza
+  // entirely.
+  { const wx = 42, wz = -6, wry = 0, tz = wz + 0.42;
+    const watchmaker = makeHuman({ ...randomPerson(r, { female: r.chance(0.4), child: false, elder: r.chance(0.5), wardrobe: vicWard }),
+      pants: 0x1e1e24, apron: 0x4a3326, sleeves: true, hat: null, coat: null, scarf: null, bag: null, backpack: null, glasses: false, moustache: r.chance(0.4), build: 'slim' });
+    W.add(watchmaker.group);
+    const brass = mat(0xc9a227, { metalness: 0.65, roughness: 0.35 }), glassM = mat(0xdff3ff, { roughness: 0.1, transparent: true, opacity: 0.4 }), darkM = mat(0x2a2420, { roughness: 0.6 });
+    const watch = group(0, 0, 0.06, watchmaker.hands[0]); watch.rotation.x = -0.8;   // the open watch, held low
+    mesh(G.cyl(0.055, 0.055, 0.016, 16), brass, { parent: watch });
+    mesh(G.cyl(0.05, 0.05, 0.002, 16), glassM, { y: 0.009, parent: watch });
+    noInk(mesh(G.cyl(0.004, 0.004, 0.03, 6), brass, { x: 0.03, rz: PI / 2, parent: watch }));   // the hour hand, mid-repair
+    const loupe = group(0, 0.1, 0.1, watchmaker.hands[1]); loupe.rotation.x = -0.3;   // the loupe, raised to the eye
+    noInk(mesh(G.torus(0.028, 0.008, 6, 14), darkM, { parent: loupe }));
+    mesh(G.cyl(0.026, 0.026, 0.004, 14), glassM, { parent: loupe });
+    noInk(mesh(G.cyl(0.006, 0.006, 0.07, 6), darkM, { y: -0.04, rx: PI / 2, parent: loupe }));   // its handle, back toward the fist
+    const table = group(wx, 0, tz, W);
+    mesh(G.cyl(0.3, 0.3, 0.02, 16), mat(0x3f6b3f, { roughness: 0.85 }), { y: 0.46, shadow: 'both', parent: table });   // baize top
+    mesh(G.cyl(0.035, 0.045, 0.44, 8), mat(0x3a2a1a, { roughness: 0.8 }), { y: 0.22, shadow: 'both', parent: table }); // single pedestal leg
+    mesh(G.cyl(0.26, 0.26, 0.02, 12), mat(0x3a2a1a, { roughness: 0.8 }), { y: 0.01, shadow: 'both', parent: table });  // its foot
+    for (const [dx, dz, c] of [[-0.15, 0.08, 0xd9d9d9], [0.12, 0.1, 0xc9a227], [0.02, -0.12, 0xb8bcc0]]) mesh(G.cyl(0.045, 0.045, 0.014, 14), mat(c, { metalness: 0.55, roughness: 0.4 }), { x: dx, y: 0.48, z: dz, ry: r() * TAU, parent: table });
+    for (let i = 0; i < 5; i++) mesh(G.cyl(0.018, 0.016, 0.01, 10), mat(0xc9a227, { metalness: 0.6, roughness: 0.4 }), { x: -0.2 + i * 0.02, y: 0.475, z: 0.16 - i * 0.015, ry: r() * TAU, parent: table });   // loose cogs
+    const deskClock = group(0.18, 0.48, -0.08, table);
+    mesh(G.cyl(0.05, 0.05, 0.03, 14), brass, { parent: deskClock });
+    mesh(G.cyl(0.044, 0.044, 0.002, 14), mat(0xf2ead8, { roughness: 0.6 }), { y: 0.017, parent: deskClock });
+    const secondHand = group(0, 0.019, 0, deskClock); noInk(mesh(G.box(0.002, 0.034, 0.002), darkM, { y: 0.017, parent: secondHand }));
+    U.push((dt, t) => { secondHand.rotation.y = t * 1.2; });
+    P.addBox(wx, 0.24, tz, 0.6, 0.48, 0.6, { cam: false });
+    const stool = group(wx, 0, wz, W);
+    mesh(G.cyl(0.18, 0.18, 0.03, 14), mat(0x5a3a1f, { roughness: 0.85 }), { y: 0.405, shadow: 'both', parent: stool });
+    mesh(G.cyl(0.1, 0.07, 0.39, 10), mat(0x3a2a1a, { roughness: 0.8 }), { y: 0.195, shadow: 'both', parent: stool });
+    P.addBox(wx, 0.21, wz, 0.3, 0.42, 0.3, { cam: false });
+    game.npcs.push(new Sitter(game, watchmaker, { x: wx, z: wz, ry: wry, seat: 0.42,
+      cries: ['⌚ "Four faces on that tower — I only ever trust the one on my own bench."', '⌚ "Careful, puss — these gears are smaller than your whiskers."', '⌚ "A good watch keeps its own time. A bad one keeps you waiting."'] }));
+    U.push(() => { if (!watchmaker.gesture) { const A = watchmaker.arms[1]; A.sh.rotation.x = -1.85; A.sh.rotation.z = -0.15; A.el.rotation.x = -1.9; } }); }
   // Victorian was the one world left with neither a game of tag nor a BallGame — every other world already
   // had at least one. Two urchins now chase each other on the open grass verge past the canal's north bank,
   // well clear of the bridges (z 25–35) and everything south of them: (0, 50) is inside the radius the hand-built
@@ -4819,6 +6649,127 @@ function buildVictorian(game, entry) {
       basket.rotation.z = sin(t * 0.5) * 0.05;
     };
     place(game, U, balloon, cos(balPhase) * balR, sin(balPhase) * balR, 0, balH); }
+  // Candy Land's Candy Queen's guard has been the only `Marchers` trio in the game since round 181 —
+  // Victorian, for all its urchins, bobby and market-square performers, never had its own drilling
+  // line. Three children, dressed up as toy soldiers for tomorrow's school pageant, now march a short
+  // beat back and forth on the open meadow south-east of the market square, rehearsing their steps
+  // before an audience of nobody but the cat. *"Hup, two, three, four — mind your dressing, Thomas!"*
+  // *"Careful, puss — mind the wooden bayonets."* *"Drop one more step and Miss will have us start
+  // again."* No new controller: the exact same `Marchers` class the gingerbread guard already uses,
+  // unchanged — same lockstep gap, same lead-and-followers logic — just this street's own wardrobe (a
+  // red coat, gilt buttons and cuffs, a tall black hat with a red band, built off the same
+  // `makeHuman`/`makeWardrobe` every other Victorian adult or child already uses) on three children in
+  // place of three gingerbread men.
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses) built
+  // the real Victorian town (`game.start('new')` then `game.load(3, 'from-prev')`, so every urchin,
+  // dancer, duck, balloon and ball-tossing pair actually moved), sampled every physics circle (every
+  // moving creature) every quarter second over 300 simulated seconds, then swept the drill line against
+  // both those samples and every one of the town's 714 physics boxes: the 6 m line from (26, -75) to
+  // (32, -75) came back clear by at least 21.8 m along its whole length, at radius 79.4-81.5 from the
+  // origin, comfortably short of the radius (88) where victorianRegion's own procedural fill takes over.
+  { const soldierWard = makeWardrobe(r, { shirts: [0xaa1f2a], pants: [0x1a1a1c], shoes: [0x1a1a1c] });
+    const soldiers = [0, 1, 2].map(() => { const rig = makeHuman({ ...randomPerson(r, { child: true, female: r.chance(0.3), wardrobe: soldierWard }),
+      coat: true, buttons: 0xd8c8a8, cuffs: 0xd8c8a8, hat: 'top', hatColor: 0x15120f, hatBand: 0xaa1f2a, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+      W.add(rig.group); return rig; });
+    game.npcs.push(new Marchers(game, soldiers, { points: [[26, -75], [32, -75]], speed: 1.0, pause: [1, 2], r: 0.32, gap: 1.1,
+      cries: ['Hup, two, three, four — mind your dressing, Thomas!', 'Careful, puss — mind the wooden bayonets.', "Drop one more step and Miss will have us start again."], cryIcon: '💂' })); }
+  // tetherball, badminton, tug-of-war, archery, sack races — a whole shelf of playground games this
+  // game has never tried once, in any of the seven worlds — and a maypole, the one dance that actually
+  // needs a prop in the middle, had never come up either. Six children in Sunday best now circle a
+  // ribboned pole on the open green deep in the south field, each one trailing a ribbon up to the
+  // wreath at the top. No new controller: the ring itself is the exact same `RingDance` every other
+  // world's own circle of dancers already uses, unchanged — the ribbons are the only new part, and
+  // they're not rigged to the dancers' own hands (the walk-cycle `RingDance.place()` drives has no
+  // "arms raised" pose to hang from) but to each dancer's own circle position a chest-height lift off
+  // the ground, recomputed fresh every frame from `dance.dancers[i].rig.group.position` — the same
+  // position `RingDance.place()` itself just set a moment earlier this frame, since `80-game.js`'s own
+  // main loop runs every `npcs[].update()` (RingDance included) before `worldCtl.update()`, which is
+  // where every world's own `U` array — this one included — actually fires. Each ribbon is a single
+  // box mesh stretched between two fixed-length-1 ends: positioned at the midpoint of pole-top and
+  // dancer, turned with `lookAt` and scaled on its own local Z to the live distance between them — the
+  // exact trick the kite string and the balloon's own ropes already use for a segment whose two ends
+  // move independently every frame. `noInk()` for the same reason those got it: ribbon width (0.06 m)
+  // against a length of several metres reads as a flat line to the outline pass without it.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses) built
+  // the real Victorian town (`game.start('new')` then `game.load(3, 'from-hub')`), sampled every one of
+  // its physics circles' own position every 1/30 s over 300 simulated seconds (so no wandering urchin,
+  // dancer, duck or ball-tossing pair mid-circuit could slip past unnoticed), then swept a grid of the
+  // open green against both that trace and every one of the town's physics boxes, keeping the whole
+  // grid inside the hand-built heart (radius 15-84, short of the radius (88) where victorianRegion's
+  // own procedural fill takes over): (0, -84) came back clear by 31.4 m of the nearest box and 25.5 m
+  // of the nearest other soul — well south of the market square (centred (0,-34), radius 17), the
+  // draughts table, the photographer and the drill line above, with room to spare for the pole, the
+  // 2 m ring and every ribbon between them.
+  { const mx = 0, mz = -84, poleH = 2.6, ringR = 2.0, nRibbons = 6;
+    const poleM = mat(0xf0ece4, { roughness: 0.65 }), stripeM = mat(0xaa1f2a, { roughness: 0.65 });
+    const pole = group(mx, 0, mz, W);
+    mesh(G.cyl(0.07, 0.09, poleH, 10), poleM, { y: poleH / 2, parent: pole });
+    for (let i = 0; i < 6; i++) mesh(G.cyl(0.072, 0.072, poleH / 6 * 0.9, 10), i % 2 ? stripeM : poleM, { y: poleH / 6 * (i + 0.5), parent: pole });
+    mesh(G.torus(0.15, 0.03, 8, 16), mat(0x5a8a4a, { roughness: 0.85 }), { y: poleH, rx: PI / 2, shadow: 'none', parent: pole });
+    for (let i = 0; i < 8; i++) { const a = i / 8 * TAU; mesh(G.sphere(0.028, 6, 5), mat(r.pick([0xff6fb5, 0xffd54a, 0x7fd7ff, 0xf7f3ec]), { roughness: 0.5 }), { x: cos(a) * 0.15, y: poleH, z: sin(a) * 0.15, shadow: 'none', parent: pole }); }
+    P.addBox(mx, poleH / 2, mz, 0.22, poleH, 0.22, { cam: false });
+    const poleLines = ['🎀 "Ribbons new this year — last year\'s went green in the rain."', '🎀 "Nobody\'s quite sure who ties the wreath. Never the same colour twice."', '🎀 "Six ribbons, six children, and somehow it never once tangles."'];
+    game.addInteractable({ obj: pole, radius: 3.4, label: () => 'Look at the maypole', onUse: () => { SFX.click(); game.toast(rnd.pick(poleLines), 3000); } });
+
+    const maypoleWard = makeWardrobe(r, { shirts: [0xf7f3ec, 0xffd54a, 0x7fd7ff, 0xff9fb0, 0x8bc34a], pants: [0x2a2a24, 0x3a3327], shoes: [0x2a2018, 0x1e1a16] });
+    const dancers = [];
+    for (let i = 0; i < nRibbons; i++) { const rig = makeHuman({ ...randomPerson(r, { child: true, female: i % 2 === 0, wardrobe: maypoleWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false }); W.add(rig.group); dancers.push(rig); }
+    const dance = new RingDance(game, dancers, { cx: mx, cz: mz, r: ringR, speed: 0.55, turnEvery: 11, cryIcon: '🎀',
+      cries: ["Don't let go of your ribbon, Thomas!", "Round and round — mind you don't trip on it!", "Nobody remembers how the pattern's meant to come out.", 'Mind the cat, everyone — small paws, quick feet!'] });
+    game.npcs.push(dance);
+
+    const ribbonColors = [0xaa1f2a, 0xf7f3ec];
+    const ribbons = dancers.map((_, i) => mesh(G.box(0.06, 0.015, 1), mat(ribbonColors[i % 2], { roughness: 0.7 }), { parent: W }));
+    for (const rib of ribbons) noInk(rib);
+    const topX = mx, topY = poleH, topZ = mz, handY = 0.95;
+    U.push(() => {
+      for (let i = 0; i < nRibbons; i++) {
+        const dp = dance.dancers[i].rig.group.position, rib = ribbons[i];
+        const hx = dp.x, hy = dp.y + handY, hz = dp.z, len = Math.hypot(hx - topX, hy - topY, hz - topZ);
+        rib.position.set((topX + hx) / 2, (topY + hy) / 2, (topZ + hz) / 2);
+        rib.lookAt(hx, hy, hz);
+        rib.scale.set(1, 1, max(0.01, len));
+      }
+    }); }
+  // every stall-keeper, newsboy, juggler and fortune in the market square keeps two feet on the
+  // ground — the one classic fairground turn this town never had was someone up on stilts. A
+  // performer in candy-striped trousers now paces a short line on the quiet green south-west of
+  // the square, towering half again his own height. *"Mind your tail, puss — I can't exactly hop
+  // out of the way up here!"* *"Eleven years on these. Fell twice. Both before breakfast."* *"Best
+  // seat in the house, this — shame it only seats one."*
+  // No new rig: `makeHuman()` builds him exactly like anyone else in the street, and the stilts
+  // themselves are two plain poles with a strap loop and a footrest peg, parented straight onto
+  // each ankle joint — the same joint the trouser cuff and shoe already hang from — so they swing
+  // with the walk cycle for free. Local lengths are divided by `rig.k` so the poles come out the
+  // same true size whatever height `randomPerson()` happened to roll for him.
+  // New `StiltWalker` class (55-npcs.js, right after `Patroller`): literally `extends Patroller`,
+  // adding nothing but a constant vertical offset applied after every position write — both in the
+  // constructor and every `update()` — since `Patroller` only sometimes rewrites the rig's own
+  // position in a given frame (paused at an end, or standing to let the cat go by) and sometimes
+  // leaves the previous frame's value standing, so the offset has to be re-applied unconditionally
+  // rather than folded once into a y-coordinate `Patroller` itself would otherwise overwrite.
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // `game.start('new')` then `game.load(3, 'from-prev')`) sampled every NPC's own rig position
+  // every quarter second over 300 simulated seconds, then swept the 6 m line from (-18, -80) to
+  // (-12, -80) against both those samples and every one of the town's 589 physics boxes: the whole
+  // line came back clear by at least 12.5 m of the nearest box and 8.9 m of the nearest other soul,
+  // at radius 80.9-82.0 from the origin — well south-west of the market square (centred (0, -34),
+  // radius 17) and short of the radius (88) where victorianRegion's own procedural fill takes over.
+  { const stiltH = 0.8;
+    const performer = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: false }),
+      stripes: 0xaa1f2a, hat: 'top', hatColor: 0x151015, hatBand: 0xf7f3ec, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(performer.group);
+    const poleM = mat(0x8a6a44, { roughness: 0.8 }), strapM = mat(0x3a2a1a, { roughness: 0.9 }), pegM = mat(0x5a4228, { roughness: 0.75 });
+    for (const L of performer.legs) {
+      const len = stiltH / performer.k;
+      const stilt = group(0, 0.22, 0.01, L.ankle);
+      mesh(G.cyl(0.026, 0.03, len + 0.3, 8), poleM, { y: -(len + 0.3) / 2 + 0.07, parent: stilt });
+      mesh(G.torus(0.09, 0.018, 6, 10), strapM, { y: 0, rx: PI / 2, parent: stilt });
+      mesh(G.box(0.15, 0.035, 0.09), pegM, { y: -0.17, z: 0.07, parent: stilt });
+    }
+    game.npcs.push(new StiltWalker(game, performer, { points: [[-18, -80], [-12, -80]], speed: 0.55, pause: [1.5, 3], r: 0.4, height: 2.6, stiltH,
+      cries: ["Mind your tail, puss — I can't exactly hop out of the way up here!", 'Eleven years on these. Fell twice. Both before breakfast.', 'Best seat in the house, this — shame it only seats one.'], cryIcon: '🎪' })); }
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);

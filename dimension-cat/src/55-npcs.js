@@ -125,6 +125,11 @@ function makeHuman(o = {}) {
     mesh(G.box(0.094, 0.05, 0.075), shoeM, { y: -0.018, z: -0.008, parent: ankle });                                  // heel cup
     rig.legs.push({ hip, knee, ankle });
   }
+  if (o.sack) {   // a sack race: both legs bound together from the ankles to the waist, narrower where it's tied, wider round the feet
+    const sackM = mat(o.sack, { roughness: 0.95 });
+    mesh(G.cyl(0.15 * girth, 0.24 * girth, 0.74, 10), sackM, { y: 0.52, parent: body });
+    mesh(G.torus(0.165 * girth, 0.026, 6, 14), sackM, { y: 0.88, rx: PI / 2, shadow: 'none', parent: body });   // the drawstring, cinched at the waist
+  }
   // ---- pelvis + torso: a chest that tapers to a waist, not a slab
   const spine = group(0, 0.9, 0, body); rig.spine = spine;   // the upper body pivots here: leaning, stooping, bowing
   mesh(G.capsule(0.13 * girth, 0.1, 12), o.skirt ? mat(o.skirt) : pantsM, { y: 0.97, sz: 0.62, rz: PI / 2, parent: body });
@@ -182,6 +187,18 @@ function makeHuman(o = {}) {
       mesh(G.cyl(0.013, 0.016, 1.6, 6), mat(0x3a2a1a, { roughness: 0.85 }), { y: 0.5, z: 0.04, parent: hand });
       const bristleM = mat(0x18181a, { roughness: 0.95 });
       for (let bi = 0; bi < 7; bi++) { const ba = bi / 7 * TAU; mesh(G.cyl(0.006, 0.011, 0.24, 4), bristleM, { x: cos(ba) * 0.045, y: 1.32, z: 0.04 + sin(ba) * 0.045, rx: sin(ba) * 0.3, rz: cos(ba) * 0.3, parent: hand }); }
+    }
+    if (o.racket && side === 1) {   // a badminton racket: handle, strung oval hoop, held up ready for a swing
+      mesh(G.cyl(0.013, 0.016, 0.22, 8), mat(0x2a2420, { roughness: 0.7 }), { y: 0.26, z: 0.03, parent: hand });
+      mesh(G.torus(0.1, 0.012, 6, 16), mat(0xd8d8d8, { metalness: 0.4, roughness: 0.4 }), { y: 0.48, z: 0.03, parent: hand });
+      const stringM = mat(0xece6d8, { roughness: 0.6, transparent: true, opacity: 0.65 });
+      for (let si = -2; si <= 2; si++) { noInk(mesh(G.cyl(0.004, 0.004, 0.19, 4), stringM, { x: si * 0.035, y: 0.48, z: 0.03, parent: hand })); noInk(mesh(G.cyl(0.004, 0.004, 0.19, 4), stringM, { x: 0, y: 0.48 + si * 0.035, z: 0.03, rz: PI / 2, parent: hand })); }
+    }
+    if (o.bow && side === -1) {   // an archer's longbow: a grip and two tapering limbs, held upright at rest
+      const bowM = mat(0x5a3c22, { roughness: 0.75 });
+      mesh(G.cyl(0.02, 0.022, 0.16, 6), bowM, { y: 0.42, z: 0.02, parent: hand });
+      for (const s of [1, -1]) mesh(G.cyl(0.016, 0.006, 0.42, 6), bowM, { y: 0.42 + s * 0.29, z: 0.02, rz: s * 0.09, parent: hand });
+      noInk(mesh(G.cyl(0.003, 0.003, 0.84, 4), mat(0xece6d8, { roughness: 0.6 }), { y: 0.42, z: 0.02, parent: hand }));
     }
     rig.arms.push({ sh, el });
   }
@@ -832,6 +849,47 @@ class Horseshoes {
   }
 }
 
+// ---------------------------------------------------------------- tetherball: two kids either side of a pole, the ball on its rope circling steadily and reversing direction each time one of them "hits" it, same held-and-struck idea as Horseshoes but an endless rally instead of a back-and-forth lob
+class Tetherball {
+  constructor(game, rigA, rigB, { x, z, ry = 0, gap = 4, poleH = 2.3, cries = null, cryIcon = '🏐' }) {
+    this.game = game; this.rigs = [rigA, rigB]; this.x = x; this.z = z; this.poleH = poleH;
+    this.t = rnd() * 10; this.ang = ry; this.dir = 1; this.hitT = rnd.range(1.4, 2.2); this.hitSide = 0; this.hitK = 0;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(5, 10) : 0;
+    const gy = game.physics.ground0(x, z);
+    this.pole = mesh(G.cyl(0.045, 0.06, poleH, 8), mat(0x8a8f98, { metalness: 0.3, roughness: 0.55 }), { x, y: gy + poleH / 2, z, parent: game.world });
+    mesh(G.cyl(0.09, 0.09, 0.05, 8), mat(0x5a5f68), { y: poleH / 2 - 0.02, parent: this.pole });   // cap
+    this.ball = mesh(G.sphere(0.17, 10, 8), mat(0xe0503c), { x, y: gy + poleH * 0.42, z: z + 0.95, parent: game.world });
+    this.rope = group(0, 0, 0, game.world); noInk(mesh(G.cyl(0.007, 0.007, 1, 4), mat(0xece6d8, { roughness: 1 }), { rx: PI / 2, shadow: 'none', parent: this.rope }));
+    this.top = V3(x, gy + poleH - 0.04, z);
+    this.ctls = this.rigs.map((rig, i) => {
+      const side = i ? 1 : -1, px = x + sin(ry) * side * (gap / 2), pz = z + cos(ry) * side * (gap / 2);
+      rig.group.position.set(px, game.physics.ground0(px, pz), pz); rig.group.rotation.y = ry + (i ? PI : 0);   // arranged either side of the pole, facing across it
+      const ctl = { game, rig, x: px, z: pz, look: 0, lookW: 0, tipT: 0, tipped: false, circle: game.physics.addCircle(this, px, pz, 0.3) };
+      greetable(game, ctl); return ctl;
+    });
+    this.rig = rigA; game.physics.addBox(x, poleH / 2, z, 0.18, poleH, 0.18, { cam: false });
+  }
+  update(dt) {
+    this.t += dt; this.hitT -= dt; this.ang += dt * this.dir * 1.7;
+    if (this.hitT <= 0) { this.dir *= -1; this.hitSide = this.dir > 0 ? 0 : 1; this.hitK = 1; this.hitT = rnd.range(1.6, 2.6); SFX.bounce(); }
+    if (this.hitK > 0) this.hitK = max(0, this.hitK - dt * 2.2);
+    const gy = this.game.physics.ground0(this.x, this.z), orbit = 0.95;
+    this.ball.position.set(this.x + sin(this.ang) * orbit, gy + this.poleH * 0.42, this.z + cos(this.ang) * orbit);
+    this.rope.position.copy(this.top).lerp(this.ball.position, 0.5); this.rope.lookAt(this.ball.position); this.rope.scale.set(1, 1, max(0.01, this.top.distanceTo(this.ball.position)));
+    this.rigs.forEach((rig, i) => {
+      rig.animate(0, false, dt, this.t);
+      if (!rig.gesture) {
+        const swing = this.hitSide === i ? this.hitK : 0;
+        const A = rig.arms[i];
+        A.sh.rotation.x = damp(A.sh.rotation.x, -0.5 - swing * 1.4, 10, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.3 - swing * 0.7, 10, dt); A.sh.rotation.z = (i ? -1 : 1) * 0.1;
+        rig.spine.rotation.y = damp(rig.spine.rotation.y, (i ? -1 : 1) * swing * 0.25, 8, dt);
+      }
+      Wanderer.prototype.lookAtCat.call(this.ctls[i], dt);
+    });
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- swinger: a child on the park swing, legs kicking at the top of each arc
 class Swinger {
   constructor(game, rig, swingSet, { x, z, ry = 0 }) {
@@ -976,6 +1034,19 @@ class Patroller {
     }
     Wanderer.prototype.lookAtCat.call(this, dt);
     if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
+// ---------------------------------------------------------------- stilt walker: an ordinary Patroller, raised a fixed height off the ground it actually paces
+class StiltWalker extends Patroller {
+  constructor(game, rig, o) {
+    super(game, rig, o);
+    this.stiltH = o.stiltH ?? 0.8;
+    rig.group.position.y += this.stiltH;
+  }
+  update(dt) {
+    super.update(dt);
+    this.rig.group.position.y += this.stiltH;
   }
 }
 
@@ -1187,6 +1258,39 @@ class FrisbeePlayer {
     this.disc.position.y = p * 0.55 * k;
     this.disc.rotation.y += dt * (3 + p * 16);
     if (!rig.gesture) { const A = rig.arms[1]; A.sh.rotation.x = damp(A.sh.rotation.x, -0.7 + p * 0.55, 9, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.5 - p * 0.3, 9, dt); A.sh.rotation.z = -0.2; }
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
+// ---------------------------------------------------------------- pogo hopper: stands put over a spring-loaded stick, the whole rig arcing up and down with a brief crouch at the bottom of each bounce, same shape as `Bouncer`'s own trampoline arc but grounded — no separate prop to share, the pole is parented straight to the body and hops with it
+class PogoHopper {
+  constructor(game, rig, color, { x, z, ry = 0, height = 0.42, cycle = 0.72, cries = null, cryIcon = '🤸' }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.height = height; this.cycle = cycle; this.t = rnd() * cycle;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    this.base = game.physics.ground0(x, z);
+    rig.group.position.set(x, this.base, z); rig.group.rotation.y = ry;
+    const k = rig.k, poleM = mat(color, { roughness: 0.4, metalness: 0.3 }), coilM = mat(0x9a9a9a, { metalness: 0.7, roughness: 0.4 });
+    this.pogo = group(0, 0.78 * k, 0.1 * k, rig.body);
+    mesh(G.cyl(0.024 * k, 0.03 * k, 0.56 * k, 8), poleM, { y: -0.14 * k, parent: this.pogo });
+    mesh(G.box(0.26 * k, 0.05 * k, 0.1 * k), mat(0x2a2a2a, { roughness: 0.8 }), { y: 0.18 * k, parent: this.pogo });   // handlebar bar
+    for (const sx of [-0.14, 0.14]) mesh(G.cyl(0.018 * k, 0.018 * k, 0.1 * k, 6), mat(0x2a2a2a), { x: sx * k, y: 0.18 * k, rz: PI / 2, parent: this.pogo });
+    this.coil = group(0, -0.42 * k, 0, this.pogo);
+    for (let i = 0; i < 5; i++) mesh(G.torus(0.045 * k, 0.01 * k, 6, 10), coilM, { y: i * 0.04 * k, shadow: 'none', parent: this.coil });
+    mesh(G.cyl(0.07 * k, 0.05 * k, 0.03 * k, 10), mat(0x2a2a2a, { roughness: 0.8 }), { y: -0.22 * k, parent: this.pogo });   // ground tip
+    this.circle = game.physics.addCircle(this, x, z, 0.4);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t = (this.t + dt) % this.cycle; const rig = this.rig, ph = this.t / this.cycle;
+    const k = sin(ph * PI);
+    rig.group.position.y = this.base + k * this.height;
+    this.coil.scale.y = 0.45 + 0.55 * k;   // the spring squashes as the rig nears the ground, stretches at the top of the hop
+    const land = min(ph, 1 - ph), squat = land < 0.08 ? 1 - land / 0.08 : 0;
+    rig.group.scale.y = 1 - squat * 0.12;
+    rig.animate(0, false, dt, this.t);
+    for (const L of rig.legs) { L.hip.rotation.x = -0.2; L.knee.rotation.x = 0.6; L.ankle.rotation.x = 0.12; }   // a fixed crouch, feet planted on the footrests
+    if (!rig.gesture) for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -0.95, 8, dt); A.sh.rotation.z = damp(A.sh.rotation.z, (A === rig.arms[0] ? 1 : -1) * 0.18, 8, dt); A.el.rotation.x = damp(A.el.rotation.x, -1.15, 8, dt); }
     Wanderer.prototype.lookAtCat.call(this, dt);
     if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
   }
@@ -1438,6 +1542,33 @@ class Birder {
   }
 }
 
+// ---------------------------------------------------------------- crossing guard: a lollipop sign lifted overhead every few seconds to halt traffic, then lowered again
+class CrossingGuard {
+  constructor(game, rig, { x, z, ry = 0, cries = null }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10; this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false;
+    this.state = 'idle'; this.timer = 0; this.cries = cries; this.cryIcon = '🛑'; this.cryT = rnd.range(4, 9); this.raised = false; this.raiseT = rnd.range(4, 7); this.reach = 0;
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    const poleM = mat(0x2a2a2a, { roughness: 0.6, metalness: 0.3 }), discM = mat(0xd62839, { roughness: 0.6 }), rimM = mat(0xf7f3ec, { roughness: 0.6 });
+    const sign = group(0, 0.14, 0.06, rig.hands[0]); sign.rotation.x = -0.25;
+    mesh(G.cyl(0.015, 0.018, 0.5, 6), poleM, { y: 0.25, parent: sign });
+    mesh(G.cyl(0.15, 0.15, 0.025, 8), discM, { y: 0.52, rx: PI / 2, parent: sign });
+    noInk(mesh(G.torus(0.15, 0.015, 5, 8), rimM, { y: 0.52, rx: PI / 2, shadow: 'none', parent: sign }));
+    this.circle = game.physics.addCircle(this, x, z, 0.35);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig;
+    rig.animate(0, false, dt, this.t);
+    this.raiseT -= dt;
+    if (this.raiseT <= 0) { this.raised = !this.raised; this.raiseT = this.raised ? rnd.range(3, 5) : rnd.range(5, 9); }
+    this.reach = damp(this.reach, this.raised ? 1 : 0, 7, dt);
+    if (!rig.gesture) for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -0.5 - this.reach * 2.1, 10, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.3 - this.reach * 0.9, 10, dt); A.sh.rotation.z = (A === rig.arms[0] ? 1 : -1) * (0.3 - this.reach * 0.15); }
+    rig.head.rotation.x = damp(rig.head.rotation.x, this.raised ? -0.15 : 0.05, 6, dt);
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- ice fisher: sits by the hole, rod dipping, and strikes every so often
 // (also used for a pier fisherman over open water — pass `seatY` when the seat isn't at ground0)
 class IceFisher {
@@ -1528,6 +1659,150 @@ class Talkers {
       Wanderer.prototype.lookAtCat.call(this.ctls[i], dt);
     });
     if (this.lines) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(8, 14); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 64) { this.game.toast('\ud83d\udcac "' + rnd.pick(this.lines) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
+// ---------------------------------------------------------------- tug of war: two players dig in and heave on a rope between them, in time with each other rather than taking turns, never quite settling who's ahead. `tension` (-1..1, a slow drift that never nears either end) is the only thing the caller needs to read back, to slide its own rope's own flag or marker \u2014 the rope itself is just scenery, built by whoever calls this, same as `BallGame`'s own ball or `Horseshoes`' own shoe.
+class TugOfWar {
+  constructor(game, rigA, rigB, { x, z, ry = 0, gap = 2.6, cries = null, cryIcon = '\ud83e\udea2' }) {
+    this.game = game; this.rigs = [rigA, rigB]; this.x = x; this.z = z; this.t = rnd() * 10; this.tension = 0;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(5, 10) : 0;
+    this.ctls = this.rigs.map((rig, i) => {
+      const side = i ? 1 : -1, px = x + sin(ry) * side * (gap / 2), pz = z + cos(ry) * side * (gap / 2);
+      rig.group.position.set(px, game.physics.ground0(px, pz), pz); rig.group.rotation.y = ry + (i ? PI : 0);   // arranged along the rope, facing each other down its length
+      const ctl = { game, rig, x: px, z: pz, look: 0, lookW: 0, tipT: 0, tipped: false, circle: game.physics.addCircle(this, px, pz, 0.3) };
+      greetable(game, ctl); return ctl;
+    });
+    this.rig = rigA;
+  }
+  update(dt) {
+    this.t += dt;
+    // both heave together, not in turn \u2014 that's the point of the game \u2014 while the rope's own "who's
+    // winning" drifts on a much slower, unrelated beat, bounded well short of either end so nobody ever
+    // actually wins
+    const heave = sin(this.t * 2.1) * 0.5 + 0.5;
+    this.tension = sin(this.t * 0.23) * 0.6 + sin(this.t * 0.071 + 1.7) * 0.3;
+    this.rigs.forEach((rig, i) => {
+      rig.animate(0, false, dt, this.t);
+      if (!rig.gesture) {
+        const lean = -0.55 - heave * 0.35, elbow = -1.0 - heave * 0.2;
+        const A = rig.arms[0], B = rig.arms[1];
+        A.sh.rotation.x = damp(A.sh.rotation.x, lean, 9, dt); A.el.rotation.x = damp(A.el.rotation.x, elbow, 9, dt); A.sh.rotation.z = 0.12;
+        B.sh.rotation.x = damp(B.sh.rotation.x, lean, 9, dt); B.el.rotation.x = damp(B.el.rotation.x, elbow, 9, dt); B.sh.rotation.z = -0.12;
+        rig.head.rotation.x = damp(rig.head.rotation.x, -heave * 0.12, 8, dt);
+      }
+      Wanderer.prototype.lookAtCat.call(this.ctls[i], dt);
+    });
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
+// ---------------------------------------------------------------- badminton: a continuous rally over a low net — the shuttlecock never pauses in anyone's hand the way `BallGame`'s and `Horseshoes`' own catch-then-throw cycle does, it reverses the instant it reaches a racket and is straight back on its way, both players swinging to the beat the shuttle sets rather than taking turns holding it. The net and racket-bearing rigs are built by whoever calls this, same as `BallGame`'s own ball or `Horseshoes`' own shoe; the shuttlecock (`shuttle`) is passed in the same way.
+class Badminton {
+  constructor(game, rigA, rigB, shuttle, { cx, cz, gap = 6, arc = 1.3, cries = null, cryIcon = '🏸' }) {
+    this.game = game; this.shuttle = shuttle; this.cx = cx; this.cz = cz; this.t = 0; this.flight = 0; this.dur = 0.85; this.arc = arc; this.fromIdx = 0; this.rallies = 0;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(5, 10) : 0;
+    this.players = [rigA, rigB].map((rig, i) => {
+      const x = cx, z = cz + (i ? gap / 2 : -gap / 2);
+      rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = i ? PI : 0;   // facing each other across the net
+      const ctl = { game, rig, x, z, look: 0, lookW: 0, tipT: 0, tipped: false, circle: game.physics.addCircle(this, x, z, 0.3) };
+      greetable(game, ctl); return ctl;
+    });
+    this.from = V3(); this.to = V3(); this.rig = rigA;
+    this.hand(this.players[0], this.from); this.hand(this.players[1], this.to);
+    this.players[0].rig.gesture = 'throw'; this.players[0].rig.gT = 0.22;   // the serve
+  }
+  hand(p, v) { return v.set(p.x, this.game.physics.ground0(p.x, p.z) + 0.95 * p.rig.k + 0.3, p.z); }
+  update(dt) {
+    this.t += dt;
+    for (const p of this.players) { p.rig.animate(0, false, dt, this.t); Wanderer.prototype.lookAtCat.call(p, dt); }
+    this.flight += dt; const u = min(1, this.flight / this.dur);
+    this.shuttle.position.copy(this.from).lerp(this.to, u); this.shuttle.position.y += sin(u * PI) * this.arc;
+    this.shuttle.rotation.z = sin(this.t * 7) * 0.12; this.shuttle.rotation.x = sin(this.t * 5 + 1) * 0.08;   // a gentle flutter, nose staying roughly down the whole flight, same as a real shuttlecock's own drag-stabilised fall
+    if (u >= 1) {
+      this.fromIdx = 1 - this.fromIdx;
+      const hitter = this.players[this.fromIdx], other = this.players[1 - this.fromIdx];
+      this.from.copy(this.to); this.hand(other, this.to); this.flight = 0; this.rallies++;
+      hitter.rig.gesture = 'throw'; hitter.rig.gT = 0.22; SFX.bounce();
+    }
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.cx, this.cz, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
+// ---------------------------------------------------------------- archer: at the firing line, drawing and loosing a longbow at a straw target downrange — one shot at a time, never held mid-flight, the arrow always nocked, flying or stuck
+class Archer {
+  constructor(game, rig, arrow, { x, z, ry = 0, dist = 10, dur = 0.5, arc = 0.3, cries = null, cryIcon = '🏹' }) {
+    this.game = game; this.rig = rig; this.arrow = arrow; this.x = x; this.z = z; this.ry = ry; this.dur = dur; this.arc = arc;
+    this.t = rnd() * 10; this.state = 'draw'; this.timer = rnd.range(0.6, 1.6); this.flight = 0; this.shots = 0;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(5, 10) : 0;
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    this.target = V3(x + sin(ry) * dist, game.physics.ground0(x, z) + 0.95 * rig.k + 0.15, z + cos(ry) * dist);
+    this.from = V3(); this.to = V3();
+    this.circle = game.physics.addCircle(this, x, z, 0.35);
+    greetable(game, this);
+  }
+  hand(v) { return v.set(this.x + sin(this.ry) * 0.16, this.game.physics.ground0(this.x, this.z) + 0.95 * this.rig.k + 0.22, this.z + cos(this.ry) * 0.16); }
+  update(dt) {
+    this.t += dt; const rig = this.rig;
+    rig.animate(0, false, dt, this.t);
+    if (!rig.gesture) {   // the bow arm stays out straight; the string arm holds the nock back, near the cheek
+      const bow = rig.arms[1], string = rig.arms[0];
+      bow.sh.rotation.x = damp(bow.sh.rotation.x, -1.25, 10, dt); bow.sh.rotation.z = damp(bow.sh.rotation.z, -0.1, 10, dt); bow.el.rotation.x = damp(bow.el.rotation.x, -0.1, 10, dt);
+      string.sh.rotation.x = damp(string.sh.rotation.x, -0.95, 10, dt); string.sh.rotation.z = damp(string.sh.rotation.z, 0.15, 10, dt); string.el.rotation.x = damp(string.el.rotation.x, -1.6, 10, dt);
+    }
+    if (this.state === 'draw') {
+      this.timer -= dt; this.hand(this.arrow.position); this.arrow.lookAt(this.target);
+      if (this.timer <= 0) { this.state = 'flight'; this.flight = 0; this.from.copy(this.arrow.position); this.to.copy(this.target); rig.gesture = 'throw'; rig.gT = 0.22; SFX.bounce(); }
+    } else if (this.state === 'flight') {
+      this.flight += dt; const u = min(1, this.flight / this.dur);
+      this.arrow.position.copy(this.from).lerp(this.to, u); this.arrow.position.y += sin(u * PI) * this.arc; this.arrow.lookAt(this.to);
+      if (u >= 1) {
+        this.state = 'stuck'; this.timer = rnd.range(2.2, 3.4); this.shots++; SFX.thunk();
+        this.game.fx.emit(this.to.x, this.to.y, this.to.z, { count: 5, colors: [0xd9c9a0, 0xffffff], speed: 0.6, up: 0.4, life: 0.4, gravity: 2.5, spread: 0.6 });
+      }
+    } else {   // stuck: a pause at the target before the next arrow is drawn
+      this.timer -= dt; if (this.timer <= 0) { this.state = 'draw'; this.timer = rnd.range(0.8, 1.8); }
+    }
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
+// ---------------------------------------------------------------- sack race: two racers hop down a short straight track, both legs bound together in a sack (`makeHuman`'s own `o.sack`) so there's no scissor-stride — the legs kick in step, not in a walk's alternating phase. Each hops back and forth between the two ends of the track independently, like `Patroller` but hopping instead of walking, at its own pace drawn once at construction, so the lead keeps changing hands but nobody ever actually crosses a line to win.
+class SackRace {
+  constructor(game, rigA, rigB, { x, z, ry = 0, length = 5, gap = 1.1, cries = null, cryIcon = '🛍️' }) {
+    this.game = game; this.x = x; this.z = z; this.length = length; this.t = rnd() * 10;
+    this.fx = sin(ry); this.fz = cos(ry); this.ry = ry;
+    const sx = cos(ry), sz = -sin(ry);
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(5, 10) : 0;
+    this.racers = [rigA, rigB].map((rig, i) => {
+      const side = i ? 1 : -1, bx = x + side * (gap / 2) * sx, bz = z + side * (gap / 2) * sz;
+      const ctl = { game, rig, bx, bz, x: bx, z: bz, look: 0, lookW: 0, prog: rnd.range(0, length), dir: rnd.chance(0.5) ? 1 : -1, hop: rnd() * 0.5, speed: rnd.range(0.82, 1.18), circle: game.physics.addCircle(this, bx, bz, 0.32) };
+      greetable(game, ctl); return ctl;
+    });
+    this.rig = rigA;
+  }
+  update(dt) {
+    this.t += dt;
+    for (const rc of this.racers) {
+      const rig = rc.rig, cyc = 0.58 / rc.speed, prev = rc.hop;
+      rc.hop = (rc.hop + dt) % cyc; const ph = rc.hop / cyc;
+      if (rc.hop < prev) {   // a hop landed: step along the track, turning round at either end
+        rc.prog += rc.dir * 0.4 * rc.speed;
+        if (rc.prog > this.length) { rc.prog = this.length; rc.dir = -1; } else if (rc.prog < 0) { rc.prog = 0; rc.dir = 1; }
+      }
+      const k = sin(ph * PI);   // 0 at landing and launch, 1 at the top of the hop
+      const px = rc.bx + this.fx * rc.prog, pz = rc.bz + this.fz * rc.prog;
+      rig.group.position.set(px, this.game.physics.ground0(px, pz) + k * 0.2, pz);
+      rig.group.rotation.y = this.ry + (rc.dir < 0 ? PI : 0);
+      rc.circle.x = px; rc.circle.z = pz; rc.x = px; rc.z = pz;
+      rig.animate(0, false, dt, this.t);
+      for (const L of rig.legs) { L.hip.rotation.x = -0.1 - k * 0.35; L.knee.rotation.x = 0.1 + k * 0.6; L.ankle.rotation.x = 0.05; }
+      if (!rig.gesture) for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -0.3 - k * 0.25, 10, dt); A.el.rotation.x = damp(A.el.rotation.x, -1.3, 10, dt); }
+      rig.spine.rotation.x = damp(rig.spine.rotation.x, -k * 0.1, 7, dt);
+      Wanderer.prototype.lookAtCat.call(rc, dt);
+    }
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
   }
 }
 

@@ -161,6 +161,17 @@ function makeSurfboard(color) {
   mesh(G.cone(0.09, 0.16, 8), mat(0x1e1e1e, { roughness: 0.7 }), { y: 0.05, z: -0.09, rx: -PI / 2, shadow: 'none', parent: g });
   return g;
 }
+/** A volleyball net strung between two posts along local X, with a white top tape and a loose cord mesh. Half-width `halfW`, so the whole thing spans `halfW * 2`. `postH`/`netH` default to volleyball's own proportions but can be overridden — badminton's own net (round 522) reuses this same rig at a lower, shallower size instead of a second near-identical function. */
+function makeVolleyballNet(halfW = 1.9, poleColor = 0xe8e2d4, { postH = 1.35, netH = 0.85 } = {}) {
+  const g = new THREE.Group(), poleM = mat(poleColor, { roughness: 0.6, metalness: 0.4 });
+  const netTop = postH - 0.08;
+  for (const sx of [-halfW, halfW]) mesh(G.cyl(0.035, 0.045, postH, 8), poleM, { x: sx, y: postH / 2, parent: g });
+  mesh(G.box(halfW * 2 + 0.08, 0.05, 0.02), mat(0xffffff, { roughness: 0.8 }), { y: postH - 0.03, shadow: 'none', parent: g });
+  const cordM = mat(0x2a2a2a, { roughness: 0.9, transparent: true, opacity: 0.6 });
+  for (let i = 0; i < 6; i++) noInk(mesh(G.cyl(0.006, 0.006, halfW * 2, 6), cordM, { y: netTop - (i / 5) * netH, rz: PI / 2, shadow: 'none', parent: g }));
+  for (let j = -3; j <= 3; j++) noInk(mesh(G.cyl(0.004, 0.004, netH, 6), cordM, { x: j / 3 * halfW, y: netTop - netH / 2, shadow: 'none', parent: g }));
+  return g;
+}
 /** A ukulele sized for one hand: a waisted body (a small bout above a bigger one), a thin neck, a headstock and four strings. Faces +z (soundboard toward the cat). */
 function makeUkulele(color = 0xd9a15a) {
   const g = new THREE.Group(), wood = mat(color, { roughness: 0.55 }), dark = mat(0x2a1c12, { roughness: 0.8 }), string = mat(0xe8e0d0, { roughness: 0.5 });
@@ -207,6 +218,65 @@ function makeConch() {
   mesh(G.torus(0.3, 0.1, 8, 20, PI * 1.3), band, { y: 0.06, z: 0.08, rx: PI / 2, ry: 0.3, parent: g }); // the flared outer lip
   mesh(G.sphere(0.2, 12, 8), inner, { y: 0.08, z: 0.18, sy: 0.4, sz: 0.55, shadow: 'none', parent: g }); // the pink mouth
   return g;
+}
+/** A shallow tide pool scooped into the sand: a ring of weathered rocks round a shallow water disc,
+ *  a beached starfish (flat, `G.star` laid in the XZ plane like the rosette flower-head trick) and a
+ *  scatter of small shells, with a sea anemone standing at its centre. The anemone's own crown of
+ *  tentacles sits on hinges exactly like the Whisper Woods flower's petals, but returned separately
+ *  (`tentacles`) so a world can curl them shut as the cat gets close — the opposite reaction to that
+ *  flower's bloom, same as a real anemone recoiling from a prodding finger rather than opening for one. */
+function makeTidePool(r = rnd, rad = 0.9) {
+  const g = new THREE.Group();
+  const water = mat(0x2e9ec8, { roughness: 0.12, metalness: 0.1, transparent: true, opacity: 0.75, map: TEX.water() });
+  mesh(G.cyl(rad, rad, 0.05, 24), water, { y: 0.02, shadow: 'receive', parent: g });
+  const rockM = mat(0x8a857a, { roughness: 1, flatShading: true });
+  for (let i = 0; i < 14; i++) { const a = i / 14 * TAU + r.range(-0.08, 0.08), d = rad + r.range(0.12, 0.3);
+    mesh(G.sphere(1, 7, 5), rockM, { x: cos(a) * d, y: r.range(0.03, 0.1), z: sin(a) * d, sx: r.range(0.18, 0.32), sy: r.range(0.1, 0.2), sz: r.range(0.18, 0.32), ry: r() * TAU, parent: g }); }
+  // the starfish, half-sunk on the pool floor
+  const starM = mat(0xff8f3c, { roughness: 0.6 });
+  const star = group(r.range(-0.3, 0.1), 0.017, r.range(-0.25, 0.15), g); star.rotation.y = r() * TAU;
+  mesh(G.star(0.16, 0.055, 0.03), starM, { rx: -PI / 2, parent: star });
+  // a couple of small shells, half-buried round the rim
+  const shellM = mat(0xf0e4c8, { roughness: 0.6 });
+  for (let i = 0; i < 3; i++) { const a = r() * TAU, d = r.range(0.35, rad - 0.1); mesh(G.sphere(0.045, 7, 5), shellM, { x: cos(a) * d, y: 0.015, z: sin(a) * d, sy: 0.55, ry: r() * TAU, parent: g }); }
+  // the anemone: a short stalk and a crown of tentacles splayed open by default
+  const stalkM = mat(0xc77fd6, { roughness: 0.5 }), tentM = mat(0xff8fd6, { roughness: 0.4 });
+  const anemone = group(0.3, 0.02, -0.15, g);
+  mesh(G.cyl(0.055, 0.07, 0.1, 10), stalkM, { y: 0.05, parent: anemone });
+  const tentacles = [];
+  const n = 10;
+  for (let i = 0; i < n; i++) { const a = i / n * TAU;
+    const hinge = group(sin(a) * 0.04, 0.1, cos(a) * 0.04, anemone); hinge.rotation.y = a; hinge.rotation.x = 1.0;
+    noInk(mesh(G.cone(0.016, 0.16, 6), tentM, { y: 0.08, parent: hinge }));
+    tentacles.push(hinge); }
+  return { group: g, water, anemone, tentacles };
+}
+/** A sensitive plant (real-life Mimosa pudica): a low clump of ferny fronds that stand up and splayed
+ *  open normally, each on its own yaw hinge exactly like the Whisper Woods flower's petals, but this
+ *  one droops — the whole frond tips down and in toward the stem rather than folding shut in place —
+ *  the way a real one collapses when brushed, not the anemone's curl or the flower's bloom. Returns
+ *  `fronds` (the hinges) so a world can drive the droop itself; a small puffball flower rides the tip
+ *  of frond 0. */
+function makeSensitivePlant(r = rnd) {
+  const g = new THREE.Group();
+  const stemM = mat(0x4a7a3a, { roughness: 0.85 }), leafA = mat(0x6fae4a, { roughness: 0.8, side: THREE.DoubleSide }), leafB = mat(0x8ac96a, { roughness: 0.8, side: THREE.DoubleSide });
+  mesh(G.cyl(0.028, 0.045, 0.16, 7), stemM, { y: 0.08, parent: g });
+  const n = 4, fronds = [];
+  for (let i = 0; i < n; i++) {
+    const ang = i / n * TAU + r.range(-0.15, 0.15);
+    const hinge = group(0, 0.15, 0, g); hinge.rotation.y = ang;
+    const len = r.range(0.3, 0.4);
+    mesh(G.cyl(0.011, 0.017, len, 5), stemM, { y: len / 2, parent: hinge });
+    for (let p = 0; p < 4; p++) { const py = (p + 0.5) / 4 * len;
+      for (const side of [1, -1]) noInk(mesh(G.sphere(0.034, 6, 5), p % 2 ? leafB : leafA, { x: side * 0.05, y: py, sx: 1.5, sy: 0.3, sz: 0.65, parent: hinge })); }
+    fronds.push({ hinge, spread: r.range(0.95, 1.2), len });
+  }
+  const flowerM = mat(0xff8fc8, { roughness: 0.6 }), tip = fronds[0];
+  const puff = group(0, tip.len, 0, tip.hinge); mesh(G.sphere(0.025, 8, 6), mat(0x7a9a5a, { roughness: 0.8 }), { parent: puff });
+  for (let i = 0; i < 7; i++) { const a = i / 7 * TAU;
+    const spike = group(0, 0, 0, puff); spike.rotation.y = a; spike.rotation.x = 1.15;
+    noInk(mesh(G.cone(0.012, 0.09, 5), flowerM, { y: 0.045, parent: spike })); }
+  return { group: g, fronds };
 }
 /** Instanced shells / pebbles scattered on the ground. spots = [[x,z,radius,count]] */
 function makeScatter(game, spots, geo, colors, r, scale = [0.6, 1.2], yOff = 0.02) {
@@ -353,7 +423,7 @@ function makeCave(game, U, x, z0, len, r = rnd) {
   mesh(G.box((denW + 1.6) * 2, Hh + 2, 1.6), rock, { x, y: y0 + Hh / 2 + 0.6, z: zEnd - 0.8, parent: game.world }); P.addBox(x, y0 + Hh / 2, zEnd - 0.8, (denW + 1.6) * 2, Hh + 2, 1.6);
   // ribs (arches) every few metres, the mouth a little bigger, plus boulders around the entrance
   for (let zz = z0 - 1; zz > denZ + 4.5; zz -= 3.2) mesh(G.torus(W + 0.3, 0.42, 7, 16, PI), dark, { x, y: y0 + 0.9, z: zz, parent: game.world });
-  mesh(G.torus(W + 0.9, 0.6, 8, 18, PI), rock, { x, y: y0 + 0.7, z: z0 + 0.4, parent: game.world });
+  const mouthArch = mesh(G.torus(W + 0.9, 0.6, 8, 18, PI), rock, { x, y: y0 + 0.7, z: z0 + 0.4, parent: game.world });
   for (let i = 0; i < 10; i++) { const a = r.range(-0.4, 0.4) + (i % 2 ? 0 : PI), d = r.range(3.2, 5.5), bx = x + sin(a) * d, bz = z0 + cos(a) * 1.5 + r.range(-1, 2); placeT(game, U, makeRock(r, 0x6b6f76, r.range(1.0, 2.2)), bx, bz, 0); }
   mesh(G.box(20, 8, 8), rock, { x, y: y0 + Hh + 4.5, z: zEnd - 2, shadow: 'both', parent: game.world });   // the hill the cave burrows into
   // inside: crystals, gems, a few lights, moss
@@ -363,7 +433,7 @@ function makeCave(game, U, x, z0, len, r = rnd) {
   for (let i = 0; i < 3; i++) { const zz = z0 - 6 - i * ((len - 12) / 3); pointLight(0x9fd8ff, 8, 9, x, y0 + Hh - 0.4, zz, game.world); }
   pointLight(0xffd9a0, 12, 10, x, y0 + Hh - 0.5, denZ, game.world);
   for (let i = 0; i < 12; i++) mesh(G.sphere(1, 7, 5), mat(0x5f9a3a, { roughness: 1 }), { x: x + r.range(-W + 0.3, W - 0.3), y: y0 + 0.02, z: z0 - r.range(1, len - 3), sx: r.range(0.2, 0.5), sy: 0.06, sz: r.range(0.2, 0.5), shadow: 'none', parent: game.world });   // moss
-  return { den: [x, denZ], mouth: [x, z0] };
+  return { den: [x, denZ], mouth: [x, z0], mouthArch };
 }
 /** A huge hollow oak whose hollow glows: the way into Whisper Woods. */
 function makeHollowOak(game, x, z, ry, onEnter, prompt = 'Crawl into the hollow oak') {
@@ -527,6 +597,18 @@ function makeAurora(parent, r = rnd) {
   worldBag.track(m);
   for (let i = 0; i < 3; i++) { const p = mesh(G.plane(420, 46, 40, 1), m, { x: r.range(-60, 60), y: 70 + i * 14, z: -230 - i * 40, ry: r.range(-0.25, 0.25), rx: 0.2, shadow: 'none', parent: g }); p.frustumCulled = false; }
   g.userData.update = (dt, t) => { u.time.value = t; };
+  return g;
+}
+/** Rainbow: seven concentric half-torus colour bands, a static backdrop far beyond the walkable limit. */
+function makeRainbowArc(parent, o = {}) {
+  const g = new THREE.Group(); g.position.set(o.x ?? 0, o.y ?? 0, o.z ?? 0); parent.add(g);
+  const colors = [0xe53935, 0xfb8c00, 0xfdd835, 0x66bb6a, 0x42a5f5, 0x5c6bc0, 0x8e24aa];
+  const R = o.r ?? 90, band = o.band ?? 3.4, tube = band * 0.48;
+  for (let i = 0; i < colors.length; i++) {
+    const m = glowMat(colors[i], 0.3, { transparent: true, opacity: 0.5, side: THREE.DoubleSide, fog: false });
+    const t = mesh(G.torus(R + i * band, tube, 5, 48, PI), m, { shadow: 'none', parent: g });
+    t.frustumCulled = false;
+  }
   return g;
 }
 function makeSled(color = 0xd62839) {
