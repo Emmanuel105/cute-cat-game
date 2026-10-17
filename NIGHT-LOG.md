@@ -14534,3 +14534,34 @@ warnings, 88% of Robot City's own ground still walkable. Robot City's own friend
 80 with the two new contractors. No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 548 — a badminton net for Candy Land
+
+Round 547's own list of worlds still owing round 508's playground games a `Badminton` net —
+Neighborhood, Candy Land, Frosty Peak, Whisper Woods — had Candy Land at the top of it: the sweet-lands
+already had a tetherball pole, a tug-of-war and a sack race, but nobody there had ever swatted anything
+over a net. **Two sweet-shop kids now keep a shuttlecock going** on the quiet grass north of the
+carousel. *"Love-love. No — love-one. I dropped one before you got here, puss."* *"Mind the net, it's
+stickier than it looks — everything out here is."* *"Forty-seven rallies. I started counting after we
+lost count the first time."*
+
+No new class and no new mesh: the exact same `Badminton` (`55-npcs.js`) and `makeVolleyballNet`
+(`62-props-nature.js`) Victorian, Sunny Shore and Robot City already use. Gingerbread men have no
+shoulder/elbow sub-joints and no `rig.spine` for `Badminton` to lean on — the same reason this land's
+own tetherball and tug-of-war pairs are sweet-shop kids rather than cookies — so this pair is
+`makeHuman` too, on its own fresh wardrobe.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+`game.start('new')` then `game.travel(1, 'from-hub')`) sampled every NPC's own position every 6th frame
+over 2400 simulated frames, then swept a 2 m grid of the open sweet-lands (radius 15-86, skipping the
+chocolate river's own band) against both those samples and every one of the land's physics boxes: (22,
+72) came back clearest of the lot, 16.48 m from the nearest box (the carousel at (35, 60)) and 20 m from
+the nearest wandering soul — north of the carousel and clear of the butterflies' own flight box (x ≤ 32)
+and the gumdrop patch at (26, 52), well inside the 92 m radius where `candyRegion`'s own procedural fill
+takes over.
+
+Full suite (`node test/run.mjs`) ran clean on three separate runs: exit 0, all 274 checks `ok`, 0
+console warnings, 92% of Candy Land's own ground still walkable (unchanged from before this round).
+Candy Land's own friend count rises from 76 to 78 with the two new kids. No visual check was possible in
+this environment (no browser, no Playwright) — only the stub-three test suite and the headless probe
+above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

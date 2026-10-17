@@ -3702,6 +3702,45 @@ function buildCandyLand(game, entry) {
     game.npcs.push(new Tetherball(game, boy, girl, { x: 50, z: -30,
       cries: ['Round and round — same as every other sweet-land game, just stickier.', 'Watch the rope, puss, it\'s had my fingers twice already.', 'Fifty wraps and counting. I always lose count past fifty.'] })); }
 
+  // round 547's own list of worlds still owing round 508's playground games a `Badminton` net
+  // (`55-npcs.js`) — Neighborhood, Candy Land, Frosty Peak, Whisper Woods — had Candy Land at the top:
+  // the sweet-lands already have a tetherball pole, a tug-of-war, a sack race and a carousel, but
+  // nobody here had ever swatted anything over a net. Two sweet-shop kids now keep a shuttlecock going
+  // on the quiet grass north of the carousel, past the butterflies' own flight box. *"Love-love. No —
+  // love-one. I dropped one before you got here, puss."* *"Mind the net, it's stickier than it looks —
+  // everything out here is."* *"Forty-seven rallies. I started counting after we lost count the first
+  // time."*
+  //
+  // No new class and no new mesh: the exact same `Badminton` (`55-npcs.js`) and `makeVolleyballNet`
+  // (`62-props-nature.js`) Victorian, Sunny Shore and Robot City already use. Gingerbread men have no
+  // shoulder/elbow sub-joints and no `rig.spine` for `Badminton` to pose or lean on — the same reason
+  // this land's own tetherball and tug-of-war pairs are sweet-shop kids rather than cookies — so this
+  // pair is `makeHuman` too, on a fresh wardrobe of its own.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // `game.start('new')` then `game.travel(1, 'from-hub')`) sampled every NPC's own position every 6th
+  // frame over 2400 simulated frames, then swept a 2 m grid of the open sweet-lands (radius 15-86,
+  // skipping the chocolate river's own band) against both those samples and every one of the land's
+  // physics boxes: (22, 72) came back clearest of the lot, 16.48 m from the nearest box (the carousel at
+  // (35, 60)) and 20 m from the nearest wandering soul — north of the carousel and clear of the
+  // butterflies' own flight box (x ≤ 32) and the gumdrop patch at (26, 52), well inside the 92 m radius
+  // where `candyRegion`'s own procedural fill takes over.
+  { const cx = 22, cz = 72, gap = 5.6, halfW = 1.6;
+    const net = makeVolleyballNet(halfW, 0xff6fb5, { postH: 1.6, netH: 0.78 });
+    place(game, U, net, cx, cz, 0);
+    for (const sx of [-halfW, halfW]) P.addBox(cx + sx, 0.8, cz, 0.16, 1.6, 0.16, { cam: false });
+    const shuttle = group(cx, 0, cz, W);
+    mesh(G.sphere(0.045, 10, 8), mat(0xf0ead6, { roughness: 0.6 }), { y: 0, parent: shuttle });
+    mesh(G.cone(0.075, 0.16, 10), mat(0xfbfaf4, { roughness: 0.8 }), { y: 0.11, rx: PI, parent: shuttle });
+    const badWard = makeWardrobe(r, { shirts: [0xffd54a, 0x7fd7ff, 0xff9ecf], pants: [0x7fd7ff, 0xffd54a] });
+    const bA = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, elder: false, wardrobe: badWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: false, racket: true });
+    const bB = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, elder: false, wardrobe: badWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: false, racket: true, hairStyle: 'braids' });
+    W.add(bA.group); W.add(bB.group);
+    const badmintonLines = ['Love-love. No — love-one. I dropped one before you got here, puss.', "Mind the net, it's stickier than it looks — everything out here is.", "Forty-seven rallies. I started counting after we lost count the first time."];
+    game.npcs.push(new Badminton(game, bA, bB, shuttle, { cx, cz, gap, cries: badmintonLines })); }
+
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('star', 7, -6); C.add('yarn', -9, 9); C.add('fish', -16, -13); C.add('mouse', 16, -9); C.add('star', -10, -27); C.add('yarn', 22, 4); C.add('mouse', -28, 26); C.add('fish', 14, -44); C.add('star', 0, -56); C.add('mouse', -58, 30); C.add('yarn', 60, 36);
