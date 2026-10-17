@@ -5194,6 +5194,43 @@ function buildRobotCity(game, entry) {
     W.add(workerA.group); W.add(workerB.group);
     game.npcs.push(new Tetherball(game, workerA, workerB, { x: 29, z: -16,
       cries: ['Five minutes. This is how I spend every one of them.', "Careful, puss — that thing's got a mean swing.", "Foreman says it's bad for morale. Foreman's never won a point."] })); }
+  // the Neighborhood, Candy Land, Frosty Peak and Whisper Woods still owe round 508's own playground
+  // list a `Badminton` net (`55-npcs.js`) — Victorian and Sunny Shore have had one for a while — but
+  // Robot City, for all its tetherball pole and its two haulers on a cable, is the one place in the
+  // city proper where a rally could actually use the open floor rather than fight the yard's own
+  // towers for space. Two off-shift contractors now keep a shuttlecock going over a low net on the bare
+  // concrete well past the last skyscraper on the south-west side. *"Quietest spot in the whole city.
+  // That's the appeal."* *"Careful, puss — that net's the only thing out here taller than you."*
+  // *"Forty-one. No — forty-two. The wind off the vents keeps nudging my count."*
+  //
+  // No new class and no new mesh: the exact same `Badminton` (`55-npcs.js`) and `makeVolleyballNet`
+  // (`62-props-nature.js`) Victorian and Sunny Shore already use. `Badminton` reaches into `rig.spine`,
+  // which `makeRobot()`'s rig never sets — the same reason the tetherball pair above and every other
+  // break-room worker in this city are human contractors rather than robots — so this pair is human
+  // too, a fresh wardrobe rather than the tetherball pair's own.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, the
+  // real city built with `game.start('new')` then `game.travel(2, 'from-hub')`) sampled every NPC's
+  // own position every 6th frame over 2400 simulated frames, then swept the net at (-28, -86) and both
+  // players' own stations (±2.8 m either side of it) and the net posts (±1.6 m) against both those
+  // samples and all 300 of the city's physics boxes: the worst of the five points came back clear by
+  // 16.3 m of the nearest box or soul — one of the gaps between the ring of towers out past radius 72,
+  // and well short of the radius (98) where robotRegion's own procedural fill takes over.
+  { const cx = -28, cz = -86, gap = 5.6, halfW = 1.6;
+    const net = makeVolleyballNet(halfW, 0x6a7078, { postH: 1.6, netH: 0.78 });
+    place(game, U, net, cx, cz, 0);
+    for (const sx of [-halfW, halfW]) P.addBox(cx + sx, 0.8, cz, 0.16, 1.6, 0.16, { cam: false });
+    const shuttle = group(cx, 0, cz, W);
+    mesh(G.sphere(0.045, 10, 8), mat(0xf0ead6, { roughness: 0.6 }), { y: 0, parent: shuttle });
+    mesh(G.cone(0.075, 0.16, 10), mat(0xfbfaf4, { roughness: 0.8 }), { y: 0.11, rx: PI, parent: shuttle });
+    const badWard = makeWardrobe(r, { shirts: [0x4a5a6a, 0x5a4a6a, 0x3a5a4a], pants: [0x232c34, 0x2a2a30], shoes: [0x1a1a20, 0x201c18] });
+    const bA = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.2), wardrobe: badWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.25), racket: true });
+    const bB = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.2), wardrobe: badWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.25), racket: true });
+    W.add(bA.group); W.add(bB.group);
+    const badmintonLines = ['Quietest spot in the whole city. That\'s the appeal.', "Careful, puss — that net's the only thing out here taller than you.", 'Forty-one. No — forty-two. The wind off the vents keeps nudging my count.'];
+    game.npcs.push(new Badminton(game, bA, bB, shuttle, { cx, cz, gap, cries: badmintonLines })); }
   const sq = new Squirrel(game, -14, -9, 'sq-robot'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('mouse', -8, 7); C.add('star', 12, -22); C.add('fish', -18, 2); C.add('yarn', 21, 9); C.add('star', 0, -27); C.add('fish', 4, 14); C.add('mouse', 26, -18); C.add('yarn', -26, -6);

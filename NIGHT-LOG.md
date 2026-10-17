@@ -14504,3 +14504,33 @@ Whisper Woods' own ground still walkable. Whisper Woods' own friend count rises 
 kids — tetherball is now in all seven worlds. No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 547 — a badminton net for Robot City
+
+Round 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack races) had
+one gap left in `Badminton`'s own column: Victorian and Sunny Shore both have a net, but Robot City,
+for all its tetherball pole and its two haulers straining on a power cable, never got the other racket
+game. **Two off-shift contractors now keep a shuttlecock going over a low net** on the bare concrete
+well south-west of the city, past the last ring of towers. *"Quietest spot in the whole city. That's
+the appeal."* *"Careful, puss — that net's the only thing out here taller than you."* *"Forty-one. No —
+forty-two. The wind off the vents keeps nudging my count."*
+
+No new class and no new mesh: the exact same `Badminton` (`55-npcs.js`) and `makeVolleyballNet`
+(`62-props-nature.js`) Victorian and Sunny Shore already use. `Badminton` reaches into `rig.spine`,
+which `makeRobot()`'s rig never sets — the same reason the tetherball pair, mechanic, painter and every
+other break-room worker in this city are human contractors rather than robots — so this pair is human
+too, on a fresh wardrobe.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, the real
+city built with `game.start('new')` then `game.travel(2, 'from-hub')`) sampled every NPC's own position
+every 6th frame over 2400 simulated frames, then swept the net at (-28, -86) and both players' own
+stations (±2.8 m either side of it) and the net posts (±1.6 m) against both those samples and all 300
+of the city's physics boxes: the worst of the five points came back clear by 16.3 m — one of the gaps
+between the ring of towers out past radius 72, short of the radius (98) where robotRegion's own
+procedural fill takes over.
+
+Full suite (`node test/run.mjs`) ran clean on two separate runs: exit 0, all 274 checks `ok`, 0 console
+warnings, 88% of Robot City's own ground still walkable. Robot City's own friend count rises from 78 to
+80 with the two new contractors. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
