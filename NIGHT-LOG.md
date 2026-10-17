@@ -14908,3 +14908,36 @@ procedural fill runs, which shuffles that fill's exact layout slightly, the same
 has seen the number move the other way. `SackRace` is now in all seven worlds. No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
 headless probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 558 — a pogo stick for Victorian
+
+The Neighborhood and Sunny Shore have each had a kid bouncing in place on a pogo stick since round
+420-odd (`PogoHopper` in `55-npcs.js`), but no other world ever got one of its own. **A Victorian
+urchin now bounces on a quiet stretch of open cobble south-west of the market square**, well clear of
+the badminton net and the sack race's own lane. *"Tuppence says I clear a hundred bounces, puss!"*
+*"Don't laugh — this spring's got a mind of its own!"* *"Lost count past eighty. Starting again, out
+of spite."*
+
+No new class and no new mesh: the exact same `PogoHopper` the Neighborhood and Sunny Shore already
+use — the pole is parented straight to the rig's own body and hops with it, the same as both of those.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+`game.start('new')` then `game.travel(3, 'from-hub')`, 300 simulated frames to let the town settle)
+sampled every NPC's own position, then swept a grid of the open ground south-west of the market square
+(short of the radius (88) where `victorianRegion`'s own procedural fill takes over) against both those
+samples and every one of the town's 302 physics boxes: (-6, -66) came back clearest at 13.9 m from the
+nearest box and 14.0 m from the nearest other soul — well clear of the badminton net, the sack race's
+own lane at (4, -66) and the market-square lane (x in [-2.3, -0.1]).
+
+Built dead last, right after the stilt walker, for the same reason every other addition at the end of
+this function already gives: `makeHuman()` draws three values off the shared `rnd()` sequence
+unconditionally, and a fresh rig built any earlier in this town would shift that sequence and desync
+every other timing-sensitive pick already placed above.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings. Victorian's
+own friend count rises from 95 to 96 with the new kid (confirmed against the unmodified base with `git
+stash`); ground walkable holds at 94%, unchanged. `PogoHopper` is now in three of the seven worlds
+(the Neighborhood, Sunny Shore, Victorian); Candy Land, Robot City, Frosty Peak and Whisper Woods are
+left to get one of their own. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

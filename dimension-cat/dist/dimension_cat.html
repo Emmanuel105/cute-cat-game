@@ -14441,6 +14441,33 @@ function buildVictorian(game, entry) {
     }
     game.npcs.push(new StiltWalker(game, performer, { points: [[-18, -80], [-12, -80]], speed: 0.55, pause: [1.5, 3], r: 0.4, height: 2.6, stiltH,
       cries: ["Mind your tail, puss — I can't exactly hop out of the way up here!", 'Eleven years on these. Fell twice. Both before breakfast.', 'Best seat in the house, this — shame it only seats one.'], cryIcon: '🎪' })); }
+  // the Neighborhood and Sunny Shore both have a kid hopping a pogo stick by now; Victorian, Candy
+  // Land, Robot City, Frosty Peak and Whisper Woods never got one of their own. A Victorian urchin now
+  // bounces on a quiet stretch of open cobble south-west of the market square, well clear of the
+  // badminton net and the sack race's own lane. *"Tuppence says I clear a hundred bounces, puss!"*
+  // *"Don't laugh — this spring's got a mind of its own!"* *"Lost count past eighty. Starting again,
+  // out of spite."*
+  //
+  // No new class and no new mesh: the exact same `PogoHopper` (`55-npcs.js`) the Neighborhood and
+  // Sunny Shore already use.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // `game.start('new')` then `game.travel(3, 'from-hub')`, 300 simulated frames to settle the town)
+  // sampled every NPC's own position and swept a grid of the open ground south-west of the market
+  // square (short of the radius (88) where `victorianRegion`'s own procedural fill takes over) against
+  // both those samples and every one of the town's 302 physics boxes: (-6, -66) came back clearest at
+  // 13.9 m from the nearest box and 14.0 m from the nearest other soul — well clear of the badminton
+  // net, the sack race's own lane at (4, -66) and the market-square lane (x in [-2.3, -0.1]).
+  //
+  // Built dead last, right after the stilt walker, for the same reason every other addition at the end
+  // of this function already gives: `makeHuman()` draws three values off the *shared* `rnd()` sequence
+  // unconditionally, and a fresh rig built any earlier in this town would shift that sequence and
+  // desync every other timing-sensitive pick already placed above.
+  { const pogoKid = makeHuman({ ...randomPerson(r, { child: true, female: r.chance(0.5), wardrobe: vicWard }),
+      pants: 0x1e1e24, hat: 'flatcap', hatColor: 0x3a3327, coat: null, jacket: null, scarf: null, bag: null, backpack: null, sleeves: true, glasses: false });
+    W.add(pogoKid.group);
+    game.npcs.push(new PogoHopper(game, pogoKid, r.pick([0xff6f3c, 0x3fae9a, 0xf2c744]), { x: -6, z: -66, ry: r.range(0, TAU),
+      cries: ['Tuppence says I clear a hundred bounces, puss!', "Don't laugh — this spring's got a mind of its own!", 'Lost count past eighty. Starting again, out of spite.'] })); }
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
