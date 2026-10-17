@@ -16970,6 +16970,52 @@ function buildSnowVillage(game, entry) {
   { const rig = makeFrostBeetle();
     game.npcs.push(new Hopper(game, rig, { x: 38, z: 8, leash: 1.0, r: 0.08, dist: [0.15, 0.4], dur: 0.26, height: 0.06, idle: [1.5, 4],
       onHop: () => { if (rnd.chance(0.2)) SFX.chitter(); } })); }
+  // The Neighborhood, Candy Land, Robot City, Victorian and Sunny Shore have all had a badminton net
+  // since round 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack
+  // races) went round every world in turn — Frosty Peak, for all its tug-of-war, archery range,
+  // tetherball and curling, never got the other racket game; only Whisper Woods is left owing one now.
+  // **Two bundled-up villagers now keep a shuttlecock going over a low net on a quiet stretch of open
+  // snowfield south-west of the village**, well past the archery range. *"Mittens are terrible for
+  // grip, wonderful for not losing feeling in your fingers."* *"Mind the net, puss — it's the only
+  // thing out here taller than a snowman."* *"Thirty-eight. No, thirty-nine — I keep losing count in
+  // the cold."*
+  //
+  // No new class and no new mesh: the exact same `Badminton` (`55-npcs.js`) and `makeVolleyballNet`
+  // (`62-props-nature.js`) the other five worlds already use, with `placeT`/`boxT` in place of a flat
+  // floor's `place`/`P.addBox` the same way the archery target and every other hand-placed prop on this
+  // mountain already accounts for the slope, and a fresh winter wardrobe (`coat: true`, beanie, scarf)
+  // in place of the other worlds' bare racket-and-shorts look.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // `game.start('new')` then `game.travel(5, 'from-hub')`) sampled every NPC's own position every 5th
+  // frame over 1500 simulated frames, then swept a 1 m grid of the open snowfield (radius 20-52, well
+  // short of the radius (58) where snowRegion's own fill takes over) against both those samples and
+  // every one of the mountain's 744 physics boxes, checking the net posts and both players' own footing:
+  // (-38, -35) came back clear by 6.37 m at its tightest point (a pine trunk at the edge of the ring),
+  // with the ground flat to 0.16 m across the whole footprint — south-west of the archery line
+  // ((-30,-15)-(-30,-25)), well clear of it and of everything else on the mountain.
+  //
+  // Built right after the frost beetle, the last thing this world adds before the squirrel spawn point,
+  // for the same reason the beetle itself went last: `makeHuman()` draws three values off the *shared*
+  // `rnd()` sequence unconditionally, and this spot was chosen with a probe built *after* every earlier
+  // NPC's own timing-sensitive pick, so placing it any earlier would have disturbed one of them the same
+  // way round 549's own Neighborhood net already warned about.
+  { const cx = -38, cz = -35, gap = 5.6, halfW = 1.8;
+    const net = makeVolleyballNet(halfW, 0xf0ece4, { postH: 1.6, netH: 0.78 });
+    placeT(game, U, net, cx, cz, 0);
+    for (const sx of [-halfW, halfW]) boxT(game, cx + sx, cz, 0.16, 1.6, 0.16, { cam: false });
+    // the shuttlecock: a pale cork and a flared cone standing in for the feathers, nose staying down
+    const shuttle = group(cx, 0, cz, W);
+    mesh(G.sphere(0.045, 10, 8), mat(0xf0ead6, { roughness: 0.6 }), { y: 0, parent: shuttle });
+    mesh(G.cone(0.075, 0.16, 10), mat(0xfbfaf4, { roughness: 0.8 }), { y: 0.11, rx: PI, parent: shuttle });
+    const bmWard = makeWardrobe(r, { shirts: [0x3a6a5a, 0x6a3a5a, 0x5a5a3a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const bA = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: bmWard }),
+      hat: 'beanie', hatColor: 0x3a6a5a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a, bag: null, backpack: null, glasses: r.chance(0.3), racket: true });
+    const bB = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: bmWard }),
+      hat: 'beanie', hatColor: 0x6a3a5a, coat: true, scarf: 0xf2ead8, cuffs: 0x3a3a3a, bag: null, backpack: null, glasses: r.chance(0.3), racket: true });
+    W.add(bA.group); W.add(bB.group);
+    const badmintonLines = ['🏸 "Mittens are terrible for grip, wonderful for not losing feeling in your fingers."', '🏸 "Mind the net, puss — it\'s the only thing out here taller than a snowman."', '🏸 "Thirty-eight. No, thirty-nine — I keep losing count in the cold."'];
+    game.npcs.push(new Badminton(game, bA, bB, shuttle, { cx, cz, gap, cries: badmintonLines })); }
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

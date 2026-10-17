@@ -14602,3 +14602,41 @@ friend count rises from 65 to 67 with the two new neighbours — `Badminton` is 
 worlds; only Frosty Peak and Whisper Woods are left to get a net of their own. No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
 headless probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 550 — a badminton net for Frosty Peak
+
+Round 549's own list of worlds still owing round 508's playground games a `Badminton` net had two names
+left on it: Frosty Peak and Whisper Woods. Frosty Peak had a tug-of-war, an archery range, tetherball
+and curling by now, but nobody up the mountain had ever swatted a shuttlecock over a net. **Two
+bundled-up villagers now keep a rally going on a quiet stretch of open snowfield south-west of the
+village**, well clear of the archery range. *"Mittens are terrible for grip, wonderful for not losing
+feeling in your fingers."* *"Mind the net, puss — it's the only thing out here taller than a snowman."*
+*"Thirty-eight. No, thirty-nine — I keep losing count in the cold."*
+
+No new class and no new mesh: the exact same `Badminton` (`55-npcs.js`) and `makeVolleyballNet`
+(`62-props-nature.js`) the other five worlds already use, with `placeT`/`boxT` in place of a flat
+floor's `place`/`P.addBox` the same way Sunny Shore's own beach badminton already accounts for sloped
+ground, and a winter wardrobe (`coat: true`, beanie, scarf) instead of the other worlds' bare
+racket-and-shorts look.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+`game.start('new')` then `game.travel(5, 'from-hub')`, waited out on the real portal-fade timer rather
+than assumed) sampled every NPC's own position every 5th frame over 1500 simulated frames, then swept a
+1 m grid of the open snowfield (radius 20-52, short of the radius (58) where `snowRegion`'s own
+procedural fill takes over) against both those samples and every one of the mountain's 744 physics
+boxes, checking the net posts and both players' own footing: (-38, -35) came back clear by 6.37 m at its
+tightest point (a pine trunk at the edge of the ring), with the ground flat to 0.16 m across the whole
+footprint — well south-west of the archery line ((-30,-15)-(-30,-25)) and everything else on the
+mountain. Built right after the frost beetle, the last thing this world adds before the squirrel spawn
+point, so `makeHuman`'s own three unconditional draws off the shared `rnd()` sequence land after every
+other timing-sensitive pick in this world and disturb nothing built earlier.
+
+Full suite (`node test/run.mjs`) ran clean on multiple separate runs: exit 0, all 275 checks `ok`, 0
+console warnings, 97% of Frosty Peak's own ground still walkable (unchanged from before this round).
+Frosty Peak's own friend count rises from 69 to 71 with the two new villagers — `Badminton` is now in
+six of the seven worlds; only Whisper Woods is left to get a net of its own. Across a wider batch of
+runs (base and modified) the pre-existing, already-documented Victorian horse-and-carriage timing flake
+(round 547, round 549) turned up at the same rate on the unmodified code too, confirmed by stashing this
+round's change away and re-running — unrelated to this round. No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite and the headless probe above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
