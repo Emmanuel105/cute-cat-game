@@ -1516,6 +1516,45 @@ function buildForest(game, entry) {
     const badmintonLines = ['🏸 "Shuttlecock\'s stuffed with real feathers — found half of them already, mind."', '🏸 "Mind the net, puss — brambles have nothing on it."', '🏸 "Forty-one... forty-two. The owls are judging us, I\'m sure."'];
     game.npcs.push(new Badminton(game, bA, bB, shuttle, { cx, cz, gap, cries: badmintonLines })); }
 
+  // `SackRace`'s own tour of the seven worlds closes out here — the Neighborhood, Candy Land, Robot
+  // City, Victorian, Sunny Shore and Frosty Peak all have one by now; Whisper Woods, for all its
+  // archery range, tug-of-war, tetherball pole and badminton net, never had the one race run two hops
+  // at a time with both ankles tied together. **Two forest kids now hop a short lane on a quiet, open
+  // stretch of woodland floor well south of the glade**, past the tug-of-war's own clearing, feet
+  // bound ankle to waist in borrowed burlap sacks. *"Mushrooms are softer to land on than this packed
+  // dirt, I'll tell you that."* *"Mind your tail, puss, I can't steer in this thing."* *"Best of
+  // three. I'm blaming a root if I lose."*
+  //
+  // No new class and no new mesh: the exact same `SackRace` (`55-npcs.js`) and `makeHuman`'s own
+  // `o.sack` option the other six worlds already use. It calls `game.physics.ground0()` for each
+  // racer's own footing every frame, the same way this wood's tug-of-war, tetherball and badminton
+  // already handle the real slope underfoot, so nothing extra was needed for terrain.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // `game.travel(6, 'from-hub')` then 3600 simulated frames, every NPC's and the squirrel's own
+  // position sampled every 10th frame) swept a grid of the open woodland floor (radius 12-55, short
+  // of the radius (58) where `forestRegion`'s own fill takes over, both lane orientations) against
+  // both those samples and every one of the wood's 720 physics boxes, then refined around the
+  // clearest patch found: (-8, -50), lane running along world X (`ry = PI/2`), came back clearest at
+  // 5.8 m from the nearest box and 8.1 m from the nearest other soul (the tug-of-war haulers at
+  // (-10, -40)) at its tightest point, with the ground sloping about 0.35 m across the whole 5 m
+  // lane — short of the fill radius and well clear of the jump-roper's own clearing (8, -48) and the
+  // horseshoes pitch (-46, -30).
+  //
+  // Built dead last, right after the badminton net, for the same reason every other addition at the
+  // end of this function already gives: `makeHuman()` draws three values off the shared `rnd()`
+  // sequence unconditionally, and a fresh pair of rigs built any earlier in this wood would shift
+  // that sequence and desync every other timing-sensitive pick already placed above.
+  { const rx = -8, rz = -50, rry = Math.PI / 2;
+    const sackWard = makeWardrobe(r, { shirts: [0x4a8a6a, 0x8a4a6a, 0x6a7a44], pants: [0x3a3327, 0x2a2a24], shoes: [0x3a2a1e, 0x2a2018] });
+    const sackA = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, elder: false, wardrobe: sackWard }),
+      sack: 0xa8946a, hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: false });
+    const sackB = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, elder: false, wardrobe: sackWard }),
+      sack: 0xa8946a, hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: false });
+    W.add(sackA.group); W.add(sackB.group);
+    game.npcs.push(new SackRace(game, sackA, sackB, { x: rx, z: rz, ry: rry,
+      cries: ["Mushrooms are softer to land on than this packed dirt, I'll tell you that.", "Mind your tail, puss, I can't steer in this thing.", "Best of three. I'm blaming a root if I lose."] })); }
+
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
 

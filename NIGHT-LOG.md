@@ -14832,3 +14832,44 @@ worlds (the Neighborhood, Candy Land, Robot City, Victorian, Sunny Shore, Frosty
 Woods is left to get one of its own. No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 556 — a sack race for Whisper Woods
+
+`SackRace`'s own tour of the seven worlds closes out here — the Neighborhood, Candy Land, Robot City,
+Victorian, Sunny Shore and Frosty Peak all had one by now; Whisper Woods, for all its archery range,
+tug-of-war, tetherball pole and badminton net, never had the one race run two hops at a time with both
+ankles tied together. **Two forest kids now hop a short lane on a quiet, open stretch of woodland
+floor well south of the glade**, past the tug-of-war's own clearing, feet bound ankle to waist in
+borrowed burlap sacks. *"Mushrooms are softer to land on than this packed dirt, I'll tell you that."*
+*"Mind your tail, puss, I can't steer in this thing."* *"Best of three. I'm blaming a root if I
+lose."*
+
+No new class and no new mesh: the exact same `SackRace` (`55-npcs.js`) and `makeHuman`'s own `o.sack`
+option the other six worlds already use. It calls `game.physics.ground0()` for each racer's own
+footing every frame, the same way this wood's tug-of-war, tetherball and badminton already handle the
+real slope underfoot, so nothing extra was needed for terrain.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+`game.travel(6, 'from-hub')` then 3600 simulated frames, every NPC's and the squirrel's own position
+sampled every 10th frame) swept a grid of the open woodland floor (radius 12-55, short of the radius
+(58) where `forestRegion`'s own fill takes over, both lane orientations) against both those samples
+and every one of the wood's 720 physics boxes, then refined around the clearest patch found: (-8,
+-50), lane running along world X (`ry = PI/2`), came back clearest at 5.8 m from the nearest box and
+8.1 m from the nearest other soul (the tug-of-war haulers at (-10, -40)) at its tightest point, with
+the ground sloping about 0.35 m across the whole 5 m lane — the steepest of any `SackRace` spot so
+far, but nothing the per-frame `ground0()` call doesn't already handle — short of the fill radius and
+well clear of the jump-roper's own clearing (8, -48) and the horseshoes pitch (-46, -30).
+
+Built dead last, right after the badminton net, for the same reason every other addition at the end of
+this function already gives: `makeHuman()` draws three values off the shared `rnd()` sequence
+unconditionally, and a fresh pair of rigs built any earlier in this wood would shift that sequence and
+desync every other timing-sensitive pick already placed above.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings. Whisper
+Woods' own friend count rises from 70 to 72 with the two new racers (confirmed against the unmodified
+base with `git stash`); ground walkable rises from 98% to 99% — the two sack kids and their wardrobe
+draw consume a few extra picks off this world's own local `r` sequence before `forestRegion`'s
+procedural fill runs, which shuffles that fill's exact layout slightly, the same way a round elsewhere
+has seen the number move the other way. `SackRace` is now in all seven worlds. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
+headless probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
