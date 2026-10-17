@@ -14146,3 +14146,38 @@ City's own friend count up from 76 to 78 for the two new workers (confirmed agai
 build with `git stash`). No visual check was possible in this environment (no browser, no Playwright)
 — only the stub-three test suite and the headless probe above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 536 — a tug-of-war for Sunny Shore
+
+Frosty Peak, Robot City and Whisper Woods have all had two haulers dig in and heave on a rope by now
+(`TugOfWar`, 55-npcs.js) — Sunny Shore, for all its badminton and volleyball nets and its open-toss
+ball games, never had one. **Two beachgoers now heel into the dry sand on a quiet dune north-west of
+the huts and heave on a length of ship's rope between them, never quite settling either way.**
+*"Heave! Heave! Nobody's budging an inch!"* *"Careful, puss — mind the rope, it bites worse than a
+crab."* *"Dead heat again. Sand's no easier to dig into than snow, turns out."*
+
+No new class and no new mesh beyond the rope and its little flag: the exact same `TugOfWar` the other
+three worlds already use, unchanged, with the same rope-and-flag dressing those three already build
+around it — just two fresh `makeHuman` haulers in a beach wardrobe (shorts, no hat or jacket) in place
+of a snowsuit or factory overalls.
+
+Sunny Shore's own hand-built heart turned out to be far more crowded than its three siblings — by my
+count this beach alone carries something like forty hand-placed NPCs and props before this round, so
+rather than eyeball a gap from the source the way earlier rounds did, I wrote a scratch probe on the
+same stub-three harness `test/run.mjs` itself uses: it built the real Sunny Shore (`game.start('new')`
+then `game.load(4, 'from-hub')`), sampled every NPC's and the squirrel's own position every fifth
+frame over 900 simulated frames (long enough for every crab, turtle, sunbather, dolphin, dog and
+dancer on this whole shore to range fully), then swept a 2 m grid of the dry dune sand (x ≤ 10, clear
+of the wet-sand zone that starts at x=12; radius 5-54, short of the radius (58) where `beachRegion`'s
+own fill takes over) against both those samples and every one of the beach's own physics boxes,
+ranking every cell by its worst-case clearance. (-50, 20) came out clearest at its own centre: 7.92 m
+from the nearest box and 8.08 m from the nearest other soul. With both haulers' own stations placed
+1.3 m either side of it (rope running along world X), the two actual footprints came back clear by
+6.68 m and 8.32 m of the nearest box and 8.00 m and 8.35 m of the nearest other soul — north-west of
+the furthest dune palms, ground height varying only about 0.1 m across the whole span.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings. Sunny
+Shore's own friend count up from 66 to 68 for the two new haulers (confirmed against the pre-change
+build with `git stash`). No visual check was possible in this environment (no browser, no Playwright)
+— only the stub-three test suite and the scratch headless probe above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

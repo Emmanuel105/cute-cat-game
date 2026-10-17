@@ -15192,6 +15192,47 @@ function buildBeach(game, entry) {
     const beachBadmintonLines = ['🏸 "Careful, the wind off the water adds a wobble."', '🏸 "Sand\'s terrible for footwork, wonderful for falling."', '🏸 "That one nearly went in the sea."'];
     game.npcs.push(new Badminton(game, bA, bB, shuttle, { cx, cz, gap, cries: beachBadmintonLines })); }
 
+  // Frosty Peak, Robot City and Whisper Woods have all had two haulers dig in and heave on a rope by
+  // now (`TugOfWar`, 55-npcs.js) — Sunny Shore, for all its net games and open-toss ball games, never
+  // had one. **Two beachgoers now heel into the dry sand on the quiet dune north-west of the huts and
+  // heave on a length of ship's rope between them, never quite settling either way.** "Heave! Heave!
+  // Nobody's budging an inch!" "Careful, puss — mind the rope, it bites worse than a crab." "Dead
+  // heat again. Sand's no easier to dig into than snow, turns out."
+  //
+  // No new class and no new mesh beyond the rope and its little flag: the exact same `TugOfWar`
+  // (`55-npcs.js`) Frosty Peak's, Robot City's and Whisper Woods' own tug-of-war already use,
+  // unchanged, with the same rope-and-flag dressing those three already build around it — just two
+  // `makeHuman` haulers in a fresh beach wardrobe (shorts, no hat or jacket) rather than a snowsuit
+  // or factory overalls.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // since there's no browser here to look at it) built the real Sunny Shore (`game.start('new')` then
+  // `game.load(4, 'from-hub')`), sampled every NPC's and the squirrel's own position every fifth frame
+  // over 900 simulated frames (long enough for every crab, turtle, sunbather, dolphin, dog and dancer
+  // on this whole shore to range fully), then swept a grid of the dry dune sand (x ≤ 10, clear of the
+  // wet-sand zone that starts at x=12, radius 5-54, short of the radius (58) where `beachRegion`'s own
+  // fill takes over) against both those samples and every one of the beach's own physics boxes:
+  // (-50, 20) came back clear by 7.92 m of the nearest box and 8.08 m of the nearest other soul at its
+  // own centre, with both haulers' own stations 1.3 m either side of it (rope along world X) clear by
+  // 6.68 m and 8.32 m of the nearest box and 8.00 m and 8.35 m of the nearest other soul, ground height
+  // varying only about 0.1 m across the whole footprint — north-west of the furthest dune palms, well
+  // short of every other hand-placed game on this beach.
+  { const tugWard = makeWardrobe(r, { shirts: [0x8a3a3a, 0x3a5a6a, 0x4a6a4a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0xefe7d8, 0x8d6e63] });
+    const haulerA = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: tugWard }),
+      shorts: true, hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.3) }); W.add(haulerA.group);
+    const haulerB = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: tugWard }),
+      shorts: true, hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.3) }); W.add(haulerB.group);
+    const tug = new TugOfWar(game, haulerA, haulerB, { x: -50, z: 20, ry: PI / 2, gap: 2.6,
+      cries: ["Heave! Heave! Nobody's budging an inch!", 'Careful, puss — mind the rope, it bites worse than a crab.', "Dead heat again. Sand's no easier to dig into than snow, turns out."] });
+    game.npcs.push(tug);
+    const [A, B] = tug.ctls, ropeM = mat(0x8a6a42, { roughness: 0.9 }), ay = P.ground0(A.x, A.z) + 0.75, by = P.ground0(B.x, B.z) + 0.75;
+    const ropeGroup = group((A.x + B.x) / 2, (ay + by) / 2, (A.z + B.z) / 2, W);
+    ropeGroup.lookAt(B.x, by, B.z);
+    noInk(mesh(G.cyl(0.035, 0.035, Math.hypot(B.x - A.x, by - ay, B.z - A.z), 8), ropeM, { rx: PI / 2, parent: ropeGroup }));
+    const flag = group(0, 0, 0, W); noInk(mesh(G.box(0.03, 0.14, 0.4), mat(0xd62839, { roughness: 0.7 }), { parent: flag }));
+    U.push(() => { const frac = 0.5 + clamp(tug.tension, -1, 1) * 0.12;
+      flag.position.set(lerp(A.x, B.x, frac), lerp(ay, by, frac) + 0.03, lerp(A.z, B.z, frac)); flag.rotation.y = ropeGroup.rotation.y; }); }
+
   beachRegion(game, U, r, 58, SHORE_LIMIT - 8);
   // the headland behind the dunes: hills and peaks inland only, never out to sea
   makeHorizon(game, r, { clear: SHORE_LIMIT + 8, hill: 0x8c9a58, rock: 0x7a7060, rock2: 0x8a8272, snowLine: 58, peaks: 26, woodCount: 260, woodHue: [0.18, 0.28], woodLight: [0.18, 0.3], keep: (x) => x < -SHORE_LIMIT * 0.15 });
