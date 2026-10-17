@@ -14687,3 +14687,41 @@ forest-dwellers — `Badminton` is now in all seven worlds, closing out round 50
 games. No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite and the headless probe above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 552 — a sack race for Robot City
+
+Round 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack races) had
+gone round every world by now except one game in one place: Robot City had the tetherball pole, the
+badminton net and the cable tug-of-war, but never the one contest with no ball, pole or shuttle at all.
+**Two off-shift contractors now hop a short lane on the quiet concrete north-west of the city**, bound
+ankle to waist in a borrowed packing sack apiece. *"Lost a bet. Didn't think they'd actually make me do
+it."* *"Careful, puss — these sacks held bolts an hour ago."* *"Neither of us has ever once reached the
+end. Foreman says that's the point."*
+
+No new class and no new mesh: the exact same `SackRace` (`55-npcs.js`) and `makeHuman`'s own `o.sack`
+option the Neighborhood and Candy Land already use. `SackRace` reaches into `rig.spine`, which
+`makeRobot()`'s rig never sets — the same reason the tetherball and badminton pairs already built in
+this city are human contractors rather than robots — so this pair is human too, adults rather than the
+other two worlds' children, matching the city's own off-shift-worker trope.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, the real
+city built with `game.start('new')` then `game.travel(2, 'from-hub')`) sampled every physics circle's
+own position every 20th frame over 3600 simulated frames (60 s, long enough for every wandering,
+patrolling and marching robot and every tetherball, tug-of-war and badminton pair to range fully), then
+swept a grid of candidate lanes (5 m long, 1.1 m apart) against both those samples and every one of the
+city's 1194 physics boxes using a spatial hash for speed: (-42, 46) came back clearest, clear by 5.89 m
+at its tightest point (an inner-ring skyscraper's own footprint), at radius 62.3 from the origin —
+comfortably short of the radius (98) where robotRegion's own procedural fill takes over, and far from
+the tetherball pole, the cable tug-of-war and the badminton net already built into this city.
+
+Built dead last, right after the badminton net and before the squirrel spawn point, so `makeHuman()`'s
+own three unconditional draws off the shared `rnd()` sequence land after every other timing-sensitive
+pick in this city and disturb nothing built earlier.
+
+Full suite (`node test/run.mjs`) ran clean on four separate runs: exit 0, all 274 checks `ok`, 0 console
+warnings, 88% of Robot City's own ground still walkable (unchanged from before this round). Robot City's
+own friend count rises from 80 to 82 with the two new contractors — `SackRace` is now in three of the
+seven worlds (the Neighborhood, Candy Land, Robot City); Victorian, Sunny Shore, Frosty Peak and Whisper
+Woods are left to get one of their own. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -5311,6 +5311,38 @@ function buildRobotCity(game, entry) {
     W.add(bA.group); W.add(bB.group);
     const badmintonLines = ['Quietest spot in the whole city. That\'s the appeal.', "Careful, puss — that net's the only thing out here taller than you.", 'Forty-one. No — forty-two. The wind off the vents keeps nudging my count.'];
     game.npcs.push(new Badminton(game, bA, bB, shuttle, { cx, cz, gap, cries: badmintonLines })); }
+  // round 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack races)
+  // has gone round every world by now — Robot City had the tetherball pole, the badminton net and the
+  // cable tug-of-war above, but never the one game with no ball, pole or shuttle at all. Two off-shift
+  // contractors now hop a short lane on the quiet concrete north-west of the city, bound ankle to waist
+  // in a borrowed packing sack apiece. *"Lost a bet. Didn't think they'd actually make me do it."*
+  // *"Careful, puss — these sacks held bolts an hour ago."* *"Neither of us has ever once reached the
+  // end. Foreman says that's the point."*
+  //
+  // No new class and no new mesh: the exact same `SackRace` (`55-npcs.js`) and `makeHuman`'s own
+  // `o.sack` option the Neighborhood and Candy Land already use. `SackRace` reaches into `rig.spine`,
+  // which `makeRobot()`'s rig never sets — the same reason the tetherball and badminton pairs above are
+  // human contractors rather than robots — so this pair is human too, adults rather than the other two
+  // worlds' children, matching this city's own off-shift-worker trope.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, the
+  // real city built with `game.start('new')` then `game.travel(2, 'from-hub')`) sampled every physics
+  // circle's own position every 20th frame over 3600 simulated frames (60 s, long enough for every
+  // wandering, patrolling and marching robot and every tetherball, tug-of-war and badminton pair to
+  // range fully), then swept the lane's own 5 m length and 1.1 m width against both those samples and
+  // every one of the city's 1194 physics boxes: (-42, 46) came back clear by 5.89 m at its tightest
+  // point (an inner-ring skyscraper's own footprint), at radius 62.3 from the origin — comfortably
+  // short of the radius (98) where robotRegion's own procedural fill takes over, and far from the
+  // tetherball pole, the cable tug-of-war and the badminton net already built into this city.
+  { const rx = -42, rz = 46, rry = PI / 2;
+    const sackWard = makeWardrobe(r, { shirts: [0x6a4a3a, 0x3a6a5a, 0x5a3a6a], pants: [0x232c34, 0x2a2a30], shoes: [0x1a1a20, 0x201c18] });
+    const sackA = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: sackWard }),
+      sack: 0x8a8278, hat: 'cap', hatColor: 0x3a4a5a, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.2) });
+    const sackB = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: sackWard }),
+      sack: 0x8a8278, hat: 'cap', hatColor: 0x3a4a5a, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.2) });
+    W.add(sackA.group); W.add(sackB.group);
+    game.npcs.push(new SackRace(game, sackA, sackB, { x: rx, z: rz, ry: rry,
+      cries: ["Lost a bet. Didn't think they'd actually make me do it.", "Careful, puss — these sacks held bolts an hour ago.", "Neither of us has ever once reached the end. Foreman says that's the point."] })); }
   const sq = new Squirrel(game, -14, -9, 'sq-robot'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('mouse', -8, 7); C.add('star', 12, -22); C.add('fish', -18, 2); C.add('yarn', 21, 9); C.add('star', 0, -27); C.add('fish', 4, 14); C.add('mouse', 26, -18); C.add('yarn', -26, -6);
