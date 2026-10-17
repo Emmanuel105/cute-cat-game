@@ -14285,3 +14285,29 @@ Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 conso
 Neighborhood's own friend count up from 63 to 65 for the two new neighbours. No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
 headless probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 540 — a look at Robot City's SECTOR 8 sign
+
+Robot City's east yard flies five neon signs: ROBOT WORKS, SECTOR 7 and CAT? all earned their own
+"walk up and look" toast over past rounds, and CHARGE got an actual customer (a robot plugged in at
+its pylon) — but SECTOR 8, hanging over the belt and crate pile the quality inspector tends, was the
+last of the five nobody had ever actually looked at. **Walking up to it now brings up a toast:**
+*"🟠 SECTOR 8. Orange, same as the crates it watches over."* *"✨ Nobody's re-lettered it since the
+line was Sector 3. Cheaper to rename the floor."* *"📦 Marks the belt, not much else. The inspector
+reads the paperwork instead."*
+
+No new mesh and no new physics box: `sign3` (`makeNeonSign('SECTOR 8', ...)`) was already kept in a
+variable rather than discarded, so it went straight to `game.addInteractable`. The tight corner it
+sits in — the conveyor belt, its own crate pile and the inspector's greet circle all crowd this part
+of the yard — meant a small radius was called for. A headless probe (the same stub-three harness
+`test/run.mjs` itself uses, `game.travel(2, 'from-prev')` then waited out the real fade timer with a
+`setTimeout` sleep between frames) read every interactable's own centre and radius straight from
+`game.interactables` rather than guessing: the conveyor's own "Look at the conveyor belt" (centre
+(44, 12), radius 5.5) cleared by 1.4 m after both radii, the inspector's "Say hello" (centre
+(47.6, 19.1), radius 2.1) by 0.5 m, and the crate pile's own physics box sat 1.23 m clear of the
+sign's chosen 1.1 m radius — tight, but with no overlap anywhere.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings — friend
+count unaffected, since a sign isn't greetable. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -3934,6 +3934,17 @@ function buildRobotCity(game, entry) {
     game.npcs.push(new Kneeler(game, inspector, { x: kx, z: kz, ry: atan2(cx - kx, cz - kz),
       cries: ['Every crate off Sector 8 gets a look before it leaves.', "Careful, puss — don't dent the paperwork.", "Line's running smooth today, for once."] })); }
   const sign3 = makeNeonSign('SECTOR 8', '#ff9f43', 6, W); sign3.position.set(44, 5.5, 20); sign3.rotation.y = PI;
+  // ROBOT WORKS, SECTOR 7 and CAT? all got their own "look" toast over the last few rounds, and CHARGE
+  // got an actual customer at its pylon — SECTOR 8 was the last of the city's five neon signs still mute.
+  // `sign3` is already kept in a variable rather than discarded, so it goes straight to
+  // `game.addInteractable`: no new mesh, no new box. A tight 1.1 m radius keeps clear of every neighbour
+  // sharing this corner of the east yard: 2.0 m short of conv2's own physics box edge (its belt spans
+  // z 6..18 at this x), 2.5 m inside the gap to conv2's own "Look at the conveyor belt" circle (centre
+  // (44, 12), radius 5.5), 1.2 m clear of the crate pile's physics box, and 1.6 m inside the gap to the
+  // quality inspector's own greet circle (radius 2.1, centred on her kneeling spot at (47.6, 19.1)) — no
+  // prompt here ever competes with another.
+  { const sign3Lines = ['🟠 "SECTOR 8. Orange, same as the crates it watches over."', '✨ "Nobody\'s re-lettered it since the line was Sector 3. Cheaper to rename the floor."', '📦 "Marks the belt, not much else. The inspector reads the paperwork instead."'];
+    game.addInteractable({ obj: sign3, radius: 1.1, label: () => 'Look at the sign', onUse: () => { SFX.click(); game.toast(rnd.pick(sign3Lines), 3000); } }); }
   const sign4 = makeNeonSign('CHARGE', '#4ade80', 5, W); sign4.position.set(-44, 6, 22); sign4.rotation.y = PI / 2;
   // the throne in Candy Land and the fountain in Victorian both got a one-off toast for walking up and
   // looking, but the plaza's own giant robot statue — the city's one proper landmark — never got so
