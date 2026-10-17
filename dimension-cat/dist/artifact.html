@@ -12513,6 +12513,38 @@ function buildRobotCity(game, entry) {
     U.push(() => { const frac = 0.5 + clamp(tug.tension, -1, 1) * 0.14;
       bulb.position.set(lerp(A.x, B.x, frac), lerp(ay, by, frac) + 0.04, lerp(A.z, B.z, frac));
       bulb.material.emissiveIntensity = 0.6 + abs(tug.tension) * 1.8; }); }
+  // the Neighborhood, Candy Land, Victorian, Sunny Shore, Frosty Peak and Whisper Woods have all had
+  // their own `Tetherball` (`55-npcs.js`) since round 508's own list of playground games went round
+  // every other world in turn — Robot City, for all its break-room sitter and its two haulers above
+  // straining on a cable, never got the one game actually played by people rather than robots. Two
+  // off-shift factory workers now bat a ball round a pole on a quiet stretch of concrete east of the
+  // yard. **A tetherball pole for Robot City.** *"Five minutes. This is how I spend every one of
+  // them."* *"Careful, puss — that thing's got a mean swing."* *"Foreman says it's bad for morale.
+  // Foreman's never won a point."*
+  //
+  // No new class and no new mesh: the exact same `Tetherball` the other six worlds already use, just a
+  // fresh pair of workers and a spot. `Tetherball` reaches into `rig.spine`, which `makeRobot()`'s rig
+  // never sets — the same reason the mechanic, painter, oil vendor and break-room worker already built
+  // earlier in this city are human contractors rather than robots — so this pair is human too, break-
+  // room `makeWardrobe` colours reused rather than a kid's.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, the
+  // real city built with `game.travel(2, 'from-hub')` and settled out past its own real-timer fade
+  // before anything was sampled) sampled every NPC's own position every 5th frame over 3600 simulated
+  // frames, then swept the pole at (29, -16) and both workers' own stations two metres either side of
+  // it, (31, -16) and (27, -16), plus the ball's own orbit extremes, against both those samples and
+  // every one of the city's 1193 physics boxes: the worst of the five points came back clear by 7.05 m
+  // of the nearest box and 7.38 m of the nearest other soul — short of the tug-of-war haulers above at
+  // (46, -8), the marching patrol's own beat and the squirrel below, and well inside the radius where
+  // robotRegion's own procedural fill takes over.
+  { const tetherWard = makeWardrobe(r, { shirts: [0x4a5a6a, 0x5a4a6a, 0x8a6a3a], pants: [0x232c34, 0x2a2a30] });
+    const workerA = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: tetherWard }),
+      hat: 'cap', hatColor: 0x3a4a5a, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.3) });
+    const workerB = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: tetherWard }),
+      hat: 'cap', hatColor: 0x3a4a5a, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.3) });
+    W.add(workerA.group); W.add(workerB.group);
+    game.npcs.push(new Tetherball(game, workerA, workerB, { x: 29, z: -16,
+      cries: ['Five minutes. This is how I spend every one of them.', "Careful, puss — that thing's got a mean swing.", "Foreman says it's bad for morale. Foreman's never won a point."] })); }
   const sq = new Squirrel(game, -14, -9, 'sq-robot'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('mouse', -8, 7); C.add('star', 12, -22); C.add('fish', -18, 2); C.add('yarn', 21, 9); C.add('star', 0, -27); C.add('fish', 4, 14); C.add('mouse', 26, -18); C.add('yarn', -26, -6);

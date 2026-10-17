@@ -14115,3 +14115,34 @@ nothing to do with this round's change). Candy Land's own friend count up from 7
 kids (also confirmed against the pre-change build). No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 535 — a tetherball pole for Robot City
+
+Round 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack races) had
+by now gone round every other world — the Neighborhood, Candy Land, Victorian, Sunny Shore, Frosty Peak
+and Whisper Woods all have their own tetherball pole — except Robot City, which had a break-room sitter
+and two haulers straining on a cable but nothing actually played as a game by people rather than
+robots. **Two off-shift factory workers now bat a ball round a pole on a quiet stretch of concrete
+east of the yard.** *"Five minutes. This is how I spend every one of them."* *"Careful, puss — that
+thing's got a mean swing."* *"Foreman says it's bad for morale. Foreman's never won a point."*
+
+No new class and no new mesh: the exact same `Tetherball` (`55-npcs.js`) every other world already
+uses. The pair are human, not robot — `Tetherball` reaches into `rig.spine`, which `makeRobot()`'s rig
+never sets, the same reason the mechanic, painter, oil vendor and break-room worker already in this
+city are all humans — so this reuses a factory-worker wardrobe rather than a new robot vignette.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses, the real city built with
+`game.travel(2, 'from-hub')` and settled out past its own real-timer fade before anything was sampled —
+an earlier pass that skipped that wait found none of the skyline's own tall towers in the physics list
+and nearly placed this one right on top of one) sampled every NPC's own position every 5th frame over
+3600 simulated frames, then swept the pole at (29, -16), both workers' own stations two metres either
+side of it and the ball's own orbit extremes against both those samples and every one of the city's
+1193 physics boxes: the worst of the five points came back clear by 7.05 m of the nearest box and
+7.38 m of the nearest other soul — short of the tug-of-war haulers at (46, -8), the marching patrol's
+own beat and the squirrel, and well inside the radius where robotRegion's own procedural fill takes over.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings. Robot
+City's own friend count up from 76 to 78 for the two new workers (confirmed against the pre-change
+build with `git stash`). No visual check was possible in this environment (no browser, no Playwright)
+— only the stub-three test suite and the headless probe above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
