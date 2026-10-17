@@ -14080,3 +14080,38 @@ Neighborhood's own friend count up from 61 to 63 for the two new racers (confirm
 pre-change build with `git stash`). No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 534 — a tetherball pole for Candy Land
+
+Round 508's own list of playground games this whole game had never tried (tetherball, badminton,
+tug-of-war, archery, sack races) handed every other sweet-land its own entry by now — the Neighborhood,
+Victorian, Robot City and Frosty Peak have all got a pole, net or rope — but Candy Land's own sack race
+(round 524) never came with a tetherball to go alongside it. **Two gingerbread-sweet kids now bat a ball
+round a pole out on the quiet grass east of the chocolate river**, sharing the field with the ukulele
+player and the kite-flying kid. *"Round and round — same as every other sweet-land game, just
+stickier."* *"Watch the rope, puss, it's had my fingers twice already."* *"Fifty wraps and counting. I
+always lose count past fifty."*
+
+No new class and no new mesh: the exact same `Tetherball` (`55-npcs.js`) the Neighborhood's own park
+pole already uses, just a fresh pair of kids and a spot — the pole, ball and rope are all built inside
+the constructor, and the ball's own orbit and rope-stretch logic needed nothing extra for a second copy.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses, `game.travel(1, 'from-hub')`,
+then every NPC's own position sampled every 5th frame over 1800 simulated frames, long enough for the
+ukulele player, the kite-flying kid, the gossiping pair and every wandering gingerbread man and dancer
+to range fully) swept the pole at (50, -30) and both kids' own stations two metres either side of it,
+(48, -30) and (52, -30), against both those samples and every one of the land's own physics boxes: the
+worst of the three points came back clear by 6.68 m of the nearest box (a candy-cane-forest trunk, the
+ring reaching in to radius 56 here) and 9.85 m of the nearest other soul (the kite-flying kid at
+(51, -33)) — short of the ukulele player at (49, -39), further off still, and well inside the radius
+(92) where candyRegion's own procedural fill takes over.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings (one
+re-run flagged the Victorian horse-and-carriage check, but it also flakes on an unmodified tree under
+load — `THREE.Clock.getDelta()` reads real wall-clock time in this harness, so a couple of leg-rotation
+and kite-height checks race a real timer rather than the fixed simulated step every other check uses;
+several clean re-runs, and a run against the pre-change build with `git stash`, both confirmed it has
+nothing to do with this round's change). Candy Land's own friend count up from 72 to 74 for the two new
+kids (also confirmed against the pre-change build). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

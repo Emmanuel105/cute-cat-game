@@ -11045,6 +11045,32 @@ function buildCandyLand(game, entry) {
     game.npcs.push(new SackRace(game, sackA, sackB, { x: rx, z: rz, ry: rry,
       cries: ['Hop faster, I\'m gaining!', "Tripped twice and still ahead — don't ask me how.", 'Best of three. Fourth, actually. Nobody\'s counting.'] })); }
 
+  // the Neighborhood (round 521), Victorian (522), Robot City (529) and Frosty Peak (520) all got a
+  // tetherball pole or a tug-of-war rope off round 508's own list of playground games this whole game
+  // had never tried — Candy Land got a sack race (524) and a carousel of its own, but the one pole-and-
+  // rope rally never made it to the sweet-lands. Two gingerbread-sweet kids now bat a ball round a pole
+  // out on the quiet grass east of the river, well clear of the ukulele player and the kite-flying kid
+  // sharing this same stretch of field. No new class and no new mesh: the exact same `Tetherball`
+  // (`55-npcs.js`) the Neighborhood's own park pole already uses, just a fresh pair of kids and a spot —
+  // the pole, ball and rope are all built inside the constructor.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses, `game.travel(1,
+  // 'from-hub')`, then every NPC's own position sampled every 5th frame over 1800 simulated frames, long
+  // enough for the ukulele player, the kite-flying kid, the gossiping pair and every wandering
+  // gingerbread man and dancer to range fully) swept (50, -30) — the pole itself — and both kids' own
+  // stations two metres either side of it, (48, -30) and (52, -30), against both those samples and every
+  // one of the land's own physics boxes: the worst of the three points came back clear by 6.68 m of the
+  // nearest box (one of the candy-cane-forest trunks, the ring reaching in to radius 56 here) and 9.85 m
+  // of the nearest other soul (the kite-flying kid at (51, -33)) — short of the ukulele player at
+  // (49, -39), 11.4 m further off still, and well past the radius (92) where candyRegion's own procedural
+  // fill takes over.
+  { const tetherWard = makeWardrobe(r, { shirts: [0xffd54a, 0x7fd7ff], pants: [0xff6fb5, 0x8d6e63] });
+    const boy = makeHuman({ ...randomPerson(r, { female: false, child: true, wardrobe: tetherWard }), hat: null, jacket: null, scarf: null, bag: null, backpack: null });
+    const girl = makeHuman({ ...randomPerson(r, { female: true, child: true, wardrobe: tetherWard }), hat: null, jacket: null, scarf: null, bag: null, backpack: null, hairStyle: 'braids' });
+    W.add(boy.group); W.add(girl.group);
+    game.npcs.push(new Tetherball(game, boy, girl, { x: 50, z: -30,
+      cries: ['Round and round — same as every other sweet-land game, just stickier.', 'Watch the rope, puss, it\'s had my fingers twice already.', 'Fifty wraps and counting. I always lose count past fifty.'] })); }
+
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('star', 7, -6); C.add('yarn', -9, 9); C.add('fish', -16, -13); C.add('mouse', 16, -9); C.add('star', -10, -27); C.add('yarn', 22, 4); C.add('mouse', -28, 26); C.add('fish', 14, -44); C.add('star', 0, -56); C.add('mouse', -58, 30); C.add('yarn', 60, 36);
