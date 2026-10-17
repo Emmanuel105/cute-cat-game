@@ -14217,3 +14217,36 @@ own friend count up from 89 to 91 for the two new draymen (confirmed against the
 `git stash`). No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite and the corrected headless probe above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 538 — a tug-of-war for Candy Land
+
+Round 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack races) had
+by now gone round Frosty Peak, Robot City, Sunny Shore, Whisper Woods and Victorian — Candy Land, for
+all its tetherball pole and its carousel, never had the one contest with no ball, shoe or shuttle to
+send back and forth. **Two market hands in candy-striped aprons now dig their heels into the open grass
+far out past the east cane-forest belt and heave on a length of liquorice rope between them, never
+quite settling either way.** *"Heave! That liquorice won't give an inch, and neither will I!"* *"Mind
+your tail, puss — this rope's stickier than it looks."* *"Dead heat again. Sugar makes for a slippery
+grip, some days."*
+
+No new class and no new mesh: the exact same `TugOfWar` (`55-npcs.js`) the other five worlds already
+use, with the same rope-and-flag dressing those five already build around it — just two fresh
+`makeHuman` stall hands rather than a snowsuit, factory overalls or beachwear (the gingerbread rig's
+own arms have no shoulder/elbow sub-joints for `TugOfWar` to pose, so this stayed with `makeHuman` like
+every other world's pair, rather than dressing it up as two gingerbread men).
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses — click
+the real start button, `game.travel(1, 'from-prev')`, then poll `game.worldIndex` with a real
+`setTimeout` sleep between frames rather than guessing a frame count) sampled every NPC's own position
+every fifth frame over 1800 simulated frames, then swept a 2 m grid of the land's own quiet south-east
+corner — short of the 92 m radius where `candyRegion`'s own procedural fill takes over, clear of the
+chocolate river's own band, the cane-forest ring and the castle's own approach — against both those
+samples and all 1959 of the land's physics boxes: (77, -41) came back clearest of the lot, 16.57 m from
+the nearest box and 20.89 m from the nearest other soul at its own centre, with both hands' own
+stations clear by 16.39–16.44 m of the nearest box and 20.22–21.62 m of the nearest other soul.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings. Candy Land's
+own friend count up from 74 to 76 for the two new stall hands (confirmed against the pre-change build
+with `git stash`). No visual check was possible in this environment (no browser, no Playwright) — only
+the stub-three test suite and the headless probe above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
