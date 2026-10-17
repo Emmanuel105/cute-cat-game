@@ -14442,3 +14442,37 @@ Sunny Shore's own ground still walkable. Sunny Shore's own friend count rises to
 kids. No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite and the headless probe above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 545 — a tetherball pole for Frosty Peak
+
+The Neighborhood, Candy Land, Robot City, Victorian and Sunny Shore have all had a tetherball pole
+since round 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack
+races) went round every world in turn — Frosty Peak, for all its tug-of-war, archery range, horseshoes
+and curling, never got the one game played standing still, swinging a ball on a rope round and round a
+post. **Two kids now keep a rally going on open snow east of the marching penguins' own drill line.**
+*"Round and round — same as every other game on the mountain, just colder."* *"Mind the rope, puss —
+mittens or not, it still stings."* *"Forty wraps. No, forty-one. I keep losing count in the cold."*
+
+No new class and no new mesh: the exact same `Tetherball` (`55-npcs.js`) the other five worlds already
+use, unchanged — it already asks `game.physics.ground0()` for its own pole, ball and each player's
+footing every frame, so the gentle slope out here cost nothing extra. Both kids come from this world's
+own `kid()` helper, the same one every other Frosty Peak child already comes from, which already adds
+its own rig to the scene, so no separate `W.add()` call was needed here.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, built the
+real mountain with `game.start('new')` then `game.travel(5, 'from-hub')`) sampled every NPC's own
+position every 5th frame over 1500 simulated frames, then swept a grid of the open snowfield (radius
+12-56, short of the radius (58) where `snowRegion`'s own procedural fill takes over) against both those
+samples and every one of the mountain's physics boxes, checking the pole's own spot and both kids'
+footing two metres either side of it: (21, -52) came back clear by 9.1 m at its tightest point, east of
+the marching penguins' own line ((55, -5)-(55, 3)) and well short of where the fill takes over.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings. One
+unrelated failure showed up on a single run out of several (`Victorian: the horse and carriage are in
+the world and on the move`) — the pre-existing, timing-based flake the test file's own comments have
+documented since round 219 (the bobby's patrol crossing the carriage lane mid-measurement), confirmed
+by reverting this round's change and seeing the exact same intermittent failure on the unmodified code
+too; three clean reruns of both the modified and unmodified code back it up. Frosty Peak's own friend
+count rises from 67 to 69 with the two new kids. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

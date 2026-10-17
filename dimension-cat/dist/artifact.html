@@ -16743,6 +16743,32 @@ function buildSnowVillage(game, entry) {
   { const marchers = [0, 1, 2].map(() => { const rig = makePenguin({ scale: r.range(0.85, 1.05) }); W.add(rig.group); return rig; });
     game.npcs.push(new Marchers(game, marchers, { points: [[55, -5], [55, 3]], speed: 0.65, pause: [1, 2], r: 0.3, height: 0.9, gap: 0.9,
       cries: ['Waddle. Waddle. Precision waddle.', "Mind the queue, puss — we've drilled this.", 'Column of three. Nobody elected a leader; the ice did.'], cryIcon: '🐧' })); }
+  // The Neighborhood, Candy Land, Robot City, Victorian and Sunny Shore have all had a tetherball pole
+  // since round 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack
+  // races) went round every world in turn — Frosty Peak, for all its tug-of-war, archery range,
+  // horseshoes and curling, never got the one game played standing still, swinging a ball on a rope
+  // round and round a post. **Two kids keep a rally going on open snow east of the marching penguins'
+  // own stretch of ice.** *"Round and round — same as every other game on the mountain, just colder."*
+  // *"Mind the rope, puss — mittens or not, it still stings."* *"Forty wraps. No, forty-one. I keep
+  // losing count in the cold."*
+  //
+  // No new class and no new mesh: the exact same `Tetherball` (`55-npcs.js`) the other five worlds
+  // already use, unchanged — it asks `game.physics.ground0()` for its own pole, ball and each player's
+  // footing every frame, so the gentle slope out here costs nothing extra. Both kids come from this
+  // file's own `kid()` helper, the same one every other Frosty Peak child already comes from (which
+  // already adds its own rig to the scene, so no separate `W.add()` call was needed here).
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, built
+  // the real mountain with `game.start('new')` then `game.travel(5, 'from-hub')`) sampled every NPC's
+  // own position every 5th frame over 1500 simulated frames, then swept a grid of the open snowfield
+  // (radius 12-56, short of the radius (58) where snowRegion's own fill takes over) against both those
+  // samples and every one of the mountain's 388 body-height physics boxes, checking the pole's own spot
+  // and both kids' footing 2 m either side of it: (21, -52) came back clear by 9.1 m at its tightest
+  // point, east of the marching penguins' own line ((55, -5)-(55, 3)) and well short of where the fill
+  // takes over.
+  { const tA = kid(false), tB = kid(true);
+    game.npcs.push(new Tetherball(game, tA, tB, { x: 21, z: -52,
+      cries: ['Round and round — same as every other game on the mountain, just colder.', 'Mind the rope, puss — mittens or not, it still stings.', "Forty wraps. No, forty-one. I keep losing count in the cold."] })); }
   // Whisper Woods got the first archery range (round 525, `Archer`, 55-npcs.js) and nobody else's had
   // one since — Frosty Peak's own hunting lodge feel (the trapper by the fire, the ice fisher on the
   // pond) never got a firing line of its own. **A lone archer now draws and looses at a straw target
