@@ -14794,3 +14794,41 @@ worlds (the Neighborhood, Candy Land, Robot City, Victorian, Sunny Shore); Frost
 Woods are left to get one of their own. No visual check was possible in this environment (no browser,
 no Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 555 — a sack race for Frosty Peak
+
+`SackRace`'s own tour of the seven worlds is down to one now — the Neighborhood, Candy Land, Robot
+City, Victorian and Sunny Shore all have one of their own; only Whisper Woods is left after this.
+Frosty Peak, for all its sledder, snowball fight, tug-of-war, tetherball, archery range and badminton
+net, never had the one race run two hops at a time with both ankles tied together. **Two bundled-up
+kids now hop a short lane on a quiet, flat stretch of snowfield east of the village**, feet bound
+ankle to waist in borrowed flour sacks, warm coats and beanies swapped in for the other worlds' bare
+shirts. *"Sand would be easier than snow for this — at least it doesn't melt down your sack."* *"Mind
+your tail, puss, I can't steer in this thing."* *"Best of three. I'm blaming the drifts if I lose."*
+
+No new class and no new mesh: the exact same `SackRace` (`55-npcs.js`) and `makeHuman`'s own `o.sack`
+option the other five worlds already use. It calls `game.physics.ground0()` for each racer's own
+footing every frame, the same way this mountain's tug-of-war, tetherball and badminton already handle
+the real slope underfoot, so nothing extra was needed for terrain.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+`game.travel(5, 'from-hub')` then 2400 simulated frames, every NPC's own position sampled every 10th
+frame) swept a grid of the open snowfield (radius 28-54, short of the radius (58) where `snowRegion`'s
+own fill takes over, both lane orientations) against both those samples and every one of the
+mountain's 746 physics boxes: (41.4, -34.7), lane running along world X (`ry = PI/2`), came back
+clearest at 7.23 m from the nearest box or soul at its tightest point, with the ground flat to 0.14 m
+across the whole 5 m lane — well clear of the archery range (55, 3), the tetherball pole (21, -52),
+the badminton net (-38, -35) and the frost beetle (38, 8).
+
+Built dead last, right after the badminton net, for the same reason every other addition at the end of
+this function already gives: `makeHuman()` draws three values off the *shared* `rnd()` sequence
+unconditionally, and a fresh pair of rigs built any earlier on this mountain would shift that sequence
+and desync every other timing-sensitive pick already placed above.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings. Frosty Peak's
+own friend count rises from 71 to 73 with the two new racers (confirmed against the unmodified base
+with `git stash`); ground walkable holds at 97%, unchanged. `SackRace` is now in six of the seven
+worlds (the Neighborhood, Candy Land, Robot City, Victorian, Sunny Shore, Frosty Peak); only Whisper
+Woods is left to get one of its own. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
