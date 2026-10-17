@@ -9668,6 +9668,28 @@ function buildNeighborhood(game, entry) {
     W.add(bA.group); W.add(bB.group);
     const badmintonLines = ["Nice and quiet up here — nobody to duck a stray shot.", "Mind the net, puss, that's the only thing taller than you for fifty feet.", 'Thirty-two. No, thirty-three — I keep losing count on the turn.'];
     game.npcs.push(new Badminton(game, bA, bB, shuttle, { cx, cz, gap, cries: badmintonLines })); }
+  // Sunny Shore has had a kid bouncing in place on a pogo stick since round 420-odd, out on the dry
+  // sand past the volleyball court; no other world ever got one of its own. A kid now bounces on the
+  // quiet grass just west of the stepping-stone path to the hollow oak, past the badminton net. *"Boing!
+  // Boing! Boing! Watch this, puss!"* *"Lost count past a hundred — starting over."* *"Don't laugh, it's
+  // harder than it looks."*
+  //
+  // No new class and no new mesh: the exact same `PogoHopper` (`55-npcs.js`) Sunny Shore already uses.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses, `game.start('new')`, no
+  // `game.travel()` needed since the Neighborhood is the world every test run already starts on) sampled
+  // every NPC's own position every 10th frame over 2400 simulated frames, then swept the open grass north
+  // of the park (clear of the stepping-stone path to the hollow oak, which only starts at x=5) against
+  // both those samples and every one of the street's own physics boxes: (-2.5, 70.5) came back clear by
+  // 14.8 m of the nearest box and 18.1 m of the nearest other soul — well past the badminton net (-18,
+  // 64) and 7.5 m clear of the hollow-oak path's own edge.
+  // Built dead last, after the badminton net, for the same reason every other addition at the end of
+  // this function already gives: `makeHuman()` draws three values off the *shared* `rnd()` sequence
+  // unconditionally, and a fresh rig built any earlier on this street would shift that sequence and
+  // desync the two-neighbours-chat timing test a thousand-odd lines up.
+  { const pogoKid = makeHuman({ ...randomPerson(r, { child: true, female: r.chance(0.5) }), shirt: 0x7c4dff, hat: null, jacket: null, coat: null, scarf: null, bag: null, backpack: null }); W.add(pogoKid.group);
+    game.npcs.push(new PogoHopper(game, pogoKid, r.pick([0xff6f3c, 0x3fae9a, 0xf2c744]), { x: -2.5, z: 70.5, ry: r.range(0, TAU),
+      cries: ['Boing! Boing! Boing! Watch this, puss!', 'Lost count past a hundred — starting over.', "Don't laugh, it's harder than it looks."] })); }
 
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);

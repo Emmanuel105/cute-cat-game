@@ -14833,6 +14833,41 @@ Woods is left to get one of its own. No visual check was possible in this enviro
 Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
 
+## Round 557 — a pogo stick for the Neighborhood
+
+Sunny Shore has had a kid bouncing in place on a pogo stick since round 420-odd (`PogoHopper` in
+`55-npcs.js`), out on the dry sand past the volleyball court, but no other world ever got one of its
+own. **A kid now bounces on the quiet grass just west of the stepping-stone path to the hollow oak,
+past the badminton net.** *"Boing! Boing! Boing! Watch this, puss!"* *"Lost count past a hundred —
+starting over."* *"Don't laugh, it's harder than it looks."*
+
+No new class and no new mesh: the exact same `PogoHopper` Sunny Shore already uses — the pole is
+parented straight to the rig's own body and hops with it, the coiled spring squashing at the bottom of
+each hop and stretching at the top.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+`game.start('new')`, no `game.travel()` needed since the Neighborhood is the world every test run
+already starts on) sampled every NPC's own position every 10th frame over 2400 simulated frames, then
+swept the open grass north of the park — clear of the stepping-stone path to the hollow oak, which
+only starts at x=5 — against both those samples and every one of the street's own 325 physics boxes:
+(-2.5, 70.5) came back clear by 14.8 m of the nearest box and 18.1 m of the nearest other soul, well
+past the badminton net (-18, 64) and 7.5 m clear of the hollow-oak path's own edge.
+
+Built dead last, right after the badminton net, for the same reason every other addition at the end of
+this function already gives: `makeHuman()` draws three values off the shared `rnd()` sequence
+unconditionally, and a fresh rig built any earlier on this street would shift that sequence and desync
+the two-neighbours-chat timing test a thousand-odd lines up. The shirt colour (a fixed `0x7c4dff`, not
+drawn from the street's own shared wardrobe bag) was checked against the full palette already in use
+and confirmed unique by the suite's own "no two neighbours wear the same shirt" check.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings. The
+Neighborhood's own friend count rises from 67 to 68 with the new kid (confirmed against the unmodified
+base with `git stash`); ground walkable holds at 96%, unchanged. `PogoHopper` is now in two of the
+seven worlds (Sunny Shore, the Neighborhood); Candy Land, Robot City, Victorian, Frosty Peak and
+Whisper Woods are left to get one of their own. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
 ## Round 556 — a sack race for Whisper Woods
 
 `SackRace`'s own tour of the seven worlds closes out here — the Neighborhood, Candy Land, Robot City,
