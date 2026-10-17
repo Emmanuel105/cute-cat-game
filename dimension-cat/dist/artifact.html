@@ -18483,6 +18483,55 @@ function buildForest(game, entry) {
     game.npcs.push(new Tetherball(game, tA, tB, { x: 41, z: -27,
       cries: ['Round and round — same as every other game in these woods, just leafier.', "Mind the rope, puss — it doesn't care whose tail is in the way.", "I'm up to twenty wraps. No, I lost count again."] })); }
 
+  // The Neighborhood, Candy Land, Robot City, Victorian, Sunny Shore and Frosty Peak have all had a
+  // badminton net since round 508's own list of playground games (tetherball, badminton, tug-of-war,
+  // archery, sack races) went round every world in turn — Whisper Woods picked up an archery range, a
+  // tug-of-war and the tetherball pole above out of that same list, but never the one racket game
+  // played standing still, swinging a shuttlecock back and forth over a net. **Two forest-dwellers now
+  // keep a rally going on a quiet patch of open ground north-east of the hollow oak**, well clear of
+  // the frisbee player and the tetherball pole. *"Shuttlecock's stuffed with real feathers — found
+  // half of them already, mind."* *"Mind the net, puss — brambles have nothing on it."* *"Forty-one...
+  // forty-two. The owls are judging us, I'm sure."*
+  //
+  // No new class and no new mesh: the exact same `Badminton` (`55-npcs.js`) and `makeVolleyballNet`
+  // (`62-props-nature.js`) the other six worlds already use, with `placeT`/`boxT` in place of a flat
+  // floor's `place`/`P.addBox` the same way every other hand-placed prop in these woods already
+  // accounts for the terrain, and a fresh woodland wardrobe (earthy shirts, no hats, bags or jackets)
+  // in place of a town's muted colours or the beach's bright ones.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // `game.start('new')` then `game.travel(6, 'from-hub')`, waited out on the real portal-fade timer
+  // rather than assumed) sampled every live physics circle — every NPC's and the squirrel's own
+  // current position, not just its home spot, which also catches the tetherball and tug-of-war pairs
+  // this probe method had missed before — every 3rd frame over 3600 simulated frames (60 s, long
+  // enough for every leashed deer, fox and hare to range fully), then swept a grid of the open
+  // woodland floor (radius 15-50, short of the radius (58) where `forestRegion`'s own fill takes over)
+  // against both those samples and every one of the wood's 682 physics boxes: (9, 47) came back clear
+  // by 6.70 m of the nearest box and 6.86 m of the nearest other soul (the frisbee player at (13, 53))
+  // at its tightest point, with the ground flat to 0.14 m across the whole footprint — south-east of
+  // the hollow oak itself (0, 50) and its own path (the `zones.addSpan` strip runs -3..3 in x, clear by
+  // 6 m), and short of the fill radius.
+  //
+  // Built right after the tetherball pole, the last thing this world adds before the squirrel spawn
+  // point, so `makeHuman()`'s own three unconditional draws off the shared `rnd()` sequence land after
+  // every other timing-sensitive pick in this wood and disturb nothing built earlier.
+  { const cx = 9, cz = 47, gap = 5.6, halfW = 1.8;
+    const net = makeVolleyballNet(halfW, 0x8a7050, { postH: 1.6, netH: 0.78 });
+    placeT(game, U, net, cx, cz, 0);
+    for (const sx of [-halfW, halfW]) boxT(game, cx + sx, cz, 0.16, 1.6, 0.16, { cam: false });
+    // the shuttlecock: a pale cork and a flared cone standing in for the feathers, nose staying down
+    const shuttle = group(cx, 0, cz, W);
+    mesh(G.sphere(0.045, 10, 8), mat(0xf0ead6, { roughness: 0.6 }), { y: 0, parent: shuttle });
+    mesh(G.cone(0.075, 0.16, 10), mat(0xfbfaf4, { roughness: 0.8 }), { y: 0.11, rx: PI, parent: shuttle });
+    const bmWard = makeWardrobe(r, { shirts: [0x6a8a4a, 0x8a6a3a, 0x4a6a6a], pants: [0x3a3327, 0x2a2a24], shoes: [0x3a2a1e, 0x2a2018] });
+    const bA = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: bmWard }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: r.chance(0.3), racket: true });
+    const bB = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: bmWard }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: r.chance(0.3), racket: true });
+    W.add(bA.group); W.add(bB.group);
+    const badmintonLines = ['🏸 "Shuttlecock\'s stuffed with real feathers — found half of them already, mind."', '🏸 "Mind the net, puss — brambles have nothing on it."', '🏸 "Forty-one... forty-two. The owls are judging us, I\'m sure."'];
+    game.npcs.push(new Badminton(game, bA, bB, shuttle, { cx, cz, gap, cries: badmintonLines })); }
+
   const sq = new Squirrel(game, -14, 20, 'sq-forest'); game.squirrels.push(sq);
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
 

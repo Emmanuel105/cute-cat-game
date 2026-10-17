@@ -14640,3 +14640,50 @@ runs (base and modified) the pre-existing, already-documented Victorian horse-an
 round's change away and re-running — unrelated to this round. No visual check was possible in this
 environment (no browser, no Playwright) — only the stub-three test suite and the headless probe above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 551 — a badminton net for Whisper Woods
+
+The last name left on round 508's own list of worlds still owing round 508's playground games a net was
+Whisper Woods itself: it already had an archery range, a tug-of-war and a tetherball pole out of that
+same round-up, but never the one racket game played over a net. **Two forest-dwellers now keep a rally
+going on a quiet patch of open ground north-east of the hollow oak**, well clear of the frisbee player
+and the tetherball pole. *"Shuttlecock's stuffed with real feathers — found half of them already,
+mind."* *"Mind the net, puss — brambles have nothing on it."* *"Forty-one... forty-two. The owls are
+judging us, I'm sure."*
+
+No new class and no new mesh: the exact same `Badminton` (`55-npcs.js`) and `makeVolleyballNet`
+(`62-props-nature.js`) the other six worlds already use, with `placeT`/`boxT` in place of a flat
+floor's `place`/`P.addBox` the same way every other hand-placed prop in these woods already accounts
+for the terrain, and a fresh woodland wardrobe (earthy shirts, no hats, bags or jackets) in place of a
+town's muted colours or the beach's bright ones.
+
+Whisper Woods turned out to be the densest of the seven worlds — over a hundred NPCs, deer and foxes
+wandering on long leashes, a dozen butterflies drifting everywhere — so the usual rig-position probe
+(sample every NPC's `.rig.group.position` every few frames) came back with false "clear" readings:
+`Tetherball` and `TugOfWar` keep their player rigs under `.rigs`/`.ctls`, not a plain `.rig`, so the
+probe's first pass missed both pairs entirely and would have planted the new net right on top of a
+hopping ladybug it also failed to catch. Rebuilt the probe around the physics engine's own live
+`circles` list instead (every person, creature and squirrel registers one, kept current every frame the
+same way the cat's own collision does), which is exactly what the game asks when it decides whether
+something is blocked — far more reliable than re-deriving it from each controller's own differently
+-shaped fields. With that fixed, a headless probe (`game.start('new')` then `game.travel(6,
+'from-hub')`, waited out on the real portal-fade timer) sampled every live circle every 3rd frame over
+3600 simulated frames (60 s, long enough for every leashed deer, fox and hare to range fully), then
+swept a grid of the open woodland floor (radius 15-50, short of the radius (58) where `forestRegion`'s
+own fill takes over) against both those samples and every one of the wood's 682 physics boxes: (9, 47)
+came back clear by 6.70 m of the nearest box and 6.86 m of the nearest other soul (the frisbee player at
+(13, 53)) at its tightest point, with the ground flat to 0.14 m across the whole footprint.
+
+Built right after the tetherball pole, the last thing this world adds before the squirrel spawn point,
+so `makeHuman()`'s own three unconditional draws off the shared `rnd()` sequence land after every other
+timing-sensitive pick in this wood and disturb nothing built earlier.
+
+Full suite (`node test/run.mjs`) ran clean on seven separate runs: exit 0, all 274 checks `ok`, 0 console
+warnings, 98% of Whisper Woods' own ground still walkable (unchanged from before this round). One run (on
+both this round's code and the unmodified base, confirmed by stashing the change away) showed the
+pre-existing, already-documented Victorian horse-and-carriage timing flake (rounds 547, 549, 550) —
+unrelated to this round. Whisper Woods' own friend count rises from 68 to 70 with the two new
+forest-dwellers — `Badminton` is now in all seven worlds, closing out round 508's own list of playground
+games. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite and the headless probe above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
