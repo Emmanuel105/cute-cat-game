@@ -14565,3 +14565,40 @@ console warnings, 92% of Candy Land's own ground still walkable (unchanged from 
 Candy Land's own friend count rises from 76 to 78 with the two new kids. No visual check was possible in
 this environment (no browser, no Playwright) — only the stub-three test suite and the headless probe
 above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 549 — a badminton net for the Neighborhood
+
+Round 508's own list of playground games — tetherball, badminton, tug-of-war, archery, sack races — had
+one `Badminton` net left unplaced: Victorian, Sunny Shore, Robot City and Candy Land all had one, but
+the Neighborhood itself, for all its tetherball pole, sack race and tug-of-war, never got the other
+racket game. **A net now stands on a quiet stretch of open grass north of the park**, past the pond and
+the portal, where nothing else on this street had ever been built. Two off-duty neighbours keep a
+shuttlecock going back and forth over it. *"Nice and quiet up here — nobody to duck a stray shot."*
+*"Mind the net, puss, that's the only thing taller than you for fifty feet."* *"Thirty-two. No,
+thirty-three — I keep losing count on the turn."*
+
+No new class and no new mesh: the exact same `Badminton` (`55-npcs.js`) and `makeVolleyballNet`
+(`62-props-nature.js`) the other four worlds already use. A headless probe (the same stub-three harness
+`test/run.mjs` itself uses, `game.start('new')`, no `game.travel()` needed since the Neighborhood is the
+world every test run already starts on) sampled every NPC's own position every 5th frame over 2400
+simulated frames, then swept a grid of the street against both those samples and every physics box:
+(-18, 64) and the net posts/players' own stations around it all came back clear by 10.6 m of the
+nearest box and 18.2 m of the nearest other soul — well past the portal (0, 50), the pond (-12, 46) and
+the kite flyer (22, 52), the nearest hand-placed things to it.
+
+Built dead last, after the tug-of-war, for the reason every other addition at the end of this world's
+build function already gives: `makeHuman()` draws three values off the *shared* `rnd()` sequence
+unconditionally. That alone cost two timing-sensitive checks further up the same file — the two
+neighbours' chat timing and the cyclist's pedalling-delta check — both failing the same way the
+lemonade stand's and the woodcutter's own comments already warned about. Bisected the same way those two
+were: one extra `rnd()` burned right before this pair's own wardrobe is built puts both checks back to
+passing, confirmed clean on eleven separate runs after the fix (one single run showed the pre-existing,
+already-documented Victorian horse-and-carriage flake, unrelated to this change — confirmed by seeing
+the same intermittent failure on the unmodified code too).
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings, 96% of the
+Neighborhood's own ground still walkable (unchanged from before this round). The Neighborhood's own
+friend count rises from 65 to 67 with the two new neighbours — `Badminton` is now in five of the seven
+worlds; only Frosty Peak and Whisper Woods are left to get a net of their own. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
+headless probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

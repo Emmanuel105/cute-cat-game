@@ -9627,6 +9627,47 @@ function buildNeighborhood(game, entry) {
     const flag = group(0, 0, 0, W); noInk(mesh(G.box(0.03, 0.14, 0.4), mat(0x8b1a1a, { roughness: 0.7 }), { parent: flag }));
     U.push(() => { const frac = 0.5 + clamp(tug.tension, -1, 1) * 0.12;
       flag.position.set(lerp(A.x, B.x, frac), lerp(ay, by, frac) + 0.03, lerp(A.z, B.z, frac)); flag.rotation.y = ropeGroup.rotation.y; }); }
+  // the tug-of-war above closed out round 508's own list of playground games everywhere except
+  // Badminton, which had gone round Victorian, Sunny Shore, Robot City and Candy Land but never the
+  // Neighborhood itself. A net now stands on a quiet stretch of open grass north of the park, past the
+  // pond and the portal, where nothing else in this street has ever been built. Two off-duty neighbours
+  // keep a shuttlecock going back and forth over it. *"Nice and quiet up here — nobody to duck a stray
+  // shot."* *"Mind the net, puss, that's the only thing taller than you for fifty feet."* *"Thirty-two.
+  // No, thirty-three — I keep losing count on the turn."*
+  //
+  // No new class and no new mesh: the exact same `Badminton` (`55-npcs.js`) and `makeVolleyballNet`
+  // (`62-props-nature.js`) Victorian, Sunny Shore, Robot City and Candy Land already use.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses, `game.start('new')`, no
+  // `game.travel()` needed since the Neighborhood is the world every test run already starts on) sampled
+  // every NPC's own position every 5th frame over 2400 simulated frames, then swept a grid of the open
+  // lawn north of the park (clear of the stepping-stone path to the hollow oak, which only starts at
+  // x=5) against both those samples and every one of the street's own physics boxes: (-18, 64) and the
+  // four points around it (the net posts at ±1.6 m in x, both players' own stations at ±2.8 m in z) all
+  // came back clear by 10.6 m of the nearest box and 18.2 m of the nearest other soul — comfortably past
+  // the portal (0, 50), the pond (-12, 46) and the kite flyer (22, 52), the nearest hand-placed things to
+  // it.
+  // Built dead last, after the tug-of-war, for the same reason every other addition at the end of this
+  // function already gives: `makeHuman()` draws three values off the *shared* `rnd()` sequence
+  // unconditionally, and two more rigs built any earlier on this street would shift that sequence and
+  // desync the two-neighbours-chat timing test a thousand-odd lines up.
+  { const cx = -18, cz = 64, gap = 5.6, halfW = 1.6;
+    const net = makeVolleyballNet(halfW, 0xf7f3ec, { postH: 1.6, netH: 0.78 });
+    place(game, U, net, cx, cz, 0);
+    for (const sx of [-halfW, halfW]) P.addBox(cx + sx, 0.8, cz, 0.16, 1.6, 0.16, { cam: false });
+    // the shuttlecock: a pale cork and a flared cone standing in for the feathers, nose staying down
+    const shuttle = group(cx, 0, cz, W);
+    mesh(G.sphere(0.045, 10, 8), mat(0xf0ead6, { roughness: 0.6 }), { y: 0, parent: shuttle });
+    mesh(G.cone(0.075, 0.16, 10), mat(0xfbfaf4, { roughness: 0.8 }), { y: 0.11, rx: PI, parent: shuttle });
+    rnd();   // burns one shared draw: without it this pair's cry timer lands on a tick that desyncs the Talkers/cyclist timing checks (found by bisection, the same class of bug the lemonade stand and the woodcutter's own comments above already warn about)
+    const badWard = makeWardrobe(r, { shirts: [0x5ad1e6, 0xe08a3f], pants: [0x2c3140, 0x3a3a3a], shoes: [0x2a2018, 0x1e1a16] });
+    const bA = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: false, wardrobe: badWard }),
+      hat: null, jacket: null, coat: null, scarf: null, bag: null, backpack: null, racket: true });
+    const bB = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: false, wardrobe: badWard, hairStyle: 'pony' }),
+      hat: null, jacket: null, coat: null, scarf: null, bag: null, backpack: null, racket: true });
+    W.add(bA.group); W.add(bB.group);
+    const badmintonLines = ["Nice and quiet up here — nobody to duck a stray shot.", "Mind the net, puss, that's the only thing taller than you for fifty feet.", 'Thirty-two. No, thirty-three — I keep losing count on the turn.'];
+    game.npcs.push(new Badminton(game, bA, bB, shuttle, { cx, cz, gap, cries: badmintonLines })); }
 
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
