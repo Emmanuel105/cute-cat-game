@@ -13248,6 +13248,48 @@ function buildVictorian(game, entry) {
     W.add(bA.group); W.add(bB.group);
     const badmintonLines = ['Sixty-one, by my count — more than we\'ve ever got to.', 'Mind your whiskers, puss, that net won\'t stop a determined paw.', 'Lost count again. Call it a draw, same as always.'];
     game.npcs.push(new Badminton(game, bA, bB, shuttle, { cx, cz, gap, cries: badmintonLines })); }
+  // round 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack races)
+  // has long since gone round the other six worlds — Frosty Peak, Robot City, Sunny Shore and Whisper
+  // Woods have all had two rigs strain against a rope of their own (`TugOfWar`, 55-npcs.js) — but
+  // Victorian, for all its quoits and its badminton net, never had the one contest with no ball, shoe
+  // or shuttle to send back and forth. Two off-duty draymen now dig their heels into the open grass
+  // east of the coalman's own yard and heave on a length of cart rope between them, never quite
+  // settling either way. *"Heave away, lads — she won't give an inch!"* *"Mind your tail, puss, that
+  // rope's seen rougher use than this."* *"Best of however many we've lost count of — same as every
+  // Sunday."*
+  //
+  // No new class and no new mesh: the exact same `TugOfWar` the other four worlds already use,
+  // unchanged, with the same rope-and-flag dressing those four already build around it — just two
+  // fresh `makeHuman` draymen in shirtsleeves and braces rather than a snowsuit, factory overalls or
+  // beachwear.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // clicking the real start button and then `game.travel(3, 'from-prev')`, waiting out both the load
+  // and the fade-lock timers rather than guessing a frame count) sampled every NPC's own position
+  // every fifth frame over 2400 simulated frames, then swept a grid of this quiet east corner — clear
+  // of the main street's own keep-out band (|z|<20) and short of the radius (88) where
+  // `victorianRegion`'s own procedural fill takes over — against both those samples and every one of
+  // the town's 589 physics boxes: (75, -29) came back clear by 16.9 m of the nearest box and 25.1 m of
+  // the nearest other soul at its own centre, with both draymen's own stations 1.3 m either side of it
+  // (rope running north-south) clear by 15.9 m and 18.0 m of the nearest box and 24.6 m and 25.6 m of
+  // the nearest other soul — well east of the coalman's own chute (52, -15) and the night watchman's
+  // bench (36, -30).
+  { const tugWard = makeWardrobe(r, { shirts: [0x6a5a4a, 0x4a5a6a, 0x5a6a4a], pants: [0x2a2420, 0x2a2a30], shoes: [0x2a2018, 0x1e1a16] });
+    const haulerA = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: false, wardrobe: tugWard, build: 'stout' }),
+      hat: 'flatcap', hatColor: 0x3a3327, jacket: null, coat: null, scarf: null, bag: null, backpack: null, sleeves: true, glasses: false });
+    const haulerB = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: false, wardrobe: tugWard, build: 'stout' }),
+      hat: 'flatcap', hatColor: 0x2a2a2a, jacket: null, coat: null, scarf: null, bag: null, backpack: null, sleeves: true, glasses: false });
+    W.add(haulerA.group); W.add(haulerB.group);
+    const tug = new TugOfWar(game, haulerA, haulerB, { x: 75, z: -29, ry: 0, gap: 2.6,
+      cries: ['Heave away, lads — she won\'t give an inch!', "Mind your tail, puss, that rope's seen rougher use than this.", "Best of however many we've lost count of — same as every Sunday."] });
+    game.npcs.push(tug);
+    const [A, B] = tug.ctls, ropeM = mat(0x8a6a42, { roughness: 0.9 }), ay = P.ground0(A.x, A.z) + 0.75, by = P.ground0(B.x, B.z) + 0.75;
+    const ropeGroup = group((A.x + B.x) / 2, (ay + by) / 2, (A.z + B.z) / 2, W);
+    ropeGroup.lookAt(B.x, by, B.z);
+    noInk(mesh(G.cyl(0.035, 0.035, Math.hypot(B.x - A.x, by - ay, B.z - A.z), 8), ropeM, { rx: PI / 2, parent: ropeGroup }));
+    const flag = group(0, 0, 0, W); noInk(mesh(G.box(0.03, 0.14, 0.4), mat(0x8b1a1a, { roughness: 0.7 }), { parent: flag }));
+    U.push(() => { const frac = 0.5 + clamp(tug.tension, -1, 1) * 0.12;
+      flag.position.set(lerp(A.x, B.x, frac), lerp(ay, by, frac) + 0.03, lerp(A.z, B.z, frac)); flag.rotation.y = ropeGroup.rotation.y; }); }
   victorianRegion(game, U, r, 88, VICTORIAN_LIMIT - 10);
   makeHorizon(game, r, { clear: VICTORIAN_LIMIT + 10, hills: true, hill: 0x3f4a38, rock: 0x3a3f4a, rock2: 0x4a4a58, snow: 0xcfd6e2, woodHue: [0.16, 0.26], woodLight: [0.1, 0.2], trunk: 0x3a2a1e, peaks: 30, woodCount: 420 });
   // people

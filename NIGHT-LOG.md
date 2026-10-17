@@ -14181,3 +14181,39 @@ Shore's own friend count up from 66 to 68 for the two new haulers (confirmed aga
 build with `git stash`). No visual check was possible in this environment (no browser, no Playwright)
 — only the stub-three test suite and the scratch headless probe above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 537 — a tug-of-war for Victorian
+
+Round 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack races) had
+by now given Frosty Peak, Robot City, Sunny Shore and Whisper Woods their own `TugOfWar` — Victorian,
+for all its quoits and its badminton net, had never had the one contest with no ball, shoe or shuttle
+to send back and forth. **Two off-duty draymen now dig their heels into the open grass east of the
+coalman's own yard and heave on a length of cart rope between them, never quite settling either way.**
+*"Heave away, lads — she won't give an inch!"* *"Mind your tail, puss, that rope's seen rougher use
+than this."* *"Best of however many we've lost count of — same as every Sunday."*
+
+No new class and no new mesh: the exact same `TugOfWar` (`55-npcs.js`) the other four worlds already
+use, unchanged, with the same rope-and-flag dressing those four already build around it — just two
+fresh `makeHuman` draymen in shirtsleeves and braces rather than a snowsuit, factory overalls or
+beachwear.
+
+Finding a clear spot turned out to need more care than usual: an earlier scratch probe that skipped
+the real `game.travel()`'s own 520 ms fade timer (driving `game.loop()` straight through without
+waiting for `load()` to actually fire) sampled a half-built, stale scene — the quoits court, the
+badminton net and dozens of other hand-placed NPCs simply weren't there yet, which would have put the
+new rope right on top of them. Redone the way `test/run.mjs` itself does it — click the real start
+button, call `game.travel(3, 'from-prev')`, then poll `game.transitioning` with a real `setTimeout`
+sleep between frames rather than guessing a frame count — the probe sampled every NPC's own position
+every fifth frame over 2400 simulated frames, then swept a grid of the town's quiet east corner (clear
+of the main street's own keep-out band, |z|<20, and short of the radius (88) where `victorianRegion`'s
+own procedural fill takes over) against both those samples and all 589 of the town's physics boxes:
+(75, -29) came back clear by 16.9 m of the nearest box and 25.1 m of the nearest other soul at its own
+centre, with both draymen's own stations 1.3 m either side of it (rope running north-south) clear by
+15.9–18.0 m of the nearest box and 24.6–25.6 m of the nearest other soul — well east of the coalman's
+own chute (52, -15) and the night watchman's bench (36, -30).
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings. Victorian's
+own friend count up from 89 to 91 for the two new draymen (confirmed against the pre-change build with
+`git stash`). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite and the corrected headless probe above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
