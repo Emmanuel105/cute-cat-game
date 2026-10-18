@@ -3804,6 +3804,37 @@ function buildCandyLand(game, entry) {
     const badmintonLines = ['Love-love. No — love-one. I dropped one before you got here, puss.', "Mind the net, it's stickier than it looks — everything out here is.", "Forty-seven rallies. I started counting after we lost count the first time."];
     game.npcs.push(new Badminton(game, bA, bB, shuttle, { cx, cz, gap, cries: badmintonLines })); }
 
+  // The Neighborhood and Sunny Shore have each had a kid bouncing in place on a pogo stick since round
+  // 420-odd, and Victorian picked one up too; Candy Land, Robot City, Frosty Peak and Whisper Woods were
+  // left without one. A sweet-shop kid now bounces on a quiet, open stretch of candy-cane ground
+  // south-west of the chocolate river, well clear of the marbles ring and the dog walker's own beat.
+  // *"Boing! Boing! Watch how high I go, puss!"* *"This spring's stickier than the cane trees — must be
+  // the icing."* *"Ninety-one bounces. I'm not stopping till triple digits."*
+  //
+  // No new class and no new mesh: the exact same `PogoHopper` (`55-npcs.js`) the Neighborhood, Sunny
+  // Shore and Victorian already use.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // `game.start('new')` then `game.travel(1, 'from-hub')`, 2400 simulated frames to let the sweet-lands
+  // settle) sampled every NPC's own position every 10th frame, then swept a grid of the open sweet-lands
+  // (radius 15-78, clear of the chocolate river's own band) against both those samples, every one of the
+  // land's physics boxes and all sixteen of `makeGumdrops`'s own decorative patches (which carry no
+  // physics box of their own, but a kid standing knee-deep in one would still look wrong): (-67, -31.5)
+  // came back clearest, 10.1 m from the nearest box, 10.2 m from the nearest other soul (the marbles kid
+  // at (-65, -60) is 29 m off) and 11.2 m from the nearest gumdrop patch, at radius 74 from the origin —
+  // well short of the radius (92) where `candyRegion`'s own procedural fill takes over.
+  //
+  // Built dead last, right after the badminton pair, for the same reason every other addition at the
+  // end of this function already gives: `makeHuman()` draws three values off the shared `rnd()` sequence
+  // unconditionally, and a fresh rig built any earlier in this land would shift that sequence and desync
+  // every other timing-sensitive pick already placed above.
+  { const pogoWard = makeWardrobe(r, { shirts: [0xff8fc8, 0x7fd7ff, 0xffd54a], pants: [0x7a5c3a, 0x3a3a3a] });
+    const pogoKid = makeHuman({ ...randomPerson(r, { child: true, female: r.chance(0.5), wardrobe: pogoWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: false });
+    W.add(pogoKid.group);
+    game.npcs.push(new PogoHopper(game, pogoKid, r.pick([0xff6f3c, 0x3fae9a, 0xf2c744]), { x: -67, z: -31.5, ry: r.range(0, TAU),
+      cries: ['Boing! Boing! Watch how high I go, puss!', "This spring's stickier than the cane trees — must be the icing.", "Ninety-one bounces. I'm not stopping till triple digits."] })); }
+
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('star', 7, -6); C.add('yarn', -9, 9); C.add('fish', -16, -13); C.add('mouse', 16, -9); C.add('star', -10, -27); C.add('yarn', 22, 4); C.add('mouse', -28, 26); C.add('fish', 14, -44); C.add('star', 0, -56); C.add('mouse', -58, 30); C.add('yarn', 60, 36);

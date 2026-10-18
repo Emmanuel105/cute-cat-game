@@ -14941,3 +14941,37 @@ stash`); ground walkable holds at 94%, unchanged. `PogoHopper` is now in three o
 left to get one of their own. No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 559 — a pogo stick for Candy Land
+
+Next on `PogoHopper`'s own tour after Victorian: Candy Land, Robot City, Frosty Peak and Whisper Woods
+were the four worlds left without one. **A sweet-shop kid now bounces on a quiet stretch of open
+candy-cane ground south-west of the chocolate river**, well clear of the marbles ring and the dog
+walker's own beat. *"Boing! Boing! Watch how high I go, puss!"* *"This spring's stickier than the cane
+trees — must be the icing."* *"Ninety-one bounces. I'm not stopping till triple digits."*
+
+No new class and no new mesh: the exact same `PogoHopper` (`55-npcs.js`) the Neighborhood, Sunny Shore
+and Victorian already use.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+`game.start('new')` then `game.travel(1, 'from-hub')`, 2400 simulated frames to let the sweet-lands
+settle) sampled every NPC's own position every 10th frame, then swept a grid of the open sweet-lands
+(radius 15-78, clear of the chocolate river's own band) against both those samples, every one of the
+land's physics boxes and all sixteen of `makeGumdrops`'s own decorative patches (which carry no physics
+box of their own, but a kid standing knee-deep in one would still look wrong): (-67, -31.5) came back
+clearest, 10.1 m from the nearest box, 10.2 m from the nearest other soul (the marbles kid at (-65, -60)
+is 29 m off) and 11.2 m from the nearest gumdrop patch, at radius 74 from the origin — well short of the
+radius (92) where `candyRegion`'s own procedural fill takes over.
+
+Built dead last, right after the badminton pair, for the same reason every other addition at the end of
+this function already gives: `makeHuman()` draws three values off the shared `rnd()` sequence
+unconditionally, and a fresh rig built any earlier in this land would shift that sequence and desync
+every other timing-sensitive pick already placed above.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings. Candy Land's
+own friend count rises from 78 to 79 with the new kid (confirmed against the unmodified base with `git
+stash`); ground walkable holds at 92%, unchanged. `PogoHopper` is now in four of the seven worlds (the
+Neighborhood, Candy Land, Sunny Shore, Victorian); Robot City, Frosty Peak and Whisper Woods are left to
+get one of their own. No visual check was possible in this environment (no browser, no Playwright) —
+only the stub-three test suite and the headless probe above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
