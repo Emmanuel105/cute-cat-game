@@ -15307,3 +15307,50 @@ against the pre-change build); ground walkable holds at 99%, unchanged. Frosty P
 world of the seven still without a piñata. No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 569 — a piñata for Frosty Peak, for real this time
+
+Round 567's own log entry claimed the "one more playground game for every world" piñata series
+(`PinataSwinger` in `55-npcs.js`, `makePinata` in `60-props.js`) had reached all seven worlds; round
+568 checked that claim against the actual source, found it was wrong, and closed the first of the two
+real gaps (Sunny Shore) while flagging Frosty Peak as the last one standing. This round closes it.
+**A piñata now hangs from a post on the open snowfield northeast of the village**, a bundled-up kid
+taking a two-handed swing at it. *"Snap it open before my mittens freeze solid, would you."* *"Mind
+your tail, puss — plenty of swing room needed here."* *"One more go. I know I can connect this time."*
+
+No new class and no new mesh: the exact same `PinataSwinger` and `makePinata` the other six worlds
+already use, just a fresh post, a fresh kid (from this file's own `kid()` helper, the one every other
+Frosty Peak child already comes from) and this mountain's own red/white/gold/ice-blue colours in place
+of any other world's own palette. `PinataSwinger`'s own constructor already asks
+`game.physics.ground0()` for the swinger's footing, the same way this mountain's tug-of-war,
+tetherball, badminton, sack race and pogo stick already handle the real slope underfoot, so nothing
+extra was needed for terrain; only the post itself needed `placeT`/`boxT` in place of the flat-floor
+worlds' `group()` + `P.addBox()`.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+`game.start('new')` then `game.travel(5, 'from-hub')` — waiting out the portal's own 520 ms fade timer
+before sampling, same fix round 568 already had to make for its own first draft — then 2400 simulated
+frames to let every reindeer, hare, arctic fox, penguin, yeti and wandering villager actually move)
+sampled every NPC's own position every 10th frame, then swept a 1 m grid of the open snowfield (radius
+20-54, short of the radius (58) where `snowRegion`'s own fill takes over) against both those samples
+and every one of the mountain's 746 physics boxes, measuring real clearance to each box's own edge
+rather than its centre (an earlier pass of this same probe measured against undefined box fields and
+silently ignored every box — caught by checking the actual `Physics.addBox` shape, `{minX, maxX, minZ,
+maxZ, ...}`, not the `{x, z, hx, hz}` the first draft assumed): (41, 34) came back clearest at 10.3 m
+from the nearest box or soul — well clear of the frost beetle (38, 8), the archery range (55, 3) and
+every other hand-placed spot, all of which sit south or east of it; the ground underfoot slopes gently
+(about 0.15 m per metre) with no outcrop or pine trunk within 11 m.
+
+Built dead last, right after the pogo stick, for the usual reason: `makeHuman()` (which `kid()` wraps)
+draws three values off the shared `rnd()` sequence unconditionally, and a fresh rig built any earlier
+on this mountain would shift that sequence and desync every other timing-sensitive pick already
+placed above.
+
+Full suite (`node test/run.mjs`) ran clean across three back-to-back runs: exit 0, all checks `ok`, 0
+console warnings. Frosty Peak's own friend count rises from 74 to 75 with the new kid (confirmed
+against the pre-change build); ground walkable holds at 97%, unchanged. All seven worlds now carry a
+piñata post — this strand of the "one more playground game for every world" series (tetherball,
+badminton, tug-of-war, sack race, pogo stick, piñata) is, this time, actually complete end to end. No
+visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
+suite and the headless probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.

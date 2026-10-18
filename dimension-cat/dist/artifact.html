@@ -17481,6 +17481,59 @@ function buildSnowVillage(game, entry) {
   { const pogoKid = kid(r.chance(0.5));
     game.npcs.push(new PogoHopper(game, pogoKid, r.pick([0xff6f3c, 0x3fae9a, 0xf2c744]), { x: 6.5, z: -42, ry: r.range(0, TAU),
       cries: ['Boing! Boing! Boing!', "One thousand bounces. Not stopping to count again.", "Don't look — actually, look, I'm good at this."] })); }
+  // round 567's own log entry claimed the "one more playground game for every world" piñata series
+  // (`PinataSwinger` in `55-npcs.js`, `makePinata` in `60-props.js`) had reached all seven worlds; that
+  // was wrong, and round 568 corrected it to say Frosty Peak was the one real gap left. This closes it.
+  // **A piñata now hangs from a post on the open snowfield northeast of the village**, a bundled-up kid
+  // taking a two-handed swing at it. *"Snap it open before my mittens freeze solid, would you."* *"Mind
+  // your tail, puss — plenty of swing room needed here."* *"One more go. I know I can connect this time."*
+  //
+  // No new class and no new mesh: the exact same `PinataSwinger` and `makePinata` the other six worlds
+  // already use, just a fresh post, a fresh kid and this mountain's own red/white/gold/ice-blue colours
+  // in place of any other world's own palette. `PinataSwinger`'s own constructor already asks
+  // `game.physics.ground0()` for the swinger's footing, the same way this mountain's tug-of-war,
+  // tetherball, badminton, sack race and pogo stick already handle the real slope underfoot, so nothing
+  // extra was needed for terrain; only the post itself needed `placeT`/`boxT` in place of the flat-floor
+  // worlds' `group()` + `P.addBox()`.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // `game.start('new')` then `game.travel(5, 'from-hub')` — waiting out the portal's own 520 ms fade
+  // timer before sampling, the mistake round 567's own first draft made — then 2400 simulated frames to
+  // let every reindeer, hare, arctic fox, penguin, yeti and wandering villager actually move) sampled
+  // every NPC's own position every 10th frame, then swept a 1 m grid of the open snowfield (radius
+  // 20-54, short of the radius (58) where `snowRegion`'s own fill takes over) against both those samples
+  // and every one of the mountain's 746 physics boxes, measuring real clearance to each box's own edge
+  // rather than its centre: (41, 34) came back clearest at 10.3 m from the nearest box or soul — well
+  // clear of the frost beetle (38, 8), the archery range (55, 3) and every other hand-placed spot, all
+  // of which sit south or east of it; the ground underfoot slopes gently (about 0.15 m per metre) with
+  // no outcrop or pine trunk within 11 m.
+  //
+  // Built dead last, right after the pogo stick, for the usual reason: `makeHuman()` (which this file's
+  // own `kid()` wraps) draws three values off the shared `rnd()` sequence unconditionally, and a fresh
+  // rig built any earlier on this mountain would shift that sequence and desync every other
+  // timing-sensitive pick already placed above.
+  { const px = 41, pz = 34, postH = 2.2, outer = 0.4, ropeLen = 0.45;
+    const SNOW_FRINGE = [0xd62839, 0xffffff, 0xffd54a, 0x8fd9ff];
+    const postM = mat(0x6b4a2a, { roughness: 0.9 });
+    const standG = group();
+    mesh(G.cyl(0.07, 0.09, postH, 8), postM, { y: postH / 2, parent: standG });
+    const pivot = group(0, postH, 0, standG);
+    mesh(G.cyl(0.012, 0.012, ropeLen, 5), mat(0xe8d9a0, { roughness: 0.9 }), { y: -ropeLen / 2, parent: pivot });
+    const pinata = makePinata(0x2e9e6e, SNOW_FRINGE);
+    pinata.position.y = -(ropeLen + outer); pivot.add(pinata);
+    let lt = 0;
+    standG.userData.update = (dt) => {
+      lt += dt;
+      const cyc = 2.6, ph = (lt % cyc) / cyc, sinceHit = ph < 0.65 ? (ph + 0.35) * cyc : (ph - 0.65) * cyc;
+      pivot.rotation.z = sin(lt * 0.5) * 0.04 + Math.exp(-sinceHit * 2.6) * 0.3;
+      pivot.rotation.x = sin(lt * 0.4 + 1) * 0.025;
+    };
+    placeT(game, U, standG, px, pz, 0);
+    boxT(game, px, pz, 0.35, postH, 0.35, { cam: false });
+    const sx = px, sz = pz + 1.3, sry = atan2(px - sx, pz - sz);
+    const swinger = kid(r.chance(0.5));
+    game.npcs.push(new PinataSwinger(game, swinger, 0x8a6a44, { x: sx, z: sz, ry: sry,
+      cries: ["Snap it open before my mittens freeze solid, would you.", 'Mind your tail, puss — plenty of swing room needed here.', 'One more go. I know I can connect this time.'] })); }
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
