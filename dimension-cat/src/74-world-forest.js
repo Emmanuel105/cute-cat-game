@@ -1596,6 +1596,71 @@ function buildForest(game, entry) {
   game.addInteractable({ obj: pond, radius: 3.2, label: () => 'Drink from the glowing pond', onUse: () => { SFX.twinkle(); game.fx.emit(game.cat.group.position.x, game.cat.group.position.y + 0.5, game.cat.group.position.z, { count: 30, colors: [0x2ad0d0, 0xa8ff9a, 0xffffff], speed: 1.5, up: 2, life: 1.2, gravity: 1 }); game.toast('✨ Sparkly! The cat feels magical.'); } });
 
   game.zones.addSpan(-3, 26, 3, 52); game.zones.addCircle(8, -6, 7); game.zones.addCircle(0, 0, 18);
+  // Victorian, Robot City, Sunny Shore, Candy Land, the Neighborhood and Frosty Peak have all had
+  // something cross their own sky by now (a hot air balloon, an airship, two biplanes, a tumbling
+  // gumball, a V of geese) — Whisper Woods' own canopy, past the butterflies and the fairies, never had
+  // anything fly above it. **A ragged line of five herons now flies a slow, high circuit over the
+  // whole wood**, 38 m up on an 85 m orbit. Purely decorative: nothing to greet, nothing to reach, no
+  // dialogue and no new sound.
+  //
+  // No new controller, no physics box of its own: the tallest things in these woods are the big trees
+  // (up to 10 m of trunk plus a leaf canopy that tops out around 11.4 m) and the treehouse's own gable
+  // (7.9 m) — 38 m clears both with more than 26 m to spare anywhere on the loop. An 85 m orbit also
+  // sits well inside the 120 m radius where this wood's own terrain function `T()` first starts
+  // raising its own decorative rim (`smoothstep(120, 250, d)` is still exactly 0 at 85 m), so the loop
+  // never climbs and needs no keep-out check against `game.zones` or any of this wood's physics boxes.
+  //
+  // Each heron is a stretched body sphere in slate-grey plumage, a long pale neck craned forward, a
+  // dark cap and a long bill, trailing stick legs streamed out behind rather than tucked under (the
+  // one silhouette difference from Frosty Peak's geese), built from the same two-bone flapping-wing rig
+  // every flyer in this file already uses. Five of them fly in a loose, ragged line behind a lead bird
+  // rather than a tight V — herons don't formation-fly the way geese do — each at its own random flap
+  // phase drawn off this wood's own local `r()` so the wingbeats never line up, carried as one rigid
+  // group round the circuit so the line costs nothing beyond the lead bird's own transform; only the
+  // wings animate per bird, called by hand from the flock's own `userData.update` since there is no
+  // per-heron controller.
+  //
+  // Drifts entirely on the world clock `t` (the orbit and a gentle bob keyed off `t` alone) from one
+  // fixed starting angle drawn once off this wood's own local `r()`, so it costs no later wardrobe or
+  // layout pick — placed last of everything hand-built in this wood, right before `forestRegion` takes
+  // over the fill, so even that one draw disturbs nothing built earlier.
+  { const makeHeron = (phase) => {
+      const g = new THREE.Group(), rig = { group: g, wings: [] };
+      const coat = mat(0x6a7684, { roughness: 0.85 }), pale = mat(0xd8d4c4, { roughness: 0.8 }), dark = mat(0x2a2e34, { roughness: 0.6 }), beakM = mat(0xd9a93a, { roughness: 0.5 }), legM = mat(0x8a7a52, { roughness: 0.7 });
+      const body = group(0, 0, 0, g); rig.body = body;
+      mesh(G.bodySphere(14, 10), coat, { sx: 0.11, sy: 0.11, sz: 0.4, parent: body });
+      const neck = group(0, 0.07, 0.24, body); neck.rotation.x = -0.9;
+      mesh(G.capsule(0.03, 0.22, 6), pale, { y: 0.12, rx: PI / 2, parent: neck });
+      const head = group(0, 0.26, -0.02, neck); head.rotation.x = 1.1;
+      mesh(G.sphere(0.045, 10, 8), dark, { parent: head });
+      mesh(G.cone(0.016, 0.1, 6), beakM, { y: 0, z: 0.08, rx: PI / 2, shadow: 'none', parent: head });
+      mesh(G.box(0.07, 0.018, 0.12), dark, { y: -0.01, z: -0.18, rx: 0.1, shadow: 'none', parent: body });   // tail
+      for (const side of [1, -1]) {
+        const w = group(side * 0.08, 0.03, 0.02, body);
+        mesh(G.box(0.42, 0.022, 0.18), coat, { x: side * 0.21, parent: w });
+        const tipW = group(side * 0.42, 0, 0, w); mesh(G.box(0.34, 0.02, 0.14), dark, { x: side * 0.15, parent: tipW });
+        rig.wings.push({ w, tipW, side });
+      }
+      for (const side of [1, -1]) mesh(G.cyl(0.01, 0.015, 0.5, 5), legM, { x: side * 0.03, y: -0.02, z: -0.3, rx: PI / 2 - 0.15, shadow: 'none', parent: body });   // trailing legs, streamed out behind
+      rig.animate = (ph, moving, dt, t = 0) => {
+        const flap = sin(t * 4 + phase), glide = (sin(t * 0.18 + phase) > 0.4) ? 1 : 0;
+        for (const Wg of rig.wings) { const a = glide ? 0.18 : flap * 0.6; Wg.w.rotation.z = Wg.side * -a; Wg.tipW.rotation.z = Wg.side * -a * 0.8; }
+        body.rotation.z = sin(t * 0.5 + phase) * 0.07;
+      };
+      bakeRig(g);
+      return rig;
+    };
+    const lineOffsets = [[0, 0, 0], [-0.9, -0.05, -1.1], [1.3, -0.1, -2.0], [-1.8, -0.16, -3.3], [0.6, -0.22, -4.4]];
+    const heronR = 85, heronH = 38, heronSpeed = TAU / 230, heronPhase = r() * TAU;
+    const flock = group(0, 0, 0);
+    const herons = lineOffsets.map(([ox, oy, oz]) => { const heron = makeHeron(r() * TAU); heron.group.position.set(ox, oy, oz); flock.add(heron.group); return heron; });
+    flock.userData.update = (dt, t) => {
+      const a = heronPhase + t * heronSpeed;
+      flock.position.set(cos(a) * heronR, heronH + sin(t * 0.15) * 2.5, sin(a) * heronR);
+      flock.rotation.y = -a;
+      for (const heron of herons) heron.animate(0, true, dt, t);
+    };
+    place(game, U, flock, cos(heronPhase) * heronR, sin(heronPhase) * heronR, 0, heronH); }
   forestRegion(game, U, r, 58, WOODS_LIMIT - 8);
   makeHorizon(game, r, { clear: WOODS_LIMIT + 8, hills: true, hill: 0x2f4a30, rock: 0x3a4a3a, rock2: 0x44505a, snow: 0xdfe8f0, snowLine: 52, peaks: 28, woodCount: 460, woodBand: 44, woodHue: [0.26, 0.36], woodLight: [0.1, 0.2], trunk: 0x3a2a1c });
   // hollow oak home (north end of the stepping-stone path)

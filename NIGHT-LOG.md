@@ -15087,3 +15087,30 @@ worlds (the Neighborhood, Candy Land, Robot City, Frosty Peak, Sunny Shore, Vict
 this particular tour is complete. No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 563 — herons over Whisper Woods
+
+Victorian, Robot City, Sunny Shore, Candy Land, the Neighborhood and Frosty Peak have all had something
+cross their own sky by now (a hot air balloon, an airship, two biplanes, a tumbling gumball, a V of
+geese) — Whisper Woods' own canopy, past the butterflies and the fairies, never had anything fly above
+it. **A ragged line of five herons now flies a slow, high circuit over the whole wood**, 38 m up on an
+85 m orbit. Purely decorative — nothing to greet, nothing to reach, no dialogue, no new sound.
+
+No new controller: the herons are built from the exact same two-bone flapping-wing rig every other
+flyer in `73/74-world-*.js` already uses (the same recipe as Frosty Peak's geese), just with a long pale
+neck craned forward, a dark cap and bill, and trailing stick legs streamed out behind instead of tucked
+under — the one silhouette swap from a goose. They fly a loose, ragged line rather than a tight V
+(herons don't formation-fly the way geese do), each at its own random flap phase so the wingbeats never
+line up. No new physics box either: the tallest things in these woods are the big trees (leaf canopy
+tops out around 11.4 m) and the treehouse's gable (7.9 m), both cleared by 26+ m at 38 m altitude, and
+an 85 m orbit sits well inside the 120 m radius where this wood's own terrain rim first starts rising
+(still exactly 0 at 85 m), so it needs no keep-out check against `game.zones` or any physics box.
+
+Placed last of everything hand-built in the wood, right before `forestRegion` takes over the fill, so
+its one `r()` draw (the starting phase) disturbs nothing built earlier.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings. Whisper Woods'
+own friend count holds at 73 (purely decorative, nothing to greet); ground walkable holds at 97%,
+unchanged. Every one of the seven worlds now has something crossing its own sky. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
