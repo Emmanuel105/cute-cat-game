@@ -13117,6 +13117,60 @@ function buildRobotCity(game, entry) {
     W.add(swinger.group);
     game.npcs.push(new PinataSwinger(game, swinger, 0xc9a86a, { x: sx, z: sz, ry: sry,
       cries: ["One of these days I'm actually going to connect.", 'Careful, puss — swing room needed here.', 'Foreman filled it with spare bolts. Typical.'] })); }
+
+  // archery had reached six of the seven worlds (Neighborhood, Frosty Peak, Whisper Woods, Victorian,
+  // Sunny Shore, Candy Land) but never Robot City, the one remaining world with no archery range of its
+  // own. **A maintenance-crew archer now shoots at a straw target on a quiet stretch of open floor north
+  // of the yard**, same crew-blue jumpsuit the pogo kid and the tug-of-war two already wear round here.
+  // *"Careful, puss — foreman docks me a shift if an arrow ends up in the scrap pile."* *"Still can't beat
+  // the sentry's own targeting scanner, and that thing's bolted to a wall."* *"Lunch break. The robots
+  // don't get archery practice — lucky them."*
+  //
+  // No new class and no new prop: the exact same `Archer` and straw-boss-and-rings target (`55-npcs.js`)
+  // the other six worlds already build, unchanged — just this crew's own jumpsuit in place of the
+  // Neighborhood's hoodie, Frosty Peak's winter coat, Whisper Woods' woodsman jacket, Victorian's
+  // bonnet-and-gown, Sunny Shore's beachwear or Candy Land's sweet-shop pink.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // `game.start('new')` then `game.travel(2, 'from-prev')`, 1800 simulated frames to let every wandering,
+  // patrolling and dancing robot actually move, sampling every NPC's own position every 15th frame) did
+  // a full joint search over every open floor point (radius ≤ 96, short of the radius (98) where
+  // `robotRegion`'s own procedural fill takes over) against all 32 firing directions at each one, scoring
+  // each candidate by its tightest clearance anywhere along the whole 10 m archer-to-target line, measured
+  // to each physics box's own edge — this city runs to 1195 physics boxes, the most of any world archery
+  // has reached yet, so the search itself ran through a spatial hash bucketing boxes and NPC samples into
+  // 4 m cells rather than a flat scan of all of them at every candidate point. The single clearest point
+  // in the whole city sat right out at the edge of the hand-built area (radius 95.6, barely inside the
+  // 98 m fill boundary), so the search was re-run preferring candidates with radius ≤ 80 — well clear of
+  // both that boundary and the outer skyline rings — and (-6, 44), firing due east toward (4, 44), came
+  // back clearest of that set: 9.58 m of headroom at the tightest point along the line, against a
+  // skyscraper's own footprint at (-19.5..-10.1, 52.7..62.2) near the archer's stand and a small prop box
+  // at the target's own end, with the nearest wandering soul (a Sitter robot) never closer than 10.2 m.
+  //
+  // Built dead last, right after the piñata, for the usual reason: `makeHuman()` draws three values off
+  // the shared `rnd()` sequence unconditionally, and a fresh rig built any earlier would shift that
+  // sequence and desync every other timing-sensitive pick already placed above.
+  { const ax = -6, az = 44, ary = PI / 2, adist = 10;
+    const tx = ax + sin(ary) * adist, tz = az + cos(ary) * adist, ty0 = P.ground0(tx, tz);
+    const target = group(tx, ty0, tz, W);
+    mesh(G.cyl(0.46, 0.46, 0.22, 16), mat(0xd9c28a, { roughness: 0.95 }), { y: 1.0, rx: PI / 2, parent: target });   // the straw boss
+    const ringSpecs = [[0.42, 0xf3f0e6], [0.33, 0x1c1c1c], [0.24, 0x2d6fd6], [0.15, 0xd62839], [0.065, 0xf2c744]];
+    ringSpecs.forEach(([rad, c], i) => mesh(G.cyl(rad, rad, 0.02, 20), mat(c, { roughness: 0.7 }), { y: 1.0, z: 0.1 + i * 0.004, rx: PI / 2, shadow: 'none', parent: target }));
+    const standM = mat(0x5b3d24, { roughness: 1 });
+    for (const s of [1, -1]) mesh(G.cyl(0.02, 0.025, 1.0, 6), standM, { x: s * 0.36, y: 0.55, z: -0.2, rx: 0.3, rz: s * 0.22, parent: target });
+    P.addBox(tx, ty0 + 1.0, tz, 0.95, 1.0, 0.3, { cam: false });
+    const bowWard = makeWardrobe(r, { shirts: [0x4a5a6a, 0x5a4a6a, 0x8a6a3a], pants: [0x232c34, 0x2a2a30] });
+    const archer = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: bowWard }),
+      hat: null, hairStyle: 'pony', jacket: null, coat: null, scarf: null, bag: null, backpack: null, glasses: false, bow: true });
+    W.add(archer.group);
+    const arrow = group(0, 0, 0, W);
+    mesh(G.cyl(0.012, 0.012, 0.62, 6), mat(0x8a6a3a, { roughness: 0.8 }), { rx: PI / 2, parent: arrow });   // shaft
+    mesh(G.cone(0.022, 0.08, 6), mat(0x9aa3ad, { metalness: 0.6, roughness: 0.35 }), { z: -0.35, rx: -PI / 2, parent: arrow });   // head, at local -Z so lookAt() faces it forward
+    const fletchM = mat(0xd62839, { roughness: 0.9 });
+    for (let fi = 0; fi < 3; fi++) mesh(G.box(0.1, 0.002, 0.05), fletchM, { z: 0.26, rz: fi / 3 * TAU, shadow: 'none', parent: arrow });   // tail fletching
+    game.npcs.push(new Archer(game, archer, arrow, { x: ax, z: az, ry: ary, dist: adist,
+      cries: ['Careful, puss — foreman docks me a shift if an arrow ends up in the scrap pile.', "Still can't beat the sentry's own targeting scanner, and that thing's bolted to a wall.", "Lunch break. The robots don't get archery practice — lucky them."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

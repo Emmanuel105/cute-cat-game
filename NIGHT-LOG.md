@@ -15526,3 +15526,41 @@ six of the seven worlds (Neighborhood, Frosty Peak, Whisper Woods, Victorian, Su
 — only Robot City still has no archery range of its own. No visual check was possible in this
 environment (no browser, no Playwright) — only the stub-three test suite and the headless probe above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 574 — archery reaches Robot City, the last of the seven worlds
+
+Archery had made it to six of the seven worlds but never Robot City. **A maintenance-crew archer now
+shoots at a straw target on a quiet stretch of open floor north of the yard**, the same crew-blue
+jumpsuit the pogo kid and the tug-of-war two already wear round here. *"Careful, puss — foreman docks me
+a shift if an arrow ends up in the scrap pile."* *"Still can't beat the sentry's own targeting scanner,
+and that thing's bolted to a wall."* *"Lunch break. The robots don't get archery practice — lucky
+them."*
+
+No new class and no new prop: the exact same `Archer` and straw-boss-and-rings target (`55-npcs.js`) the
+other six worlds already build, unchanged — just this crew's own jumpsuit in place of a hoodie, a winter
+coat, a woodsman's jacket, a bonnet-and-gown, beachwear or sweet-shop pink.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+`game.start('new')` then `game.travel(2, 'from-prev')`, 1800 simulated frames to let every wandering,
+patrolling and dancing robot actually move, sampling every NPC's own position every 15th frame) did a
+full joint search over every open floor point (radius ≤ 96, short of the radius (98) where
+`robotRegion`'s own procedural fill takes over) against all 32 firing directions, scoring each candidate
+by its tightest clearance along the whole 10 m archer-to-target line. This city runs to 1195 physics
+boxes, the most of any world archery has reached yet, so the search itself went through a spatial hash
+bucketing boxes and NPC samples into 4 m cells instead of a flat scan at every candidate point. The
+single clearest point in the whole city sat right at the edge of the hand-built area (radius 95.6,
+barely inside the 98 m fill boundary), so the search was re-run preferring points with radius ≤ 80 —
+clear of both that boundary and the outer skyline rings — and (-6, 44), firing due east toward (4, 44),
+came back clearest of that set: 9.58 m of headroom at the tightest point, against a skyscraper's own
+footprint near the archer's stand and a small prop box at the target's end, with the nearest wandering
+soul (a Sitter robot) never closer than 10.2 m.
+
+Built dead last, right after the piñata, for the usual reason: `makeHuman()` draws three values off the
+shared `rnd()` sequence unconditionally, and a fresh rig built any earlier would shift that sequence and
+desync every other timing-sensitive pick already placed above.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, every check `ok`, 0 console warnings. Robot City's
+own friend count rises from 84 to 85; ground walkable holds at 88%, unchanged. **Archery has now reached
+all seven worlds.** No visual check was possible in this environment (no browser, no Playwright) — only
+the stub-three test suite and the headless probe above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
