@@ -15047,3 +15047,43 @@ kid (confirmed against the unmodified base with `git stash`); ground walkable ho
 Sunny Shore, Victorian); Whisper Woods is the only one left to get one of its own. No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
 headless probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 562 — a pogo stick for Whisper Woods
+
+`PogoHopper`'s own tour of the seven worlds closes out here — the Neighborhood, Candy Land, Robot
+City, Frosty Peak, Sunny Shore and Victorian all have one; Whisper Woods, for all its archery range,
+tug-of-war, tetherball pole, badminton net and sack race, never had the one game played standing still
+and bouncing in place. **A forest kid now bounces on a pogo stick on a quiet stretch of open woodland
+floor west of the hollow oak's own path**, well past every other hand-placed spot in these woods.
+*"Boing! Boing! Boing!"* *"Mind the roots when I come down, puss, I'm not steering this thing."*
+*"Nine hundred and something. Lost count somewhere past the owls."*
+
+No new class and no new mesh: the exact same `PogoHopper` (`55-npcs.js`) the other six worlds already
+use, unchanged — it asks `game.physics.ground0()` for its own footing every frame, so the gentle
+woodland floor out here costs nothing extra, the same way the tug-of-war, tetherball, badminton and
+sack race already handle it. A plain `makeHuman()` kid, since this wood has no single child helper
+every kid already comes from the way Frosty Peak's `kid()` or the beach's `beachPerson()` do (the same
+reason the tetherball and badminton pairs already in this wood are built the same way).
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, the real
+wood built with `game.start('new')` then `game.travel(6, 'from-hub')`, 3600 simulated frames to let
+every wandering deer, fox and hare range fully) sampled every NPC's and the squirrel's own position
+every 10th frame, then swept a grid of the open woodland floor (radius 20-55, short of the radius (58)
+where `forestRegion`'s own fill takes over, and clear of the glowing pond's and the glade's own zones
+and the stepping-stone path) against both those samples and every one of the wood's 692 physics boxes:
+(-47, 28) came back clearest, 8.9 m from the nearest box and 14 m from the nearest other soul, at
+radius 54.7 — well west of the hollow oak's own path, with the ground flat to 0.04 m across the whole
+footprint.
+
+Built dead last, right after the sack race, for the same reason every other addition at the end of
+this function already gives: `makeHuman()` draws three values off the shared `rnd()` sequence
+unconditionally, and a fresh rig built any earlier in this wood would shift that sequence and desync
+every other timing-sensitive pick already placed above.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings. Whisper Woods'
+own friend count rises from 72 to 73 with the new kid (confirmed against the unmodified base with `git
+stash`); ground walkable holds at 99%, unchanged. `PogoHopper` has now reached every one of the seven
+worlds (the Neighborhood, Candy Land, Robot City, Frosty Peak, Sunny Shore, Victorian, Whisper Woods) —
+this particular tour is complete. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
