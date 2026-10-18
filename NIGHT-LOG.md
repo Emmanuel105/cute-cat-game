@@ -15667,6 +15667,38 @@ at 96%, unchanged. No visual check was possible in this environment (no browser,
 the stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
 
+## Round 579 — dragonflies over Whisper Woods' glowing pond
+
+The glowing pond already had ducks paddling on it, frogs hopping its rim, fairies over the rushes and
+an angler working its edge — but nothing had ever actually skimmed the water itself. **Three dragonflies
+now dart low over the pond**, each a slim two-segment body (a bulbous thorax up front, a long thin
+iridescent abdomen trailing behind), two fused bulging eyes, and two pairs of narrow, near-transparent
+wings beating out of phase for a blurred, hovering read rather than a slow flap. No dialogue — pure
+ambient wildlife, the same footing as the glade's own butterflies and fairies.
+
+New rig, `makeDragonfly()` in `56-npcs-wild.js`, right after `makeBee` (same file, same neighbourhood:
+metallic-shell body, plain tinted-transparent wing planes, no new texture). No new controller either —
+all three ride the existing `Flyer` class the glade's fairies, butterflies and bees already loop with,
+circling the pond's own centre `(8, -6)` at a radius between the duck ring (2.3 m) and the reeds that
+only start past 5.0 m out, low over the water (0.3–0.55 m up), with their own speed, phase and a little
+wobble each so the three don't read as one shape tracing three circles. `Flyer` registers no physics
+circle or box — just `game.world.add(rig.group)` — so, like the hive's bees and the glade's own
+butterflies, it costs nothing against the ground-walkable or road-clearance checks.
+
+One thing worth being honest about: `Flyer`'s constructor draws from the shared `rnd()` sequence
+(`this.a = o.phase ?? rnd() * TAU; this.t = rnd() * 10`) on top of the phase already passed in, and this
+world's own `r` is used for the colour pick. Round 578 found out the hard way that a `rnd()` draw made
+*while building the Neighborhood* shifts every later idle-gesture roll in that same build, because the
+whole street finishes constructing — and so spends its extra draws — before the test suite's early,
+timing-sensitive checks ever run their first frame. Whisper Woods doesn't have that problem: it's only
+built when the player (or the test's own `game.travel()`) actually visits it, strictly after those early
+checks have already passed, same reasoning that let the other six worlds' marching columns use `rnd()`
+freely. Full suite (`node test/run.mjs`) ran clean six times in a row: exit 0, every check `ok` (274
+of them), 0 console warnings. Whisper Woods' own friend count holds at 74, ground walkable holds at
+98% — both unaffected, as expected for an airborne rig with no physics footprint at all. No visual check
+was possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
 ## Round 578 — a marching column of sparrows for the Neighborhood
 
 `Marchers` (a `Patroller` lead with followers trailing behind, wheeling back and forth) had reached

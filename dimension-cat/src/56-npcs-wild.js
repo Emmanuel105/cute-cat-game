@@ -730,6 +730,28 @@ function makeBee() {
   return rig;
 }
 
+// ---------------------------------------------------------------- dragonfly (flyer): a bulbous thorax, a long thin iridescent abdomen trailing
+// behind it, two fused bulging eyes up front, and two pairs of narrow near-transparent wings (forewings a touch longer than the hind pair,
+// beating slightly out of phase) — the glowing pond had fairies over the rushes, frogs on the rim and an angler at the edge, but nothing ever
+// skimmed the water itself. Same `Flyer` controller every other flyer in this glade already loops with.
+function makeDragonfly(color = 0x2f6a5a) {
+  const g = new THREE.Group(), rig = { group: g };
+  const body = group(0, 0, 0, g); rig.body = body;
+  const shell = mat(color, { roughness: 0.3, metalness: 0.35 });
+  mesh(G.sphere(0.016, 8, 7), shell, { z: 0.02, shadow: 'none', parent: body });   // thorax
+  mesh(G.capsule(0.008, 0.08, 6), shell, { z: -0.065, rx: PI / 2, shadow: 'none', parent: body });   // abdomen
+  mesh(G.sphere(0.013, 8, 7), mat(0x1a1410, { roughness: 0.25 }), { y: 0.004, z: 0.036, sx: 1.4, shadow: 'none', parent: body });   // fused eyes
+  const wingM = new THREE.MeshBasicMaterial({ color: 0xdff6f0, transparent: true, opacity: 0.3, side: THREE.DoubleSide, depthWrite: false }); worldBag.track(wingM);
+  rig.wings = [[1, 0.012, 1], [1, -0.01, 0.8], [-1, 0.012, 1], [-1, -0.01, 0.8]].map(([side, zOff, scale]) => {
+    const w = group(side * 0.01, 0.014, zOff, body);
+    mesh(G.plane(0.075 * scale, 0.018 * scale), wingM, { x: side * 0.04 * scale, ry: side * 0.3, shadow: 'none', parent: w });
+    return { w, side };
+  });
+  rig.animate = (ph, moving, dt, t = 0) => { for (let i = 0; i < rig.wings.length; i++) { const W = rig.wings[i]; W.w.rotation.y = W.side * (0.2 + sin(t * 38 + i * 1.4 + (rig.phase ?? 0)) * 0.9); } body.rotation.y = sin(t * 2.3 + (rig.phase ?? 0)) * 0.22; };
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- drone-fly (flyer: Robot City's own answer to a butterfly or a gull — every
 // other world has an ambient flock wheeling overhead by now (butterflies, gulls, snow buntings, doves, fairies), but Robot City's single
 // maintenance drone over the ring-dance clearing never had any company, and nothing in this city's sky was alive. A little swarm of these now

@@ -32,6 +32,12 @@ function buildForest(game, entry) {
       d.head.rotation.x = sin(t * 0.6 + phase * 2) > 0.88 ? 0.5 : 0;   // the occasional dip toward the glow
     } });
     let quackT = 7; U.push((dt) => { quackT -= dt; if (quackT <= 0) { SFX.squawk(); quackT = rnd.range(10, 18); } }); }
+  // the pond had ducks paddling on it, frogs hopping its rim and an angler working its edge, but nothing
+  // ever skimmed low over the water itself. Three dragonflies now dart over the glowing pond, each its
+  // own radius between the duck ring (2.3 m) and the reeds that only start past 5.0 m out, its own height,
+  // speed and phase — same `Flyer` controller every other flyer in this glade already loops with, so this
+  // adds no new orbit or bob logic, just a new rig for it to carry.
+  for (let i = 0; i < 3; i++) { const rig = makeDragonfly(r.pick([0x2f6a5a, 0x3a5a8a, 0x5a3a6a])); game.npcs.push(new Flyer(game, rig, { cx: 8, cz: -6, r: r.range(2.6, 4.0), h: r.range(0.3, 0.55), speed: r.range(1.6, 2.4), bob: 0.08, wobble: 0.4, cw: i % 2 === 0, phase: i * 2.4 })); }
   for (let i = 0; i < 14; i++) { const a = i / 14 * TAU; const m = makeMushroom(0.45, r.pick([0, 300, 200]), r, true); placeT(game, U, m, cos(a) * 6.5 - 6, sin(a) * 6.5 + 8, 0); if (m.userData.update) U.push(m.userData.update); }
   // the storyteller and the ring-dance kids both swear three turns of the fairy ring earns a wish, but
   // the ring itself — the 14 mushrooms circling (-6, 8) above — had never actually granted one; nothing
