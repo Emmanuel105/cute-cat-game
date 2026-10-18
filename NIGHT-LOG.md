@@ -15354,3 +15354,51 @@ badminton, tug-of-war, sack race, pogo stick, piñata) is, this time, actually c
 visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
 suite and the headless probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 570 — an archery range for Victorian, the one game round 508's list never finished
+
+Round 508's own original list of five playground games (tetherball, badminton, tug-of-war, archery,
+sack races) got every one of tetherball, badminton, tug-of-war and sack race round every world
+eventually — the last rounds confirmed it directly: round 543 gave Victorian its tetherball pole (the
+last of the four for that game), and rounds 567-569 did the same chase for a sixth game, piñata, that
+was added on afterwards. Archery was the one game from the original five that got stuck at two worlds —
+Frosty Peak (round 532) and Whisper Woods (round 525) — and nobody ever came back for the rest. **A
+lady of the parish Toxophilite Society now draws a longbow and looses at a straw target on the quiet
+meadow south-east of Victorian's own town**, bonnet, sash and gown and all — fitting company for a
+game that really was a fashionable Victorian pastime for women. *"Forty yards, and still true to the
+gold."* *"Mind your tail, puss — you're no target, but best stand well clear."* *"The Society meets
+every fine Tuesday. Do bring your mistress along."*
+
+No new class and no new prop: the exact same `Archer` and straw-boss-and-rings target (`55-npcs.js`)
+Frosty Peak and Whisper Woods already build, unchanged — just this town's own bonnet-and-gown wardrobe,
+the same one the two gossiping ladies by the square already wear, in place of either world's winter
+coat or woodsman's jacket. `makeHuman`'s `o.bow` hand prop sits at the off hand regardless of what else
+she's wearing, so nothing needed changing there either.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, clicking
+the real start button and then `game.travel(3, 'from-prev')`, waiting out both the load and the
+fade-lock timers rather than guessing a frame count) sampled every NPC's own position every 10th frame
+over 2400 simulated frames, then swept the open south-east meadow — short of the radius (88) where
+`victorianRegion`'s own procedural fill takes over — against both those samples and every one of the
+town's physics boxes: (52, -68), radius 85.3 from the origin, came back clear by 9.85 m of the nearest
+other box (the tug-of-war, 75, -29) with the target ten metres north at (52, -58), radius 77.9 — the
+whole firing line between them clear by 18.05 m of anything else once the target's own standing box
+(which the archer naturally stands right up against) is set aside, and well off the night watchman's
+bench (36, -30).
+
+Built dead last, right after the sack race and right before `victorianRegion`'s own procedural fill,
+for the usual reason: `makeHuman()` draws three values off the shared `rnd()` sequence unconditionally,
+and a fresh rig built any earlier in this town would shift that sequence and desync every other
+timing-sensitive pick already placed above. Placing it there also means the new archer's own three
+`makeWardrobe`/`randomPerson` draws against this world's local seeded `r()` land before
+`victorianRegion` is called, so the fill drew a different hand than before: Victorian's own box count
+moves from 598 to 608 rather than up by one.
+
+Full suite (`node test/run.mjs`) ran clean across three back-to-back runs: exit 0, every check `ok`, 0
+console warnings. Victorian's own friend count rises with the new archer (confirmed against the
+pre-change build); ground walkable holds at 94%, unchanged. Archery has now reached three of the seven
+worlds (Frosty Peak, Whisper Woods, Victorian) — the Neighborhood, Candy Land, Robot City and Sunny
+Shore still have no archery range of their own, so this strand isn't finished the way the six-game
+series was. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite and the headless probe above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

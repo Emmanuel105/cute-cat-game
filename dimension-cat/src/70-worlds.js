@@ -6328,6 +6328,50 @@ function buildVictorian(game, entry) {
     W.add(sackA.group); W.add(sackB.group);
     game.npcs.push(new SackRace(game, sackA, sackB, { x: rx, z: rz, ry: rry,
       cries: ['Lost me cap in that last tumble!', "Mind your tail, puss — this sack's still got flour in the seams.", "Best of three — and I'm not owning up to losing again."] })); }
+  // round 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack races)
+  // reached every world but this one by round 532 (Frosty Peak) and round 525 (Whisper Woods) gave
+  // `Archer` (55-npcs.js) a range of its own — Victorian, for all its tetherball pole, badminton net,
+  // tug-of-war and sack race, never got the one game played standing still and loosing an arrow. **A
+  // lady of the parish Toxophilite Society now draws and shoots at a straw target on the quiet meadow
+  // south-east of town**, bonnet, sash and gown and all. *"Forty yards, and still true to the gold."*
+  // *"Mind your tail, puss — you're no target, but best stand well clear."* *"The Society meets every
+  // fine Tuesday. Do bring your mistress along."*
+  //
+  // No new class and no new prop: the exact same `Archer` (55-npcs.js) and straw-boss-and-rings target
+  // Frosty Peak and Whisper Woods already build, unchanged, just this town's own bonnet-and-gown
+  // wardrobe (the same one the two gossiping ladies by the square already wear) in place of either
+  // world's winter coat or woodsman's jacket — `makeHuman`'s `o.bow` hand prop sits at the off hand
+  // regardless of what else she has on.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // clicking the real start button and then `game.travel(3, 'from-prev')`, waiting out both the load
+  // and the fade-lock timers) sampled every NPC's own position every 10th frame over 2400 simulated
+  // frames, then swept a grid of the open south-east meadow (short of the radius (88) where
+  // `victorianRegion`'s own procedural fill takes over) against both those samples and every one of
+  // the town's physics boxes before this range existed: (52, -68), radius 85.3 m, came back clear by
+  // 9.85 m of the nearest box (the tug-of-war, 75, -29) with the target ten metres north at (52, -58),
+  // radius 77.9 m — the line between them clear by 18.05 m of anything else once the target's own
+  // standing box (which the archer naturally stands close to) is set aside.
+  { const ax = 52, az = -68, ary = 0, adist = 10;
+    const tx = ax + sin(ary) * adist, tz = az + cos(ary) * adist, ty0 = P.ground0(tx, tz);
+    const target = group(tx, ty0, tz, W);
+    mesh(G.cyl(0.46, 0.46, 0.22, 16), mat(0xd9c28a, { roughness: 0.95 }), { y: 1.0, rx: PI / 2, parent: target });   // the straw boss
+    const ringSpecs = [[0.42, 0xf3f0e6], [0.33, 0x1c1c1c], [0.24, 0x2d6fd6], [0.15, 0xd62839], [0.065, 0xf2c744]];
+    ringSpecs.forEach(([rad, c], i) => mesh(G.cyl(rad, rad, 0.02, 20), mat(c, { roughness: 0.7 }), { y: 1.0, z: 0.1 + i * 0.004, rx: PI / 2, shadow: 'none', parent: target }));
+    const standM = mat(0x5b3d24, { roughness: 1 });
+    for (const s of [1, -1]) mesh(G.cyl(0.02, 0.025, 1.0, 6), standM, { x: s * 0.36, y: 0.55, z: -0.2, rx: 0.3, rz: s * 0.22, parent: target });
+    game.physics.addBox(tx, ty0 + 1.0, tz, 0.95, 1.0, 0.3, { cam: false });
+    const bowWard = makeWardrobe(r, { shirts: [0x3a5a3a], pants: [0x1e1e24], shoes: [0x181410] });
+    const archer = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: r.chance(0.2), wardrobe: bowWard }),
+      hat: 'bonnet', hatColor: 0x3a5a3a, sleeves: true, dress: 0x3a5a3a, sash: 0xd8c8a8, glasses: false, bow: true });
+    W.add(archer.group);
+    const arrow = group(0, 0, 0, W);
+    mesh(G.cyl(0.012, 0.012, 0.62, 6), mat(0x8a6a3a, { roughness: 0.8 }), { rx: PI / 2, parent: arrow });   // shaft
+    mesh(G.cone(0.022, 0.08, 6), mat(0x9aa3ad, { metalness: 0.6, roughness: 0.35 }), { z: -0.35, rx: -PI / 2, parent: arrow });   // head, at local -Z so lookAt() faces it forward
+    const fletchM = mat(0xd62839, { roughness: 0.9 });
+    for (let fi = 0; fi < 3; fi++) mesh(G.box(0.1, 0.002, 0.05), fletchM, { z: 0.26, rz: fi / 3 * TAU, shadow: 'none', parent: arrow });   // tail fletching
+    game.npcs.push(new Archer(game, archer, arrow, { x: ax, z: az, ry: ary, dist: adist,
+      cries: ['Forty yards, and still true to the gold.', "Mind your tail, puss — you're no target, but best stand well clear.", 'The Society meets every fine Tuesday. Do bring your mistress along.'] })); }
   victorianRegion(game, U, r, 88, VICTORIAN_LIMIT - 10);
   makeHorizon(game, r, { clear: VICTORIAN_LIMIT + 10, hills: true, hill: 0x3f4a38, rock: 0x3a3f4a, rock2: 0x4a4a58, snow: 0xcfd6e2, woodHue: [0.16, 0.26], woodLight: [0.1, 0.2], trunk: 0x3a2a1e, peaks: 30, woodCount: 420 });
   // people
