@@ -16081,6 +16081,58 @@ function buildBeach(game, entry) {
     game.npcs.push(new PinataSwinger(game, swinger, 0x8a6a44, { x: sx, z: sz, ry: sry,
       cries: ["Bet there's taffy in there — there's always taffy in there.", 'Mind your tail, puss — plenty of swing room needed here.', "One more go. I can feel today's the day I actually connect."] })); }
 
+  // Sunny Shore had every one of round 508's own playground games except the one played standing
+  // still and loosing an arrow — archery had already reached the Neighborhood, Frosty Peak, Whisper
+  // Woods and Victorian, four of the seven worlds, leaving this beach and two others without a range
+  // of their own. **A lone archer now draws and looses at a straw target on a quiet stretch of dry
+  // sand**, nothing between her and the tide but sand and a straw boss. *"Steady now — the wind off
+  // the water throws every shot wide."* *"Mind your tail, puss — you're no target, but best stand well
+  // clear."* *"Every arrow that misses buries itself in the sand. I've lost more than I've found."*
+  //
+  // No new class and no new prop: the exact same `Archer` and straw-boss-and-rings target
+  // (`55-npcs.js`) the other four worlds already build, unchanged — just a plain tank-top-and-shorts
+  // beach wardrobe (`shorts: true`, no hat, no coat) in place of any of those worlds' winter coat,
+  // woodsman's jacket, bonnet-and-gown or hoodie. `makeHuman`'s `o.bow` hand prop sits at the off hand
+  // regardless of what else she wears, and `Archer`'s own constructor already calls
+  // `game.physics.ground0()` for her own footing every frame, same as every other hand-placed NPC on
+  // this beach, so the real slope underfoot costs nothing extra; only the target itself needed
+  // `P.ground0()` once at build time, same as Frosty Peak's and Victorian's own ranges.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // `game.start('new')` then `game.travel(4, 'from-hub')` — waited out for real with a 700 ms pause
+  // rather than looped through, which is what cost a first pass at this probe its result, scoring the
+  // Neighborhood it had never actually left — then 2400 simulated frames) sampled every NPC's own
+  // position every 10th frame, then swept the dry sand (radius 8-50, short of the radius (58) where
+  // `beachRegion`'s own fill takes over, eight firing directions at every grid point) against both
+  // those samples and every one of the beach's 215 physics boxes: (-8, -46), facing east, came back
+  // clearest at 5.35 m along the whole ten-metre line to the target at (2, -46) — the limiting obstacle
+  // a small prop box 5.45 m off and the nearest wandering soul 6 m off, well clear of the dense cluster
+  // of games further north and west (the pogo kid at (-28, -20), the piñata at (-14, -31.5), the sack
+  // race's own lane at (-37, -13)).
+  //
+  // Built dead last, right after the piñata, for the usual reason: `makeHuman()` draws three values off
+  // the shared `rnd()` sequence unconditionally, and a fresh rig built any earlier on this beach would
+  // shift that sequence and desync every other timing-sensitive pick already placed above.
+  { const ax = -8, az = -46, ary = PI / 2, adist = 10;
+    const tx = ax + sin(ary) * adist, tz = az + cos(ary) * adist, ty0 = P.ground0(tx, tz);
+    const target = group(tx, ty0, tz, W);
+    mesh(G.cyl(0.46, 0.46, 0.22, 16), mat(0xd9c28a, { roughness: 0.95 }), { y: 1.0, rx: PI / 2, parent: target });   // the straw boss
+    const ringSpecs = [[0.42, 0xf3f0e6], [0.33, 0x1c1c1c], [0.24, 0x2d6fd6], [0.15, 0xd62839], [0.065, 0xf2c744]];
+    ringSpecs.forEach(([rad, c], i) => mesh(G.cyl(rad, rad, 0.02, 20), mat(c, { roughness: 0.7 }), { y: 1.0, z: 0.1 + i * 0.004, rx: PI / 2, shadow: 'none', parent: target }));
+    const standM = mat(0x5b3d24, { roughness: 1 });
+    for (const s of [1, -1]) mesh(G.cyl(0.02, 0.025, 1.0, 6), standM, { x: s * 0.36, y: 0.55, z: -0.2, rx: 0.3, rz: s * 0.22, parent: target });
+    game.physics.addBox(tx, ty0 + 1.0, tz, 0.95, 1.0, 0.3, { cam: false });
+    const bowWard = makeWardrobe(r, { shirts: [0xff7043, 0x4fc3f7, 0xfff176], pants: [0x2a3a4a, 0x3a2a24], shoes: [0xefe7d8] });
+    const archer = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: bowWard }),
+      hat: null, shorts: true, stripes: null, jacket: null, coat: null, scarf: null, bag: null, backpack: null, glasses: false, bow: true });
+    W.add(archer.group);
+    const arrow = group(0, 0, 0, W);
+    mesh(G.cyl(0.012, 0.012, 0.62, 6), mat(0x8a6a3a, { roughness: 0.8 }), { rx: PI / 2, parent: arrow });   // shaft
+    mesh(G.cone(0.022, 0.08, 6), mat(0x9aa3ad, { metalness: 0.6, roughness: 0.35 }), { z: -0.35, rx: -PI / 2, parent: arrow });   // head, at local -Z so lookAt() faces it forward
+    const fletchM = mat(0xd62839, { roughness: 0.9 });
+    for (let fi = 0; fi < 3; fi++) mesh(G.box(0.1, 0.002, 0.05), fletchM, { z: 0.26, rz: fi / 3 * TAU, shadow: 'none', parent: arrow });   // tail fletching
+    game.npcs.push(new Archer(game, archer, arrow, { x: ax, z: az, ry: ary, dist: adist,
+      cries: ['Steady now — the wind off the water throws every shot wide.', "Mind your tail, puss — you're no target, but best stand well clear.", "Every arrow that misses buries itself in the sand. I've lost more than I've found."] })); }
   beachRegion(game, U, r, 58, SHORE_LIMIT - 8);
   // the headland behind the dunes: hills and peaks inland only, never out to sea
   makeHorizon(game, r, { clear: SHORE_LIMIT + 8, hill: 0x8c9a58, rock: 0x7a7060, rock2: 0x8a8272, snowLine: 58, peaks: 26, woodCount: 260, woodHue: [0.18, 0.28], woodLight: [0.18, 0.3], keep: (x) => x < -SHORE_LIMIT * 0.15 });

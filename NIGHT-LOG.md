@@ -15442,3 +15442,51 @@ now reached four of the seven worlds (Neighborhood, Frosty Peak, Whisper Woods, 
 Land, Robot City and Sunny Shore still have no archery range of their own. No visual check was possible
 in this environment (no browser, no Playwright) — only the stub-three test suite and the headless probe
 above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 572 — archery reaches Sunny Shore
+
+Archery had made it to four of the seven worlds (Neighborhood, Frosty Peak, Whisper Woods, Victorian)
+but never the beach, even though Sunny Shore already has every other game from round 508's own list
+(tetherball, badminton, tug-of-war, sack race, pogo stick, piñata). **A lone archer now draws and
+looses at a straw target on a quiet stretch of dry sand**, tank top and shorts, bow in hand, nothing
+between her and the tide but sand. *"Steady now — the wind off the water throws every shot wide."*
+*"Mind your tail, puss — you're no target, but best stand well clear."* *"Every arrow that misses
+buries itself in the sand. I've lost more than I've found."*
+
+No new class and no new prop: the exact same `Archer` and straw-boss-and-rings target (`55-npcs.js`)
+the other four worlds already build, unchanged — just a plain beach wardrobe (`shorts: true`, no hat,
+no coat) in place of a winter coat, a woodsman's jacket, bonnet-and-gown or hoodie. `makeHuman`'s
+`o.bow` hand prop sits at the off hand regardless of what else she wears, and `Archer`'s own
+constructor already calls `game.physics.ground0()` every frame for her footing, same as everything
+else on this beach, so the real slope underfoot costs nothing extra.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+`game.start('new')` then `game.travel(4, 'from-hub')`) first tripped over its own timing: `travel()`
+defers the actual world load by 520 ms behind a real `setTimeout`, and a first pass that skipped
+straight into simulated frames without waiting for it scored the Neighborhood it had never actually
+left. Waiting out that delay for real, then running 2400 simulated frames and sampling every NPC's own
+position every 10th frame, a grid sweep of the dry sand (radius 8-50, short of the radius (58) where
+`beachRegion`'s own fill takes over, eight firing directions at every point) against both those
+samples and every one of the beach's 215 physics boxes found (-8, -46), facing east, clearest along its
+whole ten-metre line to the target at (2, -46): 5.35 m of clearance at the tightest point, against a
+small prop box 5.45 m off and the nearest wandering soul 6 m off — well clear of the dense cluster of
+games further north and west (the pogo kid at (-28, -20), the piñata at (-14, -31.5), the sack race's
+own lane at (-37, -13)).
+
+Built dead last, right after the piñata, for the usual reason: `makeHuman()` draws three values off the
+shared `rnd()` sequence unconditionally, and a fresh rig built any earlier would shift that sequence
+and desync every other timing-sensitive pick already placed above.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, every check `ok`, 0 console warnings. Sunny Shore's
+own friend count rises to 74; ground walkable holds at 100%, unchanged. Archery has now reached five of
+the seven worlds (Neighborhood, Frosty Peak, Whisper Woods, Victorian, Sunny Shore) — only Candy Land
+and Robot City still have no archery range of their own. No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite and the headless probe above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+Also worth noting: this session's container started with its git checkout on a **detached HEAD**, 50
+commits ahead of `origin/main` — every one of those commits (rounds roughly 508 through 571) had been
+made, but `git push origin main` on a detached HEAD pushes the local `main` branch pointer, which had
+never moved, so none of that work had actually reached GitHub. Before starting this round's own work,
+local `main` was fast-forwarded onto that commit and pushed, recovering all 50 rounds. Future rounds
+should land as normal, on a branch, from here.
