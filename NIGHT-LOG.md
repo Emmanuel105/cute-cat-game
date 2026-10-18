@@ -15260,3 +15260,50 @@ worlds now carrying a piñata post, this strand of the "one more playground game
 visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
 suite and the headless probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 568 — a piñata for Sunny Shore (and a correction)
+
+Round 567's own log entry claimed the "one more playground game for every world" piñata series
+(`PinataSwinger` in `55-npcs.js`, `makePinata` in `60-props.js`) had reached "all seven worlds" —
+that was wrong. Checking the actual source, only five worlds (Neighborhood, Candy Land, Robot City,
+Victorian, Whisper Woods) had ever gotten one; Sunny Shore and Frosty Peak were never touched. This
+round closes the first of those two real gaps. **A beach-ball-striped piñata now hangs from a
+driftwood post** on the dry dune sand south of the beach-badminton net, a kid in swim gear taking a
+two-handed swing at it. *"Bet there's taffy in there — there's always taffy in there."* *"Mind your
+tail, puss — plenty of swing room needed here."* *"One more go. I can feel today's the day I actually
+connect."*
+
+No new class and no new mesh: the exact same `PinataSwinger` and `makePinata` the other five worlds
+already use, just a fresh post, a fresh kid and this coast's own beach-ball colours. `PinataSwinger`'s
+own constructor already asks `game.physics.ground0()` for the swinger's footing, same as this beach's
+tetherball and sack race, so the real slope underfoot cost nothing extra; only the static post needed
+`placeT`/`boxT` in place of the flat-floor worlds' `group()` + `P.addBox()`.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses) swept
+the dry dune sand for clear ground — and caught its own first mistake along the way: `game.travel()`
+defers the actual world swap behind a 520 ms real-timer fade, so a probe that calls `travel(4, ...)`
+and immediately starts sampling without waiting out that timer, the way a first draft of this script
+did, samples the world it never actually left. That first pass scored a spot against the Neighborhood
+it was still standing in and came back with 326 boxes and a "clear by 13 m" reading that was
+meaningless — the chosen point turned out to be one metre from the existing pogo kid. Waiting for
+`game.worldIndex` to actually change before sampling fixed it: the real Sunny Shore carries 225
+physics boxes, and sweeping its dry sand (x ≤ 10, radius 10-46, short of the radius 58 where
+`beachRegion`'s own fill takes over) against 2400 simulated frames of every beachgoer's and the
+squirrel's own position found (-14, -31.5) clear by 6.59 m of the nearest box or soul — south of the
+pogo kid at (-28, -20), east of the beach-badminton net at (-18, -38), well short of the sack race's
+own lane at (-37, -13).
+
+Built dead last, right after the sack race, for the usual reason: `makeHuman()` (which `beachPerson()`
+wraps) draws three values off the shared `rnd()` sequence unconditionally, and a fresh rig built any
+earlier would shift that sequence and desync every other timing-sensitive pick already placed above.
+That shift also lands one call earlier than it used to, before `beachRegion`'s own procedural fill —
+expected and harmless (the same thing every earlier addition at this spot in the file already does),
+but it does mean the fill drew a different hand this time: Sunny Shore's own box count moves from 225
+to 215 rather than up by one.
+
+Full suite (`node test/run.mjs`) ran clean across three back-to-back runs: exit 0, all 290 checks `ok`,
+0 console warnings. Sunny Shore's own friend count rises from 72 to 73 with the new kid (confirmed
+against the pre-change build); ground walkable holds at 99%, unchanged. Frosty Peak is now the only
+world of the seven still without a piñata. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
