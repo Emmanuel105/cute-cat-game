@@ -1406,6 +1406,39 @@ function buildSnowVillage(game, entry) {
     W.add(sackA.group); W.add(sackB.group);
     game.npcs.push(new SackRace(game, sackA, sackB, { x: rx, z: rz, ry: rry,
       cries: ['Sand would be easier than snow for this — at least it doesn\'t melt down your sack.', "Mind your tail, puss, I can't steer in this thing.", 'Best of three. I\'m blaming the drifts if I lose.'] })); }
+  // `PogoHopper`'s own tour of the seven worlds was down to two after round 560 — the Neighborhood,
+  // Candy Land, Robot City, Sunny Shore and Victorian all have one; only Whisper Woods is left after
+  // this. Frosty Peak, for all its sledder, tug-of-war, tetherball, archery range, badminton net and
+  // sack race, never had the one game played standing still and bouncing in place. **A bundled-up kid
+  // now bounces on a pogo stick on a quiet stretch of open snowfield south of the village**, well clear
+  // of the forest ring and every other hand-placed spot on the mountain. *"Boing! Boing! Boing!"*
+  // *"One thousand bounces. Not stopping to count again."* *"Don't look — actually, look, I'm good at
+  // this."*
+  //
+  // No new class and no new mesh: the exact same `PogoHopper` (`55-npcs.js`) the Neighborhood, Candy
+  // Land, Robot City, Sunny Shore and Victorian already use, unchanged — it asks
+  // `game.physics.ground0()` for its own footing every frame, so the slope out here costs nothing
+  // extra, the same way the tug-of-war, tetherball, badminton and sack race already handle it. The kid
+  // comes from this file's own `kid()` helper (coat and beanie already on), the same one every other
+  // Frosty Peak child already comes from.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, the
+  // real mountain built with `game.start('new')` then `game.travel(5, 'from-hub')`, 2400 simulated
+  // frames to let every reindeer, hare, arctic fox, penguin, yeti and wandering villager actually move)
+  // sampled every NPC's own position every 10th frame, then swept a grid of the open snowfield (radius
+  // 30-56, short of the radius (58) where `snowRegion`'s own fill takes over) against both those
+  // samples and every one of the mountain's physics boxes: (6.5, -42) came back clearest, 11.8 m from
+  // the nearest box (a pine trunk in the forest ring) and 11.7 m from the nearest other soul, at radius
+  // 42.5 from the origin — well clear of the archery range, the badminton net, the tetherball pole,
+  // the sack race and the frost beetle.
+  //
+  // Built dead last, right after the sack race, for the same reason every other addition at the end of
+  // this function already gives: `makeHuman()` draws three values off the shared `rnd()` sequence
+  // unconditionally, and a fresh rig built any earlier on this mountain would shift that sequence and
+  // desync every other timing-sensitive pick already placed above.
+  { const pogoKid = kid(r.chance(0.5));
+    game.npcs.push(new PogoHopper(game, pogoKid, r.pick([0xff6f3c, 0x3fae9a, 0xf2c744]), { x: 6.5, z: -42, ry: r.range(0, TAU),
+      cries: ['Boing! Boing! Boing!', "One thousand bounces. Not stopping to count again.", "Don't look — actually, look, I'm good at this."] })); }
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

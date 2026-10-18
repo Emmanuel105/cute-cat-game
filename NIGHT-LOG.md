@@ -15011,3 +15011,39 @@ known. `PogoHopper` is now in five of the seven worlds (the Neighborhood, Candy 
 Shore, Victorian); Frosty Peak and Whisper Woods are left to get one of their own. No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
 headless probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 561 — a pogo stick for Frosty Peak
+
+Continuing `PogoHopper`'s own tour: Frosty Peak and Whisper Woods were the two worlds still without
+one. **A bundled-up kid now bounces on a pogo stick on a quiet stretch of open snowfield south of the
+village**, well clear of the forest ring and everything else on the mountain. *"Boing! Boing! Boing!"*
+*"One thousand bounces. Not stopping to count again."* *"Don't look — actually, look, I'm good at
+this."*
+
+No new class and no new mesh: the exact same `PogoHopper` (`55-npcs.js`) the Neighborhood, Candy Land,
+Robot City, Sunny Shore and Victorian already use — it leans on `game.physics.ground0()` for its own
+footing every frame, so the slope out here costs nothing extra, the same way this mountain's tug-of-war,
+tetherball, badminton and sack race already handle it. The kid comes from this world's own `kid()`
+helper (coat and beanie already on), same as every other Frosty Peak child.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, the real
+mountain built with `game.start('new')` then `game.travel(5, 'from-hub')`, 2400 simulated frames to let
+every reindeer, hare, arctic fox, penguin, yeti and wandering villager actually move) sampled every
+NPC's own position every 10th frame, then swept a grid of the open snowfield (radius 30-56, short of the
+radius (58) where `snowRegion`'s own fill takes over) against both those samples and every one of the
+mountain's 325 physics boxes: (6.5, -42) came back clearest, 11.8 m from the nearest box (a pine trunk
+in the forest ring) and 11.7 m from the nearest other soul, at radius 42.5 — clear of the archery range,
+the badminton net, the tetherball pole, the sack race and the frost beetle.
+
+Built dead last, right after the sack race, for the same reason every other addition at the end of this
+function already gives: `makeHuman()` draws three values off the shared `rnd()` sequence unconditionally,
+and a fresh rig built any earlier on this mountain would shift that sequence and desync every other
+timing-sensitive pick already placed above.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings (confirmed
+stable across three back-to-back runs). Frosty Peak's own friend count rises from 73 to 74 with the new
+kid (confirmed against the unmodified base with `git stash`); ground walkable holds at 97%, unchanged.
+`PogoHopper` is now in six of the seven worlds (the Neighborhood, Candy Land, Robot City, Frosty Peak,
+Sunny Shore, Victorian); Whisper Woods is the only one left to get one of its own. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
+headless probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
