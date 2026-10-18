@@ -5396,6 +5396,28 @@ function buildRobotCity(game, entry) {
     W.add(sackA.group); W.add(sackB.group);
     game.npcs.push(new SackRace(game, sackA, sackB, { x: rx, z: rz, ry: rry,
       cries: ["Lost a bet. Didn't think they'd actually make me do it.", "Careful, puss — these sacks held bolts an hour ago.", "Neither of us has ever once reached the end. Foreman says that's the point."] })); }
+  // `PogoHopper`'s own tour (`55-npcs.js`) has now reached every world but two — the Neighborhood, Candy
+  // Land, Sunny Shore and Victorian all have one, Frosty Peak and Whisper Woods still don't. **An
+  // off-shift contractor's kid now bounces on a quiet stretch of open concrete** north-east of the
+  // city, well past the sack race and every other hand-placed spot. *"Boing! Watch me clear the vents,
+  // puss!"* *"Dad says I'll wear a groove in the floor at this rate."* *"Ninety-six. Don't you dare make
+  // me lose count."*
+  //
+  // No new class and no new mesh: the exact same `PogoHopper` the Neighborhood, Candy Land, Sunny Shore
+  // and Victorian already use. A human kid, not a robot: `makeRobot()`'s rig never sets `rig.legs` the
+  // way `PogoHopper` needs for its fixed crouch, the same reason the tetherball, badminton and sack-race
+  // pairs above are all human contractors too.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, the
+  // real city built with `game.start('new')` then `game.travel(2, 'from-hub')`, 3600 simulated frames to
+  // let every wanderer and patroller range fully) sampled every NPC's own position every 20th frame,
+  // then swept a grid of the open floor (radius 20-85, short of the radius (98) where robotRegion's own
+  // procedural fill takes over) against both those samples and every one of the city's 325 physics
+  // boxes: (22, 71) came back clearest, 17.1 m from the nearest box and 19.0 m from the nearest other
+  // soul, 38 m clear of the sack race, the badminton net and every other hand-placed spot in this city.
+  { const pogoKid = makeHuman({ ...randomPerson(r, { child: true, female: r.chance(0.5) }), shirt: 0x00e5ff, hat: null, jacket: null, coat: null, scarf: null, bag: null, backpack: null }); W.add(pogoKid.group);
+    game.npcs.push(new PogoHopper(game, pogoKid, r.pick([0xff6f3c, 0x3fae9a, 0xf2c744]), { x: 22, z: 71, ry: r.range(0, TAU),
+      cries: ['Boing! Watch me clear the vents, puss!', "Dad says I'll wear a groove in the floor at this rate.", "Ninety-six. Don't you dare make me lose count."] })); }
   const sq = new Squirrel(game, -14, -9, 'sq-robot'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('mouse', -8, 7); C.add('star', 12, -22); C.add('fish', -18, 2); C.add('yarn', 21, 9); C.add('star', 0, -27); C.add('fish', 4, 14); C.add('mouse', 26, -18); C.add('yarn', -26, -6);

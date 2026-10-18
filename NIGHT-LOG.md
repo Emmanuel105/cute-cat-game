@@ -14975,3 +14975,39 @@ Neighborhood, Candy Land, Sunny Shore, Victorian); Robot City, Frosty Peak and W
 get one of their own. No visual check was possible in this environment (no browser, no Playwright) —
 only the stub-three test suite and the headless probe above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 560 — a pogo stick for Robot City
+
+Continuing `PogoHopper`'s own tour: Robot City, Frosty Peak and Whisper Woods were the three worlds
+still without one. **An off-shift contractor's kid now bounces on a quiet stretch of open concrete**
+north-east of the city, well past the sack race, the badminton net and every other hand-placed spot.
+*"Boing! Watch me clear the vents, puss!"* *"Dad says I'll wear a groove in the floor at this rate."*
+*"Ninety-six. Don't you dare make me lose count."*
+
+No new class and no new mesh: the exact same `PogoHopper` (`55-npcs.js`) the Neighborhood, Candy Land,
+Sunny Shore and Victorian already use. A human kid, not a robot: `makeRobot()`'s rig never sets
+`rig.legs` the way `PogoHopper` needs for its fixed crouch, the same reason the tetherball, badminton
+and sack-race pairs already in this city are human contractors too.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, the real
+city built with `game.start('new')` then `game.travel(2, 'from-hub')`, 3600 simulated frames to let
+every wanderer and patroller range fully) sampled every NPC's own position every 20th frame, then swept
+a grid of the open floor (radius 20-85, short of the radius (98) where `robotRegion`'s own procedural
+fill takes over) against both those samples and every one of the city's 325 physics boxes: (22, 71)
+came back clearest, 17.1 m from the nearest box and 19.0 m from the nearest other soul, 38 m clear of
+the sack race, the badminton net and every other hand-placed spot in this city.
+
+Built dead last, right after the sack race, for the same reason every other addition at the end of this
+function already gives: `makeHuman()` draws three values off the shared `rnd()` sequence unconditionally,
+and a fresh rig built any earlier in this city would shift that sequence and desync every other
+timing-sensitive pick already placed above.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all checks `ok`, 0 console warnings (confirmed
+stable across five back-to-back runs). Robot City's own friend count rises from 82 to 83 with the new
+kid (confirmed against the unmodified base with `git stash`); ground walkable holds at 88%, unchanged.
+One run surfaced the pre-existing Victorian horse-and-carriage flake the test's own comment already
+documents since round 219 (a real-timer race, not anything this change touches) — unrelated and already
+known. `PogoHopper` is now in five of the seven worlds (the Neighborhood, Candy Land, Robot City, Sunny
+Shore, Victorian); Frosty Peak and Whisper Woods are left to get one of their own. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
+headless probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
