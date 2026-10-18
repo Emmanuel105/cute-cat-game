@@ -15402,3 +15402,43 @@ Shore still have no archery range of their own, so this strand isn't finished th
 series was. No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite and the headless probe above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 571 — archery reaches the Neighborhood, the street where the list started
+
+Round 508's own original list of five playground games (tetherball, badminton, tug-of-war, archery,
+sack races) got tetherball, badminton, tug-of-war and sack race all built here rounds ago — but
+archery, the one game played standing still and loosing an arrow, went straight to Frosty Peak (round
+532), Whisper Woods (round 525) and, much more recently, Victorian (round 570), without anyone ever
+circling back to the street the list was pulled from in the first place. **A teenager now practises
+archery on the quiet grass far south of the street, past the birdwatcher's own corner, loosing arrow
+after arrow at a straw target she's propped up herself.** *"Bullseye! ...third one today, don't tell
+my brother."* *"Careful, puss, you're faster than that arrow but not by much."* *"Give me a few more
+years and I'll make the county team."*
+
+No new class and no new prop: the exact same `Archer` and straw-boss-and-rings target (`55-npcs.js`)
+the other three worlds already build, unchanged — just a plain hoodie-and-jeans wardrobe in place of
+any world's winter coat, woodsman's jacket or bonnet-and-gown. `makeHuman`'s `o.bow` hand prop sits at
+the off hand regardless of what else she's wearing, so nothing needed changing there.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+`game.start('new')` — no `game.travel()` needed, since the Neighborhood is the world every test run
+already starts on — then 2400 simulated frames) sampled every NPC's own position every 10th frame,
+then swept a 2 m grid of the open ground (short of the square 95 m `limit` either axis clamps to)
+against both those samples and every one of the street's own physics boxes, measuring real clearance
+to each box's own edge rather than its centre: (-30, -84) came back clearest in the whole street, 18.5
+m from the nearest box or soul — south of the birdwatcher (19, -75) and well clear of the lake (-34,
+-48). The target, ten metres north at (-30, -74), still came back clear by 9.4 m of the nearest
+existing box (an outer-country tree trunk) once the target's own standing box (which the archer
+naturally stands right up against) is set aside, and the firing line between the two stays clear its
+whole length.
+
+Built dead last, right before `makeDayNight`, for the usual reason: `makeHuman()` draws three values
+off the shared `rnd()` sequence unconditionally, and a fresh rig built any earlier on this street
+would shift that sequence and desync the two-neighbours-chat timing test a thousand-odd lines up.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings. The
+Neighborhood's own friend count now shows as 70; ground walkable holds at 96%, unchanged. Archery has
+now reached four of the seven worlds (Neighborhood, Frosty Peak, Whisper Woods, Victorian) — Candy
+Land, Robot City and Sunny Shore still have no archery range of their own. No visual check was possible
+in this environment (no browser, no Playwright) — only the stub-three test suite and the headless probe
+above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -9737,6 +9737,59 @@ function buildNeighborhood(game, entry) {
       shirt: 0x00bcd4, hat: null, jacket: null, scarf: null, bag: null, backpack: null }); W.add(guest.group);
     game.npcs.push(new PinataSwinger(game, guest, 0xc9a86a, { x: sx, z: sz, ry: sry })); }
 
+  // Round 508's list of playground games (tetherball, badminton, tug-of-war, archery, sack races) is
+  // the one the street itself never finished — tetherball, badminton, tug-of-war and sack race all
+  // landed here rounds ago, but archery, the game played standing still and loosing an arrow, went
+  // straight to Frosty Peak (round 532) and Whisper Woods (round 525) and then, much later, Victorian
+  // (round 570) without ever circling back to the street where the list started. **A teenager now
+  // practises archery on the quiet grass far south of the street, past the birdwatcher's own corner,
+  // loosing arrow after arrow at a straw target she's propped up herself.** *"Bullseye! ...third one
+  // today, don't tell my brother."* *"Careful, puss, you're faster than that arrow but not by much."*
+  // *"Give me a few more years and I'll make the county team."*
+  //
+  // No new class and no new prop: the exact same `Archer` (`55-npcs.js`) and straw-boss-and-rings
+  // target Frosty Peak, Whisper Woods and Victorian already build, unchanged — just this street's own
+  // everyday wardrobe (a plain hoodie and jeans, not any world's winter coat, woodsman's jacket or
+  // bonnet-and-gown) in place of theirs. `makeHuman`'s `o.bow` hand prop sits at the off hand
+  // regardless of what else she's wearing, so nothing needed changing there either.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // `game.start('new')`, no `game.travel()` needed since the Neighborhood is the world every test run
+  // already starts on) sampled every NPC's own position every 10th frame over 2400 simulated frames,
+  // then swept a 2 m grid of the open ground (short of the square `limit` of 95 either axis clamps to)
+  // against both those samples and every one of the street's own physics boxes, measuring clearance to
+  // each box's own edge rather than its centre: (-30, -84) came back clearest in the whole street, 18.5
+  // m from the nearest box or soul — well south of the birdwatcher (19, -75) and the lake (-34, -48).
+  // The target, ten metres north at (-30, -74), still came back clear by 9.4 m of the nearest existing
+  // box (an outer-country tree trunk at (-36, -66)) once the target's own standing box (which the
+  // archer naturally stands right up against) is set aside, and the firing line between the two is
+  // clear its whole length.
+  //
+  // Built dead last, right before `makeDayNight`, for the usual reason: `makeHuman()` draws three
+  // values off the shared `rnd()` sequence unconditionally, and a fresh rig built any earlier on this
+  // street would shift that sequence and desync the two-neighbours-chat timing test a thousand-odd
+  // lines up.
+  { const ax = -30, az = -84, ary = 0, adist = 10;
+    const tx = ax + sin(ary) * adist, tz = az + cos(ary) * adist, ty0 = P.ground0(tx, tz);
+    const target = group(tx, ty0, tz, W);
+    mesh(G.cyl(0.46, 0.46, 0.22, 16), mat(0xd9c28a, { roughness: 0.95 }), { y: 1.0, rx: PI / 2, parent: target });   // the straw boss
+    const ringSpecs = [[0.42, 0xf3f0e6], [0.33, 0x1c1c1c], [0.24, 0x2d6fd6], [0.15, 0xd62839], [0.065, 0xf2c744]];
+    ringSpecs.forEach(([rad, c], i) => mesh(G.cyl(rad, rad, 0.02, 20), mat(c, { roughness: 0.7 }), { y: 1.0, z: 0.1 + i * 0.004, rx: PI / 2, shadow: 'none', parent: target }));
+    const standM = mat(0x5b3d24, { roughness: 1 });
+    for (const s of [1, -1]) mesh(G.cyl(0.02, 0.025, 1.0, 6), standM, { x: s * 0.36, y: 0.55, z: -0.2, rx: 0.3, rz: s * 0.22, parent: target });
+    P.addBox(tx, ty0 + 1.0, tz, 0.95, 1.0, 0.3, { cam: false });
+    const bowWard = makeWardrobe(r, { shirts: [0x4a4a5a, 0x6a4a5a], pants: [0x2a2a30, 0x3a342a], shoes: [0x2a2018, 0x1e1a16] });
+    const archer = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: false, wardrobe: bowWard }),
+      hat: null, hairStyle: 'pony', jacket: null, coat: null, scarf: null, bag: null, backpack: null, glasses: false, bow: true });
+    W.add(archer.group);
+    const arrow = group(0, 0, 0, W);
+    mesh(G.cyl(0.012, 0.012, 0.62, 6), mat(0x8a6a3a, { roughness: 0.8 }), { rx: PI / 2, parent: arrow });   // shaft
+    mesh(G.cone(0.022, 0.08, 6), mat(0x9aa3ad, { metalness: 0.6, roughness: 0.35 }), { z: -0.35, rx: -PI / 2, parent: arrow });   // head, at local -Z so lookAt() faces it forward
+    const fletchM = mat(0xd62839, { roughness: 0.9 });
+    for (let fi = 0; fi < 3; fi++) mesh(G.box(0.1, 0.002, 0.05), fletchM, { z: 0.26, rz: fi / 3 * TAU, shadow: 'none', parent: arrow });   // tail fletching
+    game.npcs.push(new Archer(game, archer, arrow, { x: ax, z: az, ry: ary, dist: adist,
+      cries: ["Bullseye! ...third one today, don't tell my brother.", "Careful, puss, you're faster than that arrow but not by much.", "Give me a few more years and I'll make the county team."] })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
