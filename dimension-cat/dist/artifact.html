@@ -8602,6 +8602,37 @@ function buildNeighborhood(game, entry) {
   // refuse one; `Hopper` draws its own `rnd()` for its idle timer and start heading, same as the hares
   // already do in both other worlds, so this costs no later wardrobe pick in this build's own `r`.
   { const rig = makeHare(); game.npcs.push(new Hopper(game, rig, { x: 12.0, z: -15.3, leash: 0.8, r: 0.15, dist: [0.15, 0.45], dur: 0.3, height: 0.2, idle: [1.5, 4], onHop: () => { if (rnd.chance(0.2)) SFX.chitter(); } })); }
+  // the scarecrow keeps the sparrows off the leaves and the hare only ever gets as far as the row's
+  // edge, but neither has ever stopped the one visitor working underneath them. A molehill now sits in
+  // the open grass east of the patch — a ring of kicked-up dirt round a dark burrow mouth — and every
+  // few seconds a small grey mole hitches itself up out of the hole, glances about, and sinks back
+  // down. Pure ambient set dressing, same footing as the hare just above: no greeting, no physics box
+  // (nothing here stands taller than 0.1 m, and it spends half its own cycle below the lawn, where the
+  // flat ground plane hides it the same way it hides the gardener's own feet). Rides the world clock
+  // `t` alone, one smooth sine rise-and-fall with no `rnd()` draw, so it costs no later wardrobe pick
+  // in this build. Neither this world nor `56-npcs-wild.js` has ever had a mole before now; this one is
+  // hand-built right here rather than given its own `makeX()`, the same way the scarecrow a few lines
+  // up never got one either.
+  // (The hare's own home sits at (12.0, -15.3) with a 1.4 m roam radius at most; the patch bed runs
+  // x:[13.6,15.4] z:[-15.9,-14.3]; the basket sits at (15.0,-14.0); the scarecrow's own look radius
+  // reaches 2.2 m from (14.5,-16.6). (17.0, -15.8) clears the hare by 3.5 m, the patch bed by 1.6 m,
+  // the basket by 2.0 m and the scarecrow's reach by 0.6 m past its own radius — open grass with
+  // nothing else built here.)
+  { const mx = 17.0, mz = -15.8;
+    const dirtM = mat(0x3f2e20, { roughness: 1 }), holeM = mat(0x18100a, { roughness: 1 });
+    for (let i = 0; i < 6; i++) { const a = i / 6 * TAU, d = 0.09 + (i % 2) * 0.025;
+      mesh(G.sphere(0.045 + (i % 3) * 0.012, 6, 5), dirtM, { x: mx + cos(a) * d, y: 0.02, z: mz + sin(a) * d, shadow: 'none', parent: W }); }
+    mesh(G.cyl(0.065, 0.065, 0.02, 10), holeM, { x: mx, y: 0.008, z: mz, shadow: 'none', parent: W });
+    const moleM = mat(0x5a5650, { roughness: 0.9 }), snoutM = mat(0xd98a90, { roughness: 0.8 }), eyeM = mat(0x111111, { roughness: 0.6 });
+    const mole = group(mx, -0.18, mz, W);
+    mesh(G.bodySphere(10, 8), moleM, { sx: 0.06, sy: 0.065, sz: 0.1, shadow: 'none', parent: mole });
+    mesh(G.cone(0.022, 0.05, 6), snoutM, { z: 0.085, y: -0.015, rx: PI / 2, shadow: 'none', parent: mole });
+    for (const s of [-1, 1]) mesh(G.sphere(0.01, 6, 6), eyeM, { x: s * 0.028, y: 0.015, z: 0.06, shadow: 'none', parent: mole });
+    U.push((dt, t) => {
+      const period = 4.2, cyc = (t % period) / period, pop = cyc <= 0.5 ? 0 : sin((cyc - 0.5) * 2 * PI);
+      mole.position.y = -0.18 + pop * 0.2;
+      mole.rotation.y = pop > 0.3 ? sin(t * 3) * 0.4 * pop : 0;
+    }); }
   // hammocks, picnic blankets and wishing wells had never shown up anywhere in the seven worlds — the
   // hammock went to Sunny Shore last round, so a picnic blanket lands here, spread on the open grass
   // south-west of the street, no owner in sight. A striped blanket, a wicker basket with its lid propped

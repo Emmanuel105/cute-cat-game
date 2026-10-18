@@ -15636,3 +15636,33 @@ Full suite (`node test/run.mjs`) ran clean five times in a row: exit 0, every ch
 unchanged. No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite and the headless probe above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 577 — a mole in the Neighborhood's vegetable patch
+
+The Neighborhood's backyard already had a vegetable patch, a gardener, a scarecrow guarding the rows
+and a hare that darts in for a nibble regardless — but nothing had ever bothered the patch from
+*underneath* it. **A molehill now sits in the open grass east of the patch**, a ring of kicked-up dirt
+round a dark burrow mouth, and every few seconds a small grey mole hitches itself up out of the hole,
+glances about, and sinks back down. Pure ambient set dressing, same footing as the hare right next to
+it: no greeting, no friend count, no physics box — nothing here stands taller than 0.1 m, and it
+spends half its own cycle hidden below the lawn plane, the same way the ground already hides the
+gardener's own feet.
+
+No existing rig: `56-npcs-wild.js` has no mole, so this one is hand-built right where it stands (a
+ring of dirt clods, a flattened dark cylinder for the hole, and a tiny elongated body with a pink
+snout and two dot eyes), the same way the scarecrow a few lines above it was hand-built rather than
+given its own `makeX()`. No controller either — a single `U.push((dt, t) => ...)` drives the whole
+thing off the world clock `t` alone (one sine rise-and-fall over a 4.2 s cycle, plus a little head-turn
+wobble near the peak), so it costs no `rnd()` draw and disturbs no later wardrobe pick in this build.
+
+Placement: the hare's own home sits at (12.0, -15.3) with a 1.4 m roam radius at most, the patch bed
+runs x:[13.6,15.4] z:[-15.9,-14.3], the carrot basket sits at (15.0,-14.0), and the scarecrow's own
+"look" radius reaches 2.2 m from (14.5,-16.6). (17.0, -15.8) clears the hare by 3.5 m, the patch bed by
+1.6 m, the basket by 2.0 m and the scarecrow's own reach by 0.6 m past its radius — open grass with
+nothing else built there.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings. Neighborhood's
+own friend count holds at 70 (unaffected, as expected for pure ambient wildlife); ground walkable holds
+at 96%, unchanged. No visual check was possible in this environment (no browser, no Playwright) — only
+the stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.
