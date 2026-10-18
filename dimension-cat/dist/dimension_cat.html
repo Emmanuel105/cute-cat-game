@@ -19538,6 +19538,43 @@ function buildForest(game, entry) {
     game.npcs.push(new PinataSwinger(game, guest, 0xc9a86a, { x: sx, z: sz, ry: sry,
       cries: ["One more go — I nearly had it that time!", "Watch the swing room, puss, this stick's longer than it looks.", "If it's full of acorns again I'm trading with the squirrel."] })); }
 
+  // `Marchers` (55-npcs.js: a Patroller lead with followers trailing a fixed gap, wheeling back and
+  // forth) has reached gingerbread men, robots, soldiers, penguins and crabs by now — every world
+  // except this one. Whisper Woods has hedgehogs already (`makeHedgehog`, 56-npcs-wild.js, used once
+  // already for the one living in the eastern hollow log), so three more now drill in a tight column
+  // on a quiet stretch of floor west of everything else hand-built here, same trundling walk cycle
+  // `makeQuadruped`'s own `rig.animate` already drives for the wandering ones. *"Column of three.
+  // Spines in, soldier."* *"Hup, two — hup, two — mind the toadstools, Nigel."* *"Drilling's much
+  // harder when your legs are this short, puss."*
+  //
+  // No new class and no new rig: the exact same `Marchers` and `makeHedgehog` the rest of this file
+  // and the other five marching worlds already use, unchanged.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, the
+  // real wood built with `game.start('new')` then `game.travel(6, 'from-hub')` — waiting out the
+  // portal's own real-timer fade rather than assuming it's instant, the same trap a first pass at this
+  // probe fell into — then 1800 simulated frames to let every wandering deer, fox and hare range fully,
+  // sampled every NPC's and the squirrel's own position every 10th frame over another 1800) swept a
+  // grid of the open woodland floor (radius 15-56, short of the radius (58) where `forestRegion`'s own
+  // fill takes over) against both those samples and every one of the wood's 415 physics boxes, scoring
+  // each candidate by its tightest clearance along a short march line from the point. The 2 m line from
+  // (-53, -14) to (-53, -16) came back clearest of the low-radius set: 8.4 m of headroom at the tightest
+  // sampled point, at radius 54.8-55.4 — west of the piñata post, the fairy ring and every wandering
+  // deer and fox, with the ground sloping gently (0.86 to 0.97 m) rather than flat, nowhere steep enough
+  // to trip the march.
+  //
+  // Like the wandering foxes, deer and hares already in these woods, a quadruped rig has no
+  // `rig.look`/`robot`/`cookie`, so `greetable()` is a no-op on it (confirmed by Sunny Shore's own
+  // marching crabs) — pure ambient wildlife, no new friend, no effect on this wood's friend count or
+  // collectible count.
+  //
+  // Built dead last, right before `forestRegion` takes over the fill, for the usual reason:
+  // `Patroller`'s own three unconditional draws off the shared `rnd()` sequence (phase, idle clock, cry
+  // timer) land after every other timed NPC in this wood and disturb no earlier wardrobe or layout pick.
+  { const marchers = [0, 1, 2].map(() => { const rig = makeHedgehog(); W.add(rig.group); return rig; });
+    game.npcs.push(new Marchers(game, marchers, { points: [[-53, -14], [-53, -16]], speed: 0.45, pause: [1, 2], r: 0.18, height: 0.3, gap: 0.4,
+      cries: ['Column of three. Spines in, soldier.', 'Hup, two — hup, two — mind the toadstools, Nigel.', "Drilling's much harder when your legs are this short, puss."], cryIcon: '🦔' })); }
+
   forestRegion(game, U, r, 58, WOODS_LIMIT - 8);
   makeHorizon(game, r, { clear: WOODS_LIMIT + 8, hills: true, hill: 0x2f4a30, rock: 0x3a4a3a, rock2: 0x44505a, snow: 0xdfe8f0, snowLine: 52, peaks: 28, woodCount: 460, woodBand: 44, woodHue: [0.26, 0.36], woodLight: [0.1, 0.2], trunk: 0x3a2a1c });
   // hollow oak home (north end of the stepping-stone path)

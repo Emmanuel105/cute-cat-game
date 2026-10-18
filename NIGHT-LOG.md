@@ -15596,3 +15596,43 @@ Full suite (`node test/run.mjs`) ran clean: exit 0, every check `ok`, 0 console 
 own friend count holds at 74 (unaffected, as above); ground walkable holds at 100%, unchanged. No visual
 check was possible in this environment (no browser, no Playwright) — only the stub-three test suite and
 the headless probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 576 — a marching column of hedgehogs for Whisper Woods
+
+`Marchers` (a `Patroller` lead with followers trailing a fixed gap, wheeling back and forth) had
+reached gingerbread men, robots, soldiers, penguins and crabs — every marching world except Whisper
+Woods, the one world that already had a resident hedgehog (the shy one living in the eastern hollow
+log). **Three more hedgehogs now drill in a tight column on a quiet stretch of floor west of
+everything else hand-built in these woods**, the same `makeHedgehog` rig and trundling walk cycle the
+wandering ones already use. *"Column of three. Spines in, soldier."* *"Hup, two — hup, two — mind the
+toadstools, Nigel."* *"Drilling's much harder when your legs are this short, puss."*
+
+No new class and no new rig: the exact same `Marchers` (`55-npcs.js`) and `makeHedgehog`
+(`56-npcs-wild.js`) every other marching world and this file's own wandering hedgehog already use.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses) built the
+real wood with `game.start('new')` then `game.travel(6, 'from-hub')` — the first pass forgot that
+`travel()` fires on a real 520 ms timer rather than switching worlds synchronously, and scored a patch
+of leftover Neighborhood colliders before that was caught and fixed. With the wait corrected, 1800
+simulated frames let every wandering deer, fox and hare range fully, then every NPC's and the
+squirrel's own position was sampled every 10th frame over another 1800. A grid sweep of the open
+woodland floor (radius 15–56, short of the radius (58) where `forestRegion`'s own fill takes over)
+against both those samples and all 415 of the wood's physics boxes, scored by tightest clearance along
+a short march line, turned up (-53, -14) marching to (-53, -16): 8.4 m of headroom at the tightest
+point, at radius 54.8–55.4 — west of the piñata post, the fairy ring and every wandering deer and fox,
+on ground sloping gently rather than flat but nowhere steep enough to trip the march.
+
+Like the wandering foxes, deer and hares already here, a quadruped rig has no
+`rig.look`/`robot`/`cookie`, so `greetable()` is a no-op on it, same as Sunny Shore's own marching
+crabs — pure ambient wildlife, no new friend, no effect on this wood's friend count or collectible
+count.
+
+Built dead last, right before `forestRegion` takes over the fill, for the usual reason: `Patroller`'s
+own three unconditional draws off the shared `rnd()` sequence (phase, idle clock, cry timer) land after
+every other timed NPC in this wood and disturb no earlier wardrobe or layout pick.
+
+Full suite (`node test/run.mjs`) ran clean five times in a row: exit 0, every check `ok` (274 of them),
+0 console warnings. Whisper Woods' own friend count holds unaffected; ground walkable holds at 98%,
+unchanged. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite and the headless probe above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
