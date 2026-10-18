@@ -2198,6 +2198,52 @@ function buildNeighborhood(game, entry) {
     game.npcs.push(new PogoHopper(game, pogoKid, r.pick([0xff6f3c, 0x3fae9a, 0xf2c744]), { x: -2.5, z: 70.5, ry: r.range(0, TAU),
       cries: ['Boing! Boing! Boing! Watch this, puss!', 'Lost count past a hundred — starting over.', "Don't laugh, it's harder than it looks."] })); }
 
+  // Candy Land's had a piñata since round 508-odd (`PinataSwinger`/`makePinata`, both in 55/60-npcs.js)
+  // and nowhere else ever got one — a strange gap, given the balloon seller a stone's throw south of
+  // the park path already has this street halfway to a birthday party. A second post now stands on the
+  // quiet grass just west of the stepping-stone path to the hollow oak, a kid taking a swing at a
+  // piñata in the balloon seller's own five colours. *"One of these days I'm actually going to hit
+  // it."* *"Careful, puss — swing room needed here."* *"Nearly! ...no. Still not yet."*
+  //
+  // No new class and no new mesh: the exact same `PinataSwinger` (`55-npcs.js`) and `makePinata`
+  // (`60-props.js`) Candy Land already uses — just a fresh post, a fresh kid, and this street's own
+  // balloon colours standing in for Candy Land's pastel-sweet ones.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // `game.start('new')` so every wanderer, the postie, the dog walker and every playground game
+  // actually moved) sampled every NPC's and the squirrel's own position every 5th frame over 2400
+  // simulated frames, then swept a grid of the open grass north of the park against both those samples,
+  // every one of the street's own physics boxes, and `game.zones` itself (so nothing lands on the
+  // stepping-stone path to the hollow oak, `Z.addSpan(5, 54, 40, 80)`, or any other keep-out rectangle):
+  // (2.5, 62) came back clear by 11.5 m of the nearest box and 9.9 m of the nearest other soul (the pogo
+  // stick kid), with a full 2.5 m of clearance west of the stepping-stone path's own edge.
+  // Built dead last, after the pogo stick, for the same reason every other addition at the end of this
+  // function already gives: `makeHuman()` draws three values off the *shared* `rnd()` sequence
+  // unconditionally, and a fresh rig built any earlier on this street would shift that sequence and
+  // desync the two-neighbours-chat timing test a thousand-odd lines up.
+  { const px = 2.5, pz = 62, postH = 2.2, outer = 0.4, ropeLen = 0.45;
+    const BALLOON_COLORS = [0xe0503c, 0xf2c744, 0x2e9e6e, 0x3f6fd6, 0xff8fab, 0x8a5acf];
+    const postM = mat(0x8a5a32, { roughness: 0.9 });
+    const standG = group(px, 0, pz, W);
+    mesh(G.cyl(0.07, 0.09, postH, 8), postM, { y: postH / 2, parent: standG });
+    const pivot = group(0, postH, 0, standG);
+    mesh(G.cyl(0.012, 0.012, ropeLen, 5), mat(0xe8d9a0, { roughness: 0.9 }), { y: -ropeLen / 2, parent: pivot });
+    const pinata = makePinata(0x3f6fd6, BALLOON_COLORS);
+    pinata.position.y = -(ropeLen + outer); pivot.add(pinata);
+    P.addBox(px, postH / 2, pz, 0.35, postH, 0.35, { cam: false });
+    let lt = 0;
+    standG.userData.update = (dt) => {
+      lt += dt;
+      const cyc = 2.6, ph = (lt % cyc) / cyc, sinceHit = ph < 0.65 ? (ph + 0.35) * cyc : (ph - 0.65) * cyc;
+      pivot.rotation.z = sin(lt * 0.5) * 0.04 + Math.exp(-sinceHit * 2.6) * 0.3;
+      pivot.rotation.x = sin(lt * 0.4 + 1) * 0.025;
+    };
+    U.push(standG.userData.update);
+    const sx = px, sz = pz + 1.3, sry = atan2(px - sx, pz - sz);
+    const guest = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true }),
+      shirt: 0x00bcd4, hat: null, jacket: null, scarf: null, bag: null, backpack: null }); W.add(guest.group);
+    game.npcs.push(new PinataSwinger(game, guest, 0xc9a86a, { x: sx, z: sz, ry: sry })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

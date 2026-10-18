@@ -15114,3 +15114,40 @@ own friend count holds at 73 (purely decorative, nothing to greet); ground walka
 unchanged. Every one of the seven worlds now has something crossing its own sky. No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 564 — a piñata for the Neighborhood
+
+Candy Land's had a piñata since round 508-odd (`PinataSwinger`/`makePinata`, both in 55/60-npcs.js) and
+nowhere else ever got one — a strange gap, given the Neighborhood's own balloon seller a stone's throw
+south of the park path already has this street halfway to a birthday party. **A second post now stands
+on the quiet grass just west of the stepping-stone path to the hollow oak**, a kid taking a swing at a
+piñata done out in the balloon seller's own five colours instead of Candy Land's pastel ones.
+
+No new class and no new mesh: the exact same `PinataSwinger` (`55-npcs.js`) and `makePinata`
+(`60-props.js`) Candy Land already uses, just a fresh post, a fresh kid, and this street's own balloon
+palette. A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+`game.start('new')` so every wanderer, the postie, the dog walker and every playground game actually
+moved) sampled every NPC's and the squirrel's own position every 5th frame over 2400 simulated frames,
+then swept a grid of the open grass north of the park against both those samples, every one of the
+street's own physics boxes, and `game.zones` itself (so nothing lands on the stepping-stone path to the
+hollow oak, `Z.addSpan(5, 54, 40, 80)`): (2.5, 62) came back clear by 11.5 m of the nearest box and
+9.9 m of the nearest other soul (the pogo stick kid), with a full 2.5 m of clearance west of the
+path's own edge.
+
+Two real snags, both found only by running the suite: a first attempt gave the kid a wardrobe copied
+straight from Candy Land's own guest, and the Neighborhood (unlike Candy Land) asserts no two of its
+59 townsfolk share a shirt colour — all four of those colours turned out already spoken for, so the kid
+now wears a single fixed, checked-unique teal instead. The second was subtler: giving the swinger its
+own `cries`, exactly as Candy Land's does, desynced the shared `rnd()` sequence just enough to leave a
+wholly unrelated check — the easel painter's arm mid-animation at a fixed simulated instant — on the
+wrong side of its own threshold, the same class of bug every "Built dead last" and "burns one shared
+draw" comment elsewhere in this file already warns about. Dropping the `cries` (this kid swings in
+silence; `PinataSwinger` still asks `rig.animate()` every frame regardless, which is what was actually
+shifting the sequence, not the cry lines themselves) brought the suite back to green without touching
+anything upstream. No lines of dialogue for this one, in other words — a quieter addition than most.
+
+Full suite (`node test/run.mjs`) ran clean across three back-to-back runs: exit 0, all 274 checks `ok`,
+0 console warnings. The Neighborhood's own friend count rises from 68 to 69 with the new kid (confirmed
+against the unmodified base with `git stash`); ground walkable holds at 96%, unchanged. No visual check
+was possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
+headless probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
