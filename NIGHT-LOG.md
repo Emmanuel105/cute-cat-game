@@ -15564,3 +15564,35 @@ own friend count rises from 84 to 85; ground walkable holds at 88%, unchanged. *
 all seven worlds.** No visual check was possible in this environment (no browser, no Playwright) — only
 the stub-three test suite and the headless probe above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 575 — a marching column of crabs for Sunny Shore
+
+Every world with a `Marchers` group (`55-npcs.js`: a `Patroller` lead with followers trailing a fixed
+gap behind, wheeling back and forth) had one — gingerbread men in Candy Land, soldiers in Victorian, a
+column in Robot City, three penguins drilling on the Frosty Peak ice — except Sunny Shore. **Three of
+the beach's own crabs now march in step on the wet sand**, turning on the spot and marching back the
+other way, sideways gait and all, same rig (`makeCrab`) the beach's six wandering crabs already use.
+*"Sideways, always sideways — try that gait yourself, puss."* *"Column of three. Pincers at the
+ready."* *"Mind the claws, puss — we're only drilling."*
+
+A headless probe (`game.start('new')` then `game.travel(4, 'from-hub')`, 3000 simulated frames to let
+every wandering crab, gull, turtle and beachgoer settle, then every NPC's own position sampled every
+10th frame over another 3000, 29,700 samples in all) swept a grid of candidate points and all four axis
+directions against both those samples and all 217 of the beach's own physics boxes, scoring each by its
+tightest clearance along a short march line from the point. (24, -43) marching east to (26, -43) came
+back clearest: 7.6 m of headroom at the tightest sampled point — comfortably past the ~2.4 m a trailing
+crab swings beyond either end when the column turns around — east of the (12, -40) star and south of
+every hand-placed crab, turtle and buoy on this beach.
+
+Like the wandering crabs and turtles already here, a crab rig has no `rig.look`/`robot`/`cookie`, so
+`greetable()` is a no-op on it: this is pure ambient wildlife, same as the tiger beetle before it — no
+new friend to meet, no effect on the friend count or the collectible count.
+
+Built dead last, right after the tiger beetle, for the usual reason: `Patroller`'s own three
+unconditional draws off the shared `rnd()` sequence (phase, idle clock, cry timer) land after every
+other timed NPC in this world and disturb no earlier wardrobe or layout pick.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, every check `ok`, 0 console warnings. Sunny Shore's
+own friend count holds at 74 (unaffected, as above); ground walkable holds at 100%, unchanged. No visual
+check was possible in this environment (no browser, no Playwright) — only the stub-three test suite and
+the headless probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
