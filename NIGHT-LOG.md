@@ -15222,3 +15222,41 @@ City's own friend count rises from 83 to 84 with the new swinger; ground walkabl
 unchanged. No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite and the headless probe above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 567 — a piñata for Victorian
+
+The Neighborhood, Candy Land, Whisper Woods and Robot City have all had a piñata post since rounds
+508-odd, 564, 565 and 566 (`PinataSwinger` in `55-npcs.js`, `makePinata` in `60-props.js`) — Victorian,
+for all its tetherball pole, badminton net, tug-of-war, sack race and pogo stick, was the last of the
+seven worlds left without one. **A bunting-coloured piñata now hangs from a post** on the open grass
+east of the sack race's own lane, a street urchin taking a swing at it. *"One more go, and mind, I'll
+not miss this time!"* *"Steady now, puss — plenty of swing room needed here."* *"If it's just toffees
+again, I shall be very put out."*
+
+No new class and no new mesh: the exact same `PinataSwinger` and `makePinata` the other four worlds
+already use, just a fresh post, a fresh urchin and this town's own fête colours (burgundy, gold, cream
+and hunter green) in place of any street's own balloon palette or Robot City's scrap-and-hazard-stripe
+scheme.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+`game.start('new')` then `game.travel(3, 'from-hub')`, 3600 simulated frames to let every urchin,
+dancer, duck and ball game in this town actually move) sampled every NPC's and the squirrel's own
+position every 10th frame, then swept a grid of the open grass east of the sack race's own lane against
+both those samples and every one of the town's 326 physics boxes: (16, -57) came back clearest at
+13.15 m from the nearest box or soul — 13.1 m from the sack race's own lane at (4, -66), 26.1 m from
+the badminton net (-10, -55), 23.8 m from the pogo kid (-6, -66), and a good 11 m clear of the market
+square's own circle (centred (0, -34), radius 17), at radius 59.2 from the origin, well short of the
+radius (88) where `victorianRegion`'s own procedural fill takes over.
+
+Built dead last, right after the pogo kid, for the usual reason: `makeHuman()` draws three values off
+the shared `rnd()` sequence unconditionally, and a fresh rig built any earlier in this town would shift
+that sequence and desync every other timing-sensitive pick already placed above.
+
+Full suite (`node test/run.mjs`) ran clean across three back-to-back runs: exit 0, all 274 checks `ok`,
+0 console warnings. Victorian's own friend count rises from 96 to 97 with the new urchin (confirmed
+against the unmodified base with `git stash`); ground walkable holds at 94%, unchanged. With all seven
+worlds now carrying a piñata post, this strand of the "one more playground game for every world" series
+(tetherball, badminton, tug-of-war, sack race, pogo stick, piñata) is finally complete end to end. No
+visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
+suite and the headless probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.
