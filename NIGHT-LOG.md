@@ -15490,3 +15490,39 @@ made, but `git push origin main` on a detached HEAD pushes the local `main` bran
 never moved, so none of that work had actually reached GitHub. Before starting this round's own work,
 local `main` was fast-forwarded onto that commit and pushed, recovering all 50 rounds. Future rounds
 should land as normal, on a branch, from here.
+
+## Round 573 — archery reaches Candy Land
+
+Archery had made it to five of the seven worlds (Neighborhood, Frosty Peak, Whisper Woods, Victorian,
+Sunny Shore) but never the two non-terrain worlds. **A sweet-shop girl now draws and looses arrows at
+a straw target on a quiet stretch of open sweet-lands south-east of the park**, pink-and-cyan wardrobe,
+bow in hand, candy canes and lollipops well out of her firing line. *"Careful, puss — these arrows are
+stickier than they look, same as everything else out here."* *"Every one that misses just sinks into
+the icing. I've lost a whole quiver that way."* *"Ten in a row dead centre. The sugar rush helps my
+aim, I swear."*
+
+No new class and no new prop: the exact same `Archer` and straw-boss-and-rings target (`55-npcs.js`)
+the other five worlds already build, unchanged — just a candy-coloured wardrobe (the same pink, cyan
+and sunshine-yellow the pogo kid just above her in `buildCandyLand` already wears) in place of a winter
+coat, a woodsman's jacket, bonnet-and-gown or beachwear.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+`game.start('new')` then `game.travel(1, 'from-hub')`, 2400 simulated frames to let the sweet-lands
+settle, then sampling every NPC's own position every 10th frame over another 2400) did a full joint
+search this time rather than picking a point first and a direction after: every open ground point
+(radius ≤ 80, short of the radius (92) where `candyRegion`'s own procedural fill takes over) against
+all 32 firing directions from it, scoring each candidate by its tightest clearance anywhere along the
+whole 10 m archer-to-target line, measured to each physics box's own edge. (17, -46), firing toward
+(13.17, -55.24), came back clearest of all: 8.95 m of headroom at the tightest point, well clear of the
+star collectible at (0, -56) and every other hand-placed game on that field.
+
+Built dead last, right after the pogo kid, for the usual reason: `makeHuman()` draws three values off
+the shared `rnd()` sequence unconditionally, and a fresh rig built any earlier in Candy Land would
+shift that sequence and desync every other timing-sensitive pick already placed above.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, every check `ok`, 0 console warnings. Candy Land's
+own friend count rises from 79 to 80; ground walkable holds at 92%, unchanged. Archery has now reached
+six of the seven worlds (Neighborhood, Frosty Peak, Whisper Woods, Victorian, Sunny Shore, Candy Land)
+— only Robot City still has no archery range of its own. No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite and the headless probe above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
