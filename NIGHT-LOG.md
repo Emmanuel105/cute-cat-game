@@ -15667,6 +15667,35 @@ at 96%, unchanged. No visual check was possible in this environment (no browser,
 the stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
 
+## Round 580 — a napping cat in a Victorian window
+
+The Neighborhood has had a stray cat curled up asleep on a porch rail since round 1 — no other
+world's own houses ever got one of their own, and Victorian, with its long terraces of brick
+houses lining the street, had gone 579 rounds without a single cat in any of its windows. **One
+of the north-row terrace houses (the one at x=22) now has a cat napping on its own ground-floor
+window ledge**, curled up just past the glass, breathing slowly, tail giving the occasional flick.
+
+No new rig: the exact same `makeNapCat()` the Neighborhood's own porch already uses. Added as a
+child of that specific house's own group rather than placed in world space — the same trick the
+porch cat already relies on — so it only needs the window's own *local* coordinates
+(`makeVicHouse`'s own layout maths puts the second column's window at local x=1.75 for this
+house's fixed w=7/d=7, with the glass at z=3.58), and it inherits the house's world position and
+`ry=PI` rotation for free, keeping it facing out over the street on this north row exactly as the
+Neighborhood's cat faces out over its own front path. No physics box — well past the window glass
+and the stone sill, nothing on the cobbles below can ever reach it, same reasoning as the porch
+cat and the pier's own pelican. Pure set dressing: no greeting, no effect on the friend count,
+nothing new to collect.
+
+To find a house that wasn't already carrying something of its own at its door (several of the
+south-row houses have a coalman, a woodcutter or a chimney sweep working their doorstep), I read
+through the whole `buildVictorian` build looking for an x/side combination with nothing else
+hand-placed nearby — x=22 on the north row came back clear. `node test/run.mjs` ran clean three
+times in a row: exit 0, every check `ok`, 0 console warnings, Victorian's own friend count (98)
+and ground-walkable figure (94%) both unchanged, as expected for a decoration with no greeting and
+no physics footprint. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
+
 ## Round 579 — dragonflies over Whisper Woods' glowing pond
 
 The glowing pond already had ducks paddling on it, frogs hopping its rim, fairies over the rushes and

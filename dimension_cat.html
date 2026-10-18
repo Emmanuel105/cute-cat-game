@@ -13319,6 +13319,24 @@ function buildVictorian(game, entry) {
     place(game, U, house, x, side * 11.5, side === -1 ? 0 : PI); P.addBox(x, h / 2, side * 11.5, w, h, d);
     const f = makeIronFence(5.4); f.position.set(x + 1.2, 0, side * 7.6); W.add(f); P.addBox(x + 1.2, 0.6, side * 7.6, 5.4, 1.2, 0.2, { cam: false });
     U.push(((cx, cz) => (dt) => { if (r.chance(0.35 * dt * 4)) game.fx.emit(cx, h + 3.2, cz, { count: 1, color: 0x8a8a9a, speed: 0.2, up: 0.9, life: 3, gravity: -0.1, spread: 0.2 }); })(x - w * 0.3, side * 11.5 - d * 0.15 * (side === -1 ? 1 : -1)));
+    if (side === 1 && x === 22) {
+      // the Neighborhood's had a stray cat napping on a porch rail since round 1 — no other world's
+      // own houses ever got one of their own. This north-row terrace's second-column window (local
+      // x=1.75, the one ground-floor window that isn't the door, same `makeVicHouse` layout maths the
+      // window frames themselves use: cols=max(2,floor(w/cols))=2, so c=1's x is -w/2+(c+0.5)*(w/cols)
+      // = 1.75) gets a cat curled up asleep right on its outer ledge, just past the glass (z=d/2+0.08
+      // =3.58) and the stone frame in front of it. Added as a child of this house's own group, local
+      // coordinates only, the same trick the Neighborhood's own porch cat already uses — it inherits
+      // this house's world position and `ry=PI` rotation for free, so it keeps facing out over the
+      // street on this north row exactly as a porch cat would on the south row. No physics box: well
+      // outside the window glass, nothing down on the cobbles can ever reach it, same reasoning as the
+      // Neighborhood's own porch cat and the pier's pelican.
+      const napCat = makeNapCat();
+      napCat.group.position.set(1.75, 1.05, 3.8);
+      napCat.group.rotation.y = 0.25;
+      house.add(napCat.group);
+      let napT = 7; U.push((dt) => { napT += dt; napCat.animate(0, false, dt, napT); });
+    }
   }
   // the Neighborhood, Candy Land, Sunny Shore, Robot City, Frosty Peak and Whisper Woods all have a
   // toy pinwheel spinning on the world clock by now — Victorian was the last of the seven left
