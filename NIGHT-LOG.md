@@ -15184,3 +15184,41 @@ Full suite (`node test/run.mjs`) ran clean across three back-to-back runs: exit 
 walkable holds at 98%, unchanged. No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 566 — a piñata for Robot City
+
+The Neighborhood, Candy Land and Whisper Woods have all had a piñata post since rounds 508, 564 and
+565 (`PinataSwinger`/`makePinata`, both in 55/60-npcs.js) — Robot City, for all its tetherball pole,
+badminton net, sack race and pogo stick, never got one. **A scrap-built piñata — steel-grey with a
+hazard-stripe fringe — now hangs from a post** well south of the catch pair's own throw gap, a
+contractor taking the end-of-shift swing at it. *"One of these days I'm actually going to connect."*
+*"Careful, puss — swing room needed here."* *"Foreman filled it with spare bolts. Typical."*
+
+No new class and no new mesh: the exact same `PinataSwinger` and `makePinata` the other three worlds
+already use, just a fresh post, a fresh colour scheme and a fresh swinger. `PinataSwinger` reaches into
+`rig.hands` and `rig.k`, which `makeRobot()`'s rig never sets — the same reason the tetherball,
+badminton, sack-race and pogo-stick pairs built earlier in this city are all human contractors rather
+than robots — so this swinger is human too, an adult rather than a kid, matching the city's own
+off-shift-worker trope.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, the real
+city built with `game.start('new')` then `game.travel(2, 'from-hub')`, 3600 simulated frames to let
+every wandering, patrolling, marching robot and every tetherball, tug-of-war, badminton, sack-race and
+pogo-stick pair actually move) sampled every NPC's and the squirrel's own position every 10th frame,
+then swept a grid of the open floor (radius 15-90, short of the radius 98 where robotRegion's own
+procedural fill takes over) against both those samples and every one of the city's 326 physics boxes:
+(2, -70) came back clear by 14.9 m of the nearest box or soul — south of the catch pair's own gap at
+(2, -54) and the seesaw at (0, -45), and far from every other hand-placed spot in this city. (An earlier
+pass at this probe had a bug — comparing against undefined box fields instead of the real `minX`/`maxX`/
+`minZ`/`maxZ` — that silently skipped every physics box in the clearance check; caught and fixed before
+trusting the result.)
+
+Built dead last, after the squirrel, the collectibles and the day/night cycle, for the usual reason:
+`makeHuman()` draws three values off the shared `rnd()` sequence unconditionally, and a fresh rig built
+any earlier would shift that sequence and desync every other timing-sensitive pick already placed above.
+
+Full suite (`node test/run.mjs`) ran clean: exit 0, all 274 checks `ok`, 0 console warnings. Robot
+City's own friend count rises from 83 to 84 with the new swinger; ground walkable holds at 88%,
+unchanged. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite and the headless probe above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

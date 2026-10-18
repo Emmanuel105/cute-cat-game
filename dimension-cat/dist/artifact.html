@@ -12962,6 +12962,59 @@ function buildRobotCity(game, entry) {
   C.add('mouse', -8, 7); C.add('star', 12, -22); C.add('fish', -18, 2); C.add('yarn', 21, 9); C.add('star', 0, -27); C.add('fish', 4, 14); C.add('mouse', 26, -18); C.add('yarn', -26, -6);
   game.fx.setAmbient({ count: 70, radius: 18, colors: [0xff8a3d, 0xffc46a, 0x00e5ff, 0xffffff], rise: 0.5, drift: 0.25, life: 3, height: 5, yMin: 0.4 });
   makeDayNight(game, U, W);
+  // The Neighborhood, Candy Land and Whisper Woods have all had a piñata post since rounds 508, 564 and
+  // 565 (`PinataSwinger` in `55-npcs.js`, `makePinata` in `60-props.js`) — Robot City, for all its
+  // tetherball pole, badminton net, sack race and pogo stick, never got one. A scrap-built piñata —
+  // steel-grey with a hazard-stripe fringe — now hangs from a post well south of the catch pair's own
+  // throw gap, a contractor taking the end-of-shift swing at it. **A piñata post for Robot City.**
+  // *"One of these days I'm actually going to connect."* *"Careful, puss — swing room needed here."*
+  // *"Foreman filled it with spare bolts. Typical."*
+  //
+  // No new class and no new mesh: the exact same `PinataSwinger` (`55-npcs.js`) and `makePinata`
+  // (`60-props.js`) the other three worlds already use. `PinataSwinger` reaches into `rig.hands` and
+  // `rig.k`, which `makeRobot()`'s rig never sets — the same reason the tetherball, badminton, sack-race
+  // and pogo-stick pairs built earlier in this city are all human contractors rather than robots — so
+  // this swinger is human too, an adult rather than a kid, matching the city's own off-shift-worker trope.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, the
+  // real city built with `game.start('new')` then `game.travel(2, 'from-hub')`, 3600 simulated frames to
+  // let every wandering, patrolling, marching robot and every tetherball, tug-of-war, badminton, sack-
+  // race and pogo-stick pair actually move) sampled every NPC's and the squirrel's own position every
+  // 10th frame, then swept a grid of the open floor (radius 15-90, short of the radius (98) where
+  // robotRegion's own procedural fill takes over) against both those samples and every one of the city's
+  // 326 physics boxes: (2, -70) came back clear by 14.9 m of the nearest box or soul — south of the catch
+  // pair's own gap at (2, -54) and the seesaw at (0, -45), and far from the tetherball pole, the cable
+  // tug-of-war, the badminton net, the sack race and the pogo stick already built into this city.
+  //
+  // Built dead last, after the squirrel, the collectibles and the day/night cycle, for the usual reason:
+  // `makeHuman()` draws three values off the *shared* `rnd()` sequence unconditionally, and a fresh rig
+  // built any earlier would shift that sequence and desync every other timing-sensitive pick already
+  // placed above.
+  { const px = 2, pz = -70, postH = 2.2, outer = 0.4, ropeLen = 0.45;
+    const SCRAP_FRINGE = [0x00e5ff, 0xff4d4d, 0xfff176, 0x9aa3ad, 0xffffff];
+    const postM = mat(0x454b52, { metalness: 0.5, roughness: 0.6 });
+    const standG = group(px, 0, pz, W);
+    mesh(G.cyl(0.07, 0.09, postH, 8), postM, { y: postH / 2, parent: standG });
+    const pivot = group(0, postH, 0, standG);
+    mesh(G.cyl(0.012, 0.012, ropeLen, 5), mat(0xe8d9a0, { roughness: 0.9 }), { y: -ropeLen / 2, parent: pivot });
+    const pinata = makePinata(0x5a6470, SCRAP_FRINGE);
+    pinata.position.y = -(ropeLen + outer); pivot.add(pinata);
+    P.addBox(px, postH / 2, pz, 0.35, postH, 0.35, { cam: false });
+    let lt = 0;
+    standG.userData.update = (dt) => {
+      lt += dt;
+      const cyc = 2.6, ph = (lt % cyc) / cyc, sinceHit = ph < 0.65 ? (ph + 0.35) * cyc : (ph - 0.65) * cyc;
+      pivot.rotation.z = sin(lt * 0.5) * 0.04 + Math.exp(-sinceHit * 2.6) * 0.3;
+      pivot.rotation.x = sin(lt * 0.4 + 1) * 0.025;
+    };
+    U.push(standG.userData.update);
+    const sx = px, sz = pz + 1.3, sry = atan2(px - sx, pz - sz);
+    const swingWard = makeWardrobe(r, { shirts: [0x4a5a6a, 0x5a4a6a, 0x8a6a3a], pants: [0x232c34, 0x2a2a30] });
+    const swinger = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: swingWard }),
+      hat: 'cap', hatColor: 0x3a4a5a, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.3) });
+    W.add(swinger.group);
+    game.npcs.push(new PinataSwinger(game, swinger, 0xc9a86a, { x: sx, z: sz, ry: sry,
+      cries: ["One of these days I'm actually going to connect.", 'Careful, puss — swing room needed here.', 'Foreman filled it with spare bolts. Typical.'] })); }
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
