@@ -15151,3 +15151,36 @@ Full suite (`node test/run.mjs`) ran clean across three back-to-back runs: exit 
 against the unmodified base with `git stash`); ground walkable holds at 96%, unchanged. No visual check
 was possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
 headless probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 565 — a piñata for Whisper Woods
+
+The Neighborhood and Candy Land have both had a piñata post since rounds ~508 and ~564 (`PinataSwinger`
+in `55-npcs.js`, `makePinata` in `60-props.js`), and the other five worlds never got one. **A post now
+stands on a quiet stretch of open floor south-west of the glade**, a forest kid swinging a stick at a
+piñata done out in toadstool red with a spray of woodland colours instead of either street's own
+palette. *"One more go — I nearly had it that time!"* *"Watch the swing room, puss, this stick's longer
+than it looks."* *"If it's full of acorns again I'm trading with the squirrel."*
+
+No new class and no new mesh: the exact same `PinataSwinger` and `makePinata` the other two worlds
+already use — just a fresh post, a fresh kid, and this wood's own colours. A headless probe (a scratch
+script on the same stub-three harness `test/run.mjs` itself uses, the real wood built with
+`game.start('new')` then `game.travel(6, 'from-hub')`, 3600 simulated frames to let every wandering
+deer, fox and hare range fully) sampled every NPC's and the squirrel's own position every 10th frame,
+then swept a grid of the open woodland floor against both those samples and every one of the wood's
+326 physics boxes: (-28, -22) came back clear by 12.4 m of the nearest box and 15.4 m of the nearest
+other soul, with the ground flat to the metre — well clear of the glade, the tug-of-war clearing and
+both sack-race lanes.
+
+Placed dead last, right after the herons, for the usual reason: `makeHuman()` draws three values off
+the shared `rnd()` sequence unconditionally, and a fresh rig built any earlier would shift that
+sequence and desync every other timing-sensitive pick already placed above. Unlike the Neighborhood's
+own second piñata (round 564), this one keeps its `cries` — Whisper Woods' build runs exactly once in
+the whole test (`game.travel(6, ...)` is never revisited after), so the one extra `rnd.range()` draw its
+lines cost at construction has nothing built afterward left to desync. Confirmed by actually running
+the suite with the lines in, rather than dropping them out of caution the way round 564 did.
+
+Full suite (`node test/run.mjs`) ran clean across three back-to-back runs: exit 0, all 274 checks `ok`,
+0 console warnings. Whisper Woods' own friend count rises from 73 to 74 with the new kid; ground
+walkable holds at 98%, unchanged. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -18995,6 +18995,62 @@ function buildForest(game, entry) {
       for (const heron of herons) heron.animate(0, true, dt, t);
     };
     place(game, U, flock, cos(heronPhase) * heronR, sin(heronPhase) * heronR, 0, heronH); }
+
+  // the Neighborhood and Candy Land both have a piñata post by now (`PinataSwinger`/`makePinata`,
+  // round ~508 and ~564) and the other five worlds never got one — Whisper Woods, with its fairy ring
+  // and glowing pond, is as good a spot for somebody's woodland birthday as any of them. **A post
+  // stands on a quiet stretch of open floor south-west of the glade**, a forest kid taking a swing at
+  // a piñata done out in toadstool red with a spray of woodland colours instead of either street's own
+  // palette. *"One more go — I nearly had it that time!"* *"Watch the swing room, puss, this stick's
+  // longer than it looks."* *"If it's full of acorns again I'm trading with the squirrel."*
+  //
+  // No new class and no new mesh: the exact same `PinataSwinger` (`55-npcs.js`) and `makePinata`
+  // (`60-props.js`) the other two worlds already use — just a fresh post, a fresh kid, and this wood's
+  // own colours standing in for the street parties' pastel and balloon ones.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, the
+  // real wood built with `game.start('new')` then `game.travel(6, 'from-hub')`, 3600 simulated frames
+  // to let every wandering deer, fox and hare range fully) sampled every NPC's and the squirrel's own
+  // position every 10th frame, then swept a grid of the open woodland floor (radius 20-56) against
+  // both those samples, every one of the wood's 326 physics boxes, and `game.zones` itself: (-28, -22)
+  // came back clear by 12.4 m of the nearest box and 15.4 m of the nearest other soul, with the ground
+  // flat to the metre across the whole footprint — well south-west of the glade, the tug-of-war clearing
+  // and both sack-race lanes.
+  //
+  // Built dead last, right after the herons, for the same reason every other addition at the end of
+  // this function already gives: `makeHuman()` draws three values off the shared `rnd()` sequence
+  // unconditionally, and a fresh rig built any earlier in this wood would shift that sequence and
+  // desync every other timing-sensitive pick already placed above. Unlike the Neighborhood's own
+  // second piñata, this one keeps its `cries`: Whisper Woods' build runs exactly once in the whole
+  // test (`game.travel(6, ...)` is never revisited), so the one extra `rnd.range()` draw its lines cost
+  // at construction has nothing built afterward left to desync — confirmed by running the full suite
+  // with the lines in place rather than dropping them pre-emptively.
+  { const px = -28, pz = -22, postH = 2.2, outer = 0.4, ropeLen = 0.45;
+    const FOREST_FRINGE = [0xf2c744, 0xffffff, 0x8a5acf, 0x5ac8e0, 0xa8ff9a];
+    const postM = mat(0x8a5a32, { roughness: 0.9 });
+    const standG = group(px, 0, pz, W);
+    mesh(G.cyl(0.07, 0.09, postH, 8), postM, { y: postH / 2, parent: standG });
+    const pivot = group(0, postH, 0, standG);
+    mesh(G.cyl(0.012, 0.012, ropeLen, 5), mat(0xe8d9a0, { roughness: 0.9 }), { y: -ropeLen / 2, parent: pivot });
+    const pinata = makePinata(0xd6453f, FOREST_FRINGE);
+    pinata.position.y = -(ropeLen + outer); pivot.add(pinata);
+    P.addBox(px, postH / 2, pz, 0.35, postH, 0.35, { cam: false });
+    let lt = 0;
+    standG.userData.update = (dt) => {
+      lt += dt;
+      const cyc = 2.6, ph = (lt % cyc) / cyc, sinceHit = ph < 0.65 ? (ph + 0.35) * cyc : (ph - 0.65) * cyc;
+      pivot.rotation.z = sin(lt * 0.5) * 0.04 + Math.exp(-sinceHit * 2.6) * 0.3;
+      pivot.rotation.x = sin(lt * 0.4 + 1) * 0.025;
+    };
+    U.push(standG.userData.update);
+    const sx = px, sz = pz + 1.3, sry = atan2(px - sx, pz - sz);
+    const pWard = makeWardrobe(r, { shirts: [0x5ac8e0, 0xffd54a, 0xa8ff9a], pants: [0x3a3327, 0x2a2a24], shoes: [0x3a2a1e, 0x2a2018] });
+    const guest = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, elder: false, wardrobe: pWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null });
+    W.add(guest.group);
+    game.npcs.push(new PinataSwinger(game, guest, 0xc9a86a, { x: sx, z: sz, ry: sry,
+      cries: ["One more go — I nearly had it that time!", "Watch the swing room, puss, this stick's longer than it looks.", "If it's full of acorns again I'm trading with the squirrel."] })); }
+
   forestRegion(game, U, r, 58, WOODS_LIMIT - 8);
   makeHorizon(game, r, { clear: WOODS_LIMIT + 8, hills: true, hill: 0x2f4a30, rock: 0x3a4a3a, rock2: 0x44505a, snow: 0xdfe8f0, snowLine: 52, peaks: 28, woodCount: 460, woodBand: 44, woodHue: [0.26, 0.36], woodLight: [0.1, 0.2], trunk: 0x3a2a1c });
   // hollow oak home (north end of the stepping-stone path)
