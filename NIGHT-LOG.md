@@ -15666,3 +15666,48 @@ own friend count holds at 70 (unaffected, as expected for pure ambient wildlife)
 at 96%, unchanged. No visual check was possible in this environment (no browser, no Playwright) — only
 the stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 578 — a marching column of sparrows for the Neighborhood
+
+`Marchers` (a `Patroller` lead with followers trailing behind, wheeling back and forth) had reached
+gingerbread men, robots, soldiers, penguins, crabs and hedgehogs — every marching world except the
+Neighborhood, the one street that started this whole game. **Three sparrows now drill in a tight
+column on the open field south of the street**, the same leg-swing gait `makeSparrow`'s own
+`rig.animate` already drives for the ones hopping by the birdbath and the feeder. *"Column of three,
+wings in!"* *"Hup-two, hup-two — mind the worm, Baxter."* *"Marching's trickier when you're mostly
+feathers, puss."*
+
+This one did **not** end up built with `Marchers`, unlike the other six — a first pass did use it and
+promptly failed `test/run.mjs` on a completely unrelated check: *"a painter at her easel by the pond,
+two daubs in"*. The cause: `Patroller`'s three unconditional draws off the shared `rnd()` sequence
+(phase, idle clock, cry timer), made while building this very street, shift *every* idle-gesture roll
+every human in it makes for the rest of the run (`rig.animate`'s own `rnd.pick(['wave','look','nod',…])`
+whenever a person's `idleT` next expires) — including the painter's, a hundred-odd simulated seconds
+later, right when that exact check samples her arm. "Built dead last" (the usual fix for this) only
+protects *wardrobe and layout* picks made earlier in the same build; it does nothing for a downstream,
+per-frame roll like that one, because the whole street finishes building — and so spends its extra
+draws — before the test ever runs its first frame. The other six marching columns never hit this
+because they live in worlds reached by `game.travel()`, built strictly *after* the Neighborhood's own
+fragile early checks have already run and passed. So this column is instead three plain `U.push` loops
+timed off the world clock alone — a deterministic triangle-wave walk between two points, no `rnd()`
+draws of anywhere, the same trick the vegetable patch's mole (round 577) already used, so nothing
+downstream of it can possibly shift. No new rig either: the exact same `makeSparrow()` the street's
+other sparrows already use.
+
+Placement: a headless probe (`game.start('new')`, no `game.travel()` needed) sampled every NPC's
+position every 10th frame over 2400 simulated frames, then swept the open south field against those
+samples and all of the street's own physics boxes. The 2 m line from `(5, -74)` to `(5, -76)` came back
+clear by 14 m at the tightest point — comfortably past the birdwatcher's own corner `(19, -75)` and her
+resident pair of sparrows, the scooter kid `(2, -54)`, and the archer's firing line thirty-odd metres
+west. No physics circle was added for the column itself, the same footing the birdwatcher's own hopping
+sparrows already have — and with no `greetable()` call at all, pure ambient wildlife: no new friend, no
+effect on the Neighborhood's friend count or collectible count.
+
+Worth flagging honestly: the test suite turned out to have its own pre-existing streak of real-world-
+clock flakiness independent of any of this (`THREE.Clock` measures actual wall-clock time between
+frames, so heavier per-frame work anywhere nudges every later timing-sensitive check by a little) — one
+run of eight with this change hit the Victorian horse-and-carriage gait check, the same one round 577
+flagged as occasionally fragile, and a clean baseline run of the unmodified code never did across five
+tries. Ran the suite eight more times after settling on the `rnd()`-free version: all eight came back
+exit 0, every check `ok`, 0 console warnings. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.

@@ -9821,6 +9821,67 @@ function buildNeighborhood(game, entry) {
     game.npcs.push(new Archer(game, archer, arrow, { x: ax, z: az, ry: ary, dist: adist,
       cries: ["Bullseye! ...third one today, don't tell my brother.", "Careful, puss, you're faster than that arrow but not by much.", "Give me a few more years and I'll make the county team."] })); }
 
+  // `Marchers` (55-npcs.js: a Patroller lead with followers trailing a fixed gap, wheeling back and
+  // forth) has reached gingerbread men, robots, soldiers, penguins, crabs and hedgehogs by now — every
+  // world except this one. The street already has sparrows (`makeSparrow`, 56-npcs-wild.js, hopping by
+  // the birdbath, the feeder and the birdwatcher's own corner), so three more now drill in a tight
+  // column on the open field south of the street, the same leg-swing gait `makeSparrow`'s own
+  // `rig.animate` already drives for every hopping one.
+  //
+  // Not actually built with `Marchers`, though, unlike every other world's column: a first pass did
+  // use it and failed `test/run.mjs` on an utterly unrelated check — "a painter at her easel by the
+  // pond, two daubs in" — because `Patroller`'s three unconditional draws off the shared `rnd()`
+  // sequence (phase, idle clock, cry timer), made while *this very world* is still being built, shift
+  // every idle-gesture roll every human in this street makes for the rest of the run (`rig.animate`'s
+  // `rnd.pick(['wave','look','nod',...])` whenever `idleT` next expires), including the painter's own,
+  // a hundred-odd simulated seconds later when that exact check runs. "Built dead last" only protects
+  // earlier *wardrobe and layout* picks made during this same build — it does nothing for *downstream,
+  // per-frame* rolls like that one, because the whole street finishes building, and so consumes its
+  // extra draws, before the first simulated frame of the test ever runs. The other six marching
+  // columns never hit this: they are built in worlds reached by `game.travel()`, strictly after the
+  // Neighborhood's own fragile checks have already run and passed. So this column is instead three
+  // plain `U.push` loops, exactly like the vegetable patch's mole (round 577) — a deterministic
+  // triangle-wave walk timed off the world clock `t` alone, no `rnd()` draws of any kind, so nothing
+  // downstream of it can possibly shift. *"Column of three, wings in!"* *"Hup-two, hup-two — mind the
+  // worm, Baxter."* *"Marching's trickier when you're mostly feathers, puss."* (toasted the ordinary
+  // way, through `game.toast()`, on the same cue-timer trick as the mole's own, again no `rnd()`.)
+  //
+  // No new rig: the exact same `makeSparrow()` the street's other sparrows and five of the marching
+  // worlds' own pigeons/sparrows already use (its `rig.animate(ph, moving, dt, t)` drives the legs).
+  //
+  // Placement: the same 2 m line, (5, -74) to (5, -76), a headless probe (`game.start('new')`, no
+  // `game.travel()` needed) found clear by 14 m of every NPC sampled every 10th frame over 2400
+  // simulated frames and every one of the street's own physics boxes — comfortably past the
+  // birdwatcher's own corner (19, -75) and her resident pair of sparrows, the scooter kid (2, -54) and
+  // the archer's firing line thirty-odd metres west ((-30, -84) to (-30, -74)) — on open flat grass,
+  // outside every one of `game.zones`' own keep-out rectangles. No physics circle is added for the
+  // column itself (nothing here stands over 0.1 m), the same footing the birdwatcher's own hopping
+  // sparrows already have.
+  //
+  // Pure ambient wildlife with no controller and no `greetable()` call at all — no new friend, no
+  // effect on this street's friend count or collectible count.
+  { const baseX = 5, zA = -74, zB = -76, speed = 0.8, gap = 0.3, legRate = 4.6;
+    const dur = Math.abs(zB - zA) / speed, cyc = dur * 2;
+    const marchAt = (tt) => {
+      let ct = tt % cyc; if (ct < 0) ct += cyc;
+      const atB = ct >= dur, lt = atB ? ct - dur : ct, k = lt / dur;
+      const sz = atB ? zB : zA, ez = atB ? zA : zB;
+      return { z: lerp(sz, ez, k), heading: ez > sz ? 0 : PI };
+    };
+    const birds = [0, 1, 2].map(() => { const rig = makeSparrow(); W.add(rig.group); return rig; });
+    let cryT = 6;
+    U.push((dt, t) => {
+      birds.forEach((rig, i) => {
+        const lagT = t - i * (gap / speed), { z, heading } = marchAt(lagT);
+        rig.group.position.set(baseX, P.ground0(baseX, z), z); rig.group.rotation.y = heading;
+        rig.animate(lagT * speed * legRate, true, dt, lagT);
+      });
+      cryT -= dt; if (cryT <= 0) {
+        cryT = 12; const c = game.cat.group.position;
+        if (dist2(baseX, zA, c.x, c.z) < 400) { game.toast('🐦 "' + ['Column of three, wings in!', 'Hup-two, hup-two — mind the worm, Baxter.', "Marching's trickier when you're mostly feathers, puss."][floor(t / 12) % 3] + '"', 2400); SFX.chitter(); }
+      }
+    }); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
