@@ -18546,6 +18546,48 @@ function buildSnowVillage(game, entry) {
     const swinger = kid(r.chance(0.5));
     game.npcs.push(new PinataSwinger(game, swinger, 0x8a6a44, { x: sx, z: sz, ry: sry,
       cries: ["Snap it open before my mittens freeze solid, would you.", 'Mind your tail, puss — plenty of swing room needed here.', 'One more go. I know I can connect this time.'] })); }
+  // Sunny Shore (round 591), the Neighborhood (592), Victorian (596), Candy Land (597) and Robot City
+  // (598) have all let somebody digging nearby beat their own long-suffering `Detectorist` to real
+  // treasure; Frosty Peak's own searcher, still sweeping the snow west of the reindeer herd at (-30,
+  // -9), hunting a bell shaken loose off a harness, was one of the two worlds left without one.
+  // **A bundled-up kid has struck real gold with nothing but a shovel**, out past the archery range on
+  // the open snowfield south-west of the village: an old wooden chest lies open in the snow, lid thrown
+  // back over a heap of coins, a shovel stuck in beside it and a handful of loose coins and gems
+  // scattered where they rolled. *"Everybody else got a bell buckle. I got THIS."* *"Careful, puss —
+  // don't you dare knock a single coin back into the snow."* *"Don't tell the searcher. He'll never
+  // forgive himself."*
+  //
+  // Reuses round 591's `makeTreasureChest()` and `makeShovel()` (`62-props-nature.js`) and
+  // `makeGemCluster()` (`60-props.js`) exactly as the other four digs already do — no new prop, no new
+  // mesh. `placeT`/`boxT` stand in for the flat-floor worlds' `place()`/`P.addBox()` the same way every
+  // other hand-placed prop on this mountain already accounts for the slope; `makeGemCluster()` and
+  // `Kneeler` both call `game.physics.ground0()` for their own footing already, so nothing extra was
+  // needed there. The finder is this file's own `kid()` wardrobe helper (coat and beanie already on),
+  // the same one every other Frosty Peak child already comes from, rather than a fresh build.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(5, 'from-hub')` — waiting out the real 520 ms portal-fade timer
+  // before sampling — then 2400 simulated frames with every NPC's own position sampled every 8th frame)
+  // swept a 1 m grid of the open snowfield (radius 8-56, short of the radius (58) where `snowRegion`'s
+  // own fill takes over, and clear of every zone span) against both those 28,200 samples and all 747 of
+  // the mountain's own physics boxes, staying 6-16 m from the searcher's own spot so the joke still
+  // reads without either "Say hello" circle (2.1 m each) coming near the other's: (-39, -18) came back
+  // clearest, 5.24 m from the nearest box (a pine trunk in the forest ring) and 9.49 m from the nearest
+  // other soul (the archer at (-30, -15)) — 12.7 m from the searcher himself, south-west of the
+  // badminton net (-38, -35) and well clear of it.
+  //
+  // Built dead last, right after the piñata, the usual reason: `makeHuman()` (which this file's own
+  // `kid()` wraps) draws three values off the shared `rnd()` sequence unconditionally, and a fresh rig
+  // built any earlier on this mountain would shift that sequence and desync every other
+  // timing-sensitive pick already placed above.
+  { const tx = -39, tz = -18, kx = tx + 1.3, kz = tz + 0.5, kry = atan2(tx - kx, tz - kz);
+    const chest = makeTreasureChest(); placeT(game, U, chest, tx, tz, 0.4);
+    boxT(game, tx, tz, 1.0, 0.7, 0.7, { cam: false });
+    const shovel = makeShovel(); placeT(game, U, shovel, tx + 0.75, tz - 0.6, 0.6);
+    makeGemCluster(game, U, tx + 0.4, tz + 0.9, 4, [0xd4af37, 0xc0c0c0, 0xffd54a], r, 0.9);
+    const digger = kid(r.chance(0.5));
+    game.npcs.push(new Kneeler(game, digger, { x: kx, z: kz, ry: kry, cryIcon: '💰',
+      cries: ['Everybody else got a bell buckle. I got THIS.', "Careful, puss — don't you dare knock a single coin back into the snow.", "Don't tell the searcher. He'll never forgive himself."] })); }
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

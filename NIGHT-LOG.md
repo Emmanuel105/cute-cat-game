@@ -16354,3 +16354,42 @@ digger, left for future rounds.
 time, Robot City's own friend count up one to 86. No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 599 — Frosty Peak's own searcher gets beaten to real treasure too
+
+Sunny Shore (591), the Neighborhood (592), Victorian (596), Candy Land (597) and Robot City (598) have
+all let somebody digging nearby beat their own long-suffering `Detectorist` to real treasure; Frosty
+Peak's own searcher, still sweeping the snow west of the reindeer herd for a bell shaken loose off a
+harness, was one of the two worlds left without one. **A bundled-up kid has struck real gold with
+nothing but a shovel**, out past the archery range on the open snowfield south-west of the village: an
+old wooden chest lies open in the snow, lid thrown back over a heap of coins, a shovel stuck in beside
+it and a handful of loose coins and gems scattered where they rolled. *"Everybody else got a bell
+buckle. I got THIS."* *"Careful, puss — don't you dare knock a single coin back into the snow."*
+*"Don't tell the searcher. He'll never forgive himself."*
+
+Reuses round 591's `makeTreasureChest()` and `makeShovel()` (`62-props-nature.js`) and
+`makeGemCluster()` (`60-props.js`) exactly as the other four digs already do — no new prop, no new
+mesh. `placeT`/`boxT` stand in for the flat-floor worlds' `place()`/`P.addBox()` the same way every
+other hand-placed prop on this mountain already accounts for the slope; `makeGemCluster()` and
+`Kneeler` both call `game.physics.ground0()` for their own footing already, so nothing extra was
+needed there. The finder is this file's own `kid()` wardrobe helper, the same one every other Frosty
+Peak child already comes from.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(5, 'from-hub')` — waiting out the real 520 ms portal-fade timer
+before sampling — then 2400 simulated frames with every NPC's own position sampled every 8th frame)
+swept a 1 m grid of the open snowfield (radius 8-56, short of the radius (58) where `snowRegion`'s own
+fill takes over, and clear of every zone span) against both those 28,200 samples and all 747 of the
+mountain's own physics boxes, staying 6-16 m from the searcher's own spot: (-39, -18) came back
+clearest, 5.24 m from the nearest box (a pine trunk in the forest ring) and 9.49 m from the nearest
+other soul (the archer) — 12.7 m from the searcher himself, south-west of the badminton net and well
+clear of it. Built dead last, right after the piñata, the usual reason: `makeHuman()` draws off the
+shared `rnd()` sequence unconditionally.
+
+Whisper Woods' own Detectorist is the only one left waiting on its own lucky digger, left for a future
+round.
+
+`node test/run.mjs` ran clean three times in a row — exit 0, every check `ok`, 0 console warnings every
+time, Frosty Peak's own friend count up one to 76. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
