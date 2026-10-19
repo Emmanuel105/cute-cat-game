@@ -15856,3 +15856,44 @@ Peak unaffected (same friend count, same walkable-ground figure) as expected for
 greeting and no physics footprint. No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 584 — an otter sliding on Frosty Peak's own ice
+
+This session opened on a detached `HEAD` sitting 50 commits ahead of `origin/main` (rounds roughly
+533-583) — the previous session's own push never actually reached GitHub, the same failure mode round
+581 already recovered from once. Fast-forwarded local `main` to that tip, re-ran the full suite three
+times to rule out the mountain simply being unlucky (all three came back clean), and pushed before
+starting anything new, so none of those 50 rounds were ever at risk of being lost a second time.
+
+The mountain's own frozen pond has had an ice fisherman, two would-be skaters and a birdwatcher round
+its edge since round one, and the seal (round 480) gave the slope its first animal that actually lives
+in the water — but nothing in this whole game had ever been caught *mid-splash*. **An otter now has a
+small icy puddle of its own, further round the slope from the seal's tarn, and spends the whole time
+sliding back and forth across it on its belly**, flipping to face whichever way it's headed each time
+it turns.
+
+New `makeOtter()` (`56-npcs-wild.js`, right after `makeSeal`): smaller and sleeker than the seal, round
+ears instead of none, a long tapered tail, front paws tucked rather than flippers. Not wired to any
+controller: the slide itself is one sine (`otter.body.position.x`, period 3.6 s, amplitude 0.7 m)
+driven by the world clock `t` alone in a local `U.push`, with `otter.body.rotation.y` flipping between
+facing +x and -x at the two ends of the slide; `rig.animate()` only handles the small per-frame
+flourishes (bob, tail swish, head turn) the same way the seal's own `animate()` does. No physics box:
+its own capsule tops out under 0.2 m, same reasoning as the seal and the mole in the Neighborhood's
+vegetable patch (round 577) — well under anything the walkability check's own 0.4 m floor catches.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real mountain,
+sampled every NPC's own position every tenth of a second over 300 simulated seconds (so no wandering
+penguin, deer, hare, fox or patrolling villager mid-leash could slip past unnoticed), then swept the
+open slope east of the forest ring (radius 36-54) against both those samples and every one of the
+mountain's physics boxes: (34, -28) came back 6.16 m clear of the nearest box (a pine trunk in the
+forest ring) and 9.62 m clear of the nearest other soul, with the ground varying under 0.1 m across
+the puddle's own small footprint — comfortably past the otter's own 2 m slide-plus-puddle radius
+either way.
+
+Ran the full suite ten times across this session: nine came back clean (exit 0, every check `ok`, 0
+console warnings); one hit the Victorian horse-and-carriage gait check, the same real-wall-clock timing
+flake rounds 577-581 already flagged (about 1 run in 10, with or without a change) — and this round's
+own otter draws only from Frosty Peak's own local seeded `r`, never the shared `rnd()` sequence or
+anything Victorian's own build touches, so there's no path from this change to that check at all. No
+visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
+suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -1174,6 +1174,36 @@ function buildSnowVillage(game, entry) {
     let st = r() * 10, barkT = rnd.range(8, 14);
     U.push((dt) => { st += dt; seal.animate(0, false, dt, st);
       barkT -= dt; if (barkT <= 0) { barkT = rnd.range(10, 18); const c = game.cat.group.position; if (dist2(sx, sz, c.x, c.z) < 225) SFX.bark(); } }); }
+  // the seal just above hauls out and holds still — the one animal this mountain was still missing is
+  // the one that's never still at all. An otter now has a small icy puddle of its own, further round
+  // the slope, and spends its whole time sliding back and forth across it on its belly, flipping to
+  // face whichever way it's headed each time it turns. New `makeOtter()` (56-npcs-wild.js, right after
+  // `makeSeal`): smaller and sleeker than the seal, round ears instead of none, a long tapered tail,
+  // front paws tucked rather than flippers. Not wired to any controller either — the slide itself is
+  // one sine (`otter.body.position.x`, period 3.6 s, amplitude 0.7 m) driven by the world clock `t`
+  // alone in a local `U.push`, with `otter.body.rotation.y` flipping between facing +x and -x at the
+  // two ends of the slide; `rig.animate()` itself only handles the small per-frame flourishes (bob,
+  // tail swish, head turn) the same way the seal's own `animate()` does. No physics box: its own
+  // capsule tops out under 0.2 m, same reasoning as the seal and the mole in the Neighborhood's
+  // vegetable patch (round 577) — well under anything the walkability check's own 0.4 m floor catches.
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real mountain,
+  // sampled every NPC's own position every tenth of a second over 300 simulated seconds (so no
+  // wandering penguin, deer, hare, fox or patrolling villager mid-leash could slip past unnoticed),
+  // then swept the open slope east of the forest ring (radius 36-54) against both those samples and
+  // every one of the mountain's physics boxes: (34, -28) came back 6.16 m clear of the nearest box (a
+  // pine trunk in the forest ring) and 9.62 m clear of the nearest other soul, with the ground varying
+  // under 0.1 m across the puddle's own small footprint — comfortably past the otter's own 2 m slide-
+  // plus-puddle radius either way.
+  { const ox = 34, oz = -28;
+    makeIcePond(game, ox, oz, 1.3, r);
+    const oy = P.ground0(ox, oz) + 0.04;
+    const otter = makeOtter(); otter.group.position.set(ox, oy, oz); W.add(otter.group);
+    let ot = r() * 10; const cyc = 3.6, amp = 0.7;
+    U.push((dt) => { ot += dt;
+      const slide = sin(ot * (TAU / cyc));
+      otter.body.position.x = slide * amp;
+      otter.body.rotation.y = cos(ot * (TAU / cyc)) >= 0 ? PI / 2 : -PI / 2;
+      otter.animate(0, false, dt, ot); }); }
   // Victorian's own round-up of playground games this game had never tried once in any of the seven
   // worlds (tetherball, badminton, tug-of-war, archery, sack races) named five; this is the first of
   // them anywhere. Two bundled-up villagers now dig their heels into the snow and heave on a rope

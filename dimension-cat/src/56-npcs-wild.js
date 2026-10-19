@@ -339,6 +339,37 @@ function makeSeal(o = {}) {
   return rig;
 }
 
+// ---------------------------------------------------------------- otter (slides back and forth on its own belly; ambient only, no controller)
+/** A small otter, built facing +z, sliding on its belly. The caller drives the actual back-and-forth
+ *  by rotating `rig.body` ±90° about Y and offsetting its own local X — `rig.animate` itself only
+ *  handles the small per-frame flourishes (bob, tail swish, head turn, ear twitch). */
+function makeOtter(o = {}) {
+  const g = new THREE.Group(), rig = { group: g };
+  const fur = mat(o.color ?? 0x6b4a32, { roughness: 0.85 }), fur2 = mat(o.color2 ?? 0xcbaa7a, { roughness: 0.9 }), dark = mat(0x18130d);
+  const body = group(0, 0, 0, g); rig.body = body;
+  mesh(G.capsule(0.095, 0.28, 10), fur, { y: 0.1, rx: PI / 2, parent: body });
+  mesh(G.capsule(0.065, 0.2, 10), fur2, { y: 0.045, z: 0.02, rx: PI / 2, shadow: 'none', parent: body });
+  const head = group(0, 0.11, 0.21, body); rig.head = head;
+  mesh(G.sphere(0.075, 12, 9), fur, { sz: 1.05, parent: head });
+  for (const side of [1, -1]) mesh(G.sphere(0.022, 8, 6), fur, { x: side * 0.055, y: 0.06, z: -0.015, sy: 0.6, parent: head });   // small round ears
+  for (const side of [1, -1]) {
+    mesh(G.sphere(0.012, 6, 6), dark, { x: side * 0.032, y: 0.02, z: 0.065, shadow: 'none', parent: head });
+    for (const wz of [-0.015, 0, 0.015]) noInk(mesh(G.cyl(0.0018, 0.0018, 0.08, 4), dark, { x: side * 0.05, y: wz, z: 0.06, rz: PI / 2, ry: side * 0.2 + wz, shadow: 'none', parent: head }));
+  }
+  mesh(G.sphere(0.014, 6, 6), dark, { y: -0.01, z: 0.075, shadow: 'none', parent: head });   // nose
+  const tail = group(0, 0.05, -0.19, body); rig.tail = tail;
+  mesh(G.cone(0.045, 0.24, 8), fur, { rx: -PI / 2, z: -0.1, parent: tail });
+  for (const side of [1, -1]) { const p = group(side * 0.09, -0.07, 0.1, body); mesh(G.sphere(0.03, 8, 6), fur, { sy: 0.6, parent: p }); }   // tucked front paws
+  rig.animate = (ph, moving, dt, t = 0) => {
+    body.position.y = 0.01 + max(0, sin(t * 2.4)) * 0.02;
+    head.rotation.y = sin(t * 1.5) * 0.25;
+    head.rotation.x = -0.15 + sin(t * 2.1) * 0.08;
+    tail.rotation.x = sin(t * 5) * 0.18;
+  };
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- nap cat (curled asleep, ambient only)
 /** A stray cat curled up asleep in a loaf, tail wrapped round to the nose. Breathes; never greets, never moves. */
 function makeNapCat(o = {}) {
