@@ -16393,3 +16393,42 @@ round.
 time, Frosty Peak's own friend count up one to 76. No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 600 — Whisper Woods' own searcher gets beaten to real treasure too
+
+Sunny Shore (591), the Neighborhood (592), Victorian (596), Candy Land (597), Robot City (598) and
+Frosty Peak (599) have all let somebody digging nearby beat their own long-suffering `Detectorist` to
+real treasure; Whisper Woods' own searcher, still sweeping the leaf litter off the stepping stones at
+(-4, 18) for a lost ring, was the last of the seven worlds left without one. **A kid has struck real
+gold with nothing but a shovel**, out past the fairy ring on a quiet stretch of woodland floor: an old
+wooden chest lies open, lid thrown back over a heap of coins, a shovel stuck in the moss beside it and a
+handful of loose coins and gems scattered where they rolled. *"Everybody else got a bottle cap. I got
+THIS."* *"Careful, puss — don't you dare knock a single coin back into the leaves."* *"Don't tell the
+searcher. He'll never forgive himself."*
+
+Reuses round 591's `makeTreasureChest()` and `makeShovel()` (`62-props-nature.js`) and
+`makeGemCluster()` (`60-props.js`) exactly as the other five digs already do — no new prop, no new
+mesh. `placeT`/`boxT` stand in for the flat-floor worlds' `place()`/`P.addBox()` the same way every
+other hand-placed prop in this wood already accounts for the gently rolling floor; `makeGemCluster()`
+and `Kneeler` both call `game.physics.ground0()` for their own footing already, so nothing extra was
+needed there. The finder is a fresh child rig off this file's own `makeWardrobe()`/`randomPerson()`
+combination, the same one the ring-dancers and tag pair already use.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(6, 'from-hub')` — waiting out the real 520 ms portal-fade timer before
+sampling — then 1800 simulated frames with every NPC's own position sampled every 8th frame) swept a
+1 m grid east of the glade, staying 6-18 m from the searcher's own spot, against both those 25,650
+samples and all 676 of the wood's own physics boxes: (6, 30) came back clearest, 5.6 m from the nearest
+box (a tree trunk) and 5.46 m from the nearest other soul swept across the run — the hiker who patrols
+the stepping-stone path, only ever that close for an instant as he passes — 15.6 m from the searcher
+himself, east of the fairy ring and clear of every hand-placed mushroom, log and stump. Built dead last,
+right before `forestRegion` takes over the fill, the usual reason: `makeHuman()` and `makeGemCluster()`
+both draw off the shared per-world `r()` sequence unconditionally.
+
+Every world's `Detectorist` has now been beaten to real treasure by somebody digging nearby — the
+running joke that started on Sunny Shore in round 591 has made its way through all seven worlds.
+
+`node test/run.mjs` ran clean twice in a row — exit 0, every check `ok`, 0 console warnings both times,
+Whisper Woods' own friend count up one to 75. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

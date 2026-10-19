@@ -1780,6 +1780,51 @@ function buildForest(game, entry) {
     game.npcs.push(new Marchers(game, marchers, { points: [[-53, -14], [-53, -16]], speed: 0.45, pause: [1, 2], r: 0.18, height: 0.3, gap: 0.4,
       cries: ['Column of three. Spines in, soldier.', 'Hup, two — hup, two — mind the toadstools, Nigel.', "Drilling's much harder when your legs are this short, puss."], cryIcon: '🦔' })); }
 
+  // Sunny Shore (round 591), the Neighborhood (592), Victorian (596), Candy Land (597), Robot City
+  // (598) and Frosty Peak (599) have all let somebody digging nearby beat their own long-suffering
+  // `Detectorist` to real treasure; Whisper Woods' own searcher, still sweeping the leaf litter off
+  // the stepping stones at (-4, 18) for a lost ring and turning up nothing but bottle caps, was the
+  // last of the seven worlds left without one. **A kid has struck real gold with nothing but a
+  // shovel**, out past the fairy ring on a quiet stretch of woodland floor: an old wooden chest lies
+  // open, lid thrown back over a heap of coins, a shovel stuck in the moss beside it and a handful of
+  // loose coins and gems scattered where they rolled. *"Everybody else got a bottle cap. I got THIS."*
+  // *"Careful, puss — don't you dare knock a single coin back into the leaves."* *"Don't tell the
+  // searcher. He'll never forgive himself."*
+  //
+  // Reuses round 591's `makeTreasureChest()` and `makeShovel()` (`62-props-nature.js`) and
+  // `makeGemCluster()` (`60-props.js`) exactly as the other five digs already do — no new prop, no new
+  // mesh. `placeT`/`boxT` stand in for the flat-floor worlds' `place()`/`P.addBox()` the same way every
+  // other hand-placed prop in this wood already accounts for the gently rolling floor; `makeGemCluster()`
+  // and `Kneeler` both call `game.physics.ground0()` for their own footing already, so nothing extra was
+  // needed there. The finder is a fresh child rig off this file's own `makeWardrobe()`/`randomPerson()`
+  // combination, the same one the ring-dancers and tag pair above already use.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(6, 'from-hub')` — waiting out the real 520 ms portal-fade timer
+  // before sampling — then 1800 simulated frames with every NPC's own position sampled every 8th frame)
+  // swept a 1 m grid east of the glade, staying 6-18 m from the searcher's own spot so the joke still
+  // reads without either "Say hello" circle (2.1 m each) coming near the other's, against both those
+  // 25,650 samples and all 676 of the wood's own physics boxes: (6, 30) came back clearest, 5.6 m from
+  // the nearest box (a tree trunk) and 5.46 m from the nearest other soul swept across the run — the
+  // hiker who patrols the stepping-stone path, only ever that close for an instant as he passes — 15.6 m
+  // from the searcher himself, east of the fairy ring and clear of every hand-placed mushroom, log and
+  // stump.
+  //
+  // Built dead last, right before `forestRegion` takes over the fill, the usual reason: `makeHuman()`
+  // and `makeGemCluster()` both draw off the shared per-world `r()` sequence unconditionally, and
+  // anything built earlier in this wood would have had its own timing-sensitive pick shifted by it.
+  { const tx = 6, tz = 30, kx = tx + 1.3, kz = tz + 0.4, kry = atan2(tx - kx, tz - kz);
+    const chest = makeTreasureChest(); placeT(game, U, chest, tx, tz, 0.4);
+    boxT(game, tx, tz, 1.0, 0.7, 0.7, { cam: false });
+    const shovel = makeShovel(); placeT(game, U, shovel, tx + 0.75, tz - 0.6, 0.6);
+    makeGemCluster(game, U, tx + 0.4, tz + 0.9, 4, [0xd4af37, 0xc0c0c0, 0xffd54a], r, 0.9);
+    const finderWard = makeWardrobe(r, { shirts: [0xffe0ea, 0xbfe7ff, 0xfff3b0], pants: [0xff9ecf, 0x7fd7ff, 0xffffff] });
+    const finder = makeHuman({ ...randomPerson(r, { child: true, female: r.chance(0.5), wardrobe: finderWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: false });
+    W.add(finder.group);
+    game.npcs.push(new Kneeler(game, finder, { x: kx, z: kz, ry: kry, cryIcon: '💰',
+      cries: ["Everybody else got a bottle cap. I got THIS.", "Careful, puss — don't you dare knock a single coin back into the leaves.", "Don't tell the searcher. He'll never forgive himself."] })); }
+
   forestRegion(game, U, r, 58, WOODS_LIMIT - 8);
   makeHorizon(game, r, { clear: WOODS_LIMIT + 8, hills: true, hill: 0x2f4a30, rock: 0x3a4a3a, rock2: 0x44505a, snow: 0xdfe8f0, snowLine: 52, peaks: 28, woodCount: 460, woodBand: 44, woodHue: [0.26, 0.36], woodLight: [0.1, 0.2], trunk: 0x3a2a1c });
   // hollow oak home (north end of the stepping-stone path)
