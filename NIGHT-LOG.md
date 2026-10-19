@@ -16466,3 +16466,32 @@ elsewhere (the Victorian bobby-crossing check, which "races a real timer" on the
 with anything this round touched. No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 602 — a look at Frosty Peak's own ice crystal
+
+Eight ice crystals are scattered around Frosty Peak's village, and the one in the outlying cluster by
+the ice sculptor already has a reason to stop (his own kneel-and-chisel prompt) — the other seven never
+got so much as a glance. **The crystal furthest out on its own, at (-2, 28), now gets a plain "look"
+toast**: *"Catches the light from every side at once — nobody's worked out why."* *"Cold enough to sting
+a paw. The cat keeps its distance."* *"Clear as glass, and twice as sharp at the edges."*
+
+No new mesh, no new physics box: the scattering loop that builds all eight crystals now keeps each
+group in an array (`iceCrystals`) instead of discarding it every iteration, and `iceCrystals[5]` —
+exactly the group already built and boxed at that spot — is handed straight to `game.addInteractable`,
+the same previously-discarded-return-value trick plenty of earlier rounds (the spiderweb, the Robot
+City factory sign) already used.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, calling
+`game.load(5, 'from-hub')` directly to skip the real 520 ms portal-fade timer rather than `travel()`,
+then 400 simulated frames) swept this exact point against every one of the world's 328 physics boxes and
+every NPC's own position: the nearest other box stayed 7.0 m clear and the nearest soul (the birdwatcher)
+8.9 m clear, both comfortably past the 2.4 m radius used here — generous for a crystal whose own box is
+only 0.42 m across at the corner. An Explore subagent first ruled out most of the obvious "finish the set
+across all seven worlds" leads (table games, marching columns, piñatas, pogo sticks, napping cats,
+treasure digs, beetles, every bridge/hill/sign "look" toast already logged) as already closed before this
+one turned up.
+
+`node test/run.mjs` ran clean twice in a row: exit 0, all 274 checks `ok`, 0 console warnings both times,
+box count unchanged (328 — the toast adds no physics box of its own). No visual check was possible in
+this environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

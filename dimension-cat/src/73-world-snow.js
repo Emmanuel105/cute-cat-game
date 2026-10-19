@@ -172,7 +172,18 @@ function buildSnowVillage(game, entry) {
       cries: ["That one's the show-off, always waddling over.", 'Careful, puss — you\'ll spook the whole colony.', 'Counted thirty-one out there today, give or take.'] })); }
   for (const [x, z] of [[-6, -14], [7, 18], [-20, -2], [22, -4]]) { placeT(game, U, makeSnowman(r), x, z, r() * TAU); boxT(game, x, z, 1.0, 2.4, 1.0, { cam: false }); }
   for (const [x, z, ry, c] of [[-8, 6, 0.4, 0xd62839], [4, -9, 2.0, 0x2f6fd6]]) placeT(game, U, makeSled(c), x, z, ry);
-  for (const [x, z] of [[-24, 18], [26, 16], [-26, -18], [24, -24], [0, -26], [-2, 28], [30, 0], [-32, 2]]) { const c = makeIceCrystal(r, r.pick([0x9fe8ff, 0xbfa8ff, 0xa8ffe8])); placeT(game, U, c, x, z, 0); boxT(game, x, z, 0.6, 1.6, 0.6, { cam: false }); }
+  const iceCrystals = [];
+  for (const [x, z] of [[-24, 18], [26, 16], [-26, -18], [24, -24], [0, -26], [-2, 28], [30, 0], [-32, 2]]) { const c = makeIceCrystal(r, r.pick([0x9fe8ff, 0xbfa8ff, 0xa8ffe8])); placeT(game, U, c, x, z, 0); boxT(game, x, z, 0.6, 1.6, 0.6, { cam: false }); iceCrystals.push(c); }
+  // every outlying crystal but one has gone untouched since the cluster was first scattered — only the
+  // one by the sculptor ever got a reason to stop (his own kneel-and-chisel prompt). The one furthest
+  // out on its own, at (-2, 28), gets a plain "look" toast of its own: `iceCrystals[5]`, the group the
+  // loop above already built, straight into `game.addInteractable` — no new mesh, no new box. A
+  // headless probe (`game.load(5, 'from-hub')`, 400 simulated frames) swept this point against every
+  // other physics box and NPC position in the world: the nearest other box stayed 7.0 m clear and the
+  // nearest soul 8.9 m clear, both well past the 2.4 m radius used here (the crystal's own box is only
+  // 0.42 m across at the corner).
+  { const crystalLines = ['❄️ "Catches the light from every side at once — nobody\'s worked out why."', '🧊 "Cold enough to sting a paw. The cat keeps its distance."', '✨ "Clear as glass, and twice as sharp at the edges."'];
+    game.addInteractable({ obj: iceCrystals[5], radius: 2.4, label: () => 'Look at the ice crystal', onUse: () => { SFX.click(); game.toast(rnd.pick(crystalLines), 3000); } }); }
   // an ice sculptor kneels by the outlying crystal cluster, chisel in hand, working the last facet
   { const cx = -24, cz = 18, kx = cx - 1.8, kz = cz - 1.0;
     const sculptWard = makeWardrobe(r, { shirts: [0x5a5a6a, 0x4a5a6a, 0x6a5a4a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
