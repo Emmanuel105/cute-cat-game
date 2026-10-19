@@ -15963,3 +15963,31 @@ time) — no sign of the Victorian horse-and-carriage timing flake these logs ke
 one comes and goes regardless of what changes. No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 587 — Robot City finally gets its own napping cat
+
+The napping-cat series had covered six of the seven worlds (the Neighborhood's porch, Victorian's
+terrace, Candy Land's cottage, Frosty Peak's cabin, Sunny Shore's hut roof, Whisper Woods' treehouse) —
+Robot City was the one holdout, because none of its skyscrapers carry real window glass to tuck a cat
+behind, and every hand-placed rooftop in the east yard is already spoken for (camera, radar dish, steam
+vent, missing-unit poster, hologram, window washer). The city's own **`CAT?` neon sign** — the one whose
+existing "look" toast jokes that "nobody in this city has ever worked out what it was advertising" —
+turned out to be sitting on the answer the whole time. **A scavenged metal shelf, bolted to the sign's
+own support pole with two angled braces, now holds a real stray cat curled up asleep directly under the
+lettering.** The riddle finally gets answered, just not by anyone who reads signs.
+
+Same exact `makeNapCat()` rig every other round in the series already uses — no new creature, no new
+controller. The only new geometry is the shelf itself (a flat scrap plate plus two diagonal braces,
+`mat(0x454b52, ...)`, matching the steel used elsewhere on this tower bank) at the sign's own x/z
+(19, -13), y=4.55–4.58. No physics box and no clearance probe: that height sits well clear beneath the
+sign's own backing plate (which spans y 4.9–6.3 at this same spot) and well above the tallest wandering
+robot's own head, so nothing on the ground was ever going to reach up there regardless — the same
+reasoning the treehouse round used to skip a probe of its own. The shelf and cat are added straight to
+the world group (not to `game.npcs`), so they're pure set dressing: no greeting, no effect on the friend
+count, nothing new to collect, and nothing for the existing `CAT?` interactable's own toast lines to
+desync.
+
+`node test/run.mjs` ran clean (exit 0, every check `ok`, 0 console warnings), including the usual sweep
+of Robot City's own checks. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

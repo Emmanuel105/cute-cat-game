@@ -12056,6 +12056,28 @@ function buildRobotCity(game, entry) {
   // already used.
   { const signCatLines = ['❓ "CAT? Nobody in this city has ever worked out what it was advertising."', '🤖 "The robots assumed it was a warning. Turns out it just means cat."', '✨ "Flickers yellow all night for a question nobody around here can answer."'];
     game.addInteractable({ obj: signCat, radius: 0.9, label: () => 'Look at the sign', onUse: () => { SFX.click(); game.toast(rnd.pick(signCatLines), 3000); } }); }
+  // the napping-cat series has covered six of the seven worlds by now (the Neighborhood's porch,
+  // Victorian's terrace, Candy Land's cottage, Frosty Peak's cabin, Sunny Shore's hut roof, Whisper
+  // Woods' treehouse) — Robot City never got one, because none of its skyscrapers carry real window
+  // glass to tuck a cat behind, and every hand-placed rooftop is already spoken for (camera, radar
+  // dish, steam vent, missing-unit poster, hologram, window washer). The CAT? sign just above gives it
+  // somewhere else to go: a scavenged metal shelf, bolted to the sign's own support pole with two angled
+  // braces, holds a real stray cat curled up asleep directly under the lettering — the riddle the sign
+  // poses finally answered, just not by anyone who reads signs. No new physics box and no clearance
+  // probe needed: the shelf sits at y=4.55-4.58, well clear beneath the sign's own backing plate (which
+  // spans y 4.9-6.3 at this same x/z) and well above the tallest wandering robot's own head, so nothing
+  // on the ground was ever going to reach up there regardless. Same exact `makeNapCat()` rig every
+  // other round in the series already uses; no greeting, no effect on the friend count, nothing new to
+  // collect.
+  { const shelfX = 19, shelfY = 4.55, shelfZ = -13;
+    const scrap = mat(0x454b52, { metalness: 0.6, roughness: 0.55 });
+    mesh(G.box(0.55, 0.05, 0.5), scrap, { x: shelfX, y: shelfY, z: shelfZ, parent: W });
+    for (const sx of [-0.2, 0.2]) mesh(G.box(0.05, 0.3, 0.05), scrap, { x: shelfX + sx, y: shelfY - 0.15, z: shelfZ + 0.2, ry: PI / 4, parent: W });
+    const napCat = makeNapCat();
+    napCat.group.position.set(shelfX, shelfY + 0.03, shelfZ);
+    napCat.group.rotation.y = 0.5;
+    W.add(napCat.group);
+    let napT = 4; U.push((dt) => { napT += dt; napCat.animate(0, false, dt, napT); }); }
   for (const [x, z] of [[-18, 6], [19, -13]]) { mesh(G.cyl(0.12, 0.16, 5, 8), pipe, { x, y: 2.5, z, parent: W }); P.addBox(x, 2.5, z, 0.4, 5, 0.4, { cam: false }); }
   mesh(G.cyl(0.12, 0.16, 6.4, 8), pipe, { x: -5, y: 3.2, z: -24, parent: W }); mesh(G.cyl(0.12, 0.16, 6.4, 8), pipe, { x: 5, y: 3.2, z: -24, parent: W });
   // crates & barrels around
