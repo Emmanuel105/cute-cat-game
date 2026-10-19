@@ -16117,3 +16117,39 @@ beach would have had its own timing-sensitive pick shifted by it.
 time, Sunny Shore's own friend count up one to 75. No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 592 — the Neighborhood's digger finally gets scooped too
+
+Round 591 let Sunny Shore's long-suffering `Detectorist` get beaten to real treasure by a lucky kid
+nearby; the Neighborhood's own digger (built back in an earlier round, forever muttering "Just a
+bottle cap. Every time... One day it'll be buried gold.") has been waiting even longer. **A few
+gardens over from his own sweep, a girl has struck real gold with nothing but a shovel**: an old
+wooden chest lies open in the grass, lid thrown back over a heap of coins, with a few loose coins
+rolled clear and a spade left stuck in the dirt. *"I was only digging for worms."* *"Careful, puss —
+don't you dare knock a single coin back in the dirt."* *"Don't tell the detectorist two gardens over.
+He'll never forgive himself."*
+
+Reuses round 591's `makeTreasureChest()` and `makeShovel()` (62-props-nature.js) exactly as built —
+neither is sand-specific, just a wooden box and a buried spade, so they drop onto this street's flat
+lawn with the plain `place()`/`P.addBox()` helpers in place of the terrain worlds' `placeT()`/`boxT()`.
+The loose coins are three fixed gold discs rather than another `makeGemCluster()` call: that helper's
+`makeGem()` tags itself `userData.gem`, and the Neighborhood's own test counts every one of those as
+one of the seven gems the park portal carries — the first attempt added four and broke that check
+(11 counted instead of 7). The girl herself is a plain `Kneeler`, the same pairing seven other kneeling
+neighbours already use, but with an explicit `shirt: 0xd4af37` (the chest's own gold) instead of a
+wardrobe bag: the street's own no-repeated-shirt-colour test was already at 60 distinct colours for 60
+people, and gold turned out to be the one still free.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, 3000
+simulated frames with every NPC's and the squirrel's own position sampled every 10th frame) swept the
+gap behind the south-row houses — the same quiet strip the digger himself works — against both those
+21,900 samples and all 327 of the street's own physics boxes, keeping clear of the digger's own 2 m
+circle: (63, -17) came back clearest, 8.15 m from the nearest box and 8.54 m from the nearest other
+soul, 8.5 m south of the digger's own spot — close enough the joke lands, far enough nothing overlaps.
+Built dead last of everything this street adds, right before `makeDayNight`, same reasoning every
+other Neighborhood postmortem already gives: it's the first world the test suite builds, so anything
+built earlier would have shifted a later timing-sensitive pick.
+
+`node test/run.mjs` ran clean three times in a row — exit 0, every check `ok`, 0 console warnings every
+time. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

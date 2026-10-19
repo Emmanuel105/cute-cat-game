@@ -10126,6 +10126,53 @@ function buildNeighborhood(game, entry) {
     });
   }
 
+  // Every beach, peak, woods and street has run a `Detectorist` sweeping for buried treasure for
+  // hundreds of rounds now — this street's own digger (built above at (60, -9), "One day it'll be
+  // buried gold.") has turned up nothing but a bottle cap for just as long. Round 591 let Sunny
+  // Shore's own detectorist get scooped by a lucky kid digging nearby; the Neighborhood's turn now.
+  // **A girl has dug her own hole a few gardens over and struck real gold**: an old wooden chest lies
+  // open in the grass, lid thrown back over a heap of coins, a shovel left stuck in the dirt beside it
+  // and a few loose coins scattered where they rolled. *"I was only digging for worms."* *"Careful,
+  // puss — don't you dare knock a single coin back in the dirt."* *"Don't tell the detectorist two
+  // gardens over. He'll never forgive himself."*
+  //
+  // Reuses `makeTreasureChest()` and `makeShovel()` (62-props-nature.js, round 591's own beach find)
+  // verbatim — neither is sand- or terrain-specific, just a wooden box and a buried spade built from
+  // plain `mesh()`/`group()` geometry, so they drop onto this street's flat lawn with `place()`/
+  // `P.addBox()` in place of the terrain worlds' `placeT()`/`boxT()`. The loose coins are three plain
+  // gold discs, not `makeGemCluster()`/`makeGem()` — those tag themselves `userData.gem`, which the
+  // test counts as one of the seven hidden gems the park portal carries, and four extra would have
+  // thrown that count off. The girl is a plain `Kneeler` on an explicit, hand-picked shirt colour, the
+  // same pairing seven other kneeling characters on this street already use with its own `cries`.
+  //
+  // Her shirt is forced to `0xd4af37` (the chest's own gold, a nod rather than a wardrobe pick)
+  // because the test also insists no two of this street's 61 people repeat a shirt colour, and a
+  // scripted probe reading every `rig.look.shirt` already built here found exactly 60 distinct ones in
+  // use — gold was the one colour free. `randomPerson()`'s own `...o` spread takes an explicit `shirt`
+  // over its usual wardrobe-bag pick, so this is the one line that needed it, not a new wardrobe.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // 3000 simulated frames with every NPC's and the squirrel's own position sampled every 10th frame)
+  // swept the gap behind the south-row houses — the same quiet strip the digger himself works, between
+  // the back gardens of the houses at x=54 and x=72 — against both those 21,900 samples and all 327 of
+  // the street's own physics boxes, keeping clear of the digger's own 2 m circle: (63, -17) came back
+  // clearest, 8.15 m from the nearest box and 8.54 m from the nearest other soul, 8.5 m south of the
+  // digger's own spot — close enough the joke lands, far enough nothing about either sweep overlaps.
+  //
+  // Built dead last of everything this street adds, right before `makeDayNight`: `makeHuman()` and
+  // `Kneeler` both draw off the shared `rnd()` sequence at construction, and this is the first world
+  // the test suite builds, so anything built earlier here would have had its own pick shifted by it.
+  { const tx = 63, tz = -17, kx = tx + 1.3, kz = tz + 0.5, ry = atan2(tx - kx, tz - kz);
+    const chest = makeTreasureChest(); place(game, U, chest, tx, tz, 0.5);
+    P.addBox(tx, 0.35, tz, 1.0, 0.7, 0.7, { cam: false });
+    const shovel = makeShovel(); place(game, U, shovel, tx + 0.75, tz - 0.6, 0.4);
+    const coinM = mat(0xd4af37, { metalness: 0.9, roughness: 0.3 });
+    for (const [cx, cz, cry] of [[tx - 0.6, tz + 0.5, 0.2], [tx - 0.3, tz + 0.95, 1.1], [tx + 0.15, tz + 1.1, 0.6]])
+      mesh(G.cyl(0.09, 0.09, 0.025, 10), coinM, { x: cx, y: 0.025, z: cz, rx: PI / 2, ry: cry, shadow: 'none', parent: W });
+    const finder = makeHuman({ ...randomPerson(r, { female: true, child: true, shirt: 0xd4af37 }) }); W.add(finder.group);
+    game.npcs.push(new Kneeler(game, finder, { x: kx, z: kz, ry, cryIcon: '💰',
+      cries: ['I was only digging for worms.', "Careful, puss — don't you dare knock a single coin back in the dirt.", "Don't tell the detectorist two gardens over. He'll never forgive himself."] })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
