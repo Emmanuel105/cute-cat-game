@@ -16022,3 +16022,37 @@ here shifts every later timing-sensitive roll for the rest of the run.
 `node test/run.mjs` ran clean four times in a row (exit 0, all 274 checks `ok`, 0 console warnings each
 time). No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 589 — a gumdrop beetle completes the ladybug's family across all seven worlds
+
+Whisper Woods has had a ladybug scuttling its forest floor for a long time now, and five other worlds
+each grew their own cousin of it over the rounds since: Sunny Shore's sun-bleached tiger beetle, Frosty
+Peak's frosted frost beetle, Robot City's mechanical scrap-bug, and perched (non-hopping) ladybugs of
+its own in the Neighborhood's field and Victorian's flower stall. Candy Land, for all its sugar mouse
+and its mint-pastel hare, was the only one of the seven left without a beetle of its own. **A gumdrop
+beetle now scuttles the open grass on the north lawn**, between the land's two tall lollipops — a
+glossy, candy-coloured shell (bubblegum pink, `0xff4fa0`) standing in for the ladybug's own domed back,
+with a scatter of tiny white, pale-blue and pale-yellow "sugar sprinkle" flecks in place of its spots.
+
+New rig, `makeGumdropBeetle()` in `56-npcs-wild.js`, built right after `makeFrostBeetle()` and copying
+its exact body/head/leg/antenna layout bone for bone — only the shell's proportions (rounder, more
+gumdrop-domed than the ladybug's own) and the glossy low-roughness candy material are new. Wired to the
+same `Hopper` controller the tiger beetle and frost beetle already use (not the perched-only trick the
+Neighborhood and Victorian ladybugs fall back on — those two are the first and fourth worlds the test
+suite builds in sequence and proved sensitive to a stray `rnd()` draw during construction; Candy Land is
+the second world built and, like the beach and the snow village before it, tolerates a Hopper fine so
+long as it is built dead last).
+
+A headless probe (a standalone script reusing `test/run.mjs`'s own stub-three bundling: `game.start('new')`
+then `game.load(1, 'from-prev')`, 3000 simulated frames with every NPC's and the squirrel's own position
+sampled every tenth frame throughout) swept a grid of the land against both those 19,800 samples and all
+1,899 of the land's own physics boxes, and separately against its 462 keep-out zones: (1, 42) came back
+clearest of the lot, 10.9 m of headroom — comfortably past the 1.6 m leash given here, clear of both
+hand-placed lollipops at (-40, 44) and (44, 46) and of the existing hopper resting at (-29, 40). Built
+dead last of everything this land adds — after the squirrel, the collectibles and the day/night rig —
+so `Hopper`'s own three unconditional draws off the shared `rnd()` sequence (idle timer, idle phase,
+starting heading) land after every other timing-sensitive pick already placed above and disturb nothing.
+
+`node test/run.mjs` ran clean three times in a row (exit 0, all 274 checks `ok`, 0 console warnings each
+time). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

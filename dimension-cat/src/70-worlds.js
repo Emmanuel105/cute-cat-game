@@ -4183,6 +4183,26 @@ function buildCandyLand(game, entry) {
   C.add('star', 7, -6); C.add('yarn', -9, 9); C.add('fish', -16, -13); C.add('mouse', 16, -9); C.add('star', -10, -27); C.add('yarn', 22, 4); C.add('mouse', -28, 26); C.add('fish', 14, -44); C.add('star', 0, -56); C.add('mouse', -58, 30); C.add('yarn', 60, 36);
   game.fx.setAmbient({ count: 90, radius: 16, colors: [0xffffff, 0xffd1e8, 0xfff3b0, 0xc8f0ff], rise: 0.25, drift: 0.2, life: 4, height: 3, yMin: 0.3 });
   makeDayNight(game, U, W);
+  // Whisper Woods, Victorian, the Neighborhood, Robot City (scrap-bug), Sunny Shore (tiger beetle) and Frosty
+  // Peak (frost beetle) all have the ladybug's own family by now (`56-npcs-wild.js`) — Candy Land, for all its
+  // sugar mouse and its mint hare, was the only one of the seven left without a beetle of its own. A gumdrop
+  // beetle (`makeGumdropBeetle`, new, right after `makeFrostBeetle`) now scuttles the open grass between the
+  // two tall lollipops on the north lawn, glossy candy shell and sugar-sprinkle flecks standing in for the
+  // ladybug's spots.
+  //
+  // A headless probe (`game.start('new')` then `game.load(1, 'from-prev')`, 3000 simulated frames so no
+  // wandering gingerbread man, dancer or butterfly could slip past unnoticed) swept a grid of this lawn
+  // against both those samples and every one of the land's own physics boxes and keep-out zones: (1, 42) came
+  // back clearest, 10.9 m from the nearest box or soul — comfortably past the 1.6 m leash given here, clear of
+  // both lollipops (-40, 44) and (44, 46) and of the sparrow-like hopper resting at (-29, 40).
+  //
+  // Built dead last, right after the squirrel and the day/night rig, for the usual reason: `Hopper`'s own
+  // unconditional draws off the shared `rnd()` sequence (idle timer, idle phase, starting heading) land after
+  // every other NPC in this land that times itself off that same sequence, and disturb nothing built earlier.
+  { const rig = makeGumdropBeetle(0xff4fa0); W.add(rig.group);
+    game.npcs.push(new Hopper(game, rig, { x: 1, z: 42, leash: 1.6, r: 0.1, dist: [0.25, 0.6], dur: 0.3, height: 0.18, idle: [1, 3.2],
+      onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

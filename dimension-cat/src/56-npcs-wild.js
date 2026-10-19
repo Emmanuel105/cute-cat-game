@@ -1,6 +1,6 @@
 // ============================================================================
 // WILD CREATURES — crab, seagull, turtle, dog, penguin, yeti, deer, fox, frog,
-// owl, fairy, butterfly + Flyer / Hopper controllers.  All rigs face +Z.
+// owl, fairy, butterfly, gumdrop beetle + Flyer / Hopper controllers.  All rigs face +Z.
 // ============================================================================
 
 // ---------------------------------------------------------------- crab (walks sideways: body is turned 90° inside the rig)
@@ -612,6 +612,31 @@ function makeFrostBeetle(color = 0x4a6a8a) {
     const alert = moving ? 1 : 0.65 + sin(t * 1.6) * 0.2;
     for (const side of [1, -1]) rig['ant' + side].rotation.z = side * 0.3 * alert;
     body.position.y = moving ? abs(sin(t * 14)) * 0.007 : 0;
+  };
+  bakeRig(g);
+  return rig;
+}
+
+// ---------------------------------------------------------------- gumdrop beetle (the ladybug's cousin for the sweet-lands: a glossy candy-shell dome
+// with a scatter of sugar-sprinkle flecks in place of spots, otherwise the same short Hopper scuttle)
+function makeGumdropBeetle(color = 0xff4fa0) {
+  const g = new THREE.Group(), rig = { group: g };
+  const shellM = mat(color, { roughness: 0.12, metalness: 0.05 }), darkM = mat(0x3a2a1a, { roughness: 0.5 }), legM = mat(0x4a3220, { roughness: 0.6 });
+  const body = group(0, 0, 0, g); rig.body = body;
+  const shell = group(0, 0.048, -0.014, body); rig.shell = shell;
+  mesh(G.dome(0.09, 14, 8), shellM, { sy: 0.95, parent: shell });
+  mesh(G.box(0.004, 0.075, 0.18), darkM, { y: 0.032, shadow: 'none', parent: shell });   // the seam where the two wing cases meet
+  const sprinkles = [[0.03, 0.075, 0.05, 0xffffff, 0.3], [-0.028, 0.072, -0.015, 0x9adcff, -0.4], [0.018, 0.068, -0.065, 0xffe9a8, 0.6],
+    [-0.032, 0.065, 0.085, 0xffe9a8, -0.2], [0.006, 0.08, -0.1, 0x9adcff, 0.5], [0.0, 0.07, 0.02, 0xffffff, -0.6]];
+  for (const [sx, sy, sz, sc, srz] of sprinkles) mesh(G.capsule(0.006, 0.017, 4), mat(sc, { roughness: 0.3 }), { x: sx, y: sy, z: sz, rz: srz, shadow: 'none', parent: shell });
+  const head = group(0, 0.025, 0.08, body); rig.head = head;
+  mesh(G.sphere(0.028, 10, 8), darkM, { sz: 0.75, parent: head });
+  for (const side of [1, -1]) { const ant = group(side * 0.012, 0.018, 0.015, head); rig['ant' + side] = ant; mesh(G.cyl(0.0035, 0.0035, 0.045, 4), legM, { y: 0.022, rx: -0.6, parent: ant }); }
+  for (const side of [1, -1]) for (const z of [0.045, 0, -0.045]) mesh(G.capsule(0.005, 0.045, 4), legM, { x: side * 0.045, y: 0.012, z, rz: side * 1.15, parent: body });
+  rig.animate = (ph, moving, dt, t = 0) => {
+    const alert = moving ? 1 : 0.65 + sin(t * 1.8) * 0.2;
+    for (const side of [1, -1]) rig['ant' + side].rotation.z = side * 0.3 * alert;
+    body.position.y = moving ? abs(sin(t * 16)) * 0.008 : 0;
   };
   bakeRig(g);
   return rig;
