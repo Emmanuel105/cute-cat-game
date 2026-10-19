@@ -16237,3 +16237,42 @@ every time, box count unchanged (328 — the toast adds no physics box of its ow
 neon sign's toast already used). No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 596 — Victorian's own relic hunter gets beaten to real treasure too
+
+Every Detectorist in the game has only ever turned up a bottle cap or a button — the running joke of
+the whole series — and two of the seven worlds have already let somebody digging nearby beat him to
+real treasure: Sunny Shore (round 591), the Neighborhood (round 592). Victorian's own relic hunter,
+headphones on at (-45, 42), was still only ever finding a button. **A street urchin has struck real
+gold instead, a few gardens over on the quiet north bank**: an old wooden chest lies open in the
+grass, lid thrown back over a heap of coins, a shovel left stuck in the dirt beside it and a handful
+of loose coins and gems scattered where they rolled. *"Everybody else got a bottle cap. I got THIS."*
+*"Careful, puss — don't you dare knock a single coin back in the dirt."* *"Don't tell the relic
+hunter. He'll never forgive himself."*
+
+Reuses round 591's `makeTreasureChest()` and `makeShovel()` (`62-props-nature.js`) and
+`makeGemCluster()` (`60-props.js`) exactly as the beach already does — no new prop, no new mesh.
+Victorian carries neither of the Neighborhood's own "seven gems" or "no repeated shirt" constraints
+(both scoped to world 0 only in `test/run.mjs`), so there was no need for the Neighborhood's own
+workaround of plain coin discs and a forced shirt colour — a straight `makeGemCluster()` call with a
+gold-and-silver palette did the job. The urchin herself is a plain `Kneeler` on this town's own
+`vicWard` wardrobe, the same pairing every other kneeling Victorian already uses.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(3, 'from-prev')`, 3000 simulated frames with every NPC's own
+position sampled every 5th frame) swept the open cobblestone north of the canal against those 10,680
+samples and all 608 of the town's own physics boxes, keeping clear of the relic hunter's own spot:
+(-37, 48) came back clear by 11.5 m of the nearest box and 10.0 m of the relic hunter himself — the
+only soul anywhere near this corner of town — close enough the joke still reads, far enough neither
+"Say hello" circle (2.1 m each) comes near the other's. Built dead last, right after the piñata and
+right before the squirrel, same reasoning every other addition at the end of `buildVictorian` already
+gives: `makeHuman()` and `makeGemCluster()` both draw off the shared per-world `r()` sequence
+unconditionally.
+
+Four of the seven worlds' own Detectorists (Candy Land, Robot City, Frosty Peak, Whisper Woods) are
+still waiting on their own lucky digger, left for future rounds.
+
+`node test/run.mjs` ran clean three times in a row — exit 0, every check `ok`, 0 console warnings
+every time, Victorian's own friend count up one to 99. No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
