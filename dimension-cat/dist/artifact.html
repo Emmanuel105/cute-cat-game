@@ -15277,8 +15277,31 @@ function buildBeach(game, entry) {
   // shared `rnd()`, so it draws nothing from either sequence and can't shift any later pick in this world.
   for (let i = 0; i < 5; i++) {
     const hz = -24 + i * 9, hutColor = r.pick([0xff8a65, 0x4fc3f7, 0xfff176, 0x81c784, 0xf48fb1]);
-    placeT(game, U, boxAround(game, makeBeachHut(hutColor, r), -10, hz, 2.8, 2.8, 2.8), -10, hz, PI / 2);
+    const hut = placeT(game, U, boxAround(game, makeBeachHut(hutColor, r), -10, hz, 2.8, 2.8, 2.8), -10, hz, PI / 2);
     addHutFlag(game, U, -10, hz, hutColor, i);
+    if (i === 2) {
+      // the Neighborhood's porch, Victorian's terrace, Candy Land's cottage and Frosty Peak's cabin all
+      // have a napping stray cat tucked behind real window glass by now — these huts never got one, since
+      // `makeBeachHut()` (62-props-nature.js) has only painted trim boards on its front wall, no glass to
+      // tuck a cat behind. Rather than inventing new window geometry just for this, the third hut (the
+      // one with no sandcastle kid, pinwheel or wind chime already claiming it) gets a cat sunning itself
+      // flat along its own roof ridge instead — same `makeNapCat()` rig, just asleep in the sun rather
+      // than behind glass. The gable roof (`G.gable(2.8, 1.2, 3.0)`, `y: 2.4, ry: PI/2` local to the hut's
+      // own group) puts its ridge line, in that same local frame, at y=3.6 (the wall's 2.5 m top plus the
+      // 1.2 m gable — the same apex height `addHutFlag`'s pole already climbs from), running along local
+      // x in [-1.5, 1.5] once the mesh's own ry/2 rotation is accounted for. x=0.9 sits the cat off-centre,
+      // clear of the flagpole at the hut's own local origin. Added as a child of the hut's own group
+      // (captured from `placeT`'s return value, never baked — only the procedural outer country runs
+      // `bakeDeep()`), so it inherits the hut's world position and rotation for free, same trick every
+      // prior napping cat uses. No physics box: the hut's own box tops out at y=2.8 (its full 2.8 m
+      // height), 0.8 m below the ridge — the same clearance the flagpole already relies on with no box of
+      // its own. Pure set dressing: no greeting, no effect on the friend count, nothing new to collect.
+      const napCat = makeNapCat();
+      napCat.group.position.set(0.9, 3.6, 0);
+      napCat.group.rotation.y = PI / 2 + 0.15;
+      hut.add(napCat.group);
+      let napT = 8; U.push((dt) => { napT += dt; napCat.animate(0, false, dt, napT); });
+    }
   }
   // the Neighborhood's porch, Frosty Peak's first cabin, Whisper Woods' treehouse and Victorian's last
   // terrace door all sway a wind chime of their own by now — every hut here flies a pennant, but none

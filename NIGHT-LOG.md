@@ -15897,3 +15897,35 @@ own otter draws only from Frosty Peak's own local seeded `r`, never the shared `
 anything Victorian's own build touches, so there's no path from this change to that check at all. No
 visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
 suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 585 — a cat sunning itself on a Sunny Shore hut roof
+
+The napping-cat series (the Neighborhood's porch, Victorian's terrace, Candy Land's cottage, Frosty
+Peak's cabin) always tucks the cat behind real window glass — but Sunny Shore's five beach huts never
+got one, because `makeBeachHut()` only paints trim boards on the front wall; there's no glass anywhere
+to tuck a cat behind. Rather than inventing new window geometry just for this, **the third hut along the
+row — the one plain one, with no sandcastle kid, pinwheel or wind chime already claiming it — now has a
+cat stretched flat along its own roof ridge, sound asleep in the sun**, breathing slowly, tail giving the
+odd flick, the same way every other napping cat does.
+
+No new rig: the exact same `makeNapCat()` the other four rounds already use. The tricky part was finding
+the ridge in local coordinates — `makeBeachHut()`'s gable roof is built with an extra `ry: PI/2` on the
+mesh itself (local to the hut's own group, on top of the hut's own world rotation set when it's placed),
+so the ridge line doesn't sit where the raw `G.gable()` geometry would suggest; working through the
+rotation by hand put it at local y=3.6 (the wall's 2.5 m top plus the 1.2 m gable — the same height
+`addHutFlag`'s own pole already climbs to), running along local x rather than z. The cat sits at
+x=0.9, clear of the flagpole at the hut's own local origin. Added as a child of the hut's own group
+(captured from `placeT`'s return value, which the original loop had been discarding) — never baked,
+only the procedural outer country runs `bakeDeep()` — so it inherits the hut's world position and
+rotation for free, same trick every prior napping cat relies on. No physics box: the hut's own box tops
+out at 2.8 m, 0.8 m short of the ridge, the same clearance the flagpole already gets away with. Pure set
+dressing: no greeting, no effect on the friend count, nothing new to collect.
+
+`node test/run.mjs` ran clean eleven times out of twelve across this session (exit 0, every check `ok`,
+0 console warnings each time); the one failure was the same pre-existing Victorian horse-and-carriage
+timing flake these logs have flagged since round 219 and as recently as round 584 (roughly 1 run in 10,
+with or without a change) — this round's own cat is built entirely inside Sunny Shore from that world's
+own seeded `r` and the world clock, never the shared `rnd()` sequence, so there's no path from it to a
+Victorian check several worlds away. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
