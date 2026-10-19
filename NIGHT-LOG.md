@@ -16514,3 +16514,22 @@ elsewhere in the game already do.
 times, box count unchanged (328 — the toast adds no physics box of its own). No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 604 — a look at Victorian's own shine box
+
+The market square's bootblack boy (round 487) kneels over a shine box he scrubs at all day, but the
+box itself — the actual prop, with its boot rest and tin of polish on the lid — never got so much as
+a glance. **It now answers a "look" prompt of its own**: *"A mirror shine, if the light catches it
+right."* *"Smells of polish and old leather."* *"One boot done; one still to go."*
+
+No new mesh, no new physics box: `place()`'s own return value, previously discarded, is the exact box
+this block already builds and boxes at (1.91, -40.69), handed straight to `game.addInteractable` at a
+0.8 m radius — the same previously-discarded-return-value trick rounds 602 (ice crystal) and 603
+(chestnut brazier) already used. The bootblack's own greet circle sits only 0.32 m away, closer than
+the brazier/roaster pair's 1.3 m gap, but `addInteractable` picks nearest by distance² (per
+`80-game.js`), the same coexistence the brazier round already banked on with less margin to spare.
+
+`node test/run.mjs` ran clean twice in a row: exit 0, all 274 checks `ok`, 0 console warnings both
+times, box count unchanged (328 — the toast adds no physics box of its own). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

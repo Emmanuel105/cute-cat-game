@@ -6573,10 +6573,16 @@ function buildVictorian(game, entry) {
       pants: 0x3a3327, hat: 'flatcap', hatColor: 0x3a3327, bag: null, jacket: null, scarf: null });
     W.add(bootblack.group);
     const boxX = bx + sin(ry) * 0.32, boxZ = bz + cos(ry) * 0.32;
-    place(game, U, makeShineBox(), boxX, boxZ, ry);
+    const shineBox = place(game, U, makeShineBox(), boxX, boxZ, ry);
     P.addBox(boxX, 0.11, boxZ, 0.32, 0.22, 0.24, { cam: false });
     game.npcs.push(new Kneeler(game, bootblack, { x: bx, z: bz, ry, cryIcon: '👞',
-      cries: ['Shine your boots, sir? Tuppence a shine!', 'Mind your paws on the polish, puss.', 'Mirror finish — well, mirror-ish.'] })); }
+      cries: ['Shine your boots, sir? Tuppence a shine!', 'Mind your paws on the polish, puss.', 'Mirror finish — well, mirror-ish.'] }));
+    // the bootblack's own cries cover the shine itself; the box he kneels over, same trick as round 602's
+    // ice crystal and round 603's brazier, never got a look of its own. `place()`'s return value
+    // (previously discarded) is the exact box this block already built and boxed, handed straight to
+    // `game.addInteractable` — no new mesh, no new box.
+    const shineLines = ["A mirror shine, if the light catches it right.", "Smells of polish and old leather.", "One boot done; one still to go."];
+    game.addInteractable({ obj: shineBox, radius: 0.8, label: () => 'Look at the shine box', onUse: () => { SFX.click(); game.toast(rnd.pick(shineLines), 3000); } }); }
   for (const [x, z] of [[-14, -34], [14, -34], [0, -46]]) { place(game, U, makeLamp('victorian'), x, z, 0); P.addBox(x, 2, z, 0.4, 4, 0.4, { cam: false }); }
   { const CL = VICTORIAN_LIMIT * 2 + 20;   // the canal runs the whole width of the town
     const water = flatPlane(game, CL, 8, mat(0x1f4f6a, { roughness: 0.15, metalness: 0.2, transparent: true, opacity: 0.85, emissive: 0x0a2a3a, emissiveIntensity: 0.3, map: TEX.water() }), 0, 30, 0, -0.35); U.push((dt) => { water.material.map.offset.x += dt * 0.01; });
