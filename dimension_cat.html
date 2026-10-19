@@ -16597,10 +16597,34 @@ function buildSnowVillage(game, entry) {
     const v = new Vendor(game, vendor, makeCocoaMug(), { x: cx, z: cz, ry: atan2(-cx, -cz), cryIcon: '☕',
       cries: ['Hot cocoa! Warms you right through.', 'Marshmallows or none, your choice.', "Careful, puss — it's steaming!"] });
     game.npcs.push(v); greetable(game, v); }
-  for (const [x, z, ry, wall, roof] of [[-11, -6, PI / 2 - 0.3, 0x8a5a32, 0x4a3a30], [11, -5, -PI / 2 + 0.2, 0x7a4a28, 0x3a4a5a], [-4, 12, PI + 0.2, 0x9a6a3a, 0x4a3a30], [9, 11, PI - 0.4, 0x6a4a2a, 0x5a3a30]]) {
+  const cabinSpecs = [[-11, -6, PI / 2 - 0.3, 0x8a5a32, 0x4a3a30], [11, -5, -PI / 2 + 0.2, 0x7a4a28, 0x3a4a5a], [-4, 12, PI + 0.2, 0x9a6a3a, 0x4a3a30], [9, 11, PI - 0.4, 0x6a4a2a, 0x5a3a30]];
+  for (let ci = 0; ci < cabinSpecs.length; ci++) {
+    const [x, z, ry, wall, roof] = cabinSpecs[ci];
     const c = makeCabin({ wall, roof, w: r.range(4.5, 5.5), d: r.range(4, 5) }, r); placeT(game, U, c, x, z, ry); const [w, h, d] = c.userData.size; boxT(game, x, z, max(w, d) * 0.85, h, max(w, d) * 0.85);
     const ch = c.userData.chimney, y0 = P.ground0(x, z);
     U.push((dt) => { if (rnd.chance(dt * 3)) game.fx.emit(x + ch[0] * cos(ry) + ch[2] * sin(ry), y0 + ch[1], z - ch[0] * sin(ry) + ch[2] * cos(ry), { count: 1, color: 0xcfd6e0, speed: 0.15, up: 0.8, life: 3.5, gravity: -0.1, spread: 0.2 }); });
+    if (ci === 3) {
+      // the Neighborhood's porch, Victorian's terrace and Candy Land's gingerbread cottage all have a
+      // napping stray cat tucked into a window by now — every cabin here still stood empty behind its
+      // own glass. The fourth cabin (the one furthest from the fire, with no woodcutter or shoveler of
+      // its own already crowding its walls) gets one curled up in its own west window. `makeCabin()`'s
+      // two front windows sit at local x=±w*0.3, y=1.5, z=d/2+0.05 (0.9x0.9 glass, 0.12 deep, so its
+      // outer face is d/2+0.11); `c.userData.size` already hands back [w+0.4, h+1.8, d+0.4] (this
+      // loop's own box-padding above), so the original w/d this cabin was actually built with — random
+      // per cabin via `r.range` — is recovered as size[0]-0.4 and size[2]-0.4. Same trick as the other
+      // three napping cats: added as a child of this cabin's own group (`c`, never baked — only the
+      // procedural outer country ever runs `bakeDeep()`) in local coordinates, so it inherits the
+      // cabin's world position and rotation for free. y=1.2 sits it low in the window (whose glass
+      // spans y 1.05-1.95), z=d0/2+0.3 puts it the same 0.19 m past the glass's own outer face the
+      // other three napping cats all sit at relative to their own windows. No physics box: well past
+      // the glass, nothing on the snow below can ever reach it, same reasoning as the other three.
+      const w0 = w - 0.4, d0 = d - 0.4;
+      const napCat = makeNapCat();
+      napCat.group.position.set(-w0 * 0.3, 1.2, d0 / 2 + 0.3);
+      napCat.group.rotation.y = 0.2;
+      c.add(napCat.group);
+      let napT = 5; U.push((dt) => { napT += dt; napCat.animate(0, false, dt, napT); });
+    }
   }
   // someone shovels fresh snow off the first cabin's doorstep, banking it into a little heap beside the step
   { const cx = -11, cz = -6, cry = PI / 2 - 0.3, sx = cx + sin(cry) * 3.6, sz = cz + cos(cry) * 3.6, px = cx + sin(cry) * 2.9, pz = cz + cos(cry) * 2.9;

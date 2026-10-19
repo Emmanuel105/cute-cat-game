@@ -15833,3 +15833,26 @@ detached-HEAD state and never reached `origin/main` — `git log` on `main` had 
 that unpushed work. Fast-forwarded local `main` to the tip of that chain, re-ran the full suite to
 confirm it was still green, and pushed before starting this round's own work, so none of those earlier
 nights' rounds were at risk of being lost.
+
+## Round 583 — a napping cat in a Frosty Peak cabin window
+
+The Neighborhood's porch, Victorian's terrace and Candy Land's gingerbread cottage all picked up a
+napping stray cat in a window over the last few rounds — the four log cabins round Frosty Peak's own
+campfire square still stood with empty glass. **The fourth cabin, the one furthest from the fire with
+no woodcutter or shoveler already crowding its walls, now has a cat curled up asleep in its own west
+window**, breathing slowly, same as the other three.
+
+No new rig, same exact `makeNapCat()`. The tricky part was that `makeCabin()`'s four cabins are each
+built with a random width and depth (`r.range(4.5, 5.5)` / `r.range(4, 5)`), so the window's local
+coordinates (`x = ±w*0.3`, `z = d/2+0.05`) aren't fixed numbers — recovered them from the specific
+cabin's own `userData.size` (which already hands back `[w+0.4, h+1.8, d+0.4]` for this loop's own box
+padding) by subtracting the padding back off. Added as a child of that cabin's own group, which — like
+the Neighborhood's porch, Victorian's terrace and the gingerbread cottage before it — is never run
+through `bakeDeep()` (only the procedural outer country ever is), so a live child parented onto it just
+works. No physics box: well past the glass, nothing on the snow below can ever reach it.
+
+`node test/run.mjs` ran clean twice in a row: exit 0, all 274 checks `ok`, 0 console warnings, Frosty
+Peak unaffected (same friend count, same walkable-ground figure) as expected for a decoration with no
+greeting and no physics footprint. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
