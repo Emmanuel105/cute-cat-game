@@ -7706,6 +7706,27 @@ function buildNeighborhood(game, entry) {
   U.push(makeHomeBeacon(game, 0, 0, 14).userData.update);   // the floating marker over the cat's own roof
   game.homeMarker = [0, 0];
   place(game, U, makeWindChime(game), 0.9, 5.95, 0, 2.55);   // hung from the porch eave, between the two posts and past the deck's own light
+  // The cat's own roof ridge has stood bare since round 1 — the chimney, the dormer and the porch
+  // light up there are all fixed, nothing moves. A small brass weathervane now rides the ridge pole,
+  // its arrow swinging slowly between headings rather than spinning steadily the way every pinwheel on
+  // the street already does: two out-of-phase sine terms on the world clock `t` alone (never this
+  // world's own seeded `r`, so it can't shift any lot's own wardrobe or fence-colour roll below) give
+  // it the same "wanders, never settles" wobble a real vane has in a shifting breeze. Apex height
+  // (5.98) comes straight out of `makeHome`'s own roof maths — wall height H=2.7, the ridge mesh
+  // itself placed at y=H+0.28, plus the gable's own 3.0 m height param — and sits at local x=0,z=0
+  // since that mesh carries no x/z offset of its own; the home group sits at the world origin with no
+  // rotation, so those local numbers are the world placement outright. Nearly 5 m above the cat's own
+  // ~1 m jump reach (`JUMP_SPEED=5.6`, `GRAVITY=16`), so — like the chimney smoke and the home beacon
+  // floating higher still above it — it needs no physics box of its own.
+  { const vane = group(0, 5.98, 0, W), postM = mat(0x2b2b2b, { roughness: 0.6, metalness: 0.4 }), brassM = mat(0xcfa23c, { roughness: 0.3, metalness: 0.75 });
+    mesh(G.cyl(0.02, 0.026, 0.42, 8), postM, { y: 0.21, parent: vane });
+    for (let i = 0; i < 4; i++) { const a = i * PI / 2; mesh(G.box(0.26, 0.02, 0.02), brassM, { x: cos(a) * 0.13, z: sin(a) * 0.13, y: 0.4, ry: a, parent: vane }); }
+    const pivot = group(0, 0.46, 0, vane);
+    mesh(G.cone(0.05, 0.16, 8), brassM, { x: 0.25, rz: -PI / 2, parent: pivot });
+    mesh(G.box(0.34, 0.012, 0.012), brassM, { parent: pivot });
+    mesh(G.box(0.012, 0.16, 0.08), brassM, { x: -0.2, parent: pivot });
+    mesh(G.sphere(0.035, 8, 6), brassM, { y: 0.06, parent: pivot });
+    U.push((dt, t) => { pivot.rotation.y = sin(t * 0.21) * 0.9 + sin(t * 0.37 + 1.3) * 0.5; }); }
 
   for (const [cx, len] of [[-2.5, 5.8], [3.4, 4.0]]) { const f = makeFence(len); f.position.set(cx, 0, 8); W.add(f); P.addBox(cx, 0.5, 8, len, 1, 0.2, { cam: false }); }
   for (const s of [-1, 1]) { const f = makeFence(5.4); f.position.set(s * 6.2, 0, 5.3); f.rotation.y = PI / 2; W.add(f); P.addBox(s * 6.2, 0.5, 5.3, 0.2, 1, 5.4, { cam: false }); }   // side fences

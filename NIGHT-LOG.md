@@ -16056,3 +16056,25 @@ starting heading) land after every other timing-sensitive pick already placed ab
 `node test/run.mjs` ran clean three times in a row (exit 0, all 274 checks `ok`, 0 console warnings each
 time). No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 590 — a weathervane for the cat's own roof
+
+Sixteen houses of neighbours have had their chimneys smoking and their porch lights glowing for
+hundreds of rounds, but the cat's own roof ridge — the one with the floating home beacon over it —
+has stood completely bare since round 1. **A small brass weathervane now rides the ridge pole**, arrow
+swinging slowly and unevenly between headings instead of spinning steadily the way every yard pinwheel
+on the street already does: it's just two out-of-phase sine terms on the world clock, so it never
+settles on one direction for long, the way a real vane never does in a shifting breeze.
+
+No new controller, no greet, no physics box — pure set dressing, like the chimney smoke and the home
+beacon floating higher above it. The post and compass cross are fixed; only the arrow-and-tail-fin on
+top pivots. Apex height (5.98) comes straight out of `makeHome`'s own roof math (wall height 2.7, ridge
+mesh offset 0.28, gable height 3.0) and sits dead centre over the house since that ridge mesh carries
+no x/z offset of its own and the home group sits at the world origin with no rotation — nearly 5 m
+above the cat's own ~1 m jump reach, so nothing down on the lawn was ever going to bump it anyway.
+Drawn entirely off the world clock `t`, never this world's own seeded `r`, so it costs no later draw
+and can't shift any neighbour's own fence-colour or shutter pick down the street.
+
+`node test/run.mjs` ran clean (exit 0, all 274 checks `ok`, 0 console warnings). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
