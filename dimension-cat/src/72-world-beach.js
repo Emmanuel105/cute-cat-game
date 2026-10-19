@@ -470,10 +470,20 @@ function buildBeach(game, entry) {
       shorts: true, hat: null, jacket: null, scarf: null, bag: null, glasses: r.chance(0.3) });
     W.add(surfer.group);
     mesh(G.box(0.09, 0.05, 0.14), mat(0xf7f3ec, { roughness: 0.95 }), { y: 0.05, z: 0.07, parent: surfer.hands[0] });   // the wax block
-    placeT(game, U, makeSurfboard(r.pick([0xff7043, 0x2f6fd6, 0xffd54a, 0x2e9e6e])), bx, bz, ry);
+    const board = placeT(game, U, makeSurfboard(r.pick([0xff7043, 0x2f6fd6, 0xffd54a, 0x2e9e6e])), bx, bz, ry);
     boxT(game, bx, bz, 0.6, 1.5, 0.4, { cam: false });
     game.npcs.push(new Washer(game, surfer, { x: sx, z: sz, ry,
-      cries: ["Wax while it's warm, that's the trick.", 'Careful, puss — sticky hands.', "Flat today, but you never know."] })); }
+      cries: ["Wax while it's warm, that's the trick.", 'Careful, puss — sticky hands.', "Flat today, but you never know."] }));
+    // the board itself — planted nose-down right beside the waxing above, round 602's and 603's own
+    // discarded-return-value trick — never got so much as a glance of its own, for all the time its
+    // owner spends working wax into the deck. `placeT()`'s return value, previously discarded like the
+    // ice crystal's and the chestnut brazier's own groups before this, is the exact board already built
+    // and boxed one metre south of the surfer, handed straight to `game.addInteractable` at a tight
+    // 0.9 m radius — comfortably inside the surfer's own 2.1 m `Washer` greet circle, but `addInteractable`
+    // picks nearest by distance² (per `80-game.js`), the same coexistence round 604's shine box banked on
+    // against the bootblack's own closer-still 0.32 m gap.
+    const boardLines = ['🏄 "Fresh wax, nose to tail — not a patch missed."', '🏄 "One fin, dead centre. Older than it looks."', '🏄 "Planted nose-down so the wax doesn\'t melt off in the sun."'];
+    game.addInteractable({ obj: board, radius: 0.9, label: () => 'Look at the surfboard', onUse: () => { SFX.click(); game.toast(rnd.pick(boardLines), 3000); } }); }
   // no world had a musician yet; one sits cross-legged in the dune grass west of the towels, strumming a ukulele toward the sunbathers
   { const mx = -34, mz = 0, mry = atan2(5 - mx, 10 - mz);
     const museWard = makeWardrobe(r, { shirts: [0xffd54a, 0xff7043, 0x2f6fd6], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0xefe7d8, 0x8d6e63] });

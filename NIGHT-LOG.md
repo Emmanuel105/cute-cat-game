@@ -16533,3 +16533,23 @@ the brazier/roaster pair's 1.3 m gap, but `addInteractable` picks nearest by dis
 times, box count unchanged (328 — the toast adds no physics box of its own). No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 605 — a look at Sunny Shore's own surfboard
+
+Sunny Shore's surfer has waxed the same board for rounds now, planted nose-down in the sand right
+beside them, but the board itself never got so much as a glance. **It now answers a "look" prompt of
+its own**: *"Fresh wax, nose to tail — not a patch missed."* *"One fin, dead centre. Older than it
+looks."* *"Planted nose-down so the wax doesn't melt off in the sun."*
+
+No new mesh, no new physics box: `placeT()`'s own return value, previously discarded, is the exact
+board already built and boxed one metre south of the surfer, handed straight to `game.addInteractable`
+at a tight 0.9 m radius — the same previously-discarded-return-value trick rounds 602 (ice crystal),
+603 (chestnut brazier) and 604 (shine box) already used. The surfer's own greet circle sits only 1 m
+away, well inside that 0.9 m-plus-2.1 m overlap, but `addInteractable` picks nearest by distance² (per
+`80-game.js`), the same coexistence the shine box and bootblack pair banked on with a tighter 0.32 m
+gap of their own.
+
+`node test/run.mjs` ran clean twice in a row: exit 0, all 290 checks `ok`, 0 console warnings both
+times, box count unchanged (328 — the toast adds no physics box of its own). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
