@@ -139,6 +139,35 @@ function makeSandcastle() {
   mesh(G.box(0.02, 0.2, 0.3), mat(0xffd54a), { x: 0.16, y: 1.6, parent: g }); mesh(G.cyl(0.012, 0.012, 0.5, 4), mat(0x3a2a1a), { y: 1.55, parent: g });
   return g;
 }
+/** An old wooden chest, lid thrown open, a heaped pile of gold coins spilling over its rim — a real find, for once, after every beach's own `Detectorist` has spent its whole career turning up bottle caps and buttons. Faces +z. */
+function makeTreasureChest() {
+  const g = new THREE.Group(), wood = mat(0x5a3a22, { roughness: 0.8 }), dark = mat(0x3a2415, { roughness: 0.85 });
+  const iron = mat(0x2e2e2e, { metalness: 0.6, roughness: 0.5 }), gold = mat(0xd4af37, { metalness: 0.9, roughness: 0.3 });
+  const baseH = 0.5;
+  mesh(G.box(0.9, baseH, 0.6), wood, { y: baseH / 2, shadow: 'both', parent: g });                   // trunk
+  for (const dx of [-0.2, 0, 0.2]) mesh(G.box(0.02, baseH, 0.61), dark, { x: dx, y: baseH / 2, shadow: 'none', parent: g });   // plank lines
+  for (const by of [0.1, baseH - 0.1]) mesh(G.box(0.94, 0.05, 0.64), iron, { y: by, shadow: 'none', parent: g });              // bands
+  for (const cx of [-0.44, 0.44]) for (const cz of [-0.29, 0.29]) mesh(G.box(0.05, baseH + 0.02, 0.05), iron, { x: cx, y: baseH / 2, z: cz, shadow: 'none', parent: g });   // corner posts
+  const lid = group(0, baseH, -0.3, g); lid.rotation.x = -1.9;                                         // hinged at the back top edge, thrown open
+  mesh(G.box(0.94, 0.1, 0.64), wood, { y: 0.05, z: 0.3, shadow: 'both', parent: lid });
+  for (const dx of [-0.2, 0, 0.2]) mesh(G.box(0.02, 0.1, 0.65), dark, { x: dx, y: 0.05, z: 0.3, shadow: 'none', parent: lid });
+  for (const px of [-0.3, 0.3]) mesh(G.cyl(0.03, 0.03, 0.1, 6), iron, { x: px, y: baseH, z: -0.3, rz: PI / 2, shadow: 'none', parent: g });   // hinge pins
+  mesh(G.box(0.1, 0.1, 0.03), iron, { y: baseH - 0.08, z: 0.31, shadow: 'none', parent: g });           // hasp, hanging loose
+  // a heaped pile of coins, fixed positions and tilts so this prop costs no draw from any RNG
+  const coinSpots = [[0, 0, 0], [0.12, 0.03, 0.08], [-0.14, 0.02, -0.06], [0.05, 0.07, -0.12], [-0.08, 0.05, 0.14],
+    [0.22, 0.01, -0.1], [-0.22, 0.015, 0.05], [0.0, 0.1, 0.0], [0.1, 0.13, 0.04], [-0.06, 0.12, -0.03]];
+  for (let i = 0; i < coinSpots.length; i++) { const [cx, cy, cz] = coinSpots[i];
+    mesh(G.cyl(0.09, 0.09, 0.025, 10), gold, { x: cx, y: baseH + cy, z: cz, rx: PI / 2 + (i % 3 - 1) * 0.3, ry: i * 0.7, shadow: 'none', parent: g }); }
+  return g;
+}
+/** A long-handled shovel, stuck blade-down in the sand beside a fresh dig. */
+function makeShovel() {
+  const g = new THREE.Group(), wood = mat(0x8a6a44, { roughness: 0.7 }), steel = mat(0x9aa3ad, { metalness: 0.55, roughness: 0.4 });
+  mesh(G.cyl(0.018, 0.018, 1.1, 6), wood, { y: 0.75, rx: 0.12, shadow: 'both', parent: g });
+  mesh(G.box(0.03, 0.14, 0.03), wood, { y: 1.28, rx: 0.12, shadow: 'none', parent: g });                // D-handle stub
+  mesh(G.box(0.22, 0.3, 0.015), steel, { y: 0.07, rx: 0.12, shadow: 'both', parent: g });                // blade, buried to its shoulder
+  return g;
+}
 /** A life-size sand sculpture of a turtle: a domed shell with raised scutes, a head poking out the front, four flipper nubs and a stub of a tail — a quieter, more patient cousin of the sandcastle. */
 function makeSandTurtle() {
   const g = new THREE.Group(), sand = mat(0xdcbf85, { roughness: 1, map: TEX.sand().clone() }); sand.map.needsUpdate = true; sand.map.repeat.set(1, 1); worldBag.track(sand.map);

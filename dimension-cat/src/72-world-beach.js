@@ -1441,6 +1441,52 @@ function buildBeach(game, entry) {
   { const marchers = [0, 1, 2].map(() => { const rig = makeCrab(r.pick([0xe8492b, 0xff7043, 0xc62828])); W.add(rig.group); return rig; });
     game.npcs.push(new Marchers(game, marchers, { points: [[24, -43], [26, -43]], speed: 1.0, pause: [1, 2], r: 0.22, height: 0.5, gap: 0.45,
       cries: ['Sideways, always sideways — try that gait yourself, puss.', 'Column of three. Pincers at the ready.', "Mind the claws, puss — we're only drilling."], cryIcon: '🦀' })); }
+  // Every beach, peak, woods and street has run a `Detectorist` sweeping for buried treasure for
+  // hundreds of rounds now, and every single one of them has only ever turned up a bottle cap or a
+  // button — it's the running joke of the whole series. Nobody had ever actually found anything. **An
+  // old wooden chest now lies open on the dry sand inland of the dunes, lid thrown back and a heaped
+  // pile of real gold coins spilling over the rim**, a shovel left stuck in the sand beside it and a
+  // few loose coins and gems scattered in the sand where they rolled. A boy kneels over it, still
+  // catching his breath. *"Everybody else got a bottle cap. I got THIS."* *"Careful, puss — don't you
+  // dare knock a single coin back under the sand."* *"Don't tell the detectorist. He'll never forgive
+  // himself."*
+  //
+  // New prop `makeTreasureChest()` in `62-props-nature.js`, right after `makeSandTurtle()` — a wooden
+  // trunk (plain toon planks, so `bakeDeep()` folds the box and its dark plank lines into one mesh),
+  // iron bands and corner posts, and a lid on its own pivot group hinged at the back top edge and
+  // thrown open past vertical. The ten coins heaped on top are fixed positions and tilts, not drawn
+  // from any RNG, the same reasoning the dominoes chain's own pip table (round 410) already leans on.
+  // A matching `makeShovel()` stands blade-down in the sand alongside. The handful of coins and gems
+  // that rolled clear of the chest reuse `makeGemCluster()` exactly as every other beach gem cluster
+  // already does — no new code, just a third call with a gold-and-silver palette in place of the usual
+  // candy colours.
+  //
+  // `Kneeler` is the same pairing every other kneeling character in this file already uses, on the
+  // beach's own `beachPerson()` wardrobe helper — a placement, not a build, so it draws its three
+  // unconditional values off the shared `rnd()` sequence (idle timer, cry timer, wardrobe/hair picks)
+  // only once everything above it is already laid out.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')` then
+  // `game.travel(4, 'from-hub')`, waited out for real against `game.worldIndex`, then 3000 simulated
+  // frames with every NPC's and the squirrel's own position sampled every 10th frame) swept a 2 m grid
+  // of the dry sand inland of the dunes (ground height 0.15-2.2 m, radius ≤ 52, short of the radius
+  // (58) where `beachRegion`'s own fill takes over) against both those 30,000-odd samples and all 217
+  // of the beach's own physics boxes: (-35, 6) came back clearest in the quiet patch west of the
+  // squirrel's own stretch, 5.93 m from the nearest box and 6.08 m from the nearest wandering soul, at
+  // radius 35.5 from the origin — clear of the keep-out span (`game.zones.addSpan(-52,-14,-44,14)`)
+  // guarding the portal approach further west.
+  //
+  // Built dead last of everything this world adds, after the crab marchers, for the usual reason:
+  // `makeHuman()` and `Kneeler` both draw unconditionally off the shared `rnd()` sequence, and anything
+  // built earlier on this beach would have its own timing-sensitive pick shifted by it.
+  { const tx = -35, tz = 6, kx = tx + 1.3, kz = tz + 0.5, ry = atan2(tx - kx, tz - kz);
+    const chest = makeTreasureChest(); placeT(game, U, chest, tx, tz, 0.4);
+    boxT(game, tx, tz, 1.0, 0.7, 0.7, { cam: false });
+    const shovel = makeShovel(); placeT(game, U, shovel, tx + 0.75, tz - 0.6, 0.6);
+    makeGemCluster(game, U, tx + 0.4, tz + 0.9, 4, [0xd4af37, 0xc0c0c0, 0xffd54a], r, 0.9);
+    const digger = beachPerson(false, true);
+    game.npcs.push(new Kneeler(game, digger, { x: kx, z: kz, ry, cryIcon: '💰',
+      cries: ['Everybody else got a bottle cap. I got THIS.', "Careful, puss — don't you dare knock a single coin back under the sand.", "Don't tell the detectorist. He'll never forgive himself."] })); }
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

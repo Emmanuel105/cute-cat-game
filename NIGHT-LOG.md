@@ -16078,3 +16078,42 @@ and can't shift any neighbour's own fence-colour or shutter pick down the street
 `node test/run.mjs` ran clean (exit 0, all 274 checks `ok`, 0 console warnings). No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 591 — Sunny Shore's `Detectorist` finally finds real treasure
+
+Every beach, peak, woods and street in the game has run a `Detectorist` sweeping for buried treasure
+for hundreds of rounds now, and every single one of them has only ever turned up a bottle cap or a
+button — it's been the running joke of the whole series since round 30-something. Nobody had ever
+actually found anything. **An old wooden chest now lies open on Sunny Shore's dry sand, lid thrown
+back and a heaped pile of real gold coins spilling over the rim**, a shovel left stuck in the sand
+beside it and a few loose coins and gems scattered where they rolled. A boy kneels over it, still
+catching his breath. *"Everybody else got a bottle cap. I got THIS."* *"Careful, puss — don't you dare
+knock a single coin back under the sand."* *"Don't tell the detectorist. He'll never forgive himself."*
+
+New prop `makeTreasureChest()` in `62-props-nature.js`, right after `makeSandTurtle()` — a wooden trunk
+(plain toon planks, so `bakeDeep()` folds the box and its dark plank lines into one mesh), iron bands
+and corner posts, and a lid on its own pivot group hinged at the back top edge and thrown open past
+vertical. The ten coins heaped on top are fixed positions and tilts, not drawn from any RNG, the same
+reasoning the dominoes chain's own pip table (round 410) already leans on. A matching `makeShovel()`
+stands blade-down in the sand alongside. The handful of coins and gems that rolled clear of the chest
+reuse `makeGemCluster()` exactly as every other beach gem cluster already does — no new code there,
+just a third call with a gold-and-silver palette in place of the usual candy colours. The boy himself
+is a plain `Kneeler` on the beach's own `beachPerson()` wardrobe helper, the same pairing every other
+kneeling character in this file already uses.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')` then
+`game.travel(4, 'from-hub')`, waited out for real against `game.worldIndex` rather than a fixed frame
+count, then 3000 simulated frames with every NPC's and the squirrel's own position sampled every 10th
+frame) swept a 2 m grid of the dry sand inland of the dunes (ground height 0.15-2.2 m, radius ≤ 52,
+short of the radius (58) where `beachRegion`'s own fill takes over) against both those samples and all
+217 of the beach's own physics boxes: (-35, 6) came back clearest, in the quiet patch west of the
+squirrel's own stretch — 5.93 m from the nearest box and 6.08 m from the nearest wandering soul, at
+radius 35.5 from the origin, clear of the keep-out span guarding the portal approach further west.
+Built dead last of everything this world adds, after the crab marchers, since `makeHuman()` and
+`Kneeler` both draw unconditionally off the shared `rnd()` sequence and anything built earlier on this
+beach would have had its own timing-sensitive pick shifted by it.
+
+`node test/run.mjs` ran clean three times in a row — exit 0, every check `ok`, 0 console warnings every
+time, Sunny Shore's own friend count up one to 75. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
