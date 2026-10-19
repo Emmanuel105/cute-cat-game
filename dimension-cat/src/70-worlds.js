@@ -6035,6 +6035,44 @@ function buildRobotCity(game, entry) {
     for (let fi = 0; fi < 3; fi++) mesh(G.box(0.1, 0.002, 0.05), fletchM, { z: 0.26, rz: fi / 3 * TAU, shadow: 'none', parent: arrow });   // tail fletching
     game.npcs.push(new Archer(game, archer, arrow, { x: ax, z: az, ry: ary, dist: adist,
       cries: ['Careful, puss — foreman docks me a shift if an arrow ends up in the scrap pile.', "Still can't beat the sentry's own targeting scanner, and that thing's bolted to a wall.", "Lunch break. The robots don't get archery practice — lucky them."] })); }
+  // the Neighborhood (round 592), Sunny Shore (591), Victorian (596) and Candy Land (597) have all let
+  // somebody digging nearby beat their own long-suffering `Detectorist` to real treasure by now; Robot
+  // City's own scanner, still sweeping the concrete east of the second conveyor line at (32, -56), was
+  // the last of the four worlds left without one. A visiting kid off the gondola has struck real gold
+  // with nothing but a shovel, a few strides further out on the same stretch of open concrete. *"Everybody
+  // else got a washer. I got THIS."* *"Careful, puss — don't you dare knock a single coin back onto the
+  // concrete."* *"Don't tell the scanner. He'll never forgive himself."*
+  //
+  // Reuses round 591's `makeTreasureChest()` and `makeShovel()` (`62-props-nature.js`) and
+  // `makeGemCluster()` (`60-props.js`) exactly as the other three digs already do — no new prop, no new
+  // mesh. Robot City carries none of the Neighborhood's own "seven gems"/"no repeated shirt" constraints
+  // (both scoped to world 0 only in `test/run.mjs`), so a straight `makeGemCluster()` call with the usual
+  // gold-and-silver palette did the job. The finder herself is a plain `Kneeler` in the same vivid-shirt
+  // style every other Robot City kid already wears (the yo-yo kid's cyan, the hoop kid's yellow, the
+  // chalker's orange, the pogo kid's electric blue) — a fresh violet shirt in place of theirs, same
+  // placement-only trick as those four.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(2, 'from-prev')`, 1800 simulated frames with every NPC's own
+  // position sampled every 15th frame) swept a grid of candidates near the scanner's own spot against
+  // both those 9,960 samples and all 1198 of the city's own physics boxes, staying clear of the
+  // scanner's own spot: (40, -60) came back clearest, 9.0 m from the nearest box and 8.9 m from the
+  // nearest other soul — 8.9 m from the scanner himself, close enough the joke still reads, far enough
+  // neither "Say hello" circle (2.1 m each) comes near the other's.
+  //
+  // Built dead last, right after the archery range, for the usual reason: `makeHuman()` and
+  // `makeGemCluster()` both draw off the shared per-world `r()` sequence unconditionally, and anything
+  // built earlier in this city would have had its own timing-sensitive pick shifted by it.
+  { const tx = 40, tz = -60, kx = tx + 1.3, kz = tz + 0.4, ry = atan2(tx - kx, tz - kz);
+    const chest = makeTreasureChest(); place(game, U, chest, tx, tz, 0.6);
+    P.addBox(tx, 0.35, tz, 1.0, 0.7, 0.7, { cam: false });
+    const shovel = makeShovel(); place(game, U, shovel, tx + 0.75, tz - 0.6, 0.3);
+    makeGemCluster(game, U, tx + 0.4, tz + 0.9, 4, [0xd4af37, 0xc0c0c0, 0xffd54a], r, 0.9);
+    const finder = makeHuman({ ...randomPerson(r, { child: true, female: r.chance(0.5) }),
+      shirt: 0xb388ff, backpack: null, hat: null, jacket: null, coat: null, scarf: null, bag: null, glasses: false });
+    W.add(finder.group);
+    game.npcs.push(new Kneeler(game, finder, { x: kx, z: kz, ry, cryIcon: '💰',
+      cries: ["Everybody else got a washer. I got THIS.", "Careful, puss — don't you dare knock a single coin back onto the concrete.", "Don't tell the scanner. He'll never forgive himself."] })); }
 
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };

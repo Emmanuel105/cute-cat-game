@@ -16315,3 +16315,42 @@ digger, left for future rounds.
 times, Candy Land's own friend count up one to 81. No visual check was possible in this environment
 (no browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 598 — Robot City's own scanner gets beaten to real treasure too
+
+The Neighborhood (round 592), Sunny Shore (591), Victorian (596) and Candy Land (597) have all let
+somebody digging nearby beat their own long-suffering `Detectorist` to real treasure; Robot City's own
+scanner, still sweeping the concrete east of the second conveyor line at (32, -56), was the last of the
+four worlds left without one. **A visiting kid off the gondola has struck real gold with nothing but a
+shovel**, a few strides further out on the same stretch of open concrete: an old wooden chest lies open
+with a heap of coins inside, a shovel stuck in the ground beside it and a handful of loose coins and
+gems scattered where they rolled. *"Everybody else got a washer. I got THIS."* *"Careful, puss — don't
+you dare knock a single coin back onto the concrete."* *"Don't tell the scanner. He'll never forgive
+himself."*
+
+Reuses round 591's `makeTreasureChest()` and `makeShovel()` (`62-props-nature.js`) and
+`makeGemCluster()` (`60-props.js`) exactly as the other three digs already do — no new prop, no new
+mesh. Robot City carries none of the Neighborhood's own "seven gems"/"no repeated shirt" constraints
+(both scoped to world 0 only in `test/run.mjs`), so a straight `makeGemCluster()` call with the usual
+gold-and-silver palette did the job. The finder herself is a plain `Kneeler` in the same vivid-shirt
+style every other Robot City kid already wears (the yo-yo kid's cyan, the hoop kid's yellow, the
+chalker's orange, the pogo kid's electric blue) — a fresh violet shirt in place of theirs, the same
+placement-only trick as those four.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(2, 'from-prev')`, waiting out the real 520 ms portal-fade timer, then
+1800 simulated frames with every NPC's own position sampled every 15th frame) swept a grid of
+candidates near the scanner's own spot against both those 9,960 samples and all 1198 of the city's own
+physics boxes, keeping clear of the scanner's own spot: (40, -60) came back clearest, 9.0 m from the
+nearest box and 8.9 m from the nearest other soul — 8.9 m from the scanner himself, close enough the
+joke still reads, far enough neither "Say hello" circle (2.1 m each) comes near the other's. Built dead
+last, right after the archery range, the usual reason: `makeHuman()` and `makeGemCluster()` both draw
+off the shared per-world `r()` sequence unconditionally.
+
+Frosty Peak and Whisper Woods' own Detectorists are the only two left waiting on their own lucky
+digger, left for future rounds.
+
+`node test/run.mjs` ran clean three times in a row — exit 0, every check `ok`, 0 console warnings every
+time, Robot City's own friend count up one to 86. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
