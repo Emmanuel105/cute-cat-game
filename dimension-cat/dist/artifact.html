@@ -10252,7 +10252,24 @@ function buildCandyLand(game, entry) {
     // spot 6.52 m off at (3.5, -56.5) or his tray 6.85 m off, so his "Say hello" keeps winning there,
     // exactly as the fountain's prompt in Victorian still loses to the fiddler nearby.
     const cottageLines = ['🍪 "Every brick of it edible, and not one bite taken yet."', '🍪 "The icing never melts here, however warm the sun gets."', '🍪 "Smells like the baker\'s tray from clear across the lane."'];
-    game.addInteractable({ obj: gh, radius: 5.5, label: () => 'Look at the gingerbread cottage', onUse: () => { SFX.click(); game.toast(rnd.pick(cottageLines), 3000); } }); }
+    game.addInteractable({ obj: gh, radius: 5.5, label: () => 'Look at the gingerbread cottage', onUse: () => { SFX.click(); game.toast(rnd.pick(cottageLines), 3000); } });
+    // the Neighborhood's porch has had a napping stray cat since round 1, and Victorian's own terrace
+    // picked up one of its own in a window last round — but the gingerbread cottage, the one hand-built
+    // house in the whole land the cat can actually walk up to, never got one. A cat now naps curled
+    // right in the east round window's own frame, just past the glass. Same exact `makeNapCat()` the
+    // other two already use; added as a child of this house's own group (`gh`, already kept above for
+    // the wind chime and the cottage's own interactable) using its local window coordinates — this
+    // window's glass and icing ring both sit at local (x=2.2, y=2.2, z=3.08/3.12), so y=1.55 puts the
+    // cat low in the round frame (inner hole spans y 1.38-3.02) and z=3.3 sits it just past the icing
+    // ring's own 3.19 m outer face — the same trick the other two napping cats already rely on, so it
+    // inherits the cottage's world position for free. No physics box: well past the glass and the icing
+    // frame, nothing on the cookie path below can ever reach it, same reasoning as the other two.
+    const napCat = makeNapCat();
+    napCat.group.position.set(2.2, 1.55, 3.3);
+    napCat.group.rotation.y = -0.25;
+    gh.add(napCat.group);
+    let napT = 2; U.push((dt) => { napT += dt; napCat.animate(0, false, dt, napT); });
+  }
   for (let i = 0; i < 12; i++) mesh(G.cyl(0.9, 0.9, 0.12, 12), mat(0xd9a066, { roughness: 0.95 }), { x: sin(i * 0.9) * 1.6, y: 0.04, z: -40 - i * 1.9, shadow: 'receive', parent: W });   // cookie path to the cottage
   // every other world has wildlife of its own, but Candy Land never did — a sugar mouse now lives on the
   // quiet west side of the gingerbread cottage, darting between hops exactly like Whisper Woods' hedgehog

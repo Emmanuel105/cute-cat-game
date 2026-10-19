@@ -15804,3 +15804,32 @@ frames), so that flake is pre-existing and unrelated — every run that didn't h
 every check `ok`, 0 console warnings. No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 582 — a napping cat in a Candy Land window
+
+The Neighborhood's porch has had a napping stray cat since round 1 and Victorian's own terrace picked
+up one of its own in a window last round — but the gingerbread cottage, the one hand-built house in the
+whole of Candy Land the cat can actually walk up to, never got one. **A cat now naps curled right in the
+cottage's east round window, just past the glass**, breathing slowly, tail giving the occasional flick.
+
+No new rig: the exact same `makeNapCat()` the other two already use. Added as a child of the cottage's
+own group (`gh`, already kept in `buildCandyLand` for its wind chime and its own "look at" interactable)
+using the window's own local coordinates rather than world space, same trick the other two rely on — the
+window's glass and its icing ring both sit at local (x=2.2, y=2.2, z=3.08/3.12), so y=1.55 puts the cat
+low in the round frame (whose inner hole spans y 1.38-3.02) and z=3.3 sits it just past the icing ring's
+own 3.19 m outer face. It inherits the cottage's world position for free, same as the other two. No
+physics box: well past the glass and the icing frame, nothing on the cookie path below can ever reach
+it, same reasoning as the other two. Pure set dressing: no greeting, no effect on the friend count,
+nothing new to collect.
+
+`node test/run.mjs` ran clean three times in a row: exit 0, every check `ok`, 0 console warnings,
+Candy Land's own friend count (80) and ground-walkable figure (92%) both unchanged, as expected for a
+decoration with no greeting and no physics footprint. No visual check was possible in this environment
+(no browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
+
+Also recovered and pushed 50 commits (rounds ~531-581) from a previous session that had been left in a
+detached-HEAD state and never reached `origin/main` — `git log` on `main` had drifted 15 commits behind
+that unpushed work. Fast-forwarded local `main` to the tip of that chain, re-ran the full suite to
+confirm it was still green, and pushed before starting this round's own work, so none of those earlier
+nights' rounds were at risk of being lost.
