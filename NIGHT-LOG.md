@@ -15929,3 +15929,37 @@ own seeded `r` and the world clock, never the shared `rnd()` sequence, so there'
 Victorian check several worlds away. No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 586 — a napping cat on Whisper Woods' treehouse roof
+
+This session opened with a stray, non-fatal confusion: the local repo's `HEAD` was detached 50 commits
+ahead of what a stale `origin/main` ref showed — the same false alarm the previous couple of sessions
+have each hit once. A fresh `git fetch` showed `origin/main` already sitting at that same tip (round
+585's own cat on the Sunny Shore hut roof), so nothing had actually gone unpushed; fast-forwarding local
+`main` and re-pushing came back "Everything up-to-date", confirming it. No commits were ever at risk.
+
+The napping-cat series has now covered the Neighborhood's porch, Victorian's terrace, Candy Land's
+cottage, Frosty Peak's cabin and (round 585) Sunny Shore's third beach hut — but Whisper Woods' own
+treehouse, the one building in the game where the campers below spend their dialogue wondering who
+actually lives up there, never got one. **A stray cat is now curled up asleep along the treehouse's own
+roof ridge**, in the sun above the lit window and the rope ladder, breathing slowly just like every
+other napping cat in the series.
+
+Same `makeNapCat()` rig as every other round, no new geometry. The fiddly part was the roof itself:
+`makeTreehouse()`'s gable (`G.gable(3.6, 1.2, 3.6)`, `y: 6.7, z: -0.4, ry: PI/2`, local to the
+treehouse's own group) uses the same `ry: PI/2` trick round 585 worked through on the beach hut, which
+swaps the ridge from running along local z to running along local x. Working the rotation through by
+hand put the ridge at local y = 7.9 (the room's 6.7 m wall top plus the gable's own 1.2 m), local
+z = -0.4, spanning local x out to ±1.8 either side of centre. The cat sits at x = 0.7, clear of the lit
+window below (a different height and face) and well inside the eaves. Added as a child of the
+treehouse's own group (`treehouse`, already kept in a variable two lines above where it's built) rather
+than baked, so it inherits the treehouse's world position and rotation for free. No physics box: the
+treehouse's own trunk/room box already reaches to 9 m, well past the ridge's own 7.9 m, so nothing on
+the ground was ever going to get close enough to need one regardless. Pure set dressing — no greeting,
+no effect on the friend count, nothing new to collect.
+
+`node test/run.mjs` ran clean five times running (exit 0, all 274 checks `ok`, 0 console warnings each
+time) — no sign of the Victorian horse-and-carriage timing flake these logs keep flagging, though that
+one comes and goes regardless of what changes. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

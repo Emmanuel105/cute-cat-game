@@ -205,6 +205,26 @@ function buildForest(game, entry) {
       '🐿️ Someone has already chewed one corner of the notice clean off. The cat decides not to ask who.'];
     game.addInteractable({ obj: noticeTree, radius: 3.4, label: () => 'Read the notice', onUse: () => { SFX.click(); game.toast(rnd.pick(forestNoticeLines), 3000); } }); }
   const treehouse = makeTreehouse(game, -18, 14, r);
+  // the Neighborhood's porch, Victorian's terrace, Candy Land's cottage, Frosty Peak's cabin and Sunny
+  // Shore's third beach hut all have a napping stray cat tucked somewhere by now — the treehouse never
+  // got one, and the campers below keep wondering who lives up there anyway. `makeTreehouse()`'s own
+  // roof (`G.gable(3.6, 1.2, 3.6)`, `y: 6.7, z: -0.4, ry: PI/2` local to the treehouse's own group `g`)
+  // puts its ridge, once that rotation is worked through, at local y = 6.7 + 1.2 = 7.9 (the room's own
+  // 6.7 m wall top plus the 1.2 m gable), local z = -0.4 (the roof mesh's own offset), running along
+  // local x across the full d = 3.6 m the gable was given — the same ry = PI/2 trick that put the beach
+  // hut's own ridge along local x rather than local z. x = 0.7 sits the cat off-centre on that ridge,
+  // clear of the lit window below on the front wall (a different height and face entirely) and well
+  // short of the eaves at x = ±1.8. Added as a child of the treehouse's own group (already kept in
+  // `treehouse` above), never baked — only the procedural outer country runs `bakeDeep()` — so it
+  // inherits the treehouse's world position for free, same trick every prior napping cat relies on. No
+  // physics box: the existing trunk/room box above (`P.addBox(x, y0 + 4.5, z, 3.2, 9, 3.2)`) already
+  // reaches to y0 + 9, past the ridge's own y0 + 7.9, so nothing below can ever climb high enough to
+  // meet it regardless. Pure set dressing: no greeting, no effect on the friend count, nothing to collect.
+  { const napCat = makeNapCat();
+    napCat.group.position.set(0.7, 7.9, -0.4);
+    napCat.group.rotation.y = PI / 2 + 0.12;
+    treehouse.add(napCat.group);
+    let napT = 3; U.push((dt) => { napT += dt; napCat.animate(0, false, dt, napT); }); }
   // a wind chime under the treehouse's own back eave, away from the ladder and lit window on the front
   // side — reuses the Neighborhood porch's makeWindChime() with a mossier, woodland palette
   { const y0t = P.ground0(-18, 14), chime = makeWindChime(game, { wood: 0x6b4a2a, metal: 0x7a9a7a });
