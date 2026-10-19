@@ -16153,3 +16153,33 @@ built earlier would have shifted a later timing-sensitive pick.
 `node test/run.mjs` ran clean three times in a row — exit 0, every check `ok`, 0 console warnings every
 time. No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 593 — Victorian's own canal bridge finally gets a look over the railing
+
+Candy Land's three wafer bridges over the chocolate river have each had a "look over the railing"
+toast for rounds now, but Victorian's own three stone bridges over the canal — crossed just as often on
+the way to the market square — never got one at all. **The middle bridge, dead centre at (-1.2, 30) and
+the one every north-south crossing in town actually uses, gets the first.** *"Stone and fog, same as the
+rest of the town — just damp underfoot too."* *"Boats pass under here all day. Not one of them ever
+stops to say why."* *"Canal water, same colour as the fog above it. Nobody's ever seen the bottom."*
+
+No new mesh and no new physics box: the bridge-building loop in `buildVictorian` (`70-worlds.js`)
+already builds and discards a group per bridge (deck, parapet piers, coping stones) — it now keeps the
+middle one as `mainBridge` and hands it straight to `game.addInteractable`, the same "reuse the
+already-built group" trick the chocolate river's own bridges used. Its existing deck box (half-extent
+2.2 m in x, 5.2 m in z, a 5.65 m diagonal at the corners) already keeps the cat that far off dead-on; a
+6.6 m radius clears that corner by just under a metre, the same margin the wafer bridges bank on.
+
+A headless probe (the same stub-three harness `test/run.mjs` uses: `game.start('new')`, then
+`game.travel(3, 'from-prev')` waited out for real against `game.worldIndex`, then 9000 simulated frames
+with every NPC's own position sampled every frame) found the nearest physics box — one of the street
+lamps, at (8, 25.3) — 10.06 m clear, and the nearest other interactable (a "Say hello" greet circle,
+radius 2.1 m) 11.43 m off centre-to-centre. The milling top-hats and bonnets who stroll this stretch of
+grass (home spots at (-1, 22) and (30, 22), leash 12 m, no greet prompt of their own) came as close as
+6.26 m over that run, but since they carry no interactable of their own they can only ever stand near
+this prompt, never steal it. The other two stone bridges (-96 and 104) stay untouched and could get the
+same treatment in a later round.
+
+`node test/run.mjs` ran clean three times in a row — exit 0, every check `ok`, 0 console warnings every
+time. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -6454,13 +6454,33 @@ function buildVictorian(game, entry) {
     for (const bx of BRIDGES) { const w = bx - 2.6 - edge; if (w > 0.5) P.addBox(edge + w / 2, 2, 30, w, 4, 8, { walk: false, cam: false }); edge = bx + 2.6; }
     P.addBox((edge + CL / 2) / 2, 2, 30, CL / 2 - edge, 4, 8, { walk: false, cam: false });
     const stone = mat(0x8c8377, { roughness: 0.95, map: TEX.stone(30) });
+    let mainBridge = null;
     for (const bx of BRIDGES) {
       const br = group(bx, 0, 30, W);
       mesh(G.box(4.4, 0.4, 10.4), stone, { y: 0.6, shadow: 'both', parent: br }); mesh(G.torus(4.6, 0.7, 8, 20, PI), stone, { ry: PI / 2, shadow: 'none', parent: br });
       for (const s of [-1, 1]) { for (let i = 0; i < 6; i++) mesh(G.box(0.3, 0.9, 0.3), stone, { x: s * 2.0, y: 1.25, z: -4.6 + i * 1.84, parent: br }); mesh(G.box(0.2, 0.1, 10.4), stone, { x: s * 2.0, y: 1.75, parent: br }); }
       P.addBox(bx, 0.4, 30, 4.4, 0.8, 10.4, { cam: false });
       for (const s of [-1, 1]) P.addBox(bx + s * 2.0, 1.4, 30, 0.3, 1.2, 10.4, { cam: false, walk: false });
+      if (bx === BRIDGES[0]) mainBridge = br;
     }
+    // Candy Land's three wafer bridges over the chocolate river each got a "look over the railing" toast
+    // rounds ago; Victorian's own three stone bridges over the canal, crossed just as often on the way
+    // to the market square, never got one at all. The middle bridge, dead centre at (-1.2, 30) and the
+    // one every north-south crossing actually uses, gets the first. `br`, the group this loop already
+    // builds and discards per bridge (deck, parapet piers and coping stones), is kept this once as
+    // `mainBridge` and handed straight to `game.addInteractable` below — no new mesh, no new box: its
+    // own deck box (half-extent 2.2 m in x, 5.2 m in z, a 5.65 m diagonal at the corners) already keeps
+    // the cat that far off dead-on. A 6.6 m radius clears that corner by just under a metre, the same
+    // margin the chocolate river's own bridges bank on. A headless probe (`game.travel(3, 'from-prev')`,
+    // then 9000 simulated frames with every NPC's own position sampled every frame) found the nearest
+    // physics box (one of the street lamps, at (8, 25.3)) 10.06 m clear and the nearest other
+    // interactable (a "Say hello" greet circle, radius 2.1) 11.43 m off centre-to-centre; the milling
+    // top-hats and bonnets who stroll this stretch of grass (home spots at (-1, 22) and (30, 22), leash
+    // 12 m, no greet prompt of their own) came as close as 6.26 m over that run, but since they carry no
+    // interactable they can never steal this prompt, only ever stand near it. The other two stone
+    // bridges (-96 and 104) stay untouched and could get the same treatment in a later round.
+    { const bridgeLines = ['🌉 "Stone and fog, same as the rest of the town — just damp underfoot too."', '🚣 "Boats pass under here all day. Not one of them ever stops to say why."', '🌊 "Canal water, same colour as the fog above it. Nobody\'s ever seen the bottom."'];
+      game.addInteractable({ obj: mainBridge, radius: 6.6, label: () => 'Look over the railing', onUse: () => { SFX.click(); game.toast(rnd.pick(bridgeLines), 3000); } }); }
     for (const x of [-40, 20, 40, -140, 150, 70, -70]) { const b = makeBoat(r.pick([0x3f6fd6, 0x7a1f1f])); b.userData.y0 = -0.3; b.scale.setScalar(1.2); place(game, U, b, x, 30, r() * TAU, -0.3); }
     // the canal had boats and two bank workers (the angler, the mudlark) but, like the Neighborhood's
     // park pond before round 199, nothing ever actually lived on the water itself. A duck pair now
