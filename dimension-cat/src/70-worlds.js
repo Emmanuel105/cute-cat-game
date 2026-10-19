@@ -2430,6 +2430,51 @@ function buildNeighborhood(game, entry) {
       });
     }); }
 
+  // Every yard feature on this street so far — the pinwheel, the sprinkler, the sundial — sits on
+  // somebody's own front lawn; the field behind the second row of houses (row two sits at z=28, the
+  // park paths start at z=35.2) never got a feature of its own. A wind-up toy train now loops a small
+  // wooden track there on its own, forever rounding the same circle with its single open car trailing
+  // behind, the kind of thing a kid leaves running after they've been called in for dinner.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real
+  // Neighborhood, sampled every NPC's own position every tenth of a second over 300 simulated seconds
+  // (so no wandering stroller or dog-walker on a long leash could slip past unnoticed), then swept the
+  // open field north of the second house row against both those samples and every one of the street's
+  // own physics boxes: (-57, 42) came back clearest, 10.82 m from the nearest box or soul —
+  // comfortably past the track's own 1.3 m loop-plus-train radius either way. Fixed numbers throughout
+  // and no draw from either `rnd()` or this world's own local `r` — the same discipline the bats above
+  // and the marching sparrows before them already spell out, since this is the first world the test
+  // ever builds and anything drawn here shifts every later timing-sensitive roll for the rest of the
+  // run. No physics box of its own, same reasoning as the park ducks and Frosty Peak's otter: a moving
+  // hitbox has nothing to collide against here anyway, and the track sits well clear of every path.
+  {
+    const tcx = -57, tcz = 42, trad = 1.0, trackY = 0.012;
+    const railM = mat(0x8a5a2e, { roughness: 0.85 }), tieM = mat(0x5a3a1e, { roughness: 0.9 });
+    mesh(G.torus(trad, 0.045, 6, 48), railM, { x: tcx, y: trackY, z: tcz, rx: PI / 2, shadow: 'receive', parent: W });
+    for (let i = 0; i < 14; i++) { const a = i / 14 * TAU; mesh(G.box(0.22, 0.02, 0.09), tieM, { x: tcx + cos(a) * trad, y: trackY, z: tcz + sin(a) * trad, ry: a, shadow: 'receive', parent: W }); }
+
+    const bodyM = mat(0xd6243c, { roughness: 0.6 }), trimM = mat(0xf2c744, { roughness: 0.6 }), wheelM = mat(0x2a2a2a, { roughness: 0.8 }), stackM = mat(0x3a3a3a, { roughness: 0.7 });
+    const loco = group(tcx, trackY, tcz, W);
+    mesh(G.box(0.26, 0.2, 0.4), bodyM, { y: 0.16, parent: loco });
+    mesh(G.box(0.18, 0.16, 0.18), trimM, { y: 0.32, z: 0.08, parent: loco });
+    mesh(G.cyl(0.05, 0.05, 0.22, 10), stackM, { y: 0.36, z: -0.12, parent: loco });
+    for (const [wx, wz] of [[0.14, 0.12], [-0.14, 0.12], [0.14, -0.12], [-0.14, -0.12]]) mesh(G.cyl(0.07, 0.07, 0.04, 10), wheelM, { x: wx, y: 0.07, z: wz, rz: PI / 2, parent: loco });
+
+    const car = group(tcx, trackY, tcz, W);
+    mesh(G.box(0.22, 0.14, 0.3), trimM, { y: 0.12, parent: car });
+    for (const [wx, wz] of [[0.12, 0.1], [-0.12, 0.1], [0.12, -0.1], [-0.12, -0.1]]) mesh(G.cyl(0.06, 0.06, 0.04, 10), wheelM, { x: wx, y: 0.06, z: wz, rz: PI / 2, parent: car });
+    for (const [bx, bc] of [[-0.05, 0xf4f1dc], [0.06, 0x3a6a6a]]) mesh(G.box(0.08, 0.08, 0.08), mat(bc, { roughness: 0.7 }), { x: bx, y: 0.21, parent: car });
+
+    const speed = 0.6, gap = 0.55;
+    U.push((dt, t) => {
+      for (const [grp, phase] of [[loco, 0], [car, -gap]]) {
+        const a = t * speed + phase, dx = -sin(a), dz = cos(a);
+        grp.position.set(tcx + cos(a) * trad, trackY, tcz + sin(a) * trad);
+        grp.rotation.y = atan2(dx, dz);
+      }
+    });
+  }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

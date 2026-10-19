@@ -15991,3 +15991,34 @@ desync.
 of Robot City's own checks. No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 588 — a wind-up toy train for the Neighborhood
+
+Every yard feature the street has picked up over the last couple hundred rounds — the pinwheel, the
+lawn sprinkler, the sundial — sits squarely on somebody's own front lawn. The open field behind the
+second row of houses (row two sits at z=28; the park paths don't start until z=35.2) never got a
+feature of its own. **A wind-up toy train now loops a small wooden track there on its own**, a little
+red-and-brass locomotive hauling a single open car with two toy crates peeking over the side, forever
+rounding the same circle the way a kid's toy keeps going after they've been called in for dinner.
+
+No new controller and no greet: this is pure set dressing, like the park ducks or the biplane, built
+and animated entirely inline. The track is a flat wooden torus with fourteen evenly spaced sleepers
+round it; the locomotive and its car are both just boxes, cylinders and wheels, following the exact
+same closed-form circle math the park's own duck pairs already use (`a = t*speed + phase`, heading
+from `atan2(-sin(a), cos(a))`) — the car trails the locomotive by a fixed phase offset, so it always
+sits tangent to the same track the locomotive rides. No physics box: a moving hitbox has nothing to
+collide with out here anyway, and the track sits well clear of every path.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real Neighborhood,
+sampled every NPC's own position every tenth of a second over 300 simulated seconds (so no wandering
+stroller or dog-walker on a long leash could slip past unnoticed), then swept the field north of the
+second house row against both those samples and every one of the street's own physics boxes: (-57, 42)
+came back clearest, 10.82 m from the nearest box or soul — comfortably past the track's own 1.3 m
+loop-plus-train radius either way. Fixed numbers throughout, no draw from either `rnd()` or this
+world's own local `r` — the same discipline the bats (round 581) and the marching sparrows (round 578)
+already spell out, since the Neighborhood is the first world the test ever builds and anything drawn
+here shifts every later timing-sensitive roll for the rest of the run.
+
+`node test/run.mjs` ran clean four times in a row (exit 0, all 274 checks `ok`, 0 console warnings each
+time). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
