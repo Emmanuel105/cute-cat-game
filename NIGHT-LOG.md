@@ -16276,3 +16276,42 @@ still waiting on their own lucky digger, left for future rounds.
 every time, Victorian's own friend count up one to 99. No visual check was possible in this
 environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 597 — Candy Land's own scanner gets beaten to real treasure too
+
+Sunny Shore (round 591), the Neighborhood (round 592) and Victorian (round 596) have all let somebody
+digging nearby beat their own long-suffering `Detectorist` to real treasure; Candy Land's own scanner,
+panning the open grass at (23, 27) for yet another gumdrop, was still waiting on his turn. **A few
+strides off, a gingerbread-cottage kid has struck real gold with nothing but a shovel**: an old wooden
+chest lies open in the grass, lid thrown back over a heap of coins, a shovel left stuck in the dirt
+beside it and a handful of loose coins and gems scattered where they rolled. *"Everybody else got a
+gumdrop. I got THIS."* *"Careful, puss — don't you dare knock a single coin back in the grass."*
+*"Don't tell the scanner. He'll never forgive himself."*
+
+Reuses round 591's `makeTreasureChest()` and `makeShovel()` (`62-props-nature.js`) and
+`makeGemCluster()` (`60-props.js`) exactly as Victorian's own relic hunter already does — no new prop,
+no new mesh. Candy Land carries none of the Neighborhood's own "seven gems"/"no repeated shirt"
+constraints (both scoped to world 0 only in `test/run.mjs`), so a straight `makeGemCluster()` call
+with the usual gold-and-silver palette did the job. The finder himself is a plain `Kneeler` on a fresh
+pastel wardrobe matching the ukulele player's and kite flyer's own, the same pairing every other
+kneeling child in this land already uses.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(1, 'from-prev')`, 400 simulated frames with every NPC's own position
+sampled every frame) swept a grid of candidates near the scanner's own spot against both those 30,800
+samples and all 1898 of the land's own physics boxes: (31, 30) came back clearest, 7.5 m from the
+nearest box and 8.1 m from the nearest other soul — 8.5 m from the scanner himself, the same distance
+round 592's own Neighborhood dig used, close enough the joke still reads, far enough neither "Say
+hello" circle (2.1 m each) comes near the other's. None of the sixteen gumdrop-patch donuts
+`makeGumdrops` scatters reach anywhere near this corner either — the nearest patch, at (22, 6), is
+21 m off and only 5 m of scatter radius. Built dead last, right after the gumdrop beetle, the usual
+reason: `makeHuman()` and `makeGemCluster()` both draw off the shared per-world `r()` sequence
+unconditionally.
+
+Robot City, Frosty Peak and Whisper Woods' own Detectorists are still waiting on their own lucky
+digger, left for future rounds.
+
+`node test/run.mjs` ran clean twice in a row — exit 0, every check `ok`, 0 console warnings both
+times, Candy Land's own friend count up one to 81. No visual check was possible in this environment
+(no browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

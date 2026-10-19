@@ -11893,6 +11893,50 @@ function buildCandyLand(game, entry) {
   { const rig = makeGumdropBeetle(0xff4fa0); W.add(rig.group);
     game.npcs.push(new Hopper(game, rig, { x: 1, z: 42, leash: 1.6, r: 0.1, dist: [0.25, 0.6], dur: 0.3, height: 0.18, idle: [1, 3.2],
       onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } })); }
+  // Sunny Shore (round 591), the Neighborhood (round 592) and Victorian (round 596) have all let
+  // somebody digging nearby beat their own long-suffering `Detectorist` to real treasure, and the
+  // scanner panning for bottle caps here on the open grass at (23, 27) — "Just a gumdrop. Every
+  // time." — was still waiting on his own turn. **A few strides off, a gingerbread-cottage kid has
+  // struck real gold with nothing but a shovel**: an old wooden chest lies open in the grass, lid
+  // thrown back over a heap of coins, with a shovel left stuck in the dirt and a handful of loose
+  // coins and gems scattered where they rolled. *"Everybody else got a gumdrop. I got THIS."*
+  // *"Careful, puss — don't you dare knock a single coin back in the grass."* *"Don't tell the
+  // scanner. He'll never forgive himself."*
+  //
+  // Reuses round 591's `makeTreasureChest()` and `makeShovel()` (`62-props-nature.js`) and
+  // `makeGemCluster()` (`60-props.js`) exactly as Victorian's own relic hunter already does — no new
+  // prop, no new mesh. Candy Land carries none of the Neighborhood's own "seven gems"/"no repeated
+  // shirt" constraints (both scoped to world 0 only in `test/run.mjs`), so a straight
+  // `makeGemCluster()` call with the same gold-and-silver palette does the job. The finder himself is
+  // a plain `Kneeler` on a fresh pastel wardrobe matching the ukulele player's and kite flyer's own
+  // (`shirts: [0xffe0ea, 0xbfe7ff, 0xfff3b0]`), the same pairing every other kneeling child in this
+  // land already uses.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(1, 'from-prev')`, 400 simulated frames with every NPC's own
+  // position sampled every frame) swept a grid of candidates near the scanner's own spot against both
+  // those 30,800 samples and all 1898 of the land's own physics boxes: (31, 30) came back clearest,
+  // 7.5 m from the nearest box and 8.1 m from the nearest other soul — 8.5 m from the scanner himself,
+  // the same distance round 592's own Neighborhood dig used, close enough the joke still reads, far
+  // enough neither "Say hello" circle (2.1 m each) comes near the other's. None of the sixteen
+  // gumdrop-patch donuts `makeGumdrops` scatters reach anywhere near this corner either — the nearest
+  // patch, at (22, 6), is 21 m off and only 5 m of scatter radius.
+  //
+  // Built dead last, right after the gumdrop beetle, for the reason every other addition at the end
+  // of this function already gives: `makeHuman()` and `makeGemCluster()` both draw off the shared
+  // per-world `r()` sequence unconditionally, and anything built earlier in this land would have had
+  // its own timing-sensitive pick shifted by it.
+  { const tx = 31, tz = 30, kx = tx + 1.3, kz = tz + 0.4, ry = atan2(tx - kx, tz - kz);
+    const chest = makeTreasureChest(); place(game, U, chest, tx, tz, 0.6);
+    P.addBox(tx, 0.35, tz, 1.0, 0.7, 0.7, { cam: false });
+    const shovel = makeShovel(); place(game, U, shovel, tx + 0.75, tz - 0.6, 0.3);
+    makeGemCluster(game, U, tx + 0.4, tz + 0.9, 4, [0xd4af37, 0xc0c0c0, 0xffd54a], r, 0.9);
+    const luckyWard = makeWardrobe(r, { shirts: [0xffe0ea, 0xbfe7ff, 0xfff3b0], pants: [0xff9ecf, 0x7fd7ff, 0xffffff] });
+    const finder = makeHuman({ ...randomPerson(r, { child: true, female: r.chance(0.5), wardrobe: luckyWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: false });
+    W.add(finder.group);
+    game.npcs.push(new Kneeler(game, finder, { x: kx, z: kz, ry, cryIcon: '💰',
+      cries: ["Everybody else got a gumdrop. I got THIS.", "Careful, puss — don't you dare knock a single coin back in the grass.", "Don't tell the scanner. He'll never forgive himself."] })); }
 
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
