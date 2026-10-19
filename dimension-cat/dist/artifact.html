@@ -14890,11 +14890,16 @@ function buildVictorian(game, entry) {
     const roaster = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.4), wardrobe: roastWard }),
       pants: 0x2a2420, apron: 0x3a3330, hat: r.chance(0.5) ? 'flatcap' : 'bonnet', hatColor: 0x3a3327, scarf: 0x6a3a3a, bag: null, jacket: null, glasses: false });
     W.add(roaster.group);
-    place(game, U, makeChestnutBrazier(), bx, bz, 0);
+    const brazier = place(game, U, makeChestnutBrazier(), bx, bz, 0);
     P.addBox(bx, 0.3, bz, 0.3, 0.65, 0.3, { cam: false });
     const v = new Vendor(game, roaster, makeChestnutCone(), { x: vx, z: vz, ry: vry, cryIcon: '🌰',
       cries: ["Hot chestnuts! Straight off the brazier!", "Careful, puss — that griddle's hotter than it looks.", "Best thing for cold hands, this time of year."] });
-    game.npcs.push(v); greetable(game, v); }
+    game.npcs.push(v); greetable(game, v);
+    // the roaster's own sell cries cover the chestnuts; the brazier itself, right beside her, never got a
+    // look of its own. `place()`'s return value (previously discarded) is the same drum this whole block
+    // already built and boxed, handed straight to `game.addInteractable` — no new mesh, no new box.
+    const brazierLines = ["The vents glow a deep, steady orange.", "Warm enough to feel from here.", "A faint crack and hiss — one more chestnut giving in."];
+    game.addInteractable({ obj: brazier, radius: 1.2, label: () => 'Look at the brazier', onUse: () => { SFX.click(); game.toast(rnd.pick(brazierLines), 3000); } }); }
   // the Neighborhood, Candy Land and Robot City all have a kid working a yo-yo by now — Victorian, for
   // all five of its own games on the north bank (tag, the ring dance, catch, the swing and the seesaw),
   // never had one. A child now works one on the grass between the kite kid and the chestnut roaster,

@@ -16495,3 +16495,22 @@ one turned up.
 box count unchanged (328 — the toast adds no physics box of its own). No visual check was possible in
 this environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 603 — a look at the chestnut brazier
+
+Victorian's chestnut roaster has had her sell cries for a while now, but the fire-lit drum standing
+right beside her — the thing actually doing the roasting — never got so much as a glance of its own.
+**The brazier now answers a "look" prompt too**: *"The vents glow a deep, steady orange."* *"Warm
+enough to feel from here."* *"A faint crack and hiss — one more chestnut giving in."*
+
+No new mesh, no new physics box: `place()`'s own return value, previously discarded, is the exact
+drum this block already builds and boxes, handed straight to `game.addInteractable` at a tight 1.2 m
+radius — the same previously-discarded-return-value trick round 602's ice crystal and several props
+before it already used. The roaster's own greet circle sits only 1.3 m away, but `addInteractable`
+picks nearest by distance² (per `80-game.js`), so the two coexist the same way clustered toasts
+elsewhere in the game already do.
+
+`node test/run.mjs` ran clean twice in a row: exit 0, all 274 checks `ok`, 0 console warnings both
+times, box count unchanged (328 — the toast adds no physics box of its own). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
