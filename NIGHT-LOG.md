@@ -16432,3 +16432,37 @@ running joke that started on Sunny Shore in round 591 has made its way through a
 Whisper Woods' own friend count up one to 75. No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 601 — a carved pumpkin for the Neighborhood's own house 5
+
+Every fixture on the street so far sits out at the usual yard-corner offset, or, in the napping cat's
+one case, up on a porch rail — nothing had ever actually sat on a porch *step*. **House 5's own step,
+right below the sundial it already shares a yard with, now has a carved jack-o'-lantern on it**: a
+squashed orange sphere, a short green stem, and a face built entirely from `G.earCone()` triangles —
+the same flattened-spike shape the sundial's own gnomon and the weathervane's own ears already borrow
+— two for eyes, one upside-down for a nose, four in a zigzag for a grin. *"Somebody's been at the
+carving knife."* *"Mind your whiskers near that candle, puss."* *"Every year it goes a little more
+lopsided. Charming, really."*
+
+Static geometry, no controller, no new rig: one group parented straight onto house 5's own house
+group in local coordinates, the same trick the napping cat on house 2's porch rail already uses. Every
+dimension and colour is a fixed literal — no draw from this world's own seeded `r` or the shared
+`rnd()` at build time, the usual Neighborhood caution (round 578's own postmortem, on the marching
+sparrows, is the one that first spelled out why: this is the one world every test travel starts from,
+so any extra draw here shifts a later timing-sensitive check anywhere downstream in the run). The
+carved face's material reuses the porch light's own emissive hex (`0xffe3a0`) rather than adding any
+new day/night code, so it glows warmly after dusk and reads as a plain dark carving by day for free,
+off the existing `W.traverse()` sweep at the bottom of the build function — no `U.push` tick needed at
+all. The step itself sits well inside this lot's own "front path" keep-out zone, a metre further from
+the house than the napping cat's own rail and 4.5 m off the sundial's own corner, nowhere near any road,
+pavement or path `test/run.mjs` actually walks; no physics box, same reasoning as the napping cat.
+
+`node test/run.mjs` passed clean on the great majority of around three dozen repeat runs (static
+geometry only, plus one `rnd.pick()` on a player-triggered "Look at the pumpkin" toast that the test
+never interacts with). One lone run in the batch came back red without its failing line captured, but
+a six-run pass on the unmodified code beforehand, and over thirty more runs on this change afterward,
+all came back clean — consistent with the pre-existing real-timer flake `test/run.mjs` already documents
+elsewhere (the Victorian bobby-crossing check, which "races a real timer" on the portal-fade wait), not
+with anything this round touched. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

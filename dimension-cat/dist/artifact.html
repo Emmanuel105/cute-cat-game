@@ -8083,6 +8083,49 @@ function buildNeighborhood(game, entry) {
       const dialLines = ['🕰️ "No numbers, no hands — just a shadow and a steady guess."', '☀️ "Works a treat, so long as the sun actually shows up."', '😼 "Puss, chasing the shadow around it doesn\'t count as telling the time."'];
       game.addInteractable({ obj: sundial, radius: 1.8, label: () => 'Look at the sundial', onUse: () => { SFX.click(); game.toast(rnd.pick(dialLines), 3000); } });
     }
+    // every fixture on this street so far sits out at the usual yard-corner offset (x+4.5,
+    // z+front*4.0) or, in the napping cat's one case, up on a porch rail — nothing has ever actually
+    // sat on a porch STEP. House 5's own step, right below the sundial it shares a yard with, now has
+    // a carved pumpkin on it: a squashed orange sphere, a short green stem, and a jack-o'-lantern face
+    // built from `G.earCone()` triangles — the same flattened-spike shape the sundial's own gnomon
+    // above and the weathervane's own ears already borrow — two for eyes, one upside-down for a nose,
+    // four in a zigzag for a grin. *"Somebody's been at the carving knife."* *"Mind your whiskers near
+    // that candle, puss."* *"Every year it goes a little more lopsided. Charming, really."*
+    //
+    // Static geometry, no controller: one new group parented straight onto house 5's own `h` (the
+    // same trick the napping cat on house 2's porch rail already uses, so it inherits the house's own
+    // world position and rotation for free, in LOCAL coordinates only). Every dimension and colour
+    // below is a fixed literal — no draw from this world's own seeded `r` or the shared `rnd()` at
+    // build time, the same caution every other fixture on this street already takes, since the
+    // Neighborhood is the one world every test travel starts from and any extra draw here shifts a
+    // later timing-sensitive check elsewhere in the run (round 578's own postmortem, on the marching
+    // sparrows, spells out why).
+    //
+    // The carved face reuses the porch light's own emissive hex (`0xffe3a0`) rather than adding any
+    // new day/night code: the day/night cycle's own `W.traverse()` sweep (the bottom of this function)
+    // only matches on a material's emissive colour, so the face glows warmly after dusk and fades back
+    // to a plain dark carving by day for free, exactly like every porch bulb on the street already
+    // does — no `U.push` tick of its own needed at all.
+    //
+    // The step itself sits at local (dx, 0.12, d/2 + 1.75), a full metre further from the house than
+    // the deck the napping cat's own rail sits over and 4.5 m off the sundial's own corner — nowhere
+    // anything has ever been placed before — and squarely inside this lot's own "front path" keep-out
+    // zone (`Z.add(x, z + front*6.9, 1.4, 6.4)`, added for every lot at the top of this function), well
+    // short of any road, pavement or path `test/run.mjs` actually walks. No physics box, the same
+    // reasoning the napping cat's own round gives: well below the cat's own jump reach and nothing
+    // here it could meaningfully collide with.
+    { const px = 1.7, pz = 4.65, py = 0.29;
+      const pumpkinM = mat(0xe8711a, { roughness: 0.6 }), stemM = mat(0x5a7a3a, { roughness: 0.7 }),
+        faceM = mat(0x1a1410, { roughness: 0.85, emissive: 0xffe3a0, emissiveIntensity: 0.08 });
+      const pumpkin = group(px, py, pz, h);
+      mesh(G.sphere(0.2, 12, 9), pumpkinM, { sy: 0.85, shadow: 'both', parent: pumpkin });
+      mesh(G.cyl(0.02, 0.03, 0.06, 6), stemM, { y: 0.2, shadow: 'none', parent: pumpkin });
+      for (const ex of [-0.08, 0.08]) mesh(G.earCone(0.045, 0.09), faceM, { x: ex, y: 0.03, z: 0.17, shadow: 'none', parent: pumpkin });   // eyes
+      mesh(G.earCone(0.03, 0.06), faceM, { y: -0.01, z: 0.185, rz: PI, shadow: 'none', parent: pumpkin });   // nose, point up
+      [-0.12, -0.04, 0.04, 0.12].forEach((tx, ti) => mesh(G.earCone(0.035, 0.07), faceM, { x: tx, y: -0.09, z: 0.15, rz: ti % 2 ? 0 : PI, shadow: 'none', parent: pumpkin }));   // zigzag grin
+      const pumpkinLines = ['🎃 "Somebody\'s been at the carving knife."', '🕯️ "Mind your whiskers near that candle, puss."', '🎃 "Every year it goes a little more lopsided. Charming, really."'];
+      game.addInteractable({ obj: pumpkin, radius: 1.6, label: () => 'Look at the pumpkin', onUse: () => { SFX.click(); game.toast(rnd.pick(pumpkinLines), 3000); } });
+    }
     // the pinwheel, sprinkler, kennel, birdhouse, gnome, feeder, bin and sundial gave eight of the
     // street's sixteen yards their own fixture, but nothing on the whole street has ever actually
     // caught a drop of rain, odd for a village with a sprinkler watering the grass two doors down.
