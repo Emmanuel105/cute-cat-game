@@ -16183,3 +16183,31 @@ same treatment in a later round.
 `node test/run.mjs` ran clean three times in a row — exit 0, every check `ok`, 0 console warnings every
 time. No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 594 — Victorian's other two canal bridges finish the set
+
+Round 593 gave the middle canal bridge a "look over the railing" toast and left the other two — west
+at (-96, 30), east at (104, 30) — "untouched, could get the same treatment in a later round." **Both
+now get it.** West: *"Furthest crossing from the square. Fewest footsteps, same fog."* *"No boat has
+ever stopped under this one either. Must be a canal thing."* East: *"Same stone, same fog, same drop
+to the water as every other bridge in town."* *"Furthest bridge from the time door. A long walk home
+from here, fog or no fog."*
+
+Same trick as last round, just the other two iterations of the loop: `buildVictorian`'s bridge-building
+loop in `70-worlds.js` already builds one group per entry in `BRIDGES = [-1.2, -96, 104]` and used to
+discard the outer two — it now keeps all three (`mainBridge`, `westBridge`, `eastBridge`) and hands the
+new pair straight to `game.addInteractable`, no new mesh, no new box. Every bridge in that loop shares
+identical deck/parapet geometry and box sizes, so the same 6.6 m radius that cleared the middle bridge's
+corner clears these two by the same margin. Checked by hand against everything else `buildVictorian`
+places near z=30: the lamp cluster (x in [-52,-24,8,24,48]) and the angler sit near the middle bridge
+only, the duck pair only ranges x=46-64, the mudlark works (-10, 37.3), and the seven canal boats
+(x=-140/-70/70/150 and the three already near the middle bridge) are pure visuals with no physics box
+of their own — `makeBoat`'s only motion is its own bob. The canal's `zones.addSpan` (z 24-36, the whole
+width) already walls the whole strip off from `victorianRegion`'s outer-country fill, so nothing
+procedural can land near either bridge either. All three Victorian crossings now answer the same way
+Candy Land's three wafer bridges already do.
+
+`node test/run.mjs` ran clean three times in a row — exit 0, every check `ok`, 0 console warnings every
+time, boxes steady at 328 (no new physics boxes were added, same as last round's reasoning). No visual
+check was possible in this environment (no browser, no Playwright) — only the stub-three test suite
+above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

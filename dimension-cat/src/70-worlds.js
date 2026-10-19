@@ -6454,14 +6454,14 @@ function buildVictorian(game, entry) {
     for (const bx of BRIDGES) { const w = bx - 2.6 - edge; if (w > 0.5) P.addBox(edge + w / 2, 2, 30, w, 4, 8, { walk: false, cam: false }); edge = bx + 2.6; }
     P.addBox((edge + CL / 2) / 2, 2, 30, CL / 2 - edge, 4, 8, { walk: false, cam: false });
     const stone = mat(0x8c8377, { roughness: 0.95, map: TEX.stone(30) });
-    let mainBridge = null;
+    let mainBridge = null, westBridge = null, eastBridge = null;
     for (const bx of BRIDGES) {
       const br = group(bx, 0, 30, W);
       mesh(G.box(4.4, 0.4, 10.4), stone, { y: 0.6, shadow: 'both', parent: br }); mesh(G.torus(4.6, 0.7, 8, 20, PI), stone, { ry: PI / 2, shadow: 'none', parent: br });
       for (const s of [-1, 1]) { for (let i = 0; i < 6; i++) mesh(G.box(0.3, 0.9, 0.3), stone, { x: s * 2.0, y: 1.25, z: -4.6 + i * 1.84, parent: br }); mesh(G.box(0.2, 0.1, 10.4), stone, { x: s * 2.0, y: 1.75, parent: br }); }
       P.addBox(bx, 0.4, 30, 4.4, 0.8, 10.4, { cam: false });
       for (const s of [-1, 1]) P.addBox(bx + s * 2.0, 1.4, 30, 0.3, 1.2, 10.4, { cam: false, walk: false });
-      if (bx === BRIDGES[0]) mainBridge = br;
+      if (bx === BRIDGES[0]) mainBridge = br; else if (bx === BRIDGES[1]) westBridge = br; else eastBridge = br;
     }
     // Candy Land's three wafer bridges over the chocolate river each got a "look over the railing" toast
     // rounds ago; Victorian's own three stone bridges over the canal, crossed just as often on the way
@@ -6477,10 +6477,23 @@ function buildVictorian(game, entry) {
     // interactable (a "Say hello" greet circle, radius 2.1) 11.43 m off centre-to-centre; the milling
     // top-hats and bonnets who stroll this stretch of grass (home spots at (-1, 22) and (30, 22), leash
     // 12 m, no greet prompt of their own) came as close as 6.26 m over that run, but since they carry no
-    // interactable they can never steal this prompt, only ever stand near it. The other two stone
-    // bridges (-96 and 104) stay untouched and could get the same treatment in a later round.
+    // interactable they can never steal this prompt, only ever stand near it.
     { const bridgeLines = ['🌉 "Stone and fog, same as the rest of the town — just damp underfoot too."', '🚣 "Boats pass under here all day. Not one of them ever stops to say why."', '🌊 "Canal water, same colour as the fog above it. Nobody\'s ever seen the bottom."'];
       game.addInteractable({ obj: mainBridge, radius: 6.6, label: () => 'Look over the railing', onUse: () => { SFX.click(); game.toast(rnd.pick(bridgeLines), 3000); } }); }
+    // the other two stone bridges, kept as `westBridge` (-96, 30) and `eastBridge` (104, 30) the same
+    // way `mainBridge` was kept last round — same loop, same deck/parapet geometry, same box sizes, so
+    // the same 6.6 m radius clears the same 5.65 m corner diagonal by the same margin. Neither bridge
+    // has anything hand-placed nearby: the nearest lamps sit at x in [-52,-24,8,24,48] (z=25.3, all
+    // clustered around the main bridge), the duck pair only ranges x=46-64, the mudlark works (-10,
+    // 37.3), and the boats at x=-140/-70/70/150 are pure visuals with no physics box of their own
+    // (`makeBoat`'s only motion is its own `userData.update` bob). The canal's outer-country fill is
+    // walled off by the `zones.addSpan` above (z 24-36 the whole width), so nothing from `victorianRegion`
+    // can land here either. Two more "look over the railing" toasts, one per bridge, finish the set —
+    // all three Victorian crossings now answer the same way Candy Land's three wafer bridges already do.
+    { const westLines = ['🌉 "Furthest crossing from the square. Fewest footsteps, same fog."', '🚣 "No boat has ever stopped under this one either. Must be a canal thing."', '🌫️ "Quietest stretch of water in the whole town — even the gulls give it a miss."'];
+      game.addInteractable({ obj: westBridge, radius: 6.6, label: () => 'Look over the railing', onUse: () => { SFX.click(); game.toast(rnd.pick(westLines), 3000); } }); }
+    { const eastLines = ['🌉 "Same stone, same fog, same drop to the water as every other bridge in town."', '🚣 "The boats drift past here too, and still never say why."', '🌁 "Furthest bridge from the time door. A long walk home from here, fog or no fog."'];
+      game.addInteractable({ obj: eastBridge, radius: 6.6, label: () => 'Look over the railing', onUse: () => { SFX.click(); game.toast(rnd.pick(eastLines), 3000); } }); }
     for (const x of [-40, 20, 40, -140, 150, 70, -70]) { const b = makeBoat(r.pick([0x3f6fd6, 0x7a1f1f])); b.userData.y0 = -0.3; b.scale.setScalar(1.2); place(game, U, b, x, 30, r() * TAU, -0.3); }
     // the canal had boats and two bank workers (the angler, the mudlark) but, like the Neighborhood's
     // park pond before round 199, nothing ever actually lived on the water itself. A duck pair now
