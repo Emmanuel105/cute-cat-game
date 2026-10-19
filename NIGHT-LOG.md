@@ -16211,3 +16211,29 @@ Candy Land's three wafer bridges already do.
 time, boxes steady at 328 (no new physics boxes were added, same as last round's reasoning). No visual
 check was possible in this environment (no browser, no Playwright) — only the stub-three test suite
 above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 595 — a look up at Robot City's own CHARGE sign
+
+Round 514 wired up ROBOT WORKS, SECTOR 7 and CAT?, then SECTOR 8 followed later, leaving CHARGE as the
+city's one neon sign still mute — flagged back then as needing "its own careful check against the
+statue's interactable first", since it hangs at (-44, 22), the exact same ground spot as the giant
+robot statue's own "Admire the statue" circle. **It finally answers too**: *"CHARGE. Mostly for the
+statue cleaner's own trolley, these days."* *"Still humming, same green glow it's always had."* *"The
+pylon out back is the only thing that ever answers it."*
+
+The sign's own mesh sits directly above the statue, so there is no separate wall to walk up to — any
+interactable there would just restate "Admire the statue". Instead the toast is anchored to a bare
+`group()` (no mesh, no physics box) at (-40, 18), the one patch of open floor left with room of its
+own: the statue's existing box sits north-west of it, the skyscraper at (-34, 26) sits north-east, and
+the statue's own 3.6 m circle covers most of the ground in between. A headless probe (`game.start('new')`,
+`game.travel(2, 'from-prev')`, 3000 simulated frames sampling every NPC's own position every frame)
+found (-40, 18) clear by 2.83 m of the nearest physics box (the statue's own), 5.66 m from the statue's
+own "Admire the statue" interactable (past the 1.5 m radius chosen here, so the two circles never
+touch — 1.5 + 3.6 = 5.1, under that 5.66 m gap), and 6.71 m from the nearest wandering soul (the
+charging robot on its own leash).
+
+`node test/run.mjs` ran clean three times in a row — exit 0, all 274 checks `ok`, 0 console warnings
+every time, box count unchanged (328 — the toast adds no physics box of its own, same trick every other
+neon sign's toast already used). No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

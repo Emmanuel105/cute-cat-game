@@ -12149,6 +12149,15 @@ function buildRobotCity(game, entry) {
   { const statue = makeRobot(); statue.group.scale.setScalar(3.2); statue.group.position.set(-44, 1.0, 22); statue.group.rotation.y = PI / 2; W.add(statue.group); mesh(G.cyl(3.2, 3.6, 1.0, 20), mat(0x3a4048, { metalness: 0.7, roughness: 0.5 }), { x: -44, y: 0.5, z: 22, parent: W }); P.addBox(-44, 3, 22, 4, 7, 4); let st = 0; U.push((dt) => { st += dt; statue.animate(0, false, dt, st); }); flatPlane(game, 22, 22, mat(0x2a2f38, { roughness: 0.6, metalness: 0.3 }), -44, 22, 0, 0.015);
     const statueLines = ['🤖 "Thirty-two tonnes of chrome, and it still can\'t wave back."', '🤖 "The eyes used to light up. Nobody remembers why they stopped."', '🤖 "Tallest robot in the city, and the only one that never clocks in."'];
     game.addInteractable({ obj: statue.group, radius: 3.6, label: () => 'Admire the statue', onUse: () => { SFX.beep(); game.fx.emit(-44, 3.4, 22, { count: 14, colors: [0xcfe6ff, 0xffffff, 0x4ade80], speed: 1.1, up: 1.6, life: 0.9, gravity: 2 }); game.toast(rnd.pick(statueLines), 3000); } }); }
+  // ROBOT WORKS, SECTOR 7, SECTOR 8 and CAT? all got their own "look" toast rounds ago, and CHARGE got
+  // an actual customer at its pylon — but the sign itself, hung right over the statue's own plaza, was
+  // still mute, the one corner of the factory floor too tight for its own prompt until now: the statue's
+  // box sits to the north-west, the skyscraper at (-34, 26) to the north-east, and the statue's own
+  // "Admire the statue" circle (radius 3.6) covers most of the open ground east of it. A bare anchor
+  // (`group()`, no mesh) south of both, at (-40, 18), is the one spot left with room of its own.
+  { const signAnchor = group(-40, 6, 18, W);
+    const signLines = ['🟢 "CHARGE. Mostly for the statue cleaner\'s own trolley, these days."', '🟢 "Still humming, same green glow it\'s always had."', '🟢 "The pylon out back is the only thing that ever answers it."'];
+    game.addInteractable({ obj: signAnchor, radius: 1.5, label: () => 'Look up at the sign', onUse: () => { SFX.click(); game.toast(rnd.pick(signLines), 3000); } }); }
   for (const [x, z] of [[-44, 10], [-56, 22], [-32, 34], [44, 26], [56, 8]]) { mesh(G.cyl(0.1, 0.14, 6, 8), mat(0x5a6470, { metalness: 0.8, roughness: 0.35 }), { x, y: 3, z, parent: W }); mesh(G.box(0.6, 0.3, 0.4), glowMat(0xe8f4ff, 2), { x, y: 6, z, shadow: 'none', parent: W }); pointLight(0xcfe6ff, 60, 22, x, 5.6, z, W); P.addBox(x, 3, z, 0.3, 6, 0.3, { cam: false }); }
   for (const [x, z] of [[-24, 40], [30, 44], [-52, -10], [58, -18]]) { const rig = makeRobot(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x, z, speed: r.range(0.5, 0.8), leash: 12, r: 0.42, height: 1.9, idle: [1.5, 4] })); }
   for (const [x, z] of [[-46, 34], [40, 36], [54, -30], [-40, -40]]) { mesh(G.cyl(0.5, 0.5, 1.2, 14), mat(0x2f6f9f, { metalness: 0.6, roughness: 0.4 }), { x, y: 0.6, z, parent: W }); P.addBox(x, 0.6, z, 1, 1.2, 1, { cam: false }); }
