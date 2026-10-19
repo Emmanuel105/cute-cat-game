@@ -806,6 +806,29 @@ function makeCrow(o = {}) {
   return rig;
 }
 
+// ---------------------------------------------------------------- bat (small dark flier, wide membrane wings instead of the crow's feathered ones, no beak — a pair of ear cones and a fast, floppy flap)
+function makeBat(o = {}) {
+  const g = new THREE.Group(), rig = { group: g, wings: [] };
+  const fur = mat(o.color ?? 0x201c1a, { roughness: 0.75 }), mem = mat(0x2a2320, { roughness: 0.55 });
+  const body = group(0, 0, 0, g); rig.body = body;
+  mesh(G.bodySphere(12, 9), fur, { sx: 0.065, sy: 0.07, sz: 0.1, parent: body });
+  mesh(G.sphere(0.045, 10, 8), fur, { y: 0.03, z: 0.09, parent: body });
+  for (const side of [1, -1]) mesh(G.cone(0.018, 0.05, 6), fur, { x: side * 0.022, y: 0.065, z: 0.08, rx: -0.35, shadow: 'none', parent: body });   // ears
+  for (const side of [1, -1]) {
+    const w = group(side * 0.04, 0.01, 0, body);
+    mesh(G.box(0.32, 0.012, 0.16), mem, { x: side * 0.16, parent: w });
+    const tipW = group(side * 0.32, 0, 0.02, w); mesh(G.box(0.22, 0.01, 0.12), mem, { x: side * 0.11, parent: tipW });
+    rig.wings.push({ w, tipW, side });
+  }
+  rig.animate = (ph, moving, dt, t = 0) => {
+    const flap = sin(t * 9.5 + (o.phase ?? 0));
+    for (const W of rig.wings) { const a = 0.55 + flap * 0.8; W.w.rotation.z = W.side * -a; W.tipW.rotation.z = W.side * -max(0, flap) * 0.6; }
+    body.rotation.z = sin(t * 1.4 + (o.phase ?? 0)) * 0.1;
+  };
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- Flyer controller: loops around a centre in the air
 class Flyer {
   /** o: {cx, cz, r, h, speed, bob, wobble, phase, cw} */

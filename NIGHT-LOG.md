@@ -15772,3 +15772,35 @@ flagged as occasionally fragile, and a clean baseline run of the unmodified code
 tries. Ran the suite eight more times after settling on the `rnd()`-free version: all eight came back
 exit 0, every check `ok`, 0 console warnings. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 581 — bats over the Neighborhood at night
+
+The Neighborhood is the one world with a real day/night cycle (`makeDayNight`), but nothing in it had
+ever actually reacted to night falling beyond the lamps, porches and windows switching on — the sky
+itself stayed just as empty after dark as before it. **Four small bats now flit over the park once
+dusk properly falls**, invisible by day and faded in only past the same `night` fraction
+(`makeDayNight`'s own 0..1 value, derived from `game.dayPhase`) that the streetlamps already use, so
+they stay hidden if the HUD's time toggle is forced to "day" or "dusk" too.
+
+New rig, `makeBat()` in `56-npcs-wild.js` right after `makeCrow`: a small dark body, two ear cones, and
+wide membrane-plane wings instead of feathers, flapping fast and floppy rather than the crow's measured
+beat. No `Flyer` controller, though, and no draw from either the shared `rnd()` or this world's own
+local `r` — round 578's own postmortem (the marching sparrows, two rounds back) already found that any
+extra draw made while building *this particular world*, the first one the test ever constructs, shifts
+every later timing-sensitive roll for the rest of the run, because the whole street finishes building —
+and so spends its extra draws — before the test's first simulated frame runs. `Flyer`'s own constructor
+draws twice from the shared `rnd()` regardless of what's passed in, so it was never going to be safe
+here. Each bat's flight path is instead a closed-form Lissajous curve keyed only off its own index and
+the world clock `t` — the same reasoning the mole (577) and this world's own marching sparrows (578)
+already lean on, so there is nothing for any later check to notice shifting. Flies well above every
+rooftop (houses top out around y=8.5 at their chimney pots, the same ceiling the street's own crows
+already respect) over the open park the crows already share — no physics box or circle, so, like the
+crows, it needed no headless clearance probe.
+
+Ran the full suite 20-odd times across this session to separate signal from the test's own pre-existing
+flakiness (flagged honestly in rounds 577–579): the Victorian horse-and-carriage gait check failed about
+1 run in 10 both *with* and *without* this change (real-wall-clock timing, `THREE.Clock` between actual
+frames), so that flake is pre-existing and unrelated — every run that didn't hit it came back exit 0,
+every check `ok`, 0 console warnings. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.

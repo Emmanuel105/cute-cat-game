@@ -2389,6 +2389,47 @@ function buildNeighborhood(game, entry) {
       }
     }); }
 
+  // the Neighborhood is the one world with a real day/night cycle (`makeDayNight` below), but nothing
+  // in it ever actually reacted to night falling beyond the lamps, porches and windows lighting up —
+  // the sky itself stayed just as empty after dark as before it. Four small bats now flit over the
+  // park after dusk, invisible by day and faded in only once `night` (the same 0..1 fraction
+  // `makeDayNight` derives from `game.dayPhase` below) clears a threshold, so they never show up while
+  // the cycle is forced to "day" or "dusk" from the HUD toggle either.
+  //
+  // No `Flyer` here, and no draw from either `rnd()` or this world's own local `r` — round 578's own
+  // postmortem (the marching sparrows above) already found that *any* extra draw made while building
+  // this particular world, the first one the test ever constructs, shifts every later timing-sensitive
+  // roll for the rest of the run, because the whole street finishes building — and so spends its extra
+  // draws — before the test's first simulated frame. `Flyer`'s own constructor draws twice from the
+  // shared `rnd()` sequence regardless of what's passed in, so it was never an option here. Instead
+  // each bat's flight path is a closed-form Lissajous curve keyed only off its own index `i` and the
+  // world clock `t`, the same reasoning the mole (577) and this world's own marching sparrows already
+  // lean on — nothing for a later check to ever notice shifting.
+  //
+  // Flies well above every rooftop (houses top out around y=8.5 at their chimney pots, same ceiling the
+  // street's own crows already respect) over the open park north of the signpost, the same airspace the
+  // crows already share — nothing here carries a physics box or circle, so, like the crows, it needed no
+  // headless clearance probe.
+  { const cx = 0, cz = 20, baseH = 12.5;
+    const bats = [0, 1, 2, 3].map((i) => { const rig = makeBat({ phase: i * 1.7 }); W.add(rig.group); rig.group.visible = false; return rig; });
+    const batAt = (i, t) => {
+      const fx = 0.5 + i * 0.09, fz = 0.63 + i * 0.11, px = i * 1.3, pz = i * 2.1, rr = 8 + i * 1.6;
+      const x = cx + cos(t * fx + px) * rr, z = cz + sin(t * fz + pz) * rr * 0.8;
+      const y = baseH + sin(t * (1.1 + i * 0.15) + i) * 1.8;
+      return { x, y, z };
+    };
+    U.push((dt, t) => {
+      const sa = (game.dayPhase ?? 0) * TAU - PI / 2, night = smoothstep(0.05, -0.2, sin(sa));
+      const visible = night > 0.2;
+      bats.forEach((rig, i) => {
+        rig.group.visible = visible; if (!visible) return;
+        const p = batAt(i, t), p2 = batAt(i, t + 0.08);
+        rig.group.position.set(p.x, p.y, p.z);
+        const dx = p2.x - p.x, dz = p2.z - p.z; if (dx * dx + dz * dz > 1e-6) rig.group.rotation.y = atan2(dx, dz);
+        rig.animate(0, true, dt, t);
+      });
+    }); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
