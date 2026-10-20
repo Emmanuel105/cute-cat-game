@@ -16752,3 +16752,29 @@ already flagged on its first run, then came back clean four times in a row immed
 checks `ok`, 0 console warnings, box count unchanged at 328. No visual check was possible in this
 environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 614 — a chimney sweep's brush pays off its own joke two doors down
+
+Round 365's own mudlark called the chimney sweep "as Victorian as" it gets, and round 374 gave the
+town one, standing in his yard at x=-18 with rod and sack, insisting "every flue's mine sooner or
+later." Every chimney on the terrace has had smoke rising from it since round 1, though — meaning
+every one of those fires was already lit, which means somebody already got up there first. **The house
+two doors along (x=-8, north row) now has the payoff**: a soot-blackened brush already wedged in its
+near chimney pot, handle up, bristle down the flue. *"Someone's already been up this one. Lucky devil
+beat him to it."* *"Puss, that is a sweep's brush, not a scratching post — and it's three storeys up."*
+*"Paid and gone before the sweep two doors down even knocked."*
+
+Added as a child of that house's own group, the same trick the Neighborhood's roof trio (TV aerial,
+satellite dish, solar panel, rounds 611-613) already uses: local coordinates straight off the chimney
+stack `makeVicHouse()` itself already builds (`-w*0.3, h+3.3, -d*0.15` — `h+2.4` is the stack's own
+centre, `+0.9` its own half-height), so no world-space maths and no physics box of its own. A headless
+probe (`game.travel(3, 'from-prev')`, 30 real-timer frames to clear the transition, then a grid sweep
+of every open ground cell within 12 m against all 328 of the town's physics boxes) found the nearest
+walkable point — the alley between this house and its neighbour — only 2.0 m from the brush's own
+world position, so the interactable's radius is set to 4, comfortably reachable without reaching
+through either wall.
+
+`node test/run.mjs` ran clean three times in a row: all checks `ok`, 0 console warnings, box count
+unchanged at 328 (no new collider, same reasoning the roof trio leaned on). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -13893,6 +13893,27 @@ function buildVictorian(game, entry) {
       house.add(napCat.group);
       let napT = 7; U.push((dt) => { napT += dt; napCat.animate(0, false, dt, napT); });
     }
+    if (side === -1 && x === -8) {
+      // the chimney sweep two doors down (x=-18) swears "every flue's mine sooner or later" — but
+      // every chimney on this terrace has had smoke rising from it since round 1, which means someone
+      // already lit every one of those fires. This house's own near chimney pot pays off that line: a
+      // soot-blackened brush is already wedged in it, handle sticking straight up out of the pot,
+      // bristle end down the flue — whoever swept this one got there, got paid and left before the
+      // sweep further along even knocked. *"Someone's already been up this one. Lucky devil beat him
+      // to it."* *"Puss, that is a sweep's brush, not a scratching post — and it's three storeys up."*
+      // Added as a child of this house's own group (`house`), the same trick the TV aerial, satellite
+      // dish and solar panel on the Neighborhood's own roofs already use: local coordinates straight
+      // off the stack `makeVicHouse()` itself already builds (`cx = -w*0.3`, `z = -d*0.15`, top of the
+      // 1.8 m stack centred at `h+2.4`, so `h+3.3`), no world-space maths and no physics box of its
+      // own — nothing on the ground can jump anywhere near three storeys up.
+      const standM = mat(0x3a2a1a, { roughness: 0.85 }), bristleM = mat(0x161414, { roughness: 0.95 });
+      const brush = group(-w * 0.3, h + 3.3, -d * 0.15, house);
+      brush.rotation.z = 0.12;
+      noInk(mesh(G.cyl(0.02, 0.025, 0.7, 6), standM, { y: 0.35, parent: brush }));
+      mesh(G.cone(0.1, 0.26, 8), bristleM, { y: 0.83, parent: brush });
+      const brushLines = ['🧹 "Someone\'s already been up this one. Lucky devil beat him to it."', '😼 "Puss, that is a sweep\'s brush, not a scratching post — and it\'s three storeys up."', '🔥 "Paid and gone before the sweep two doors down even knocked."'];
+      game.addInteractable({ obj: brush, radius: 4, label: () => 'Look up at the chimney brush', onUse: () => { SFX.click(); game.toast(rnd.pick(brushLines), 3000); } });
+    }
   }
   // the Neighborhood, Candy Land, Sunny Shore, Robot City, Frosty Peak and Whisper Woods all have a
   // toy pinwheel spinning on the world clock by now — Victorian was the last of the seven left
