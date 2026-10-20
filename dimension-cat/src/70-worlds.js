@@ -842,6 +842,32 @@ function buildNeighborhood(game, entry) {
       const aerialLines = ['🐦 "Chirp. (Translation: best view on the block.)"', '📺 "Nobody\'s watched anything through that aerial in years — the whole street\'s on satellite now."', '😼 "Puss, that\'s several metres up. Even you\'re not trying that."'];
       game.addInteractable({ obj: aerial, radius: 2.6, label: () => 'Look up at the TV aerial', onUse: () => { SFX.click(); game.toast(rnd.pick(aerialLines), 3000); } });
     }
+    // the TV aerial above pays off its own joke two lots over: house 8's own ridge — the lot with the
+    // sprinkler, further up this same loop — now carries the satellite dish the aerial's own toast
+    // already grumbles about ("the whole street's on satellite now"). A short pole, a shallow bowl
+    // bolted on at a fixed tilt, and a stub arm reaching back over the rim — nothing on this street
+    // has a motor to sweep it, so it just faces one patch of sky forever. *"Whoever climbed up here to
+    // bolt that down earns a medal."* *"Faces the same patch of sky, rain or shine. Nobody's ever
+    // adjusted it once."* *"Puss, that bowl is not a water dish. Different kind of dish."*
+    // Same trick the aerial uses one lot over: parented to this house's own group (`h`) at local
+    // (0, h.userData.h, 0), the ridge-apex point `makeHouse()` itself already computes for every house
+    // on the street — no world-space maths of its own, and no physics box, the same few-metres-up
+    // reasoning the aerial, the chimney smoke and the cat's own roof weathervane all already lean on.
+    // The bowl is `G.dome()`, the exact hemisphere the gnome's cap, the bootblack's tin lid and the
+    // igloos already use, just flipped (`rz: PI`) so its concave face points up into the tilt instead
+    // of down over a head.
+    if (i === 8) {
+      const poleH = 0.3;
+      const poleM = mat(0x3a3a3a, { metalness: 0.4, roughness: 0.55 }), dishM = mat(0xd8dadd, { metalness: 0.4, roughness: 0.4 }), armM = mat(0x2a2a2a, { metalness: 0.5, roughness: 0.5 });
+      const sat = group(0, h.userData.h, 0, h);
+      noInk(mesh(G.cyl(0.015, 0.02, poleH, 6), poleM, { y: poleH / 2, shadow: 'none', parent: sat }));
+      const dish = group(0, poleH, 0, sat); dish.rotation.set(-0.9, 0.5, 0);
+      mesh(G.dome(0.22, 14, 10), dishM, { rz: PI, shadow: 'both', parent: dish });
+      noInk(mesh(G.cyl(0.01, 0.01, 0.2, 5), armM, { z: 0.1, rx: -0.5, shadow: 'none', parent: dish }));
+      mesh(G.cyl(0.02, 0.018, 0.05, 8), armM, { z: 0.2, y: -0.09, rx: -0.5, shadow: 'none', parent: dish });
+      const satLines = ['📡 "Whoever climbed up here to bolt that down earns a medal."', '📡 "Faces the same patch of sky, rain or shine. Nobody\'s ever adjusted it once."', '😼 "Puss, that bowl is not a water dish. Different kind of dish."'];
+      game.addInteractable({ obj: sat, radius: 2.6, label: () => 'Look up at the satellite dish', onUse: () => { SFX.click(); game.toast(rnd.pick(satLines), 3000); } });
+    }
   });
   // the pinwheel, sprinkler and kennel above gave three of the street's sixteen yards their own
   // feature; lot 14's own corner now gets a fourth — a stone birdbath, a shallow bowl on a short

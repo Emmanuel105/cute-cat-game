@@ -16705,3 +16705,28 @@ same class of flake round 610 already flagged this suite as having): all checks 
 box count unchanged at 328. No visual check was possible in this environment (no browser, no Playwright)
 — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 612 — a satellite dish pays off the TV aerial's own joke
+
+Round 611's TV aerial on house 1's roof grumbled, in one of its own toast lines, that "the whole
+street's on satellite now" — but nothing on the street actually had one. **House 8's own ridge (the
+lot with the sprinkler) now carries that satellite dish**: a short pole, a shallow bowl bolted on at a
+fixed tilt, and a stub arm reaching back over the rim. Nothing on this street has a motor to sweep it,
+so it just faces one patch of sky forever. *"Whoever climbed up here to bolt that down earns a
+medal."* *"Faces the same patch of sky, rain or shine. Nobody's ever adjusted it once."* *"Puss, that
+bowl is not a water dish. Different kind of dish."*
+
+Same trick the aerial uses one lot over: parented to house 8's own group at local `(0, h.userData.h,
+0)`, the ridge-apex point `makeHouse()` already computes for every house on the street, so it needs no
+world-space maths and no physics box of its own — the same few-metres-up reasoning the aerial, the
+chimney smoke and the cat's own roof weathervane all already lean on. The bowl is `G.dome()`, the exact
+hemisphere the gnome's cap, the bootblack's tin lid and the igloos already use, just flipped (`rz: PI`)
+so its concave face points up into the tilt instead of down over a head. No new physics box, no new
+`rnd()` draw — every dimension below is a fixed literal, the same caution every other fixture on this
+street already takes, since the Neighborhood is the one world every test travel starts from.
+
+`node test/run.mjs` ran clean nine times in a row (one single unrelated flake, same Victorian
+horse-and-carriage timing check rounds 610 and 611 already flagged, reproduced neither before nor after
+against identical code): all checks `ok`, 0 console warnings, box count unchanged at 328. No visual
+check was possible in this environment (no browser, no Playwright) — only the stub-three test suite
+above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
