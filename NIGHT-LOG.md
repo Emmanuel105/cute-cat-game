@@ -16730,3 +16730,25 @@ horse-and-carriage timing check rounds 610 and 611 already flagged, reproduced n
 against identical code): all checks `ok`, 0 console warnings, box count unchanged at 328. No visual
 check was possible in this environment (no browser, no Playwright) — only the stub-three test suite
 above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 613 — a solar panel finishes the street's rooftop joke in three
+
+The TV aerial (round 611) and the satellite dish (round 612) gave two of the Neighborhood's sixteen
+roofs a fixture of their own, both about catching a signal from somewhere else. **House 12's own
+ridge (the lot with the seed feeder) now carries a tilted solar panel** on a short stand, dark blue
+with three thin cell-line strips across its face, facing south — the one roof fixture on this street
+that's actually making something rather than receiving it. *"Faces the sun, not a screen. Different
+roof, different argument."* *"Try telling the aerial two lots over that it's old news. It won't hear
+it over the static."* *"Puss, that is not a sun-lounger. Find your own spot to nap in."*
+
+Same trick the aerial and the dish both already use: parented to house 12's own group at local
+`(0, h.userData.h, 0)`, the ridge-apex point `makeHouse()` already computes for every house on the
+street, so no world-space math and no physics box — nothing on the ground can jump anywhere near
+roof height. No draw from this world's own seeded `r` or the shared `rnd()` sequence at build time;
+every dimension is a fixed literal, same caution the other two roof fixtures already take.
+
+`node test/run.mjs` hit the same pre-existing Victorian horse-and-carriage timing flake rounds 610-612
+already flagged on its first run, then came back clean four times in a row immediately after: all
+checks `ok`, 0 console warnings, box count unchanged at 328. No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

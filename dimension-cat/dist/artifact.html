@@ -8494,6 +8494,33 @@ function buildNeighborhood(game, entry) {
       const satLines = ['📡 "Whoever climbed up here to bolt that down earns a medal."', '📡 "Faces the same patch of sky, rain or shine. Nobody\'s ever adjusted it once."', '😼 "Puss, that bowl is not a water dish. Different kind of dish."'];
       game.addInteractable({ obj: sat, radius: 2.6, label: () => 'Look up at the satellite dish', onUse: () => { SFX.click(); game.toast(rnd.pick(satLines), 3000); } });
     }
+    // the TV aerial and the satellite dish gave two of the street's sixteen ridges a fixture of their
+    // own, both of them about catching a signal from somewhere else — nothing up there has ever once
+    // been about making anything itself. House 12's own ridge (the lot with the seed feeder down in
+    // the yard) now carries a tilted solar panel on a short stand, dark blue with a faint grid of cell
+    // lines across its face, facing south. *"Faces the sun, not a screen. Different roof, different
+    // argument."* *"Try telling the aerial two lots over that it's old news. It won't hear it over the
+    // static."* *"Puss, that is not a sun-lounger. Find your own spot to nap in."*
+    // Same trick the aerial and the dish both already use: parented to this house's own group (`h`) at
+    // local (0, h.userData.h, 0), the ridge-apex point `makeHouse()` itself already computes for every
+    // house on the street, so it costs no world-space maths and no physics box — the same few-metres-up
+    // reasoning the aerial and the dish both already lean on. The grid lines are three thin strips laid
+    // across the panel's own face, `noInk()`-wrapped the same way the aerial's own mast and the dish's
+    // own mounting arm already are, since nothing that slender should pick up the outline shader's ink.
+    // No draw from either this world's own seeded `r` or the shared `rnd()` sequence at build time —
+    // every dimension and the tilt below are fixed literals, the same caution the aerial and the dish
+    // both already took, since the Neighborhood is the one world every test travel starts from.
+    if (i === 12) {
+      const standM = mat(0x3a3a3a, { metalness: 0.4, roughness: 0.55 }), panelM = mat(0x1a2f4a, { metalness: 0.5, roughness: 0.3 }), lineM = mat(0x3a5a7a, { metalness: 0.4, roughness: 0.35 });
+      const standH = 0.2, panelW = 0.5, panelD = 0.32;
+      const solar = group(0, h.userData.h, 0, h);
+      noInk(mesh(G.cyl(0.018, 0.022, standH, 6), standM, { y: standH / 2, shadow: 'none', parent: solar }));
+      const panel = group(0, standH, 0, solar); panel.rotation.x = -0.4;
+      mesh(G.box(panelW, 0.02, panelD), panelM, { shadow: 'both', parent: panel });
+      for (let k = -1; k <= 1; k++) noInk(mesh(G.box(panelW * 0.94, 0.006, 0.01), lineM, { y: 0.012, z: k * panelD * 0.28, shadow: 'none', parent: panel }));
+      const solarLines = ['☀️ "Faces the sun, not a screen. Different roof, different argument."', '📺 "Try telling the aerial two lots over that it\'s old news. It won\'t hear it over the static."', '😼 "Puss, that is not a sun-lounger. Find your own spot to nap in."'];
+      game.addInteractable({ obj: solar, radius: 2.6, label: () => 'Look up at the solar panel', onUse: () => { SFX.click(); game.toast(rnd.pick(solarLines), 3000); } });
+    }
   });
   // the pinwheel, sprinkler and kennel above gave three of the street's sixteen yards their own
   // feature; lot 14's own corner now gets a fourth — a stone birdbath, a shallow bowl on a short
