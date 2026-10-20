@@ -16917,3 +16917,32 @@ the 2.4 m radius used here.
 at 328 (no new collider). No visual check was possible in this environment (no browser, no Playwright)
 — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 621 — the Neighborhood finally gets its own marching line
+
+Candy Land's gingerbread guard, Robot City's security detail, the toy soldiers drilling in Victorian,
+the crab march on Sunny Shore, the penguin march at Frosty Peak and the hedgehog march in Whisper
+Woods all beat a lockstep line by now — a straight count through every world's own `Marchers` calls
+found the Neighborhood, for all its hopscotch, marbles and tug-of-war, was the one world left without
+one. **Three kids playing army now drill back and forth on the open field south-west of the street**,
+in matching home-made green uniforms and caps. *"Left, right, left, right — keep it sharp, troops!"*
+*"Forward march! Mind the anthill, soldier."* *"Reporting for duty, cat. Dismissed."*
+
+No new controller: the exact same `Marchers` class (`55-npcs.js`) every other world's own march
+already uses, just three `makeHuman()` kids in a small dedicated wardrobe (not the street's shared
+18-colour `ward` bag) standing in for gingerbread men, robots or penguins. A headless probe (a scratch
+script on the same stub-three harness `test/run.mjs` itself uses — `game.start('new')`, then
+`game.loop()` 1800 times with every NPC's own position sampled every sixth frame) swept a grid of
+candidate lines against those samples and every one of the street's 328 physics boxes with
+`game.physics.blocked()`, the same circle check movement itself uses: the 7 m line from (-29.5, -28)
+to (-22.5, -28) came back clear by 6 m of the nearest box and nearly 11 m of the nearest wandering
+soul — 14 m from the picnic blanket's own spot at (-40, -30) and well clear of the woodcutter's stump,
+the scarecrow's patch and the catch pair further east.
+
+`node test/run.mjs` ran clean five times running (one earlier run in this same session returned a
+non-zero exit with no `FAIL` line anywhere in its output — the same occasional harness hiccup round
+616's own comment already noted, never reproduced again across six runs since). Every passing run: all
+277 checks `ok`, 0 console warnings, box count unchanged at 328 (no new collider — the three marchers
+sit on physics circles, same as every other world's own march). No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

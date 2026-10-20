@@ -2673,6 +2673,28 @@ function buildNeighborhood(game, entry) {
     game.npcs.push(new Kneeler(game, finder, { x: kx, z: kz, ry, cryIcon: '💰',
       cries: ['I was only digging for worms.', "Careful, puss — don't you dare knock a single coin back in the dirt.", "Don't tell the detectorist two gardens over. He'll never forgive himself."] })); }
 
+  // the Candy Queen's gingerbread guard, Robot City's security detail, the toy soldiers drilling in
+  // Victorian, the crab march on Sunny Shore, the penguin march at Frosty Peak and the hedgehog march
+  // in Whisper Woods all beat a lockstep line by now — the Neighborhood, for all its hopscotch, marbles
+  // and tug-of-war, never had a `Marchers` group of its own. Three kids playing army now drill back and
+  // forth on the open field south-west of the street, in matching home-made uniforms, same lockstep-
+  // and-follow `Marchers` class (55-npcs.js) every other world's own march already uses — no new
+  // controller, no new prop.
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real
+  // Neighborhood, ran `game.start('new')` so every stroller, the postie and the cyclist actually
+  // moved, sampled every NPC's own position every sixth frame over 1800 simulated frames, then swept a
+  // grid of candidate lines against both those samples and every one of the street's 328 physics boxes
+  // with `game.physics.blocked()`, the same circle check movement itself uses: the 7 m line from
+  // (-29.5, -28) to (-22.5, -28) came back clear by 6 m of the nearest box and nearly 11 m of the
+  // nearest wandering soul — 14 m from the picnic blanket's own spot at (-40, -30) and well clear of
+  // the woodcutter's stump, the scarecrow's patch and the catch pair further east.
+  { const troopWard = makeWardrobe(r, { shirts: [0x5a6a3a], pants: [0x3a3a2a], shoes: [0x3a2a1e] });
+    const troop = [0, 1, 2].map(() => { const rig = makeHuman({ ...randomPerson(r, { child: true, female: r.chance(0.5), wardrobe: troopWard }),
+      hat: 'cap', hatColor: 0x3a4a2a, jacket: null, scarf: null, bag: null, backpack: null, glasses: false });
+      W.add(rig.group); return rig; });
+    game.npcs.push(new Marchers(game, troop, { points: [[-29.5, -28], [-22.5, -28]], speed: 1.0, pause: [1, 2], r: 0.32, gap: 1.1,
+      cries: ['Left, right, left, right — keep it sharp, troops!', 'Forward march! Mind the anthill, soldier.', 'Reporting for duty, cat. Dismissed.'], cryIcon: '🪖' })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
