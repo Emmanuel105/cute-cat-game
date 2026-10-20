@@ -16639,3 +16639,33 @@ time, box count unchanged (328 — the toast adds no physics box of its own; ren
 run regardless of this change, confirmed against the unmodified build too). No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 610 — the squirrel finally answers back when you meow at it
+
+Every squirrel in every world has sat there since round 1 getting petted, chattering up a tree,
+drifting back down — and ignoring the one sound the cat can actually make at it. **Meow (M) near a
+grounded squirrel now gets a chitter back**: a quick `SFX.chitter()` and the same little happy bob
+`pet()` already gives it, just without the hearts, the score, or the scamper up the nearest tree —
+petting is still the only way to actually make friends with it. A climbing or perched squirrel is left
+alone; only one on the ground, within the same 4 m it already turns to face the cat at, answers.
+
+New `Squirrel.chirp()` in `55-npcs.js` (one line, reusing the existing `petT`-driven bob) and three new
+lines in `Game.meow()` (`80-game.js`) that check every world's `game.squirrels` (never more than one)
+against the cat's position with the shared `dist2()` helper. No new mesh, no new physics box, no `rnd()`
+draw of its own.
+
+The tricky part wasn't the feature — it was testing it. `meow()` has always reset the cat's blink timer
+(`this.cat.blinkT = this.cat.nextBlink`), which was never exercised by the test suite before tonight,
+because nothing had ever pressed M. Forcing a blink early means the cat's own blink-reschedule code
+(`this.nextBlink = rnd.range(2.2, 6) * (rnd.chance(0.2) ? 0.15 : 1)`, in `50-cat.js`) fires sooner than
+it otherwise would, and that draws from the single shared `rnd()` every NPC in every world pulls its own
+per-frame timers from. The first attempt pressed M twice in the middle of the Neighborhood's big NPC
+test block and broke two completely unrelated, already-passing checks further down the same block (a
+neighbour conversation's turn-taking, then a cyclist's lap) — not because the squirrel code was wrong,
+but because two extra pulls on that shared sequence, taken early, shifted every timing-sensitive draw
+after them for the rest of the file. Moving the whole meow test to the very end of `test/run.mjs`, after
+every other timing-sensitive check has already run, fixed it outright: `node test/run.mjs` now ran
+clean three times in a row, 293 checks (290 before + the far-away no-op, the up-close chitter, and the
+no-score-no-friend check), 0 console warnings, box count unchanged. No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -305,6 +305,18 @@ door.onUse(); while (game.transitioning) { await sleep(60); frames(4); } frames(
 check(game.worldIndex === 0 && game.state.completed, `time door → neighborhood (score=${game.state.score})`);
 check(saved() && saved().completed === true && saved().form === 'cat' && saved().skin === 'black', 'save records completion, form and skin');
 await sleep(500);
+// meowing near the squirrel gets a chitter back, with no hearts or friend credit and no climbing — tested
+// last of all (meow() reschedules the cat's next blink off the shared rnd(), same as every other per-frame
+// draw, so pressing it any earlier would shift every later timing-sensitive check in this file)
+{ const sq2 = game.squirrels[0], there = pos().clone();
+  pos().set(sq2.x + 50, 0, sq2.z); key('m'); key('m', false);
+  check(sq2.petT === 0, 'meowing far from the squirrel gets no reaction');
+  pos().set(sq2.x + 1, 0, sq2.z);
+  const scoreBefore = game.state.score, friendsBefore = game.state.friends.size;
+  key('m'); key('m', false);
+  check(sq2.petT > 0 && sq2.climbState === 'down', `meow nearby gets a chitter back (petT=${sq2.petT.toFixed(2)}, climb=${sq2.climbState})`);
+  check(game.state.score === scoreBefore && game.state.friends.size === friendsBefore, 'meowing at the squirrel earns no score or friend credit');
+  pos().copy(there); }
 // touch controls: joystick pushed right strafes the cat
 {
   const stick = elements.get('stick'), sfire = (t, ev) => (stick.listeners[t] || []).forEach((fn) => fn(ev));

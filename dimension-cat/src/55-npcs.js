@@ -1982,6 +1982,9 @@ class Squirrel {
     this.petT = 1.6;
     if (this.climbState === 'down') { this.climbState = 'up'; this.perchT = rnd.range(3, 5); this.chatterT = rnd.range(0.5, 1); }   // scampers up the nearest tree to chatter about it
   }
+  // a meow within earshot gets a chitter back — no hearts, no friend credit, no tree-climbing, just the
+  // same little bob `update()` already gives `petT` on the ground, reused here for a free-standing reaction
+  chirp() { SFX.chitter(); this.petT = max(this.petT, 0.5); }
   update(dt) {
     this.t += dt; this.petT = max(0, this.petT - dt);
     const cat = this.game.cat.group.position, d2 = dist2(this.x, this.z, cat.x, cat.z);

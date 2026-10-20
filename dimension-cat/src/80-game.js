@@ -315,7 +315,14 @@ class Game {
     else this.toast('🐱 Home sweet home. Find the door…', 3000);
     this.save();
   }
-  meow() { SFX.meow(); this.cat.blinkT = this.cat.nextBlink; }
+  meow() {
+    SFX.meow(); this.cat.blinkT = this.cat.nextBlink;
+    // every world's squirrel has stood within earshot of a meow since the game began and never once answered one —
+    // one chitters back now if it's close enough on the ground to have noticed (the same 4 m the squirrel already
+    // turns to face the cat at), still perched or climbing squirrels are left alone
+    const c = this.cat.group.position;
+    for (const sq of this.squirrels) { if (sq.climbState === 'down' && dist2(sq.x, sq.z, c.x, c.z) < 16) { sq.chirp(); break; } }
+  }
 
   // ------------------------------------------------------------------ touch controls (joystick + buttons; the canvas itself orbits)
   bindTouch() {

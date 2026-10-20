@@ -3791,6 +3791,9 @@ class Squirrel {
     this.petT = 1.6;
     if (this.climbState === 'down') { this.climbState = 'up'; this.perchT = rnd.range(3, 5); this.chatterT = rnd.range(0.5, 1); }   // scampers up the nearest tree to chatter about it
   }
+  // a meow within earshot gets a chitter back — no hearts, no friend credit, no tree-climbing, just the
+  // same little bob `update()` already gives `petT` on the ground, reused here for a free-standing reaction
+  chirp() { SFX.chitter(); this.petT = max(this.petT, 0.5); }
   update(dt) {
     this.t += dt; this.petT = max(0, this.petT - dt);
     const cat = this.game.cat.group.position, d2 = dist2(this.x, this.z, cat.x, cat.z);
@@ -20852,7 +20855,14 @@ class Game {
     else this.toast('🐱 Home sweet home. Find the door…', 3000);
     this.save();
   }
-  meow() { SFX.meow(); this.cat.blinkT = this.cat.nextBlink; }
+  meow() {
+    SFX.meow(); this.cat.blinkT = this.cat.nextBlink;
+    // every world's squirrel has stood within earshot of a meow since the game began and never once answered one —
+    // one chitters back now if it's close enough on the ground to have noticed (the same 4 m the squirrel already
+    // turns to face the cat at), still perched or climbing squirrels are left alone
+    const c = this.cat.group.position;
+    for (const sq of this.squirrels) { if (sq.climbState === 'down' && dist2(sq.x, sq.z, c.x, c.z) < 16) { sq.chirp(); break; } }
+  }
 
   // ------------------------------------------------------------------ touch controls (joystick + buttons; the canvas itself orbits)
   bindTouch() {
