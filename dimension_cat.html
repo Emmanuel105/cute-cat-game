@@ -17188,6 +17188,32 @@ function buildBeach(game, entry) {
     const digger = beachPerson(false, true);
     game.npcs.push(new Kneeler(game, digger, { x: kx, z: kz, ry, cryIcon: '💰',
       cries: ['Everybody else got a bottle cap. I got THIS.', "Careful, puss — don't you dare knock a single coin back under the sand.", "Don't tell the detectorist. He'll never forgive himself."] })); }
+  // three fallen hollow logs lie along this coast (the loop above: (-14, 36), (4, -30), (-6, 12)) and
+  // all three have sat bare since they were first placed — no kneeler, no creature, nothing like Whisper
+  // Woods' own hedgehog hunt (round 91) ever paired up with one. The log out at (-14, 36) gets that
+  // pairing now: a kid kneels at its mouth sure there's a hermit crab living inside, and a real one
+  // obliges, poking its claws out and ducking straight back.
+  // These three logs carry no physics box of their own (unlike the forest's, which get one from
+  // `boxT` in the same loop), so the only things a headless probe needs to clear are every other box
+  // and NPC trace in the world. A sweep of all three log spots (`game.travel(4, 'from-prev')`, 1200
+  // simulated frames sampling every NPC's own position every 15th frame, checked against all 218 of the
+  // beach's own physics boxes) found (-14, 36) clearest by far: 4.14 m from the nearest box (a palm at
+  // (-16, 40)) and 10 m from the nearest other soul — the other two sit within a few metres of the
+  // crab marchers or the sand-crab boy's own kneeling circle.
+  // The log itself (`makeHollowLog`, scaled ×0.7 same as the other two) runs its hollow along local
+  // +x, rotated by its own `ry`; its true half-length is 1.7 × 0.7 ≈ 1.19 m (the forest's own hollow-log
+  // comment already works this out from `L=3.4` in `makeHollowLog`), well short of the kid's 2 m
+  // kneeling stand-off and the crab's 1.3 m poke, both measured along the same `(-cos(ry), sin(ry))`
+  // bearing the forest's own hedgehog hunt uses for a log's near mouth.
+  { const lx = -14, lz = 36, lry = 0.4, dirx = -cos(lry), dirz = sin(lry);
+    const kOff = 2.0, kx = lx + kOff * dirx, kz = lz + kOff * dirz, kry = atan2(lx - kx, lz - kz);
+    const crabKid = beachPerson(false, true);
+    game.npcs.push(new Kneeler(game, crabKid, { x: kx, z: kz, ry: kry,
+      cries: ["I saw its claws, I swear it!", "Shh — you'll scare it back in.", "It has to come out sometime. I can wait."] }));
+    const hOff = 1.3, hx = lx + hOff * dirx, hz = lz + hOff * dirz;
+    const hermit = makeCrab(0xc1662f);
+    game.npcs.push(new Hopper(game, hermit, { x: hx, z: hz, leash: 0.2, r: 0.1, dist: [0.1, 0.2], dur: 0.3, height: 0.1, idle: [2, 5],
+      onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } })); }
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

@@ -16829,3 +16829,29 @@ anything else in this build). Every passing run: all checks `ok`, 0 console warn
 unchanged at 328 (no new collider — the rider rides inside the carousel's own existing box). No
 visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
 suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 617 — a hermit crab hunt at Sunny Shore's own hollow log
+
+Whisper Woods has had its hedgehog hunt at a hollow log since round 91, and Sunny Shore has had three
+fallen hollow logs of its own since they were first scattered along the dunes — bare set dressing,
+never paired with anyone, the whole time. **The log out at (-14, 36) gets that pairing now**: a kid
+kneels at its mouth convinced there's a hermit crab living inside, and a real one obliges, poking its
+claws out now and then before ducking straight back. *"I saw its claws, I swear it!"* *"Shh — you'll
+scare it back in."* *"It has to come out sometime. I can wait."*
+
+Same `Kneeler` + `Hopper` pairing the forest's own hedgehog hunt already uses, just on the beach:
+the kid is `beachPerson(false, true)` (this world's own child wardrobe helper), the crab is a plain
+`makeCrab()` on a very short leash (0.2 m) so it only ever pokes its nose past the log's own mouth and
+retreats. These three logs carry no physics box of their own, unlike the forest's, so the only thing to
+clear was every other box and NPC trace: a headless sweep of all three spots (1200 simulated frames,
+NPC positions sampled every 15th frame, checked against all 218 of the beach's own physics boxes) found
+(-14, 36) clearest by far — 4.14 m from the nearest box (a palm) and 10 m from the nearest other soul —
+while the other two sit within a few metres of the crab marchers or the sand-crab boy's own kneeling
+circle. Both the kid's 2 m stand-off and the crab's 1.3 m poke are measured off the log's own `ry` along
+the same `(-cos(ry), sin(ry))` bearing the forest's hedgehog hunt already works out for a log's near
+mouth, clear of its true half-length (1.7 × the 0.7 scale this beach's logs use ≈ 1.19 m).
+
+`node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
+collider — same as the forest's own hedgehog, both NPCs sit on physics circles rather than boxes). No
+visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
+suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
