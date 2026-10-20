@@ -17023,3 +17023,29 @@ stick with only a 0.4 m half-extent.
 new collider — the chosen lollipop sits on the same physics box its loop already gave it). No visual
 check was possible in this environment (no browser, no Playwright) — only the stub-three test suite
 above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 625 — a fourth ice crystal gets its own look on Frosty Peak
+
+Frosty Peak scatters eight ice crystals round the village; one (the one by the sculptor's chisel) got
+company from round 1, and two more picked up "look" toasts in later rounds — leaving five of the eight
+still mute. **The one south-east of the village at (24, -24), out past the badminton net, gets a "look"
+prompt of its own now.** *"South-east corner of the cluster, closest one to the badminton net."*
+*"Nobody's ever chipped a facet off this one. Still rough where it grew."* *"Catches the aurora better
+than the others, out here with nothing blocking the sky."*
+
+No new mesh, no new physics box: the loop that plants all eight crystals already keeps them in an
+`iceCrystals` array, so this round just hands `iceCrystals[3]` straight to `game.addInteractable` — the
+same trick the two crystals before it used, at the same 2.4 m radius. A headless probe (`game.start('new')`,
+`game.travel(5, 'from-hub')` waited out through its real portal-fade timer, then 1800 simulated frames
+sampling every NPC's own position every sixth frame) swept this point against every one of the
+mountain's 748 physics boxes, every sample and every interactable already on the snow: the nearest
+other box stayed 3.57 m clear, the nearest wandering soul 8.94 m off and the nearest other
+interactable (the painter's easel) 8.94 m off too — all comfortably past the radius. Four crystals (at
+(26, 16), (-26, -18), (0, -26) and (-32, 2)) are still mute, left for future rounds — (26, 16) and
+(-32, 2) came back too close to a wandering penguin and another box respectively in this same probe, so
+whoever picks them up next should re-sweep rather than reuse these numbers.
+
+`node test/run.mjs` ran clean three times in a row: all checks `ok`, 0 console warnings every time, box
+count unchanged at 328 (no new collider). No visual check was possible in this environment (no browser,
+no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
