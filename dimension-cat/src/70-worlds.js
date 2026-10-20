@@ -996,8 +996,15 @@ function buildNeighborhood(game, entry) {
   { const hx = 74.4, hz = -54.2, kx = hx - 1.5, kz = hz + 0.4;
     const hiveWood = mat(0xd9b06a, { roughness: 0.85 }), hiveRoof = mat(0x8a5a32, { roughness: 0.8 });
     for (let i = 0; i < 3; i++) mesh(G.box(0.5, 0.22, 0.42), hiveWood, { x: hx, y: 0.11 + i * 0.22, z: hz, shadow: 'both', parent: W });
-    mesh(G.box(0.56, 0.06, 0.48), hiveRoof, { x: hx, y: 0.8, z: hz, shadow: 'both', parent: W });
+    // the roof's own return value, previously discarded, is the exact lid of the stack this block already
+    // builds and boxes — handed straight to `game.addInteractable` at a tight 0.8 m radius, the same
+    // discarded-return-value trick rounds 602-606 (ice crystal, brazier, shine box, surfboard, patient)
+    // already used. The keeper's own greet circle sits 1.55 m away, well past that 0.8 m reach, but
+    // `addInteractable` picks nearest by distance² (per `80-game.js`) if the cat ever stands between them.
+    const roof = mesh(G.box(0.56, 0.06, 0.48), hiveRoof, { x: hx, y: 0.8, z: hz, shadow: 'both', parent: W });
     P.addBox(hx, 0.42, hz, 0.56, 0.84, 0.48, { cam: false });
+    const hiveLines = ['A low hum behind the lid.', "Sweet enough to smell from here — don't knock it.", "Heavy with honey. Best leave the lid be."];
+    game.addInteractable({ obj: roof, radius: 0.8, label: () => 'Look at the hive', onUse: () => { SFX.click(); game.toast(rnd.pick(hiveLines), 3000); } });
     const beeWard = makeWardrobe(r, { shirts: [0xdcd3b8, 0xc9b896], pants: [0x3a3a3a, 0x2f4a3a], shoes: [0x5a4530, 0x2a2018] });
     const keeper = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: beeWard }),
       hat: 'sunhat', hatColor: 0xdcd3b8, apron: 0xe6dcc6, jacket: null, scarf: null, bag: null, backpack: null }); W.add(keeper.group);

@@ -16574,3 +16574,23 @@ both would answer regardless.
 times, box count unchanged (328 — the toast adds no physics box of its own). No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 607 — a look at the Neighborhood's own beehive
+
+The beekeeper (checking a frame at the sunny south-east edge of the wildflower meadow) has had her
+three-box hive and its little roof standing beside her for a long time now, but the hive itself never
+got so much as a glance of its own. **It now answers a "look" prompt too**: *"A low hum behind the
+lid."* *"Sweet enough to smell from here — don't knock it."* *"Heavy with honey. Best leave the lid
+be."*
+
+No new mesh, no new physics box: the roof's own return value, previously discarded, is the exact lid
+this block already builds and boxes, handed straight to `game.addInteractable` at a tight 0.8 m radius
+— the same discarded-return-value trick rounds 602 (ice crystal) through 606 (Robot City's patient)
+already used. The keeper's own greet circle sits 1.55 m away, comfortably past that 0.8 m reach, but
+`addInteractable` picks nearest by distance² (per `80-game.js`) if the cat ever stands where both would
+answer regardless.
+
+`node test/run.mjs` ran clean twice in a row: exit 0, all 290 checks `ok`, 0 console warnings both
+times, box count unchanged (328 — the toast adds no physics box of its own). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
