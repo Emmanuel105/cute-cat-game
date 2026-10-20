@@ -17102,3 +17102,26 @@ other interactable — by far the roomiest of the set.
 new collider — the chosen basket sits on the same lamp post the street-lighting loop already gives it).
 No visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
 suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 628 — a third ice crystal gets its own look on Frosty Peak
+
+Round 625 left four of Frosty Peak's eight ice crystals still mute and flagged two of them ((26, 16)
+and (-32, 2)) as too close to a wandering penguin or another box to add safely. **The remaining
+south-west crystal at (-26, -18), out on the open snow between the pond and the sled run, gets a "look"
+prompt of its own now.** *"South-west of the village, well clear of both the pond and the sled run."*
+*"Streaked grey-blue, like it grew in the shadow of the slope."* *"Quietest crystal in the cluster —
+nothing out here but open snow."*
+
+No new mesh, no new physics box: `iceCrystals[2]`, the group the cluster-planting loop already keeps,
+goes straight to `game.addInteractable` at the same 2.4 m radius the other three crystals already use.
+A headless probe (`game.start('new')`, `game.travel(5, 'from-hub')` waited out through its real
+portal-fade timer, then 1800 simulated frames sampling every NPC's own position every sixth frame) swept
+this point against every physics box, NPC sample and interactable already on the snow: the nearest other
+box stayed 12.42 m clear, the nearest wandering soul 10.0 m off and the nearest other interactable
+10.49 m off — the roomiest margin of the cluster so far. The same probe also confirmed the fourth
+remaining crystal, (0, -26), is clear too (nearest box 5.13 m, nearest soul 9.84 m, nearest interactable
+12.0 m) — left for a future round.
+
+`node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
+collider). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
