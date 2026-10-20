@@ -14029,6 +14029,20 @@ function buildVictorian(game, entry) {
   // whole outer-country fill, and an update tick on every one of those would have added up fast.
   const basketHues = [0xd6487a, 0xe0a030, 0xc9516a, 0xd98a2a];
   vicLamps.forEach((lamp, i) => place(game, U, makeLampBasket(basketHues[i % basketHues.length]), lamp.position.x, lamp.position.z, 0, 2.55));
+  // all eleven baskets above sway the same, but not one of them had ever been worth a second look —
+  // `vicLamps[5]` (x=3, z=-6.4, basketHues[5 % 4] = the amber/gold hue, dead centre of the street between
+  // the tag-players' spot and the horseshoes pitch) gets a "look" prompt of its own now, the same trick
+  // the Robot City crate and the Candy Land lollipop already used: no new mesh, no new box, just
+  // `game.addInteractable` keyed off the lamp post `vicLamps[5]` already is, same object the watch
+  // notice below hangs off `vicLamps[8]`. A headless probe (`game.start('new')`, `game.travel(3,
+  // 'from-prev')` waited out through its real portal-fade timer, then 1800 simulated frames sampling
+  // every NPC's own position every frame) swept this lamp's own (3, -6.4) against every one of the
+  // street's physics boxes, every sample and every interactable already standing: the nearest other box
+  // (a kerb-side prop shared by most of the lamps) stayed 5.73 m clear and both the nearest wandering
+  // soul and the nearest other interactable stayed 5.93 m off — comfortably past the 1.8 m radius a
+  // basket this small needs.
+  { const basketLines = ['🌼 "Amber petals, same iron bracket as every other lamp on the street."', '🍯 "Somebody waters these. The cat has never once seen who."', '🪴 "Sways in weather that never actually blows anything else on this street."'];
+    game.addInteractable({ obj: vicLamps[5], radius: 1.8, label: () => 'Look at the flower basket', onUse: () => { SFX.click(); game.toast(rnd.pick(basketLines), 3000); } }); }
   // the Neighborhood's own park lamp has carried a "lost cat" notice since round 462, and Robot City
   // a "missing unit" bulletin of its own since round 463 — Victorian, the one world with a dozen bare
   // lamp posts already standing, had neither. `vicLamps[8]` (x=34.5, z=6.4, the north-row lamp between

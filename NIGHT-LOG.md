@@ -17076,3 +17076,29 @@ past the radius.
 `node test/run.mjs` ran clean: all 277 checks `ok`, 0 console warnings, box count unchanged at 328 (no
 new collider). No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 627 — a look at one of Victorian's own flower baskets
+
+Every one of the dozen gas lamps along Victorian's main street has swayed a small hanging basket of
+flowers off its own iron bracket since round 557 — the north-row lamp at (34.5, 6.4) picked up a "lost
+pocket watch" notice later still — but none of the eleven baskets had ever been worth a prompt of their
+own. **The one dead centre of the street, on the lamp at (3, -6.4), gets a "Look at the flower basket"
+prompt now.** *"Amber petals, same iron bracket as every other lamp on the street."* *"Somebody waters
+these. The cat has never once seen who."* *"Sways in weather that never actually blows anything else on
+this street."*
+
+No new mesh, no new physics box: `vicLamps[5]` — the lamp post the street-lighting loop already keeps in
+an array, same trick the watch notice already used two lamps over — goes straight to
+`game.addInteractable` at a 1.8 m radius, same object its own basket already hangs off. A headless probe
+(a scratch script on the same stub-three harness `test/run.mjs` uses — `game.start('new')`,
+`game.travel(3, 'from-prev')` waited out through its real portal-fade timer, then 1800 simulated frames
+sampling every NPC's own position every frame) swept every one of the street's eleven lamps against
+every physics box, NPC sample and interactable already standing: most of them sit only about 1.1 m from
+a small kerb-side prop that stands by nearly every lamp, too tight for a safe margin, but (3, -6.4) came
+back clear by 5.73 m from its own nearest box and 5.93 m from the nearest wandering soul and nearest
+other interactable — by far the roomiest of the set.
+
+`node test/run.mjs` ran clean: all 277 checks `ok`, 0 console warnings, box count unchanged at 328 (no
+new collider — the chosen basket sits on the same lamp post the street-lighting loop already gives it).
+No visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
+suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
