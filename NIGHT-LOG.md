@@ -16970,3 +16970,29 @@ the 2 m radius chosen never competes with anything else out there.
 at 328 (no new collider). No visual check was possible in this environment (no browser, no Playwright)
 — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 623 — a look at one of Robot City's own crates
+
+The furnace, the robot arm, the factory sign and the barrel out at (16, -22) have all picked up a
+"look" toast over past rounds, but the six loose crates scattered round the factory floor — standing
+since round 1, same as the barrels — never got so much as a glance. **The one tucked in the quiet
+south-west corner, at (-16, -20), gets a look prompt of its own now.** *"No label, no stencil, not even
+a stray barcode. Whatever shipped in it, nobody wrote down."* *"Lighter than it looks — empty, probably,
+or packed with something the robots don't need twice."* *"The forklift bot never rolls out this far.
+This crate has been resting undisturbed for a long while."*
+
+No new mesh, no new physics box: the loop that drops all six crates already calls `mesh()` for each one
+and discards the return, so this round just keeps the one whose coordinates match `(-16, -20)` and hands
+it straight to `game.addInteractable` — the same trick the barrel and the sign used on their own loop
+returns. A headless probe (`game.start('new')`, `game.travel(2, 'from-prev')`, 1800 simulated frames
+sampling every NPC's own position every sixth frame) swept this spot against every physics box, every
+sample and every interactable already on the floor: the nearest other box (a barrel at [-15, -25])
+stayed 4.59 m clear, the nearest wandering soul 7.21 m off and the nearest other interactable 7.21 m off
+— all comfortably past the 2.0 m radius chosen for a crate with only a 0.5 m half-extent.
+
+`node test/run.mjs` ran clean three times out of four in this session (one run hit the same occasional
+Victorian horse-and-carriage timing flake rounds 616 and 621 already noted, never reproduced on a
+re-run and unrelated to this change — Robot City's own floor, not the Victorian street). Every passing
+run: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new collider). No visual check
+was possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
