@@ -16946,3 +16946,27 @@ non-zero exit with no `FAIL` line anywhere in its output — the same occasional
 sit on physics circles, same as every other world's own march). No visual check was possible in this
 environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 622 — the far palm on Sunny Shore finally gets a look
+
+Eighteen palms have swayed in the dunes since round 1, planted in a loop and never looked at again.
+**The one furthest out, at (-40, 40) in the north-west corner of the dune field, gets a "look" prompt
+of its own now.** *"Furthest palm on the whole beach, and the only one nobody's ever stood under."*
+*"Leans a little more than its neighbours. Picked a windier spot and just kept growing."* *"Not one
+coconut's ever come down off this one. The vendor still has to buy hers."* — a nod to the coconut
+seller a few rounds back, who still has to buy in rather than pick her own stock.
+
+No new mesh, no new physics box: the loop that plants all eighteen palms already calls `makePalm()`
+for each spot and discards the return, so this round just keeps the one matching (-40, 40) and hands
+it straight to `game.addInteractable` — the same trick the barrel and the snowman used in earlier
+rounds. A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses —
+`game.start('new')`, `game.travel(4, 'from-prev')`, 1800 simulated frames sampling every NPC's own
+position every 15th frame) swept all eighteen palm spots against every physics box and every sampled
+position; this one came back clearest of the set — 10.4 m from the nearest other box, 9.5 m from the
+nearest wandering soul, and 7.4 m from the nearest other interactable (the hollow log at (-30, 44)) — so
+the 2 m radius chosen never competes with anything else out there.
+
+`node test/run.mjs` ran clean twice in a row: all checks `ok`, 0 console warnings, box count unchanged
+at 328 (no new collider). No visual check was possible in this environment (no browser, no Playwright)
+— only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.
