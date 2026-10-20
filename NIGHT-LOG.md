@@ -16553,3 +16553,24 @@ gap of their own.
 times, box count unchanged (328 — the toast adds no physics box of its own). No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 606 — a look at Robot City's own patient
+
+The mechanic (round 487-ish — long before the "look" prompts started) has been fixing the same wonky
+robot for a long time now, wrench in hand, sparks flying off a tightened bolt. The robot *being*
+fixed, kneeling right in front of him, never got a glance of its own. **It now answers a "look" prompt
+too**: *"A dent above the knee joint — old damage, not new."* *"One access panel hangs by a single
+loose screw."* *"The diagnostic light just blinks amber. Nobody knows what amber means."*
+
+No new mesh, no new physics box: `makeRobot()`'s own group, previously built and handed straight into
+the `Mechanic` constructor and forgotten, is captured in a variable and handed to
+`game.addInteractable` at a 0.75 m radius instead — the same discarded-return-value trick rounds 602
+(ice crystal) through 605 (surfboard) used on static props, here turned on the moving patient an NPC
+controller already owns. The mechanic's own greet circle sits 0.85 m away, comfortably past that 0.75 m
+reach, but `addInteractable` picks nearest by distance² (per `80-game.js`) if a cat ever stands where
+both would answer regardless.
+
+`node test/run.mjs` ran clean twice in a row: exit 0, all 290 checks `ok`, 0 console warnings both
+times, box count unchanged (328 — the toast adds no physics box of its own). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

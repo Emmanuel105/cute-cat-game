@@ -12583,8 +12583,17 @@ function buildRobotCity(game, entry) {
   // a mechanic kneels over a wonky robot on the open floor, wrench in hand — a tightened bolt sparks and the patient sits bolt upright for a moment
   { const mech = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }), shirt: 0x3a4a6a, stripes: null, pants: 0x232c44, shoes: 0x1a1a20, hat: 'cap', hatColor: 0x3a4a6a, jacket: null, scarf: null, bag: null, build: 'stout', glasses: false });
     W.add(mech.group);
-    game.npcs.push(new Mechanic(game, mech, makeRobot(), { x: 2, z: 18, ry: PI,
-      cries: ['Nearly got it...', "It's just a squeaky bearing.", 'Hold still, you overgrown toaster.', 'There! ...no. Not quite.'] })); }
+    const patient = makeRobot();
+    game.npcs.push(new Mechanic(game, mech, patient, { x: 2, z: 18, ry: PI,
+      cries: ['Nearly got it...', "It's just a squeaky bearing.", 'Hold still, you overgrown toaster.', 'There! ...no. Not quite.'] }));
+    // the patient itself — the robot actually getting worked on, standing 0.85 m off the mechanic's own
+    // kneeling spot — never got a glance of its own, for all the wrench time spent on it. `makeRobot()`'s
+    // own group, captured here instead of being handed straight to the `Mechanic` constructor and
+    // discarded, is the same trick rounds 602-605 used on other props now turned on an NPC's own patient.
+    // 0.75 m keeps it clear of the mechanic's 0.4 m greet circle 0.85 m away; `addInteractable` picks
+    // nearest by distance² (per `80-game.js`) if a cat ever stands where both would answer.
+    const patientLines = ['🤖 "A dent above the knee joint — old damage, not new."', '🤖 "One access panel hangs by a single loose screw."', '🤖 "The diagnostic light just blinks amber. Nobody knows what amber means."'];
+    game.addInteractable({ obj: patient.group, radius: 0.75, label: () => 'Look at the patient', onUse: () => { SFX.click(); game.toast(rnd.pick(patientLines), 3000); } }); }
   // an artist sets up an easel on the open floor, painting the giant robot statue and its neon glow across the plaza — the one world of the seven with no painter yet
   { const painterWard = makeWardrobe(r, { shirts: [0x4a5a6a, 0x5a4a6a, 0x3a4a5a], pants: [0x232c34, 0x2a2a30] });
     const painter = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: painterWard }),
