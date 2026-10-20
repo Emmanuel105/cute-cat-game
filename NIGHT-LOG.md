@@ -16802,3 +16802,30 @@ nearest soul (the bold penguin that peels off to investigate the cat) 5.66 m off
 unchanged at 328 (no new collider). No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 616 — the carousel gets its first rider
+
+Round 494's carousel landed in Candy Land with its own toast swearing "not a single rider to show
+for it" across all six seats — a joke that was always going to get paid off eventually. **One of
+those seats (the green one, seat index 3) now has a gingerbread man sitting in it**, so the toast
+gets rewritten to match. *"Round and round — and one rider finally along for the ride."* *"Five
+empty seats now. The green one's taken."* *"Spins on its own, mostly. One gingerbread man never
+seems to mind the company."*
+
+No new mesh beyond the rider itself and no physics box: the gingerbread rig (`makeGingerbread()`,
+already used all over this town) is parented straight to `carousel.pivot`, the same group the ride's
+own `U.push` already spins every frame, so it orbits for free — the same "inherit the parent's world
+transform" trick every roof fixture and napping cat before it has used. Its own seat (local
+`(sx, sz) = (-1.3, 0)`, the green one at `i=3` in `makeCarousel()`'s own six-seat loop) has a
+seat-top at local `y = 0.805`; the rig's own feet sit about 0.045 m above its own group origin, so
+parenting it at local `y = 0.76` lands its feet on the seat. Pure set dressing otherwise: no
+greeting, no friend credit, no draw from this world's own seeded `r` or the shared `rnd()` sequence
+at build time.
+
+`node test/run.mjs` ran clean fourteen times in a row after one early non-zero exit with no `FAIL`
+line captured in its own output — never reproduced again across the runs since, so put down to the
+same occasional harness hiccup rather than this change (Candy Land's own carousel, untouched by
+anything else in this build). Every passing run: all checks `ok`, 0 console warnings, box count
+unchanged at 328 (no new collider — the rider rides inside the carousel's own existing box). No
+visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
+suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

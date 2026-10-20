@@ -10779,7 +10779,23 @@ function buildCandyLand(game, entry) {
     carousel.group.position.set(cx, 0, cz); W.add(carousel.group);
     U.push((dt, t) => { carousel.pivot.rotation.y = t * 0.45; });
     P.addBox(cx, 0.5, cz, 4.0, 1.0, 4.0);
-    const carouselLines = ['🎠 "Round and round, and not a single rider to show for it."', '🎠 "Six empty seats and the music\'s only in your head."', '🎠 "Spins on its own, somehow. Nobody\'s ever seen it stop."'];
+    // the carousel's own toast used to swear not one of its six seats had ever been filled — one of
+    // them finally gets a rider. Seat index 3 (the green one, `i / 6 * TAU` at i=3 is PI, so local
+    // (sx, sz) = (cos(PI) * 1.3, sin(PI) * 1.3) = (-1.3, 0)) has its own seat-sphere top at local
+    // y = 0.14 + 0.38 + 0.12 + 0.22 * 0.75 = 0.805 (the seat centre `makeCarousel()` itself computes,
+    // plus its own 0.22 m radius squashed to 0.75 on y); a gingerbread rig's own feet sit about 0.045 m
+    // above its own group origin (the leg capsules — radius 0.085, length 0.24 — hang from a hip at
+    // local y = 0.42 relative to the body, itself at the rig's own origin), so parenting the rig at
+    // local y = 0.76 lands its feet right on the seat. Parented to `carousel.pivot` itself — the same
+    // group the ride's own spin already turns every frame — so the rider orbits for free, no `U.push`
+    // of its own needed. Pure set dressing, same as every napping cat before it: no greeting, no
+    // physics box, nothing to collect, and no draw from this world's own seeded `r` or the shared
+    // `rnd()` sequence at build time.
+    { const rider = makeGingerbread();
+      rider.group.position.set(-1.3, 0.76, 0);
+      rider.group.rotation.y = -PI / 2;   // facing outward, away from the centre pole, along local -X
+      carousel.pivot.add(rider.group); }
+    const carouselLines = ['🎠 "Round and round — and one rider finally along for the ride."', '🎠 "Five empty seats now. The green one\'s taken."', '🎠 "Spins on its own, mostly. One gingerbread man never seems to mind the company."'];
     game.addInteractable({ obj: carousel.group, radius: 3.4, label: () => 'Look at the carousel', onUse: () => { SFX.click(); game.toast(rnd.pick(carouselLines), 3000); } }); }
   // the Candy Queen's castle, up the lane to the north — houmoungous, and you can walk right in — with a little candy village on the approach
   game.zones.addCircle(0, 150, 27);
