@@ -16996,3 +16996,30 @@ re-run and unrelated to this change — Robot City's own floor, not the Victoria
 run: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new collider). No visual check
 was possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 624 — a look at one of Candy Land's own lollipops
+
+The notice cane and the wishing well have both had their own moment in Candy Land by now, but the inner
+dozen of big candy-cane-striped lollipops ringing the sweet-lands — standing since round 1, same
+vintage as the barrels and crates other worlds only just started noticing — had never been looked at
+once. **The one out at (36, 18), past the east side of the candy-cane belt, gets a "look" prompt of its
+own now.** *"Biggest swirl in the whole inner belt, and not one lick taken out of it."* *"Planted the
+same day as the rest. Everyone else got eaten or replaced — this one just got tall."* The cat gives the
+stick a token headbutt. The lollipop does not notice.
+
+No new mesh, no new physics box: the loop that plants all twelve big lollipops already calls
+`makeLollipop()` for each spot and discards the return, so this round just keeps the one matching
+(36, 18) and hands it straight to `game.addInteractable` — the same trick the crate and the barrel used
+in Robot City and the far palm used on Sunny Shore. A headless probe (a scratch script built on the same
+stub-three harness `test/run.mjs` uses — `game.start('new')`, `game.travel(1, 'from-prev')` awaited out
+through its real portal-fade timer rather than guessed at with a frame count, then 1800 simulated frames
+sampling every NPC's own position every sixth frame) swept all twelve candidate spots against every one
+of the land's 1900 physics boxes, every sample and every interactable already on the floor: (36, 18)
+came back clearest of the set — 11.3 m from the nearest other box, 12.0 m from the nearest wandering
+soul and 12.9 m from the nearest other interactable — comfortably past the 2.2 m radius chosen for a
+stick with only a 0.4 m half-extent.
+
+`node test/run.mjs` ran clean: all 277 checks `ok`, 0 console warnings, box count unchanged at 328 (no
+new collider — the chosen lollipop sits on the same physics box its loop already gave it). No visual
+check was possible in this environment (no browser, no Playwright) — only the stub-three test suite
+above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
