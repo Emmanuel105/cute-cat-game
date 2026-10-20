@@ -16896,3 +16896,24 @@ to clear its own footprint.
 `node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
 collider). No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 620 — a look at one of Robot City's own barrels
+
+The furnace and the robot arm beside it both picked up a "look" toast a few rounds back, but the five
+plain oil barrels scattered around the factory floor — standing since round 1 — never got so much as a
+glance. **The one out at (16, -22) gets a look prompt of its own now.** *"Contents: unknown. Smell:
+considerably worse."* *"Dented clean through on one side — something heavier than a mop handle did
+that."* *"The cat noses the rim, learns nothing, and decides the furnace was more interesting anyway."*
+
+No new mesh, no new physics box: the loop that drops all five barrels already calls `mesh()` for each
+one and throws the return value away, so this round just keeps the one whose coordinates match `(16,
+-22)` and hands it straight to `game.addInteractable` — same trick round 619's snowman and this run's
+own barrel neighbour, the furnace, already used. Its existing box (half-extent 0.5 m) only needs a
+little over 2 m of clearance to walk all the way round, and an earlier round's own comment had already
+worked out this exact barrel sits 8.6 m from the furnace and 9.5 m from the sign-pole — both well past
+the 2.4 m radius used here.
+
+`node test/run.mjs` ran clean twice in a row: all checks `ok`, 0 console warnings, box count unchanged
+at 328 (no new collider). No visual check was possible in this environment (no browser, no Playwright)
+— only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.

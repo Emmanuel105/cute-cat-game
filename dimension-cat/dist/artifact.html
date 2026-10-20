@@ -12474,7 +12474,17 @@ function buildRobotCity(game, entry) {
   // crates & barrels around
   const crateM = mat(0x8a6a3a, { roughness: 0.9, map: TEX.planks(30, 34) }), barrelM = mat(0x2f6f9f, { metalness: 0.6, roughness: 0.4 });
   for (const [x, z, s] of [[-22, 4, 1], [-23, 5.2, 0.8], [22, 2, 1], [-4, 8, 0.9], [15, 12, 1.1], [-16, -20, 1]]) { mesh(G.box(s, s, s), crateM, { x, y: s / 2, z, ry: r() * 0.5, parent: W }); P.addBox(x, s / 2, z, s, s, s, { cam: false }); }
-  for (const [x, z] of [[28.5, 3.5], [29.7, 2.2], [-6, 10], [16, -22], [-24, -22]]) { mesh(G.cyl(0.5, 0.5, 1.2, 14), barrelM, { x, y: 0.6, z, parent: W }); P.addBox(x, 0.6, z, 1, 1.2, 1, { cam: false }); }
+  let farBarrel = null;
+  for (const [x, z] of [[28.5, 3.5], [29.7, 2.2], [-6, 10], [16, -22], [-24, -22]]) { const bm = mesh(G.cyl(0.5, 0.5, 1.2, 14), barrelM, { x, y: 0.6, z, parent: W }); P.addBox(x, 0.6, z, 1, 1.2, 1, { cam: false }); if (x === 16 && z === -22) farBarrel = bm; }
+  // the furnace and the robot arm beside it both got a "look" toast a few lines up — the five barrels
+  // scattered round the floor, standing since round 1, never got so much as a glance. The one out at
+  // (16, -22), nearest the furnace at 8.6 m and the sign-pole at 9.5 m (both already worked out above),
+  // is kept straight off this loop's own `mesh()` return rather than built again: no new mesh, no new
+  // box, same trick the furnace and the robot arm just used on their own return values. Its existing
+  // box (half-extent 0.5 m) only needs a little over 2 m of clearance to be walked all the way round,
+  // so a 2.4 m radius never reaches the furnace, the sign-pole, or the robot arm at (-5, -16) 21.8 m off.
+  { const barrelLines = ['🛢️ "Contents: unknown. Smell: considerably worse."', '🛢️ "Dented clean through on one side — something heavier than a mop handle did that."', '😼 The cat noses the rim, learns nothing, and decides the furnace was more interesting anyway.'];
+    game.addInteractable({ obj: farBarrel, radius: 2.4, label: () => 'Look at the barrel', onUse: () => { SFX.click(); game.toast(rnd.pick(barrelLines), 3000); } }); }
   // the Neighborhood, Candy Land, Sunny Shore, Whisper Woods and Robot City's own maintenance drone all
   // spin on the world clock by now, but no actual toy pinwheel had ever been planted on the factory
   // floor — someone off-shift stuck a scavenged one in a crack in the concrete anyway. Same geometry and
