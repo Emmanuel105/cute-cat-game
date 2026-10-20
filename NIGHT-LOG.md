@@ -16615,3 +16615,27 @@ Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
 times, box count unchanged (328 — the toast adds no physics box of its own). No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 609 — a look at Whisper Woods' own woodcutter's stump
+
+Rounds 602-608 gave six other worlds a "look" prompt on some prop a working NPC stands beside but
+never answers for — the ice crystal, the chestnut brazier, the shine box, the surfboard, the mechanic's
+patient, the beehive, the gingerbread tray. Whisper Woods never got one. **The woodcutter's own stump
+now answers a "look" prompt too**: *"Sawn flat on top — years of this."* *"Growth rings right there,
+if you care to count them."* *"A scatter of fresh chips at the base — mind your paws."*
+
+No new mesh, no new physics box: the same `placeT()` call that already builds and boxes the stump
+(one of four built in a loop near the top of `buildForest`) now captures its return value for the
+woodcutter's stump alone, handed straight to `game.addInteractable` at a 0.9 m radius. The other three
+stumps in that loop sit exactly under their own sitters (the whittler, the knitter, the weaver) —
+same (x, z) as the person on them — so a look prompt there would always tie the sitter's own greet
+circle and never win (`80-game.js` picks the *first* registered interactable on an exact distance tie,
+never the nearer one, because there is no nearer one). The woodcutter's stump alone sits 1.6 m clear of
+him, the same kind of offset round 605's surfboard (1 m) and round 603's brazier (1.3 m) used, so the
+two interactables resolve correctly by actual distance instead of registration order.
+
+`node test/run.mjs` ran clean ten times in a row: exit 0, all checks `ok`, 0 console warnings every
+time, box count unchanged (328 — the toast adds no physics box of its own; render counts vary run to
+run regardless of this change, confirmed against the unmodified build too). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
