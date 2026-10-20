@@ -17049,3 +17049,30 @@ whoever picks them up next should re-sweep rather than reuse these numbers.
 count unchanged at 328 (no new collider). No visual check was possible in this environment (no browser,
 no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 626 — the west rock in Whisper Woods gets its own look
+
+Whisper Woods scatters four rocks round the glade; round 609 gave the north-west one (-24, 30) a "look"
+prompt, leaving the other three mute — the south one (8, -38) only ever did duty as a clearance
+reference for the digger kid's own dig (round 591), never a prompt of its own. **The west rock, out past
+the woodcutter's glade at (-36, 6), gets a "look" prompt now.** *"West edge of the glade — the trees
+thin out just past it."* *"No moss on this one. Too much sun gets through here."* *"Quietest rock in the
+whole wood. Nobody ever comes this far west."*
+
+The fourth candidate, the east rock at (32, 8), came back too close to call: a headless probe found it
+only 2.0 m from a wandering soul's own greet circle, too tight to add a second prompt without the two
+crowding each other, so it's left for a future round to re-sweep rather than force in here.
+
+No new mesh, no new physics box: `westRock`, captured off the same `placeT()` call that already builds
+and places it (the loop already keeps `mossyRock` the same way for the north-west one), goes straight to
+`game.addInteractable` — the same 2.2 m radius the north-west rock already uses. A headless probe
+(a scratch script on the same stub-three harness `test/run.mjs` itself uses — `game.start('new')`,
+`game.travel(6, 'from-hub')`, 1800 simulated frames sampling every NPC's own position every 15th frame)
+swept this spot against every one of the glade's physics boxes, every sample and every interactable
+already planted: the nearest box (a thin sapling trunk) stayed 4.14 m clear, and the nearest NPC sample
+and nearest other interactable (the same distance, since neither moves) stayed 4.15 m off — comfortably
+past the radius.
+
+`node test/run.mjs` ran clean: all 277 checks `ok`, 0 console warnings, box count unchanged at 328 (no
+new collider). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
