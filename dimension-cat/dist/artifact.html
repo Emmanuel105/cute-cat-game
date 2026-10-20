@@ -17398,7 +17398,18 @@ function buildSnowVillage(game, entry) {
       hat: 'beanie', hatColor: 0x3a5a4a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a }); W.add(birder.group);
     game.npcs.push(new Birder(game, birder, { x: 30, z: 10, ry: atan2(18 - 30, 8 - 10),
       cries: ["That one's the show-off, always waddling over.", 'Careful, puss — you\'ll spook the whole colony.', 'Counted thirty-one out there today, give or take.'] })); }
-  for (const [x, z] of [[-6, -14], [7, 18], [-20, -2], [22, -4]]) { placeT(game, U, makeSnowman(r), x, z, r() * TAU); boxT(game, x, z, 1.0, 2.4, 1.0, { cam: false }); }
+  let farSnowman;
+  for (const [i, [x, z]] of [[-6, -14], [7, 18], [-20, -2], [22, -4]].entries()) { const s = placeT(game, U, makeSnowman(r), x, z, r() * TAU); boxT(game, x, z, 1.0, 2.4, 1.0, { cam: false }); if (i === 3) farSnowman = s; }
+  // the first two snowmen in that loop both got a child fussing over them above (one packing on arms,
+  // one pressing in a carrot) — the last one, out at (22, -4), never got so much as a glance. It gets a
+  // plain "look" toast instead: no new mesh, no new physics box, `farSnowman` is just this loop's own
+  // `placeT()` return value for index 3, captured instead of discarded and handed straight to
+  // `game.addInteractable` — the same trick the far ice crystal's own "look" prompt two blocks down
+  // already uses. Its own box (half-extent 1.0 m in x and z, a 1.41 m diagonal) sits a clear 9.1 m from
+  // the nearest other soul out here (the talking skaters at (23.5, 5)) and well outside any other
+  // interactable's own radius, so a 1.8 m radius only ever needs to clear its own footprint.
+  { const farSnowmanLines = ['☃️ "Scarf\'s on a bit crooked. Nobody\'s straightened it."', '☃️ "The other two get all the company. This one just stands here."', '☃️ "Same three coal buttons as his neighbours — just colder out this far."'];
+    game.addInteractable({ obj: farSnowman, radius: 1.8, label: () => 'Look at the snowman', onUse: () => { SFX.click(); game.toast(rnd.pick(farSnowmanLines), 3000); } }); }
   for (const [x, z, ry, c] of [[-8, 6, 0.4, 0xd62839], [4, -9, 2.0, 0x2f6fd6]]) placeT(game, U, makeSled(c), x, z, ry);
   const iceCrystals = [];
   for (const [x, z] of [[-24, 18], [26, 16], [-26, -18], [24, -24], [0, -26], [-2, 28], [30, 0], [-32, 2]]) { const c = makeIceCrystal(r, r.pick([0x9fe8ff, 0xbfa8ff, 0xa8ffe8])); placeT(game, U, c, x, z, 0); boxT(game, x, z, 0.6, 1.6, 0.6, { cam: false }); iceCrystals.push(c); }

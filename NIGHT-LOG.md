@@ -16877,3 +16877,22 @@ than 9.3 m. The 2.2 m radius clears that approach with room to spare.
 `node test/run.mjs` ran clean twice in a row: all checks `ok`, 0 console warnings, box count unchanged at 328
 (no new collider). No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 619 — the fourth snowman at Frosty Peak finally gets a look
+
+Four snowmen have stood on the mountain since round 1's build, and round 156-ish gave the first two
+their own kneeling kids (one packing on arms, one pressing in a carrot nose) — but the last two never
+got so much as a glance. **The far one, out at (22, -4), gets a plain "look" prompt of its own now.**
+*"Scarf's on a bit crooked. Nobody's straightened it."* *"The other two get all the company. This one
+just stands here."* *"Same three coal buttons as his neighbours — just colder out this far."*
+
+No new mesh, no new physics box: the loop that builds all four snowmen already captures `placeT()`'s
+return value and discards it, so this round just keeps the one for index 3 (`farSnowman`) and hands
+it straight to `game.addInteractable` — the same trick the lone ice crystal's own "look" prompt uses
+a few lines down. Its existing box (half-extent 1.0 m, a 1.41 m diagonal) sits a clear 9.1 m from the
+nearest other soul out here (the two talking skaters at (23.5, 5)), so a 1.8 m radius only ever needs
+to clear its own footprint.
+
+`node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
+collider). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
