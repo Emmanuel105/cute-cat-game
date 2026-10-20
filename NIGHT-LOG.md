@@ -16778,3 +16778,27 @@ through either wall.
 unchanged at 328 (no new collider, same reasoning the roof trio leaned on). No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 615 — a seventh ice crystal gets its own look on Frosty Peak
+
+Eight ice crystals are scattered around Frosty Peak's village; one sits right by the ice sculptor's
+own chisel, and round 602 gave the one furthest out on its own, at (-2, 28), a plain "look" toast —
+but six of the eight have sat untouched since the cluster was first scattered. **The crystal out west
+of the gondola station, at (30, 0), now gets the same treatment**: *"Pale blue, this one — almost the
+colour of the gondola cable."* *"Furthest crystal from the sculptor's chisel, and none the worse for
+it."* *"Sharp enough at the tip to catch the cat's whiskers. The cat keeps its distance."*
+
+Same trick as round 602's own crystal and the whole cupcake-hill chain in Candy Land: `iceCrystals[6]`
+is the group the scattering loop already built (and already keeps in an array), handed straight to
+`game.addInteractable` — no new mesh, no new physics box, no `rnd()` draw of its own. A headless probe
+(a scratch script on the same stub-three harness `test/run.mjs` itself uses, `game.start('new')` then
+`game.load(5, 'from-hub')`, 400 simulated frames) checked every one of the eight crystals' own spots
+against every physics box and NPC position in the world: this one came back the clearest of the six
+still unclaimed — the nearest other box (one of the pines ringing the village) 8.28 m off and the
+nearest soul (the bold penguin that peels off to investigate the cat) 5.66 m off, both well past the
+2.4 m radius used here (the crystal's own box is only 0.42 m across at the corner).
+
+`node test/run.mjs` ran clean three times in a row: all checks `ok`, 0 console warnings, box count
+unchanged at 328 (no new collider). No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

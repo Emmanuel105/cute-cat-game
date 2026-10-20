@@ -17377,6 +17377,17 @@ function buildSnowVillage(game, entry) {
   // 0.42 m across at the corner).
   { const crystalLines = ['❄️ "Catches the light from every side at once — nobody\'s worked out why."', '🧊 "Cold enough to sting a paw. The cat keeps its distance."', '✨ "Clear as glass, and twice as sharp at the edges."'];
     game.addInteractable({ obj: iceCrystals[5], radius: 2.4, label: () => 'Look at the ice crystal', onUse: () => { SFX.click(); game.toast(rnd.pick(crystalLines), 3000); } }); }
+  // the (-2, 28) crystal has had its own toast for a few rounds now; the seventh in the list, out west
+  // of the gondola station at (30, 0), never did. Same trick again: `iceCrystals[6]` is the group the
+  // loop above already built, handed straight to `game.addInteractable` — no new mesh, no new box, same
+  // 2.4 m radius the other crystal already uses to clear this one's own box's 0.42 m corner. A headless
+  // probe (the same stub-three harness `test/run.mjs` itself uses, `game.start('new')` then
+  // `game.load(5, 'from-hub')`, 400 simulated frames) swept this exact point against every other
+  // physics box and NPC position in the world: the nearest other box (one of the pines ringing the
+  // village) stayed 8.28 m clear and the nearest soul (the bold penguin that peels off to investigate
+  // the cat) stayed 5.66 m clear, both well past this radius.
+  { const crystalLines6 = ['🧊 "Pale blue, this one — almost the colour of the gondola cable."', '❄️ "Furthest crystal from the sculptor\'s chisel, and none the worse for it."', '✨ "Sharp enough at the tip to catch the cat\'s whiskers. The cat keeps its distance."'];
+    game.addInteractable({ obj: iceCrystals[6], radius: 2.4, label: () => 'Look at the ice crystal', onUse: () => { SFX.click(); game.toast(rnd.pick(crystalLines6), 3000); } }); }
   // an ice sculptor kneels by the outlying crystal cluster, chisel in hand, working the last facet
   { const cx = -24, cz = 18, kx = cx - 1.8, kz = cz - 1.0;
     const sculptWard = makeWardrobe(r, { shirts: [0x5a5a6a, 0x4a5a6a, 0x6a5a4a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
