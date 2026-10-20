@@ -19125,7 +19125,28 @@ function buildForest(game, entry) {
   makeGemCluster(game, U, -6, 8, 7, [0xa8ff9a, 0x7fe0ff, 0xffd54a, 0xff6fb5], r, 1.6); makeGemCluster(game, U, -12, 22.5, 4, [0xc8a2ff, 0xa8ff9a], r, 0.9);
   let cutterStump;
   for (const [x, z] of [[-6, 2], [18, 24], [-26, -22], [4, -16]]) { const s = placeT(game, U, makeStump(r), x, z, r() * TAU); boxT(game, x, z, 1.0, 0.75, 1.0, { cam: false }); if (x === -6 && z === 2) cutterStump = s; }
-  for (const [x, z] of [[-24, 30], [32, 8], [-36, 6], [8, -38]]) placeT(game, U, makeRock(r, 0x6b7a6a, r.range(1.2, 2.2)), x, z, 0);
+  let mossyRock;
+  for (const [x, z] of [[-24, 30], [32, 8], [-36, 6], [8, -38]]) { const rk = placeT(game, U, makeRock(r, 0x6b7a6a, r.range(1.2, 2.2)), x, z, 0); if (x === -24 && z === 30) mossyRock = rk; }
+  // of the four rocks scattered through the woods at line 276, only the south one (8, -38) has ever had
+  // a neighbour — the digger kid's own dig, round 591, used it purely as a clearance reference, never a
+  // "look" prompt of its own. The other three have sat bare since the glade was first built. **The
+  // north-west rock, out past the owl's tree, gets a "look" prompt now.**
+  //
+  // No new mesh, no new physics box: `mossyRock`, captured straight off the same `placeT()` call that
+  // already builds and places it, goes straight to `game.addInteractable` — the exact trick the
+  // woodcutter's own stump (a few lines below) and the zipline tower just above already use on this same
+  // glade.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(6, 'from-hub')`, 1800 simulated frames to let every deer, fox,
+  // hare, frog and fairy actually move, sampling every NPC's own position every 15th frame) found this
+  // rock sits flush against the base of a tree (0.00 m to its trunk's own box), so a 0.25 m grid sweep
+  // of the ground around it — checked against every one of this glade's physics boxes with the same cat-
+  // sized circle `blocked()` already uses for movement — found the nearest walkable cell only 1.0 m off,
+  // at (-23, 30); the nearest other soul (a deer on its own wander) never closer than 9.3 m. A 2.2 m
+  // radius clears that 1.0 m approach with room to spare, well short of the zipline tower's own 4.2 m.
+  { const rockLines = ['🪨 "Moss on the north face. Always the north face."', '🪨 "Half-sunk in roots — nobody\'s ever managed to roll this one."', '🪨 "Flat enough on top for a nap, if the owl up above would stop staring."'];
+    game.addInteractable({ obj: mossyRock, radius: 2.2, label: () => 'Look at the rock', onUse: () => { SFX.click(); game.toast(rnd.pick(rockLines), 3000); } }); }
   // stepping stones from the entrance to the glade
   for (let i = 0; i < 14; i++) { const z = 40 - i * 2.6, x = sin(i * 0.7) * 1.6; mesh(G.cyl(0.55, 0.6, 0.12, 9), mat(0x8a8a80, { roughness: 1 }), { x, y: P.ground0(x, z) + 0.05, z, ry: r() * TAU, shadow: 'receive', parent: W }); }
 

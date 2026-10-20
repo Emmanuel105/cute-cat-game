@@ -16855,3 +16855,25 @@ mouth, clear of its true half-length (1.7 × the 0.7 scale this beach's logs use
 collider — same as the forest's own hedgehog, both NPCs sit on physics circles rather than boxes). No
 visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
 suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 618 — a look at Whisper Woods' own mossy rock
+
+Four bare rocks have sat scattered through the glade since round one's first build (`src/74-world-forest.js`,
+the loop that builds `makeStump()`'s own stumps right above does the same with `makeRock()`). The south one
+got drawn into round 591's digger-kid probe purely as a clearance landmark, but **none of the four ever got
+a "look" prompt of their own — until now, for the one out past the owl's tree.** *"Moss on the north face.
+Always the north face."* *"Half-sunk in roots — nobody's ever managed to roll this one."* *"Flat enough on
+top for a nap, if the owl up above would stop staring."*
+
+No new mesh, no new physics box: `mossyRock` is just the same `placeT()` return value the stump loop two
+lines down already captures for the woodcutter's stump, handed straight to `game.addInteractable`. A
+headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses — `game.start('new')`,
+`game.travel(6, 'from-hub')`, 1800 simulated frames, every NPC's own position sampled every 15th frame) found
+this rock sits flush against its own tree's trunk box (0.00 m), so a 0.25 m grid sweep of the ground around
+it against every physics box in the glade, using the same cat-sized circle `blocked()` already checks movement
+with, found the nearest walkable cell only 1.0 m off; the nearest other soul (a wandering deer) never closer
+than 9.3 m. The 2.2 m radius clears that approach with room to spare.
+
+`node test/run.mjs` ran clean twice in a row: all checks `ok`, 0 console warnings, box count unchanged at 328
+(no new collider). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
