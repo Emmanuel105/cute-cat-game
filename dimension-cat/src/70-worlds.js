@@ -3287,6 +3287,8 @@ function buildCandyLand(game, entry) {
       mesh(G.torus(0.15, 0.025, 5, 10), icing, { x: dx, y: 0.4, z: dz, rx: PI / 2, shadow: 'none', parent: tray });
     }
     P.addBox(tx, 0.2, tz, 1.6, 0.4, 1.0, { cam: false });
+    const trayLines = ['🍪 "Still warm — the icing hasn\'t set yet."', '🍪 "Three gingerbread men, fresh off the tray."', '🍪 "Smells like the whole cottage."'];
+    game.addInteractable({ obj: tray, radius: 0.8, label: () => 'Look at the tray', onUse: () => { SFX.click(); game.toast(rnd.pick(trayLines), 3000); } });
     const bakerWard = makeWardrobe(r, { shirts: [0xfffdf7, 0xf7e4c1, 0xffe0ea], pants: [0xc27b3a, 0x8a5a32] });
     const baker = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: bakerWard }),
       apron: 0xd9a066, hat: 'flatcap', hatColor: 0xfffdf7, bag: null, jacket: null, scarf: null });

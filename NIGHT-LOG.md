@@ -16590,6 +16590,27 @@ already used. The keeper's own greet circle sits 1.55 m away, comfortably past t
 `addInteractable` picks nearest by distance² (per `80-game.js`) if the cat ever stands where both would
 answer regardless.
 
+## Round 608 — a look at Candy Land's own gingerbread tray
+
+The baker by the gingerbread cottage has been kneeling over the same tray for rounds now, icing three
+fresh gingerbread men while they're still warm, but the tray itself never got a glance of its own. **It
+now answers a "look" prompt too**: *"Still warm — the icing hasn't set yet."* *"Three gingerbread men,
+fresh off the tray."* *"Smells like the whole cottage."*
+
+No new mesh, no new physics box: the tray's own group, previously built and boxed but never captured
+for anything beyond that box, is handed straight to `game.addInteractable` at a tight 0.8 m radius —
+the same discarded-return-value trick rounds 602 (ice crystal) through 607 (the beehive) already used,
+here the first time it's reached Candy Land. The baker's own greet circle sits only 1.3 m away (the
+tray is placed 1.3 m in front of where she kneels), comfortably inside her 2.1 m reach, but
+`addInteractable` picks nearest by distance² (per `80-game.js`) if the cat ever stands where both would
+answer regardless — the same coexistence the shine box and bootblack pair (round 604) banked on with an
+even tighter gap.
+
+`node test/run.mjs` ran clean twice in a row: exit 0, all 274 checks `ok`, 0 console warnings both
+times, box count unchanged (328 — the toast adds no physics box of its own). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
 `node test/run.mjs` ran clean twice in a row: exit 0, all 290 checks `ok`, 0 console warnings both
 times, box count unchanged (328 — the toast adds no physics box of its own). No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
