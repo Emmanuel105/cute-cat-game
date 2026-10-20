@@ -16669,3 +16669,39 @@ clean three times in a row, 293 checks (290 before + the far-away no-op, the up-
 no-score-no-friend check), 0 console warnings, box count unchanged. No visual check was possible in this
 environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 611 — a TV aerial on house 1's own roof
+
+Every one of the Neighborhood's sixteen front yards has had its own fixture for a while now — the
+pinwheel, the sprinkler, the kennel, the birdhouse, the gnome, the feeder, the bin, the sundial, the
+rain barrel, the weathervane, the flamingos, the wheelbarrow, the bike, the hose reel — but not one of
+the sixteen houses ever got anything on its own *roof* besides the chimney smoke every single one of
+them already carries. **House 1's own ridge now gets a TV aerial**: a thin mast with three crossbars
+planted dead centre on the roof, a sparrow perched on the top bar looking out over the street. *"Chirp.
+(Translation: best view on the block.)"* *"Nobody's watched anything through that aerial in years — the
+whole street's on satellite now."* *"Puss, that's several metres up. Even you're not trying that."*
+
+No new physics box: the aerial is added as a child of the house's own group (the same trick the porch's
+own nap cat already uses), so it inherits the house's world position and rotation for free, and sits at
+local `(0, h.userData.h, 0)` — exactly the ridge height `makeHouse()` itself already computes and the
+house's own collision box already uses for its own half-height. Nothing on the ground can jump anywhere
+near that high, the same reasoning the cat's own roof weathervane and every house's chimney smoke already
+lean on. The sparrow is the exact same `makeSparrow()` rig the birdhouse, the feeder and the birdbath
+already use, just given nothing new to do beyond its own built-in idle.
+
+Before settling on the roof, this round went looking for a free yard-corner spot instead and found that
+houses 1 and 14 — the two indices that looked unclaimed from inside the per-house loop — actually already
+had a yard-sale table and a birdbath respectively, built just outside that loop with their own absolute
+coordinates; every one of the street's sixteen yards turned out to be spoken for already. A quick
+headless probe (this same `test/run.mjs` stub-three harness, 150 simulated seconds, every NPC's own
+position sampled every frame) also confirmed the one remaining gap on the south pavement — between the
+streetlamps at x=-72 and x=-52 — is now regularly walked by the council electrician added in a later
+round than the fire hydrant's own, coming within 0.70 m of it; the roof was the one place nothing on this
+street has ever had a reason to walk through, which is exactly why it went there.
+
+`node test/run.mjs` ran clean ten times in a row across this round (one single unrelated flake on the
+Victorian horse-and-carriage timing check reproduced neither before nor after against identical code — the
+same class of flake round 610 already flagged this suite as having): all checks `ok`, 0 console warnings,
+box count unchanged at 328. No visual check was possible in this environment (no browser, no Playwright)
+— only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.

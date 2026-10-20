@@ -8448,6 +8448,33 @@ function buildNeighborhood(game, entry) {
       const hoseLines = ['💧 "Drip. Drip. Somebody\'s definitely not screwed that tap all the way off."', '😼 "Puss, that\'s a hose, not a snake. Leave it coiled."', '🚿 "Half the street waters by watering can. This one cheats."'];
       game.addInteractable({ obj: reel, radius: 1.8, label: () => 'Look at the hose reel', onUse: () => { SFX.click(); game.toast(rnd.pick(hoseLines), 3000); } });
     }
+    // the pinwheel, sprinkler, kennel, birdhouse, gnome, feeder, bin, sundial, rain barrel, weathervane,
+    // flamingos, wheelbarrow, bike and hose reel between them have given the street's own front yards a
+    // fixture apiece by now, but not one of the sixteen houses ever got anything on its own roof besides
+    // the chimney smoke every one of them already carries. House 1's own ridge now gets a TV aerial: a
+    // thin mast with three crossbars planted dead centre on the roof, a sparrow perched on the top bar
+    // looking out over the street. *"Chirp. (Translation: best view on the block.)"* *"Nobody's watched
+    // anything through that aerial in years — the whole street's on satellite now."* *"Puss, that's
+    // several metres up. Even you're not trying that."*
+    // Added as a child of this house's own group (`h`), the same trick the porch's own nap cat above
+    // uses, so it inherits the house's own world position and `ry` for free and needs no world-space
+    // maths of its own: local (0, h.userData.h, 0) sits exactly on the ridge `makeHouse()` itself already
+    // computes (`g.userData.h = H + roofH`, the same number this house's own collision box above already
+    // uses for its own half-height). No physics box, same reasoning as the weathervane on the cat's own
+    // roof and the chimney smoke rising above every house on this street: nothing on the ground — person,
+    // squirrel or cat — can jump anywhere near the few metres a roof ridge sits at, let alone this.
+    if (i === 1) {
+      const mastH = 0.6, bars = [0.4, 0.3, 0.2];
+      const mastM = mat(0x3a3a3a, { metalness: 0.4, roughness: 0.55 });
+      const aerial = group(0, h.userData.h, 0, h);
+      noInk(mesh(G.cyl(0.012, 0.016, mastH, 6), mastM, { y: mastH / 2, shadow: 'none', parent: aerial }));
+      for (let k = 0; k < bars.length; k++) noInk(mesh(G.cyl(0.006, 0.006, bars[k], 5), mastM, { y: mastH * (0.42 + k * 0.26), ry: k * 0.5, rz: PI / 2, shadow: 'none', parent: aerial }));
+      const sparrow = makeSparrow(); aerial.add(sparrow.group);
+      sparrow.group.position.set(0, mastH + 0.01, 0);
+      U.push((dt, t) => sparrow.animate(0, false, dt, t));
+      const aerialLines = ['🐦 "Chirp. (Translation: best view on the block.)"', '📺 "Nobody\'s watched anything through that aerial in years — the whole street\'s on satellite now."', '😼 "Puss, that\'s several metres up. Even you\'re not trying that."'];
+      game.addInteractable({ obj: aerial, radius: 2.6, label: () => 'Look up at the TV aerial', onUse: () => { SFX.click(); game.toast(rnd.pick(aerialLines), 3000); } });
+    }
   });
   // the pinwheel, sprinkler and kennel above gave three of the street's sixteen yards their own
   // feature; lot 14's own corner now gets a fourth — a stone birdbath, a shallow bowl on a short
