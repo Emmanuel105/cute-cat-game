@@ -17550,3 +17550,29 @@ radius the way the wall crate already did.
 `node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
 collider). No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 647 — the last of Robot City's five barrels finally gets a look
+
+Round 646 closed out the last bare crate and left a note behind: of the floor's five scattered barrels,
+three had already picked up a "look" toast over past rounds, and the remaining two — a pair by the
+entrance ramp at (28.5, 3.5) and (29.7, 2.2) — had been skipped every time for sitting only 1.77 m apart,
+too tight for either one's own circle. **The one nearer the airlock, at (28.5, 3.5), gets its turn now**,
+with a radius small enough to leave its neighbour's circle alone. *"Rolled off the ramp years ago and
+nobody's rolled it back on."* *"Its twin sits a metre off. Whatever they held, it wasn't worth
+separating."* *"The cat squeezes between this barrel and the next, finds nothing, and squeezes back
+out."*
+
+No new mesh and no new physics box: the barrel's own `mesh()` return from the existing loop in
+`src/70-worlds.js` is captured into a new `rampBarrel` variable alongside the other three barrels'
+captures, then handed straight to `game.addInteractable` — the same trick they already used. A headless
+probe on the stub-three harness (`game.travel(2, 'from-prev')`, 3600 simulated frames sampling every
+physics box, NPC and interactable on the floor every sixth frame) found the nearest other box — its own
+neighbour barrel — 1.06 m clear, the nearest wandering soul 9.30 m off and the nearest other
+interactable 6.67 m off, so a 0.6 m radius (tighter than any barrel before it, since this corner is
+genuinely the most crowded of the five) stays a clean half-metre short of reaching the neighbour's own
+circle. The neighbour itself, (29.7, 2.2), is left for a future round — still skippable on its own
+merits, but now with company.
+
+`node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
+collider). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
