@@ -17426,3 +17426,30 @@ clearance, so this one gets a smaller 1.6 m radius rather than reusing their 2.4
 (no new collider). No visual check was possible in this environment (no browser, no Playwright) — only
 the stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 642 — a third loose crate in Robot City finally gets a look
+
+Two of the factory floor's six loose crates got a "look" prompt in earlier rounds ((-16, -20) and
+(15, 12)), leaving four still bare. Two of those four, at (-22, 4) and (-23, 5.2), sit barely 1.3 m
+apart — same problem the entrance-ramp barrel pair ran into — so they're skipped again. **The crate at
+(-22, 4) gets its own look instead**, the first one found backed right up against the factory
+building's own wall. *"Wedged right up against the building — however it got stacked here, nobody's
+moved it since."* *"Scrapes the wall if you lean on it. Nobody's bothered to shift it the one metre it
+would take."* *"Still reads as cargo to the loading bots. They just never route this way."*
+
+No new mesh, no new physics box: the crate loop in `src/70-worlds.js` already builds and places all six
+with one `mesh()` call each, so this one's return value is captured into `wallCrate` alongside the
+existing `farCrate`/`midCrate` captures, then handed straight to `game.addInteractable` — the same
+trick the other two crates already used. A headless probe (a scratch script on the same stub-three
+harness `test/run.mjs` itself uses — `game.start('new')`, `game.travel(2, 'from-prev')`, 1800 simulated
+frames sampling every physics box, NPC and interactable every sixth frame) found this the tightest spot
+yet: only 0.85 m clear of the building wall, against 3.39 m to the nearest wandering soul and 6.71 m to
+the nearest other interactable. Rather than trust that one nearest-box figure alone, a second probe
+walked a 36-point ring around the crate at a few candidate radii: at 0.7 m, 33 of the 36 points stood on
+open floor, so the crate keeps a walkable approach from every side but the one against the wall, and the
+prompt gets a 0.7 m radius — smaller than any crate or barrel look before it.
+
+`node test/run.mjs` ran clean: all checks `ok` (277), 0 console warnings, box count unchanged at 328
+(no new collider). No visual check was possible in this environment (no browser, no Playwright) — only
+the stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.
