@@ -17524,3 +17524,29 @@ at build time.
 `node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
 collider). No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 646 — the last of Robot City's six crates finally gets a look
+
+Rounds 640–645 worked through roofs, barrels and lollipops; three of Robot City's six scattered crates
+had already picked up a "look" toast ((-16, -20), (15, 12), (-22, 4)), leaving the one east of the
+conveyor belts at (22, 2) still bare. **It gets the same treatment now**: *"Sits closer to the
+skyscrapers than to the belts — nobody's claimed it either way."* *"No stencil, no dent, no reason
+anyone's given for it being exactly here."* *"The forklift bots have a route past every other crate on
+this floor. Not this one."*
+
+No new mesh and no new physics box: the crate's own `mesh()` return from the existing loop in
+`src/70-worlds.js` is captured into a new `eastCrate` variable alongside the other three crates'
+captures, then handed straight to `game.addInteractable` — the same trick the others already used. A
+headless probe on the stub-three harness (`game.load(2, 'from-prev')`, 3600 simulated frames tracking
+every wandering robot's own position every frame) found the nearest other physics box 6.08 m clear and
+the nearest wandering soul never closer than 1.97 m over the whole run; a second probe walked a 36-point
+ring 1.3 m out and found every point on open floor. The entrance-ramp barrel pair at (28.5, 3.5)/(29.7,
+2.2), noted as skipped in earlier rounds, turned out on a correct re-probe (an earlier scratch script
+had mistakenly called `game.travel()`, whose fade only loads the next world after a real 520 ms
+`setTimeout`, and so measured distances in the Neighborhood instead of Robot City) to have decent
+clearance from everything except each other — a future round could still give one of them a tight
+radius the way the wall crate already did.
+
+`node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
+collider). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
