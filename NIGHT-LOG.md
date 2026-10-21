@@ -17599,3 +17599,29 @@ apart, short of touching. All five of Robot City's barrels now have their own li
 `node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
 collider). No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 649 — the last of Victorian's eleven flower baskets finally gets a look
+
+A much earlier round gave every one of the Victorian street's eleven lamp posts a small hanging basket
+of flowers, swaying off a short iron bracket, and a later round gave just one of them — `vicLamps[5]`,
+dead centre of the street — its own "look" prompt. The other ten sat bare ever since. **The one at the
+very end of the street, `vicLamps[10]` (x=55.5, z=6.4), past the cyclist's own lane, gets the same
+treatment now** — the dusty-rose hue, furthest basket from the market square. *"Last lamp on the street,
+last basket too — same dusty-rose petals as its neighbours."* *"The cyclist rings past this one every
+lap. Never once looks up."* *"Furthest basket from the market square. Nobody waters this one any less
+for it."*
+
+No new mesh and no new physics box: `game.addInteractable` is keyed off the lamp post `vicLamps[10]`
+already is, the same trick `vicLamps[5]`'s own prompt and the Robot City crates and barrels already
+used. A headless probe on the stub-three harness (`game.start('new')`, `game.travel(3, 'from-prev')`
+waited out through its real portal-fade timer, then 3600 simulated frames tracking every NPC's own
+position every frame) found the nearest other physics box was the lamp's own post, the nearest other
+interactable (a greet prompt) 7.51 m off, and the nearest wandering soul (the cyclist on his lane) never
+closer than 5.1 m — comfortably past the 1.8 m radius a basket this small needs. An earlier candidate,
+`vicLamps[1]` at the street's western end, was ruled out by the same probe: a wandering local there
+came within 2.0 m of the lamp's own post, too tight a margin for a fresh prompt, so it's left for a
+future round with a smaller radius.
+
+`node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
+collider). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
