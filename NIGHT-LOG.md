@@ -17148,3 +17148,27 @@ nothing else on the mountain changed in between.
 `node test/run.mjs` ran clean: all 277 checks `ok`, 0 console warnings, box count unchanged at 328 (no
 new collider). No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 630 — the zipline windsock finally flaps
+
+Before picking a task, a headless re-check of round 625's own two flagged ice crystals ((26, 16) and
+(-32, 2) on Frosty Peak) confirmed both are still genuinely stuck: a longer probe (`game.start('new')`,
+`game.travel(5, 'from-hub')`, 7200 frames sampled every frame rather than every sixth) still puts a
+wandering penguin within 0.43 m of (26, 16), and (-32, 2) sits just 0.27 m from the welcome arch's own
+post at (-31.5, 0) — not a penguin or a stray box, but a real structural fixture. Neither is worth
+forcing, so they stay bare for a future round with a different idea, not just a different probe.
+
+Instead, this round is a quiet polish on something every other prop like it already has: **the zipline
+tower's own windsock, swinging on its mast since round 219, has never once made a sound.** It now gives
+a soft fabric rustle every five to nine seconds while the cat is within 20 m of the tower's base — the
+same `SFX.rustle()` the leaf litter already uses, timed off a plain countdown rather than the shared
+`rnd()` sequence so no other NPC's idle-gesture timing shifts. `makeZipline()` in `62-props-nature.js` is
+shared code, used by both Frosty Peak's and Whisper Woods' own zipline towers, so one change gives each
+tower's sock its own independent rustle clock (keyed off that world's own seeded `r`, not a shared one).
+No new mesh, no new physics box, no new collider — just a timer and a distance check added to the
+sock's existing `userData.update`.
+
+`node test/run.mjs` ran clean: all 277 checks `ok`, 0 console warnings, box count unchanged at 328. No
+visual or audio check was possible in this environment (no browser, no Playwright, no real
+`AudioContext` in the stub harness) — only confirmation that the change doesn't throw and the rest of
+the suite stays green. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
