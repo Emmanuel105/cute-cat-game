@@ -895,6 +895,35 @@ function buildNeighborhood(game, entry) {
       const solarLines = ['☀️ "Faces the sun, not a screen. Different roof, different argument."', '📺 "Try telling the aerial two lots over that it\'s old news. It won\'t hear it over the static."', '😼 "Puss, that is not a sun-lounger. Find your own spot to nap in."'];
       game.addInteractable({ obj: solar, radius: 2.6, label: () => 'Look up at the solar panel', onUse: () => { SFX.click(); game.toast(rnd.pick(solarLines), 3000); } });
     }
+    // the aerial, the dish and the solar panel gave three of the street's sixteen ridges a fixture of
+    // their own; thirteen still carry nothing but chimney smoke. House 9's own ridge now gets a
+    // whirlybird roof vent: a short galvanised pipe stub topped with a turbine rotor of angled fins,
+    // the kind that spins on its own in any breeze to pull stale air out of an attic. Nothing in this
+    // game actually simulates wind, so it just turns steadily — the same "nothing drives it but the
+    // world clock `t`" trick the cat's own roof weathervane and the zipline windsock both already lean
+    // on, just a full spin instead of a swing.
+    // Same slot the aerial, the dish and the solar panel all already use: parented to this house's own
+    // group (`h`) at local (0, h.userData.h, 0), the ridge-apex point `makeHouse()` itself already
+    // computes for every house on the street — no world-space maths of its own, and no physics box,
+    // the same few-metres-up reasoning every other roof fixture on this street already banks on:
+    // nothing on the ground can jump anywhere near a roof ridge, let alone this. The fins are
+    // `noInk()`-wrapped, the same treatment the weathervane's own spindle and the solar panel's own
+    // grid lines already get, since nothing this slender should pick up the outline shader's ink line.
+    // Every dimension below is a fixed literal, not a draw from this world's own seeded `r` — the
+    // sundial's and weathervane's own comments above already spell out why, since the Neighborhood is
+    // the one world every test travel starts from.
+    if (i === 9) {
+      const pipeM = mat(0x6b6f74, { metalness: 0.55, roughness: 0.5 }), finM = mat(0x9aa0a6, { metalness: 0.6, roughness: 0.4 });
+      const pipeH = 0.22, rotorR = 0.1, finCount = 8;
+      const vent = group(0, h.userData.h, 0, h);
+      noInk(mesh(G.cyl(0.07, 0.08, pipeH, 10), pipeM, { y: pipeH / 2, shadow: 'none', parent: vent }));
+      const rotor = group(0, pipeH + 0.03, 0, vent);
+      for (let k = 0; k < finCount; k++) { const a = k / finCount * TAU; noInk(mesh(G.box(0.09, 0.075, 0.01), finM, { x: cos(a) * rotorR, z: sin(a) * rotorR, ry: a, rz: 0.4, shadow: 'none', parent: rotor })); }
+      noInk(mesh(G.dome(0.025, 8, 6), finM, { y: 0.045, shadow: 'none', parent: rotor }));
+      U.push((dt, t) => { rotor.rotation.y = t * 2.6; });
+      const ventLines = ['🌀 "Spins all day, rain or shine. Nobody\'s ever climbed up to oil it."', '💨 "Keeps the attic from going stuffy, or so the roofer claimed."', '😼 "Puss, that\'s four storeys up. Even you\'re not trying that."'];
+      game.addInteractable({ obj: vent, radius: 2.6, label: () => 'Look up at the roof vent', onUse: () => { SFX.click(); game.toast(rnd.pick(ventLines), 3000); } });
+    }
   });
   // the pinwheel, sprinkler and kennel above gave three of the street's sixteen yards their own
   // feature; lot 14's own corner now gets a fourth — a stone birdbath, a shallow bowl on a short

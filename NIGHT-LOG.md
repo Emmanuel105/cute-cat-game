@@ -17172,3 +17172,25 @@ sock's existing `userData.update`.
 visual or audio check was possible in this environment (no browser, no Playwright, no real
 `AudioContext` in the stub harness) — only confirmation that the change doesn't throw and the rest of
 the suite stays green. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 631 — house 9 finally gets something on its own roof
+
+Three of the Neighborhood's sixteen house ridges had their own fixture by now — the TV aerial, the
+satellite dish, the solar panel — but the other thirteen carried nothing but the chimney smoke every
+house already gets. **House 9's own ridge now has a whirlybird roof vent**, a short galvanised pipe
+topped with a turbine rotor of eight angled fins that spins steadily, the kind that's supposed to pull
+stale air out of an attic on the wind. Nothing in this game actually simulates wind, so it just turns
+off the world clock, the same trick the roof weathervane and the zipline windsock already lean on.
+*"Spins all day, rain or shine. Nobody's ever climbed up to oil it."* *"Puss, that's four storeys up.
+Even you're not trying that."*
+
+Same slot the aerial, dish and solar panel already use — parented to the house's own group at its
+ridge apex, no world-space math, no physics box, same reasoning as every other roof fixture on this
+street: nothing on the ground can jump anywhere near a roof ridge. Every dimension is a fixed literal,
+not a draw from the world's own seeded `r`, since the Neighborhood is the one world every test travel
+starts from.
+
+`node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
+collider — it's well above anything that could touch it). No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
