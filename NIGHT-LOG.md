@@ -17475,3 +17475,27 @@ clearest of the set — 8.61 m from the nearest other box, 11.72 m from the near
 `node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
 collider). No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 644 — a third of Candy Land's twelve big lollipops gets its own look
+
+Rounds 624 and 643 gave the inner dozen's clearest two lollipops, at (36, 18) and (-34, 16), their own
+"look" prompts, leaving ten of the twelve still planted since round 1 and never once looked at. **The
+lollipop at (-6, -34) gets its turn now**, down in the south belt past the gumdrop patch — picked as
+the clearest of the remaining ten in a headless sweep. *"Down in the south belt, past the gumdrop
+patch — quietest corner of the dozen."* *"Stripe's a little crooked near the base. Nobody's ever
+minded."* *"The cat sniffs the stick, finds no scent of mouse, and moves on."*
+
+No new mesh, no new physics box, no new draw from the world's own seeded `r()`: the lollipop loop in
+`src/70-worlds.js` already builds and places all twelve with one `makeLollipop()` call each, so this
+one's return value is captured into `southLollipop` alongside the existing `farLollipop`/`westLollipop`
+captures, then handed straight to `game.addInteractable` — the same trick the other two lollipops
+already used. A headless probe (`game.start('new')`, `game.travel(1, 'from-prev')`, 1800 simulated
+frames sampling every NPC's own position every sixth frame) swept the ten remaining candidates against
+every one of the land's physics boxes, every sample and every other interactable already on the floor:
+(-6, -34) came back with the widest box clearance of the set — 10.29 m from the nearest other box,
+5.45 m from the nearest wandering soul and 6.57 m from the nearest other interactable — comfortably
+past the 2.2 m radius this prompt uses.
+
+`node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
+collider). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
