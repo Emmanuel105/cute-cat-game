@@ -17194,3 +17194,24 @@ starts from.
 collider — it's well above anything that could touch it). No visual check was possible in this
 environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 632 — a fifth roof on the street finally gets something of its own
+
+The aerial, the dish, the solar panel and the whirlybird vent had given four of the Neighborhood's
+sixteen house ridges a fixture of their own; twelve still carried nothing but chimney smoke. **House
+5's own ridge — the lot with the sundial and the porch pumpkin down in the yard — now gets a lightning
+rod**: a thin copper mast with three small points fanned out at the tip and a red glass beacon ball
+just below them, pulsing steadily the way a real rooftop hazard light would. *"Copper, so it won't
+rust before the house does."* *"Blinks whether there's anything up there to see it or not."* *"Puss,
+lightning only strikes the mast. Please don't go testing that."*
+
+Same trick every other roof fixture on this street already uses: parented to the house's own group at
+its ridge apex (`h.userData.h`), so it costs no world-space maths and needs no physics box — nothing on
+the ground can jump anywhere near a roof ridge. The beacon's pulse is the same `glowMat()`/
+`emissiveIntensity` sine-wave the cat's own home beacon already drives, timed off the world clock `t`
+alone, never the shared `rnd()` sequence or this world's own seeded `r`, since the Neighborhood is the
+one world every test travel starts from.
+
+`node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
+collider). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

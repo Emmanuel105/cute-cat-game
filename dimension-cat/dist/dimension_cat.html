@@ -8567,6 +8567,33 @@ function buildNeighborhood(game, entry) {
       const ventLines = ['🌀 "Spins all day, rain or shine. Nobody\'s ever climbed up to oil it."', '💨 "Keeps the attic from going stuffy, or so the roofer claimed."', '😼 "Puss, that\'s four storeys up. Even you\'re not trying that."'];
       game.addInteractable({ obj: vent, radius: 2.6, label: () => 'Look up at the roof vent', onUse: () => { SFX.click(); game.toast(rnd.pick(ventLines), 3000); } });
     }
+    // the aerial, the dish, the solar panel and the whirlybird vent gave four of the street's sixteen
+    // ridges a fixture of their own; twelve still carry nothing but chimney smoke. House 5's own ridge
+    // (the lot with the sundial and the porch pumpkin down in the yard) now gets a lightning rod: a
+    // thin copper mast with three small points fanned out at its tip and a red glass beacon ball
+    // mounted just below them, pulsing on and off the way a real rooftop hazard light would. *"Copper,
+    // so it won't rust before the house does."* *"Blinks whether there's anything up there to see it or
+    // not."* *"Puss, lightning only strikes the mast. Please don't go testing that."*
+    // Same slot the aerial, the dish, the solar panel and the vent all already use: parented to this
+    // house's own group (`h`) at local (0, h.userData.h, 0), the ridge-apex point `makeHouse()` itself
+    // already computes for every house on the street — no world-space maths of its own, and no
+    // physics box, the same few-metres-up reasoning every other roof fixture on this street already
+    // banks on: nothing on the ground can jump anywhere near a roof ridge, let alone this. The mast
+    // and its points are `noInk()`-wrapped, the same treatment the weathervane's own spindle and the
+    // vent's own fins already get. The beacon's pulse is `glowMat()`/`emissiveIntensity` driven purely
+    // off the world clock `t` — the same trick the cat's own home beacon one roof over already uses
+    // for its own glow — never a draw from either this world's own seeded `r` or the shared `rnd()`
+    // sequence, since the Neighborhood is the one world every test travel starts from.
+    if (i === 5) {
+      const mastM = mat(0x8a5a3a, { metalness: 0.5, roughness: 0.4 }), beaconM = glowMat(0xd42a2a, 0.5);
+      const mastH = 0.5, rod = group(0, h.userData.h, 0, h);
+      noInk(mesh(G.cyl(0.01, 0.014, mastH, 6), mastM, { y: mastH / 2, shadow: 'none', parent: rod }));
+      mesh(G.sphere(0.04, 8, 6), beaconM, { y: mastH + 0.02, shadow: 'none', parent: rod });
+      for (let k = 0; k < 3; k++) { const a = k / 3 * TAU; noInk(mesh(G.cone(0.01, 0.05, 5), mastM, { x: cos(a) * 0.03, z: sin(a) * 0.03, y: mastH + 0.06, shadow: 'none', parent: rod })); }
+      U.push((dt, t) => { beaconM.emissiveIntensity = 0.5 + max(0, sin(t * 2.4)) * 1.8; });
+      const rodLines = ['⚡ "Copper, so it won\'t rust before the house does."', '🔴 "Blinks whether there\'s anything up there to see it or not."', '😼 "Puss, lightning only strikes the mast. Please don\'t go testing that."'];
+      game.addInteractable({ obj: rod, radius: 2.6, label: () => 'Look up at the lightning rod', onUse: () => { SFX.click(); game.toast(rnd.pick(rodLines), 3000); } });
+    }
   });
   // the pinwheel, sprinkler and kennel above gave three of the street's sixteen yards their own
   // feature; lot 14's own corner now gets a fourth — a stone birdbath, a shallow bowl on a short
