@@ -951,6 +951,33 @@ function buildNeighborhood(game, entry) {
       const rodLines = ['⚡ "Copper, so it won\'t rust before the house does."', '🔴 "Blinks whether there\'s anything up there to see it or not."', '😼 "Puss, lightning only strikes the mast. Please don\'t go testing that."'];
       game.addInteractable({ obj: rod, radius: 2.6, label: () => 'Look up at the lightning rod', onUse: () => { SFX.click(); game.toast(rnd.pick(rodLines), 3000); } });
     }
+    // the aerial, the dish, the solar panel, the vent and the rod gave five of the street's sixteen
+    // ridges a fixture of their own; eleven still carry nothing but chimney smoke. House 11's own
+    // ridge — the lot with the garden gnome down in the yard, its unlit lantern already a running
+    // joke — now gets a small pennant on a thin flagpole, fluttering in a breeze nothing else on this
+    // street can feel. *"Flies every day, rain or shine. Nobody's ever run it down to wash it."*
+    // *"Same wind that never once turns the gnome's own weathervane next door."* *"Puss, that is not
+    // a ribbon for you to chase. It's nailed up there for a reason."*
+    // Same slot every other roof fixture on this street already uses: parented to this house's own
+    // group (`h`) at local (0, h.userData.h, 0), the ridge-apex point `makeHouse()` itself already
+    // computes for every house on the street — no world-space maths of its own, and no physics box,
+    // the same few-metres-up reasoning every other roof fixture on this street already banks on. The
+    // pennant's flutter is the exact same two-sine `rotation.y`/`rotation.z` trick the swim flag
+    // (`makeSwimFlag()`, 62-props-nature.js) already uses, just re-timed so it doesn't flap in
+    // lockstep with anything else on the street — driven purely by the world clock `t`, never the
+    // shared `rnd()` sequence or this world's own seeded `r`, since the Neighborhood is the one world
+    // every test travel starts from.
+    if (i === 11) {
+      const poleM = mat(0x5a5a5a, { metalness: 0.4, roughness: 0.55 }), flagM = mat(0x2e63d8, { roughness: 0.8 }), flagM2 = mat(0xf7f3ec, { roughness: 0.8 });
+      const poleH = 0.6, flagpole = group(0, h.userData.h, 0, h);
+      noInk(mesh(G.cyl(0.012, 0.016, poleH, 6), poleM, { y: poleH / 2, shadow: 'none', parent: flagpole }));
+      const pennant = group(0, poleH * 0.82, 0, flagpole);
+      mesh(G.box(0.26, 0.1, 0.012), flagM, { x: 0.13, y: 0.05, shadow: 'none', parent: pennant });
+      mesh(G.box(0.26, 0.1, 0.012), flagM2, { x: 0.13, y: -0.05, shadow: 'none', parent: pennant });
+      U.push((dt, t) => { pennant.rotation.y = 0.35 + sin(t * 2.3) * 0.25; pennant.rotation.z = sin(t * 1.6) * 0.06; });
+      const pennantLines = ['🚩 "Flies every day, rain or shine. Nobody\'s ever run it down to wash it."', '💨 "Same wind that never once turns the gnome\'s own weathervane next door."', '😼 "Puss, that is not a ribbon for you to chase. It\'s nailed up there for a reason."'];
+      game.addInteractable({ obj: flagpole, radius: 2.6, label: () => 'Look up at the pennant', onUse: () => { SFX.click(); game.toast(rnd.pick(pennantLines), 3000); } });
+    }
   });
   // the pinwheel, sprinkler and kennel above gave three of the street's sixteen yards their own
   // feature; lot 14's own corner now gets a fourth — a stone birdbath, a shallow bowl on a short

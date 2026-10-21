@@ -17215,3 +17215,24 @@ one world every test travel starts from.
 `node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
 collider). No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 633 — a sixth roof on the street finally gets something of its own
+
+The TV aerial, the satellite dish, the solar panel, the whirlybird vent and the lightning rod had given
+five of the Neighborhood's sixteen house ridges a fixture of their own; eleven still carried nothing but
+chimney smoke. **House 11's own ridge — the lot with the garden gnome down in the yard, whose lantern
+has never once lit up — now flies a small pennant from a thin flagpole**, fluttering in a breeze nothing
+else on the street can feel. *"Flies every day, rain or shine. Nobody's ever run it down to wash it."*
+*"Same wind that never once turns the gnome's own weathervane next door."* *"Puss, that is not a ribbon
+for you to chase. It's nailed up there for a reason."*
+
+Same slot every other roof fixture on this street already uses — parented to the house's own group at
+its ridge apex (`h.userData.h`), so it costs no world-space maths and needs no physics box, same
+reasoning as the other five. The flutter reuses the exact two-sine `rotation.y`/`rotation.z` trick the
+swim flag (`makeSwimFlag()`) already relies on, just re-timed off the world clock `t` alone so it
+doesn't flap in lockstep with anything else — never a draw from the shared `rnd()` sequence or this
+world's own seeded `r`, since the Neighborhood is the one world every test travel starts from.
+
+`node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
+collider). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
