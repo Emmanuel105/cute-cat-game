@@ -8702,6 +8702,43 @@ function buildNeighborhood(game, entry) {
       const dpLines = ['🌧️ "So that\'s where the rain barrel\'s been getting it all along."', '💧 "Explains why that tap only ever drips — most of it\'s still up on the roof."', '😼 "Puss, that is a drainpipe. You are not climbing it."'];
       game.addInteractable({ obj: dp, radius: 2.4, label: () => 'Look at the downpipe', onUse: () => { SFX.click(); game.toast(rnd.pick(dpLines), 3000); } });
     }
+    // the aerial, the dish, the solar panel, the vent, the rod, the pennant, the anemometer and the
+    // downpipe between them gave eight of the street's sixteen roofs a fixture of their own — every
+    // single one of them mounted at the ridge apex (the downpipe's corner aside), and not one of them
+    // anywhere near the one thing every roof on this street already has: a chimney pot. House 4's own
+    // chimney — the lot whose front yard already has the parked wheelbarrow — now gets a rotating
+    // cowl: a squat iron collar sat on the pot's own rim, a bent outlet pipe poking out sideways, and a
+    // flat tail fin behind it that catches the wind and slowly swings the whole thing round so the
+    // opening always ends up pointing away from the gusts — the same unhurried drift the weathervane's
+    // own cat arrow already uses, just re-timed so the two don't track in lockstep. *"Spins round to
+    // keep its back to the wind — same trick the weathervane uses, just with smoke coming out the
+    // front instead of a cat."* *"Never faces the same way twice. Keeps the kitchen from smoking out,
+    // allegedly."* *"Puss, that is a very long way up. Not even you."*
+    // Parented to this house's own group (`h`) at `h.userData.chimney` — the exact local offset
+    // `makeHouse()` itself already computes for the chimney smoke above — rather than any fresh
+    // world-space maths of its own, since a child of `h` inherits the house's own position and rotation
+    // for free the moment it's parented there, the same trick every ridge fixture on this street
+    // already banks on. No new physics box: a few centimetres of iron sat on a brick pot that already
+    // towers higher than the ridge apex every other roof fixture on this street already goes
+    // uncollided at. The riser, hood and tail fin are all `noInk()`-wrapped, the same treatment every
+    // slender fixture on this street already gets; the drift is a fixed literal off the world clock `t`
+    // alone, never this world's own seeded `r` or the shared `rnd()` sequence, since the Neighborhood is
+    // the one world every test travel starts from.
+    if (i === 4) {
+      const [chx, chy, chz] = h.userData.chimney;
+      const ironM = mat(0x3a3d42, { metalness: 0.5, roughness: 0.45 }), hoodM = mat(0x53575e, { metalness: 0.45, roughness: 0.4 });
+      const base = group(chx, chy, chz, h);
+      mesh(G.cyl(0.34, 0.34, 0.05, 14), ironM, { y: 0.025, shadow: 'both', parent: base });   // collar, sat on the pot's own rim
+      const pivot = group(0, 0.07, 0, base);
+      noInk(mesh(G.cyl(0.03, 0.03, 0.12, 8), ironM, { y: 0.06, shadow: 'none', parent: pivot }));   // short riser
+      const hood = group(0, 0.12, 0, pivot);
+      noInk(mesh(G.cyl(0.11, 0.11, 0.2, 10), hoodM, { x: 0.1, rz: PI / 2, shadow: 'none', parent: hood }));    // the bent outlet, pointed sideways
+      noInk(mesh(G.cyl(0.085, 0.085, 0.02, 10), ironM, { x: 0.2, rz: PI / 2, shadow: 'none', parent: hood })); // rim at the open end
+      noInk(mesh(G.box(0.14, 0.16, 0.01), ironM, { x: -0.14, y: 0.02, shadow: 'none', parent: hood }));        // tail fin, opposite the hood
+      U.push((dt, t) => { pivot.rotation.y = sin(t * 0.09 + 0.4) * 0.8 + sin(t * 0.023 + 1.1) * 1.5; });
+      const cowlLines = ['🌀 "Spins round to keep its back to the wind — same trick the weathervane uses, just with smoke coming out the front instead of a cat."', '💨 "Never faces the same way twice. Keeps the kitchen from smoking out, allegedly."', '😼 "Puss, that is a very long way up. Not even you."'];
+      game.addInteractable({ obj: base, radius: 2.2, label: () => 'Look up at the chimney cowl', onUse: () => { SFX.click(); game.toast(rnd.pick(cowlLines), 3000); } });
+    }
   });
   // the pinwheel, sprinkler and kennel above gave three of the street's sixteen yards their own
   // feature; lot 14's own corner now gets a fourth — a stone birdbath, a shallow bowl on a short

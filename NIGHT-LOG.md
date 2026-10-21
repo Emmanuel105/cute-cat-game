@@ -17282,3 +17282,30 @@ from.
 `node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
 collider). No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 636 — a rotating cowl finally sits on a chimney, not a ridge
+
+Eight of the street's sixteen roofs had a fixture by now — the aerial, the dish, the solar panel, the
+whirlybird vent, the lightning rod, the pennant, the anemometer and the downpipe — every one of them
+mounted at the ridge apex (the downpipe's own corner aside). Not one had ever gone anywhere near the
+one thing every roof on this street already has: a chimney pot. **House 4's own chimney — the lot
+whose front yard already has the parked wheelbarrow — now gets a rotating cowl**: a squat iron collar
+on the pot's own rim, a bent outlet pipe poking out sideways, and a flat tail fin behind it that
+catches the wind and slowly swings the whole thing round so the opening ends up facing away from the
+gusts — the same unhurried two-sine drift the weathervane's own cat arrow already uses, just re-timed
+so the two don't track in lockstep. *"Spins round to keep its back to the wind — same trick the
+weathervane uses, just with smoke coming out the front instead of a cat."* *"Never faces the same way
+twice. Keeps the kitchen from smoking out, allegedly."* *"Puss, that is a very long way up. Not even
+you."*
+
+Parented to the house's own group (`h`) at `h.userData.chimney` — the exact local offset `makeHouse()`
+already computes for the chimney smoke, so it inherits the house's position and rotation for free, no
+world-space rotation maths of its own needed. No new physics box: it sits higher than the ridge apex
+every other roof fixture on this street already goes uncollided at. Every slender part is
+`noInk()`-wrapped, and the drift is a fixed literal off the world clock `t` alone, never this world's
+own seeded `r` or the shared `rnd()`, since the Neighborhood is the one world every test travel starts
+from.
+
+`node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
+collider). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
