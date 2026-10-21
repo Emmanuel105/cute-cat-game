@@ -17453,3 +17453,25 @@ prompt gets a 0.7 m radius — smaller than any crate or barrel look before it.
 (no new collider). No visual check was possible in this environment (no browser, no Playwright) — only
 the stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 643 — a second of Candy Land's twelve big lollipops gets its own look
+
+Round 624 gave the inner dozen's clearest lollipop, out at (36, 18), its first "look" prompt and left
+the other eleven planted since round 1 and never once looked at. **The lollipop at (-34, 16) gets its
+turn now**, picked as the clearest of the remaining eleven in a headless sweep. *"Leans a little west,
+same as every cane in this corner of the belt."* *"This one's swirl has gone slightly matte. Still
+nobody's taken a lick."* *"The cat circles the stick twice, decides it is not food, and wanders off."*
+
+No new mesh, no new physics box, no new draw from the world's own seeded `r()`: the lollipop loop in
+`src/70-worlds.js` already builds and places all twelve with one `makeLollipop()` call each, so this
+one's return value is captured into `westLollipop` alongside the existing `farLollipop` capture, then
+handed straight to `game.addInteractable` — the same trick `farLollipop` itself used. A headless probe
+(`game.start('new')`, `game.load(1, 'from-prev')`, 1800 simulated frames sampling every NPC's own
+position every sixth frame) swept all eleven remaining candidates against every one of the land's
+physics boxes, every sample and every other interactable already on the floor: (-34, 16) came back
+clearest of the set — 8.61 m from the nearest other box, 11.72 m from the nearest wandering soul and
+15.59 m from the nearest other interactable — comfortably past the 2.2 m radius this prompt uses.
+
+`node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
+collider). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
