@@ -8804,6 +8804,41 @@ function buildNeighborhood(game, entry) {
       const lanternLines = ['🏮 "Burns the same hours as every porch bulb on the street — just further up."', '😼 "Puss, the ridge is not the place for a night-time prowl, however inviting that glow looks."', '✨ "First light up there, last one out. Somebody clearly likes the view."'];
       game.addInteractable({ obj: lantern, radius: 2.4, label: () => 'Look up at the roof lantern', onUse: () => { SFX.click(); game.toast(rnd.pick(lanternLines), 3000); } });
     }
+    // the aerial, the dish, the solar panel, the vent, the rod, the pennant, the anemometer, the
+    // downpipe, the cowl, the finial and the lantern between them gave eleven of the street's sixteen
+    // roofs a fixture of their own — and the lantern was the first to notice the day/night cycle at
+    // all, but only ever by brightening after dusk, same as every porch bulb on the street already
+    // does. House 2's own roof — the lot whose porch rail already has the napping stray cat on it —
+    // gets a small bubble skylight now, the twelfth roof fixture and the first one that answers to
+    // daylight instead of darkness: a clear dome over a square frame, catching a faint blue glare that
+    // brightens toward midday and fades to almost nothing once the sun goes down — the exact opposite
+    // of the lantern's own dusk-to-dawn glow a few lots over. *"Catches the glare at noon and goes
+    // dark the second the sun does. Not much use after dinner."* *"Puss, that is the skylight.
+    // Whatever's up there for you to stare at is on the inside, not the roof."* *"Brightest roof on
+    // the street at midday, dullest one by midnight — nobody's matched the lantern's own trick in
+    // reverse before."*
+    // Can't reuse `makeDayNight`'s own emissive-hex sweep the lantern leans on, since that sweep only
+    // ever drives brightness UP at night — it has no "day" bucket for a fixture that wants the inverse
+    // to join. So this one reads `game.dayPhase` directly in its own small `U.push`, with the same
+    // `sunY = sin(dayPhase * TAU - PI/2)` the day/night cycle itself already derives the sun's height
+    // from a few lines above — one frame of lag behind the cycle's own update at worst, same as every
+    // other reader of `game.dayPhase` would see. Same slot every other roof fixture already uses —
+    // parented to the house's own group (`h`) at its ridge apex (`h.userData.h`), so it costs no
+    // world-space maths and needs no physics box, same reasoning the other eleven already give. No
+    // draw from this world's own seeded `r` or the shared `rnd()` sequence at build time, same caution
+    // every roof fixture on this street has taken.
+    if (i === 2) {
+      const curbH = 0.05, domeR = 0.1;
+      const frameM = mat(0x3a3a3a, { metalness: 0.4, roughness: 0.55 }),
+        glassM = mat(0x4a5560, { roughness: 0.2, transparent: true, opacity: 0.75, emissive: 0xcfe8ff, emissiveIntensity: 0.04 });
+      const skylight = group(0, h.userData.h, 0, h);
+      mesh(G.box(0.26, curbH, 0.26), frameM, { y: curbH / 2, shadow: 'both', parent: skylight });
+      mesh(G.dome(domeR, 12, 8), glassM, { y: curbH, shadow: 'none', parent: skylight });
+      for (const a of [0, PI / 2]) noInk(mesh(G.box(domeR * 2, 0.006, 0.01), frameM, { y: curbH + domeR * 0.42, ry: a, shadow: 'none', parent: skylight }));
+      U.push(() => { const p = game.dayPhase ?? 0.12, sa = p * TAU - PI / 2, sunY = sin(sa); glassM.emissiveIntensity = 0.04 + max(0, sunY) * 0.5; });
+      const skyLines = ['☀️ "Catches the glare at noon and goes dark the second the sun does. Not much use after dinner."', '😼 "Puss, that is the skylight. Whatever\'s up there for you to stare at is on the inside, not the roof."', '🏠 "Brightest roof on the street at midday, dullest one by midnight."'];
+      game.addInteractable({ obj: skylight, radius: 2.2, label: () => 'Look up at the skylight', onUse: () => { SFX.click(); game.toast(rnd.pick(skyLines), 3000); } });
+    }
   });
   // the pinwheel, sprinkler and kennel above gave three of the street's sixteen yards their own
   // feature; lot 14's own corner now gets a fourth — a stone birdbath, a shallow bowl on a short

@@ -17499,3 +17499,28 @@ past the 2.2 m radius this prompt uses.
 `node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
 collider). No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 645 — the twelfth roof answers to daylight, not dusk
+
+Round 640 gave the Neighborhood's roof trio an eleventh member — a cage lantern on house 0 that was the
+first roof fixture to notice the street's own day/night cycle, brightening after dusk the same way
+every porch bulb does. **House 2's own roof — the lot whose porch rail already has the napping stray
+cat on it — gets a small bubble skylight now**, the twelfth roof fixture and the first one that runs
+the lantern's own trick in reverse: a clear dome over a square frame, catching a faint blue glare that
+brightens toward midday and fades to almost nothing once the sun sets. *"Catches the glare at noon and
+goes dark the second the sun does. Not much use after dinner."* *"Puss, that is the skylight. Whatever's
+up there for you to stare at is on the inside, not the roof."* *"Brightest roof on the street at
+midday, dullest one by midnight."*
+
+Couldn't reuse `makeDayNight`'s own emissive-hex sweep the lantern leans on — that sweep only ever
+drives brightness *up* at night, with no "day" bucket for a fixture wanting the opposite. So the
+skylight reads `game.dayPhase` directly in its own small `U.push`, deriving the sun's height with the
+same `sunY = sin(dayPhase * TAU - PI/2)` the day/night cycle itself already uses a few lines above.
+Same slot every other roof fixture on this street already uses — parented to house 2's own group at its
+ridge apex (`h.userData.h`) — so no world-space maths and no physics box, same reasoning the other
+eleven fixtures already give. No draw from this world's own seeded `r` or the shared `rnd()` sequence
+at build time.
+
+`node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
+collider). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
