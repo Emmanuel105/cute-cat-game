@@ -17236,3 +17236,27 @@ world's own seeded `r`, since the Neighborhood is the one world every test trave
 `node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
 collider). No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 634 — a seventh roof on the street finally gets something of its own
+
+The aerial, the dish, the solar panel, the whirlybird vent, the lightning rod and the pennant had
+given six of the Neighborhood's sixteen house ridges a fixture of their own; ten still carried nothing
+but chimney smoke. **House 7's own ridge — the lot whose front yard already has the iron weathervane
+with the little cat-shaped arrow — now gets a proper cup anemometer**: three small scoops on short arms,
+spinning steadily around a thin spindle. The yard vane downstairs only guesses which way the wind is
+blowing; this one up on the ridge is built to say how hard. *"The vane downstairs points. This one
+spins. Between them, this house has an opinion about every gust."* *"Spins whether there's a breeze or
+not — same trick as the gnome's own weathervane next door, if anyone ever checked."* *"Puss, you're not
+catching that one either."*
+
+Same slot every other roof fixture on this street already uses — parented to the house's own group at
+its ridge apex (`h.userData.h`), so it costs no world-space maths and needs no physics box, same
+reasoning as the other six. The mast, arms and cups are all `noInk()`-wrapped like the vent's own fins,
+and the rotor spin is a fixed literal timed off the world clock `t` alone, never this world's own
+seeded `r` or the shared `rnd()` sequence, since the Neighborhood is the one world every test travel
+starts from.
+
+`node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
+collider — well above anything that could touch it). No visual check was possible in this environment
+(no browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

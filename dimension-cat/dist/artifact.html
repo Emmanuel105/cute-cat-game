@@ -8614,6 +8614,41 @@ function buildNeighborhood(game, entry) {
       const pennantLines = ['🚩 "Flies every day, rain or shine. Nobody\'s ever run it down to wash it."', '💨 "Same wind that never once turns the gnome\'s own weathervane next door."', '😼 "Puss, that is not a ribbon for you to chase. It\'s nailed up there for a reason."'];
       game.addInteractable({ obj: flagpole, radius: 2.6, label: () => 'Look up at the pennant', onUse: () => { SFX.click(); game.toast(rnd.pick(pennantLines), 3000); } });
     }
+    // the aerial, the dish, the solar panel, the vent, the rod and the pennant gave six of the
+    // street's sixteen ridges a fixture of their own; ten still carry nothing but chimney smoke.
+    // House 7's own ridge — the lot whose front yard already has the iron weathervane with the little
+    // cat-shaped arrow (the round a few features back) — now gets a proper cup anemometer: three small
+    // scoops on short arms, spinning steadily around a thin spindle. The yard vane below only guesses
+    // which way the wind is blowing; this one up on the ridge is built to say how hard, for whatever
+    // that's worth on a street where nothing else here actually has weather. *"The vane downstairs
+    // points. This one spins. Between them, this house has an opinion about every gust."* *"Spins
+    // whether there's a breeze or not — same trick as the gnome's own weathervane next door, if anyone
+    // ever checked."* *"Puss, you're not catching that one either."*
+    // Same slot every other roof fixture on this street already uses: parented to this house's own
+    // group (`h`) at local (0, h.userData.h, 0), the ridge-apex point `makeHouse()` itself already
+    // computes for every house on the street — no world-space maths of its own, and no physics box,
+    // the same few-metres-up reasoning every other roof fixture on this street already banks on. The
+    // mast, arms and cups are all `noInk()`-wrapped, the same treatment the vent's own fins and the
+    // pennant's own pole already get, since nothing this slender should pick up the outline shader's
+    // ink line while it's spinning. The rotor speed is a fixed literal driven by the world clock `t`
+    // alone, never this world's own seeded `r` or the shared `rnd()` sequence, since the Neighborhood
+    // is the one world every test travel starts from.
+    if (i === 7) {
+      const metalM = mat(0x6b6f74, { metalness: 0.55, roughness: 0.5 }), cupM = mat(0xd8dadd, { metalness: 0.3, roughness: 0.45 });
+      const mastH = 0.26, armLen = 0.09, cupR = 0.026, cupCount = 3;
+      const anem = group(0, h.userData.h, 0, h);
+      noInk(mesh(G.cyl(0.01, 0.014, mastH, 6), metalM, { y: mastH / 2, shadow: 'none', parent: anem }));
+      const rotor = group(0, mastH + 0.01, 0, anem);
+      for (let k = 0; k < cupCount; k++) {
+        const arm = group(0, 0, 0, rotor); arm.rotation.y = k / cupCount * TAU;
+        noInk(mesh(G.cyl(0.005, 0.005, armLen, 5), metalM, { z: armLen / 2, rx: PI / 2, shadow: 'none', parent: arm }));
+        const cup = group(0, 0, armLen, arm); cup.rotation.y = PI / 2;
+        noInk(mesh(G.dome(cupR, 8, 6), cupM, { rz: PI, shadow: 'none', parent: cup }));
+      }
+      U.push((dt, t) => { rotor.rotation.y = t * 3.1; });
+      const anemLines = ['🌬️ "The vane downstairs points. This one spins. Between them, this house has an opinion about every gust."', '🔄 "Spins whether there\'s a breeze or not — same trick as the gnome\'s own weathervane next door, if anyone ever checked."', '😼 "Puss, you\'re not catching that one either."'];
+      game.addInteractable({ obj: anem, radius: 2.6, label: () => 'Look up at the anemometer', onUse: () => { SFX.click(); game.toast(rnd.pick(anemLines), 3000); } });
+    }
   });
   // the pinwheel, sprinkler and kennel above gave three of the street's sixteen yards their own
   // feature; lot 14's own corner now gets a fourth — a stone birdbath, a shallow bowl on a short
