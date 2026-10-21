@@ -17378,3 +17378,26 @@ the 2.2 m radius chosen for a crate with only a 0.55 m half-extent.
 `node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
 collider). No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 640 — an eleventh roof, and the first that answers to dusk
+
+The aerial, the dish, the solar panel, the vent, the rod, the pennant, the anemometer, the downpipe,
+the cowl and the finial gave ten of the street's sixteen roofs a fixture of their own — but every one
+of them only ever moves off the world clock, never off the Neighborhood's own four-minute day/night
+cycle. **House 0 — the lot with the toy pinwheel already in its yard — gets a small cage lantern on
+its ridge now**, the eleventh roof and the first one that actually notices dusk falling: dark iron by
+day, a warm amber glow once night comes in, the same bulb colour every porch light on the street
+already turns on with. *"Burns the same hours as every porch bulb on the street — just further up."*
+*"Puss, the ridge is not the place for a night-time prowl, however inviting that glow looks."* *"First
+light up there, last one out. Somebody clearly likes the view."*
+
+No new `U.push` tick and no draw from the world's own seeded `r`: the lantern's little glass pane just
+reuses the porch light's own emissive hex (`0xffe3a0`), the same trick the carved pumpkin on house 5's
+own step already leans on, so `makeDayNight`'s own sweep drives it automatically, for free, right
+alongside every porch bulb on the street. Parented to the house's own group at the ridge apex the
+other ten fixtures already use, so it costs no world-space maths and needs no physics box either.
+
+`node test/run.mjs` ran clean: all checks `ok` (277), 0 console warnings, box count unchanged at 328
+(no new collider). No visual check was possible in this environment (no browser, no Playwright) — only
+the stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.

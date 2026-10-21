@@ -1126,6 +1126,41 @@ function buildNeighborhood(game, entry) {
       const finialLines = ['✨ "Doesn\'t do anything up there. Just sits looking pleased with itself."', '🏠 "Oldest thing on that roof, probably — older than the aerial, the dish and the rest of that nonsense put together."', '😼 "Puss, you have been staring at that ball for a very long time. It is not a toy."'];
       game.addInteractable({ obj: finial, radius: 2.2, label: () => 'Look up at the roof finial', onUse: () => { SFX.click(); game.toast(rnd.pick(finialLines), 3000); } });
     }
+    // the aerial, the dish, the solar panel, the vent, the rod, the pennant, the anemometer, the
+    // downpipe, the cowl and the finial gave ten of the street's sixteen roofs a fixture of their own,
+    // but every one of the ten only ever moves off the world clock `t` — not one of them has ever
+    // noticed the Neighborhood's own four-minute day/night cycle running underneath it. House 0 — the
+    // lot with the toy pinwheel already planted in its yard — gets a small cage lantern on its ridge
+    // now, the eleventh roof and the first that actually answers to dusk: dark iron by day, a warm
+    // amber glow once night falls, the same bulb colour every porch light on the street already turns
+    // on with. *"Burns the same hours as every porch bulb on the street — just further up."* *"Puss,
+    // the ridge is not the place for a night-time prowl, however inviting that glow looks."* *"First
+    // light up there, last one out. Somebody clearly likes the view."*
+    // Same slot every other roof fixture already uses — parented to the house's own group at its ridge
+    // apex (`h.userData.h`), so it costs no world-space maths and needs no physics box, same reasoning
+    // the other ten already give. Rather than add its own `U.push` tick off `t` the way the finial's
+    // glint and the pennant's flutter do, the lantern's little glass pane is simply built with the
+    // porch light's own emissive hex (`0xffe3a0`) — the exact trick the carved pumpkin on house 5's own
+    // step already uses (see its comment above): `makeDayNight`'s `W.traverse()` sweep at the bottom of
+    // this function matches on that hex alone and drives its `emissiveIntensity` every frame, so the
+    // lantern dims and brightens with every porch bulb on the street for free, no extra per-frame work
+    // and no draw from this world's own seeded `r` or the shared `rnd()` sequence at build time. The
+    // post and cage struts are all `noInk()`-wrapped, the same treatment every slender fixture up here
+    // already gets.
+    if (i === 0) {
+      const postH = 0.3, lanternH = 0.16;
+      const postM = mat(0x2b2b2b, { roughness: 0.6, metalness: 0.4 }), frameM = mat(0x3a3a3a, { metalness: 0.4, roughness: 0.55 }),
+        glassM = mat(0x2a2015, { roughness: 0.6, emissive: 0xffe3a0, emissiveIntensity: 0.08 });
+      const lantern = group(0, h.userData.h, 0, h);
+      noInk(mesh(G.cyl(0.018, 0.022, postH, 6), postM, { y: postH / 2, shadow: 'none', parent: lantern }));
+      const cage = group(0, postH, 0, lantern);
+      mesh(G.box(0.14, lanternH, 0.14), glassM, { y: lanternH / 2, shadow: 'both', parent: cage });
+      for (const [cx, cz] of [[-0.07, -0.07], [0.07, -0.07], [-0.07, 0.07], [0.07, 0.07]]) noInk(mesh(G.cyl(0.008, 0.008, lanternH, 5), frameM, { x: cx, y: lanternH / 2, z: cz, shadow: 'none', parent: cage }));
+      mesh(G.cone(0.11, 0.1, 8), frameM, { y: lanternH + 0.05, shadow: 'both', parent: cage });
+      noInk(mesh(G.sphere(0.018, 8, 6), frameM, { y: lanternH + 0.12, shadow: 'none', parent: cage }));
+      const lanternLines = ['🏮 "Burns the same hours as every porch bulb on the street — just further up."', '😼 "Puss, the ridge is not the place for a night-time prowl, however inviting that glow looks."', '✨ "First light up there, last one out. Somebody clearly likes the view."'];
+      game.addInteractable({ obj: lantern, radius: 2.4, label: () => 'Look up at the roof lantern', onUse: () => { SFX.click(); game.toast(rnd.pick(lanternLines), 3000); } });
+    }
   });
   // the pinwheel, sprinkler and kennel above gave three of the street's sixteen yards their own
   // feature; lot 14's own corner now gets a fourth — a stone birdbath, a shallow bowl on a short
