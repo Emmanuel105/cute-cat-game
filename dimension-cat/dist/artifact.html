@@ -12813,8 +12813,8 @@ function buildRobotCity(game, entry) {
   // 2.2 m radius chosen for a crate with only a 0.55 m half-extent.
   { const midCrateLines = ['📦 "Sits right between the two belts, same as it always has — neither one claims it."', '📦 "Stencil long gone, if it ever had one. Just a crate now."', '🤖 "No forklift route runs through here. This one gets left alone."'];
     game.addInteractable({ obj: midCrate, radius: 2.2, label: () => 'Look at the crate', onUse: () => { SFX.click(); game.toast(rnd.pick(midCrateLines), 3000); } }); }
-  let farBarrel = null, swBarrel = null;
-  for (const [x, z] of [[28.5, 3.5], [29.7, 2.2], [-6, 10], [16, -22], [-24, -22]]) { const bm = mesh(G.cyl(0.5, 0.5, 1.2, 14), barrelM, { x, y: 0.6, z, parent: W }); P.addBox(x, 0.6, z, 1, 1.2, 1, { cam: false }); if (x === 16 && z === -22) farBarrel = bm; if (x === -24 && z === -22) swBarrel = bm; }
+  let farBarrel = null, swBarrel = null, midBarrel = null;
+  for (const [x, z] of [[28.5, 3.5], [29.7, 2.2], [-6, 10], [16, -22], [-24, -22]]) { const bm = mesh(G.cyl(0.5, 0.5, 1.2, 14), barrelM, { x, y: 0.6, z, parent: W }); P.addBox(x, 0.6, z, 1, 1.2, 1, { cam: false }); if (x === 16 && z === -22) farBarrel = bm; if (x === -24 && z === -22) swBarrel = bm; if (x === -6 && z === 10) midBarrel = bm; }
   // the furnace and the robot arm beside it both got a "look" toast a few lines up — the five barrels
   // scattered round the floor, standing since round 1, never got so much as a glance. The one out at
   // (16, -22), nearest the furnace at 8.6 m and the sign-pole at 9.5 m (both already worked out above),
@@ -12834,6 +12834,17 @@ function buildRobotCity(game, entry) {
   // past the 2.4 m radius the other barrel already uses.
   { const swBarrelLines = ['🛢️ "Rolled all the way out here and never rolled back."', '🛢️ "Rusted shut — whatever\'s inside is staying inside."', '😼 Furthest barrel from the furnace. Somehow still warm to the touch.'];
     game.addInteractable({ obj: swBarrel, radius: 2.4, label: () => 'Look at the barrel', onUse: () => { SFX.click(); game.toast(rnd.pick(swBarrelLines), 3000); } }); }
+  // the barrels at (16, -22) and (-24, -22) got their own "look" toast over past rounds, leaving the two
+  // paired by the entrance ramp and this one — out past the mechanic's bay, nearest the pipe run at
+  // (-18, 6) — still bare. The one at (-6, 10) comes free the same way as the others: `bm`, this same
+  // loop's own `mesh()` return, kept for the one matching coordinates instead of discarded — no new mesh,
+  // no new box. A headless probe (the stub bundle itself, `game.travel(2, 'from-prev')`, 1800 simulated
+  // frames sampling every NPC's own position every sixth frame) swept this spot against every physics box
+  // on the floor (excluding its own) and every sample: the nearest other box stayed 2.19 m clear and the
+  // nearest wandering soul 2.42 m off, so a smaller 1.6 m radius — tighter than the other two barrels'
+  // 2.4 m, since this corner is more crowded — stays well short of either.
+  { const midBarrelLines = ['🛢️ "Tucked by the pipe run, out of everyone\'s way — including the mechanic\'s."', '🛢️ "No dent, no rust streak. This one just never got used."', '😼 The cat gives it a sniff. Just old metal and pipe grease.'];
+    game.addInteractable({ obj: midBarrel, radius: 1.6, label: () => 'Look at the barrel', onUse: () => { SFX.click(); game.toast(rnd.pick(midBarrelLines), 3000); } }); }
   // the Neighborhood, Candy Land, Sunny Shore, Whisper Woods and Robot City's own maintenance drone all
   // spin on the world clock by now, but no actual toy pinwheel had ever been planted on the factory
   // floor — someone off-shift stuck a scavenged one in a crack in the concrete anyway. Same geometry and

@@ -17401,3 +17401,28 @@ other ten fixtures already use, so it costs no world-space maths and needs no ph
 (no new collider). No visual check was possible in this environment (no browser, no Playwright) — only
 the stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 641 — a third Robot City barrel finally gets a look
+
+Two of the factory floor's five barrels got a "look" prompt in earlier rounds (round 620 at (16, -22),
+round 638 at (-24, -22)), leaving three still bare: the pair by the entrance ramp at (28.5, 3.5) and
+(29.7, 2.2), and the lone one at (-6, 10) out past the mechanic's bay, nearest the pipe run.
+**That lone barrel at (-6, 10) gets its own look now** — picked over the paired two since they sit
+only 1.3 m apart and would leave little room for either one's own circle. *"Tucked by the pipe run, out
+of everyone's way — including the mechanic's."* *"No dent, no rust streak. This one just never got
+used."* *"The cat gives it a sniff. Just old metal and pipe grease."*
+
+No new mesh, no new physics box: the barrel loop in `src/70-worlds.js` already builds and places all
+five with one `mesh()` call each, so this one's return value is captured into `midBarrel` alongside the
+existing `farBarrel`/`swBarrel` captures, then handed straight to `game.addInteractable` — the same
+trick the other two barrels already used. A headless probe (a scratch script on the same stub-three
+harness `test/run.mjs` itself uses — `game.start('new')`, `game.travel(2, 'from-prev')`, 1800 simulated
+frames sampling every NPC's own position every sixth frame) swept this spot against every one of the
+city's physics boxes (excluding the barrel's own) and every sample: the nearest other box stayed only
+2.19 m clear and the nearest wandering soul 2.42 m off — tighter than the other two barrels' own
+clearance, so this one gets a smaller 1.6 m radius rather than reusing their 2.4 m.
+
+`node test/run.mjs` ran clean: all checks `ok` (277), 0 console warnings, box count unchanged at 328
+(no new collider). No visual check was possible in this environment (no browser, no Playwright) — only
+the stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.
