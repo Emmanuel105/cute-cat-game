@@ -8649,6 +8649,52 @@ function buildNeighborhood(game, entry) {
       const anemLines = ['🌬️ "The vane downstairs points. This one spins. Between them, this house has an opinion about every gust."', '🔄 "Spins whether there\'s a breeze or not — same trick as the gnome\'s own weathervane next door, if anyone ever checked."', '😼 "Puss, you\'re not catching that one either."'];
       game.addInteractable({ obj: anem, radius: 2.6, label: () => 'Look up at the anemometer', onUse: () => { SFX.click(); game.toast(rnd.pick(anemLines), 3000); } });
     }
+    // round 620's own rain barrel sits right outside this house's front-right corner (world x+5.5,
+    // z+front*4.0, just past the wall's own half-width/half-depth edge) catching rain that, until now,
+    // never had anywhere to actually come from. House 10's own roof fixes that with a downpipe: a short
+    // gutter stub at the eave, a long bracketed vertical run down the wall, and a spout at the bottom
+    // kicked outward toward the barrel, dripping into its own small puddle the same way the barrel's
+    // own tap already does. *"So that's where it's been coming from."* *"Explains why that tap only
+    // ever drips — most of it's still up there."* *"Puss, that is a drainpipe. You are not climbing
+    // it."*
+    // Parented to this house's own group (`h`) like every roof fixture on the street, but at its
+    // front-right corner (local x=3.35, z=2.85 — just inside the wall's own half-width 3.5 and
+    // half-depth 3.0) instead of the ridge apex the aerial/dish/vent/rod/pennant/anemometer all use,
+    // since a downpipe only means anything if it reaches the ground. `eaveY` is computed the same way
+    // `makeHouse()` itself built this house's own wall height for this `i` (storeys 2 × wall height
+    // 3.1, with the roofH this house was actually given subtracted back off the ridge apex
+    // `h.userData.h`), not a fresh literal, so it can't drift out of sync with the wall it's bolted to.
+    // No new physics box: the whole run sits inside the house's own wall collider
+    // (`P.addBox(x, h.userData.h/2, z, 7.4, h.userData.h, 6.4)` above, covering every local x/z inside
+    // ±3.7/±3.2 for the wall's full height) — the exact reasoning `makeHouse()`'s own corner boards
+    // (60-props.js:190) already go uncollided on. The drip reuses the rain barrel's own
+    // falling-drop-plus-puddle trick a few hundred lines up, just re-timed so the two don't drip in
+    // lockstep, off the world clock `t` alone — never this world's own seeded `r` or the shared
+    // `rnd()` sequence, since the Neighborhood is the one world every test travel starts from. Every
+    // other dimension below is a fixed literal for the same reason.
+    if (i === 10) {
+      const pipeM = mat(0x5a5f66, { metalness: 0.5, roughness: 0.5 }), waterM = mat(0x4a7aa8, { transparent: true, opacity: 0.55, roughness: 0.2 });
+      const roofHere = 2 + (i % 3) * 0.4, eaveY = h.userData.h - roofHere;
+      const px = 3.35, pz = 2.85, kickA = atan2(5.5 - px, 4.0 - pz);   // aimed roughly at the rain barrel's own corner
+      const dp = group(px, 0, pz, h);
+      noInk(mesh(G.box(0.5, 0.07, 0.1), pipeM, { y: eaveY, z: -0.1, ry: kickA, shadow: 'none', parent: dp }));   // gutter stub, catching the eave
+      const pipeTop = eaveY - 0.3, pipeBot = 0.18;
+      noInk(mesh(G.cyl(0.035, 0.035, pipeTop - pipeBot, 8), pipeM, { y: (pipeTop + pipeBot) / 2, shadow: 'none', parent: dp }));   // the long vertical run
+      for (const by of [pipeBot + (pipeTop - pipeBot) * 0.25, pipeBot + (pipeTop - pipeBot) * 0.55, pipeBot + (pipeTop - pipeBot) * 0.85]) noInk(mesh(G.box(0.1, 0.03, 0.05), pipeM, { y: by, x: 0.04, shadow: 'none', parent: dp }));   // wall brackets
+      const spout = group(0, pipeBot, 0, dp); spout.rotation.y = kickA; spout.rotation.x = 0.7;
+      noInk(mesh(G.cyl(0.035, 0.03, 0.22, 8), pipeM, { y: 0.11, shadow: 'none', parent: spout }));
+      const spoutX = sin(kickA) * 0.2, spoutZ = cos(kickA) * 0.2;   // roughly where the spout's open end sits, for the drip below
+      const DCYCLE = 3.6, drop = mesh(G.sphere(0.012, 6, 5), waterM, { shadow: 'none', parent: dp }), puddle = mesh(G.cyl(0.09, 0.09, 0.004, 12), waterM, { y: 0.004, shadow: 'none', parent: dp });
+      puddle.position.set(spoutX, 0.004, spoutZ);
+      U.push((dt, t) => {
+        const k = ((t + 1.8) % DCYCLE) / DCYCLE, dropSpan = 0.5;
+        drop.visible = k < dropSpan;
+        if (drop.visible) drop.position.set(spoutX, lerp(pipeBot - 0.02, 0.02, k / dropSpan), spoutZ);
+        puddle.material.opacity = 0.35 + 0.15 * sin(t * 0.9 + 2);
+      });
+      const dpLines = ['🌧️ "So that\'s where the rain barrel\'s been getting it all along."', '💧 "Explains why that tap only ever drips — most of it\'s still up on the roof."', '😼 "Puss, that is a drainpipe. You are not climbing it."'];
+      game.addInteractable({ obj: dp, radius: 2.4, label: () => 'Look at the downpipe', onUse: () => { SFX.click(); game.toast(rnd.pick(dpLines), 3000); } });
+    }
   });
   // the pinwheel, sprinkler and kennel above gave three of the street's sixteen yards their own
   // feature; lot 14's own corner now gets a fourth — a stone birdbath, a shallow bowl on a short

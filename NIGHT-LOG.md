@@ -17260,3 +17260,25 @@ starts from.
 collider — well above anything that could touch it). No visual check was possible in this environment
 (no browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 635 — the rain barrel finally gets a downpipe to feed it
+
+Round 620's rain barrel has sat outside house 10's own front corner catching rain that never had
+anywhere to actually come from. **House 10's roof now grows a downpipe**: a short gutter stub up at
+the eave, a long bracketed run down the wall, and a spout at the bottom kicked outward toward the
+barrel, dripping into its own small puddle the same way the barrel's own tap already does.
+*"So that's where it's been coming from."* *"Explains why that tap only ever drips — most of it's
+still up there."* *"Puss, that is a drainpipe. You are not climbing it."*
+
+Parented to this house's own group at its front-right corner rather than the ridge apex every other
+roof fixture on this street uses, since a downpipe only means anything if it reaches the ground. No
+new physics box — the whole run sits inside the house's own existing wall collider, the exact same
+reasoning `makeHouse()`'s own corner boards already go uncollided on. The drip animation reuses the
+rain barrel's own falling-drop-plus-puddle trick, re-timed off the world clock alone so the two don't
+drip in lockstep, and every dimension is a fixed literal rather than a draw from this world's own
+seeded `r` or the shared `rnd()`, since the Neighborhood is the one world every test travel starts
+from.
+
+`node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
+collider). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
