@@ -17355,3 +17355,26 @@ comfortably past the 2.4 m radius the other barrel already uses.
 `node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
 collider). No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 639 — a second loose crate in Robot City finally gets a look
+
+Six loose crates have sat scattered round the factory floor since round one, and only the one out at
+(-16, -20) ever earned a "look" prompt (round 638). **The crate at (15, 12), sitting in the open
+stretch between the two conveyor belts and the pipe run, gets one now** — the second of the six, four
+still bare. *"Sits right between the two belts, same as it always has — neither one claims it."*
+*"Stencil long gone, if it ever had one. Just a crate now."* *"No forklift route runs through here.
+This one gets left alone."*
+
+No new mesh, no new physics box: the crate loop in `src/70-worlds.js` already builds and places all
+six with one `mesh()` call each, so this one's return value is captured into `midCrate` alongside the
+existing `farCrate` capture, then handed straight to `game.addInteractable` — the same trick the other
+crate already used. A headless probe (a scratch script on the same stub-three harness `test/run.mjs`
+itself uses — `game.start('new')`, `game.travel(2, 'from-prev')`, 1800 simulated frames sampling every
+NPC's own position every sixth frame) swept this spot against every one of the city's physics boxes,
+every sample and every interactable already placed: the nearest other box stayed 4.85 m clear, the
+nearest wandering soul 3.63 m off and the nearest other interactable 8.54 m off — all comfortably past
+the 2.2 m radius chosen for a crate with only a 0.55 m half-extent.
+
+`node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
+collider). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

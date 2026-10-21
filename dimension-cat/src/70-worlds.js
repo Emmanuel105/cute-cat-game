@@ -5116,8 +5116,8 @@ function buildRobotCity(game, entry) {
   mesh(G.cyl(0.12, 0.16, 6.4, 8), pipe, { x: -5, y: 3.2, z: -24, parent: W }); mesh(G.cyl(0.12, 0.16, 6.4, 8), pipe, { x: 5, y: 3.2, z: -24, parent: W });
   // crates & barrels around
   const crateM = mat(0x8a6a3a, { roughness: 0.9, map: TEX.planks(30, 34) }), barrelM = mat(0x2f6f9f, { metalness: 0.6, roughness: 0.4 });
-  let farCrate = null;
-  for (const [x, z, s] of [[-22, 4, 1], [-23, 5.2, 0.8], [22, 2, 1], [-4, 8, 0.9], [15, 12, 1.1], [-16, -20, 1]]) { const cm = mesh(G.box(s, s, s), crateM, { x, y: s / 2, z, ry: r() * 0.5, parent: W }); P.addBox(x, s / 2, z, s, s, s, { cam: false }); if (x === -16 && z === -20) farCrate = cm; }
+  let farCrate = null, midCrate = null;
+  for (const [x, z, s] of [[-22, 4, 1], [-23, 5.2, 0.8], [22, 2, 1], [-4, 8, 0.9], [15, 12, 1.1], [-16, -20, 1]]) { const cm = mesh(G.box(s, s, s), crateM, { x, y: s / 2, z, ry: r() * 0.5, parent: W }); P.addBox(x, s / 2, z, s, s, s, { cam: false }); if (x === -16 && z === -20) farCrate = cm; if (x === 15 && z === 12) midCrate = cm; }
   // the furnace, the robot arm, the barrel at (16, -22) and the factory sign have all picked up a "look"
   // toast over past rounds, but every one of these six loose crates — scattered round the floor since
   // round 1, same as the barrels — stayed untouched. The one out at (-16, -20), tucked in the quiet
@@ -5131,6 +5131,17 @@ function buildRobotCity(game, entry) {
   // — all comfortably past the 2.0 m radius chosen for a crate with only a 0.5 m half-extent.
   { const crateLines = ['📦 "No label, no stencil, not even a stray barcode. Whatever shipped in it, nobody wrote down."', '📦 "Lighter than it looks — empty, probably, or packed with something the robots don\'t need twice."', '🤖 "The forklift bot never rolls out this far. This crate has been resting undisturbed for a long while."'];
     game.addInteractable({ obj: farCrate, radius: 2.0, label: () => 'Look at the crate', onUse: () => { SFX.click(); game.toast(rnd.pick(crateLines), 3000); } }); }
+  // the crate out at (-16, -20) got its own "look" a few rounds back, leaving four more of these six on
+  // the loop still bare. The one at (15, 12), tucked in the open stretch between the two conveyor belts
+  // and the pipe run, comes free the same way: `cm`, this same loop's own `mesh()` return, kept for the
+  // one matching coordinates instead of discarded — no new mesh, no new box. A headless probe (the stub
+  // bundle itself, `game.travel(2, 'from-prev')`, 1800 simulated frames sampling every NPC's own
+  // position every sixth frame) swept this spot against every physics box, every sample and every
+  // interactable already on this floor: the nearest other box stayed 4.85 m clear, the nearest
+  // wandering soul 3.63 m off and the nearest other interactable 8.54 m off — all comfortably past the
+  // 2.2 m radius chosen for a crate with only a 0.55 m half-extent.
+  { const midCrateLines = ['📦 "Sits right between the two belts, same as it always has — neither one claims it."', '📦 "Stencil long gone, if it ever had one. Just a crate now."', '🤖 "No forklift route runs through here. This one gets left alone."'];
+    game.addInteractable({ obj: midCrate, radius: 2.2, label: () => 'Look at the crate', onUse: () => { SFX.click(); game.toast(rnd.pick(midCrateLines), 3000); } }); }
   let farBarrel = null, swBarrel = null;
   for (const [x, z] of [[28.5, 3.5], [29.7, 2.2], [-6, 10], [16, -22], [-24, -22]]) { const bm = mesh(G.cyl(0.5, 0.5, 1.2, 14), barrelM, { x, y: 0.6, z, parent: W }); P.addBox(x, 0.6, z, 1, 1.2, 1, { cam: false }); if (x === 16 && z === -22) farBarrel = bm; if (x === -24 && z === -22) swBarrel = bm; }
   // the furnace and the robot arm beside it both got a "look" toast a few lines up — the five barrels
