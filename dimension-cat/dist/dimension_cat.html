@@ -8739,6 +8739,36 @@ function buildNeighborhood(game, entry) {
       const cowlLines = ['🌀 "Spins round to keep its back to the wind — same trick the weathervane uses, just with smoke coming out the front instead of a cat."', '💨 "Never faces the same way twice. Keeps the kitchen from smoking out, allegedly."', '😼 "Puss, that is a very long way up. Not even you."'];
       game.addInteractable({ obj: base, radius: 2.2, label: () => 'Look up at the chimney cowl', onUse: () => { SFX.click(); game.toast(rnd.pick(cowlLines), 3000); } });
     }
+    // the aerial, the dish, the solar panel, the vent, the rod, the pennant, the anemometer, the
+    // downpipe and the cowl between them gave nine of the street's sixteen roofs a fixture of their
+    // own; seven still carry nothing but chimney smoke. House 14 — the lot whose own front corner
+    // already has the stone birdbath — gets the simplest one yet: a copper ball finial on the ridge,
+    // a hammered sphere threaded on a short spike, the kind of ornament half the real cottages on a
+    // street like this would have riveted to the ridge tile the day it was built. It doesn't spin,
+    // swing or track anything the way every other fixture up here does — it just catches the light, a
+    // slow glint sweeping across the copper on the world clock alone. *"Doesn't do anything up there.
+    // Just sits looking pleased with itself."* *"Oldest thing on that roof, probably — older than the
+    // aerial, the dish and the rest of that nonsense put together."* *"Puss, you have been staring at
+    // that ball for a very long time. It is not a toy."*
+    // Same slot every other roof fixture on this street already uses — parented to the house's own
+    // group at its ridge apex (`h.userData.h`), so it costs no world-space maths and needs no physics
+    // box, same reasoning the other nine already give. The spike is `noInk()`-wrapped like every
+    // slender fixture up here already is; the ball's own emissive colour (`0xffcc88`) is a fresh hex
+    // the day/night sweep at the bottom of this function doesn't match (it only matches `0xffd9a0`,
+    // `0xffe3a0` and `0xfff3c4` exactly), so the glint runs on its own `U.push` tick off the world
+    // clock `t` alone, undisturbed by dusk or dawn, and never a draw from this world's own seeded `r`
+    // or the shared `rnd()` sequence, since the Neighborhood is the one world every test travel starts
+    // from.
+    if (i === 14) {
+      const finialM = mat(0xb87333, { metalness: 0.75, roughness: 0.3, emissive: 0xffcc88, emissiveIntensity: 0.15 });
+      const finial = group(0, h.userData.h, 0, h);
+      noInk(mesh(G.cyl(0.015, 0.015, 0.34, 8), finialM, { y: 0.17, shadow: 'none', parent: finial }));
+      mesh(G.sphere(0.09, 14, 10), finialM, { y: 0.4, shadow: 'both', parent: finial });
+      noInk(mesh(G.cone(0.012, 0.1, 8), finialM, { y: 0.54, shadow: 'none', parent: finial }));
+      U.push((dt, t) => { finialM.emissiveIntensity = 0.15 + max(0, sin(t * 0.6 + 2)) * 0.35; });
+      const finialLines = ['✨ "Doesn\'t do anything up there. Just sits looking pleased with itself."', '🏠 "Oldest thing on that roof, probably — older than the aerial, the dish and the rest of that nonsense put together."', '😼 "Puss, you have been staring at that ball for a very long time. It is not a toy."'];
+      game.addInteractable({ obj: finial, radius: 2.2, label: () => 'Look up at the roof finial', onUse: () => { SFX.click(); game.toast(rnd.pick(finialLines), 3000); } });
+    }
   });
   // the pinwheel, sprinkler and kennel above gave three of the street's sixteen yards their own
   // feature; lot 14's own corner now gets a fourth — a stone birdbath, a shallow bowl on a short
