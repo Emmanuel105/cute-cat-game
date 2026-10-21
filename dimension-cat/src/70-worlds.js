@@ -5259,8 +5259,8 @@ function buildRobotCity(game, entry) {
   // radius — comfortably inside both figures above, same margin the earlier three crates kept.
   { const eastCrateLines = ['📦 "Sits closer to the skyscrapers than to the belts — nobody\'s claimed it either way."', '📦 "No stencil, no dent, no reason anyone\'s given for it being exactly here."', '🤖 "The forklift bots have a route past every other crate on this floor. Not this one."'];
     game.addInteractable({ obj: eastCrate, radius: 1.3, label: () => 'Look at the crate', onUse: () => { SFX.click(); game.toast(rnd.pick(eastCrateLines), 3000); } }); }
-  let farBarrel = null, swBarrel = null, midBarrel = null, rampBarrel = null;
-  for (const [x, z] of [[28.5, 3.5], [29.7, 2.2], [-6, 10], [16, -22], [-24, -22]]) { const bm = mesh(G.cyl(0.5, 0.5, 1.2, 14), barrelM, { x, y: 0.6, z, parent: W }); P.addBox(x, 0.6, z, 1, 1.2, 1, { cam: false }); if (x === 16 && z === -22) farBarrel = bm; if (x === -24 && z === -22) swBarrel = bm; if (x === -6 && z === 10) midBarrel = bm; if (x === 28.5 && z === 3.5) rampBarrel = bm; }
+  let farBarrel = null, swBarrel = null, midBarrel = null, rampBarrel = null, rampBarrel2 = null;
+  for (const [x, z] of [[28.5, 3.5], [29.7, 2.2], [-6, 10], [16, -22], [-24, -22]]) { const bm = mesh(G.cyl(0.5, 0.5, 1.2, 14), barrelM, { x, y: 0.6, z, parent: W }); P.addBox(x, 0.6, z, 1, 1.2, 1, { cam: false }); if (x === 16 && z === -22) farBarrel = bm; if (x === -24 && z === -22) swBarrel = bm; if (x === -6 && z === 10) midBarrel = bm; if (x === 28.5 && z === 3.5) rampBarrel = bm; if (x === 29.7 && z === 2.2) rampBarrel2 = bm; }
   // the furnace and the robot arm beside it both got a "look" toast a few lines up — the five barrels
   // scattered round the floor, standing since round 1, never got so much as a glance. The one out at
   // (16, -22), nearest the furnace at 8.6 m and the sign-pole at 9.5 m (both already worked out above),
@@ -5304,6 +5304,19 @@ function buildRobotCity(game, entry) {
   // five) stays a clean half-metre short of reaching its own neighbour's circle.
   { const rampBarrelLines = ['🛢️ "Rolled off the ramp years ago and nobody\'s rolled it back on."', '🛢️ "Its twin sits a metre off. Whatever they held, it wasn\'t worth separating."', '😼 The cat squeezes between this barrel and the next, finds nothing, and squeezes back out.'];
     game.addInteractable({ obj: rampBarrel, radius: 0.6, label: () => 'Look at the barrel', onUse: () => { SFX.click(); game.toast(rnd.pick(rampBarrelLines), 3000); } }); }
+  // the barrel at (28.5, 3.5) got its own "look" toast last round and left a note behind: its twin at
+  // (29.7, 2.2), 1.77 m away centre to centre, was still skippable on its own merits but "now with
+  // company" — the first barrel's own circle had already proven a small radius fits in this corner. The
+  // twin comes free the same way as every barrel before it: `rampBarrel2`, the same loop's own `mesh()`
+  // return, kept instead of discarded — no new mesh, no new box. A headless probe (the stub bundle
+  // itself, `game.start('new')`, `game.load(2, 'from-prev')`, 3600 simulated frames sampling every
+  // physics box, NPC and interactable on the floor every sixth frame) found the nearest other box — its
+  // own neighbour at (28.5, 3.5) — the same 1.06 m clear the neighbour's own probe found looking the
+  // other way, the nearest wandering soul 5.73 m off and the nearest other interactable (that same
+  // neighbour) 1.77 m off. A 0.5 m radius, tighter even than the neighbour's own 0.6 m, keeps the two
+  // circles a clean 0.67 m apart center-to-edge-sum short of touching.
+  { const rampBarrel2Lines = ['🛢️ "Never made it onto the ramp at all. Rolled the other way instead."', '🛢️ "Its twin\'s a metre off, nearer the airlock. Whatever was inside, neither one kept it."', '😼 The cat squeezes between this barrel and the next, finds nothing, and squeezes back out the other side.'];
+    game.addInteractable({ obj: rampBarrel2, radius: 0.5, label: () => 'Look at the barrel', onUse: () => { SFX.click(); game.toast(rnd.pick(rampBarrel2Lines), 3000); } }); }
   // the Neighborhood, Candy Land, Sunny Shore, Whisper Woods and Robot City's own maintenance drone all
   // spin on the world clock by now, but no actual toy pinwheel had ever been planted on the factory
   // floor — someone off-shift stuck a scavenged one in a crack in the concrete anyway. Same geometry and

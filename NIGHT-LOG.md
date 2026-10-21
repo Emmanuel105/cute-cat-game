@@ -17576,3 +17576,26 @@ merits, but now with company.
 `node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
 collider). No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 648 — Robot City's last bare barrel finally gets its own look
+
+Round 647 closed out the barrel nearer the airlock and left the exact next step written down: its
+twin, 1.77 m away at (29.7, 2.2), had been skipped every round before for sitting too close to its
+neighbour, but was "now with company" once the neighbour proved a small radius fits this corner.
+**It gets the same treatment now** — the last of Robot City's five barrels with a "look" prompt.
+*"Never made it onto the ramp at all. Rolled the other way instead."* *"Its twin's a metre off, nearer
+the airlock. Whatever was inside, neither one kept it."* *"The cat squeezes between this barrel and
+the next, finds nothing, and squeezes back out the other side."*
+
+No new mesh and no new physics box: `rampBarrel2`, captured from the same `mesh()`-returning loop in
+`src/70-worlds.js` that built the other four, goes straight into `game.addInteractable`. A headless
+probe on the stub-three harness (`game.start('new')`, `game.load(2, 'from-prev')`, 3600 simulated
+frames sampling every physics box, NPC and interactable every sixth frame) found the nearest other box
+— its own neighbour — the same 1.06 m clear the neighbour's own probe found looking the other way, the
+nearest wandering soul 5.73 m off and the nearest other interactable (that same neighbour) 1.77 m off.
+A 0.5 m radius, tighter even than the neighbour's own 0.6 m, keeps the two circles a clean 0.67 m
+apart, short of touching. All five of Robot City's barrels now have their own line.
+
+`node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
+collider). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
