@@ -17548,6 +17548,19 @@ function buildSnowVillage(game, entry) {
   // comfortably past this radius, the roomiest of the cluster so far.
   { const crystalLines2 = ['🧊 "South-west of the village, well clear of both the pond and the sled run."', '❄️ "Streaked grey-blue, like it grew in the shadow of the slope."', '✨ "Quietest crystal in the cluster — nothing out here but open snow."'];
     game.addInteractable({ obj: iceCrystals[2], radius: 2.4, label: () => 'Look at the ice crystal', onUse: () => { SFX.click(); game.toast(rnd.pick(crystalLines2), 3000); } }); }
+  // four crystals down, four still bare — two of those ((26, 16) and (-32, 2)) came back too close to a
+  // wandering penguin or another box in an earlier round's probe, and (-24, 18) is the one the sculptor
+  // already kneels beside. That leaves the fifth in the list, due south of the village at (0, -26), out
+  // past the badminton net on the far side from its south-east neighbour. `iceCrystals[4]` is the group
+  // the loop above already built, handed straight to `game.addInteractable` — no new mesh, no new box,
+  // same 2.4 m radius every crystal before it already uses to clear its own box's 0.42 m corner. A
+  // headless probe (`game.start('new')`, `game.travel(5, 'from-hub')` waited out through its real
+  // portal-fade timer, then 1800 simulated frames sampling every NPC's own position every sixth frame)
+  // swept this point against every one of the mountain's 328 physics boxes, every sample and every
+  // interactable already on the snow: the nearest other box stayed 5.13 m clear, the nearest wandering
+  // soul 9.84 m off and the nearest other interactable 12.0 m off — all comfortably past this radius.
+  { const crystalLines4 = ['🧊 "Due south of the village, out past the badminton net."', '❄️ "Milky at the core, clear at the tip — grew faster than the others."', '✨ "Last bare one in the cluster bar two the penguins keep bumping into."'];
+    game.addInteractable({ obj: iceCrystals[4], radius: 2.4, label: () => 'Look at the ice crystal', onUse: () => { SFX.click(); game.toast(rnd.pick(crystalLines4), 3000); } }); }
   // an ice sculptor kneels by the outlying crystal cluster, chisel in hand, working the last facet
   { const cx = -24, cz = 18, kx = cx - 1.8, kz = cz - 1.0;
     const sculptWard = makeWardrobe(r, { shirts: [0x5a5a6a, 0x4a5a6a, 0x6a5a4a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });

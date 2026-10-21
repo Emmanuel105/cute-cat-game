@@ -17125,3 +17125,26 @@ remaining crystal, (0, -26), is clear too (nearest box 5.13 m, nearest soul 9.84
 `node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
 collider). No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 629 — the fifth ice crystal gets its own look on Frosty Peak
+
+Round 628 cleared four of Frosty Peak's eight ice crystals but left four bare, and flagged two of
+those ((26, 16) and (-32, 2)) as too close to a wandering penguin or another box to add safely — and
+a fifth, (-24, 18), is where the ice sculptor already kneels. That left the crystal due south of the
+village at (0, -26), out past the badminton net, which round 628's own probe had already confirmed
+clear and set aside for a future round. **It gets a "look" prompt of its own now.** *"Due south of the
+village, out past the badminton net."* *"Milky at the core, clear at the tip — grew faster than the
+others."* *"Last bare one in the cluster bar two the penguins keep bumping into."*
+
+No new mesh, no new physics box: `iceCrystals[4]`, the group the cluster-planting loop already keeps,
+goes straight to `game.addInteractable` at the same 2.4 m radius the other crystals already use. A
+headless probe (`game.start('new')`, `game.travel(5, 'from-hub')` waited out through its real
+portal-fade timer, then 1800 simulated frames sampling every NPC's own position every sixth frame)
+swept this point against every physics box, NPC sample and interactable already on the snow: the
+nearest other box stayed 5.13 m clear, the nearest wandering soul 9.84 m off and the nearest other
+interactable 12.0 m off — comfortably past the radius, matching round 628's own numbers exactly since
+nothing else on the mountain changed in between.
+
+`node test/run.mjs` ran clean: all 277 checks `ok`, 0 console warnings, box count unchanged at 328 (no
+new collider). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
