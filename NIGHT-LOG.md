@@ -17883,3 +17883,28 @@ eighteen are now left bare for future rounds.
 collider — the chosen palm sits on the same trunk box its loop already gave it). No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+
+## Round 660 — an eighth Candy Land lollipop finally gets a look
+
+Rounds 624, 643, 644, 652, 654, 656 and 657 picked off seven of the inner dozen big lollipops standing
+since round 1, leaving five still bare. **The one at (22, -26), down in the south-east corner of the
+belt past where the river bends, gets the next "look" now.** *"South-east corner of the belt, past
+where the river bends."* *"Same swirl as its eleven neighbours. This one just gets fewer visitors."*
+*"The cat gives the stick a last headbutt and leaves the dozen to its silence."*
+
+No new mesh and no new physics box: `southEastLollipop`, captured off the same loop in `buildCandyLand()`
+that already plants and boxes all twelve inner lollipops, goes straight to `game.addInteractable` at the
+same 2.2 m radius the other seven lollipops' own prompts use. A headless probe (the same stub-three
+harness `test/run.mjs` itself uses — `game.start('new')`, `game.travel(1, 'from-prev')`, 600 simulated
+frames sampling every NPC's own position every sixth frame) swept all five remaining bare lollipops
+against every one of the land's 1900 physics boxes, every sample and every interactable already on the
+floor: (22, -26) came back with the widest minimum clearance of the five — 4.60 m clear of the nearest
+other box and 13.60 m off both the nearest wandering soul and the nearest other interactable ((40, -12)
+and (14, 10) were tightest, 2.60 m off a box and an interactable respectively). Four of the twelve are
+now left bare for future rounds.
+
+`node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
+collider — the chosen lollipop sits on the same stem box its loop already gave it). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
