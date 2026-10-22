@@ -18205,3 +18205,28 @@ and hands it straight to `game.addInteractable`, the same trick every palm befor
 visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
 suite above. Six of the eighteen dune palms are now left bare for future rounds — one of them, (-16,
 40), permanently so. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 672 — Sunny Shore's second turtle is finally a friend, not just scenery
+
+Fifty-odd rounds in a row had been nothing but "look" prompts queued onto props already standing since
+round 1 — palms, flower baskets, lollipops, crates, barrels, rocks, ice crystals, roofs. This round
+looked for something that wasn't just the next item in one of those queues, and found it right under
+the surf: Sunny Shore's two turtles (`makeTurtle()`, wandering their own 5 m leash since round 1) have
+sat there the whole game as pure background, same as the crabs — unlike the beach's dog and its own
+squirrel, neither turtle was ever a friend to meet. **The second one, up at (24, 20), now answers a
+"Pet the turtle" prompt.** *"🐢 *slow blink of approval*"*
+
+`Wanderer`'s constructor already calls `greetable()` on every rig it's handed, but that function bails
+out unless the rig carries `.look` (a human), `.robot`, or `.cookie` (a gingerbread man) — a bare
+`makeTurtle()` rig has none of the three, so it was quietly skipped the whole time, the same reason the
+dog in this exact world (and every other world's own dog) needs its own explicit interactable rather
+than picking one up for free. No new mesh and no new physics box: just `game.namedFriend('turtle')` and
+`game.addInteractable` on the turtle rig's own group, tracked every frame the same way the dog's
+`obj: dog.group` already is, so the prompt follows it as it wanders. A new `SFX.thunk()` — already
+used elsewhere in this game for a soft low thud — stands in for a shell pat; the first turtle, at
+(22, -2), is left exactly as it was for a future round.
+
+`node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
+collider), Sunny Shore's own friend count rose from 76 to 77 and "100% of the ground is walkable" held.
+No visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
+suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -472,7 +472,21 @@ function buildBeach(game, entry) {
   { const rig = makeCrab(0xd84315); W.add(rig.group);
     game.npcs.push(new Follower(game, rig, { x: 17, z: -6, r: 0.25, height: 0.5, step: 0.25, idle: [0.5, 2], walk: [1, 3], leash: 5, speed: 1.8, range: 10, keep: 1.6, sfx: () => SFX.click() })); }
   for (let i = 0; i < 7; i++) { const rig = makeSeagull({ phase: i * 1.3 }); game.npcs.push(new Flyer(game, rig, { cx: 14 + r.range(-8, 8), cz: r.range(-30, 30), r: r.range(9, 18), h: r.range(5, 11), speed: r.range(3.5, 5), bob: 1.2, wobble: 3, cw: i % 2 === 0, phase: i })); }
-  for (const [x, z] of [[22, -2], [24, 20]]) { const rig = makeTurtle(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x, z, speed: 0.35, leash: 5, r: 0.45, height: 0.5, step: 0.25, idle: [2, 5], walk: [3, 7] })); }
+  // both turtles have been pure background since round 1, same as the crabs — unlike the dog and the
+  // squirrel, neither was ever a friend to meet. The second one, up at (24, 20), gets a "Pet the
+  // turtle" prompt now: `makeTurtle()`'s rig has none of `.look`/`.robot`/`.cookie`, so `Wanderer`'s own
+  // `greetable()` call already quietly no-ops on it (same reason the dog needs its own explicit
+  // interactable rather than picking one up for free), and nothing here is new mesh or a new physics
+  // box — just `game.addInteractable` on the rig's own group, tracking it as it wanders its usual 5 m
+  // leash, the same trick the beach dog above and every world's own dog already use.
+  for (const [i, [x, z]] of [[22, -2], [24, 20]].entries()) {
+    const rig = makeTurtle(); W.add(rig.group);
+    game.npcs.push(new Wanderer(game, rig, { x, z, speed: 0.35, leash: 5, r: 0.45, height: 0.5, step: 0.25, idle: [2, 5], walk: [3, 7] }));
+    if (i === 1) {
+      const tid = game.namedFriend('turtle');
+      game.addInteractable({ obj: rig.group, radius: 2.4, label: () => 'Pet the turtle', onUse: () => { game.befriend(tid); SFX.thunk(); game.hearts(rig.group.position.x, 0.5, rig.group.position.z, 4); game.toast('🐢 *slow blink of approval*'); } });
+    }
+  }
   // the open sea past the wade limit (x=33) has been empty water since round 1 — nothing was ever living
   // out there, only the foam line and the horizon. A pair of dolphins now porpoises on a slow circuit far
   // out past the pier, each one surfacing for a moment every lap or so before sinking back under: the pod
