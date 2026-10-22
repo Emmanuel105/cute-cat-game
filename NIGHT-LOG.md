@@ -18108,3 +18108,30 @@ the eleven baskets are now left bare for future rounds.
 collider — the chosen lamp sits on its own existing post box). No visual check was possible in this
 environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 668 — a ninth Victorian flower basket finally gets a look
+
+Five of the eleven flower baskets along Victorian's street had their own "look" prompt by now
+(`vicLamps[1]`, `[5]`, `[7]`, `[8]`'s own lost-watch notice and `[10]`); six still bare. **`vicLamps[9]`,
+south pavement at (45, -6.4), gets the next one — it hangs right by the clock-tower plaza, three strides
+from the watchmaker's own bench and barely further from his own lost-watch notice two posts back.**
+*"The watchmaker two strides off never once looks up from his bench, basket swaying right over his bent
+head."*
+
+Round 649 had already ruled out `vicLamps[1]` for the usual 1.8 m radius because the lamplighter stops
+to light every lamp on his round, this one included, and a headless probe (`game.start('new')`,
+`game.travel(3, 'from-prev')` waited out through its real portal-fade timer, then 42000 simulated frames
+— about 700 seconds, several full laps of his patrol — sampling every NPC's own position every 15th
+frame) found the exact same problem here: the lamplighter's own stop to light this lamp never came
+closer than 1.28 m to it, and never further either, lap after lap. The nearest other box (the lamp's own
+post) stayed 2.65 m off and the watchmaker's bench 3.03 m off — both fine at the usual radius — so only
+his own pause forces a smaller one. The same 0.9 m radius round 649 settled on for `vicLamps[1]` clears
+all three here too. No new mesh and no new physics box: `game.addInteractable` keys straight off the
+lamp post `vicLamps[9]` already is, the same trick every basket before it used. (An early, shorter probe
+— just 60 simulated seconds — missed the lamplighter's own pause entirely and came back with a
+misleadingly generous 3 m clear; worth remembering for any future basket check.)
+
+`node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
+collider — the chosen lamp sits on its own existing post box). No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

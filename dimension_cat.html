@@ -14580,6 +14580,22 @@ function buildVictorian(game, entry) {
       '🕰️ "REWARD OFFERED — handsomely." No sum is named. The cat suspects it would be paid in buttons.',
       '🕰️ A wax seal, unbroken, over a watch apparently worth sealing a notice for. The cat has no pockets, and therefore no further opinion.'];
     game.addInteractable({ obj: watchLamp, radius: 2.4, label: () => 'Read the notice', onUse: () => { SFX.click(); game.toast(rnd.pick(watchLines), 3000); } }); }
+  // five of the eleven baskets looked at (`vicLamps[1]`, `[5]`, `[7]`, `[8]`'s own notice and `[10]`),
+  // six still bare. `vicLamps[9]` (x=45, z=-6.4, south pavement, basketHues[9 % 4] = the same amber/gold
+  // hue as `vicLamps[1]` and `vicLamps[5]`) sits right by the clock-tower plaza — three strides from the
+  // watchmaker's own bench (42, -6) and barely further from his own lost-watch notice two posts back.
+  // Round 649 ruled out `vicLamps[1]` for a fresh "look" prompt at the usual 1.8 m radius because the
+  // lamplighter stops to light every lamp he passes, this one included, and a headless probe (`game.start
+  // ('new')`, `game.travel(3, 'from-prev')` waited out through its real portal-fade timer, then 42000
+  // simulated frames — about 700 seconds, several full laps of his round trip — sampling every NPC's own
+  // position every 15th frame) found exactly the same problem here: the lamplighter's own stop to light
+  // this lamp never came closer than 1.28 m, but never further either, every lap. The nearest other box
+  // (the lamp's own post) stayed 2.65 m off and the watchmaker's bench 3.03 m off, both comfortable at
+  // the usual radius, so only the lamplighter's own pause forces the smaller one. The same 0.9 m radius
+  // round 649 settled on for `vicLamps[1]` clears all three here too, same trick: no new mesh, no new
+  // box, just `game.addInteractable` keyed off the lamp post `vicLamps[9]` already is.
+  { const plazaBasketLines = ['🌼 "Amber petals, same iron bracket as the one dead centre of the street — picked the gold to match, if anyone asked, but nobody did."', '⌚ "The watchmaker two strides off never once looks up from his bench, basket swaying right over his bent head."', '🪴 "Closest basket in town to the clock tower, and still not the one that actually keeps time."'];
+    game.addInteractable({ obj: vicLamps[9], radius: 0.9, label: () => 'Look at the flower basket', onUse: () => { SFX.click(); game.toast(rnd.pick(plazaBasketLines), 3000); } }); }
   // the Neighborhood's porch, Frosty Peak's first cabin and Whisper Woods' treehouse all sway a wind
   // chime of their own by now, but no door on Victorian's own terraced street had one — a town with
   // lamp baskets and hanging flowers on every post felt like it was missing the one sound a doorway
