@@ -17727,3 +17727,35 @@ own "Say hello"). Sixteen of the eighteen are still left bare for future rounds.
 new collider — the chosen palm sits on the same trunk box its loop already gave it). No visual check
 was possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 654 — a fifth Candy Land lollipop finally gets a look
+
+Rounds 624 and the three that followed it picked off four of the inner dozen big candy-cane-striped
+lollipops ringing the sweet-lands (the far east, west, south and far-south ones), leaving eight still
+bare. **The south-west corner of the belt, at (-40, -8), gets a "look" prompt now.** *"South-west
+corner of the belt — the bridge is a long walk from here."* *"Same stripe as the rest, just facing a
+different way nobody ever checks."* *"The cat gives the stick one last headbutt and decides the inner
+dozen is a lost cause."*
+
+No new mesh, no new physics box: `southWestLollipop`, captured off the same loop in `buildCandyLand()`
+that already plants and boxes all twelve big lollipops (the same trick the four `look` prompts before
+it already used), goes straight to `game.addInteractable` at the same 2.2 m radius the others use. A
+headless probe (`game.start('new')`, `game.load(1, 'from-prev')`, 3600 simulated frames sampling every
+NPC's own position every sixth frame) swept the remaining eight bare candidates against every one of
+the land's physics boxes, every sample and every other interactable already on the floor: (-40, -8)
+came back with the widest overall clearance of the eight — 6.0 m clear of the nearest other box, 6.79
+m off the nearest wandering soul and 10.77 m off the nearest other interactable, comfortably past the
+radius. A second candidate, (-12, 12), was ruled out first: a wandering soul comes within 0.61 m of
+it. Seven of the twelve are now left bare for future rounds.
+
+Frosty Peak's own three still-bare ice crystals were also checked this round (the pair an earlier
+round flagged "too close to a wandering penguin or another box" plus the one beside the ice sculptor):
+one sits only 0.3 m from an unrelated physics box (likely one of the forest-ring pines, since it falls
+right at the ring's inner edge) and another comes within 0.61 m of a wandering penguin at some point
+in a 3600-frame sweep — too tight for a prompt with any meaningful radius, so both stay bare rather
+than force a token-sized interactable onto them.
+
+`node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
+collider — the chosen lollipop sits on the same stem box its loop already gave it). No visual check
+was possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
