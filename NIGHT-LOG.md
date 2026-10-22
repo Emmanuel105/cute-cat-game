@@ -18182,3 +18182,26 @@ collider — the palm sits on its own existing trunk box). No visual check was p
 environment (no browser, no Playwright) — only the stub-three test suite above. Seven of the eighteen
 dune palms are now left bare for future rounds. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 671 — a twelfth Sunny Shore palm finally gets a look, and one gets ruled out for good
+
+Of the eighteen dune palms, eleven had a "look" prompt after round 670; seven were still bare. A
+headless sweep of all seven — `game.travel(4, 'from-hub')` through its real portal-fade timer, then
+1800 simulated frames sampling every NPC's own position, every physics box and every interactable
+every 6th frame — turned up something worth knowing before picking one: **the palm at (-16, 40) can
+never get a "look" prompt at all.** A sunbather's own `Wanderer` spawns standing right on that exact
+coordinate — 0.00 m away, every single frame sampled — so a "Look at the palm tree" prompt there would
+permanently fight her own "Say hello", never mind any radius. Two more, at (-20, 6) and (-34, -4),
+cleared barely a metre from their own nearest box and were ruled out too. That left four real
+candidates, and **the hill palm, at (-38, 12) — well back from the surf, between the west palm and the
+one further towards the north side of the dune field — gets the twelfth "look", with the widest overall
+clearance of the four: 2.75 m from the nearest other box, 9.77 m from the nearest wandering soul and
+8.31 m from the nearest other interactable**, comfortably past the usual 2 m radius. *"Well back from
+the surf, between the west palm and the one further towards the north side of the dunes."*
+
+No new mesh and no new physics box: the same build loop keeps `hillPalm` off its matching coordinate
+and hands it straight to `game.addInteractable`, the same trick every palm before it used.
+`node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328. No
+visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
+suite above. Six of the eighteen dune palms are now left bare for future rounds — one of them, (-16,
+40), permanently so. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
