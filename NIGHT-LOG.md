@@ -17833,3 +17833,28 @@ twelve are now left bare for future rounds.
 collider — the chosen lollipop sits on the same stem box its loop already gave it). No visual check
 was possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 658 — a fourth Sunny Shore palm finally gets a look
+
+Rounds 622, 653 and 655 picked off three of the eighteen dune palms on Sunny Shore (the far north-west
+one, the one tucked back in the dunes at (-28, -14), and the one up at (-12, 48)), leaving fifteen still
+bare. **The one at (-30, 44), in the north-east corner of the dune field past the fallen hollow logs,
+gets the next "look" now.** *"North-east corner of the dunes, past where the hollow logs lie."* *"Leans
+the same lazy way as the rest of them. Nobody up here minds."* *"A coconut or two in the sand
+underneath — nobody's come looking for them yet."*
+
+No new mesh and no new physics box: `grovePalm`, captured off the same loop in `buildBeach()` that
+already plants and boxes all eighteen dune palms, goes straight to `game.addInteractable` at the same
+2 m radius the other three palms' own prompts use. A headless probe (the same stub-three harness
+`test/run.mjs` itself uses — `game.start('new')`, `game.travel(4, 'from-hub')` waited out through its
+real portal-fade timer, then 3600 simulated frames sampling every NPC's own position every 6th frame)
+swept all fifteen remaining bare palms against every one of the beach's own physics boxes, every sample
+and every interactable already on the sand: (-30, 44) came back with the widest overall clearance of
+the fifteen — 10.45 m from the nearest other box, and 8.25 m from both the nearest wandering soul and
+the nearest other interactable (the same soul's own "Say hi" prompt, sampled at the same spot).
+Fourteen of the eighteen are now left bare for future rounds.
+
+`node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
+collider — the chosen palm sits on the same trunk box its loop already gave it). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
