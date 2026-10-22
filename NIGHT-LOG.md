@@ -17984,3 +17984,39 @@ eighteen are now left bare for future rounds.
 new collider — the chosen palm sits on the same trunk box its loop already gave it). No visual check
 was possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 664 — an eighth Sunny Shore palm finally gets a look
+
+Housekeeping first: round 663's own commit had landed on a detached `HEAD` rather than `main` — the
+local branch pointer was a commit behind, though the work itself had already reached `origin/main`
+intact. Fast-forwarded `main` to match before starting this round; no work was lost.
+
+Before picking a new palm, the other two known queues got a quick recheck. Candy Land's inner dozen
+lollipops still have three bare — (-12, 12), (14, 10) and (18, 34) — but round 661's own probe had
+already found all three pressed up against something at well under a metre, and nothing nearby has
+changed since, so they stay left for whoever eventually has a better idea than a plain "look" prompt.
+Frosty Peak's ice-crystal cluster is down to two bare crystals, both already flagged stuck (one against
+a wandering penguin, one against the welcome arch's own post). That left the dune palms as the only
+queue with room to move.
+
+Rounds 622, 653, 655, 658, 659, 662 and 663 picked off seven of Sunny Shore's eighteen dune palms,
+leaving eleven still bare. **The one at (-30, 30), inland between the west palm and the grove up in the
+north-east corner, gets the next "look" now.** *"Not on any edge of the field — this one just grows in
+the middle of the dunes."* *"Same curl in the fronds as the rest of the grove. Nobody's ever stood under
+this one to look."* *"A trunk like any other, planted the same day as its seventeen neighbours."*
+
+No new mesh and no new physics box: `midDunePalm`, captured off the same loop in `buildBeach()` that
+already plants and boxes all eighteen dune palms, goes straight to `game.addInteractable` at the same
+2 m radius the other seven palms' own prompts use. A headless probe (the same stub-three harness
+`test/run.mjs` itself uses — `game.start('new')`, `game.travel(4, 'from-hub')` waited out through its
+real portal-fade timer, then 1200 simulated frames sampling every NPC's own position every 6th frame)
+swept all eleven remaining bare palms against every one of the beach's own physics boxes, every sample
+and every interactable already on the sand: (-30, 30) came back with the widest overall clearance of
+the eleven — 11.88 m from the nearest other box, 8.49 m from the nearest wandering soul and 8.32 m from
+the nearest other interactable, comfortably past the 2 m radius the other seven already use. Ten of the
+eighteen are now left bare for future rounds.
+
+`node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
+collider — the chosen palm sits on the same trunk box its loop already gave it). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
