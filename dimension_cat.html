@@ -19873,8 +19873,8 @@ function buildForest(game, entry) {
   makeGemCluster(game, U, -6, 8, 7, [0xa8ff9a, 0x7fe0ff, 0xffd54a, 0xff6fb5], r, 1.6); makeGemCluster(game, U, -12, 22.5, 4, [0xc8a2ff, 0xa8ff9a], r, 0.9);
   let cutterStump;
   for (const [x, z] of [[-6, 2], [18, 24], [-26, -22], [4, -16]]) { const s = placeT(game, U, makeStump(r), x, z, r() * TAU); boxT(game, x, z, 1.0, 0.75, 1.0, { cam: false }); if (x === -6 && z === 2) cutterStump = s; }
-  let mossyRock, westRock, eastRock;
-  for (const [x, z] of [[-24, 30], [32, 8], [-36, 6], [8, -38]]) { const rk = placeT(game, U, makeRock(r, 0x6b7a6a, r.range(1.2, 2.2)), x, z, 0); if (x === -24 && z === 30) mossyRock = rk; if (x === 32 && z === 8) eastRock = rk; if (x === -36 && z === 6) westRock = rk; }
+  let mossyRock, westRock, eastRock, southRock;
+  for (const [x, z] of [[-24, 30], [32, 8], [-36, 6], [8, -38]]) { const rk = placeT(game, U, makeRock(r, 0x6b7a6a, r.range(1.2, 2.2)), x, z, 0); if (x === -24 && z === 30) mossyRock = rk; if (x === 32 && z === 8) eastRock = rk; if (x === -36 && z === 6) westRock = rk; if (x === 8 && z === -38) southRock = rk; }
   // of the four rocks scattered through the woods at line 276, only the south one (8, -38) has ever had
   // a neighbour — the digger kid's own dig, round 591, used it purely as a clearance reference, never a
   // "look" prompt of its own. The other three have sat bare since the glade was first built. **The
@@ -19924,6 +19924,22 @@ function buildForest(game, entry) {
   // regardless of where the cat stands or whether the seller ever starts wandering.
   { const eastRockLines = ['🪨 "East edge of the glade, within earshot of the berry seller\'s own cries."', '🪨 "Sun-bleached on top, same grey-green as the others underneath."', '🪨 "Close enough to smell the berries. Rock doesn\'t care either way."'];
     game.addInteractable({ obj: eastRock, radius: 0.9, label: () => 'Look at the rock', onUse: () => { SFX.click(); game.toast(rnd.pick(eastRockLines), 3000); } }); }
+  // that leaves the south rock (8, -38) as the last of the original four still bare — round 591's own
+  // digger kid only ever used it as a clearance reference, never gave it a prompt of its own, and the
+  // firefly jar catcher further up this file measures its own distance off this exact rock too without
+  // ever touching it. **It gets a "look" prompt now, closing out the glade's rock quartet.**
+  //
+  // No new mesh, no new physics box: `southRock`, captured off the very same loop above that already
+  // builds and places it, goes straight to `game.addInteractable` — the same trick the other three
+  // rocks just above already use.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // `game.travel(6, 'from-hub')`, 1800 simulated frames sampling every NPC's own position every 15th
+  // frame) found this rock clear by 11.66 m of the nearest wandering soul and the firefly catcher's own
+  // greet circle, and 8.45 m of the nearest physics box — comfortably past the 2.2 m radius the mossy
+  // and west rocks already use, and nowhere near the digger's own dig a dozen metres north.
+  { const southRockLines = ['🪨 "South edge of the glade — the digger\'s own dig is a stone\'s throw north."', '🪨 "Flattest of the four. Nobody\'s ever bothered to climb it, though."', '🪨 "Same grey-green as its three cousins, just further from everything."'];
+    game.addInteractable({ obj: southRock, radius: 2.2, label: () => 'Look at the rock', onUse: () => { SFX.click(); game.toast(rnd.pick(southRockLines), 3000); } }); }
   // stepping stones from the entrance to the glade
   for (let i = 0; i < 14; i++) { const z = 40 - i * 2.6, x = sin(i * 0.7) * 1.6; mesh(G.cyl(0.55, 0.6, 0.12, 9), mat(0x8a8a80, { roughness: 1 }), { x, y: P.ground0(x, z) + 0.05, z, ry: r() * TAU, shadow: 'receive', parent: W }); }
 

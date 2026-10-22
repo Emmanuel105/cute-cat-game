@@ -18051,3 +18051,29 @@ are now left bare for future rounds.
 collider — the chosen palm sits on the same trunk box its loop already gave it). No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 666 — Whisper Woods' last bare rock finally gets a look
+
+Before touching Sunny Shore's dune palms again — the only queue left running, nine deep by now, and the
+sole focus of the previous six rounds straight — this round went looking for a different queue nobody
+had actually finished. Whisper Woods' own glade has four rocks, planted in one loop back when the world
+was first built (`[[-24, 30], [32, 8], [-36, 6], [8, -38]]` in `buildForest()`'s big rock-and-stump
+block). Three of them — the mossy north-west rock, the east one by the berry seller, the west one past
+the woodcutter's glade — each picked up their own "look" prompt in earlier rounds. The fourth, the south
+rock at (8, -38), never did: round 591's digger kid and the firefly jar catcher further down the same
+file both measure their own clearance off it, but neither ever gave it a prompt of its own. **It gets
+one now, closing out the glade's rock quartet.**
+
+No new mesh and no new physics box: `southRock`, captured off the exact same loop that already builds
+and places all four, goes straight to `game.addInteractable` at the same 2.2 m radius the mossy and west
+rocks already use. A headless probe (the same stub-three harness `test/run.mjs` itself uses —
+`game.start('new')`, `game.travel(6, 'from-hub')`, then 1800 simulated frames sampling every NPC's own
+position every 15th frame) swept the spot against every deer, fox, hare and fairy sample, every physics
+box and every interactable already in the glade: the nearest other soul (the firefly jar catcher's own
+wander) stayed 11.66 m clear and the nearest box 8.45 m clear — comfortably past the 2.2 m radius, with
+the digger's own dig a dozen metres further north still.
+
+`node test/run.mjs` ran clean: all 277 checks `ok`, 0 console warnings, box count unchanged at 328 (no
+new collider — the rock sits on terrain with no box of its own, same as its three cousins). No visual
+check was possible in this environment (no browser, no Playwright) — only the stub-three test suite
+above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
