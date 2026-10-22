@@ -17933,3 +17933,28 @@ the risk. Three of the twelve are now left bare for future rounds.
 collider — the chosen lollipop sits on the same stem box its loop already gave it). No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+
+## Round 662 — a sixth Sunny Shore palm finally gets a look
+
+Rounds 622, 653, 655, 658 and 659 picked off five of the eighteen dune palms standing since round 1,
+leaving thirteen still bare. **The one at (-22, -32), down in the south-west corner of the dune field
+past the sack race's own lane, gets the next "look" now.** *"South-west corner of the dunes, past the
+sack race's own lane."* *"Leans the same way every trunk on this beach leans. Just further from
+everything else."* *"Whatever falls off this one lands in sand nobody's ever raked."*
+
+No new mesh and no new physics box: `stormPalm`, captured off the same loop in `buildBeach()` that
+already plants and boxes all eighteen dune palms, goes straight to `game.addInteractable` at the same
+2 m radius the other five palms' own prompts use. A headless probe (the same stub-three harness
+`test/run.mjs` itself uses — `game.start('new')`, `game.travel(4, 'from-hub')` waited out through its
+real portal-fade timer, then 1200 simulated frames sampling every NPC's own position every sixth frame)
+swept all thirteen remaining bare palms against every one of the beach's own physics boxes, every
+sample and every interactable already on the sand: (-22, -32) came back with the widest overall
+clearance of the thirteen by a clear margin — 9.27 m from the nearest other box, 4.07 m from the
+nearest wandering soul and 5.29 m from the nearest other interactable, comfortably past the 2 m radius.
+Twelve of the eighteen are now left bare for future rounds.
+
+`node test/run.mjs` ran clean: all 277 checks `ok`, 0 console warnings, box count unchanged at 328 (no
+new collider — the chosen palm sits on the same trunk box its loop already gave it). No visual check
+was possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

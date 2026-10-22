@@ -243,8 +243,8 @@ function buildBeach(game, entry) {
     game.npcs.push(v); greetable(game, v); }
   // dunes: palms, grass tufts, driftwood
   const palmSpots = [[-20, 6], [-24, 16], [-18, 28], [-30, 30], [-34, -4], [-28, -14], [-38, 12], [-22, -32], [-36, -28], [-44, 2], [-42, 22], [-16, 40], [-30, 44], [-46, -18], [-12, 48], [-6, 34], [-4, -34], [-40, 40]];
-  let farPalm = null, duneyPalm = null, northPalm = null, grovePalm = null, eastPalm = null;
-  for (const [x, z] of palmSpots) { const p = makePalm(r, r.range(3.8, 5.6)); placeT(game, U, p, x, z, 0); boxT(game, x, z, 0.5, 5, 0.5, { cam: false }); if (x === -40 && z === 40) farPalm = p; if (x === -28 && z === -14) duneyPalm = p; if (x === -12 && z === 48) northPalm = p; if (x === -30 && z === 44) grovePalm = p; if (x === -4 && z === -34) eastPalm = p; }
+  let farPalm = null, duneyPalm = null, northPalm = null, grovePalm = null, eastPalm = null, stormPalm = null;
+  for (const [x, z] of palmSpots) { const p = makePalm(r, r.range(3.8, 5.6)); placeT(game, U, p, x, z, 0); boxT(game, x, z, 0.5, 5, 0.5, { cam: false }); if (x === -40 && z === 40) farPalm = p; if (x === -28 && z === -14) duneyPalm = p; if (x === -12 && z === 48) northPalm = p; if (x === -30 && z === 44) grovePalm = p; if (x === -4 && z === -34) eastPalm = p; if (x === -22 && z === -32) stormPalm = p; }
   // eighteen palms have stood in these dunes since round 1 and none of them ever got so much as a
   // glance — the one out at (-40, 40), the far north-west corner of the dune field, gets a "look" of
   // its own now. No new mesh, no new physics box: the loop above already calls `makePalm()` for each
@@ -308,6 +308,19 @@ function buildBeach(game, entry) {
   // everything with plenty to spare. Thirteen of the eighteen are now left bare for future rounds.
   { const eastPalmLines = ['🌴 "Furthest east of the whole dune field, and the furthest south too."', '🌴 "On its own out here — the rest of the grove is a long walk west."', '🥥 "Nobody\'s ever built so much as a sandcastle under this one."'];
     game.addInteractable({ obj: eastPalm, radius: 2, label: () => 'Look at the palm tree', onUse: () => { SFX.click(); game.toast(rnd.pick(eastPalmLines), 3000); } }); }
+  // thirteen of the eighteen dune palms are still bare after those five. The one at (-22, -32), down in
+  // the south-west corner of the field past the sack race's own lane, gets the next "look" now. No new
+  // mesh and no new physics box: the same loop above already keeps `stormPalm` off the matching
+  // coordinate, same trick `farPalm`, `duneyPalm`, `northPalm`, `grovePalm` and `eastPalm` used. A
+  // headless probe (`game.start('new')`, `game.travel(4, 'from-hub')` waited out through its real
+  // portal-fade timer, then 1200 simulated frames sampling every NPC's own position every 6th frame)
+  // swept all thirteen remaining bare palms against every one of the beach's own physics boxes, every
+  // sample and every interactable already on the sand: (-22, -32) came back with the widest overall
+  // clearance of the thirteen — 9.27 m from the nearest other box, 4.07 m from the nearest wandering
+  // soul and 5.29 m from the nearest other interactable, comfortably past the 2 m radius the other five
+  // already use. Twelve of the eighteen are now left bare for future rounds.
+  { const stormPalmLines = ['🌴 "South-west corner of the dunes, past the sack race\'s own lane."', '🌴 "Leans the same way every trunk on this beach leans. Just further from everything else."', '🥥 "Whatever falls off this one lands in sand nobody\'s ever raked."'];
+    game.addInteractable({ obj: stormPalm, radius: 2, label: () => 'Look at the palm tree', onUse: () => { SFX.click(); game.toast(rnd.pick(stormPalmLines), 3000); } }); }
   makeGrass(game, [[-26, 0, 22, 150], [-14, 30, 12, 70], [-40, -30, 12, 70]], r, { hue: [0.13, 0.21], light: [0.4, 0.56], tall: 1.15, wide: 1.45, pad: 0.2 });
   makeScatter(game, [[10, 0, 12, 60], [6, 28, 10, 40], [8, -26, 10, 40]], G.sphere(0.06, 6, 5), [0xfff1dc, 0xffd9c2, 0xf3e3c8, 0xd9a3a3, 0xe8c9a0], r, [0.6, 1.4], 0.02);  // shells
   for (const [x, z, ry] of [[-14, 36, 0.4], [4, -30, 1.2], [-6, 12, 2.4]]) { const log = makeHollowLog(r); log.scale.setScalar(0.7); placeT(game, U, log, x, z, ry); }
