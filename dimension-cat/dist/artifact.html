@@ -11025,8 +11025,8 @@ function buildCandyLand(game, entry) {
       '🍭 "Finder keeps the stick either way." The cat has no plans to go looking.',
       '🍭 Someone has tied a scrap of licorice string to the corner, as if that proves anything. The cat sniffs it anyway.'];
     game.addInteractable({ obj: notice, radius: 2.2, label: () => 'Read the notice', onUse: () => { SFX.click(); game.toast(rnd.pick(lollipopLines), 3000); } }); }
-  let farLollipop = null, westLollipop = null, southLollipop = null;
-  for (const [x, z] of [[-12, 12], [14, 10], [-24, -8], [22, -26], [-34, 16], [36, 18], [-16, 32], [18, 34], [-40, -8], [40, -12], [-6, -34], [6, -48]]) { const s = r.range(1.1, 1.8), l = makeLollipop(s, r.pick([330, 0, 200, 50, 280, 120]), r.range(2.6, 4)); l.position.set(x, 0, z); l.rotation.y = r() * TAU; W.add(l); P.addBox(x, 1.5, z, 0.4, 3, 0.4, { cam: false }); if (x === 36 && z === 18) farLollipop = l; if (x === -34 && z === 16) westLollipop = l; if (x === -6 && z === -34) southLollipop = l; }
+  let farLollipop = null, westLollipop = null, southLollipop = null, farSouthLollipop = null;
+  for (const [x, z] of [[-12, 12], [14, 10], [-24, -8], [22, -26], [-34, 16], [36, 18], [-16, 32], [18, 34], [-40, -8], [40, -12], [-6, -34], [6, -48]]) { const s = r.range(1.1, 1.8), l = makeLollipop(s, r.pick([330, 0, 200, 50, 280, 120]), r.range(2.6, 4)); l.position.set(x, 0, z); l.rotation.y = r() * TAU; W.add(l); P.addBox(x, 1.5, z, 0.4, 3, 0.4, { cam: false }); if (x === 36 && z === 18) farLollipop = l; if (x === -34 && z === 16) westLollipop = l; if (x === -6 && z === -34) southLollipop = l; if (x === 6 && z === -48) farSouthLollipop = l; }
   // this inner dozen of big lollipops has stood since round 1, never looked at once — the notice cane
   // a few lines up and the wishing well further down both got their own "look" prompt, but every one of
   // these twelve was planted and forgotten. (36, 18), out past the east side of the candy-cane belt,
@@ -11062,6 +11062,15 @@ function buildCandyLand(game, entry) {
   // loop above, the same trick `farLollipop`/`westLollipop` already used.
   { const lollipopLines3 = ['🍭 "Down in the south belt, past the gumdrop patch — quietest corner of the dozen."', '🍭 "Stripe\'s a little crooked near the base. Nobody\'s ever minded."', '😼 The cat sniffs the stick, finds no scent of mouse, and moves on.'];
     game.addInteractable({ obj: southLollipop, radius: 2.2, label: () => 'Look at the lollipop', onUse: () => { SFX.click(); game.toast(rnd.pick(lollipopLines3), 3000); } }); }
+  // three of the inner dozen looked at, nine still bare. (6, -48), the furthest-south of the whole belt, came
+  // back clearest of the remaining nine in a headless probe (`game.start('new')`, `game.load(1, 'from-prev')`,
+  // 3600 simulated frames sampling every NPC's own position every sixth frame): 6.01 m clear of the nearest
+  // other physics box, 8.86 m off the nearest wandering soul and 8.86 m off the nearest other interactable (the
+  // same soul, since neither moves) — the widest box clearance of the nine, comfortably past the 2.2 m radius
+  // the other three already use. No new mesh, no new physics box, no new `r()` draw: `farSouthLollipop` just
+  // captures this one instance's own return value out of the same loop above.
+  { const lollipopLines4 = ['🍭 "Furthest south of the whole belt — the ground gets quiet out here."', '🍭 "Same swirl as its eleven neighbours, just a longer walk to see it."', '😼 The cat gives the stick a token headbutt, same as it gave the last one. Still no reaction.'];
+    game.addInteractable({ obj: farSouthLollipop, radius: 2.2, label: () => 'Look at the lollipop', onUse: () => { SFX.click(); game.toast(rnd.pick(lollipopLines4), 3000); } }); }
   for (let i = 0; i < 40; i++) { const x = r.range(-45, 45), z = r.range(-50, 40); if (abs(z + 18) < 5 || (abs(x) < 3 && abs(z) < 3)) continue; const l = makeLollipop(0.28, r.pick([330, 0, 200, 50, 280, 120]), r.range(0.5, 0.8)); l.position.set(x, 0, z); l.rotation.y = r() * TAU; W.add(l); }
   makeGumdrops(game, [[-8, 14, 4, 14], [10, -6, 4, 12], [-20, 2, 5, 16], [22, 6, 5, 16], [-30, -30, 6, 18], [30, -32, 6, 18], [0, 22, 6, 20], [-40, 20, 5, 14], [40, -2, 5, 14], [-52, 8, 7, 22], [54, 12, 7, 22], [-20, 50, 8, 24], [26, 52, 7, 20], [-50, -34, 6, 16], [52, -36, 6, 16], [10, -50, 6, 18]], r);
   for (const [x, z] of [[-40, 44], [44, 46], [-56, -10], [58, -14], [-14, -56], [22, -58], [-66, 16], [68, 4]]) { const s = r.range(1.2, 1.9), l = makeLollipop(s, r.pick([330, 0, 200, 50, 280, 120]), r.range(3, 4.5)); l.position.set(x, 0, z); l.rotation.y = r() * TAU; W.add(l); P.addBox(x, 1.5, z, 0.4, 3, 0.4, { cam: false }); }
