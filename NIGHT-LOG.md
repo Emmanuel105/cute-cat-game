@@ -17784,3 +17784,28 @@ bare for future rounds.
 collider — the chosen palm sits on the same trunk box its loop already gave it). No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 656 — a sixth Candy Land lollipop finally gets a look
+
+Rounds 624, 643, 644, 652 and 654 picked off five of the inner dozen big candy-cane-striped lollipops
+ringing the sweet-lands, leaving seven still bare. **The one at (-16, 32), up on the north side of the
+belt short of the park bridge, gets a "look" prompt now.** *"North edge of the belt, where the
+candy-cane groves start to thin out."* *"Same swirl, same stick. Nobody up here to notice either."*
+*"The cat gives the stick a disinterested sniff and goes back to looking for mice."*
+
+No new mesh and no new physics box: `northLollipop`, captured off the same loop in `buildCandyLand()`
+that already plants and boxes all twelve big lollipops (the same trick the five `look` prompts before
+it already used), goes straight to `game.addInteractable` at the same 2.2 m radius the others use. A
+headless probe (`game.start('new')`, `game.load(1, 'from-prev')`, 3600 simulated frames sampling every
+NPC's own position every sixth frame) swept the remaining seven bare candidates against every one of
+the land's physics boxes, every sample and every other interactable already on the floor: (-16, 32)
+came back with the widest overall clearance of the seven — 5.58 m clear of the nearest other box, 7.75
+m off the nearest wandering soul and 14.14 m off the nearest other interactable. The north-east corner
+at (14, 10) came back tightest — only 2.6 m off both a wandering soul and another interactable, too
+snug for a prompt with a 2.2 m radius, so it stays bare. Six of the twelve are now left bare for future
+rounds.
+
+`node test/run.mjs` ran clean: 277 checks all `ok`, 0 console warnings, box count unchanged at 328 (no
+new collider — the chosen lollipop sits on the same stem box its loop already gave it). No visual check
+was possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
