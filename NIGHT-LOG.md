@@ -17625,3 +17625,27 @@ future round with a smaller radius.
 `node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
 collider). No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 650 — Whisper Woods' east rock finally gets its own look
+
+Round 626 gave the west rock in Whisper Woods a "look" prompt and flagged the east one, at (32, 8), as
+too close to call: the berry seller stands fixed at (34, 8), just 2.0 m away, with her own "Say hello"
+circle reaching 2.1 m — a hair past the rock itself. **The east rock gets a "look" prompt now anyway,
+not by re-probing but by picking a radius small enough to settle the question for good.** *"East edge
+of the glade, within earshot of the berry seller's own cries."* *"Sun-bleached on top, same grey-green
+as the others underneath."* *"Close enough to smell the berries. Rock doesn't care either way."*
+
+`80-game.js` hands the use-prompt to whichever interactable is physically nearer among those whose own
+radius the cat is standing inside — not a normalized ratio, just raw distance. Since the seller never
+moves (`Vendor` holds a fixed `x, z`, only her arms animate), the gap to her is always exactly 2.0 m, so
+by the triangle inequality every point inside a radius-r circle around the rock is at least (2.0 - r) m
+from her. A 0.9 m radius keeps that floor (1.1 m) above r itself, so the rock's own prompt wins
+everywhere inside its own circle with a clean 0.2 m margin — true by construction, no timing-sensitive
+probe needed, and it holds even if a future round ever sets the seller wandering. `eastRock`, captured
+off the same `placeT()` call that already builds and places all four rocks (the same trick `mossyRock`
+and `westRock` already used), goes straight to `game.addInteractable`. No new mesh, no new physics box
+— rocks in this glade never had one.
+
+`node test/run.mjs` ran clean: all 277 checks `ok`, 0 console warnings, box count unchanged at 328 (no
+new collider). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

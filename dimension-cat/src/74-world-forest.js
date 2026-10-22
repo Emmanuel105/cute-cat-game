@@ -273,8 +273,8 @@ function buildForest(game, entry) {
   makeGemCluster(game, U, -6, 8, 7, [0xa8ff9a, 0x7fe0ff, 0xffd54a, 0xff6fb5], r, 1.6); makeGemCluster(game, U, -12, 22.5, 4, [0xc8a2ff, 0xa8ff9a], r, 0.9);
   let cutterStump;
   for (const [x, z] of [[-6, 2], [18, 24], [-26, -22], [4, -16]]) { const s = placeT(game, U, makeStump(r), x, z, r() * TAU); boxT(game, x, z, 1.0, 0.75, 1.0, { cam: false }); if (x === -6 && z === 2) cutterStump = s; }
-  let mossyRock, westRock;
-  for (const [x, z] of [[-24, 30], [32, 8], [-36, 6], [8, -38]]) { const rk = placeT(game, U, makeRock(r, 0x6b7a6a, r.range(1.2, 2.2)), x, z, 0); if (x === -24 && z === 30) mossyRock = rk; if (x === -36 && z === 6) westRock = rk; }
+  let mossyRock, westRock, eastRock;
+  for (const [x, z] of [[-24, 30], [32, 8], [-36, 6], [8, -38]]) { const rk = placeT(game, U, makeRock(r, 0x6b7a6a, r.range(1.2, 2.2)), x, z, 0); if (x === -24 && z === 30) mossyRock = rk; if (x === 32 && z === 8) eastRock = rk; if (x === -36 && z === 6) westRock = rk; }
   // of the four rocks scattered through the woods at line 276, only the south one (8, -38) has ever had
   // a neighbour — the digger kid's own dig, round 591, used it purely as a clearance reference, never a
   // "look" prompt of its own. The other three have sat bare since the glade was first built. **The
@@ -313,6 +313,17 @@ function buildForest(game, entry) {
   // rock already uses.
   { const westRockLines = ['🪨 "West edge of the glade — the trees thin out just past it."', '🪨 "No moss on this one. Too much sun gets through here."', '🪨 "Quietest rock in the whole wood. Nobody ever comes this far west."'];
     game.addInteractable({ obj: westRock, radius: 2.2, label: () => 'Look at the rock', onUse: () => { SFX.click(); game.toast(rnd.pick(westRockLines), 3000); } }); }
+  // round 626 left the east rock (32, 8) bare: it sits only 2.0 m from the berry seller's own "Say
+  // hello" circle (2.1 m radius, fixed at (34, 8) — a stationary `Vendor`, not a wanderer, so the gap
+  // never changes), too tight for the usual 2.2 m radius the other rocks use. A smaller radius fixes it
+  // outright rather than needing a fresh probe: `game.step()` hands the prompt to whichever
+  // interactable is physically nearer among those within their own radius (80-game.js's `best`/`bestD`
+  // check), so for every point inside a radius-r circle around the rock, the triangle inequality puts
+  // the seller at least (2.0 - r) m away — picking r = 0.9 keeps that floor (1.1 m) safely above r
+  // itself, so the rock's own prompt always wins inside its own circle, with a 0.2 m margin to spare,
+  // regardless of where the cat stands or whether the seller ever starts wandering.
+  { const eastRockLines = ['🪨 "East edge of the glade, within earshot of the berry seller\'s own cries."', '🪨 "Sun-bleached on top, same grey-green as the others underneath."', '🪨 "Close enough to smell the berries. Rock doesn\'t care either way."'];
+    game.addInteractable({ obj: eastRock, radius: 0.9, label: () => 'Look at the rock', onUse: () => { SFX.click(); game.toast(rnd.pick(eastRockLines), 3000); } }); }
   // stepping stones from the entrance to the glade
   for (let i = 0; i < 14; i++) { const z = 40 - i * 2.6, x = sin(i * 0.7) * 1.6; mesh(G.cyl(0.55, 0.6, 0.12, 9), mat(0x8a8a80, { roughness: 1 }), { x, y: P.ground0(x, z) + 0.05, z, ry: r() * TAU, shadow: 'receive', parent: W }); }
 
