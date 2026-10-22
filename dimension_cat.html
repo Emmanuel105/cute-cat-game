@@ -14471,6 +14471,20 @@ function buildVictorian(game, entry) {
   // came closer than 5.1 m — comfortably past the 1.8 m radius a basket this small needs.
   { const eastBasketLines = ['🌹 "Last lamp on the street, last basket too — same dusty-rose petals as its neighbours."', '🚲 "The cyclist rings past this one every lap. Never once looks up."', '🪴 "Furthest basket from the market square. Nobody waters this one any less for it."'];
     game.addInteractable({ obj: vicLamps[10], radius: 1.8, label: () => 'Look at the flower basket', onUse: () => { SFX.click(); game.toast(rnd.pick(eastBasketLines), 3000); } }); }
+  // round 649 ruled out `vicLamps[1]` (x=-49.5, z=6.4, basketHues[1 % 4] = the same amber/gold hue as
+  // `vicLamps[5]`'s own) for a fresh "look" prompt: the lamplighter's own patrol stops right by this
+  // lamp to light it, and a 1.8 m radius (the size every other basket prompt here uses) came too close
+  // to his own "Say hello" circle for comfort. A headless probe (`game.start('new')`, `game.travel(3,
+  // 'from-prev')` waited out through its real portal-fade timer, then 3600 simulated frames sampling
+  // every NPC's own position every frame) found the lamplighter never comes closer than 2.1 m to this
+  // post itself — the same floor round 649's own probe found — with the nearest other box (a kerb-side
+  // prop shared by most of the lamps) 1.51 m off and the nearest other interactable 1.56 m off. A 0.9 m
+  // radius, half what the other baskets use, clears all three with room: 0.6 m short of the kerb prop,
+  // 0.66 m short of the other interactable, and a full 1.2 m short of the lamplighter's own closest
+  // approach — small enough to settle the question for good, the same trick round 650 used for Whisper
+  // Woods' own east rock.
+  { const westBasketLines = ['🌼 "Same amber petals as the one dead centre of the street — this one just got here first."', '🔥 "The lamplighter stops a couple of strides short to light this post. Never once glances down at the flowers."', '🪴 "Furthest basket from the market square on this side. Nobody waters this one any less for it."'];
+    game.addInteractable({ obj: vicLamps[1], radius: 0.9, label: () => 'Look at the flower basket', onUse: () => { SFX.click(); game.toast(rnd.pick(westBasketLines), 3000); } }); }
   // the Neighborhood's own park lamp has carried a "lost cat" notice since round 462, and Robot City
   // a "missing unit" bulletin of its own since round 463 — Victorian, the one world with a dozen bare
   // lamp posts already standing, had neither. `vicLamps[8]` (x=34.5, z=6.4, the north-row lamp between

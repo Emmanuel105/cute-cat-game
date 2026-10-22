@@ -17649,3 +17649,31 @@ and `westRock` already used), goes straight to `game.addInteractable`. No new me
 `node test/run.mjs` ran clean: all 277 checks `ok`, 0 console warnings, box count unchanged at 328 (no
 new collider). No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 651 — Victorian's western flower basket finally gets its own look
+
+Round 650 closed out Whisper Woods' east rock and left one more loose end on the books: round 649's
+own probe had ruled out a "look" prompt on `vicLamps[1]`, the lamp basket at the street's western end
+(x=-49.5, z=6.4), because the lamplighter's own patrol stops right by this lamp to light it, too close
+for the 1.8 m radius every other basket prompt here uses — and flagged it for "a future round with a
+smaller radius". **It gets that smaller radius now.** *"Same amber petals as the one dead centre of
+the street — this one just got here first."* *"The lamplighter stops a couple of strides short to
+light this post. Never once glances down at the flowers."* *"Furthest basket from the market square on
+this side. Nobody waters this one any less for it."*
+
+No new mesh and no new physics box: `vicLamps[1]`, captured from the same lamp-building loop in
+`src/70-worlds.js` that already places all twelve street lamps and their baskets, goes straight into
+`game.addInteractable` — the same trick `vicLamps[5]` and `vicLamps[10]`'s own prompts already used. A
+headless probe on the stub-three harness (`game.start('new')`, `game.travel(3, 'from-prev')` waited out
+through its real portal-fade timer, then 3600 simulated frames sampling every NPC's own position every
+frame) found the lamplighter never comes closer than 2.1 m to this post — the same floor round 649's
+own probe found — with the nearest other box (a kerb-side prop shared by most of the lamps) 1.51 m off
+and the nearest other interactable 1.56 m off. A 0.9 m radius, half what the other baskets use and the
+same size round 650's own rock prompt picked, clears all three with room to spare: 0.6 m short of the
+kerb prop, 0.66 m short of the other interactable, and a full 1.2 m short of the lamplighter's closest
+approach. All three of Victorian's flower-basket prompts now sit on the same street without crowding
+each other or the one soul who visits every lamp in turn.
+
+`node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
+collider). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
