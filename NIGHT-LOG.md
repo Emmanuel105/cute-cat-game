@@ -18159,3 +18159,26 @@ collider — the palm sits on its own existing trunk box). No visual check was p
 environment (no browser, no Playwright) — only the stub-three test suite above. Eight of the eighteen
 dune palms are now left bare for future rounds. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 670 — an eleventh Sunny Shore palm finally gets a look
+
+Of the eighteen dune palms, ten had a "look" prompt after round 669; eight were still bare.
+**`backPalm`, at (-24, 16) — set back from the surf, between the inner palm and the west side of the
+dune field — gets the eleventh.** *"Set back from the surf, between the inner palm and the west side
+of the field."*
+
+No new mesh and no new physics box: `palmSpots`'s own build loop already calls `makePalm()` for every
+coordinate in the list and discards the return value, so this just keeps the one matching (-24, 16)
+(`backPalm`) and hands it straight to `game.addInteractable`, the same trick all ten palms before it
+used. A headless probe (`game.travel(4, 'from-hub')` waited out through its real portal-fade timer,
+then 1200 simulated frames sampling every NPC's own position, every physics box and every interactable
+every 6th frame) swept all eight remaining bare palms: (-24, 16) came back with the widest overall
+clearance of the eight — 8.49 m from the nearest other box, 8.06 m from the nearest wandering soul and
+7.16 m from the nearest other interactable, comfortably past the 2 m radius every other palm already
+uses.
+
+`node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
+collider — the palm sits on its own existing trunk box). No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite above. Seven of the eighteen
+dune palms are now left bare for future rounds. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
