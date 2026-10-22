@@ -18077,3 +18077,34 @@ the digger's own dig a dozen metres further north still.
 new collider — the rock sits on terrain with no box of its own, same as its three cousins). No visual
 check was possible in this environment (no browser, no Playwright) — only the stub-three test suite
 above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 667 — a seventh Victorian flower basket finally gets a look
+
+The usual prop-queue checks came first: Candy Land's three remaining bare lollipops and Frosty Peak's
+two remaining ice crystals are both still genuinely tight (round 665's recheck stands), and Whisper
+Woods' rock quartet closed out last round, so this round looked at a queue nobody had finished either —
+Victorian's own street lamps. All eleven standing lamps along the main street swing a hanging flower
+basket (added back when the baskets themselves first went up), but only three had ever earned their own
+"look" prompt: `vicLamps[1]` (round 649, reduced to a tight 0.9 m radius for the lamplighter's own
+patrol), `vicLamps[5]` (dead centre of the street) and `vicLamps[10]` (the last lamp at the eastern
+end) — plus `vicLamps[8]`, which carries the lost-watch notice instead of a basket prompt. Seven baskets
+were still bare. **`vicLamps[7]`, south pavement at (24, -6.4), gets the next one — it sits almost
+directly across the street from the one terrace window whose ledge has carried a sleeping cat since
+this build's very first pass.** *"Straight across the street, that window ledge has had a cat asleep on
+it longer than this basket's been hanging."*
+
+No new mesh and no new physics box: `game.addInteractable` keys straight off the lamp post `vicLamps[7]`
+already is, the same trick the other three baskets and the watch notice all used. A headless probe (the
+same stub-three harness `test/run.mjs` itself uses — `game.start('new')`, `game.travel(3, 'from-prev')`
+waited out through its real portal-fade timer, then 3600 simulated frames sampling every NPC's own
+position every sixth frame) checked all seven remaining bare lamps: `vicLamps[7]` came back with the
+widest clearance of the set — 3.72 m from the nearest wandering soul and 3.67 m from the nearest other
+interactable, both comfortably past the 1.8 m radius the other baskets already use. (`vicLamps[9]`, the
+other decent candidate at 3.03 m on both counts, is left for a future round; the rest were too tight —
+under 1.2 m to a wandering soul or another interactable — to risk without a lot more digging.) Six of
+the eleven baskets are now left bare for future rounds.
+
+`node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
+collider — the chosen lamp sits on its own existing post box). No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

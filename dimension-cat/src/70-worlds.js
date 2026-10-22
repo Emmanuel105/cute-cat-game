@@ -6907,6 +6907,20 @@ function buildVictorian(game, entry) {
   // Woods' own east rock.
   { const westBasketLines = ['🌼 "Same amber petals as the one dead centre of the street — this one just got here first."', '🔥 "The lamplighter stops a couple of strides short to light this post. Never once glances down at the flowers."', '🪴 "Furthest basket from the market square on this side. Nobody waters this one any less for it."'];
     game.addInteractable({ obj: vicLamps[1], radius: 0.9, label: () => 'Look at the flower basket', onUse: () => { SFX.click(); game.toast(rnd.pick(westBasketLines), 3000); } }); }
+  // four of the eleven baskets looked at (`vicLamps[1]`, `[5]`, `[8]`'s own notice and `[10]`), seven
+  // still bare. `vicLamps[7]` (x=24, z=-6.4, south pavement, basketHues[7 % 4] = the dusty-rose hue)
+  // sits almost directly across the street from the north-row terrace at x=22 whose window ledge has
+  // carried a sleeping cat since this build's own first pass — the only house on the whole street with
+  // one. A headless probe (`game.start('new')`, `game.travel(3, 'from-prev')` waited out through its
+  // real portal-fade timer, then 3600 simulated frames sampling every NPC's own position every sixth
+  // frame) swept this lamp's own (24, -6.4) against every one of the street's physics boxes, every
+  // sample and every interactable already standing: the nearest wandering soul stayed 3.72 m off and
+  // the nearest other interactable 3.67 m off — both comfortably past the 1.8 m radius the other
+  // baskets already use, and the widest clearance of the seven candidates checked. No new mesh, no new
+  // box: `game.addInteractable` keys off the lamp post `vicLamps[7]` already is, same trick every
+  // basket before it used.
+  { const southBasketLines = ['🌹 "Dusty-rose petals, same as the one past the market square — this one just got here first."', '🐈 "Straight across the street, that window ledge has had a cat asleep on it longer than this basket\'s been hanging."', '🪴 "Sways in weather that never actually blows anything else on this street."'];
+    game.addInteractable({ obj: vicLamps[7], radius: 1.8, label: () => 'Look at the flower basket', onUse: () => { SFX.click(); game.toast(rnd.pick(southBasketLines), 3000); } }); }
   // the Neighborhood's own park lamp has carried a "lost cat" notice since round 462, and Robot City
   // a "missing unit" bulletin of its own since round 463 — Victorian, the one world with a dozen bare
   // lamp posts already standing, had neither. `vicLamps[8]` (x=34.5, z=6.4, the north-row lamp between
