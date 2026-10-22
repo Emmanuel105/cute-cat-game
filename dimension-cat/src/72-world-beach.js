@@ -243,8 +243,8 @@ function buildBeach(game, entry) {
     game.npcs.push(v); greetable(game, v); }
   // dunes: palms, grass tufts, driftwood
   const palmSpots = [[-20, 6], [-24, 16], [-18, 28], [-30, 30], [-34, -4], [-28, -14], [-38, 12], [-22, -32], [-36, -28], [-44, 2], [-42, 22], [-16, 40], [-30, 44], [-46, -18], [-12, 48], [-6, 34], [-4, -34], [-40, 40]];
-  let farPalm = null;
-  for (const [x, z] of palmSpots) { const p = makePalm(r, r.range(3.8, 5.6)); placeT(game, U, p, x, z, 0); boxT(game, x, z, 0.5, 5, 0.5, { cam: false }); if (x === -40 && z === 40) farPalm = p; }
+  let farPalm = null, duneyPalm = null;
+  for (const [x, z] of palmSpots) { const p = makePalm(r, r.range(3.8, 5.6)); placeT(game, U, p, x, z, 0); boxT(game, x, z, 0.5, 5, 0.5, { cam: false }); if (x === -40 && z === 40) farPalm = p; if (x === -28 && z === -14) duneyPalm = p; }
   // eighteen palms have stood in these dunes since round 1 and none of them ever got so much as a
   // glance — the one out at (-40, 40), the far north-west corner of the dune field, gets a "look" of
   // its own now. No new mesh, no new physics box: the loop above already calls `makePalm()` for each
@@ -257,6 +257,18 @@ function buildBeach(game, entry) {
   // log over at (-30, 44)) stays 7.4 m off. A 2 m radius clears its own trunk with plenty to spare.
   { const farPalmLines = ['🌴 "Furthest palm on the whole beach, and the only one nobody\'s ever stood under."', '🌴 "Leans a little more than its neighbours. Picked a windier spot and just kept growing."', '🥥 "Not one coconut\'s ever come down off this one. The vendor still has to buy hers."'];
     game.addInteractable({ obj: farPalm, radius: 2, label: () => 'Look at the palm tree', onUse: () => { SFX.click(); game.toast(rnd.pick(farPalmLines), 3000); } }); }
+  // seventeen of the eighteen dune palms are still bare after that one. The one at (-28, -14), tucked
+  // well back from the sack race's own lane and the chopper's firewood stump, gets the next "look" now.
+  // No new mesh, no new physics box: the same loop above already keeps `duneyPalm` off the matching
+  // coordinate, same trick `farPalm` used. A headless probe (`game.start('new')`, `game.travel(4,
+  // 'from-hub')` waited out through its real portal-fade timer, then 3600 simulated frames sampling
+  // every NPC's own position every 6th frame) found this trunk's own box (half-extent 0.5 m) sits a
+  // clear 8.8 m from the nearest other physics box and 9.6 m from the nearest wandering soul (the
+  // kite-flying flyer, out over the surf) — the widest clearance of any bare palm left on this coast;
+  // the nearest other interactable (the chopper's own "Say hello") stays 9.8 m off. A 2 m radius, the
+  // same as the far palm's own, clears everything with room to spare.
+  { const duneyPalmLines = ['🌴 "No path runs anywhere near this one. It just gets to be a palm tree, quietly."', '🌴 "Every other palm on this beach has somebody walking past it sooner or later. Not this one."', '🥥 "Whatever grows up here, the sand\'s too far from everything for anyone to notice."'];
+    game.addInteractable({ obj: duneyPalm, radius: 2, label: () => 'Look at the palm tree', onUse: () => { SFX.click(); game.toast(rnd.pick(duneyPalmLines), 3000); } }); }
   makeGrass(game, [[-26, 0, 22, 150], [-14, 30, 12, 70], [-40, -30, 12, 70]], r, { hue: [0.13, 0.21], light: [0.4, 0.56], tall: 1.15, wide: 1.45, pad: 0.2 });
   makeScatter(game, [[10, 0, 12, 60], [6, 28, 10, 40], [8, -26, 10, 40]], G.sphere(0.06, 6, 5), [0xfff1dc, 0xffd9c2, 0xf3e3c8, 0xd9a3a3, 0xe8c9a0], r, [0.6, 1.4], 0.02);  // shells
   for (const [x, z, ry] of [[-14, 36, 0.4], [4, -30, 1.2], [-6, 12, 2.4]]) { const log = makeHollowLog(r); log.scale.setScalar(0.7); placeT(game, U, log, x, z, ry); }
