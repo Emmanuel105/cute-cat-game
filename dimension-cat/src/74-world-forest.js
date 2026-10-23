@@ -1278,8 +1278,21 @@ function buildForest(game, entry) {
   // (radius <= 55, short of `forestRegion`'s own fill at 58) against both those samples and every one of
   // the wood's physics boxes: (-28, -20) came back clear by 12.8 m of the nearest box and 13.2 m of the
   // nearest other soul, on flat ground, outside every hand-reserved zone in this file.
+  // This same ladybug is the one the Neighborhood and Victorian comments above (round 692, this file's
+  // own history) both point to as still unmet: Candy Land's gumdrop beetle, Robot City's scrap bug,
+  // Sunny Shore's tiger beetle and Frosty Peak's frost beetle are all in the same boat — pure ambient
+  // `Hopper` wildlife, same as the raccoon and the factory mouse were before their own rounds. `Hopper`
+  // never calls `greetable()` the way `Wanderer` does, so a rig with none of `.look`/`.robot`/`.cookie`
+  // just sits there unmet. No new mesh, no new physics box: `game.namedFriend('ladybug')` plus a
+  // `game.addInteractable` keyed straight to the ladybug's own `rig.group`, tracked every frame so the
+  // prompt follows it through its tiny hops inside its own 1 m leash. The 2.1 m greet radius — the same
+  // every other Hopper creature's own prompt already uses — sits nowhere near anything else: the probe
+  // just above already found this exact spot 12.8 m from the nearest box and 13.2 m from the nearest
+  // other soul, far past the radius needed here.
   { const rig = makeLadybug(); W.add(rig.group);
-    game.npcs.push(new Hopper(game, rig, { x: -28, z: -20, leash: 1.0, r: 0.08, dist: [0.12, 0.3], dur: 0.3, height: 0.05, idle: [1.5, 4] })); }
+    game.npcs.push(new Hopper(game, rig, { x: -28, z: -20, leash: 1.0, r: 0.08, dist: [0.12, 0.3], dur: 0.3, height: 0.05, idle: [1.5, 4] }));
+    const ladybugId = game.namedFriend('ladybug');
+    game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the ladybug', onUse: () => { game.befriend(ladybugId); SFX.chitter(); game.hearts(rig.group.position.x, 0.15, rig.group.position.z, 3); game.toast('🐞 *antennae twitch, then it scuttles half an inch away*'); } }); }
 
   // the snail above finally gave this wood something that creeps, but nothing had ever been caught
   // actually spinning silk. A knee-high orb web now hangs between two twig stakes in a quiet pocket of

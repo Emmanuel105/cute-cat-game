@@ -18739,3 +18739,27 @@ tight to use without first checking whether that soul's patrol has since moved.
 new collider), Sunny Shore's own ground still 100% walkable. No visual check was possible in this
 environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 694 — Whisper Woods' own ladybug finally becomes a friend
+
+Round 692's raccoon and the round before it's factory mouse both closed out this same gap on their own
+worlds, and the text of round 692 pointed straight at the next one left: Whisper Woods' own ladybug
+(resting in the clearing by the hollow log since an earlier round) was still pure ambient `Hopper`
+wildlife, never anyone the cat could actually meet. **It now answers its own "Say hello to the
+ladybug" prompt too**, with *"🐞 *antennae twitch, then it scuttles half an inch away*"*.
+
+Same root cause as the raccoon and the mouse: `Hopper` — unlike `Wanderer` — never calls `greetable()`
+on its own, so a rig with none of `.look`/`.robot`/`.cookie` just sits there unmet. No new mesh, no new
+physics box: a `game.namedFriend('ladybug')` plus a `game.addInteractable` keyed straight to the
+ladybug's own `rig.group`, tracked every frame so the prompt follows it through its tiny hops inside
+its 1 m leash. The 2.1 m greet radius — the same size every other Hopper creature's own prompt uses —
+needed no new probe: the comment already sitting above this ladybug's own placement, from the round
+that put it there, had already swept this exact spot and found it 12.8 m from the nearest physics box
+and 13.2 m from the nearest other soul, far past the radius used here.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 328
+(no new collider), Whisper Woods' own friend count rose by one. Candy Land's gumdrop beetle, Robot
+City's scrap bug, Sunny Shore's tiger beetle and Frosty Peak's frost beetle are the same ladybug family
+and all still unmet — any one of them is next. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
