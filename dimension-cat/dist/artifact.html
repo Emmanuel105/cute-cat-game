@@ -13136,7 +13136,16 @@ function buildRobotCity(game, entry) {
   // factory drops. A headless probe swept the gap between the crates at (-22, 4)/(-23, 5.2), the Sector 7
   // sign pole at (-18, 6) and the wandering robot patrolling near (-16, -2): (-19, 2) came back clear by
   // 2.9 m from the nearest box, comfortably past the 1.3 m leash given here.
-  { const rig = makeFactoryMouse(); game.npcs.push(new Hopper(game, rig, { x: -19, z: 2, leash: 1.3, r: 0.15, dist: [0.3, 0.7], dur: 0.3, height: 0.24, idle: [1, 3.5], onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } })); }
+  { const rig = makeFactoryMouse(); game.npcs.push(new Hopper(game, rig, { x: -19, z: 2, leash: 1.3, r: 0.15, dist: [0.3, 0.7], dur: 0.3, height: 0.24, idle: [1, 3.5], onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } }));
+    // the factory mouse was ambient from the day it was added — `Hopper` (unlike `Wanderer`) never calls
+    // `greetable()` on its own, the same reason the beach's hermit crab and the forest's frogs and hares
+    // needed their own explicit interactable. No new mesh and no new physics box: `game.namedFriend` and
+    // `game.addInteractable` tracked on the rig's own group every frame, so the prompt follows it through
+    // its tiny hops within the 1.3 m leash; the radius (2.1 m, matching every other Hopper creature's own
+    // greet circle) stays clear of the nearest crate (3.6 m to [-22, 4]) and the Sector 7 pipe (4.1 m to
+    // [-18, 6]), so nothing else's own box or prompt overlaps it.
+    const mouseId = game.namedFriend('factorymouse');
+    game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the mouse', onUse: () => { game.befriend(mouseId); SFX.chitter(); game.hearts(rig.group.position.x, 0.3, rig.group.position.z, 3); game.toast('🐭 *freezes, whiskers twitching, then dives back toward the crates*'); } }); }
   // the factory mouse above was Robot City's only living thing past the robots themselves — every other
   // world's own wildlife runs to at least two creatures by now (Candy Land's sugar mouse and mint hare,
   // Frosty Peak's hares and arctic fox, Victorian's pigeons and alley rat). A scrap-built crab-bot now

@@ -18652,3 +18652,27 @@ own `Wanderer` spawns right on top of that exact coordinate.
 Shore's own friend count unchanged at 85 (this is a "look" prompt, not a friend), ground still 100%
 walkable. No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 691 — Robot City's factory mouse finally becomes a friend
+
+Robot City's own comments have tracked its wildlife gap for a while: it was the one world with no
+living thing of its own until a grey factory mouse was dropped in near the Sector 7 crate stack, and
+even then it stayed pure background — same story as the beach's colony crabs and the forest's frogs
+and hares before their own rounds caught up with them. This round closes that gap: the factory mouse
+**answers its own "Say hello to the mouse" prompt too**, with *"🐭 *freezes, whiskers twitching, then
+dives back toward the crates*"*.
+
+Same root cause as every other background critter fixed this way: it runs on `Hopper`, which — unlike
+`Wanderer` — never calls `greetable()` on its own, so a rig with none of `.look`/`.robot`/`.cookie`
+just sits there unmet. No new mesh, no new physics box: a `game.namedFriend('factorymouse')` plus a
+`game.addInteractable` keyed straight to the mouse's own `rig.group`, tracked every frame so the prompt
+follows it through its tiny hops inside its 1.3 m leash. The 2.1 m greet radius — the same size every
+other Hopper creature's own prompt uses — stays well clear of the nearest crate (3.6 m to its spot at
+[-22, 4]) and the Sector 7 pipe (4.1 m to [-18, 6]), so nothing else's box or prompt overlaps it.
+
+`node test/run.mjs` ran clean: all checks `ok` (277 of them), 0 console warnings, box count unchanged
+at 328 (no new collider), Robot City's own friend count rose by one. No visual check was possible in
+this environment (no browser, no Playwright) — only the stub-three test suite above, so the mouse's
+exact greet radius is unverified against anything the probe above didn't know to check; if it reads as
+overlapping a crate's own "Look" prompt in a real browser, shrinking the radius slightly is the fix.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
