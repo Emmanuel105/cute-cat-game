@@ -18624,3 +18624,31 @@ at 328 (no new collider), Sunny Shore's own friend count rose from 84 to 85, gro
 With this, every crab on the beach — the colony, the bolder one, and the hermit — is now a friend to
 meet. No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 690 — Sunny Shore's thirteenth dune palm finally gets a look
+
+Twelve of the beach's eighteen dune palms had their own "Look at the palm tree" prompt by round 681;
+the last round in that series ruled out two of the remaining six for sitting barely a metre from their
+own physics box, leaving four genuinely open spots. This round takes one of those four: the palm at
+(-42, 22), tucked into the dune field's own north-west corner between the far palm out at (-40, 40) and
+the west palm at (-44, 2), **answers its own "Look at the palm tree" prompt too**. *"🌴 'Tucked into the
+north-west corner of the dunes, between the far palm and the west one.'"*
+
+Same trick a thirteenth time: `cornerPalm`, captured from the same build loop that already calls
+`makePalm()` for all eighteen spots, goes straight into `game.addInteractable` — no new mesh, no new
+physics box. A small headless probe script (built on the test harness's own stub-three setup, loading
+Sunny Shore the same way `test/run.mjs` does and sampling every NPC's position over 1800 simulated
+frames) swept this point against every one of the beach's own physics boxes, every sample and every
+other interactable: the nearest other box stayed 10.4 m clear, the nearest wandering soul 8.3 m off and
+the nearest other interactable 7.0 m off, all comfortably past the 2 m radius every other palm already
+uses. The same probe checked the other candidates still standing bare: (-46, -18) came back just as
+clear (7.9 m of box, 3.9 m of soul, 4.2 m of interactable) and is left for a future round purely to
+keep this one self-contained; (-6, 34) came back only 1.2 m from a wandering soul, too tight to use;
+(-20, 6) and (-34, -4), already ruled out in round 689's own probe, are still too close to their
+nearest box (around 1 m) to be worth another look; and (-16, 40) stays permanently out — a sunbather's
+own `Wanderer` spawns right on top of that exact coordinate.
+
+`node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328, Sunny
+Shore's own friend count unchanged at 85 (this is a "look" prompt, not a friend), ground still 100%
+walkable. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
