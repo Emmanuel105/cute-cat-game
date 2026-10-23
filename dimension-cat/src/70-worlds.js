@@ -3163,7 +3163,23 @@ function buildCandyLand(game, entry) {
       d.group.rotation.y = facing;
       d.head.rotation.x = sin(t * 0.6 + phase * 2) > 0.88 ? 0.5 : 0;   // the occasional dip toward the water
     } });
-    let quackT = 7; U.push((dt) => { quackT -= dt; if (quackT <= 0) { SFX.squawk(); quackT = rnd.range(10, 18); } }); }
+    let quackT = 7; U.push((dt) => { quackT -= dt; if (quackT <= 0) { SFX.squawk(); quackT = rnd.range(10, 18); } });
+    // the Neighborhood's park pond, Sunny Shore's second turtle, Whisper Woods' first frog and the
+    // Neighborhood's own park-pond drake have each had a background creature turned into a friend in
+    // recent rounds; this river's own pair, paddling its 18 m stretch since the river itself got ducks,
+    // was still pure scenery. The drake answers a "say hello" prompt now, the same trick as the park
+    // pond's own drake: `game.addInteractable` keys off `drake.group` directly, so `getWorldPosition`
+    // (the main loop in `80-game.js`) follows it along its sweep every frame — no new mesh, no new
+    // physics box. The river itself is blocked for walking bank to bank (the four `P.addBox` calls above
+    // give it a 3.4 m half-extent in z, centred on this same z=-18), so the cat has to call across from
+    // dry land; a 4.0 m radius clears that 3.4 m gap by 0.6 m even when the drake is dead level with the
+    // caller, and stays 5.2 m clear of the east bridge's own 5.8 m "look over the railing" radius (outer
+    // edge at x=51.8) even at the drake's nearest swing in, to x=61. The hen is left exactly as she was,
+    // for a future round.
+    const did = game.namedFriend('duck');
+    game.addInteractable({ obj: drake.group, radius: 4.0, label: () => 'Say hello to the duck', onUse: () => {
+      game.befriend(did); SFX.squawk(); game.hearts(drake.group.position.x, drake.group.position.y + 0.3, drake.group.position.z, 3);
+      game.toast('🦆 "Quack!"'); } }); }
   // the outer sweet-lands: a candy-cane forest belt, cupcake hills, a gingerbread cottage, cookie paths
   for (let i = 0; i < 44; i++) { const a = i / 44 * TAU + r.range(-0.07, 0.07), d = r.range(56, 76), x = cos(a) * d, z = sin(a) * d; if (abs(z + 18) < 5) continue; const h = r.range(3, 5), c = makeCandyCane(h); c.position.set(x, 0, z); c.rotation.y = r() * TAU; W.add(c); P.addBox(x, h / 2, z, 0.5, h, 0.5, { cam: false }); }
   const cupcakeHills = [];

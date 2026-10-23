@@ -18279,3 +18279,29 @@ stub-three test suite above, so the exact window in the drake's lap where the pr
 eyeballed, only reasoned about: the 2.4 m interactable radius comfortably bridges the gap between the
 pond's own bank (stone ring at 2.35–2.6 m from centre) and the drake's fixed 2 m swim radius. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 675 — Candy Land's chocolate-river drake is finally a friend, not just scenery
+
+Rounds 672 through 674 found the same gap three times over: a duck, turtle or frog paddling or hopping
+since round 1 (or since whichever round first dropped it in) as pure background, never anyone the cat
+could actually meet. This round found a fourth instance of it, one world over from the last: Candy
+Land's own duck pair, which has paddled an 18 m stretch of the chocolate river east of the last wafer
+bridge since it was added, was never given a "say hello" prompt either — unlike the Neighborhood's park
+pond, whose own drake got exactly this fix last round. **The chocolate river's drake now answers one.**
+*"🦆 "Quack!""*
+
+Same fix as the park pond, the turtle and the frog: `game.namedFriend('duck')` plus
+`game.addInteractable` keyed straight off `drake.group`, so it follows the drake back and forth along
+its sweep every frame with no new mesh and no new physics box. The one wrinkle here is that the river
+itself blocks walking from bank to bank (a 3.4 m half-extent in z, dead centre on the drake's own
+swim line), so the cat has to call across the water rather than stand right next to it — a 4.0 m radius
+clears that 3.4 m gap with 0.6 m to spare even when the drake is dead level with the caller, and still
+sits 5.2 m clear of the east bridge's own "look over the railing" radius at the drake's closest swing
+in. The hen is left exactly as she was, for a future round, same as the Neighborhood's own hen.
+
+`node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
+collider), Candy Land's own friend count rose from 81 to 82. No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite above, so whether the drake's
+swing actually brings it within that 4.0 m window from a sensible spot on the bank couldn't be
+eyeballed, only reasoned about from the river's own geometry. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
