@@ -4915,9 +4915,24 @@ function buildCandyLand(game, entry) {
   // Built dead last, right after the squirrel and the day/night rig, for the usual reason: `Hopper`'s own
   // unconditional draws off the shared `rnd()` sequence (idle timer, idle phase, starting heading) land after
   // every other NPC in this land that times itself off that same sequence, and disturb nothing built earlier.
+  //
+  // That same comment left the ladybug's own family (round 694) still unmet here: `Hopper`, unlike
+  // `Wanderer`, never calls `greetable()` on its own, so a rig with none of `.look`/`.robot`/`.cookie`
+  // just sits there ambient. **The gumdrop beetle now answers its own "Say hello to the gumdrop beetle"
+  // prompt too**, with *"🍬 *rolls onto its back for a second, sugar-sprinkle flecks catching the light,
+  // then rights itself and scuttles on"*". Same fix as the raccoon, the factory mouse and the ladybug: no
+  // new mesh, no new physics box, just `game.namedFriend('gumdrop-beetle')` plus a `game.addInteractable`
+  // keyed straight to the beetle's own `rig.group`, tracked every frame so the prompt follows it through
+  // its tiny hops inside its own 1.6 m leash. The 2.1 m greet radius — the same every other Hopper
+  // creature's own prompt already uses — sits nowhere near anything else: the probe above this build
+  // already found (1, 42) 10.9 m from the nearest box or soul, clear of both lollipops and the nearby
+  // hopper, far past the radius needed here. Robot City's scrap bug, Sunny Shore's tiger beetle and
+  // Frosty Peak's frost beetle are the same family and still unmet — any one of them is next.
   { const rig = makeGumdropBeetle(0xff4fa0); W.add(rig.group);
     game.npcs.push(new Hopper(game, rig, { x: 1, z: 42, leash: 1.6, r: 0.1, dist: [0.25, 0.6], dur: 0.3, height: 0.18, idle: [1, 3.2],
-      onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } })); }
+      onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } }));
+    const gumdropBeetleId = game.namedFriend('gumdrop-beetle');
+    game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the gumdrop beetle', onUse: () => { game.befriend(gumdropBeetleId); SFX.chitter(); game.hearts(rig.group.position.x, 0.15, rig.group.position.z, 3); game.toast('🍬 *rolls onto its back for a second, sugar-sprinkle flecks catching the light, then rights itself and scuttles on*'); } }); }
   // Sunny Shore (round 591), the Neighborhood (round 592) and Victorian (round 596) have all let
   // somebody digging nearby beat their own long-suffering `Detectorist` to real treasure, and the
   // scanner panning for bottle caps here on the open grass at (23, 27) — "Just a gumdrop. Every

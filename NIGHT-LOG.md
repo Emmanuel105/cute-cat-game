@@ -18763,3 +18763,28 @@ City's scrap bug, Sunny Shore's tiger beetle and Frosty Peak's frost beetle are 
 and all still unmet — any one of them is next. No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 695 — Candy Land's gumdrop beetle finally becomes a friend
+
+Round 694's ladybug closed that text's own list down to three: Candy Land's gumdrop beetle, Robot
+City's scrap bug, Sunny Shore's tiger beetle and Frosty Peak's frost beetle, all still pure ambient
+`Hopper` wildlife nobody could actually meet. This round takes the first of those three. **The gumdrop
+beetle, scuttling the open grass between the two tall lollipops on Candy Land's north lawn since round
+692, now answers its own "Say hello to the gumdrop beetle" prompt too**, with *"🍬 *rolls onto its back
+for a second, sugar-sprinkle flecks catching the light, then rights itself and scuttles on*"*.
+
+Same root cause and same fix as the raccoon, the factory mouse and the ladybug before it: `Hopper`,
+unlike `Wanderer`, never calls `greetable()` on its own, so a rig with none of `.look`/`.robot`/`.cookie`
+just sits there unmet. No new mesh, no new physics box: a `game.namedFriend('gumdrop-beetle')` plus a
+`game.addInteractable` keyed straight to the beetle's own `rig.group`, tracked every frame so the
+prompt follows it through its tiny hops inside its own 1.6 m leash. The 2.1 m greet radius — the same
+every other Hopper creature's own prompt already uses — needed no new probe: round 692's own placement
+comment had already swept this exact spot (1, 42) and found it 10.9 m from the nearest physics box or
+wandering soul, clear of both lollipops, far past the radius used here.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 328
+(no new collider), Candy Land's own friend count rose by one (84 to meet). Robot City's scrap bug,
+Sunny Shore's tiger beetle and Frosty Peak's frost beetle are the same ladybug family and still
+unmet — any one of them is next. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
