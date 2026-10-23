@@ -18305,3 +18305,21 @@ environment (no browser, no Playwright) — only the stub-three test suite above
 swing actually brings it within that 4.0 m window from a sensible spot on the bank couldn't be
 eyeballed, only reasoned about from the river's own geometry. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 676 — the Neighborhood park pond's hen is finally a friend too
+
+Round 674 gave the park pond's drake a "say hello" prompt and left the hen exactly as she was, for a
+future round — same as rounds 672 and 673 left their own second half of a pair. This round is that
+future round: the hen now gets the same treatment as the drake, four rounds later.
+
+Same mechanism, a second one: a new `game.namedFriend('hen')` key (the drake already claimed `'duck'`
+in this world) and a second `game.addInteractable` keyed off `hen.group` directly, so the prompt tracks
+her own phase and speed round the pond exactly like the drake's tracks his. No new mesh, no new physics
+box. She gets her own line rather than echoing the drake's. *"🦆 "...Quack.""*
+
+`node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
+collider), the Neighborhood's own friend count rose from 73 to 74. No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite above. The lake's own duck
+pair, mentioned in round 674's own comment as the other pair with nobody living on the water, is left
+exactly as it was, for a future round. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.

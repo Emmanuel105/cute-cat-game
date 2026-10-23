@@ -8929,11 +8929,17 @@ function buildNeighborhood(game, entry) {
     // loop in `80-game.js`) follows it round the pond every frame exactly like the turtle's and the
     // frog's own group before it — no new mesh, no new physics box (the pond itself has never had one),
     // and the prompt only fires when the drake's current lap swings it within reach of the bank. The hen
-    // is left exactly as she was, for a future round.
+    // got left for a future round; this one gives her the same treatment, a separate `namedFriend` key
+    // (`'hen'`, since `'duck'` is already the drake's) keyed off her own `hen.group` so both birds can be
+    // greeted independently as they paddle their own phase and speed round the same 2.0 m ring.
     const did = game.namedFriend('duck');
     game.addInteractable({ obj: drake.group, radius: 2.4, label: () => 'Say hello to the duck', onUse: () => {
       game.befriend(did); SFX.squawk(); game.hearts(drake.group.position.x, drake.group.position.y + 0.3, drake.group.position.z, 3);
-      game.toast('🦆 "Quack!"'); } }); }
+      game.toast('🦆 "Quack!"'); } });
+    const hid = game.namedFriend('hen');
+    game.addInteractable({ obj: hen.group, radius: 2.4, label: () => 'Say hello to the duck', onUse: () => {
+      game.befriend(hid); SFX.squawk(); game.hearts(hen.group.position.x, hen.group.position.y + 0.3, hen.group.position.z, 3);
+      game.toast('🦆 "...Quack."'); } }); }
   const bench = makeBench(); place(game, U, bench, 6, 40, PI); P.addBox(6, 0.4, 40, 1.9, 0.8, 0.6, { cam: false });
   const parkLamp = makeLamp('modern'); place(game, U, parkLamp, -4, 38, PI / 2); P.addBox(-4, 2, 38, 0.3, 4, 0.3, { cam: false });
   // the street's own lamp posts have gone bare since the Neighborhood was first built; this one, the
