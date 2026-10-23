@@ -18676,3 +18676,38 @@ this environment (no browser, no Playwright) — only the stub-three test suite 
 exact greet radius is unverified against anything the probe above didn't know to check; if it reads as
 overlapping a crate's own "Look" prompt in a real browser, shrinking the radius slightly is the fix.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 692 — the Neighborhood's bin raccoon finally becomes a friend
+
+House 15's raccoon, added back in round 495, has worked house 15's own wheelie bin ever since — pure
+ambient wildlife, with no greeting and no effect on the friend count, same as the Woods' ladybug and
+Candy Land's gumdrop toad. It was also the Neighborhood's only piece of wildlife besides its own
+squirrel, and the one world of the seven where that wildlife still couldn't be met. This round closes
+that gap the same way the beach's hermit crab and Robot City's factory mouse already were: the raccoon
+**answers its own "Say hello to the raccoon" prompt too**, with *"🦝 *pauses with both paws still on the
+lid, then freezes and stares back*"*.
+
+Same root cause as those two: it runs on `Hopper`, which — unlike `Wanderer` — never calls
+`greetable()`, so a rig with none of `.look`/`.robot`/`.cookie` just sits there unmet. No new mesh, no
+new physics box: a `game.namedFriend('raccoon')` plus a `game.addInteractable` keyed straight to the
+raccoon's own `rig.group`, tracked every frame so the prompt follows it through its tiny hops inside
+its 0.5 m leash by the bin. The 2.1 m greet radius — the same size every other Hopper creature's own
+prompt uses — does sit well inside the range of the bin's own existing "Sniff the bin" interactable
+(0.92 m away, 1.6 m radius of its own), but `game.loop`'s own nearest-interactable search always shows
+whichever prompt's centre is closer, so standing right at the bin still offers "Sniff the bin" and
+backing off a step hands it to the raccoon — nothing is lost or hidden.
+
+A small headless probe (built on the test harness's own stub-three setup, loading the real
+Neighborhood via `game.start('new')` and sampling every NPC's own position and the interactable list
+over 9000 simulated frames) confirmed the raccoon's home point sits 2.60 m from the nearest other
+wandering soul (the roller-skating girl's own `Patroller`) — comfortably past the new 2.1 m radius —
+and found no third interactable anywhere nearer than the bin's own.
+
+`node test/run.mjs` ran clean twice in a row: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 328 (no new collider), Neighborhood's own friend count rose from 76 to 77, ground
+still 95–96% walkable (the usual frame-count jitter between runs, not a regression). With this, every
+world now has at least one piece of wildlife the cat can actually meet, not just watch. No visual
+check was possible in this environment (no browser, no Playwright) — only the stub-three test suite
+above, so the raccoon's exact greet radius next to the bin's own is unverified in a real browser; if
+the two prompts flicker against each other when standing between them, shrinking one radius slightly
+is the fix. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
