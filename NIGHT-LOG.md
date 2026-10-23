@@ -18711,3 +18711,31 @@ check was possible in this environment (no browser, no Playwright) — only the 
 above, so the raccoon's exact greet radius next to the bin's own is unverified in a real browser; if
 the two prompts flicker against each other when standing between them, shrinking one radius slightly
 is the fix. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 693 — Sunny Shore's fourteenth dune palm finally gets a look
+
+Round 690 swept the one bare palm left standing at the time, found a second candidate at (-46, -18) —
+out in the dune field's own south-west corner, past the storm palm — already clear of everything, and
+left it bare on purpose so that round would stay self-contained. This round is that future round:
+**`farSwPalm` now answers its own "Look at the palm tree" prompt too.** *"🌴 'Out past the storm palm,
+in the dune field's own quiet south-west corner.'"*
+
+Same trick as the other thirteen: `farSwPalm`, captured from the same build loop that already calls
+`makePalm()` for all eighteen spots, goes straight into `game.addInteractable` — no new mesh, no new
+physics box. Round 690's own probe already swept this exact point against every one of the beach's
+physics boxes, every NPC sample over 1800 simulated frames and every other interactable, and came back
+clear: 7.9 m from the nearest box, 3.9 m from the nearest wandering soul and 4.2 m from the nearest
+other interactable, all comfortably past the 2 m radius every other palm already uses. This round
+trusted that probe rather than re-running it, since nothing has moved the beach's props, NPCs or zones
+since round 690.
+
+With this, fourteen of the eighteen dune palms have a look prompt. Four stay bare: two, at (-20, 6) and
+(-34, -4), were ruled out back in round 689 for sitting barely a metre from their own nearest box; one,
+at (-16, 40), stays permanently out because a sunbather's own `Wanderer` spawns right on that exact
+point; and one, at (-6, 34), came back only 1.2 m from a wandering soul in round 690's own probe, too
+tight to use without first checking whether that soul's patrol has since moved.
+
+`node test/run.mjs` ran clean: all 277 checks `ok`, 0 console warnings, box count unchanged at 328 (no
+new collider), Sunny Shore's own ground still 100% walkable. No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

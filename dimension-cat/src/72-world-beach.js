@@ -243,8 +243,8 @@ function buildBeach(game, entry) {
     game.npcs.push(v); greetable(game, v); }
   // dunes: palms, grass tufts, driftwood
   const palmSpots = [[-20, 6], [-24, 16], [-18, 28], [-30, 30], [-34, -4], [-28, -14], [-38, 12], [-22, -32], [-36, -28], [-44, 2], [-42, 22], [-16, 40], [-30, 44], [-46, -18], [-12, 48], [-6, 34], [-4, -34], [-40, 40]];
-  let farPalm = null, duneyPalm = null, northPalm = null, grovePalm = null, eastPalm = null, stormPalm = null, westPalm = null, midDunePalm = null, swPalm = null, innerPalm = null, backPalm = null, hillPalm = null, cornerPalm = null;
-  for (const [x, z] of palmSpots) { const p = makePalm(r, r.range(3.8, 5.6)); placeT(game, U, p, x, z, 0); boxT(game, x, z, 0.5, 5, 0.5, { cam: false }); if (x === -40 && z === 40) farPalm = p; if (x === -28 && z === -14) duneyPalm = p; if (x === -12 && z === 48) northPalm = p; if (x === -30 && z === 44) grovePalm = p; if (x === -4 && z === -34) eastPalm = p; if (x === -22 && z === -32) stormPalm = p; if (x === -44 && z === 2) westPalm = p; if (x === -30 && z === 30) midDunePalm = p; if (x === -36 && z === -28) swPalm = p; if (x === -18 && z === 28) innerPalm = p; if (x === -24 && z === 16) backPalm = p; if (x === -38 && z === 12) hillPalm = p; if (x === -42 && z === 22) cornerPalm = p; }
+  let farPalm = null, duneyPalm = null, northPalm = null, grovePalm = null, eastPalm = null, stormPalm = null, westPalm = null, midDunePalm = null, swPalm = null, innerPalm = null, backPalm = null, hillPalm = null, cornerPalm = null, farSwPalm = null;
+  for (const [x, z] of palmSpots) { const p = makePalm(r, r.range(3.8, 5.6)); placeT(game, U, p, x, z, 0); boxT(game, x, z, 0.5, 5, 0.5, { cam: false }); if (x === -40 && z === 40) farPalm = p; if (x === -28 && z === -14) duneyPalm = p; if (x === -12 && z === 48) northPalm = p; if (x === -30 && z === 44) grovePalm = p; if (x === -4 && z === -34) eastPalm = p; if (x === -22 && z === -32) stormPalm = p; if (x === -44 && z === 2) westPalm = p; if (x === -30 && z === 30) midDunePalm = p; if (x === -36 && z === -28) swPalm = p; if (x === -18 && z === 28) innerPalm = p; if (x === -24 && z === 16) backPalm = p; if (x === -38 && z === 12) hillPalm = p; if (x === -42 && z === 22) cornerPalm = p; if (x === -46 && z === -18) farSwPalm = p; }
   // eighteen palms have stood in these dunes since round 1 and none of them ever got so much as a
   // glance — the one out at (-40, 40), the far north-west corner of the dune field, gets a "look" of
   // its own now. No new mesh, no new physics box: the loop above already calls `makePalm()` for each
@@ -409,6 +409,15 @@ function buildBeach(game, entry) {
   // 2 m radius every other palm already uses.
   { const cornerPalmLines = ['🌴 "Tucked into the north-west corner of the dunes, between the far palm and the west one."', '🌴 "Same lean, same fronds as its seventeen neighbours. Just a quieter corner to grow in."', '🥥 "Nobody\'s ever built so much as a sandcastle under this one either."'];
     game.addInteractable({ obj: cornerPalm, radius: 2, label: () => 'Look at the palm tree', onUse: () => { SFX.click(); game.toast(rnd.pick(cornerPalmLines), 3000); } }); }
+  // fourteenth look: the one at (-46, -18), out in the dune field's own south-west corner. Round 690's
+  // own probe already swept this exact point against every physics box, every wandering soul and every
+  // other interactable and came back clear — 7.9 m from the nearest box, 3.9 m from the nearest soul and
+  // 4.2 m from the nearest other interactable, all comfortably past the 2 m radius every other palm
+  // already uses — and was left bare on purpose so that round stayed self-contained. Same trick a
+  // fourteenth time: `farSwPalm`, captured from the same loop above, straight into `addInteractable` —
+  // no new mesh, no new physics box.
+  { const farSwPalmLines = ['🌴 "Out past the storm palm, in the dune field\'s own quiet south-west corner."', '🌴 "Furthest south of all eighteen, and no closer to anything for it."', '🥥 "Same lean as the rest. Just further to walk to find it."'];
+    game.addInteractable({ obj: farSwPalm, radius: 2, label: () => 'Look at the palm tree', onUse: () => { SFX.click(); game.toast(rnd.pick(farSwPalmLines), 3000); } }); }
   makeGrass(game, [[-26, 0, 22, 150], [-14, 30, 12, 70], [-40, -30, 12, 70]], r, { hue: [0.13, 0.21], light: [0.4, 0.56], tall: 1.15, wide: 1.45, pad: 0.2 });
   makeScatter(game, [[10, 0, 12, 60], [6, 28, 10, 40], [8, -26, 10, 40]], G.sphere(0.06, 6, 5), [0xfff1dc, 0xffd9c2, 0xf3e3c8, 0xd9a3a3, 0xe8c9a0], r, [0.6, 1.4], 0.02);  // shells
   for (const [x, z, ry] of [[-14, 36, 0.4], [4, -30, 1.2], [-6, 12, 2.4]]) { const log = makeHollowLog(r); log.scale.setScalar(0.7); placeT(game, U, log, x, z, ry); }
