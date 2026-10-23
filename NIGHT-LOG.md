@@ -18425,3 +18425,27 @@ collider), Candy Land's own friend count rose from 82 to 83. No visual check was
 environment (no browser, no Playwright) — only the stub-three test suite above. As far as this round
 can tell, every background duck, hen, turtle and frog really is a friend now. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 681 — Sunny Shore's first crab is finally a friend, not just scenery
+
+Round 680 closed out the "every background duck, hen, turtle and frog is a friend now" claim, but the
+six-strong crab colony scuttling the sand since round 1 was never on that list at all — pure background
+the whole time, same gap round 672 already closed for this beach's own turtles. **The first crab, at
+(16, -30), now answers a "Say hello" prompt too.** *"🦀 *waves a claw*"*
+
+Same mechanism as the turtle before it: `makeCrab()`'s rig carries none of `.look`/`.robot`/`.cookie`,
+so `Wanderer`'s own `greetable()` call already quietly no-ops on it — crabs have wandered this beach
+unprompted for hundreds of rounds for exactly that reason. No new mesh and no new physics box: just
+`game.addInteractable` keyed straight off the crab's own `rig.group`, tracking it as it wanders its
+usual 5 m leash, exactly like the dog and the turtle already do. `'crab'` was still a free
+`namedFriend` key on this beach, so it takes it plain.
+
+`node test/run.mjs` ran clean: all 277 checks `ok`, 0 console warnings, box count unchanged at 328 (no
+new collider), Sunny Shore's own friend count rose from 77 to 78 (confirmed by diffing against the
+previous commit). No visual check was possible in this environment (no browser, no Playwright) — only
+the stub-three test suite above, so whether the beach's own paths actually bring the cat within that
+2.1 m window of the crab's wander couldn't be eyeballed, only reasoned about from the same
+leash-and-greetable mechanism every wandering person on this beach already uses safely. The other five
+crabs in this colony, the bolder follower-crab, and the hermit crab paired with the hollow log are all
+still pure background, left for a future round. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.

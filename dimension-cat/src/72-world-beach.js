@@ -467,7 +467,21 @@ function buildBeach(game, entry) {
   const boat2 = makeBoat(0xd62839); boat2.userData.y0 = 0.05; boat2.scale.setScalar(0.8); place(game, U, boat2, 54, -30, 0.8, 0.05);
 
   // life: crabs, gulls, turtles, beachgoers, a dog, the squirrel
-  for (const [x, z] of [[16, -30], [18, 2], [15, 14], [19, 24], [14, -18], [17, 36]]) { const rig = makeCrab(r.pick([0xe8492b, 0xff7043, 0xc62828])); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x, z, speed: r.range(0.9, 1.4), leash: 5, r: 0.25, height: 0.5, step: 0.25, idle: [0.5, 2], walk: [1, 3] })); }
+  // the six-strong crab colony has scuttled this stretch of sand since round 1, pure background the
+  // whole time — unlike the dog and the squirrel, not one of them was ever a friend to meet, the exact
+  // gap round 672 closed for this beach's own turtles. The first crab, at (16, -30), gets the same
+  // treatment: `makeCrab()`'s rig has none of `.look`/`.robot`/`.cookie`, so `Wanderer`'s own
+  // `greetable()` call already quietly no-ops on it, and nothing here is new mesh or a new physics box
+  // — just `game.addInteractable` tracking the rig's own group as it wanders its usual 5 m leash,
+  // exactly like the turtle before it.
+  for (const [i, [x, z]] of [[16, -30], [18, 2], [15, 14], [19, 24], [14, -18], [17, 36]].entries()) {
+    const rig = makeCrab(r.pick([0xe8492b, 0xff7043, 0xc62828])); W.add(rig.group);
+    game.npcs.push(new Wanderer(game, rig, { x, z, speed: r.range(0.9, 1.4), leash: 5, r: 0.25, height: 0.5, step: 0.25, idle: [0.5, 2], walk: [1, 3] }));
+    if (i === 0) {
+      const crid = game.namedFriend('crab');
+      game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the crab', onUse: () => { game.befriend(crid); SFX.chitter(); game.hearts(rig.group.position.x, 0.5, rig.group.position.z, 3); game.toast('🦀 *waves a claw*'); } });
+    }
+  }
   // a bolder crab: it minds its own business until the cat wanders close, then scuttles over for a look
   { const rig = makeCrab(0xd84315); W.add(rig.group);
     game.npcs.push(new Follower(game, rig, { x: 17, z: -6, r: 0.25, height: 0.5, step: 0.25, idle: [0.5, 2], walk: [1, 3], leash: 5, speed: 1.8, range: 10, keep: 1.6, sfx: () => SFX.click() })); }
