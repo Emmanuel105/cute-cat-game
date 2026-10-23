@@ -16854,11 +16854,12 @@ function buildBeach(game, entry) {
   // life: crabs, gulls, turtles, beachgoers, a dog, the squirrel
   // the six-strong crab colony has scuttled this stretch of sand since round 1, pure background the
   // whole time — unlike the dog and the squirrel, not one of them was ever a friend to meet, the exact
-  // gap round 672 closed for this beach's own turtles. Rounds 681-683 gave the first three crabs a "Say
-  // hello" prompt; this round gives the fourth, at (19, 24), the same treatment: `makeCrab()`'s rig
-  // has none of `.look`/`.robot`/`.cookie`, so `Wanderer`'s own `greetable()` call already quietly
-  // no-ops on it, and nothing here is new mesh or a new physics box — just `game.addInteractable`
-  // tracking the rig's own group as it wanders its usual 5 m leash, exactly like the first three crabs.
+  // gap round 672 closed for this beach's own turtles. Rounds 681-684 gave the first four colony crabs a
+  // "Say hello" prompt; this round gives the fifth, at (14, -18), the same treatment, leaving only the
+  // last colony crab at (17, 36) pure background: `makeCrab()`'s rig has none of `.look`/`.robot`/
+  // `.cookie`, so `Wanderer`'s own `greetable()` call already quietly no-ops on it, and nothing here is
+  // new mesh or a new physics box — just `game.addInteractable` tracking the rig's own group as it
+  // wanders its usual 5 m leash, exactly like the first four crabs.
   for (const [i, [x, z]] of [[16, -30], [18, 2], [15, 14], [19, 24], [14, -18], [17, 36]].entries()) {
     const rig = makeCrab(r.pick([0xe8492b, 0xff7043, 0xc62828])); W.add(rig.group);
     game.npcs.push(new Wanderer(game, rig, { x, z, speed: r.range(0.9, 1.4), leash: 5, r: 0.25, height: 0.5, step: 0.25, idle: [0.5, 2], walk: [1, 3] }));
@@ -16874,17 +16875,18 @@ function buildBeach(game, entry) {
     } else if (i === 3) {
       const crid4 = game.namedFriend('crab4');
       game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the crab', onUse: () => { game.befriend(crid4); SFX.chitter(); game.hearts(rig.group.position.x, 0.5, rig.group.position.z, 3); game.toast('🦀 *taps both claws together, twice*'); } });
+    } else if (i === 4) {
+      const crid5 = game.namedFriend('crab5');
+      game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the crab', onUse: () => { game.befriend(crid5); SFX.chitter(); game.hearts(rig.group.position.x, 0.5, rig.group.position.z, 3); game.toast('🦀 *raises one claw high, then the other*'); } });
     }
   }
   // a bolder crab: it minds its own business until the cat wanders close, then scuttles over for a look.
-  // Rounds 681-684 picked off four of the six colony crabs above, leaving two colony crabs and this one —
-  // plus the hermit crab at the hollow log — still pure background. This round takes the bolder crab:
-  // **it now answers a "Say hello" prompt too.** Same no-op reasoning as every other crab (`makeCrab()`'s
-  // rig carries none of `.look`/`.robot`/`.cookie`), but a plain `game.addInteractable` on its own group
-  // works regardless of which controller drives it, `Follower` here rather than `Wanderer` — and
-  // `Follower`'s own `keep` distance (1.6 m) means this crab parks itself well inside the 2.1 m radius
-  // the moment it closes in on the cat, so the prompt is if anything easier to trigger than the colony
-  // crabs' own wandering ones.
+  // Round 685 already gave this one a "Say hello" prompt, same no-op reasoning as every other crab
+  // (`makeCrab()`'s rig carries none of `.look`/`.robot`/`.cookie`), but a plain `game.addInteractable`
+  // on its own group works regardless of which controller drives it, `Follower` here rather than
+  // `Wanderer` — and `Follower`'s own `keep` distance (1.6 m) means this crab parks itself well inside
+  // the 2.1 m radius the moment it closes in on the cat, so the prompt is if anything easier to trigger
+  // than the colony crabs' own wandering ones.
   { const rig = makeCrab(0xd84315); W.add(rig.group);
     const fw = new Follower(game, rig, { x: 17, z: -6, r: 0.25, height: 0.5, step: 0.25, idle: [0.5, 2], walk: [1, 3], leash: 5, speed: 1.8, range: 10, keep: 1.6, sfx: () => SFX.click() });
     game.npcs.push(fw);

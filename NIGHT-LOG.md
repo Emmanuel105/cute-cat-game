@@ -18531,3 +18531,22 @@ up on a 8.6 m line`, reproduces with or without this round's crab — the kite's
 check, not this change, same occasional harness hiccup rounds 616 and 621 already noted and never
 pinned down. No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 686 — Sunny Shore's fifth crab becomes a friend too
+
+Rounds 681-685 picked off four of the six colony crabs plus the bolder crab, leaving only the sixth
+colony crab (at (17, 36)) and the hermit crab at the hollow log still pure background. This round takes
+the fifth colony crab, at (14, -18): **it now answers a "Say hello" prompt too.** *"🦀 *raises one claw
+high, then the other*"*
+
+Same mechanism as every crab before it: `makeCrab()`'s rig carries none of `.look`/`.robot`/`.cookie`,
+so `Wanderer`'s own `greetable()` call already quietly no-ops on it — no new mesh, no new physics box,
+just `game.addInteractable` keyed straight off the crab's own `rig.group`, tracking it as it wanders
+its usual 5 m leash. `'crab'` through `'crab4'` and `'boldcrab'` were already taken, so this one takes
+`'crab5'`, a distinct id so greeting one never silently credits the others.
+
+`node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
+collider), Sunny Shore's own friend count rose from 82 to 83, ground still 100% walkable. No visual
+check was possible in this environment (no browser, no Playwright) — only the stub-three test suite
+above. One colony crab and the hermit crab paired with the hollow log are still pure background, left
+for a future round. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
