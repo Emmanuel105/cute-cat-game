@@ -16861,12 +16861,12 @@ function buildBeach(game, entry) {
   // life: crabs, gulls, turtles, beachgoers, a dog, the squirrel
   // the six-strong crab colony has scuttled this stretch of sand since round 1, pure background the
   // whole time — unlike the dog and the squirrel, not one of them was ever a friend to meet, the exact
-  // gap round 672 closed for this beach's own turtles. Rounds 681-684 gave the first four colony crabs a
-  // "Say hello" prompt; this round gives the fifth, at (14, -18), the same treatment, leaving only the
-  // last colony crab at (17, 36) pure background: `makeCrab()`'s rig has none of `.look`/`.robot`/
-  // `.cookie`, so `Wanderer`'s own `greetable()` call already quietly no-ops on it, and nothing here is
-  // new mesh or a new physics box — just `game.addInteractable` tracking the rig's own group as it
-  // wanders its usual 5 m leash, exactly like the first four crabs.
+  // gap round 672 closed for this beach's own turtles. Rounds 681-686 gave the first five colony crabs a
+  // "Say hello" prompt; this round gives the sixth and last, at (17, 36), the same treatment, closing out
+  // the whole colony: `makeCrab()`'s rig has none of `.look`/`.robot`/`.cookie`, so `Wanderer`'s own
+  // `greetable()` call already quietly no-ops on it, and nothing here is new mesh or a new physics box —
+  // just `game.addInteractable` tracking the rig's own group as it wanders its usual 5 m leash, exactly
+  // like the first five crabs.
   for (const [i, [x, z]] of [[16, -30], [18, 2], [15, 14], [19, 24], [14, -18], [17, 36]].entries()) {
     const rig = makeCrab(r.pick([0xe8492b, 0xff7043, 0xc62828])); W.add(rig.group);
     game.npcs.push(new Wanderer(game, rig, { x, z, speed: r.range(0.9, 1.4), leash: 5, r: 0.25, height: 0.5, step: 0.25, idle: [0.5, 2], walk: [1, 3] }));
@@ -16885,6 +16885,9 @@ function buildBeach(game, entry) {
     } else if (i === 4) {
       const crid5 = game.namedFriend('crab5');
       game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the crab', onUse: () => { game.befriend(crid5); SFX.chitter(); game.hearts(rig.group.position.x, 0.5, rig.group.position.z, 3); game.toast('🦀 *raises one claw high, then the other*'); } });
+    } else if (i === 5) {
+      const crid6 = game.namedFriend('crab6');
+      game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the crab', onUse: () => { game.befriend(crid6); SFX.chitter(); game.hearts(rig.group.position.x, 0.5, rig.group.position.z, 3); game.toast('🦀 *skitters in a tight little circle, claws up*'); } });
     }
   }
   // a bolder crab: it minds its own business until the cat wanders close, then scuttles over for a look.
