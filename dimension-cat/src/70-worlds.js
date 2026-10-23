@@ -6546,9 +6546,25 @@ function buildRobotCity(game, entry) {
   // the same draws the raccoon's own comment already warns about) land after every other NPC in this
   // city that times itself off that same sequence, the off-shift gossiping pair included, and disturb
   // nothing built earlier on the factory floor.
+  //
+  // This same comment left the ladybug's own family (round 694) unmet here: `Hopper`, unlike
+  // `Wanderer`, never calls `greetable()` on its own, so a rig with none of `.look`/`.robot`/`.cookie`
+  // just sits there ambient. Round 695 fixed Candy Land's gumdrop beetle the same way, and this round
+  // takes the scrap-bug. **It now answers its own "Say hello to the scrap-bug" prompt too**, with
+  // *"🤖 *lens flares bright blue for a second, feelers twitch, then it skitters off*"*. Same fix as
+  // the raccoon, the factory mouse and the two beetles before it: no new mesh, no new physics box,
+  // just `game.namedFriend('scrap-bug')` plus a `game.addInteractable` keyed straight to the bug's own
+  // `rig.group`, tracked every frame so the prompt follows it through its tiny hops inside its own
+  // 1.1 m leash. The 2.1 m greet radius — the same every other Hopper creature's own prompt already
+  // uses — sits nowhere near anything else: the probe above this build already found (34, 11) 13.5 m
+  // from the nearest box and 8.6 m from the nearest wandering soul, far past the radius needed here.
+  // Sunny Shore's tiger beetle and Frosty Peak's frost beetle are the same family and still unmet —
+  // either one is next.
   { const rig = makeScrapBug();
     game.npcs.push(new Hopper(game, rig, { x: 34, z: 11, leash: 1.1, r: 0.1, dist: [0.2, 0.5], dur: 0.26, height: 0.1, idle: [1.2, 3.6],
-      onHop: () => { if (rnd.chance(0.25)) SFX.click(); } })); }
+      onHop: () => { if (rnd.chance(0.25)) SFX.click(); } }));
+    const scrapBugId = game.namedFriend('scrap-bug');
+    game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the scrap-bug', onUse: () => { game.befriend(scrapBugId); SFX.beep(); game.hearts(rig.group.position.x, 0.15, rig.group.position.z, 3); game.toast('🤖 *lens flares bright blue for a second, feelers twitch, then it skitters off*'); } }); }
   // Candy Land's gingerbread guard (round 300-ish) and Victorian's drill line both already use `Marchers`
   // (55-npcs.js) for a lockstep patrol; Robot City has its own sentry and RoboDog, each one robot walking
   // alone, but never a squad in step. A three-robot security detail now beats a strict north-south line

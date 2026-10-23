@@ -18788,3 +18788,26 @@ Sunny Shore's tiger beetle and Frosty Peak's frost beetle are the same ladybug f
 unmet — any one of them is next. No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 696 — Robot City's scrap-bug finally becomes a friend
+
+Round 695's gumdrop beetle narrowed the same list to two: Robot City's scrap-bug and Sunny Shore's
+tiger beetle and Frosty Peak's frost beetle (the latter two still both open). This round takes the
+scrap-bug, scuttling the quiet concrete north-east of the city since it was built. **It now answers
+its own "Say hello to the scrap-bug" prompt too**, with *"🤖 *lens flares bright blue for a second,
+feelers twitch, then it skitters off*"*.
+
+Same root cause and same fix as the raccoon, the factory mouse, the ladybug and the gumdrop beetle
+before it: `Hopper`, unlike `Wanderer`, never calls `greetable()` on its own, so a rig with none of
+`.look`/`.robot`/`.cookie` just sits there unmet. No new mesh, no new physics box: a
+`game.namedFriend('scrap-bug')` plus a `game.addInteractable` keyed straight to the bug's own
+`rig.group`, tracked every frame so the prompt follows it through its tiny hops inside its own 1.1 m
+leash. The 2.1 m greet radius — the same every other Hopper creature's own prompt already uses —
+needed no new probe: the build's own placement comment had already swept (34, 11) and found it 13.5 m
+from the nearest physics box and 8.6 m from the nearest wandering soul, far past the radius used here.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 328
+(no new collider), Robot City's own friend count rose by one (88 to meet). Sunny Shore's tiger beetle
+and Frosty Peak's frost beetle are the same family and still unmet — either one is next. No visual
+check was possible in this environment (no browser, no Playwright) — only the stub-three test suite
+above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
