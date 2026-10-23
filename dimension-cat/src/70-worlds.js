@@ -7447,7 +7447,30 @@ function buildVictorian(game, entry) {
         d.group.rotation.y = facing;
         d.head.rotation.x = sin(t * 0.6 + phase * 2) > 0.88 ? 0.5 : 0;   // the occasional dip toward the water
       } });
-      let quackT = 8; U.push((dt) => { quackT -= dt; if (quackT <= 0) { SFX.squawk(); quackT = rnd.range(10, 18); } }); } }
+      let quackT = 8; U.push((dt) => { quackT -= dt; if (quackT <= 0) { SFX.squawk(); quackT = rnd.range(10, 18); } });
+      // round 677's own comment named this pair, and Whisper Woods' glowing-pond pair, as the last two
+      // background water pairs left in the whole game after the Neighborhood's two ponds and Candy
+      // Land's chocolate river all got "say hello" prompts. This is that round for the canal: both
+      // birds answer at once, the same trick as the lake pair two rounds ago. No new mesh, no new
+      // physics box — `game.addInteractable` keys off each duck's own `group` directly, so it tracks
+      // this pair's fixed z=30 and oscillating x (46-64, from `dMid`/`dRange` above) every frame. The
+      // canal itself is blocked for walking bank to bank by the `P.addBox` calls above, a 4.0 m
+      // half-extent in z centred on this same z=30 (`w, 4, 8` — half of 8), so the cat has to call
+      // across from the towpath; since the pair swims dead on z=30 itself, that 4.0 m gap never
+      // narrows or widens with the lap the way a circular swim does, so a 4.6 m radius clears it by a
+      // flat 0.6 m regardless of where either duck sits in its sweep. The nearest lamp post (x=48,
+      // z=25.3, from the loop just below) sits well clear of both ducks' own reach, and the nearest
+      // bridge's own "look over the railing" circle (east, x=104, radius 6.6, outer edge x=97.4) stays
+      // 33 m off even at the drake's closest swing in, to x=64 — `'duck'`/`'hen'` are free in this
+      // world, since only `'boy'` has claimed a key here so far.
+      const cdid = game.namedFriend('duck');
+      game.addInteractable({ obj: drake.group, radius: 4.6, label: () => 'Say hello to the duck', onUse: () => {
+        game.befriend(cdid); SFX.squawk(); game.hearts(drake.group.position.x, drake.group.position.y + 0.3, drake.group.position.z, 3);
+        game.toast('🦆 "Quack!"'); } });
+      const chid = game.namedFriend('hen');
+      game.addInteractable({ obj: hen.group, radius: 4.6, label: () => 'Say hello to the duck', onUse: () => {
+        game.befriend(chid); SFX.squawk(); game.hearts(hen.group.position.x, hen.group.position.y + 0.3, hen.group.position.z, 3);
+        game.toast('🦆 "...Quack."'); } }); } }
   for (const x of [-52, -24, 8, 24, 48]) { place(game, U, makeLamp('victorian'), x, 25.3, 0); P.addBox(x, 2, 25.3, 0.4, 4, 0.4, { cam: false }); }
   // the canal had rowing boats but nobody minding a line; an old-timer takes the north bank between two lamps, rod dipped in
   { const anglerWard = makeWardrobe(r, { shirts: [0x4a5a4a, 0x5a4a3a, 0x3a4a5a], pants: [0x2e3a2e, 0x2a2a2a], shoes: [0x2a2018, 0x1e2020] });

@@ -18354,3 +18354,30 @@ the Neighborhood's ponds and Candy Land's chocolate river — but the Victorian 
 Whisper Woods' glowing-pond pair are still pure background, left exactly as they are for a future round.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 678 — the Victorian canal's duck pair finally become friends too
+
+Round 677's own comment named the Victorian canal pair and Whisper Woods' glowing-pond pair as the last
+two background water pairs left in the game, right after the lake's own ducks caught up with the
+Neighborhood's park pond and Candy Land's chocolate river. This round takes the canal: **both the drake
+and the hen paddling the open stretch of canal between the boats now answer a "say hello" prompt, at
+once** — same move as the lake pair two rounds ago. *"🦆 "Quack!""* from the drake, *"🦆 "...Quack.""*
+from the hen.
+
+Same mechanism as every pond, river and lake duck before this one: `game.addInteractable` keyed straight
+off each duck's own `group`, no new mesh and no new physics box. The wrinkle here isn't naming (`'duck'`
+and `'hen'` were still free in the Victorian world — only `'boy'` had claimed a key there) but geometry:
+this pair doesn't swim a circle like the ponds, it holds a fixed z=30 dead centre of the canal while only
+its x oscillates, the same straight-sweep style as the chocolate river's own drake. The canal's own
+walk-blocking boxes give it a flat 4.0 m half-extent in z, so unlike a circling duck this gap to the
+towpath never narrows or widens with the lap — a flat 4.6 m radius clears it by a flat 0.6 m regardless
+of where either bird sits in its sweep, and stays a comfortable 33 m clear of the nearest bridge's own
+"look over the railing" circle even at the drake's closest swing in.
+
+`node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
+collider), the Victorian world's own friend count rose from 99 to 101 (both ducks at once, confirmed by
+diffing against the previous commit). No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite above, so whether the towpath actually brings the cat within
+that 4.6 m window of either duck's sweep couldn't be eyeballed, only reasoned about from the box geometry.
+Whisper Woods' glowing-pond pair is the last background water pair left in the game, for a future round.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
