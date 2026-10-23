@@ -18252,3 +18252,30 @@ collider), Whisper Woods' own friend count rose from 75 to 76 and "98% of the gr
 No visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
 suite above. The other five frogs and all three hares are left exactly as they were for a future round.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 674 — the Neighborhood's park-pond drake is finally a friend, not just scenery
+
+Rounds 672 and 673 found the same gap in Sunny Shore's turtles and Whisper Woods' frogs: creatures that
+had swum or hopped around since round 1 as pure background, never anyone the cat could actually meet.
+This round found the oldest instance of it, right back in the Neighborhood (the very first world): the
+drake and hen paddling slow circles on the park pond have done nothing but swim since round 199, and —
+unlike that round's own comment pointing out the lake's ducks were the other pair with nobody living on
+the water — neither duck pair was ever given a "say hello" prompt. **The park pond's drake now answers
+one.** *"🦆 "Quack!""*
+
+The ducks aren't an NPC class at all, just a `U.push` closure moving `drake.group`/`hen.group` round a
+fixed 2 m circle each frame — no `.look`/`.robot`/`.cookie`, and never pushed to `game.npcs`, so no
+controller was ever going to call `greetable()` on them. Same fix as the turtle and the frog: just
+`game.namedFriend('duck')` and `game.addInteractable({ obj: drake.group, ... })` directly on the swimming
+group. `80-game.js`'s main loop calls `getWorldPosition` on every interactable's `obj` each frame
+regardless of what moves it, so the prompt follows the drake round the pond exactly the same way. No new
+mesh and no new physics box — the pond itself has never had a collider. The hen, and the lake's own duck
+pair further up the street, are left exactly as they were for a future round.
+
+`node test/run.mjs` ran clean: all 277 checks `ok`, 0 console warnings, box count unchanged at 328 (no
+new collider), the Neighborhood's own friend count rose from 72 to 73 and "96% of the ground is
+walkable" held. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above, so the exact window in the drake's lap where the prompt fires couldn't be
+eyeballed, only reasoned about: the 2.4 m interactable radius comfortably bridges the gap between the
+pond's own bank (stone ring at 2.35–2.6 m from centre) and the drake's fixed 2 m swim radius. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
