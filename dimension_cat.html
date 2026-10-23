@@ -18127,7 +18127,15 @@ function buildBeach(game, entry) {
     const hOff = 1.3, hx = lx + hOff * dirx, hz = lz + hOff * dirz;
     const hermit = makeCrab(0xc1662f);
     game.npcs.push(new Hopper(game, hermit, { x: hx, z: hz, leash: 0.2, r: 0.1, dist: [0.1, 0.2], dur: 0.3, height: 0.1, idle: [2, 5],
-      onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } })); }
+      onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } }));
+    // the kid kneeling here is already convinced this log holds a hermit crab, but until now the crab
+    // itself was pure background like the six colony crabs before rounds 681-687 — `Hopper` (unlike
+    // `Wanderer`) never calls `greetable()` on its own, same reason the forest's frogs and hares needed
+    // their own explicit interactable. No new mesh and no new physics box: `game.namedFriend('hermitcrab')`
+    // and `game.addInteractable` on the rig's own group, tracked every frame so the prompt follows it
+    // across its own tiny hops within the 0.2 m leash right at the log's mouth.
+    const hermitId = game.namedFriend('hermitcrab');
+    game.addInteractable({ obj: hermit.group, radius: 2.1, label: () => 'Say hello to the crab', onUse: () => { game.befriend(hermitId); SFX.chitter(); game.hearts(hermit.group.position.x, 0.3, hermit.group.position.z, 3); game.toast('🦀 *claws peek out, then duck back in*'); } }); }
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

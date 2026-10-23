@@ -18601,3 +18601,26 @@ suite above, so the collar's exact look (a flat band under the chin, angled slig
 axis to keep the geometry simple) is unverified; if it reads oddly in a real browser, nudging its `y`/`z`
 offsets in `makeQuadruped()` is the fix. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 689 — Sunny Shore's hermit crab finally lives up to the kid's story
+
+Round 687 closed out the six-strong colony crab and noted one holdout left on the sand: the hermit crab
+paired with the hollow log at (-14, 36), where a kid kneels at the log's mouth convinced something is
+living inside. The crab itself obliges with little pokes and ducks, but until now it was pure background
+— the kid's own line, *"I saw its claws, I swear it!"*, had nothing real backing it up. It does now:
+**the hermit crab answers its own "Say hello to the crab" prompt too**, with *"🦀 *claws peek out, then
+duck back in*"*.
+
+Same root cause as the frogs and hares in Whisper Woods and every colony crab before it: the hermit
+crab runs on `Hopper`, which — unlike `Wanderer` — never calls `greetable()` on its own, so a rig with
+none of `.look`/`.robot`/`.cookie` just sits there unmet. No new mesh, no new physics box: a
+`game.namedFriend('hermitcrab')` plus a `game.addInteractable` keyed straight to the crab's own
+`rig.group`, tracked every frame so the prompt follows it through its tiny hops inside its 0.2 m leash
+right at the log's mouth. `'hermitcrab'` is a fresh id, distinct from `'crab'` through `'crab6'` and
+`'boldcrab'`, so greeting it never silently credits any of the others.
+
+`node test/run.mjs` ran clean twice in a row: all checks `ok`, 0 console warnings, box count unchanged
+at 328 (no new collider), Sunny Shore's own friend count rose from 84 to 85, ground still 100% walkable.
+With this, every crab on the beach — the colony, the bolder one, and the hermit — is now a friend to
+meet. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
