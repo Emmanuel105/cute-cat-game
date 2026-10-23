@@ -19794,7 +19794,25 @@ function buildForest(game, entry) {
       d.group.rotation.y = atan2(dx, dz);
       d.head.rotation.x = sin(t * 0.6 + phase * 2) > 0.88 ? 0.5 : 0;   // the occasional dip toward the glow
     } });
-    let quackT = 7; U.push((dt) => { quackT -= dt; if (quackT <= 0) { SFX.squawk(); quackT = rnd.range(10, 18); } }); }
+    let quackT = 7; U.push((dt) => { quackT -= dt; if (quackT <= 0) { SFX.squawk(); quackT = rnd.range(10, 18); } });
+    // round 678's own comment named this pair as the last background water pair left in the game, after
+    // the Neighborhood's two ponds, Candy Land's chocolate river and the Victorian canal all caught up
+    // over rounds 672-678. This round closes the series: the glowing pond's own drake and hen now answer
+    // a "say hello" prompt too, same mechanism as every pair before them — `game.addInteractable` keyed
+    // straight off each duck's own `group`, no new mesh and no new physics box. This pond is the easiest
+    // of the lot: unlike every pond, river, canal and lake in the series, it has never had a collision box
+    // at all (`72-world-beach.js`'s own comment calls it "a shallow puddle the cat can walk straight
+    // through"), so there is no bank to clear and no gap that narrows or widens with the lap — the same
+    // 2.4 m radius the park pond and the lake already use clears it with room to spare from anywhere
+    // inside the pond's own 4.5 m rim, not just one sweet spot on it.
+    const did = game.namedFriend('duck');
+    game.addInteractable({ obj: drake.group, radius: 2.4, label: () => 'Say hello to the duck', onUse: () => {
+      game.befriend(did); SFX.squawk(); game.hearts(drake.group.position.x, drake.group.position.y + 0.3, drake.group.position.z, 3);
+      game.toast('🦆 "Quack!"'); } });
+    const hid = game.namedFriend('hen');
+    game.addInteractable({ obj: hen.group, radius: 2.4, label: () => 'Say hello to the duck', onUse: () => {
+      game.befriend(hid); SFX.squawk(); game.hearts(hen.group.position.x, hen.group.position.y + 0.3, hen.group.position.z, 3);
+      game.toast('🦆 "...Quack."'); } }); }
   // the pond had ducks paddling on it, frogs hopping its rim and an angler working its edge, but nothing
   // ever skimmed low over the water itself. Three dragonflies now dart over the glowing pond, each its
   // own radius between the duck ring (2.3 m) and the reeds that only start past 5.0 m out, its own height,

@@ -18381,3 +18381,26 @@ Playwright) — only the stub-three test suite above, so whether the towpath act
 that 4.6 m window of either duck's sweep couldn't be eyeballed, only reasoned about from the box geometry.
 Whisper Woods' glowing-pond pair is the last background water pair left in the game, for a future round.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 679 — Whisper Woods' glowing-pond ducks close out the series
+
+Round 678's own comment named Whisper Woods' glowing-pond pair as the last background water pair left
+in the game, after the Neighborhood's two ponds, Candy Land's chocolate river and the Victorian canal
+all caught up over rounds 672-678. This round closes the series: **the glowing pond's own drake and hen
+now both answer a "say hello" prompt too, at once.** *"🦆 "Quack!""* from the drake, *"🦆 "...Quack.""*
+from the hen.
+
+Same mechanism as every pond, river, canal and lake duck before this one: `game.addInteractable` keyed
+straight off each duck's own `group`, no new mesh and no new physics box, and `'duck'`/`'hen'` were
+still free keys in this world. This pond turned out to be the easiest of the seven: unlike every other
+one in the series, it has never had a collision box at all — `72-world-beach.js`'s own comment calls it
+"a shallow puddle the cat can walk straight through" — so there's no bank to clear and no gap that
+narrows or widens with the lap. The same 2.4 m radius the park pond and the lake already settled on
+clears it comfortably from anywhere around the pond's own 4.5 m rim, not just one sweet spot.
+
+`node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
+collider), Whisper Woods' own friend count rose from 76 to 78 (both ducks at once). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above. Every
+duck, hen, turtle and frog that has sat as pure background since round 1 across all seven worlds is now
+a friend the cat can actually meet. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.
