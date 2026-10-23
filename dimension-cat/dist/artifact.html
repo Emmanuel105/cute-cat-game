@@ -8901,7 +8901,31 @@ function buildNeighborhood(game, entry) {
       d.group.position.set(dcx + cos(a) * drad, dY + sin(t * 2.2 + phase) * 0.012, dcz + sin(a) * drad);
       d.group.rotation.y = atan2(dx, dz);
       d.head.rotation.x = sin(t * 0.6 + phase * 2) > 0.88 ? 0.5 : 0;   // the occasional dip toward the water
-    } }); }
+    } });
+    // the lake's own duck pair was the one this very comment block, four rounds ago, named as "left for
+    // a future round" when the park pond's pair first got a "say hello" prompt — this is that round.
+    // Same mechanism, no new mesh and no new physics box: `game.addInteractable` keys off each duck's own
+    // group, so `getWorldPosition` in `80-game.js`'s main loop follows it round the lake's south-west
+    // corner every frame. `'duck'`/`'hen'` are already this world's park-pond keys, so these take
+    // `'lake-duck'`/`'lake-hen'` instead — distinct ids, so greeting one pair never marks the other met.
+    // The lake's own keep-out zone is a circle of radius 8.4 centred on the pond itself (-34, -48)
+    // (`Z.addCircle(-34, -48, 8.4)` above), concentric with the water but not with the swim circle, so the
+    // gap between duck and bank varies with angle; at the swim circle's own farthest reach from the pond's
+    // centre (6.44 m, on the line through both centres) the gap narrows to its minimum, 8.4 − 6.44 = 1.96 m,
+    // so a 2.4 m radius — the same figure the park pond already uses — clears it with a comfortable margin
+    // right at that one sweet spot on the bank, same "only when the lap swings close enough" design as
+    // every pond, river and lake duck before this one. No quack timer here either, for the same reason the
+    // swim itself stays off this world's own `r`: this is the world every test travel starts from, and a
+    // runtime-only SFX timer costs nothing from either `r` or the shared `rnd()` sequence, so it's safe —
+    // but the toast text itself is a fixed literal, not `rnd.pick`, so no draw is spent there regardless.
+    const lid = game.namedFriend('lake-duck');
+    game.addInteractable({ obj: drake.group, radius: 2.4, label: () => 'Say hello to the duck', onUse: () => {
+      game.befriend(lid); SFX.squawk(); game.hearts(drake.group.position.x, drake.group.position.y + 0.3, drake.group.position.z, 3);
+      game.toast('🦆 "Quack!"'); } });
+    const lhid = game.namedFriend('lake-hen');
+    game.addInteractable({ obj: hen.group, radius: 2.4, label: () => 'Say hello to the duck', onUse: () => {
+      game.befriend(lhid); SFX.squawk(); game.hearts(hen.group.position.x, hen.group.position.y + 0.3, hen.group.position.z, 3);
+      game.toast('🦆 "...Quack."'); } }); }
   makeFlowers(game, [[60, -40, 14, 260], [72, -58, 10, 160], [-70, 60, 12, 200], [-56, -60, 9, 120]], r);
   // park (south) with pond, bench, lamp, flowers and the portal arch
   flatPlane(game, 26, 1.4, walk, 0, 36, 0, 0.02); flatPlane(game, 1.4, 14, walk, 0, 42, 0, 0.02);

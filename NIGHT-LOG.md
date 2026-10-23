@@ -18323,3 +18323,34 @@ environment (no browser, no Playwright) — only the stub-three test suite above
 pair, mentioned in round 674's own comment as the other pair with nobody living on the water, is left
 exactly as it was, for a future round. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 677 — the Neighborhood lake's own duck pair are finally friends too
+
+Round 674's own comment named the lake as the other body of water in this world with nobody actually
+living on it, right back when the park pond's drake got the first "say hello" prompt in the series; round
+676 gave the park pond's hen the same treatment and left the lake's pair for a future round. This is that
+round: the drake and hen paddling the lake's south-west corner, below the jetty, now both answer one too.
+**The lake's own ducks are friends at last.** *"🦆 "Quack!""* and, for the hen, *"🦆 "...Quack.""*
+
+Same mechanism as every pond, river and lake before this one in the series: `game.addInteractable` keyed
+straight off each duck's own `group`, no new mesh and no new physics box (the lake's water has never had
+one). The only wrinkle is naming: `'duck'` and `'hen'` are already this world's park-pond keys, so the
+lake pair take `game.namedFriend('lake-duck')` / `('lake-hen')` instead, distinct ids so greeting one pair
+never silently marks the other pair met too. The lake's keep-out zone is a circle of radius 8.4 centred on
+the water (-34, -48), not concentric with the ducks' own 2.2 m swim circle centred (-37, -51), so the gap
+between duck and bank varies with angle; at the swim circle's farthest reach from the lake's centre
+(6.44 m, worked out two rounds ago when the swim itself was added) the gap narrows to its minimum, 1.96 m,
+so the 2.4 m radius already used at the park pond clears it with room to spare at that one sweet spot on
+the bank — same "only when the lap swings close enough" design as every duck before it. No quack timer
+here, matching the lake pair's own original comment: this world is the one every test run starts from and
+its timing-sensitive checks are tuned to an exact count of shared `rnd()` draws, so nothing here risks one.
+
+`node test/run.mjs` ran clean: all 277 checks `ok`, 0 console warnings, box count unchanged at 328 (no new
+collider), the Neighborhood's own friend count rose from 74 to 76 (both ducks at once). No visual check
+was possible in this environment (no browser, no Playwright) — only the stub-three test suite above, so
+whether the lake's own bank actually brings the cat within that 2.4 m window of a swinging duck couldn't
+be eyeballed, only reasoned about from the zone geometry. Three duck pairs are greetable now — both of
+the Neighborhood's ponds and Candy Land's chocolate river — but the Victorian canal's own pair and
+Whisper Woods' glowing-pond pair are still pure background, left exactly as they are for a future round.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.
