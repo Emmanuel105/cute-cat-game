@@ -18404,3 +18404,24 @@ possible in this environment (no browser, no Playwright) — only the stub-three
 duck, hen, turtle and frog that has sat as pure background since round 1 across all seven worlds is now
 a friend the cat can actually meet. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 680 — Candy Land's own chocolate-river hen was still mute after all
+
+Round 679 closed out the "every background duck becomes a friend" series with a claim that every duck,
+hen, turtle and frog in the game was now greetable — but it missed one. Round 675 gave the chocolate
+river's drake a "say hello" prompt and explicitly left the hen "for a future round"; rounds 676-679 went
+on to the lake, the canal and the glowing pond instead, and nobody came back for her. **The chocolate
+river's own hen finally answers too.** *"🦆 "...Quack.""*
+
+Same mechanism as every duck in the series: `game.addInteractable` keyed straight off `hen.group`, no new
+mesh and no new physics box. The hen shares the drake's own `dMid`/`dRange`/`dz` constants and only
+differs in phase, so her sweep covers the identical x=61-79 stretch of river the drake already answers
+from — the same 4.0 m radius that clears the 3.4 m bank-to-water gap for the drake clears it for her too,
+by the same margin, with no new geometry to work out. `'duck'` was already the drake's own key in this
+world; `'hen'` was still free, so she takes it plain, same as the Neighborhood's park pond.
+
+`node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
+collider), Candy Land's own friend count rose from 82 to 83. No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite above. As far as this round
+can tell, every background duck, hen, turtle and frog really is a friend now. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

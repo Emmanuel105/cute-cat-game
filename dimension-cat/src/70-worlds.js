@@ -3204,12 +3204,19 @@ function buildCandyLand(game, entry) {
     // give it a 3.4 m half-extent in z, centred on this same z=-18), so the cat has to call across from
     // dry land; a 4.0 m radius clears that 3.4 m gap by 0.6 m even when the drake is dead level with the
     // caller, and stays 5.2 m clear of the east bridge's own 5.8 m "look over the railing" radius (outer
-    // edge at x=51.8) even at the drake's nearest swing in, to x=61. The hen is left exactly as she was,
-    // for a future round.
+    // edge at x=51.8) even at the drake's nearest swing in, to x=61. The hen was left exactly as she was,
+    // for a future round — this is that round: she shares the drake's own `dMid`/`dRange`/`dz`, only the
+    // phase differs, so her sweep covers the identical x=61-79 stretch and the same 4.0 m radius clears
+    // the same 3.4 m gap by the same margin. `'duck'` is already the drake's own key in this world, so
+    // the hen takes the plain `'hen'` key instead — still free here, same as every other pond's pair.
     const did = game.namedFriend('duck');
     game.addInteractable({ obj: drake.group, radius: 4.0, label: () => 'Say hello to the duck', onUse: () => {
       game.befriend(did); SFX.squawk(); game.hearts(drake.group.position.x, drake.group.position.y + 0.3, drake.group.position.z, 3);
-      game.toast('🦆 "Quack!"'); } }); }
+      game.toast('🦆 "Quack!"'); } });
+    const hid = game.namedFriend('hen');
+    game.addInteractable({ obj: hen.group, radius: 4.0, label: () => 'Say hello to the duck', onUse: () => {
+      game.befriend(hid); SFX.squawk(); game.hearts(hen.group.position.x, hen.group.position.y + 0.3, hen.group.position.z, 3);
+      game.toast('🦆 "...Quack."'); } }); }
   // the outer sweet-lands: a candy-cane forest belt, cupcake hills, a gingerbread cottage, cookie paths
   for (let i = 0; i < 44; i++) { const a = i / 44 * TAU + r.range(-0.07, 0.07), d = r.range(56, 76), x = cos(a) * d, z = sin(a) * d; if (abs(z + 18) < 5) continue; const h = r.range(3, 5), c = makeCandyCane(h); c.position.set(x, 0, z); c.rotation.y = r() * TAU; W.add(c); P.addBox(x, h / 2, z, 0.5, h, 0.5, { cam: false }); }
   const cupcakeHills = [];
