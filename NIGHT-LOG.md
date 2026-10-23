@@ -18569,3 +18569,35 @@ hollow log, is still pure background on this beach.
 collider), Sunny Shore's own friend count rose from 83 to 84, ground still 98% walkable. No visual check
 was possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 688 — Frosty Peak's Copper is finally visible, not just a name in two other mouths
+
+Sixteen straight rounds (672-687) turned background wildlife into friends across five worlds — ducks,
+a turtle, a frog, a hen, and the whole of Sunny Shore's crab colony. This round breaks that pattern for
+something narrower: Frosty Peak's reindeer keeper and the searcher hunting a lost bell have both named
+a specific reindeer, Copper, in their dialogue since the mountain was built ("Copper's the friendliest
+of the lot"; "One of Copper's bells came loose out here somewhere") — but the herd itself was always
+three identical, anonymous deer. Nothing in the world was ever actually, visibly Copper.
+
+The reindeer standing exactly on the spot the keeper calls "the herd's middle spot" — (-18, -12), the
+same point the searcher's detector sweeps toward — now wears a small copper-coloured collar and bell,
+and **answers her own "Say hello" prompt too**: *"🦌 *collar bell gives a soft jingle* Still got mine,
+at least."* `SFX.bell()` (already used by the world's wind chimes) ties the greeting back to the
+lost-bell plot both humans are chasing.
+
+The collar itself is a new, opt-in `collar` option on the shared `makeQuadruped()` builder (56-npcs-wild.js)
+— a flat copper band plus a small hanging bell sphere, both parented to the head group just under the
+chin, gated behind `if (o.collar)` so every quadruped built without it (dogs, foxes, horses, and Frosty
+Peak's own other two deer) renders exactly as it always has. `makeDeer()` now threads an optional
+`{ collar }` through; the two untouched reindeer still call it bare. Copper herself is friended the same
+way every wandering creature has been since round 672: `game.addInteractable` keyed straight to her own
+`rig.group`, tracking her live position inside the same 8 m `Wanderer` leash the other two deer already
+roam — no new physics box.
+
+`node test/run.mjs` ran clean three times in a row: all checks `ok`, 0 console warnings, box count
+unchanged at 328, Frosty Peak's own friend count rose from 76 to 77, ground still 98% walkable. No
+visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
+suite above, so the collar's exact look (a flat band under the chin, angled slightly off the neck's own
+axis to keep the geometry simple) is unverified; if it reads oddly in a real browser, nudging its `y`/`z`
+offsets in `makeQuadruped()` is the fix. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.

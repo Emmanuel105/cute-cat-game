@@ -261,7 +261,27 @@ function buildSnowVillage(game, entry) {
   // a bolder penguin peels off from the flock to waddle over and investigate the cat, then hurries back
   { const rig = makePenguin({ scarf: 0xffd54a, scale: 0.95 }); W.add(rig.group);
     game.npcs.push(new Follower(game, rig, { x: 26, z: 2, r: 0.3, height: 0.9, step: 0.25, idle: [1, 3], walk: [2, 4], leash: 6, speed: 0.9, range: 11, keep: 1.8, sfx: () => SFX.squawk() })); }
-  for (const [x, z] of [[-22, 6], [-18, -12], [24, 20]]) { const rig = makeDeer(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x, z, speed: 0.6, leash: 8, r: 0.45, height: 1.4, step: 0.3, idle: [3, 7], walk: [2, 5] })); }
+  // the keeper kneeling at (-18, -12) — the herd's own "middle spot" — and the searcher further west
+  // both already name a reindeer called Copper in their dialogue ("Copper's the friendliest of the
+  // lot"; "One of Copper's bells came loose out here somewhere"), but nothing in the herd was ever
+  // actually, visibly Copper — just three identical deer. The middle one, standing on that exact
+  // named spot, now gets a small copper-coloured collar and bell (the new `collar` option on
+  // `makeQuadruped`, gated so the other two deer render exactly as before) and answers her own "Say
+  // hello" prompt, `SFX.bell()` tying the greeting back to the lost-bell plot the keeper and searcher
+  // are both chasing. No new physics box: like every other wandering creature turned friend before
+  // her, `game.addInteractable` is keyed straight to her own `rig.group`, tracking her live position
+  // inside the same 8 m leash the other two deer already wander.
+  for (const [i, [x, z]] of [[-22, 6], [-18, -12], [24, 20]].entries()) {
+    const rig = i === 1 ? makeDeer({ collar: 0xb5651d }) : makeDeer();
+    W.add(rig.group);
+    if (i === 1) {
+      const cid = game.namedFriend('copper');
+      game.addInteractable({ obj: rig.group, radius: 2.2, label: () => 'Say hello to Copper', onUse: () => {
+        game.befriend(cid); SFX.bell(); game.hearts(rig.group.position.x, rig.group.position.y + 1.1, rig.group.position.z, 3);
+        game.toast('🦌 "*collar bell gives a soft jingle* Still got mine, at least."'); } });
+    }
+    game.npcs.push(new Wanderer(game, rig, { x, z, speed: 0.6, leash: 8, r: 0.45, height: 1.4, step: 0.3, idle: [3, 7], walk: [2, 5] }));
+  }
   // snow hares, in the gap east of the village between the pine ring and the open snowfield — `Hopper`
   // has done duty for Whisper Woods' frogs since the glade was built but never reused since; a white
   // hare on white snow is the obvious second home for it. A headless probe swept a 16-point ring at the

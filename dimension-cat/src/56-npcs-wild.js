@@ -140,6 +140,12 @@ function makeQuadruped(o) {
     else mesh(G.earCone(o.ears === 'big' ? 0.07 : 0.05, o.ears === 'big' ? 0.2 : 0.14), fur, { x: side * 0.1, y: 0.16, z: -0.03, rz: side * -0.3, parent: head });
     if (o.antlers) { const a = group(side * 0.07, 0.15, -0.04, head); const bone = mat(0xd9c9a8, { roughness: 0.8 }); mesh(G.cyl(0.015, 0.02, 0.32, 6), bone, { y: 0.16, rz: side * -0.35, parent: a }); mesh(G.cyl(0.012, 0.015, 0.18, 6), bone, { x: side * 0.06, y: 0.28, rz: side * -1.0, parent: a }); mesh(G.cyl(0.011, 0.014, 0.16, 6), bone, { x: side * 0.02, y: 0.36, rz: side * 0.5, parent: a }); }
   }
+  // an optional collar: a flat band just under the chin, where head meets neck, plus a small hanging
+  // bell charm. Gated behind `o.collar` (a color) so every quadruped built without it — every dog, fox,
+  // horse and the other two deer in a herd — looks exactly as it always has.
+  if (o.collar) { const collarMat = mat(o.collar, { metalness: 0.35, roughness: 0.5 });
+    mesh(G.cyl(0.095, 0.095, 0.025, 12), collarMat, { y: -0.16, z: 0.02, parent: head });
+    mesh(G.sphere(0.026, 8, 6), collarMat, { y: -0.21, z: 0.08, parent: head }); }
   // legs
   for (const [x, z, front] of [[0.13, L / 2 - 0.05, true], [-0.13, L / 2 - 0.05, true], [0.13, -L / 2 + 0.05, false], [-0.13, -L / 2 + 0.05, false]]) {
     const hip = group(x, H - 0.08, z, body); mesh(G.capsule(0.05, H * 0.45 - 0.05), fur, { y: -(H * 0.45) / 2, parent: hip });
@@ -166,7 +172,7 @@ function makeQuadruped(o) {
 }
 const makeHorse = (color = 0x5a3a22) => makeQuadruped({ color, color2: 0x3a2416, belly: 0x6a4a32, hooves: true, tail: 'long', bodyY: 0.92, length: 1.25, scale: 1.3, neck: 0.32, wag: 1.6 });
 const makeDog = (color = 0xc8925a) => makeQuadruped({ color, color2: 0xf3e3c8, belly: 0xf3e3c8, ears: 'floppy', tail: 'curl', wag: 7, bodyY: 0.42, length: 0.6, scale: 0.95 });
-const makeDeer = () => makeQuadruped({ color: 0xa8763f, color2: 0xe8d7b8, belly: 0xe8d7b8, ears: 'big', tail: 'stub', antlers: true, hooves: true, grazes: true, bodyY: 0.62, length: 0.75, neck: 0.12, scale: 1.05, wag: 2 });
+const makeDeer = (o = {}) => makeQuadruped({ color: 0xa8763f, color2: 0xe8d7b8, belly: 0xe8d7b8, ears: 'big', tail: 'stub', antlers: true, hooves: true, grazes: true, bodyY: 0.62, length: 0.75, neck: 0.12, scale: 1.05, wag: 2, collar: o.collar });
 const makeFox = () => makeQuadruped({ color: 0xe8702a, color2: 0xfff1e0, belly: 0xfff1e0, ears: 'big', tail: 'bushy', bodyY: 0.34, length: 0.5, scale: 0.8, wag: 3 });
 const makeHare = () => makeQuadruped({ color: 0xf2f0ea, color2: 0xe3ded0, belly: 0xffffff, ears: 'big', tail: 'stub', bodyY: 0.2, length: 0.3, scale: 0.55, wag: 2 });
 const makeHedgehog = () => makeQuadruped({ color: 0x3a2e22, color2: 0x241a12, belly: 0xcfc3a0, ears: 'round', tail: 'stub', bodyY: 0.13, length: 0.22, scale: 0.4, wag: 1.5 });
