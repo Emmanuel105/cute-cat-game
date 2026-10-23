@@ -18230,3 +18230,25 @@ used elsewhere in this game for a soft low thud — stands in for a shell pat; t
 collider), Sunny Shore's own friend count rose from 76 to 77 and "100% of the ground is walkable" held.
 No visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
 suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 673 — Whisper Woods' first frog is finally a friend, not just scenery
+
+Round 672 turned Sunny Shore's second turtle from pure background into a friend; this round found the
+same gap one world over. The six frogs hopping round Whisper Woods' pond clearing have sat there since
+round 1 as decoration only — unlike the owls and the woodpecker a few lines below them in the same
+build, none was ever anyone the cat could actually meet. **The first frog, at the clearing's own east
+edge, now answers a "Say hello to the frog" prompt.** *"🐸 *ribbit*"*
+
+`Hopper` (the shared controller every frog, hare and hedgehog in this game hops around on) never calls
+`greetable()` the way `Wanderer` does, and even if it did, `makeFrog()`'s rig carries none of
+`.look`/`.robot`/`.cookie` that function checks for — the same reason the turtles and every world's own
+dog each needed their own explicit interactable rather than picking one up for free. No new mesh and no
+new physics box: just `game.namedFriend('frog')` and `game.addInteractable` on the frog's own rig
+group, tracked every frame the same way the turtle's is, so the prompt follows it across its short hops
+within its own 4 m leash.
+
+`node test/run.mjs` ran clean: all checks `ok`, 0 console warnings, box count unchanged at 328 (no new
+collider), Whisper Woods' own friend count rose from 75 to 76 and "98% of the ground is walkable" held.
+No visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
+suite above. The other five frogs and all three hares are left exactly as they were for a future round.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
