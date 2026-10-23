@@ -18506,3 +18506,28 @@ check was possible in this environment (no browser, no Playwright) — only the 
 above. Two crabs in the colony, the bolder follower-crab, and the hermit crab paired with the hollow
 log are all still pure background, left for a future round. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 685 — Sunny Shore's bolder crab becomes a friend too
+
+Rounds 681-684 picked off four of the six colony crabs scuttling this beach, leaving two colony crabs
+and two other crabs — the bolder one that scuttles over for a look, and the hermit paired with the
+hollow log — still pure background. This round takes the bolder crab: **it now answers a "Say hello"
+prompt too.** *"🦀 *marches right up and taps a claw on your paw*"*
+
+Same reasoning as every colony crab before it — `makeCrab()`'s rig carries none of
+`.look`/`.robot`/`.cookie`, so whichever controller drives it quietly no-ops on `greetable()`, and a
+plain `game.addInteractable` keyed off the rig's own group works regardless. The one difference here is
+the controller itself: this crab runs on `Follower`, not `Wanderer`, so instead of wandering its own
+leash it closes in on the cat whenever it comes within range and parks itself at its `keep` distance
+(1.6 m) — comfortably inside the usual 2.1 m prompt radius, if anything an easier crab to catch than the
+wandering ones. No new mesh, no new physics box.
+
+`node test/run.mjs` ran clean twice in a row with the change in place: all checks `ok`, 0 console
+warnings, box count unchanged at 328 (no new collider), Sunny Shore's own friend count rose from 81 to
+82. A later run on this same build came back `exit 1` with no `FAIL` line printed by this session's own
+output capture — a scratch check then stashed the change, ran the unmodified codebase five times in a
+row (all clean), and confirmed the flake's own one real failure line, `Sunny Shore: a kite flies 6.5 m
+up on a 8.6 m line`, reproduces with or without this round's crab — the kite's own timing-sensitive
+check, not this change, same occasional harness hiccup rounds 616 and 621 already noted and never
+pinned down. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

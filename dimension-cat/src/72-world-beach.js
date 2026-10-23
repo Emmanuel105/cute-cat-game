@@ -491,9 +491,20 @@ function buildBeach(game, entry) {
       game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the crab', onUse: () => { game.befriend(crid4); SFX.chitter(); game.hearts(rig.group.position.x, 0.5, rig.group.position.z, 3); game.toast('🦀 *taps both claws together, twice*'); } });
     }
   }
-  // a bolder crab: it minds its own business until the cat wanders close, then scuttles over for a look
+  // a bolder crab: it minds its own business until the cat wanders close, then scuttles over for a look.
+  // Rounds 681-684 picked off four of the six colony crabs above, leaving two colony crabs and this one —
+  // plus the hermit crab at the hollow log — still pure background. This round takes the bolder crab:
+  // **it now answers a "Say hello" prompt too.** Same no-op reasoning as every other crab (`makeCrab()`'s
+  // rig carries none of `.look`/`.robot`/`.cookie`), but a plain `game.addInteractable` on its own group
+  // works regardless of which controller drives it, `Follower` here rather than `Wanderer` — and
+  // `Follower`'s own `keep` distance (1.6 m) means this crab parks itself well inside the 2.1 m radius
+  // the moment it closes in on the cat, so the prompt is if anything easier to trigger than the colony
+  // crabs' own wandering ones.
   { const rig = makeCrab(0xd84315); W.add(rig.group);
-    game.npcs.push(new Follower(game, rig, { x: 17, z: -6, r: 0.25, height: 0.5, step: 0.25, idle: [0.5, 2], walk: [1, 3], leash: 5, speed: 1.8, range: 10, keep: 1.6, sfx: () => SFX.click() })); }
+    const fw = new Follower(game, rig, { x: 17, z: -6, r: 0.25, height: 0.5, step: 0.25, idle: [0.5, 2], walk: [1, 3], leash: 5, speed: 1.8, range: 10, keep: 1.6, sfx: () => SFX.click() });
+    game.npcs.push(fw);
+    const boldId = game.namedFriend('boldcrab');
+    game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the crab', onUse: () => { game.befriend(boldId); SFX.chitter(); game.hearts(rig.group.position.x, 0.5, rig.group.position.z, 3); game.toast('🦀 *marches right up and taps a claw on your paw*'); } }); }
   for (let i = 0; i < 7; i++) { const rig = makeSeagull({ phase: i * 1.3 }); game.npcs.push(new Flyer(game, rig, { cx: 14 + r.range(-8, 8), cz: r.range(-30, 30), r: r.range(9, 18), h: r.range(5, 11), speed: r.range(3.5, 5), bob: 1.2, wobble: 3, cw: i % 2 === 0, phase: i })); }
   // both turtles have been pure background since round 1, same as the crabs — unlike the dog and the
   // squirrel, neither was ever a friend to meet. The second one, up at (24, 20), gets a "Pet the
