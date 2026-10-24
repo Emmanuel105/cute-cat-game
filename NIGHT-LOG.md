@@ -18932,3 +18932,28 @@ the gumdrop-pink toad are still unmet in Candy Land, alongside the Frosty Peak a
 trios, the beach's sandpipers and the Victorian pigeons — any one of them is next. No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 702 — Candy Land's peppermint sparrow finally becomes a friend
+
+Round 701's list of still-unmet ambient `Hopper` critters named two left in Candy Land: the peppermint
+sparrow and the gumdrop-pink toad. This round takes the sparrow, hopping the open grass north of the
+lane since the round that gave `makeSparrow` its colour options. **It now answers its own "Say hello
+to the peppermint sparrow" prompt too**, with *"🐦 *head cocks sideways, one quick chirp, then
+flutters off into the grass*"*.
+
+Same root cause and same fix as the mint hare, the sugar mouse, the Neighborhood's bin raccoon and
+hare, Robot City's factory mouse and scrap-bug, and the whole ladybug family before it: `Hopper`,
+unlike `Wanderer`, never calls `greetable()` on its own, so a rig with none of `.look`/`.robot`/
+`.cookie` just sits there unmet. No new mesh, no new physics box: a
+`game.namedFriend('peppermint-sparrow')` plus a `game.addInteractable` keyed straight to the sparrow's
+own `rig.group`, tracked every frame so the prompt follows it through its hops inside its own 1.6 m
+leash. The 2.1 m greet radius — the same every other Hopper creature's own prompt already uses —
+needed no new probe: the build's own placement comment had already swept this exact spot (-29, 40)
+clear by 10.9 m in every direction, far past the radius used here.
+
+`node test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box count unchanged at
+328 (no new collider), Candy Land's own friend count rose by one (87 to meet). The gumdrop-pink toad
+is still unmet in Candy Land, alongside the Frosty Peak and Whisper Woods hare trios, the beach's
+sandpipers and the Victorian pigeons — any one of them is next. No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
