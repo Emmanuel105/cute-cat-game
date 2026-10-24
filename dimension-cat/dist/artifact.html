@@ -11054,9 +11054,20 @@ function buildCandyLand(game, entry) {
   // unnoticed) and ruled out every decorative gumdrop patch by its own radius, not just the physics
   // boxes: (-17, -46) came back clear by over 10 m on both counts — south of the market stalls, north
   // of the marshmallow bush cluster at (-36,-48), inside the 1.6 m leash given here.
+  // Same root cause and same fix as the sugar mouse two entries above, and the raccoon, the factory
+  // mouse and the whole ladybug family before it: `Hopper`, unlike `Wanderer`, never calls
+  // `greetable()` on its own, so the mint hare sat ambient and un-greetable since the round that
+  // placed it. It now answers its own "Say hello to the mint hare" prompt — no new mesh, no new
+  // physics box, just `game.namedFriend('mint-hare')` plus a `game.addInteractable` keyed to the
+  // rig's own group, tracked every frame so the prompt follows it through its hops inside the 1.6 m
+  // leash. The 2.1 m greet radius (the same every other Hopper creature's own prompt uses) needed no
+  // new probe: the build's own placement comment above already swept this exact spot clear by over
+  // 10 m in every direction, far past the radius used here.
   { const rig = makeMintHare();
     game.npcs.push(new Hopper(game, rig, { x: -17, z: -46, leash: 1.6, r: 0.15, dist: [0.3, 0.8], dur: 0.3, height: 0.26, idle: [1, 3.5],
-      onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } })); }
+      onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } }));
+    const mintHareId = game.namedFriend('mint-hare');
+    game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the mint hare', onUse: () => { game.befriend(mintHareId); SFX.chitter(); game.hearts(rig.group.position.x, 0.2, rig.group.position.z, 3); game.toast('🐰 *ears swivel, nose twitches twice, then it thumps off into the grass*'); } }); }
   // the mouse and the hare are both ground-bound mammals; every other world's own ground-pecking bird
   // (the Neighborhood's sparrow, Victorian's pigeons, Sunny Shore's sandpipers) is a plain reskin of
   // `makeSparrow`'s own rig, and Candy Land never had one of its own, past the butterflies overhead. A
