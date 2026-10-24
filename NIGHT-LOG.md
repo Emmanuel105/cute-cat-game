@@ -19030,3 +19030,26 @@ this clearing, at (29, -35), is left exactly as it was, alongside the Frosty Pea
 beach's sandpipers and the Victorian pigeons — any one of them is next. No visual check was possible
 in this environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 706 — Whisper Woods' third hare finishes the trio
+
+Round 705 took the clearing's second hare at (32, -34) and left the third, at (29, -35), as it was.
+This round takes it, closing out the whole woodland hare trio that's sat in that south-east clearing
+since round 383. **It now answers its own "Say hello to the hare" prompt too**, with *"🐇 *goes rigid,
+ears flat, then kicks off low and fast through the grass*"*.
+
+Same root cause and fix as its two clearing-mates, and every ambient `Hopper` critter this log has
+fixed up: `Hopper` never calls `greetable()` on its own, and `makeHare()`'s rig carries none of
+`.look`/`.robot`/`.cookie` for that function to find. No new mesh, no new physics box: a third
+`game.namedFriend('hare-3')` (kept distinct from `'hare'` and `'hare-2'`) plus a `game.addInteractable`
+keyed straight to this hare's own `rig.group`, tracked every frame so the prompt follows it through
+its hops inside its own 3.5 m leash. The same headless probe from round 704 had already swept this
+exact spot clear by 5.9-7.6 m of the nearest box and 8.0-10.6 m of the nearest other soul, far past
+the 2.1 m greet radius used here.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 328
+(no new collider), Whisper Woods' own friend count rose by one again (82 to meet). All three hares in
+this clearing are now friends. What's left unmet among the long-running list of ambient critters are
+the Frosty Peak hare trio, the beach's sandpipers and the Victorian pigeons — any one of them is next.
+No visual check was possible in this environment (no browser, no Playwright) — only the stub-three
+test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

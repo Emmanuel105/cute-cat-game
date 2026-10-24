@@ -20403,11 +20403,11 @@ function buildForest(game, entry) {
   // same way the sugar mouse, the mint hare, the peppermint sparrow and the gumdrop-pink toad in Candy
   // Land already were: a `game.namedFriend('hare')` plus a `game.addInteractable` keyed straight to
   // its own `rig.group`, tracked every frame so the prompt follows it through its hops inside its own
-  // 3.5 m leash. The second, at (32, -34), gets the same treatment this round, with its own
-  // `game.namedFriend('hare-2')` so it doesn't collide with the first hare's id. The third, at
-  // (29, -35), is left exactly as it was.
-  let friendlyHare = null, secondHare = null;
-  for (const [i, [x, z]] of [[30, -32], [32, -34], [29, -35]].entries()) { const rig = makeHare(); game.npcs.push(new Hopper(game, rig, { x, z, leash: 3.5, r: 0.15, dist: [0.3, 0.9], dur: 0.3, height: 0.22, idle: [1, 3.5], onHop: () => { if (rnd.chance(0.2)) SFX.chitter(); } })); if (i === 0) friendlyHare = rig; if (i === 1) secondHare = rig; }
+  // 3.5 m leash. The second, at (32, -34), got the same treatment in round 705, with its own
+  // `game.namedFriend('hare-2')` so it doesn't collide with the first hare's id. This round finishes
+  // the trio: the third, at (29, -35), gets `game.namedFriend('hare-3')` the same way.
+  let friendlyHare = null, secondHare = null, thirdHare = null;
+  for (const [i, [x, z]] of [[30, -32], [32, -34], [29, -35]].entries()) { const rig = makeHare(); game.npcs.push(new Hopper(game, rig, { x, z, leash: 3.5, r: 0.15, dist: [0.3, 0.9], dur: 0.3, height: 0.22, idle: [1, 3.5], onHop: () => { if (rnd.chance(0.2)) SFX.chitter(); } })); if (i === 0) friendlyHare = rig; if (i === 1) secondHare = rig; if (i === 2) thirdHare = rig; }
   { const hareId = game.namedFriend('hare');
     game.addInteractable({ obj: friendlyHare.group, radius: 2.1, label: () => 'Say hello to the hare', onUse: () => {
       game.befriend(hareId); SFX.chitter(); game.hearts(friendlyHare.group.position.x, 0.2, friendlyHare.group.position.z, 3);
@@ -20416,6 +20416,10 @@ function buildForest(game, entry) {
     game.addInteractable({ obj: secondHare.group, radius: 2.1, label: () => 'Say hello to the hare', onUse: () => {
       game.befriend(hare2Id); SFX.chitter(); game.hearts(secondHare.group.position.x, 0.2, secondHare.group.position.z, 3);
       game.toast('🐇 *freezes stock-still a beat, then thumps off sideways into the clearing*'); } }); }
+  { const hare3Id = game.namedFriend('hare-3');
+    game.addInteractable({ obj: thirdHare.group, radius: 2.1, label: () => 'Say hello to the hare', onUse: () => {
+      game.befriend(hare3Id); SFX.chitter(); game.hearts(thirdHare.group.position.x, 0.2, thirdHare.group.position.z, 3);
+      game.toast('🐇 *goes rigid, ears flat, then kicks off low and fast through the grass*'); } }); }
   let friendlyOwl = null, watchedOwl = null, thirdOwl = null;
   for (const [i, [x, z, tree]] of [[-30, -10, 0], [30, 22, 0], [12, 32, 0]].entries()) { const owl = makeOwl(); const y = P.ground0(x, z) + 6.6; owl.group.position.set(x + 1.8, y, z); owl.group.rotation.y = atan2(-x, -z); W.add(owl.group); mesh(G.cyl(0.08, 0.1, 1.6, 6), mat(0x4a3323), { x: x + 1.2, y: y - 0.05, z, rz: PI / 2, parent: W }); let ot = r() * 10; U.push((dt) => { ot += dt; owl.animate(0, false, dt, ot); }); if (i === 0) friendlyOwl = owl; if (i === 1) watchedOwl = owl; if (i === 2) thirdOwl = owl; }
   let hootT = 6; U.push((dt) => { hootT -= dt; if (hootT <= 0) { SFX.hoot(); hootT = rnd.range(8, 16); } });
