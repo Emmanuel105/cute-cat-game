@@ -19196,3 +19196,25 @@ shore's sandpipers are now fully met, alongside both Frosty Peak hare trios. Wha
 long-running list of ambient critters is the Victorian pigeons — likely next. No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 713 — Victorian's two market-square pigeons also become friends
+
+Round 712 finished off Sunny Shore's trio of sandpipers; the pigeons that round's own write-up flagged
+as "likely next" turn out to be exactly that. The market square's pair of pigeons, pecking near the
+fountain since the round that gave Victorian a crumb-feeder to mind them, now answer their own "Say
+hello to the pigeon" prompt too. One gets *"🐦 *tilts its head, coos once, then waddles off to peck at
+the cobbles*"*; the other, *"🐦 *puffs up its chest feathers, bobs twice, then flutters a step away*"*.
+
+Same root cause and fix as the whole run of ambient `Hopper` critters this log has turned into friends:
+`Hopper`, unlike `Wanderer`, never calls `greetable()` on its own, and `makePigeon()`'s rig carries none
+of `.look`/`.robot`/`.cookie` for that function to find. No new mesh, no new physics box: two
+`game.namedFriend(id)` calls (`'square-pigeon'`, `'square-pigeon-2'`) plus a `game.addInteractable` keyed
+straight to each bird's own `rig.group`, tracked every frame so the prompt follows it through its hops
+inside its own 1.1 m leash. The 2.1 m greet radius — the same every other `Hopper` creature's own prompt
+already uses — needed no new probe: the pigeons' own placement comment already keeps them 1.5 m clear of
+the fountain and both east-side stalls, and the two birds sit 4.3 m apart, outside each other's radius.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 328
+(no new collider), Victorian's own friend count rose by two (101 to 103 to meet). The crumb-feeder's own
+cries are untouched. No visual check was possible in this environment (no browser, no Playwright) — only
+the stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

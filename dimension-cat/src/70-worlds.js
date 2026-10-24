@@ -7431,7 +7431,25 @@ function buildVictorian(game, entry) {
   // woods' frogs already do. Checked against the fountain's own box (half-extent 3.4 m, centred (0,-34) —
   // both homes sit past it on x) and the two east-side stalls (half-extent 1.6 m at (10,-29.3)/(10,-43.3)):
   // nearest approach with leash included is still over 1.5 m clear of either.
-  for (const [x, z] of [[5, -34], [6.5, -37.5]]) { const rig = makePigeon(); game.npcs.push(new Hopper(game, rig, { x, z, leash: 1.1, r: 0.08, dist: [0.25, 0.55], dur: 0.25, height: 0.1, idle: [1, 3.2], onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } })); }
+  // both pigeons now answer their own "Say hello to the pigeon" prompt too — same root cause and fix as
+  // every other ambient `Hopper` critter this log has turned into a friend: `Hopper`, unlike `Wanderer`,
+  // never calls `greetable()` on its own, and `makePigeon()`'s rig carries none of `.look`/`.robot`/
+  // `.cookie` for that function to find. No new mesh, no new physics box: `game.namedFriend(id)` plus a
+  // `game.addInteractable` keyed straight to each bird's own `rig.group`, tracked every frame so the
+  // prompt follows it through its hops inside its own 1.1 m leash. The 2.1 m greet radius — the same
+  // every other `Hopper` creature's own prompt already uses — needed no new probe: this placement's own
+  // clearance above (1.5 m clear of the fountain and both east-side stalls) already covers it, and the
+  // two birds sit 4.3 m apart, outside each other's radius.
+  let firstPigeon = null, secondPigeon = null;
+  for (const [i, [x, z]] of [[5, -34], [6.5, -37.5]].entries()) { const rig = makePigeon(); game.npcs.push(new Hopper(game, rig, { x, z, leash: 1.1, r: 0.08, dist: [0.25, 0.55], dur: 0.25, height: 0.1, idle: [1, 3.2], onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } })); if (i === 0) firstPigeon = rig; if (i === 1) secondPigeon = rig; }
+  { const pigeonId = game.namedFriend('square-pigeon');
+    game.addInteractable({ obj: firstPigeon.group, radius: 2.1, label: () => 'Say hello to the pigeon', onUse: () => {
+      game.befriend(pigeonId); SFX.chitter(); game.hearts(firstPigeon.group.position.x, 0.2, firstPigeon.group.position.z, 3);
+      game.toast('🐦 *tilts its head, coos once, then waddles off to peck at the cobbles*'); } }); }
+  { const pigeonId2 = game.namedFriend('square-pigeon-2');
+    game.addInteractable({ obj: secondPigeon.group, radius: 2.1, label: () => 'Say hello to the pigeon', onUse: () => {
+      game.befriend(pigeonId2); SFX.chitter(); game.hearts(secondPigeon.group.position.x, 0.2, secondPigeon.group.position.z, 3);
+      game.toast('🐦 *puffs up its chest feathers, bobs twice, then flutters a step away*'); } }); }
   // the pigeons above never had anyone minding them — every other world's wildlife has a human
   // companion of its own (the Neighborhood's birdwatcher for the sparrows, Sunny Shore's for the gulls,
   // the snow and forest worlds' too). A crumb-feeder now kneels on the square's quiet east side, a
