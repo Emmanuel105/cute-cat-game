@@ -18811,3 +18811,25 @@ from the nearest physics box and 8.6 m from the nearest wandering soul, far past
 and Frosty Peak's frost beetle are the same family and still unmet — either one is next. No visual
 check was possible in this environment (no browser, no Playwright) — only the stub-three test suite
 above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 697 — Sunny Shore's tiger beetle finally becomes a friend
+
+Round 696's scrap-bug narrowed the family down to two: Sunny Shore's tiger beetle and Frosty Peak's
+frost beetle. This round takes the tiger beetle, scuttling the dry dune sand west of the tug-of-war
+since it was built. **It now answers its own "Say hello to the tiger beetle" prompt too**, with
+*"✨ *flares its iridescent shell for a second, then darts off across the sand*"*.
+
+Same root cause and same fix as the raccoon, the factory mouse, the ladybug, the gumdrop beetle and
+the scrap-bug before it: `Hopper`, unlike `Wanderer`, never calls `greetable()` on its own, so a rig
+with none of `.look`/`.robot`/`.cookie` just sits there unmet. No new mesh, no new physics box: a
+`game.namedFriend('tiger-beetle')` plus a `game.addInteractable` keyed straight to the beetle's own
+`rig.group`, tracked every frame so the prompt follows it through its tiny hops inside its own 1 m
+leash. The 2.1 m greet radius — the same every other Hopper creature's own prompt already uses —
+needed no new probe: the build's own placement comment had already swept (-8, 24) and found it 8.8 m
+from the nearest physics box and 6.1 m from the nearest wandering soul, far past the radius used here.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 328
+(no new collider), Sunny Shore's own friend count rose by one (86 to meet). Frosty Peak's frost beetle
+is the last of the family still unmet. No visual check was possible in this environment (no browser,
+no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

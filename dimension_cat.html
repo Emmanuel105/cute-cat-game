@@ -18103,9 +18103,21 @@ function buildBeach(game, entry) {
   // the same draws the raccoon's and the scrap-bug's own comments already warned future rounds about)
   // land after every other NPC in this world that times itself off that same sequence, and disturb
   // nothing built earlier on the sand.
+  // Round 696's own text named this beetle as the next of the ladybug's family still unmet — the
+  // raccoon, the factory mouse, the ladybug and the gumdrop beetle and scrap-bug all got the same fix
+  // in their own rounds first. Same root cause: `Hopper`, unlike `Wanderer`, never calls `greetable()`
+  // on its own, so a rig with none of `.look`/`.robot`/`.cookie` just sits there unmet. No new mesh, no
+  // new physics box: `game.namedFriend('tiger-beetle')` plus a `game.addInteractable` keyed straight to
+  // the beetle's own `rig.group`, tracked every frame so the prompt follows it through its tiny hops
+  // inside its own 1 m leash. The 2.1 m greet radius — the same every other Hopper creature's own
+  // prompt already uses — needed no new probe: the placement comment above already swept this exact
+  // spot (-8, 24) and found it 8.8 m from the nearest box and 6.1 m from the nearest wandering soul,
+  // far past the radius used here.
   { const rig = makeTigerBeetle();
     game.npcs.push(new Hopper(game, rig, { x: -8, z: 24, leash: 1.0, r: 0.08, dist: [0.15, 0.35], dur: 0.22, height: 0.05, idle: [1, 3],
-      onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } })); }
+      onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } }));
+    const beetleId = game.namedFriend('tiger-beetle');
+    game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the tiger beetle', onUse: () => { game.befriend(beetleId); SFX.chitter(); game.hearts(rig.group.position.x, 0.15, rig.group.position.z, 3); game.toast('✨ *flares its iridescent shell for a second, then darts off across the sand*'); } }); }
   // The Neighborhood, Candy Land, Robot City and Victorian all have their own line of marchers
   // (`Marchers` in 55-npcs.js, a `Patroller` lead with followers trailing a fixed gap behind), and so
   // does Frosty Peak — three penguins in a drilled column on the ice. This beach never got one of its
