@@ -19723,7 +19723,23 @@ function buildSnowVillage(game, entry) {
       const slide = sin(ot * (TAU / cyc));
       otter.body.position.x = slide * amp;
       otter.body.rotation.y = cos(ot * (TAU / cyc)) >= 0 ? PI / 2 : -PI / 2;
-      otter.animate(0, false, dt, ot); }); }
+      otter.animate(0, false, dt, ot); });
+    // this otter has slid back and forth across its own puddle, with the seal just above hauled out on
+    // its own tarn, since the round that built them — both ambient-only, perched (well, sliding) and
+    // animating off the local timer above, with no `greetable()` anywhere near a flipper or a paw. Same
+    // fix as the seal just took: `game.namedFriend('otter')` plus a `game.addInteractable`, the same
+    // "perched; only animates" trick the Whisper Woods owls and the seal above already use. The target
+    // is `otter.body`, not `otter.group` — the group itself never moves, only `body`'s own local x
+    // slides inside it, and `getWorldPosition` (what every interactable's prompt check already calls
+    // each frame) walks the whole parent chain, so tracking `body` keeps the prompt glued to the otter
+    // through its slide instead of sitting still at the puddle's centre. `game.hearts` reads the same
+    // live offset (`ox + otter.body.position.x`) rather than the puddle's fixed centre, for the same
+    // reason. The round that placed this otter already measured 6.16 m of clearance to the nearest
+    // physics box and 9.62 m to the nearest other soul against the puddle's own centre; the slide's own
+    // 0.7 m amplitude eats at most that much off either figure, leaving both comfortably past this
+    // interactable's 2.2 m reach.
+    const otterId = game.namedFriend('otter');
+    game.addInteractable({ obj: otter.body, radius: 2.2, label: () => 'Say hello to the otter', onUse: () => { game.befriend(otterId); SFX.chitter(); game.hearts(ox + otter.body.position.x, oy + 0.25, oz, 3); game.toast('🦦 *rolls onto its back for a second, whiskers twitching, then flips over and keeps sliding*'); } }); }
   // Victorian's own round-up of playground games this game had never tried once in any of the seven
   // worlds (tetherball, badminton, tug-of-war, archery, sack races) named five; this is the first of
   // them anywhere. Two bundled-up villagers now dig their heels into the snow and heave on a rope

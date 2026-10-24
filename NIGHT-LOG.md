@@ -19357,3 +19357,28 @@ and forth on its own icy puddle a few metres further round the slope has the exa
 to keep this one self-contained. No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 719 — Frosty Peak's sliding otter finally becomes a friend
+
+Picking up exactly where last round's seal left off: Frosty Peak's otter, on its own small puddle
+further round the slope, has spent its whole time sliding back and forth on its belly — flipping to
+face whichever way it's headed — since the round that built it, but was never anyone the cat could
+actually meet. **The otter now answers its own "Say hello to the otter" prompt**, with *"🦦 *rolls onto
+its back for a second, whiskers twitching, then flips over and keeps sliding*"*.
+
+Same fix as the seal (round 718): `game.namedFriend('otter')` plus a `game.addInteractable`, no new
+mesh and no new physics box. The one wrinkle the seal didn't have is that the otter's own `rig.group`
+never moves at all — only `rig.body`, a child group, slides back and forth inside it on a local sine.
+Keying the interactable to `otter.group` would have left the prompt sitting still at the puddle's centre
+while the otter itself slid away from it, so this keys to `otter.body` instead; `getWorldPosition` (what
+every interactable's prompt check already calls each frame) walks the whole parent chain, so the prompt
+now follows the otter through its whole slide. `game.hearts` reads the same live offset rather than the
+puddle's fixed centre, for the same reason.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 328
+(no new collider), Frosty Peak's own friend total rose by one (83 to 84 to meet). The round that placed
+this otter already measured 6.16 m of clearance to the nearest physics box and 9.62 m to the nearest
+other soul against the puddle's centre; the slide's own 0.7 m amplitude eats at most that much off
+either figure, leaving both comfortably past this interactable's 2.2 m reach. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
