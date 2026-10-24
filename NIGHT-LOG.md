@@ -19382,3 +19382,23 @@ other soul against the puddle's centre; the slide's own 0.7 m amplitude eats at 
 either figure, leaving both comfortably past this interactable's 2.2 m reach. No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 720 — Sunny Shore's first turtle finally becomes a friend too
+
+Round 672 gave Sunny Shore's second turtle, up at (24, 20), a "Pet the turtle" prompt and folded it
+into the friend count — but the beach has always had *two* turtles, and the first one down at (22, -2)
+got left exactly as it was: a plain `Wanderer` wandering its own 5 m leash with nobody able to meet it.
+Same root cause as every other ambient critter this log keeps finding: `makeTurtle()`'s rig carries none
+of `.look`/`.robot`/`.cookie`, so `Wanderer`'s own `greetable()` call quietly no-ops on it.
+
+**The first turtle now answers its own "Pet the turtle" prompt too**, with the same *"🐢 *slow blink of
+approval*"* its neighbour already gives. The fix is the exact same `game.addInteractable` the second
+turtle got, now applied unconditionally to both instead of gated on `i === 1`, each with its own
+`game.namedFriend` id (`turtle` for the second, `turtle2` for the first) so they count as two separate
+friends rather than one shared one. No new mesh, no new physics box, no new zone — just the same radius
+(2.4 m) tracking the same rig's own group through its usual wander.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 328
+(no new collider). Sunny Shore's own friend total rose by one (89 to 90 to meet). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
