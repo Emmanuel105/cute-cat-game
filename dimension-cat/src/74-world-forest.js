@@ -370,9 +370,20 @@ function buildForest(game, entry) {
     game.npcs.push(new Kneeler(game, feeder, { x: kx, z: kz, ry: atan2(dx - kx, dz - kz),
       cries: ["Acorns bring them close, if you're quiet.", 'Careful, puss — you\'ll scare them off.', 'That one always comes first.'] })); }
   for (const [x, z] of [[14, 6], [-26, -14]]) { const rig = makeFox(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x, z, speed: 1.3, leash: 10, r: 0.3, height: 0.8, step: 0.3, idle: [1, 3], walk: [2, 5] })); }
-  // a third, bolder fox: it minds its own business until the cat wanders close, then trots over for a look
+  // a third, bolder fox: it minds its own business until the cat wanders close, then trots over for a look.
+  // Same root cause and fix as the bolder penguin (Frosty Peak, round 716) and the bolder crab (Sunny
+  // Shore, round 685) before it: `Follower` wraps a plain `Wanderer` around whatever rig it's given, and
+  // `Wanderer`'s own constructor does call `greetable()` — but `makeFox()`'s rig carries none of
+  // `.look`/`.robot`/`.cookie` for that function to find, so this fox trotted over and back forever
+  // without ever being anyone the cat could meet. No new mesh, no new physics box: a
+  // `game.namedFriend('bold-fox')` plus a `game.addInteractable` keyed straight to the fox's own
+  // `rig.group`, tracked every frame so the prompt follows it through its approach and retreat. `keep: 2.0`
+  // already parks it well inside the 2.1 m greet radius the moment it closes in on the cat, same as the
+  // penguin's and crab's own fixes.
   { const rig = makeFox(); W.add(rig.group);
-    game.npcs.push(new Follower(game, rig, { x: 32, z: -22, r: 0.3, height: 0.8, step: 0.3, idle: [1, 3], walk: [2, 4], leash: 8, speed: 1.6, range: 13, keep: 2.0, sfx: () => SFX.bark() })); }
+    game.npcs.push(new Follower(game, rig, { x: 32, z: -22, r: 0.3, height: 0.8, step: 0.3, idle: [1, 3], walk: [2, 4], leash: 8, speed: 1.6, range: 13, keep: 2.0, sfx: () => SFX.bark() }));
+    const boldFoxId = game.namedFriend('bold-fox');
+    game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the fox', onUse: () => { game.befriend(boldFoxId); SFX.bark(); game.hearts(rig.group.position.x, 0.6, rig.group.position.z, 3); game.toast('🦊 *ears perk up, tail gives one quick swish*'); } }); }
   // the six frogs round this clearing have all been pure background since round 1, the same as Sunny
   // Shore's crabs were before its turtles got their own friend prompts (rounds 672 and before that) —
   // unlike the owls and the woodpecker just below, none of them was ever anyone the cat could actually

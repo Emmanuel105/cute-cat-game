@@ -19307,3 +19307,29 @@ inside it the moment it closes in on the cat, same as the bolder crab's own fix.
 for a future round to keep this one self-contained. No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 717 — Whisper Woods' bolder fox finally becomes a friend
+
+Taking up exactly where last round left off: Whisper Woods has three foxes, two plain wanderers and a
+third, bolder one (`new Follower(...)` at (32, -22)) that minds its own business until the cat wanders
+close, then trots over for a look before heading back. **That bolder fox now answers its own "Say hello
+to the fox" prompt**, with *"🦊 *ears perk up, tail gives one quick swish*"*.
+
+Same root cause as the bolder penguin (Frosty Peak, round 716) and the bolder crab (Sunny Shore, round
+685) before it: `Follower` wraps a plain `Wanderer` around whatever rig it's given, and `Wanderer`'s own
+constructor does call `greetable()` — but `makeFox()`'s rig carries none of `.look`/`.robot`/`.cookie`
+for that function to find, so the fox trotted over and back forever without ever being anyone the cat
+could meet. No new mesh, no new physics box: a `game.namedFriend('bold-fox')` plus a
+`game.addInteractable` keyed straight to the fox's own `rig.group`, tracked every frame so the prompt
+follows it through its approach and retreat. The 2.1 m greet radius needed no new probe: `Follower`'s own
+`keep: 2.0` already parks the fox well inside it the moment it closes in on the cat, same as the
+penguin's and crab's own fixes.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 328
+(no new collider), Whisper Woods' own friend total rose by one (82 to 83 to meet). A scan of the other two
+plain-`Wanderer` foxes and the rest of the forest's ambient life didn't turn up another `Follower`-driven
+critter left unmet — Robot City has no `Follower` at all, and the Neighborhood's and Victorian's own uses
+were fixed in earlier rounds — so this looks like the last of this particular bug pattern; a future round
+will need to look elsewhere. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
