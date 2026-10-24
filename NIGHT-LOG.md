@@ -18858,3 +18858,29 @@ Candy Land's gumdrop beetle, Sunny Shore's tiger beetle and now Frosty Peak's fr
 met across all seven worlds. No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 699 — the Neighborhood's vegetable-patch hare finally becomes a friend
+
+The ladybug's family closed out every world, but it was never the only ambient `Hopper` creature left
+sitting mute. The Neighborhood has had a hare living in the gap west of the vegetable patch since the
+scarecrow was built, darting in for a nibble at the row's edge — and it has sat there, un-greetable,
+ever since. **It now answers its own "Say hello to the hare" prompt too**, with *"🐇 *freezes mid-nibble,
+ears straight up, then bolts for the cabbage row*"*.
+
+Same root cause as the raccoon by the bin, Robot City's factory mouse and scrap-bug, and the rest of
+the ladybug's family: `Hopper`, unlike `Wanderer`, never calls `greetable()` on its own, so a rig with
+none of `.look`/`.robot`/`.cookie` just sits there unmet. No new mesh, no new physics box: a
+`game.namedFriend('hare')` plus a `game.addInteractable` keyed straight to the hare's own `rig.group`,
+tracked every frame so the prompt follows it through its hops inside its own 0.8 m leash. The 2.1 m
+greet radius — the same every other Hopper creature's own prompt already uses — sits 2.82 m from the
+scarecrow's own 2.2 m look radius at (14.5, -16.6), close at the very edge of both, but `game.loop`'s
+own nearest-interactable search always prefers whichever is closer, so neither prompt steals the
+other's turn.
+
+`node test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box count unchanged at
+328 (no new collider), the Neighborhood's own friend count rose by one (78 to meet). Plenty of other
+ambient `Hopper` critters are still unmet across the game — Candy Land's sugar mouse, mint hare,
+peppermint sparrow and gumdrop-pink toad, the Frosty Peak and Whisper Woods hare trios, the beach's
+sandpipers, the Victorian pigeons — any one of them is next. No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

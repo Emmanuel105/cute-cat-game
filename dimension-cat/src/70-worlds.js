@@ -1602,7 +1602,18 @@ function buildNeighborhood(game, entry) {
   // patch bed's west edge at x=13.6, so `Hopper.startHop`'s own `physics.blocked` check never has to
   // refuse one; `Hopper` draws its own `rnd()` for its idle timer and start heading, same as the hares
   // already do in both other worlds, so this costs no later wardrobe pick in this build's own `r`.
-  { const rig = makeHare(); game.npcs.push(new Hopper(game, rig, { x: 12.0, z: -15.3, leash: 0.8, r: 0.15, dist: [0.15, 0.45], dur: 0.3, height: 0.2, idle: [1.5, 4], onHop: () => { if (rnd.chance(0.2)) SFX.chitter(); } })); }
+  // Like the raccoon by the bin and the factory mouse in Robot City, this hare sat ambient since the
+  // round that placed it: `Hopper`, unlike `Wanderer`, never calls `greetable()` on its own. It now
+  // answers its own "Say hello to the hare" prompt too. Same fix as every other round like this: no
+  // new mesh, no new physics box, just `game.namedFriend('hare')` plus a `game.addInteractable` keyed
+  // to the rig's own group, tracked every frame so the prompt follows it through its hops inside the
+  // 0.8 m leash. The 2.1 m greet radius (the same every other Hopper creature's own prompt uses) sits
+  // 2.82 m from the scarecrow's own 2.2 m look radius at (14.5, -16.6) — close enough to brush at the
+  // very edge of both, but `game.loop`'s own nearest-interactable search always prefers whichever is
+  // closer, so neither prompt ever steals the other's turn.
+  { const rig = makeHare(); game.npcs.push(new Hopper(game, rig, { x: 12.0, z: -15.3, leash: 0.8, r: 0.15, dist: [0.15, 0.45], dur: 0.3, height: 0.2, idle: [1.5, 4], onHop: () => { if (rnd.chance(0.2)) SFX.chitter(); } }));
+    const hareId = game.namedFriend('hare');
+    game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the hare', onUse: () => { game.befriend(hareId); SFX.chitter(); game.hearts(rig.group.position.x, 0.2, rig.group.position.z, 3); game.toast('🐇 *freezes mid-nibble, ears straight up, then bolts for the cabbage row*'); } }); }
   // the scarecrow keeps the sparrows off the leaves and the hare only ever gets as far as the row's
   // edge, but neither has ever stopped the one visitor working underneath them. A molehill now sits in
   // the open grass east of the patch — a ring of kicked-up dirt round a dark burrow mouth — and every
