@@ -19125,3 +19125,27 @@ Peak hare trios (this mountain's own and Whisper Woods') are now fully met. What
 long-running list of ambient critters are the beach's sandpipers and the Victorian pigeons — either is
 next. No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 710 — Sunny Shore's first sandpiper finally becomes a friend
+
+Round 709 closed out both Frosty Peak hare trios and listed what's left among the long-running list of
+ambient critters: the beach's sandpipers and the Victorian pigeons. This round takes the first of the
+shore's three sandpipers — the one at (16, -24), darting the tideline since the beach was first built.
+**It now answers its own "Say hello to the sandpiper" prompt too**, with *"🐦 *skitters back a step on
+its stick legs, pipes once, then darts off along the wet sand*"*.
+
+Same root cause and same fix as the whole run of ambient `Hopper` critters this log has turned into
+friends: `Hopper`, unlike `Wanderer`, never calls `greetable()` on its own, and `makeSandpiper()`'s rig
+carries none of `.look`/`.robot`/`.cookie` for that function to find. No new mesh, no new physics box: a
+`game.namedFriend('tideline-sandpiper')` plus a `game.addInteractable` keyed straight to the bird's own
+`rig.group`, tracked every frame so the prompt follows it through its darts inside its own 1.6 m leash.
+The 2.1 m greet radius — the same every other `Hopper` creature's own prompt already uses — needed no
+new probe: the build's own placement comment had already kept this spot clear of the crabs' homes, the
+lighthouse rocks and the swim-flag posts, and its two companions at (17, -38) and (14, 44) sit 14-68 m
+away, far past the radius used here.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 328
+(no new collider), Sunny Shore's own friend count rose by one (86 to 87 to meet). The other two
+sandpipers, at (17, -38) and (14, 44), are left exactly as they were, alongside the Victorian pigeons —
+either is next. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
