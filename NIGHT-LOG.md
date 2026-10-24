@@ -19333,3 +19333,27 @@ were fixed in earlier rounds — so this looks like the last of this particular 
 will need to look elsewhere. No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 718 — Frosty Peak's seal finally becomes a friend
+
+Last round closed out the `Follower` bug (ambient animals that approach the cat but can't be greeted
+because their rig carries none of `.look`/`.robot`/`.cookie`). This round found the same *symptom* on a
+different kind of critter: Frosty Peak's seal, hauled out on its own small frozen tarn east of the
+forest ring, animates in place off a local timer (bob, head-turn, an occasional bark) but was never
+wired up as anyone the cat could say hello to at all — no controller, no `greetable()`, nothing.
+
+**The seal now answers its own "Say hello to the seal" prompt**, with *"🦭 *barks once and flops back
+down on the ice*"*. No new mesh, no new physics box: `game.namedFriend('seal')` plus a
+`game.addInteractable` keyed straight to the seal's own `rig.group`, radius 2.4 m around the tarn — the
+same "perched; only animates" friend trick the Whisper Woods owls already use up in their own trees,
+just down at ground level instead of up a trunk. The round that first placed this seal already measured
+6.39 m of clearance to the nearest physics box and 12.45 m to the nearest other soul, both comfortably
+past the tarn's own 1.8 m radius plus this interactable's 2.4 m reach, so no new probe was needed.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 328
+(no new collider). Frosty Peak's own friend total rose by one (82 to 83 to meet). The otter sliding back
+and forth on its own icy puddle a few metres further round the slope has the exact same gap — perch
+(well, slide) and animate, no way to meet it — and is the obvious next target, left for a future round
+to keep this one self-contained. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

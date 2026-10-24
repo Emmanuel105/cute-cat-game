@@ -19682,7 +19682,18 @@ function buildSnowVillage(game, entry) {
     const seal = makeSeal(); seal.group.position.set(sx, sy, sz); seal.group.rotation.y = r() * TAU; W.add(seal.group);
     let st = r() * 10, barkT = rnd.range(8, 14);
     U.push((dt) => { st += dt; seal.animate(0, false, dt, st);
-      barkT -= dt; if (barkT <= 0) { barkT = rnd.range(10, 18); const c = game.cat.group.position; if (dist2(sx, sz, c.x, c.z) < 225) SFX.bark(); } }); }
+      barkT -= dt; if (barkT <= 0) { barkT = rnd.range(10, 18); const c = game.cat.group.position; if (dist2(sx, sz, c.x, c.z) < 225) SFX.bark(); } });
+    // this seal has hauled out and watched the mountain go by since it was first built, same as the
+    // otter just below, but neither one was ever anyone the cat could actually meet — both just
+    // perch-and-animate off the local timer above, with no `greetable()` anywhere near a flipper. No
+    // new mesh, no new physics box: `game.namedFriend('seal')` plus a `game.addInteractable` keyed
+    // straight to `seal.group`, the same "perched; only animates" friend trick the Whisper Woods owls
+    // already use up in their own trees. The tarn's own 1.8 m radius plus this interactable's 2.4 m
+    // reach stays inside the 6.39 m of clearance the round that placed this seal already measured
+    // against the nearest box and the 12.45 m against the nearest other soul, so nothing else moves
+    // into reach of it.
+    const sealId = game.namedFriend('seal');
+    game.addInteractable({ obj: seal.group, radius: 2.4, label: () => 'Say hello to the seal', onUse: () => { game.befriend(sealId); SFX.bark(); game.hearts(sx, sy + 0.3, sz, 3); game.toast('🦭 *barks once and flops back down on the ice*'); } }); }
   // the seal just above hauls out and holds still — the one animal this mountain was still missing is
   // the one that's never still at all. An otter now has a small icy puddle of its own, further round
   // the slope, and spends its whole time sliding back and forth across it on its belly, flipping to
