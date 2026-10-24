@@ -19218,3 +19218,31 @@ the fountain and both east-side stalls, and the two birds sit 4.3 m apart, outsi
 (no new collider), Victorian's own friend count rose by two (101 to 103 to meet). The crumb-feeder's own
 cries are untouched. No visual check was possible in this environment (no browser, no Playwright) — only
 the stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 714 — Victorian's alley rat finally becomes a friend
+
+Round 713 closed out the market square's pair of pigeons; the write-up didn't flag a next target, so
+this round went looking at the rest of the Victorian build and found one left over: the alley rat
+skulking in the square's south-west corner, behind the pieman's pitch, has been there since a round
+gave the market a rat "every market has one" — but it never got the hello fix. It now answers its own
+"Say hello to the rat" prompt too, with *"🐀 *freezes mid-nibble, whiskers twitching, then bolts for
+the nearest shadow*"*.
+
+Same root cause and same fix as the whole run of ambient `Hopper` critters this log has turned into
+friends: `Hopper`, unlike `Wanderer`, never calls `greetable()` on its own, and `makeAlleyRat()`'s rig
+carries none of `.look`/`.robot`/`.cookie` for that function to find. No new mesh, no new physics box:
+a `game.namedFriend('alley-rat')` plus a `game.addInteractable` keyed straight to the rat's own
+`rig.group`, tracked every frame so the prompt follows it through its skulking inside its own 1.3 m
+leash. The 2.1 m greet radius — the same every other `Hopper` creature's own prompt already uses —
+needed no new probe: the rat's own placement comment had already swept its corner clear of the
+pieman's stall, the nearest lamp and the birch, all well past the radius used here.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 328
+(no new collider), Victorian's own friend count rose by one (103 to 104 to meet). A scan of every
+`Hopper`-driven creature across all seven worlds turned up only one other unmet one left: Whisper
+Woods' hedgehog in the hollow log, which its own placement comment says is deliberately kept just out
+of the cat's reach — "never quite within the stick's reach" — so that one is a vignette, not a bug,
+and is left alone. With it excluded, this looks like the end of the long run of ambient-critter hello
+fixes; next round will need to look for a fresh gap instead. No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
