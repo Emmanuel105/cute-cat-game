@@ -19246,3 +19246,38 @@ and is left alone. With it excluded, this looks like the end of the long run of 
 fixes; next round will need to look for a fresh gap instead. No visual check was possible in this
 environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 715 — Candy Land gets its own stilt walker
+
+With the ambient-critter hello fixes finally exhausted, this round went looking at a different pattern
+instead: several "playground game" and "performer" controllers (Archer, Badminton, Juggler, KiteFlyer
+and a couple dozen others) have been rolled out to all seven worlds, one world per round, over a very
+long stretch — but a `grep` for `new StiltWalker(` turned up only one, in Victorian's market square.
+**Candy Land now has a stilt walker of its own**, pacing a short line on the quiet grass south of the
+gingerbread cottage path, in candy-cane-striped trousers and a matching red top hat. *"Up here the whole
+candy-cane forest looks like a tin of peppermints."* *"Eleven years on these back home — out here,
+nobody's ever seen me fall. Yet."* *"Mind your tail, puss — these aren't candy canes, whatever they look
+like!"*
+
+No new class: `StiltWalker` (55-npcs.js) already `extends Patroller`, adding nothing but a constant
+vertical offset, and `Patroller`'s own constructor already calls `greetable()` on its own, so this
+performer — built with plain `makeHuman()`, which carries `.look` — counts as a friend to meet for free,
+same as Victorian's. No new mesh either: the same ankle-parented pole/strap/peg rig Victorian's stilt
+walker already builds, just recoloured candy-cane red and white instead of plain wood and leather. A
+headless probe (`game.start('new')` then `game.travel(1, 'from-hub')`, 2000 simulated frames sampling
+every NPC's own position every fifteenth frame) swept the open grass south of the cottage path against
+both those samples and every one of the land's own physics boxes: the whole 6 m line from (2, -82) to (8,
+-82) came back clear by at least 11.5 m of the nearest box (a candy-cane-belt trunk out near (-10, -80))
+and 13 m of the nearest other soul, at radius 82-82.4 from the origin — past the hand-placed candy-cane
+belt (radius 56-76) and well short of the radius (92) where `candyRegion`'s own procedural fill takes
+over. Built dead last in `buildCandyLand`, right after the treasure-chest kid, since `makeHuman()` and
+`randomPerson()` both draw off the shared per-world `r()` sequence unconditionally.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 328
+(the stilts carry no physics box of their own, same as Victorian's). Candy Land's own friend total rose
+by one. Of the two dozen-odd "every world has one by now" controllers, `Loader`, `Mechanic`, `CrossingGuard`,
+`HorseCarriage`, `Sledder`, `SnowballFight` and `Vehicle` still show up only once each — but those read as
+scene-specific by design (a conveyor loader and a factory mechanic only make sense in Robot City, a sled
+run only on a snowy mountain, a horse carriage only in the Victorian street), not oversights, so they are
+left alone. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

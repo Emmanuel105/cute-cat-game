@@ -12674,6 +12674,39 @@ function buildCandyLand(game, entry) {
     W.add(finder.group);
     game.npcs.push(new Kneeler(game, finder, { x: kx, z: kz, ry, cryIcon: '💰',
       cries: ["Everybody else got a gumdrop. I got THIS.", "Careful, puss — don't you dare knock a single coin back in the grass.", "Don't tell the scanner. He'll never forgive himself."] })); }
+  // Victorian's market square has had a stilt walker since round 714-ish; every other performer in this
+  // land — the jester by the throne, the gate's own gingerbread sentry — keeps both feet on the ground,
+  // and Candy Land, sugar-dusted and showy as it is, never had one of its own. A performer in
+  // candy-cane-striped trousers now paces a short line on the quiet grass south of the sweet-lands,
+  // towering half again his own height, same `StiltWalker` class (55-npcs.js, `extends Patroller`) and
+  // the same ankle-parented pole rig Victorian's own stilt walker already uses — no new class, no new
+  // mesh shape, just the pole, strap and footrest peg recoloured candy-cane red and white.
+  //
+  // A headless probe (`game.start('new')` then `game.travel(1, 'from-hub')`, 2000 simulated frames
+  // sampling every NPC's own position every fifteenth frame) swept a grid of the open grass south of
+  // the gingerbread cottage path against both those samples and every one of the land's own physics
+  // boxes: the whole 6 m line from (2, -82) to (8, -82) came back clear by at least 11.5 m of the
+  // nearest box (one of the candy-cane-belt trunks, out near (-10, -80)) and 13 m of the nearest other
+  // soul, at radius 82-82.4 from the origin — past the hand-placed candy-cane belt (radius 56-76) and
+  // short of the radius (92) where `candyRegion`'s own procedural fill takes over.
+  //
+  // Built dead last, right after the treasure-chest kid, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off the shared per-world `r()` sequence unconditionally, and anything
+  // built earlier in this land would have had its own timing-sensitive pick shifted by it.
+  { const stiltH = 0.8;
+    const performer = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
+      shirt: 0xf7f3ec, stripes: 0xd62839, pants: 0xf7f3ec, shoes: 0xffffff, hat: 'top', hatColor: 0xd62839, hatBand: 0xf7f3ec, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(performer.group);
+    const poleM = mat(0xd62839, { roughness: 0.8 }), strapM = mat(0xf7f3ec, { roughness: 0.6 }), pegM = mat(0x8a6a44, { roughness: 0.75 });
+    for (const L of performer.legs) {
+      const len = stiltH / performer.k;
+      const stilt = group(0, 0.22, 0.01, L.ankle);
+      mesh(G.cyl(0.026, 0.03, len + 0.3, 8), poleM, { y: -(len + 0.3) / 2 + 0.07, parent: stilt });
+      mesh(G.torus(0.09, 0.018, 6, 10), strapM, { y: 0, rx: PI / 2, parent: stilt });
+      mesh(G.box(0.15, 0.035, 0.09), pegM, { y: -0.17, z: 0.07, parent: stilt });
+    }
+    game.npcs.push(new StiltWalker(game, performer, { points: [[2, -82], [8, -82]], speed: 0.55, pause: [1.5, 3], r: 0.4, height: 2.6, stiltH,
+      cries: ['Up here the whole candy-cane forest looks like a tin of peppermints.', "Eleven years on these back home — out here, nobody's ever seen me fall. Yet.", "Mind your tail, puss — these aren't candy canes, whatever they look like!"], cryIcon: '🍭' })); }
 
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
