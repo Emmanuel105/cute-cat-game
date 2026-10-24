@@ -17074,22 +17074,26 @@ function buildBeach(game, entry) {
       d.rig.group.rotation.set(arc > 0 ? -cos(lp * TAU) * 0.6 : 0, atan2(dx, dz), 0);
     } }); }
   // sandpipers dart along the tideline on the open sand, well clear of the crabs' own homes, the lighthouse rocks and the swim-flag posts — ambient like the crabs and gulls, no greeting, no effect on the friend count
-  // the first of the three, at (16, -24), now answers its own "Say hello to the sandpiper" prompt too —
+  // the first two of the three now answer their own "Say hello to the sandpiper" prompt —
   // same root cause and fix as every other ambient `Hopper` critter this log has turned into a friend:
   // `Hopper`, unlike `Wanderer`, never calls `greetable()` on its own, and `makeSandpiper()`'s rig carries
   // none of `.look`/`.robot`/`.cookie` for that function to find. No new mesh, no new physics box:
-  // `game.namedFriend('tideline-sandpiper')` plus a `game.addInteractable` keyed straight to this bird's
-  // own `rig.group`, tracked every frame so the prompt follows it through its darts inside its own 1.6 m
-  // leash. The 2.1 m greet radius — the same every other `Hopper` creature's own prompt already uses —
-  // needed no new probe: the placement comment above already keeps it clear of the crabs' homes, the
-  // lighthouse rocks and the swim-flag posts, and its two companions at (17, -38) and (14, 44) are 14-68 m
-  // away, far past the radius used here. Those other two are left exactly as they were.
-  let firstSandpiper = null;
-  for (const [i, [x, z]] of [[16, -24], [17, -38], [14, 44]].entries()) { const rig = makeSandpiper(); game.npcs.push(new Hopper(game, rig, { x, z, leash: 1.6, r: 0.08, dist: [0.3, 0.7], dur: 0.28, height: 0.14, idle: [1, 3.5], onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } })); if (i === 0) firstSandpiper = rig; }
+  // `game.namedFriend(id)` plus a `game.addInteractable` keyed straight to each bird's own `rig.group`,
+  // tracked every frame so the prompt follows it through its darts inside its own 1.6 m leash. The 2.1 m
+  // greet radius — the same every other `Hopper` creature's own prompt already uses — needed no new
+  // probe: the placement comment above already keeps it clear of the crabs' homes, the lighthouse rocks
+  // and the swim-flag posts, and all three are 14-68 m apart, far past the radius used here. The third,
+  // at (14, 44), is left exactly as it was.
+  let firstSandpiper = null, secondSandpiper = null;
+  for (const [i, [x, z]] of [[16, -24], [17, -38], [14, 44]].entries()) { const rig = makeSandpiper(); game.npcs.push(new Hopper(game, rig, { x, z, leash: 1.6, r: 0.08, dist: [0.3, 0.7], dur: 0.28, height: 0.14, idle: [1, 3.5], onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } })); if (i === 0) firstSandpiper = rig; if (i === 1) secondSandpiper = rig; }
   { const sandpiperId = game.namedFriend('tideline-sandpiper');
     game.addInteractable({ obj: firstSandpiper.group, radius: 2.1, label: () => 'Say hello to the sandpiper', onUse: () => {
       game.befriend(sandpiperId); SFX.chitter(); game.hearts(firstSandpiper.group.position.x, 0.2, firstSandpiper.group.position.z, 3);
       game.toast('🐦 *skitters back a step on its stick legs, pipes once, then darts off along the wet sand*'); } }); }
+  { const sandpiperId2 = game.namedFriend('tideline-sandpiper-2');
+    game.addInteractable({ obj: secondSandpiper.group, radius: 2.1, label: () => 'Say hello to the sandpiper', onUse: () => {
+      game.befriend(sandpiperId2); SFX.chitter(); game.hearts(secondSandpiper.group.position.x, 0.2, secondSandpiper.group.position.z, 3);
+      game.toast('🐦 *bobs its head twice, gives a sharp peep, then skitters away over the wet sand*'); } }); }
   const beachWard = makeWardrobe(r, {
     shirts: [0xff7043, 0x4fc3f7, 0xfff176, 0xf48fb1, 0xffffff, 0x80deea, 0xaed581],
     pants: [0x2f6fd6, 0xd62839, 0x2e9e6e, 0xff8fab, 0xffb74d],
