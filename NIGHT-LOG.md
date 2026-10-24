@@ -18983,3 +18983,28 @@ and Whisper Woods hare trios, the beach's sandpipers and the Victorian pigeons �
 next. No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 704 — the first of Whisper Woods' hare trio finally becomes a friend
+
+Round 703's list named the Frosty Peak and Whisper Woods hare trios, the beach's sandpipers and the
+Victorian pigeons as the remaining ambient critters nobody could meet. This round takes the first of
+the woods' own trio — the hare at (30, -32) in the small clearing south-east of the pond, there since
+round 383 gave `makeHare()` its first woodland coat. **It now answers its own "Say hello to the hare"
+prompt too**, with *"🐇 *ears swivel, nose twitches twice, then bolts a hop deeper into the clearing*"*.
+
+Same root cause and same fix as the mint hare, the peppermint sparrow, the gumdrop-pink toad, the
+sugar mouse, the Neighborhood's bin raccoon and hare, Robot City's factory mouse and scrap-bug, and the
+whole ladybug family before it: `Hopper`, unlike `Wanderer`, never calls `greetable()` on its own, so a
+rig with none of `.look`/`.robot`/`.cookie` just sits there unmet. No new mesh, no new physics box: a
+`game.namedFriend('hare')` plus a `game.addInteractable` keyed straight to the hare's own `rig.group`,
+tracked every frame so the prompt follows it through its hops inside its own 3.5 m leash. The 2.1 m
+greet radius — the same every other `Hopper` creature's own prompt already uses — needed no new probe:
+the build's own placement comment had already swept this exact spot clear by 5.9-7.6 m of the nearest
+box and 8.0-10.6 m of the nearest other soul, far past the radius used here.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 328
+(no new collider), Whisper Woods' own friend count rose by one (80 to meet). The other two hares in
+this same clearing, at (32, -34) and (29, -35), are left exactly as they were, alongside the Frosty
+Peak hare trio, the beach's sandpipers and the Victorian pigeons — any one of them is next. No visual
+check was possible in this environment (no browser, no Playwright) — only the stub-three test suite
+above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

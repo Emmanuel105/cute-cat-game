@@ -404,7 +404,21 @@ function buildForest(game, entry) {
   // 2.8-3.2 m from the next — a loose huddle, not a line. Placed last in this creature block, after
   // every earlier draw from this world's own seeded `r`, so these fixed coordinates and plain
   // `makeHare()` calls disturb nothing built before them.
-  for (const [x, z] of [[30, -32], [32, -34], [29, -35]]) { const rig = makeHare(); game.npcs.push(new Hopper(game, rig, { x, z, leash: 3.5, r: 0.15, dist: [0.3, 0.9], dur: 0.3, height: 0.22, idle: [1, 3.5], onHop: () => { if (rnd.chance(0.2)) SFX.chitter(); } })); }
+  //
+  // Same gap every ambient `Hopper` creature has shipped with since round 1: `Hopper`, unlike
+  // `Wanderer`, never calls `greetable()` on its own, and even if it did, `makeHare()`'s rig carries
+  // none of `.look`/`.robot`/`.cookie` for that function to find — so the whole trio has sat here as
+  // pure background since the clearing was built. This round takes the first one, at (30, -32), the
+  // same way the sugar mouse, the mint hare, the peppermint sparrow and the gumdrop-pink toad in Candy
+  // Land already were: a `game.namedFriend('hare')` plus a `game.addInteractable` keyed straight to
+  // its own `rig.group`, tracked every frame so the prompt follows it through its hops inside its own
+  // 3.5 m leash. The other two, at (32, -34) and (29, -35), are left exactly as they were.
+  let friendlyHare = null;
+  for (const [i, [x, z]] of [[30, -32], [32, -34], [29, -35]].entries()) { const rig = makeHare(); game.npcs.push(new Hopper(game, rig, { x, z, leash: 3.5, r: 0.15, dist: [0.3, 0.9], dur: 0.3, height: 0.22, idle: [1, 3.5], onHop: () => { if (rnd.chance(0.2)) SFX.chitter(); } })); if (i === 0) friendlyHare = rig; }
+  { const hareId = game.namedFriend('hare');
+    game.addInteractable({ obj: friendlyHare.group, radius: 2.1, label: () => 'Say hello to the hare', onUse: () => {
+      game.befriend(hareId); SFX.chitter(); game.hearts(friendlyHare.group.position.x, 0.2, friendlyHare.group.position.z, 3);
+      game.toast('🐇 *ears swivel, nose twitches twice, then bolts a hop deeper into the clearing*'); } }); }
   let friendlyOwl = null, watchedOwl = null, thirdOwl = null;
   for (const [i, [x, z, tree]] of [[-30, -10, 0], [30, 22, 0], [12, 32, 0]].entries()) { const owl = makeOwl(); const y = P.ground0(x, z) + 6.6; owl.group.position.set(x + 1.8, y, z); owl.group.rotation.y = atan2(-x, -z); W.add(owl.group); mesh(G.cyl(0.08, 0.1, 1.6, 6), mat(0x4a3323), { x: x + 1.2, y: y - 0.05, z, rz: PI / 2, parent: W }); let ot = r() * 10; U.push((dt) => { ot += dt; owl.animate(0, false, dt, ot); }); if (i === 0) friendlyOwl = owl; if (i === 1) watchedOwl = owl; if (i === 2) thirdOwl = owl; }
   let hootT = 6; U.push((dt) => { hootT -= dt; if (hootT <= 0) { SFX.hoot(); hootT = rnd.range(8, 16); } });
