@@ -18957,3 +18957,29 @@ is still unmet in Candy Land, alongside the Frosty Peak and Whisper Woods hare t
 sandpipers and the Victorian pigeons — any one of them is next. No visual check was possible in this
 environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 703 — Candy Land's gumdrop-pink toad finally becomes a friend
+
+Round 702's list of still-unmet ambient `Hopper` critters named the gumdrop-pink toad as the last one
+left in Candy Land. This round takes it, hopping the open grass west of the market stalls since the
+round that gave it its pink `makeFrog()` colouring. **It now answers its own "Say hello to the
+gumdrop-pink toad" prompt too**, with *"🐸 *throat puffs once, a single soft ribbit, then it hops off
+into the grass*"*.
+
+Same root cause and same fix as the peppermint sparrow, the mint hare, the sugar mouse, the
+Neighborhood's bin raccoon and hare, Robot City's factory mouse and scrap-bug, and the whole ladybug
+family before it: `Hopper`, unlike `Wanderer`, never calls `greetable()` on its own, so a rig with
+none of `.look`/`.robot`/`.cookie` just sits there unmet. No new mesh, no new physics box: a
+`game.namedFriend('gumdrop-toad')` plus a `game.addInteractable` keyed straight to the toad's own
+`rig.group`, tracked every frame so the prompt follows it through its hops inside its own 1.6 m
+leash. The 2.1 m greet radius — the same every other Hopper creature's own prompt already uses —
+needed no new probe: the build's own placement comment had already swept this exact spot (-38, 0)
+clear by 6.9 m in every direction, far past the radius used here.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 328
+(no new collider), Candy Land's own friend count rose by one (88 to meet). Every ambient `Hopper`
+critter named across the last several rounds is now a friend; what's left unmet are the Frosty Peak
+and Whisper Woods hare trios, the beach's sandpipers and the Victorian pigeons — any one of them is
+next. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.
