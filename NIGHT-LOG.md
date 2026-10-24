@@ -19172,3 +19172,27 @@ three birds sit 14-68 m apart, far past the radius used here.
 at (14, 44), is left exactly as it was, alongside the Victorian pigeons — either is next. No visual
 check was possible in this environment (no browser, no Playwright) — only the stub-three test suite
 above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 712 — Sunny Shore's third and last sandpiper also becomes a friend
+
+Round 711 took the second of the shore's three sandpipers, at (17, -38), and left the third — at
+(14, 44) — exactly as it was. This round closes out the trio. **It now answers its own "Say hello to
+the sandpiper" prompt too**, with *"🐦 *freezes on one leg, cocks its head, then scuttles off down the
+beach*"*.
+
+Same root cause and same fix as its two tideline companions and the whole run of ambient `Hopper`
+critters this log has turned into friends: `Hopper`, unlike `Wanderer`, never calls `greetable()` on
+its own, and `makeSandpiper()`'s rig carries none of `.look`/`.robot`/`.cookie` for that function to
+find. No new mesh, no new physics box: a third `game.namedFriend('tideline-sandpiper-3')` (kept
+distinct from the first two birds' own ids) plus a `game.addInteractable` keyed straight to this
+sandpiper's own `rig.group`, tracked every frame so the prompt follows it through its darts inside its
+own 1.6 m leash. The 2.1 m greet radius needed no new probe: the build's own placement comment had
+already kept this spot clear of the crabs' homes, the lighthouse rocks and the swim-flag posts, and the
+three birds sit 14-68 m apart, far past the radius used here.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 328
+(no new collider), Sunny Shore's own friend count rose by one again (88 to 89 to meet). All three of the
+shore's sandpipers are now fully met, alongside both Frosty Peak hare trios. What's left among the
+long-running list of ambient critters is the Victorian pigeons — likely next. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
