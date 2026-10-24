@@ -258,9 +258,18 @@ function buildSnowVillage(game, entry) {
 
   // life: penguins, reindeer, kids, the yeti, the squirrel
   for (let i = 0; i < 6; i++) { const rig = makePenguin({ scarf: i === 0 ? 0xd62839 : (i === 3 ? 0x2f6fd6 : null), scale: r.range(0.8, 1.05) }); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x: 18 + r.range(-6, 6), z: 8 + r.range(-6, 6), speed: r.range(0.5, 0.8), leash: 9, r: 0.3, height: 0.9, step: 0.25, idle: [1, 3] })); }
-  // a bolder penguin peels off from the flock to waddle over and investigate the cat, then hurries back
+  // a bolder penguin peels off from the flock to waddle over and investigate the cat, then hurries back.
+  // Same root cause and fix as every ambient `Hopper` critter this log has turned into a friend: `Follower`
+  // wraps a plain `Wanderer` around `makePenguin()`'s rig, which carries none of `.look`/`.robot`/`.cookie`
+  // for `greetable()` (called inside that inner `Wanderer`) to find, so it silently waddles forever without
+  // ever becoming anyone the cat can actually meet. No new mesh, no new physics box: a `game.namedFriend`
+  // plus a `game.addInteractable` keyed straight to the penguin's own `rig.group`, tracked every frame so
+  // the prompt follows it in and out of its approach. `keep: 1.8` already parks it well inside this 2.1 m
+  // greet radius — the same radius every other `Hopper`/`Follower` creature's own prompt already uses.
   { const rig = makePenguin({ scarf: 0xffd54a, scale: 0.95 }); W.add(rig.group);
-    game.npcs.push(new Follower(game, rig, { x: 26, z: 2, r: 0.3, height: 0.9, step: 0.25, idle: [1, 3], walk: [2, 4], leash: 6, speed: 0.9, range: 11, keep: 1.8, sfx: () => SFX.squawk() })); }
+    game.npcs.push(new Follower(game, rig, { x: 26, z: 2, r: 0.3, height: 0.9, step: 0.25, idle: [1, 3], walk: [2, 4], leash: 6, speed: 0.9, range: 11, keep: 1.8, sfx: () => SFX.squawk() }));
+    const boldPenguinId = game.namedFriend('bold-penguin');
+    game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the penguin', onUse: () => { game.befriend(boldPenguinId); SFX.squawk(); game.hearts(rig.group.position.x, 0.6, rig.group.position.z, 3); game.toast('🐧 *flaps its wings and squawks right back*'); } }); }
   // the keeper kneeling at (-18, -12) — the herd's own "middle spot" — and the searcher further west
   // both already name a reindeer called Copper in their dialogue ("Copper's the friendliest of the
   // lot"; "One of Copper's bells came loose out here somewhere"), but nothing in the herd was ever

@@ -19281,3 +19281,29 @@ scene-specific by design (a conveyor loader and a factory mechanic only make sen
 run only on a snowy mountain, a horse carriage only in the Victorian street), not oversights, so they are
 left alone. No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 716 — Frosty Peak's bolder penguin finally becomes a friend
+
+With the ambient-`Hopper`-critter sweep closed out last round, this one went looking at `Follower` —
+`Hopper`'s cousin controller, used for the "one bold animal peels off from the flock to approach the
+cat" vignette that Sunny Shore's crabs, Frosty Peak's penguins and Whisper Woods' foxes each got in
+earlier rounds. A `grep` for `new Follower(` outside `DogWalker` turned up three: Sunny Shore's bolder
+crab already got its own "Say hello" prompt a few rounds back, but the penguin and the fox never did.
+**Frosty Peak's bolder penguin — the one with the yellow scarf that waddles over to investigate the cat
+before hurrying back to the flock — now answers its own "Say hello to the penguin" prompt**, with
+*"🐧 *flaps its wings and squawks right back*"*.
+
+Same root cause as the whole `Hopper` campaign, just one layer down: `Follower` wraps a plain `Wanderer`
+around whatever rig it's given, and `Wanderer`'s own constructor does call `greetable()` — but
+`makePenguin()`'s rig carries none of `.look`/`.robot`/`.cookie` for that function to find, so the
+penguin waddled over and back forever without ever being anyone the cat could meet. No new mesh, no new
+physics box: a `game.namedFriend('bold-penguin')` plus a `game.addInteractable` keyed straight to the
+penguin's own `rig.group`, tracked every frame so the prompt follows it through its approach and retreat.
+The 2.1 m greet radius needed no new probe: `Follower`'s own `keep: 1.8` already parks the penguin well
+inside it the moment it closes in on the cat, same as the bolder crab's own fix.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 328
+(no new collider). Whisper Woods' bolder fox has the exact same bug and is the obvious next target, left
+for a future round to keep this one self-contained. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
