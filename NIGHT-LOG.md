@@ -19078,3 +19078,27 @@ in this same trio, at (45, 0) and (48, -2), are left exactly as they were, along
 sandpipers and the Victorian pigeons — any one of them is next. No visual check was possible in this
 environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 708 — the middle hare of Frosty Peak's trio also becomes a friend
+
+Round 707 took the first of the mountain's own hare trio, at (48, 2), and left the other two — at
+(45, 0) and (48, -2) — exactly as they were. This round takes the middle one, at (45, 0). **It now
+answers its own "Say hello to the hare" prompt too**, with *"🐇 *stamps a hind foot once, then bolts
+in a zigzag through the snow*"*.
+
+Same root cause and same fix as its trio-mate and the whole run of ambient `Hopper` critters this log
+has turned into friends: `Hopper`, unlike `Wanderer`, never calls `greetable()` on its own, and
+`makeHare()`'s rig carries none of `.look`/`.robot`/`.cookie` for that function to find. No new mesh,
+no new physics box: a second `game.namedFriend('peak-hare-2')` (kept distinct from the first hare's
+own `'peak-hare'` id) plus a `game.addInteractable` keyed straight to this hare's own `rig.group`,
+tracked every frame so the prompt follows it through its hops inside its own 1.8 m leash. The 2.1 m
+greet radius needed no new probe: round 707's own placement comment had already swept this exact spot
+clear by 3.5 m of its two trio-mates and 17-20 m of the nearest other soul, far past the radius used
+here.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 328
+(no new collider), Frosty Peak's own friend count rose by one again (79 to 80 to meet). The third hare
+in this trio, at (48, -2), is left exactly as it was, alongside the beach's sandpipers and the
+Victorian pigeons — any one of them is next. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
