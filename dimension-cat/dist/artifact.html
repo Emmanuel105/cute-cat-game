@@ -19697,11 +19697,21 @@ function buildSnowVillage(game, entry) {
   // land after every other NPC in this world that times itself off that same sequence, and disturb
   // nothing built earlier on the mountain.
   //
-  // It isn't a friend to meet — same as the ladybug and the tiger beetle — Frosty Peak's own friend
-  // count is unaffected.
+  // Round 697's own text named this beetle as the last of the ladybug's family still unmet — the
+  // raccoon, the factory mouse, the ladybug, the gumdrop beetle, the scrap-bug and the tiger beetle all
+  // got the same fix in their own rounds first. Same root cause: `Hopper`, unlike `Wanderer`, never
+  // calls `greetable()` on its own, so a rig with none of `.look`/`.robot`/`.cookie` just sits there
+  // unmet. No new mesh, no new physics box: `game.namedFriend('frost-beetle')` plus a
+  // `game.addInteractable` keyed straight to the beetle's own `rig.group`, tracked every frame so the
+  // prompt follows it through its tiny hops inside its own 1 m leash. The 2.1 m greet radius — the same
+  // every other Hopper creature's own prompt already uses — needed no new probe: the placement comment
+  // above already swept this exact spot (38, 8) and found it 7.29 m from the nearest box and 8.25 m
+  // from the nearest wandering soul, far past the radius used here.
   { const rig = makeFrostBeetle();
     game.npcs.push(new Hopper(game, rig, { x: 38, z: 8, leash: 1.0, r: 0.08, dist: [0.15, 0.4], dur: 0.26, height: 0.06, idle: [1.5, 4],
-      onHop: () => { if (rnd.chance(0.2)) SFX.chitter(); } })); }
+      onHop: () => { if (rnd.chance(0.2)) SFX.chitter(); } }));
+    const beetleId = game.namedFriend('frost-beetle');
+    game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the frost beetle', onUse: () => { game.befriend(beetleId); SFX.chitter(); game.hearts(rig.group.position.x, 0.15, rig.group.position.z, 3); game.toast('❄️ *shell flashes frosty white for a second, then it scuttles off across the snow*'); } }); }
   // The Neighborhood, Candy Land, Robot City, Victorian and Sunny Shore have all had a badminton net
   // since round 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack
   // races) went round every world in turn — Frosty Peak, for all its tug-of-war, archery range,

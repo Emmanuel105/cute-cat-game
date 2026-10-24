@@ -18833,3 +18833,28 @@ from the nearest physics box and 6.1 m from the nearest wandering soul, far past
 is the last of the family still unmet. No visual check was possible in this environment (no browser,
 no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 698 — Frosty Peak's frost beetle finally becomes a friend
+
+Round 697's tiger beetle left exactly one of the ladybug's family still unmet: Frosty Peak's own frost
+beetle, picking its way across the open snow east of the village since round 693. This round closes
+the whole family out. **The frost beetle now answers its own "Say hello to the frost beetle" prompt
+too**, with *"❄️ *shell flashes frosty white for a second, then it scuttles off across the snow*"*.
+
+Same root cause and same fix as the raccoon, the factory mouse, the ladybug, the gumdrop beetle, the
+scrap-bug and the tiger beetle before it: `Hopper`, unlike `Wanderer`, never calls `greetable()` on its
+own, so a rig with none of `.look`/`.robot`/`.cookie` just sits there unmet. No new mesh, no new
+physics box: a `game.namedFriend('frost-beetle')` plus a `game.addInteractable` keyed straight to the
+beetle's own `rig.group`, tracked every frame so the prompt follows it through its tiny hops inside its
+own 1 m leash. The 2.1 m greet radius — the same every other Hopper creature's own prompt already
+uses — needed no new probe: round 693's own placement comment had already swept this exact spot (38, 8)
+and found it 7.29 m from the nearest physics box and 8.25 m from the nearest wandering soul, far past
+the radius used here.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 328
+(no new collider), Frosty Peak's own friend count rose by one (78 to meet). The ladybug's whole
+family — Neighborhood's raccoon, Robot City's factory mouse and scrap-bug, Whisper Woods' ladybug,
+Candy Land's gumdrop beetle, Sunny Shore's tiger beetle and now Frosty Peak's frost beetle — is fully
+met across all seven worlds. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
