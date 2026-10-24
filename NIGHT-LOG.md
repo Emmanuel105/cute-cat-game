@@ -19008,3 +19008,25 @@ this same clearing, at (32, -34) and (29, -35), are left exactly as they were, a
 Peak hare trio, the beach's sandpipers and the Victorian pigeons — any one of them is next. No visual
 check was possible in this environment (no browser, no Playwright) — only the stub-three test suite
 above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 705 — Whisper Woods' second hare also becomes a friend
+
+Round 704 took the first of the woods' hare trio at (30, -32) and left the other two — at (32, -34)
+and (29, -35) — exactly as they were. This round takes the second, at (32, -34), the same spot a
+headless probe already swept clear by 5.9-7.6 m of the nearest box and 8.0-10.6 m of the nearest other
+soul back in round 704's own survey. **It now answers its own "Say hello to the hare" prompt too**,
+with *"🐇 *freezes stock-still a beat, then thumps off sideways into the clearing*"*.
+
+Same root cause and fix as its clearing-mate, and the whole run of ambient `Hopper` critters before
+it: `Hopper` never calls `greetable()` on its own, and `makeHare()`'s rig carries none of
+`.look`/`.robot`/`.cookie` for that function to find. No new mesh, no new physics box: a second
+`game.namedFriend('hare-2')` (kept distinct from the first hare's own `'hare'` id) plus a
+`game.addInteractable` keyed straight to this hare's own `rig.group`, tracked every frame so the
+prompt follows it through its hops inside its own 3.5 m leash.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 328
+(no new collider), Whisper Woods' own friend count rose by one again (81 to meet). The third hare in
+this clearing, at (29, -35), is left exactly as it was, alongside the Frosty Peak hare trio, the
+beach's sandpipers and the Victorian pigeons — any one of them is next. No visual check was possible
+in this environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
