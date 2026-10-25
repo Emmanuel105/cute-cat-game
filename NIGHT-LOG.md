@@ -19922,3 +19922,39 @@ Whisper Woods are the two worlds still left without a lie-down vignette of their
 round. No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite and the standalone headless probe described here. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 738 — Robot City finally has somewhere to just lie down
+
+Victorian picked up its own lie-down vignette last round, leaving Robot City and Whisper Woods as the
+only two worlds still without one. **Robot City now has its own**: a maintenance-crew worker lies flat
+on their back on a quiet stretch of open floor east of the yard, hard hat knocked off beside them,
+catching five minutes before the next shift whistle. *"Five minutes. The scrap pile isn't going
+anywhere."* *"Careful, puss — mind the hard hat, that's the only one that fits me."* *"Floor's warm
+straight through from the server racks underneath. Best nap spot in the city."*
+
+No new controller: the exact same `Sunbather` class (`55-npcs.js`) every other world's own lie-down
+vignette already uses, unchanged — flat on the back, hands behind the head, same relaxed pose as the
+rest — dressed in the same crew-blue jumpsuit the archer and the piñata swinger already wear round
+here. The dropped hard hat is two primitives built inline (a safety-yellow dome for the shell, a thin
+torus laid flat for the brim), the same trick Frosty Peak's own dropped beanie uses, and carries no
+physics box of its own — too small and low to need one, same reasoning the beanie and Victorian's
+dropped bouquet both already bank on.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses — click
+the start-screen `enter` element, then `game.travel(2, 'from-prev')`, 1800 simulated frames to let
+every wandering, patrolling and dancing robot actually move) sampled every NPC's own position every
+15th frame, then swept a 2 m grid of the open floor (radius 15–75) against both those 8,880 samples and
+all 305 of the city's own waist-to-head-height physics boxes: (23, 71) came back clearest of the whole
+grid, 16.3 m from the nearest box and 19.0 m from the nearest other soul, comfortably short of the
+radius (98) where `robotRegion`'s own procedural fill takes over. Robot City carries no hand-added
+`game.zones` entries at all (its floor is flat and open, with no roads or paths of its own to protect),
+so no zone check was needed beyond the box and NPC sweep. Built dead last, right after the
+treasure-chest finder, so the fresh `makeHuman()` draw off the shared `rnd()` sequence disturbs no
+earlier timing-sensitive pick in the city.
+
+`node test/run.mjs` ran clean twice in a row: exit 0, all checks `ok` both times, 0 console warnings,
+box count unchanged at 328 (no new collider, as expected). Robot City's own friend total rose by one
+(89 to 90 to meet). Whisper Woods is now the only world left without a lie-down vignette of its own,
+left for a future round. No visual check was possible in this environment (no browser, no Playwright)
+— only the stub-three test suite and the standalone headless probe described here. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

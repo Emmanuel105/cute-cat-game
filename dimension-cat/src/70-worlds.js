@@ -7110,6 +7110,40 @@ function buildRobotCity(game, entry) {
     W.add(finder.group);
     game.npcs.push(new Kneeler(game, finder, { x: kx, z: kz, ry, cryIcon: '💰',
       cries: ["Everybody else got a washer. I got THIS.", "Careful, puss — don't you dare knock a single coin back onto the concrete.", "Don't tell the scanner. He'll never forgive himself."] })); }
+  // the Neighborhood's radio listener, Candy Land's sunbather, Sunny Shore's three towel people,
+  // Frosty Peak's snow-angel girl and Victorian's flower girl have all had somewhere to just lie down
+  // for a while, round by round — Robot City and Whisper Woods were the two worlds still left without
+  // one. A maintenance-crew worker now lies flat on their back on a quiet stretch of open floor east of
+  // the yard, hard hat knocked off beside them, catching five minutes before the next shift whistle.
+  // No new controller or prop: the exact same `Sunbather` class (`55-npcs.js`) every other world's own
+  // lie-down vignette already uses, unchanged — flat on the back, hands behind the head, same relaxed
+  // pose as the rest — and the crew-blue jumpsuit the archer and the piñata swinger already wear round
+  // here. The dropped hard hat is two primitives built inline, the same trick Frosty Peak's own dropped
+  // beanie uses: a safety-yellow dome for the shell, a thin torus laid flat for the brim, both static
+  // with no physics box of their own (too small and low to need one, the same reasoning that beanie and
+  // Victorian's dropped bouquet both bank on).
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, `game.travel(2, 'from-prev')`, 1800 simulated frames
+  // sampling every NPC's own position every 15th frame) swept a 2 m grid of the open floor (radius
+  // 15-75, comfortably short of the radius (98) where `robotRegion`'s own procedural fill takes over)
+  // against both those 8,880 samples and all 305 of the city's own waist-to-head-height physics boxes:
+  // (23, 71) came back clearest of the whole grid, 16.3 m from the nearest box and 19.0 m from the
+  // nearest other soul.
+  // Built dead last, right after the treasure-chest finder, for the same reason every other addition at
+  // the end of this function already gives: `makeHuman()` draws three values off the shared `rnd()`
+  // sequence unconditionally, and a fresh rig built any earlier in this city would shift that sequence
+  // and desync every other timing-sensitive pick already placed above.
+  { const bx = 23, bz = 71, bry = atan2(-bx, -bz);
+    const breakWard = makeWardrobe(r, { shirts: [0x3a4a6a, 0x4a5a6a], pants: [0x232c34, 0x2a2a30] });
+    const breaker = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: breakWard }),
+      hat: null, jacket: null, coat: null, scarf: null, bag: null, backpack: null, glasses: false });
+    W.add(breaker.group);
+    const hhx = bx + cos(bry) * 0.55, hhz = bz - sin(bry) * 0.55, hhy = P.ground0(hhx, hhz);
+    const hatM = mat(0xffd54a, { roughness: 0.5 });
+    mesh(G.dome(0.14, 10, 7), hatM, { x: hhx, y: hhy + 0.1, z: hhz, shadow: 'none', parent: W });
+    mesh(G.torus(0.145, 0.02, 6, 16), hatM, { x: hhx, y: hhy + 0.02, z: hhz, rx: PI / 2, shadow: 'none', parent: W });
+    game.npcs.push(new Sunbather(game, breaker, { x: bx, z: bz, ry: bry, cryIcon: '🔧',
+      cries: ["Five minutes. The scrap pile isn't going anywhere.", "Careful, puss — mind the hard hat, that's the only one that fits me.", "Floor's warm straight through from the server racks underneath. Best nap spot in the city."] })); }
 
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
