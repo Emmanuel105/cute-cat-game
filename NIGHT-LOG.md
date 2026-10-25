@@ -19654,3 +19654,33 @@ simulated frames sampling the crab-bot's own position found the nearest other so
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above, plus
 the standalone headless probe described here.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 730 — Frosty Peak's marching penguin finally becomes a friend
+
+Frosty Peak's three-penguin column — waddling a strict 8 m line of snow, turning in place, and waddling
+straight back — went in deliberately ambient a few rounds back, on the reasoning that it was "the same
+ambient wildlife" as the loose pond colony it marched out of. That reasoning held for the followers, but
+not for the lead: every other `Marchers` patrol in this game (the gingerbread guard, the toy soldiers,
+the robot patrol) already lets its own lead answer a greeting, because `Patroller`'s own `greetable()`
+call only no-ops when the rig itself carries none of `.look`/`.robot`/`.cookie` — exactly what a bare
+`makePenguin()` rig lacks, same root cause this log keeps finding everywhere else.
+
+**The column's lead penguin now answers "Say hello to the penguin"** on its own, with *"🐧 *breaks column
+for one surprised wing-flap, then falls right back in line*"*. No new mesh, no new physics box:
+`game.namedFriend('marching-penguin')` plus a `game.addInteractable` tracked straight off
+`marchers[0].group` — which `Patroller` already repositions every frame as the column paces its route —
+does the rest, at the same 2.1 m radius every other `greetable()` prompt uses. The two followers stay
+ambient, same as every other march in this game where only the lead carries a name.
+
+A headless probe (`game.start('new')` then `game.load(5, 'from-hub')`, 3000 simulated frames) confirmed
+the new interactable's position tracks the lead all the way along its route (z sweeping -4.9 to 2.8 at
+x=55, matching the column's own `[55,-5]`→`[55,3]` points), and that walking the cat up to it and firing
+`onUse()` registers a `marching-penguin` friend. The bold penguin elsewhere on the mountain shares the
+exact same label text ("Say hello to the penguin") — not a bug, the same thing hare/hare-2/hare-3 and
+deer/deer-2/deer-3 already do, since only whichever one is nearest ever shows its prompt.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 328
+(no new collider). Frosty Peak's own friend total rose by one (85 to 86 to meet). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above, plus
+the standalone headless probe described here.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

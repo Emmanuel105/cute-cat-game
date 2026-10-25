@@ -19828,8 +19828,17 @@ function buildSnowVillage(game, entry) {
   // or `.cookie` — a bare `makePenguin()` rig has none of the three, so the call quietly no-ops. That's
   // not a bug here: it's the same thing that already keeps the pond colony's own `Wanderer`s and the
   // bolder `Follower` penguin from counting as friends, and this march is the same ambient wildlife as
-  // both, just filed into formation instead of wandering loose. No change to this world's own friend
-  // total.
+  // both, just filed into formation instead of wandering loose.
+  //
+  // Except it didn't stay that way: this log has since gone back and fixed that exact no-op one creature
+  // at a time (the crab-bot, the snail, every hare and fox this round-by-round series has turned up), and
+  // a march with a named leader fits that pattern better than most. The column's own lead penguin now
+  // answers "Say hello to the penguin" on its own — same `game.namedFriend` + `game.addInteractable` fix
+  // every one of those used, tracked straight off `marchers[0].group`, which `Patroller` already
+  // repositions every frame as the column paces its 8 m stretch, so the prompt follows it there and back.
+  // 2.1 m radius, matching every other `greetable()` prompt's own circle; no new mesh, no new physics box.
+  // The two followers behind it stay ambient, same as every other march in this game where only the lead
+  // carries a name (the gingerbread guard, the toy soldiers, the robot patrol).
   //
   // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, built
   // the real mountain with `game.start('new')` then `game.travel(5, 'from-hub')`) sampled every NPC's
@@ -19845,7 +19854,9 @@ function buildSnowVillage(game, entry) {
   // layout pick.
   { const marchers = [0, 1, 2].map(() => { const rig = makePenguin({ scale: r.range(0.85, 1.05) }); W.add(rig.group); return rig; });
     game.npcs.push(new Marchers(game, marchers, { points: [[55, -5], [55, 3]], speed: 0.65, pause: [1, 2], r: 0.3, height: 0.9, gap: 0.9,
-      cries: ['Waddle. Waddle. Precision waddle.', "Mind the queue, puss — we've drilled this.", 'Column of three. Nobody elected a leader; the ice did.'], cryIcon: '🐧' })); }
+      cries: ['Waddle. Waddle. Precision waddle.', "Mind the queue, puss — we've drilled this.", 'Column of three. Nobody elected a leader; the ice did.'], cryIcon: '🐧' }));
+    const leadId = game.namedFriend('marching-penguin');
+    game.addInteractable({ obj: marchers[0].group, radius: 2.1, label: () => 'Say hello to the penguin', onUse: () => { game.befriend(leadId); SFX.squawk(); game.hearts(marchers[0].group.position.x, 0.6, marchers[0].group.position.z, 3); game.toast('🐧 *breaks column for one surprised wing-flap, then falls right back in line*'); } }); }
   // The Neighborhood, Candy Land, Robot City, Victorian and Sunny Shore have all had a tetherball pole
   // since round 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack
   // races) went round every world in turn — Frosty Peak, for all its tug-of-war, archery range,
