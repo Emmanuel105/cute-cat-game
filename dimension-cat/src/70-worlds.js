@@ -5623,13 +5623,24 @@ function buildRobotCity(game, entry) {
   // Frosty Peak's hares and arctic fox, Victorian's pigeons and alley rat). A scrap-built crab-bot now
   // scuttles the open floor north of the ring dance, built from spare plating rather than shell — the
   // same `makeCrab` rig every Sunny Shore crab already uses, just recoloured gunmetal grey, on a plain
-  // `Wanderer` exactly as those beach crabs are, ambient like them too (no greeting, no effect on the
-  // friend count). A headless probe sampled every NPC's own position continuously over 400 simulated
-  // frames (so no wandering robot, tag pair or ring dancer mid-turn could slip past unnoticed) and swept
-  // a grid of the open floor against both those samples and every one of the city's 1166 physics boxes:
-  // (-12, 30) came back clear by 11.1 m in every direction, open concrete north of the ring dance at
-  // (0, 40) and well inside the radius (98) where robotRegion's own procedural fill takes over.
-  { const rig = makeCrab(0x7a828c); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x: -12, z: 30, speed: r.range(0.6, 0.9), leash: 4, r: 0.22, height: 0.45, step: 0.25, idle: [1, 3], walk: [1, 3] })); }
+  // `Wanderer`. It went in ambient, left ungreeted on the grounds that Sunny Shore's own crabs were
+  // ambient too — but this log has since gone back and fixed every one of those beach crabs one by one
+  // (round-by-round: crab through crab6, boldcrab, hermitcrab), so this crab-bot is now the only crab
+  // left in the whole game nobody can say hello to. Same root cause as always: `makeCrab()`'s rig
+  // carries none of `.look`/`.robot`/`.cookie`, so `Wanderer`'s own `greetable()` call quietly no-ops
+  // on it. A headless probe sampled every NPC's own position continuously over 400 simulated frames (so
+  // no wandering robot, tag pair or ring dancer mid-turn could slip past unnoticed) and swept a grid of
+  // the open floor against both those samples and every one of the city's 1166 physics boxes: (-12, 30)
+  // came back clear by 11.1 m in every direction, open concrete north of the ring dance at (0, 40) and
+  // well inside the radius (98) where robotRegion's own procedural fill takes over — unchanged by this
+  // round, since nothing about its placement needed to move.
+  { const rig = makeCrab(0x7a828c); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x: -12, z: 30, speed: r.range(0.6, 0.9), leash: 4, r: 0.22, height: 0.45, step: 0.25, idle: [1, 3], walk: [1, 3] }));
+    // No new mesh, no new physics box: `game.namedFriend('scrapcrab')` plus a `game.addInteractable`
+    // keyed straight to the rig's own group (2.1 m radius, matching every other crab's own greet
+    // circle), tracked every frame so the prompt follows it through its 4 m leash. `SFX.beep()` rather
+    // than the organic crabs' `SFX.chitter()`, since this one is scrap-built, not shell-built.
+    const crabBotId = game.namedFriend('scrapcrab');
+    game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the crab-bot', onUse: () => { game.befriend(crabBotId); SFX.beep(); game.hearts(rig.group.position.x, 0.5, rig.group.position.z, 3); game.toast('🦀 *claws clack together, servos whirring*'); } }); }
   // every other world has a landmark that reacts to the cat walking up to it — Robot City had its
   // furnace, radar dish, robot arm and statue, but nothing that actually noticed the cat on its own. An
   // archive-bot now stands at its own tripod camera on the open concrete south of Sector 7, filing an

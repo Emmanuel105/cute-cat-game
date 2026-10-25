@@ -19624,29 +19624,33 @@ possible in this environment (no browser, no Playwright) — only the stub-three
 the standalone headless probe described here.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
 
-Frosty Peak's own arctic fox has roamed the open snow south-east of the village since the round that
-first built it — white-coated, the mountain's answer to Whisper Woods' orange foxes — but nobody could
-ever say hello to it. Same root cause this log keeps finding in every ambient critter built outside the
-usual `Hopper`/named-rig path: `makeArcticFox()`'s rig is a plain `makeQuadruped()` with none of
-`.look`/`.robot`/`.cookie`, so `Wanderer`'s own `greetable()` call quietly no-ops on it, same as every
-hare, fox, deer, turtle, seal, otter, pelican and penguin this log has fixed one by one for the last
-thirty-odd rounds.
 
-**The arctic fox now answers its own "Say hello to the fox" prompt**, with *"🦊 *white ears swivel,
-breath puffing in the cold, then it melts into the snow*"*. No new mesh, no new physics box:
-`game.namedFriend('arctic-fox')` plus a `game.addInteractable` keyed straight to the rig's own group
-(2.1 m radius, matching the woods' own foxes) does the rest, tracked every frame so the prompt follows
-it through its full 8 m leash.
+## Round 729 — Robot City's scrap-crab finally becomes a friend
 
-A headless probe (`game.start('new')` then `game.travel(5, 'from-hub')` so `Wanderer`'s state machine
-actually runs, 3000 simulated frames with the fox's own position sampled every frame) swept every
-sample against every physics box and every other NPC: the nearest box stayed 0.3 m clear throughout
-(the fox's own collision-avoidance keeps it from ever touching one, the same margin the deer and others
-hold a few rounds back), and the nearest other soul never came closer than 3.86 m, well past the new
-prompt's 2.1 m radius.
+Robot City's crab-bot — the gunmetal-grey scrap-built crab that has scuttled the open floor north of
+the ring dance for a few dozen rounds now — went in deliberately ambient, on the reasoning that Sunny
+Shore's own crabs were ambient too. They aren't anymore: this log has since gone back and fixed every
+one of those beach crabs one by one (crab through crab6, boldcrab, hermitcrab), which left the
+crab-bot as the last crab in the whole game nobody could say hello to. Same root cause as every other
+fix in this vein: `makeCrab()`'s rig carries none of `.look`/`.robot`/`.cookie`, so `Wanderer`'s own
+`greetable()` call quietly no-ops on it.
+
+**The crab-bot now answers "Say hello to the crab-bot"**, with *"🦀 *claws clack together, servos
+whirring*"*. No new mesh, no new physics box, no change to its position or wander pattern:
+`game.namedFriend('scrapcrab')` plus a `game.addInteractable` keyed straight to the rig's own group
+(2.1 m radius, matching every other crab's own greet circle) does the rest, tracked every frame through
+its 4 m leash. `SFX.beep()` stands in for the organic crabs' `SFX.chitter()`, since this one is
+scrap-built, not shell-built.
+
+A headless probe (`game.start('new')` then `game.travel(2, 'from-hub')`, waited out against both
+`game.worldIndex` and `game.transitioning`, the latter being the actual gate on `game.interact()` that
+tripped up the first pass at this probe) walked the cat to the crab-bot's spawn and confirmed the new
+label and a successful `game.befriend()` (`robot:scrapcrab` landed in the friend set). A further 400
+simulated frames sampling the crab-bot's own position found the nearest other soul never closer than
+11.93 m, consistent with the clearance the original placement round already worked out.
 
 `node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 328
-(no new collider). Frosty Peak's own friend total rose by one (84 to 85 to meet). No visual check was
+(no new collider). Robot City's own friend total rose by one (88 to 89 to meet). No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above, plus
 the standalone headless probe described here.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
