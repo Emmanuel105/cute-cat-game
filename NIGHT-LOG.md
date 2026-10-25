@@ -19717,3 +19717,28 @@ cat up to Blitzen's own position and confirmed the new "Say hello to Blitzen" pr
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above, plus
 the standalone headless probes described here.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 732 — Sunny Shore's last dune palm finally gets its look
+
+Eighteen palms have stood in the Sunny Shore dunes since round 1; fourteen had already earned a "Look
+at the palm tree" prompt over the last several dozen rounds, and three were permanently ruled out — one
+sits right on top of a sunbather's own wander spot (0.00 m away every frame), and two others cleared
+barely a metre from their own nearest box, too tight for a clean 2 m circle. That left exactly one spot
+never checked: **the trunk at (-6, 34), inland between the backdune grove and the hollow log**, which
+now answers too — *"🌴 Last of the dune's own palms to get a proper look. Grew up quiet, same as the
+rest."*
+
+No new mesh, no new physics box: the build loop already called `makePalm()` on this coordinate and
+discarded the result, so this round just keeps it (`lastPalm`) and hands it straight to
+`game.addInteractable`, the same trick every earlier palm used. A headless probe (`game.start('new')`,
+`game.travel(4, 'from-hub')` waited through its real portal-fade timer, then 3600 simulated frames
+sampling every NPC's own position) found this trunk's own box sits 2.80 m from the nearest other
+physics box, 3.26 m from the nearest wandering soul and 4.47 m from the nearest other interactable —
+all clear of the 2 m radius every other palm already uses. All fifteen of the dune's viable palms now
+answer; the other three stay bare for the reasons above, permanently.
+
+`node test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box count unchanged at
+328 (no new collider, as expected for a look prompt with no new geometry). No visual check was possible
+in this environment (no browser, no Playwright) — only the stub-three test suite and the standalone
+headless probe described here.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
