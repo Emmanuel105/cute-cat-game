@@ -1458,8 +1458,17 @@ function buildSnowVillage(game, entry) {
   // every one of those used, tracked straight off `marchers[0].group`, which `Patroller` already
   // repositions every frame as the column paces its 8 m stretch, so the prompt follows it there and back.
   // 2.1 m radius, matching every other `greetable()` prompt's own circle; no new mesh, no new physics box.
-  // The two followers behind it stay ambient, same as every other march in this game where only the lead
-  // carries a name (the gingerbread guard, the toy soldiers, the robot patrol).
+  //
+  // This round gives the column's second penguin — `marchers[1].group` — the same fix, the same
+  // "second frog / second fox / second deer" move this log keeps repeating once a lead creature's own
+  // no-op has already been fixed once. `Marchers.update()` (55-npcs.js) repositions every follower's own
+  // group each frame to hold its fixed 0.9 m gap behind the lead, so tracking `marchers[1].group` keeps
+  // the prompt glued to its spot in the column exactly like the lead's own. Both radii (2.1 m each)
+  // overlap at that gap, but `game.update()` (80-game.js) already picks whichever interactable is
+  // nearest the cat every frame, so standing closer to the second bird prompts for it and closer to the
+  // lead prompts for that one — no conflict, same as any other two creatures this close together. The
+  // third penguin stays ambient, same as every other march in this game where only part of the column
+  // carries a name.
   //
   // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, built
   // the real mountain with `game.start('new')` then `game.travel(5, 'from-hub')`) sampled every NPC's
@@ -1477,7 +1486,9 @@ function buildSnowVillage(game, entry) {
     game.npcs.push(new Marchers(game, marchers, { points: [[55, -5], [55, 3]], speed: 0.65, pause: [1, 2], r: 0.3, height: 0.9, gap: 0.9,
       cries: ['Waddle. Waddle. Precision waddle.', "Mind the queue, puss — we've drilled this.", 'Column of three. Nobody elected a leader; the ice did.'], cryIcon: '🐧' }));
     const leadId = game.namedFriend('marching-penguin');
-    game.addInteractable({ obj: marchers[0].group, radius: 2.1, label: () => 'Say hello to the penguin', onUse: () => { game.befriend(leadId); SFX.squawk(); game.hearts(marchers[0].group.position.x, 0.6, marchers[0].group.position.z, 3); game.toast('🐧 *breaks column for one surprised wing-flap, then falls right back in line*'); } }); }
+    game.addInteractable({ obj: marchers[0].group, radius: 2.1, label: () => 'Say hello to the penguin', onUse: () => { game.befriend(leadId); SFX.squawk(); game.hearts(marchers[0].group.position.x, 0.6, marchers[0].group.position.z, 3); game.toast('🐧 *breaks column for one surprised wing-flap, then falls right back in line*'); } });
+    const secondId = game.namedFriend('marching-penguin-2');
+    game.addInteractable({ obj: marchers[1].group, radius: 2.1, label: () => 'Say hello to the penguin', onUse: () => { game.befriend(secondId); SFX.squawk(); game.hearts(marchers[1].group.position.x, 0.6, marchers[1].group.position.z, 3); game.toast('🐧 *keeps pace but cranes its neck round for a look*'); } }); }
   // The Neighborhood, Candy Land, Robot City, Victorian and Sunny Shore have all had a tetherball pole
   // since round 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack
   // races) went round every world in turn — Frosty Peak, for all its tug-of-war, archery range,

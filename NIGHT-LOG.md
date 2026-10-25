@@ -20075,3 +20075,37 @@ box count unchanged at 329 (no new collider, as expected — a befriend prompt o
 none). Whisper Woods' own friend total rose by one (91 to 92 to meet). No visual check was possible in
 this environment (no browser, no Playwright) — only the stub-three test suite described here. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 743 — Frosty Peak's second marching penguin finally becomes a friend
+
+The snowfield's drill column (three penguins, a strict lockstep line waddling an 8 m stretch and
+turning in place) only ever gave its lead bird a "Say hello" prompt, since `Patroller`'s own
+`greetable()` call only reaches `marchers[0]`'s own rig — the same no-op every other `makePenguin()`
+and `makeFrog()` rig outside a human/robot/cookie body already hits, and the same thing this log keeps
+going back to fix one creature at a time. **The second penguin in the column now answers too**, same
+`game.namedFriend()` + `game.addInteractable` trick the lead already uses, tracked straight off
+`marchers[1].group` — which `Marchers.update()` (`55-npcs.js`) already repositions every frame to hold
+its fixed 0.9 m gap behind the lead, so the prompt follows it there and back along the whole 8 m
+stretch. *"Keeps pace but cranes its neck round for a look."*
+
+No new mesh, no new controller, no new physics box: just a second interactable on an existing rig the
+column already builds. The two birds' 2.1 m prompt radii overlap at that 0.9 m gap, but `game.update()`
+already picks whichever interactable sits nearest the cat each frame, so standing closer to either bird
+prompts for that one specifically — no conflict, the same way any two close-together `greetable()`
+creatures in this game already behave. The third penguin in the column stays pure ambient background
+for a future round.
+
+Before touching anything, this round also discovered `origin/main` had been force-pushed backward
+since this session's own clone — five commits adding Sunny Shore's first four colony crabs and its
+bolder crab as friends had vanished from the branch's history between clone and now. Those crabs
+already count as friends through other code already on this branch (the beach's own crab-greeting
+code, with comments dated to rounds 681-686, was already in place before this force-push happened), so
+no functionality appears to have been lost, but the history rewrite itself is irregular and worth a
+human's attention — this round did not attempt to fix or investigate it further, only rebased its own
+new work on top of the branch's current, post-force-push head as instructed.
+
+`node test/run.mjs` ran clean twice in a row: exit 0, all checks `ok` both times, 0 console warnings,
+box count unchanged at 329 (no new collider, as expected — a befriend prompt on an existing rig adds
+none). Frosty Peak's own friend total rose by one (87 to 88 to meet). No visual check was possible in
+this environment (no browser, no Playwright) — only the stub-three test suite described here. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
