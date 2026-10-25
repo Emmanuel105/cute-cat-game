@@ -19742,3 +19742,41 @@ answer; the other three stay bare for the reasons above, permanently.
 in this environment (no browser, no Playwright) — only the stub-three test suite and the standalone
 headless probe described here.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 733 — the Neighborhood's thirteenth roof fixture, and the first that just sits still
+
+Every roof fixture on this street so far has either spun (the whirlybird vent, the chimney cowl),
+glowed (the lightning rod, the lantern), pulsed (the finial) or at least pointed somewhere (the aerial,
+the dish, the solar panel, the anemometer) — twelve of the street's sixteen roofs carried one of those,
+four still bare but for chimney smoke. **House 6's own ridge — the lot whose own front yard already has
+the wall-mounted hose reel — gets the thirteenth fixture, and the first with nothing to watch at all: a
+low continuous ridge vent**, a plain galvanised cap straddling the apex with a row of angled louvers
+down each slope, no turbine, no bulb, no moving part to oil or catch the light. *"Louvers, not a
+turbine — no spinning, no oiling, nothing up there to watch at all."* *"Keeps the attic dry while the
+hose two storeys down keeps everything else wet."* *"Puss, there is nothing up there to chase. It
+doesn't even turn."*
+
+Same slot every other roof fixture already uses — parented to the house's own group (`h`) at its ridge
+apex (`h.userData.h`), so it costs no world-space maths and needs no physics box, the same few-metres-up
+reasoning every fixture up there already banks on. Unlike all twelve before it, this one needs no
+`U.push` tick of its own and no emissive hex for `makeDayNight`'s own sweep to catch — nothing about it
+changes between one frame and the next, so it bakes flat into the house's own static mesh same as the
+walls and the roof itself. The louvers are `noInk()`-wrapped, the same treatment every slender fixture
+up here already gets.
+
+A standalone headless probe (`game.start('new')`, 300 simulated frames) found the new "Look up at the
+ridge vent" interactable registered at local (0, 5.1, 0) under house 6's own group — the same ridge-apex
+slot every other roof fixture sits at — and confirmed `onUse()` fires its toast without throwing. Three
+of the street's sixteen roofs — 3, 13 and 15 — still carry nothing but chimney smoke, left for a future
+round.
+
+`node test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box count unchanged at
+328 (no new collider, as expected — the vent sits several metres up with nothing below it to collide
+with). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite and the standalone headless probe described here.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+**Housekeeping note:** this session found roughly 47 commits (rounds up through 732) sitting on a
+detached `HEAD`, never pushed to `origin/main` — several earlier scheduled runs had committed but the
+push step hadn't landed. Fast-forwarded local `main` to that work and pushed it before starting this
+round's own change, so nothing from those earlier rounds was at risk of being lost.

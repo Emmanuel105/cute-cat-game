@@ -1196,6 +1196,31 @@ function buildNeighborhood(game, entry) {
       const skyLines = ['☀️ "Catches the glare at noon and goes dark the second the sun does. Not much use after dinner."', '😼 "Puss, that is the skylight. Whatever\'s up there for you to stare at is on the inside, not the roof."', '🏠 "Brightest roof on the street at midday, dullest one by midnight."'];
       game.addInteractable({ obj: skylight, radius: 2.2, label: () => 'Look up at the skylight', onUse: () => { SFX.click(); game.toast(rnd.pick(skyLines), 3000); } });
     }
+    // every roof fixture on this street so far has either spun (the whirlybird vent, the chimney cowl),
+    // glowed (the lightning rod, the lantern), pulsed (the finial) or at least pointed somewhere (the
+    // aerial, the dish, the solar panel, the anemometer) — twelve of the street's sixteen roofs carry
+    // one of those by now, four still bare but for chimney smoke. House 6's own ridge — the lot whose
+    // own front yard already has the wall-mounted hose reel — gets the thirteenth fixture, and the
+    // first with nothing to watch at all: a low continuous ridge vent, a plain galvanised cap straddling
+    // the apex with a row of angled louvers down each slope, no turbine, no bulb, no moving part to
+    // oil or catch the light. *"Louvers, not a turbine — no spinning, no oiling, nothing up there to
+    // watch at all."* *"Keeps the attic dry while the hose two storeys down keeps everything else
+    // wet."* *"Puss, there is nothing up there to chase. It doesn't even turn."*
+    // Same slot every other roof fixture already uses — parented to the house's own group (`h`) at its
+    // ridge apex (`h.userData.h`), so it costs no world-space maths and needs no physics box, the same
+    // few-metres-up reasoning every fixture on this street already banks on. Unlike all twelve before
+    // it, this one needs no `U.push` tick of its own and no emissive hex for `makeDayNight`'s own sweep
+    // to catch — nothing about it changes between one frame and the next, so it bakes flat into the
+    // house's own static mesh same as the walls and the roof itself. The louvers are `noInk()`-wrapped,
+    // the same treatment every slender fixture up here already gets.
+    if (i === 6) {
+      const capM = mat(0x5c5f63, { metalness: 0.35, roughness: 0.6 }), louverM = mat(0x2e3033, { metalness: 0.3, roughness: 0.65 });
+      const vent = group(0, h.userData.h, 0, h);
+      mesh(G.box(0.5, 0.08, 0.2), capM, { y: 0.04, shadow: 'both', parent: vent });
+      for (const s of [-1, 1]) for (let k = 0; k < 4; k++) noInk(mesh(G.box(0.44, 0.01, 0.028), louverM, { y: 0.015 + k * 0.018, z: s * (0.055 + k * 0.01), rx: s * 0.55, shadow: 'none', parent: vent }));
+      const ventLines = ['💨 "Louvers, not a turbine — no spinning, no oiling, nothing up there to watch at all."', '🏠 "Keeps the attic dry while the hose two storeys down keeps everything else wet."', '😼 "Puss, there is nothing up there to chase. It doesn\'t even turn."'];
+      game.addInteractable({ obj: vent, radius: 2.2, label: () => 'Look up at the ridge vent', onUse: () => { SFX.click(); game.toast(rnd.pick(ventLines), 3000); } });
+    }
   });
   // the pinwheel, sprinkler and kennel above gave three of the street's sixteen yards their own
   // feature; lot 14's own corner now gets a fourth — a stone birdbath, a shallow bowl on a short
