@@ -19426,3 +19426,25 @@ plain-`Wanderer` foxes (the bolder third one was fixed in round 717) have the ex
 obvious next target. No visual check was possible in this environment (no browser, no Playwright) —
 only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 722 — Whisper Woods' den fox finally becomes a friend
+
+Picking up exactly where last round's deer left off: Whisper Woods has had two plain `Wanderer` foxes
+denned at (14, 6) and (-26, -14) since round 1, on top of the third "bolder" fox that got its own
+`Follower`-driven fix back in round 717. Neither of these two was ever anyone the cat could actually
+meet — same root cause as every other ambient critter this log keeps finding: `makeFox()`'s rig carries
+none of `.look`/`.robot`/`.cookie`, so `Wanderer`'s own `greetable()` call quietly no-ops on it.
+
+**The den fox at (14, 6) — the one whose own den the mushroom callouts a few lines up already mention —
+now answers its own "Say hello to the fox" prompt**, with *"🦊 *freezes mid-trot, one ear swivelling,
+then darts off into the ferns*"*. No new mesh, no new physics box: the loop that builds both foxes now
+captures the first rig in a local variable, and a `game.namedFriend('fox')` plus a
+`game.addInteractable` keyed straight to its own `rig.group` (2.0 m radius, tracked every frame so the
+prompt follows it through its usual 10 m leash) does the rest — the same one-at-a-time pattern this log
+used for the deer trio last round. The second fox, denned further west at (-26, -14), is left for a
+future round.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 328
+(no new collider). Whisper Woods' own friend total rose by one (84 to 85 to meet). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

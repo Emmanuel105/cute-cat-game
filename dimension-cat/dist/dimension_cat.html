@@ -20521,7 +20521,19 @@ function buildForest(game, entry) {
     game.addInteractable({ obj: firstDeer.group, radius: 2.0, label: () => 'Say hello to the deer', onUse: () => {
       game.befriend(deerId); SFX.click(); game.hearts(firstDeer.group.position.x, 1.1, firstDeer.group.position.z, 3);
       game.toast('🦌 *ears swivel, one cautious step closer, then back to grazing*'); } }); }
-  for (const [x, z] of [[14, 6], [-26, -14]]) { const rig = makeFox(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x, z, speed: 1.3, leash: 10, r: 0.3, height: 0.8, step: 0.3, idle: [1, 3], walk: [2, 5] })); }
+  let firstFox = null;
+  for (const [i, [x, z]] of [[14, 6], [-26, -14]].entries()) { const rig = makeFox(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x, z, speed: 1.3, leash: 10, r: 0.3, height: 0.8, step: 0.3, idle: [1, 3], walk: [2, 5] })); if (i === 0) firstFox = rig; }
+  // the den fox at (14, 6) has been purely ambient since round 1, the same root cause as the deer above
+  // and every other critter this log keeps finding: `makeFox()`'s rig carries none of
+  // `.look`/`.robot`/`.cookie`, so `Wanderer`'s own `greetable()` call quietly no-ops on it. It gets the
+  // fix first since it's the one with its own den-side mushroom callouts a few lines up; the other,
+  // denned further west at (-26, -14), is left for a future round. No new mesh, no new physics box:
+  // `game.namedFriend('fox')` plus a `game.addInteractable` keyed straight to `firstFox.group`, tracked
+  // every frame so the prompt follows it through its own 10 m leash.
+  { const foxId = game.namedFriend('fox');
+    game.addInteractable({ obj: firstFox.group, radius: 2.0, label: () => 'Say hello to the fox', onUse: () => {
+      game.befriend(foxId); SFX.bark(); game.hearts(firstFox.group.position.x, 0.6, firstFox.group.position.z, 3);
+      game.toast('🦊 *freezes mid-trot, one ear swivelling, then darts off into the ferns*'); } }); }
   // a third, bolder fox: it minds its own business until the cat wanders close, then trots over for a look.
   // Same root cause and fix as the bolder penguin (Frosty Peak, round 716) and the bolder crab (Sunny
   // Shore, round 685) before it: `Follower` wraps a plain `Wanderer` around whatever rig it's given, and
