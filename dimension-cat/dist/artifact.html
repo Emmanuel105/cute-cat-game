@@ -18677,14 +18677,32 @@ function buildSnowVillage(game, entry) {
   // are both chasing. No new physics box: like every other wandering creature turned friend before
   // her, `game.addInteractable` is keyed straight to her own `rig.group`, tracking her live position
   // inside the same 8 m leash the other two deer already wander.
+  // Copper got her own collar and bell back in round 274's own history, answering her own greeting —
+  // but the herd's other two deer, at (-22, 6) and (24, 20), stayed exactly what they'd always been:
+  // plain `makeDeer()` rigs with none of `.look`/`.robot`/`.cookie` for `Wanderer`'s own `greetable()`
+  // call to find, same root cause as every other ambient quadruped this log keeps turning into a
+  // friend. The third deer, at (24, 20), now gets a blue collar and bell of her own (the same `collar`
+  // option Copper already uses, just a different colour so the two read as two individuals, not a
+  // matching pair) and answers to Blitzen. The other deer, at (-22, 6), stays untouched: a headless
+  // probe (`game.start('new')` then `game.load(5, 'from-hub')`, 3000 simulated frames sampling every
+  // wandering reindeer's own position) found that one drifting within 0.45 m of a pine trunk at times,
+  // too tight for a new greet circle to sit cleanly, while (24, 20) never came closer than 2.1 m of the
+  // nearest box (a pine trunk, approachable from the open side) and 2.6 m of the nearest other soul
+  // (the pinecone-gathering Kneeler at (21.6, 19)) — comfortably clear of the 1.8 m greet radius below.
   for (const [i, [x, z]] of [[-22, 6], [-18, -12], [24, 20]].entries()) {
-    const rig = i === 1 ? makeDeer({ collar: 0xb5651d }) : makeDeer();
+    const rig = i === 1 ? makeDeer({ collar: 0xb5651d }) : (i === 2 ? makeDeer({ collar: 0x3a6ea8 }) : makeDeer());
     W.add(rig.group);
     if (i === 1) {
       const cid = game.namedFriend('copper');
       game.addInteractable({ obj: rig.group, radius: 2.2, label: () => 'Say hello to Copper', onUse: () => {
         game.befriend(cid); SFX.bell(); game.hearts(rig.group.position.x, rig.group.position.y + 1.1, rig.group.position.z, 3);
         game.toast('🦌 "*collar bell gives a soft jingle* Still got mine, at least."'); } });
+    }
+    if (i === 2) {
+      const bid = game.namedFriend('blitzen');
+      game.addInteractable({ obj: rig.group, radius: 1.8, label: () => 'Say hello to Blitzen', onUse: () => {
+        game.befriend(bid); SFX.bell(); game.hearts(rig.group.position.x, rig.group.position.y + 1.1, rig.group.position.z, 3);
+        game.toast('🦌 "*blue collar bell jingles, nose bumps the cat once*"'); } });
     }
     game.npcs.push(new Wanderer(game, rig, { x, z, speed: 0.6, leash: 8, r: 0.45, height: 1.4, step: 0.3, idle: [3, 7], walk: [2, 5] }));
   }

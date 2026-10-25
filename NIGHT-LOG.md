@@ -19684,3 +19684,36 @@ deer/deer-2/deer-3 already do, since only whichever one is nearest ever shows it
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above, plus
 the standalone headless probe described here.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+
+## Round 731 — Frosty Peak's third reindeer finally becomes a friend, as Blitzen
+
+Copper, the herd's own middle deer, got her collar and bell and her own greeting back in round 274's
+history. The other two reindeer in that same herd — plain `makeDeer()` rigs wandering their own patches
+at (-22, 6) and (24, 20) — stayed exactly what they'd always been: no `.look`/`.robot`/`.cookie` for
+`Wanderer`'s own `greetable()` call to find, the same root cause this log keeps turning up everywhere
+else. Only one of the two gets fixed this round, on purpose: a headless probe (`game.start('new')` then
+`game.load(5, 'from-hub')`, 3000 simulated frames sampling both wandering reindeer's own positions)
+found the (-22, 6) deer drifting within 0.45 m of a pine trunk at times — too tight for a clean new
+greet circle — while (24, 20) never came closer than 2.1 m of the nearest box (a pine trunk,
+approachable from its open side) and 2.6 m of the nearest other soul (the pinecone-gathering Kneeler at
+(21.6, 19)).
+
+**The third deer now wears a blue collar and bell of her own and answers to Blitzen**, with *"🦌 *blue
+collar bell jingles, nose bumps the cat once*"*. Same `collar` option `makeQuadruped` already grew for
+Copper, just a different colour (0x3a6ea8 vs Copper's copper 0xb5651d) so the two read as two
+individuals rather than a matching pair. No new mesh beyond the collar, no new physics box:
+`game.namedFriend('blitzen')` plus a `game.addInteractable` keyed straight to her own `rig.group`,
+tracked every frame through her 8 m leash, at a 1.8 m greet radius — tighter than the usual 2.1-2.2 m,
+to stay clear of the 2.1 m box clearance the probe found. The first deer, at (-22, 6), stays untouched
+for now.
+
+A follow-up headless probe (same build, `game.start('new')` then `game.load(5, 'from-hub')`) walked the
+cat up to Blitzen's own position and confirmed the new "Say hello to Blitzen" prompt and a successful
+`game.befriend()` (`snow:blitzen` landed in the friend set).
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 328
+(no new collider). Frosty Peak's own friend total rose by one (86 to 87 to meet). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above, plus
+the standalone headless probes described here.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
