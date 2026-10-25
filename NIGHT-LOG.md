@@ -19847,3 +19847,40 @@ with). No visual check was possible in this environment (no browser, no Playwrig
 stub-three test suite described here. One of the street's sixteen roofs — house 3 — still carries
 nothing but chimney smoke, left for a future round.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+**Housekeeping note:** this session started with local `main` pointed at an old commit while `HEAD`
+sat detached 50 commits ahead of it on a line that had diverged entirely from `origin/main` — the exact
+situation the previous round's own note describes, just the mirror image of it. This session backed up
+that detached line to `backup/unpushed-detached-work` for safety and began a round on top of the stale
+`main`, but by the time it tried to push, `origin/main` had been force-updated (by some other session)
+to that very detached line — the same content this session had just backed up, now carrying rounds up
+through 735. The round this session had just built (Sunny Shore's fifth crab) turned out to already
+exist verbatim on that line, along with a sixth crab this session hadn't gotten to yet, so nothing was
+lost: that work was discarded as redundant, local `main` was reset onto the real `origin/main`, and this
+round was built fresh from there instead.
+
+## Round 736 — the Neighborhood's last bare roof gets a tenant, not a gadget
+
+Fifteen of the street's sixteen roofs now carry a fixture of their own, every one of them a built
+thing — an aerial, a dish, a vent, a clock, a chime. **House 3's own ridge, the lot whose front yard
+already has the parked bike and helmet, is the last bare roof on the street, and it skips the gadgets
+entirely: a small mud-cup nest tucked against the ridge, with a sparrow actually sitting in it.**
+*"Chirp. (Translation: last roof on the street, and the only one that's actually lived in.)"* *"Every
+other roof up here got a gadget. This one got a tenant."* *"Puss, that nest is occupied. Leave it be."*
+
+Same slot every other roof fixture on this street already uses — parented to the house's own group
+(`h`) at its ridge apex (`h.userData.h`), so it costs no world-space maths and needs no physics box,
+the same few-metres-up reasoning the other fifteen already bank on. The nest is two overlapping
+flattened spheres (mottled by colour alone) with a few `noInk()`-wrapped twig stubs poking out, all
+static. The sparrow is `makeSparrow()` straight off the shelf — the same rig the Neighborhood's own
+birdbath already perches on its rim — sat in the cup and driven by its own `rig.animate()` call each
+frame for the occasional idle peck, exactly the trick the birdbath leans on. No new animation of its
+own, so no draw from this world's own seeded `r` or the shared `rnd()` sequence at build time.
+
+`node test/run.mjs` ran clean twice in a row: exit 0, all checks `ok` both times, 0 console warnings,
+box count unchanged at 328 (no new collider, as expected — the nest sits several metres up with
+nothing below it to collide with), "every NPC is in the scene graph" still passing with the sparrow
+added as a child of the nest group. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite described here. All sixteen of the Neighborhood's roofs
+now carry a fixture of their own. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.

@@ -8947,6 +8947,36 @@ function buildNeighborhood(game, entry) {
       const clockLines = ['🕰️ "Checked it against a phone once. The phone lost."', '⏰ "Ten minutes fast by sunrise, an hour fast by lunch — nobody\'s ever climbed up to fix it."', '😼 "Puss, you have been staring at those hands for a very long time. They are not going to slow down."'];
       game.addInteractable({ obj: cupola, radius: 2.4, label: () => 'Look up at the cupola clock', onUse: () => { SFX.click(); game.toast(rnd.pick(clockLines), 3000); } });
     }
+    // fifteen of the street's sixteen roofs have a fixture of their own by now — every single one of
+    // them a built thing: an aerial, a dish, a vent, a clock, a chime. House 3's own ridge — the lot
+    // whose own front yard already has the parked bike and helmet — is the last bare roof on the
+    // street, and it skips the gadgets entirely: a small mud-cup nest tucked against the ridge, with a
+    // sparrow actually sitting in it. *"Last roof on the street, and the only one that's actually
+    // lived in."* *"Every other roof up here got a gadget. This one got a tenant."* *"Puss, that nest
+    // is occupied. Leave it be."*
+    // Same slot every other roof fixture on this street already uses — parented to the house's own
+    // group (`h`) at its ridge apex (`h.userData.h`), so it costs no world-space maths and needs no
+    // physics box, the same few-metres-up reasoning the other fifteen already bank on. The nest itself
+    // is a flattened, mottled dome (two overlapping sphere scales, the same "bodySphere"-style trick
+    // the birds' own rigs use for a less-than-perfectly-round shape) with a few `noInk()`-wrapped twig
+    // stubs poking out, all static. The sparrow is `makeSparrow()` straight off the shelf — the exact
+    // rig the birdbath's own visitor already uses — sat in the cup and driven by its own `rig.animate()`
+    // call each frame for the occasional idle peck, the same trick the birdbath leans on; no new
+    // animation of its own, so no draw from this world's own seeded `r` or the shared `rnd()` sequence
+    // at build time, the same caution every fixture on this street already takes.
+    if (i === 3) {
+      const nestM = mat(0x7a5a38, { roughness: 0.95 }), nestM2 = mat(0x8a6a44, { roughness: 0.9 }), twigM = mat(0x5c4428, { roughness: 0.9 });
+      const nest = group(0.25, h.userData.h, 0, h);
+      mesh(G.sphere(0.14, 12, 8), nestM, { sy: 0.55, shadow: 'both', parent: nest });
+      mesh(G.sphere(0.1, 10, 7), nestM2, { y: 0.03, sy: 0.4, shadow: 'none', parent: nest });
+      for (const [tx, tz, tr] of [[-0.12, 0.05, 0.4], [0.1, -0.08, -0.3], [0.02, 0.13, 1.1], [-0.08, -0.11, 2.2]]) noInk(mesh(G.cyl(0.006, 0.006, 0.16, 5), twigM, { x: tx, y: 0.04, z: tz, rx: PI / 2, ry: tr, shadow: 'none', parent: nest }));
+      const tenant = makeSparrow(); nest.add(tenant.group);
+      tenant.group.position.set(0, 0.06, 0);
+      tenant.group.rotation.y = 0.6;
+      U.push((dt, t) => tenant.animate(0, false, dt, t));
+      const nestLines = ['🐦 "Chirp. (Translation: last roof on the street, and the only one that\'s actually lived in.)"', '🏠 "Every other roof up here got a gadget. This one got a tenant."', '😼 "Puss, that nest is occupied. Leave it be."'];
+      game.addInteractable({ obj: nest, radius: 2.2, label: () => 'Look up at the nest', onUse: () => { SFX.click(); game.toast(rnd.pick(nestLines), 3000); } });
+    }
   });
   // the pinwheel, sprinkler and kennel above gave three of the street's sixteen yards their own
   // feature; lot 14's own corner now gets a fourth — a stone birdbath, a shallow bowl on a short
