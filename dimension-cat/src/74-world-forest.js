@@ -362,8 +362,8 @@ function buildForest(game, entry) {
   for (let i = 0; i < 14; i++) { const z = 40 - i * 2.6, x = sin(i * 0.7) * 1.6; mesh(G.cyl(0.55, 0.6, 0.12, 9), mat(0x8a8a80, { roughness: 1 }), { x, y: P.ground0(x, z) + 0.05, z, ry: r() * TAU, shadow: 'receive', parent: W }); }
 
   // life: deer, foxes, hares, frogs, owls, fairies, butterflies, the squirrel
-  let firstDeer = null;
-  for (const [i, [x, z]] of [[-24, 4], [20, 20], [-10, -30]].entries()) { const rig = makeDeer(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x, z, speed: 0.6, leash: 9, r: 0.45, height: 1.4, step: 0.3, idle: [3, 7], walk: [2, 5] })); if (i === 0) firstDeer = rig; }
+  let firstDeer = null, secondDeer = null;
+  for (const [i, [x, z]] of [[-24, 4], [20, 20], [-10, -30]].entries()) { const rig = makeDeer(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x, z, speed: 0.6, leash: 9, r: 0.45, height: 1.4, step: 0.3, idle: [3, 7], walk: [2, 5] })); if (i === 0) firstDeer = rig; if (i === 1) secondDeer = rig; }
   // a woman kneels at the fringe of the trees, scattering acorns for the western deer
   { const dx = -24, dz = 4, kx = dx + 2.2, kz = dz - 1.0;
     const feeder = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: false }), shirt: 0x6b8a5a, pants: 0x4a4030, shoes: 0x3a2a1e, bag: 0x8a6a4a, hat: null, scarf: null, jacket: null, backpack: null, glasses: false });
@@ -381,6 +381,21 @@ function buildForest(game, entry) {
     game.addInteractable({ obj: firstDeer.group, radius: 2.0, label: () => 'Say hello to the deer', onUse: () => {
       game.befriend(deerId); SFX.click(); game.hearts(firstDeer.group.position.x, 1.1, firstDeer.group.position.z, 3);
       game.toast('🦌 *ears swivel, one cautious step closer, then back to grazing*'); } }); }
+  // the second deer, out by (20, 20) near the jump-roper, was left for "a future round" above — this is
+  // that round. Same root cause, same fix: `game.namedFriend('deer-2')` plus a `game.addInteractable`
+  // keyed straight to `secondDeer.group`, tracked every frame so the prompt follows it through its own
+  // 9 m leash. A headless probe (`game.start('new')` then `game.load(6, 'from-hub')` so the Wanderer
+  // state machine actually runs, 3000 simulated frames with this deer's own position sampled every
+  // frame) swept every sample against every physics box and every other NPC: the nearest box stayed
+  // 4.39 m clear throughout, and the nearest other soul — the jogger looping near (26, 14) — came within
+  // 1.71 m at the wander's closest approach. That's inside the new prompt's 2.0 m radius, so the two
+  // prompts can briefly contend for whichever is nearer at that one corner of the deer's leash; the game
+  // already resolves that by picking the closest interactable, the same as the two foxes' own overlap
+  // two rounds back, so nothing breaks.
+  { const deer2Id = game.namedFriend('deer-2');
+    game.addInteractable({ obj: secondDeer.group, radius: 2.0, label: () => 'Say hello to the deer', onUse: () => {
+      game.befriend(deer2Id); SFX.click(); game.hearts(secondDeer.group.position.x, 1.1, secondDeer.group.position.z, 3);
+      game.toast('🦌 *head lifts sharply, chews once, then bounds off through the ferns*'); } }); }
   let firstFox = null, secondFox = null;
   for (const [i, [x, z]] of [[14, 6], [-26, -14]].entries()) { const rig = makeFox(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x, z, speed: 1.3, leash: 10, r: 0.3, height: 0.8, step: 0.3, idle: [1, 3], walk: [2, 5] })); if (i === 0) firstFox = rig; if (i === 1) secondFox = rig; }
   // the den fox at (14, 6) has been purely ambient since round 1, the same root cause as the deer above

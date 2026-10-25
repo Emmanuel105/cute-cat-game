@@ -19505,3 +19505,35 @@ and the angler's own greet circle 8.1 m short.
 (no new collider). Sunny Shore's own friend total rose by one (90 to 91 to meet). No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 725 — Whisper Woods' second deer finally becomes a friend
+
+Round 1 placed three deer in Whisper Woods' glade at `(-24, 4)`, `(20, 20)` and `(-10, -30)`, and a
+woman kneeling nearby scatters acorns to coax the western one close, calling it "that one" who "always
+comes first." A later round gave that western deer its own "Say hello" prompt and explicitly left its
+two glade-mates "for a future round." This is that round for the second one, out at `(20, 20)`.
+
+**The second deer now answers its own "Say hello to the deer" prompt**, with *"🦌 *head lifts sharply,
+chews once, then bounds off through the ferns*"* — a different reaction from its western cousin's so the
+two don't read as the same animal. Same root cause as every other ambient critter this log keeps
+finding: `makeDeer()`'s rig carries none of `.look`/`.robot`/`.cookie`, so `Wanderer`'s own `greetable()`
+call quietly no-ops on it. No new mesh, no new physics box: the loop that builds all three deer now also
+captures the second rig, and a `game.namedFriend('deer-2')` plus a `game.addInteractable` keyed straight
+to its own `rig.group` (2.0 m radius, the same the first deer uses, tracked every frame so the prompt
+follows it through its own 9 m leash) does the rest. The third deer, at `(-10, -30)`, is left for a
+future round.
+
+A headless probe (`game.start('new')` then `game.load(6, 'from-hub')` so the `Wanderer` state machine
+actually runs, 3000 simulated frames with this deer's own position sampled every frame) swept every
+sample against every physics box and every other NPC: the nearest box stayed 4.39 m clear throughout,
+and the nearest other soul — a jogger looping near `(26, 14)` — came within 1.71 m at the wander's
+closest approach. That's inside the new prompt's 2.0 m radius, so the two prompts can briefly contend
+for whichever is nearer at that one corner of the deer's leash; the game already resolves that the same
+way it does anywhere else two prompts overlap (closest wins), the same as the two foxes' own overlap a
+few rounds back, so nothing breaks.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 328
+(no new collider). Whisper Woods' own friend total rose by one (86 to 87 to meet). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above, plus
+the standalone headless probe described here.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
