@@ -1221,6 +1221,43 @@ function buildNeighborhood(game, entry) {
       const ventLines = ['💨 "Louvers, not a turbine — no spinning, no oiling, nothing up there to watch at all."', '🏠 "Keeps the attic dry while the hose two storeys down keeps everything else wet."', '😼 "Puss, there is nothing up there to chase. It doesn\'t even turn."'];
       game.addInteractable({ obj: vent, radius: 2.2, label: () => 'Look up at the ridge vent', onUse: () => { SFX.click(); game.toast(rnd.pick(ventLines), 3000); } });
     }
+    // thirteen of the street's sixteen roofs have a fixture of their own by now, every one of them
+    // bolted to the ridge apex bar the downpipe's own gutter corner — and the cat's own porch has flown
+    // a wind chime since round 1, the same prop the gingerbread cottage, the gondola cabin and more
+    // than one beach hut already hang from their own eaves, but not one of the street's sixteen porches
+    // has ever had one. House 15's own porch — the lot whose front yard already has the wheelie bin —
+    // gets one now, hung from the underside of its own porch roof, on the post opposite the porch
+    // light so the two don't crowd each other. *"Nobody's rung that on purpose yet. The wind manages
+    // just fine without the help."* *"Fourteen roofs with a fixture of their own, and it took this long
+    // to notice the porch underneath counts too."* *"Puss, that's a wind chime, not string. Leave it
+    // be."*
+    // Reuses `makeWindChime()` outright rather than build anything new — the exact prop the cat's own
+    // porch, the gingerbread cottage and the gondola cabin already hang (60-props.js). Parented
+    // straight to this house's own group (`h`) at local (dx - 0.75, 2.45, d/2 + 1.7): `makeHouse()`'s
+    // own defaults (w=7, d=6, never overridden by any call in this loop) put the porch roof's
+    // underside at y=2.72 and its own 1.9 m depth spanning z 3.05..4.95 off d/2=3.0, so y=2.45 hangs
+    // clear underneath it and z=4.7 sits well inside that span, clear of both porch posts at z=4.35.
+    // `dx` is the exact same door-side offset `makeHouse()` itself computes (`o.doorRight ? w*0.3 : 0`),
+    // and house 15 is odd (i%2===1, same as every other doorRight house in this loop) so dx=2.1; minus
+    // 0.75 lands the chime on the post at local x=1.35, the far side from the porch light at dx+0.75.
+    // Since `place()` always re-parents to `game.world` and `makeWindChime()` wires up its own
+    // `userData.update` rather than returning anything else, this one skips `place()` and does the two
+    // steps by hand: `h.add()` for the parenting (so it inherits this house's own world position and
+    // `ry` for free, same as every ridge fixture above), then its `userData.update` pushed straight onto
+    // this world's own `U` list. No new physics box: the whole chime hangs under a porch roof already
+    // 2.4 m off the ground, inside the same porch collision box every house's own front step already
+    // sits behind, the same "nothing on the ground can reach it" reasoning the ridge fixtures above all
+    // lean on. No new SFX either — the occasional ring is `makeWindChime()`'s own built-in `SFX.twinkle()`
+    // call, the exact one the cat's own porch chime already makes on its own fixed 16 s cycle.
+    if (i === 15) {
+      const dx15 = 2.1, d15 = 6;
+      const chime = makeWindChime(game, { wood: 0x8a5a32, metal: 0xd8dde0 });
+      chime.position.set(dx15 - 0.75, 2.45, d15 / 2 + 1.7);
+      h.add(chime);
+      U.push(chime.userData.update);
+      const chimeLines = ['🎐 "Nobody\'s rung that on purpose yet. The wind manages just fine without the help."', '🏠 "Fourteen roofs with a fixture of their own, and it took this long to notice the porch underneath counts too."', '😼 "Puss, that\'s a wind chime, not string. Leave it be."'];
+      game.addInteractable({ obj: chime, radius: 1.8, label: () => 'Listen to the wind chime', onUse: () => { SFX.click(); game.toast(rnd.pick(chimeLines), 3000); } });
+    }
   });
   // the pinwheel, sprinkler and kennel above gave three of the street's sixteen yards their own
   // feature; lot 14's own corner now gets a fourth — a stone birdbath, a shallow bowl on a short

@@ -19780,3 +19780,37 @@ Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
 detached `HEAD`, never pushed to `origin/main` — several earlier scheduled runs had committed but the
 push step hadn't landed. Fast-forwarded local `main` to that work and pushed it before starting this
 round's own change, so nothing from those earlier rounds was at risk of being lost.
+
+## Round 734 — House 15's porch gets the street's first wind chime
+
+The cat's own porch has flown a wind chime since round 1, and the gingerbread cottage, the gondola
+cabin and more than one beach hut have hung one of their own since — but of the street's sixteen
+houses, not one porch had ever gotten the same treatment, even with thirteen of their ridges already
+carrying a fixture apiece (aerial, dish, solar panel, whirlybird vent, lightning rod, pennant,
+anemometer, downpipe, cowl, finial, lantern, skylight, ridge vent). **House 15's own porch — the lot
+whose front yard already has the wheelie bin — now hangs a wind chime from the underside of its porch
+roof**, on the post opposite the porch light so the two don't crowd each other. *"Nobody's rung that
+on purpose yet. The wind manages just fine without the help."* *"Fourteen roofs with a fixture of
+their own, and it took this long to notice the porch underneath counts too."* *"Puss, that's a wind
+chime, not string. Leave it be."*
+
+No new mesh: this reuses `makeWindChime()` outright (60-props.js), the exact prop every other eave in
+the game already hangs. Parented straight to house 15's own group (`h`) at local (1.35, 2.45, 4.7) —
+`dx - 0.75` on the x axis (the door-side offset `makeHouse()` itself computes, minus a step to land on
+the post away from the porch light) and `d/2 + 1.7` on z, which sits inside the porch roof's own 1.9 m
+depth and clear of both posts. `h.add()` handles the parenting by hand (skipping `place()`, which
+always re-parents to `game.world`) and the chime's own `userData.update` is pushed onto the world's `U`
+list directly, the same two steps every roof fixture's own animated parts already take. No new physics
+box: the chime hangs under a porch roof already 2.4 m up, inside the porch's own existing collision
+box. No new SFX either — the occasional ring is `makeWindChime()`'s own built-in `SFX.twinkle()` on its
+usual fixed 16 s cycle.
+
+A standalone headless probe (`game.start('new')`, 60 simulated frames) found house 15's own group at
+world (63, 0, 28) as expected, the new "Listen to the wind chime" interactable registered with the
+chime at local (1.35, 2.45, 4.7) under it, and confirmed `onUse()` fires its toast without throwing.
+Houses 3 and 13 still carry nothing on their roofs but chimney smoke — either is next.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 328
+(no new collider, as expected). No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite and the standalone headless probe described here.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
