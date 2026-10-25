@@ -362,13 +362,25 @@ function buildForest(game, entry) {
   for (let i = 0; i < 14; i++) { const z = 40 - i * 2.6, x = sin(i * 0.7) * 1.6; mesh(G.cyl(0.55, 0.6, 0.12, 9), mat(0x8a8a80, { roughness: 1 }), { x, y: P.ground0(x, z) + 0.05, z, ry: r() * TAU, shadow: 'receive', parent: W }); }
 
   // life: deer, foxes, hares, frogs, owls, fairies, butterflies, the squirrel
-  for (const [x, z] of [[-24, 4], [20, 20], [-10, -30]]) { const rig = makeDeer(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x, z, speed: 0.6, leash: 9, r: 0.45, height: 1.4, step: 0.3, idle: [3, 7], walk: [2, 5] })); }
+  let firstDeer = null;
+  for (const [i, [x, z]] of [[-24, 4], [20, 20], [-10, -30]].entries()) { const rig = makeDeer(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x, z, speed: 0.6, leash: 9, r: 0.45, height: 1.4, step: 0.3, idle: [3, 7], walk: [2, 5] })); if (i === 0) firstDeer = rig; }
   // a woman kneels at the fringe of the trees, scattering acorns for the western deer
   { const dx = -24, dz = 4, kx = dx + 2.2, kz = dz - 1.0;
     const feeder = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: false }), shirt: 0x6b8a5a, pants: 0x4a4030, shoes: 0x3a2a1e, bag: 0x8a6a4a, hat: null, scarf: null, jacket: null, backpack: null, glasses: false });
     W.add(feeder.group);
     game.npcs.push(new Kneeler(game, feeder, { x: kx, z: kz, ry: atan2(dx - kx, dz - kz),
       cries: ["Acorns bring them close, if you're quiet.", 'Careful, puss — you\'ll scare them off.', 'That one always comes first.'] })); }
+  // the western deer (-24, 4) the acorn-feeder above is coaxing close has been purely ambient since
+  // round 1, same root cause as every other critter this log keeps finding: `makeDeer()`'s rig carries
+  // none of `.look`/`.robot`/`.cookie`, so `Wanderer`'s own `greetable()` call quietly no-ops on it.
+  // It's "that one" the feeder's own dialogue already calls out as the first to come close, so it gets
+  // the fix first; the other two deer, further round the glade, are left for a future round. No new
+  // mesh, no new physics box: `game.namedFriend('deer')` plus a `game.addInteractable` keyed straight
+  // to `firstDeer.group`, tracked every frame so the prompt follows it through its own 9 m leash.
+  { const deerId = game.namedFriend('deer');
+    game.addInteractable({ obj: firstDeer.group, radius: 2.0, label: () => 'Say hello to the deer', onUse: () => {
+      game.befriend(deerId); SFX.click(); game.hearts(firstDeer.group.position.x, 1.1, firstDeer.group.position.z, 3);
+      game.toast('🦌 *ears swivel, one cautious step closer, then back to grazing*'); } }); }
   for (const [x, z] of [[14, 6], [-26, -14]]) { const rig = makeFox(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x, z, speed: 1.3, leash: 10, r: 0.3, height: 0.8, step: 0.3, idle: [1, 3], walk: [2, 5] })); }
   // a third, bolder fox: it minds its own business until the cat wanders close, then trots over for a look.
   // Same root cause and fix as the bolder penguin (Frosty Peak, round 716) and the bolder crab (Sunny

@@ -19402,3 +19402,27 @@ friends rather than one shared one. No new mesh, no new physics box, no new zone
 (no new collider). Sunny Shore's own friend total rose by one (89 to 90 to meet). No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 721 — Whisper Woods' first deer finally becomes a friend
+
+Whisper Woods has had three deer wandering the glade since round 1, plus a woman kneeling at the
+tree-line scattering acorns to coax the western one close — her own dialogue even calls it out as "that
+one" who always comes first. But none of the three was ever anyone the cat could actually meet. Same
+root cause as every other ambient critter this log keeps finding: `makeDeer()`'s rig carries none of
+`.look`/`.robot`/`.cookie`, so `Wanderer`'s own `greetable()` call quietly no-ops on it.
+
+**The western deer at (-24, 4), the one the feeder is coaxing, now answers its own "Say hello to the
+deer" prompt**, with *"🦌 *ears swivel, one cautious step closer, then back to grazing*"*. No new mesh,
+no new physics box: the loop that builds all three deer now captures the first rig in a local variable,
+and a `game.namedFriend('deer')` plus a `game.addInteractable` keyed straight to its own `rig.group`
+(2.0 m radius, tracked every frame so the prompt follows it through its usual 9 m leash) does the rest.
+The other two deer, further round the glade with no feeder of their own, are left for a future round —
+same one-at-a-time pattern this log has used for every other trio (Frosty Peak's hares, Sunny Shore's
+sandpipers) so each round stays small and self-contained.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 328
+(no new collider). Whisper Woods' own friend total rose by one (83 to 84 to meet). Whisper Woods' two
+plain-`Wanderer` foxes (the bolder third one was fixed in round 717) have the exact same gap and are the
+obvious next target. No visual check was possible in this environment (no browser, no Playwright) —
+only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.
