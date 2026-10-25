@@ -19567,3 +19567,32 @@ well clear of the new prompt's 2.0 m radius.
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above, plus
 the standalone headless probe described here.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 727 — Frosty Peak's arctic fox finally becomes a friend
+
+Frosty Peak's own arctic fox has roamed the open snow south-east of the village since the round that
+first built it — white-coated, the mountain's answer to Whisper Woods' orange foxes — but nobody could
+ever say hello to it. Same root cause this log keeps finding in every ambient critter built outside the
+usual `Hopper`/named-rig path: `makeArcticFox()`'s rig is a plain `makeQuadruped()` with none of
+`.look`/`.robot`/`.cookie`, so `Wanderer`'s own `greetable()` call quietly no-ops on it, same as every
+hare, fox, deer, turtle, seal, otter, pelican and penguin this log has fixed one by one for the last
+thirty-odd rounds.
+
+**The arctic fox now answers its own "Say hello to the fox" prompt**, with *"🦊 *white ears swivel,
+breath puffing in the cold, then it melts into the snow*"*. No new mesh, no new physics box:
+`game.namedFriend('arctic-fox')` plus a `game.addInteractable` keyed straight to the rig's own group
+(2.1 m radius, matching the woods' own foxes) does the rest, tracked every frame so the prompt follows
+it through its full 8 m leash.
+
+A headless probe (`game.start('new')` then `game.travel(5, 'from-hub')` so `Wanderer`'s state machine
+actually runs, 3000 simulated frames with the fox's own position sampled every frame) swept every
+sample against every physics box and every other NPC: the nearest box stayed 0.3 m clear throughout
+(the fox's own collision-avoidance keeps it from ever touching one, the same margin the deer and others
+hold a few rounds back), and the nearest other soul never came closer than 3.86 m, well past the new
+prompt's 2.1 m radius.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 328
+(no new collider). Frosty Peak's own friend total rose by one (84 to 85 to meet). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above, plus
+the standalone headless probe described here.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

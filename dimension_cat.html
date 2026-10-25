@@ -18730,7 +18730,23 @@ function buildSnowVillage(game, entry) {
   // (12, -48) comes back clear by 16.25 m at the centre and never closer than 8.36 m anywhere round the
   // ring — south of the reindeer and the searcher's sweep, well clear of the cave tunnel's flat strip
   // (which only ever runs within 9 m of x=0) and the sled run's corridor further west
-  { const rig = makeArcticFox(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x: 12, z: -48, speed: 1.1, leash: 8, r: 0.3, height: 0.7, step: 0.3, idle: [1, 3], walk: [2, 5] })); }
+  { const rig = makeArcticFox(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x: 12, z: -48, speed: 1.1, leash: 8, r: 0.3, height: 0.7, step: 0.3, idle: [1, 3], walk: [2, 5] }));
+    // the arctic fox was ambient from the day it was added — `Wanderer` only calls `greetable()` for
+    // rigs carrying `.look`/`.robot`/`.cookie`, and `makeArcticFox()`'s plain `makeQuadruped()` rig has
+    // none of those, the same root cause this log keeps finding in every ambient critter built outside
+    // the usual `Hopper`/named-rig path (Whisper Woods' own foxes, hares and deer, Frosty Peak's own
+    // hare trio). No new mesh, no new physics box: `game.namedFriend` and `game.addInteractable` tracked
+    // on the rig's own group every frame, so the prompt follows it through its full 8 m leash. A headless
+    // probe (`game.start('new')` then `game.travel(5, 'from-hub')` so `Wanderer`'s state machine actually
+    // runs, 3000 simulated frames with the fox's own position sampled every frame) swept every sample
+    // against every physics box and every other NPC: the nearest box stayed 0.3 m clear throughout (the
+    // fox's own collision-avoidance keeps it from ever touching one, the same margin the deer and others
+    // hold a few rounds back), and the nearest other soul never came closer than 3.86 m, well past the
+    // new prompt's 2.1 m radius.
+    const arcticFoxId = game.namedFriend('arctic-fox');
+    game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the fox', onUse: () => {
+      game.befriend(arcticFoxId); SFX.bark(); game.hearts(rig.group.position.x, 0.5, rig.group.position.z, 3);
+      game.toast('🦊 *white ears swivel, breath puffing in the cold, then it melts into the snow*'); } }); }
   // a snowy owl perches on the pine already standing at (30, 26) — one of the hand-placed ring trees
   // above — the exact same perched-and-blinking rig Whisper Woods' three owls use (`makeOwl()` in
   // 56-npcs-wild.js, which now takes an optional colour override), just recoloured white and pale grey
