@@ -19996,3 +19996,39 @@ Whisper Woods' own friend total rose by one (89 to 90 to meet). All seven worlds
 vignette of their own. No visual check was possible in this environment (no browser, no Playwright) —
 only the stub-three test suite and the standalone headless probe described here. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 740 — the Neighborhood finally gets an ice-cream cart
+
+With the lie-down vignette and roof-fixture campaigns both wrapped up, this round checked each world's
+own `friendTotal` fresh out of a headless probe: Victorian 105, Robot City and Whisper Woods 90, Sunny
+Shore 91, Frosty Peak 87, Candy Land 89 — and the Neighborhood, smallest of the seven worlds, lowest of
+all at 78. Sunny Shore has had a scoop seller working the sand since round 411, and this same street
+has had a balloon seller and a lemonade stand for almost as long, but no one on the whole street ever
+sold the other classic treat. **A small push-cart now parks in the open field south of the street, the
+same quiet corner the Marchers drill in**: a boxy cooler on two wheels with a painted stripe and a
+striped awning overhead, and a vendor in a paper cap holding a cone up for the first taker. *"Ice
+cream! Fresh off the cart!"* *"Careful, puss — it's melting already."* *"One scoop or two today?"*
+
+No new mesh for the cone itself: it reuses `makeIceCreamCone()` outright (`62-props-nature.js`), the
+exact held prop Sunny Shore's own scoop seller already holds up. The cart is new but small and
+entirely static — a cooler box, a painted stripe, two wheels and a front support leg, a bent push
+handle, and a two-pole striped awning overhead — every dimension a literal, no draw from this world's
+own seeded `r()` for the geometry, only for the vendor's own `randomPerson()`/`makeWardrobe()` pick, the
+usual caution every fixture on this street already takes since the Neighborhood is the first world the
+test suite builds. `greetable(game, v)` — the same trick the lemonade stand's own seller already uses —
+gives it a "Say hello" prompt with no custom `addInteractable` needed.
+
+A headless probe (`game.start('new')`, 4000 simulated frames, every NPC's and the squirrel's own
+position sampled every 5th frame) swept the open field south of the street against both those 12,000+
+samples and all 328 of the street's own physics boxes: (-4, -26) came back clear by 8.4 m of the
+nearest box and 8.0 m of the nearest wandering soul, comfortably past the cart's own small 0.8×0.5 m
+footprint — well west of the Marchers' own drill line and south of the lake, the same open ground the
+woodcutter and the picnic blanket already share. Built dead last, right after the Marchers, so the
+fresh `makeHuman()` and `makeWardrobe()` draws off the shared `rnd()`/this world's own `r()` sequences
+disturb no earlier timing-sensitive pick on this street.
+
+`node test/run.mjs` ran clean twice in a row: exit 0, all checks `ok` both times, 0 console warnings,
+box count up by one (328 to 329, the cart's own collider, as expected). The Neighborhood's own friend
+total rose by one (78 to 79 to meet). No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite and the standalone headless probe described here. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

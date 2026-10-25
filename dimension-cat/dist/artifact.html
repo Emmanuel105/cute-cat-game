@@ -10834,6 +10834,49 @@ function buildNeighborhood(game, entry) {
     game.npcs.push(new Marchers(game, troop, { points: [[-29.5, -28], [-22.5, -28]], speed: 1.0, pause: [1, 2], r: 0.32, gap: 1.1,
       cries: ['Left, right, left, right — keep it sharp, troops!', 'Forward march! Mind the anthill, soldier.', 'Reporting for duty, cat. Dismissed.'], cryIcon: '🪖' })); }
 
+  // Sunny Shore's own ice-cream seller has worked the sand since round 411, and this street has had a
+  // balloon seller and a lemonade stand for almost as long — but no one in the whole Neighborhood ever
+  // sold the other classic treat. A small push-cart now parks in the open field south of the street, the
+  // same quiet corner the Marchers drill in above: a boxy cooler on two wheels with a striped awning
+  // overhead, and a vendor in a paper cap holding a cone up for the first taker. *"Ice cream! Fresh off
+  // the cart!"* *"Careful, puss — it's melting already."* *"One scoop or two today?"*
+  // Reuses `makeIceCreamCone()` outright (62-props-nature.js), the exact held prop Sunny Shore's own
+  // ice-cream seller already uses — no new mesh for the cone itself. The cart is new, small and static:
+  // a cooler box on two wheels with a painted stripe, a front support leg, a bent push handle and a
+  // two-pole striped awning overhead, every dimension below a literal (no draw from this world's own
+  // seeded `r()` for the geometry, only for the vendor's own `randomPerson()`/`makeWardrobe()` pick,
+  // the same caution every other fixture on this street already takes since the Neighborhood is the
+  // first world the test suite builds). `greetable(game, v)` — the exact trick the lemonade stand's own
+  // seller already uses — gives it a "Say hello" prompt with no custom `addInteractable` needed.
+  // A headless probe (`game.start('new')`, 4000 simulated frames, every NPC's and the squirrel's own
+  // position sampled every 5th frame) swept the open field south of the street against both those
+  // samples and all 328 of the street's own physics boxes: (-4, -26) came back clear by 8.4 m of the
+  // nearest box and 8.0 m of the nearest wandering soul, comfortably past the cart's own small 0.8x0.5 m
+  // footprint — well west of the Marchers' own drill line and south of the lake, the same open ground
+  // the woodcutter and the picnic blanket already share. Built dead last, right after the Marchers, so
+  // the fresh `makeHuman()` and `makeWardrobe()` draws off the shared `rnd()`/this world's own `r()`
+  // sequences disturb no earlier timing-sensitive pick on this street.
+  { const cartX = -4, cartZ = -26;
+    const coolerM = mat(0xf2f7f2, { roughness: 0.55 }), trimM = mat(0x2e9e6e, { roughness: 0.5 }), wheelM = mat(0x2a2a2a, { roughness: 0.7 }), metalM = mat(0x8a8a8a, { metalness: 0.5, roughness: 0.45 });
+    const cart = group(cartX, 0, cartZ, W);
+    mesh(G.box(0.7, 0.5, 0.42), coolerM, { y: 0.45, shadow: 'both', parent: cart });               // cooler body
+    mesh(G.box(0.72, 0.05, 0.44), trimM, { y: 0.71, shadow: 'both', parent: cart });                // lid trim
+    for (const stripeZ of [-0.1, 0.1]) mesh(G.box(0.72, 0.03, 0.03), trimM, { y: 0.5, z: stripeZ, shadow: 'none', parent: cart });   // painted stripes
+    for (const wx of [-0.26, 0.26]) mesh(G.cyl(0.14, 0.14, 0.06, 14), wheelM, { x: wx, y: 0.14, z: 0.24, rx: PI / 2, shadow: 'both', parent: cart });   // two wheels at the back
+    mesh(G.cyl(0.03, 0.03, 0.14, 8), metalM, { y: 0.14, z: -0.22, shadow: 'both', parent: cart });   // front support leg
+    const handle = group(0, 0.68, -0.21, cart);
+    mesh(G.cyl(0.02, 0.02, 0.4, 6), metalM, { y: 0.1, rx: -0.3, shadow: 'none', parent: handle });
+    mesh(G.cyl(0.02, 0.02, 0.3, 6), metalM, { y: 0.28, z: -0.12, rx: PI / 2 - 0.3, shadow: 'none', parent: handle });
+    for (const px of [-0.3, 0.3]) mesh(G.cyl(0.018, 0.018, 1.0, 6), metalM, { x: px, y: 1.2, shadow: 'none', parent: cart });   // two awning poles
+    for (let i = 0; i < 5; i++) mesh(G.box(0.16, 0.02, 0.5), i % 2 ? trimM : mat(0xfff3e6, { roughness: 0.8 }), { x: -0.32 + i * 0.16, y: 1.7, shadow: 'both', parent: cart });   // striped flat awning
+    P.addBox(cartX, 0.4, cartZ, 0.8, 0.8, 0.5, { cam: false });
+    const scoopWard = makeWardrobe(r, { shirts: [0xffffff, 0xf7f3ec], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0xefe7d8, 0x8d6e63] });
+    const seller = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.2), wardrobe: scoopWard }),
+      apron: 0xf5f2ea, hat: 'cap', hatColor: 0x2e9e6e, jacket: null, scarf: null }); W.add(seller.group);
+    const v = new Vendor(game, seller, makeIceCreamCone(), { x: cartX + 0.9, z: cartZ, ry: PI / 2, cryIcon: '🍦',
+      cries: ['Ice cream! Fresh off the cart!', "Careful, puss — it's melting already.", 'One scoop or two today?'] });
+    game.npcs.push(v); greetable(game, v); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
