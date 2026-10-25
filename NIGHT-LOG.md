@@ -19481,3 +19481,27 @@ breaks, but it's worth knowing about if a future round wants to tighten this cor
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above, plus
 the standalone headless probe described here.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 724 — Sunny Shore's pelican finally becomes a friend
+
+Sunny Shore's pier has had a pelican perched on its own handrail, scanning the water and miming the
+occasional swallowed fish, since the round that first placed it (`makePelican()` in `56-npcs-wild.js`,
+built "perched: only animates" from the start, the same trick as the owls and Frosty Peak's seal and
+otter). But it was never wired to `greetable()`, so it just stood there forever with nobody able to say
+hello — same root cause this log keeps finding in every ambient critter built outside the usual
+`Wanderer`/`Hopper` controllers.
+
+**The pelican now answers its own "Say hello to the pelican" prompt**, with *"🐦 *jaw clacks shut around
+nothing, then goes back to watching the water*"*. No new mesh, no new physics box: `game.namedFriend
+('pelican')` plus a `game.addInteractable` keyed straight to `pelican.group` does the rest. The pelican
+is a child of the pier's own group (parented there for its rotation, not placed in world space), so the
+hearts effect reads its live world position off `pelican.group.getWorldPosition()` rather than any fixed
+offset — the same way `getWorldPosition` already drives the interactable's own distance check every
+frame in `80-game.js`. The 2.2 m greet radius (the same the otter's own prompt uses) steals nothing: the
+round that placed this pelican already measured the "look out over the pier" prompt 5.2 m short of here
+and the angler's own greet circle 8.1 m short.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 328
+(no new collider). Sunny Shore's own friend total rose by one (90 to 91 to meet). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

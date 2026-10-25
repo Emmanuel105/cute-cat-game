@@ -16615,7 +16615,23 @@ function buildBeach(game, entry) {
   // same "perched; only animates" trick the owls and Frosty Peak's seal already use — so it can't block
   // the deck the cat actually walks.
   { const pelican = makePelican(); pelican.group.position.set(1.45, 1.56, 5); pier.add(pelican.group);
-    let pt = r() * 10; U.push((dt) => { pt += dt; pelican.animate(0, false, dt, pt); }); }
+    let pt = r() * 10; U.push((dt) => { pt += dt; pelican.animate(0, false, dt, pt); });
+    // this pelican has stood its rail and mimed swallowing fish since the round that placed it, same
+    // root cause as every other "perched; only animates" critter this log keeps finding (the owls,
+    // Frosty Peak's seal and otter): nothing wired it to `greetable()`, so it just scanned the water
+    // forever with nobody able to say hello. `game.addInteractable` keys straight off `pelican.group`
+    // — no new mesh, no new physics box — and `getWorldPosition` (what the main loop's prompt check
+    // already calls every frame) walks the parent chain through the pier's own rotation for free, the
+    // same trick the lake's drake and hen already rely on, so the prompt tracks it correctly even
+    // though it's a child of `pier` rather than placed in world space. The round that placed this
+    // pelican already measured the "look out over the pier" prompt (radius 4 at the pier's landward
+    // origin) 5.2 m short of here and the angler's own greet circle 8.1 m short, so a 2.2 m reach
+    // (the same the otter's own prompt uses) steals neither.
+    const pelicanId = game.namedFriend('pelican');
+    game.addInteractable({ obj: pelican.group, radius: 2.2, label: () => 'Say hello to the pelican', onUse: () => {
+      const p = V3(); pelican.group.getWorldPosition(p);
+      game.befriend(pelicanId); SFX.gull(); game.hearts(p.x, p.y + 0.2, p.z, 3);
+      game.toast('🐦 *jaw clacks shut around nothing, then goes back to watching the water*'); } }); }
   const lighthouse = makeLighthouse(game, 12, -46); U.push(lighthouse.userData.update);
   // the Victorian bell tolls, the factory whistle blows, Whisper Woods' owl hoots — but Sunny Shore's
   // own lighthouse, sweeping its beam every second since the world was first built, had never once
