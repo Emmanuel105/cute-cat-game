@@ -20109,3 +20109,25 @@ box count unchanged at 329 (no new collider, as expected — a befriend prompt o
 none). Frosty Peak's own friend total rose by one (87 to 88 to meet). No visual check was possible in
 this environment (no browser, no Playwright) — only the stub-three test suite described here. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 744 — Frosty Peak's third marching penguin finally becomes a friend
+
+Round 743 gave the drill column's second penguin a "Say hello" prompt and explicitly left the third
+— the one bringing up the rear of the strict 8 m lockstep line — as pure ambient background. **The
+third penguin now answers too**, same `game.namedFriend()` + `game.addInteractable` trick the first two
+already use, tracked straight off `marchers[2].group`, which `Marchers.update()` (`55-npcs.js`) already
+repositions every frame to hold its own fixed 0.9 m gap behind the second bird, so the prompt follows
+it there and back along the whole stretch exactly like the other two. *"Brings up the rear, muttering
+about the pace."*
+
+No new mesh, no new controller, no new physics box: just a third interactable on an existing rig the
+column already builds. All three birds' 2.1 m prompt radii now overlap along the short column, but
+`game.update()` already picks whichever interactable sits nearest the cat each frame, so standing
+closer to any one bird prompts for that one specifically — no conflict, same as the first two. Every
+penguin in the drill column is now a friend; this vignette is complete.
+
+`node test/run.mjs` ran clean twice in a row: exit 0, all checks `ok` both times, 0 console warnings,
+box count unchanged at 329 (no new collider, as expected — a befriend prompt on an existing rig adds
+none). Frosty Peak's own friend total rose by one (88 to 89 to meet). No visual check was possible in
+this environment (no browser, no Playwright) — only the stub-three test suite described here. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -20147,7 +20147,9 @@ function buildSnowVillage(game, entry) {
     const leadId = game.namedFriend('marching-penguin');
     game.addInteractable({ obj: marchers[0].group, radius: 2.1, label: () => 'Say hello to the penguin', onUse: () => { game.befriend(leadId); SFX.squawk(); game.hearts(marchers[0].group.position.x, 0.6, marchers[0].group.position.z, 3); game.toast('🐧 *breaks column for one surprised wing-flap, then falls right back in line*'); } });
     const secondId = game.namedFriend('marching-penguin-2');
-    game.addInteractable({ obj: marchers[1].group, radius: 2.1, label: () => 'Say hello to the penguin', onUse: () => { game.befriend(secondId); SFX.squawk(); game.hearts(marchers[1].group.position.x, 0.6, marchers[1].group.position.z, 3); game.toast('🐧 *keeps pace but cranes its neck round for a look*'); } }); }
+    game.addInteractable({ obj: marchers[1].group, radius: 2.1, label: () => 'Say hello to the penguin', onUse: () => { game.befriend(secondId); SFX.squawk(); game.hearts(marchers[1].group.position.x, 0.6, marchers[1].group.position.z, 3); game.toast('🐧 *keeps pace but cranes its neck round for a look*'); } });
+    const thirdId = game.namedFriend('marching-penguin-3');
+    game.addInteractable({ obj: marchers[2].group, radius: 2.1, label: () => 'Say hello to the penguin', onUse: () => { game.befriend(thirdId); SFX.squawk(); game.hearts(marchers[2].group.position.x, 0.6, marchers[2].group.position.z, 3); game.toast('🐧 *brings up the rear, muttering about the pace*'); } }); }
   // The Neighborhood, Candy Land, Robot City, Victorian and Sunny Shore have all had a tetherball pole
   // since round 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack
   // races) went round every world in turn — Frosty Peak, for all its tug-of-war, archery range,
