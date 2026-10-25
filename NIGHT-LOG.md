@@ -19814,3 +19814,36 @@ Houses 3 and 13 still carry nothing on their roofs but chimney smoke — either 
 (no new collider, as expected). No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite and the standalone headless probe described here.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 735 — House 13's ridge gets a cupola clock that's always wrong
+
+Fourteen of the Neighborhood's sixteen roofs already carried a fixture of their own — a turbine that
+spins, a beacon that pulses, a dish that just sits facing one patch of sky — but not one of them has
+ever been about the time of day. **House 13's own ridge — the lot whose own front yard already has the
+dog kennel — now gets a small cupola with a clock face on its street-facing side, the fifteenth roof
+fixture and the first that's actually supposed to tell the time and visibly can't**: the hour hand
+sweeps a full circle roughly every two minutes, the minute hand more than ten times faster than that,
+both of them a dead giveaway to anyone who looks up for more than a second. *"Checked it against a
+phone once. The phone lost."* *"Ten minutes fast by sunrise, an hour fast by lunch — nobody's ever
+climbed up to fix it."* *"Puss, you have been staring at those hands for a very long time. They are
+not going to slow down."*
+
+Same slot every other roof fixture on this street already uses — parented to the house's own group
+(`h`) at its ridge apex (`h.userData.h`), so it costs no world-space maths and needs no physics box,
+the same few-metres-up reasoning the other fourteen already bank on. The housing and its four-sided
+pyramid cap are plain static geometry; the clock face is a flat disc rotated onto the housing's own
+local +z side (`rx: PI/2`), the same side `makeHouse()` itself already treats as the street-facing one
+(the door, porch roof and porch light all sit at `+d/2`), so the dial reads right-way-up to the cat
+walking up from the street rather than facing blankly into the roof. The twelve hour-mark dots and both
+hands are `noInk()`-wrapped, the usual treatment for anything this slender up here; the hands are two
+pivot groups spun on their own local z-axis — the plane the face itself sits in — off the world clock
+`t` alone, at two fixed, deliberately wrong rates. No draw from this world's own seeded `r` or the
+shared `rnd()` sequence at build time, since the Neighborhood is the one world every test travel starts
+from.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 328
+(no new collider, as expected — the clock sits several metres up with nothing below it to collide
+with). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite described here. One of the street's sixteen roofs — house 3 — still carries
+nothing but chimney smoke, left for a future round.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

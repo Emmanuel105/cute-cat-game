@@ -8907,6 +8907,46 @@ function buildNeighborhood(game, entry) {
       const chimeLines = ['🎐 "Nobody\'s rung that on purpose yet. The wind manages just fine without the help."', '🏠 "Fourteen roofs with a fixture of their own, and it took this long to notice the porch underneath counts too."', '😼 "Puss, that\'s a wind chime, not string. Leave it be."'];
       game.addInteractable({ obj: chime, radius: 1.8, label: () => 'Listen to the wind chime', onUse: () => { SFX.click(); game.toast(rnd.pick(chimeLines), 3000); } });
     }
+    // fourteen of the street's sixteen roofs carry a fixture of their own by now, but every single one
+    // of them — spinning, glowing, pulsing or just pointing somewhere — only ever moves at a rate that
+    // looks roughly sensible: a turbine spins, a beacon pulses, a dish just sits. House 13's own ridge —
+    // the lot whose own front yard already has the dog kennel — gets a small cupola with a clock on its
+    // street-facing side, the fifteenth fixture and the first that's actually supposed to tell the time
+    // and visibly can't: the hour hand sweeps a full circle every two minutes or so, the minute hand
+    // over ten times a second faster than that, both of them a dead giveaway the moment anyone looks up.
+    // *"Checked it against a phone once. The phone lost."* *"Ten minutes fast by sunrise, an hour fast
+    // by lunch — nobody's ever climbed up to fix it."* *"Puss, you have been staring at those hands for
+    // a very long time. They are not going to slow down."*
+    // Same slot every other roof fixture on this street already uses — parented to the house's own
+    // group (`h`) at its ridge apex (`h.userData.h`), so it costs no world-space maths and needs no
+    // physics box, the same few-metres-up reasoning every fixture up here already banks on. The little
+    // housing and its pyramid cap are plain static boxes/cone; the clock face is a flat disc rotated
+    // onto the housing's own local +z side (`rx: PI/2` turns its default y-axis into z), the same side
+    // every porch fixture in `makeHouse()` already treats as the street-facing one (the door, porch
+    // roof and porch light all sit at `+d/2`), so the dial reads the right way up to anyone approaching
+    // from the street rather than facing into the roof. The twelve hour-mark dots and both hands are
+    // `noInk()`-wrapped, the same treatment every slender fixture on this street already gets; the
+    // hands are two pivot groups rotated on their own local z-axis (the plane the face itself sits in)
+    // off the world clock `t` alone at two fixed, deliberately wrong rates — never a draw from this
+    // world's own seeded `r` or the shared `rnd()` sequence at build time, since the Neighborhood is the
+    // one world every test travel starts from.
+    if (i === 13) {
+      const houseM = mat(0x6b4a2a, { roughness: 0.85 }), capM = mat(0x8a5a32, { roughness: 0.8 }),
+        faceM = mat(0xf3ead6, { roughness: 0.6 }), markM = mat(0x2a2015, { roughness: 0.6 }), handM = mat(0x2a2015, { roughness: 0.55 });
+      const boxW = 0.3, boxH = 0.26, boxD = 0.3, faceR = 0.1, faceZ = boxD / 2;
+      const cupola = group(0, h.userData.h, 0, h);
+      mesh(G.box(boxW, boxH, boxD), houseM, { y: boxH / 2, shadow: 'both', parent: cupola });
+      mesh(G.cone(boxW * 0.72, 0.18, 4), capM, { y: boxH + 0.09, ry: PI / 4, shadow: 'both', parent: cupola });
+      mesh(G.cyl(faceR, faceR, 0.02, 20), faceM, { y: boxH * 0.55, z: faceZ + 0.01, rx: PI / 2, shadow: 'none', parent: cupola });
+      for (let k = 0; k < 12; k++) { const a = k / 12 * TAU; noInk(mesh(G.box(0.012, 0.012, 0.012), markM, { x: sin(a) * faceR * 0.82, y: boxH * 0.55 + cos(a) * faceR * 0.82, z: faceZ + 0.02, shadow: 'none', parent: cupola })); }
+      const hourHand = group(0, boxH * 0.55, faceZ + 0.025, cupola);
+      noInk(mesh(G.box(0.012, faceR * 0.5, 0.006), handM, { y: faceR * 0.25, shadow: 'none', parent: hourHand }));
+      const minHand = group(0, boxH * 0.55, faceZ + 0.03, cupola);
+      noInk(mesh(G.box(0.008, faceR * 0.75, 0.006), handM, { y: faceR * 0.375, shadow: 'none', parent: minHand }));
+      U.push((dt, t) => { hourHand.rotation.z = -t * 0.9; minHand.rotation.z = -t * 11; });
+      const clockLines = ['🕰️ "Checked it against a phone once. The phone lost."', '⏰ "Ten minutes fast by sunrise, an hour fast by lunch — nobody\'s ever climbed up to fix it."', '😼 "Puss, you have been staring at those hands for a very long time. They are not going to slow down."'];
+      game.addInteractable({ obj: cupola, radius: 2.4, label: () => 'Look up at the cupola clock', onUse: () => { SFX.click(); game.toast(rnd.pick(clockLines), 3000); } });
+    }
   });
   // the pinwheel, sprinkler and kennel above gave three of the street's sixteen yards their own
   // feature; lot 14's own corner now gets a fourth — a stone birdbath, a shallow bowl on a short
