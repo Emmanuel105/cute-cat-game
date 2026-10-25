@@ -19537,3 +19537,33 @@ few rounds back, so nothing breaks.
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above, plus
 the standalone headless probe described here.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 726 — Whisper Woods' third and last deer finally becomes a friend
+
+Round 1 placed three deer in Whisper Woods' glade at `(-24, 4)`, `(20, 20)` and `(-10, -30)`. Two rounds
+back the western one got a "Say hello" prompt (the acorn-feeder's own favorite), and last round the
+second one, out at `(20, 20)`, got the same fix with both notes explicitly leaving the third "for a
+future round." This is that round, for the last of the three.
+
+**The third deer now answers its own "Say hello to the deer" prompt**, with *"🦌 *freezes mid-chew,
+watches a long moment, then melts back into the ferns*"* — a third distinct reaction, different from
+both its glade-mates'. Same root cause as every ambient critter this log keeps finding: `makeDeer()`'s
+rig carries none of `.look`/`.robot`/`.cookie`, so `Wanderer`'s own `greetable()` call quietly no-ops on
+it. No new mesh, no new physics box: the same loop that builds all three deer already captures the
+third rig into a local `thirdDeer`, and a `game.namedFriend('deer-3')` plus a `game.addInteractable`
+keyed straight to `thirdDeer.group` (2.0 m radius, the same the other two use, tracked every frame so
+the prompt follows it through its own 9 m leash) does the rest. All three of Whisper Woods' deer are now
+friends — the glade has nothing ambient left unwired.
+
+A headless probe (`game.start('new')` then `game.travel(6, 'from-hub')` so the `Wanderer` state machine
+actually runs, 3000 simulated frames with this deer's own position sampled every frame) swept every
+sample against every physics box and every other NPC: the nearest box stayed 0.45 m clear throughout
+(the deer's own collision-avoidance keeps it from ever touching one, the same margin the fox and others
+hold a few rounds back) and the nearest other soul — a `Sitter` nearby — never came closer than 3.55 m,
+well clear of the new prompt's 2.0 m radius.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 328
+(no new collider). Whisper Woods' own friend total rose by one (87 to 88 to meet). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above, plus
+the standalone headless probe described here.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
