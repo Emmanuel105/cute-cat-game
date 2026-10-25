@@ -19448,3 +19448,36 @@ future round.
 (no new collider). Whisper Woods' own friend total rose by one (84 to 85 to meet). No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 723 — Whisper Woods' second fox finally becomes a friend
+
+Last round picked up the den fox at (14, 6) and explicitly left its denmate, further west at (-26, -14),
+for "a future round" — this is that round. Same root cause as every other ambient critter this log keeps
+finding: `makeFox()`'s rig carries none of `.look`/`.robot`/`.cookie`, so `Wanderer`'s own `greetable()`
+call quietly no-ops on it, leaving the fox to wander its den forever without ever being anyone the cat
+could meet.
+
+**The second fox now answers its own "Say hello to the fox" prompt**, with *"🦊 *tenses, amber eyes
+flicking up, then slinks back toward the den*"* — a different line from its denmate's so the two don't
+read as the same animal. No new mesh, no new physics box: the loop that builds both foxes already ran
+every iteration, so this just captures the second rig in a local variable (`secondFox`) alongside the
+first, and a `game.namedFriend('fox2')` plus a `game.addInteractable` keyed straight to `secondFox.group`
+(2.0 m radius, the same the first fox uses, tracked every frame so the prompt follows it through its own
+10 m leash) does the rest.
+
+A headless probe (`game.load(6, 'from-hub')`, game actually started so the `Wanderer` state machine
+runs, 6000 simulated frames with this fox's own position sampled every frame) swept every sample against
+every physics box and every other ground-level NPC: the nearest box stayed 0.57 m clear throughout (the
+fox's own collision-avoidance keeps it from ever touching one) and the nearest other soul — the boy
+kneeling by the nearby hollow log, round 722's own note that this corner "clears both the fox denned at
+(-26, -14) and the deer ... even if only by a shin's width" — came within 1.08 m at the wander's closest
+approach. That's inside the new prompt's 2.0 m radius, so the fox's own "Say hello" prompt can briefly
+contend with the boy's hollow-log prompt for whichever is nearer; the game already resolves that by
+picking the closest interactable, the same as it does anywhere else two prompts overlap, so nothing
+breaks, but it's worth knowing about if a future round wants to tighten this corner further.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 328
+(no new collider). Whisper Woods' own friend total rose by one (85 to 86 to meet). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above, plus
+the standalone headless probe described here.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
