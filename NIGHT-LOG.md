@@ -19884,3 +19884,41 @@ added as a child of the nest group. No visual check was possible in this environ
 Playwright) — only the stub-three test suite described here. All sixteen of the Neighborhood's roofs
 now carry a fixture of their own. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 737 — Victorian finally has somewhere to just lie down
+
+The Neighborhood's radio listener, Candy Land's own sunbather, Sunny Shore's three towel people and
+Frosty Peak's snow-angel girl have all had somewhere to just lie down for a while, round by round, as
+each world picked it up in turn — but three of the seven worlds were still left without one: Robot
+City, Victorian and Whisper Woods. **Victorian now has its own**: far out past the canal, past every
+market stall and terrace, a flower girl lies flat on her back in the quiet grass, basket of violets
+tipped over in the grass beside her, taking five minutes off her feet before the lamplighters come
+round. *"Five minutes off my feet. The violets can wait."* *"Careful, puss — mind the basket, that's
+my whole morning's takings."* *"Last patch of sun before the lamplighters come round. Not wasting it
+standing up."*
+
+No new controller or prop: the exact same `Sunbather` class (`55-npcs.js`) every other world's own
+lie-down vignette already uses, unchanged — flat on the back, hands behind the head, same relaxed pose
+as the rest — and `makeFlowerBouquet()` (`60-props.js`), already standing in every market stall
+keeper's own hand, laid on its side in the grass instead of held upright. `Sunbather` calls
+`greetable()` on its own construction, so no manual `namedFriend`/`addInteractable` was needed either —
+the same "Say hello" hookup every other reclining character in the game already gets for free.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses — click
+the start-screen `enter` element, then `game.travel(3, 'from-prev')`, 3600 simulated frames to let every
+urchin, dancer, duck, balloon and ball-tossing pair in this town actually move) sampled every NPC's own
+position every 5th frame, then checked the open grass far out past the canal against both those samples
+and every one of the town's 609 physics boxes: (60, -45) came back clear by 14.9 m of the nearest box
+and 10.1 m of the nearest other soul, at radius 75 from the origin, comfortably short of the radius (88)
+where `victorianRegion`'s own procedural fill takes over, and clear of every zone this world's own
+`game.zones` already marks. Built dead last, right after the treasure-chest finder and right before the
+squirrel, so the fresh `makeHuman()` draw off the shared `rnd()` sequence disturbs no earlier
+timing-sensitive pick in the town.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 328
+(no new collider — the bouquet is small and loose on the grass, the same way the snow-angel's dropped
+beanie needed none). Victorian's own friend total rose by one (104 to 105 to meet). Robot City and
+Whisper Woods are the two worlds still left without a lie-down vignette of their own, left for a future
+round. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite and the standalone headless probe described here. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
