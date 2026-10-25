@@ -22468,6 +22468,56 @@ function buildForest(game, entry) {
     game.npcs.push(new Kneeler(game, finder, { x: kx, z: kz, ry: kry, cryIcon: '💰',
       cries: ["Everybody else got a bottle cap. I got THIS.", "Careful, puss — don't you dare knock a single coin back into the leaves.", "Don't tell the searcher. He'll never forgive himself."] })); }
 
+  // The Neighborhood's radio listener, Candy Land's sunbather, Sunny Shore's three towel people, Frosty
+  // Peak's snow-angel girl, Victorian's flower girl and Robot City's maintenance worker have all had
+  // somewhere to just lie down for a while, round by round — Whisper Woods, for all its mushroom
+  // patches, archery range, tug-of-war, badminton net, sack race and pogo stick, was the last of the
+  // seven worlds left without one. **A second forager now takes a break on a quiet stretch of woodland
+  // floor well west of everything else hand-built here**, flat on her back in the moss, wicker basket
+  // tipped over beside her with a couple of chanterelles spilled loose in the grass. *"Five minutes.
+  // The mushrooms aren't going anywhere."* *"Careful, puss — don't you dare roll off with the last cap,
+  // that one's for dinner."* *"Softest patch of moss in the whole wood. Found it by accident, keeping
+  // it on purpose."*
+  //
+  // No new controller: the exact same `Sunbather` class (`55-npcs.js`) every other world's own lie-down
+  // vignette already uses, unchanged — flat on the back, hands behind the head, same relaxed pose as
+  // the rest. The tipped basket is a plain wicker cylinder and rim (the same wicker tone `makeFruitBasket`
+  // already uses in `60-props.js`, built fresh here with no fruit baked into it), laid on its side rather
+  // than upright; the spilled mushrooms are this wood's own `makeMushroom()` (`62-props-nature.js`,
+  // already scattered loose across the floor by the region fill and the kneeling forager's own patch),
+  // small and unlit, standing normally where they rolled clear of the basket.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // `elements.get('enter').listeners.click[0]()` then `game.travel(6, 'from-hub')` — waiting out the
+  // portal's own real-timer fade rather than assuming it's instant — then 3600 simulated frames to let
+  // every wandering deer, fox, hare and fairy range fully, every NPC's and the squirrel's own position
+  // sampled every 10th frame) swept a 2 m grid of the open woodland floor (radius 15-55, short of the
+  // radius (58) where `forestRegion`'s own fill takes over, clear of the hollow oak's own path strip,
+  // the glowing pond's zone and the central glade) against both those samples and all 632 of the wood's
+  // own physics boxes: (-37, 39) came back clearest of the whole grid, 10.0 m from the nearest box and
+  // 11.7 m from the nearest other soul, at radius 53.8 — west of the pogo hopper's own spot (-47, 28)
+  // and clear of every other hand-placed prop in these woods, with the ground sloping about 0.05 m
+  // across the whole footprint.
+  //
+  // Built dead last, right before `forestRegion` takes over the fill, for the same reason every other
+  // addition at the end of this function already gives: `makeHuman()` draws three values off the shared
+  // `rnd()` sequence unconditionally, and a fresh rig built any earlier in this wood would shift that
+  // sequence and desync every other timing-sensitive pick already placed above.
+  { const lx = -37, lz = 39, lry = atan2(-lx, -lz);
+    const forageWard = makeWardrobe(r, { shirts: [0x6b4f8a, 0x8a6a4a, 0x4a6a5a], pants: [0x3a3327, 0x2a2a24], shoes: [0x3a2a1e, 0x2a2018] });
+    const napper = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: forageWard }),
+      hat: null, jacket: null, coat: null, scarf: null, bag: null, backpack: null, glasses: false });
+    W.add(napper.group);
+    const bskx = lx + cos(lry) * 0.6, bskz = lz - sin(lry) * 0.6, wicker = mat(0xb8894a, { roughness: 0.95 });
+    const basket = group(0, 0, 0, W);
+    mesh(G.cyl(0.1, 0.08, 0.11, 12), wicker, { parent: basket });
+    mesh(G.torus(0.1, 0.012, 5, 12), mat(0x8a5a32, { roughness: 0.9 }), { y: 0.055, rx: PI / 2, shadow: 'none', parent: basket });
+    basket.rotation.x = PI / 2;
+    placeT(game, U, basket, bskx, bskz, lry, 0.08);
+    for (const [mdx, mdz] of [[0.3, 0.12], [-0.22, 0.28]]) { const m = makeMushroom(r.range(0.14, 0.2), 20, r, false); placeT(game, U, m, bskx + mdx, bskz + mdz, 0); }
+    game.npcs.push(new Sunbather(game, napper, { x: lx, z: lz, ry: lry, cryIcon: '🍄',
+      cries: ["Five minutes. The mushrooms aren't going anywhere.", "Careful, puss — don't you dare roll off with the last cap, that one's for dinner.", "Softest patch of moss in the whole wood. Found it by accident, keeping it on purpose."] })); }
+
   forestRegion(game, U, r, 58, WOODS_LIMIT - 8);
   makeHorizon(game, r, { clear: WOODS_LIMIT + 8, hills: true, hill: 0x2f4a30, rock: 0x3a4a3a, rock2: 0x44505a, snow: 0xdfe8f0, snowLine: 52, peaks: 28, woodCount: 460, woodBand: 44, woodHue: [0.26, 0.36], woodLight: [0.1, 0.2], trunk: 0x3a2a1c });
   // hollow oak home (north end of the stepping-stone path)

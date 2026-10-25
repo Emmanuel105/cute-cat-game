@@ -19958,3 +19958,41 @@ box count unchanged at 328 (no new collider, as expected). Robot City's own frie
 left for a future round. No visual check was possible in this environment (no browser, no Playwright)
 — only the stub-three test suite and the standalone headless probe described here. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 739 — Whisper Woods finally has somewhere to just lie down
+
+Robot City picked up its own lie-down vignette last round, leaving Whisper Woods as the only world
+still without one. **It has its own now**: well west of everything else hand-built in these woods, a
+second forager lies flat on her back in the moss, wicker basket tipped over beside her with a couple
+of chanterelles spilled loose in the grass. *"Five minutes. The mushrooms aren't going anywhere."*
+*"Careful, puss — don't you dare roll off with the last cap, that one's for dinner."* *"Softest patch
+of moss in the whole wood. Found it by accident, keeping it on purpose."*
+
+No new controller: the exact same `Sunbather` class (`55-npcs.js`) every other world's own lie-down
+vignette already uses, unchanged — flat on the back, hands behind the head, same relaxed pose as the
+rest. The tipped basket is a plain wicker cylinder and rim built fresh inline (the same wicker tone
+`makeFruitBasket` already uses in `60-props.js`, just without its baked-in fruit), laid on its side;
+the spilled mushrooms are this wood's own `makeMushroom()` (`62-props-nature.js`), small and unlit,
+sitting upright where they rolled clear of the basket.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(6, 'from-hub')` — waiting out the portal's
+own real-timer fade — then 3600 simulated frames to let every wandering deer, fox, hare and fairy
+range fully, every NPC's and the squirrel's own position sampled every 10th frame) swept a 2 m grid of
+the open woodland floor (radius 15-55, short of the radius (58) where `forestRegion`'s own fill takes
+over, clear of the hollow oak's own path strip, the glowing pond's zone and the central glade) against
+both those samples and all 632 of the wood's own physics boxes: (-37, 39) came back clearest of the
+whole grid, 10.0 m from the nearest box and 11.7 m from the nearest other soul, at radius 53.8 — west
+of the pogo hopper's own spot (-47, 28), with the ground sloping about 0.05 m across the whole
+footprint.
+
+Built dead last, right before `forestRegion` takes over the fill, the usual reason: `makeHuman()`
+draws three values off the shared `rnd()` sequence unconditionally, and a fresh rig built any earlier
+in this wood would shift that sequence and desync every other timing-sensitive pick already placed
+above.
+
+`node test/run.mjs` ran clean twice in a row: exit 0, all checks `ok` both times, 0 console warnings.
+Whisper Woods' own friend total rose by one (89 to 90 to meet). All seven worlds now have a lie-down
+vignette of their own. No visual check was possible in this environment (no browser, no Playwright) —
+only the stub-three test suite and the standalone headless probe described here. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
