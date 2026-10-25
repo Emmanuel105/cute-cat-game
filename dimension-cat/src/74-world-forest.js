@@ -454,12 +454,16 @@ function buildForest(game, entry) {
   // new physics box: just `game.namedFriend('frog')` and `game.addInteractable` on the rig's own group,
   // tracked every frame (`getWorldPosition` in `80-game.js`'s main loop) the same way the turtle's is,
   // so the prompt follows it across every one of its short hops within its own 4 m leash.
-  let friendlyFrog = null;
-  for (let i = 0; i < 6; i++) { const a = i / 6 * TAU, x = 8 + cos(a) * 5.6, z = -6 + sin(a) * 5.6; const rig = makeFrog(r.pick([0x4caf50, 0x8bc34a, 0x2e7d32])); game.npcs.push(new Hopper(game, rig, { x, z, leash: 4, r: 0.15, dist: [0.4, 1.1], dur: 0.35, height: 0.35, idle: [1, 4], onHop: () => { if (rnd.chance(0.3)) SFX.ribbit(); } })); if (i === 0) friendlyFrog = rig; }
+  let friendlyFrog = null, secondFrog = null;
+  for (let i = 0; i < 6; i++) { const a = i / 6 * TAU, x = 8 + cos(a) * 5.6, z = -6 + sin(a) * 5.6; const rig = makeFrog(r.pick([0x4caf50, 0x8bc34a, 0x2e7d32])); game.npcs.push(new Hopper(game, rig, { x, z, leash: 4, r: 0.15, dist: [0.4, 1.1], dur: 0.35, height: 0.35, idle: [1, 4], onHop: () => { if (rnd.chance(0.3)) SFX.ribbit(); } })); if (i === 0) friendlyFrog = rig; if (i === 1) secondFrog = rig; }
   { const fid = game.namedFriend('frog');
     game.addInteractable({ obj: friendlyFrog.group, radius: 2.2, label: () => 'Say hello to the frog', onUse: () => {
       game.befriend(fid); SFX.ribbit(); game.hearts(friendlyFrog.group.position.x, 0.3, friendlyFrog.group.position.z, 3);
       game.toast('🐸 *ribbit*'); } }); }
+  { const fid2 = game.namedFriend('frog2');
+    game.addInteractable({ obj: secondFrog.group, radius: 2.2, label: () => 'Say hello to the frog', onUse: () => {
+      game.befriend(fid2); SFX.ribbit(); game.hearts(secondFrog.group.position.x, 0.3, secondFrog.group.position.z, 3);
+      game.toast('🐸 *ribbit-ribbit*'); } }); }
   // the jump-roper south of here swears "the rabbits won't try it — too many ears in the way", but no
   // rabbit ever actually lived in these woods to back her up or catch her out. `makeHare()` already
   // exists — Frosty Peak's own hares and Candy Land's mint-green one both use it — and had just never
