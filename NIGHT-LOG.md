@@ -19596,3 +19596,57 @@ prompt's 2.1 m radius.
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above, plus
 the standalone headless probe described here.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 728 — Whisper Woods' snail finally becomes a friend
+
+Whisper Woods has had a snail gliding, almost too slowly to notice, through the fern litter at the
+heart of the glade for a few rounds now — the one creature in these woods that moves slower than the
+cat can be bothered to watch. Same root cause this log keeps finding in nearly every ambient critter
+built outside the usual `Hopper`/named-rig path: `makeSnail()`'s plain custom rig carries none of
+`.look`/`.robot`/`.cookie`, so `Wanderer`'s own `greetable()` call quietly no-ops on it, same as every
+hare, fox, deer, turtle and beetle this log has fixed one by one for the last thirty-odd rounds.
+
+**The snail now answers its own "Say hello to the snail" prompt**, with *"🐌 *draws into its shell for
+a moment, then two eye-stalks creep back out*"*. No new mesh, no new physics box:
+`game.namedFriend('snail')` plus a `game.addInteractable` keyed straight to the rig's own group (1.2 m
+radius, tight against the snail's own 1.0 m leash since it barely strays from `(0, -18)` at all) does
+the rest, tracked every frame.
+
+A headless probe (`game.start('new')` then `game.load(6, 'from-hub')` so `Wanderer`'s state machine
+actually runs, 3000 simulated frames with the snail's own position sampled every frame) swept every
+sample against every physics box and every other NPC: the nearest box stayed 3.05 m clear throughout,
+and the nearest other soul never came closer than 1.99 m — just outside the new prompt's 1.2 m radius,
+so nothing contends for the snail's own spot in the fern patch.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 328
+(no new collider). Whisper Woods' own friend total rose by one (88 to 89 to meet). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above, plus
+the standalone headless probe described here.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+Frosty Peak's own arctic fox has roamed the open snow south-east of the village since the round that
+first built it — white-coated, the mountain's answer to Whisper Woods' orange foxes — but nobody could
+ever say hello to it. Same root cause this log keeps finding in every ambient critter built outside the
+usual `Hopper`/named-rig path: `makeArcticFox()`'s rig is a plain `makeQuadruped()` with none of
+`.look`/`.robot`/`.cookie`, so `Wanderer`'s own `greetable()` call quietly no-ops on it, same as every
+hare, fox, deer, turtle, seal, otter, pelican and penguin this log has fixed one by one for the last
+thirty-odd rounds.
+
+**The arctic fox now answers its own "Say hello to the fox" prompt**, with *"🦊 *white ears swivel,
+breath puffing in the cold, then it melts into the snow*"*. No new mesh, no new physics box:
+`game.namedFriend('arctic-fox')` plus a `game.addInteractable` keyed straight to the rig's own group
+(2.1 m radius, matching the woods' own foxes) does the rest, tracked every frame so the prompt follows
+it through its full 8 m leash.
+
+A headless probe (`game.start('new')` then `game.travel(5, 'from-hub')` so `Wanderer`'s state machine
+actually runs, 3000 simulated frames with the fox's own position sampled every frame) swept every
+sample against every physics box and every other NPC: the nearest box stayed 0.3 m clear throughout
+(the fox's own collision-avoidance keeps it from ever touching one, the same margin the deer and others
+hold a few rounds back), and the nearest other soul never came closer than 3.86 m, well past the new
+prompt's 2.1 m radius.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 328
+(no new collider). Frosty Peak's own friend total rose by one (84 to 85 to meet). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above, plus
+the standalone headless probe described here.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -21116,7 +21116,18 @@ function buildForest(game, entry) {
   // past the glowing pond's own 7 m keep-out circle. Placed last, after every other draw this build makes
   // from its own local `r`, so this one extra colour pick disturbs nothing earlier in the wood.
   { const rig = makeSnail(r.pick([0xc9a24a, 0xb08a52, 0x8a9a6a])); W.add(rig.group);
-    game.npcs.push(new Wanderer(game, rig, { x: 0, z: -18, speed: 0.05, leash: 1.0, r: 0.08, height: 0.14, step: 0.08, idle: [2, 5], walk: [6, 14] })); }
+    game.npcs.push(new Wanderer(game, rig, { x: 0, z: -18, speed: 0.05, leash: 1.0, r: 0.08, height: 0.14, step: 0.08, idle: [2, 5], walk: [6, 14] }));
+    // the snail was ambient from the day it was added — `Wanderer` only calls `greetable()` for rigs
+    // carrying `.look`/`.robot`/`.cookie`, and `makeSnail()`'s plain custom rig has none of those, the
+    // same root cause this log keeps finding in every ambient critter built outside the usual
+    // `Hopper`/named-rig path. No new mesh, no new physics box: `game.namedFriend` and
+    // `game.addInteractable` tracked on the rig's own group every frame, with a 1.2 m radius against its
+    // own 1.0 m leash (the snail barely strays from (0, -18) at all), so the prompt never drifts far from
+    // where the fern patch already put it.
+    const snailId = game.namedFriend('snail');
+    game.addInteractable({ obj: rig.group, radius: 1.2, label: () => 'Say hello to the snail', onUse: () => {
+      game.befriend(snailId); SFX.rustle(); game.hearts(rig.group.position.x, 0.15, rig.group.position.z, 3);
+      game.toast('🐌 *draws into its shell for a moment, then two eye-stalks creep back out*'); } }); }
 
   // yo-yos and a hula hoop have both done the rounds here, but no world yet had a jump rope. A child
   // works one on open ground deep in the south of these woods: the rope is a single thin rod pivoting
