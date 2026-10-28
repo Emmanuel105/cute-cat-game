@@ -20131,3 +20131,25 @@ box count unchanged at 329 (no new collider, as expected — a befriend prompt o
 none). Frosty Peak's own friend total rose by one (88 to 89 to meet). No visual check was possible in
 this environment (no browser, no Playwright) — only the stub-three test suite described here. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 745 — Whisper Woods' fourth frog finally becomes a friend
+
+Round 742 left three of the clearing's six frogs as pure background. **The fourth frog (i===3 in the
+same loop) now answers a "Say hello to the frog" prompt too**, same `Hopper` controller, same 2.2 m
+greet radius, same `game.namedFriend()` + `game.addInteractable` trick the first three already use
+since `makeFrog()`'s rig carries none of `.look`/`.robot`/`.cookie` and so `Hopper` never calls
+`greetable()` on it automatically. *"A long, low croak, sounding unimpressed"* — a different reaction
+from the first three's rising count of "ribbit"s, to tell this one apart on the toast.
+
+No new mesh, no new physics box, no new controller: just a fourth tracked rig (`fourthFrog`, captured
+the same way `friendlyFrog`/`secondFrog`/`thirdFrog` already are, at `i === 3` in the existing loop)
+and a fourth named friend (`'frog4'`) with its own interactable, mirroring the fox, deer and penguin
+"second/third/fourth" rounds already in this log. Two frogs in the clearing remain pure background for
+a future round.
+
+`node test/run.mjs` ran clean twice in a row: exit 0, all 277 checks `ok` both times, 0 console
+warnings, box count unchanged at 329 (no new collider, as expected — a befriend prompt on an existing
+hopper adds none). Whisper Woods' own friend total rose by one (92 to 93 to meet, confirmed by loading
+world 6 directly against the stub harness). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite described here. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

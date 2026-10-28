@@ -447,15 +447,15 @@ function buildForest(game, entry) {
   // the six frogs round this clearing have all been pure background since round 1, the same as Sunny
   // Shore's crabs were before its turtles got their own friend prompts (rounds 672 and before that) —
   // unlike the owls and the woodpecker just below, none of them was ever anyone the cat could actually
-  // meet. The first three, at i===0/1/2, now answer a "Say hello to the frog" prompt each:
+  // meet. The first four, at i===0/1/2/3, now answer a "Say hello to the frog" prompt each:
   // `makeFrog()`'s rig carries none of `.look`/`.robot`/`.cookie`, so `Hopper` (unlike `Wanderer`) never
   // even calls `greetable()` on it in the first place — same reason the turtles and every world's own
   // dog needed their own explicit interactable. No new mesh and no new physics box: just
   // `game.namedFriend()` and `game.addInteractable` on each rig's own group, tracked every frame
   // (`getWorldPosition` in `80-game.js`'s main loop) the same way the turtle's is, so the prompt
-  // follows each across its own short hops within its own 4 m leash.
-  let friendlyFrog = null, secondFrog = null, thirdFrog = null;
-  for (let i = 0; i < 6; i++) { const a = i / 6 * TAU, x = 8 + cos(a) * 5.6, z = -6 + sin(a) * 5.6; const rig = makeFrog(r.pick([0x4caf50, 0x8bc34a, 0x2e7d32])); game.npcs.push(new Hopper(game, rig, { x, z, leash: 4, r: 0.15, dist: [0.4, 1.1], dur: 0.35, height: 0.35, idle: [1, 4], onHop: () => { if (rnd.chance(0.3)) SFX.ribbit(); } })); if (i === 0) friendlyFrog = rig; if (i === 1) secondFrog = rig; if (i === 2) thirdFrog = rig; }
+  // follows each across its own short hops within its own 4 m leash. Two frogs remain pure background.
+  let friendlyFrog = null, secondFrog = null, thirdFrog = null, fourthFrog = null;
+  for (let i = 0; i < 6; i++) { const a = i / 6 * TAU, x = 8 + cos(a) * 5.6, z = -6 + sin(a) * 5.6; const rig = makeFrog(r.pick([0x4caf50, 0x8bc34a, 0x2e7d32])); game.npcs.push(new Hopper(game, rig, { x, z, leash: 4, r: 0.15, dist: [0.4, 1.1], dur: 0.35, height: 0.35, idle: [1, 4], onHop: () => { if (rnd.chance(0.3)) SFX.ribbit(); } })); if (i === 0) friendlyFrog = rig; if (i === 1) secondFrog = rig; if (i === 2) thirdFrog = rig; if (i === 3) fourthFrog = rig; }
   { const fid = game.namedFriend('frog');
     game.addInteractable({ obj: friendlyFrog.group, radius: 2.2, label: () => 'Say hello to the frog', onUse: () => {
       game.befriend(fid); SFX.ribbit(); game.hearts(friendlyFrog.group.position.x, 0.3, friendlyFrog.group.position.z, 3);
@@ -468,6 +468,10 @@ function buildForest(game, entry) {
     game.addInteractable({ obj: thirdFrog.group, radius: 2.2, label: () => 'Say hello to the frog', onUse: () => {
       game.befriend(fid3); SFX.ribbit(); game.hearts(thirdFrog.group.position.x, 0.3, thirdFrog.group.position.z, 3);
       game.toast('🐸 *ribbit-ribbit-ribbit*'); } }); }
+  { const fid4 = game.namedFriend('frog4');
+    game.addInteractable({ obj: fourthFrog.group, radius: 2.2, label: () => 'Say hello to the frog', onUse: () => {
+      game.befriend(fid4); SFX.ribbit(); game.hearts(fourthFrog.group.position.x, 0.3, fourthFrog.group.position.z, 3);
+      game.toast('🐸 *a long, low croak, sounding unimpressed*'); } }); }
   // the jump-roper south of here swears "the rabbits won't try it — too many ears in the way", but no
   // rabbit ever actually lived in these woods to back her up or catch her out. `makeHare()` already
   // exists — Frosty Peak's own hares and Candy Land's mint-green one both use it — and had just never
