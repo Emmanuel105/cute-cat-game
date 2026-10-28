@@ -18548,9 +18548,23 @@ function buildBeach(game, entry) {
   // Built dead last, right after the tiger beetle, for the usual reason: `Patroller`'s own three
   // unconditional draws off the shared `rnd()` sequence (phase, idle clock, cry timer) land after every
   // other timed NPC in this world and disturb no earlier wardrobe or layout pick.
+  // the drill column itself has stayed pure background since it was first built — unlike every other
+  // crab on this beach (the six-strong colony, the bold one, the hermit in the log), none of these
+  // three ever got a "Say hello" prompt. `Marchers`' lead rig runs on `Patroller`, whose constructor
+  // calls `greetable()` automatically, same as every other march in this game, but `greetable()` only
+  // wires a prompt up when the rig carries `.look`, `.robot` or `.cookie` — a bare `makeCrab()` rig has
+  // none of the three, so the call quietly no-ops, exactly the gap Frosty Peak's marching penguins and
+  // this same beach's own colony crabs already had closed. The column's lead crab now answers "Say
+  // hello to the crab" on its own: the same `game.namedFriend` + `game.addInteractable` fix, tracked
+  // straight off `marchers[0].group`, which `Marchers.update()` (55-npcs.js) repositions every frame as
+  // the column paces its own 2 m stretch, so the prompt follows it there and back. 2.1 m radius,
+  // matching every other crab's own prompt; no new mesh, no new physics box. The other two crabs in
+  // the column stay ambient for now, same as any march where only the lead has a name so far.
   { const marchers = [0, 1, 2].map(() => { const rig = makeCrab(r.pick([0xe8492b, 0xff7043, 0xc62828])); W.add(rig.group); return rig; });
     game.npcs.push(new Marchers(game, marchers, { points: [[24, -43], [26, -43]], speed: 1.0, pause: [1, 2], r: 0.22, height: 0.5, gap: 0.45,
-      cries: ['Sideways, always sideways — try that gait yourself, puss.', 'Column of three. Pincers at the ready.', "Mind the claws, puss — we're only drilling."], cryIcon: '🦀' })); }
+      cries: ['Sideways, always sideways — try that gait yourself, puss.', 'Column of three. Pincers at the ready.', "Mind the claws, puss — we're only drilling."], cryIcon: '🦀' }));
+    const leadId = game.namedFriend('marching-crab');
+    game.addInteractable({ obj: marchers[0].group, radius: 2.1, label: () => 'Say hello to the crab', onUse: () => { game.befriend(leadId); SFX.chitter(); game.hearts(marchers[0].group.position.x, 0.5, marchers[0].group.position.z, 3); game.toast('🦀 *breaks rank for one quick wave, then snaps right back into step*'); } }); }
   // Every beach, peak, woods and street has run a `Detectorist` sweeping for buried treasure for
   // hundreds of rounds now, and every single one of them has only ever turned up a bottle cap or a
   // button — it's the running joke of the whole series. Nobody had ever actually found anything. **An

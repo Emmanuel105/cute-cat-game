@@ -20195,3 +20195,25 @@ and the penguin drill column closed out before it.
 friend total rose by one (94 to 95 to meet). No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite described here. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 748 — Sunny Shore's marching crab column gets its first friend
+
+The three-crab drill column on the dry sand at (24-26, -43) has stayed pure background since it was
+built — unlike every other crab on this beach (the six-strong colony, the bold crab that comes over
+for a look, the hermit crab in the hollow log), none of these three ever got a "Say hello" prompt.
+**The column's lead crab now does.** Same root cause as Frosty Peak's marching penguins before it:
+`Marchers`' lead rig runs on `Patroller`, whose constructor calls `greetable()` automatically, but
+`greetable()` only wires a prompt up for a rig carrying `.look`, `.robot` or `.cookie`, and a bare
+`makeCrab()` rig has none of the three, so the call quietly no-ops. *"Breaks rank for one quick wave,
+then snaps right back into step."*
+
+No new mesh, no new class, no new physics box: just `game.namedFriend('marching-crab')` and a
+`game.addInteractable` tracked off `marchers[0].group`, which `Marchers.update()` already repositions
+every frame as the column paces its own 2 m stretch, so the prompt follows it there and back. The
+other two crabs in the column stay ambient for now, the same as any march where only the lead has a
+name so far.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 329
+(no new collider, as expected). Sunny Shore's own friend total rose by one (91 to 92 to meet). No
+visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
+suite described here. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
