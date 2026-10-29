@@ -20217,3 +20217,25 @@ name so far.
 (no new collider, as expected). Sunny Shore's own friend total rose by one (91 to 92 to meet). No
 visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
 suite described here. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 749 — Whisper Woods' marching hedgehog column gets its first friend
+
+Round 591's drilling hedgehog column (three of them, pacing a 2 m stretch west of everything else
+hand-built in these woods) has stayed pure ambient wildlife since it went in — same gap Frosty Peak's
+marching penguins and Sunny Shore's marching crabs each had closed in their own rounds. `Marchers`'
+lead rig runs on `Patroller`, whose constructor calls `greetable()` automatically, but `greetable()`
+only wires a prompt up for a rig carrying `.look`, `.robot` or `.cookie`, and a bare `makeHedgehog()`
+rig has none of the three, so the call quietly no-ops. **The column's lead hedgehog now answers "Say
+hello to the hedgehog."** *"Uncurls just enough to blink at you, then falls right back into step."*
+
+No new mesh, no new class, no new physics box: just `game.namedFriend('marching-hedgehog')` and a
+`game.addInteractable` tracked off `marchers[0].group`, which `Marchers.update()` already repositions
+every frame as the column paces back and forth, so the prompt follows it there and back. Same 2.1 m
+greet radius every other march's lead prompt already uses. The other two hedgehogs in the column stay
+ambient for now, same as the crab and penguin columns before theirs got a second name.
+
+`node test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box count unchanged at
+329 (no new collider, as expected). A headless probe (`game.start('new')` then `game.travel(6,
+'from-hub')`) confirmed Whisper Woods' own friend total rose by one, 95 to 96 to meet. No visual check
+was possible in this environment (no browser, no Playwright) — only the stub-three test suite and that
+probe. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

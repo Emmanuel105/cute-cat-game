@@ -22510,16 +22510,22 @@ function buildForest(game, entry) {
   // to trip the march.
   //
   // Like the wandering foxes, deer and hares already in these woods, a quadruped rig has no
-  // `rig.look`/`robot`/`cookie`, so `greetable()` is a no-op on it (confirmed by Sunny Shore's own
-  // marching crabs) — pure ambient wildlife, no new friend, no effect on this wood's friend count or
-  // collectible count.
+  // `rig.look`/`robot`/`cookie`, so `greetable()` is a no-op on it — pure ambient wildlife, same gap
+  // Frosty Peak's marching penguins and this very column's own Sunny Shore crab cousins already had
+  // closed. **The lead hedgehog now answers "Say hello to the hedgehog" too.** Same fix again:
+  // `game.namedFriend` + `game.addInteractable` tracked straight off `marchers[0].group`, which
+  // `Marchers.update()` (55-npcs.js) repositions every frame as the column paces its own 2 m stretch,
+  // so the prompt follows it there and back. 2.1 m radius, matching every other march's lead prompt;
+  // no new mesh, no new physics box. The other two hedgehogs in the column stay ambient for now.
   //
   // Built dead last, right before `forestRegion` takes over the fill, for the usual reason:
   // `Patroller`'s own three unconditional draws off the shared `rnd()` sequence (phase, idle clock, cry
   // timer) land after every other timed NPC in this wood and disturb no earlier wardrobe or layout pick.
   { const marchers = [0, 1, 2].map(() => { const rig = makeHedgehog(); W.add(rig.group); return rig; });
     game.npcs.push(new Marchers(game, marchers, { points: [[-53, -14], [-53, -16]], speed: 0.45, pause: [1, 2], r: 0.18, height: 0.3, gap: 0.4,
-      cries: ['Column of three. Spines in, soldier.', 'Hup, two — hup, two — mind the toadstools, Nigel.', "Drilling's much harder when your legs are this short, puss."], cryIcon: '🦔' })); }
+      cries: ['Column of three. Spines in, soldier.', 'Hup, two — hup, two — mind the toadstools, Nigel.', "Drilling's much harder when your legs are this short, puss."], cryIcon: '🦔' }));
+    const leadId = game.namedFriend('marching-hedgehog');
+    game.addInteractable({ obj: marchers[0].group, radius: 2.1, label: () => 'Say hello to the hedgehog', onUse: () => { game.befriend(leadId); SFX.chitter(); game.hearts(marchers[0].group.position.x, 0.3, marchers[0].group.position.z, 3); game.toast('🦔 *uncurls just enough to blink at you, then falls right back into step*'); } }); }
 
   // Sunny Shore (round 591), the Neighborhood (592), Victorian (596), Candy Land (597), Robot City
   // (598) and Frosty Peak (599) have all let somebody digging nearby beat their own long-suffering
