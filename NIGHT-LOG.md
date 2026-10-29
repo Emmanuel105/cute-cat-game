@@ -20596,3 +20596,29 @@ flock this log keeps closing one marked bird at a time.
 Peak's own friend total rose by one, from 90 to 91. No visual check was possible in this environment
 (no browser, no Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 764 — Frosty Peak's pond flock gets its third friend, the first of the plain penguins
+
+Before touching anything, this round checked the backlog item round 762 left open — the herd's third
+reindeer at (-22, 6), the one wandering quadruped in the game still missing a greet prompt. A headless
+probe (`game.travel(5, 'from-hub')`, 3000 simulated frames, sampling the deer's own position against
+every solid box every quarter second) found it actually touching a pine trunk's footprint at times —
+0.00 m clearance, not the 0.45 m an earlier probe reported — so a smaller greet radius wouldn't help;
+the deer walks straight through ground the cat can't. Left it alone and went back to the pond instead.
+
+The six-strong penguin flock at (18, 8) has two marked, meetable birds (red scarf, blue scarf, rounds
+762-763) and four plain ones that still no-op `greetable()` the same way the flock always has —
+`makePenguin()`'s rig carries none of `.look`/`.robot`/`.cookie`. The plain birds are visually
+identical to each other, but that's never stopped this log before: the beach's own six colony crabs
+(none of them marked either) were closed out one at a time the same way. **The first of Frosty Peak's
+four plain penguins can now be met.** The spawn loop now also captures the second bird's rig
+(`plainPenguin1`), and it gets its own `game.namedFriend('flock-penguin-3')` plus a
+`game.addInteractable` keyed straight to `rig.group`, tracked every frame through its usual 9 m leash.
+No new mesh, no new physics box. *"*flaps stubby wings and waddles a tight little circle*"* Three
+plain penguins remain ambient.
+
+`node test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count unchanged at
+329 (no new collider, as expected). Frosty Peak's own friend total rose by one, from 91 to 92. No
+visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
+suite and the headless reindeer probe above (deleted after use, not committed). Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
