@@ -18993,8 +18993,8 @@ function buildSnowVillage(game, entry) {
   makeScatter(game, [[0, 0, 40, 70]], G.sphere(0.35, 7, 5), [0xffffff, 0xeef3fa, 0xdfe8f2], r, [0.6, 1.6], 0.0);   // snow drifts / buried boulders
 
   // life: penguins, reindeer, kids, the yeti, the squirrel
-  let redScarfPenguin = null, blueScarfPenguin = null, plainPenguin1 = null, plainPenguin2 = null, plainPenguin3 = null;
-  for (let i = 0; i < 6; i++) { const rig = makePenguin({ scarf: i === 0 ? 0xd62839 : (i === 3 ? 0x2f6fd6 : null), scale: r.range(0.8, 1.05) }); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x: 18 + r.range(-6, 6), z: 8 + r.range(-6, 6), speed: r.range(0.5, 0.8), leash: 9, r: 0.3, height: 0.9, step: 0.25, idle: [1, 3] })); if (i === 0) redScarfPenguin = rig; if (i === 3) blueScarfPenguin = rig; if (i === 1) plainPenguin1 = rig; if (i === 2) plainPenguin2 = rig; if (i === 4) plainPenguin3 = rig; }
+  let redScarfPenguin = null, blueScarfPenguin = null, plainPenguin1 = null, plainPenguin2 = null, plainPenguin3 = null, plainPenguin4 = null;
+  for (let i = 0; i < 6; i++) { const rig = makePenguin({ scarf: i === 0 ? 0xd62839 : (i === 3 ? 0x2f6fd6 : null), scale: r.range(0.8, 1.05) }); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x: 18 + r.range(-6, 6), z: 8 + r.range(-6, 6), speed: r.range(0.5, 0.8), leash: 9, r: 0.3, height: 0.9, step: 0.25, idle: [1, 3] })); if (i === 0) redScarfPenguin = rig; if (i === 3) blueScarfPenguin = rig; if (i === 1) plainPenguin1 = rig; if (i === 2) plainPenguin2 = rig; if (i === 4) plainPenguin3 = rig; if (i === 5) plainPenguin4 = rig; }
   // the pond colony's own six penguins have waddled this flock since round one, same root cause as
   // every other ambient `Wanderer`-wrapped critter this log keeps turning into a friend: `makePenguin()`'s
   // rig carries none of `.look`/`.robot`/`.cookie` for `Wanderer`'s own `greetable()` call to find, so it
@@ -19028,6 +19028,15 @@ function buildSnowVillage(game, entry) {
     game.addInteractable({ obj: plainPenguin3.group, radius: 2.1, label: () => 'Say hello to the penguin', onUse: () => {
       game.befriend(flockPenguin5Id); SFX.squawk(); game.hearts(plainPenguin3.group.position.x, 0.6, plainPenguin3.group.position.z, 3);
       game.toast('🐧 *honks softly and leans in to sniff the cat\'s paw*'); } }); }
+  // the sixth and last bird in the flock, spawn-loop index 5 — round 766 flagged it as the very last
+  // ambient member of this pond colony. Same fix, one more time: `game.namedFriend('flock-penguin-6')`
+  // plus a `game.addInteractable` keyed to its own `rig.group`. No new mesh, no new physics box. With
+  // this one the entire six-strong flock (the bold one, both scarved ones and all four plain ones) can
+  // now be met.
+  { const flockPenguin6Id = game.namedFriend('flock-penguin-6');
+    game.addInteractable({ obj: plainPenguin4.group, radius: 2.1, label: () => 'Say hello to the penguin', onUse: () => {
+      game.befriend(flockPenguin6Id); SFX.squawk(); game.hearts(plainPenguin4.group.position.x, 0.6, plainPenguin4.group.position.z, 3);
+      game.toast('🐧 *waddles in a slow circle, then settles beside the cat in the snow*'); } }); }
   // a bolder penguin peels off from the flock to waddle over and investigate the cat, then hurries back.
   // Same root cause and fix as every ambient `Hopper` critter this log has turned into a friend: `Follower`
   // wraps a plain `Wanderer` around `makePenguin()`'s rig, which carries none of `.look`/`.robot`/`.cookie`
