@@ -20544,3 +20544,33 @@ members meetable, lead through trailing follower.
 suite's own count going from 80 to 81 to meet (checked against the pre-change tree with `git stash`).
 No visual check was possible in this environment (no browser, no Playwright) — only the stub-three
 test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 762 — Frosty Peak's pond flock gets its first friend, the red-scarfed penguin
+
+Every lockstep `Marchers` column closed last round, so this one went hunting for whatever ambient
+wildlife had been missed along the way. One turned up: the six-strong penguin flock that's waddled
+the frozen pond at (18, 8) since round one, a plain `Wanderer` wrapped around a bare `makePenguin()`
+rig. Same root cause as every other ambient critter this log has fixed — `makePenguin()`'s rig
+carries none of `.look`/`.robot`/`.cookie` for `Wanderer`'s own `greetable()` call to find, so the
+whole flock has quietly no-opped the entire time. The bold penguin that peels off to investigate the
+cat got its own fix long ago (`bold-penguin`), sitting right in the code just after this flock's own
+loop — but the six that stay in formation on the pond never did, until now.
+
+**The red-scarfed one, easy to pick out from the rest of the flock, can now be met.** No new mesh, no
+new physics box: `game.namedFriend('flock-penguin')` plus a `game.addInteractable` keyed straight to
+its own `rig.group`, tracked every frame as it wanders its usual 9 m leash around the pond. *"*tilts
+its head at the red scarf flapping, then goes right back to waddling*"* The other five stay ambient
+for now, the same pattern every other flock in this game — the colony crabs, the peak-hares, the
+pigeons — went through before each got closed out bird by bird.
+
+`node test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count unchanged at
+329 (no new collider, as expected — a greet prompt on an existing `Wanderer` rig adds none). Frosty
+Peak's own friend total rose by one, confirmed by the suite's own count going from 89 to 90 to meet
+(checked against the pre-change tree with `git stash`). No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+Worth noting for a future round: the herd's own third reindeer, at (-22, 6), is still the one wandering
+quadruped in this game with no greet prompt at all — a headless probe once found it drifting within
+0.45 m of a pine trunk, too tight for a 2.1 m circle to sit cleanly, but a smaller radius (or a second
+probe run) might still close it.
