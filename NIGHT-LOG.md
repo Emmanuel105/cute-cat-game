@@ -20678,3 +20678,23 @@ penguins left at (18, 8).
 329 (no new collider, as expected — a greet prompt on an existing `Wanderer` rig adds none). No
 visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
 suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 768 — Whisper Woods' marching hedgehog column gets its third and last friend
+
+With Frosty Peak's pond flock fully closed out, this round went looking for the next column still
+missing a member and found it close to home: Whisper Woods' own three-hedgehog drill column, west of
+everything else hand-built in the wood. The lead hedgehog and its first follower were already
+meetable (the lead's own cry even names the third one — "mind the toadstools, Nigel" — without Nigel
+himself ever answering), and the comment above the build loop said as much: "the third hedgehog stays
+ambient for now." **Nigel can now be met too.** Same fix as his two columnmates, nothing new: a third
+`game.namedFriend('marching-hedgehog-3')` plus a `game.addInteractable` tracked straight off
+`marchers[2].group`, which `Marchers.update()` already repositions every frame at a fixed 0.4 m gap
+behind the second hedgehog, so the prompt follows him there and back through the column's own 2 m
+march. No new mesh, no new physics box. *"*that's Nigel — flinches at the word "toadstool," then
+settles back into step*"* With this one, every hedgehog in the column can be met.
+
+`node test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count unchanged at
+329 (no new collider, as expected — a greet prompt on an existing `Marchers` rig adds none). Whisper
+Woods' own friend total rose by one, from 98 to 99, checked directly against the pre-change tree with
+`git stash`. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
