@@ -3185,12 +3185,22 @@ function buildNeighborhood(game, entry) {
   // (-29.5, -28) to (-22.5, -28) came back clear by 6 m of the nearest box and nearly 11 m of the
   // nearest wandering soul — 14 m from the picnic blanket's own spot at (-40, -30) and well clear of
   // the woodcutter's stump, the scarecrow's patch and the catch pair further east.
+  // The lead already answers a "Say hello" prompt for free — `Marchers`' lead rig runs on `Patroller`,
+  // whose constructor calls `greetable()` automatically, and a human rig carries `.look`, one of the
+  // three tags `greetable()` checks for — but the two followers it drags along never got the same
+  // wiring, same gap this log already closed on the gingerbread guard's own followers. The second
+  // recruit now gets it by hand: the same `game.namedFriend` + `game.addInteractable` move, tracked
+  // off `troop[1].group`, which `Marchers.update()` (55-npcs.js) already repositions at a fixed 1.1 m
+  // gap behind the lead every frame, so the prompt follows it there and back with no new mesh and no
+  // new physics box.
   { const troopWard = makeWardrobe(r, { shirts: [0x5a6a3a], pants: [0x3a3a2a], shoes: [0x3a2a1e] });
     const troop = [0, 1, 2].map(() => { const rig = makeHuman({ ...randomPerson(r, { child: true, female: r.chance(0.5), wardrobe: troopWard }),
       hat: 'cap', hatColor: 0x3a4a2a, jacket: null, scarf: null, bag: null, backpack: null, glasses: false });
       W.add(rig.group); return rig; });
     game.npcs.push(new Marchers(game, troop, { points: [[-29.5, -28], [-22.5, -28]], speed: 1.0, pause: [1, 2], r: 0.32, gap: 1.1,
-      cries: ['Left, right, left, right — keep it sharp, troops!', 'Forward march! Mind the anthill, soldier.', 'Reporting for duty, cat. Dismissed.'], cryIcon: '🪖' })); }
+      cries: ['Left, right, left, right — keep it sharp, troops!', 'Forward march! Mind the anthill, soldier.', 'Reporting for duty, cat. Dismissed.'], cryIcon: '🪖' }));
+    const secondId = game.namedFriend('toy-troop-2');
+    game.addInteractable({ obj: troop[1].group, radius: 2.1, label: () => 'Say hello', onUse: () => { game.befriend(secondId); SFX.tag(); game.hearts(troop[1].group.position.x, 1.1, troop[1].group.position.z, 3); game.toast('🪖 "Keeping step, sir! I mean — hi, kitty."'); } }); }
 
   // Sunny Shore's own ice-cream seller has worked the sand since round 411, and this street has had a
   // balloon seller and a lemonade stand for almost as long — but no one in the whole Neighborhood ever

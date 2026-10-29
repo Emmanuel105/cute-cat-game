@@ -20399,3 +20399,26 @@ detail and Victorian's drill line (all `Marchers` columns using `makeHuman`/`mak
 than bare animals) still only have their lead rig wired up — the lead gets `greetable()` for free since
 a human/robot rig carries `.look`/`.robot`, but `Marchers` never wires the two followers trailing
 behind it. Same gap, same fix, three more columns' worth of it.
+
+## Round 756 — the Neighborhood's toy-soldier troop gets a second friend
+
+First of the three columns flagged at the end of round 755: the Neighborhood's three kids playing
+army, drilling back and forth on the open field south-west of the street. The lead already answers
+"Say hello" for free — `Marchers`' lead rig runs on `Patroller`, whose constructor calls `greetable()`
+automatically, and a human rig carries `.look`, one of the three tags `greetable()` checks for — but
+`Marchers` only ever wires the lead, leaving the two kids trailing behind mute. **The second recruit
+can now be met too.** *"Keeping step, sir! I mean — hi, kitty."*
+
+Same fix this log keeps reusing on the animal-rig columns' own followers, just confirmed to work
+identically on a human rig: a `game.namedFriend('toy-troop-2')` plus a tracked `game.addInteractable`
+off `troop[1].group`, which `Marchers.update()` (55-npcs.js) already repositions at its fixed 1.1 m
+gap behind the lead every frame, so the prompt follows it there and back with no new mesh and no new
+physics box. The third recruit stays ambient for now, same pattern as every other column before its
+own third got closed in a later round — and Robot City's security detail and Victorian's drill line
+still have the identical gap waiting.
+
+`node test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count unchanged at
+329 (no new collider, as expected). The Neighborhood's own friend total rose by one, confirmed by the
+suite's own count going from 79 to 80 to meet (checked against the pre-change tree with `git stash`).
+No visual check was possible in this environment (no browser, no Playwright) — only the stub-three
+test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
