@@ -10943,6 +10943,47 @@ function buildNeighborhood(game, entry) {
       cries: ['Ice cream! Fresh off the cart!', "Careful, puss — it's melting already.", 'One scoop or two today?'] });
     game.npcs.push(v); greetable(game, v); }
 
+  // Candy Land, Robot City and Victorian all have a `StiltWalker` by now (55-npcs.js, an ordinary
+  // `Patroller` raised a fixed height off the ground it actually paces) — the Neighborhood, for all
+  // its toy soldiers, treasure hunters and ice-cream cart, never had one of its own. A kid on a pair
+  // of homemade stilts now paces a short line on the quiet field south of the street, nail heads and
+  // mismatched paint and all, towering half her own height off the ground. *"Dad helped me nail the
+  // footrests on. Mostly me, though."* *"Bet I can see clean over Mrs. Peabody's hedge from up
+  // here!"* *"Don't laugh — these took me all weekend!"*
+  // No new class and no new mesh shape: the same ankle-parented pole, strap and footrest peg every
+  // other stilt walker in this game already uses, just shorter (a kid's own homemade pair, not a
+  // performer's) and recoloured in bare wood and rope instead of any of the other three's paint jobs.
+  // Shirt colour is a fixed literal outside `SHIRT_COLORS`, not drawn from the street's shared `ward`
+  // bag — that pool is already fully subscribed by the rest of the street, and this is the 64th
+  // person on it, which `test/run.mjs` checks for a repeat-free shirt colour across all of them.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, 2000 simulated frames sampling every NPC's own
+  // position every 15th frame) swept a 2 m grid of the open field south of the street against both
+  // those samples and all 329 of the street's own physics boxes: the whole 6 m line from (14, -34) to
+  // (14, -28) came back clearest of the grid, 9.6 m from the nearest box and 10.5 m from the nearest
+  // wandering soul — clear of the toy troop's own drill line (-29.5 to -22.5, z=-28), the ice-cream
+  // cart just above (-4, -26) and the treasure dig further east (63, -17).
+  //
+  // Built dead last, right after the ice-cream vendor, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off the shared `rnd()` sequence unconditionally, and this is the first
+  // world the test suite builds, so anything built earlier here would have had its own timing-
+  // sensitive pick shifted by it.
+  { const stiltH = 0.6;
+    const performer = makeHuman({ ...randomPerson(r, { female: true, child: true, elder: false }),
+      shirt: 0x6a8ab5, hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: false });
+    W.add(performer.group);
+    const poleM = mat(0xc9a267, { roughness: 0.85 }), strapM = mat(0xd8c39a, { roughness: 0.9 }), pegM = mat(0x8a6a44, { roughness: 0.8 });
+    for (const L of performer.legs) {
+      const len = stiltH / performer.k;
+      const stilt = group(0, 0.22, 0.01, L.ankle);
+      mesh(G.cyl(0.024, 0.028, len + 0.3, 8), poleM, { y: -(len + 0.3) / 2 + 0.07, parent: stilt });
+      mesh(G.torus(0.085, 0.017, 6, 10), strapM, { y: 0, rx: PI / 2, parent: stilt });
+      mesh(G.box(0.14, 0.032, 0.085), pegM, { y: -0.17, z: 0.07, parent: stilt });
+    }
+    game.npcs.push(new StiltWalker(game, performer, { points: [[14, -34], [14, -28]], speed: 0.5, pause: [1.5, 3], r: 0.4, height: 2.0, stiltH,
+      cries: ['Dad helped me nail the footrests on. Mostly me, though.', 'Bet I can see clean over Mrs. Peabody’s hedge from up here!', "Don't laugh — these took me all weekend!"], cryIcon: '🎪' })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

@@ -20800,3 +20800,37 @@ against the test's own printed counts before and after. No visual check was poss
 environment (no browser, no Playwright) — only the stub-three test suite and the headless probe above
 (deleted after use, not committed). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 772 — the Neighborhood finally gets a stilt walker
+
+Candy Land, Robot City and Victorian have all had their own `StiltWalker` for a few rounds now —
+the Neighborhood, for all its toy soldiers, treasure hunters and ice-cream cart, never had one of
+its own. **A kid on a pair of homemade stilts now paces a short line on the quiet field south of
+the street**, nail heads and mismatched paint and all, towering half her own height off the
+ground. *"Dad helped me nail the footrests on. Mostly me, though."* *"Bet I can see clean over Mrs.
+Peabody's hedge from up here!"* *"Don't laugh — these took me all weekend!"*
+
+No new class and no new mesh shape: `StiltWalker` (`55-npcs.js`, an ordinary `Patroller` raised a
+fixed height off the ground it actually paces) already exists, and this reuses the same
+ankle-parented pole, strap and footrest peg every other stilt walker in the game already wears —
+just shorter (a kid's own homemade pair, stiltH 0.6 against the adults' 0.8) and recoloured in bare
+wood and rope instead of any of the other three's paint jobs. Her shirt colour is a fixed literal
+outside `SHIRT_COLORS`, not drawn from the street's shared `ward` bag: that pool is already fully
+subscribed by the rest of the street, and she's the 64th person on it, which `test/run.mjs` checks
+for a repeat-free shirt colour across all of them — the first draw landed on a colour already taken,
+so the fix was a plain hex override, same move the kite-flying boy and the flower-watering girl
+already use further up this same street for the same reason.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, 2000 simulated frames sampling every NPC's own
+position every 15th frame) swept a 2 m grid of the open field south of the street against both
+those samples and all 329 of the street's own physics boxes: the whole 6 m line from (14, -34) to
+(14, -28) came back clearest of the grid, 9.6 m from the nearest box and 10.5 m from the nearest
+wandering soul — clear of the toy troop's own drill line (-29.5 to -22.5, z=-28), the ice-cream cart
+just above (-4, -26) and the treasure dig further east (63, -17).
+
+`node test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count unchanged at
+329 (`StiltWalker`/`Patroller` only adds a dynamic circle, no static box). The Neighborhood's own
+friend count rose by one, from 81 to 82. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe above (deleted after
+use, not committed). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
