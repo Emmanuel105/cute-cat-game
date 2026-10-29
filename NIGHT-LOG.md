@@ -20265,3 +20265,27 @@ right at the log mouth still shows the hedgehog's prompt first.
 own friend total rose by one, 96 to 97 to meet. No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite described here. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 751 — Sunny Shore's marching crab column gets a second friend
+
+Round 748 fixed the lead crab in the three-crab drill column at (24-26, -43) — `Marchers`' lead rig
+runs on `Patroller`, whose constructor calls `greetable()` automatically, but `greetable()` only wires
+a prompt up for a rig carrying `.look`, `.robot` or `.cookie`, and a bare `makeCrab()` rig has none of
+the three, so only the lead ever got fixed, leaving the other two ambient. **The second crab in line now
+answers "Say hello to the crab" too** — the same "second penguin / second frog / second fox" move this
+log keeps repeating once a lead creature's own no-op has already been closed once. *"Waves one claw
+without ever breaking stride."*
+
+No new mesh, no new class, no new physics box: just `game.namedFriend('marching-crab-2')` and a
+`game.addInteractable` tracked off `marchers[1].group`, which `Marchers.update()` already holds at a
+fixed 0.45 m gap behind the lead every frame, so the prompt follows it there and back. Both 2.1 m
+radii overlap across that gap, but `game.update()` always picks whichever interactable sits nearest
+the cat, so standing closer to either crab prompts for that one with no conflict — same reasoning the
+penguin column's own second bird already relied on. The third crab stays ambient for now, same as the
+penguin column before its own third got a name.
+
+`node test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count unchanged at
+329 (no new collider, as expected — a second befriend prompt on an existing Marchers follower adds
+none). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite described here. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.
