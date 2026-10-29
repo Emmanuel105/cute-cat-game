@@ -20496,3 +20496,27 @@ this environment (no browser, no Playwright) — only the stub-three test suite.
 Worth noting for a future round: the Neighborhood's own toy-troop and Victorian's drill line both
 still only have their lead and second recruit wired up — same gap, same fix, two more `Marchers`
 thirds' worth of it, and then every lockstep column in the game will have all its marchers meetable.
+
+## Round 760 — Victorian's toy-soldier drill line is complete: all three recruits answer "Say hello"
+
+Second of the two gaps flagged at the end of round 759: Victorian's own trio of children drilling on
+the meadow south-east of the market square, dressed up as toy soldiers for tomorrow's school pageant.
+The lead answers for free via `Patroller`'s own `greetable()` call, and round 758 wired up the second
+recruit — but the third, trailing at the back of the line, was still ambient. **All three recruits can
+now be met.** `soldiers[2].group` gets its own `game.namedFriend('toy-soldier-3')` and a tracked
+`game.addInteractable`, the identical move already proven on every other `Marchers` column's own
+third (the gingerbread guard, the crab column, the penguin column, Robot City's security detail). No
+new mesh, no new class, no new physics box — `Marchers.update()` (55-npcs.js) already repositions the
+third follower at its fixed 1.1 m gap behind the lead every frame, so the prompt follows it there and
+back for free. Gets a line of its own rather than reusing the lead's or second's: *"Last in line — but
+I've got the best view of Miss's face when we trip."*
+
+`node test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count unchanged at
+329 (no new collider, as expected). Victorian's own friend total rose by one, confirmed by the suite's
+own count going from 106 to 107 to meet. No visual check was possible in this environment (no browser,
+no Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
+
+Worth noting for a future round: the Neighborhood's own toy-troop is now the last `Marchers` column in
+the game still missing its third — the exact same fix, one more time, closes every lockstep column in
+the game.

@@ -16579,7 +16579,8 @@ function buildVictorian(game, entry) {
   // unchanged — same lockstep gap, same lead-and-followers logic — just this street's own wardrobe (a
   // red coat, gilt buttons and cuffs, a tall black hat with a red band, built off the same
   // `makeHuman`/`makeWardrobe` every other Victorian adult or child already uses) on three children in
-  // place of three gingerbread men.
+  // place of three gingerbread men. All three recruits are now wired up to meet, closing the gap this
+  // log flagged at the end of round 759 — the last `Marchers` column in the game still missing a third.
   // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses) built
   // the real Victorian town (`game.start('new')` then `game.load(3, 'from-prev')`, so every urchin,
   // dancer, duck, balloon and ball-tossing pair actually moved), sampled every physics circle (every
@@ -16594,7 +16595,9 @@ function buildVictorian(game, entry) {
     game.npcs.push(new Marchers(game, soldiers, { points: [[26, -75], [32, -75]], speed: 1.0, pause: [1, 2], r: 0.32, gap: 1.1,
       cries: ['Hup, two, three, four — mind your dressing, Thomas!', 'Careful, puss — mind the wooden bayonets.', "Drop one more step and Miss will have us start again."], cryIcon: '💂' }));
     const secondId = game.namedFriend('toy-soldier-2');
-    game.addInteractable({ obj: soldiers[1].group, radius: 2.1, label: () => 'Say hello', onUse: () => { game.befriend(secondId); SFX.tag(); game.hearts(soldiers[1].group.position.x, 1.1, soldiers[1].group.position.z, 3); game.toast('💂 "Pssst — don’t tell Miss I broke rank to wave."'); } }); }
+    game.addInteractable({ obj: soldiers[1].group, radius: 2.1, label: () => 'Say hello', onUse: () => { game.befriend(secondId); SFX.tag(); game.hearts(soldiers[1].group.position.x, 1.1, soldiers[1].group.position.z, 3); game.toast('💂 "Pssst — don’t tell Miss I broke rank to wave."'); } });
+    const thirdId = game.namedFriend('toy-soldier-3');
+    game.addInteractable({ obj: soldiers[2].group, radius: 2.1, label: () => 'Say hello', onUse: () => { game.befriend(thirdId); SFX.tag(); game.hearts(soldiers[2].group.position.x, 1.1, soldiers[2].group.position.z, 3); game.toast('💂 "Last in line — but I’ve got the best view of Miss’s face when we trip."'); } }); }
   // tetherball, badminton, tug-of-war, archery, sack races — a whole shelf of playground games this
   // game has never tried once, in any of the seven worlds — and a maypole, the one dance that actually
   // needs a prop in the middle, had never come up either. Six children in Sunday best now circle a
