@@ -20770,3 +20770,33 @@ checked directly against the test's own printed counts before and after. No visu
 in this environment (no browser, no Playwright) — only the stub-three test suite and the headless probe
 above (deleted after use, not committed). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 771 — Robot City finally gets a stilt walker
+
+A sweep for any still-open thread (march columns, pond flocks, forest wildlife, "look" toasts) found
+them all closed as of round 770, so this round went looking for a feature that had already been rolled
+out to some worlds but not all — the kind of gap this log keeps catching (tetherball, archery, pogo
+sticks). `StiltWalker` (an ordinary `Patroller`, raised a fixed height off the ground it paces) existed
+in exactly two of the seven worlds, Candy Land and Victorian. **Robot City now has the third: a factory
+hand on a pair of scavenged pipe-stilts paces a short line on the open floor north of the scrap crane**,
+safety-orange jumpsuit and all, towering half again his own height. *"Highest thing on this floor that
+isn't welded down, puss."* *"Every other act in this city's got gears. I've just got these two poles."*
+
+No new class and no new mesh shape: the same ankle-parented pole, strap and footrest peg the other two
+stilt walkers already use, recoloured in scrap steel and hazard orange. `StiltWalker` extends
+`Patroller`, whose constructor calls `greetable()` on its own, so this one counts toward the friend
+total with no extra wiring. A headless probe (a scratch script on the same stub-three harness
+`test/run.mjs` itself uses: `game.start('new')` then `game.travel(2, 'from-prev')`, 2000 simulated
+frames sampling every NPC's own position every 15th frame) swept a 2 m grid of the open factory floor
+against both those 11,390 samples and all 1200 of the city's own physics boxes: the whole 6 m line from
+(12, -30) to (18, -30) came back clearest of the grid, 7.65 m from the nearest box at its tightest end
+and 13.97 m from the nearest wandering soul (a drone circling overhead, no ground-level obstruction) —
+north of the scrap crane's own base at (13, -39) and well off the tetherball court at (29, -18), short
+of the radius (98) where `robotRegion`'s own procedural fill takes over.
+
+`node test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings. Robot City's own friend
+count rose by one, from 92 to 93, and its walkable-ground percentage held at 88%, both checked directly
+against the test's own printed counts before and after. No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite and the headless probe above
+(deleted after use, not committed). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.

@@ -7282,6 +7282,41 @@ function buildRobotCity(game, entry) {
     game.npcs.push(new Sunbather(game, breaker, { x: bx, z: bz, ry: bry, cryIcon: '🔧',
       cries: ["Five minutes. The scrap pile isn't going anywhere.", "Careful, puss — mind the hard hat, that's the only one that fits me.", "Floor's warm straight through from the server racks underneath. Best nap spot in the city."] })); }
 
+  // Candy Land and Victorian both have a stilt walker by now (`StiltWalker`, 55-npcs.js, an
+  // ordinary `Patroller` raised a fixed height off the ground it actually paces) — Robot City,
+  // with its own factory floor full of hands on break, never had one of its own. A worker on a
+  // pair of scavenged pipe-stilts now paces a short line on the open floor north of the scrap
+  // crane, safety-orange jumpsuit and all, half again his own height off the ground. No new class,
+  // no new mesh shape: the same ankle-parented pole, strap and footrest peg every other stilt
+  // walker in this game already uses, just recoloured in scrap steel and hazard orange.
+  //
+  // A headless probe (`game.start('new')` then `game.travel(2, 'from-prev')`, 2000 simulated
+  // frames sampling every NPC's own position every 15th frame) swept a 2 m grid of the open
+  // factory floor (radius 20-46 from the origin, short of the radius (98) where `robotRegion`'s
+  // own procedural fill takes over) against both those 11,390 samples and all 1200 of the city's
+  // own physics boxes: the whole 6 m line from (12, -30) to (18, -30) came back clearest of the
+  // grid, 7.65 m from the nearest box at its tightest end and 13.97 m from the nearest wandering
+  // soul (a drone circling overhead, no obstruction at ground level) — north of the scrap crane's
+  // own base at (13, -39) and well off the tetherball court at (29, -18).
+  //
+  // Built dead last, right after the break-time napper, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off the shared per-world `r()` sequence unconditionally, and
+  // anything built earlier in this city would have had its own timing-sensitive pick shifted by it.
+  { const stiltH = 0.8;
+    const performer = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
+      shirt: 0xff8a00, stripes: 0x00e5ff, pants: 0x232c34, shoes: 0x2a2a30, hat: 'cap', hatColor: 0xff8a00, hatBand: 0x00e5ff, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(performer.group);
+    const poleM = mat(0x454b52, { metalness: 0.6, roughness: 0.55 }), strapM = mat(0xff8a00, { roughness: 0.7 }), pegM = mat(0x2b2f36, { metalness: 0.5, roughness: 0.6 });
+    for (const L of performer.legs) {
+      const len = stiltH / performer.k;
+      const stilt = group(0, 0.22, 0.01, L.ankle);
+      mesh(G.cyl(0.026, 0.03, len + 0.3, 8), poleM, { y: -(len + 0.3) / 2 + 0.07, parent: stilt });
+      mesh(G.torus(0.09, 0.018, 6, 10), strapM, { y: 0, rx: PI / 2, parent: stilt });
+      mesh(G.box(0.15, 0.035, 0.09), pegM, { y: -0.17, z: 0.07, parent: stilt });
+    }
+    game.npcs.push(new StiltWalker(game, performer, { points: [[12, -30], [18, -30]], speed: 0.55, pause: [1.5, 3], r: 0.4, height: 2.6, stiltH,
+      cries: ["Highest thing on this floor that isn't welded down, puss.", 'Scavenged these from the scrap pile myself. Mostly holding.', "Every other act in this city's got gears. I've just got these two poles."], cryIcon: '🎪' })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
