@@ -20468,3 +20468,31 @@ pattern as every other column before its own third got closed in a later round.
 own count going from 105 to 106 to meet (checked against the pre-change tree with `git stash`). No
 visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
 suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 759 — Robot City's security detail is complete: all three units answer "Beep hello"
+
+Round 757 closed the detail's second robot and flagged the third as a candidate for a future round,
+same as every other `Marchers` column's own third before it. This round closes it: **the security
+detail's three robots can now all be met** — `marchers[2].group`, the rear guard of the strict
+north-south line patrolling the gap between two of the east yard's own towers, gets its own
+`game.namedFriend` and a tracked `game.addInteractable`, the identical move already proven on the
+gingerbread guard's, the crab column's and the penguin column's own thirds. Gets its own line rather
+than reusing the lead's or second's "unauthorized feline logged": *"REAR GUARD UNIT. ...DESIGNATED
+FRIEND. HELLO."*
+
+No new mesh, no new class, no new physics box — `Marchers.update()` (55-npcs.js) already repositions
+every follower, third included, at its fixed 1.2 m gap behind the lead each frame, so the tracked
+interactable follows it there and back with no extra bookkeeping. All three 2.1 m greet radii overlap
+across the short line, but `game.update()`'s nearest-interactable search always resolves to whichever
+unit is actually closest, so there's no ambiguity standing anywhere along it.
+
+`node test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count unchanged at
+329 (no new collider, as expected — a third befriend prompt on an existing Marchers follower adds
+none). Robot City's own friend total rose by one, confirmed by the suite's own count going from 91 to
+92 to meet (checked against the pre-change tree with `git stash`). No visual check was possible in
+this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+Worth noting for a future round: the Neighborhood's own toy-troop and Victorian's drill line both
+still only have their lead and second recruit wired up — same gap, same fix, two more `Marchers`
+thirds' worth of it, and then every lockstep column in the game will have all its marchers meetable.

@@ -14534,11 +14534,16 @@ function buildRobotCity(game, entry) {
   // hand: the same `game.namedFriend` + `game.addInteractable` move, tracked off `marchers[1].group`,
   // which `Marchers.update()` (55-npcs.js) already repositions at a fixed 1.2 m gap behind the lead
   // every frame, so the prompt follows it there and back with no new mesh and no new physics box.
+  // The third unit now closes the detail out, the identical fix round 755 already used on the
+  // gingerbread guard's own third: `game.namedFriend` plus a tracked `game.addInteractable` off
+  // `marchers[2].group`, its own line rather than reusing the lead's or second's.
   { const marchers = [0, 1, 2].map(() => { const rig = makeRobot(); W.add(rig.group); return rig; });
     game.npcs.push(new Marchers(game, marchers, { points: [[46, -18], [46, -26]], speed: 1.0, pause: [1, 2], pauseAll: true, loop: false, r: 0.42, height: 1.9, gap: 1.2,
       cries: ['Shift patrol: sector clear.', 'In step. Always in step.', 'Unauthorized feline logged. Proceeding.'], cryIcon: '🛡️' }));
     const secondId = game.namedFriend('security-detail-2');
-    game.addInteractable({ obj: marchers[1].group, radius: 2.1, label: () => 'Beep hello', onUse: () => { game.befriend(secondId); SFX.beep(); game.hearts(marchers[1].group.position.x, 1.9, marchers[1].group.position.z, 3); game.toast('🤖 "SECONDARY UNIT. FELINE RE-LOGGED. ...HELLO."'); } }); }
+    game.addInteractable({ obj: marchers[1].group, radius: 2.1, label: () => 'Beep hello', onUse: () => { game.befriend(secondId); SFX.beep(); game.hearts(marchers[1].group.position.x, 1.9, marchers[1].group.position.z, 3); game.toast('🤖 "SECONDARY UNIT. FELINE RE-LOGGED. ...HELLO."'); } });
+    const thirdId = game.namedFriend('security-detail-3');
+    game.addInteractable({ obj: marchers[2].group, radius: 2.1, label: () => 'Beep hello', onUse: () => { game.befriend(thirdId); SFX.beep(); game.hearts(marchers[2].group.position.x, 1.9, marchers[2].group.position.z, 3); game.toast('🤖 "REAR GUARD UNIT. ...DESIGNATED FRIEND. HELLO."'); } }); }
   // Frosty Peak's own haulers (round 526-ish) and now the penguin colony have both used `TugOfWar`
   // (55-npcs.js) for a straining, never-resolving contest; Robot City had plenty of robots standing,
   // wandering or marching, but no two of them ever pitted against each other. Two factory units now
