@@ -20639,3 +20639,23 @@ a little on the ice, then rights itself and keeps waddling*"* Two plain penguins
 Peak's own friend total rose by one, from 92 to 93 (checked directly against the test's own printed
 count). No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 766 — Frosty Peak's pond flock gets its fifth friend, the third of the plain penguins
+
+Continued straight on from round 765's own plain-penguin count: the six-strong flock at (18, 8) now
+has four marked, meetable birds (red scarf, blue scarf, the first two plain ones) and two still-ambient
+plain ones, both `Wanderer`-wrapped `makePenguin()` rigs that quietly no-op `greetable()` for the usual
+reason — the rig carries none of `.look`/`.robot`/`.cookie`. **The third of the four plain penguins can
+now be met.** The spawn loop now also captures the fifth bird's rig (`plainPenguin3`, index 4 in the
+spawn loop), and it gets its own `game.namedFriend('flock-penguin-5')` plus a `game.addInteractable`
+keyed straight to `rig.group`, tracked every frame through its usual 9 m leash. No new mesh, no new
+physics box. *"*honks softly and leans in to sniff the cat's paw*"* One plain penguin remains ambient.
+
+`node test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count unchanged at
+329 (no new collider, as expected — a greet prompt on an existing `Wanderer` rig adds none). Frosty
+Peak's own friend total rose by one, from 93 to 94, confirmed against the pre-change tree with
+`git stash`. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+Worth noting for a future round: one plain penguin in the flock (spawn-loop index 5) is now the very
+last ambient member of this pond colony — the same fix, one more time, closes it out completely.
