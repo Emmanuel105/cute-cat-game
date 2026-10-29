@@ -20422,3 +20422,26 @@ still have the identical gap waiting.
 suite's own count going from 79 to 80 to meet (checked against the pre-change tree with `git stash`).
 No visual check was possible in this environment (no browser, no Playwright) — only the stub-three
 test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 757 — Robot City's security detail gets a second friend
+
+Second of the three columns flagged at the end of round 755: Robot City's three-robot security
+detail, marching an 8 m north-south line in the east yard's own tower cluster. The lead already
+answers "Beep hello" for free — `Marchers`' lead rig runs on `Patroller`, whose constructor calls
+`greetable()` automatically, and a robot rig carries `.robot`, one of the three tags `greetable()`
+checks for — but `Marchers` only ever wires up the lead, leaving the two units trailing behind it
+mute. **The second unit can now be met too.** *"SECONDARY UNIT. FELINE RE-LOGGED. ...HELLO."*
+
+Same fix this log keeps reusing on every other column's own followers, just confirmed to work
+identically on a robot rig: a `game.namedFriend('security-detail-2')` plus a tracked
+`game.addInteractable` off `marchers[1].group`, which `Marchers.update()` (55-npcs.js) already
+repositions at its fixed 1.2 m gap behind the lead every frame, so the prompt follows it there and
+back with no new mesh and no new physics box. The third unit stays ambient for now, same pattern as
+every other column before its own third got closed in a later round — and Victorian's drill line
+still has the identical gap waiting.
+
+`node test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count unchanged at
+329 (no new collider, as expected). Robot City's own friend total rose by one, confirmed by the
+suite's own count going from 90 to 91 to meet (checked against the pre-change tree). No visual check
+was possible in this environment (no browser, no Playwright) — only the stub-three test suite.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
