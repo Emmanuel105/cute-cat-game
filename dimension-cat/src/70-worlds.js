@@ -4060,6 +4060,38 @@ function buildCandyLand(game, entry) {
     const flag = group(0, 0, 0, W); noInk(mesh(G.box(0.03, 0.14, 0.4), mat(0xff6fb5, { roughness: 0.7 }), { parent: flag }));
     U.push(() => { const frac = 0.5 + clamp(tug.tension, -1, 1) * 0.12;
       flag.position.set(lerp(A.x, B.x, frac), lerp(ay, by, frac) + 0.03, lerp(A.z, B.z, frac)); flag.rotation.y = ropeGroup.rotation.y; }); }
+  // The chocolate river has run through this land since round one, and `candyRegion`'s own far country
+  // (just below) keeps a chocolate pool here and there, but nowhere in the walkable heart of Candy
+  // Land has ever actually been a fountain. **A three-tiered chocolate fondue fountain now stands in
+  // the open field north-east of the village**, basin brimming, four strawberries planted on skewers
+  // round its rim. *"🍫 Three tiers, and not one of them has ever run dry."* *"🍓 Four strawberries,
+  // and the fountain never once complains about sharing."* *"🍫 Sounds just like the river, if the
+  // river only had to fill one bowl."*
+  //
+  // New prop `makeChocolateFountain()` (60-props.js, right after `makeDonut`): a basin, three stacked
+  // cone-frustum tiers in the same `TEX.chocolate()` material the river itself already uses, and four
+  // skewered strawberries round the rim. Pure static mesh, baked with the rest of this world — no
+  // `userData.update` of its own, so nothing here needs a baking exemption — the only thing new to the
+  // per-frame tick is a chocolate-drip particle burst on its own loop, the same ambience trick the
+  // castle's music box and Robot City's scrap crane already use, timed off the shared `rnd()` sequence
+  // only inside this `U.push` tick, which runs after every construction-time draw in this build, so it
+  // shifts no wardrobe or layout pick anywhere.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')` then `game.load(1, 'from-prev')`, 3600 simulated frames sampling every NPC's
+  // own position every sixth frame) swept a grid of the open field inside `candyRegion`'s own inner=92
+  // hand-off boundary just below — short of the radius where its procedural fill takes over, so nothing
+  // placed here risks a later blob landing on top of it — against both those 7900-odd samples and every
+  // one of the land's own physics boxes and circles: (58, 68) came back clearest of the lot, 18.2 m
+  // from the nearest box, circle or soul — north-east of the village, well clear of the castle's own
+  // approach lane and the chocolate river's band.
+  { const fx = 58, fz = 68, fy0 = P.ground0(fx, fz);
+    const fountain = makeChocolateFountain(); fountain.position.set(fx, fy0, fz); W.add(fountain);
+    P.addBox(fx, 0.7, fz, 2.5, 1.4, 2.5, { cam: false });
+    let dripT = rnd.range(2, 4);
+    U.push((dt) => { dripT -= dt; if (dripT <= 0) { dripT = rnd.range(2.5, 4.5); game.fx.emit(fx, fy0 + 2.15, fz, { count: 5, color: 0x3a1a08, speed: 0.3, up: 0.1, life: 1.1, gravity: 2.4, spread: 0.3 }); } });
+    const fountainLines = ['🍫 "Three tiers, and not one of them has ever run dry."', '🍓 "Four strawberries, and the fountain never once complains about sharing."', '🍫 "Sounds just like the river, if the river only had to fill one bowl."'];
+    game.addInteractable({ obj: fountain, radius: 3.0, label: () => 'Look at the chocolate fountain', onUse: () => { SFX.click(); game.toast(rnd.pick(fountainLines), 3000); } }); }
   candyRegion(game, U, r, 92, CANDY_LIMIT - 8);
   for (const [x, z] of [[-14, 18], [18, 16], [-8, -10], [10, -12], [-28, 8], [30, 4], [-22, 30], [22, 32], [-34, -32], [34, -36], [2, -30]]) { const b = makeMarshmallowBush(r); b.position.set(x, 0, z); W.add(b); P.addBox(x, 0.5, z, 1.2, 1, 1.2, { cam: false }); }
   for (const [x, z, ry, c] of [[-16, 8, 0.3, 0xff6fb5], [20, -8, -0.8, 0x7fd7ff], [0, 26, 1.5, 0xffd54a]]) { const d = makeDonut(c); d.position.set(x, 0, z); d.rotation.y = ry; W.add(d); addRotBox(game, x, 1.2, z, 0.6, 2.4, 3.4, ry, { cam: false }); }

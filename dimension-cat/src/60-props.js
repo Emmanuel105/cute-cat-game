@@ -1223,6 +1223,29 @@ function makeDonut(color) {
   return g;
 }
 const r0 = (i) => PI * 0.05 + i / 24 * PI * 0.9;
+/** A tiered chocolate fondue fountain: three stacked cone frustums over a wide basin, with four
+ * strawberries on skewers planted round the rim. Static mesh only — no `userData.update` — any drip
+ * particles are the caller's own `U.push` timer, same trick the castle's music box and the beehive's
+ * smoker already use. */
+function makeChocolateFountain() {
+  const g = new THREE.Group();
+  const choc = mat(0xffffff, { roughness: 0.3, metalness: 0.05, map: TEX.chocolate(), emissive: 0x3a1a08, emissiveIntensity: 0.35 });
+  const rim = mat(0x5a2d12, { roughness: 0.7 });
+  mesh(G.cyl(1.15, 1.25, 0.3, 20), rim, { y: 0.15, shadow: 'both', parent: g });
+  mesh(G.cyl(1.02, 1.02, 0.04, 20), choc, { y: 0.32, shadow: 'none', parent: g });   // pooled chocolate, basin's own surface
+  const tiers = [[0.75, 0.9], [0.5, 0.95], [0.3, 1.0]];
+  let ty = 0.34;
+  for (const [rr, h] of tiers) { mesh(G.cyl(rr * 0.55, rr, h, 16), choc, { y: ty + h / 2, shadow: 'both', parent: g }); ty += h; }
+  mesh(G.sphere(0.12, 10, 7), choc, { y: ty + 0.05, shadow: 'none', parent: g });   // the trickling crown at the very top
+  for (let i = 0; i < 4; i++) {
+    const a = i / 4 * TAU + PI / 4, sx = cos(a) * 1.0, sz = sin(a) * 1.0;
+    const sk = group(sx, 0.32, sz, g); sk.rotation.y = -a; sk.rotation.x = -0.35;
+    mesh(G.cyl(0.012, 0.012, 0.3, 6), mat(0xc9a24a, { roughness: 0.6 }), { y: 0.15, parent: sk });
+    mesh(G.sphere(0.09, 10, 8), mat(0xd62839, { roughness: 0.45 }), { y: 0.3, sy: 1.3, parent: sk });
+    mesh(G.cone(0.04, 0.08, 6), mat(0x4a8a3a, { roughness: 0.8 }), { y: 0.42, parent: sk });
+  }
+  return g;
+}
 
 // ---------------------------------------------------------------- robot city
 function makeSkyscraper(w, h, d, seed) {

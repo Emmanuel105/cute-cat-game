@@ -20698,3 +20698,43 @@ settles back into step*"* With this one, every hedgehog in the column can be met
 Woods' own friend total rose by one, from 98 to 99, checked directly against the pre-change tree with
 `git stash`. No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 769 — Candy Land finally gets a chocolate fountain
+
+Before touching anything, this round swept the game's own source comments for any backlog item still
+genuinely open — march columns, ambient critters, bare "look" props — and found every one of them
+already closed by earlier rounds (the mushroom ring, all three forest deer and foxes, every marching
+column in every world, every plain penguin in Frosty Peak's pond flock, all fifteen reachable dune
+palms). With the easy wins gone, it went looking for something new instead. A quick tally from
+`test/run.mjs`'s own "N to meet" counts showed Candy Land sitting at 91 friends against Victorian's
+107, but the Neighborhood is even lower at 81 and is already so densely built (hopscotch, marbles, a
+dog walker, a dog groomer, a scooter kid, a skateboarder…) that a fresh idea there is hard to find
+without duplicating something. Candy Land's own chocolate river — there since round one — had never
+once had a fountain of its own, so **a three-tiered chocolate fondue fountain now stands in the open
+field north-east of the village**, basin brimming, four strawberries planted on skewers round its rim.
+*"🍫 Three tiers, and not one of them has ever run dry."* *"🍓 Four strawberries, and the fountain
+never once complains about sharing."*
+
+New prop `makeChocolateFountain()` (`60-props.js`, right after `makeDonut`): a basin, three stacked
+cone-frustum tiers in the same `TEX.chocolate()` material the river itself already uses, and four
+skewered strawberries round the rim. Pure static mesh — no `userData.update`, no baking exemption
+needed — with a small chocolate-drip particle burst on its own timer (the same ambience trick the
+castle's music box and Robot City's scrap crane already use), timed off the shared `rnd()` sequence
+only inside that `U.push` tick, which runs after every construction-time draw in this build. It's a
+"look" prop, not a friend — no `namedFriend`, so Candy Land's own friend count stays at 91 — the same
+category as the sandcastle, the mushrooms and every other scenery interactable in this game.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')` then `game.load(1, 'from-prev')`, 3600 simulated frames sampling every NPC's own
+position every sixth frame) swept a grid of the open field inside `candyRegion`'s own inner=92
+hand-off boundary — short of the radius where its own procedural fill takes over, so nothing placed
+here risks a later blob landing on top of it — against both those samples and every one of the land's
+own physics boxes and circles: (58, 68) came back clearest of the lot, 18.2 m from the nearest box,
+circle or soul.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings. Candy
+Land's own friend count held at 91 (as expected for a look-only prop) and its walkable-ground
+percentage held at 92%, both checked directly against the test's own printed counts. No visual check
+was possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
+headless probe above (deleted after use, not committed). Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
