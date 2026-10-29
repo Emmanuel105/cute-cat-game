@@ -20738,3 +20738,35 @@ percentage held at 92%, both checked directly against the test's own printed cou
 was possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
 headless probe above (deleted after use, not committed). Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 770 — Robot City finally gets a vending machine
+
+With every ambient backlog item this log tracks (march columns, pond colonies, forest wildlife, dune
+palms) already closed out as of round 769, this round swept Robot City's own factory floor instead —
+crates, barrels, a furnace, a robot arm, three neon signs — and found nothing that actually sells
+anything to the robots who live there. **A free-standing oil vending machine now stands south of the
+factory sign**: a tall metal cabinet, a glass front over three rows of oil cans, a coin slot, three
+buttons nobody's ever seen light up in the right order, and its own little "OIL" plate on top reusing
+`makeNeonSign()` exactly as the factory sign and both sector signs already do. *"🛢️ OIL — 50 credits a
+can, exact change only."* *"🤖 Row 3B has been empty since Sector 7 stopped reporting in."*
+
+New prop `makeOilVendingMachine()` (`60-props.js`, right after `makeFurnace`): pure static mesh, no
+`userData.update`, nothing added to the world's `U` list — same category as the gumball machine. It's a
+"look" prop, not a friend, so Robot City's own friend count holds at 92.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(2, 'from-prev')` waited out through its real portal-fade timer — an
+earlier draft of this same probe skipped that wait and silently sampled the *wrong* world, which would
+have placed this machine on top of the Neighborhood instead — then 300 simulated frames sampling every
+NPC's own position every 15th frame) swept a 3 m grid of the floor against both those samples and
+every one of the city's own 1199 physics boxes: (0, -33) came back clearest of the lot, 9.90 m from
+the nearest box or wandering soul, south of the factory sign's own pole at (0, -24) and clear of both
+pipe runs at (±5, -24). Short of the radius (98) where `robotRegion`'s own procedural fill takes over.
+
+`node test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count unchanged in the
+printed tally (the machine's own box is new, but the suite's final count is taken in a different
+world). Robot City's own friend count held at 92 and its walkable-ground percentage held at 88%, both
+checked directly against the test's own printed counts before and after. No visual check was possible
+in this environment (no browser, no Playwright) — only the stub-three test suite and the headless probe
+above (deleted after use, not committed). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.

@@ -5796,6 +5796,25 @@ function buildRobotCity(game, entry) {
   // circles a clean 0.67 m apart center-to-edge-sum short of touching.
   { const rampBarrel2Lines = ['🛢️ "Never made it onto the ramp at all. Rolled the other way instead."', '🛢️ "Its twin\'s a metre off, nearer the airlock. Whatever was inside, neither one kept it."', '😼 The cat squeezes between this barrel and the next, finds nothing, and squeezes back out the other side.'];
     game.addInteractable({ obj: rampBarrel2, radius: 0.5, label: () => 'Look at the barrel', onUse: () => { SFX.click(); game.toast(rnd.pick(rampBarrel2Lines), 3000); } }); }
+  // every robot in this city gets refuelled somehow, but nothing on the whole factory floor ever
+  // actually sold oil. A free-standing vending machine now stands south of the factory sign, three rows
+  // of oil cans behind its own glass front, a coin slot and three buttons nobody's ever seen light up in
+  // the right order. Reuses `makeNeonSign()` for its own little "OIL" plate on top, same trick the
+  // factory sign and both sector signs already use. Pure static mesh, like the gumball machine — no
+  // `userData.update`, nothing added to this world's `U` list.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(2, 'from-prev')` waited out through its real portal-fade timer,
+  // then 300 simulated frames sampling every NPC's own position every 15th frame) swept a 3 m grid of
+  // the floor against both those samples and every one of the city's own physics boxes: (0, -33) came
+  // back clearest of the lot, 9.90 m from the nearest box or wandering soul — south of the factory
+  // sign's own pole at (0, -24) (9 m off, well past its own 4.5 m "Look at the factory sign" circle) and
+  // clear of both pipe runs at (±5, -24). Short of the radius (98) where robotRegion's own procedural
+  // fill takes over.
+  { const vx = 0, vz = -33;
+    const vending = makeOilVendingMachine(game, vx, vz, 0);
+    const vendingLines = ['🛢️ "OIL — 50 credits a can, exact change only."', '🤖 "Row 3B has been empty since Sector 7 stopped reporting in."', '😼 The cat noses the coin slot, finds no coin, and gives up.'];
+    game.addInteractable({ obj: vending, radius: 2.0, label: () => 'Look at the vending machine', onUse: () => { SFX.click(); game.toast(rnd.pick(vendingLines), 3000); } }); }
   // the Neighborhood, Candy Land, Sunny Shore, Whisper Woods and Robot City's own maintenance drone all
   // spin on the world clock by now, but no actual toy pinwheel had ever been planted on the factory
   // floor — someone off-shift stuck a scavenged one in a crack in the concrete anyway. Same geometry and

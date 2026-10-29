@@ -6258,6 +6258,30 @@ function makeFurnace(game, x, z, ry) {
   game.physics.addBox(x, 1.6, z, abs(c) * 4 + abs(s) * 3, 3.2, abs(s) * 4 + abs(c) * 3);
   return g;
 }
+/** A free-standing oil vending machine: a tall metal cabinet, a glass front over three rows of oil
+ * cans, a coin slot and a little neon "OIL" plate on top. Pure static mesh, same as the gumball
+ * machine — no `userData.update`, nothing for the world's `U` list. */
+function makeOilVendingMachine(game, x, z, ry) {
+  const g = group(x, 0, z, game.world); g.rotation.y = ry;
+  const cab = mat(0x3a4048, { roughness: 0.5, metalness: 0.6 }), chrome = mat(0xc8ccd0, { metalness: 0.8, roughness: 0.25 }), dark = mat(0x1a1d22, { roughness: 0.7 });
+  mesh(G.box(1.0, 2.1, 0.7), cab, { y: 1.05, shadow: 'both', parent: g });                                    // the cabinet
+  mesh(G.box(1.04, 0.14, 0.74), chrome, { y: 2.12, parent: g });                                              // top cap
+  const glass = mat(0xaee8ff, { roughness: 0.1, transparent: true, opacity: 0.35 });
+  mesh(G.box(0.74, 1.3, 0.04), glass, { y: 1.35, z: 0.36, shadow: 'none', parent: g });                       // display window
+  const canColors = [0xffb300, 0xff6a00, 0xe0a020, 0xffd54a];
+  for (let row = 0; row < 3; row++) for (let col = 0; col < 3; col++) {
+    mesh(G.cyl(0.075, 0.075, 0.22, 10), mat(canColors[(row * 3 + col) % canColors.length], { roughness: 0.4, metalness: 0.3 }), { x: -0.24 + col * 0.24, y: 0.85 + row * 0.33, z: 0.3, shadow: 'none', parent: g });
+  }
+  mesh(G.box(0.16, 0.1, 0.03), dark, { x: 0.32, y: 1.7, z: 0.36, parent: g });                                 // coin slot plate
+  mesh(G.box(0.03, 0.02, 0.01), chrome, { x: 0.32, y: 1.7, z: 0.375, shadow: 'none', parent: g });
+  const btnColors = [0xff4040, 0x4ade80, 0x4098ff];
+  for (let i = 0; i < 3; i++) mesh(G.cyl(0.035, 0.035, 0.03, 10), glowMat(btnColors[i], 1.2), { x: 0.32, y: 0.55 - i * 0.12, z: 0.37, rx: PI / 2, shadow: 'none', parent: g });
+  mesh(G.box(0.3, 0.12, 0.2), dark, { y: 0.16, z: 0.32, parent: g });                                          // dispensing tray
+  const sign = makeNeonSign('OIL', '#ffb300', 0.6, g); sign.position.set(0, 2.5, 0);
+  const c = cos(ry), s = sin(ry);
+  game.physics.addBox(x, 1.05, z, abs(c) * 1.0 + abs(s) * 0.7, 2.1, abs(s) * 1.0 + abs(c) * 0.7);
+  return g;
+}
 /** A jib crane swinging a magnet slowly over a scrap pile. `x,z,ry` are world-space; the scrap pile
  * sits along local +z from the mast, so `ry` should point that side at open ground. */
 function makeScrapCrane(game, x, z, ry) {
@@ -13461,6 +13485,25 @@ function buildRobotCity(game, entry) {
   // circles a clean 0.67 m apart center-to-edge-sum short of touching.
   { const rampBarrel2Lines = ['🛢️ "Never made it onto the ramp at all. Rolled the other way instead."', '🛢️ "Its twin\'s a metre off, nearer the airlock. Whatever was inside, neither one kept it."', '😼 The cat squeezes between this barrel and the next, finds nothing, and squeezes back out the other side.'];
     game.addInteractable({ obj: rampBarrel2, radius: 0.5, label: () => 'Look at the barrel', onUse: () => { SFX.click(); game.toast(rnd.pick(rampBarrel2Lines), 3000); } }); }
+  // every robot in this city gets refuelled somehow, but nothing on the whole factory floor ever
+  // actually sold oil. A free-standing vending machine now stands south of the factory sign, three rows
+  // of oil cans behind its own glass front, a coin slot and three buttons nobody's ever seen light up in
+  // the right order. Reuses `makeNeonSign()` for its own little "OIL" plate on top, same trick the
+  // factory sign and both sector signs already use. Pure static mesh, like the gumball machine — no
+  // `userData.update`, nothing added to this world's `U` list.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(2, 'from-prev')` waited out through its real portal-fade timer,
+  // then 300 simulated frames sampling every NPC's own position every 15th frame) swept a 3 m grid of
+  // the floor against both those samples and every one of the city's own physics boxes: (0, -33) came
+  // back clearest of the lot, 9.90 m from the nearest box or wandering soul — south of the factory
+  // sign's own pole at (0, -24) (9 m off, well past its own 4.5 m "Look at the factory sign" circle) and
+  // clear of both pipe runs at (±5, -24). Short of the radius (98) where robotRegion's own procedural
+  // fill takes over.
+  { const vx = 0, vz = -33;
+    const vending = makeOilVendingMachine(game, vx, vz, 0);
+    const vendingLines = ['🛢️ "OIL — 50 credits a can, exact change only."', '🤖 "Row 3B has been empty since Sector 7 stopped reporting in."', '😼 The cat noses the coin slot, finds no coin, and gives up.'];
+    game.addInteractable({ obj: vending, radius: 2.0, label: () => 'Look at the vending machine', onUse: () => { SFX.click(); game.toast(rnd.pick(vendingLines), 3000); } }); }
   // the Neighborhood, Candy Land, Sunny Shore, Whisper Woods and Robot City's own maintenance drone all
   // spin on the world clock by now, but no actual toy pinwheel had ever been planted on the factory
   // floor — someone off-shift stuck a scavenged one in a crack in the concrete anyway. Same geometry and

@@ -1332,6 +1332,30 @@ function makeFurnace(game, x, z, ry) {
   game.physics.addBox(x, 1.6, z, abs(c) * 4 + abs(s) * 3, 3.2, abs(s) * 4 + abs(c) * 3);
   return g;
 }
+/** A free-standing oil vending machine: a tall metal cabinet, a glass front over three rows of oil
+ * cans, a coin slot and a little neon "OIL" plate on top. Pure static mesh, same as the gumball
+ * machine — no `userData.update`, nothing for the world's `U` list. */
+function makeOilVendingMachine(game, x, z, ry) {
+  const g = group(x, 0, z, game.world); g.rotation.y = ry;
+  const cab = mat(0x3a4048, { roughness: 0.5, metalness: 0.6 }), chrome = mat(0xc8ccd0, { metalness: 0.8, roughness: 0.25 }), dark = mat(0x1a1d22, { roughness: 0.7 });
+  mesh(G.box(1.0, 2.1, 0.7), cab, { y: 1.05, shadow: 'both', parent: g });                                    // the cabinet
+  mesh(G.box(1.04, 0.14, 0.74), chrome, { y: 2.12, parent: g });                                              // top cap
+  const glass = mat(0xaee8ff, { roughness: 0.1, transparent: true, opacity: 0.35 });
+  mesh(G.box(0.74, 1.3, 0.04), glass, { y: 1.35, z: 0.36, shadow: 'none', parent: g });                       // display window
+  const canColors = [0xffb300, 0xff6a00, 0xe0a020, 0xffd54a];
+  for (let row = 0; row < 3; row++) for (let col = 0; col < 3; col++) {
+    mesh(G.cyl(0.075, 0.075, 0.22, 10), mat(canColors[(row * 3 + col) % canColors.length], { roughness: 0.4, metalness: 0.3 }), { x: -0.24 + col * 0.24, y: 0.85 + row * 0.33, z: 0.3, shadow: 'none', parent: g });
+  }
+  mesh(G.box(0.16, 0.1, 0.03), dark, { x: 0.32, y: 1.7, z: 0.36, parent: g });                                 // coin slot plate
+  mesh(G.box(0.03, 0.02, 0.01), chrome, { x: 0.32, y: 1.7, z: 0.375, shadow: 'none', parent: g });
+  const btnColors = [0xff4040, 0x4ade80, 0x4098ff];
+  for (let i = 0; i < 3; i++) mesh(G.cyl(0.035, 0.035, 0.03, 10), glowMat(btnColors[i], 1.2), { x: 0.32, y: 0.55 - i * 0.12, z: 0.37, rx: PI / 2, shadow: 'none', parent: g });
+  mesh(G.box(0.3, 0.12, 0.2), dark, { y: 0.16, z: 0.32, parent: g });                                          // dispensing tray
+  const sign = makeNeonSign('OIL', '#ffb300', 0.6, g); sign.position.set(0, 2.5, 0);
+  const c = cos(ry), s = sin(ry);
+  game.physics.addBox(x, 1.05, z, abs(c) * 1.0 + abs(s) * 0.7, 2.1, abs(s) * 1.0 + abs(c) * 0.7);
+  return g;
+}
 /** A jib crane swinging a magnet slowly over a scrap pile. `x,z,ry` are world-space; the scrap pile
  * sits along local +z from the mast, so `ry` should point that side at open ground. */
 function makeScrapCrane(game, x, z, ry) {
