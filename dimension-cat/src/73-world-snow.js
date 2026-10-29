@@ -257,22 +257,25 @@ function buildSnowVillage(game, entry) {
   makeScatter(game, [[0, 0, 40, 70]], G.sphere(0.35, 7, 5), [0xffffff, 0xeef3fa, 0xdfe8f2], r, [0.6, 1.6], 0.0);   // snow drifts / buried boulders
 
   // life: penguins, reindeer, kids, the yeti, the squirrel
-  let redScarfPenguin = null;
-  for (let i = 0; i < 6; i++) { const rig = makePenguin({ scarf: i === 0 ? 0xd62839 : (i === 3 ? 0x2f6fd6 : null), scale: r.range(0.8, 1.05) }); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x: 18 + r.range(-6, 6), z: 8 + r.range(-6, 6), speed: r.range(0.5, 0.8), leash: 9, r: 0.3, height: 0.9, step: 0.25, idle: [1, 3] })); if (i === 0) redScarfPenguin = rig; }
+  let redScarfPenguin = null, blueScarfPenguin = null;
+  for (let i = 0; i < 6; i++) { const rig = makePenguin({ scarf: i === 0 ? 0xd62839 : (i === 3 ? 0x2f6fd6 : null), scale: r.range(0.8, 1.05) }); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x: 18 + r.range(-6, 6), z: 8 + r.range(-6, 6), speed: r.range(0.5, 0.8), leash: 9, r: 0.3, height: 0.9, step: 0.25, idle: [1, 3] })); if (i === 0) redScarfPenguin = rig; if (i === 3) blueScarfPenguin = rig; }
   // the pond colony's own six penguins have waddled this flock since round one, same root cause as
   // every other ambient `Wanderer`-wrapped critter this log keeps turning into a friend: `makePenguin()`'s
   // rig carries none of `.look`/`.robot`/`.cookie` for `Wanderer`'s own `greetable()` call to find, so it
   // quietly no-ops. The bold one that peels off to investigate the cat (just below) got its own fix long
-  // ago; the six that stay in formation never did. The red-scarfed one, distinct from the rest of the
-  // flock at a glance, now answers "Say hello to the penguin" too. No new mesh, no new physics box:
-  // `game.namedFriend('flock-penguin')` plus a `game.addInteractable` keyed straight to its own
-  // `rig.group`, tracked every frame so the prompt follows it through its own 9 m leash around (18, 8).
-  // The other five stay ambient for now, same pattern as every other flock this log has closed one bird
-  // at a time.
+  // ago; the red-scarfed one got its fix in round 762. The blue-scarfed one, the flock's other marked
+  // bird, gets the identical fix this round: `game.namedFriend('flock-penguin-2')` plus a
+  // `game.addInteractable` keyed straight to its own `rig.group`, tracked every frame so the prompt
+  // follows it through its own 9 m leash around (18, 8). No new mesh, no new physics box. The remaining
+  // four stay ambient for now, same pattern as every other flock this log has closed one bird at a time.
   { const flockPenguinId = game.namedFriend('flock-penguin');
     game.addInteractable({ obj: redScarfPenguin.group, radius: 2.1, label: () => 'Say hello to the penguin', onUse: () => {
       game.befriend(flockPenguinId); SFX.squawk(); game.hearts(redScarfPenguin.group.position.x, 0.6, redScarfPenguin.group.position.z, 3);
       game.toast('🐧 *tilts its head at the red scarf flapping, then goes right back to waddling*'); } }); }
+  { const flockPenguin2Id = game.namedFriend('flock-penguin-2');
+    game.addInteractable({ obj: blueScarfPenguin.group, radius: 2.1, label: () => 'Say hello to the penguin', onUse: () => {
+      game.befriend(flockPenguin2Id); SFX.squawk(); game.hearts(blueScarfPenguin.group.position.x, 0.6, blueScarfPenguin.group.position.z, 3);
+      game.toast('🐧 *shuffles half a step closer, blue scarf trailing in the wind*'); } }); }
   // a bolder penguin peels off from the flock to waddle over and investigate the cat, then hurries back.
   // Same root cause and fix as every ambient `Hopper` critter this log has turned into a friend: `Follower`
   // wraps a plain `Wanderer` around `makePenguin()`'s rig, which carries none of `.look`/`.robot`/`.cookie`

@@ -20574,3 +20574,25 @@ Worth noting for a future round: the herd's own third reindeer, at (-22, 6), is 
 quadruped in this game with no greet prompt at all — a headless probe once found it drifting within
 0.45 m of a pine trunk, too tight for a 2.1 m circle to sit cleanly, but a smaller radius (or a second
 probe run) might still close it.
+
+## Round 763 — Frosty Peak's pond flock gets its second friend, the blue-scarfed penguin
+
+Picked up where round 762 left off: the six-strong penguin flock waddling the frozen pond at (18, 8)
+carries two marked birds, a red scarf on the first and a blue scarf on the fourth, both set apart from
+the plain four just by `makePenguin()`'s own `scarf` option in the loop that spawns the flock. Round
+762 wired up the red-scarfed one; the blue-scarfed one was still exactly what it had always been — a
+bare `Wanderer`-wrapped rig with none of `.look`/`.robot`/`.cookie` for `greetable()` to find, so its
+own prompt never fired.
+
+**The blue-scarfed penguin can now be met.** Same fix as its red-scarfed flockmate, nothing new: the
+spawning loop now also captures the fourth bird's rig, and it gets its own `game.namedFriend('flock-penguin-2')`
+plus a `game.addInteractable` keyed straight to `rig.group`, tracked every frame as it wanders its
+usual 9 m leash. No new mesh, no new physics box. *"*shuffles half a step closer, blue scarf trailing
+in the wind*"* The remaining four plain penguins in the flock stay ambient, same as every other
+flock this log keeps closing one marked bird at a time.
+
+`node test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count unchanged at
+329 (no new collider, as expected — a greet prompt on an existing `Wanderer` rig adds none). Frosty
+Peak's own friend total rose by one, from 90 to 91. No visual check was possible in this environment
+(no browser, no Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
