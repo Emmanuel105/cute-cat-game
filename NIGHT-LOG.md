@@ -20445,3 +20445,26 @@ still has the identical gap waiting.
 suite's own count going from 90 to 91 to meet (checked against the pre-change tree). No visual check
 was possible in this environment (no browser, no Playwright) — only the stub-three test suite.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 758 — Victorian's toy-soldier drill line gets its second friend
+
+Last of the three human/robot `Marchers` columns flagged at the end of round 755: Victorian's own
+trio of children, dressed up as toy soldiers for tomorrow's school pageant, drilling back and forth
+on the meadow south-east of the market square. The lead already answers "Say hello" for free —
+`Marchers`' lead rig runs on `Patroller`, whose constructor calls `greetable()` automatically, and a
+human rig carries `.look`, one of the three tags `greetable()` checks for — but `Marchers` only ever
+wires up the lead, leaving the two recruits trailing behind mute. **The second recruit can now be met
+too.** *"Pssst — don't tell Miss I broke rank to wave."*
+
+Same fix this log has now closed on every `Marchers` column in the game — the gingerbread guard, the
+Neighborhood's toy troop and Robot City's security detail before it: a `game.namedFriend('toy-soldier-2')`
+plus a tracked `game.addInteractable` off `soldiers[1].group`, which `Marchers.update()` (55-npcs.js)
+already repositions at its fixed 1.1 m gap behind the lead every frame, so the prompt follows it there
+and back with no new mesh and no new physics box. The third recruit stays ambient for now, same
+pattern as every other column before its own third got closed in a later round.
+
+`node test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count unchanged at
+329 (no new collider, as expected). Victorian's own friend total rose by one, confirmed by the suite's
+own count going from 105 to 106 to meet (checked against the pre-change tree with `git stash`). No
+visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
+suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

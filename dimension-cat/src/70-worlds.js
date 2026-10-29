@@ -8945,7 +8945,9 @@ function buildVictorian(game, entry) {
       coat: true, buttons: 0xd8c8a8, cuffs: 0xd8c8a8, hat: 'top', hatColor: 0x15120f, hatBand: 0xaa1f2a, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
       W.add(rig.group); return rig; });
     game.npcs.push(new Marchers(game, soldiers, { points: [[26, -75], [32, -75]], speed: 1.0, pause: [1, 2], r: 0.32, gap: 1.1,
-      cries: ['Hup, two, three, four — mind your dressing, Thomas!', 'Careful, puss — mind the wooden bayonets.', "Drop one more step and Miss will have us start again."], cryIcon: '💂' })); }
+      cries: ['Hup, two, three, four — mind your dressing, Thomas!', 'Careful, puss — mind the wooden bayonets.', "Drop one more step and Miss will have us start again."], cryIcon: '💂' }));
+    const secondId = game.namedFriend('toy-soldier-2');
+    game.addInteractable({ obj: soldiers[1].group, radius: 2.1, label: () => 'Say hello', onUse: () => { game.befriend(secondId); SFX.tag(); game.hearts(soldiers[1].group.position.x, 1.1, soldiers[1].group.position.z, 3); game.toast('💂 "Pssst — don’t tell Miss I broke rank to wave."'); } }); }
   // tetherball, badminton, tug-of-war, archery, sack races — a whole shelf of playground games this
   // game has never tried once, in any of the seven worlds — and a maypole, the one dance that actually
   // needs a prop in the middle, had never come up either. Six children in Sunday best now circle a
