@@ -18573,15 +18573,20 @@ function buildBeach(game, entry) {
   // behind the lead each frame, so tracking `marchers[1].group` keeps the prompt glued to its spot in
   // line exactly like the lead's own. Both radii (2.1 m) overlap across that gap, but `game.update()`
   // always picks whichever interactable sits nearest the cat, so standing closer to either crab prompts
-  // for that one with no conflict. The third crab stays ambient for now, same as the penguin column
-  // before its own third got a name.
+  // for that one with no conflict.
+  //
+  // This round closes the column out: the third crab, `marchers[2].group`, gets the identical fix —
+  // `game.namedFriend('marching-crab-3')` plus a tracked `game.addInteractable`, the same move the
+  // penguin column's own third bird already got. All three of this drill column can now be met.
   { const marchers = [0, 1, 2].map(() => { const rig = makeCrab(r.pick([0xe8492b, 0xff7043, 0xc62828])); W.add(rig.group); return rig; });
     game.npcs.push(new Marchers(game, marchers, { points: [[24, -43], [26, -43]], speed: 1.0, pause: [1, 2], r: 0.22, height: 0.5, gap: 0.45,
       cries: ['Sideways, always sideways — try that gait yourself, puss.', 'Column of three. Pincers at the ready.', "Mind the claws, puss — we're only drilling."], cryIcon: '🦀' }));
     const leadId = game.namedFriend('marching-crab');
     game.addInteractable({ obj: marchers[0].group, radius: 2.1, label: () => 'Say hello to the crab', onUse: () => { game.befriend(leadId); SFX.chitter(); game.hearts(marchers[0].group.position.x, 0.5, marchers[0].group.position.z, 3); game.toast('🦀 *breaks rank for one quick wave, then snaps right back into step*'); } });
     const secondId = game.namedFriend('marching-crab-2');
-    game.addInteractable({ obj: marchers[1].group, radius: 2.1, label: () => 'Say hello to the crab', onUse: () => { game.befriend(secondId); SFX.chitter(); game.hearts(marchers[1].group.position.x, 0.5, marchers[1].group.position.z, 3); game.toast('🦀 *waves one claw without ever breaking stride*'); } }); }
+    game.addInteractable({ obj: marchers[1].group, radius: 2.1, label: () => 'Say hello to the crab', onUse: () => { game.befriend(secondId); SFX.chitter(); game.hearts(marchers[1].group.position.x, 0.5, marchers[1].group.position.z, 3); game.toast('🦀 *waves one claw without ever breaking stride*'); } });
+    const thirdId = game.namedFriend('marching-crab-3');
+    game.addInteractable({ obj: marchers[2].group, radius: 2.1, label: () => 'Say hello to the crab', onUse: () => { game.befriend(thirdId); SFX.chitter(); game.hearts(marchers[2].group.position.x, 0.5, marchers[2].group.position.z, 3); game.toast('🦀 *brings up the rear, claws snapping at nothing in particular*'); } }); }
   // Every beach, peak, woods and street has run a `Detectorist` sweeping for buried treasure for
   // hundreds of rounds now, and every single one of them has only ever turned up a bottle cap or a
   // button — it's the running joke of the whole series. Nobody had ever actually found anything. **An

@@ -20314,3 +20314,26 @@ same as the crab column before its own third got a name.
 none). Whisper Woods' own friend total rose by one, 97 to 98 to meet. No visual check was possible in
 this environment (no browser, no Playwright) — only the stub-three test suite described here. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 753 — Sunny Shore's marching crab column gets its third and last friend
+
+Round 751 fixed the column's second crab, same as the "second penguin / second frog / second fox"
+move this log keeps repeating once a lead creature's own no-op has already been closed once, but left
+the third crab ambient — same as the penguin column had, before its own third got a name in an earlier
+round. **The column is complete now: all three drilling crabs at (24-26, -43) answer "Say hello to the
+crab."** The third, `marchers[2].group`, gets the identical fix: a `game.namedFriend('marching-crab-3')`
+and a tracked `game.addInteractable`, the same move already proven on the lead and second crab, and on
+the penguin column's own third bird. *"Brings up the rear, claws snapping at nothing in particular."*
+
+No new mesh, no new class, no new physics box — `Marchers.update()` (55-npcs.js) already repositions
+every follower, including the third, at its fixed 0.45 m gap behind the lead each frame, so the
+tracked interactable follows it there and back with no extra bookkeeping. All three 2.1 m radii
+overlap across the short column, but `game.update()`'s nearest-interactable search always resolves to
+whichever crab is actually closest, so there's no ambiguity standing anywhere along the line.
+
+`node test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box count unchanged at
+329 (no new collider, as expected — a third befriend prompt on an existing Marchers follower adds
+none). A headless probe (`game.start('new')` then `game.travel(4, 'from-hub')`) confirmed Sunny Shore
+loads cleanly post-change with its friend total at 94 and all three marching-crab interactables wired.
+No visual check was possible in this environment (no browser, no Playwright) — only the stub-three
+test suite and that probe. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
