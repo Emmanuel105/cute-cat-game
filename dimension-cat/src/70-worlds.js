@@ -4056,8 +4056,18 @@ function buildCandyLand(game, entry) {
 
   // gingerbread men
   for (const [x, z] of [[-10, 4], [-18, 14], [6, 26], [-4, -56], [-46, 34], [48, 32]]) { const rig = makeGingerbread(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x, z, speed: r.range(0.6, 0.9), leash: 10, r: 0.4, height: 1.4, idle: [1, 3] })); }
-  // the Candy Queen's guard: three gingerbread men marching in step back and forth in front of her
-  game.npcs.push(new Marchers(game, [0, 1, 2].map(() => { const rig = makeGingerbread(); W.add(rig.group); return rig; }), { points: [[-13, -27], [5, -27]], speed: 1.1, pause: [1, 2], r: 0.4, height: 1.4, gap: 1.3, cries: ['Hup, two, three, four!', 'Eyes front! Cat approaching!', 'Halt! ...who goes there? Oh, a kitty.'], cryIcon: '\ud83c\udf6a' }));
+  // the Candy Queen's guard: three gingerbread men marching in step back and forth in front of her.
+  // The lead already answers a "Say hello" prompt for free \u2014 `Marchers`' lead rig runs on `Patroller`,
+  // whose constructor calls `greetable()` automatically, and a gingerbread rig carries `.cookie`, one
+  // of the three tags `greetable()` checks for \u2014 but the two followers it drags along never got the
+  // same wiring. The second guard now gets it by hand: the same `game.namedFriend` +
+  // `game.addInteractable` move this log has used to close the same gap on the crab, penguin and
+  // hedgehog columns' own followers, tracked off `marchers[1].group`, which `Marchers.update()`
+  // (55-npcs.js) already repositions at a fixed 1.3 m gap behind the lead every frame.
+  { const guard = [0, 1, 2].map(() => { const rig = makeGingerbread(); W.add(rig.group); return rig; });
+    game.npcs.push(new Marchers(game, guard, { points: [[-13, -27], [5, -27]], speed: 1.1, pause: [1, 2], r: 0.4, height: 1.4, gap: 1.3, cries: ['Hup, two, three, four!', 'Eyes front! Cat approaching!', 'Halt! ...who goes there? Oh, a kitty.'], cryIcon: '\ud83c\udf6a' }));
+    const secondId = game.namedFriend('candy-guard-2');
+    game.addInteractable({ obj: guard[1].group, radius: 2.1, label: () => 'Say hello', onUse: () => { game.befriend(secondId); SFX.tag(); game.hearts(guard[1].group.position.x, 1.1, guard[1].group.position.z, 3); game.toast('\ud83c\udf6a "Hee hee! Mind my icing!"'); } }); }
   // four more dance a ring round the big lollipop, hand in hand, turning about every nine seconds
   game.npcs.push(new RingDance(game, [0, 1, 2, 3].map(() => { const rig = makeGingerbread(); W.add(rig.group); return rig; }), { cx: 14, cz: 10, r: 2.6 }));
   // the gingerbread men wander, march and dance in a ring, but nobody ever threw anything — every other

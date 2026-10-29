@@ -20337,3 +20337,37 @@ none). A headless probe (`game.start('new')` then `game.travel(4, 'from-hub')`) 
 loads cleanly post-change with its friend total at 94 and all three marching-crab interactables wired.
 No visual check was possible in this environment (no browser, no Playwright) — only the stub-three
 test suite and that probe. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 754 — Candy Land's gingerbread guard gets a second friend
+
+Before this run even started, a stray detached-HEAD state from a previous session meant rounds 748–753
+(the crab, hedgehog and marching-column fixes logged just above) had been committed but never actually
+pushed to `main` — `main` itself was still sitting at round-742-ish history. First order of business was
+resetting `main` to that work and pushing it for real, so none of it got thrown away with the sandbox.
+
+For the actual round: the crab, penguin and hedgehog drill columns all needed their *lead* rig fixed by
+hand, because `greetable()` only wires a prompt onto a rig carrying `.look`, `.robot` or `.cookie`, and
+those bare animal rigs have none of the three. The Candy Queen's three-gingerbread-man guard never had
+that problem — `makeGingerbread()` rigs carry `.cookie`, so `Marchers`' lead (which runs on `Patroller`,
+whose constructor calls `greetable()` automatically) has answered "Say hello" since the guard was first
+built, back in round 181. But the *other* bug those columns all shared is still here too: `Marchers`
+only ever wires up the lead, so the two followers trailing behind it have stood there mute for 573
+rounds. **The second gingerbread guard now answers "Say hello" as well** — a quick icing-flavoured
+wave. *"Hee hee! Mind my icing!"*
+
+Same fix this log keeps reusing on these columns' own followers: `game.namedFriend('candy-guard-2')`
+plus a `game.addInteractable` tracked off `guard[1].group`, which `Marchers.update()` (55-npcs.js)
+already repositions at a fixed 1.3 m gap behind the lead every frame, so the prompt follows it there
+and back with no new mesh and no new physics box. The only change needed to the surrounding code was
+keeping a reference to the three-rig array instead of discarding it inline into the `Marchers`
+constructor call. The third guard stays ambient for now, same as the crab and penguin columns before
+their own thirds got a name — a candidate for a future round.
+
+`node test/run.mjs` ran clean three times in a row: exit 0, all 277 checks `ok`, 0 console warnings,
+box count unchanged at 329 (no new collider, as expected — a second befriend prompt on an existing
+Marchers follower adds none). A headless probe (`game.start('new')` then `game.travel(1, 'from-prev')`,
+600 simulated frames) found exactly two "Say hello" interactables sitting on the guard's drill line —
+the lead's existing one and this round's new second-guard one — and Candy Land's friend total intact
+at 90. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite and that probe. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.
