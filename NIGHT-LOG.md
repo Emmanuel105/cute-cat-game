@@ -20239,3 +20239,29 @@ ambient for now, same as the crab and penguin columns before theirs got a second
 'from-hub')`) confirmed Whisper Woods' own friend total rose by one, 95 to 96 to meet. No visual check
 was possible in this environment (no browser, no Playwright) — only the stub-three test suite and that
 probe. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 750 — the hollow log's hedgehog, which the child could never catch, finally meets the cat
+
+A child has knelt at the mouth of Whisper Woods' eastern hollow log since whichever round first put
+her there, sure a hedgehog is hiding just out of reach — *"It's in there, I heard it snuffle."* *"Shh
+— you'll frighten it further in."* A later round even gave the hedgehog itself a real `Hopper`
+routine, poking its nose out of the log and ducking back, its leash kept just inside the child's own
+kneeling circle so her stick never quite reaches it. But nobody ever wired a greet prompt onto it:
+same gap every other bare-rig `Hopper` creature in this game has shipped with at some point —
+`Hopper`, unlike `Wanderer` or `Kneeler`, never calls `greetable()` on its own, and `makeHedgehog()`'s
+rig carries none of `.look`/`.robot`/`.cookie` needed for that call to do anything. **The cat succeeds
+where the child never does.** *"Noses all the way out to bump whiskers with the cat, then vanishes
+back down the log before the kneeling child ever sees it."*
+
+No new mesh, no new class, no new physics box: just `game.namedFriend('log-hedgehog')` and a
+`game.addInteractable` tracked off the hedgehog's own `rig.group`, which `Hopper` already repositions
+every frame inside its existing 0.18 m leash, so the prompt follows it there. Same 2.1 m greet radius
+every other Hopper creature's own prompt already uses; it overlaps the child's own circle at this
+range, but `game.loop`'s nearest-interactable search always prefers whichever is closer, so standing
+right at the log mouth still shows the hedgehog's prompt first.
+
+`node test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count unchanged at
+329 (no new collider, as expected — a befriend prompt on an existing Hopper adds none). Whisper Woods'
+own friend total rose by one, 96 to 97 to meet. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite described here. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

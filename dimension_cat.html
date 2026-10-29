@@ -21176,10 +21176,22 @@ function buildForest(game, entry) {
   // of both the log's box and the child's own 0.35 m kneeling circle out to 0.3 m, blocked from 0.35 m on
   // (the child's circle, their stick almost reaching) — so the hedgehog's leash is kept well inside that,
   // poking its nose out, freezing, and ducking back, never quite within the stick's reach
+  // the child at (670) above has been trying and failing to spot this hedgehog since whichever round
+  // first placed it — `Hopper` (unlike `Wanderer`/`Kneeler`) never calls `greetable()` on its own, and
+  // `makeHedgehog()`'s rig carries none of `.look`/`.robot`/`.cookie`, so it stayed pure background
+  // the same way every other bare-rig `Hopper` creature did before its own round closed the gap. The
+  // cat succeeds where the child never does: a `game.namedFriend('log-hedgehog')` plus a
+  // `game.addInteractable` tracked on the rig's own group, following it through its tiny hops inside
+  // the same 0.18 m leash. The 2.1 m greet radius (the same every other Hopper creature's own prompt
+  // uses) overlaps the kneeling child's own circle at this range, but `game.loop`'s own
+  // nearest-interactable search always prefers whichever is closer, so standing by the log mouth still
+  // shows the hedgehog's own prompt first.
   { const lx = 22, lz = -14, lry = 1.1, dirx = -cos(lry), dirz = sin(lry), hx = lx + 1.9 * dirx, hz = lz + 1.9 * dirz;
     const rig = makeHedgehog();
     game.npcs.push(new Hopper(game, rig, { x: hx, z: hz, leash: 0.18, r: 0.1, dist: [0.08, 0.16], dur: 0.3, height: 0.12, idle: [1.5, 4],
-      onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } })); }
+      onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } }));
+    const logHedgehogId = game.namedFriend('log-hedgehog');
+    game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the hedgehog', onUse: () => { game.befriend(logHedgehogId); SFX.chitter(); game.hearts(rig.group.position.x, 0.15, rig.group.position.z, 3); game.toast('🦔 *noses all the way out to bump whiskers with the cat, then vanishes back down the log before the kneeling child ever sees it*'); } }); }
 
   // a naturalist kneels by the log up near the stepping stones — the only one of the five hollow logs nobody had stopped at yet — noting the moss along its bark
   { const lx = 12, lz = 14, lry = 0.6, off = 1.5, kx = lx + off * sin(lry), kz = lz + off * cos(lry);
