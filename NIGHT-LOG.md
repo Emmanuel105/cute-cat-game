@@ -20371,3 +20371,31 @@ the lead's existing one and this round's new second-guard one — and Candy Land
 at 90. No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite and that probe. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 755 — Candy Land's gingerbread guard is complete: all three answer "Say hello"
+
+Round 754 fixed the guard's second gingerbread man and flagged the third as "a candidate for a future
+round," same as the crab, penguin and hedgehog drill columns before their own thirds got closed. This
+round closes it: **the Candy Queen's three-gingerbread-man guard can now all be met** — `guard[2].group`,
+the one bringing up the rear of the lockstep line at (-13, 5)/(-27), gets its own `game.namedFriend`
+and a tracked `game.addInteractable`, the identical move already proven on the crab and penguin
+columns' own thirds. Gets its own line rather than reusing the lead's and second's "mind my icing":
+*"Last in line, first to break step for a wave."*
+
+No new mesh, no new class, no new physics box — `Marchers.update()` (55-npcs.js) already repositions
+every follower, third included, at its fixed 1.3 m gap behind the lead each frame, so the tracked
+interactable follows it there and back with no extra bookkeeping. All three 2.1 m greet radii overlap
+across the short line, but `game.update()`'s nearest-interactable search always resolves to whichever
+guard is actually closest, so there's no ambiguity standing anywhere along it.
+
+`node test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count unchanged at
+329 (no new collider, as expected — a third befriend prompt on an existing Marchers follower adds
+none). Candy Land's own friend total rose by one, confirmed by the suite's own count going from 90 to
+91 to meet. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+Worth noting for a future round: the Neighborhood's own toy-soldier troop, Robot City's security
+detail and Victorian's drill line (all `Marchers` columns using `makeHuman`/`makeRobot` rigs rather
+than bare animals) still only have their lead rig wired up — the lead gets `greetable()` for free since
+a human/robot rig carries `.look`/`.robot`, but `Marchers` never wires the two followers trailing
+behind it. Same gap, same fix, three more columns' worth of it.
