@@ -20909,3 +20909,43 @@ the suite's own count, and its walkable-ground percentage held at 100%. No visua
 in this environment (no browser, no Playwright) — only the stub-three test suite and the headless
 probe above (deleted after use, not committed). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 775 — Frosty Peak finally gets a stilt walker
+
+Candy Land, Robot City, Victorian, the Neighborhood and Sunny Shore have all had their own
+`StiltWalker` for a few rounds now — Frosty Peak, for all its skaters, snowball throwers and carnival
+acts, never had one of its own, leaving Whisper Woods as the only other world still without one. **A
+carnival performer now paces a short line on the open snowfield east of the hollow, up on a pair of
+ski-pole stilts, ice-blue and white from head to footrest peg.** *"Ski poles. Figured, why waste them
+once the lifts shut down."* *"Highest set of eyes on this mountain tonight, puss — better view of the
+aurora than anybody."* *"Ask me again in spring whether the ice held. I'll still be up here."*
+
+No new class and no new mesh shape: the same `StiltWalker` (`55-npcs.js`, an ordinary `Patroller`
+raised a fixed height off the ground it paces) and the identical ankle-parented pole, strap and
+footrest peg every other stilt walker in the game already wears, just repainted ice-blue and white.
+`StiltWalker` extends `Patroller`, whose constructor calls `greetable()` on its own, so this one counts
+toward the friend total with no extra wiring, and its own `update()` re-reads `game.physics.ground0()`
+every frame the same way every other terrain-world NPC already does, so the mountain's own slope
+needed no special handling. Built dead last in `buildSnowVillage()`, right after the treasure dig, for
+the usual reason: `makeHuman()` and `randomPerson()` both draw off the shared `rnd()` sequence
+unconditionally, and anything built earlier on this mountain would have had its own timing-sensitive
+pick shifted by it.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(5, 'from-hub')` waited out for real against the portal's own 520 ms
+fade timer, then 2400 simulated frames sampling every NPC's own position every 10th frame) swept a 2 m
+grid of the open snowfield (radius 15-54 from the origin, short of the radius (58) where
+`snowRegion`'s own fill takes over, and clear of every one of `game.zones`'s own keep-out rectangles)
+against both those 22,800 samples and all 762 of the mountain's own physics boxes: the 6 m line from
+(49.5, 11.5) to (55.5, 11.5) came back clearest nearby, 4.30 m from the nearest box at its tightest end
+(a pine trunk back toward the archery range) and 8.47 m from the nearest wandering soul — well east of
+the archery range itself at (55, 3), with the ground sloping gently (about 0.04 m per metre) and no
+outcrop underfoot.
+
+`node test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count unchanged at
+329 (`StiltWalker` adds a dynamic circle, not a static box, and the suite's own printed tally is taken
+in a different world anyway). Frosty Peak's own friend count rose by one, from 95 to 96, confirmed by
+the suite's own count, and its walkable-ground percentage held at 98%. No visual check was possible in
+this environment (no browser, no Playwright) — only the stub-three test suite and the headless probe
+above (deleted after use, not committed). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.

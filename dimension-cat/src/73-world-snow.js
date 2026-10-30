@@ -1857,6 +1857,50 @@ function buildSnowVillage(game, entry) {
     const digger = kid(r.chance(0.5));
     game.npcs.push(new Kneeler(game, digger, { x: kx, z: kz, ry: kry, cryIcon: '💰',
       cries: ['Everybody else got a bell buckle. I got THIS.', "Careful, puss — don't you dare knock a single coin back into the snow.", "Don't tell the searcher. He'll never forgive himself."] })); }
+  // Candy Land, Robot City, Victorian, the Neighborhood and Sunny Shore have all had their own
+  // `StiltWalker` for a few rounds now (`55-npcs.js`, an ordinary `Patroller` raised a fixed height
+  // off the ground it paces) — Frosty Peak, for all its skaters, snowball throwers and carnival
+  // acts, never had one of its own. **A carnival performer now paces a short line on the open
+  // snowfield east of the hollow, up on a pair of ski-pole stilts, ice-blue and white from head to
+  // footrest peg.** *"Ski poles. Figured, why waste them once the lifts shut down."* *"Highest set
+  // of eyes on this mountain tonight, puss — better view of the aurora than anybody."* *"Ask me
+  // again in spring whether the ice held. I'll still be up here."*
+  //
+  // No new class and no new mesh shape: the same ankle-parented pole, strap and footrest peg every
+  // other stilt walker in this game already wears, repainted ice-blue and white rather than any of
+  // the other five's own paint jobs. `StiltWalker` extends `Patroller`, whose constructor calls
+  // `greetable()` on its own, so this one counts toward the friend total with no extra wiring, and
+  // its own `update()` re-reads `game.physics.ground0()` every frame the same way every other
+  // terrain-world NPC already does, so the mountain's own slope needs no special handling here.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(5, 'from-hub')` waited out for real against the portal's own
+  // 520 ms fade timer, then 2400 simulated frames sampling every NPC's own position every 10th
+  // frame) swept a 2 m grid of the open snowfield (radius 15-54 from the origin, short of the
+  // radius (58) where `snowRegion`'s own fill takes over, and clear of every one of `game.zones`'s
+  // own keep-out rectangles) against both those 22,800 samples and all 762 of the mountain's own
+  // physics boxes: the 6 m line from (49.5, 11.5) to (55.5, 11.5) came back clearest nearby, 4.30 m
+  // from the nearest box at its tightest end (a pine trunk back toward the archery range) and
+  // 8.47 m from the nearest wandering soul — well east of the archery range itself at (55, 3), with
+  // the ground sloping gently (about 0.04 m per metre) and no outcrop underfoot.
+  //
+  // Built dead last, right after the treasure dig, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off the shared `rnd()` sequence unconditionally, and anything built
+  // earlier on this mountain would have had its own timing-sensitive pick shifted by it.
+  { const stiltH = 0.8;
+    const performer = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
+      stripes: 0x1c3f66, shirt: 0xeaf4ff, pants: 0x1c3f66, hat: 'beanie', hatColor: 0xeaf4ff, scarf: 0x6fb7e8, glasses: false, jacket: null, bag: null, backpack: null });
+    W.add(performer.group);
+    const poleM = mat(0xeaf4ff, { roughness: 0.6 }), strapM = mat(0x1c3f66, { roughness: 0.8 }), pegM = mat(0x6b4a2a, { roughness: 0.8 });
+    for (const L of performer.legs) {
+      const len = stiltH / performer.k;
+      const stilt = group(0, 0.22, 0.01, L.ankle);
+      mesh(G.cyl(0.026, 0.03, len + 0.3, 8), poleM, { y: -(len + 0.3) / 2 + 0.07, parent: stilt });
+      mesh(G.torus(0.09, 0.018, 6, 10), strapM, { y: 0, rx: PI / 2, parent: stilt });
+      mesh(G.box(0.15, 0.035, 0.09), pegM, { y: -0.17, z: 0.07, parent: stilt });
+    }
+    game.npcs.push(new StiltWalker(game, performer, { points: [[49.5, 11.5], [55.5, 11.5]], speed: 0.55, pause: [1.5, 3], r: 0.4, height: 2.6, stiltH,
+      cries: ["Ski poles. Figured, why waste them once the lifts shut down.", 'Highest set of eyes on this mountain tonight, puss — better view of the aurora than anybody.', "Ask me again in spring whether the ice held. I'll still be up here."], cryIcon: '🎪' })); }
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
