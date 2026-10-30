@@ -21455,3 +21455,34 @@ City's own friend count rose by one, from 93 to 94, and its walkable-ground perc
 both checked directly in the test output. No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite and the headless probes described here.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 792 — Victorian's clock tower belfry finally gets bats of its own
+
+Every other real landmark in this town had earned itself something living nearby by now — the
+fountain its wish, the carriage its horse, the market square its pigeons and its five doves, the
+canal its dragonflies — but the clock tower's own belfry, the stone block the four clock faces are
+set into, sixty feet up, had stood with nothing but a bell and a weathervane keeping it company since
+the town was first built. **Three bats now circle the belfry itself, flitting past the clock faces at
+dusk-coloured height.** No dialogue — like the doves and dragonflies already in this town, they're a
+plain `Flyer` loop, not a greetable soul, just something to notice looking up.
+
+No new mesh, no new controller: reuses `makeBat()` (`56-npcs-wild.js`, built originally for the
+Neighborhood's own dusk sky) and the exact same `Flyer` controller the market square's doves and the
+canal's dragonflies already lean on. Unlike the Neighborhood's own bats, these are never gated behind
+`game.dayPhase` — Victorian's sky is fixed permanently at dusk by its own `applySky` call, so there's
+no daylight for them to wait out, and `game.dayPhase` itself only ever advances while the
+Neighborhood's own world is the one being ticked each frame; reading it here would have left the bats
+stuck invisible at whatever phase the Neighborhood happened to be left in. Centred on the tower (42, 0)
+at height 21.5 — the same height the clock faces themselves sit at — with radius 3.6, clear of the
+belfry's own 2.5 m half-width and the faces mounted flush against each wall, well above the tower's
+physics box (tops out at 18) and well below the spire (starts at 24). No physics box of its own:
+nothing on the ground can ever reach sixty feet up, same reasoning the doves and dragonflies already
+relied on. Built dead last in `buildVictorian`, right after the flower girl and right before the
+squirrel, for the usual reason: `Flyer`'s own constructor draws unconditionally from the *shared*
+`rnd()` sequence, and anything built earlier in this town would have had its own timing-sensitive pick
+shifted by it.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count
+unchanged at 329 (no new physics box). No visual check was possible in this environment (no browser,
+no Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.

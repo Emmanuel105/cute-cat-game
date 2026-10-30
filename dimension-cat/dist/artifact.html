@@ -17395,6 +17395,37 @@ function buildVictorian(game, entry) {
     place(game, U, bouquet, bqx, bqz, flry, 0.08);
     game.npcs.push(new Sunbather(game, flowerGirl, { x: flx, z: flz, ry: flry, cryIcon: '🌸',
       cries: ["Five minutes off my feet. The violets can wait.", "Careful, puss — mind the basket, that's my whole morning's takings.", "Last patch of sun before the lamplighters come round. Not wasting it standing up."] })); }
+  // every other real landmark in this town has earned itself something living nearby by now — the
+  // fountain its wish, the carriage its horse, the market square its pigeons and its five doves — but
+  // the clock tower's own belfry, the five-metre stone block the four clock faces are set into, has
+  // stood sixty feet up with nothing but a bell and a weathervane keeping it company since the town was
+  // first built. **Three bats now flit around the belfry itself, circling past the clock faces at
+  // dusk-coloured height.** No dialogue, no new mesh: like the market square's own doves and the
+  // canal's own dragonflies above, they're a plain `Flyer` loop, not a greetable soul.
+  //
+  // Reuses `makeBat()` (56-npcs-wild.js, built for the Neighborhood's own dusk sky) and the exact same
+  // `Flyer` controller (`cx`, `cz`, `r`, `h`, `speed`, `bob`, `wobble`, `phase`, `cw`) the doves and
+  // dragonflies above already lean on. Unlike the Neighborhood's own bats, these are never hidden
+  // behind `game.dayPhase`: Victorian's sky is fixed permanently at dusk by `applySky` above, so there
+  // is no daylight for them to wait out — and `game.dayPhase` itself only ever advances while the
+  // Neighborhood's own world is the one being ticked each frame, so reading it here would leave the
+  // bats stuck invisible at whatever phase the Neighborhood happened to be left in.
+  //
+  // Centred on the tower (42, 0) at height 21.5, the same height the four clock faces themselves sit
+  // at, well inside the belfry's own open block (19 to 24 — the tower's physics box tops out at 18, the
+  // belfry's roof slab at 18.5, the spire doesn't start until 24), with radius 3.6, clear of the
+  // belfry's own 2.5 m half-width and the faces mounted flush against each wall. No physics box of its
+  // own: nothing on the ground can ever reach sixty feet up, the same reasoning the doves and
+  // dragonflies above already relied on.
+  //
+  // Built dead last, right after the flower girl and right before the squirrel, for the reason every
+  // other addition at the end of this function already gives: `Flyer`'s own constructor draws
+  // unconditionally from the *shared* `rnd()` sequence, and anything built earlier in this town would
+  // have had its own timing-sensitive pick shifted by it.
+  for (let bi = 0; bi < 3; bi++) {
+    const batRig = makeBat({ phase: bi * 2.1 });
+    game.npcs.push(new Flyer(game, batRig, { cx: 42, cz: 0, r: 3.6, h: 21.5, speed: 2.2 + bi * 0.35, bob: 0.5, wobble: 0.6, cw: bi % 2 === 0, phase: bi * 2.1 }));
+  }
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
