@@ -21419,3 +21419,39 @@ visual check was possible in this environment (no browser, no Playwright) — on
 suite, plus the throwaway probe script above to size the interaction radius safely. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Two of the eleven baskets
 (`vicLamps[2]` and `[6]`) are still bare.
+
+
+## Round 791 — Robot City finally gets a pretzel cart
+
+Every other world's open floor had a snack cart by now — the Neighborhood's lemonade stand, Candy
+Land's cotton candy drum, Sunny Shore's fish-and-chips fryer — but Robot City's own factory floor,
+for all its coffee vendor and oil seller, never had anything to actually eat between shifts. **A
+pretzel cart now stands on the open floor, a tray of twisted, salted pretzels under a glass case,
+with a vendor holding one up for passers-by.** *"🥨 Fresh off the rack, still warm!"* *"🥨 Careful,
+puss — that salt will make you sneeze."* *"🥨 One twist, two twists, three — never get the count
+right."*
+
+No new controller: the same `Vendor` class every other world's own cart-seller already uses (the
+cotton candy spinner, the chip fryer, the coffee vendor), holding a new `makePretzel()` shape built
+inline — a flat torus ring with two short crossed legs underneath and a scatter of tiny salt-crystal
+spheres, three of them sitting under the cart's own glass case and a fourth, bigger one held up in
+the vendor's hand. `greetable(game, v)` is the explicit call every other cart's own seller needs,
+same as the cotton candy spinner round took, since `Vendor` never calls it on its own.
+
+Before considering vicLamps[2]/[6] again (Victorian's last two bare flower baskets, left over from
+round 790): a fresh headless probe over 42000 simulated frames found both genuinely still blocked —
+[2] gets a wandering gentleman within 0.16 m at some point in his round, and [6] sits just 0.10 m
+from a physics box and 0.64 m from another interactable — confirming round 790's own finding rather
+than contradicting it, so both stay bare for now and this round went looking for a fresh fixture
+instead.
+
+A headless probe (`game.start('new')`, `game.travel(2, 'from-hub')`, 9000 simulated frames sampling
+every non-flying NPC's own position every single frame) swept several open-floor candidates: (-20,
+-20) came back clearest, 6.44 m from the nearest physics box and 8.45 m from the nearest wandering
+soul over the full run, with no `game.zones` entry anywhere near it either.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings. Robot
+City's own friend count rose by one, from 93 to 94, and its walkable-ground percentage held at 88%,
+both checked directly in the test output. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probes described here.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
