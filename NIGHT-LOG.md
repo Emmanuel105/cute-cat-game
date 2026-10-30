@@ -21486,3 +21486,27 @@ shifted by it.
 unchanged at 329 (no new physics box). No visual check was possible in this environment (no browser,
 no Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 793 — the tenth of Candy Land's inner dozen lollipops finally gets looked at
+
+Nine of the twelve big fixed lollipops ringing Candy Land's inner belt had picked up their own "look"
+toast over the last several dozen rounds, one per round, each time from a headless probe narrowing
+down whichever of the rest had the most room to spare. Three were left: (-12, 12), (14, 10) and
+(18, 34). **The one at (18, 34), up in the belt's own north-east corner, is the tenth to answer.**
+*"🍭 North-east corner of the belt — not much else out this way."*
+
+A fresh probe (`game.start('new')`, `game.travel(1, 'from-prev')` waited out through its real
+portal-fade timer, then 3600 simulated frames sampling every NPC's own position every sixth frame)
+swept all three remaining candidates against every one of the land's 1902 physics boxes, every sample
+and every interactable already on the floor: (-12, 12) came back only 0.75 m from the nearest
+wandering soul over the run, and (14, 10) only 0.78 m from the nearest other physics box — both too
+tight for the 2.2 m radius every other lollipop in the set already uses. (18, 34) stayed 3.68 m clear
+of the nearest box and never closer than 8.60 m to any soul or interactable, comfortably the widest
+margin of the three, so it's the one that gets the prompt this round; the other two stay bare. No new
+mesh, no new physics box: `neLollipop` just captures this one instance's own existing return value out
+of the loop that already built all twelve, the same trick the other nine already used.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 329. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite and the headless probe described above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
