@@ -4005,7 +4005,37 @@ function buildCandyLand(game, entry) {
   // still to come in this build or any later one.
   let castleJingleT = rnd.range(45, 75);
   U.push((dt) => { castleJingleT -= dt; if (castleJingleT <= 0) { SFX.musicbox(); castleJingleT = rnd.range(90, 130); } });
-  for (const [hx, hz, hue] of [[-16, 95, 330], [16, 97, 200], [-24, 112, 50], [24, 114, 120], [0, 80, 280]]) { const house = makeCandyHouse(game, hx, hz, r() * TAU, r, hue); for (const u of house.updates) U.push(u); }
+  const candyHouseSpots = [[-16, 95, 330], [16, 97, 200], [-24, 112, 50], [24, 114, 120], [0, 80, 280]];
+  for (let i = 0; i < candyHouseSpots.length; i++) {
+    const [hx, hz, hue] = candyHouseSpots[i];
+    const house = makeCandyHouse(game, hx, hz, r() * TAU, r, hue);
+    for (const u of house.updates) U.push(u);
+    // all five hand-placed candy houses have had sugar steam rising off their finial for a while, but
+    // not one has ever had anyone or anything actually on its roof — every other hand-built cluster in
+    // the game (the Neighborhood's sixteen roofs, Victorian's flower stalls) got a per-building detail
+    // of its own eventually. The first house now has a sparrow perched on one of its own icing dollops,
+    // out past the west eaves, well clear of the roof's own slanted surface.
+    // `makeSparrow()` straight off the shelf, the exact rig the Neighborhood's roof-nest tenant and the
+    // birdbath's own visitor already use. Parented to the house's own group (`house.group`, never run
+    // through `bakeDeep`/`bakeRig` in this function, so a live child just works) at local
+    // (-3.15, 3.43, 0): the dollop loop above plants one of its ten icing bumps (radius 0.16) at that
+    // exact (x, z) with its top at y = 3.14 + 0.16 = 3.3, so y = 3.43 rests the sparrow's feet just
+    // above it. At that height the roof cone's own slanted surface (base radius 3.2 at y=3.3, apex at
+    // y=5.9) has narrowed to radius ≈3.04 — short of the dollop's radius 3.15 — so the perch sits just
+    // outside the cone's surface, past the eaves, rather than inside the solid roof mesh. No physics
+    // box: the house's own collision box tops out at y=3.2, well under the perch. No draw from this
+    // world's own seeded `r` or the shared `rnd()` sequence at build time — the position and rotation
+    // are fixed literals, the same caution every perched bird in the game already takes.
+    if (i === 0) {
+      const perch = makeSparrow();
+      house.group.add(perch.group);
+      perch.group.position.set(-3.15, 3.43, 0);
+      perch.group.rotation.y = -PI / 2;
+      U.push((dt, t) => perch.animate(0, false, dt, t));
+      const candyRoofLines = ['🐦 "Chirp. (Translation: the icing dollops make a surprisingly good perch.)"', '🍬 "Every other roof fixture in this game spins, glows or tells the wrong time. This one just sits and watches the steam go by."', '😼 "Puss, that\'s real icing under its feet. Don\'t get any ideas."'];
+      game.addInteractable({ obj: perch.group, radius: 1.6, label: () => 'Look at the sparrow', onUse: () => { SFX.click(); game.toast(rnd.pick(candyRoofLines), 3000); } });
+    }
+  }
   for (const s of [-1, 1]) { const rig = makeGingerbread(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x: castle.throne[0] + s * 2.6, z: castle.throne[1] + 1.4, speed: 0.3, leash: 1.2, r: 0.4, height: 1.4, idle: [2, 5] })); }
   game.addInteractable({ obj: castle.throneGroup, radius: 3.4, label: () => 'Approach the throne', onUse: () => { SFX.talk(); game.toast('👑 "A comfy-looking throne. Built for someone rather bigger than a cat."', 3000); } });
   // the hall between the gate and the dais was empty; a court jester now juggles there for a throne its queen rarely visits

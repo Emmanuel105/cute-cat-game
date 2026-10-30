@@ -21193,3 +21193,35 @@ unchanged at 329 (as expected — a mast six-plus metres up adds no collider). N
 possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
 standalone headless probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 783 — a sparrow finally lands on a Candy Land roof
+
+Every hand-built cluster in the game has picked up a per-building detail of its own eventually — the
+Neighborhood's sixteen roofs, Victorian's flower stalls, the gingerbread cottage's napping cat in the
+window — but the five hand-placed candy houses had only ever gotten ambient sugar steam curling off
+their finials, nothing anyone could actually look at up close. **The first of the five now has a
+sparrow perched out past its west eaves, sitting on top of one of its own icing dollops.** *"Chirp.
+(Translation: the icing dollops make a surprisingly good perch.)"* *"Every other roof fixture in this
+game spins, glows or tells the wrong time. This one just sits and watches the steam go by."* *"Puss,
+that's real icing under its feet. Don't get any ideas."*
+
+No new rig: `makeSparrow()` straight off the shelf, the exact one the Neighborhood's own roof-nest
+tenant (round 736) and the birdbath's visitor already use, driven the same way — `U.push((dt, t) =>
+perch.animate(0, false, dt, t))` for the occasional idle peck, nothing of its own to tick. The loop that
+builds the five candy houses (`buildCandyLand`, `70-worlds.js`) had to go from a plain `for...of` to an
+indexed loop to single one house out without touching the other four. Parented to that house's own
+group (never run through `bakeDeep`/`bakeRig` in this function, so a live child just works) at local
+(-3.15, 3.43, 0): `makeCandyHouse`'s own dollop loop (`68-regions.js`) already plants ten icing bumps
+(radius 0.16) around the roofline at that exact radius, and the one at this angle has its top at
+y = 3.14 + 0.16 = 3.3, so y = 3.43 rests the sparrow's feet just above it with a little clearance. At
+that height the roof cone's own slanted surface (base radius 3.2 at y=3.3, narrowing to its apex at
+y=5.9) has already shrunk to radius ≈3.04 — short of the dollop's own radius 3.15 — so the perch sits
+just outside the cone's surface, past the eaves, rather than buried in the solid roof mesh. No physics
+box: the house's own collision box tops out at y=3.2, well under the perch. No draw from this world's
+own seeded `r` or the shared `rnd()` sequence at build time — position and rotation are fixed literals,
+the same caution every perched bird in the game already takes.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count
+unchanged at 329 (as expected — nothing below head height can reach three-plus metres up). No visual
+check was possible in this environment (no browser, no Playwright) — only the stub-three test suite.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
