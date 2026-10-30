@@ -21059,3 +21059,25 @@ script deleted after use, nothing committed.
 (no new physics box, as expected). No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 779 — Victorian's canal finally gets something flying over the water
+
+Boats, a duck pair, an angler and a mudlark have all worked the canal for rounds now, but nothing had
+ever actually skimmed low over the water itself — Whisper Woods' glowing pond got its own trio of
+dragonflies back in round 773, and the canal, the only other stretch of real open water in the game,
+never had one. **Three dragonflies now dart in a low loop over a quiet reach of the canal**, between
+the main bridge and the duck pair's own swim lane.
+
+No new rig and no new controller: the exact same `makeDragonfly()` and `Flyer` controller
+(`56-npcs-wild.js`) the pond's own trio already uses, just a fresh loop centred on open water with
+nothing else nearby to clip. The loop sits at (30, 30) with a 2.5 m swing radius, so it never ranges
+past the water plane's own z 26–34 band — clear of the nearest boats (x=20 and x=40, 7.5 m off), the
+main bridge's own deck (x≤1.0, 26 m off) and the duck pair's swim lane (x=46–64, 13.5 m off). It's pure
+ambience, no `addInteractable` and no physics box, so there was nothing for the headless suite's
+road-and-path sweep to catch either way.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count
+unchanged at 329 (as expected — `Flyer` adds no physics box). Victorian's own friend count held at 107
+and its walkable-ground percentage held at 94%, both read straight off the test's own printed counts.
+No visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
+suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

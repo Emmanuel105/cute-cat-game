@@ -15810,6 +15810,20 @@ function buildVictorian(game, entry) {
     W.add(mudlark.group);
     game.npcs.push(new Forager(game, mudlark, { x: mx, z: mz, ry, cryIcon: '🪙',
       cries: ['Found a farthing! Mudlarking never quite lets you down.', 'Careful, puss — mind the mud, it never comes out of white fur.', 'A thimble, would you believe. Third one this month — someone up there keeps losing them.'] })); }
+  // the canal has had boats, ducks, an angler and a mudlark for rounds now, but nothing ever skimmed low
+  // over the water itself — Whisper Woods' glowing pond got its own trio of dragonflies back in round
+  // 773, and the canal, the only other real stretch of open water in the game with nothing flying over
+  // it, never had its own. Three dragonflies now dart low over a quiet reach of the canal between the
+  // main bridge and the duck pair's own swim lane. Exact same `makeDragonfly()` and `Flyer` controller
+  // the pond's trio already uses (`56-npcs-wild.js`, unchanged) — no new rig, no new orbit logic, just
+  // a fresh loop centred on open water with nothing else nearby to clip.
+  // The loop centres on (30, 30), a 5 m stretch of canal with a 2.5 m swing radius (x 27.5-32.5, z
+  // 27.5-32.5) — comfortably inside the water plane's own z 26-34 band, so neither wingtip ever crosses
+  // the bank. The nearest boat sits at x=20 and x=40 (both 7.5 m clear at the swing's widest), the main
+  // bridge's own deck ends at x=1.0 (26 m clear), and the duck pair's swim ranges x=46-64 (13.5 m clear)
+  // — no physics box or `addInteractable` of its own, so there is nothing here for the headless suite's
+  // road-and-path sweep to trip on.
+  for (let i = 0; i < 3; i++) { const rig = makeDragonfly(r.pick([0x2f6a5a, 0x3a5a8a, 0x5a3a6a])); game.npcs.push(new Flyer(game, rig, { cx: 30, cz: 30, r: 2.5, h: r.range(0.25, 0.45), speed: r.range(1.6, 2.4), bob: 0.08, wobble: 0.3, cw: i % 2 === 0, phase: i * 2.1 })); }
   for (const [x, z, k2] of [[-30, 20, 'oak'], [36, 22, 'oak'], [-12, -50, 'birch'], [18, -52, 'birch'], [-66, -14, 'oak'], [66, 18, 'oak']]) addTree(game, k2, x, z, r);
   // clock tower plaza (east), time door (west)
   const tower = makeClockTower(game, 42, 0, U);
