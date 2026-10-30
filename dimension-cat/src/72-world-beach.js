@@ -1245,6 +1245,36 @@ function buildBeach(game, entry) {
   // same as the glowing pond in Whisper Woods: a shallow puddle the cat can walk straight through.
   { const tpx = 5, tpz = -48;
     const pool = makeTidePool(r);
+    // the anemone and the starfish are the only life this pool has ever had — nothing on this whole
+    // coast, in 777 rounds, ever put an actual fish in the sea. A small seahorse now hangs tail-first
+    // off a blade of planted sea grass, bobbing upright in the shallows at local (-0.5, 0.16, 0.3):
+    // inside the pool's own 0.9 m water disc, clear of the starfish's randomised patch (x -0.3..0.1, z
+    // -0.25..0.15) and the anemone at (0.3, 0.02, -0.15), well short of the rock ring that starts at
+    // radius 1.02. No new physics box — the pool has none of its own either — and the bob is driven
+    // only by the world clock `t` inside the pool's own existing `userData.update`, never this world's
+    // seeded `r`, so nothing later in the build shifts.
+    const grassM = mat(0x3a8a5a, { roughness: 0.9, flatShading: true });
+    mesh(G.cone(0.03, 0.22, 5), grassM, { x: -0.56, y: 0.11, z: 0.36, rz: 0.15, parent: pool.group });
+    mesh(G.cone(0.024, 0.17, 5), grassM, { x: -0.48, y: 0.085, z: 0.3, rz: -0.12, parent: pool.group });
+    const seaM = mat(0xffb04c, { roughness: 0.6 });
+    const seahorse = group(-0.5, 0.16, 0.3, pool.group);
+    mesh(G.capsule(0.045, 0.14, 6), seaM, { parent: seahorse });
+    const shHead = group(0.015, 0.1, 0, seahorse); shHead.rotation.z = -0.35;
+    mesh(G.sphere(0.055, 10, 8), seaM, { parent: shHead });
+    mesh(G.cone(0.028, 0.11, 8), seaM, { x: 0.08, rz: -PI / 2, parent: shHead });
+    const eyeM = mat(0x2a2a2a, { roughness: 0.4 });
+    mesh(G.sphere(0.011, 6, 5), eyeM, { x: 0.03, y: 0.025, z: 0.04, parent: shHead });
+    mesh(G.sphere(0.011, 6, 5), eyeM, { x: 0.03, y: 0.025, z: -0.04, parent: shHead });
+    noInk(mesh(G.box(0.09, 0.06, 0.01), seaM, { y: 0.1, rz: 0.4, parent: seahorse }));
+    let tailParent = seahorse, tailY = -0.08;
+    for (let i = 0; i < 4; i++) {
+      const joint = group(0, tailY, 0, tailParent);
+      joint.rotation.x = -0.55 - i * 0.32;
+      const tr = 0.026 - i * 0.004, tl = 0.05;
+      mesh(G.capsule(tr, tl, 6), seaM, { y: -tl / 2 - tr * 0.3, parent: joint });
+      tailParent = joint; tailY = -tl - tr * 0.6;
+    }
+    const seahorseLines = ['🐠 "Hangs on by the tail and lets the whole pool drift past it."', '🐠 "Doesn\'t dart like the little fish past the rocks — just bobs, upright, and waits."', '🐠 "Not a fish shaped like a horse. The other way round, if you ask it."'];
     const poolLines = ['🪸 "Touch the water, and watch it flinch — not you, puss, the anemone."', '⭐ "That starfish hasn\'t moved all week. Starfish don\'t, much."', '🪸 "Pulls in tight the second a shadow crosses it. Give it a minute - it opens right back up."'];
     let poolOpen = 1, poolNear = false;
     pool.group.userData.update = (dt, t) => {
@@ -1253,11 +1283,14 @@ function buildBeach(game, entry) {
       for (const h of pool.tentacles) h.rotation.x = 0.15 + poolOpen * 0.85;
       pool.anemone.scale.setScalar(0.72 + poolOpen * 0.28);
       pool.water.map.offset.x = t * 0.01;
+      seahorse.position.y = 0.16 + sin(t * 0.9) * 0.012;
+      seahorse.rotation.y = 0.6 + sin(t * 0.7) * 0.1;
       if (isNear && !poolNear) { poolNear = true; SFX.wave(); game.toast(rnd.pick(poolLines), 3000);
         game.fx.emit(tpx, P.ground0(tpx, tpz) + 0.15, tpz, { count: 8, colors: [0xbfe8ff, 0xffffff], speed: 0.6, up: 0.6, life: 0.6, gravity: 1.5 }); }
       if (!isNear) poolNear = false;
     };
-    placeT(game, U, pool.group, tpx, tpz, r() * TAU); }
+    placeT(game, U, pool.group, tpx, tpz, r() * TAU);
+    game.addInteractable({ obj: seahorse, radius: 1.1, label: () => 'Look at the seahorse', onUse: () => { SFX.click(); game.toast(rnd.pick(seahorseLines), 3000); } }); }
 
   // the Neighborhood (395), Robot City (425), Victorian (426) and Candy Land (427) have all had a go at
   // the same back-garden toss game by now — a horseshoe, a coupling ring, a brass quoit, a gummy ring —

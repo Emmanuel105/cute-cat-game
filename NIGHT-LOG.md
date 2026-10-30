@@ -21024,3 +21024,38 @@ percentage held at 98%, both checked directly against the test's own printed cou
 was possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
 headless probe above (deleted after use, not committed). Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 778 — Sunny Shore's tide pool finally gets a fish in it
+
+With every "left for a future round" thread this log had going (the dune's own bare palms, the three
+deer, the two foxes, the glade's eight mushrooms) already closed out in earlier rounds, this one went
+looking for something that had simply never been tried before. A sweep of `NIGHT-LOG.md` and the whole
+`src/` tree for "seahorse" came back with nothing in 777 rounds — the tide pool south of the lighthouse
+has had a starfish and a sea anemone standing in for all the pool's own life since the round that built
+it, and never anything that swam. **A small seahorse now hangs tail-first off a blade of planted sea
+grass at the edge of that same tide pool, bobbing gently upright in the shallows.** *"🐠 Hangs on by the
+tail and lets the whole pool drift past it."* *"🐠 Not a fish shaped like a horse. The other way round,
+if you ask it."*
+
+No new physics box — the pool never had one of its own either, same shallow-puddle treatment as the
+glowing pond in Whisper Woods. The seahorse is built from the same primitives every creature in this
+game already uses (`G.capsule`, `G.sphere`, `G.cone`, chained `group()`s for a four-joint curling tail,
+copying the idiom the cat's own tail chain in `50-cat.js` uses) and parented straight onto the tide
+pool's own group at local `(-0.5, 0.16, 0.3)` — inside the pool's 0.9 m water disc, clear of the
+starfish's own randomised patch and the anemone's fixed spot, short of the rock ring. It's a "look"
+prop only, `game.addInteractable` and nothing else — no `namedFriend`, so it doesn't touch any world's
+friend count — and its gentle bob and yaw are driven purely off the world clock `t` inside the tide
+pool's own existing `userData.update` closure (which already drives the anemone's flinch), never this
+world's seeded `r`, so no later palm, shell or wardrobe pick anywhere else in the build shifts.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+`game.travel(4, 'from-hub')` waited out against the portal's own real fade timer, then 2000 simulated
+frames with the seahorse's own world position re-read every frame via `getWorldPosition`) found it
+clear by 3.57 m of the nearest physics box and 5.54 m of both the nearest wandering soul and the
+nearest other interactable throughout — all comfortably past the new prompt's own 1.1 m radius. Probe
+script deleted after use, nothing committed.
+
+`node test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count unchanged at 329
+(no new physics box, as expected). No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
