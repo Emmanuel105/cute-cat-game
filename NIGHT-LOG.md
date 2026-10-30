@@ -20834,3 +20834,41 @@ just above (-4, -26) and the treasure dig further east (63, -17).
 friend count rose by one, from 81 to 82. No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite and the headless probe above (deleted after
 use, not committed). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 773 — Candy Land finally gets a cotton candy cart
+
+Every world's "cries per world" tally sits in the low-to-mid 40s and 50s by now, and Candy Land's own
+had quietly fallen to the lowest of the seven. Looking for what a candy-themed world ought to have and
+didn't turned up an obvious gap: the sweet-stall sells peppermints, the gingerbread cottage has its
+tray of biscuits, the chocolate river has its own angler — but the one fixture every candy-themed fair
+is actually built around, a cotton candy cart with the tub spinning, was nowhere in the land. **A
+striped little cart with a chrome-rimmed drum now spins a cloud of pink, white and blue sugar-fluff on
+the open grass south of the gingerbread cottage, with a vendor standing beside it holding up a
+finished cone.** *"Fresh spun, still warm off the tub!"* *"Careful, puss — it melts the second it's
+damp."* *"Sugar and air, that's the whole trick to it."*
+
+No new class: the vendor reuses `Vendor` (`55-npcs.js`), the same controller the existing peppermint
+seller already stands on — it never calls `greetable()` on its own, so this one gets the identical
+explicit `greetable(game, v6)` the first vendor needed. The cart itself is new geometry built inline
+the way the gingerbread cottage's tray and the candy-lane pinwheel already are: a candy-striped drum on
+two wheels, a chrome rim, and a ring of ten pastel "fluff" spheres inside the drum that the world's own
+clock spins slowly on its own `y` axis — no `userData.update` needed, since the hand-built core of each
+world is never passed through `bakeDeep()` (only the procedural outer ring is). The vendor's held item
+is a matching finished cone, built the same way the sweet-stall's candy jar is: a small prop handed
+straight to `Vendor`'s own `held` parameter.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')` then `game.travel(1, 'from-prev')`, 2000 simulated frames sampling every NPC's own
+position every 15th frame) swept the open ground south of the gingerbread cottage against both those
+samples and all of Candy Land's own physics boxes: (4, -70) came back clear by 14.86 m from the nearest
+box and 16.02 m from the nearest wandering soul — well inside the hand-built core (70 m out from the
+origin; the candy-cane ring that fills the outer country only starts at radius 92, so there was never
+any risk of the two systems colliding).
+
+`node test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings. A second headless check
+(travel to world 1 and wait out the real portal-fade timer, rather than read `game.physics.boxes`
+mid-fade) confirmed Candy Land's own box count rose from 1901 to 1902 — just the cart's own footprint
+— and its NPC count from 79 to 80. Candy Land's own friend count rose by one, from 91 to 92, and its
+walkable-ground percentage held at 92%. No visual check was possible in this environment (no browser,
+no Playwright) — only the stub-three test suite and the headless probes above (deleted after use, not
+committed). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

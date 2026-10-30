@@ -4204,6 +4204,40 @@ function buildCandyLand(game, entry) {
     const v5 = new Vendor(game, sweetSeller, makeCandyJar(), { x: cx, z: cz, ry: atan2(-cx, -cz), cryIcon: '🍬',
       cries: ['Peppermints, fresh peppermints!', 'A sweet for the journey, puss?', 'One a day keeps the toothache away - or so they say.'] });
     game.npcs.push(v5); greetable(game, v5); }
+  // the sweet-stall sells peppermints and the chocolate fountain, the chocolate river has its own
+  // angler, but the one fixture every candy-themed fair is built around — a cotton candy cart, the
+  // spinning tub and all — never showed up anywhere in the land. A headless probe swept the open
+  // grass south of the gingerbread cottage against every physics box and NPC roam circle already
+  // built into the world: (4, -70) came back clear by 14.86 m from the nearest box and 16.02 m from
+  // the nearest wandering soul, well inside the hand-built core (70 m out; the candy-cane ring only
+  // starts at radius 92). `Vendor` (`55-npcs.js`) never calls `greetable()` on its own, same as the
+  // sweet-stall above, so this one gets the same explicit `greetable(game, v6)`.
+  { const cx = 4, cz = -70; game.zones.addCircle(cx, cz, 1.4);
+    const cart = group(cx, 0, cz, W);
+    const cabM = mat(0xffffff, { roughness: 0.5, map: TEX.candyCane() }), chromeM = mat(0xd8dde0, { metalness: 0.75, roughness: 0.25 });
+    mesh(G.cyl(0.42, 0.46, 0.62, 16), cabM, { y: 0.31, shadow: 'both', parent: cart });                       // striped cart body
+    for (const s of [-1, 1]) mesh(G.cyl(0.16, 0.16, 0.05, 14), mat(0x3a3a3a, { roughness: 0.6 }), { x: s * 0.44, y: 0.16, rx: PI / 2, parent: cart }); // wheels
+    mesh(G.cyl(0.4, 0.4, 0.06, 16), chromeM, { y: 0.65, parent: cart });                                      // rim the drum sits in
+    const tub = group(0, 0.68, 0, cart);
+    mesh(G.cyl(0.36, 0.32, 0.22, 16), chromeM, { y: 0.11, parent: tub });                                     // the spinning drum itself
+    const fluffColors = [0xffb3de, 0xffffff, 0xbdeeff];
+    for (let i = 0; i < 10; i++) { const a = (i / 10) * TAU + r() * 0.3, rr = r.range(0.1, 0.24);
+      mesh(G.sphere(r.range(0.07, 0.11), 8, 6), mat(r.pick(fluffColors), { roughness: 0.9 }), { x: cos(a) * rr, y: 0.2 + r.range(0, 0.05), z: sin(a) * rr, shadow: 'none', parent: tub }); }
+    let tubT = r() * TAU;
+    U.push((dt) => { tubT += dt * 0.6; tub.rotation.y = tubT; });
+    P.addBox(cx, 0.32, cz, 0.46, 0.65, 0.46, { cam: false });
+    const spinWard = makeWardrobe(r, { shirts: [0xffffff, 0xffb3de, 0xbdeeff], pants: [0xffffff, 0x2a2420] });
+    const spinner = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.2), wardrobe: spinWard }),
+      pants: 0xffffff, apron: 0xbdeeff, hat: 'flatcap', hatColor: 0xffb3de, bag: null, jacket: null, scarf: null });
+    W.add(spinner.group);
+    const cone = group(0, 0, 0);
+    mesh(G.cyl(0.015, 0.09, 0.05, 8), mat(0xf5e9d6, { roughness: 0.7 }), { y: 0.025, parent: cone });          // paper cone tip
+    for (let i = 0; i < 7; i++) { const a = r() * TAU, d = r.range(0, 0.14);
+      mesh(G.sphere(r.range(0.07, 0.1), 8, 6), mat(r.pick([0xffb3de, 0xffffff]), { roughness: 0.9 }), { x: cos(a) * d, y: 0.1 + r.range(0, 0.1), z: sin(a) * d, shadow: 'none', parent: cone }); }
+    const sx = cx + 0.95, sz = cz;
+    const v6 = new Vendor(game, spinner, cone, { x: sx, z: sz, ry: atan2(cx - sx, cz - sz), cryIcon: '🍭',
+      cries: ["Fresh spun, still warm off the tub!", "Careful, puss — it melts the second it's damp.", "Sugar and air, that's the whole trick to it."] });
+    game.npcs.push(v6); greetable(game, v6); }
   // the gingerbread cottage had nobody minding it; a baker kneels by a fresh tray, icing them while they're still warm
   { const cx = 3.5, cz = -56.5, tx = cx, tz = cz - 1.3;
     const dough = mat(0xc27b3a, { roughness: 0.95 }), icing = mat(0xfffdf7, { roughness: 0.35 });
