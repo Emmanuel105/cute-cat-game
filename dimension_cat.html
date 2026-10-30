@@ -11854,6 +11854,26 @@ function buildCandyLand(game, entry) {
       const candyRoofLines3 = ['🍬 "A gumdrop beetle, out of the grass and up on the roof where the real gumdrops are."', '🍬 "Third roof on the street with company now. Two still bare."', '😼 "Puss, it\'s candy-coloured. That doesn\'t make it candy."'];
       game.addInteractable({ obj: bug2.group, radius: 1.6, label: () => 'Look at the gumdrop beetle', onUse: () => { SFX.click(); game.toast(rnd.pick(candyRoofLines3), 3000); } });
     }
+    // the fourth house gets a roof visitor too, so no new rig: `makeSnail()` already rests Whisper Woods'
+    // own grass on the same flat, ground-hugging foot as the roof beetles above it, so a shell recoloured
+    // bubblegum-pink (0xff8fd1, matching neither this house's green icing nor any snail already in the
+    // game) sits the same way they do. Dollop #1 of the same ten-dollop loop (`makeCandyHouse`,
+    // 68-regions.js): x = cos(1/10·TAU)·3.15 ≈ 2.548, z = sin(1/10·TAU)·3.15 ≈ 1.852, an odd index so
+    // y = 3.24 + 0.16 = 3.4 — the same height class houses 2 and 3 already proved clear of the roof
+    // cone's own taper (radius ≈3.08 at y=3.4, short of the dollop's own radius 3.15). No physics box
+    // (the house's own box tops out at y=3.2, well under this) and no draw from `r()` or the shared
+    // `rnd()` at build time — position, rotation and colour are fixed literals, the same caution every
+    // perched roof creature in this game already takes.
+    if (i === 3) {
+      const snailX = 2.548, snailZ = 1.852, snailY = 3.4;
+      const snail = makeSnail(0xff8fd1);
+      house.group.add(snail.group);
+      snail.group.position.set(snailX, snailY, snailZ);
+      snail.group.rotation.y = atan2(snailX, snailZ);
+      U.push((dt, t) => snail.animate(0, false, dt, t));
+      const candyRoofLines4 = ['🐌 "No hurry at all up here — the icing isn\'t going anywhere."', '🍬 "Fourth roof on the street with company. One still bare."', '😼 "Puss, it left a trail. It\'s sugar, not slime. Probably."'];
+      game.addInteractable({ obj: snail.group, radius: 1.6, label: () => 'Look at the snail', onUse: () => { SFX.click(); game.toast(rnd.pick(candyRoofLines4), 3000); } });
+    }
   }
   for (const s of [-1, 1]) { const rig = makeGingerbread(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x: castle.throne[0] + s * 2.6, z: castle.throne[1] + 1.4, speed: 0.3, leash: 1.2, r: 0.4, height: 1.4, idle: [2, 5] })); }
   game.addInteractable({ obj: castle.throneGroup, radius: 3.4, label: () => 'Approach the throne', onUse: () => { SFX.talk(); game.toast('👑 "A comfy-looking throne. Built for someone rather bigger than a cat."', 3000); } });

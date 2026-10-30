@@ -21281,3 +21281,29 @@ in this game already takes. Two of the five candy houses are still bare.
 unchanged at 329 (as expected — nothing below head height can reach three-plus metres up). No visual
 check was possible in this environment (no browser, no Playwright) — only the stub-three test suite.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 786 — a fourth Candy Land roof gets its own visitor
+
+Rounds 783–785 gave three of Candy Land's five hand-placed candy houses a roof detail each, in order,
+leaving the fourth and fifth bare. **The fourth house now has a bubblegum-pink snail parked on one of
+its own icing dollops, taking its time out past the eaves.** *"🐌 No hurry at all up here — the icing
+isn't going anywhere."* *"🍬 Fourth roof on the street with company. One still bare."* *"😼 Puss, it
+left a trail. It's sugar, not slime. Probably."*
+
+No new rig: `makeSnail(0xff8fd1)` is the exact snail already crawling Whisper Woods' grass, just
+recoloured away from its default gold and away from the pink the second house's ladybug already uses.
+Its foot sits flush on the ground the same way the two roof beetles do, so it can be planted straight on
+a dollop rather than hovering a margin above it, the way house 1's sparrow needed. Dollop #1 of
+`makeCandyHouse`'s own ten-dollop loop (`68-regions.js`): x = cos(1/10·TAU)·3.15 ≈ 2.548,
+z = sin(1/10·TAU)·3.15 ≈ 1.852, an odd index so its own y = 3.24, top at 3.24 + 0.16 = 3.4 — the same
+height class houses 2 and 3 already proved clear of the roof cone's own taper (radius ≈3.08 at y=3.4,
+short of the dollop's own radius 3.15). `rotation.y` is `atan2(x, z)` so it faces outward along the same
+radial line as its own dollop. No physics box (the house's own box tops out at y=3.2, well under this)
+and no draw from the world's seeded `r()` or the shared `rnd()` at build time — position, rotation and
+colour are fixed literals, the same caution every perched roof creature on this street already takes.
+One of the five candy houses is still bare.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count
+unchanged at 329 (as expected — nothing below head height can reach three-plus metres up). No visual
+check was possible in this environment (no browser, no Playwright) — only the stub-three test suite.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
