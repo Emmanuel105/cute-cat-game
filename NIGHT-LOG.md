@@ -21364,3 +21364,30 @@ unchanged at 329 (no new physics box). No visual check was possible in this envi
 no Playwright) — only the stub-three test suite, plus the throwaway probe script above to size the
 interaction radius safely. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
 Four of the eleven baskets are still bare.
+
+## Round 789 — Victorian's third flower basket gets looked at, right over the chimney sweep's own yard
+
+Round 788 left seven of Victorian's eleven hanging lamp baskets with a "look" prompt and four still
+bare. **`vicLamps[3]`, the lamp right out front of the house whose own backyard the chimney sweep
+works twelve strides south, now has its own basket dialogue in an amber-orange none of the other
+looked-at baskets wear.** *"🧡 Amber-orange petals, same iron bracket as every other lamp on the
+street."* *"🧹 The sweep works the yard behind this very house, a dozen strides south. Never once
+looks up at the flowers."*
+
+No new mesh, no new box: `game.addInteractable` keys off the lamp post `vicLamps[3]` already is, the
+same trick every basket before it used. A headless probe (the stub-three test harness, clicking the
+real Enter button, travelling to world 3, then running 42000 simulated frames tracking the
+`Lamplighter` NPC's own position every frame) checked all four remaining bare lamps: all four turned
+out to be boxed in by the same continuous garden-fence run, just 1.10 m off every one of them, with
+the lamplighter's own closest pass never under 1.13 m at any of them. `vicLamps[3]` came back best of
+the four on the other measures — nearest other interactable (the chimney brush two houses along)
+7.48 m off, nearest wandering soul 4.06 m off — so the same half-radius round 649 settled on for
+`vicLamps[1]` (0.9 m, half what the open-street baskets use) clears the fence line with 0.2 m to
+spare and the lamplighter with 0.38 m.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count
+unchanged at 329 (no new physics box — the interactable hangs off the lamp post's existing one). No
+visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
+suite, plus the throwaway probe script above to size the interaction radius safely. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Three of the eleven baskets are
+still bare.
