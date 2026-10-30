@@ -21391,3 +21391,31 @@ visual check was possible in this environment (no browser, no Playwright) — on
 suite, plus the throwaway probe script above to size the interaction radius safely. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Three of the eleven baskets are
 still bare.
+
+
+## Round 790 — Victorian's fourth flower basket gets looked at, fence and all
+
+Round 789 left eight of Victorian's eleven hanging lamp baskets with a "look" prompt and three still
+bare — `vicLamps[2]`, `[4]` and `[6]`, all three on the north row. **`vicLamps[4]`, the lamp at the
+fence line of the north-row house at x=-8, now has its own basket dialogue in the same fuchsia-pink
+`vicLamps[0]` already wears.** *"🌸 Fuchsia, same as the very first lamp at the far end of the street —
+this one just sways a little closer to the fence."* *"⚜️ Iron pickets a stride off on one side, the
+lamplighter's own round on the other. The basket minds neither."*
+
+No new mesh, no new box: `game.addInteractable` keys off the lamp post `vicLamps[4]` already is, same
+trick every basket before it used. A headless probe (the stub-three test harness, clicking the real
+Enter button, travelling to world 3, then running 42000 simulated frames sampling every NPC's own
+position every fifth frame) checked all three remaining candidates: `vicLamps[2]` and `[6]` both came
+back fouled by something else standing within half a metre to a few strides (a wandering gentleman
+practically on top of `[2]`, another soul and an interactable crowding `[6]`), but `vicLamps[4]` came
+back clean on everything but the fence — the x=-8 house's own garden fence 1.10 m off, the
+lamplighter's own closest patrol stop a comfortable 2.1 m off, and the nearest wandering soul 2.93 m
+off. The same 0.9 m half-radius round 649 and `vicLamps[3]` already relied on clears the fence line
+here too, with 0.2 m to spare.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count
+unchanged at 329 (no new physics box — the interactable hangs off the lamp post's existing one). No
+visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
+suite, plus the throwaway probe script above to size the interaction radius safely. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Two of the eleven baskets
+(`vicLamps[2]` and `[6]`) are still bare.
