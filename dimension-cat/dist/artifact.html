@@ -11801,6 +11801,25 @@ function buildCandyLand(game, entry) {
       const candyRoofLines = ['🐦 "Chirp. (Translation: the icing dollops make a surprisingly good perch.)"', '🍬 "Every other roof fixture in this game spins, glows or tells the wrong time. This one just sits and watches the steam go by."', '😼 "Puss, that\'s real icing under its feet. Don\'t get any ideas."'];
       game.addInteractable({ obj: perch.group, radius: 1.6, label: () => 'Look at the sparrow', onUse: () => { SFX.click(); game.toast(rnd.pick(candyRoofLines), 3000); } });
     }
+    // the second house gets a roof detail of its own now too: a sugar-pink ladybug (`makeLadybug(0xff4fa0)`,
+    // the exact rig the Neighborhood's and Whisper Woods' own plain red ladybugs already use, just recoloured
+    // to match the house's own icing) parked on dollop #7 of its own roofline — the same ten-dollop loop
+    // above, one of its odd-indexed bumps, so its top sits at y = 3.24 + 0.16 = 3.4 rather than house 1's
+    // even-indexed one. At that height the roof cone's own slanted surface has narrowed to radius ≈3.08,
+    // short of this dollop's own outer radius (3.15 + 0.16 = 3.31), so the ladybug sits just past the eaves,
+    // clear of the solid roof mesh, the same margin round 783's sparrow relied on for house 1. No physics
+    // box (the house's own box tops out at y=3.2, well under this) and no draw from `r()` or the shared
+    // `rnd()` at build time — position and rotation are fixed literals.
+    if (i === 1) {
+      const bugX = -0.973, bugZ = -2.996, bugY = 3.4;
+      const bug = makeLadybug(0xff4fa0);
+      house.group.add(bug.group);
+      bug.group.position.set(bugX, bugY, bugZ);
+      bug.group.rotation.y = atan2(bugX, bugZ);
+      U.push((dt, t) => bug.animate(0, false, dt, t));
+      const candyRoofLines2 = ['🐞 "Not a spot in sight — just sugar sprinkles standing in for them."', '🍬 "Second roof on the street to get its own visitor. Three to go."', '😼 "Puss, that one bites back less than the gingerbread men do."'];
+      game.addInteractable({ obj: bug.group, radius: 1.6, label: () => 'Look at the ladybug', onUse: () => { SFX.click(); game.toast(rnd.pick(candyRoofLines2), 3000); } });
+    }
   }
   for (const s of [-1, 1]) { const rig = makeGingerbread(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x: castle.throne[0] + s * 2.6, z: castle.throne[1] + 1.4, speed: 0.3, leash: 1.2, r: 0.4, height: 1.4, idle: [2, 5] })); }
   game.addInteractable({ obj: castle.throneGroup, radius: 3.4, label: () => 'Approach the throne', onUse: () => { SFX.talk(); game.toast('👑 "A comfy-looking throne. Built for someone rather bigger than a cat."', 3000); } });

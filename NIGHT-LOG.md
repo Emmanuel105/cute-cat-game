@@ -21225,3 +21225,31 @@ the same caution every perched bird in the game already takes.
 unchanged at 329 (as expected — nothing below head height can reach three-plus metres up). No visual
 check was possible in this environment (no browser, no Playwright) — only the stub-three test suite.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 784 — a second Candy Land roof gets its own visitor too
+
+Round 783 gave the first of Candy Land's five hand-placed candy houses a sparrow on its roof and left
+the other four bare; the natural next step, and the safest one to try without eyes on the game, was
+giving the second house a detail of its own rather than reaching for something untested. **A sugar-pink
+ladybug now sits on one of the second house's own icing dollops, out past the eaves.** *"🐞 Not a spot
+in sight — just sugar sprinkles standing in for them."* *"🍬 Second roof on the street to get its own
+visitor. Three to go."* *"😼 Puss, that one bites back less than the gingerbread men do."*
+
+No new rig: `makeLadybug(0xff4fa0)` straight off the shelf, the same rig the Neighborhood's and Whisper
+Woods' own plain red ladybugs already use, just recoloured to match the icing. The existing ten-dollop
+loop in `makeCandyHouse` (`68-regions.js`) plants dollops at `cos(i/10·TAU)·3.15, sin(i/10·TAU)·3.15`
+with `y = 3.14 + (i%2)·0.1`; this one sits on dollop #7, an odd-indexed bump, so its top lands at
+y = 3.24 + 0.16 = 3.4, a different height from house 1's even-indexed dollop so the two houses don't
+read identically. Checked the roof cone's own taper at that height the same way round 782 and 783 did:
+radius ≈3.08 at y=3.4, short of this dollop's own outer radius (3.15 + 0.16 = 3.31), so the ladybug sits
+just past the eaves, clear of the solid roof mesh. `rotation.y` is `atan2(x, z)` so it faces outward
+along the same radial line as the dollop itself. No physics box (the house's own box tops out at
+y=3.2) and no draw from the world's seeded `r()` or the shared `rnd()` at build time — position and
+rotation are fixed literals, the same caution every perched creature in this game already takes. A
+"Look at the ladybug" interactable plays one of three toast lines; like the sparrow, it's ambient and
+not a friend, so neither world's friend count moves.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count
+unchanged at 329 (as expected — nothing below head height can reach three-plus metres up). No visual
+check was possible in this environment (no browser, no Playwright) — only the stub-three test suite.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
