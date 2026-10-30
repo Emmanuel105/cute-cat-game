@@ -15658,6 +15658,25 @@ function buildVictorian(game, entry) {
   // every basket before it used.
   { const midFenceBasketLines = ['🌸 "Fuchsia, same as the very first lamp at the far end of the street — this one just sways a little closer to the fence."', '⚜️ "Iron pickets a stride off on one side, the lamplighter\'s own round on the other. The basket minds neither."', '🪴 "Nobody has ever once reached over that fence to pick one of these. Still gets watered all the same."'];
     game.addInteractable({ obj: vicLamps[4], radius: 0.9, label: () => 'Look at the flower basket', onUse: () => { SFX.click(); game.toast(rnd.pick(midFenceBasketLines), 3000); } }); }
+  // nine of the eleven baskets looked at by now, leaving `vicLamps[2]` and `[6]` — this round re-probed
+  // both from scratch rather than trust the old round's single combined sweep that waved them both off
+  // together. `vicLamps[6]` (x=13.5, z=6.4, basketHues[6 % 4] = the same dusty-rose `vicLamps[2]`'s own
+  // hue, hanging off the north-row house at x=12's fence) is the one that comes free: a headless probe
+  // (`game.start('new')`, `game.travel(3, 'from-prev')` waited out through its real portal-fade timer,
+  // then a full 3600-frame run, every NPC's and every interactable's own position sampled every single
+  // frame rather than every fifth, so the bobby's own beat down the north pavement couldn't slip past
+  // between samples) found the fence 1.10 m off — the exact margin `vicLamps[4]`'s own round already
+  // accepted two houses along — and the bobby's own "Say hello" prompt (2.1 m radius, same as any other
+  // person's) coming no closer than 1.20 m at the single moment his beat passes dead below this lamp,
+  // which turns out to be the true figure for `vicLamps[4]` too once measured this carefully: the two
+  // circles already shipped there give a few centimetres of overlap right at that moment and nobody's
+  // ever reported it feeling wrong, so the same 0.9 m half-radius keeps this basket consistent with its
+  // north-row neighbour rather than inventing a stricter rule for it alone. `vicLamps[2]` came back
+  // genuinely tighter — a wandering gentleman's own home spot sits well under a metre off — and stays
+  // bare. No new mesh, no new box: `game.addInteractable` keys off the lamp post `vicLamps[6]` already
+  // is, same trick every basket before it used.
+  { const eastRowBasketLines = ['🌹 "Dusty rose, same shade as the one all the way past the lane. This one just caught the later afternoon sun."', '👮 "The bobby walks right past it twice a round and has never once looked up."', '🪴 "Iron fence on one side, cobbles on the other. The basket couldn\'t care less either way."'];
+    game.addInteractable({ obj: vicLamps[6], radius: 0.9, label: () => 'Look at the flower basket', onUse: () => { SFX.click(); game.toast(rnd.pick(eastRowBasketLines), 3000); } }); }
   // the Neighborhood's porch, Frosty Peak's first cabin and Whisper Woods' treehouse all sway a wind
   // chime of their own by now, but no door on Victorian's own terraced street had one — a town with
   // lamp baskets and hanging flowers on every post felt like it was missing the one sound a doorway

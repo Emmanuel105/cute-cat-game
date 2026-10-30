@@ -21568,3 +21568,28 @@ unchanged at 329 (no new physics box) and Robot City's own friend count rose fro
 walkable-ground percentage holding at 88%. No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite and the headless probe described above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 796 — Victorian's sixth flower basket gets a second look-alike neighbour
+
+Nine of the eleven lamp baskets lining the main street had already picked up a "look" toast, but two
+— `vicLamps[2]` and `vicLamps[6]`, both on the north row — had been waved off together by one old
+combined probe. **`vicLamps[6]` (x=13.5, z=6.4, off the fence of the north-row house at x=12) now
+gets its own toast, reusing the exact same half-radius trick its fence-adjacent neighbour `vicLamps[4]`
+already uses.** *"The bobby walks right past it twice a round and has never once looked up."*
+
+Re-probing from scratch (`game.start('new')`, `game.travel(3, 'from-prev')` waited out through its
+real portal-fade timer, then a full 3600-frame run with every NPC's and every interactable's own
+position sampled every single frame, not every fifth) found the fence 1.10 m off `vicLamps[6]` — the
+same margin `vicLamps[4]`'s own round already accepted — and the bobby's patrolling "Say hello" prompt
+(2.1 m radius) never closer than 1.20 m, at the one moment his beat passes directly below. Running the
+identical probe against `vicLamps[4]` turned up the same 1.20 m figure for *that* basket too, meaning
+the two prompts already overlap by a few centimetres there and always have, without anyone noticing or
+minding — so `vicLamps[6]` gets the same 0.9 m radius rather than a stricter rule invented just for it.
+`vicLamps[2]` came back genuinely worse (a wandering gentleman's own home spot under a metre off) and
+stays bare — the only one of the eleven left. No new mesh, no new box: `game.addInteractable` keys off
+the lamp post `vicLamps[6]` already is, same trick every basket before it used.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329 (no new physics box). No visual check was possible in this environment (no browser,
+no Playwright) — only the stub-three test suite and the headless probes described above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
