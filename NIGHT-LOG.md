@@ -21081,3 +21081,30 @@ unchanged at 329 (as expected — `Flyer` adds no physics box). Victorian's own 
 and its walkable-ground percentage held at 94%, both read straight off the test's own printed counts.
 No visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
 suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 780 — Frosty Peak's reindeer herd is complete: the last of the three answers to Dasher
+
+Round 762 named this one and left it alone: the herd's third deer, wandering at (-22, 6), was the one
+quadruped in the whole game still missing a greet prompt, because an older probe had found it drifting
+within 0.45 m of a pine trunk and called that "too tight for a new greet circle to sit cleanly." That
+note sat unclosed through eighteen rounds of other work. A fresh headless probe this round (the same
+harness `test/run.mjs` itself uses: `game.start('new')`, `game.load(5, 'from-hub')`, then 4000 simulated
+frames reading her own `Wanderer` position against every physics box in the world every frame) found
+the real number is exactly her own collision radius, 0.45 m, and nothing tighter — `move()`'s own
+`blocked()` check already refuses to step any `Wanderer` closer to a box than its own circle allows, so
+"0.45 m from a tree" is just what bumping into one and turning away looks like, the same bump every
+other wandering creature in this game already does at the edge of its own range. It was never a special
+hazard; it was a false alarm from reading a bump as a hazard. **The last of Frosty Peak's three reindeer
+now gets her own collar and bell (a red one, to tell her apart from Copper's copper and Blitzen's blue)
+and answers to Dasher**, same mechanism as her two herd-mates: `game.namedFriend('dasher')` plus a
+`game.addInteractable` keyed straight to her own `rig.group`, tracked every frame through her usual 8 m
+leash. No new mesh beyond the collar `makeDeer()`'s existing `collar` option already draws, no new
+physics box. *"🦌 *red collar bell jingles, keeps one eye on the nearest tree anyway*"* — she's still the
+shy one of the three, tree-bump and all.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count
+unchanged at 329 (as expected — a collar and a greet prompt on an existing `Wanderer` rig add neither).
+Frosty Peak's own friend total rose by one, from 96 to 97, confirmed by the suite's own printed count.
+No visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
+suite and the headless probe above (deleted after use, not committed). Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -327,17 +327,28 @@ function buildSnowVillage(game, entry) {
   // but the herd's other two deer, at (-22, 6) and (24, 20), stayed exactly what they'd always been:
   // plain `makeDeer()` rigs with none of `.look`/`.robot`/`.cookie` for `Wanderer`'s own `greetable()`
   // call to find, same root cause as every other ambient quadruped this log keeps turning into a
-  // friend. The third deer, at (24, 20), now gets a blue collar and bell of her own (the same `collar`
+  // friend. The third deer, at (24, 20), got a blue collar and bell of her own (the same `collar`
   // option Copper already uses, just a different colour so the two read as two individuals, not a
-  // matching pair) and answers to Blitzen. The other deer, at (-22, 6), stays untouched: a headless
-  // probe (`game.start('new')` then `game.load(5, 'from-hub')`, 3000 simulated frames sampling every
-  // wandering reindeer's own position) found that one drifting within 0.45 m of a pine trunk at times,
-  // too tight for a new greet circle to sit cleanly, while (24, 20) never came closer than 2.1 m of the
-  // nearest box (a pine trunk, approachable from the open side) and 2.6 m of the nearest other soul
-  // (the pinecone-gathering Kneeler at (21.6, 19)) — comfortably clear of the 1.8 m greet radius below.
+  // matching pair) and answers to Blitzen. The last one, at (-22, 6), stayed untouched for a long
+  // stretch of this log: round 762's own probe found her drifting within 0.45 m of a pine trunk at
+  // times and called that "too tight for a new greet circle to sit cleanly." A fresh headless probe
+  // (`game.start('new')` then `game.load(5, 'from-hub')`, 4000 simulated frames reading her own
+  // `Wanderer` position against every physics box in the world every frame) found the real number is
+  // exactly her own collision radius, 0.45 m, and nothing tighter — `move()`'s own `blocked()` check
+  // already refuses to step her any closer to a box than her own circle allows, the same bump-and-turn
+  // every single `Wanderer` in this game does at the edge of its wander range. That is not a special
+  // hazard, it is what colliding with a tree always looks like; Blitzen's own "2.1 m of the nearest
+  // box" a few lines up is simply a wander range that happens not to reach one. **The last of the
+  // three now gets a collar and bell of her own too, and answers to Dasher.**
   for (const [i, [x, z]] of [[-22, 6], [-18, -12], [24, 20]].entries()) {
-    const rig = i === 1 ? makeDeer({ collar: 0xb5651d }) : (i === 2 ? makeDeer({ collar: 0x3a6ea8 }) : makeDeer());
+    const rig = i === 0 ? makeDeer({ collar: 0xa83232 }) : (i === 1 ? makeDeer({ collar: 0xb5651d }) : makeDeer({ collar: 0x3a6ea8 }));
     W.add(rig.group);
+    if (i === 0) {
+      const did = game.namedFriend('dasher');
+      game.addInteractable({ obj: rig.group, radius: 1.8, label: () => 'Say hello to Dasher', onUse: () => {
+        game.befriend(did); SFX.bell(); game.hearts(rig.group.position.x, rig.group.position.y + 1.1, rig.group.position.z, 3);
+        game.toast('🦌 "*red collar bell jingles, keeps one eye on the nearest tree anyway*"'); } });
+    }
     if (i === 1) {
       const cid = game.namedFriend('copper');
       game.addInteractable({ obj: rig.group, radius: 2.2, label: () => 'Say hello to Copper', onUse: () => {
