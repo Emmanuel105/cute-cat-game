@@ -21336,3 +21336,31 @@ street already took.
 unchanged at 329 (as expected — nothing below head height can reach three-plus metres up). No visual
 check was possible in this environment (no browser, no Playwright) — only the stub-three test suite.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 788 — Victorian's westmost flower basket finally gets looked at
+
+Rounds back to 649 have been giving Victorian's eleven hanging lamp baskets a "look" prompt one at a
+time; six were done (`vicLamps[1]`, `[5]`, `[7]`, `[8]`'s own lost-watch notice, `[9]` and `[10]`),
+leaving five bare. **`vicLamps[0]`, the westmost lamp on the street — the one the lamplighter's own
+round always starts and ends at — now has its own basket dialogue, in a fuchsia-pink none of the other
+looked-at baskets wear.** *"🌸 Fuchsia, not the amber the others wear — this is the one lamp the
+lamplighter starts and ends his round at."* *"🎐 Right over the pinwheel in the grass past the fence.
+Neither one has ever noticed the other."*
+
+No new mesh, no new box: `game.addInteractable` keys off the lamp post `vicLamps[0]` already is, the
+same trick every basket before it used. The choice of *which* bare lamp wasn't arbitrary — the
+lamplighter's own patrol stops to light every lamp on the street in turn, and the usual 1.8 m radius
+only works where he stops far enough off. A small headless probe script (not part of `test/run.mjs`:
+loaded the same stub-three harness, clicked the real Enter button, travelled to world 3, then ran
+20000 simulated frames tracking the `Lamplighter` NPC's own position every frame) checked all five
+remaining candidates: four came back under 1.3 m clearance from his stop, but `vicLamps[0]` — the end
+of his route, where he turns around rather than pausing square-on — came back at 2.59 m, comfortably
+clear of the 1.8 m radius. The nearest static box turned out to be the toy pinwheel planted in round
+787's own build, right next door (1.12 m off, no overlap since neither carries an interactable of its
+own), and the nearest other interactable (the chimney brush two houses down) stayed 6.58 m off.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count
+unchanged at 329 (no new physics box). No visual check was possible in this environment (no browser,
+no Playwright) — only the stub-three test suite, plus the throwaway probe script above to size the
+interaction radius safely. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+Four of the eleven baskets are still bare.
