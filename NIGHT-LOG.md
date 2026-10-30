@@ -20949,3 +20949,43 @@ the suite's own count, and its walkable-ground percentage held at 98%. No visual
 this environment (no browser, no Playwright) — only the stub-three test suite and the headless probe
 above (deleted after use, not committed). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 776 — Whisper Woods finally gets a stilt walker
+
+Candy Land, Robot City, Victorian, the Neighborhood, Sunny Shore and Frosty Peak have all had their
+own `StiltWalker` for a few rounds now — Whisper Woods was the last of the seven worlds left without
+one. **A woodland performer now paces a short line on open floor deep in the west wood, up on a pair
+of birch-pole stilts, pale bark and moss-green from head to footrest peg.** *"Figured if the herons
+can fly this high, I can walk it."* *"Mind the roots, puss — these stilts don't bend like branches."*
+*"Best way to see clean over the mushroom patches without picking a single one."*
+
+No new class and no new mesh shape: the same `StiltWalker` (`55-npcs.js`, an ordinary `Patroller`
+raised a fixed height off the ground it paces) and the identical ankle-parented pole, strap and
+footrest peg every other stilt walker in the game already wears, just repainted birch-bark and moss
+rather than any of the other six's own paint jobs. `StiltWalker` extends `Patroller`, whose
+constructor calls `greetable()` on its own, so this one counts toward the friend total with no extra
+wiring, and its own `update()` re-reads `game.physics.ground0()` every frame the same way every other
+terrain-world NPC already does, so the wood's own gentle slope out here needed no special handling.
+Built dead last in `buildForest()`, right after the second forager, for the usual reason:
+`makeHuman()` and `randomPerson()` both draw off the shared `rnd()` sequence unconditionally, and
+anything built earlier in this wood would have had its own timing-sensitive pick shifted by it.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(6, 'from-hub')` waited out for real against the portal's own 520 ms
+fade timer, then 2400 simulated frames sampling every NPC's and the squirrel's own position every
+10th frame) swept a 2 m grid of the open woodland floor (radius 15-54, short of the radius (58) where
+`forestRegion`'s own fill takes over, and clear of every one of `game.zones`'s own keep-out
+rectangles — the glowing pond's circle, the central glade circle and the stepping-stone path's span)
+against both those 19,920 samples and all 483 of the wood's own physics boxes tall enough to matter:
+the 6 m line from (-53, 1) to (-53, 7) came back clearest, 9.51 m from the nearest box at its
+tightest end and 10.00 m from the nearest wandering soul — well west of the pogo hopper's own spot
+(-47, 28) and the second forager's napping patch (-37, 39), with the ground sloping gently (about
+0.1 m across the whole line) and no outcrop underfoot.
+
+`node test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count unchanged at
+329 (`StiltWalker` adds a dynamic circle, not a static box, and the suite's own printed tally is taken
+in a different world anyway). Whisper Woods' own friend count rose by one, from 99 to 100, confirmed
+by the suite's own count, and its walkable-ground percentage held at 98%. All seven worlds now have
+their own stilt walker. No visual check was possible in this environment (no browser, no Playwright)
+— only the stub-three test suite and the headless probe above (deleted after use, not committed).
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

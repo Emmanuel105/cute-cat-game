@@ -23051,6 +23051,52 @@ function buildForest(game, entry) {
     game.npcs.push(new Sunbather(game, napper, { x: lx, z: lz, ry: lry, cryIcon: '🍄',
       cries: ["Five minutes. The mushrooms aren't going anywhere.", "Careful, puss — don't you dare roll off with the last cap, that one's for dinner.", "Softest patch of moss in the whole wood. Found it by accident, keeping it on purpose."] })); }
 
+  // Candy Land, Robot City, Victorian, the Neighborhood, Sunny Shore and Frosty Peak have all had their
+  // own `StiltWalker` for a few rounds now (`55-npcs.js`, an ordinary `Patroller` raised a fixed height
+  // off the ground it paces) — Whisper Woods was the last of the seven worlds left without one. **A
+  // woodland performer now paces a short line on open floor deep in the west wood, up on a pair of
+  // birch-pole stilts, pale bark and moss-green from head to footrest peg.** *"Figured if the herons
+  // can fly this high, I can walk it."* *"Mind the roots, puss — these stilts don't bend like
+  // branches."* *"Best way to see clean over the mushroom patches without picking a single one."*
+  //
+  // No new class and no new mesh shape: the same `StiltWalker` (`55-npcs.js`, `extends Patroller`,
+  // whose constructor calls `greetable()` on its own so this counts toward the friend total with no
+  // extra wiring) and the identical ankle-parented pole, strap and footrest peg every other stilt
+  // walker in this game already wears, repainted birch-bark and moss rather than any of the other six's
+  // own paint jobs. Its own `update()` re-reads `game.physics.ground0()` every frame the same way every
+  // other terrain-world NPC already does, so the wood's own gentle slope out here needs no special
+  // handling.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(6, 'from-hub')` waited out for real against the portal's own
+  // 520 ms fade timer, then 2400 simulated frames sampling every NPC's and the squirrel's own position
+  // every 10th frame) swept a 2 m grid of the open woodland floor (radius 15-54, short of the radius
+  // (58) where `forestRegion`'s own fill takes over, and clear of every one of `game.zones`'s own
+  // keep-out rectangles — the glowing pond's circle, the central glade circle and the stepping-stone
+  // path's span) against both those 19,920 samples and all 483 of the wood's own physics boxes tall
+  // enough to matter: the 6 m line from (-53, 1) to (-53, 7) came back clearest, 9.51 m from the
+  // nearest box at its tightest end and 10.00 m from the nearest wandering soul — well west of the
+  // pogo hopper's own spot (-47, 28) and the second forager's napping patch (-37, 39), with the ground
+  // sloping gently (about 0.1 m across the whole line) and no outcrop underfoot.
+  //
+  // Built dead last, right after the second forager, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off the shared `rnd()` sequence unconditionally, and anything built
+  // earlier in this wood would have had its own timing-sensitive pick shifted by it.
+  { const stiltH = 0.8;
+    const performer = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
+      stripes: 0x2f5a3a, shirt: 0xe8dcb8, pants: 0x2f5a3a, hat: 'beanie', hatColor: 0xe8dcb8, scarf: 0x6b8a5a, glasses: false, jacket: null, bag: null, backpack: null });
+    W.add(performer.group);
+    const poleM = mat(0xe8dcb8, { roughness: 0.7 }), strapM = mat(0x2f5a3a, { roughness: 0.8 }), pegM = mat(0x4a3420, { roughness: 0.85 });
+    for (const L of performer.legs) {
+      const len = stiltH / performer.k;
+      const stilt = group(0, 0.22, 0.01, L.ankle);
+      mesh(G.cyl(0.026, 0.03, len + 0.3, 8), poleM, { y: -(len + 0.3) / 2 + 0.07, parent: stilt });
+      mesh(G.torus(0.09, 0.018, 6, 10), strapM, { y: 0, rx: PI / 2, parent: stilt });
+      mesh(G.box(0.15, 0.035, 0.09), pegM, { y: -0.17, z: 0.07, parent: stilt });
+    }
+    game.npcs.push(new StiltWalker(game, performer, { points: [[-53, 1], [-53, 7]], speed: 0.55, pause: [1.5, 3], r: 0.4, height: 2.6, stiltH,
+      cries: ['Figured if the herons can fly this high, I can walk it.', "Mind the roots, puss — these stilts don't bend like branches.", 'Best way to see clean over the mushroom patches without picking a single one.'], cryIcon: '🎪' })); }
+
   forestRegion(game, U, r, 58, WOODS_LIMIT - 8);
   makeHorizon(game, r, { clear: WOODS_LIMIT + 8, hills: true, hill: 0x2f4a30, rock: 0x3a4a3a, rock2: 0x44505a, snow: 0xdfe8f0, snowLine: 52, peaks: 28, woodCount: 460, woodBand: 44, woodHue: [0.26, 0.36], woodLight: [0.1, 0.2], trunk: 0x3a2a1c });
   // hollow oak home (north end of the stepping-stone path)
