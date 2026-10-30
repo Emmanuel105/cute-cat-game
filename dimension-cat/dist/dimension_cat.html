@@ -6821,6 +6821,28 @@ function makeGondolaStation(game, x, z, ry, onEnter, prompt = 'Ride the gondola 
   glowSprite(0xbfe8ff, 3.0, 0.4, cabin).position.y = 0.75;
   for (const s of [-1, 1]) for (const t of [-1, 1]) { const [px, pz] = localXZ(x, z, s * 2.6, t * 1.8, ry); game.physics.addBox(px, 2.4, pz, 0.35, 4.8, 0.35, { cam: false }); }
   const [bx, bz] = localXZ(x, z, -1.6, -1.4, ry); game.physics.addBox(bx, 0.7, bz, abs(cos(ry)) * 1.6 + abs(sin(ry)) * 0.5, 0.5, abs(sin(ry)) * 1.6 + abs(cos(ry)) * 0.5, { cam: false });
+  // the two gondola stations built from this one shared function have had bunting and a dispatch bell
+  // for a while now, but neither one has ever actually shown which way the wind up here is blowing —
+  // the one instrument a real cable-car station always keeps for its own operators. A windsock now
+  // flies from a short mast at the true roof ridge: the two `gable()` meshes above peak at local
+  // (0, 6.57, 0) once their own `ry: PI/2` rotation is accounted for (their width axis becomes world
+  // z, their depth/ridge axis becomes world x, so the ridge line itself runs along x at z=0) — clear
+  // of both sign labels at the gable ends (z=±2.6), the bunting line (z=1.85, y=4.55) and the drive
+  // wheel and cable mount below (z=-0.8, y≤4.6). No physics box: nothing below head height can reach
+  // this high.
+  const white = mat(0xf4f7fb, { roughness: 0.9 });
+  const sockMast = group(0, 6.57, 0, g);
+  noInk(mesh(G.cyl(0.03, 0.04, 0.9, 8), steel, { y: 0.45, shadow: 'none', parent: sockMast }));
+  const sockYoke = group(0, 0.9, 0, sockMast);
+  noInk(mesh(G.cyl(0.016, 0.016, 0.2, 6), steel, { x: 0.1, rz: PI / 2, shadow: 'none', parent: sockYoke }));
+  const sockLen = 0.5, sockSegs = 4;
+  for (let i = 0; i < sockSegs; i++) {
+    const r0 = lerp(0.085, 0.022, i / sockSegs), r1 = lerp(0.085, 0.022, (i + 1) / sockSegs);
+    mesh(G.cyl(r0, r1, sockLen / sockSegs, 10), i % 2 === 0 ? red : white, { x: 0.2 + (i + 0.5) * (sockLen / sockSegs), rz: PI / 2, shadow: 'none', parent: sockYoke });
+  }
+  noInk(mesh(G.torus(0.085, 0.01, 6, 14), steel, { x: 0.2, ry: PI / 2, shadow: 'none', parent: sockYoke }));
+  const sockLines = ['💨 "Points downhill more often than not. The gondola runs anyway."', '🧭 "Nobody up here has ever agreed on which way it\'s actually blowing."', '😼 Puss watches it swing a while, decides the wind isn\'t chaseable, and gives up.'];
+  game.addInteractable({ obj: sockMast, radius: 3.0, label: () => 'Look up at the windsock', onUse: () => { SFX.click(); game.toast(rnd.pick(sockLines), 3000); } });
   // every other landmark worth lingering by now keeps some ambient sound of its own (the Victorian bell,
   // Robot City's whistle, Sunny Shore's foghorn, Candy Land's music box, Whisper Woods' owl) but the
   // gondola stations at both ends of this ride — built from this one shared function — never sounded a
@@ -6833,6 +6855,7 @@ function makeGondolaStation(game, x, z, ry, onEnter, prompt = 'Ride the gondola 
     cabin.rotation.z = sin(t * 0.9) * 0.04; cabin.position.y = 2.4 + sin(t * 1.3) * 0.04; swirl.rotation.y = t * 0.8; swirl.rotation.x = sin(t) * 0.3;
     for (const rd of riders) { rd.userData.k = (rd.userData.k + rd.userData.dir * dt * 0.022 + 1) % 1; rd.position.z = -4 - rd.userData.k * (cableLen - 8); rd.rotation.z = sin(t * 0.7 + rd.userData.k * 9) * 0.04; }
     bellT -= dt; if (bellT <= 0) { SFX.gondolaBell(); bellT = rnd.range(85, 125); }
+    sockYoke.rotation.y = 0.3 + sin(t * 1.1) * 0.35; sockYoke.rotation.z = sin(t * 2.4) * 0.07;
   };
   hubPrompt(game, g, x, z, prompt, onEnter, 0x9fe8ff, 3.4);
   return g;

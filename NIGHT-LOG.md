@@ -21149,3 +21149,47 @@ unchanged at 329 (as expected — no new physics box or circle). The Neighborhoo
 by one, to 83, confirmed by the suite's own printed count. No visual check was possible in this
 environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 782 — both gondola stations finally get a windsock
+
+Robot City was the one world that hadn't had a direct round of its own since the stilt-walker series,
+but a look through its build function found it already startlingly dense — tag robots, a catch pair,
+a ring dance, a mechanic, an archery range, a security detail, a vending machine and dozens more —
+with no obviously clear patch of concrete left to probe safely without a browser to look through.
+A sweep of the whole `src/` tree for untried vignette ideas (chimney sweep, lamplighter, kite, pinwheel
+— all present somewhere already) turned up one real gap instead: nothing in the game had ever shown
+which way the wind was blowing, the one instrument a real cable-car station always keeps for its own
+operators. **A red-and-white windsock now flies from a short mast at the true peak of the roof on
+`makeGondolaStation()` — the one shared function both the Neighborhood's and Frosty Peak's gondola
+buildings are built from — so both ends of the ride got it from a single change.** *"💨 Points downhill
+more often than not. The gondola runs anyway."* *"🧭 Nobody up here has ever agreed on which way it's
+actually blowing."*
+
+The mast parents straight onto the station's own group `g` at local (0, 6.57, 0): working out that this
+is actually the roof's true ridge line took reading `G.gable()` itself (`20-util.js`) — a triangular
+prism built with its ridge running along local z, so the two roof meshes' own `ry: PI/2` rotation swaps
+that onto world x, meaning the peak the two of them climb to (`y: 5.0`/`5.12` base `+ h: 1.4`/`1.45`)
+sits at z=0 across the whole roof, not at the z=0.6 "safely in the middle" guess that looked right
+before that reading and would have buried the mast's base inside the solid roof mesh. From that true
+peak the mast clears every other fixture on the building with room to spare: the sign labels at the
+gable ends (z=±2.6), the bunting line (z=1.85, y=4.55) and the drive wheel and cable mount below
+(z=-0.8, y≤4.6). A short swing-arm and four tapered, alternating red/white cylinder segments make the
+sock itself, fluttering on the exact two-sine `rotation.y`/`rotation.z` trick the Neighborhood's own
+roof pennant (round 225-ish) already uses, folded into the station's existing `g.userData.update` tick
+(the same one that already drives the cabins, the riders and the dispatch bell) rather than a separate
+`U.push` of its own. No new physics box — nothing below head height can reach six-plus metres up — and
+a look-only `game.addInteractable` ("Look up at the windsock") keyed to the mast, so neither world's
+friend count moves.
+
+A standalone headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`
+for the Neighborhood, then `game.travel(5, 'from-hub')` waited out against the real portal fade timer
+for Frosty Peak) read the windsock interactable's own world position in both worlds — (-72, 6.57, -40)
+in the Neighborhood, (-40, 6.96, 0) in Frosty Peak, the 0.39 m difference being that world's own
+`ground0()` offset applied to the whole station after construction — and fired `onUse()` in both
+without it throwing. Probe script deleted after use, nothing committed.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count
+unchanged at 329 (as expected — a mast six-plus metres up adds no collider). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
+standalone headless probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.
