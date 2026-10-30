@@ -21510,3 +21510,34 @@ of the loop that already built all twelve, the same trick the other nine already
 count unchanged at 329. No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite and the headless probe described above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 794 — Whisper Woods finally gets a fairy door
+
+The fairy ring already grants a wish and the canopy's own fairies flit between the big trees, but in
+a hundred-odd rounds nobody had ever given a fairy anywhere to actually live. **A knee-high door is
+now built flush into the trunk of the southernmost inner-ring tree — arched top, two jambs, a round
+glass porthole and a brass knob, no taller than the cat's own shoulder.** *"🧚 Nobody answers. Nobody
+ever does."* *"🚪 Barely big enough for a mouse, let alone a fairy. The cat sniffs the sill and finds
+nothing."* *"✨ Somebody's polished that brass knob more than once." No one around to say who.*
+
+No greeting, no effect on the friend count — pure set dressing, same spirit as the scarecrow's and
+the snowmen's own "look" toasts. New `makeFairyDoor()` next to `makeBigTree()` in
+`62-props-nature.js`: a small wood box with a flattened dome for the arch, two jamb strips, a toon-glass
+disc for the window and a tiny brass sphere for the knob. Mounted on the inner-ring tree at (-6, -34),
+captured from the same `inner` loop that builds and places all twelve inner trees (`doorTree`, next to
+the existing `noticeTree` capture), offset outward along local +z by the tree's own base radius plus
+3cm — the same taper-clearing trick the trunk's own stapled notice already uses, just low enough on
+the trunk to sit near the true (wider) base radius rather than the narrower taper further up. No new
+physics box: the tree's own trunk box already covers it.
+
+A headless probe (`game.start('new')`, `game.travel(6, 'from-hub')` waited out through its real
+portal-fade timer, then 3600 simulated frames sampling every NPC's own position, every physics box
+and every physics circle every sixth frame) checked all six inner-ring trees still bare at the time:
+(-6, -34) came back roomiest by a wide margin — nearest other box 7.9 m clear, nearest physics circle
+5.1 m clear, nearest wandering soul 5.5 m off, nearest other interactable 5.5 m off — so it's the one
+that got the door.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 276 checks `ok`, 0 console warnings, box
+count unchanged at 329 (no new physics box). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe described above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

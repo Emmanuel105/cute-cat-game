@@ -702,6 +702,18 @@ function makeBigTree(r = rnd, o = {}) {
   g.userData.col = [R * 2.2, h]; g.rotation.y = r() * TAU;
   return g;
 }
+/** A tiny arched door set flush into a tree's own trunk — a fairy door, no bigger than the cat's own head. */
+function makeFairyDoor(r = rnd) {
+  const g = new THREE.Group(), wood = mat(r.pick([0x6b4226, 0x5a3a22, 0x7a4a2a]), { roughness: 0.9 }), trim = mat(0x3a2414, { roughness: 0.85 }),
+    knob = mat(0xc9a227, { roughness: 0.35, metalness: 0.6 }), glass = mat(0x9fe8ff, { roughness: 0.2, metalness: 0.1, transparent: true, opacity: 0.8 });
+  mesh(G.box(0.34, 0.4, 0.045), wood, { y: 0.2, shadow: 'none', parent: g });
+  mesh(G.dome(0.17, 10, 6), wood, { y: 0.4, sz: 0.045 / 0.17, shadow: 'none', parent: g });
+  mesh(G.box(0.4, 0.03, 0.05), trim, { y: 0.005, shadow: 'none', parent: g });
+  for (const side of [-1, 1]) mesh(G.box(0.03, 0.4, 0.05), trim, { x: side * 0.175, y: 0.2, shadow: 'none', parent: g });
+  mesh(G.cyl(0.07, 0.07, 0.01, 10), glass, { y: 0.3, z: 0.024, rx: PI / 2, shadow: 'none', parent: g });
+  mesh(G.sphere(0.018, 8, 6), knob, { x: 0.1, y: 0.17, z: 0.03, shadow: 'none', parent: g });
+  return g;
+}
 function makeMushroom(size = 1, hue = 0, r = rnd, glow = false) {
   const g = new THREE.Group(), stem = mat(0xf3e9d8, { roughness: 0.9 }), cap = glow ? glowMat(new THREE.Color().setHSL(hue / 360, 0.8, 0.55), 0.6, { map: TEX.mushroom(hue), roughness: 0.5 }) : mat(0xffffff, { roughness: 0.55, map: TEX.mushroom(hue) });
   const h = size * 1.3;

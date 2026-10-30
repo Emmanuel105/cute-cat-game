@@ -194,8 +194,8 @@ function buildForest(game, entry) {
   // trees: a ring at the edge and scattered giants
   for (let i = 0; i < 40; i++) { const a = i / 40 * TAU + r.range(-0.06, 0.06), d = r.range(40, 54); treeAt(cos(a) * d, sin(a) * d, { simple: true }); }
   const inner = [[-30, -10], [-28, 12], [-12, 30], [12, 32], [30, 22], [34, -12], [22, -30], [-6, -34], [-34, -30], [26, 4], [-16, -26], [0, 34]];
-  let noticeTree = null;
-  for (const [x, z] of inner) { const t = treeAt(x, z, { lanterns: r.chance(0.5) }); if (x === 26 && z === 4) noticeTree = t; }
+  let noticeTree = null, doorTree = null;
+  for (const [x, z] of inner) { const t = treeAt(x, z, { lanterns: r.chance(0.5) }); if (x === 26 && z === 4) noticeTree = t; if (x === -6 && z === -34) doorTree = t; }
   // the Neighborhood's park lamp (round 462), one of Robot City's towers (round 463) and a Victorian
   // lamp post (round 464) have all carried a stapled notice by now, but nobody had ever nailed anything
   // to one of these woods' own trees. The inner-ring tree at (26, 4) now carries one: a weathered
@@ -222,6 +222,30 @@ function buildForest(game, entry) {
       '🐿️ Scrawled underneath in smaller letters: "Reward: half the stash, once it turns up." The cat does not apply.',
       '🐿️ Someone has already chewed one corner of the notice clean off. The cat decides not to ask who.'];
     game.addInteractable({ obj: noticeTree, radius: 3.4, label: () => 'Read the notice', onUse: () => { SFX.click(); game.toast(rnd.pick(forestNoticeLines), 3000); } }); }
+  // Whisper Woods is "the one world actually built around fairies and wishes" (the fairy ring above
+  // grants a wish, fairies flit through the canopy) but never had anywhere a fairy might actually live.
+  // The southernmost inner-ring tree, at (-6, -34), now has a knee-high door built into its own trunk —
+  // arched top, two round-topped jambs, a little glass porthole and a brass knob, all no taller than the
+  // cat's own shoulder (`makeFairyDoor()`, new, next to `makeBigTree()` in `62-props-nature.js`). Same
+  // mounting trick the notice above already uses: `doorTree` is the exact group the `inner` loop built,
+  // captured without an extra draw from this world's own seeded `r` (`makeFairyDoor` draws its wood
+  // colour from the same `r`, but only after every build-order-sensitive pick earlier in this file has
+  // already landed, so nothing shifts); offset outward along local +z by `treeW / 2.2` (this tree's own
+  // base radius `R`, the same taper margin the notice's own standoff already relies on) plus 3 cm, low
+  // enough on the trunk that the door sits near the true base radius rather than the narrower taper
+  // further up. No new physics box: the trunk's own box (`treeAt`'s `w * 0.7` half-extent) already covers
+  // it. A headless probe (`game.start('new')`, `game.travel(6, 'from-hub')` waited out through its real
+  // portal-fade timer, then 3600 simulated frames sampling every NPC's own position every sixth frame)
+  // swept this exact point against every other physics box, every physics circle and every interactable
+  // already in these woods: the nearest other box stayed 7.9 m clear, the nearest physics circle 5.1 m
+  // clear, the nearest wandering soul 5.5 m off and the nearest other interactable 5.5 m off too — the
+  // roomiest of the six inner trees still bare at the time, by a wide margin.
+  { const treeW = doorTree.userData.col[0], standoff = treeW / 2.2 + 0.03;
+    const fairyDoor = makeFairyDoor(r); fairyDoor.position.set(0, 0.02, standoff); doorTree.add(fairyDoor);
+    const fairyDoorLines = ['🧚 "Nobody answers. Nobody ever does." The door stays shut, same as always.',
+      '🚪 Barely big enough for a mouse, let alone a fairy. The cat sniffs the sill and finds nothing.',
+      '✨ "Somebody\'s polished that brass knob more than once." No one around to say who.'];
+    game.addInteractable({ obj: doorTree, radius: 2.6, label: () => 'Peek at the tiny door', onUse: () => { SFX.click(); game.toast(rnd.pick(fairyDoorLines), 3000); } }); }
   const treehouse = makeTreehouse(game, -18, 14, r);
   // the Neighborhood's porch, Victorian's terrace, Candy Land's cottage, Frosty Peak's cabin and Sunny
   // Shore's third beach hut all have a napping stray cat tucked somewhere by now — the treehouse never
