@@ -21307,3 +21307,32 @@ One of the five candy houses is still bare.
 unchanged at 329 (as expected — nothing below head height can reach three-plus metres up). No visual
 check was possible in this environment (no browser, no Playwright) — only the stub-three test suite.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 787 — the fifth and last Candy Land roof finally gets its own visitor
+
+Rounds 783–786 gave four of Candy Land's five hand-placed candy houses a roof detail each, one per
+round, leaving only the fifth bare. **That last roof now has a butterscotch tiger beetle of its own,
+resting on one of its own icing dollops out past the eaves — every roof on the street has company.**
+*"🪲 Butterscotch, not grass-green — the roof version, apparently."* *"🍬 Fifth roof on the street with
+company now. None bare anymore."* *"😼 Puss, you have checked every roof on this street tonight. They
+are all still roofs."*
+
+No new rig: `makeTigerBeetle()` is the same short-legged, flush-footed frame the ladybug, gumdrop
+beetle and snail already proved safe on these roofs, just called with `0xffcf4d` (butterscotch) instead
+of its usual sun-bleached green so it doesn't read as the same bug that scuttles the street's open
+grass elsewhere. Every odd-indexed dollop closest to hand (#1, #3, #5, #7) already had a tenant from
+the earlier rounds, so this one takes dollop #9 of `makeCandyHouse`'s own ten-dollop loop
+(`68-regions.js`): x = cos(9/10·TAU)·3.15 ≈ 2.548, z = sin(9/10·TAU)·3.15 ≈ -1.852 — an odd index, so
+y = 3.24 + 0.16 = 3.4, the same height class every flush roof visitor so far has used, clear of the
+roof cone's own taper (radius ≈3.08 at y=3.4, short of the dollop's own radius 3.15). Checked again that
+an even-indexed dollop would have been a mistake: at the roof's bare base (y=3.3) the cone is still its
+full 3.2 m radius, wider than the 3.15 m dollop ring, which is why house 1's sparrow needed a margin
+above its dollop instead of sitting flush on one. No physics box (the house's own box tops out at
+y=3.2, well under this) and no draw from the world's seeded `r()` or the shared `rnd()` at build time —
+position, rotation and colour are fixed literals, the same caution every perched roof creature on this
+street already took.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count
+unchanged at 329 (as expected — nothing below head height can reach three-plus metres up). No visual
+check was possible in this environment (no browser, no Playwright) — only the stub-three test suite.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
