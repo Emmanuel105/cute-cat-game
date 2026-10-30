@@ -21253,3 +21253,31 @@ not a friend, so neither world's friend count moves.
 unchanged at 329 (as expected — nothing below head height can reach three-plus metres up). No visual
 check was possible in this environment (no browser, no Playwright) — only the stub-three test suite.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 785 — a third Candy Land roof gets its own visitor
+
+Rounds 783 and 784 gave the first two of Candy Land's five hand-placed candy houses a roof detail each
+and left three bare. **The third house now has a gumdrop beetle of its own, minted green rather than
+pink, resting on one of its own icing dollops out past the eaves.** *"🍬 A gumdrop beetle, out of the
+grass and up on the roof where the real gumdrops are."* *"🍬 Third roof on the street with company now.
+Two still bare."* *"😼 Puss, it's candy-coloured. That doesn't make it candy."*
+
+No new rig: `makeGumdropBeetle()` already scuttles Candy Land's outer grass elsewhere in this same
+build in its default pink — this one is called with `0x8ee6a8` (minted green) instead, so it doesn't
+read as the same bug turning up twice. It's built on the exact same short-legged frame as the ladybug
+rounds 783/784 already proved on these roofs, origin sitting basically at ground contact, so it rests
+flush on dollop #3 of `makeCandyHouse`'s own ten-dollop loop (`68-regions.js`): x = cos(3/10·TAU)·3.15 ≈
+-0.973, z = sin(3/10·TAU)·3.15 ≈ 2.996, an odd index so y = 3.24 + 0.16 = 3.4 — the same height class
+house 2's ladybug already used, just on the opposite side of the roof. Checked the roof cone's own
+taper again before trusting that height: at the roof's bare base (y=3.3) the cone is still its full
+3.2 m radius, *wider* than the 3.15 m dollop ring, which would have buried a beetle planted right at the
+base inside the solid roof mesh; by y=3.4 the cone has narrowed to radius ≈3.08, short of the dollop's
+own radius, so the beetle sits just past the eaves instead. No physics box (the house's own box tops
+out at y=3.2, well under this) and no draw from the world's seeded `r()` or the shared `rnd()` at build
+time — position, rotation and colour are fixed literals, the same caution every perched roof creature
+in this game already takes. Two of the five candy houses are still bare.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count
+unchanged at 329 (as expected — nothing below head height can reach three-plus metres up). No visual
+check was possible in this environment (no browser, no Playwright) — only the stub-three test suite.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
