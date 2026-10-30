@@ -20872,3 +20872,40 @@ mid-fade) confirmed Candy Land's own box count rose from 1901 to 1902 — just t
 walkable-ground percentage held at 92%. No visual check was possible in this environment (no browser,
 no Playwright) — only the stub-three test suite and the headless probes above (deleted after use, not
 committed). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 774 — Sunny Shore finally gets a stilt walker
+
+Candy Land, Robot City, Victorian and the Neighborhood have all had their own `StiltWalker` for a
+few rounds now — Sunny Shore, for all its kite flyers, sunbathers and sandcastle kids, never had one
+of its own. **A boardwalk performer now paces a short line on the dry dune sand north of the marbles
+ring, towering well over head height on a pair of candy-striped stilts.** *"Careful, puss — these
+legs don't bend the way yours do."* *"Tide's coming in. Good thing I brought my own height."* *"Kids
+on the pier bet I'd topple into the sea by now. Still waiting."*
+
+No new class and no new mesh shape: the same `StiltWalker` (`55-npcs.js`, an ordinary `Patroller`
+raised a fixed height off the ground it paces) and the identical ankle-parented pole, strap and
+footrest peg every other stilt walker in the game already wears, just repainted red-and-white to
+read as a boardwalk act. `StiltWalker` extends `Patroller`, whose constructor calls `greetable()` on
+its own, so this one counts toward the friend total with no extra wiring. Built dead last in
+`buildBeach()`, right after the hermit-crab log, for the usual reason: `makeHuman()` and
+`randomPerson()` both draw off the shared `rnd()` sequence unconditionally, and anything built
+earlier on this beach would have had its own timing-sensitive pick shifted by it.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(4, 'from-hub')` waited out for real against `game.worldIndex`, then
+2400 simulated frames sampling every NPC's own position every 15th frame) swept a 1 m grid of the dry
+dune sand (radius ≤ 50, short of the radius (58) where `beachRegion`'s own fill takes over) against
+both those samples and all 218 of the beach's own physics boxes — and, this time, against a keep-out
+span too: an early candidate near (-45, 17) looked clear of every box and NPC trace, but sat inside
+`game.zones.addSpan(-52, -14, -44, 14)`, the span guarding the portal approach further west, so it
+was dropped without even measuring it properly. The 6 m line from (-39, 26) to (-33, 26) came back
+clearest of what remained, 4.65 m from the nearest box and 4.50 m from the nearest wandering soul —
+just north of the marbles ring at (-33, 20) and well clear of the treasure dig at (-35, 6).
+
+`node test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count unchanged at
+329 (`StiltWalker` adds a dynamic circle, not a static box, and the suite's own printed tally is taken
+in a different world anyway). Sunny Shore's own friend count rose by one, from 94 to 95, confirmed by
+the suite's own count, and its walkable-ground percentage held at 100%. No visual check was possible
+in this environment (no browser, no Playwright) — only the stub-three test suite and the headless
+probe above (deleted after use, not committed). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.

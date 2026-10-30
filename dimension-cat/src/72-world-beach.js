@@ -1850,6 +1850,46 @@ function buildBeach(game, entry) {
     // across its own tiny hops within the 0.2 m leash right at the log's mouth.
     const hermitId = game.namedFriend('hermitcrab');
     game.addInteractable({ obj: hermit.group, radius: 2.1, label: () => 'Say hello to the crab', onUse: () => { game.befriend(hermitId); SFX.chitter(); game.hearts(hermit.group.position.x, 0.3, hermit.group.position.z, 3); game.toast('🦀 *claws peek out, then duck back in*'); } }); }
+  // Candy Land, Robot City, Victorian and the Neighborhood all have a `StiltWalker` by now
+  // (`55-npcs.js`, an ordinary `Patroller` raised a fixed height off the ground it paces) — Sunny
+  // Shore, for all its kite flyers, sunbathers and sandcastle kids, never had one of its own. A
+  // boardwalk performer now paces a short line on the dry dune sand north of the marbles ring,
+  // towering well over head height on a pair of candy-striped stilts. *"Careful, puss — these legs
+  // don't bend the way yours do."* *"Tide's coming in. Good thing I brought my own height."* *"Kids
+  // on the pier bet I'd topple into the sea by now. Still waiting."*
+  //
+  // No new class and no new mesh shape: the same ankle-parented pole, strap and footrest peg every
+  // other stilt walker in this game already uses, repainted red-and-white to read as a boardwalk act
+  // rather than any of the other three's own paint jobs. `randomPerson()` draws its usual one
+  // wardrobe pick off this world's own seeded `r`, same as every other hand-placed local on this
+  // shore — nothing new drawn from the shared `rnd()` sequence at build time.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // `game.travel(4, 'from-hub')` waited out for real against `game.worldIndex`, then 2400 simulated
+  // frames sampling every NPC's own position every 15th frame) swept a 1 m grid of the dry dune sand
+  // (radius ≤ 50, short of the radius (58) where `beachRegion`'s own fill takes over, and clear of
+  // the keep-out span guarding the portal approach at x∈[-52,-44], z∈[-14,14]) against both those
+  // samples and all 218 of the beach's own physics boxes: the 6 m line from (-39, 26) to (-33, 26)
+  // came back clearest nearby, 4.65 m from the nearest box and 4.50 m from the nearest wandering
+  // soul — just north of the marbles ring at (-33, 20) and well clear of the treasure dig at (-35, 6).
+  //
+  // Built dead last, right after the hermit-crab log, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off the shared `rnd()` sequence unconditionally, and anything built
+  // earlier on this beach would have had its own timing-sensitive pick shifted by it.
+  { const stiltH = 0.8;
+    const performer = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
+      stripes: 0xf5f2ea, shorts: true, hat: 'cap', hatColor: 0xd62839, glasses: true, glassColor: 0x203040, jacket: null, scarf: null, bag: null, backpack: null });
+    W.add(performer.group);
+    const poleM = mat(0xd62839, { roughness: 0.75 }), strapM = mat(0xf5f2ea, { roughness: 0.85 }), pegM = mat(0x8a5a32, { roughness: 0.8 });
+    for (const L of performer.legs) {
+      const len = stiltH / performer.k;
+      const stilt = group(0, 0.22, 0.01, L.ankle);
+      mesh(G.cyl(0.026, 0.03, len + 0.3, 8), poleM, { y: -(len + 0.3) / 2 + 0.07, parent: stilt });
+      mesh(G.torus(0.09, 0.018, 6, 10), strapM, { y: 0, rx: PI / 2, parent: stilt });
+      mesh(G.box(0.15, 0.035, 0.09), pegM, { y: -0.17, z: 0.07, parent: stilt });
+    }
+    game.npcs.push(new StiltWalker(game, performer, { points: [[-39, 26], [-33, 26]], speed: 0.55, pause: [1.5, 3], r: 0.4, height: 2.6, stiltH,
+      cries: ["Careful, puss — these legs don't bend the way yours do.", "Tide's coming in. Good thing I brought my own height.", "Kids on the pier bet I'd topple into the sea by now. Still waiting."], cryIcon: '🎪' })); }
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
