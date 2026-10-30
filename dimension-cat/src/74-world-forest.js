@@ -1402,6 +1402,27 @@ function buildForest(game, entry) {
       cries: ['Calm smoke, calm bees. Works every time.', "Careful, puss — give the hive some room.", "Three jars of honey off this lot, last season."] }));
     let smokeT = rnd.range(5, 9);
     U.push((dt) => { smokeT -= dt; if (smokeT <= 0) { smokeT = rnd.range(7, 12); const p = V3(); spout.getWorldPosition(p); game.fx.emit(p.x, p.y, p.z, { count: 4, color: 0xe8e4da, speed: 0.15, up: 0.3, life: 1.4, gravity: -0.3, spread: 0.2 }); } }); }
+  // the keeper's own cry line ("Three jars of honey off this lot, last season") never had anything to
+  // point at — a low crate-table now stands a few steps past the hive, three lidded jars of honey on
+  // top, a dipper leant across the front with one last drop caught on its tip. New prop
+  // `makeHoneyJarStand()` (62-props-nature.js, right after `makeStump`): pure static mesh, no
+  // `userData.update`, baked with the rest of this world — the only addition to the per-frame tick is
+  // an amber drip particle burst on its own loop, the same ambience trick the smoker just above and
+  // the chocolate fountain already use. It's a "look" prop, not a friend, so Whisper Woods' own friend
+  // count is unaffected.
+  // A headless probe (`game.start('new')` then `game.load(6, 'from-hub')`, 2400 simulated frames
+  // sampling every NPC's and the squirrel's own position every tenth frame) swept the open floor east
+  // of the hive against both those samples and all 731 of the wood's own physics boxes, staying clear
+  // of every one of `game.zones`'s own keep-out rectangles: (-43, 5) came back clear by 2.88 m of the
+  // nearest box (the hive's own, at (-43, 2)) and 2.32 m of the nearest wandering soul (the keeper
+  // herself), close enough to read as sitting right by the hive without standing on top of it.
+  { const jx = -43, jz = 5, jy0 = P.ground0(jx, jz);
+    const stand = makeHoneyJarStand(); stand.position.set(jx, jy0, jz); W.add(stand);
+    P.addBox(jx, 0.22, jz, 0.74, 0.44, 0.5, { cam: false });
+    let dripT = rnd.range(6, 10);
+    U.push((dt) => { dripT -= dt; if (dripT <= 0) { dripT = rnd.range(8, 14); game.fx.emit(jx, jy0 + 0.56, jz, { count: 2, color: 0xd9960f, speed: 0.1, up: 0.05, life: 1.0, gravity: 1.3, spread: 0.05 }); } });
+    const honeyLines = ['🍯 "Three jars off this lot, just like she said — none of them opened yet."', '🐝 "Puss, that dipper has been sitting there since last season. The drop never falls."', '🍯 "Whoever set these out never came back for them. Still sealed, still full."'];
+    game.addInteractable({ obj: stand, radius: 2.2, label: () => 'Look at the honey jars', onUse: () => { SFX.click(); game.toast(rnd.pick(honeyLines), 3000); } }); }
 
   // every creature in this glade moves with some clip or flutter — even the snail above has somewhere to
   // be, slowly — but nothing here had ever just sat and scuttled a few inches at a time. A ladybug now

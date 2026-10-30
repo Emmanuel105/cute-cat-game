@@ -20989,3 +20989,38 @@ by the suite's own count, and its walkable-ground percentage held at 98%. All se
 their own stilt walker. No visual check was possible in this environment (no browser, no Playwright)
 — only the stub-three test suite and the headless probe above (deleted after use, not committed).
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 777 — Whisper Woods' beekeeper finally has something to point at
+
+With the stilt-walker series complete across all seven worlds as of round 776, this round swept the
+game's own dialogue lines for a payoff that was never actually built. Whisper Woods' beekeeper has had
+a smoking hive and a cry line — *"Three jars of honey off this lot, last season"* — since her own
+round, but nothing in the glade ever showed those jars. **A low wooden crate-table now stands a few
+steps past the hive, three lidded jars of honey sitting on top and a dipper leant across the front with
+one last amber drop caught on its tip, plus a small drip stain on the ground where an earlier one got
+away.** *"🍯 Three jars off this lot, just like she said — none of them opened yet."* *"🐝 Puss, that
+dipper has been sitting there since last season. The drop never falls."*
+
+New prop `makeHoneyJarStand()` (`62-props-nature.js`, right after `makeStump`): a crate, three jars
+(honey cylinder plus a lid disc each, no separate glass mesh — this toon-shaded game reads a solid
+amber cylinder as a full jar the same way the chocolate fountain's basin reads as full chocolate), a
+leaning dipper and a flattened ground drip. Pure static mesh, no `userData.update`, baked with the rest
+of the world — the only addition to the per-frame tick is a slow amber drip particle burst on its own
+timer, the same ambience trick the smoker just above it and Candy Land's own chocolate fountain already
+use. It's a "look" prop, not a friend — `game.addInteractable` only, no `namedFriend` — so Whisper
+Woods' own friend count holds at 100, the same category as the fountain and the oil vending machine.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')` then `game.load(6, 'from-hub')`, 2400 simulated frames sampling every NPC's and the
+squirrel's own position every tenth frame) swept the open floor east of the hive against both those
+28,080 samples and all 731 of the wood's own physics boxes, staying clear of every one of `game.zones`'s
+own 224 keep-out rectangles: (-43, 5) came back clear by 2.88 m of the nearest box (the hive's own, at
+(-43, 2)) and 2.32 m of the nearest wandering soul (the keeper herself) — close enough to read as
+sitting right by the hive without standing on top of it or blocking her own patrol.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings. Whisper
+Woods' own friend count held at 100 (as expected for a look-only prop) and its walkable-ground
+percentage held at 98%, both checked directly against the test's own printed counts. No visual check
+was possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
+headless probe above (deleted after use, not committed). Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

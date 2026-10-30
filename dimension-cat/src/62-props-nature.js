@@ -813,6 +813,29 @@ function makeStump(r = rnd) {
   for (let i = 0; i < 4; i++) mesh(G.torus(0.12 + i * 0.09, 0.008, 4, 16), mat(0x8a6a44), { y: 0.745, rx: PI / 2, shadow: 'none', parent: g });
   return g;
 }
+/** A low wooden crate-table beside the beehive, three lidded jars of honey standing on top and a
+ * wooden dipper leant across the front with a last amber drop caught on its tip, plus a small dried
+ * drip stain on the ground where an earlier one got away. Pure static mesh — no `userData.update` —
+ * any drip particles are the caller's own `U.push` timer, same trick the beehive's own smoker and
+ * the chocolate fountain already use. */
+function makeHoneyJarStand() {
+  const g = new THREE.Group();
+  const wood = mat(0x6b4a28, { roughness: 0.9 });
+  const honey = mat(0xd9960f, { roughness: 0.25, metalness: 0.05, emissive: 0x7a4a05, emissiveIntensity: 0.3 });
+  const lid = mat(0xc9a24a, { roughness: 0.6 });
+  mesh(G.box(0.68, 0.42, 0.44), wood, { y: 0.21, shadow: 'both', parent: g });
+  mesh(G.box(0.74, 0.03, 0.5), wood, { y: 0.435, shadow: 'both', parent: g });   // tabletop lip
+  for (let i = 0; i < 3; i++) {
+    const jar = group(-0.2 + i * 0.2, 0.45, 0, g);
+    mesh(G.cyl(0.09, 0.1, 0.2, 10), honey, { y: 0.1, shadow: 'none', parent: jar });
+    mesh(G.cyl(0.1, 0.1, 0.025, 10), lid, { y: 0.21, parent: jar });
+  }
+  const dip = group(0, 0.46, 0.14, g); dip.rotation.z = 0.55; dip.rotation.x = -0.1;
+  mesh(G.cyl(0.013, 0.013, 0.34, 6), wood, { y: 0.17, parent: dip });
+  mesh(G.sphere(0.032, 8, 6), honey, { y: 0.34, shadow: 'none', parent: dip });   // the drop caught on the dipper's tip
+  mesh(G.cyl(0.06, 0.06, 0.01, 10), honey, { y: 0.006, z: 0.32, shadow: 'none', parent: g });   // a drip that reached the ground
+  return g;
+}
 /**
  * A knee-high orb web slung between two twig stakes: eight silk spokes and three concentric rings
  * (full toruses — the web's own local plane is XY, which is exactly how a torus already sits, so the
