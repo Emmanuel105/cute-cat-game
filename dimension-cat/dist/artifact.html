@@ -4579,6 +4579,37 @@ function makeGumdropBeetle(color = 0xff4fa0) {
   return rig;
 }
 
+// ---------------------------------------------------------------- grasshopper (the ladybug's cousin for the lawn: a longer, legs-first body with no shell dome,
+// a pair of folded wing-cases laid flat along the back instead, and the one feature none of its beetle cousins carry — big bent hind legs, cocked for a spring)
+function makeGrasshopper(color = 0x6fae3a) {
+  const g = new THREE.Group(), rig = { group: g };
+  const bodyM = mat(color, { roughness: 0.55 }), wingM = mat(0x4a8a2e, { roughness: 0.4 }), darkM = mat(0x1c1a12, { roughness: 0.6 }), legM = mat(0x3a6a28, { roughness: 0.6 });
+  const body = group(0, 0, 0, g); rig.body = body;
+  mesh(G.capsule(0.022, 0.08, 10), bodyM, { y: 0.026, rx: PI / 2, parent: body });
+  for (const side of [1, -1]) mesh(G.capsule(0.013, 0.09, 6), wingM, { x: side * 0.012, y: 0.036, z: -0.01, rx: PI / 2, shadow: 'none', parent: body });   // folded wing-cases laid flat along the back
+  const head = group(0, 0.03, 0.065, body); rig.head = head;
+  mesh(G.sphere(0.018, 10, 8), bodyM, { sz: 1.1, parent: head });
+  for (const side of [1, -1]) mesh(G.sphere(0.009, 8, 6), darkM, { x: side * 0.013, y: 0.004, z: 0.013, shadow: 'none', parent: head });   // big bulging eyes
+  for (const side of [1, -1]) { const ant = group(side * 0.008, 0.012, 0.015, head); rig['ant' + side] = ant; mesh(G.cyl(0.0025, 0.0025, 0.055, 4), legM, { y: 0.027, rx: -0.7, parent: ant }); }
+  for (const side of [1, -1]) for (const z of [0.02, -0.025]) mesh(G.capsule(0.0035, 0.035, 4), legM, { x: side * 0.022, y: 0.01, z, rz: side * 1.1, parent: body });   // short front and middle legs
+  // the hind legs: the grasshopper's own signature — a thigh angled up and back, a shin folded under it, cocked like a loaded spring
+  for (const side of [1, -1]) {
+    const hip = group(side * 0.02, 0.015, -0.045, body); hip.rotation.z = side * 0.3; rig['hip' + side] = hip;
+    mesh(G.capsule(0.0075, 0.07, 6), legM, { y: -0.035, rz: side * 0.55, parent: hip });
+    const knee = group(0, -0.07, 0, hip); knee.rotation.z = side * -1.9; rig['knee' + side] = knee;
+    mesh(G.capsule(0.005, 0.075, 6), legM, { y: -0.0375, parent: knee });
+  }
+  rig.animate = (ph, moving, dt, t = 0) => {
+    const alert = moving ? 1 : 0.6 + sin(t * 1.7) * 0.25;
+    for (const side of [1, -1]) rig['ant' + side].rotation.z = side * 0.3 * alert;
+    const spring = moving ? 1 : 0;   // hind legs kick out mid-hop, snap back cocked the instant it lands
+    for (const side of [1, -1]) { rig['hip' + side].rotation.z = side * (0.3 - spring * 0.5); rig['knee' + side].rotation.z = side * (-1.9 + spring * 0.9); }
+    body.position.y = moving ? abs(sin(t * 16)) * 0.01 : 0;
+  };
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- owl (perched; only animates)
 // `o.body`/`o.face` recolour it (a snowy owl for Frosty Peak); omitted, it's the brown tawny owl
 // Whisper Woods has always had, so every existing call is unaffected.
@@ -9489,6 +9520,44 @@ function buildNeighborhood(game, entry) {
       mole.position.y = -0.18 + pop * 0.2;
       mole.rotation.y = pop > 0.3 ? sin(t * 3) * 0.4 * pop : 0;
     }); }
+  // the field ladybug (round 461) and the hare and mole both already work this yard, but nothing has
+  // ever actually sat on the vegetable patch's own leaves, the one spot a real pest would be. A
+  // grasshopper now perches on one of the patch's own carrot leaves, hind legs cocked, antennae
+  // twitching, giving a little spring now and then without ever actually leaving the leaf.
+  //
+  // New `makeGrasshopper()` (`56-npcs-wild.js`, next to the gumdrop beetle it's modelled on): the same
+  // short front legs and twitching antennae every ladybug-family cousin already uses, but with no
+  // shell dome — a longer bare body with a pair of wing-cases laid flat along the back instead — and
+  // the one feature none of its cousins carry: big bent hind legs, built as a hip-and-knee pair the
+  // same way the cat's own legs are, that kick out and snap back cocked on cue.
+  //
+  // Sits at (14.75, -14.6), one of the patch's own leaf-cluster centres (`vx = px + col * 0.5` with
+  // `col = 0.5`, `vz = pz + row * 0.5` with `row = 1`, straight off the loop that planted the leaves
+  // above) — 0.65 m from the carrot basket, 2.84 m from the hare's own home and 2.55 m from the
+  // molehill, all clear.
+  //
+  // Round 461's own field ladybug is the cautionary tale this one follows to the letter: an earlier
+  // attempt there wired it to `Hopper` for a bit of wandering, and `Hopper`'s own constructor draws
+  // three values off the *shared* `rnd()` sequence unconditionally (its idle timer, its own clock
+  // offset, its starting heading) — silently shifting the chat timing of two unrelated neighbours built
+  // later in this same function, caught only by a dedicated probe, not by `test/run.mjs` itself. This
+  // grasshopper stays put instead, the same "perched; only animates" trick the field ladybug settled on
+  // and the owls already use elsewhere: a plain `rig.group.position.set()` placement, no `Hopper`, no
+  // physics circle, and its idle spring timed off the world clock `t` alone inside a local `U.push`, so
+  // it draws nothing from either the shared `rnd()` or this world's own seeded `r()` — nothing later in
+  // this build, in this world or any other, shifts because of it.
+  //
+  // Answers "Say hello" from the moment it's placed, the same `game.namedFriend` + `game.addInteractable`
+  // fix every ambient critter in this log eventually gets, just arriving on day one instead of waiting
+  // for a later round: no `Hopper` tracking needed since the rig's own group never moves, so the
+  // interactable's `obj` is just that fixed group. A 1.6 m radius (tighter than the usual 2.1 m, since
+  // the carrot basket's own look prompt sits only 0.65 m away) reaches the leaf from any side without
+  // ever contesting the basket's.
+  { const gx = 14.75, gz = -14.6;
+    const rig = makeGrasshopper(); rig.group.position.set(gx, P.ground0(gx, gz) + 0.14, gz); rig.group.rotation.y = 0.5; W.add(rig.group);
+    U.push((dt, t) => { const cyc = 3.4, ph = (t % cyc) / cyc; rig.animate(0, ph < 0.1, dt, t); });
+    const hopperId = game.namedFriend('grasshopper');
+    game.addInteractable({ obj: rig.group, radius: 1.6, label: () => 'Say hello to the grasshopper', onUse: () => { game.befriend(hopperId); SFX.chitter(); game.hearts(gx, 0.25, gz, 3); game.toast('🦗 *antennae flick twice, gives one more spring, then settles right back on the same leaf*'); } }); }
   // hammocks, picnic blankets and wishing wells had never shown up anywhere in the seven worlds — the
   // hammock went to Sunny Shore last round, so a picnic blanket lands here, spread on the open grass
   // south-west of the street, no owner in sight. A striped blanket, a wicker basket with its lid propped

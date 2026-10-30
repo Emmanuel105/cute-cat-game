@@ -648,6 +648,37 @@ function makeGumdropBeetle(color = 0xff4fa0) {
   return rig;
 }
 
+// ---------------------------------------------------------------- grasshopper (the ladybug's cousin for the lawn: a longer, legs-first body with no shell dome,
+// a pair of folded wing-cases laid flat along the back instead, and the one feature none of its beetle cousins carry — big bent hind legs, cocked for a spring)
+function makeGrasshopper(color = 0x6fae3a) {
+  const g = new THREE.Group(), rig = { group: g };
+  const bodyM = mat(color, { roughness: 0.55 }), wingM = mat(0x4a8a2e, { roughness: 0.4 }), darkM = mat(0x1c1a12, { roughness: 0.6 }), legM = mat(0x3a6a28, { roughness: 0.6 });
+  const body = group(0, 0, 0, g); rig.body = body;
+  mesh(G.capsule(0.022, 0.08, 10), bodyM, { y: 0.026, rx: PI / 2, parent: body });
+  for (const side of [1, -1]) mesh(G.capsule(0.013, 0.09, 6), wingM, { x: side * 0.012, y: 0.036, z: -0.01, rx: PI / 2, shadow: 'none', parent: body });   // folded wing-cases laid flat along the back
+  const head = group(0, 0.03, 0.065, body); rig.head = head;
+  mesh(G.sphere(0.018, 10, 8), bodyM, { sz: 1.1, parent: head });
+  for (const side of [1, -1]) mesh(G.sphere(0.009, 8, 6), darkM, { x: side * 0.013, y: 0.004, z: 0.013, shadow: 'none', parent: head });   // big bulging eyes
+  for (const side of [1, -1]) { const ant = group(side * 0.008, 0.012, 0.015, head); rig['ant' + side] = ant; mesh(G.cyl(0.0025, 0.0025, 0.055, 4), legM, { y: 0.027, rx: -0.7, parent: ant }); }
+  for (const side of [1, -1]) for (const z of [0.02, -0.025]) mesh(G.capsule(0.0035, 0.035, 4), legM, { x: side * 0.022, y: 0.01, z, rz: side * 1.1, parent: body });   // short front and middle legs
+  // the hind legs: the grasshopper's own signature — a thigh angled up and back, a shin folded under it, cocked like a loaded spring
+  for (const side of [1, -1]) {
+    const hip = group(side * 0.02, 0.015, -0.045, body); hip.rotation.z = side * 0.3; rig['hip' + side] = hip;
+    mesh(G.capsule(0.0075, 0.07, 6), legM, { y: -0.035, rz: side * 0.55, parent: hip });
+    const knee = group(0, -0.07, 0, hip); knee.rotation.z = side * -1.9; rig['knee' + side] = knee;
+    mesh(G.capsule(0.005, 0.075, 6), legM, { y: -0.0375, parent: knee });
+  }
+  rig.animate = (ph, moving, dt, t = 0) => {
+    const alert = moving ? 1 : 0.6 + sin(t * 1.7) * 0.25;
+    for (const side of [1, -1]) rig['ant' + side].rotation.z = side * 0.3 * alert;
+    const spring = moving ? 1 : 0;   // hind legs kick out mid-hop, snap back cocked the instant it lands
+    for (const side of [1, -1]) { rig['hip' + side].rotation.z = side * (0.3 - spring * 0.5); rig['knee' + side].rotation.z = side * (-1.9 + spring * 0.9); }
+    body.position.y = moving ? abs(sin(t * 16)) * 0.01 : 0;
+  };
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- owl (perched; only animates)
 // `o.body`/`o.face` recolour it (a snowy owl for Frosty Peak); omitted, it's the brown tawny owl
 // Whisper Woods has always had, so every existing call is unaffected.

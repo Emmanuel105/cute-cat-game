@@ -21108,3 +21108,44 @@ Frosty Peak's own friend total rose by one, from 96 to 97, confirmed by the suit
 No visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
 suite and the headless probe above (deleted after use, not committed). Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+
+## Round 781 — a grasshopper settles on the Neighborhood's vegetable patch
+
+Round 461 gave the Neighborhood a ladybug resting in the open field, and the vegetable patch itself
+already has a hare at its edge and a mole working underneath — but nothing had ever actually sat on the
+patch's own leaves, the one spot a real pest would be. **A grasshopper now perches on one of the carrot
+leaves, hind legs cocked and antennae twitching, giving a little spring now and then without ever
+actually leaving the leaf.** *"🦗 antennae flick twice, gives one more spring, then settles right back
+on the same leaf"*
+
+New `makeGrasshopper()` in `56-npcs-wild.js`, built next to the gumdrop beetle it's modelled on: the
+same short front legs and twitching antennae every ladybug-family cousin already uses, but with no
+shell dome — a longer bare body with a pair of wing-cases laid flat along the back instead — and the
+one feature none of its cousins carry: big bent hind legs, a hip-and-knee pair built the same way the
+cat's own legs are, that kick out and snap back cocked on cue. Sits at (14.75, -14.6), one of the
+patch's own leaf-cluster centres straight off the loop that planted the leaves there — 0.65 m from the
+carrot basket, 2.84 m from the hare's own home and 2.55 m from the molehill, all clear.
+
+First attempt wired it to `Hopper` for a bit of wandering, the same controller the hare and the raccoon
+already use — but round 461's own field ladybug had already been down this exact road and backed out of
+it: `Hopper`'s constructor draws three values off the *shared* `rnd()` sequence unconditionally (its
+idle timer, its own clock offset, its starting heading), and doing that here shifts every later draw on
+that same sequence for the rest of the game, not just this world. A separate attempt at giving it a
+random colour off this world's own *seeded* `r()` instead landed two unrelated neighbours in the same
+shirt a few hundred lines later in this same build, caught immediately by `test/run.mjs`'s own "no two
+neighbours wear the same shirt" check — a smaller-scale version of the identical class of bug. Both
+were dropped: the grasshopper stays fixed in place, placed with a plain `rig.group.position.set()` and
+animated off the world clock `t` alone inside a local `U.push`, the same "perched; only animates" trick
+the field ladybug settled on and the owls already use — no `Hopper`, no physics circle, no colour
+argument, nothing drawn from either RNG. It answers "Say hello" from the moment it's placed rather than
+waiting for a later round's fix, since a fixed group needs no `Hopper` tracking to key an interactable
+to: `game.namedFriend('grasshopper')` plus a `game.addInteractable` on the rig's own (never-moving)
+group, radius 1.6 m — tighter than the usual 2.1 m, since the carrot basket's own look prompt sits only
+0.65 m away.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count
+unchanged at 329 (as expected — no new physics box or circle). The Neighborhood's own friend total rose
+by one, to 83, confirmed by the suite's own printed count. No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

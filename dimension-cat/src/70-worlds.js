@@ -1777,6 +1777,44 @@ function buildNeighborhood(game, entry) {
       mole.position.y = -0.18 + pop * 0.2;
       mole.rotation.y = pop > 0.3 ? sin(t * 3) * 0.4 * pop : 0;
     }); }
+  // the field ladybug (round 461) and the hare and mole both already work this yard, but nothing has
+  // ever actually sat on the vegetable patch's own leaves, the one spot a real pest would be. A
+  // grasshopper now perches on one of the patch's own carrot leaves, hind legs cocked, antennae
+  // twitching, giving a little spring now and then without ever actually leaving the leaf.
+  //
+  // New `makeGrasshopper()` (`56-npcs-wild.js`, next to the gumdrop beetle it's modelled on): the same
+  // short front legs and twitching antennae every ladybug-family cousin already uses, but with no
+  // shell dome — a longer bare body with a pair of wing-cases laid flat along the back instead — and
+  // the one feature none of its cousins carry: big bent hind legs, built as a hip-and-knee pair the
+  // same way the cat's own legs are, that kick out and snap back cocked on cue.
+  //
+  // Sits at (14.75, -14.6), one of the patch's own leaf-cluster centres (`vx = px + col * 0.5` with
+  // `col = 0.5`, `vz = pz + row * 0.5` with `row = 1`, straight off the loop that planted the leaves
+  // above) — 0.65 m from the carrot basket, 2.84 m from the hare's own home and 2.55 m from the
+  // molehill, all clear.
+  //
+  // Round 461's own field ladybug is the cautionary tale this one follows to the letter: an earlier
+  // attempt there wired it to `Hopper` for a bit of wandering, and `Hopper`'s own constructor draws
+  // three values off the *shared* `rnd()` sequence unconditionally (its idle timer, its own clock
+  // offset, its starting heading) — silently shifting the chat timing of two unrelated neighbours built
+  // later in this same function, caught only by a dedicated probe, not by `test/run.mjs` itself. This
+  // grasshopper stays put instead, the same "perched; only animates" trick the field ladybug settled on
+  // and the owls already use elsewhere: a plain `rig.group.position.set()` placement, no `Hopper`, no
+  // physics circle, and its idle spring timed off the world clock `t` alone inside a local `U.push`, so
+  // it draws nothing from either the shared `rnd()` or this world's own seeded `r()` — nothing later in
+  // this build, in this world or any other, shifts because of it.
+  //
+  // Answers "Say hello" from the moment it's placed, the same `game.namedFriend` + `game.addInteractable`
+  // fix every ambient critter in this log eventually gets, just arriving on day one instead of waiting
+  // for a later round: no `Hopper` tracking needed since the rig's own group never moves, so the
+  // interactable's `obj` is just that fixed group. A 1.6 m radius (tighter than the usual 2.1 m, since
+  // the carrot basket's own look prompt sits only 0.65 m away) reaches the leaf from any side without
+  // ever contesting the basket's.
+  { const gx = 14.75, gz = -14.6;
+    const rig = makeGrasshopper(); rig.group.position.set(gx, P.ground0(gx, gz) + 0.14, gz); rig.group.rotation.y = 0.5; W.add(rig.group);
+    U.push((dt, t) => { const cyc = 3.4, ph = (t % cyc) / cyc; rig.animate(0, ph < 0.1, dt, t); });
+    const hopperId = game.namedFriend('grasshopper');
+    game.addInteractable({ obj: rig.group, radius: 1.6, label: () => 'Say hello to the grasshopper', onUse: () => { game.befriend(hopperId); SFX.chitter(); game.hearts(gx, 0.25, gz, 3); game.toast('🦗 *antennae flick twice, gives one more spring, then settles right back on the same leaf*'); } }); }
   // hammocks, picnic blankets and wishing wells had never shown up anywhere in the seven worlds — the
   // hammock went to Sunny Shore last round, so a picnic blanket lands here, spread on the open grass
   // south-west of the street, no owner in sight. A striped blanket, a wicker basket with its lid propped
