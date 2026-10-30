@@ -21541,3 +21541,30 @@ that got the door.
 count unchanged at 329 (no new physics box). No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite and the headless probe described above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 795 — Robot City's factory floor finally gets an oil-stain scrub
+
+The oil vendor at the plaza sells cans by the crate, but nothing on the factory floor ever caught
+what misses the can on the way to the line. **A maintenance worker now kneels over a dark, spreading
+stain on the open floor with a sponge, scrubbing at a mess that clearly isn't coming out.** *"Every
+drop that misses the can ends up here, eventually."* *"Three shifts in and it's barely any lighter."*
+Saying hello makes the worker the usual kind of friend.
+
+No new controller: this is `Washer`'s second outing in Robot City, after the statue cleaner's own
+bucket of suds a few rounds back — same bent-forward scrub motion and the same sponge its constructor
+already hands it, just a different mess. The stain itself is four flattened, near-black cylinders
+(plus two smaller greenish ones layered on top for an oily sheen) with no physics box of their own,
+same reasoning the puddles elsewhere in the game already rely on.
+
+Placed at (-28, -16), a spot well clear of everything else on this floor: a headless probe
+(`game.start('new')`, `game.travel(2, 'from-prev')` waited out through its real portal-fade timer,
+then 9000 simulated frames sampling every NPC's own position every third frame) found the nearest
+other physics box 9.89 m clear, the nearest wandering soul 10.85 m off and the nearest other
+interactable 11.10 m off, with a full 36-point ring open at every radius tried up to 0.9 m — the
+roomiest margin checked in a long while, nowhere near any hand-placed prop or `game.zones` entry.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329 (no new physics box) and Robot City's own friend count rose from 94 to 95, its
+walkable-ground percentage holding at 88%. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe described above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

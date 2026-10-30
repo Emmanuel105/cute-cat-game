@@ -15382,6 +15382,34 @@ function buildRobotCity(game, entry) {
       cries: ['Fresh off the rack, still warm!', 'Careful, puss — that salt will make you sneeze.', 'One twist, two twists, three — never get the count right.'] });
     game.npcs.push(v); greetable(game, v); }
 
+  // the oil vendor sells cans by the crate at the plaza, but nothing on this floor ever caught what
+  // misses the can on the way to the line — a stain has been spreading on the open factory floor for
+  // who knows how long. A maintenance worker now kneels over it with a sponge: `Washer`'s second outing
+  // in this city, after the statue cleaner's own bucket of suds, same bent-forward scrubbing motion and
+  // the same sponge the constructor already hands it, just a different mess to work on.
+  //
+  // A headless probe (`game.start('new')`, `game.travel(2, 'from-prev')` waited out through its real
+  // portal-fade timer, then 9000 simulated frames sampling every NPC's own position every third frame)
+  // swept this open patch of floor: the nearest other box stayed 9.89 m clear, the nearest wandering
+  // soul 10.85 m off and the nearest other interactable ("Say hello" at (-36, -8.3)) 11.10 m off, with a
+  // full 36-point ring at every radius up to 0.9 m landing on open floor — nowhere near any hand-placed
+  // prop or `game.zones` entry.
+  //
+  // Built dead last, right after the pretzel cart above, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off the shared per-world `r()` sequence unconditionally, and anything
+  // built earlier in this city would have had its own timing-sensitive pick shifted by it.
+  { const wx = -28, wz = -16, wry = 0.6;
+    const stainM = mat(0x15120e, { transparent: true, opacity: 0.72, roughness: 0.12, metalness: 0.15 }),
+      sheenM = mat(0x3a4a3a, { transparent: true, opacity: 0.32, roughness: 0.08, metalness: 0.3 });
+    const stx = wx + sin(wry) * 0.4, stz = wz + cos(wry) * 0.4;
+    for (const [dx, dz, s, m] of [[0, 0, 0.46, stainM], [0.22, -0.12, 0.26, stainM], [-0.18, 0.2, 0.2, sheenM], [0.1, 0.22, 0.14, sheenM]]) mesh(G.cyl(s, s, 0.004, 14), m, { x: stx + dx, y: 0.004, z: stz + dz, shadow: 'none', parent: W });
+    const mopWard = makeWardrobe(r, { shirts: [0x4a5a5a, 0x5a5048], pants: [0x2a2a2a, 0x33332e] });
+    const mopper = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: mopWard }),
+      apron: 0x3a4248, hat: null, jacket: null, scarf: null, bag: null, glasses: r.chance(0.2) });
+    W.add(mopper.group);
+    game.npcs.push(new Washer(game, mopper, { x: wx, z: wz, ry: wry,
+      cries: ['Every drop that misses the can ends up here, eventually.', 'Careful, puss — track that around and it never comes out.', "Three shifts in and it's barely any lighter."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
