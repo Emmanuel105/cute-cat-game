@@ -21941,3 +21941,25 @@ anything built earlier in this town would have had its own timing-sensitive pick
 unchanged at 329 (no new physics box). No visual check was possible in this environment (no browser,
 no Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy. Seven of Victorian's eleven baskets are now bare of bees.
+
+## Round 811 — Victorian's plaza flower basket gets its own bees too
+
+The east (`vicLamps[10]`), west (`vicLamps[1]`), dead-centre (`vicLamps[5]`) and south-pavement
+(`vicLamps[7]`) baskets have all had their own bees since rounds 806-810; `vicLamps[9]` (x=45, z=-6.4,
+the amber/gold basket three strides from the clock-tower plaza, sharing a tight 0.9 m "look" radius
+with its lamp post to clear the lamplighter's own patrol route) never got any. **A fifth pair of bees
+now circles that basket too**, same height and radius as the other four.
+
+No new mesh, no dialogue, no physics box: the same `makeBee()` rig and `Flyer` controller the other
+four baskets' bees already lean on, centred on the plaza basket's own position (45, -6.4) at y=2.62 —
+just above the basket's own y=2.55, well clear of the bobby's and the lamplighter's own head height and
+the cat's own jump reach, and well clear of the tight 0.9 m ground-level radius that only ever mattered
+for something standing on the pavement, so no fresh clearance probe was needed. Appended right after
+the south basket's own bee loop and before the squirrel, since `Flyer`'s constructor draws
+unconditionally from the shared `rnd()` sequence and anything built earlier in this town would have had
+its own timing-sensitive pick shifted by it.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329 (no new physics box). No visual check was possible in this environment (no browser,
+no Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy. Six of Victorian's eleven baskets are now bare of bees.

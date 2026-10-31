@@ -9941,6 +9941,26 @@ function buildVictorian(game, entry) {
     const southBeeRig = makeBee();
     game.npcs.push(new Flyer(game, southBeeRig, { cx: 24, cz: -6.4, r: 0.3, h: 2.62, speed: 1.6 + bi * 0.3, bob: 0.05, wobble: 0.12, cw: bi % 2 === 0, phase: bi * 2.6 + 3.3 }));
   }
+  // the east, west, dead-centre and south baskets all got their own bees above; `vicLamps[9]` (x=45,
+  // z=-6.4, basketHues[9 % 4] = the same amber/gold hue as `vicLamps[1]` and `vicLamps[5]`, the
+  // plaza-side basket three strides from the clock tower whose own "look" prompt already shares a 0.9
+  // m radius with the lamp post to clear the lamplighter's patrol route), never got any either. A
+  // fifth pair now circles that one too, same height and radius as the other four: y=2.62, just above
+  // the basket's own y=2.55 — well above the bobby's, the lamplighter's and the cat's own jump reach,
+  // the same reasoning every basket's own bees so far already relied on, so no fresh ground-level
+  // clearance probe was needed here either: the loop flies a flat 0.3 m circle at head height and
+  // above, well clear of the tight 0.9 m basket-prompt radius that only ever mattered for something
+  // standing on the pavement. No new mesh, no new physics box: the same `makeBee()` rig and `Flyer`
+  // controller the other four baskets' bees already lean on, not a greetable soul.
+  //
+  // Built dead last, right after the south basket's own bees and right before the squirrel, for the
+  // reason every other addition at the end of this function already gives: `Flyer`'s own constructor
+  // draws unconditionally from the *shared* `rnd()` sequence, and anything built earlier in this town
+  // would have had its own timing-sensitive pick shifted by it.
+  for (let bi = 0; bi < 2; bi++) {
+    const plazaBeeRig = makeBee();
+    game.npcs.push(new Flyer(game, plazaBeeRig, { cx: 45, cz: -6.4, r: 0.3, h: 2.62, speed: 1.6 + bi * 0.3, bob: 0.05, wobble: 0.12, cw: bi % 2 === 0, phase: bi * 2.6 + 4.4 }));
+  }
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
