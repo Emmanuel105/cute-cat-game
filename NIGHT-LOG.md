@@ -21753,3 +21753,27 @@ the gondola. Built dead last, right after the stilt walker, since `makeHuman()`,
 unchanged at 329 (no new physics box). No visual check was possible in this environment (no browser,
 no Playwright) — only the stub-three test suite and the headless probe described above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 803 — Sunny Shore finally gets a jellyfish washed up in the sand
+
+The shell, the treasure chest and the message in the bottle all came ashore from somewhere else, but
+nothing that drifted in under its own power and lost the fight against the tide ever had. **A
+jellyfish now lies beached in the dry sand, its bell gone slack and translucent and its six tentacles
+splayed limp across the sand around it.** *"Stranded, limp and still somehow menacing."* *"Even
+beached, best not to poke that one with a paw."*
+
+Pure set dressing, same spirit as the bottle and the sandcastle's own "look" toasts — no greeting, no
+friend, no physics box, since it's thin and flat enough that nothing needs to collide with it. The
+bell is a flattened, semi-transparent sphere with a scatter of small darker spots underneath; the
+tentacles are thin tapered cylinders (`noInk`, same as every other whisker-thin prop in this game)
+fanned out in a ring from the bell's base. A throwaway headless probe (`game.start('new')`,
+`game.travel(4, 'from-hub')` waited out through its real portal-fade timer, then 3600 simulated frames
+sampling every NPC's and the squirrel's own position every sixth frame) swept a 2 m grid of the dry
+sand (ground height 0.05-2.2 m, radius ≤ 50) against those samples, every one of the beach's physics
+boxes and every existing interactable: (-16, -18) came back clearest of the lot tried, 4.87 m clear of
+the nearest of any of the three, and outside every `game.zones` rectangle too.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 329 (no new physics box). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe described above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

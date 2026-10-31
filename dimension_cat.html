@@ -18826,6 +18826,30 @@ function buildBeach(game, entry) {
     const bottleLines = ['📜 "The ink\'s run, but one word still reads clear: \'HELP\'. Or maybe \'KELP\'."', '📜 "No name, no date — just a wobbly little drawing of a boat."', '📜 "Whoever threw this one in clearly didn\'t expect a cat to find it first."'];
     game.addInteractable({ obj: bottle, radius: 2.2, label: () => 'Read the message in the bottle', onUse: () => { SFX.click(); game.fx.emit(bx, y0 + 0.2, bz, { count: 10, colors: [0x7fd7ff, 0xffffff, 0xe8dcb8], speed: 0.9, up: 1.0, life: 0.7, gravity: 1.6 }); game.toast(rnd.pick(bottleLines), 3000); } }); }
 
+  // the shell, the chest and the bottle all came ashore from somewhere else, but nothing that drifted
+  // in under its own power and lost the fight ever has. A jellyfish now lies beached in the dry sand,
+  // bell gone slack and translucent, six tentacles splayed limp across the sand around it — the usual
+  // fate of anything that rides the tide in too far. A headless probe (`game.start('new')`,
+  // `game.travel(4, 'from-hub')` waited out through its real portal-fade timer, then 3600 simulated
+  // frames sampling every NPC's and the squirrel's own position every sixth frame) swept the dry sand
+  // (ground height 0.05-2.2 m, radius ≤ 50) against those samples, every one of the beach's physics
+  // boxes and every existing interactable: (-16, -18) came back clearest of the lot it tried, 4.87 m
+  // clear of the nearest of any of the three and outside every `game.zones` rectangle too.
+  { const jx = -16, jz = -18, jry = r() * TAU, jy0 = P.ground0(jx, jz);
+    const jelly = group(jx, jy0 + 0.02, jz, W); jelly.rotation.y = jry;
+    const bellM = mat(0xd9a8e0, { roughness: 0.2, metalness: 0.05, transparent: true, opacity: 0.55 });
+    const spotM = mat(0xb06fc0, { roughness: 0.3, transparent: true, opacity: 0.7 });
+    const tentM = mat(0xe8c8ee, { roughness: 0.5, transparent: true, opacity: 0.6 });
+    mesh(G.sphere(0.26, 14, 10), bellM, { y: 0.1, sy: 0.4, shadow: 'none', parent: jelly });            // the bell, flattened out of the water
+    for (const [dx, dz] of [[0.1, 0], [-0.08, 0.06], [0.02, -0.1], [-0.12, -0.08], [0.14, 0.07]]) mesh(G.sphere(0.03, 8, 6), spotM, { x: dx, y: 0.17, z: dz, shadow: 'none', parent: jelly });   // a scatter of spots under the bell
+    for (let i = 0; i < 6; i++) {   // six tentacles, splayed flat and limp across the sand
+      const a = (i / 6) * TAU, len = 0.5 + (i % 3) * 0.12;
+      const piv = group(0, 0.01, 0, jelly); piv.rotation.y = a;
+      noInk(mesh(G.cyl(0.015, 0.006, len, 6), tentM, { z: len / 2, rx: PI / 2, shadow: 'none', parent: piv }));
+    }
+    const jellyLines = ['🪼 "Stranded, limp and still somehow menacing."', '🪼 "Even beached, best not to poke that one with a paw."', '🪼 "The tide brought it in and forgot to take it back out."'];
+    game.addInteractable({ obj: jelly, radius: 2.0, label: () => 'Look at the jellyfish', onUse: () => { SFX.click(); game.toast(rnd.pick(jellyLines), 3000); } }); }
+
   // the shell, the chest and the bottle above are all things the cat finds and triggers with a look or
   // an `E` — but Whisper Woods' giant flower (round 442) already proved a prop can react on its own, no
   // button needed, just by noticing the cat get close. Nothing on this whole coast ever did that. A
