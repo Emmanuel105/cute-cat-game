@@ -21645,3 +21645,27 @@ stakes.
 count unchanged at 329 (no new physics box). No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite and the headless probe described above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 799 — Frosty Peak finally gets its own spiderweb, rimed with frost
+
+Whisper Woods and Sunny Shore both already had a knee-high orb web slung between two twig stakes
+(dew beads, three silk rings, a spider dead centre), but the mountain never got one. **A third web now
+hangs in a quiet stretch of open snowfield east of the village, same silk, same spider, just left to
+gather frost instead of dew.** *"Spun before the first snowfall, and rimed with frost ever since — the
+dew never quite freezes solid."* *"Holding dead centre, same as its cousins down in the woods and on
+the shore."*
+
+No new mesh, no new physics box: `makeSpiderweb()` (62-props-nature.js) is the exact same rig the
+forest's and the beach's own webs already use, just given its own set of look lines and placed at
+(35, -5). A headless probe (`game.start('new')`, `game.travel(5, 'from-hub')` waited out through its
+real portal-fade timer, then a grid of candidate points screened against every physics box and
+`game.zones` entry, followed by 2400 simulated frames sampling every NPC's own position every frame)
+found this spot 6.0 m clear of the nearest physics box and never closer than 8.2 m to any wandering
+soul over the whole run — well clear of the gondola path, the cave strip and the zipline's own
+tree-lined run. The ground there varies by under 12 cm across a 1.2 m ring round the stakes, flat
+enough for the same flush, untilted `placeT` every snow pine on this slope already relies on.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 329 (no new physics box). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe described above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

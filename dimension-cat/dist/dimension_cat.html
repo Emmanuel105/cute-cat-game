@@ -20833,6 +20833,28 @@ function buildSnowVillage(game, entry) {
       for (const goose of geese) goose.animate(0, true, dt, t);
     };
     place(game, U, flock, cos(flockPhase) * flockR, sin(flockPhase) * flockR, 0, flockH); }
+  // Whisper Woods and Sunny Shore both have a knee-high spiderweb slung between two twig stakes
+  // (`makeSpiderweb()`, 62-props-nature.js) — dew beads, three silk rings, a spider holding dead
+  // centre — and the mountain never got one of its own. A quiet, open stretch of snowfield east of
+  // the village, well clear of the gondola path and every pine ring, is exactly the kind of sheltered
+  // pocket a web spun before the first snowfall would get left to gather frost rather than be swept
+  // down, so a third one now sits out there, same rig, same spider, just rimed with it instead of dew.
+  //
+  // Placed at (35, -5): a headless probe (`game.start('new')`, `game.travel(5, 'from-hub')` waited out
+  // through its real portal-fade timer, then 2400 simulated frames sampling every NPC's own position
+  // every frame against a grid of candidate points) found this spot 6.0 m clear of the nearest physics
+  // box and never closer than 8.2 m to any wandering soul over the whole run, outside every
+  // `game.zones` entry this mountain registers and well clear of the cave strip, the path strip and
+  // the zipline's own tree-lined run. The ground here varies by under 12 cm across a 1.2 m ring round
+  // the stakes — the same flush, untilted `placeT` every snow pine on this slope already relies on.
+  //
+  // No new mesh, no new physics box: `makeSpiderweb()` is the identical rig the forest's and the
+  // beach's own webs already use — only the look lines below are new. `r` is this world's own seeded
+  // RNG, the same one every other draw in this file already uses, so it costs nothing downstream.
+  { const wx = 35, wz = -5;
+    const web = placeT(game, U, makeSpiderweb(r), wx, wz, atan2(0 - wx, 0 - wz));
+    const webLines = ['🕸️ "Spun before the first snowfall, and rimed with frost ever since — the dew never quite freezes solid."', '🕷️ "Holding dead centre, same as its cousins down in the woods and on the shore."', '❄️ "The wind off the peak sets it swaying, but never once tears a strand."'];
+    game.addInteractable({ obj: web, radius: 1.8, label: () => 'Look at the web', onUse: () => { SFX.click(); game.toast(rnd.pick(webLines), 3000); } }); }
   snowRegion(game, U, r, 58, PEAK_LIMIT - 8);
   makeHorizon(game, r, { clear: PEAK_LIMIT + 8, hills: true, hill: 0xe8eef6, rock: 0x6a7a94, rock2: 0x7e8ea6, snow: 0xf6fbff, snowLine: 26, peaks: 32, peakH: [46, 110], woodCount: 300, woodHue: [0.32, 0.42], woodLight: [0.12, 0.2], trunk: 0x4a3a2a });
   // gondola home (bottom station of the village)
