@@ -9501,6 +9501,21 @@ function buildNeighborhood(game, entry) {
     let scareT = 0;
     U.push((dt) => { scareT += dt * 0.9; upper.rotation.z = sin(scareT) * 0.035; });
     P.addBox(scx, 0.525, scz, 0.14, 1.05, 0.14, { cam: false });
+    // the scareLines below already joked that the sparrows ignore this thing completely — so one of
+    // them finally proves it, perched right on the crossbar arm instead of flying off. `makeSparrow()`
+    // straight off the shelf, the exact rig the birdbath's own visitor and the roof nest's tenant
+    // already use, added as a child of `upper` so it rides along with the scarecrow's own gentle sway
+    // for free — no second transform to keep in step. Sits at (0.3, 0.036, 0) in `upper`'s own local
+    // space, on top of the crossbar cylinder's 0.035 radius, well short of the straw cuff at x=0.74.
+    // Driven by its own built-in idle peck (`tenant.animate(0, false, dt, t)` off the world clock `t`
+    // alone, the same trick the birdbath and nest already lean on), so this draws nothing from either
+    // this world's own seeded `r` or the shared `rnd()` sequence at build time. No new physics box:
+    // it's set dressing riding on the post's own existing box, the same reasoning the hat and head
+    // above it already get away with.
+    { const tenant = makeSparrow(); upper.add(tenant.group);
+      tenant.group.position.set(0.3, 0.036, 0);
+      tenant.group.rotation.y = 1.9;
+      U.push((dt, t) => tenant.animate(0, false, dt, t)); }
     // a look at the scarecrow itself — every other hand-built landmark in the Neighborhood has had its
     // own "walk up and look" toast for rounds now, but the scarecrow never got one; the cat could only
     // ever walk past it. Same trick as every other round like this: `scare`, the post's own group
@@ -9509,7 +9524,7 @@ function buildNeighborhood(game, entry) {
     // new physics box. Its own existing box (0.14 half-extent) sits well inside a 2.2 m radius, and the
     // comment above already measured this spot 1.5 m clear of the patch bed, 2.65 m clear of the carrot
     // basket and 2.7 m clear of the gardener — all comfortably past this interactable's own reach.
-    const scareLines = ['🌾 "Button eyes, straw for bones, and it still looks unimpressed."', '🌾 "Doesn\'t scare the gardener\'s carrots one bit. The sparrows ignore it completely."', '🌾 "That floppy hat has seen more weather than anyone else on this street."'];
+    const scareLines = ['🌾 "Button eyes, straw for bones, and it still looks unimpressed."', '🌾 "Doesn\'t scare the gardener\'s carrots one bit. The sparrows ignore it completely."', '🌾 "That floppy hat has seen more weather than anyone else on this street."', '🐦 "See the one on its arm? Chirp. (Translation: it never scared off so much as a sparrow, and now one just lives there.)"'];
     game.addInteractable({ obj: scare, radius: 2.2, label: () => 'Look at the scarecrow', onUse: () => { SFX.click(); game.toast(rnd.pick(scareLines), 3000); } }); }
   // the scarecrow never stopped the one culprit that actually matters: a hare lives in the gap just
   // west of the vegetable patch, darting in for a nibble at the row's edge. The exact same makeHare()

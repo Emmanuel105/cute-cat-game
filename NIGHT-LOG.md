@@ -21897,3 +21897,26 @@ by it.
 unchanged at 329 (no new physics box). No visual check was possible in this environment (no browser,
 no Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy. Eight of Victorian's eleven baskets are now bare of bees.
+
+## Round 809 — a sparrow finally lands on the scarecrow's own arm
+
+The Neighborhood's scarecrow has had its own "Look at the scarecrow" prompt for a while, and one of
+its three lines already joked that "the sparrows ignore it completely" — but nothing had ever actually
+put a sparrow anywhere near it. **A sparrow now perches right on the scarecrow's crossbar arm**,
+pecking idly, completely unbothered by the thing standing guard underneath it. A fourth line on the
+look prompt now calls it out directly: *"See the one on its arm? Chirp. (Translation: it never scared
+off so much as a sparrow, and now one just lives there.)"*
+
+No new rig: `makeSparrow()` straight off the shelf, the exact one the birdbath's visitor and the
+street's roof-nest tenant already use, added as a child of `upper` (the scarecrow's own sub-group that
+already sways gently every frame) so it rides along with the sway for free — no second transform to
+keep in step. Sits at local (0.3, 0.036, 0), right on top of the crossbar cylinder's own 0.035 radius
+and well short of the straw cuff at x=0.74. Driven by its own built-in idle peck off the world clock
+alone, the same trick the birdbath and nest tenant both already lean on, so it draws nothing from
+either this world's own seeded `r` or the shared `rnd()` sequence at build time. No new physics box —
+pure set dressing riding on the post's own existing box, same as the hat and head above it.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 329 (no new physics box, as expected for a perched ambient bird). No visual check
+was possible in this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
