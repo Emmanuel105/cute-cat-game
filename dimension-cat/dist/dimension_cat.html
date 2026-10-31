@@ -19269,6 +19269,31 @@ function buildBeach(game, entry) {
     const web = placeT(game, U, makeSpiderweb(r), wx, wz, atan2(0 - wx, 0 - wz));
     const webLines = ['🕸️ "Slung between two dried-out stakes, dew beading on every strand despite the sea air."', '🕷️ "Holding dead centre, same as its cousin further inland — spiders don\'t care much for a view."', '🌊 "The sea breeze keeps it swaying, but never once tears a strand."'];
     game.addInteractable({ obj: web, radius: 1.8, label: () => 'Look at the web', onUse: () => { SFX.click(); game.toast(rnd.pick(webLines), 3000); } }); }
+  // the Neighborhood and Robot City both have a kid kneeling by a skateboard, checking its trucks
+  // before trying it again (`makeSkateboard()` + `Kneeler`, 60-props.js / 55-npcs.js) — Sunny Shore,
+  // the one world where skateboarding and a boardwalk actually belong together, never got one of its
+  // own. A kid now kneels on a quiet stretch of dry dune sand far north of the beach, same board, same
+  // pairing, tightening the back truck before dropping in again.
+  //
+  // Placed at (-3, 54.5): a headless probe (`game.start('new')`, `game.travel(4, 'from-hub')` waited
+  // out through its real portal-fade timer, then 30 simulated seconds sampling every NPC's and the
+  // squirrel's own position every 1/15 s) swept the dry dune sand (ground height 0.2-2.5 m, radius <
+  // 58, short of where `beachRegion`'s own procedural fill below takes over) against those samples,
+  // every physics box and every `game.zones` rect: (-3, 54.5) came back 10.75 m clear of the nearest
+  // box, 10.74 m clear of the nearest wandering soul and 13.17 m clear of the nearest zone rect, at
+  // radius 54.6 from the origin — well past the northern dune-palm cluster and every other hand-placed
+  // prop up there.
+  //
+  // No new mesh, no new physics box: `makeSkateboard()` is the identical rig the Neighborhood's and
+  // Robot City's own boards already use, thin and flat enough that nothing needs to collide with it.
+  // `Kneeler` already asks `ground0()` for its own rig's height regardless of world, so only the board
+  // itself needs the terrain-aware `placeT` in place of the other two worlds' flat-floor `place()`.
+  { const sx = -3, sz = 54.5, kx = sx + 0.9, kz = sz, ry = atan2(sx - kx, sz - kz);
+    const board = makeSkateboard(0xf2c744); placeT(game, U, board, sx, sz, 0.3);
+    const skater = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, wardrobe: beachWard }), hat: null, glasses: false });
+    W.add(skater.group);
+    game.npcs.push(new Kneeler(game, skater, { x: kx, z: kz, ry,
+      cries: ['One more bolt and it should hold.', 'Careful, puss — these wheels have no manners.', "Flat as a boardwalk up here — perfect for it."] })); }
   beachRegion(game, U, r, 58, SHORE_LIMIT - 8);
   // the headland behind the dunes: hills and peaks inland only, never out to sea
   makeHorizon(game, r, { clear: SHORE_LIMIT + 8, hill: 0x8c9a58, rock: 0x7a7060, rock2: 0x8a8272, snowLine: 58, peaks: 26, woodCount: 260, woodHue: [0.18, 0.28], woodLight: [0.18, 0.3], keep: (x) => x < -SHORE_LIMIT * 0.15 });

@@ -21669,3 +21669,32 @@ enough for the same flush, untilted `placeT` every snow pine on this slope alrea
 count unchanged at 329 (no new physics box). No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite and the headless probe described above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 800 — Sunny Shore finally gets its own skateboard kid
+
+The Neighborhood and Robot City both have a kid kneeling by a skateboard, checking its trucks before
+trying it again — but Sunny Shore, the one world where skateboarding and a boardwalk actually belong
+together, never got one of its own. **A kid now kneels on a quiet stretch of dry dune sand far north
+of the beach, tightening the back truck on a yellow board before dropping in again.** *"One more bolt
+and it should hold."* *"Careful, puss — these wheels have no manners."* *"Flat as a boardwalk up here —
+perfect for it."* Saying hello makes the usual kind of friend.
+
+No new mechanism: `makeSkateboard()` (60-props.js) and `Kneeler` (55-npcs.js) already exist and
+already pair up in the other two worlds; `Kneeler`'s constructor calls `greetable()` itself and reads
+the terrain's own height directly, so only the board needed the terrain-aware `placeT` in place of the
+other worlds' flat-floor `place()`. No new physics box either — same as those two boards, it's thin
+and flat enough that nothing needs to collide with it.
+
+Placed at (-3, 54.5): a headless probe (`game.start('new')`, `game.travel(4, 'from-hub')` waited out
+through its real portal-fade timer, then 30 simulated seconds sampling every NPC's and the squirrel's
+own position every 1/15 s) swept the dry dune sand (ground height 0.2-2.5 m, radius < 58, short of
+where `beachRegion`'s own procedural fill takes over) against those samples, every physics box and
+every `game.zones` rect: this spot came back 10.75 m clear of the nearest box, 10.74 m clear of the
+nearest wandering soul and 13.17 m clear of the nearest zone rect, at radius 54.6 from the origin —
+well past the northern dune-palm cluster and every other hand-placed prop up there.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329 (no new physics box), Sunny Shore's own friend count rose from 95 to 96, its
+walkable-ground percentage holding at 99%. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe described above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
