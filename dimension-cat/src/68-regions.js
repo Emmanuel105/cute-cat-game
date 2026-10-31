@@ -307,10 +307,23 @@ function beachRegion(game, U, r, inner, outer) {
     { w: 1, build: (g, r, x, z) => { const l = makeHollowLog(r); l.scale.setScalar(0.8); placeT(g, U, l, x, z, r() * TAU); } },
     { w: 1, build: (g, r, x, z) => makeScatter(g, [[x, z, 9, 40]], G.sphere(0.06, 6, 5), [0xfff1dc, 0xffd9c2, 0xf3e3c8, 0xd9a3a3, 0xe8c9a0], r, [0.6, 1.4], 0.02) },
   ] }));
+  // The six-strong colony crabs near the hub (and the bolder one that trots over) have all answered
+  // "Say hello" since rounds 681-686, but these ten further down the shore — scattered the length of
+  // the whole beach by `fillRing`'s own outer loop, not the hand-built colony — never got the same
+  // treatment: `makeCrab()`'s rig carries none of `.look`/`.robot`/`.cookie`, so `Wanderer`'s own
+  // `greetable()` call quietly no-ops on every one of them. The first of the ten now answers too, same
+  // `game.namedFriend` + `game.addInteractable` fix, tracked straight off its own `rig.group` so the
+  // prompt follows it through its usual 6 m leash. No new mesh, no new physics box, and no extra `r()`
+  // draw: the interactable is wired up after the Wanderer already exists, so it costs nothing in the
+  // shared `rnd()` or this world's own seeded sequence and shifts no later pick in this build.
   for (let i = 0; i < 10; i++) {   // crabs and gulls all the way down the shore
     const z = r.range(-outer * 0.8, outer * 0.8);
     const rig = makeCrab(r.pick([0xe8492b, 0xff7043, 0xc62828])); W.add(rig.group);
     game.npcs.push(new Wanderer(game, rig, { x: r.range(13, 20), z, speed: r.range(0.9, 1.4), leash: 6, r: 0.25, height: 0.5, step: 0.25, idle: [0.5, 2], walk: [1, 3] }));
+    if (i === 0) {
+      const driftId = game.namedFriend('driftcrab');
+      game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the crab', onUse: () => { game.befriend(driftId); SFX.chitter(); game.hearts(rig.group.position.x, 0.5, rig.group.position.z, 3); game.toast('🦀 "*freezes mid-scuttle, one claw raised, then relaxes*"'); } });
+    }
   }
   for (let i = 0; i < 8; i++) { const rig = makeSeagull({ phase: i * 1.7 }); game.npcs.push(new Flyer(game, rig, { cx: r.range(-30, 16), cz: r.range(-outer * 0.7, outer * 0.7), r: r.range(10, 20), h: r.range(6, 14), speed: r.range(3.5, 5), bob: 1.2, wobble: 3, cw: i % 2 === 0, phase: i })); }
 }

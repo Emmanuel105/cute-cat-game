@@ -22088,3 +22088,38 @@ hedgehog" prompt actually exists after travelling to Victorian, sits at (-66, -7
 new friend when used. No visual check was possible in this environment (no browser, no Playwright) —
 only the stub-three test suite and the headless probes described above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 817 — Sunny Shore's first far-shore crab finally becomes a friend
+
+Every "left for a future round" thread this log has run down by hand so far — the colony crabs near
+the hub, the turtles, the frogs, the marching penguins — turned out to be hand-built creatures this
+round's own census hadn't checked: a headless probe built every world in turn and compared every
+`Wanderer`/`Hopper`/`Follower`-driven rig's own group against every registered interactable's `obj`, to
+find anyone still wandering with no "Say hello" prompt at all. The seven hand-built hearts of each
+world (the Neighborhood, Candy Land, Robot City, Victorian) all came back clean — years of one-at-a-time
+fixes have genuinely closed that out. But Sunny Shore, Frosty Peak and Whisper Woods each came back with
+**ten** unmet wanderers apiece: not the hand-built colony animals this log already knows about, but the
+separate population `68-regions.js`'s own outer-country `fillRing` scatters the length of each world —
+crabs down the whole shore, deer and penguins out past the snowfield, deer and foxes through the far
+wood. None of those three loops had ever been touched.
+
+This round closes the first one: **the first of Sunny Shore's ten far-shore crabs** (`beachRegion()`'s
+own loop, not the six-strong hub colony) **now answers "Say hello to the crab" too** — *"🦀 *freezes
+mid-scuttle, one claw raised, then relaxes*"*, worded to read shier than the hub colony's own six crabs
+since this one has never had company to get used to. Same root cause as every one of those: `makeCrab()`'s
+rig carries none of `.look`/`.robot`/`.cookie`, so `Wanderer`'s own `greetable()` call quietly no-ops on
+it. The fix is the same `game.namedFriend('driftcrab')` + `game.addInteractable` trick every crab before
+it has used, keyed straight to the rig's own `group` so the prompt follows it through its usual 6 m
+leash — wired up after the `Wanderer` already exists, so it draws nothing extra from this world's own
+seeded `r()` and shifts no later pick in this build. No new mesh, no new physics box.
+
+The other nine far-shore crabs, and the whole untouched populations in Frosty Peak's and Whisper Woods'
+own outer country, are left for future rounds — the same one-at-a-time pattern this log has used for
+every other crowd.
+
+`node test/run.mjs` ran clean twice in a row: exit 0, all 277 checks `ok` both times, 0 console
+warnings, box count unchanged at 329 (no new collider, as expected — a befriend prompt on an existing
+wanderer adds none). Sunny Shore's own friend total rose by one (96 to 97 to meet). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
+headless census probe described above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.
