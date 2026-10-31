@@ -21920,3 +21920,24 @@ pure set dressing riding on the post's own existing box, same as the hat and hea
 count unchanged at 329 (no new physics box, as expected for a perched ambient bird). No visual check
 was possible in this environment (no browser, no Playwright) — only the stub-three test suite. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 810 — Victorian's south-pavement flower basket gets its own bees too
+
+Rounds 806 through 808 gave the east, west and dead-centre baskets their own bees; `vicLamps[7]`
+(x=24, z=-6.4, the dusty-rose basket on the south pavement whose own "look" prompt already points
+across the street at the sleeping cat on the terrace window ledge) never got any. **A fourth pair of
+bees now circles that basket too**, same height and radius as the other three.
+
+No new mesh, no dialogue, no physics box: the same `makeBee()` rig and `Flyer` controller the other
+three baskets' bees already lean on, centred on the south basket's own position (24, -6.4) at y=2.62 —
+just above the basket's own y=2.55, well clear of the bobby's and the lamplighter's own head height and
+the cat's own jump reach, so no fresh ground-level clearance probe was needed either (the basket's own
+"look" prompt round already measured the nearest wandering soul 3.72 m off at ground level, which this
+loop never reaches anyway). Appended right after the centre basket's own bee loop and before the
+squirrel, since `Flyer`'s constructor draws unconditionally from the shared `rnd()` sequence and
+anything built earlier in this town would have had its own timing-sensitive pick shifted by it.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329 (no new physics box). No visual check was possible in this environment (no browser,
+no Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy. Seven of Victorian's eleven baskets are now bare of bees.
