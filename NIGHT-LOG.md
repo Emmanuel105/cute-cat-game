@@ -21831,3 +21831,29 @@ unchanged at 329 (no new physics box). No visual check was possible in this envi
 no Playwright) — only the stub-three test suite and the headless probe described above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Every one of the seven worlds now
 has its own spiderweb.
+
+## Round 806 — Victorian's flower baskets finally get a bee
+
+Eleven lamp posts along the main street each carry their own hanging flower basket, and the clock
+tower's belfry got three bats and the canal got dragonflies, but not one basket ever had anything
+actually visiting it. **A couple of bees now circle the easternmost basket**, the quiet one at the
+street's far end past the cyclist's own lane. No dialogue, no new mesh: like the belfry's bats and the
+canal's dragonflies before it, this is a plain `Flyer` loop around a fixed point, not a greetable soul.
+
+Reuses `makeBee()` (built for Whisper Woods' own beekeeper, `56-npcs-wild.js`) and the exact same
+`Flyer` controller every other flying ambient creature in this town already leans on — no new mesh, no
+new class. Centred on `vicLamps[10]`'s own position (55.5, 6.4) at h=2.62, just above the basket's own
+y=2.55 (the same height every basket on the street already hangs at), with a tight 0.3 m orbit radius
+so the loop never strays off the basket. That height sits well clear of the cat's own jump reach
+(roughly 1 m, from the physics constants in `40-physics.js`), the same reasoning every basket on this
+street and the belfry's bats already relied on — no physics box needed. An earlier round's own probe
+for this exact basket already found the nearest wandering soul (the cyclist) never closer than 5.1 m
+and the telegram boy's lane running another 5.1 m south of it, all at ground level this loop never
+touches. Built dead last, right after the belfry's bats and right before the squirrel, for the usual
+reason: `Flyer`'s own constructor draws unconditionally from the shared `rnd()` sequence, and anything
+built earlier in this town would have had its own timing-sensitive pick shifted by it.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329 (no new physics box, as expected for a flying ambient creature at a fixed height).
+No visual check was possible in this environment (no browser, no Playwright) — only the stub-three
+test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

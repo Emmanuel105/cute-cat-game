@@ -17632,6 +17632,34 @@ function buildVictorian(game, entry) {
     const batRig = makeBat({ phase: bi * 2.1 });
     game.npcs.push(new Flyer(game, batRig, { cx: 42, cz: 0, r: 3.6, h: 21.5, speed: 2.2 + bi * 0.35, bob: 0.5, wobble: 0.6, cw: bi % 2 === 0, phase: bi * 2.1 }));
   }
+  // every lamp on the street has carried its own hanging flower basket for rounds now, and the
+  // Neighborhood's garden, Victorian's own canal and the clock tower's belfry all got something living
+  // nearby in turn — not one of the eleven baskets ever had, so a couple of bees now circle the
+  // easternmost one, `vicLamps[10]` (x=55.5, z=6.4), the same basket whose own "look" prompt already
+  // calls it the quietest spot on the row. No dialogue, no new mesh: like the belfry's own bats and the
+  // canal's own dragonflies above, they're a plain `Flyer` loop around the basket's own position, not a
+  // greetable soul.
+  //
+  // Reuses `makeBee()` (56-npcs-wild.js, built for Whisper Woods' own beekeeper) and the exact same
+  // `Flyer` controller every other flyer in this town already leans on. Centred on the basket's own
+  // (55.5, 6.4) at h=2.62 — just above the basket's own y=2.55, the same height every basket on this
+  // street already hangs at, well above the bobby's, the lamplighter's and the cat's own jump reach
+  // (JUMP_SPEED²/2·GRAVITY ≈ 1 m, 40-physics.js) — with a 0.3 m radius, smaller than the basket's own
+  // iron bracket arm, so the loop never leaves the basket's own airspace. No physics box of its own:
+  // nothing on the ground can ever reach this high, the same reasoning every basket, the belfry's bats
+  // and the canal's dragonflies above already relied on. This is the east end of the street — the
+  // basket's own "look" prompt round already measured the nearest wandering soul (the cyclist) never
+  // coming closer than 5.1 m here, and the telegram boy's own lane (z=1.3, `limit: 62`) runs 5.1 m
+  // south of it too — comfortably clear at ground level, which this loop never reaches anyway.
+  //
+  // Built dead last, right after the belfry's bats and right before the squirrel, for the reason every
+  // other addition at the end of this function already gives: `Flyer`'s own constructor draws
+  // unconditionally from the *shared* `rnd()` sequence, and anything built earlier in this town would
+  // have had its own timing-sensitive pick shifted by it.
+  for (let bi = 0; bi < 2; bi++) {
+    const beeRig = makeBee();
+    game.npcs.push(new Flyer(game, beeRig, { cx: 55.5, cz: 6.4, r: 0.3, h: 2.62, speed: 1.6 + bi * 0.3, bob: 0.05, wobble: 0.12, cw: bi % 2 === 0, phase: bi * 2.6 }));
+  }
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
