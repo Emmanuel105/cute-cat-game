@@ -7657,6 +7657,33 @@ function buildRobotCity(game, entry) {
     game.npcs.push(new Kneeler(game, skater, { x: kx, z: kz, ry,
       cries: ['One more bolt and it should hold.', 'Careful, puss — these wheels have no manners.', "Robots glide on wheels all shift long and never scuff a knee."] })); }
 
+  // Whisper Woods, Sunny Shore and Frosty Peak all have the exact same knee-high spiderweb slung
+  // between two twig stakes (`makeSpiderweb()`, 62-props-nature.js: dew beads, three silk rings, a
+  // spider holding dead centre) — but all three are terrain worlds and used the height-aware `placeT`
+  // to drop it. No flat-floor world has ever gotten one, and Robot City's own factory floor is dead
+  // flat at y=0, so the identical rig drops straight on with plain `place`, no terrain lookup needed.
+  // **A real spiderweb — dew, spider and all — now hangs between two stakes in a quiet corner of the
+  // factory floor nobody built on, out past the oil vendor's own plaza.** *"🕸️ Real silk, real spider —
+  // the one thing on this floor nobody built."* *"🤖 Not even the cleaning drones bother with this
+  // corner. Lucky, this time."* *"😼 Puss, you did not just try to bat that. Everyone saw."*
+  //
+  // No new mesh, no new physics box: `makeSpiderweb()` is the identical rig the other three worlds
+  // already use, and its two stakes (0.62 m tall) sit at ground level same as theirs — nothing that
+  // tall needs colliding with on an open floor. A headless probe (`game.start('new')`, `game.travel(2,
+  // 'from-prev')` waited out through its real portal-fade timer, then 36000 simulated frames sampling
+  // every NPC's own position every frame) swept (15, 26) against every one of the city's 1201 physics
+  // boxes, every `game.zones` rect and every interactable already standing: 6.17 m clear of the nearest
+  // box, 6.71 m clear of the nearest other interactable and never closer than 6.71 m to any wandering
+  // soul over the whole run — comfortably past the 1.8 m radius the other three webs already use.
+  //
+  // Built dead last, after the skateboard kid above, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off this city's own shared `r()` sequence unconditionally (and so does
+  // `makeSpiderweb()`'s own dew-phase roll), so anything built earlier would have had its own
+  // timing-sensitive pick shifted by it.
+  { const web = place(game, U, makeSpiderweb(r), 15, 26, atan2(0 - 15, 0 - 26));
+    const webLines = ['🕸️ "Real silk, real spider — the one thing on this floor nobody built."', '🤖 "Not even the cleaning drones bother with this corner. Lucky, this time."', '😼 "Puss, you did not just try to bat that. Everyone saw."'];
+    game.addInteractable({ obj: web, radius: 1.8, label: () => 'Look at the web', onUse: () => { SFX.click(); game.toast(rnd.pick(webLines), 3000); } }); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

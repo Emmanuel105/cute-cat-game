@@ -21698,3 +21698,30 @@ unchanged at 329 (no new physics box), Sunny Shore's own friend count rose from 
 walkable-ground percentage holding at 99%. No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite and the headless probe described above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 801 — Robot City finally gets a spiderweb, the first on a flat floor
+
+Whisper Woods, Sunny Shore and Frosty Peak all have the exact same knee-high spiderweb slung between
+two twig stakes (`makeSpiderweb()`, 62-props-nature.js — dew beads, three silk rings, a spider holding
+dead centre), but all three are terrain worlds and used the height-aware `placeT` to set it down. No
+flat-floor world had one. **Robot City's factory floor, dead flat at y=0, needed no terrain lookup at
+all — the identical rig now drops straight on with plain `place`, cobwebbed in a quiet corner out past
+the oil vendor's own plaza, the one thing on that whole floor nobody built.** *"🕸️ Real silk, real
+spider — the one thing on this floor nobody built."* *"🤖 Not even the cleaning drones bother with this
+corner. Lucky, this time."* *"😼 Puss, you did not just try to bat that. Everyone saw."*
+
+No new mesh, no new physics box: `makeSpiderweb()` is the identical rig the other three worlds already
+use, and its two stakes (0.62 m tall) sit at ground level same as theirs — nothing that tall needs
+colliding with on an open floor. A headless probe (`game.start('new')`, `game.travel(2, 'from-prev')`
+waited out through its real portal-fade timer, then 36000 simulated frames sampling every NPC's own
+position every frame) swept (15, 26) against every one of the city's 1201 physics boxes, every
+`game.zones` rect and every interactable already standing: 6.17 m clear of the nearest box, 6.71 m
+clear of the nearest other interactable and never closer than 6.71 m to any wandering soul over the
+whole run — comfortably past the 1.8 m radius the other three webs already use. Built dead last,
+after the skateboard kid, since `makeHuman()`, `randomPerson()` and `makeSpiderweb()`'s own dew-phase
+roll all draw off the city's shared `r()` sequence unconditionally.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 329 (no new physics box). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe described above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
