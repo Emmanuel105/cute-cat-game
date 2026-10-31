@@ -22008,3 +22008,25 @@ by it.
 unchanged at 329 (no new physics box). No visual check was possible in this environment (no browser,
 no Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy. Four of Victorian's eleven baskets are now bare of bees.
+
+## Round 814 — Victorian's south-pavement fence basket gets its own bees too
+
+Rounds 806 through 813 gave the east, west, dead-centre, south, plaza, westmost and mid-fence baskets
+their own bees; `vicLamps[3]` (x=-18, z=-6.4, the amber-orange basket out front of the chimney sweep's
+own house) was still bare. **An eighth pair of bees now circles that basket too**, same height and
+radius as the other seven.
+
+No new mesh, no new physics box: the same `makeBee()` rig and `Flyer` controller every other basket's
+bees already lean on, centred on this basket's own position (-18, -6.4) at y=2.62 — just above the
+basket's own y=2.55. The garden fence 1.10 m off and the lamplighter's own closest patrol pass 1.13 m
+off were only ever a ground-level concern for the basket's own "look" interactable circle (which is why
+that round settled on a tight 0.9 m radius for it); a bee circling 2.62 m up clears both without a fresh
+clearance probe, the same conclusion the mid-fence basket's own round already reached. Appended right
+after the mid-fence basket's own bee loop and before the squirrel, since `Flyer`'s constructor draws
+unconditionally from the shared `rnd()` sequence and anything built earlier in this town would have had
+its own timing-sensitive pick shifted by it.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329 (no new physics box). No visual check was possible in this environment (no browser,
+no Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy. Three of Victorian's eleven baskets are now bare of bees.
