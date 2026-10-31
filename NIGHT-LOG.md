@@ -22187,3 +22187,29 @@ than 27.3 m to any other interactable's own object, comfortably clear of the new
 the three hand-built glade deer's own 2.0 m prompts. No visual check was possible in this environment
 (no browser, no Playwright) — only the stub-three test suite and the two headless probes described
 above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 820 — Frosty Peak's first outer-country deer finally becomes a friend
+
+Round 818 closed the first of Frosty Peak's ten `fillRing` outer-country wanderers — a penguin, since
+the loop's `i===0` lands on the `else` branch. The other half of that same loop (`i % 2`, five deer)
+never got touched: the collared trio down in the village, Dasher, Copper and Blitzen, are a separate,
+hand-built population in `73-world-snow.js` and never covered this gap. Same root cause as every
+wanderer this log keeps finding: plain `makeDeer()` rigs carry none of `.look`/`.robot`/`.cookie`, so
+`Wanderer`'s own `greetable()` call quietly no-ops on them.
+
+**The first of this loop's five deer (i===1, the first odd `i`) now answers "Say hello to the deer"
+too** — *"🦌 *ears flick, stamps a hoof twice in the snow, then canters off toward the pines*"* —
+plain and collarless, so it gets `SFX.click()` rather than the named trio's `SFX.bell()`. Same fix as
+every other outer-country critter this log has turned into a friend: `game.namedFriend('outer-peak-deer')`
+plus a `game.addInteractable` keyed straight to the rig's own `group`, wired up after the `Wanderer`
+already exists so it draws nothing extra from this world's own seeded `r()` and shifts no later pick in
+this build. No new mesh, no new physics box — the `Wanderer` was already wandering its usual 10 m leash
+long before this round touched it.
+
+The other four deer in this loop, and the five penguins still unmet from round 818's own half, are left
+for future rounds — the same one-at-a-time pattern as every other crowd in this log.
+
+`node test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box count unchanged at
+329 (no new collider, as expected). Frosty Peak's own friend total rose by one (98 to 99 to meet). No
+visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
+suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

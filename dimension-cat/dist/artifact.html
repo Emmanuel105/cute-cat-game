@@ -7772,7 +7772,27 @@ function snowRegion(game, U, r, inner, outer) {
   // remaining birds) are left for future rounds, the same one-at-a-time pattern as everywhere else.
   for (let i = 0; i < 10; i++) {
     const a = r() * TAU, d = r.range(inner, outer * 0.8), x = cos(a) * d, z = sin(a) * d;
-    if (i % 2) { const rig = makeDeer(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x, z, speed: 0.6, leash: 10, r: 0.45, height: 1.4, step: 0.3, idle: [3, 7], walk: [2, 5] })); }
+    if (i % 2) {
+      const rig = makeDeer(); W.add(rig.group);
+      game.npcs.push(new Wanderer(game, rig, { x, z, speed: 0.6, leash: 10, r: 0.45, height: 1.4, step: 0.3, idle: [3, 7], walk: [2, 5] }));
+      // This loop's own deer (odd i) stayed just as unmet as its penguin neighbours until round 818
+      // closed the first penguin — the collared trio down in the village (Dasher, Copper, Blitzen) are
+      // hand-built `73-world-snow.js` NPCs, not this outer-country population, so they never covered
+      // this gap. Same root cause as every wanderer in this log: `makeDeer()`'s own rig carries none
+      // of `.look`/`.robot`/`.cookie`, so `Wanderer`'s own `greetable()` call quietly no-ops on it.
+      // The first of this loop's five deer (i===1, the first odd i) now answers "Say hello to the
+      // deer" too — plain `game.namedFriend('outer-peak-deer')` plus a `game.addInteractable` keyed
+      // straight to its own `rig.group`, wired up after the `Wanderer` already exists so it draws
+      // nothing extra from this world's own seeded `r()` and shifts no later pick in this build. No
+      // new mesh, no new physics box. Collarless and uncollected, so no `SFX.bell()` like the named
+      // trio gets — a plain `SFX.click()` instead, same as this log's very first ambient deer greets.
+      if (i === 1) {
+        const outerPeakDeerId = game.namedFriend('outer-peak-deer');
+        game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the deer', onUse: () => {
+          game.befriend(outerPeakDeerId); SFX.click(); game.hearts(rig.group.position.x, 1.1, rig.group.position.z, 3);
+          game.toast('🦌 "*ears flick, stamps a hoof twice in the snow, then canters off toward the pines*"'); } });
+      }
+    }
     else {
       const rig = makePenguin({ scale: r.range(0.8, 1.05) }); W.add(rig.group);
       game.npcs.push(new Wanderer(game, rig, { x, z, speed: r.range(0.5, 0.8), leash: 9, r: 0.3, height: 0.9, step: 0.25, idle: [1, 3] }));
