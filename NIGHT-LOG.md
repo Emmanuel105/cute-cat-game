@@ -21857,3 +21857,23 @@ built earlier in this town would have had its own timing-sensitive pick shifted 
 unchanged at 329 (no new physics box, as expected for a flying ambient creature at a fixed height).
 No visual check was possible in this environment (no browser, no Playwright) — only the stub-three
 test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 807 — Victorian's west-end flower basket gets its own bees too
+
+Last round gave the easternmost of Victorian's eleven lamp baskets a couple of bees; the westernmost
+one, `vicLamps[1]` — the lamp whose own "look" prompt already calls it the one the lamplighter's round
+stops a couple of strides short of — never got any of its own. **A second pair of bees now circles
+that basket too**, same height and radius as the east pair.
+
+No new mesh, no dialogue, no physics box: the exact same `makeBee()` rig and `Flyer` controller the
+east basket's bees already lean on, centred on the west basket's own position (-49.5, 6.4) at y=2.62 —
+just above the basket's own y=2.55, well clear of the lamplighter's own head height and the cat's own
+jump reach, so no ground-level clearance probe was needed either. Appended right after the east
+basket's bee loop and before the squirrel, since `Flyer`'s constructor draws unconditionally from the
+shared `rnd()` sequence and anything built earlier in this town would have had its own timing-sensitive
+pick shifted by it.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329 (no new physics box). No visual check was possible in this environment (no browser,
+no Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

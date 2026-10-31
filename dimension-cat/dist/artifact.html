@@ -17653,6 +17653,23 @@ function buildVictorian(game, entry) {
     const beeRig = makeBee();
     game.npcs.push(new Flyer(game, beeRig, { cx: 55.5, cz: 6.4, r: 0.3, h: 2.62, speed: 1.6 + bi * 0.3, bob: 0.05, wobble: 0.12, cw: bi % 2 === 0, phase: bi * 2.6 }));
   }
+  // the east end's basket got a couple of bees above — the west end's own, `vicLamps[1]` (x=-49.5,
+  // z=6.4, the lamp whose own "look" prompt already calls it the one the lamplighter's round stops a
+  // couple of strides short to light), never got any. A second pair now circles that basket too, same
+  // height, same radius as the east pair: y=2.62, just above the basket's own y=2.55, well clear of
+  // the lamplighter's own head height and the cat's own jump reach. No physics box needed — nothing on
+  // the ground can reach this high, the same reasoning the east basket's own bees already relied on.
+  //
+  // Reuses the same `makeBee()` rig and `Flyer` controller the east basket's bees above already lean
+  // on. No dialogue, no new mesh: a plain orbit around the basket's own position, not a greetable
+  // soul. Built dead last, right after the east basket's own bees and right before the squirrel, for
+  // the reason every other addition at the end of this function already gives: `Flyer`'s own
+  // constructor draws unconditionally from the *shared* `rnd()` sequence, and anything built earlier
+  // in this town would have had its own timing-sensitive pick shifted by it.
+  for (let bi = 0; bi < 2; bi++) {
+    const westBeeRig = makeBee();
+    game.npcs.push(new Flyer(game, westBeeRig, { cx: -49.5, cz: 6.4, r: 0.3, h: 2.62, speed: 1.6 + bi * 0.3, bob: 0.05, wobble: 0.12, cw: bi % 2 === 0, phase: bi * 2.6 + 1.1 }));
+  }
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
