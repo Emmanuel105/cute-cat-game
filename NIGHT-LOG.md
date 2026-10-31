@@ -21984,3 +21984,27 @@ town would have had its own timing-sensitive pick shifted by it.
 unchanged at 329 (no new physics box). No visual check was possible in this environment (no browser,
 no Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy. Five of Victorian's eleven baskets are now bare of bees.
+
+
+## Round 813 — Victorian's mid-fence flower basket gets its own bees too
+
+Rounds 806 through 812 gave the east, west, dead-centre, south, plaza and westmost baskets their own
+bees; `vicLamps[4]` (x=-7.5, z=6.4, the fuchsia-pink basket hanging off the north-row house's garden
+fence, whose own "look" prompt round already settled on a tight 0.9 m radius to clear that fence and
+the lamplighter's own patrol stop) was still bare. **A seventh pair of bees now circles that basket
+too**, same height and radius as the other six.
+
+No new mesh, no dialogue, no physics box: the same `makeBee()` rig and `Flyer` controller every other
+basket's bees already lean on, centred on the mid-fence basket's own position (-7.5, 6.4) at y=2.62 —
+just above the basket's own y=2.55. The fence and the lamplighter's close patrol stop were only ever a
+ground-level concern for the basket's own "look" interactable circle; a bee circling 2.62 m up clears
+both without a fresh clearance probe, the same conclusion the westmost basket's own round already
+reached for the bobby and lamplighter there. Appended right after the westmost basket's own bee loop
+and before the squirrel, since `Flyer`'s constructor draws unconditionally from the shared `rnd()`
+sequence and anything built earlier in this town would have had its own timing-sensitive pick shifted
+by it.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329 (no new physics box). No visual check was possible in this environment (no browser,
+no Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy. Four of Victorian's eleven baskets are now bare of bees.
