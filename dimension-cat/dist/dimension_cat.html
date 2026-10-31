@@ -19247,6 +19247,28 @@ function buildBeach(game, entry) {
     for (let fi = 0; fi < 3; fi++) mesh(G.box(0.1, 0.002, 0.05), fletchM, { z: 0.26, rz: fi / 3 * TAU, shadow: 'none', parent: arrow });   // tail fletching
     game.npcs.push(new Archer(game, archer, arrow, { x: ax, z: az, ry: ary, dist: adist,
       cries: ['Steady now — the wind off the water throws every shot wide.', "Mind your tail, puss — you're no target, but best stand well clear.", "Every arrow that misses buries itself in the sand. I've lost more than I've found."] })); }
+  // Whisper Woods has had a knee-high spiderweb slung between two twig stakes for a good while now —
+  // dew beads, three silk rings, a spider holding dead centre (`makeSpiderweb()`, 62-props-nature.js)
+  // — and no other world ever got one of its own. The dry dune sand west of the tug-of-war ground is
+  // exactly the kind of quiet, scrubby pocket a real web would turn up in, so a second one now hangs
+  // there, same rig, same spider, just facing the water instead of the pond.
+  //
+  // Placed at (-40, -30): a headless probe (`game.start('new')`, `game.travel(4, 'from-hub')` waited
+  // out through its real portal-fade timer, then 3000 simulated frames sampling every NPC's own
+  // position every frame) found the nearest physics box 4.14 m clear and the nearest wandering soul
+  // never closer than 4.83 m over the whole run, with the spot outside every `game.zones` entry this
+  // beach registers. The ground here is flat enough for a flush, untilted `placeT`: height varies by
+  // under 6 cm across a 1.2 m ring around the stakes, the same tolerance every palm on this dune
+  // already relies on.
+  //
+  // No new mesh, no new physics box: `makeSpiderweb()` is the identical rig the forest's own web
+  // already uses — only the look lines below are new, swapped for the sand instead of the
+  // undergrowth. `r` is this world's own seeded RNG, the same one every other dew-phase or wardrobe
+  // draw on this beach already uses, so it costs nothing downstream.
+  { const wx = -40, wz = -30;
+    const web = placeT(game, U, makeSpiderweb(r), wx, wz, atan2(0 - wx, 0 - wz));
+    const webLines = ['🕸️ "Slung between two dried-out stakes, dew beading on every strand despite the sea air."', '🕷️ "Holding dead centre, same as its cousin further inland — spiders don\'t care much for a view."', '🌊 "The sea breeze keeps it swaying, but never once tears a strand."'];
+    game.addInteractable({ obj: web, radius: 1.8, label: () => 'Look at the web', onUse: () => { SFX.click(); game.toast(rnd.pick(webLines), 3000); } }); }
   beachRegion(game, U, r, 58, SHORE_LIMIT - 8);
   // the headland behind the dunes: hills and peaks inland only, never out to sea
   makeHorizon(game, r, { clear: SHORE_LIMIT + 8, hill: 0x8c9a58, rock: 0x7a7060, rock2: 0x8a8272, snowLine: 58, peaks: 26, woodCount: 260, woodHue: [0.18, 0.28], woodLight: [0.18, 0.3], keep: (x) => x < -SHORE_LIMIT * 0.15 });

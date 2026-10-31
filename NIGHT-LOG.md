@@ -21622,3 +21622,26 @@ unchanged at 329 (no new physics box) and Robot City's own friend count rose fro
 walkable-ground percentage holding at 88%. No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite and the headless probe described above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 798 — Sunny Shore finally gets a spiderweb of its own
+
+Whisper Woods has had a knee-high orb web slung between two twig stakes for a long time now — dew
+beads, three silk rings, a spider sitting dead centre — but it never spread anywhere else. **A second
+web now hangs in a quiet pocket of dry dune sand west of the tug-of-war ground, same silk, same
+spider, just facing the sea instead of the pond.** *"Slung between two dried-out stakes, dew beading
+on every strand despite the sea air."* *"Holding dead centre, same as its cousin further inland —
+spiders don't care much for a view."*
+
+No new mesh, no new physics box: `makeSpiderweb()` (62-props-nature.js) is the exact same rig the
+forest's web already uses, just given its own set of look lines and placed at (-40, -30). A headless
+probe (`game.start('new')`, `game.travel(4, 'from-hub')` waited out through its real portal-fade
+timer, then 3000 simulated frames sampling every NPC's own position every frame) found the nearest
+physics box 4.14 m clear and the nearest wandering soul never closer than 4.83 m over the whole run,
+with the spot outside every `game.zones` entry this beach registers. The ground there is flat enough
+for a flush `placeT` with no tilt needed — under 6 cm of height change across a 1.2 m ring around the
+stakes.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 329 (no new physics box). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe described above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
