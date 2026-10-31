@@ -22030,3 +22030,29 @@ its own timing-sensitive pick shifted by it.
 unchanged at 329 (no new physics box). No visual check was possible in this environment (no browser,
 no Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy. Three of Victorian's eleven baskets are now bare of bees.
+
+## Round 815 — Victorian's east-row flower basket gets its own bees too
+
+Rounds 806 through 814 gave the east, west, dead-centre, south, plaza, westmost, mid-fence and
+south-pavement-fence baskets their own bees; `vicLamps[6]` (x=13.5, z=6.4, the dusty-rose basket on
+the north-row house's own fence, whose own "look" prompt round already measured the fence at 1.10 m
+off and the bobby's own closest patrol pass at 1.20 m off) was still bare. **A ninth pair of bees now
+circles that basket too**, same height and radius as the other eight.
+
+No new mesh, no new physics box: the same `makeBee()` rig and `Flyer` controller every other basket's
+bees already lean on, centred on this basket's own position (13.5, 6.4) at y=2.62 — just above the
+basket's own y=2.55. The fence and the bobby's own close patrol pass were only ever a ground-level
+concern for the basket's own "look" interactable circle; a bee circling 2.62 m up clears both without a
+fresh clearance probe, the same conclusion the mid-fence and south-pavement-fence baskets' own rounds
+already reached. `vicLamps[2]`, the one remaining bare basket, stays that way — its own "look" round
+already ruled it out even at ground level because a wandering gentleman's own home spot sits well under
+a metre off, and flying bees up at 2.62 m buys nothing there since the gentleman himself, not the
+fence, is the obstacle. Appended right after the south-pavement-fence basket's own bee loop and before
+the squirrel, since `Flyer`'s constructor draws unconditionally from the shared `rnd()` sequence and
+anything built earlier in this town would have had its own timing-sensitive pick shifted by it.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329 (no new physics box). No visual check was possible in this environment (no browser,
+no Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy. Of Victorian's eleven baskets, only one — `vicLamps[2]` — is left bare, and it is
+expected to stay that way for good.

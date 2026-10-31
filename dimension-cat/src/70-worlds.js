@@ -10021,6 +10021,31 @@ function buildVictorian(game, entry) {
     const fenceBeeRig = makeBee();
     game.npcs.push(new Flyer(game, fenceBeeRig, { cx: -18, cz: -6.4, r: 0.3, h: 2.62, speed: 1.6 + bi * 0.3, bob: 0.05, wobble: 0.12, cw: bi % 2 === 0, phase: bi * 2.6 + 7.7 }));
   }
+  // eight of the eleven baskets have their own bees by now (east, west, dead-centre, south, plaza,
+  // westmost, mid-fence and south-pavement fence); `vicLamps[6]` (x=13.5, z=6.4, the dusty-rose basket
+  // on the north-row house's own fence, whose own "look" prompt round already measured the fence at
+  // 1.10 m off and the bobby's own closest patrol pass at 1.20 m off before settling on the usual 0.9 m
+  // half-radius for the ground-level "look" circle there) never got any either. A ninth pair now circles
+  // that one too, same height and radius as the rest: y=2.62, just above the basket's own y=2.55 — well
+  // above the fence line, the bobby's own head height and the cat's own jump reach, the same reasoning
+  // every basket's own bees so far already relied on. The fence and the bobby's own close pass were only
+  // ever a ground-level concern for the basket's own "look" interactable circle; a bee circling 2.62 m up
+  // clears both without a fresh clearance probe, same conclusion the mid-fence and south-pavement-fence
+  // baskets' own rounds already reached. `vicLamps[2]` stays bare — its own "look" round already ruled
+  // it out even at ground level, a wandering gentleman's own home spot sitting well under a metre off,
+  // and a bee circling 2.62 m up buys nothing there since that gentleman himself is the obstacle, not
+  // the fence.
+  // No new mesh, no new physics box: the same `makeBee()` rig and `Flyer` controller the other eight
+  // baskets' bees already lean on, not a greetable soul.
+  //
+  // Built dead last, right after the south-pavement-fence basket's own bees and right before the
+  // squirrel, for the reason every other addition at the end of this function already gives: `Flyer`'s
+  // own constructor draws unconditionally from the *shared* `rnd()` sequence, and anything built earlier
+  // in this town would have had its own timing-sensitive pick shifted by it.
+  for (let bi = 0; bi < 2; bi++) {
+    const eastRowBeeRig = makeBee();
+    game.npcs.push(new Flyer(game, eastRowBeeRig, { cx: 13.5, cz: 6.4, r: 0.3, h: 2.62, speed: 1.6 + bi * 0.3, bob: 0.05, wobble: 0.12, cw: bi % 2 === 0, phase: bi * 2.6 + 8.8 }));
+  }
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
