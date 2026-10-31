@@ -13356,6 +13356,28 @@ function buildCandyLand(game, entry) {
     game.npcs.push(new StiltWalker(game, performer, { points: [[2, -82], [8, -82]], speed: 0.55, pause: [1.5, 3], r: 0.4, height: 2.6, stiltH,
       cries: ['Up here the whole candy-cane forest looks like a tin of peppermints.', "Eleven years on these back home — out here, nobody's ever seen me fall. Yet.", "Mind your tail, puss — these aren't candy canes, whatever they look like!"], cryIcon: '🍭' })); }
 
+  // Whisper Woods, Sunny Shore and Frosty Peak all have the same knee-high spiderweb between two twig
+  // stakes (`makeSpiderweb()`, 62-props-nature.js — dew beads, three silk rings, a spider holding dead
+  // centre), and the Neighborhood and Robot City both got one on their own flat floors with plain
+  // `place()`. Candy Land's ground is exactly as flat as those two, and never had one of its own.
+  // **A real spiderweb now hangs between two stakes in the open grass south of the sweet-lands, well
+  // past the candy-cane belt and short of the land's own procedural fill.** No new mesh, no new
+  // physics box: `makeSpiderweb()` is the identical rig the other four worlds already use, dropped
+  // straight on with plain `place()` same as Robot City's and the Neighborhood's.
+  //
+  // A headless probe (`game.start('new')`, `game.travel(1, 'from-prev')` waited out through its real
+  // portal-fade timer, then 2000 simulated frames sampling every NPC's own position every fifteenth
+  // frame) swept a grid of the open grass south of the gingerbread cottage (radius 56-90 from the
+  // origin, past the hand-placed cane belt and short of the region fill at 92) against those samples
+  // and every one of the land's own physics boxes: (-14, -86) came back clearest of the lot tried,
+  // 13.6 m clear of the nearest box and 15.2 m clear of the nearest other soul (the candy-cane stilt
+  // walker's own patrol line), well outside every `game.zones` rectangle too.
+  //
+  // Built dead last, right after the stilt walker, since `makeHuman()`, `randomPerson()` and
+  // `makeSpiderweb()`'s own dew-phase roll all draw off this land's shared `r()` sequence
+  // unconditionally.
+  { const web = place(game, U, makeSpiderweb(r), -14, -86, atan2(0 - -14, 0 - -86)); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

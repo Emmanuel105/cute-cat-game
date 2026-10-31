@@ -21777,3 +21777,29 @@ the nearest of any of the three, and outside every `game.zones` rectangle too.
 count unchanged at 329 (no new physics box). No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite and the headless probe described above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 804 — Candy Land finally gets a spiderweb of its own
+
+Whisper Woods, Sunny Shore and Frosty Peak all have the same knee-high spiderweb between two twig
+stakes, and the Neighborhood and Robot City both got one on their own flat floors over the last two
+rounds. Candy Land's ground is just as flat as those two — nobody had ever dropped one in the sweet-
+lands. **A real spiderweb now hangs between two stakes in the quiet grass south of the gingerbread
+cottage, well past the candy-cane belt and the stilt walker's own patrol line.**
+
+No new mesh, no new physics box: `makeSpiderweb()` is the identical rig the other five worlds already
+use, placed with plain `place()` same as Robot City's and the Neighborhood's, since this land's ground
+is flat at y=0 the same way those two are.
+
+A headless probe (`game.start('new')`, `game.travel(1, 'from-prev')` waited out through its real
+portal-fade timer, then 2000 simulated frames sampling every NPC's own position every fifteenth frame)
+swept a grid of the open grass south of the cottage (radius 56-90 from the origin, past the hand-placed
+cane belt and short of the land's own procedural fill at 92) against those samples and every one of the
+land's own physics boxes: (-14, -86) came back clearest of the lot tried, 13.6 m clear of the nearest
+box and 15.2 m clear of the nearest other soul — well outside every `game.zones` rectangle too. Built
+dead last, right after the stilt walker, since `makeHuman()`, `randomPerson()` and `makeSpiderweb()`'s
+own dew-phase roll all draw off this land's shared `r()` sequence unconditionally.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 329 (no new physics box). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe described above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
