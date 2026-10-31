@@ -21593,3 +21593,32 @@ the lamp post `vicLamps[6]` already is, same trick every basket before it used.
 unchanged at 329 (no new physics box). No visual check was possible in this environment (no browser,
 no Playwright) — only the stub-three test suite and the headless probes described above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 797 — Robot City finally gets its own skateboard kid
+
+The Neighborhood, Candy Land and Victorian all have a kid kneeling by a wobbly scooter, and Robot
+City picked that up too a while back — but the actual skateboard, `makeSkateboard()`, had only ever
+been built once, in the Neighborhood (round 141), and never spread to any other world the way the
+scooter was. **A girl now kneels on Robot City's open factory floor, checking her skateboard's back
+truck before she tries it again — a neon-cyan deck, same bent-forward checking pose every scooter and
+scooter-adjacent kid in this game already uses.** *"One more bolt and it should hold."* *"Careful,
+puss — these wheels have no manners."* *"Robots glide on wheels all shift long and never scuff a
+knee."* Saying hello makes her the usual kind of friend.
+
+No new mechanism: `makeSkateboard()` (60-props.js) and `Kneeler` (55-npcs.js) already exist and
+already pair for the Neighborhood's own skateboard girl; `Kneeler`'s constructor calls `greetable()`
+itself. No new physics box either — same as the Neighborhood's board, it's thin and flat enough that
+nothing needs to collide with it.
+
+Placed at (-60, -27.5): a headless probe (`game.start('new')`, `game.travel(2, 'from-prev')` waited
+out through its real portal-fade timer, then 3000 simulated frames sampling every NPC's own position
+every frame) found the nearest physics box (a skyscraper footprint) 8.5 m clear, the nearest
+`game.zones` rect 9.19 m clear, the nearest wandering soul 14.4 m off over the whole run and the
+nearest other interactable ("Push the swing") 11.24 m off — comfortably inside the radius (98) where
+`robotRegion`'s own procedural fill takes over, nowhere near any hand-placed prop.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329 (no new physics box) and Robot City's own friend count rose from 95 to 96, its
+walkable-ground percentage holding at 88%. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe described above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

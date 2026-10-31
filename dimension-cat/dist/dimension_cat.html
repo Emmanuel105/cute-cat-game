@@ -15417,6 +15417,31 @@ function buildRobotCity(game, entry) {
     game.npcs.push(new Washer(game, mopper, { x: wx, z: wz, ry: wry,
       cries: ['Every drop that misses the can ends up here, eventually.', 'Careful, puss — track that around and it never comes out.', "Three shifts in and it's barely any lighter."] })); }
 
+  // the Neighborhood, Candy Land and Victorian all have a kid kneeling by a wobbly scooter, Robot City
+  // among them — but the actual skateboard, `makeSkateboard()`, was only ever built once, in the
+  // Neighborhood, and never spread the way the scooter was. A girl now kneels on the open factory
+  // floor, checking her skateboard's back truck before she tries it again. Same `makeSkateboard()` +
+  // `Kneeler` pairing the Neighborhood already uses, so this is a placement, not a new build.
+  //
+  // A headless probe (`game.start('new')`, `game.travel(2, 'from-prev')` waited out through its real
+  // portal-fade timer, then 3000 simulated frames sampling every NPC's own position every frame) swept
+  // the open floor against every physics box and every `game.zones` rect: (-60, -27.5) came back 8.5 m
+  // clear of the nearest box (a skyscraper footprint), 9.19 m clear of the nearest zone rect, 14.4 m
+  // clear of the nearest wandering soul over the whole run and 11.24 m off the nearest other
+  // interactable ("Push the swing") — well inside the radius (98) where `robotRegion`'s own procedural
+  // fill takes over.
+  //
+  // Built dead last, after the oil-stain scrubber above, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off this city's own shared `r()` sequence unconditionally, and anything
+  // built earlier would have had its own timing-sensitive pick shifted by it.
+  { const sx = -60, sz = -27.5, kx = sx + 0.9, kz = sz, ry = atan2(sx - kx, sz - kz);
+    const board = makeSkateboard(0x00e5ff); place(game, U, board, sx, sz, 0.3);
+    const skateWard = makeWardrobe(r, { shirts: [0xff6fb5], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x3a2a1e, 0x2a2018] });
+    const skater = makeHuman({ ...randomPerson(r, { female: true, child: true, wardrobe: skateWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(skater.group);
+    game.npcs.push(new Kneeler(game, skater, { x: kx, z: kz, ry,
+      cries: ['One more bolt and it should hold.', 'Careful, puss — these wheels have no manners.', "Robots glide on wheels all shift long and never scuff a knee."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
