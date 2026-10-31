@@ -3326,6 +3326,36 @@ function buildNeighborhood(game, entry) {
     game.npcs.push(new StiltWalker(game, performer, { points: [[14, -34], [14, -28]], speed: 0.5, pause: [1.5, 3], r: 0.4, height: 2.0, stiltH,
       cries: ['Dad helped me nail the footrests on. Mostly me, though.', 'Bet I can see clean over Mrs. Peabody’s hedge from up here!', "Don't laugh — these took me all weekend!"], cryIcon: '🎪' })); }
 
+  // Whisper Woods, Sunny Shore and Frosty Peak all have the same knee-high spiderweb slung between two
+  // twig stakes (`makeSpiderweb()`, 62-props-nature.js), and Robot City's factory floor got the first
+  // one on a flat floor last round. The Neighborhood's ground is just as flat (`P.ground0` is never set
+  // here either), but nobody had ever dropped one in its own back gardens. **A real spiderweb now hangs
+  // between two stakes in the quiet grass behind the back row of houses, well clear of anyone's fence
+  // or path.** *"🕸️ Somebody's been slacking on the garden chores."* *"😼 Puss eyes the spider. The
+  // spider does not move. A standoff."* *"🏠 Every yard on this street has one of these somewhere. This
+  // is just the one anybody can see."*
+  //
+  // No new mesh, no new physics box: `makeSpiderweb()` is the identical rig the other four worlds
+  // already use, placed with plain `place()` same as Robot City's own rather than `placeT()`, since
+  // this village's ground is flat at y=0 the same way that factory floor is. Its two stakes (0.62 m
+  // tall) need nothing to collide with in open grass.
+  //
+  // A headless probe (`game.start('new')`, no travel needed since the Neighborhood is the world the
+  // game boots into, then 3000 simulated frames sampling every NPC's own position every frame) swept
+  // (-58, 44) against every one of this village's physics boxes, every `game.zones` rect and every
+  // interactable already standing: 10.76 m clear of the nearest box, 12.65 m clear of the nearest zone
+  // rect and never closer than 10.77 m to any wandering soul or interactable over the whole run — open
+  // grass behind the back-row houses at x=-63 and x=-45, well north of the park paths and well east of
+  // the lantern path to the gondola.
+  //
+  // Built dead last, right after the stilt walker above, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off this village's own shared `r()` sequence unconditionally (and so
+  // does `makeSpiderweb()`'s own dew-phase roll), and this is the first world the test suite builds, so
+  // anything built earlier here would have had its own timing-sensitive pick shifted by it.
+  { const web = place(game, U, makeSpiderweb(r), -58, 44, atan2(0 - -58, 0 - 44));
+    const webLines = ['🕸️ "Somebody\'s been slacking on the garden chores."', '😼 "Puss eyes the spider. The spider does not move. A standoff."', '🏠 "Every yard on this street has one of these somewhere. This is just the one anybody can see."'];
+    game.addInteractable({ obj: web, radius: 1.8, label: () => 'Look at the web', onUse: () => { SFX.click(); game.toast(rnd.pick(webLines), 3000); } }); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
