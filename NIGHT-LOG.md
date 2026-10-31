@@ -22123,3 +22123,30 @@ wanderer adds none). Sunny Shore's own friend total rose by one (96 to 97 to mee
 possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
 headless census probe described above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 818 — Frosty Peak's first outer-country penguin finally becomes a friend
+
+Round 817's census note said Frosty Peak's and Whisper Woods' own `fillRing` wildlife (ten deer/penguins
+on the Peak, fourteen deer/foxes/butterflies in the Woods) were still untouched — this round closes the
+first one. `makeDeer()` and `makePenguin()`'s rigs carry none of `.look`/`.robot`/`.cookie`, so
+`Wanderer`'s own `greetable()` call quietly no-ops on every one of them, same as the far-shore crabs.
+
+**The first of Frosty Peak's ten outer-country wanderers (always a penguin, since the loop's `i===0`
+branch alternates to the `else` case) now answers "Say hello to the penguin" too** — *"🐧 *waddles two
+steps closer, flaps once, then slides off on its belly*"* — distinct from the hub colony's bolder
+penguin and the march's three lines so it reads like a stranger still sizing the cat up. Same fix as
+the crab: `game.namedFriend('outer-penguin')` plus a `game.addInteractable` keyed straight to the rig's
+own `group`, wired up after the `Wanderer` already exists so it draws nothing extra from this world's
+seeded `r()` and shifts no later pick in this build. No new mesh, no new physics box — `fillRing`'s own
+loop already placed this penguin's `Wanderer` with its usual 9 m leash long before this round touched it.
+
+The other nine Frosty Peak wanderers, and the whole untouched populations in Whisper Woods' own outer
+country, are left for future rounds — the same one-at-a-time pattern as every crowd before them.
+
+`node test/run.mjs` ran clean: exit 0, all 290 checks `ok`, 0 console warnings, box count unchanged at
+329 (no new collider, as expected). Frosty Peak's own friend total rose by one (97 to 98 to meet). A
+headless probe (`game.start('new')`, `game.load(5, 'from-hub')`, 400 simulated frames so the `Wanderer`
+state machine actually places it, then a scan of every interactable's label) confirmed the new "Say
+hello to the penguin" prompt exists and that using it adds exactly one new friend. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
+headless probe described above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

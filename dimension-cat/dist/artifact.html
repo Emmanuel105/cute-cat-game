@@ -7759,10 +7759,30 @@ function snowRegion(game, U, r, inner, outer) {
     { w: 2, build: (g, r, x, z) => makeScatter(g, [[x, z, 12, 30]], G.sphere(0.35, 7, 5), [0xffffff, 0xeef3fa, 0xdfe8f2], r, [0.8, 2.2], 0.0) },
     { w: 1, build: (g, r, x, z) => { placeT(g, U, makeSled(r.pick([0xd62839, 0x2f6fd6, 0x2e9e6e])), x, z, r() * TAU); placeT(g, U, makeSnowman(r), x + 2.5, z + 1.5, r() * TAU); boxT(g, x + 2.5, z + 1.5, 1.0, 2.4, 1.0, { cam: false }); } },
   ] }));
+  // Same census that found Sunny Shore's ten unmet far-shore crabs (round 817) turned up the same gap
+  // here: these ten deer/penguin pairs are `fillRing`'s own outer-country population, not the hand-built
+  // colony this log already fixed one at a time (the hare trio, the march, the bold penguin) — `makeDeer()`
+  // and `makePenguin()`'s rigs carry none of `.look`/`.robot`/`.cookie`, so `Wanderer`'s own `greetable()`
+  // call quietly no-ops on every one of them. The first of the ten (i===0, always a penguin since the loop
+  // alternates starting on the `else` branch) now answers "Say hello to the penguin" too, same
+  // `game.namedFriend` + `game.addInteractable` fix as the crab, keyed straight to its own `rig.group` so
+  // the prompt follows it through its usual 9 m leash — wired up after the `Wanderer` already exists, so it
+  // draws nothing extra from this world's own seeded `r()` and shifts no later pick in this build. No new
+  // mesh, no new physics box. The other nine (the eight further deer/penguins and this same loop's own
+  // remaining birds) are left for future rounds, the same one-at-a-time pattern as everywhere else.
   for (let i = 0; i < 10; i++) {
     const a = r() * TAU, d = r.range(inner, outer * 0.8), x = cos(a) * d, z = sin(a) * d;
     if (i % 2) { const rig = makeDeer(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x, z, speed: 0.6, leash: 10, r: 0.45, height: 1.4, step: 0.3, idle: [3, 7], walk: [2, 5] })); }
-    else { const rig = makePenguin({ scale: r.range(0.8, 1.05) }); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x, z, speed: r.range(0.5, 0.8), leash: 9, r: 0.3, height: 0.9, step: 0.25, idle: [1, 3] })); }
+    else {
+      const rig = makePenguin({ scale: r.range(0.8, 1.05) }); W.add(rig.group);
+      game.npcs.push(new Wanderer(game, rig, { x, z, speed: r.range(0.5, 0.8), leash: 9, r: 0.3, height: 0.9, step: 0.25, idle: [1, 3] }));
+      if (i === 0) {
+        const outerPenguinId = game.namedFriend('outer-penguin');
+        game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the penguin', onUse: () => {
+          game.befriend(outerPenguinId); SFX.squawk(); game.hearts(rig.group.position.x, 0.6, rig.group.position.z, 3);
+          game.toast('🐧 "*waddles two steps closer, flaps once, then slides off on its belly*"'); } });
+      }
+    }
   }
 }
 
