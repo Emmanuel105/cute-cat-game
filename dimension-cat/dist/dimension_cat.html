@@ -16655,6 +16655,28 @@ function buildVictorian(game, entry) {
     for (let fi = 0; fi < 3; fi++) mesh(G.box(0.1, 0.002, 0.05), fletchM, { z: 0.26, rz: fi / 3 * TAU, shadow: 'none', parent: arrow });   // tail fletching
     game.npcs.push(new Archer(game, archer, arrow, { x: ax, z: az, ry: ary, dist: adist,
       cries: ['Forty yards, and still true to the gold.', "Mind your tail, puss — you're no target, but best stand well clear.", 'The Society meets every fine Tuesday. Do bring your mistress along.'] })); }
+  // Whisper Woods, Sunny Shore, Frosty Peak, Robot City, the Neighborhood and Candy Land all have the
+  // same knee-high spiderweb slung between two twig stakes (`makeSpiderweb()`, 62-props-nature.js —
+  // dew beads, three silk rings, a spider holding dead centre) by now; Victorian, for all its flower
+  // baskets and lamp posts, never got one of its own. **A real spiderweb now hangs between two stakes
+  // on the quiet grass south-west of the market square**, well clear of the tetherball pole, the
+  // bootblack's stand and the juggler's own pitch.
+  //
+  // No new mesh, no new physics box: `makeSpiderweb()` is the identical rig the other six worlds
+  // already use, placed with plain `place()` same as the Neighborhood's and Robot City's own, since
+  // this town's ground is flat at y=0 the same way those two are.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // clicking the real start button and then `game.travel(3, 'from-prev')`, waiting out both the load
+  // and the fade-lock timers) sampled every NPC's own position every 10th frame over 2400 simulated
+  // frames, then swept five candidate points in the open south-west meadow (short of the radius (88)
+  // where `victorianRegion`'s own procedural fill takes over) against those samples and every one of
+  // the town's 572 physics boxes: (-35, -55) came back clearest of the lot tried, 16.6 m clear of the
+  // nearest box, 11.3 m clear of the nearest wandering soul and 18.4 m clear of every `game.zones`
+  // rectangle and circle. Built dead last, right after the archer, since `makeHuman()`,
+  // `randomPerson()` and `makeSpiderweb()`'s own dew-phase roll all draw off this town's shared `r()`
+  // sequence unconditionally.
+  { const web = place(game, U, makeSpiderweb(r), -35, -55, atan2(0 - -35, 0 - -55)); }
   victorianRegion(game, U, r, 88, VICTORIAN_LIMIT - 10);
   makeHorizon(game, r, { clear: VICTORIAN_LIMIT + 10, hills: true, hill: 0x3f4a38, rock: 0x3a3f4a, rock2: 0x4a4a58, snow: 0xcfd6e2, woodHue: [0.16, 0.26], woodLight: [0.1, 0.2], trunk: 0x3a2a1e, peaks: 30, woodCount: 420 });
   // people

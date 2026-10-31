@@ -21803,3 +21803,31 @@ own dew-phase roll all draw off this land's shared `r()` sequence unconditionall
 count unchanged at 329 (no new physics box). No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite and the headless probe described above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 805 — Victorian finally gets a spiderweb of its own
+
+Whisper Woods, Sunny Shore, Frosty Peak, Robot City, the Neighborhood and Candy Land all picked up
+the same knee-high spiderweb between two twig stakes over the last several rounds — Victorian, for
+all its flower baskets, gas lamps and clock tower, was the last of the seven worlds still without
+one. **A real spiderweb now hangs between two stakes on the quiet grass south-west of the market
+square**, well past the tetherball pole, the bootblack's stand and the juggler's own pitch.
+
+No new mesh and no new physics box: `makeSpiderweb()` (`62-props-nature.js`) is the identical rig
+every other world already uses — dew beads, three silk rings, a spider holding dead centre — dropped
+in with plain `place()` the same way the Neighborhood's and Robot City's own flat floors take it,
+since Victorian's ground is flat at y=0 too.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself runs on, clicking the real start
+button, `game.travel(3, 'from-prev')`, then 2400 simulated frames sampling every NPC's own position
+every 10th frame) swept five candidate points in the open south-west meadow against those samples and
+every one of the town's 572 physics boxes: (-35, -55) came back clearest, 16.6 m clear of the nearest
+box, 11.3 m clear of the nearest wandering soul and 18.4 m clear of every `game.zones` rectangle and
+circle — well short of the radius (88) where `victorianRegion`'s own procedural fill takes over. Built
+dead last, right after the archer, since `makeHuman()`, `randomPerson()` and `makeSpiderweb()`'s own
+dew-phase roll all draw off this town's shared `r()` sequence unconditionally.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329 (no new physics box). No visual check was possible in this environment (no browser,
+no Playwright) — only the stub-three test suite and the headless probe described above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Every one of the seven worlds now
+has its own spiderweb.
