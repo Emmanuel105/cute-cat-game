@@ -21877,3 +21877,23 @@ pick shifted by it.
 unchanged at 329 (no new physics box). No visual check was possible in this environment (no browser,
 no Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 808 — Victorian's dead-centre flower basket gets its own bees too
+
+Rounds 806 and 807 gave the east and west end baskets their own bees; `vicLamps[5]` (x=3, z=-6.4, the
+amber/gold basket dead centre of the street, and the very first basket in the game to ever get a
+"Look at the flower basket" prompt, back in round 627) was still bare. **A third pair of bees now
+circles that basket too**, same height and radius as the other two.
+
+No new mesh, no dialogue, no physics box: the same `makeBee()` rig and `Flyer` controller the east and
+west baskets' bees already lean on, centred on the basket's own (3, -6.4) at y=2.62 — just above the
+basket's own y=2.55, well clear of the bobby's, the lamplighter's and the cat's own jump reach, so no
+fresh ground-level clearance probe was needed either. Appended right after the west basket's bee loop
+and before the squirrel, since `Flyer`'s constructor draws unconditionally from the shared `rnd()`
+sequence and anything built earlier in this town would have had its own timing-sensitive pick shifted
+by it.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329 (no new physics box). No visual check was possible in this environment (no browser,
+no Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy. Eight of Victorian's eleven baskets are now bare of bees.
