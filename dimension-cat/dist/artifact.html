@@ -7800,9 +7800,29 @@ function forestRegion(game, U, r, inner, outer) {
     { w: 1, build: (g, r, x, z) => { U.push(makeGlowPond(g, x, z, r.range(3.5, 6), r).userData.update); blob(r, x, z, 9, 8, (cx, cz) => { const m = makeMushroom(r.range(0.4, 0.8), r.pick([0, 300, 200]), r, true); placeT(g, U, m, cx, cz, 0); if (m.userData.update) U.push(m.userData.update); }); } },
     { w: 1, build: (g, r, x, z) => { const a = r() * TAU, bx = x + cos(a) * 16, bz = z + sin(a) * 16; bigTree(g, x, z, { lanterns: true }); bigTree(g, bx, bz, { lanterns: true }); U.push(makeLanternString(g, x, z, bx, bz, 7, 4.2).update); } },
   ] }));
+  // Round 817/818's census found the same gap a third time: these fourteen deer/fox/butterfly picks
+  // are `fillRing`'s own outer-country population, not the hand-built glade trio this log already
+  // befriended one at a time (rounds 1, 2, 3 above). `makeDeer()`'s rig carries none of
+  // `.look`/`.robot`/`.cookie`, so `Wanderer`'s own `greetable()` call quietly no-ops on every one of
+  // these too. The first of the fourteen (i===0, always a deer since the loop starts on that branch)
+  // now answers "Say hello to the deer" too, same `game.namedFriend` + `game.addInteractable` fix as
+  // the outer crab and penguin, keyed straight to its own `rig.group` so the prompt follows it through
+  // its usual 11 m leash — wired up after the `Wanderer` already exists, so it draws nothing extra from
+  // this world's own seeded `r()` and shifts no later pick in this build. No new mesh, no new physics
+  // box. The other thirteen (four more deer, five foxes, five butterflies) are left for future rounds,
+  // the same one-at-a-time pattern as everywhere else.
   for (let i = 0; i < 14; i++) {
     const a = r() * TAU, d = r.range(inner, outer * 0.85), x = cos(a) * d, z = sin(a) * d;
-    if (i % 3 === 0) { const rig = makeDeer(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x, z, speed: 0.6, leash: 11, r: 0.45, height: 1.4, step: 0.3, idle: [3, 7], walk: [2, 5] })); }
+    if (i % 3 === 0) {
+      const rig = makeDeer(); W.add(rig.group);
+      game.npcs.push(new Wanderer(game, rig, { x, z, speed: 0.6, leash: 11, r: 0.45, height: 1.4, step: 0.3, idle: [3, 7], walk: [2, 5] }));
+      if (i === 0) {
+        const outerDeerId = game.namedFriend('outer-deer');
+        game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the deer', onUse: () => {
+          game.befriend(outerDeerId); SFX.rustle(); game.hearts(rig.group.position.x, 1.1, rig.group.position.z, 3);
+          game.toast('🦌 "*freezes mid-chew, ears swivelling, then bolts three bounds into the ferns*"'); } });
+      }
+    }
     else if (i % 3 === 1) { const rig = makeFox(); W.add(rig.group); game.npcs.push(new Wanderer(game, rig, { x, z, speed: 1.3, leash: 12, r: 0.3, height: 0.8, step: 0.3, idle: [1, 3], walk: [2, 5] })); }
     else { const rig = makeButterfly(r.pick([300, 40, 200, 20, 260])); game.npcs.push(new Flyer(game, rig, { cx: x, cz: z, r: r.range(2, 5), h: r.range(0.8, 2.4), speed: r.range(0.8, 1.6), bob: 0.3, wobble: 0.8, cw: i % 2 === 0 })); }
   }

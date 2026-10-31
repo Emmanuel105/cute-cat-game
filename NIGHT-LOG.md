@@ -22150,3 +22150,40 @@ state machine actually places it, then a scan of every interactable's label) con
 hello to the penguin" prompt exists and that using it adds exactly one new friend. No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
 headless probe described above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 819 — Whisper Woods' first outer-country deer finally becomes a friend
+
+Round 817's census note said Whisper Woods' own `fillRing` wildlife (fourteen deer/fox/butterfly picks
+scattered through the outer wood) was the third untouched population it had found, after Sunny Shore's
+far-shore crabs and Frosty Peak's outer penguins — this round closes that one too. `makeDeer()`'s rig
+carries none of `.look`/`.robot`/`.cookie`, so `Wanderer`'s own `greetable()` call quietly no-ops on
+every one of these fourteen, same root cause as everywhere else in this log, including the three
+hand-built glade deer this log already befriended one at a time back in rounds 1-3.
+
+**The first of Whisper Woods' fourteen outer-country wanderers (always a deer, since the loop's
+`i===0` lands on the `i % 3 === 0` branch) now answers "Say hello to the deer" too** —
+*"🦌 freezes mid-chew, ears swivelling, then bolts three bounds into the ferns"* — warier than the
+three hand-built glade deer, which have a feeder coaxing them close and settle for a cautious step or a
+lifted head rather than bolting outright, since this one has never seen the cat before. Same fix as the
+Shore's crab and the Peak's penguin: `game.namedFriend('outer-deer')` plus a `game.addInteractable`
+keyed straight to the rig's own `group`, wired up after the `Wanderer` already exists so it draws
+nothing extra from this world's own seeded `r()` and shifts no later pick in this build. No new mesh, no
+new physics box — `fillRing`'s own loop already placed this deer's `Wanderer` with its usual 11 m leash
+long before this round touched it. Used `SFX.rustle()` instead of the hand-built deer's plain `click()`,
+to match the "bolts into the ferns" line.
+
+The other thirteen Whisper Woods wanderers (four more deer, five foxes, five butterflies) are left for
+future rounds, the same one-at-a-time pattern as every other crowd — and with this round, all three of
+the fillRing populations round 817's census turned up (the Shore, the Peak, and now the Woods) have each
+had their first wanderer answered.
+
+`node test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box count unchanged at
+329 (no new collider, as expected). Whisper Woods' own friend total rose by one (100 to 101 to meet). A
+headless probe (`game.start('new')`, `game.load(6, 'from-hub')`, 400 simulated frames so the `Wanderer`
+state machine actually places it, then a scan of every interactable's label) confirmed the new "Say
+hello to the deer" prompt exists on the new outer deer and that using it adds exactly one new friend. A
+second probe sampled this deer's own position every frame over 3000 simulated frames: nowhere closer
+than 27.3 m to any other interactable's own object, comfortably clear of the new 2.1 m prompt radius and
+the three hand-built glade deer's own 2.0 m prompts. No visual check was possible in this environment
+(no browser, no Playwright) — only the stub-three test suite and the two headless probes described
+above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
