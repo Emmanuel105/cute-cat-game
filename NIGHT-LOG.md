@@ -22056,3 +22056,35 @@ unchanged at 329 (no new physics box). No visual check was possible in this envi
 no Playwright) — only the stub-three test suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy. Of Victorian's eleven baskets, only one — `vicLamps[2]` — is left bare, and it is
 expected to stay that way for good.
+
+## Round 816 — Victorian finally gets its own hedgehog
+
+Whisper Woods has had hedgehogs for a good while now — three marching in file plus a fourth poking its
+nose out of a hollow log — but no other world ever got one of its own, and Victorian, iron fences and
+hanging baskets and all, is the obvious town for it. **A hedgehog now snuffles through the long grass
+past the street's western end**, beyond the toy pinwheel, where the cobbled town gives way to open
+country. It curls up tight for a second when greeted, then carries on snuffling.
+
+No new rig, no new controller: `makeHedgehog()` (`56-npcs-wild.js`) and `Hopper` are the exact pair
+Whisper Woods' own hedgehogs already use, just one more home point on the shared controller. Like
+every other bare-rig `Hopper` creature before its own round closed this same gap (the hare, the
+raccoon, the factory mouse), it answers its own "Say hello to the hedgehog" prompt from the moment it's
+placed — `game.namedFriend('victorian-hedgehog')` plus a `game.addInteractable` tracked on the rig's
+own group, following it through its hops inside a tight 0.35 m leash. No new physics box either.
+
+Placed at (-66, -7.5): a headless probe (`game.start('new')`, `game.travel(3, 'from-prev')` waited out
+through its real portal-fade timer, then 3000 simulated frames sampling every NPC's own position every
+10th frame) swept the grass past the pinwheel's own spot against all 572 of the town's physics boxes
+and every wandering soul over the run — 4.5 m clear of the nearest box (the first house's own wall),
+6.22 m clear of the nearest wandering soul and 6.1 m from the nearest other interactable, comfortably
+past both the hop's own leash and the 2.1 m greet radius. Built dead last, right after the east-row
+basket's own bees and right before the squirrel, since `Hopper`'s own constructor draws three values
+off the shared `rnd()` sequence unconditionally and anything built earlier in this town would have had
+its own timing shifted by it.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box count
+unchanged at 329 (no new physics box). A second headless check confirmed the new "Say hello to the
+hedgehog" prompt actually exists after travelling to Victorian, sits at (-66, -7.5), and registers a
+new friend when used. No visual check was possible in this environment (no browser, no Playwright) —
+only the stub-three test suite and the headless probes described above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
