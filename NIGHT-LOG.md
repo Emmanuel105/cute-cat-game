@@ -22213,3 +22213,33 @@ for future rounds — the same one-at-a-time pattern as every other crowd in thi
 329 (no new collider, as expected). Frosty Peak's own friend total rose by one (98 to 99 to meet). No
 visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
 suite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 821 — Whisper Woods' first outer-country fox finally becomes a friend
+
+Same loop as round 819's deer (the fourteen deer/fox/butterfly picks `fillRing` scatters through
+Whisper Woods' outer country), but the other branch: `i % 3 === 1` is this loop's fox, and it had been
+left just as unmet as the deer was before round 819 — `makeFox()`'s rig carries none of
+`.look`/`.robot`/`.cookie` either, so `Wanderer`'s own `greetable()` call quietly no-ops on it, same
+root cause as everywhere else in this log.
+
+**The first of the loop's five foxes (i===1, the first `i % 3 === 1`) now answers "Say hello to the
+fox" too** — *"🦊 freezes, one paw raised, eyes fixed on the cat, then slips off through the ferns"* —
+and gets `SFX.bark()`, the same bark the woods' two den foxes and the bolder third fox already use for
+their own greets. Same fix as every other outer-country critter in this log: `game.namedFriend('outer-fox')`
+plus a `game.addInteractable` keyed straight to the rig's own `group`, wired up after the `Wanderer`
+already exists so it draws nothing extra from this world's own seeded `r()` and shifts no later pick in
+this build. No new mesh, no new physics box — this fox was already wandering its usual 12 m leash.
+
+The other four foxes in this loop, and all five butterflies, are left for future rounds — the same
+one-at-a-time pattern as every other crowd in this log.
+
+`node test/run.mjs` ran clean: exit 0, all 290 checks `ok`, 0 console warnings, box count unchanged at
+329 (no new collider, as expected). Whisper Woods' own friend total rose by one (101 to 102 to meet). A
+headless probe (`game.start('new')`, `game.load(6, 'from-hub')`, 400 simulated frames so the `Wanderer`
+actually places it, then a scan of every "Say hello to the fox" interactable by position) found the new
+one sitting at (125, -17) — clear of the two den foxes and the bolder third fox, which stay within 20 m
+of their own fixed spots. A second probe sampled its position every frame over 3000 simulated frames:
+never closer than 67.6 m to any other interactable, and using it added exactly one friend
+(`forest:outer-fox`) to the save. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite and the two headless probes described above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
