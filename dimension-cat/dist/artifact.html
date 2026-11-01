@@ -7931,6 +7931,17 @@ function forestRegion(game, U, r, inner, outer) {
           game.befriend(outerDeer2Id); SFX.rustle(); game.hearts(rig.group.position.x, 1.1, rig.group.position.z, 3);
           game.toast('🦌 "*lifts its head, chews once more, then steps unhurried behind a fern*"'); } });
       }
+      // The i%3===0 branch's third deer (i===6, the next multiple of three after rounds 819/822's
+      // i===0 and i===3), left just as unmet by the same `makeDeer()` rig with none of
+      // `.look`/`.robot`/`.cookie` that `Wanderer`'s own `greetable()` quietly skips. Same fix, a
+      // third distinct id so it stacks with the first two, and a wary line of its own: this one
+      // backs away a few steps before it turns, rather than bolting or merely stepping behind a fern.
+      else if (i === 6) {
+        const outerDeer3Id = game.namedFriend('outer-deer-3');
+        game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the deer', onUse: () => {
+          game.befriend(outerDeer3Id); SFX.rustle(); game.hearts(rig.group.position.x, 1.1, rig.group.position.z, 3);
+          game.toast('🦌 "*backs away three slow steps, never taking its eyes off the cat, then turns and ambles into the ferns*"'); } });
+      }
     }
     else if (i % 3 === 1) {
       const rig = makeFox(); W.add(rig.group);
