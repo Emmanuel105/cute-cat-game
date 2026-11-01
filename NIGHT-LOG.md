@@ -22598,3 +22598,29 @@ friend count from 0 to 6, including `forest:outer-deer`, `forest:outer-deer-2` a
 rather than overwrites. No visual check was possible in this environment (no browser, no Playwright) —
 only the stub-three test suite and the headless probe described above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 834 — Frosty Peak's fifth and last outer-country deer becomes a friend
+
+Rounds 820, 823, 830 and 832 closed the first four deer in Frosty Peak's ten-pick `fillRing` loop in
+`68-regions.js` (the `i % 2` branch's odd picks, i===1, i===3, i===5 and i===7); the loop's last odd `i`
+(i===9) sat just as unmet, same root cause as every outer-country critter in this log: `makeDeer()`'s
+rig carries none of `.look`/`.robot`/`.cookie`, so `Wanderer`'s own `greetable()` quietly skips it.
+
+**The loop's fifth and last deer now answers "Say hello to the deer" too** —
+*"🦌 *flicks one ear toward the cat, considers it briefly, then goes right back to grazing*"* — the
+calmest exit of the five (the others cant off, bolt, watch, or trot off without looking back), so it
+reads differently from all of them. Same fix as every other outer-country critter in this log:
+`game.namedFriend('outer-peak-deer-5')` (a distinct id so it stacks with the first four instead of
+overwriting any of them) plus a `game.addInteractable` keyed straight to the rig's own `group`, wired up
+after the `Wanderer` already exists so it draws nothing extra from this world's own seeded `r()` and
+shifts no later pick in this build. No new mesh, no new physics box. With this the loop's deer branch
+(every odd i from 1 to 9) is fully met, matching the penguin branch (every even i) closed by round
+831 — the whole ten-pick loop in Frosty Peak is now done.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 329
+(no new collider, as expected). A headless probe (`game.travel(5, 'from-hub')`, 400 simulated frames so
+every `Wanderer` actually places) found 5 "Say hello to the deer" interactables in the world; firing all
+of them produced 5 distinct friend ids — `snow:outer-peak-deer` through `snow:outer-peak-deer-5` —
+confirming the new fifth deer stacks rather than overwrites. No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite and the headless probe
+described above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

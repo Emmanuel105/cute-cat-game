@@ -7832,6 +7832,19 @@ function snowRegion(game, U, r, inner, outer) {
           game.befriend(outerPeakDeer4Id); SFX.click(); game.hearts(rig.group.position.x, 1.1, rig.group.position.z, 3);
           game.toast('🦌 "*lowers its head toward the snow, flicks its tail, then trots off without looking back*"'); } });
       }
+      // Round 832 closed this loop's fourth deer (i===7); this is its fifth and last (i===9, the final
+      // odd i in the ten-pick loop), left just as unmet by the same `makeDeer()` rig with none of
+      // `.look`/`.robot`/`.cookie` that `Wanderer`'s own `greetable()` quietly skips. Same fix, a fifth
+      // distinct id so it stacks with the first four rather than replacing any of them, and a line of
+      // its own: this one just flicks an ear and keeps grazing, rather than canting, bolting, watching
+      // or trotting off first. With this the loop's deer branch (every odd i from 1 to 9) is fully met,
+      // matching the penguin branch (every even i) closed by round 831 — the whole ten-pick loop is done.
+      else if (i === 9) {
+        const outerPeakDeer5Id = game.namedFriend('outer-peak-deer-5');
+        game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the deer', onUse: () => {
+          game.befriend(outerPeakDeer5Id); SFX.click(); game.hearts(rig.group.position.x, 1.1, rig.group.position.z, 3);
+          game.toast('🦌 "*flicks one ear toward the cat, considers it briefly, then goes right back to grazing*"'); } });
+      }
     }
     else {
       const rig = makePenguin({ scale: r.range(0.8, 1.05) }); W.add(rig.group);
