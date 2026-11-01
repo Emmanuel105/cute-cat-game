@@ -22657,3 +22657,32 @@ ahead of the stale local tracking branch; a fresh `git fetch` showed `origin/mai
 37 (an earlier fetch had simply been out of date), so nothing was lost — reset the local `main` branch
 to track `origin/main` properly before starting this round's own work. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 836 — Whisper Woods' fourth outer-country deer becomes a friend
+
+Rounds 814, 821 and the two before it closed the first three deer in Whisper Woods' fourteen-pick
+`fillRing` loop in `68-regions.js` (the `i % 3 === 0` branch's first three picks, i===0, i===3 and
+i===6); the branch's next pick (i===9) sat just as unmet, same root cause as every outer-country
+critter in this log: `makeDeer()`'s rig carries none of `.look`/`.robot`/`.cookie`, so `Wanderer`'s own
+`greetable()` quietly skips it.
+
+**The branch's fourth deer now answers "Say hello to the deer" too** —
+*"🦌 *keeps right on eating, only flicking one ear toward the cat to show it noticed*"* — the most
+unbothered of the four so far (the others bolt, step away unhurried, or back off warily), so it reads
+differently from all of them. Same fix as every other outer-country critter in this log:
+`game.namedFriend('outer-deer-4')` (a distinct id so it stacks with the first three instead of
+overwriting any of them) plus a `game.addInteractable` keyed straight to the rig's own `group`, wired up
+after the `Wanderer` already exists so it draws nothing extra from this world's own seeded `r()` and
+shifts no later pick in this build. No new mesh, no new physics box. The deer branch's last pick
+(i=12), the fox branch's remaining picks (i=10,13) and the butterfly branch's remaining picks (i=8,11)
+are left for future rounds, same one-at-a-time pattern as everywhere else in this log; also tidied the
+stale summary comment above the loop to match.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 329
+(no new collider, as expected). A headless probe (`game.start('new')`, `game.load(6, 'from-hub')`, 400
+simulated frames so every `Wanderer` actually places) found 7 "Say hello to the deer" interactables in
+the world (the hand-built glade trio plus this loop's four outer deer); firing all of them produced
+four distinct outer friend ids — `forest:outer-deer` through `forest:outer-deer-4` — confirming the new
+fourth deer stacks rather than overwrites. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe described above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

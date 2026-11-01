@@ -7921,7 +7921,7 @@ function forestRegion(game, U, r, inner, outer) {
   // its usual 11 m leash — wired up after the `Wanderer` already exists, so it draws nothing extra from
   // this world's own seeded `r()` and shifts no later pick in this build. No new mesh, no new physics
   // box. The other thirteen are being closed one at a time, same pattern as everywhere else; as of this
-  // round, deer i=9,12, fox i=10,13 and butterfly i=8,11 are what's left.
+  // round, deer i=12, fox i=10,13 and butterfly i=8,11 are what's left.
   for (let i = 0; i < 14; i++) {
     const a = r() * TAU, d = r.range(inner, outer * 0.85), x = cos(a) * d, z = sin(a) * d;
     if (i % 3 === 0) {
@@ -7954,6 +7954,17 @@ function forestRegion(game, U, r, inner, outer) {
         game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the deer', onUse: () => {
           game.befriend(outerDeer3Id); SFX.rustle(); game.hearts(rig.group.position.x, 1.1, rig.group.position.z, 3);
           game.toast('🦌 "*backs away three slow steps, never taking its eyes off the cat, then turns and ambles into the ferns*"'); } });
+      }
+      // The i%3===0 branch's fourth deer (i===9, the next multiple of three after rounds 819/822/here's
+      // i===0, i===3 and i===6), left just as unmet by the same `makeDeer()` rig with none of
+      // `.look`/`.robot`/`.cookie` that `Wanderer`'s own `greetable()` quietly skips. Same fix, a
+      // fourth distinct id so it stacks with the first three, and a line of its own: this one keeps
+      // eating and only flicks an ear, rather than bolting, stepping away or backing off.
+      else if (i === 9) {
+        const outerDeer4Id = game.namedFriend('outer-deer-4');
+        game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the deer', onUse: () => {
+          game.befriend(outerDeer4Id); SFX.rustle(); game.hearts(rig.group.position.x, 1.1, rig.group.position.z, 3);
+          game.toast('🦌 "*keeps right on eating, only flicking one ear toward the cat to show it noticed*"'); } });
       }
     }
     else if (i % 3 === 1) {
