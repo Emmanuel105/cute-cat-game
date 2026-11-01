@@ -22530,3 +22530,38 @@ world); firing all of them added exactly one new friend id, `snow:outer-penguin-
 from earlier rounds, confirming it stacks rather than overwrites. No visual check was possible in this
 environment (no browser, no Playwright) — only the stub-three test suite and the headless probe
 described above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 832 — Frosty Peak's fourth outer-country deer becomes a friend
+
+Rounds 820, 823 and 830 closed the first three deer in Frosty Peak's ten-pick `fillRing` loop in
+`68-regions.js` (the `i % 2` branch's odd picks, i===1, i===3 and i===5); the loop's next odd `i`
+(i===7, also a deer) sat just as unmet, same root cause as every outer-country critter in this log:
+`makeDeer()`'s rig carries none of `.look`/`.robot`/`.cookie`, so `Wanderer`'s own `greetable()` quietly
+skips it.
+
+**The loop's fourth deer now answers "Say hello to the deer" too** —
+*"🦌 *lowers its head toward the snow, flicks its tail, then trots off without looking back*"* — a
+flatter, more indifferent exit than the first three (one cants off, one bolts and glances back, one
+watches a long moment first), so it reads differently from all of them. Same fix as every other
+outer-country critter in this log: `game.namedFriend('outer-peak-deer-4')` (a distinct id so it stacks
+with the first three instead of overwriting any of them) plus a `game.addInteractable` keyed straight to
+the rig's own `group`, wired up after the `Wanderer` already exists so it draws nothing extra from this
+world's own seeded `r()` and shifts no later pick in this build. No new mesh, no new physics box — the
+`Wanderer` was already wandering its usual 10 m leash long before this round touched it. With this the
+loop's deer branch has only its last pick (i===9) left for a future round; the penguin branch (every
+even i) was already fully met as of round 831.
+
+Also found and fixed a stale comment a few lines up, left over from round 829, that still said "the two
+remaining deer (i===7,9) are left for future rounds" — now that i===7 is met, it correctly says only
+i===9 remains.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 329
+(no new collider, as expected). A headless probe (`game.travel(5, 'from-hub')`, 400 simulated frames so
+every `Wanderer` actually places) found 4 "Say hello to the deer" interactables in the world; firing all
+of them took the friend count from 0 to 4, adding `snow:outer-peak-deer`, `snow:outer-peak-deer-2`,
+`snow:outer-peak-deer-3` and the new `snow:outer-peak-deer-4` — four distinct ids, confirming it stacks
+rather than overwrites. No visual check was possible in this environment (no browser, no Playwright) —
+only the stub-three test suite and the headless probe described above. Also recovered 34 commits from a
+previous round that had been made on a detached HEAD and never reached `origin/main`; those are now
+pushed along with this round's own commit. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.

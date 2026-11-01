@@ -7821,6 +7821,17 @@ function snowRegion(game, U, r, inner, outer) {
           game.befriend(outerPeakDeer3Id); SFX.click(); game.hearts(rig.group.position.x, 1.1, rig.group.position.z, 3);
           game.toast('🦌 "*watches the cat over its shoulder a long moment, then wanders off through the drifts*"'); } });
       }
+      // Round 830 closed this loop's third deer (i===5); this is its fourth (i===7, the next odd i),
+      // left just as unmet by the same `makeDeer()` rig with none of `.look`/`.robot`/`.cookie` that
+      // `Wanderer`'s own `greetable()` quietly skips. Same fix, a fourth distinct id so it stacks with
+      // the first three rather than replacing any of them, and a line of its own: this one lowers its
+      // head and trots off without a backward glance, rather than canting, bolting or watching first.
+      else if (i === 7) {
+        const outerPeakDeer4Id = game.namedFriend('outer-peak-deer-4');
+        game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the deer', onUse: () => {
+          game.befriend(outerPeakDeer4Id); SFX.click(); game.hearts(rig.group.position.x, 1.1, rig.group.position.z, 3);
+          game.toast('🦌 "*lowers its head toward the snow, flicks its tail, then trots off without looking back*"'); } });
+      }
     }
     else {
       const rig = makePenguin({ scale: r.range(0.8, 1.05) }); W.add(rig.group);
@@ -7869,7 +7880,7 @@ function snowRegion(game, U, r, inner, outer) {
       // skips. Same fix, a fifth distinct id so it stacks with the first four rather than replacing any
       // of them, and a line of its own: this one just blinks and settles rather than sliding, waddling
       // off or backing away. With this the loop's penguin branch (every even i from 0 to 8) is fully met;
-      // only the two remaining deer (i===7,9) are left for future rounds.
+      // only the remaining deer (i===9) is left for future rounds.
       else if (i === 8) {
         const outerPenguin5Id = game.namedFriend('outer-penguin-5');
         game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the penguin', onUse: () => {
