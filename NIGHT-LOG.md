@@ -22420,3 +22420,30 @@ and the bold one — thirteen penguin friends total in the world — and the new
 possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
 headless probe described above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 828 — Whisper Woods' second butterfly becomes a friend
+
+Round 826 closed the first of Whisper Woods' four outer-country butterflies (the `i % 3 === 2` pick in
+`forestRegion`'s fillRing loop, flown by `Flyer` rather than `Wanderer`) as a friend; the other three
+(i=5,8,11) were left for later. This round closes the second.
+
+**The loop's second butterfly (i===5) now answers "Say hello to the butterfly" too** —
+*"🦋 *lands on the cat's head for a moment, then flits off toward the glow pond*"* — settling rather
+than just looping, so it reads differently from the first one's greet. Same fix as every flying
+creature in this log: a second, distinct `game.namedFriend('outer-butterfly-2')` id so it stacks with
+round 826's `outer-butterfly` instead of overwriting it, plus a `game.addInteractable` keyed straight
+to the rig's own `group` — `Flyer` already adds the rig to the scene in its own constructor, so no new
+scene-graph wiring was needed. No new mesh, no new physics box, and no extra draw from this world's own
+seeded `r()`: the interactable is wired up after the `Flyer` already exists.
+
+The loop's remaining two butterflies (i=8,11) are left for future rounds, the same one-at-a-time
+pattern as every other crowd in this log.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 329
+(no new collider — a flying friend needs none). Whisper Woods' own friend total rose by one (105 to
+106 to meet). A headless probe (`game.start('new')`, `game.load(6, 'from-hub')`, 400 simulated frames)
+found both "Say hello to the butterfly" interactables in the world; firing both took the friend count
+from 0 to 2 and added `forest:outer-butterfly` and `forest:outer-butterfly-2` to the save as two
+distinct ids. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite and the headless probe described above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
