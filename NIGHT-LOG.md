@@ -22389,3 +22389,34 @@ butterfly" interactable, 34.2 m clear of its nearest neighbour (an outer-country
 check was possible in this environment (no browser, no Playwright) — only the stub-three test suite and
 the headless probe described above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 827 — Frosty Peak's third outer-country penguin becomes a friend
+
+Rounds 818 and 822 closed the first two penguins in Frosty Peak's ten-pick `fillRing` loop in
+`68-regions.js` (the `i % 2 === 0` branch, i===0 and i===2); the loop's next even `i` (i===4, also a
+penguin) sat just as unmet ever since, same root cause as every outer-country critter in this log:
+`makePenguin()`'s rig carries none of `.look`/`.robot`/`.cookie`, so `Wanderer`'s own `greetable()`
+quietly skips it.
+
+**The loop's third penguin now answers "Say hello to the penguin" too** —
+*"🐧 *lets out a sharp squawk, waddles backward, then turns tail toward the ice*"* — more startled than
+the first two, which slide off on their belly or toboggan away calmly. Same fix as every other
+outer-country critter in this log: `game.namedFriend('outer-penguin-3')` (a distinct id so it stacks
+with rounds 818 and 822's `outer-penguin` / `outer-penguin-2` instead of overwriting either) plus a
+`game.addInteractable` keyed straight to the rig's own `group`, wired up after the `Wanderer` already
+exists so it draws nothing extra from this world's own seeded `r()` and shifts no later pick in this
+build. No new mesh, no new physics box — the `Wanderer` was already wandering its usual 9 m leash long
+before this round touched it.
+
+The loop's remaining penguins (i=6,8) and deer (i=5,7,9) are left for future rounds, same
+one-at-a-time pattern as every other crowd in this log.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 329
+(no new collider, as expected). A headless probe (`game.start('new')`, `game.load(5, 'from-hub')`, 400
+simulated frames so all three `Wanderer`s actually place, then every "Say hello to the penguin"
+interactable fired in turn) found all three outer-country penguin prompts plus the six flock penguins
+and the bold one — thirteen penguin friends total in the world — and the new interactable's own
+`onUse` added exactly one distinct friend, `snow:outer-penguin-3`, to the save. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
+headless probe described above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.
