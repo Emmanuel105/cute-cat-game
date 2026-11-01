@@ -486,6 +486,25 @@ function forestRegion(game, U, r, inner, outer) {
           game.toast('🦊 "*ears snap back, then bolts in a streak of orange toward the undergrowth*"'); } });
       }
     }
-    else { const rig = makeButterfly(r.pick([300, 40, 200, 20, 260])); game.npcs.push(new Flyer(game, rig, { cx: x, cz: z, r: r.range(2, 5), h: r.range(0.8, 2.4), speed: r.range(0.8, 1.6), bob: 0.3, wobble: 0.8, cw: i % 2 === 0 })); }
+    else {
+      const rig = makeButterfly(r.pick([300, 40, 200, 20, 260]));
+      game.npcs.push(new Flyer(game, rig, { cx: x, cz: z, r: r.range(2, 5), h: r.range(0.8, 2.4), speed: r.range(0.8, 1.6), bob: 0.3, wobble: 0.8, cw: i % 2 === 0 }));
+      // This loop's four butterflies (i%3===2: i=2,5,8,11) have only ever been ambient decoration —
+      // unlike the deer and fox branches above, nothing here ever gave them a `game.namedFriend` id,
+      // so none of this log's "Say hello" fixes applied to a flying creature yet. `Flyer` already
+      // calls `game.world.add(rig.group)` itself in its own constructor, so the rig needs no extra
+      // wiring to satisfy the scene-graph check; only the interactable is new. The proximity test in
+      // `80-game.js` compares `pos.x/z` only, never height, so the usual 2.1 m radius still catches
+      // the cat passing underneath while this one loops 0.8–2.4 m up — no need to wait for it to
+      // land, since it never does. First of the four (i===2) now answers "Say hello to the
+      // butterfly", with `SFX.twinkle()` instead of any of this log's bark/click/squawk since nothing
+      // here has a voice to begin with.
+      if (i === 2) {
+        const outerButterflyId = game.namedFriend('outer-butterfly');
+        game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the butterfly', onUse: () => {
+          game.befriend(outerButterflyId); SFX.twinkle(); game.hearts(rig.group.position.x, rig.group.position.y, rig.group.position.z, 3);
+          game.toast('🦋 "*wings flutter in a tight loop around the cat\'s head, then drifts off over the ferns*"'); } });
+      }
+    }
   }
 }

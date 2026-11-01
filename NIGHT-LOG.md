@@ -22360,3 +22360,32 @@ interactable sitting 142+ m from its nearest neighbour and its own `onUse` addin
 friend (`forest:outer-fox-2`) and five points to the score. No visual check was possible in this
 environment (no browser, no Playwright) — only the stub-three test suite and the headless probe
 described above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 826 — Whisper Woods' first butterfly becomes a friend
+
+Every outer-country fix in this log so far has been a `Wanderer`-driven ground animal (deer, fox,
+penguin, crab) whose rig just lacks the `.look`/`.robot`/`.cookie` flag that `greetable()` checks for.
+Whisper Woods' outer-country loop in `68-regions.js` also drops four butterflies (`i % 3 === 2`, flown
+by the `Flyer` controller rather than `Wanderer`), and none of them had ever been wired up as a friend
+at all — not even an attempt, since nothing in this log had touched a flying creature before. Same root
+cause in spirit (nobody had given them an id), different controller.
+
+**The first of the four (i===2) now answers "Say hello to the butterfly"** —
+*"🦋 *wings flutter in a tight loop around the cat's head, then drifts off over the ferns*"* — with
+`SFX.twinkle()` standing in for a voice, since nothing here ever had one. `Flyer` already calls
+`game.world.add(rig.group)` itself in its own constructor, so no extra scene-graph wiring was needed;
+only `game.namedFriend('outer-butterfly')` plus a `game.addInteractable` keyed to the rig's own `group`
+was new. The game's own proximity check in `80-game.js` compares `pos.x`/`pos.z` only, never height, so
+the usual 2.1 m radius still catches the cat walking underneath while this one loops 0.8–2.4 m up —
+it never has to land. The other three (i=5,8,11) are left for future rounds, same one-at-a-time pattern
+as every other crowd in this log.
+
+`node test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box count unchanged at
+329 (no new collider — a flying friend needs none). A headless probe (`game.start('new')`,
+`game.travel(6, 'from-hub')`, waited for the real portal-fade timer rather than just spinning frames,
+then 400 simulated frames so the `Flyer` settles into its loop) found exactly one "Say hello to the
+butterfly" interactable, 34.2 m clear of its nearest neighbour (an outer-country fox); firing its
+`onUse` took the friend count from 0 to 1 and added `forest:outer-butterfly` to the save. No visual
+check was possible in this environment (no browser, no Playwright) — only the stub-three test suite and
+the headless probe described above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.
