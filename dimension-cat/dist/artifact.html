@@ -7893,6 +7893,17 @@ function forestRegion(game, U, r, inner, outer) {
           game.befriend(outerFoxId); SFX.bark(); game.hearts(rig.group.position.x, 0.6, rig.group.position.z, 3);
           game.toast('🦊 "*freezes, one paw raised, eyes fixed on the cat, then slips off through the ferns*"'); } });
       }
+      // Round 821 closed the i%3===1 branch's first fox (i===1); this is the branch's own second
+      // (i===4, the next multiple-of-three-plus-one), left just as unmet by the same `makeFox()` rig
+      // with none of `.look`/`.robot`/`.cookie` that `Wanderer`'s own `greetable()` quietly skips. Same
+      // fix, a second distinct id so it stacks with the first rather than replacing it, and a bolder
+      // line since this one bolts outright rather than freezing first.
+      else if (i === 4) {
+        const outerFox2Id = game.namedFriend('outer-fox-2');
+        game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the fox', onUse: () => {
+          game.befriend(outerFox2Id); SFX.bark(); game.hearts(rig.group.position.x, 0.6, rig.group.position.z, 3);
+          game.toast('🦊 "*ears snap back, then bolts in a streak of orange toward the undergrowth*"'); } });
+      }
     }
     else { const rig = makeButterfly(r.pick([300, 40, 200, 20, 260])); game.npcs.push(new Flyer(game, rig, { cx: x, cz: z, r: r.range(2, 5), h: r.range(0.8, 2.4), speed: r.range(0.8, 1.6), bob: 0.3, wobble: 0.8, cw: i % 2 === 0 })); }
   }
