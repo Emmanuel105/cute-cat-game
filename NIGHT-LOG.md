@@ -22302,3 +22302,32 @@ second probe sampled its position every frame over 2000 simulated frames: never 
 any other interactable. No visual check was possible in this environment (no browser, no Playwright) —
 only the stub-three test suite and the two headless probes described above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 824 — Whisper Woods' second outer-country deer becomes a friend
+
+Round 819 closed the first deer in Whisper Woods' fourteen-pick `fillRing` loop (the `i % 3 === 0`
+branch, i===0); the loop's next multiple of three (i===3, also a deer) sat just as unmet ever since,
+same root cause as every outer-country critter in this log: `makeDeer()`'s rig carries none of
+`.look`/`.robot`/`.cookie`, so `Wanderer`'s own `greetable()` quietly skips it.
+
+**The loop's second deer now answers "Say hello to the deer" too** —
+*"🦌 *lifts its head, chews once more, then steps unhurried behind a fern*"* — calmer than the first,
+which bolts three bounds into the ferns outright. Same fix as every other outer-country critter in this
+log: `game.namedFriend('outer-deer-2')` (a distinct id so it stacks with round 819's `outer-deer` instead
+of overwriting it) plus a `game.addInteractable` keyed straight to the rig's own `group`, wired up after
+the `Wanderer` already exists so it draws nothing extra from this world's own seeded `r()` and shifts no
+later pick in this build. No new mesh, no new physics box — the `Wanderer` was already wandering its
+usual 11 m leash long before this round touched it.
+
+The loop's remaining deer (i=6,9,12), foxes (i=4,7,10,13) and all five butterflies are left for future
+rounds, the same one-at-a-time pattern as every other crowd in this log.
+
+`node test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box count unchanged at
+329 (no new collider, as expected). A headless probe (`game.start('new')`, `game.load(6, 'from-hub')`,
+400 simulated frames so the `Wanderer` actually places it, then every "Say hello to the deer"
+interactable triggered in turn) found five deer prompts in total — the hand-built glade trio
+(`forest:deer`, `forest:deer-2`, `forest:deer-3`) plus both outer-country ones — and the new interactable
+at (-100.3, -74.8) added exactly one distinct friend, `forest:outer-deer-2`, sitting 36.2 m clear of its
+nearest neighbour (round 819's `outer-deer`). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe described above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

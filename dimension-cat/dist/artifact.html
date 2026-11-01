@@ -7864,6 +7864,17 @@ function forestRegion(game, U, r, inner, outer) {
           game.befriend(outerDeerId); SFX.rustle(); game.hearts(rig.group.position.x, 1.1, rig.group.position.z, 3);
           game.toast('🦌 "*freezes mid-chew, ears swivelling, then bolts three bounds into the ferns*"'); } });
       }
+      // Round 821's fox closed the i%3===1 branch's first pick; this is the i%3===0 branch's own second
+      // deer (i===3, the next multiple of three after round 819's i===0), left just as unmet by the same
+      // `makeDeer()` rig with none of `.look`/`.robot`/`.cookie` that `Wanderer`'s own `greetable()`
+      // quietly skips. Same fix, a second distinct id so it stacks with the first rather than replacing
+      // it, and a calmer line since this one only lifts its head rather than bolting outright.
+      else if (i === 3) {
+        const outerDeer2Id = game.namedFriend('outer-deer-2');
+        game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the deer', onUse: () => {
+          game.befriend(outerDeer2Id); SFX.rustle(); game.hearts(rig.group.position.x, 1.1, rig.group.position.z, 3);
+          game.toast('🦌 "*lifts its head, chews once more, then steps unhurried behind a fern*"'); } });
+      }
     }
     else if (i % 3 === 1) {
       const rig = makeFox(); W.add(rig.group);
