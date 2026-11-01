@@ -22624,3 +22624,36 @@ of them produced 5 distinct friend ids — `snow:outer-peak-deer` through `snow:
 confirming the new fifth deer stacks rather than overwrites. No visual check was possible in this
 environment (no browser, no Playwright) — only the stub-three test suite and the headless probe
 described above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 835 — Whisper Woods' third outer-country fox becomes a friend
+
+Rounds 821 and 825 closed the first two foxes in Whisper Woods' fourteen-pick `fillRing` loop in
+`68-regions.js` (the `i % 3 === 1` branch's first two picks, i===1 and i===4); the branch's next pick
+(i===7) sat just as unmet, same root cause as every outer-country critter in this log: `makeFox()`'s
+rig carries none of `.look`/`.robot`/`.cookie`, so `Wanderer`'s own `greetable()` quietly skips it.
+
+**The branch's third fox now answers "Say hello to the fox" too** —
+*"🦊 *takes one curious step closer, sniffs the air, then thinks better of it and trots away*"* — a
+hesitant approach-then-retreat, different from the first fox's freeze-and-slip-away or the second's
+outright bolt. Same fix as every other outer-country critter in this log: `game.namedFriend('outer-fox-3')`
+(a distinct id so it stacks with the first two instead of overwriting either) plus a
+`game.addInteractable` keyed straight to the rig's own `group`, wired up after the `Wanderer` already
+exists so it draws nothing extra from this world's own seeded `r()` and shifts no later pick in this
+build. No new mesh, no new physics box — this fox was already wandering its usual 12 m leash long
+before this round touched it. The fox branch's last two picks (i=10,13), the deer branch's remaining
+picks (i=9,12) and the butterfly branch's remaining picks (i=8,11) are left for future rounds, same
+one-at-a-time pattern as everywhere else in this log; also tidied a stale comment above the loop that
+still listed "four more deer, five foxes, five butterflies" left to do.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 329
+(no new collider, as expected). A headless probe (`game.load(6, 'from-hub')`, 400 simulated frames so
+every `Wanderer` actually places) found 6 "Say hello to the fox" interactables in the world (the den
+trio plus this loop's three outer foxes); firing all of them took the friend count from 0 to 6,
+including `forest:outer-fox`, `forest:outer-fox-2` and the new `forest:outer-fox-3` — three distinct
+outer ids alongside the den trio's own, confirming it stacks rather than overwrites. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
+headless probe described above. Also found the local `git` state pointing at a detached HEAD 37 commits
+ahead of the stale local tracking branch; a fresh `git fetch` showed `origin/main` already carried all
+37 (an earlier fetch had simply been out of date), so nothing was lost — reset the local `main` branch
+to track `origin/main` properly before starting this round's own work. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

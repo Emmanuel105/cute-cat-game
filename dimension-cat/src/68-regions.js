@@ -501,8 +501,8 @@ function forestRegion(game, U, r, inner, outer) {
   // the outer crab and penguin, keyed straight to its own `rig.group` so the prompt follows it through
   // its usual 11 m leash — wired up after the `Wanderer` already exists, so it draws nothing extra from
   // this world's own seeded `r()` and shifts no later pick in this build. No new mesh, no new physics
-  // box. The other thirteen (four more deer, five foxes, five butterflies) are left for future rounds,
-  // the same one-at-a-time pattern as everywhere else.
+  // box. The other thirteen are being closed one at a time, same pattern as everywhere else; as of this
+  // round, deer i=9,12, fox i=10,13 and butterfly i=8,11 are what's left.
   for (let i = 0; i < 14; i++) {
     const a = r() * TAU, d = r.range(inner, outer * 0.85), x = cos(a) * d, z = sin(a) * d;
     if (i % 3 === 0) {
@@ -564,6 +564,18 @@ function forestRegion(game, U, r, inner, outer) {
         game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the fox', onUse: () => {
           game.befriend(outerFox2Id); SFX.bark(); game.hearts(rig.group.position.x, 0.6, rig.group.position.z, 3);
           game.toast('🦊 "*ears snap back, then bolts in a streak of orange toward the undergrowth*"'); } });
+      }
+      // Round 821 and the round above closed the i%3===1 branch's first two foxes (i===1, i===4); this
+      // is the branch's own third (i===7, the next multiple-of-three-plus-one), left just as unmet by
+      // the same `makeFox()` rig with none of `.look`/`.robot`/`.cookie` that `Wanderer`'s own
+      // `greetable()` quietly skips. Same fix, a third distinct id so it stacks with the first two, and
+      // a curious line of its own: this one approaches a step before it decides against it, rather than
+      // freezing first or bolting outright.
+      else if (i === 7) {
+        const outerFox3Id = game.namedFriend('outer-fox-3');
+        game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the fox', onUse: () => {
+          game.befriend(outerFox3Id); SFX.bark(); game.hearts(rig.group.position.x, 0.6, rig.group.position.z, 3);
+          game.toast('🦊 "*takes one curious step closer, sniffs the air, then thinks better of it and trots away*"'); } });
       }
     }
     else {
