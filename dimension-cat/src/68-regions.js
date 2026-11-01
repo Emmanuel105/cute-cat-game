@@ -502,7 +502,7 @@ function forestRegion(game, U, r, inner, outer) {
   // its usual 11 m leash — wired up after the `Wanderer` already exists, so it draws nothing extra from
   // this world's own seeded `r()` and shifts no later pick in this build. No new mesh, no new physics
   // box. The other thirteen are being closed one at a time, same pattern as everywhere else; as of this
-  // round, deer i=12, fox i=10,13 and butterfly i=8,11 are what's left.
+  // round, deer i=12, fox i=10,13 and butterfly i=11 are what's left.
   for (let i = 0; i < 14; i++) {
     const a = r() * TAU, d = r.range(inner, outer * 0.85), x = cos(a) * d, z = sin(a) * d;
     if (i % 3 === 0) {
@@ -618,6 +618,17 @@ function forestRegion(game, U, r, inner, outer) {
         game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the butterfly', onUse: () => {
           game.befriend(outerButterfly2Id); SFX.twinkle(); game.hearts(rig.group.position.x, rig.group.position.y, rig.group.position.z, 3);
           game.toast('🦋 "*lands on the cat\'s head for a moment, then flits off toward the glow pond*"'); } });
+      }
+      // Round 831 closed this loop's second butterfly (i===5); this is its third (i===8, the next
+      // i%3===2 pick), left just as unmet by the same `makeButterfly()` rig that nothing had ever given
+      // a `game.namedFriend` id. Same fix, a third distinct id so it stacks with the first two rather
+      // than replacing either, and a line of its own: this one keeps its distance and only dips lower on
+      // its loop, rather than circling the cat's head or landing on it.
+      else if (i === 8) {
+        const outerButterfly3Id = game.namedFriend('outer-butterfly-3');
+        game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the butterfly', onUse: () => {
+          game.befriend(outerButterfly3Id); SFX.twinkle(); game.hearts(rig.group.position.x, rig.group.position.y, rig.group.position.z, 3);
+          game.toast('🦋 "*dips low on its loop for just a moment, wings catching the light, then rises back out of reach*"'); } });
       }
     }
   }

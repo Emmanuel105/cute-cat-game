@@ -22658,6 +22658,38 @@ ahead of the stale local tracking branch; a fresh `git fetch` showed `origin/mai
 to track `origin/main` properly before starting this round's own work. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
 
+## Round 837 — Whisper Woods' third outer-country butterfly becomes a friend
+
+Rounds 826 and 831 closed the first two butterflies in Whisper Woods' fourteen-pick `fillRing` loop in
+`68-regions.js` (the `i % 3 === 2` branch's first two picks, i===2 and i===5); the branch's next pick
+(i===8) sat just as unmet. Unlike the deer and fox branches in this same loop, the butterflies were
+never befriendable at all until round 826 — `makeButterfly()`'s rig has no voice and `Flyer` never
+calls `greetable()`, so nothing here ever drew a `game.namedFriend` id before that.
+
+**The branch's third butterfly now answers "Say hello to the butterfly" too** —
+*"🦋 *dips low on its loop for just a moment, wings catching the light, then rises back out of reach*"*
+— briefer than the first butterfly's head-circling loop or the second's landing on the cat's head. Same
+fix as the first two: `game.namedFriend('outer-butterfly-3')` (a distinct id so it stacks with the
+first two rather than overwriting either) plus a `game.addInteractable` keyed straight to the rig's own
+`group`, wired up after the `Flyer` already exists so it draws nothing extra from this world's own
+seeded `r()` and shifts no later pick in this build. `Flyer` already adds its rig to the scene graph
+itself, and the proximity check in `80-game.js` only compares `x`/`z`, never height, so the usual 2.1 m
+radius still catches the cat passing underneath while this butterfly loops 0.8–2.4 m up. No new mesh,
+no new physics box. The deer branch's last pick (i=12), the fox branch's remaining picks (i=10,13) and
+the butterfly branch's last pick (i=11) are left for future rounds, same one-at-a-time pattern as
+everywhere else in this log; also tidied the stale summary comment above the loop to match.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 329
+(no new collider, as expected). A headless probe (`game.start('new')`, `game.travel(6, 'from-hub')`, 400
+simulated frames so the butterflies place) found 3 "Say hello to the butterfly" interactables in the
+world; firing all three produced three distinct friend ids — `forest:outer-butterfly`,
+`forest:outer-butterfly-2` and the new `forest:outer-butterfly-3` — confirming the new third butterfly
+stacks rather than overwrites. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite and the headless probe described above. Also found the
+local git repo in a detached HEAD state with a stale `main` tracking branch; `git fetch` showed
+`origin/main` already carried everything, so reset local `main` to track it before starting this
+round's own work. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
 ## Round 836 — Whisper Woods' fourth outer-country deer becomes a friend
 
 Rounds 814, 821 and the two before it closed the first three deer in Whisper Woods' fourteen-pick
