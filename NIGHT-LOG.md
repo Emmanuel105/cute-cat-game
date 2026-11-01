@@ -22503,3 +22503,30 @@ the world; firing all of them took the friend count from 0 to 3, adding `snow:ou
 stacks rather than overwrites. No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite and the headless probe described above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 831 — Frosty Peak's fifth and last outer-country penguin becomes a friend
+
+Rounds 818, 822, 827 and 829 closed the first four penguins in Frosty Peak's ten-pick `fillRing` loop
+in `68-regions.js` (the `i % 2 === 0` branch, i===0, i===2, i===4, i===6); the loop's last even `i`
+(i===8, also a penguin) sat just as unmet, same root cause as every outer-country critter in this log:
+`makePenguin()`'s rig carries none of `.look`/`.robot`/`.cookie`, so `Wanderer`'s own `greetable()`
+quietly skips it.
+
+**The loop's fifth and final penguin now answers "Say hello to the penguin" too** —
+*"🐧 *blinks twice, ruffles its wings, then settles back down on the ice*"* — settling rather than
+sliding, tobogganing, backing off or waddling closer, so it reads differently from all four before it.
+Same fix as every other outer-country critter in this log: `game.namedFriend('outer-penguin-5')` (a
+distinct id so it stacks with the first four instead of overwriting any of them) plus a
+`game.addInteractable` keyed straight to the rig's own `group`, wired up after the `Wanderer` already
+exists so it draws nothing extra from this world's own seeded `r()` and shifts no later pick in this
+build. No new mesh, no new physics box. With this the loop's whole penguin branch (every even `i` from
+0 to 8) is met — only its two remaining deer (i=7,9) are left for future rounds.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 329
+(no new collider, as expected). A headless probe (`game.start('new')`, `game.load(5, 'from-hub')`, 400
+simulated frames so every `Wanderer` actually places) found 15 "Say hello to the penguin" interactables
+in the world (this loop's five plus the ten hand-built flock/bold/marching penguins elsewhere in the
+world); firing all of them added exactly one new friend id, `snow:outer-penguin-5`, alongside the four
+from earlier rounds, confirming it stacks rather than overwrites. No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite and the headless probe
+described above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

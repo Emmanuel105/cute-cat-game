@@ -438,6 +438,18 @@ function snowRegion(game, U, r, inner, outer) {
           game.befriend(outerPenguin4Id); SFX.squawk(); game.hearts(rig.group.position.x, 0.6, rig.group.position.z, 3);
           game.toast('🐧 "*waddles two steps closer, peers up at the cat, then hops away flapping*"'); } });
       }
+      // Rounds 818/822/827/829 closed i===0,2,4,6; this is the loop's fifth and last penguin (i===8),
+      // left just as unmet by the same `makePenguin()` rig that `Wanderer`'s own `greetable()` quietly
+      // skips. Same fix, a fifth distinct id so it stacks with the first four rather than replacing any
+      // of them, and a line of its own: this one just blinks and settles rather than sliding, waddling
+      // off or backing away. With this the loop's penguin branch (every even i from 0 to 8) is fully met;
+      // only the two remaining deer (i===7,9) are left for future rounds.
+      else if (i === 8) {
+        const outerPenguin5Id = game.namedFriend('outer-penguin-5');
+        game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the penguin', onUse: () => {
+          game.befriend(outerPenguin5Id); SFX.squawk(); game.hearts(rig.group.position.x, 0.6, rig.group.position.z, 3);
+          game.toast('🐧 "*blinks twice, ruffles its wings, then settles back down on the ice*"'); } });
+      }
     }
   }
 }
