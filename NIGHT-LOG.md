@@ -22273,3 +22273,32 @@ of every other interactable except a pre-existing, unrelated hand-built trio of 
 close together by original design. No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite and the headless probe described above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 823 — Frosty Peak's second outer-country deer becomes a friend
+
+Round 820 closed the first deer in Frosty Peak's ten-wanderer `fillRing` loop (the `i % 2` branch,
+i===1); the loop's next odd `i` (i===3, also a deer) sat just as unmet ever since, same root cause as
+everywhere else in this log: `makeDeer()`'s rig carries none of `.look`/`.robot`/`.cookie`, so
+`Wanderer`'s own `greetable()` quietly skips it.
+
+**The loop's second deer now answers "Say hello to the deer" too** —
+*"🦌 *freezes mid-graze, then bolts two bounds and glances back from the tree line*"* — warier than the
+first, which just stamps a hoof and trots off. Same fix as every other outer-country critter in this
+log: `game.namedFriend('outer-peak-deer-2')` (a distinct id so it stacks with round 820's
+`outer-peak-deer` instead of overwriting it) plus a `game.addInteractable` keyed straight to the rig's
+own `group`, wired up after the `Wanderer` already exists so it draws nothing extra from this world's
+own seeded `r()` and shifts no later pick in this build. No new mesh, no new physics box — the
+`Wanderer` was already wandering its usual 10 m leash long before this round touched it.
+
+The loop's remaining deer (i=5,7,9) and penguins (i=4,6,8) are left for future rounds, same
+one-at-a-time pattern as every other crowd in this log.
+
+`node test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box count unchanged at
+329 (no new collider, as expected). A headless probe (`game.start('new')`, `game.load(5, 'from-hub')`,
+400 simulated frames so both `Wanderer`s actually place, then a scan of every "Say hello to the deer"
+interactable) found both `outer-peak-deer` and `outer-peak-deer-2` present, 214.9 m apart from each
+other, and the new one's own `onUse` adding a distinct friend (`snow:outer-peak-deer-2`) to the save. A
+second probe sampled its position every frame over 2000 simulated frames: never closer than 15.5 m to
+any other interactable. No visual check was possible in this environment (no browser, no Playwright) —
+only the stub-three test suite and the two headless probes described above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
