@@ -22812,3 +22812,36 @@ distinct friend ids, including `beach:driftcrab`, `beach:driftcrab-2`, `beach:dr
 visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
 suite and the headless probe described above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 841 — Sunny Shore's fifth far-shore crab becomes a friend
+
+Rounds 816 and 838-840 closed the first four of the ten crabs `fillRing` scatters the length of
+Sunny Shore's outer country, in `68-regions.js` (`beachRegion`'s own loop, distinct from the
+six-strong hub colony, the bold crab, the marching trio and the hermit crab, all already friends
+since rounds 681-686 and later). The other six never got the same treatment — `makeCrab()`'s rig
+carries none of `.look`/`.robot`/`.cookie`, so `Wanderer`'s own `greetable()` call quietly no-ops on
+every one of them, same root cause as every outer-country critter in this log. This round closes the
+loop's fifth (i===4, the pick right after round 840's i===3).
+
+**The shore's fifth drifting crab now answers "Say hello to the crab" too** —
+*"🦀 *flips onto its back and goes perfectly still, then rights itself a moment later*"* — a play-dead
+beat, different again from the first four (freeze-and-relax, duck-into-a-hole, burrow, claw-wave).
+Same fix as everywhere else in this log: `game.namedFriend('driftcrab-5')` (a distinct id so it stacks
+with `driftcrab` through `driftcrab-4` rather than overwriting any of them) plus a
+`game.addInteractable` keyed straight to the rig's own `group`, wired up right after the `Wanderer`
+already exists so it draws nothing extra from this world's own seeded `r()` and shifts no later pick
+in this build. No new mesh, no new physics box. The remaining five crabs (i=5..9) and all eight
+seagulls (never given a voice at all, since nothing in this log has touched `makeSeagull()`/`Flyer`
+yet — they circle well above head height, so befriending one for real will likely need a change to how
+it's reached, not just a line of dialogue) are left for future rounds, same one-at-a-time pattern as
+everywhere else in this log; tidied the stale comment above the loop to match.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 329
+(no new collider, as expected). A headless probe (`game.start('new')`, `game.travel(4, 'from-hub')`,
+waiting out the travel fade, then 400 simulated frames so every far-shore `Wanderer` actually places)
+found 16 "Say hello to the crab" interactables in the world (the hub colony's six, the bold crab, the
+marching trio, the hermit crab, and this loop's five far-shore crabs); firing all of them produced
+`beach:driftcrab` through `beach:driftcrab-5` all present as distinct friend ids — confirming the new
+fifth crab stacks rather than overwrites. No visual check was possible in this environment (no browser,
+no Playwright) — only the stub-three test suite and the headless probe described above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
