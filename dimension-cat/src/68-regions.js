@@ -384,6 +384,17 @@ function snowRegion(game, U, r, inner, outer) {
           game.befriend(outerPeakDeer2Id); SFX.click(); game.hearts(rig.group.position.x, 1.1, rig.group.position.z, 3);
           game.toast('🦌 "*freezes mid-graze, then bolts two bounds and glances back from the tree line*"'); } });
       }
+      // Rounds 820/823 closed this loop's first two deer (i===1,3); this is its third (i===5, the next
+      // odd i), left just as unmet by the same `makeDeer()` rig with none of `.look`/`.robot`/`.cookie`
+      // that `Wanderer`'s own `greetable()` quietly skips. Same fix, a third distinct id so it stacks
+      // with the first two rather than replacing either, and a calmer line of its own: this one just
+      // watches rather than bolting or freezing first.
+      else if (i === 5) {
+        const outerPeakDeer3Id = game.namedFriend('outer-peak-deer-3');
+        game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the deer', onUse: () => {
+          game.befriend(outerPeakDeer3Id); SFX.click(); game.hearts(rig.group.position.x, 1.1, rig.group.position.z, 3);
+          game.toast('🦌 "*watches the cat over its shoulder a long moment, then wanders off through the drifts*"'); } });
+      }
     }
     else {
       const rig = makePenguin({ scale: r.range(0.8, 1.05) }); W.add(rig.group);
