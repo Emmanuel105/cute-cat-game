@@ -22243,3 +22243,33 @@ never closer than 67.6 m to any other interactable, and using it added exactly o
 (`forest:outer-fox`) to the save. No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite and the two headless probes described above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 822 — Frosty Peak's second outer-country penguin becomes a friend
+
+Round 818 closed the first penguin in Frosty Peak's ten-wanderer `fillRing` loop (the `else` branch,
+i===0); the loop's next even `i` (i===2, also a penguin) sat just as unmet ever since, same root cause
+as everywhere else in this log: `makePenguin()`'s rig carries none of `.look`/`.robot`/`.cookie`, so
+`Wanderer`'s own `greetable()` quietly skips it.
+
+**The loop's second penguin now answers "Say hello to the penguin" too** —
+*"🐧 *tilts its head, studies the cat a moment, then flaps and toboggans away*"* — a touch bolder than
+the first, which just waddles closer and slides off. Same fix as every other outer-country critter in
+this log: `game.namedFriend('outer-penguin-2')` (a distinct id so it stacks with round 818's
+`outer-penguin` instead of overwriting it) plus a `game.addInteractable` keyed straight to the rig's own
+`group`, wired up after the `Wanderer` already exists so it draws nothing extra from this world's own
+seeded `r()` and shifts no later pick in this build. No new mesh, no new physics box — the `Wanderer`
+was already wandering its usual 9 m leash long before this round touched it.
+
+The loop's remaining deer (i=3,5,7,9) and penguins (i=4,6,8) are left for future rounds, same
+one-at-a-time pattern as every other crowd in this log.
+
+`node test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box count unchanged at
+329 (no new collider, as expected). Frosty Peak's own friend total rose by one (99 to 100 to meet). A
+headless probe (`game.start('new')`, `game.load(5, 'from-hub')`, 400 simulated frames so both
+`Wanderer`s actually place, then a scan of every "Say hello to the penguin" interactable) found both
+`outer-penguin` and `outer-penguin-2` present and each one's own `onUse` adding exactly one distinct
+friend (`snow:outer-penguin`, `snow:outer-penguin-2`) to the save, 18 m apart from each other and clear
+of every other interactable except a pre-existing, unrelated hand-built trio of flock penguins that sit
+close together by original design. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite and the headless probe described above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

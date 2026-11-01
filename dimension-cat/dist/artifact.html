@@ -7802,6 +7802,17 @@ function snowRegion(game, U, r, inner, outer) {
           game.befriend(outerPenguinId); SFX.squawk(); game.hearts(rig.group.position.x, 0.6, rig.group.position.z, 3);
           game.toast('🐧 "*waddles two steps closer, flaps once, then slides off on its belly*"'); } });
       }
+      // Round 818 closed this loop's first penguin (i===0); this is its second (i===2, the next even
+      // i), left unmet ever since by the same `makePenguin()` rig with none of `.look`/`.robot`/`.cookie`
+      // that `Wanderer`'s own `greetable()` quietly skips. Same fix, a second distinct id so it stacks
+      // with the first rather than replacing it, and a slightly bolder line since this one holds its
+      // ground a beat longer before sliding off.
+      else if (i === 2) {
+        const outerPenguin2Id = game.namedFriend('outer-penguin-2');
+        game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the penguin', onUse: () => {
+          game.befriend(outerPenguin2Id); SFX.squawk(); game.hearts(rig.group.position.x, 0.6, rig.group.position.z, 3);
+          game.toast('🐧 "*tilts its head, studies the cat a moment, then flaps and toboggans away*"'); } });
+      }
     }
   }
 }
