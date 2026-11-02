@@ -23544,3 +23544,36 @@ unchanged at 329 (no new collider, as expected) and Victorian's own friend count
 `namedFriend`, same as the trout before it — this is flavour, not a new friend). No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite described
 above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 865 — Robot City's last unclaimed crate finally gets a look
+
+Round 500-ish put a "look" toast on five of the six loose crates scattered round the factory floor —
+the one at (-16, -20), (15, 12), (-22, 4) and (22, 2) each got their own round in turn, and (-23, 5.2)
+was explicitly skipped for sitting too close to its own neighbour. That left the crate at (-4, 8), by
+the pipe run near the mechanic's own bay, simply never picked — no comment, no skip, just missed by
+every earlier tally.
+
+**That last crate now answers a look too**, same `game.addInteractable` trick every other crate on
+this floor already uses. *"📦 Last of the six to get a second look. Nobody ever said why it took so
+long."* *"🤖 Not on any forklift's route. Never has been."*
+
+No new mesh, no new physics box: the crate loop that builds all six already keeps each `mesh()`
+return in a local `cm`; this round just adds one more coordinate match (`x === -4 && z === 8`) to
+capture it as `pipeCrate`, the same pattern the other four already use. A headless probe (the stub
+bundle itself, `game.load(2, 'from-prev')`, 3000 simulated frames sampling every physics box, every
+grounded NPC's own position every frame, and every interactable already on the floor) found the
+nearest other box — the pipe-run barrel at (-6, 10) — 2.12 m clear of this spot, the nearest grounded
+wanderer never closer than 2.78 m over the whole run, and the nearest other interactable (that same
+barrel's own "Look at the barrel" circle, radius 1.6) 1.23 m past its own edge. That's the tightest
+corner of any crate yet bar the one already wedged against the factory wall, so this one gets a 0.8 m
+radius rather than the 1.3-2.2 m the roomier five used. One of the city's own wandering drone-flies
+does cross within a centimetre of this exact point at one stage of its own slow circuit, but it loops
+8-10.5 m up — the same "flying well overhead, no obstruction" case this log has waved off for a
+passing butterfly or fairy elsewhere, not a collision risk at ground level.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 329 (no new collider, as expected) and Robot City's own friend count untouched (a
+"look" prop, not a greet — no `namedFriend`). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe described above.
+Probe scripts deleted after use, nothing committed. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
