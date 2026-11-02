@@ -18133,6 +18133,37 @@ function buildVictorian(game, entry) {
     place(game, U, bouquet, bqx, bqz, flry, 0.08);
     game.npcs.push(new Sunbather(game, flowerGirl, { x: flx, z: flz, ry: flry, cryIcon: '🌸',
       cries: ["Five minutes off my feet. The violets can wait.", "Careful, puss — mind the basket, that's my whole morning's takings.", "Last patch of sun before the lamplighters come round. Not wasting it standing up."] })); }
+  // the Neighborhood and Robot City both have a kid kneeling by a skateboard (`makeSkateboard()`,
+  // 60-props.js, paired with `Kneeler`, 55-npcs.js) — Victorian, for all its own scooter kid,
+  // bootblack, marbles ring and hopscotch chalker, never got one of its own. A boy now kneels on the
+  // quiet cobblestones south-west of the market square, checking his skateboard's back truck before
+  // he tries it again, flatcap and all.
+  //
+  // No new mechanism: `makeSkateboard()` and `Kneeler` already exist and already pair for the other
+  // two worlds' own skateboard kids, and `Kneeler`'s own constructor calls `greetable()` itself, so no
+  // extra wiring was needed. No new physics box either — same as those two boards, it's thin and flat
+  // enough that nothing needs to collide with it.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(3, 'from-hub')` waited out through its real portal-fade timer,
+  // then 1800 simulated frames with every NPC's own position sampled every 15th frame) swept a grid of
+  // the open cobblestones against both those samples and every one of the town's physics boxes:
+  // (-29, -59) came back clearest at 17.2 m from the nearest box and 16.9 m from the nearest other
+  // soul, at radius 65.7 from the origin — well short of the radius (88) where `victorianRegion`'s own
+  // procedural fill takes over, clear of `game.zones`' market-square circle and both hub circles, and
+  // far past the hopscotch chalker at (-45.9, -57.85), the nearest hand-placed vignette.
+  //
+  // Built right after the flower girl above, the last thing in this town to draw off the local `r()`
+  // sequence, and before the belfry's own bats, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off this town's own shared `r()` sequence unconditionally, and anything
+  // built earlier would have had its own timing-sensitive pick shifted by it.
+  { const sx = -29, sz = -59, kx = sx + 0.9, kz = sz, ry = atan2(sx - kx, sz - kz);
+    const board = makeSkateboard(0x2f8f8f); place(game, U, board, sx, sz, 0.3);
+    const skateWard = makeWardrobe(r, { shirts: [0x4a6a8a], pants: [0x2a2a24, 0x3a3327], shoes: [0x3a2a1e, 0x2a2018] });
+    const skater = makeHuman({ ...randomPerson(r, { female: false, child: true, wardrobe: skateWard }), hat: 'flatcap', hatColor: 0x3a3a44, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(skater.group);
+    game.npcs.push(new Kneeler(game, skater, { x: kx, z: kz, ry,
+      cries: ["Just the back truck — nearly got it, guv'nor.", "Careful, puss — mind your tail, these wheels don't care whose it is.", "Round the market square and back, no hands. Nobody's caught me at it yet."] })); }
   // every other real landmark in this town has earned itself something living nearby by now — the
   // fountain its wish, the carriage its horse, the market square its pigeons and its five doves — but
   // the clock tower's own belfry, the five-metre stone block the four clock faces are set into, has

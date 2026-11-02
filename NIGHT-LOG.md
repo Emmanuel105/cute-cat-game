@@ -23420,3 +23420,35 @@ unchanged at 329 (no new physics box) and Candy Land's own friend count rose fro
 check was possible in this environment (no browser, no Playwright) — only the stub-three test suite
 and the headless probe described above. Probe script deleted after use, nothing committed. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 861 — Victorian finally gets its own skateboard kid
+
+The Neighborhood (round 141) and Robot City (round 797) both have a kid kneeling by a skateboard
+(`makeSkateboard()`, 60-props.js, paired with `Kneeler`, 55-npcs.js) — Victorian, for all its own
+scooter kid, bootblack, marbles ring and hopscotch chalker, never got one of its own.
+
+**A boy now kneels on the quiet cobblestones south-west of the market square, checking his
+skateboard's back truck before he tries it again, flatcap and all.** *"Just the back truck — nearly
+got it, guv'nor."* *"Round the market square and back, no hands. Nobody's caught me at it yet."*
+Saying hello makes him the usual kind of friend.
+
+No new mechanism: `makeSkateboard()` and `Kneeler` already exist and already pair for the other two
+worlds' own skateboard kids; `Kneeler`'s constructor calls `greetable()` itself, so no extra wiring
+was needed. No new physics box either — same as the other two boards, it's thin and flat enough that
+nothing needs to collide with it.
+
+A headless probe (`game.start('new')`, `game.travel(3, 'from-hub')` waited out through its real
+portal-fade timer, then 1800 simulated frames sampling every NPC's own position every 15th frame)
+swept a grid of the open cobblestones against both those samples and every one of the town's physics
+boxes: (-29, -59) came back clearest, 17.2 m clear of the nearest box and 16.9 m clear of the nearest
+other soul, at radius 65.7 from the origin — well short of the radius (88) where `victorianRegion`'s
+own procedural fill takes over, clear of `game.zones`' market-square circle and both hub circles, and
+far past the hopscotch chalker at (-45.9, -57.85), the nearest hand-placed vignette. Built right
+after the flower girl (the last thing in this town to draw off the local `r()` sequence) and before
+the belfry's own bats, so it shifts no earlier pick in this build.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329 (no new physics box) and Victorian's own friend count rose from 108 to 109. No
+visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
+suite and the headless probe described above. Probe script deleted after use, nothing committed.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
