@@ -23234,3 +23234,32 @@ environment (no browser, no Playwright) — only the stub-three test suite and t
 described above. This closes out all eight of Sunny Shore's circling seagulls as friends — every wild
 creature `fillRing` scatters across the beach now answers "Say hello." Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 855 — Whisper Woods' fourth outer-country fox becomes a friend
+
+Rounds 821/824/852 gave the first three of the forest's five `i%3===1` outer-country foxes a "Say
+hello" prompt, each with its own `game.namedFriend` id and its own beat so none of them read as
+copies of each other. This round gives the fourth (`i===10`) the same treatment, in `68-regions.js`'s
+`forestRegion`, leaving only the fifth and last (`i===13`) for a future round.
+
+**Whisper Woods' fourth outer-country fox now answers "Say hello to the fox" too** —
+*"🦊 *trots a tight circle around the cat, tail low, then peels off toward the deeper ferns*"* — a
+circle-and-peel beat, different from the first three (freeze-then-slip, ears-back-bolt, approach-then-
+think-better), so none of the four read as copies of each other. Same fix as everywhere else in this
+log: `game.namedFriend('outer-fox-4')` (a distinct id so it stacks with the other three rather than
+overwriting any of them) plus a `game.addInteractable` keyed straight to the rig's own `group`,
+reusing `SFX.bark()`. No new mesh, no new physics box, and no extra `r()` draw: the fix sits entirely
+inside the existing loop body, after the `Wanderer` that already adds the rig to the scene, so it
+shifts no later pick in this build.
+
+`node test/run.mjs` ran clean twice in a row: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329 (no new collider, as expected). A headless probe (`game.start('new')`,
+`game.travel(6, 'from-hub')`, a real 700ms wait for the portal's own `setTimeout`-based fade, then
+1800 simulated frames) found 7 "Say hello to the fox" interactables in the world (the three hand-built
+den/bold foxes plus this loop's four outer ones); firing all seven produced `forest:outer-fox` through
+`forest:outer-fox-4` as four distinct entries in `game.state.friends`, confirming the fourth fox
+stacks rather than overwrites the first three. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe described above. The
+loop's deer (`i===12`) and butterfly (`i===11`) picks, plus this fox branch's own fifth (`i===13`),
+are left for future rounds, same one-at-a-time pattern as everywhere else in this log. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

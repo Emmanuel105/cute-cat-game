@@ -663,7 +663,7 @@ function forestRegion(game, U, r, inner, outer) {
   // its usual 11 m leash — wired up after the `Wanderer` already exists, so it draws nothing extra from
   // this world's own seeded `r()` and shifts no later pick in this build. No new mesh, no new physics
   // box. The other thirteen are being closed one at a time, same pattern as everywhere else; as of this
-  // round, deer i=12, fox i=10,13 and butterfly i=11 are what's left.
+  // round, deer i=12, fox i=13 and butterfly i=11 are what's left.
   for (let i = 0; i < 14; i++) {
     const a = r() * TAU, d = r.range(inner, outer * 0.85), x = cos(a) * d, z = sin(a) * d;
     if (i % 3 === 0) {
@@ -748,6 +748,18 @@ function forestRegion(game, U, r, inner, outer) {
         game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the fox', onUse: () => {
           game.befriend(outerFox3Id); SFX.bark(); game.hearts(rig.group.position.x, 0.6, rig.group.position.z, 3);
           game.toast('🦊 "*takes one curious step closer, sniffs the air, then thinks better of it and trots away*"'); } });
+      }
+      // Rounds 821/824/here closed the i%3===1 branch's first three foxes (i===1, i===4, i===7); this
+      // is the branch's own fourth (i===10, the next multiple-of-three-plus-one), left just as unmet by
+      // the same `makeFox()` rig with none of `.look`/`.robot`/`.cookie` that `Wanderer`'s own
+      // `greetable()` quietly skips. Same fix, a fourth distinct id so it stacks with the first three,
+      // and a line of its own: this one trots a tight circle around the cat before deciding to leave,
+      // rather than freezing, bolting or approaching a step first. Only i===13 is left after this.
+      else if (i === 10) {
+        const outerFox4Id = game.namedFriend('outer-fox-4');
+        game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the fox', onUse: () => {
+          game.befriend(outerFox4Id); SFX.bark(); game.hearts(rig.group.position.x, 0.6, rig.group.position.z, 3);
+          game.toast('🦊 "*trots a tight circle around the cat, tail low, then peels off toward the deeper ferns*"'); } });
       }
     }
     else {
