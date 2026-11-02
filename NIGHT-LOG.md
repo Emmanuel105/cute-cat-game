@@ -23577,3 +23577,36 @@ count unchanged at 329 (no new collider, as expected) and Robot City's own frien
 browser, no Playwright) — only the stub-three test suite and the headless probe described above.
 Probe scripts deleted after use, nothing committed. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 866 — Candy Land's own game of jacks
+
+Every playground game this log has ever rolled out — hopscotch, marbles, catch, tag, dominoes, the
+skateboard girl just last round — started in one world and spread to the rest in turn. Jacks never
+crossed over to any of the seven worlds at all, Candy Land included, for all its own marbles ring a
+few rounds back.
+
+**A girl now kneels on the open grass south-east of the sweet-lands, candy-striped jacks scattered in
+front of her and a small banded bouncy ball resting where it last came down.** *"Threw it up, grabbed
+four, caught it again — your turn, if you can manage it with paws."* *"Careful, puss — swat one of
+these into the grass and I'm starting the whole round over."* *"Six jacks down, one bounce between
+each. Nobody in this land's ever beaten my best."* Saying hello makes her the usual kind of friend.
+
+No new controller: `Kneeler`'s own patting gesture already reads as scooping jacks off the grass, the
+same reading the marbles flick and the hopscotch chalk already lean on — this is a placement, not a
+build. Six tiny jacks (three thin crossed cylinders each, the same crossed-stick trick the pinwheels
+elsewhere in this game already use for their own blades) and one candy-striped ball (the gumball's own
+red-and-white banding, just unmottled) are loose static mesh on the grass — no new physics box, same
+reasoning the marbles ring and the dominoes pips already bank on.
+
+A headless probe (`game.start('new')`, `game.travel(1, 'from-prev')` waited out through its real
+portal-fade timer, then 1800 simulated frames sampling every NPC's own position every sixth frame)
+swept a fine grid of the open grass south-east of the castle against both those samples and every one
+of the land's 1902 physics boxes: (46.5, 18) came back clearest, 9.8 m clear of the nearest box (a
+candy-cane trunk) and 10.0 m clear of the nearest wandering soul — well short of the cane-forest ring
+and clear of every other hand-placed prop in that corner of the land.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329 (no new collider, as expected) and Candy Land's own friend count rose from 93 to 94.
+No visual check was possible in this environment (no browser, no Playwright) — only the stub-three
+test suite and the headless probe described above. Probe script deleted after use, nothing committed.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

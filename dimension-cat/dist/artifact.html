@@ -13917,6 +13917,57 @@ function buildCandyLand(game, entry) {
     game.npcs.push(new Kneeler(game, skater, { x: kx, z: kz, ry,
       cries: ['One more bolt and it should hold.', "Careful, puss — candy canes don't move, no matter how fast you go.", 'Sugar rush and four wheels — nothing in this land stands a chance.'] })); }
 
+  // every playground game Candy Land has picked up over the rounds — hopscotch, marbles, catch, tag,
+  // dominoes, the skateboard girl just above — started life in some other world first; jacks never
+  // crossed over to any of the seven at all. A girl now kneels on the open grass south-east of the
+  // sweet-lands, candy-striped jacks scattered in front of her and a small banded bouncy ball resting
+  // where it last came down. *"Threw it up, grabbed four, caught it again — your turn, if you can
+  // manage it with paws."* *"Careful, puss — swat one of these into the grass and I'm starting the
+  // whole round over."* *"Six jacks down, one bounce between each. Nobody in this land's ever beaten
+  // my best."* Saying hello makes her the usual kind of friend.
+  //
+  // No new controller: `Kneeler`'s own patting gesture (55-npcs.js) already reads as scooping jacks off
+  // the grass, the same reading the marbles flick and the hopscotch chalk already lean on — a placement,
+  // not a build. `Kneeler`'s constructor calls `greetable()` itself, so no extra wiring. Six tiny jacks
+  // (three thin crossed cylinders each, meeting at a point, the same crossed-stick trick the pinwheels
+  // elsewhere in this game already use for their own blades) and one candy-striped ball (the same
+  // red-and-white banding the catch game's own gumball already paints on, just unmottled) are loose
+  // static mesh on the grass, no physics box — same reasoning the marbles ring and the dominoes pips
+  // already bank on: too small and flat for anything to catch on.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(1, 'from-prev')` waited out through its real portal-fade timer,
+  // then 1800 simulated frames sampling every NPC's own position every sixth frame) swept a fine grid
+  // of the open grass south-east of the castle (radius 20-54 from the origin — inside the cane-forest
+  // ring's own 56 m inner edge, and clear of the chocolate river's own z-band) against both those
+  // samples and every one of the land's 1902 physics boxes: (46.5, 18) came back clearest, 9.8 m clear
+  // of the nearest box (a candy-cane trunk at [44, 8]) and 10.0 m clear of the nearest wandering soul,
+  // well short of the cane-forest ring itself and clear of every other hand-placed prop in this corner
+  // of the land.
+  //
+  // Built dead last, right after the skateboard girl, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off this land's own shared `r()` sequence unconditionally, and anything
+  // built earlier would have had its own timing-sensitive pick shifted by it.
+  { const px = 46.5, pz = 18, kx = px - 0.9, kz = pz, kry = atan2(px - kx, pz - kz);
+    const jackM = mat(0xff6fb5, { roughness: 0.4, metalness: 0.15 });
+    for (const [jx, jz] of [[-0.18, 0.1], [0.08, -0.14], [0.2, 0.08], [-0.05, -0.2], [0.12, 0.2], [-0.22, -0.05]]) {
+      const jack = group(px + jx, 0.02, pz + jz, W);
+      mesh(G.sphere(0.012, 6, 5), jackM, { shadow: 'none', parent: jack });
+      mesh(G.cyl(0.01, 0.01, 0.08, 6), jackM, { shadow: 'none', parent: jack });
+      mesh(G.cyl(0.01, 0.01, 0.08, 6), jackM, { rz: PI / 2, shadow: 'none', parent: jack });
+      mesh(G.cyl(0.01, 0.01, 0.08, 6), jackM, { rx: PI / 2, shadow: 'none', parent: jack });
+      jack.rotation.y = r() * TAU;
+    }
+    const ball = group(px + 0.3, 0.045, pz + 0.22, W);
+    mesh(G.sphere(0.045, 12, 8), mat(0xffffff, { roughness: 0.3 }), { parent: ball });
+    mesh(G.sphere(0.0452, 12, 8), mat(0xd62839, { roughness: 0.3 }), { sx: 0.5, shadow: 'none', parent: ball });
+    mesh(G.sphere(0.0452, 12, 8), mat(0xd62839, { roughness: 0.3 }), { sz: 0.5, shadow: 'none', parent: ball });
+    const jacksWard = makeWardrobe(r, { shirts: [0xff9ecf, 0x7fe0ff, 0xffe27a], pants: [0xfff3b0, 0xbfe7ff] });
+    const jacksKid = makeHuman({ ...randomPerson(r, { female: true, child: true, wardrobe: jacksWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(jacksKid.group);
+    game.npcs.push(new Kneeler(game, jacksKid, { x: kx, z: kz, ry: kry,
+      cries: ['Threw it up, grabbed four, caught it again — your turn, if you can manage it with paws.', "Careful, puss — swat one of these into the grass and I'm starting the whole round over.", "Six jacks down, one bounce between each. Nobody in this land's ever beaten my best."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
