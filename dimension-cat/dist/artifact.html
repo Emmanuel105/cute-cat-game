@@ -19630,6 +19630,27 @@ function buildBeach(game, entry) {
       tailParent = joint; tailY = -tl - tr * 0.6;
     }
     const seahorseLines = ['🐠 "Hangs on by the tail and lets the whole pool drift past it."', '🐠 "Doesn\'t dart like the little fish past the rocks — just bobs, upright, and waits."', '🐠 "Not a fish shaped like a horse. The other way round, if you ask it."'];
+    // the pool's other open corner, clear of the grass, the starfish's patch and the anemone, had never
+    // had anything in it either. The dry sand already has a jellyfish of its own (round 442-ish, beached
+    // and limp), so this one is a comb jelly instead, to read as its own thing rather than a second copy
+    // of a prop that already exists a few metres away: a small translucent oval that pulses and drifts,
+    // with a faint rainbow shimmer down its sides standing in for the real animal's beating cilia bands.
+    // Local (0.55, 0.22, -0.5): 0.74 m off pool centre (inside the 0.9 m water disc, short of the rock
+    // ring at 1.02), 0.43 m clear of the anemone and 0.52 m clear of the starfish's randomised patch at
+    // its nearest corner. Its pulse and drift are folded into the pool's own existing `userData.update`
+    // closure and driven purely off the world clock `t`, same as the seahorse's own bob just above,
+    // never this world's seeded `r`, so nothing later in the build shifts.
+    const combM = mat(0xcfe6ea, { roughness: 0.2, transparent: true, opacity: 0.6 });
+    const comb = group(0.55, 0.22, -0.5, pool.group);
+    mesh(G.sphere(0.075, 10, 8), combM, { sy: 1.5, sz: 0.55, parent: comb });
+    const stripeM = [mat(0xff9fd6, { roughness: 0.3, transparent: true, opacity: 0.55 }), mat(0x9fe0ff, { roughness: 0.3, transparent: true, opacity: 0.55 }), mat(0xcaff9f, { roughness: 0.3, transparent: true, opacity: 0.55 })];
+    const combStripes = [];
+    const cn = 4;
+    for (let i = 0; i < cn; i++) { const a = (i / cn - 0.5) * TAU * 0.4;
+      const hinge = group(0, 0, 0, comb); hinge.rotation.z = a;
+      noInk(mesh(G.capsule(0.006, 0.13, 4), stripeM[i % stripeM.length], { x: 0.075, parent: hinge }));
+      combStripes.push(hinge); }
+    const combLines = ['🪼 "Not a jellyfish — a comb jelly. No sting, just a soft little drift and a shimmer of colour down its sides."', '🪼 "Beat its own tiny paddles in a ripple straight down its body, same as that beached one on the sand never will again."', '🪼 "Older than jellyfish, older than bones. Just never in a hurry about it."'];
     const poolLines = ['🪸 "Touch the water, and watch it flinch — not you, puss, the anemone."', '⭐ "That starfish hasn\'t moved all week. Starfish don\'t, much."', '🪸 "Pulls in tight the second a shadow crosses it. Give it a minute - it opens right back up."'];
     let poolOpen = 1, poolNear = false;
     pool.group.userData.update = (dt, t) => {
@@ -19640,12 +19661,16 @@ function buildBeach(game, entry) {
       pool.water.map.offset.x = t * 0.01;
       seahorse.position.y = 0.16 + sin(t * 0.9) * 0.012;
       seahorse.rotation.y = 0.6 + sin(t * 0.7) * 0.1;
+      comb.position.y = 0.22 + sin(t * 0.8) * 0.018;
+      comb.rotation.y = sin(t * 0.4) * 0.3;
+      for (let i = 0; i < cn; i++) combStripes[i].scale.x = 0.7 + sin(t * 2.2 + i * 0.6) * 0.3;
       if (isNear && !poolNear) { poolNear = true; SFX.wave(); game.toast(rnd.pick(poolLines), 3000);
         game.fx.emit(tpx, P.ground0(tpx, tpz) + 0.15, tpz, { count: 8, colors: [0xbfe8ff, 0xffffff], speed: 0.6, up: 0.6, life: 0.6, gravity: 1.5 }); }
       if (!isNear) poolNear = false;
     };
     placeT(game, U, pool.group, tpx, tpz, r() * TAU);
-    game.addInteractable({ obj: seahorse, radius: 1.1, label: () => 'Look at the seahorse', onUse: () => { SFX.click(); game.toast(rnd.pick(seahorseLines), 3000); } }); }
+    game.addInteractable({ obj: seahorse, radius: 1.1, label: () => 'Look at the seahorse', onUse: () => { SFX.click(); game.toast(rnd.pick(seahorseLines), 3000); } });
+    game.addInteractable({ obj: comb, radius: 1.0, label: () => 'Look at the comb jelly', onUse: () => { SFX.click(); game.toast(rnd.pick(combLines), 3000); } }); }
 
   // the Neighborhood (395), Robot City (425), Victorian (426) and Candy Land (427) have all had a go at
   // the same back-garden toss game by now — a horseshoe, a coupling ring, a brass quoit, a gummy ring —

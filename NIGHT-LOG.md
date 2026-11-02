@@ -23291,3 +23291,40 @@ No visual check was possible in this environment (no browser, no Playwright) —
 suite and the headless probe described above. This closes out every fox this loop ever placed; only
 the deer (`i===12`) and butterfly (`i===11`) picks remain in this loop, left for future rounds. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 857 — Sunny Shore's tide pool finally gets a comb jelly
+
+Round 778 put the pool's first swimmer in it — a seahorse hanging tail-first off a blade of planted
+sea grass — but the pool's other open corner, clear of the grass, the starfish's patch and the
+anemone, had sat empty ever since. The beach already has a jellyfish of its own, beached and limp in
+the dry sand, so this round gives the pool a comb jelly instead: a different animal, so it reads as
+its own thing rather than a second copy of a prop already a few metres away.
+
+**A small comb jelly now drifts in the tide pool south of the lighthouse** — a translucent oval that
+pulses gently with a faint shimmer rippling down four comb-rows along its sides, a few feet across the
+water from the seahorse. *"🪼 Not a jellyfish — a comb jelly. No sting, just a soft little drift and a
+shimmer of colour down its sides."* *"🪼 Older than jellyfish, older than bones. Just never in a hurry
+about it."*
+
+New mesh, same inline idiom the seahorse already uses in `72-world-beach.js` (right after the
+seahorse block, inside the tide pool's own `{ ... }` scope): a `G.sphere` body stretched into an oval
+on `sy`/`sz`, four `noInk`'d thin capsules on hinge groups standing in for the comb-rows, all parented
+straight onto `pool.group` at local `(0.55, 0.22, -0.5)`. The pulse, the rainbow-shimmer squash and a
+slow drift-and-yaw are folded into the pool's own existing `userData.update` closure (the one that
+already drives the anemone's flinch and the seahorse's bob) and driven purely off the world clock `t`,
+never this world's seeded `r`, so nothing later in the build shifts. It's a "look" prop only —
+`game.addInteractable` and nothing else, no `namedFriend` — so Sunny Shore's own friend count is
+untouched. No new physics box either: the pool has none of its own, same shallow-puddle treatment as
+everything else living in it.
+
+A headless probe (`game.start('new')`, `game.travel(4, 'from-hub')` waited out against the portal's
+own real fade timer, then 200 simulated frames with the comb jelly's own world position re-read every
+frame via `getWorldPosition`) found it clear by 2.51 m of the nearest physics box and 6.09 m of the
+nearest wandering soul, and 1.32 m of the nearest other interactable (the seahorse itself, sharing the
+same small pool) — outside the comb jelly's own 1.0 m prompt radius. Firing its `onUse` left the score
+untouched, as expected for a look-only prop. Probe script deleted after use, nothing committed.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329 (no new physics box, as expected). No visual check was possible in this environment
+(no browser, no Playwright) — only the stub-three test suite and the headless probe described above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
