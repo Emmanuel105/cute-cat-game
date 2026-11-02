@@ -2600,6 +2600,31 @@ function buildNeighborhood(game, entry) {
     game.npcs.push(new Kneeler(game, skater, { x: skx, z: skz, ry: bry,
       cries: ["Just the back truck — nearly got it.", "Careful, puss — mind your tail, these wheels bite.", "Cleared the kerb outside number twelve. Almost."] })); }
 
+  // every wheeled-toy vignette on this street answers to a kid kneeling beside something parked — the
+  // scooter, the skateboard above, both bikes — but no world in the whole game has ever had a wagon,
+  // the one toy every actual front yard keeps by the porch. A boy now kneels on the open grass loading
+  // acorns into a little red wagon one at a time. New prop `makeWagon()` (60-props.js): a bed on four
+  // wheels with a steel tow handle resting on the grass where he dropped it, the same build-a-prop-
+  // then-`place()` trick the skateboard just above already uses. `Kneeler` again for the boy himself —
+  // its own patting gesture already reads as dropping another acorn in, so this is a placement, not a
+  // new controller (own fixed shirt colour 0x6fcf97, not in the street's shared 18-colour `ward` bag
+  // nor any other fixed shirt this build hands out; placed right after the skateboard girl, so it draws
+  // from this world's own local `r()` sequence one step later and disturbs no earlier neighbour's
+  // wardrobe or colour pick).
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real
+  // Neighborhood, ran `game.start('new')` so every stroller, the postie and the cyclist actually moved,
+  // sampled every NPC's own position every ninth frame over 300 simulated seconds, then swept a 1 m
+  // grid of the whole walkable disc against both those samples and every one of the street's physics
+  // boxes: (25, -49) came back clear by 20.9 m of the nearest box and 8.6 m of the nearest other soul,
+  // comfortably inside the world's own 95 m movement limit and clear of every road, pavement and path
+  // `game.zones` tracks.
+  { const wx = 25, wz = -49, bx = wx + 0.8, bz = wz, bry = atan2(wx - bx, wz - bz);
+    const wagon = makeWagon(0xc1272d); place(game, U, wagon, bx, bz, bry);
+    const wagonWard = makeWardrobe(r, { shirts: [0x6fcf97], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x3a2a1e, 0x2a2018] });
+    const hauler = makeHuman({ ...randomPerson(r, { female: false, child: true, wardrobe: wagonWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false }); W.add(hauler.group);
+    game.npcs.push(new Kneeler(game, hauler, { x: wx, z: wz, ry: atan2(bx - wx, bz - wz),
+      cries: ["Found six more by the fence — might need a bigger wagon.", "Careful, puss — not for riding in, these ones are mine.", "Nearly full. One more lap round the yard and I'm done."] })); }
+
   // Victorian's had a hot air balloon since round 438, Robot City an airship since round 439, Sunny
   // Shore a biplane since round 440 and Candy Land a tumbling gumball since round 441 — every one of
   // those skies had something crossing it but the Neighborhood's own, the first world anyone sees,

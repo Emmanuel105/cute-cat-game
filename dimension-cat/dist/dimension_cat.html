@@ -5651,6 +5651,21 @@ function makeSkateboard(color = 0xff6fb5) {
   }
   return g;
 }
+/** A little red wagon: a bed on four wheels with a steel tow handle resting on the ground. Faces +z. */
+function makeWagon(color = 0xc1272d) {
+  const g = new THREE.Group(), bedM = mat(color, { roughness: 0.55, metalness: 0.15 }), wheelM = mat(0x1e1a18, { roughness: 0.8 }), hubM = mat(0xc8ccd2, { metalness: 0.6, roughness: 0.4 }), steel = mat(0x8a8f96, { metalness: 0.6, roughness: 0.4 });
+  const bedY = 0.2;
+  mesh(G.box(0.46, 0.18, 0.78), bedM, { y: bedY, parent: g });
+  for (const x of [-0.24, 0.24]) for (const z of [-0.33, 0.33]) {
+    mesh(G.cyl(0.09, 0.09, 0.04, 14), wheelM, { x, y: 0.09, z, rz: PI / 2, parent: g });
+    mesh(G.cyl(0.025, 0.025, 0.044, 10), hubM, { x, y: 0.09, z, rz: PI / 2, shadow: 'none', parent: g });
+  }
+  const tongue = group(0, bedY, 0.39, g); tongue.rotation.x = 1.7;
+  mesh(G.cyl(0.018, 0.018, 0.62, 8), steel, { y: 0.31, parent: tongue });
+  const grip = group(0, 0.62, 0, tongue);
+  mesh(G.torus(0.06, 0.012, 6, 16), steel, { rx: PI / 2, shadow: 'none', parent: grip });
+  return g;
+}
 /** A bicycle: two wheels, a frame, handlebars, a saddle and a crank. Faces +z; `wheels` and `crank` turn. */
 function makeBike(color = 0xd62839) {
   const g = new THREE.Group(), frame = mat(color, { roughness: 0.4, metalness: 0.3 }), dark = mat(0x1e1a18, { roughness: 0.8 }), rim = mat(0xc8ccd2, { metalness: 0.6, roughness: 0.4 });
@@ -10875,6 +10890,31 @@ function buildNeighborhood(game, entry) {
     const skater = makeHuman({ ...randomPerson(r, { female: true, child: true, wardrobe: skateWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false }); W.add(skater.group);
     game.npcs.push(new Kneeler(game, skater, { x: skx, z: skz, ry: bry,
       cries: ["Just the back truck — nearly got it.", "Careful, puss — mind your tail, these wheels bite.", "Cleared the kerb outside number twelve. Almost."] })); }
+
+  // every wheeled-toy vignette on this street answers to a kid kneeling beside something parked — the
+  // scooter, the skateboard above, both bikes — but no world in the whole game has ever had a wagon,
+  // the one toy every actual front yard keeps by the porch. A boy now kneels on the open grass loading
+  // acorns into a little red wagon one at a time. New prop `makeWagon()` (60-props.js): a bed on four
+  // wheels with a steel tow handle resting on the grass where he dropped it, the same build-a-prop-
+  // then-`place()` trick the skateboard just above already uses. `Kneeler` again for the boy himself —
+  // its own patting gesture already reads as dropping another acorn in, so this is a placement, not a
+  // new controller (own fixed shirt colour 0x6fcf97, not in the street's shared 18-colour `ward` bag
+  // nor any other fixed shirt this build hands out; placed right after the skateboard girl, so it draws
+  // from this world's own local `r()` sequence one step later and disturbs no earlier neighbour's
+  // wardrobe or colour pick).
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real
+  // Neighborhood, ran `game.start('new')` so every stroller, the postie and the cyclist actually moved,
+  // sampled every NPC's own position every ninth frame over 300 simulated seconds, then swept a 1 m
+  // grid of the whole walkable disc against both those samples and every one of the street's physics
+  // boxes: (25, -49) came back clear by 20.9 m of the nearest box and 8.6 m of the nearest other soul,
+  // comfortably inside the world's own 95 m movement limit and clear of every road, pavement and path
+  // `game.zones` tracks.
+  { const wx = 25, wz = -49, bx = wx + 0.8, bz = wz, bry = atan2(wx - bx, wz - bz);
+    const wagon = makeWagon(0xc1272d); place(game, U, wagon, bx, bz, bry);
+    const wagonWard = makeWardrobe(r, { shirts: [0x6fcf97], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x3a2a1e, 0x2a2018] });
+    const hauler = makeHuman({ ...randomPerson(r, { female: false, child: true, wardrobe: wagonWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false }); W.add(hauler.group);
+    game.npcs.push(new Kneeler(game, hauler, { x: wx, z: wz, ry: atan2(bx - wx, bz - wz),
+      cries: ["Found six more by the fence — might need a bigger wagon.", "Careful, puss — not for riding in, these ones are mine.", "Nearly full. One more lap round the yard and I'm done."] })); }
 
   // Victorian's had a hot air balloon since round 438, Robot City an airship since round 439, Sunny
   // Shore a biplane since round 440 and Candy Land a tumbling gumball since round 441 — every one of

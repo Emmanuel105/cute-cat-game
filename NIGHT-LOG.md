@@ -23610,3 +23610,38 @@ unchanged at 329 (no new collider, as expected) and Candy Land's own friend coun
 No visual check was possible in this environment (no browser, no Playwright) — only the stub-three
 test suite and the headless probe described above. Probe script deleted after use, nothing committed.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 867 — the Neighborhood finally gets a little red wagon
+
+The Neighborhood has had a kid on a scooter, a skateboarder and a parked bike for a while now — every
+wheeled toy a street kid actually owns, except the one nearly every real front yard keeps leaning by
+the porch: the little red wagon. It had never shown up anywhere in the whole game, in any of the seven
+worlds, until now.
+
+**A boy now kneels on the open grass loading acorns into a little red wagon, one at a time.**
+*"Found six more by the fence — might need a bigger wagon."* *"Careful, puss — not for riding in,
+these ones are mine."* *"Nearly full. One more lap round the yard and I'm done."* Saying hello makes
+him the usual kind of friend.
+
+New prop `makeWagon()` (`60-props.js`): a red bed on four small wheels with a steel tow handle tipped
+down to rest near the grass, built the same box-and-cylinder way the skateboard and scooter already
+are. No new controller — `Kneeler` again, the exact same patting gesture the skateboard girl right
+before him already leans on to read as checking a bolt, here reading as dropping another acorn in.
+Own fixed shirt colour (0x6fcf97), not already in this street's shared wardrobe bag or any other kid's
+fixed colour in this build; placed immediately after the skateboard girl in the file, so it draws from
+this world's own local `r()` sequence one step later and disturbs no earlier neighbour's own wardrobe
+or colour pick.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses) built the real Neighborhood,
+ran `game.start('new')` so every stroller, the postie and the cyclist actually moved, sampled every
+NPC's own position every ninth frame over 300 simulated seconds, then swept a 1 m grid of the whole
+walkable disc against both those samples and every one of the street's own physics boxes: (25, -49)
+came back clear by 20.9 m of the nearest box and 8.6 m of the nearest other soul, comfortably inside
+the world's own 95 m movement limit and clear of every road, pavement and path `game.zones` tracks.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329 (no new collider — the wagon and the boy's own greet circle are the only new things,
+same as the skateboard before it) and the Neighborhood's own friend count rose from 83 to 84. No
+visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
+suite and the headless probe described above. Probe script deleted after use, nothing committed.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

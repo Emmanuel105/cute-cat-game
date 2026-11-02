@@ -687,6 +687,21 @@ function makeSkateboard(color = 0xff6fb5) {
   }
   return g;
 }
+/** A little red wagon: a bed on four wheels with a steel tow handle resting on the ground. Faces +z. */
+function makeWagon(color = 0xc1272d) {
+  const g = new THREE.Group(), bedM = mat(color, { roughness: 0.55, metalness: 0.15 }), wheelM = mat(0x1e1a18, { roughness: 0.8 }), hubM = mat(0xc8ccd2, { metalness: 0.6, roughness: 0.4 }), steel = mat(0x8a8f96, { metalness: 0.6, roughness: 0.4 });
+  const bedY = 0.2;
+  mesh(G.box(0.46, 0.18, 0.78), bedM, { y: bedY, parent: g });
+  for (const x of [-0.24, 0.24]) for (const z of [-0.33, 0.33]) {
+    mesh(G.cyl(0.09, 0.09, 0.04, 14), wheelM, { x, y: 0.09, z, rz: PI / 2, parent: g });
+    mesh(G.cyl(0.025, 0.025, 0.044, 10), hubM, { x, y: 0.09, z, rz: PI / 2, shadow: 'none', parent: g });
+  }
+  const tongue = group(0, bedY, 0.39, g); tongue.rotation.x = 1.7;
+  mesh(G.cyl(0.018, 0.018, 0.62, 8), steel, { y: 0.31, parent: tongue });
+  const grip = group(0, 0.62, 0, tongue);
+  mesh(G.torus(0.06, 0.012, 6, 16), steel, { rx: PI / 2, shadow: 'none', parent: grip });
+  return g;
+}
 /** A bicycle: two wheels, a frame, handlebars, a saddle and a crank. Faces +z; `wheels` and `crank` turn. */
 function makeBike(color = 0xd62839) {
   const g = new THREE.Group(), frame = mat(color, { roughness: 0.4, metalness: 0.3 }), dark = mat(0x1e1a18, { roughness: 0.8 }), rim = mat(0xc8ccd2, { metalness: 0.6, roughness: 0.4 });
