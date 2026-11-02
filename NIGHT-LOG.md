@@ -23040,3 +23040,30 @@ something it can never actually touch. No visual check was possible in this envi
 Playwright) — only the stub-three test suite and the headless probe described above. The other seven
 seagulls are left for future rounds, same one-at-a-time pattern as everywhere else in this log.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 848 — Sunny Shore's second seagull becomes a friend
+
+Round 847 gave the first of the beach's eight circling seagulls a "Say hello" prompt, proving a
+`Flyer` is just as reachable as a ground-level `Wanderer` since `80-game.js`'s own nearest-interactable
+scan only compares x/z distance, never height. The other seven were left mute. This round gives the
+second (i===1) the same treatment, in `68-regions.js`'s `beachRegion`.
+
+**The beach's second circling seagull now answers "Say hello to the seagull" too** —
+*"🐦 *skims low over the water, snatches at the foam, then screeches back up into its circle*"* — a
+different beat from the first (which wheels, cries and banks), so the two don't read as copies of each
+other. Same fix as everywhere else in this log: `game.namedFriend('outer-seagull-2')` (a distinct id so
+it stacks with `outer-seagull` rather than overwriting it) plus a `game.addInteractable` keyed straight
+to the rig's own `group`, reusing `SFX.gull()`. No new mesh, no new physics box, and no extra `r()`
+draw: the fix sits entirely inside the existing loop body, after the `Flyer` that already adds the rig
+to the scene, so it shifts no later pick in this build.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 329
+(no new collider, as expected). A headless probe (`game.start('new')`, `game.travel(4, 'from-hub')`
+waited out through its real portal-fade timer, then 1600 simulated frames so every far-shore `Flyer`
+actually orbits into range) found both "Say hello to the seagull" interactables in the world; firing
+both produced `beach:outer-seagull` and `beach:outer-seagull-2` as distinct entries in
+`game.state.friends`, confirming the second seagull stacks rather than overwrites the first. No visual
+check was possible in this environment (no browser, no Playwright) — only the stub-three test suite and
+the headless probe described above. The other six seagulls are left for future rounds, same
+one-at-a-time pattern as everywhere else in this log. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

@@ -7839,6 +7839,19 @@ function beachRegion(game, U, r, inner, outer) {
         game.befriend(outerGullId); SFX.gull(); game.hearts(rig.group.position.x, rig.group.position.y, rig.group.position.z, 3);
         game.toast('🐦 "*wheels low with a sharp cry, banks hard over the cat, then climbs back out over the waves*"'); } });
     }
+    // Round 847 gave the first of these eight circling `Flyer`s a voice, on the strength of
+    // `80-game.js`'s own nearest-interactable scan being height-blind (`dist2` only ever compares x/z).
+    // The second (i===1) gets the same treatment now, with its own id so it stacks rather than
+    // overwrites, and a different beat from the first so the two don't read as copies of each other.
+    // No new mesh, no new physics box, no extra `r()` draw: the fix sits entirely inside this loop's
+    // own body, after the `Flyer` that already adds `rig.group` to the scene, so it costs nothing from
+    // this world's own seeded sequence and shifts no later pick in this build.
+    else if (i === 1) {
+      const outerGull2Id = game.namedFriend('outer-seagull-2');
+      game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the seagull', onUse: () => {
+        game.befriend(outerGull2Id); SFX.gull(); game.hearts(rig.group.position.x, rig.group.position.y, rig.group.position.z, 3);
+        game.toast('🐦 "*skims low over the water, snatches at the foam, then screeches back up into its circle*"'); } });
+    }
   }
 }
 
