@@ -23513,3 +23513,34 @@ Victorian's own friend count rose by one. No visual check was possible in this e
 browser, no Playwright) — only the stub-three test suite and the headless probe described above.
 Probe script deleted after use, nothing committed. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 864 — Victorian's canal angler finally gets a bite worth having
+
+The old-timer on the canal's north bank has grumbled *"Not a bite in this canal all week"* since the
+round that built him — the exact same joke Frosty Peak's ice fisherman told for 73 rounds before round
+862 finally put a trout under his hole. Nobody had ever closed the matching gap here: the canal had
+boats, ducks, an angler and a mudlark, but nothing had ever actually lived in the water his own line
+drops into.
+
+**A small olive-grey canal fish now keeps station just under the water's surface at the exact spot his
+line targets, nosing into the current with a slow tail-sweep and an occasional turn.** No dialogue of
+its own — a "Look at the fish" prompt instead, with three toasts, one aimed at the angler's own bad
+luck: *"The one that's kept the old-timer on that bank all week, line in and nothing to show for it."*
+
+No new mechanism: this is the identical "perched; only animates" trick round 862's trout (and the
+seal and otter before it) already used — a small hand-built mesh (capsule body, cone tail and dorsal
+fin, a bead for an eye) with its own `userData.update` bobbing and turning off the world clock `t`,
+placed with `place()` (Victorian is a flat-floor world, not a terrain one, so no `placeT()`) at the
+angler's own `holeX`/`holeZ` (15, 28.6). No new physics box, matching the canal's own boats, which
+already prove nothing floating on this water needs one. Checked by hand rather than a probe script
+this time, since the only neighbours are fixed points already on record: 4.2 m from the angler's own
+2.1 m greet circle (centred on his seat at 15, 24.4, 0.8 m clear even against this fish's own 1.3 m
+radius), and tens of metres from the mudlark (-10, 37.3) and the dragonflies further east (30, 30). A
+fixed colour throughout, no draw from this world's own seeded `r`, so nothing later in this build
+(the mudlark's wardrobe, the dragonflies, every basket past this point) shifts.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329 (no new collider, as expected) and Victorian's own friend count unchanged at 110 (no
+`namedFriend`, same as the trout before it — this is flavour, not a new friend). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite described
+above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

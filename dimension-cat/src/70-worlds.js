@@ -8539,6 +8539,35 @@ function buildVictorian(game, entry) {
       hat: 'flatcap', hatColor: 0x3a3327, coat: true, scarf: null, jacket: null, buttons: null, cane: false, glasses: r.chance(0.25) }); W.add(angler.group);
     game.npcs.push(new IceFisher(game, angler, makeIceStool(), { x: 15, z: 24.4, ry: 0, holeX: 15, holeZ: 28.6, holeY: -0.3,
       cries: ['Not a bite in this canal all week.', 'Caught a boot once. Best catch all month.', 'Mind the towpath, puss.'] })); }
+  // the angler's own line has dipped into this canal all week without a single bite — the same gap
+  // round 862 closed for Frosty Peak's ice-fishing hole with a trout. A small canal fish now keeps
+  // station just under the water's surface at the exact spot his own line targets, nose into the
+  // current, with a slow tail-sweep and an occasional turn — the same "perched; only animates" trick
+  // that trout (and the seal and otter before it) already use: `t`-driven position and rotation in a
+  // local `fish.userData.update`, no controller, no leash. No new physics box: the canal's own boats
+  // already prove nothing floating on this water needs one. A fixed colour throughout, not drawn from
+  // this world's own seeded `r`, so nothing later in this build (the mudlark's wardrobe, the
+  // dragonflies, every basket past this point) shifts. Sitting at the angler's own holeX/holeZ (15,
+  // 28.6), it's 4.2 m from his own 2.1 m greet circle (centred on his seat at (15, 24.4)) — clear with
+  // 0.8 m to spare even against this fish's own 1.3 m radius — and well short of the mudlark (-10,
+  // 37.3) and the dragonflies further east at (30, 30).
+  { const fx = 15, fz = 28.6, fy0 = -0.38;
+    const fishM = mat(0x5a6a52, { roughness: 0.4 });
+    const fish = new THREE.Group();
+    mesh(G.capsule(0.06, 0.2, 8), fishM, { rz: PI / 2, parent: fish });
+    const tail = group(-0.17, 0, 0, fish);
+    mesh(G.cone(0.1, 0.13, 4), fishM, { rz: -PI / 2, sz: 0.3, x: -0.03, parent: tail });
+    noInk(mesh(G.cone(0.035, 0.06, 4), fishM, { y: 0.075, rz: PI, sx: 0.3, parent: fish }));
+    const eyeM = mat(0x1a1a1a, { roughness: 0.3 });
+    mesh(G.sphere(0.014, 6, 5), eyeM, { x: 0.12, y: 0.015, z: 0.045, parent: fish });
+    const fishLines = ['🐟 "Noses into the current, just under where the hook dangles, and never once takes it."', '🐟 "The one that\'s kept the old-timer on that bank all week, line in and nothing to show for it."', '🐟 "Flicks its tail, turns, and goes right back to ignoring the hook above it."'];
+    fish.userData.update = (dt, t) => {
+      fish.position.y = fy0 + sin(t * 0.7) * 0.02;
+      fish.rotation.y = sin(t * 0.35) * 0.5;
+      tail.rotation.y = sin(t * 2.6) * 0.3;
+    };
+    place(game, U, fish, fx, fz, 0, fy0);
+    game.addInteractable({ obj: fish, radius: 1.3, label: () => 'Look at the fish', onUse: () => { SFX.click(); game.toast(rnd.pick(fishLines), 3000); } }); }
   // the angler above has the near bank; the far bank, well past the water, had nobody at all — and a trade
   // as Victorian as the chimney sweep was still missing from the whole town: no mudlark had ever worked the
   // canal's mud for what the boats drop. One kneels on the grass just past the far wall now, a wicker pan
