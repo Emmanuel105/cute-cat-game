@@ -23093,3 +23093,31 @@ confirming the third seagull stacks rather than overwrites the first two. No vis
 this environment (no browser, no Playwright) — only the stub-three test suite and the headless probe
 described above. The other five seagulls are left for future rounds, same one-at-a-time pattern as
 everywhere else in this log. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 850 — Sunny Shore's fourth seagull becomes a friend
+
+Rounds 847-849 gave the first three of the beach's eight circling seagulls a "Say hello" prompt,
+proving a `Flyer` is just as reachable as a ground-level `Wanderer` since `80-game.js`'s own
+nearest-interactable scan only ever compares x/z distance, never height. This round gives the fourth
+(i===3) the same treatment, in `68-regions.js`'s `beachRegion`.
+
+**The beach's fourth circling seagull now answers "Say hello to the seagull" too** —
+*"🐦 *hangs almost still on the wind, wings beating hard, then peels away with a squawk*"* — a
+hover-against-the-wind beat, different from the first three (wheel-and-bank, skim-and-snatch,
+dive-and-pull-up), so none of the four read as copies of each other. Same fix as everywhere else in
+this log: `game.namedFriend('outer-seagull-4')` (a distinct id so it stacks with the other three
+rather than overwriting any of them) plus a `game.addInteractable` keyed straight to the rig's own
+`group`, reusing `SFX.gull()`. No new mesh, no new physics box, and no extra `r()` draw: the fix sits
+entirely inside the existing loop body, after the `Flyer` that already adds the rig to the scene, so it
+shifts no later pick in this build.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 329
+(no new collider, as expected). A headless probe (`game.start('new')`, `game.travel(4, 'from-hub')`
+waited out through its real portal-fade timer, then 1600 simulated frames so every far-shore `Flyer`
+orbits into range) found all four "Say hello to the seagull" interactables in the world; firing all
+four produced `beach:outer-seagull`, `beach:outer-seagull-2`, `beach:outer-seagull-3` and
+`beach:outer-seagull-4` as distinct entries in `game.state.friends`, confirming the fourth seagull
+stacks rather than overwrites the first three. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe described above. The
+other four seagulls are left for future rounds, same one-at-a-time pattern as everywhere else in this
+log. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
