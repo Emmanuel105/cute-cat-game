@@ -13891,6 +13891,39 @@ function buildCandyLand(game, entry) {
   // unconditionally.
   { const web = place(game, U, makeSpiderweb(r), -14, -86, atan2(0 - -14, 0 - -86)); }
 
+  // The Neighborhood, Robot City and Sunny Shore all have a kid kneeling by a skateboard
+  // (`makeSkateboard()`, 60-props.js, paired with `Kneeler`, 55-npcs.js) — Candy Land, same flat
+  // ground as Robot City's factory floor, never got one of its own. **A girl now kneels in the
+  // quiet grass south of the sweet-lands, checking her mint-green board's back truck before she
+  // tries it again.** *"One more bolt and it should hold."* *"Careful, puss — candy canes don't
+  // move, no matter how fast you go."* *"Sugar rush and four wheels — nothing in this land stands
+  // a chance."* Saying hello makes her the usual kind of friend.
+  //
+  // No new mechanism: `makeSkateboard()` and `Kneeler` already exist and already pair for the
+  // Neighborhood's own skateboard girl; `Kneeler`'s constructor calls `greetable()` itself. No new
+  // physics box either — same as every other board in this game, it's thin and flat enough that
+  // nothing needs to collide with it.
+  //
+  // A headless probe (`game.start('new')`, `game.travel(1, 'from-hub')` waited out through its real
+  // portal-fade timer, then a grid of the open grass south of the gingerbread cottage swept against
+  // 2000 simulated frames of every NPC's own position, every physics box and every `game.zones`
+  // rect) found (-16, -80) clearest of the candidates tried: 10.9 m clear of the nearest box, 14.1 m
+  // clear of the nearest zone rect and 13.7 m clear of both the nearest wandering soul and the
+  // nearest other interactable (the candy-cane stilt walker's own patrol line) — well past the
+  // candy-cane belt (radius 56-76) and clear of the spiderweb at (-14, -86) and the stilt walker's
+  // line at (2-8, -82).
+  //
+  // Built dead last, right after the spiderweb, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off this land's shared `r()` sequence unconditionally, and anything
+  // built earlier would have had its own timing-sensitive pick shifted by it.
+  { const sx = -16, sz = -80, kx = sx + 0.9, kz = sz, ry = atan2(sx - kx, sz - kz);
+    const board = makeSkateboard(0x4ad9b0); place(game, U, board, sx, sz, 0.3);
+    const skateWard = makeWardrobe(r, { shirts: [0x4ad9b0], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x3a2a1e, 0x2a2018] });
+    const skater = makeHuman({ ...randomPerson(r, { female: true, child: true, wardrobe: skateWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(skater.group);
+    game.npcs.push(new Kneeler(game, skater, { x: kx, z: kz, ry,
+      cries: ['One more bolt and it should hold.', "Careful, puss — candy canes don't move, no matter how fast you go.", 'Sugar rush and four wheels — nothing in this land stands a chance.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

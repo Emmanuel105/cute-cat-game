@@ -23387,3 +23387,36 @@ overwrites the first three. No visual check was possible in this environment (no
 Playwright) — only the stub-three test suite and the headless probe described above. Probe script
 deleted after use, nothing committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 860 — Candy Land finally gets its own skateboard kid
+
+The Neighborhood (round 141), Robot City (round 797) and Sunny Shore (round 800) all have a kid
+kneeling by a skateboard (`makeSkateboard()`, 60-props.js, paired with `Kneeler`, 55-npcs.js) — Candy
+Land, whose ground is exactly as flat as Robot City's own factory floor, never got one of its own.
+
+**A girl now kneels in the quiet grass south of the sweet-lands, checking her mint-green board's back
+truck before she tries it again** — *"One more bolt and it should hold."* *"Careful, puss — candy
+canes don't move, no matter how fast you go."* *"Sugar rush and four wheels — nothing in this land
+stands a chance."* Saying hello makes her the usual kind of friend, same as every other kneeling kid
+in this game.
+
+No new mechanism: `makeSkateboard()` and `Kneeler` already exist and already pair for the three
+other worlds' own skateboard kids; `Kneeler`'s constructor calls `greetable()` itself, so no extra
+wiring was needed. No new physics box either — same as every other board in this game, it's thin and
+flat enough that nothing needs to collide with it.
+
+A headless probe (`game.start('new')`, `game.travel(1, 'from-hub')` waited out through its real
+portal-fade timer, then a grid of the open grass south of the gingerbread cottage swept against 2000
+simulated frames of every NPC's own position, every physics box and every `game.zones` rect) found
+(-16, -80) clearest of the candidates tried: 10.9 m clear of the nearest box, 14.1 m clear of the
+nearest zone rect and 13.7 m clear of both the nearest wandering soul and the nearest other
+interactable — past the candy-cane belt (radius 56-76) and clear of the spiderweb at (-14, -86) and
+the stilt walker's patrol line at (2-8, -82). Built dead last in `buildCandyLand()`, right after the
+spiderweb, since `makeHuman()` and `randomPerson()` both draw off the land's shared `r()` sequence
+unconditionally.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329 (no new physics box) and Candy Land's own friend count rose from 92 to 93. No visual
+check was possible in this environment (no browser, no Playwright) — only the stub-three test suite
+and the headless probe described above. Probe script deleted after use, nothing committed. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
