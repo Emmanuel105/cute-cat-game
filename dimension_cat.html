@@ -7902,6 +7902,16 @@ function beachRegion(game, U, r, inner, outer) {
         game.befriend(outerGull7Id); SFX.gull(); game.hearts(rig.group.position.x, rig.group.position.y, rig.group.position.z, 3);
         game.toast('🐦 "*tips sideways to ride the updraft along the dune, then rights itself with a sharp cry*"'); } });
     }
+    // The eighth and last (i===7), same stacking id pattern, its own beat so none of the eight read
+    // alike (wheel-and-bank, skim-and-snatch, dive-and-pull-up, hover-against-the-wind, circle-and-call,
+    // shadow-chase, updraft-tip, this one rolls once onto its side mid-flight before gliding out in a
+    // long silent arc) — and closes out all eight of the beach's circling seagulls as friends.
+    else if (i === 7) {
+      const outerGull8Id = game.namedFriend('outer-seagull-8');
+      game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the seagull', onUse: () => {
+        game.befriend(outerGull8Id); SFX.gull(); game.hearts(rig.group.position.x, rig.group.position.y, rig.group.position.z, 3);
+        game.toast('🐦 "*rolls once onto its side mid-flight, rights itself with a flap, then glides out in a long silent arc*"'); } });
+    }
   }
 }
 

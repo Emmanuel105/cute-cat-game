@@ -23204,3 +23204,33 @@ the first six. No visual check was possible in this environment (no browser, no 
 the stub-three test suite and the headless probe described above. Only the eighth and last seagull is
 left for a future round, same one-at-a-time pattern as everywhere else in this log. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 854 — Sunny Shore's eighth and last seagull becomes a friend
+
+Rounds 847-853 gave the first seven of the beach's eight circling seagulls a "Say hello" prompt, each
+with its own `game.namedFriend` id and its own beat so none of them read as copies of each other. This
+round gives the eighth and last (`i===7`) the same treatment, in `68-regions.js`'s `beachRegion`,
+closing out the loop.
+
+**The beach's eighth circling seagull now answers "Say hello to the seagull" too** —
+*"🐦 *rolls once onto its side mid-flight, rights itself with a flap, then glides out in a long silent
+arc*"* — a roll-and-glide beat, different from the first seven (wheel-and-bank, skim-and-snatch,
+dive-and-pull-up, hover-against-the-wind, circle-and-call, shadow-chase, updraft-tip), so none of the
+eight read as copies of each other. Same fix as everywhere else in this log:
+`game.namedFriend('outer-seagull-8')` (a distinct id so it stacks with the other seven rather than
+overwriting any of them) plus a `game.addInteractable` keyed straight to the rig's own `group`, reusing
+`SFX.gull()`. No new mesh, no new physics box, and no extra `r()` draw: the fix sits entirely inside
+the existing loop body, after the `Flyer` that already adds the rig to the scene, so it shifts no later
+pick in this build.
+
+`node test/run.mjs` ran clean three times in a row: exit 0, all checks `ok`, 0 console warnings, box
+count unchanged at 329 (no new collider, as expected). A headless probe (`game.start('new')`,
+`game.travel(4, 'from-hub')`, a real 700ms wait for the portal's own `setTimeout`-based fade, then 1600
+simulated frames so every far-shore `Flyer` orbits into range) found all eight "Say hello to the
+seagull" interactables in the world; firing all eight produced `beach:outer-seagull` through
+`beach:outer-seagull-8` as eight distinct entries in `game.state.friends`, confirming the eighth
+seagull stacks rather than overwrites the first seven. No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite and the headless probe
+described above. This closes out all eight of Sunny Shore's circling seagulls as friends — every wild
+creature `fillRing` scatters across the beach now answers "Say hello." Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
