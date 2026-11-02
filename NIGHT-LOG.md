@@ -23452,3 +23452,29 @@ unchanged at 329 (no new physics box) and Victorian's own friend count rose from
 visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
 suite and the headless probe described above. Probe script deleted after use, nothing committed.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 862 — Frosty Peak's ice-fishing hole finally gets a fish
+
+The angler's rod has dipped into the ice hole at the village pond since round one, and his own cry
+("Not a bite in an hour...") has never been more than flavour text — in 73 rounds of worldbuilding
+nothing ever actually lived in that water. Sunny Shore's tide pool got the same treatment back in
+round 798 (a seahorse and a comb jelly); the ice hole never did.
+
+**A small trout now keeps station just under the hole's surface, nose into the current, giving a
+slow tail-sweep and an occasional lazy turn.** No voice line of its own — a "Look at the fish"
+prompt instead, with three toasts of commentary, one of them aimed squarely at the angler: *"The one
+that's kept the angler on that stool for an hour and counting."*
+
+No new mechanism: this is the same "perched; only animates" trick the seal and otter already use
+further round the mountain — a small hand-built mesh (capsule body, cone tail and dorsal fin, a bead
+for an eye) with its own `userData.update` bobbing and turning off the world clock `t`, registered
+through `placeT` exactly like every other terrain prop in this world. No new physics box (it floats
+flush with the hole's own thin ice disc, the same reasoning every other perched creature in this game
+already relies on) and no interference with the angler's own `IceFisher` controller, which keeps its
+periodic "Got one!" bite exactly as it was — the fish is a separate, independent decoration a couple
+of metres off, not wired to that timer at all.
+
+`node test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box count unchanged
+at 329 (no new collider, as expected). No visual check was possible in this environment (no browser,
+no Playwright) — only the stub-three test suite described above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

@@ -20618,6 +20618,32 @@ function buildSnowVillage(game, entry) {
       hat: 'beanie', hatColor: 0x3a4a5a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a }); W.add(angler.group);
     game.npcs.push(new IceFisher(game, angler, makeIceStool(), { x: 18, z: 14.3, ry: PI, holeX: 18, holeZ: 11.5, holeY,
       cries: ['Not a bite in an hour...', "Careful, puss, don't scare them off.", 'Best fishing hole on the mountain, this.'] })); }
+  // the angler's rod has dipped into this hole since round one, but nothing has ever actually lived
+  // in the water itself — the same gap round 798 closed for Sunny Shore's tide pool with a seahorse
+  // and a comb jelly. A small trout now keeps station just under the hole's surface, nose into the
+  // current, with a slow tail-sweep and an occasional turn — the same "perched; only animates" trick
+  // the seal and otter further round the mountain already use: `t`-driven position and rotation in a
+  // local `fish.userData.update`, no controller, no leash. No new physics box: it floats flush with
+  // the hole's own thin disc, well under anything a collider would catch, same reasoning as those two.
+  // Its colour is the only draw off this world's own seeded `r()`, made once at build time, so nothing
+  // later in this build shifts.
+  { const fx = 18, fz = 11.5, fy0 = P.ground0(fx, fz) + 0.03;
+    const fishM = mat(r.pick([0x6a8aa8, 0x7a9a7a, 0x8a7a5a]), { roughness: 0.4 });
+    const fish = new THREE.Group();
+    mesh(G.capsule(0.06, 0.2, 8), fishM, { rz: PI / 2, parent: fish });
+    const tail = group(-0.17, 0, 0, fish);
+    mesh(G.cone(0.1, 0.13, 4), fishM, { rz: -PI / 2, sz: 0.3, x: -0.03, parent: tail });
+    noInk(mesh(G.cone(0.035, 0.06, 4), fishM, { y: 0.075, rz: PI, sx: 0.3, parent: fish }));
+    const eyeM = mat(0x1a1a1a, { roughness: 0.3 });
+    mesh(G.sphere(0.014, 6, 5), eyeM, { x: 0.12, y: 0.015, z: 0.045, parent: fish });
+    const fishLines = ['🐟 "Noses into the current, never quite far enough up to make a splash — or a meal."', '🐟 "The one that\'s kept the angler on that stool for an hour and counting."', '🐟 "Flicks its tail, turns, and goes right back to doing nothing at all."'];
+    fish.userData.update = (dt, t) => {
+      fish.position.y = fy0 + sin(t * 0.7) * 0.02;
+      fish.rotation.y = sin(t * 0.35) * 0.5;
+      tail.rotation.y = sin(t * 2.6) * 0.3;
+    };
+    placeT(game, U, fish, fx, fz, 0, 0.03);
+    game.addInteractable({ obj: fish, radius: 1.3, label: () => 'Look at the fish', onUse: () => { SFX.click(); game.toast(rnd.pick(fishLines), 3000); } }); }
   // two friends stand on the pond's far bank, working up the nerve to skate
   { const talkWard = makeWardrobe(r, { shirts: [0x5a6a4a, 0x8a3a3a, 0x3a4a6a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
     const skaterA = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: false, wardrobe: talkWard }),
