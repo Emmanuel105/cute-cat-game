@@ -23356,3 +23356,34 @@ outer ones); firing the last one produced `forest:outer-deer-5` as a new, distin
 first four. No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite and the headless probe described above. Probe script deleted after use, nothing
 committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 859 — Whisper Woods' fourth and last outer-country butterfly becomes a friend
+
+This round closes out the last gap in `forestRegion`'s fourteen-pick outer-country loop in
+`68-regions.js`: rounds 814 through 858 had already answered every deer (i=0,3,6,9,12) and every fox
+(i=1,4,7,10,13), and rounds 826/828/837 had answered the butterfly branch's first three picks
+(i=2,5,8), leaving only i=11, the branch's fourth and last pick, still unmet going into this round.
+
+**The fourth and last outer-country butterfly now answers "Say hello to the butterfly" too** —
+*"🦋 *spirals upward in a widening loop, catching the light, then vanishes into the canopy*"* — a
+spiral-and-vanish beat, different from the other three (loop-around-the-head, land-on-the-head,
+dip-low-then-rise), so none of the four read as copies of each other. Same fix as the rest of this
+loop: `game.namedFriend('outer-butterfly-4')` (a distinct id so it stacks with the other three rather
+than overwriting any of them) plus a `game.addInteractable` keyed straight to the rig's own `group`,
+reusing `SFX.twinkle()` since nothing in the butterfly branch has a bark or click to borrow. `Flyer`
+already adds the rig to the scene in its own constructor, so no scene-graph wiring was needed, no new
+mesh, no new physics box, and no extra `r()` draw — the fix sits entirely inside the existing loop
+body, after the `Flyer` that already exists, so it shifts no later pick in this build. With this,
+every one of the loop's fourteen outer-country deer/fox/butterfly picks now answers "Say hello" —
+the whole census that rounds 817/818 first turned up is closed.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 329
+(no new collider, as expected). A headless probe (`game.start('new')`, `game.travel(6, 'from-hub')`, a
+real 700ms wait for the portal's own `setTimeout`-based fade, then 1800 simulated frames) found 4
+"Say hello to the butterfly" interactables in the world (the loop's full set, i=2,5,8,11); firing all
+four produced `forest:outer-butterfly` through `forest:outer-butterfly-4` as four distinct entries in
+`game.state.friends` (friend count 0 → 4), confirming the fourth butterfly stacks rather than
+overwrites the first three. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite and the headless probe described above. Probe script
+deleted after use, nothing committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.

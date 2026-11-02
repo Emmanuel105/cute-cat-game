@@ -8248,6 +8248,20 @@ function forestRegion(game, U, r, inner, outer) {
           game.befriend(outerButterfly3Id); SFX.twinkle(); game.hearts(rig.group.position.x, rig.group.position.y, rig.group.position.z, 3);
           game.toast('🦋 "*dips low on its loop for just a moment, wings catching the light, then rises back out of reach*"'); } });
       }
+      // The round above closed this loop's third butterfly (i===8); this is its fourth and last
+      // (i===11, the next i%3===2 pick), left just as unmet by the same `makeButterfly()` rig that
+      // nothing had ever given a `game.namedFriend` id. Same fix, a fourth distinct id so it stacks
+      // with the first three rather than replacing any of them, and a line of its own: this one spirals
+      // upward out of reach rather than circling the cat's head, landing on it, or dipping low. This
+      // closes out every butterfly this loop ever placed — and with the deer and fox branches already
+      // closed out in rounds 858 and 856, every one of this loop's fourteen outer-country picks now
+      // answers "Say hello" too.
+      else if (i === 11) {
+        const outerButterfly4Id = game.namedFriend('outer-butterfly-4');
+        game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the butterfly', onUse: () => {
+          game.befriend(outerButterfly4Id); SFX.twinkle(); game.hearts(rig.group.position.x, rig.group.position.y, rig.group.position.z, 3);
+          game.toast('🦋 "*spirals upward in a widening loop, catching the light, then vanishes into the canopy*"'); } });
+      }
     }
   }
 }
