@@ -8082,7 +8082,7 @@ function forestRegion(game, U, r, inner, outer) {
   // its usual 11 m leash — wired up after the `Wanderer` already exists, so it draws nothing extra from
   // this world's own seeded `r()` and shifts no later pick in this build. No new mesh, no new physics
   // box. The other thirteen are being closed one at a time, same pattern as everywhere else; as of this
-  // round, deer i=12, fox i=13 and butterfly i=11 are what's left.
+  // round, only butterfly i=11 is left.
   for (let i = 0; i < 14; i++) {
     const a = r() * TAU, d = r.range(inner, outer * 0.85), x = cos(a) * d, z = sin(a) * d;
     if (i % 3 === 0) {
@@ -8126,6 +8126,19 @@ function forestRegion(game, U, r, inner, outer) {
         game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the deer', onUse: () => {
           game.befriend(outerDeer4Id); SFX.rustle(); game.hearts(rig.group.position.x, 1.1, rig.group.position.z, 3);
           game.toast('🦌 "*keeps right on eating, only flicking one ear toward the cat to show it noticed*"'); } });
+      }
+      // The i%3===0 branch's fifth and last deer (i===12, the next multiple of three after rounds
+      // 819/822/852/here's i===0, i===3, i===6 and i===9), left just as unmet by the same `makeDeer()`
+      // rig with none of `.look`/`.robot`/`.cookie` that `Wanderer`'s own `greetable()` quietly skips.
+      // Same fix, a fifth distinct id so it stacks with the first four, and a line of its own: this one
+      // stamps a hoof and snorts before bounding off, rather than freezing, stepping away, backing off
+      // or simply continuing to eat. This closes out every deer this loop ever placed — only the
+      // butterfly (i===11) pick remains.
+      else if (i === 12) {
+        const outerDeer5Id = game.namedFriend('outer-deer-5');
+        game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the deer', onUse: () => {
+          game.befriend(outerDeer5Id); SFX.rustle(); game.hearts(rig.group.position.x, 1.1, rig.group.position.z, 3);
+          game.toast('🦌 "*stamps one hoof, snorts softly, then bounds off into the deeper trees*"'); } });
       }
     }
     else if (i % 3 === 1) {

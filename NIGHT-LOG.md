@@ -23328,3 +23328,31 @@ untouched, as expected for a look-only prop. Probe script deleted after use, not
 unchanged at 329 (no new physics box, as expected). No visual check was possible in this environment
 (no browser, no Playwright) — only the stub-three test suite and the headless probe described above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 858 — Whisper Woods' fifth and last outer-country deer becomes a friend
+
+Round 857's comb jelly closed out Sunny Shore's tide pool; this round goes back to `forestRegion`'s
+own fourteen-pick outer-country loop in `68-regions.js`, which rounds 814/817/822/852 had already
+chipped away at for the deer branch (`i%3===0`, picks i=0, 3, 6, 9) — only the fifth and last, i=12,
+was still left unanswered, same gap the fox branch (i=1/4/7/10/13) finished off two rounds ago.
+
+**The fifth and last outer-country deer now answers "Say hello to the deer" too** —
+*"🦌 *stamps one hoof, snorts softly, then bounds off into the deeper trees*"* — a stamp-and-snort
+beat, different from the other four (bolt-in-three-bounds, step-behind-a-fern, back-away-three-steps,
+keep-eating-flick-an-ear), so none of the five read as copies of each other. Same fix as everywhere
+else in this log: `game.namedFriend('outer-deer-5')` (a distinct id so it stacks with the other four
+rather than overwriting any of them) plus a `game.addInteractable` keyed straight to the rig's own
+`group`, reusing `SFX.rustle()`. No new mesh, no new physics box, and no extra `r()` draw: the fix
+sits entirely inside the existing loop body, after the `Wanderer` that already adds the rig to the
+scene, so it shifts no later pick in this build. This closes out every deer this loop ever placed;
+only the butterfly (i===11) pick remains in this loop, left for a future round.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 329
+(no new collider, as expected). A headless probe (`game.start('new')`, `game.travel(6, 'from-hub')`, a
+real 700ms wait for the portal's own `setTimeout`-based fade, then 1800 simulated frames) found 8 "Say
+hello to the deer" interactables in the world (the three hand-built glade deer plus this loop's five
+outer ones); firing the last one produced `forest:outer-deer-5` as a new, distinct entry in
+`game.state.friends` (friend count 0 → 1), confirming the fifth deer stacks rather than overwrites the
+first four. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite and the headless probe described above. Probe script deleted after use, nothing
+committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
