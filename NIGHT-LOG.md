@@ -23478,3 +23478,38 @@ of metres off, not wired to that timer at all.
 at 329 (no new collider, as expected). No visual check was possible in this environment (no browser,
 no Playwright) — only the stub-three test suite described above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 863 — Victorian finally gets its own crossing guard
+
+The Neighborhood has had someone minding its own side-road junction since round 772 — a lollipop
+sign raised and lowered every few seconds while cars, a cyclist and the postie go by. Victorian has
+every bit as much street traffic (a horse and carriage, a telegram boy's bicycle, a bobby on the
+beat) crossing the very spot where the lane up to the market square meets the street, but nobody had
+ever actually watched that junction.
+
+**A crossing sweeper now stands on the south pavement right where the lane meets the street, sign
+raised overhead every few seconds just like the Neighborhood's own guard, dressed for the period
+rather than in hi-vis.** *"Mind the carriage, now."* *"Wait for the sign, if you please."* *"Thirty
+years on this crossing — not a soul run down yet."* Saying hello makes the usual kind of friend.
+
+No new mechanism: `CrossingGuard` (55-npcs.js) already exists for the Neighborhood's own junction and
+builds its own sign-on-a-pole mesh and raise/lower cycle itself; this round just points a fresh
+`makeHuman()` rig at it in Victorian's own flat-cap-and-coat palette. No new physics box beyond the
+controller's own 0.35 m circle, same as the Neighborhood's.
+
+A headless probe (`game.start('new')`, `game.travel(3, 'from-hub')` waited out through its real
+portal-fade timer, then 2000 simulated frames sampling every NPC's own position every 10th frame)
+swept the pavement either side of the lane's own crossing point against both that trace and every
+physics box in town: (-4, -5.6) came back clearest, 1.9 m clear of the nearest box (the fence past
+the lane's own gap in the terrace) and 4.3 m clear of the nearest other soul — past the carriage's
+own lane, the telegram boy's and the bobby's own patrol rectangle, with the lane itself a clear 1.7 m
+to the east. Built dead last in `buildVictorian()`, right after the hedgehog and right before the
+squirrel, since `makeHuman()` and `randomPerson()` both draw off the town's own shared `r()` sequence
+unconditionally.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329 (no new physics box, as expected — the controller uses its own circle collider) and
+Victorian's own friend count rose by one. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe described above.
+Probe script deleted after use, nothing committed. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
