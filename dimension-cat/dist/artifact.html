@@ -7736,8 +7736,7 @@ function beachRegion(game, U, r, inner, outer) {
   // interactable is wired up after its own Wanderer already exists, so it costs nothing in the shared
   // `rnd()` or this world's own seeded sequence and shifts no later pick in this build. The eight
   // seagulls below (never given a voice at all, since nothing in this log has touched
-  // `makeSeagull()`/`Flyer` yet — they circle well above head height, so befriending one for real will
-  // likely need a change to how it's reached, not just a line of dialogue) are left for a future round.
+  // `makeSeagull()`/`Flyer` yet) are left for a future round — see the note just above that loop.
   for (let i = 0; i < 10; i++) {   // crabs and gulls all the way down the shore
     const z = r.range(-outer * 0.8, outer * 0.8);
     const rig = makeCrab(r.pick([0xe8492b, 0xff7043, 0xc62828])); W.add(rig.group);
@@ -7818,7 +7817,29 @@ function beachRegion(game, U, r, inner, outer) {
       game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the crab', onUse: () => { game.befriend(driftCrab10Id); SFX.chitter(); game.hearts(rig.group.position.x, 0.5, rig.group.position.z, 3); game.toast('🦀 "*spins a quick half circle, kicking up a spray of sand, then faces the cat head-on*"'); } });
     }
   }
-  for (let i = 0; i < 8; i++) { const rig = makeSeagull({ phase: i * 1.7 }); game.npcs.push(new Flyer(game, rig, { cx: r.range(-30, 16), cz: r.range(-outer * 0.7, outer * 0.7), r: r.range(10, 20), h: r.range(6, 14), speed: r.range(3.5, 5), bob: 1.2, wobble: 3, cw: i % 2 === 0, phase: i })); }
+  // Every wild creature `fillRing` scatters across the sand now answers "Say hello" as of round 846's
+  // tenth crab, leaving only these eight circling seagulls — written off above as needing "a change to
+  // how it's reached" since they loop 6-14 m up, well over the cat's head. That assumption turns out to
+  // be wrong: round 826's outer-country butterfly already proved it, and the reason is in `80-game.js`
+  // itself — the nearest-interactable scan compares `dist2(pos.x, pos.z, tmpV.x, tmpV.z)`, which never
+  // looks at height, so a cat walking under a `Flyer`'s orbit is just as in range as one standing next
+  // to it on the ground. The first of the eight (i===0) now answers "Say hello to the seagull" too,
+  // same `game.namedFriend` + `game.addInteractable` fix as every other creature in this log, using
+  // `SFX.gull()` — already written in `30-audio.js`, just never called until now. `Flyer` already adds
+  // `rig.group` to the scene itself, so only the interactable is new, wired up right after the `Flyer`
+  // already exists so it draws nothing extra from this world's own seeded `r()` and shifts no later
+  // pick in this build. No new mesh, no new physics box. The other seven seagulls are left for future
+  // rounds, same one-at-a-time pattern as everywhere else in this log.
+  for (let i = 0; i < 8; i++) {
+    const rig = makeSeagull({ phase: i * 1.7 });
+    game.npcs.push(new Flyer(game, rig, { cx: r.range(-30, 16), cz: r.range(-outer * 0.7, outer * 0.7), r: r.range(10, 20), h: r.range(6, 14), speed: r.range(3.5, 5), bob: 1.2, wobble: 3, cw: i % 2 === 0, phase: i }));
+    if (i === 0) {
+      const outerGullId = game.namedFriend('outer-seagull');
+      game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the seagull', onUse: () => {
+        game.befriend(outerGullId); SFX.gull(); game.hearts(rig.group.position.x, rig.group.position.y, rig.group.position.z, 3);
+        game.toast('🐦 "*wheels low with a sharp cry, banks hard over the cat, then climbs back out over the waves*"'); } });
+    }
+  }
 }
 
 // ---------------------------------------------------------------- Frosty Peak

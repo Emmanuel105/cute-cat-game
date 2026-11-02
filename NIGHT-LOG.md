@@ -23011,3 +23011,32 @@ marching trio, the hermit crab, and all ten far-shore crabs); firing all of them
 tenth crab stacks rather than overwrites. No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite and the headless probe described above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 847 — Sunny Shore's first seagull becomes a friend
+
+Round 846 closed out the last of Sunny Shore's ten far-shore crabs, leaving only the beach's eight
+circling seagulls on the "left for a future round" list — and every earlier entry assumed a flying
+creature would need some new way to be reached, since `makeSeagull()`/`Flyer` loop them 6-14 m over
+the sand, well above the cat's head. That assumption was already wrong by round 826: Whisper Woods'
+outer-country butterflies proved a `Flyer` is just as reachable as a ground-level `Wanderer`, because
+`80-game.js`'s own nearest-interactable scan only ever compares `dist2(pos.x, pos.z, tmpV.x, tmpV.z)`
+— it never looks at height. Walking under a seagull's orbit puts the cat in range exactly like walking
+up to anything standing on the sand.
+
+**The beach's first circling seagull now answers "Say hello to the seagull" too** —
+*"🐦 *wheels low with a sharp cry, banks hard over the cat, then climbs back out over the waves*"* —
+using `game.namedFriend('outer-seagull')` plus a `game.addInteractable` keyed straight to the rig's own
+`group`, wired up right after the `Flyer` already exists (which adds the rig to the scene itself, so no
+extra scene-graph wiring was needed) and with `SFX.gull()` — a cry already written in `30-audio.js` but
+never actually called anywhere until now. No new mesh, no new physics box, and no extra `r()` draw: the
+fix costs nothing from this world's own seeded sequence and shifts no later pick in this build.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 329
+(no new collider, as expected). A headless probe (`game.start('new')`, `game.load(4, 'from-hub')`, then
+400 simulated frames so every far-shore `Flyer` and `Wanderer` actually places) found the new "Say
+hello to the seagull" interactable in the world; firing it produced `beach:outer-seagull` in
+`game.state.friends`, confirming the height-blind proximity check really does let the cat befriend
+something it can never actually touch. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite and the headless probe described above. The other seven
+seagulls are left for future rounds, same one-at-a-time pattern as everywhere else in this log.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
