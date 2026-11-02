@@ -7868,6 +7868,15 @@ function beachRegion(game, U, r, inner, outer) {
         game.befriend(outerGull4Id); SFX.gull(); game.hearts(rig.group.position.x, rig.group.position.y, rig.group.position.z, 3);
         game.toast('🐦 "*hangs almost still on the wind, wings beating hard, then peels away with a squawk*"'); } });
     }
+    // The fifth (i===4), same stacking id pattern, its own beat so none of the five read alike
+    // (wheel-and-bank, skim-and-snatch, dive-and-pull-up, hover-against-the-wind, this one circles
+    // twice calling out before dropping low to skim its own reflection).
+    else if (i === 4) {
+      const outerGull5Id = game.namedFriend('outer-seagull-5');
+      game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the seagull', onUse: () => {
+        game.befriend(outerGull5Id); SFX.gull(); game.hearts(rig.group.position.x, rig.group.position.y, rig.group.position.z, 3);
+        game.toast('🐦 "*circles twice, calling out in a long rattling cry, then drops low to skim its own reflection in the shallows*"'); } });
+    }
   }
 }
 
