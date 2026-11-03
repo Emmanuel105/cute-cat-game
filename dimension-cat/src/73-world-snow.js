@@ -190,6 +190,18 @@ function buildSnowVillage(game, entry) {
       hat: 'beanie', hatColor: 0x8a5acf, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a }); W.add(skaterB.group);
     game.npcs.push(new Talkers(game, skaterA, skaterB, { x: 23.5, z: 5, ry: PI / 2,
       lines: ["Think it'll hold, out there?", 'The fisherman swears by it.', "I'm not going first.", "One good crack and I'm off home."] })); }
+  // skaterA and skaterB have stood on the bank working up the nerve to go out since round one and
+  // never once actually have — a third, bolder kid now glides back and forth across the ice itself,
+  // straight down the middle of the pond, well clear of the fisherman's hole and the bank where the
+  // other two are still talking themselves out of it. `Patroller` already walks a fixed route there
+  // and back; nothing here builds a skating gait, so the glide reads as a brisk run rather than a
+  // true skate, but at this distance and speed it is a reasonable stand-in, the same trade-off every
+  // wandering human in this game already makes.
+  { const skaterCWard = makeWardrobe(r, { shirts: [0xc2185b], pants: [0x2a2a2a], shoes: [0x2a2018] });
+    const skaterC = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, wardrobe: skaterCWard }),
+      hat: 'beanie', hatColor: 0xffd166, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a }); W.add(skaterC.group);
+    game.npcs.push(new Patroller(game, skaterC, { points: [[14.5, 8], [21.5, 8]], speed: 1.7, pause: [0.3, 0.8], height: 1.3, r: 0.3,
+      cryIcon: '⛸️', cries: ['Told you it would hold!', "Last one out is a scaredy-sheep!", "Come on, it's not even cracking!"] })); }
   // a birdwatcher stands on a clear rise east of the pond, binoculars trained on the penguin colony below
   { const birdWard = makeWardrobe(r, { shirts: [0x4a6a5a, 0x5a5a7a, 0x6a5a4a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
     const birder = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: birdWard }),

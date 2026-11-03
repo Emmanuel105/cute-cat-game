@@ -23709,3 +23709,39 @@ unchanged at 329 (no new collider, as expected) and the Neighborhood's own frien
 (no browser, no Playwright) — only the stub-three test suite and the headless probe described above.
 Probe script deleted after use, nothing committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 870 — Frosty Peak's pond finally gets someone who actually skates
+
+Two friends have stood on the pond's bank since round one, talking themselves out of going out on
+the ice — "Think it'll hold, out there?", "I'm not going first." They never once actually did. A
+third, bolder kid now glides straight across the middle of the ice itself, well clear of the
+fisherman's hole, turning and going back the other way.
+
+**A kid in a yellow beanie skates back and forth across the pond, right down the middle.**
+*"Told you it would hold!"* *"Last one out is a scaredy-sheep!"* *"Come on, it's not even
+cracking!"* Saying hello makes the usual kind of friend.
+
+No new controller: `Patroller` (`55-npcs.js`) already walks a fixed route there and back, so this is
+a placement, same `greetable()`-on-construction trick every other Patroller already relies on. Two
+points straight across the pond's own radius-5 ice disc ((14.5, 8) to (21.5, 8)), a quick turn at
+each end and a brisk speed (1.7) to read as more of a glide than a stroll — but there is no skating
+gait in this build, so up close it is still an ordinary running walk-cycle, the same honest
+approximation every wandering human here already makes. Own fixed shirt colour (0xc2185b), not
+already in this pond's own nearby wardrobes (the talking pair, the fire-sitters, the cocoa vendor,
+the birdwatcher).
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+`game.travel(5, 'from-hub')` waited out through its real portal-fade timer, then 1800 simulated
+frames sampling every other NPC's own position every sixth frame) swept both ends of the skate path
+and its middle against every one of the mountain's 812 physics boxes: the nearest box stayed 3.3 m
+clear at the closest point checked. The pond colony's own wandering penguins (home spot centred on
+the same pond, leash 9) pass within a metre or so now and again, same as they already do to the
+fisherman and the talking pair — NPCs don't collide with each other in this engine, only with the
+cat and static boxes, so that is expected, not a bug.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329 (new NPC, no new collider — a `Patroller`'s own circle is dynamic, not a static box)
+and Frosty Peak's own friend count rose from 107 to 108. No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite and the headless probe
+described above. Probe script deleted after use, nothing committed. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
