@@ -23816,3 +23816,36 @@ count unchanged at 329 (no new physics box) and Whisper Woods' own friend count 
 115. No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite and the headless probe described above. Probe script deleted after use,
 nothing committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 873 — Robot City finally gets its own game of jacks
+
+The Neighborhood has had a game of jacks since round 1 and got a second one a few rounds back;
+Candy Land picked one up too. It never reached Robot City, Victorian or any of the three terrain
+worlds. **A boy now kneels on the open factory floor, candy-striped jacks scattered in front of
+him and a small banded bouncy ball resting where it last came down.** *"Threw it up, swept up
+three, caught it on the way back down — paws don't count, puss."* *"Mind where you step. Every
+one of these rolls clean under a conveyor if you tip it."* *"Six jacks, no bounce to spare.
+Nobody on this floor's beaten my best either."* Saying hello makes him the usual kind of friend.
+
+No new controller: `Kneeler`'s own patting gesture (55-npcs.js) already reads as scooping jacks
+off the ground, the exact mesh-and-controller pairing the Neighborhood's and Candy Land's own
+jacks games already use — a placement, not a build. `Kneeler`'s constructor calls `greetable()`
+itself, so no extra wiring, and the six tiny jacks plus the banded ball are loose static mesh on
+the floor with no physics box, same reasoning the other two games already bank on: too small and
+flat for anything to catch on. Shirt colour (0xffd60a, bright yellow) is a fixed literal not
+already in Robot City's own cast of fixed-colour characters.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.load(2,
+'from-prev')`, then 3600 simulated frames sampling every NPC's and the squirrel's own position
+every frame) swept the open floor between the skateboard girl's own corner at (-60, -27.5) and the
+spiderweb at (15, 26): (-38, 50) came back 9.6 m clear of the nearest physics box, 44.0 m clear of
+the nearest `game.zones` rect, 13.1 m clear of the nearest wandering soul over the whole run and
+11.0 m off the nearest other interactable — comfortably inside the radius (98) where
+`robotRegion`'s own procedural fill takes over. Built dead last, right after the spiderweb, so
+this one more `r()` draw disturbs nothing built earlier on this floor.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box
+count unchanged at 329 (no new physics box, as expected) and Robot City's own friend count rose
+from 96 to 97. No visual check was possible in this environment (no browser, no Playwright) —
+only the stub-three test suite and the headless probe described above. Probe script deleted after
+use, nothing committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -7928,6 +7928,54 @@ function buildRobotCity(game, entry) {
     const webLines = ['🕸️ "Real silk, real spider — the one thing on this floor nobody built."', '🤖 "Not even the cleaning drones bother with this corner. Lucky, this time."', '😼 "Puss, you did not just try to bat that. Everyone saw."'];
     game.addInteractable({ obj: web, radius: 1.8, label: () => 'Look at the web', onUse: () => { SFX.click(); game.toast(rnd.pick(webLines), 3000); } }); }
 
+  // the Neighborhood (twice over, by now) and Candy Land both have a kid kneeling over a game of
+  // jacks — `makeHuman()` + `Kneeler` scooping candy-striped jacks and a bouncy ball off the ground —
+  // but it never reached Robot City, Victorian or any of the three terrain worlds. A boy now kneels on
+  // the open factory floor, jacks scattered in front of him and a banded bouncy ball resting where it
+  // last came down. *"Threw it up, swept up three, caught it on the way back down — paws don't count,
+  // puss."* *"Mind where you step. Every one of these rolls clean under a conveyor if you tip it."*
+  // *"Six jacks, no bounce to spare. Nobody on this floor's beaten my best either."* Saying hello makes
+  // him the usual kind of friend.
+  //
+  // No new controller: `Kneeler`'s own patting gesture (55-npcs.js) already reads as scooping jacks off
+  // the floor, the same reading the Neighborhood's and Candy Land's own games already lean on — a
+  // placement, not a build. `Kneeler`'s constructor calls `greetable()` itself, so no extra wiring. Six
+  // tiny jacks (three thin crossed cylinders each, meeting at a point) and one candy-striped ball are
+  // loose static mesh on the floor, no physics box — same reasoning the other two games already bank
+  // on: too small and flat for anything to catch on. Shirt colour (0xffd60a) is a fixed literal, not
+  // already in this city's own fixed-colour cast (the skateboard girl's pink, the vendor's orange, the
+  // painter's and the rest).
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.load(2,
+  // 'from-prev')`, then 3600 simulated frames sampling every NPC's and squirrel's own position every
+  // frame) swept the open floor between the skateboard girl's own corner and the spiderweb's: (-38, 50)
+  // came back 9.6 m clear of the nearest box, 44.0 m clear of the nearest `game.zones` rect, 13.1 m
+  // clear of the nearest wandering soul over the whole run and 11.0 m off the nearest other
+  // interactable — well inside the radius (98) where `robotRegion`'s own procedural fill takes over.
+  //
+  // Built dead last, after the spiderweb above, for the usual reason: `makeHuman()` and `randomPerson()`
+  // both draw off this city's own shared `r()` sequence unconditionally, and anything built earlier
+  // would have had its own timing-sensitive pick shifted by it.
+  { const px = -38, pz = 50, kx = px - 0.9, kz = pz, kry = atan2(px - kx, pz - kz);
+    const jackM = mat(0xff6fb5, { roughness: 0.4, metalness: 0.15 });
+    for (const [jx, jz] of [[-0.18, 0.1], [0.08, -0.14], [0.2, 0.08], [-0.05, -0.2], [0.12, 0.2], [-0.22, -0.05]]) {
+      const jack = group(px + jx, 0.02, pz + jz, W);
+      mesh(G.sphere(0.012, 6, 5), jackM, { shadow: 'none', parent: jack });
+      mesh(G.cyl(0.01, 0.01, 0.08, 6), jackM, { shadow: 'none', parent: jack });
+      mesh(G.cyl(0.01, 0.01, 0.08, 6), jackM, { rz: PI / 2, shadow: 'none', parent: jack });
+      mesh(G.cyl(0.01, 0.01, 0.08, 6), jackM, { rx: PI / 2, shadow: 'none', parent: jack });
+      jack.rotation.y = r() * TAU;
+    }
+    const ball = group(px + 0.3, 0.045, pz + 0.22, W);
+    mesh(G.sphere(0.045, 12, 8), mat(0xffffff, { roughness: 0.3 }), { parent: ball });
+    mesh(G.sphere(0.0452, 12, 8), mat(0xd62839, { roughness: 0.3 }), { sx: 0.5, shadow: 'none', parent: ball });
+    mesh(G.sphere(0.0452, 12, 8), mat(0xd62839, { roughness: 0.3 }), { sz: 0.5, shadow: 'none', parent: ball });
+    const jacksWard = makeWardrobe(r, { shirts: [0xffd60a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x3a2a1e, 0x2a2018] });
+    const jacksKid = makeHuman({ ...randomPerson(r, { female: false, child: true, wardrobe: jacksWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(jacksKid.group);
+    game.npcs.push(new Kneeler(game, jacksKid, { x: kx, z: kz, ry: kry,
+      cries: ["Threw it up, swept up three, caught it on the way back down — paws don't count, puss.", 'Mind where you step. Every one of these rolls clean under a conveyor if you tip it.', "Six jacks, no bounce to spare. Nobody on this floor's beaten my best either."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
