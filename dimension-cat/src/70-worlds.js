@@ -10417,6 +10417,56 @@ function buildVictorian(game, entry) {
     W.add(guard.group);
     game.npcs.push(new CrossingGuard(game, guard, { x: -4, z: -5.6, ry: 0,
       cries: ['Mind the carriage, now.', 'Wait for the sign, if you please.', "Thirty years on this crossing — not a soul run down yet."] })); }
+  // the Neighborhood (twice over), Candy Land and Robot City all have a kid kneeling over a game of
+  // jacks by now — it never reached Victorian, past its own scooter kid, bootblack, marbles ring and
+  // hopscotch chalker. A girl now kneels on the open cobbles south-east of the market square, jacks
+  // scattered in front of her and a small banded bouncy ball resting where it last came down.
+  // *"Threw it up, swept up four, caught it on the way back down — paws don't count, puss."*
+  // *"Mind where you kneel. These roll clean into the gutter if you tip one."* *"Six jacks, one bounce
+  // each. Nobody this side of the square has beaten my best yet."* Saying hello makes her the usual
+  // kind of friend.
+  //
+  // No new mechanism: `Kneeler`'s own patting gesture (55-npcs.js) already reads as scooping jacks off
+  // the ground, the exact mesh-and-controller pairing the Neighborhood's, Candy Land's and Robot City's
+  // own jacks games already use — a placement, not a build. `Kneeler`'s constructor calls `greetable()`
+  // itself, so no extra wiring. The six tiny jacks (three thin crossed cylinders each, meeting at a
+  // point) and the one candy-striped ball are loose static mesh on the cobbles, no physics box — same
+  // reasoning the other three games already bank on: too small and flat for anything to catch on.
+  // Shirt colour (0x8a7a3a, a dull mustard) is a fixed literal not already in this town's own
+  // fixed-colour cast (the crossing sweeper's, the bootblack's, the skateboard boy's and the rest).
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // `game.travel(3, 'from-hub')` waited out through its real portal-fade timer, then 3600 simulated
+  // frames sampling every NPC's own position every 5th frame) swept the open cobbles south-east of the
+  // market square against both those samples and all 570 of the town's own physics boxes: (60, -32)
+  // came back clear by 15.45 m of the nearest box and 13.0 m of the nearest wandering soul over the
+  // whole run, at radius 68 from the origin — comfortably short of the radius (88) where
+  // `victorianRegion`'s own procedural fill takes over, clear of every one of `game.zones`'s own
+  // keep-out rectangles, and flat underfoot (ground height 0.000 across the whole 0.6 m footprint).
+  //
+  // Built dead last, right after the crossing sweeper and right before the squirrel, for the reason
+  // every other addition at the end of this function already gives: `makeHuman()` and `randomPerson()`
+  // both draw off this town's own shared `r()` sequence unconditionally, and anything built earlier
+  // would have had its own timing-sensitive pick shifted by it.
+  { const px = 60, pz = -32, kx = px - 0.9, kz = pz, kry = atan2(px - kx, pz - kz);
+    const jackM = mat(0x6a8a9a, { roughness: 0.4, metalness: 0.15 });
+    for (const [jx, jz] of [[-0.18, 0.1], [0.08, -0.14], [0.2, 0.08], [-0.05, -0.2], [0.12, 0.2], [-0.22, -0.05]]) {
+      const jack = group(px + jx, 0.02, pz + jz, W);
+      mesh(G.sphere(0.012, 6, 5), jackM, { shadow: 'none', parent: jack });
+      mesh(G.cyl(0.01, 0.01, 0.08, 6), jackM, { shadow: 'none', parent: jack });
+      mesh(G.cyl(0.01, 0.01, 0.08, 6), jackM, { rz: PI / 2, shadow: 'none', parent: jack });
+      mesh(G.cyl(0.01, 0.01, 0.08, 6), jackM, { rx: PI / 2, shadow: 'none', parent: jack });
+      jack.rotation.y = r() * TAU;
+    }
+    const ball = group(px + 0.3, 0.045, pz + 0.22, W);
+    mesh(G.sphere(0.045, 12, 8), mat(0xffffff, { roughness: 0.3 }), { parent: ball });
+    mesh(G.sphere(0.0452, 12, 8), mat(0xd62839, { roughness: 0.3 }), { sx: 0.5, shadow: 'none', parent: ball });
+    mesh(G.sphere(0.0452, 12, 8), mat(0xd62839, { roughness: 0.3 }), { sz: 0.5, shadow: 'none', parent: ball });
+    const jacksWard = makeWardrobe(r, { shirts: [0x8a7a3a], pants: [0x2a2a2e, 0x3a3327] });
+    const jacksKid = makeHuman({ ...randomPerson(r, { female: true, child: true, wardrobe: jacksWard }), hat: null, scarf: null, jacket: null, coat: null, bag: null, backpack: null, glasses: false });
+    W.add(jacksKid.group);
+    game.npcs.push(new Kneeler(game, jacksKid, { x: kx, z: kz, ry: kry,
+      cries: ["Threw it up, swept up four, caught it on the way back down — paws don't count, puss.", 'Mind where you kneel. These roll clean into the gutter if you tip one.', "Six jacks, one bounce each. Nobody this side of the square has beaten my best yet."] })); }
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);

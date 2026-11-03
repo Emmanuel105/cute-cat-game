@@ -23849,3 +23849,38 @@ count unchanged at 329 (no new physics box, as expected) and Robot City's own fr
 from 96 to 97. No visual check was possible in this environment (no browser, no Playwright) —
 only the stub-three test suite and the headless probe described above. Probe script deleted after
 use, nothing committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 874 — Victorian finally gets its own game of jacks
+
+The Neighborhood (twice over), Candy Land and Robot City all have a kid kneeling over a game of
+jacks by now — it never reached Victorian, past its own scooter kid, bootblack, marbles ring and
+hopscotch chalker. **A girl now kneels on the open cobbles south-east of the market square, jacks
+scattered in front of her and a small banded bouncy ball resting where it last came down.**
+*"Threw it up, swept up four, caught it on the way back down — paws don't count, puss."* *"Mind
+where you kneel. These roll clean into the gutter if you tip one."* *"Six jacks, one bounce each.
+Nobody this side of the square has beaten my best yet."* Saying hello makes her the usual kind of
+friend.
+
+No new mechanism: `Kneeler`'s own patting gesture (55-npcs.js) already reads as scooping jacks off
+the ground, the exact mesh-and-controller pairing the other three worlds' own jacks games already
+use — a placement, not a build. `Kneeler`'s constructor calls `greetable()` itself, so no extra
+wiring. The six tiny jacks and the one candy-striped ball are loose static mesh on the cobbles, no
+physics box — same reasoning the other three games already bank on: too small and flat for
+anything to catch on. Shirt colour (0x8a7a3a, a dull mustard) isn't already in this town's own
+fixed-colour cast.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+`game.travel(3, 'from-hub')` waited out through its real portal-fade timer, then 3600 simulated
+frames sampling every NPC's own position every 5th frame) swept the open cobbles south-east of the
+market square against both those samples and all 570 of the town's own physics boxes: (60, -32)
+came back clear by 15.45 m of the nearest box and 13.0 m of the nearest wandering soul over the
+whole run, at radius 68 from the origin — well short of the radius (88) where `victorianRegion`'s
+own procedural fill takes over, clear of every one of `game.zones`'s own keep-out rectangles, and
+flat underfoot. Built dead last, right after the crossing sweeper, so this one more `r()` draw
+disturbs nothing built earlier in this town.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box
+count unchanged at 329 (no new physics box) and Victorian's own friend count rose from 111 to 112.
+No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite and the headless probe described above. Probe script deleted after use,
+nothing committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
