@@ -23745,3 +23745,39 @@ and Frosty Peak's own friend count rose from 107 to 108. No visual check was pos
 environment (no browser, no Playwright) — only the stub-three test suite and the headless probe
 described above. Probe script deleted after use, nothing committed. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 871 — Frosty Peak finally gets its own skateboard kid
+
+The Neighborhood (round 141), Robot City, Sunny Shore, Candy Land and Victorian all have a kid
+kneeling by a skateboard by now — Frosty Peak and Whisper Woods were the only two worlds left
+without one, same gap this file's own comments already flagged when the scooter kid, the hopscotch
+chalker and the marbles ring each spread here in turn a few dozen rounds back.
+
+**A kid now kneels on the open snowfield east of the marbles ring, checking a skateboard's back
+truck before trying it again on the packed snow.** *"One more bolt and it should hold."*
+*"Careful, puss — these wheels have no manners."* *"Flat as the pond up here — perfect for it."*
+Saying hello makes the usual kind of friend.
+
+No new mechanism: `makeSkateboard()` (60-props.js) and `Kneeler` (55-npcs.js) already pair for
+every other world's own skateboard kid; `Kneeler`'s constructor calls `greetable()` itself. Built
+with the terrain-aware `placeT` (like Sunny Shore's own board) rather than the flat-floor `place()`
+the first four worlds use, since this snowfield slopes gently underfoot too, and `kid()`'s own coat
+and beanie suit the cold better than the other worlds' bare-headed skateboard kids anyway. No new
+physics box — same as every other world's board, it's thin and flat enough that nothing needs to
+collide with it.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+`game.travel(5, 'from-hub')` waited out through its real portal-fade timer, then 1800 simulated
+frames sampling every NPC's and the squirrel's own position every sixth frame) swept a 2 m grid of
+the open snow (radius 27-56, clear of the village's own keep-out circle and short of the radius (58)
+where `snowRegion`'s own fill takes over) against both those samples, every one of the mountain's
+812 physics boxes and every `game.zones` rect: (44, 16) came back clear by 7.3 m of the nearest box,
+14.5 m of the nearest zone rect and 7.1 m of the nearest other soul (the marbles kid, 8 m off), with
+ground height varying only 0.02 m across the whole footprint — flatter than the marbles ring's own
+spot.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329 (no new physics box) and Frosty Peak's own friend count rose from 108 to 109. No
+visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
+suite and the headless probe described above. Probe script deleted after use, nothing committed.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

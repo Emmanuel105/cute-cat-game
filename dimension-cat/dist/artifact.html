@@ -21698,6 +21698,29 @@ function buildSnowVillage(game, entry) {
     const marbleKid = kid(r.chance(0.5));
     game.npcs.push(new Kneeler(game, marbleKid, { x: mkx, z: mkz, ry: mry,
       cries: ["Watch close — I never miss.", "Careful, puss — don't swallow one of these.", "Won every single one, fair and square."] })); }
+  // the Neighborhood (round 141), Robot City, Sunny Shore, Candy Land and Victorian all have a kid kneeling
+  // by a skateboard (`makeSkateboard()` + `Kneeler`) by now — Frosty Peak and Whisper Woods are the only
+  // two worlds left without one. A kid now kneels on the open snowfield east of the marbles ring,
+  // checking the skateboard's back truck before trying it again on the packed snow. Same pairing every
+  // other world's own skateboard kid already uses, built with the terrain-aware `placeT` (like Sunny
+  // Shore's own board) rather than the flat-floor `place()` the first four worlds reach for, since this
+  // snowfield slopes gently underfoot too — `kid()`'s own coat and beanie suit the cold better than the
+  // other worlds' bare-headed skateboard kids anyway. No new physics box: same as every other world's
+  // board, it's thin and flat enough that nothing needs to collide with it.
+  //
+  // A headless probe (`game.start('new')`, `game.travel(5, 'from-hub')` waited out through its real
+  // portal-fade timer, then 1800 simulated frames sampling every NPC's and the squirrel's own position
+  // every sixth frame) swept a 2 m grid of the open snow (radius 27-56, clear of the village's own
+  // keep-out circle and short of the radius (58) where snowRegion's own fill takes over) against both
+  // those samples, every one of the mountain's 812 physics boxes and every `game.zones` rect: (44, 16)
+  // came back clear by 7.3 m of the nearest box, 14.5 m of the nearest zone rect and 7.1 m of the
+  // nearest other soul (the marbles kid, 8 m off), with ground height varying only 0.02 m across the
+  // whole footprint — flatter than the marbles ring's own spot.
+  { const skx = 44, skz = 16, kx = skx + 0.9, kz = skz, ry = atan2(skx - kx, skz - kz);
+    const board = makeSkateboard(0x7fe0ff); placeT(game, U, board, skx, skz, 0.3);
+    const skateKid = kid(r.chance(0.5));
+    game.npcs.push(new Kneeler(game, skateKid, { x: kx, z: kz, ry,
+      cries: ['One more bolt and it should hold.', 'Careful, puss — these wheels have no manners.', "Flat as the pond up here — perfect for it."] })); }
   // the birdwatcher up by the ice pond has her binoculars trained on the penguin colony, same as every round
   // before this one — Candy Land, Sunny Shore and Whisper Woods all got an actual flock wheeling overhead
   // (butterflies, gulls, fairies), but Frosty Peak's own sky, for all its aurora, never had a single real
