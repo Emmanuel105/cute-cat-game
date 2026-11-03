@@ -24331,3 +24331,47 @@ unchanged at 329 (no new collider, as expected), and Whisper Woods' own friend c
 118. No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite and the headless probes described above, all deleted after use, nothing
 committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 887 — Candy Land finally gets a toffee-apple seller
+
+Peppermints at the sweet-stall, cotton candy off the spinning tub, gingerbread warm off the baker's
+tray — the one classic fairground treat threaded onto a stick had never shown up anywhere in the
+land. **A seller now stands on the quiet grass well west of the tag game, a tray of four glossy
+dark-red toffee apples held up for passers-by.** *"Toffee apples, get your toffee apples!"* *"Careful,
+puss — all shell, no stick for you."* *"Dipped fresh this morning. Mind the stick, mind your teeth."*
+
+New prop `makeToffeeApples()` (60-props.js): the same tray-plus-domes shape `makePieTray()` already
+uses, just plain spheres with a thin stick standing out of each instead of lattice-topped pie domes.
+No new controller: `Vendor` (55-npcs.js), the same one every other stall-keeper in this land already
+uses, holds the tray in its off hand and calls its own cries on a timer; `greetable()` is called
+explicitly afterward, the same way the sweet-stall and the cotton-candy seller already do, since
+`Vendor` itself never calls it. No new physics box either — `Vendor`'s own constructor already adds
+its own 0.35 m collision circle, same as every other vendor in the land.
+
+Placed at (-48, -4): a headless probe (`game.start('new')`, `game.travel(1, 'from-prev')` waited out
+through its real portal-fade timer, then 3000 simulated frames sampling every NPC's own position
+every tenth frame) swept the open grass west of the tag game's leash against both those samples and
+every one of the land's 1902 physics boxes. (-48, -4) came back 8.40 m clear of the nearest other box
+(a fixed candy-cane trunk out at the near edge of the 56-76 m forest ring) and 10.07 m clear of the
+nearest wandering soul, at radius 48.2 from the origin — short of that ring, clear of the tag game's
+own 5.5 m leash at (-70, -6), and outside the x-range (-45..45) the land's forty scattered small
+lollipops draw from. It sits 12.65 m from the centre of the gumdrop patch at (-52, 8), inside that
+patch's own 7-22 m scatter annulus — but `makeGumdrops()` draws purely decorative instanced meshes
+with no collider of their own, so the worst case is a gumdrop rendered near the seller's feet, not
+a blocked path; it's the one thing this stub-three probe can't see or rule out without a real
+renderer.
+
+Built dead last, right after the river's own stone skipper (round 883), for the usual reason:
+`makeHuman()` and `randomPerson()` both draw off this land's own shared `r()` sequence
+unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted by
+it. `Vendor`'s own draws (`this.t`, `this.cryT`) come off the shared global `rnd()` instead, so it
+costs nothing later either way.
+
+A second headless probe teleported the cat beside the seller and called `game.interact()`:
+`game.nearest.label()` read "Say hello", and using it took `game.state.friends.size` from 0 to 1. A
+further 300-frame run confirmed the seller's own rig position stayed finite throughout.
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329 (no new collider, as expected), and Candy Land's own friend count rose from 96 to
+97. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite and the two headless probes described above, both deleted after use, nothing
+committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

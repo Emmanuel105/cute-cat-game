@@ -5922,6 +5922,40 @@ function buildCandyLand(game, entry) {
     game.npcs.push(new StoneSkipper(game, skipper, { x: 150, z: -13.5, ry: PI,
       cries: ["Takes a flat one — round ones just sink in fudge, I found that out the hard way.", 'Careful, puss — one splash in that and it\'s a bath, not a paw-wash.', "Three skips, same as every throw before it. Best stretch of river for it, this."] })); }
 
+  // the sweet-stall sells peppermints, the cart spins cotton candy, the gingerbread cottage has its own
+  // baker, but nothing in the land was ever threaded onto a stick and dipped. A toffee-apple seller now
+  // stands on the open grass well west of the cane-forest belt's own trunks, a tray of four glossy
+  // dark-red apples held up for passers-by. New `makeToffeeApples()` (60-props.js), the same tray-plus-
+  // domes shape `makePieTray()` already uses, just spheres with a stick instead of lattice-topped domes.
+  // Reuses `Vendor` (55-npcs.js) unchanged, the same controller every other stall-keeper in this land
+  // already uses, with its own explicit `greetable()` call the way the sweet-stall and the cotton-candy
+  // seller above both already do.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` uses: `game.start('new')`,
+  // `game.travel(1, 'from-prev')` waited out through its real portal-fade timer, then 3000 simulated
+  // frames with every NPC's own position sampled every tenth frame) swept a grid west of the tag game's
+  // own leash against both those samples and every one of the land's 1902 physics boxes: (-48, -4) came
+  // back 8.40 m clear of the nearest other box (a fixed candy-cane trunk out at the edge of the
+  // 56-76 m forest ring) and 10.07 m clear of the nearest wandering soul, at radius 48.2 from the
+  // origin — short of that ring, clear of the tag game's own 5.5 m leash at (-70, -6) and the gumdrop
+  // patch centred on (-52, 8) (12.65 m off, inside that patch's own 7-22 m scatter annulus but with no
+  // physics box of its own to collide with — `makeGumdrops()` draws purely decorative instanced meshes,
+  // the one thing this probe can't see or rule out without a real renderer).
+  //
+  // Built dead last, right after the stone skipper above, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off this land's own shared `r()` sequence unconditionally, and anything
+  // built earlier would have had its own timing-sensitive pick shifted by it. `Vendor`'s own draws
+  // (`this.t`, `this.cryT`) come off the shared global `rnd()`, not this land's `r()`, so it costs
+  // nothing later either way.
+  { const cx = -48, cz = -4, ry = atan2(-cx, -cz);
+    const toffeeWard = makeWardrobe(r, { shirts: [0xffffff, 0xff8fab], pants: [0x8a5a32, 0x2a2420] });
+    const toffeeSeller = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: toffeeWard }),
+      apron: 0x7a1710, hat: 'flatcap', hatColor: 0x7a1710, bag: null, jacket: null, scarf: null });
+    W.add(toffeeSeller.group);
+    const v7 = new Vendor(game, toffeeSeller, makeToffeeApples(), { x: cx, z: cz, ry, cryIcon: '🍎',
+      cries: ["Toffee apples, get your toffee apples!", 'Careful, puss — all shell, no stick for you.', "Dipped fresh this morning. Mind the stick, mind your teeth."] });
+    game.npcs.push(v7); greetable(game, v7); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

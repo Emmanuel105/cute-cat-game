@@ -608,6 +608,16 @@ function makeCandyJar() {
   mesh(G.sphere(0.025, 8, 6), mat(0xd62839, { roughness: 0.5 }), { y: 0.25, shadow: 'none', parent: g });
   return g;
 }
+/** A wooden tray of toffee apples: glossy dark-red shells on pale sticks, for a market stall keeper to hold up. */
+function makeToffeeApples() {
+  const g = new THREE.Group(), wood = mat(0x8a5a32, { roughness: 0.9, map: TEX.planks(20, 14) }), toffee = mat(0x7a1710, { roughness: 0.25, metalness: 0.05 }), stick = mat(0xd9c9a8, { roughness: 0.85 });
+  mesh(G.box(0.26, 0.02, 0.16), wood, { y: 0.01, parent: g });
+  for (const [x, z] of [[-0.08, -0.03], [0.07, -0.025], [-0.015, 0.04], [0.065, 0.04]]) {
+    mesh(G.sphere(0.055, 10, 8), toffee, { x, y: 0.075, z, shadow: 'none', parent: g });
+    mesh(G.cyl(0.006, 0.006, 0.09, 6), stick, { x, y: 0.165, z, parent: g });
+  }
+  return g;
+}
 /** A free-standing coin-op gumball machine: a red cabinet, a glass globe packed with gumballs, a chrome collar and cap. */
 function makeGumballMachine(r) {
   const g = new THREE.Group();
