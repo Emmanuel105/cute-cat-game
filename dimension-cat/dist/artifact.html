@@ -25583,6 +25583,39 @@ function buildForest(game, entry) {
     const hopperId = game.namedFriend('woods-grasshopper');
     game.addInteractable({ obj: rig.group, radius: 1.6, label: () => 'Say hello to the grasshopper', onUse: () => { game.befriend(hopperId); SFX.chitter(); game.hearts(gx, 0.25, gz, 3); game.toast('🦗 "Moss instead of a carrot leaf, but it springs the same either way."'); } }); }
 
+  // the Neighborhood's two ponds, Candy Land's chocolate river, Victorian's canal and Sunny Shore all
+  // got a stone skipper by now — this wood's own glowing pond, the one water feature in the whole set
+  // with ducks, frogs and dragonflies already living on it, never had somebody standing at its edge
+  // with a handful of flat stones. **A kid now stands on the pond's own south-west bank, skipping a
+  // stone across the glow in the same three-shrinking-hops loop `StoneSkipper` already uses everywhere
+  // else.** *"Three's my best, same as everywhere else this works."* *"Careful, puss — the glow doesn't
+  // mean warm."* *"Dad skips at the lake back home. Says this pond skips better."*
+  //
+  // Same `StoneSkipper` controller (55-npcs.js), no new code. Placed at (2.54, -9.15), 6.3 m out from
+  // the pond's own centre (8, -6) on a bearing (`ry: PI / 3`) that lands it squarely between frog3
+  // (2.4, -6) and frog4 (5.2, -10.85) — 3.15 m clear of each rather than sharing either one's own
+  // bearing — and 9.8 m from the angler at (8, -1), well past the frog ring's own 5.6 m radius. All
+  // three hops land 0.55-3.35 m from the pond's own centre, well inside its 4.5 m radius and short of
+  // the reeds (5.0 m out) — closer in than any other skipper in the set, since this pond is the
+  // smallest water body any of them use.
+  //
+  // A headless probe (`game.start('new')`, `game.travel(6, 'from-hub')`, 2600 simulated frames) found
+  // the nearest static box 6.4 m clear (the weaver's own stump at (4, -16)) and confirmed no physics box
+  // sits anywhere near the pond itself, same as the ducks and dragonflies already bank on there. The
+  // frogs' own leash (4 m from each one's ring anchor) can occasionally bring one within a couple of
+  // metres of this spot, same as it can of each other already — `Physics.blocked()` treats the
+  // skipper's own circle like any other, and a frog just picks a different hop rather than overlapping
+  // it, so nothing here can actually collide.
+  //
+  // Built right before `forestRegion()`, after everything else in this wood that draws off the shared
+  // seeded `r()` — `makeHuman()` and `randomPerson()` both pull from it unconditionally, and anything
+  // built earlier here would have had its own timing-sensitive pick shifted by it.
+  { const pondSkipWard = makeWardrobe(r, { shirts: [0x4a8a6a, 0x6a4a8a], pants: [0x2e3a2e, 0x3a2a3a] });
+    const pondSkipper = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, wardrobe: pondSkipWard }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false }); W.add(pondSkipper.group);
+    game.npcs.push(new StoneSkipper(game, pondSkipper, { x: 2.54, z: -9.15, ry: PI / 3,
+      cries: ["Three's my best, same as everywhere else this works.", "Careful, puss — the glow doesn't mean warm.", 'Dad skips at the lake back home. Says this pond skips better.'] })); }
+
   forestRegion(game, U, r, 58, WOODS_LIMIT - 8);
   makeHorizon(game, r, { clear: WOODS_LIMIT + 8, hills: true, hill: 0x2f4a30, rock: 0x3a4a3a, rock2: 0x44505a, snow: 0xdfe8f0, snowLine: 52, peaks: 28, woodCount: 460, woodBand: 44, woodHue: [0.26, 0.36], woodLight: [0.1, 0.2], trunk: 0x3a2a1c });
   // hollow oak home (north end of the stepping-stone path)

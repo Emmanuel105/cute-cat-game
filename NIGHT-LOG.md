@@ -24295,3 +24295,39 @@ Neighborhood's own friend count rose from 86 to 87. No visual check was possible
 (no browser, no Playwright) — only the stub-three test suite and the two headless probes described
 above, both deleted after use, nothing committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 886 — Whisper Woods' glowing pond finally gets a stone skipper too
+
+The Neighborhood's two ponds, Candy Land's chocolate river, Victorian's canal and Sunny Shore all got a
+stone skipper over the last few rounds — the one water feature left in the set, Whisper Woods' own
+glowing pond (the one already crowded with paddling ducks, hopping frogs and darting dragonflies),
+never got its turn. **A kid now stands on the pond's own south-west bank, skipping a stone across the
+glow in the same three-shrinking-hops loop every other skipper already uses.** *"Three's my best, same
+as everywhere else this works."* *"Careful, puss — the glow doesn't mean warm."* *"Dad skips at the
+lake back home. Says this pond skips better."*
+
+Reused `StoneSkipper` (55-npcs.js) unchanged — no new controller, no new mesh beyond the stone it
+already draws, no new physics box. Placed at (2.54, -9.15), 6.3 m out from the pond's own centre
+(8, -6) on a bearing that lands squarely between two of the six ring frogs (3.15 m clear of each
+rather than sharing either one's own bearing) and 9.8 m from the angler, well past the frog ring's own
+5.6 m radius. This is the smallest pond any skipper in the set works: all three hops land 0.55-3.35 m
+from centre, well inside the 4.5 m water radius and short of the reeds (5.0 m out).
+
+Built right before `forestRegion()`, after everything else in this wood that draws off the shared
+seeded `r()` — `makeHuman()` and `randomPerson()` both pull from it unconditionally, and anything built
+earlier here would have had its own timing-sensitive pick shifted by it, the same reasoning every
+earlier stone skipper in this series banked on.
+
+A headless probe (`game.start('new')`, `game.travel(6, 'from-hub')`, 2600 simulated frames) found the
+nearest static box 6.4 m clear (the weaver's own stump) and confirmed no box sits anywhere near the
+pond itself, same as the ducks and dragonflies already standing on it. The frogs' own 4 m leash can
+occasionally bring one within a couple of metres of this spot, same as it already can of each other —
+`Physics.blocked()` treats the skipper's own circle like any other NPC's, so a frog just picks a
+different hop rather than overlapping it. A second probe teleported the cat alongside the skipper and
+called `game.interact()`: `nearest.label()` read "Say hi", and using it took `game.state.friends.size`
+from 0 to 1. A 300-frame run watched the stone's own flight stay finite throughout.
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329 (no new collider, as expected), and Whisper Woods' own friend count rose from 117 to
+118. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite and the headless probes described above, all deleted after use, nothing
+committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
