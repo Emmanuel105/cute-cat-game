@@ -23676,3 +23676,36 @@ Victorian's own friend count rose to 111. No visual check was possible in this e
 no Playwright) — only the stub-three test suite and the headless probe described above. Probe script
 deleted after use, nothing committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 869 — a second game of jacks, this time on the Neighborhood's own grass
+
+Candy Land got the only game of jacks anywhere in this game a couple of rounds back, after noting
+jacks had never crossed over to any of the seven worlds the way hopscotch, marbles, catch, tag and
+dominoes all eventually did. It still hadn't reached anywhere else, so the street where this whole log
+started gets the second.
+
+**A girl now kneels on the quiet south field, candy-striped jacks scattered in front of her and a
+small banded bouncy ball resting where it last came down.** *"Six jacks and a bouncy ball — watch
+close, I'll show you how it's done."* *"Careful, puss — paws off, these roll clean under the porch if
+you tip one."* *"Threes and fours now. Started out just picking up ones, same as everybody."* Saying
+hello makes her the usual kind of friend.
+
+No new controller: `Kneeler`'s own patting gesture already reads as scooping jacks off the grass, the
+same reading the marbles flick and the hopscotch chalk already lean on — a placement, not a build,
+copying Candy Land's own jacks mesh (six tiny crossed-cylinder jacks and one red-and-white ball) wholesale.
+No new physics box either, same reasoning the marbles ring already banks on. Shirt colour (0x9b5de5) is
+a fixed literal, not already in this street's own 65-person wardrobe.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, 300
+simulated seconds sampling every NPC's own position every sixth frame) swept a grid of the open field
+south of the street against both those samples and every one of the street's own physics boxes: (4, -71)
+came back clear by 15.7 m of the nearest box and 15.5 m of the nearest wandering soul, well south of the
+lake and jetty and clear of the toy-troop drill line, the ice-cream cart and the stilt walker's own line
+nearer the street.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box count
+unchanged at 329 (no new collider, as expected) and the Neighborhood's own friend count rose from 84 to
+85 (66 people, still no two sharing a shirt colour). No visual check was possible in this environment
+(no browser, no Playwright) — only the stub-three test suite and the headless probe described above.
+Probe script deleted after use, nothing committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.

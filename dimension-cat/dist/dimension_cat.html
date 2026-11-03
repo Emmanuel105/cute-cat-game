@@ -11696,6 +11696,57 @@ function buildNeighborhood(game, entry) {
     const webLines = ['🕸️ "Somebody\'s been slacking on the garden chores."', '😼 "Puss eyes the spider. The spider does not move. A standoff."', '🏠 "Every yard on this street has one of these somewhere. This is just the one anybody can see."'];
     game.addInteractable({ obj: web, radius: 1.8, label: () => 'Look at the web', onUse: () => { SFX.click(); game.toast(rnd.pick(webLines), 3000); } }); }
 
+  // Candy Land got the first game of jacks in the whole game a few rounds back, after noting jacks had
+  // never crossed over to any of the seven worlds the way hopscotch, marbles, catch, tag and dominoes
+  // all eventually did. It still hasn't reached anywhere else. A girl now kneels on the quiet south
+  // field, candy-striped jacks scattered in front of her and a small banded bouncy ball resting where
+  // it last came down. *"Six jacks and a bouncy ball — watch close, I'll show you how it's done."*
+  // *"Careful, puss — paws off, these roll clean under the porch if you tip one."* *"Threes and fours
+  // now. Started out just picking up ones, same as everybody."* Saying hello makes her the usual kind
+  // of friend.
+  //
+  // No new controller: `Kneeler`'s own patting gesture (55-npcs.js) already reads as scooping jacks off
+  // the grass, the same reading the marbles flick and the hopscotch chalk already lean on here — a
+  // placement, not a build. `Kneeler`'s constructor calls `greetable()` itself, so no extra wiring. Six
+  // tiny jacks (three thin crossed cylinders each, meeting at a point, the same crossed-stick trick the
+  // pinwheels elsewhere in this game already use for their own blades) and one candy-striped ball (the
+  // same red-and-white banding the park's own balloons and Candy Land's own ball already use) are loose
+  // static mesh on the grass, no physics box — same reasoning Candy Land's own jacks and this street's
+  // marbles ring already bank on: too small and flat for anything to catch on. Shirt colour (0x9b5de5)
+  // is a fixed literal outside `SHIRT_COLORS` and not already in this street's shared `ward` bag or any
+  // other kid's own fixed colour in this build.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, 300
+  // simulated seconds sampling every NPC's own position every sixth frame) swept a 2 m grid of the open
+  // field south of the street against both those samples and every one of the street's own physics
+  // boxes: (4, -71) came back clear by 15.7 m of the nearest box and 15.5 m of the nearest wandering
+  // soul, well south of the lake and jetty and clear of the toy-troop drill line, the ice-cream cart and
+  // the stilt walker's own line nearer the street.
+  //
+  // Built dead last, right after the spiderweb above, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off this village's own shared `r()` sequence unconditionally, and this is
+  // the first world the test suite builds, so anything built earlier here would have had its own
+  // timing-sensitive pick shifted by it.
+  { const px = 4, pz = -71, kx = px - 0.9, kz = pz, kry = atan2(px - kx, pz - kz);
+    const jackM = mat(0xff6fb5, { roughness: 0.4, metalness: 0.15 });
+    for (const [jx, jz] of [[-0.18, 0.1], [0.08, -0.14], [0.2, 0.08], [-0.05, -0.2], [0.12, 0.2], [-0.22, -0.05]]) {
+      const jack = group(px + jx, 0.02, pz + jz, W);
+      mesh(G.sphere(0.012, 6, 5), jackM, { shadow: 'none', parent: jack });
+      mesh(G.cyl(0.01, 0.01, 0.08, 6), jackM, { shadow: 'none', parent: jack });
+      mesh(G.cyl(0.01, 0.01, 0.08, 6), jackM, { rz: PI / 2, shadow: 'none', parent: jack });
+      mesh(G.cyl(0.01, 0.01, 0.08, 6), jackM, { rx: PI / 2, shadow: 'none', parent: jack });
+      jack.rotation.y = r() * TAU;
+    }
+    const ball = group(px + 0.3, 0.045, pz + 0.22, W);
+    mesh(G.sphere(0.045, 12, 8), mat(0xffffff, { roughness: 0.3 }), { parent: ball });
+    mesh(G.sphere(0.0452, 12, 8), mat(0xd62839, { roughness: 0.3 }), { sx: 0.5, shadow: 'none', parent: ball });
+    mesh(G.sphere(0.0452, 12, 8), mat(0xd62839, { roughness: 0.3 }), { sz: 0.5, shadow: 'none', parent: ball });
+    const jacksWard = makeWardrobe(r, { shirts: [0x9b5de5], pants: [0xfff3b0, 0xbfe7ff], shoes: [0xefe7d8, 0x8d6e63] });
+    const jacksKid = makeHuman({ ...randomPerson(r, { female: true, child: true, wardrobe: jacksWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(jacksKid.group);
+    game.npcs.push(new Kneeler(game, jacksKid, { x: kx, z: kz, ry: kry,
+      cries: ["Six jacks and a bouncy ball — watch close, I'll show you how it's done.", "Careful, puss — paws off, these roll clean under the porch if you tip one.", "Threes and fours now. Started out just picking up ones, same as everybody."] })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
