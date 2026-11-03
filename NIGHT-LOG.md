@@ -24409,3 +24409,32 @@ console warnings. No visual check was possible in this environment (no browser, 
 the whale's shape, colour and the look of the spray haven't been seen, only confirmed not to crash
 and to move the way the code says it should. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 889 — Victorian's last bare flower basket finally gets its own bees
+
+Ten of Victorian's eleven hanging flower baskets picked up a slow circling pair of bees one round
+at a time over the last few dozen rounds — east, west, dead-centre, south, plaza, westmost,
+mid-fence, the chimney sweep's and the north-row house's own — with only `vicLamps[2]` ever
+explicitly ruled out (a wandering gentleman stands too close even at height). Checking every
+basket's own entry against that list turned up one nobody had actually gotten to: **`vicLamps[8]`,
+the north-row lamp between the market-square lane and the east end of the street — the same post
+that already carries a "lost pocket watch" notice — never had its own bees.** A tenth pair now
+circles that basket too.
+
+No new mechanism: the same `makeBee()` rig (56-npcs-wild.js) and `Flyer` controller every one of the
+other nine baskets' bees already use, just a new centre point. Height 2.62, same as the rest — a
+clear metre above the notice (which reads at y=1.55 on the very same post) and well above the
+bobby's and the cat's own jump reach, so none of the earlier ground-level clearance work the notice
+or the basket itself ever needed gets touched. No new mesh, no new physics box, not a greetable soul
+— a plain airborne loop, same as every other basket's own pair.
+
+Added right at the end of `buildVictorian()`, after the canal's own stone skipper and before the
+squirrel, same discipline every late addition in that function already follows: `Flyer`'s own
+constructor draws unconditionally off the shared `rnd()` sequence, so anything built earlier in the
+town would have had its own timing-sensitive pick shifted by it. `node dimension-cat/test/run.mjs`
+ran clean: exit 0, 277 checks `ok`, 0 console warnings, box count unchanged at 329 (no new collider,
+as expected) and Victorian's own friend count unchanged at 113 (bees were never meant to be
+greetable). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite confirmed the loop runs and stays finite. All eleven of Victorian's baskets are
+now accounted for: ten with their own bees, one ruled out for good. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
