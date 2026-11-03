@@ -23957,3 +23957,41 @@ count unchanged at 329 (no new physics box, as expected) and Frosty Peak's own f
 to 110. No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite and the headless probe described above. Probe script deleted after use,
 nothing committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 877 — Whisper Woods finally gets its own game of jacks
+
+The Neighborhood (twice over), Candy Land, Robot City, Victorian, Sunny Shore and Frosty Peak all
+had a kid kneeling over a game of jacks by now — Whisper Woods was the last of the seven worlds
+left without one. **A child now kneels on the forest floor south-west of the frog pond, copper-toned
+jacks scattered on the packed earth and a small banded bouncy ball resting where it last came
+down.** *"Threw it up, swept up five, caught it on the way back down — paws don't count, puss."*
+*"Mind the roots. Let one roll into the ferns and it's gone for the afternoon."* *"Six jacks, one
+bounce each. Nobody in this whole wood has beaten my best yet."* Saying hello makes them the usual
+kind of friend.
+
+No new mesh and no new controller: the same six crossed-cylinder jacks and candy-striped ball every
+other world's jacks game already uses, and `Kneeler`'s own patting gesture (55-npcs.js) already
+reads as scooping them up — a placement, not a build. Built with plain `makeHuman` rather than a
+local wardrobe helper, the same way this file's own skateboard kid and marbles kid already are, so
+the only new colour literal is the jacks' own copper tone. Like the marbles ring, the jacks and ball
+sit on `P.ground0()` rather than a fixed y, since the forest floor rolls gently underfoot here too.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+`game.load(6, 'from-hub')`, then 3600 simulated frames sampling every NPC's and the squirrel's own
+position every 5th frame) swept a 2 m grid of the open forest floor (radius 15-50, short of the
+radius (58) where `forestRegion`'s own fill takes over) against both those 84,240 samples and all
+749 of the wood's own physics boxes: (-24, -30.5) came back clearest nearby, 8.14 m from the
+nearest box and 8.73 m from the nearest wandering soul, at radius 38.8 from the origin and clear of
+every one of `game.zones`'s own keep-out rectangles, with ground height varying only about 0.065 m
+across the jacks' own footprint.
+
+Built dead last, right after the skateboard kid, for the usual reason: `makeHuman()` and
+`randomPerson()` both draw off the shared `rnd()` sequence unconditionally, and anything built
+earlier in this wood would have had its own timing-sensitive pick shifted by it.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329 (no new physics box) and Whisper Woods' own friend count rose to 116 — the jacks
+game has now gone round all seven worlds. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe described above.
+Probe script deleted after use, nothing committed. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

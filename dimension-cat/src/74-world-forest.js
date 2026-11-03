@@ -2277,6 +2277,55 @@ function buildForest(game, entry) {
     game.npcs.push(new Kneeler(game, skater, { x: kx, z: kz, ry,
       cries: ['One more bolt and it should hold.', "Careful, puss — these wheels have no manners.", "Flattest patch in the whole wood — perfect for it."] })); }
 
+  // the Neighborhood (twice over), Candy Land, Robot City, Victorian, Sunny Shore and Frosty Peak all
+  // have a kid kneeling over a game of jacks by now — Whisper Woods was the last of the seven worlds
+  // left without one. A child now kneels on the forest floor south-west of the frog pond, copper-toned
+  // jacks scattered on the packed earth and a small banded bouncy ball resting where it last came down.
+  // *"Threw it up, swept up five, caught it on the way back down — paws don't count, puss."*
+  // *"Mind the roots. Let one roll into the ferns and it's gone for the afternoon."*
+  // *"Six jacks, one bounce each. Nobody in this whole wood has beaten my best yet."*
+  // Saying hello makes them the usual kind of friend.
+  //
+  // No new mesh and no new controller: the same six crossed-cylinder jacks (three thin crossed
+  // cylinders each, meeting at a point) and candy-striped ball every other world's jacks game already
+  // uses, and `Kneeler`'s own patting gesture (55-npcs.js) already reads as scooping them up — a
+  // placement, not a build. Built with plain `makeHuman` rather than a local wardrobe helper, the same
+  // way this file's own skateboard kid, marbles kid and dandelion blower already are, so no new colour
+  // literal either beyond the jacks themselves (a copper tone not yet used anywhere in this file). Like
+  // the marbles ring and the top-spinner above, the jacks and ball sit on `P.ground0()` rather than a
+  // fixed y, since the forest floor rolls gently underfoot at this spot too.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // `game.load(6, 'from-hub')`, then 3600 simulated frames sampling every NPC's and the squirrel's own
+  // position every 5th frame) swept a 2 m grid of the open forest floor (radius 15-50, short of the
+  // radius (58) where `forestRegion`'s own fill takes over) against both those 84,240 samples and all
+  // 749 of the wood's own physics boxes: (-24, -30.5) came back clearest nearby, 8.14 m from the
+  // nearest box and 8.73 m from the nearest wandering soul, at radius 38.8 from the origin and clear
+  // of every one of `game.zones`'s own keep-out rectangles, with ground height varying only about
+  // 0.065 m across the jacks' own footprint.
+  //
+  // Built dead last, right after the skateboard kid, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off the shared `rnd()` sequence unconditionally, and anything built
+  // earlier in this wood would have had its own timing-sensitive pick shifted by it.
+  { const px = -24, pz = -30.5, py = P.ground0(px, pz), kx = px - 0.9, kz = pz, kry = atan2(px - kx, pz - kz);
+    const jackM = mat(0xc97b4a, { roughness: 0.4, metalness: 0.15 });
+    for (const [jx, jz] of [[-0.18, 0.1], [0.08, -0.14], [0.2, 0.08], [-0.05, -0.2], [0.12, 0.2], [-0.22, -0.05]]) {
+      const jack = group(px + jx, py + 0.02, pz + jz, W);
+      mesh(G.sphere(0.012, 6, 5), jackM, { shadow: 'none', parent: jack });
+      mesh(G.cyl(0.01, 0.01, 0.08, 6), jackM, { shadow: 'none', parent: jack });
+      mesh(G.cyl(0.01, 0.01, 0.08, 6), jackM, { rz: PI / 2, shadow: 'none', parent: jack });
+      mesh(G.cyl(0.01, 0.01, 0.08, 6), jackM, { rx: PI / 2, shadow: 'none', parent: jack });
+      jack.rotation.y = r() * TAU;
+    }
+    const ball = group(px + 0.3, py + 0.045, pz + 0.22, W);
+    mesh(G.sphere(0.045, 12, 8), mat(0xffffff, { roughness: 0.3 }), { parent: ball });
+    mesh(G.sphere(0.0452, 12, 8), mat(0xd62839, { roughness: 0.3 }), { sx: 0.5, shadow: 'none', parent: ball });
+    mesh(G.sphere(0.0452, 12, 8), mat(0xd62839, { roughness: 0.3 }), { sz: 0.5, shadow: 'none', parent: ball });
+    const jacksKid = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(jacksKid.group);
+    game.npcs.push(new Kneeler(game, jacksKid, { x: kx, z: kz, ry: kry,
+      cries: ["Threw it up, swept up five, caught it on the way back down — paws don't count, puss.", "Mind the roots. Let one roll into the ferns and it's gone for the afternoon.", "Six jacks, one bounce each. Nobody in this whole wood has beaten my best yet."] })); }
+
   forestRegion(game, U, r, 58, WOODS_LIMIT - 8);
   makeHorizon(game, r, { clear: WOODS_LIMIT + 8, hills: true, hill: 0x2f4a30, rock: 0x3a4a3a, rock2: 0x44505a, snow: 0xdfe8f0, snowLine: 52, peaks: 28, woodCount: 460, woodBand: 44, woodHue: [0.26, 0.36], woodLight: [0.1, 0.2], trunk: 0x3a2a1c });
   // hollow oak home (north end of the stepping-stone path)
