@@ -13845,6 +13845,65 @@ function buildCandyLand(game, entry) {
     game.npcs.push(new Archer(game, archer, arrow, { x: ax, z: az, ry: ary, dist: adist,
       cries: ["Careful, puss — these arrows are stickier than they look, same as everything else out here.", "Every one that misses just sinks into the icing. I've lost a whole quiver that way.", "Ten in a row dead centre. The sugar rush helps my aim, I swear."] })); }
 
+  // Sunny Shore, Victorian, Frosty Peak, the Neighborhood and Robot City (its own gas-leak soap test)
+  // have all had something that drifts, sparkles and fades for a good while now, and Whisper Woods got
+  // its own thematic stand-in (a dandelion, rather than a plain copy) — Candy Land was the one world
+  // left with neither. A girl now blows candy-striped bubbles from a loop-ended wand on the open
+  // sweet-lands west of the pogo kid, well short of both the archery range and the trampoline.
+  // *"Blow too hard and it pops before it's even round."* *"Every bubble tastes like bubblegum if you
+  // believe hard enough, puss."* *"Watch — this one's going right over the cane trees."*
+  //
+  // Same build every other world's own bubble-blower already uses (the wand sits in `hands[1]`, read
+  // once right after `Charger` fixes the rig's position and rotation for an exact launch point, two
+  // bubbles riding the world clock `t` on fixed phases so neither draws from this land's own seeded
+  // `r`), just with the wand handle wrapped in `TEX.candyCane()` — the same stripe map the giant
+  // lollipops already use — in place of a plain painted dowel, and the bubbles themselves tinted
+  // gumdrop-pink rather than soap-white.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.travel(1,
+  // 'from-prev')`, then 2000 simulated frames sampling every NPC's own position every 5th frame) swept
+  // the open sweet-lands (radius 10-54, well short of the radius (92) where `candyRegion`'s own
+  // procedural fill takes over, and clear of the chocolate river's own z -24..-12 band) against both
+  // those 6,560 samples and all 1902 of the land's own physics boxes: (-45, 18) came back clearest,
+  // 9.1 m from the nearest box and 9.4 m from the nearest wandering soul.
+  //
+  // Built dead last, right after the archer, for the usual reason: `makeHuman()` and `randomPerson()`
+  // both draw off this land's own shared `r()` sequence unconditionally, and a fresh rig built any
+  // earlier would shift every other timing-sensitive pick already placed above.
+  { const bkx = -45, bkz = 18, bkry = atan2(-bkx, -bkz);
+    const bubbleWard = makeWardrobe(r, { shirts: [0xbfe7ff, 0xfff3b0, 0xffb3de], pants: [0xff9ecf, 0x7fd7ff, 0xffffff] });
+    const blower = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, wardrobe: bubbleWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: false });
+    W.add(blower.group);
+    const wand = group(0.02, 0, 0.1, blower.hands[1]); wand.rotation.set(-0.3, 0, 0.3);
+    mesh(G.cyl(0.012, 0.012, 0.14, 6), mat(0xffffff, { roughness: 0.4, map: TEX.candyCane() }), { y: 0.07, parent: wand });
+    mesh(G.torus(0.055, 0.009, 6, 16), mat(0xff6fb5, { roughness: 0.3, transparent: true, opacity: 0.65 }), { y: 0.16, parent: wand });
+    game.npcs.push(new Charger(game, blower, { x: bkx, z: bkz, ry: bkry }));
+    const tip = V3(); wand.getWorldPosition(tip);
+    const bubbleM = mat(0xffe3f3, { pbr: true, metalness: 0.05, roughness: 0.1, transparent: true, opacity: 0.42 });
+    const bubbles = [0, 1].map((i) => ({ m: mesh(G.sphere(0.05, 10, 8), bubbleM, { shadow: 'none', parent: W }), ph: i * 1.8, popped: -1 }));
+    const cyc = 3.2;
+    U.push((dt, t) => {
+      for (const b of bubbles) {
+        const k = ((t + b.ph) % cyc) / cyc;
+        if (k < 0.92) {
+          b.m.visible = true;
+          b.m.position.set(tip.x + sin(t * 1.6 + b.ph) * 0.18 * k, tip.y + k * 1.5, tip.z + cos(t * 1.1 + b.ph) * 0.12 * k);
+          b.m.scale.setScalar(0.4 + k * 0.7);
+        } else {
+          b.m.visible = false;
+          const cycleNo = floor((t + b.ph) / cyc);
+          if (cycleNo !== b.popped) { b.popped = cycleNo;
+            const c = game.cat.group.position;
+            if (dist2(tip.x, tip.z, c.x, c.z) < 400) { SFX.twinkle(); game.fx.emit(b.m.position.x, b.m.position.y, b.m.position.z, { count: 4, colors: [0xffe3f3, 0xffd54a, 0x7fd7ff], speed: 0.5, up: 0.6, life: 0.5, gravity: 1.5 }); }
+          }
+        }
+      }
+    });
+    const bubbleLines = ["Blow too hard and it pops before it's even round.", 'Every bubble tastes like bubblegum if you believe hard enough, puss.', "Watch — this one's going right over the cane trees."];
+    let bubbleCryT = r.range(4, 9);
+    U.push((dt) => { bubbleCryT -= dt; if (bubbleCryT <= 0) { bubbleCryT = r.range(9, 16); const c = game.cat.group.position; if (dist2(bkx, bkz, c.x, c.z) < 400) { game.toast('🫧 "' + r.pick(bubbleLines) + '"', 2400); SFX.talk(); } } }); }
+
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('star', 7, -6); C.add('yarn', -9, 9); C.add('fish', -16, -13); C.add('mouse', 16, -9); C.add('star', -10, -27); C.add('yarn', 22, 4); C.add('mouse', -28, 26); C.add('fish', 14, -44); C.add('star', 0, -56); C.add('mouse', -58, 30); C.add('yarn', 60, 36);

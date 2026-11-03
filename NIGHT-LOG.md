@@ -23995,3 +23995,46 @@ game has now gone round all seven worlds. No visual check was possible in this e
 browser, no Playwright) — only the stub-three test suite and the headless probe described above.
 Probe script deleted after use, nothing committed. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 878 — Candy Land finally gets its own bubble-blower
+
+Sunny Shore, Victorian, Frosty Peak, the Neighborhood and Robot City (its own gas-leak soap test)
+have all had something that drifts, sparkles and fades for a good while now, and Whisper Woods got
+its own thematic stand-in — a dandelion — rather than a plain copy. Candy Land, of all seven worlds,
+was the only one left with neither. **A girl now blows candy-striped bubbles from a loop-ended wand
+on the open sweet-lands west of the pogo kid, well clear of both the archery range and the
+trampoline.** *"Blow too hard and it pops before it's even round."* *"Every bubble tastes like
+bubblegum if you believe hard enough, puss."* *"Watch — this one's going right over the cane
+trees."* Saying hello makes her a friend, same as everyone else here.
+
+No new controller and no new animation loop: the exact same build every other world's own
+bubble-blower already uses (70-worlds.js and 72-world-beach.js) — a `Charger` standing still, a wand
+in `hands[1]` read once for a fixed launch point, two bubbles riding the world clock `t` on fixed
+phases so neither one draws from this land's own seeded `r` sequence. The only new pieces are
+cosmetic: the wand handle is wrapped in `TEX.candyCane()`, the same red-and-white stripe map the
+giant lollipops standing all over this field already use, instead of a plain painted dowel, and the
+two bubbles are tinted gumdrop-pink rather than soap-white, popping into a small pink/gold/cyan
+sparkle on approach instead of the beach's pale blue-white one. No physics box either — the wand and
+bubbles are all small and held or floating, the same reasoning every other bubble-blower already
+banks on.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.travel(1,
+'from-prev')`, then 2000 simulated frames sampling every NPC's own position every 5th frame) swept a
+2 m grid of the open sweet-lands (radius 10–54, well short of the radius (92) where `candyRegion`'s
+own procedural fill takes over, and clear of the chocolate river's own z −24..−12 band) against both
+those 6,560 samples and all 1,902 of the land's own physics boxes: (−45, 18) came back clearest, 9.1 m
+from the nearest box and 9.4 m from the nearest wandering soul. Built dead last, right after the
+archer, so the fresh `makeHuman()` draw off this land's own shared `r()` sequence disturbs no earlier
+timing-sensitive pick already placed above.
+
+Verified past the test suite's own checks: a second headless script clicked the real start screen,
+travelled to Candy Land, waited out both the load and the 500 ms fade-lock timer (skipping that step
+first read `game.nearest` as `null` even standing right on top of her — not a bug, just the same
+"transitioning never cleared" trap earlier rounds already describe), then teleported the cat beside
+her. `game.nearest.label()` read "Say hi" (she's a child), and using her took `game.state.friends.size`
+from 0 to 1. `node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329 (no new collider, as expected), and Candy Land's own friend total rose from 94 to 95
+— the lowest friend count of the seven worlds, now one higher. No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite and the two headless probes
+described above, both deleted after use, nothing committed. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
