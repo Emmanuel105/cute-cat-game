@@ -23781,3 +23781,38 @@ unchanged at 329 (no new physics box) and Frosty Peak's own friend count rose fr
 visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
 suite and the headless probe described above. Probe script deleted after use, nothing committed.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 872 — Whisper Woods finally gets its own skateboard kid
+
+The Neighborhood, Candy Land, Robot City, Victorian, Sunny Shore and Frosty Peak all have a kid
+kneeling by a skateboard by now — Whisper Woods was the last of the seven worlds left without one,
+the same gap round 871's own note flagged for this world specifically.
+
+**A kid now kneels on the open forest floor east of the frog pond's clearing, checking a
+skateboard's back truck before trying it again on the packed earth.** *"One more bolt and it
+should hold."* *"Careful, puss — these wheels have no manners."* *"Flattest patch in the whole
+wood — perfect for it."* Saying hello makes the usual kind of friend.
+
+No new mechanism: `makeSkateboard()` (60-props.js) and `Kneeler` (55-npcs.js) already pair for
+every other world's own skateboard kid, and `Kneeler`'s constructor calls `greetable()` itself, so
+no extra wiring. Built with the terrain-aware `placeT`/`boxT` helpers (like Sunny Shore's and
+Frosty Peak's own boards) rather than the flat-floor `place()` the first four worlds use, since the
+forest floor rolls gently underfoot too. No new physics box for the board itself — thin and flat
+enough that nothing needs to collide with it. Its own fixed shirt colour (amber, 0xffa94d) is one
+no other skateboard in the game has used.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+`game.travel(6, 'from-hub')` waited out through its real portal-fade timer, then 1800 simulated
+frames sampling every NPC's and the squirrel's own position every sixth frame) swept a 2 m grid of
+the open forest floor (radius 15-54, short of the radius (58) where `forestRegion`'s own fill takes
+over, and clear of every one of `game.zones`'s own keep-out rectangles) against both those 23,400
+samples and all 329 of the wood's own physics boxes: (4, -42) came back clear by 11.6 m of the
+nearest box and 12.0 m of the nearest other soul, with the ground perfectly flat (y=0.000) across
+the whole 2 m footprint. Placed last, right after the stilt walker, so this one more gender draw
+off the local `r` disturbs nothing built earlier in the wood.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 329 (no new physics box) and Whisper Woods' own friend count rose from 114 to
+115. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite and the headless probe described above. Probe script deleted after use,
+nothing committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

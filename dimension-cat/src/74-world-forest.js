@@ -2250,6 +2250,33 @@ function buildForest(game, entry) {
     game.npcs.push(new StiltWalker(game, performer, { points: [[-53, 1], [-53, 7]], speed: 0.55, pause: [1.5, 3], r: 0.4, height: 2.6, stiltH,
       cries: ['Figured if the herons can fly this high, I can walk it.', "Mind the roots, puss — these stilts don't bend like branches.", 'Best way to see clean over the mushroom patches without picking a single one.'], cryIcon: '🎪' })); }
 
+  // the Neighborhood (round 141), Candy Land, Robot City, Victorian, Sunny Shore and Frosty Peak all
+  // have a kid kneeling by a skateboard (`makeSkateboard()` + `Kneeler`) by now — Whisper Woods was
+  // the last of the seven worlds left without one. A kid now kneels on the open forest floor east of
+  // the frog pond's clearing, checking the skateboard's back truck before trying it again on the
+  // packed earth. Same pairing every other world's own skateboard kid already uses, built with the
+  // terrain-aware `placeT`/`boxT` helpers (like Sunny Shore's and Frosty Peak's own boards) rather
+  // than the first four worlds' flat-floor `place()`/`P.addBox()`, since the forest floor rolls
+  // gently underfoot here too. No new physics box for the board itself: same as every other world's
+  // version, it's thin and flat enough that nothing needs to collide with it.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` uses: `game.start('new')`,
+  // `game.travel(6, 'from-hub')` waited out through its real portal-fade timer, then 1800 simulated
+  // frames sampling every NPC's and the squirrel's own position every sixth frame) swept a 2 m grid
+  // of the open forest floor (radius 15-54, short of the radius (58) where `forestRegion`'s own fill
+  // takes over, and clear of every one of `game.zones`'s own keep-out rectangles) against both those
+  // 23,400 samples and all 329 of the wood's own physics boxes: (4, -42) came back clear by 11.6 m of
+  // the nearest box and 12.0 m of the nearest other soul, with the ground flat (y=0.000) across the
+  // whole 2 m footprint — flatter than the pond's own skating ice ever needed to be. Placed last,
+  // right after the stilt walker, so this one more gender-and-wardrobe draw off the local `r`
+  // disturbs nothing built earlier in the wood.
+  { const skx = 4, skz = -42, kx = skx + 0.9, kz = skz, ry = atan2(skx - kx, skz - kz);
+    const board = makeSkateboard(0xffa94d); placeT(game, U, board, skx, skz, 0.3);
+    const skater = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(skater.group);
+    game.npcs.push(new Kneeler(game, skater, { x: kx, z: kz, ry,
+      cries: ['One more bolt and it should hold.', "Careful, puss — these wheels have no manners.", "Flattest patch in the whole wood — perfect for it."] })); }
+
   forestRegion(game, U, r, 58, WOODS_LIMIT - 8);
   makeHorizon(game, r, { clear: WOODS_LIMIT + 8, hills: true, hill: 0x2f4a30, rock: 0x3a4a3a, rock2: 0x44505a, snow: 0xdfe8f0, snowLine: 52, peaks: 28, woodCount: 460, woodBand: 44, woodHue: [0.26, 0.36], woodLight: [0.1, 0.2], trunk: 0x3a2a1c });
   // hollow oak home (north end of the stepping-stone path)
