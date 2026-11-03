@@ -2325,6 +2325,32 @@ function buildForest(game, entry) {
     W.add(jacksKid.group);
     game.npcs.push(new Kneeler(game, jacksKid, { x: kx, z: kz, ry: kry,
       cries: ["Threw it up, swept up five, caught it on the way back down — paws don't count, puss.", "Mind the roots. Let one roll into the ferns and it's gone for the afternoon.", "Six jacks, one bounce each. Nobody in this whole wood has beaten my best yet."] })); }
+  // `makeGrasshopper()` (`56-npcs-wild.js`) has sat on the Neighborhood's own vegetable patch since
+  // round 1799 and never once made it out here, despite this wood being its most obvious home of all
+  // seven — moss and leaf litter instead of a carrot leaf. **One now perches on the forest floor out
+  // past the stepping-stone glade**, hind legs cocked, antennae twitching, giving the odd little spring
+  // without ever actually leaving its spot.
+  //
+  // No new mesh and no new controller: the exact same rig the Neighborhood's own already uses, and the
+  // exact same "perched; only animates" trick that one, the owls and the field ladybug before it all
+  // settled on — a plain `rig.group.position.set()`, no `Hopper`, no physics box, its idle spring timed
+  // off the world clock `t` alone inside a local `U.push`. It draws nothing from either the shared
+  // `rnd()` or this wood's own seeded `r()`, so nothing built earlier in this file shifts because of it,
+  // and it could as easily have gone in first as dead last.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // `game.travel(6, 'from-hub')`, then 3600 simulated frames sampling every NPC's and the squirrel's own
+  // position every 5th frame) swept the open forest floor (radius 10-50, short of the radius (58) where
+  // `forestRegion`'s own fill takes over) against both those samples and every one of the wood's own
+  // physics boxes: (6, -42) came back clearest, 11.7 m from the nearest box, 11.3 m from the nearest
+  // wandering soul and 12.2 m from the nearest other interactable (the hollow oak's own "Say hi"),
+  // comfortably past the 1.6 m radius the Neighborhood's own grasshopper already uses — and confirmed
+  // clear of every one of `game.zones`'s own keep-out rectangles, on flat ground.
+  { const gx = 6, gz = -42;
+    const rig = makeGrasshopper(); rig.group.position.set(gx, P.ground0(gx, gz) + 0.14, gz); rig.group.rotation.y = 1.1; W.add(rig.group);
+    U.push((dt, t) => { const cyc = 3.4, ph = (t % cyc) / cyc; rig.animate(0, ph < 0.1, dt, t); });
+    const hopperId = game.namedFriend('woods-grasshopper');
+    game.addInteractable({ obj: rig.group, radius: 1.6, label: () => 'Say hello to the grasshopper', onUse: () => { game.befriend(hopperId); SFX.chitter(); game.hearts(gx, 0.25, gz, 3); game.toast('🦗 "Moss instead of a carrot leaf, but it springs the same either way."'); } }); }
 
   forestRegion(game, U, r, 58, WOODS_LIMIT - 8);
   makeHorizon(game, r, { clear: WOODS_LIMIT + 8, hills: true, hill: 0x2f4a30, rock: 0x3a4a3a, rock2: 0x44505a, snow: 0xdfe8f0, snowLine: 52, peaks: 28, woodCount: 460, woodBand: 44, woodHue: [0.26, 0.36], woodLight: [0.1, 0.2], trunk: 0x3a2a1c });

@@ -24070,3 +24070,38 @@ height of 0.03 m — right at the tideline, not underwater.
 possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
 headless probe described above, deleted after use, nothing committed. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 880 — Whisper Woods finally gets its own grasshopper
+
+Every ladybug-family critter in this game traces back to the same `makeGrasshopper()` rig built for
+the Neighborhood's vegetable patch — short front legs, twitching antennae, and the one feature none
+of its cousins carry: big bent hind legs that kick out and snap back cocked. It's sat on a carrot
+leaf there ever since. In seven worlds' worth of moss, ferns and leaf litter, it never once made it
+out to the one wood that's actually its home. **A grasshopper now perches on the forest floor out
+past the stepping-stone glade**, hind legs cocked, antennae twitching, giving the odd little spring
+without ever actually leaving its spot. *"Moss instead of a carrot leaf, but it springs the same
+either way."*
+
+No new mesh and no new controller: the exact same rig the Neighborhood already uses, and the exact
+same "perched; only animates" trick that one, the owls and the field ladybug before it all settled
+on — a plain `rig.group.position.set()`, no `Hopper`, no physics box, its idle spring timed off the
+world clock `t` alone inside a local `U.push`. It draws nothing from either the shared `rnd()` or
+this wood's own seeded `r()` sequence (the rotation is a fixed literal, not a draw), so nothing built
+earlier in `74-world-forest.js` shifts because of it.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+`game.travel(6, 'from-hub')`, then 3600 simulated frames sampling every NPC's and the squirrel's own
+position every 5th frame) swept the open forest floor (radius 10–50, short of the radius (58) where
+`forestRegion`'s own fill takes over) against both those samples and all of the wood's own physics
+boxes: (6, -42) came back clearest, 11.7 m from the nearest box, 11.3 m from the nearest wandering
+soul and 12.2 m from the nearest other interactable (the hollow oak's own "Say hi") — confirmed clear
+of every one of `game.zones`'s own keep-out rectangles too, on flat ground.
+
+Verified past the test suite's own checks: a second headless script travelled to Whisper Woods,
+waited out the 500 ms fade-lock timer, then teleported the cat beside it. `game.nearest.label()` read
+"Say hello to the grasshopper", and using it took `game.state.friends.size` from 0 to 1. `node
+test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 329 (no
+new collider, as expected), and Whisper Woods' own friend total rose from 116 to 117. No visual check
+was possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
+two headless probes described above, both deleted after use, nothing committed. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
