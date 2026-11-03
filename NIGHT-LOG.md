@@ -24259,3 +24259,39 @@ unchanged at 329 (no new collider, as expected), and the Neighborhood's own frie
 to 86. No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite and the two headless probes described above, both deleted after use, nothing
 committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 885 — the Neighborhood's lake finally gets a stone skipper too
+
+Candy Land's chocolate river, Victorian's canal and Sunny Shore all got a stone skipper flinging flat
+stones in three shrinking hops — the Neighborhood, the one world with *two* real ponds of its own
+(the park pond and this lake), never got one. **A kid now stands on the lake's own quiet north bank,
+skipping a flat stone south across the water in the same steady loop: three bounces, each landing
+closer than the last, then a last plop and a beat before the next stone comes out.** *"Three's my
+best. Dad taught me on this very lake."* *"Careful, puss — not as deep as it looks, but still a
+soaking."* *"Flat stones skip. Round ones just plop."*
+
+Reused `StoneSkipper` (55-npcs.js) unchanged — no new controller, no new mesh beyond the stone it
+already draws, no new physics box. Placed at (-34, -40.1), 7.9 m from the lake's own centre
+(-34, -48): just outside the water (radius 7.5) but inside the ring where this build's 12 bushes
+start (9.5-14 out), so no bush can ever land here regardless of the angle `r()` rolls for it, and
+clear of the jetty's own zone and physics box (both sit south of z=-47) and the duck pair's swim
+circle (centred (-37, -51), well over 8 m away). Every hop lands 2.15-5.85 m from the lake's centre,
+well inside the water and short of the jetty.
+
+Built dead last in `buildNeighborhood`, right after the paper-plane kid a round ago, for the usual
+reason: `makeHuman()` and `randomPerson()` both draw off this village's own shared `r()` sequence
+unconditionally, and this is the first world the test suite builds, so anything built earlier here
+would have shifted every timing-sensitive pick after it — tried it mid-build first and watched the
+test suite fail on exactly that (a shifted pumpkin prompt, a dropped friend), moved it to the tail and
+it came back clean.
+
+A headless probe built the real Neighborhood and checked the new skipper's own position: 8.45 m from
+the nearest other soul (the jetty angler) and 2.03 m clear of the nearest physics box (the jetty's own
+walkway). A second probe teleported the cat alongside it and called `game.interact()` — `nearest.label()`
+read "Say hi", and using it took `game.state.friends.size` from 0 to 1. A 300-frame run watched the
+stone's own flight stay finite throughout. `node dimension-cat/test/run.mjs` ran clean: exit 0, all
+checks `ok`, 0 console warnings, box count unchanged at 329 (no new collider, as expected), and the
+Neighborhood's own friend count rose from 86 to 87. No visual check was possible in this environment
+(no browser, no Playwright) — only the stub-three test suite and the two headless probes described
+above, both deleted after use, nothing committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.

@@ -11878,6 +11878,27 @@ function buildNeighborhood(game, entry) {
     game.npcs.push(new PaperPlaneKid(game, dartKid, { x: -31, z: 63, ry: 0,
       cries: ["Folds a fresh one every throw — never flies the same dart twice.", "Careful, puss — paws off, that nose crease took three tries to get right.", "Longest glide yet. Nobody's measuring, but it felt longer."] })); }
 
+  // Candy Land's chocolate river, Victorian's canal and Sunny Shore all got a stone skipper by now —
+  // the Neighborhood has two real ponds of its own (the park pond and this lake) and never had one.
+  // A kid stands on the lake's own north bank, well clear of the jetty (its zone and physics box both
+  // sit south of z=-47, this spot is at z=-40.1) and the duck pair's swim circle (centred (-37,-51),
+  // over 8 m away), skipping a flat stone south across the water in the same three-shrinking-hops loop
+  // `StoneSkipper` already uses for the other three. At distance 7.9 from the lake's own centre
+  // (-34, -48) the standing spot sits just outside the water (radius 7.5) but inside the ring where
+  // this build's 12 bushes start (9.5-14 out), so no bush can ever land here regardless of the angle
+  // `r()` rolls for them. Every hop lands well inside the water (2.15-5.85 m from centre at its
+  // deepest) and short of the jetty's own z range. Same `StoneSkipper` controller, no new code.
+  //
+  // Built dead last, right after the paper-plane kid above, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off this village's own shared `r()` sequence unconditionally, and this is
+  // the first world the test suite builds, so anything built earlier here would have had its own
+  // timing-sensitive pick shifted by it.
+  { const lakeSkipWard = makeWardrobe(r, { shirts: [0x4a8a9a, 0x9a7a4a], pants: [0x2e3a2e, 0x3a2a3a] });
+    const lakeSkipper = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, wardrobe: lakeSkipWard }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false }); W.add(lakeSkipper.group);
+    game.npcs.push(new StoneSkipper(game, lakeSkipper, { x: -34, z: -40.1, ry: PI,
+      cries: ["Three's my best. Dad taught me on this very lake.", 'Careful, puss — not as deep as it looks, but still a soaking.', "Flat stones skip. Round ones just plop."] })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
