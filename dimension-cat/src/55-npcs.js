@@ -1263,6 +1263,50 @@ class FrisbeePlayer {
   }
 }
 
+// ---------------------------------------------------------------- stone skipper: a flat stone leaves the hand low and sidearm, skips the water three times at shrinking height and distance, then sinks — same `from`/`to`/lerp-with-a-sine-arc` ball idiom `SnowballFight` already uses, just one stone and one thrower instead of two kids trading volleys
+class StoneSkipper {
+  constructor(game, rig, { x, z, ry = 0, cries = null, cryIcon = '🪨' }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.ry = ry; this.t = rnd() * 10;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    this.fx = sin(ry); this.fz = cos(ry);
+    this.stone = mesh(G.cyl(0.07, 0.06, 0.02, 8), mat(0x8c8a7e, { roughness: 0.85 }));
+    this.stone.scale.z = 1.3; this.stone.visible = false; this.stone.rotation.y = ry; game.world.add(this.stone);
+    this.hop = -1; this.hopT = 0; this.hopDur = 0.3; this.hopHeight = 0; this.wait = rnd.range(1.5, 3);
+    this.from = V3(); this.to = V3();
+    this.circle = game.physics.addCircle(this, x, z, 0.4);
+    greetable(game, this);
+  }
+  startHop(i) {
+    const k = this.rig.k, dists = [2.6, 1.7, 1.1], heights = [0.5, 0.26, 0.12], durs = [0.42, 0.32, 0.24];
+    let prevDist = 0.35; for (let j = 0; j < i; j++) prevDist += dists[j];
+    const dist = prevDist + dists[i];
+    this.from.set(this.x + this.fx * prevDist, i === 0 ? 0.92 * k : 0, this.z + this.fz * prevDist);
+    this.to.set(this.x + this.fx * dist, 0, this.z + this.fz * dist);
+    this.hopHeight = heights[i]; this.hopDur = durs[i]; this.hopT = 0; this.hop = i; this.stone.visible = true;
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig;
+    rig.animate(0, false, dt, this.t);
+    if (this.hop < 0) {
+      this.wait -= dt; const windup = this.wait < 0.6;
+      if (!rig.gesture) { const A = rig.arms[1]; A.sh.rotation.x = damp(A.sh.rotation.x, windup ? -1.35 : -0.25, windup ? 6 : 10, dt); A.sh.rotation.z = damp(A.sh.rotation.z, windup ? 0.5 : 0.1, 8, dt); A.el.rotation.x = damp(A.el.rotation.x, windup ? -0.3 : -0.15, 8, dt); }
+      if (this.wait <= 0) this.startHop(0);
+    } else {
+      this.hopT += dt; const u = min(1, this.hopT / this.hopDur);
+      this.stone.position.copy(this.from).lerp(this.to, u); this.stone.position.y += sin(u * PI) * this.hopHeight;
+      this.stone.rotation.x += dt * 10;
+      if (!rig.gesture) { const A = rig.arms[1]; A.sh.rotation.x = damp(A.sh.rotation.x, 0.15, 20, dt); A.sh.rotation.z = damp(A.sh.rotation.z, -0.1, 14, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.1, 14, dt); }
+      if (u >= 1) {
+        this.game.fx.emit(this.to.x, 0.03, this.to.z, { count: 7, colors: [0xdff3ff, 0xffffff], speed: 1.1, up: 0.7, life: 0.5, gravity: 4 });
+        if (this.hop < 2) { SFX.bounce(); this.startHop(this.hop + 1); } else { SFX.click(); this.stone.visible = false; this.hop = -1; this.wait = rnd.range(2, 3.4); }
+      }
+    }
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- pogo hopper: stands put over a spring-loaded stick, the whole rig arcing up and down with a brief crouch at the bottom of each bounce, same shape as `Bouncer`'s own trampoline arc but grounded — no separate prop to share, the pole is parented straight to the body and hops with it
 class PogoHopper {
   constructor(game, rig, color, { x, z, ry = 0, height = 0.42, cycle = 0.72, cries = null, cryIcon = '🤸' }) {

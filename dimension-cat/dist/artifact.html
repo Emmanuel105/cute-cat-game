@@ -3072,6 +3072,50 @@ class FrisbeePlayer {
   }
 }
 
+// ---------------------------------------------------------------- stone skipper: a flat stone leaves the hand low and sidearm, skips the water three times at shrinking height and distance, then sinks — same `from`/`to`/lerp-with-a-sine-arc` ball idiom `SnowballFight` already uses, just one stone and one thrower instead of two kids trading volleys
+class StoneSkipper {
+  constructor(game, rig, { x, z, ry = 0, cries = null, cryIcon = '🪨' }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.ry = ry; this.t = rnd() * 10;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    this.fx = sin(ry); this.fz = cos(ry);
+    this.stone = mesh(G.cyl(0.07, 0.06, 0.02, 8), mat(0x8c8a7e, { roughness: 0.85 }));
+    this.stone.scale.z = 1.3; this.stone.visible = false; this.stone.rotation.y = ry; game.world.add(this.stone);
+    this.hop = -1; this.hopT = 0; this.hopDur = 0.3; this.hopHeight = 0; this.wait = rnd.range(1.5, 3);
+    this.from = V3(); this.to = V3();
+    this.circle = game.physics.addCircle(this, x, z, 0.4);
+    greetable(game, this);
+  }
+  startHop(i) {
+    const k = this.rig.k, dists = [2.6, 1.7, 1.1], heights = [0.5, 0.26, 0.12], durs = [0.42, 0.32, 0.24];
+    let prevDist = 0.35; for (let j = 0; j < i; j++) prevDist += dists[j];
+    const dist = prevDist + dists[i];
+    this.from.set(this.x + this.fx * prevDist, i === 0 ? 0.92 * k : 0, this.z + this.fz * prevDist);
+    this.to.set(this.x + this.fx * dist, 0, this.z + this.fz * dist);
+    this.hopHeight = heights[i]; this.hopDur = durs[i]; this.hopT = 0; this.hop = i; this.stone.visible = true;
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig;
+    rig.animate(0, false, dt, this.t);
+    if (this.hop < 0) {
+      this.wait -= dt; const windup = this.wait < 0.6;
+      if (!rig.gesture) { const A = rig.arms[1]; A.sh.rotation.x = damp(A.sh.rotation.x, windup ? -1.35 : -0.25, windup ? 6 : 10, dt); A.sh.rotation.z = damp(A.sh.rotation.z, windup ? 0.5 : 0.1, 8, dt); A.el.rotation.x = damp(A.el.rotation.x, windup ? -0.3 : -0.15, 8, dt); }
+      if (this.wait <= 0) this.startHop(0);
+    } else {
+      this.hopT += dt; const u = min(1, this.hopT / this.hopDur);
+      this.stone.position.copy(this.from).lerp(this.to, u); this.stone.position.y += sin(u * PI) * this.hopHeight;
+      this.stone.rotation.x += dt * 10;
+      if (!rig.gesture) { const A = rig.arms[1]; A.sh.rotation.x = damp(A.sh.rotation.x, 0.15, 20, dt); A.sh.rotation.z = damp(A.sh.rotation.z, -0.1, 14, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.1, 14, dt); }
+      if (u >= 1) {
+        this.game.fx.emit(this.to.x, 0.03, this.to.z, { count: 7, colors: [0xdff3ff, 0xffffff], speed: 1.1, up: 0.7, life: 0.5, gravity: 4 });
+        if (this.hop < 2) { SFX.bounce(); this.startHop(this.hop + 1); } else { SFX.click(); this.stone.visible = false; this.hop = -1; this.wait = rnd.range(2, 3.4); }
+      }
+    }
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- pogo hopper: stands put over a spring-loaded stick, the whole rig arcing up and down with a brief crouch at the bottom of each bounce, same shape as `Bouncer`'s own trampoline arc but grounded — no separate prop to share, the pole is parented straight to the body and hops with it
 class PogoHopper {
   constructor(game, rig, color, { x, z, ry = 0, height = 0.42, cycle = 0.72, cries = null, cryIcon = '🤸' }) {
@@ -20666,6 +20710,29 @@ function buildBeach(game, entry) {
     W.add(skater.group);
     game.npcs.push(new Kneeler(game, skater, { x: kx, z: kz, ry,
       cries: ['One more bolt and it should hold.', 'Careful, puss — these wheels have no manners.', "Flat as a boardwalk up here — perfect for it."] })); }
+  // every other beach activity here is either sitting still (sunbathers, the net-mender) or playing
+  // with something that stays in the air (the kite, the frisbee, the juggler's own balls) — nobody on
+  // this whole long shore ever throws anything *at* the water. A stone skipper now stands on the dry
+  // sand just short of the tideline, flinging a flat stone sidearm in a loop: it skips the water three
+  // times, shrinking in height and in the distance between bounces, same as a real one would, and
+  // sinks for good on the third. New `StoneSkipper` controller in `55-npcs.js`, right after
+  // `FrisbeePlayer` (the stone is a single free-floating mesh, lerped `from`/`to` with a sine arc on
+  // top of each hop, the exact idiom `SnowballFight`'s own snowballs already use — just one stone,
+  // one thrower, no second kid to throw back).
+  //
+  // Placed at (20.5, 29), facing +x out to sea: a headless probe (`game.start('new')`,
+  // `game.travel(4, 'from-hub')` waited out through its real portal-fade timer, then 3600 simulated
+  // frames with real-time deltas, sampling every NPC's own position every 10th frame) found the
+  // ground there a dry 0.22 m (well clear of the −0.05 m tideline threshold the crab trap round
+  // already used), the nearest physics box never closer than 7.4 m over the full 60 s run, and the
+  // stone's own first two touchdowns — 2.95 m and 4.65 m further out along the throw — landing at
+  // −0.05 m and −0.21 m, visibly underwater both times. At radius 35.5 m from the origin, well short
+  // of the radius (58) where `beachRegion`'s own procedural fill below takes over, so nothing here
+  // depends on that fill or shifts because of it.
+  { const skipX = 20.5, skipZ = 29;
+    const skipper = beachPerson(r.chance(0.5), false);
+    game.npcs.push(new StoneSkipper(game, skipper, { x: skipX, z: skipZ, ry: PI / 2,
+      cries: ["Takes a flat one - that's the whole trick.", 'Careful, puss, you\'ll end up in the sea chasing that.', "Best skip all week, and no one else here to see it."] })); }
   beachRegion(game, U, r, 58, SHORE_LIMIT - 8);
   // the headland behind the dunes: hills and peaks inland only, never out to sea
   makeHorizon(game, r, { clear: SHORE_LIMIT + 8, hill: 0x8c9a58, rock: 0x7a7060, rock2: 0x8a8272, snowLine: 58, peaks: 26, woodCount: 260, woodHue: [0.18, 0.28], woodLight: [0.18, 0.3], keep: (x) => x < -SHORE_LIMIT * 0.15 });

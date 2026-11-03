@@ -24105,3 +24105,40 @@ new collider, as expected), and Whisper Woods' own friend total rose from 116 to
 was possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
 two headless probes described above, both deleted after use, nothing committed. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 881 — Sunny Shore finally gets a stone skipper
+
+Everyone else on this beach either sits still (the sunbathers, the net-mender) or plays with
+something that stays in the air — a kite, a frisbee, the juggler's own three balls. Nobody ever
+throws anything *at* the water. **A stone skipper now stands on the dry sand just short of the
+tideline, flinging a flat stone sidearm in a steady loop: it skips the water three times, each
+bounce lower and shorter than the last, and sinks for good on the third before the next stone comes
+out.** *"Takes a flat one — that's the whole trick."* *"Careful, puss, you'll end up in the sea
+chasing that."* *"Best skip all week, and no one else here to see it."*
+
+New `StoneSkipper` controller in `55-npcs.js`, right after `FrisbeePlayer` — the stone is a single
+free-floating mesh, lerped `from`/`to` with a sine arc added on top of each hop, the same idiom
+`SnowballFight`'s own snowballs already use one world over, just one stone and one thrower instead
+of two kids trading volleys. No new physics box, just the usual `addCircle` so the thrower blocks
+the way like anyone else; `greetable()` makes them a friend to meet, same as the juggler standing
+further up the sand.
+
+A headless probe (`game.start('new')`, `game.travel(4, 'from-hub')` waited out through its real
+portal-fade timer, then 3600 simulated frames with real-time deltas, sampling every NPC's own
+position every 10th frame) found (20.5, 29) — dry sand at 0.22 m, well clear of the −0.05 m tideline
+threshold the crab trap round already used — with the nearest physics box never closer than 7.4 m
+over the full 60 s run, and the stone's own first two touchdowns landing at −0.05 m and −0.21 m,
+visibly underwater both times. At radius 35.5 m from the origin, well short of where `beachRegion`'s
+own procedural fill takes over, so nothing here depends on that fill or shifts because of it.
+
+Verified past the test suite's own checks: a second headless script travelled to Sunny Shore,
+teleported the cat beside the skipper, and called the interactable's own `onUse()` directly (the
+first attempt via `game.interact()` landed inside the post-travel fade-lock window and was correctly
+ignored — the same timer every world-transition round already has to wait out). `label()` read "Say
+hello", and using it took `game.state.friends.size` from 0 to 1. A further 600 frames confirmed the
+stone's position stays finite through several full throw-skip-sink cycles with no NaNs. `node
+test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 329 (no
+new collider, as expected). No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite and the headless probes described above, all deleted
+after use, nothing committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.

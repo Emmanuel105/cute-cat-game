@@ -1820,6 +1820,29 @@ function buildBeach(game, entry) {
     W.add(skater.group);
     game.npcs.push(new Kneeler(game, skater, { x: kx, z: kz, ry,
       cries: ['One more bolt and it should hold.', 'Careful, puss — these wheels have no manners.', "Flat as a boardwalk up here — perfect for it."] })); }
+  // every other beach activity here is either sitting still (sunbathers, the net-mender) or playing
+  // with something that stays in the air (the kite, the frisbee, the juggler's own balls) — nobody on
+  // this whole long shore ever throws anything *at* the water. A stone skipper now stands on the dry
+  // sand just short of the tideline, flinging a flat stone sidearm in a loop: it skips the water three
+  // times, shrinking in height and in the distance between bounces, same as a real one would, and
+  // sinks for good on the third. New `StoneSkipper` controller in `55-npcs.js`, right after
+  // `FrisbeePlayer` (the stone is a single free-floating mesh, lerped `from`/`to` with a sine arc on
+  // top of each hop, the exact idiom `SnowballFight`'s own snowballs already use — just one stone,
+  // one thrower, no second kid to throw back).
+  //
+  // Placed at (20.5, 29), facing +x out to sea: a headless probe (`game.start('new')`,
+  // `game.travel(4, 'from-hub')` waited out through its real portal-fade timer, then 3600 simulated
+  // frames with real-time deltas, sampling every NPC's own position every 10th frame) found the
+  // ground there a dry 0.22 m (well clear of the −0.05 m tideline threshold the crab trap round
+  // already used), the nearest physics box never closer than 7.4 m over the full 60 s run, and the
+  // stone's own first two touchdowns — 2.95 m and 4.65 m further out along the throw — landing at
+  // −0.05 m and −0.21 m, visibly underwater both times. At radius 35.5 m from the origin, well short
+  // of the radius (58) where `beachRegion`'s own procedural fill below takes over, so nothing here
+  // depends on that fill or shifts because of it.
+  { const skipX = 20.5, skipZ = 29;
+    const skipper = beachPerson(r.chance(0.5), false);
+    game.npcs.push(new StoneSkipper(game, skipper, { x: skipX, z: skipZ, ry: PI / 2,
+      cries: ["Takes a flat one - that's the whole trick.", 'Careful, puss, you\'ll end up in the sea chasing that.', "Best skip all week, and no one else here to see it."] })); }
   beachRegion(game, U, r, 58, SHORE_LIMIT - 8);
   // the headland behind the dunes: hills and peaks inland only, never out to sea
   makeHorizon(game, r, { clear: SHORE_LIMIT + 8, hill: 0x8c9a58, rock: 0x7a7060, rock2: 0x8a8272, snowLine: 58, peaks: 26, woodCount: 260, woodHue: [0.18, 0.28], woodLight: [0.18, 0.3], keep: (x) => x < -SHORE_LIMIT * 0.15 });
