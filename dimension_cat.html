@@ -3123,6 +3123,50 @@ class StoneSkipper {
   }
 }
 
+// ---------------------------------------------------------------- paper plane kid: folds and flings a paper dart on a sidearm throw, same `from`/`to`/lerp-with-a-sine-arc` idiom `StoneSkipper` already uses, just one long gliding arc instead of three shrinking hops, and landing on open grass rather than water — it tumbles to a stop and is folded away rather than sinking
+class PaperPlaneKid {
+  constructor(game, rig, { x, z, ry = 0, cries = null, cryIcon = '🛩️' }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.ry = ry; this.t = rnd() * 10;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    this.fx = sin(ry); this.fz = cos(ry);
+    const paperM = mat(0xf2ead6, { roughness: 0.85 });
+    this.plane = mesh(G.cone(0.1, 0.018, 4), paperM);   // a tiny flattened 4-sided pyramid reads as a folded paper dart: a diamond in plan, stretched long nose-to-tail
+    this.plane.scale.z = 3.1; this.plane.visible = false; this.plane.rotation.y = ry; game.world.add(this.plane);
+    this.flying = false; this.flightT = 0; this.flightDur = 1.05; this.dist = 3.0; this.height = 1.15; this.wait = rnd.range(1.6, 3.2);
+    this.from = V3(); this.to = V3();
+    this.circle = game.physics.addCircle(this, x, z, 0.4);
+    greetable(game, this);
+  }
+  throwPlane() {
+    const k = this.rig.k;
+    this.from.set(this.x + this.fx * 0.3, 0.9 * k, this.z + this.fz * 0.3);
+    this.to.set(this.x + this.fx * this.dist, 0.05, this.z + this.fz * this.dist);
+    this.flightT = 0; this.flying = true; this.plane.visible = true;
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig;
+    rig.animate(0, false, dt, this.t);
+    if (!this.flying) {
+      this.wait -= dt; const windup = this.wait < 0.6;
+      if (!rig.gesture) { const A = rig.arms[1]; A.sh.rotation.x = damp(A.sh.rotation.x, windup ? -1.5 : -0.2, windup ? 6 : 10, dt); A.sh.rotation.z = damp(A.sh.rotation.z, windup ? 0.4 : 0.1, 8, dt); A.el.rotation.x = damp(A.el.rotation.x, windup ? -0.25 : -0.15, 8, dt); }
+      if (this.wait <= 0) { SFX.rustle(); this.throwPlane(); }
+    } else {
+      this.flightT += dt; const u = min(1, this.flightT / this.flightDur);
+      this.plane.position.copy(this.from).lerp(this.to, u); this.plane.position.y += sin(u * PI) * this.height;
+      this.plane.rotation.z = sin(u * PI * 3 + this.t * 2) * 0.18;   // a gentle bank wobble on the glide
+      this.plane.rotation.x = -0.25 + u * 0.4;   // nose up on the climb, levelling out toward landing
+      if (!rig.gesture) { const A = rig.arms[1]; A.sh.rotation.x = damp(A.sh.rotation.x, 0.1, 20, dt); A.sh.rotation.z = damp(A.sh.rotation.z, -0.1, 14, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.1, 14, dt); }
+      if (u >= 1) {
+        this.game.fx.emit(this.to.x, 0.04, this.to.z, { count: 6, colors: [0xf2ead6, 0xffffff], speed: 0.8, up: 0.5, life: 0.5, gravity: 3 });
+        SFX.rustle(); this.plane.visible = false; this.flying = false; this.wait = rnd.range(2.2, 3.6);
+      }
+    }
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- pogo hopper: stands put over a spring-loaded stick, the whole rig arcing up and down with a brief crouch at the bottom of each bounce, same shape as `Bouncer`'s own trampoline arc but grounded — no separate prop to share, the pole is parented straight to the body and hops with it
 class PogoHopper {
   constructor(game, rig, color, { x, z, ry = 0, height = 0.42, cycle = 0.72, cries = null, cryIcon = '🤸' }) {
@@ -11805,6 +11849,41 @@ function buildNeighborhood(game, entry) {
     W.add(jacksKid.group);
     game.npcs.push(new Kneeler(game, jacksKid, { x: kx, z: kz, ry: kry,
       cries: ["Six jacks and a bouncy ball — watch close, I'll show you how it's done.", "Careful, puss — paws off, these roll clean under the porch if you tip one.", "Threes and fours now. Started out just picking up ones, same as everybody."] })); }
+
+  // kites, frisbees, hula hoops, yo-yos and every pavement game going have had a turn in this park by
+  // now, but nothing anyone actually folds for themselves. A kid stands on the quiet lawn well north
+  // of the badminton net, flinging a paper dart in one long gliding arc that banks gently on the way
+  // down, levels out and tumbles to a stop on the grass — then, a beat later, is simply folded away and
+  // thrown again, the same "endless supply" the stone skippers already lean on for their stones.
+  // *"Folds a fresh one every throw — never flies the same dart twice."* *"Careful, puss — paws off,
+  // that nose crease took three tries to get right."* *"Longest glide yet. Nobody's measuring, but
+  // it felt longer."*
+  //
+  // New controller `PaperPlaneKid` (55-npcs.js): the exact `from`/`to`/lerp-with-a-sine-arc` idiom
+  // `StoneSkipper` already uses for its stone, just one long throw instead of three shrinking hops, and
+  // landing on open grass instead of water. The dart itself is a single flattened 4-sided cone
+  // (`G.cone(0.1, 0.018, 4)`, stretched long in `scale.z`) — a diamond in plan view, same cheap
+  // flattened-primitive trick the stone, the jacks and the hockey puck elsewhere in this game all
+  // already use. No new SFX: the fold and the landing both reuse `SFX.rustle()`, already heard from
+  // this world's own bushes.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, 2400
+  // simulated frames sampling every NPC's own position every fifth frame) swept a 1–2 m grid of the open
+  // lawn north of the park — clear of the portal (0, 50), the pond (-12, 46), the kite flyer (22, 52),
+  // the stepping-stone path to the hollow oak (x 5..40, z 54..80) and the badminton net (-18, 64) — against
+  // both those samples and every one of the street's own physics boxes: (-31, 63) came back clear by
+  // 10.6 m of the nearest box and 13.1 m of the nearest wandering soul, with the dart's own 3 m landing
+  // point north of it (-31, 66) staying clear by 9.2 m and 13.9 m respectively.
+  //
+  // Built dead last, right after the jacks kid above, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off this village's own shared `r()` sequence unconditionally, and this is
+  // the first world the test suite builds, so anything built earlier here would have had its own
+  // timing-sensitive pick shifted by it.
+  { const dartWard = makeWardrobe(r, { shirts: [0x4a9ad6, 0xe8a23f], pants: [0x3a3a40, 0x5a4a3a], shoes: [0x2a2018, 0xefe7d8] });
+    const dartKid = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, wardrobe: dartWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(dartKid.group);
+    game.npcs.push(new PaperPlaneKid(game, dartKid, { x: -31, z: 63, ry: 0,
+      cries: ["Folds a fresh one every throw — never flies the same dart twice.", "Careful, puss — paws off, that nose crease took three tries to get right.", "Longest glide yet. Nobody's measuring, but it felt longer."] })); }
 
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);

@@ -24216,3 +24216,46 @@ friend count rose to 96. No visual check was possible in this environment (no br
 Playwright) — only the stub-three test suite and the two headless probes described above, both
 deleted after use, nothing committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 884 — the Neighborhood finally gets a kid folding paper planes
+
+Kites, frisbees, hula hoops, yo-yos and every pavement game going have had a turn in this street's own
+park by now — nothing anyone actually folds for themselves, though. **A kid now stands on the quiet
+lawn well north of the badminton net, flinging a paper dart in one long gliding arc that banks gently
+on the way down, levels out and tumbles to a stop on the grass — then, a beat later, is simply folded
+away and thrown again, the same endless supply the stone skippers already lean on for their stones.**
+*"Folds a fresh one every throw — never flies the same dart twice."* *"Careful, puss — paws off, that
+nose crease took three tries to get right."* *"Longest glide yet. Nobody's measuring, but it felt
+longer."*
+
+New controller `PaperPlaneKid` (55-npcs.js): the exact `from`/`to`/lerp-with-a-sine-arc idiom
+`StoneSkipper` already uses for its stone, just one long throw instead of three shrinking hops, landing
+on open grass instead of water. The dart itself is a single flattened 4-sided cone
+(`G.cone(0.1, 0.018, 4)`, stretched long with `scale.z`) — a diamond in plan view, the same
+cheap-flattened-primitive trick the stone and the jacks elsewhere in this game already use. No new SFX:
+the fold and the landing both reuse `SFX.rustle()`, already heard from this world's own bushes. No new
+physics box, same as the stone skippers — just the usual `addCircle` so he blocks the way like anyone
+else; `greetable()` makes him a friend to meet.
+
+Placed at (-31, 63): a headless probe (`game.start('new')`, 2400 simulated frames sampling every NPC's
+own position every fifth frame) swept the open lawn north of the park — clear of the portal (0, 50),
+the pond (-12, 46), the kite flyer (22, 52), the stepping-stone path to the hollow oak (x 5..40, z
+54..80) and the badminton net (-18, 64) — against both those samples and every one of the street's own
+physics boxes: (-31, 63) came back clear by 10.6 m of the nearest box and 13.1 m of the nearest
+wandering soul, with the dart's own 3 m landing point north of it (-31, 66) staying clear by 9.2 m and
+13.9 m respectively.
+
+Verified past the test suite's own checks with a second headless probe: walked the cat beside the kid
+and called `game.interact()` — `nearest.label()` read "Say hi", and using it took
+`game.state.friends.size` from 0 to 1. A further 600-frame run watched the dart actually fly: finite
+positions throughout, banking and levelling as scripted, landing inside the expected 63..66 z-band. Built
+dead last in `buildNeighborhood`, right after the jacks kid a few rounds back, for the usual reason:
+`makeHuman()` and `randomPerson()` both draw off this village's own shared `r()` sequence
+unconditionally, and this is the first world the test suite builds, so anything built earlier here
+would have had its own timing-sensitive pick shifted by it.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329 (no new collider, as expected), and the Neighborhood's own friend count rose from 85
+to 86. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite and the two headless probes described above, both deleted after use, nothing
+committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -1307,6 +1307,50 @@ class StoneSkipper {
   }
 }
 
+// ---------------------------------------------------------------- paper plane kid: folds and flings a paper dart on a sidearm throw, same `from`/`to`/lerp-with-a-sine-arc` idiom `StoneSkipper` already uses, just one long gliding arc instead of three shrinking hops, and landing on open grass rather than water — it tumbles to a stop and is folded away rather than sinking
+class PaperPlaneKid {
+  constructor(game, rig, { x, z, ry = 0, cries = null, cryIcon = '🛩️' }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.ry = ry; this.t = rnd() * 10;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    this.fx = sin(ry); this.fz = cos(ry);
+    const paperM = mat(0xf2ead6, { roughness: 0.85 });
+    this.plane = mesh(G.cone(0.1, 0.018, 4), paperM);   // a tiny flattened 4-sided pyramid reads as a folded paper dart: a diamond in plan, stretched long nose-to-tail
+    this.plane.scale.z = 3.1; this.plane.visible = false; this.plane.rotation.y = ry; game.world.add(this.plane);
+    this.flying = false; this.flightT = 0; this.flightDur = 1.05; this.dist = 3.0; this.height = 1.15; this.wait = rnd.range(1.6, 3.2);
+    this.from = V3(); this.to = V3();
+    this.circle = game.physics.addCircle(this, x, z, 0.4);
+    greetable(game, this);
+  }
+  throwPlane() {
+    const k = this.rig.k;
+    this.from.set(this.x + this.fx * 0.3, 0.9 * k, this.z + this.fz * 0.3);
+    this.to.set(this.x + this.fx * this.dist, 0.05, this.z + this.fz * this.dist);
+    this.flightT = 0; this.flying = true; this.plane.visible = true;
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig;
+    rig.animate(0, false, dt, this.t);
+    if (!this.flying) {
+      this.wait -= dt; const windup = this.wait < 0.6;
+      if (!rig.gesture) { const A = rig.arms[1]; A.sh.rotation.x = damp(A.sh.rotation.x, windup ? -1.5 : -0.2, windup ? 6 : 10, dt); A.sh.rotation.z = damp(A.sh.rotation.z, windup ? 0.4 : 0.1, 8, dt); A.el.rotation.x = damp(A.el.rotation.x, windup ? -0.25 : -0.15, 8, dt); }
+      if (this.wait <= 0) { SFX.rustle(); this.throwPlane(); }
+    } else {
+      this.flightT += dt; const u = min(1, this.flightT / this.flightDur);
+      this.plane.position.copy(this.from).lerp(this.to, u); this.plane.position.y += sin(u * PI) * this.height;
+      this.plane.rotation.z = sin(u * PI * 3 + this.t * 2) * 0.18;   // a gentle bank wobble on the glide
+      this.plane.rotation.x = -0.25 + u * 0.4;   // nose up on the climb, levelling out toward landing
+      if (!rig.gesture) { const A = rig.arms[1]; A.sh.rotation.x = damp(A.sh.rotation.x, 0.1, 20, dt); A.sh.rotation.z = damp(A.sh.rotation.z, -0.1, 14, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.1, 14, dt); }
+      if (u >= 1) {
+        this.game.fx.emit(this.to.x, 0.04, this.to.z, { count: 6, colors: [0xf2ead6, 0xffffff], speed: 0.8, up: 0.5, life: 0.5, gravity: 3 });
+        SFX.rustle(); this.plane.visible = false; this.flying = false; this.wait = rnd.range(2.2, 3.6);
+      }
+    }
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- pogo hopper: stands put over a spring-loaded stick, the whole rig arcing up and down with a brief crouch at the bottom of each bounce, same shape as `Bouncer`'s own trampoline arc but grounded — no separate prop to share, the pole is parented straight to the body and hops with it
 class PogoHopper {
   constructor(game, rig, color, { x, z, ry = 0, height = 0.42, cycle = 0.72, cries = null, cryIcon = '🤸' }) {

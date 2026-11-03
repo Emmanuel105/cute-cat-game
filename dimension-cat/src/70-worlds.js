@@ -3447,6 +3447,41 @@ function buildNeighborhood(game, entry) {
     game.npcs.push(new Kneeler(game, jacksKid, { x: kx, z: kz, ry: kry,
       cries: ["Six jacks and a bouncy ball — watch close, I'll show you how it's done.", "Careful, puss — paws off, these roll clean under the porch if you tip one.", "Threes and fours now. Started out just picking up ones, same as everybody."] })); }
 
+  // kites, frisbees, hula hoops, yo-yos and every pavement game going have had a turn in this park by
+  // now, but nothing anyone actually folds for themselves. A kid stands on the quiet lawn well north
+  // of the badminton net, flinging a paper dart in one long gliding arc that banks gently on the way
+  // down, levels out and tumbles to a stop on the grass — then, a beat later, is simply folded away and
+  // thrown again, the same "endless supply" the stone skippers already lean on for their stones.
+  // *"Folds a fresh one every throw — never flies the same dart twice."* *"Careful, puss — paws off,
+  // that nose crease took three tries to get right."* *"Longest glide yet. Nobody's measuring, but
+  // it felt longer."*
+  //
+  // New controller `PaperPlaneKid` (55-npcs.js): the exact `from`/`to`/lerp-with-a-sine-arc` idiom
+  // `StoneSkipper` already uses for its stone, just one long throw instead of three shrinking hops, and
+  // landing on open grass instead of water. The dart itself is a single flattened 4-sided cone
+  // (`G.cone(0.1, 0.018, 4)`, stretched long in `scale.z`) — a diamond in plan view, same cheap
+  // flattened-primitive trick the stone, the jacks and the hockey puck elsewhere in this game all
+  // already use. No new SFX: the fold and the landing both reuse `SFX.rustle()`, already heard from
+  // this world's own bushes.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, 2400
+  // simulated frames sampling every NPC's own position every fifth frame) swept a 1–2 m grid of the open
+  // lawn north of the park — clear of the portal (0, 50), the pond (-12, 46), the kite flyer (22, 52),
+  // the stepping-stone path to the hollow oak (x 5..40, z 54..80) and the badminton net (-18, 64) — against
+  // both those samples and every one of the street's own physics boxes: (-31, 63) came back clear by
+  // 10.6 m of the nearest box and 13.1 m of the nearest wandering soul, with the dart's own 3 m landing
+  // point north of it (-31, 66) staying clear by 9.2 m and 13.9 m respectively.
+  //
+  // Built dead last, right after the jacks kid above, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off this village's own shared `r()` sequence unconditionally, and this is
+  // the first world the test suite builds, so anything built earlier here would have had its own
+  // timing-sensitive pick shifted by it.
+  { const dartWard = makeWardrobe(r, { shirts: [0x4a9ad6, 0xe8a23f], pants: [0x3a3a40, 0x5a4a3a], shoes: [0x2a2018, 0xefe7d8] });
+    const dartKid = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, wardrobe: dartWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(dartKid.group);
+    game.npcs.push(new PaperPlaneKid(game, dartKid, { x: -31, z: 63, ry: 0,
+      cries: ["Folds a fresh one every throw — never flies the same dart twice.", "Careful, puss — paws off, that nose crease took three tries to get right.", "Longest glide yet. Nobody's measuring, but it felt longer."] })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
