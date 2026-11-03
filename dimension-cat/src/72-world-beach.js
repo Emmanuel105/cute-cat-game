@@ -2019,6 +2019,53 @@ function buildBeach(game, entry) {
     }
     game.npcs.push(new StiltWalker(game, performer, { points: [[-39, 26], [-33, 26]], speed: 0.55, pause: [1.5, 3], r: 0.4, height: 2.6, stiltH,
       cries: ["Careful, puss — these legs don't bend the way yours do.", "Tide's coming in. Good thing I brought my own height.", "Kids on the pier bet I'd topple into the sea by now. Still waiting."], cryIcon: '🎪' })); }
+  // the Neighborhood (twice over), Candy Land, Robot City and Victorian all have a kid kneeling
+  // over a game of jacks by now — it never reached Sunny Shore, past its own sandcastle digger,
+  // marbles ring and hopscotch chalker. A girl now kneels on the open dry sand west of the
+  // treasure dig, candy-striped jacks scattered in front of her and a small banded bouncy ball
+  // resting where it last came down. *"Threw it up, swept up five, caught it on the way back
+  // down — paws don't count, puss."* *"Mind the wind. Blow one into a dune and it's gone for
+  // good."* *"Six jacks, one bounce each. Nobody on this stretch of sand has beaten my best
+  // yet."* Saying hello makes her the usual kind of friend.
+  //
+  // No new mesh and no new controller: the same six crossed-cylinder jacks (three thin crossed
+  // cylinders each, meeting at a point) and candy-striped ball every other world's jacks game
+  // already uses, and `Kneeler`'s own patting gesture (55-npcs.js) already reads as scooping them
+  // up — a placement, not a build. `beachPerson()` is this file's own wardrobe helper, already
+  // used for every other background kid on this shore (the digger, the hermit-crab kid, the
+  // sandcastle patter), so no new colour literal either. Unlike the other three worlds' flat
+  // cobbles or factory floor, this sand isn't level, so the jacks and ball sit on `P.ground0()`
+  // at this spot rather than a fixed y.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // `game.travel(4, 'from-hub')` waited out for real against `game.worldIndex`, then 3600
+  // simulated frames sampling every NPC's and the squirrel's own position every 5th frame) swept a
+  // 2 m grid of the open dry sand (x from -22 to 10, z from -8 to 56) against both those 76,320
+  // samples and all 199 of the beach's own physics boxes: (-16, 8) came back clearest, 4.14 m from
+  // the nearest box and 6.0 m from the nearest wandering soul, at radius 17.9 from the origin —
+  // well short of the radius (58) where `beachRegion`'s own fill takes over, flat underfoot
+  // (ground height 0.25 m) and clear of every one of `game.zones`'s own keep-out rectangles.
+  //
+  // Built dead last, right after the boardwalk stilt walker, for the usual reason: `makeHuman()`
+  // and `randomPerson()` (inside `beachPerson()`) both draw off the shared `rnd()` sequence
+  // unconditionally, and anything built earlier on this beach would have had its own
+  // timing-sensitive pick shifted by it.
+  { const px = -16, pz = 8, py = P.ground0(px, pz), kx = px - 0.9, kz = pz, kry = atan2(px - kx, pz - kz);
+    const jackM = mat(0x6a8a9a, { roughness: 0.4, metalness: 0.15 });
+    for (const [jx, jz] of [[-0.18, 0.1], [0.08, -0.14], [0.2, 0.08], [-0.05, -0.2], [0.12, 0.2], [-0.22, -0.05]]) {
+      const jack = group(px + jx, py + 0.02, pz + jz, W);
+      mesh(G.sphere(0.012, 6, 5), jackM, { shadow: 'none', parent: jack });
+      mesh(G.cyl(0.01, 0.01, 0.08, 6), jackM, { shadow: 'none', parent: jack });
+      mesh(G.cyl(0.01, 0.01, 0.08, 6), jackM, { rz: PI / 2, shadow: 'none', parent: jack });
+      mesh(G.cyl(0.01, 0.01, 0.08, 6), jackM, { rx: PI / 2, shadow: 'none', parent: jack });
+      jack.rotation.y = r() * TAU;
+    }
+    const ball = group(px + 0.3, py + 0.045, pz + 0.22, W);
+    mesh(G.sphere(0.045, 12, 8), mat(0xffffff, { roughness: 0.3 }), { parent: ball });
+    mesh(G.sphere(0.0452, 12, 8), mat(0xd62839, { roughness: 0.3 }), { sx: 0.5, shadow: 'none', parent: ball });
+    mesh(G.sphere(0.0452, 12, 8), mat(0xd62839, { roughness: 0.3 }), { sz: 0.5, shadow: 'none', parent: ball });
+    game.npcs.push(new Kneeler(game, beachPerson(true, true), { x: kx, z: kz, ry: kry,
+      cries: ["Threw it up, swept up five, caught it on the way back down — paws don't count, puss.", "Mind the wind. Blow one into a dune and it's gone for good.", "Six jacks, one bounce each. Nobody on this stretch of sand has beaten my best yet."] })); }
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

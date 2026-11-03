@@ -23884,3 +23884,41 @@ count unchanged at 329 (no new physics box) and Victorian's own friend count ros
 No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite and the headless probe described above. Probe script deleted after use,
 nothing committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 875 — Sunny Shore finally gets its own game of jacks
+
+The Neighborhood (twice over), Candy Land, Robot City and Victorian all had a kid kneeling over a
+game of jacks by now — it never reached Sunny Shore, past its own sandcastle digger, marbles ring
+and hopscotch chalker. **A girl now kneels on the open dry sand west of the treasure dig,
+candy-striped jacks scattered in front of her and a small banded bouncy ball resting where it last
+came down.** *"Threw it up, swept up five, caught it on the way back down — paws don't count,
+puss."* *"Mind the wind. Blow one into a dune and it's gone for good."* *"Six jacks, one bounce
+each. Nobody on this stretch of sand has beaten my best yet."* Saying hello makes her the usual
+kind of friend.
+
+No new mesh and no new controller: the same six crossed-cylinder jacks and candy-striped ball
+every other world's jacks game already uses, and `Kneeler`'s own patting gesture (55-npcs.js)
+already reads as scooping them up — a placement, not a build. `beachPerson()` is this file's own
+wardrobe helper, already used for every other background kid on this shore, so no new colour
+literal either. Unlike the other four worlds' flat cobbles or factory floor, this sand isn't
+level, so the jacks and ball sit on `P.ground0()` at this spot instead of a fixed y.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+`game.travel(4, 'from-hub')` waited out for real against `game.worldIndex`, then 3600 simulated
+frames sampling every NPC's and the squirrel's own position every 5th frame) swept a 2 m grid of
+the open dry sand (x from -22 to 10, z from -8 to 56) against both those 76,320 samples and all
+199 of the beach's own physics boxes: (-16, 8) came back clearest, 4.14 m from the nearest box and
+6.0 m from the nearest wandering soul, at radius 17.9 from the origin — well short of the radius
+(58) where `beachRegion`'s own fill takes over, flat underfoot (ground height 0.25 m) and clear of
+every one of `game.zones`'s own keep-out rectangles.
+
+Built dead last, right after the boardwalk stilt walker, for the usual reason: `makeHuman()` and
+`randomPerson()` (inside `beachPerson()`) both draw off the shared `rnd()` sequence unconditionally,
+and anything built earlier on this beach would have had its own timing-sensitive pick shifted by
+it.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box
+count unchanged at 329 (no new physics box) and Sunny Shore's own friend count rose by one, to
+115. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite and the headless probe described above. Probe script deleted after use,
+nothing committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
