@@ -24174,3 +24174,45 @@ unchanged at 329 (no new physics box) and Victorian's own friend count rose from
 walkable-ground percentage holding at 95%. No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite and the headless probe described above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 883 — Candy Land's chocolate river finally gets a stone skipper
+
+Sunny Shore (round 881) and Victorian's canal (round 882) both got a stone skipper flinging flat
+stones into open water — the chocolate river, this land's own stretch of it (a boat, a swimming duck
+pair, an angler, three wafer bridges, yet nobody ever actually throwing anything in), never caught
+up. **A boy now stands on the river's north bank, well east of everyone else out here, skipping a
+flat stone south across the chocolate in the same steady loop: three bounces, each lower and shorter
+than the last, then it sinks for good before the next one comes out.** *"Takes a flat one — round
+ones just sink in fudge, I found that out the hard way."* *"Careful, puss — one splash in that and
+it's a bath, not a paw-wash."* *"Three skips, same as every throw before it. Best stretch of river
+for it, this."*
+
+No new mechanism: the exact same `StoneSkipper` controller (55-npcs.js) the beach and the canal
+already use, unchanged — just a placement and a facing (`ry: PI`, straight across) instead of a new
+class. No new physics box either, same as the other two throwers — just the usual `addCircle` so he
+blocks the way like anyone else; `greetable()` makes him a friend to meet. Built dead last in
+`buildCandyLand`, right after the jacks kid two rounds ago, for the usual reason: `makeHuman()` and
+`randomPerson()` both draw off this land's own shared `r()` sequence, and anything built earlier
+would have had its own pick shifted by it.
+
+Placed at (150, -13.5), 1.0 m north of the river wall's own edge — the same offset the canal's own
+skipper and angler already stand at on their own towpaths. A headless probe (`game.start('new')`,
+`game.travel(1, 'from-prev')` waited out through its real portal-fade timer) swept the north bank out
+past the swimming ducks (x 61–79), the river angler (x=26) and all three wafer bridges (x=-44, 0, 46)
+against every one of the land's 1902 physics boxes and every wandering soul: (150, -13.5) came back
+17.6 m clear of the nearest other box and 69.2 m clear of the nearest wandering soul, at radius 150.6
+from the origin — deep inside the radius (92) where `candyRegion`'s own procedural fill already took
+over, so that sweep's own clearances already account for whatever canes and lollipops the fill
+scattered out there. With `fz=-1` the three hops land at z=-16.45, -18.15 and -19.25 — comfortably
+inside the chocolate's own z −21.5..−14.5 band the whole way, never short of it or past the far bank.
+
+Verified past the test suite's own checks: a second headless script travelled to Candy Land,
+teleported the cat beside the skipper, and called `game.interact()`. `nearest.label()` read "Say hi",
+and using it took `game.state.friends.size` from 0 to 1. A further 3600-frame run confirmed the
+stone stays visible and finite through several full throw-skip-sink cycles, with its last hop landing
+right at z≈-19.2 as expected. `node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0
+console warnings, box count unchanged at 329 (no new collider, as expected), and Candy Land's own
+friend count rose to 96. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite and the two headless probes described above, both
+deleted after use, nothing committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.

@@ -5834,6 +5834,38 @@ function buildCandyLand(game, entry) {
     game.npcs.push(new Kneeler(game, jacksKid, { x: kx, z: kz, ry: kry,
       cries: ['Threw it up, grabbed four, caught it again — your turn, if you can manage it with paws.', "Careful, puss — swat one of these into the grass and I'm starting the whole round over.", "Six jacks down, one bounce between each. Nobody in this land's ever beaten my best."] })); }
 
+  // Sunny Shore (round 881) and Victorian's canal (round 882) both got a stone skipper flinging flat
+  // stones into open water — the chocolate river, this land's own stretch of it (a boat, a swimming
+  // duck pair, an angler, three wafer bridges, yet nobody ever actually throwing anything in), never
+  // caught up. A boy now stands on the river's north bank well east of everyone else out here,
+  // skipping a flat stone south across the chocolate in the same steady loop: three bounces, each
+  // lower and shorter than the last, then it sinks for good before the next one comes out. Same
+  // `StoneSkipper` controller (55-npcs.js) the beach and the canal already use, unchanged — no new
+  // class, no new mesh, just a placement and a facing.
+  //
+  // Placed at (150, -13.5), facing -z (`ry: PI`) straight across: a headless probe (`game.start('new')`,
+  // `game.travel(1, 'from-prev')` waited out through its real portal-fade timer) swept the north bank
+  // out past the swimming ducks (x 61-79), the river angler (x=26) and all three wafer bridges
+  // (x=-44, 0, 46) against every one of the land's physics boxes and every wandering soul: (150, -13.5)
+  // came back 17.6 m clear of the nearest other box and 69.2 m clear of the nearest wandering soul, at
+  // radius 150.6 from the origin — deep inside the radius (92) where `candyRegion`'s own procedural
+  // fill already took over, so that sweep's own clearances already account for whatever canes and
+  // lollipops the fill scattered out there. One metre north of the river wall's own edge (z=-14.6) —
+  // the same offset the canal's own skipper and the canal angler already stand at on their own
+  // towpaths — with `fz=-1` the three hops land at z=-16.45, -18.15 and -19.25, comfortably inside the
+  // chocolate's own z −21.5..−14.5 band the whole way, never short of it or past the far bank.
+  //
+  // Built dead last, right after the jacks kid above, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off this land's own shared `r()` sequence unconditionally, and anything
+  // built earlier would have had its own timing-sensitive pick shifted by it. `StoneSkipper`'s own
+  // draws (`this.t`, `this.wait`) come off the shared global `rnd()`, not this land's `r()`, so it
+  // costs nothing later either way.
+  { const skipWard = makeWardrobe(r, { shirts: [0x8a6a9a, 0x6a9a8a], pants: [0xfff3b0, 0xbfe7ff] });
+    const skipper = makeHuman({ ...randomPerson(r, { female: false, child: true, wardrobe: skipWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(skipper.group);
+    game.npcs.push(new StoneSkipper(game, skipper, { x: 150, z: -13.5, ry: PI,
+      cries: ["Takes a flat one — round ones just sink in fudge, I found that out the hard way.", 'Careful, puss — one splash in that and it\'s a bath, not a paw-wash.', "Three skips, same as every throw before it. Best stretch of river for it, this."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
