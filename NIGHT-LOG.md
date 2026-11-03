@@ -24438,3 +24438,29 @@ greetable). No visual check was possible in this environment (no browser, no Pla
 stub-three test suite confirmed the loop runs and stays finite. All eleven of Victorian's baskets are
 now accounted for: ten with their own bees, one ruled out for good. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 890 — Whisper Woods' fairies finally get their own "say hello"
+
+Five fairies have circled the glade on their own slow loops since this world was first built, the
+same `Flyer` controller the butterflies and the glowing-pond dragonfly already use — but unlike
+every one of those, nobody had ever given a single one of them a `game.namedFriend` id. The only
+fairy in the whole wood who ever got a line was the one asleep inside the hidden flower bud, and she
+only ever gets a toast, never a friend credit. **The first of the five loop-flying fairies now
+answers "Say hello to the fairy" too** — *"Oh! Hello. Don't tell the others I stopped to chat."*
+
+No new mesh, no new physics box, no change to the loop's own look or motion: the fairy-building loop
+in `buildForest()` (74-world-forest.js) now just captures its first iteration's rig into
+`friendlyFairy` before moving on exactly as before, then a `game.addInteractable` right after the
+loop keys off `friendlyFairy.group` directly — the same pattern this log has used on every other
+looping `Flyer` critter (the butterflies' four, the dragonfly, the bees). `Flyer`'s own constructor
+already calls `game.world.add(rig.group)` itself, so the scene-graph check needed nothing extra, and
+the proximity test in `80-game.js` compares x/z only, never height, so the usual 2.1 m radius still
+catches the cat walking underneath while the fairy loops 1.2–2.4 m up. The loop's own `r.range()`
+and `r.pick()` draws are completely unchanged — only a capture and an interactable were added after
+it finishes, so nothing later in this world's build had its own seeded pick shifted.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329 (no new collider, as expected), and Whisper Woods' own friend count rose from 118 to
+119. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite confirmed the interactable fires and the fairy's own position stays finite.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
