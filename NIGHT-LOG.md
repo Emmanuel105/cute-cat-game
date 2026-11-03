@@ -24038,3 +24038,35 @@ unchanged at 329 (no new collider, as expected), and Candy Land's own friend tot
 environment (no browser, no Playwright) — only the stub-three test suite and the two headless probes
 described above, both deleted after use, nothing committed. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 879 — Sunny Shore finally gets a crab trap
+
+This beach is thick with crabs — marching crabs, far-shore crabs, a crab who tips off the fisherman
+where to cast — and a net-mender who sits on the north sand coiling rope for gear she apparently
+never sets. But in seven worlds' worth of beachcombing, nobody had ever actually dropped an actual
+crab trap in the sand. **A tapered wicker crab trap now sits a few steps down the tideline from the
+net-mender's own stool, lashed slats round two hoops, a narrow funnel neck on top, and a short coil
+of rope trailing off the rim like it was just hauled up and left to dry.** Every crab on this beach
+is apparently too smart for it. *"Empty again. They always find the one gap in the weave."* *"Baited
+it fresh this morning. Something ate the bait and left."* *"Every crab on this beach knows better
+than to go in there."*
+
+New prop `makeCrabTrap()` in `62-props-nature.js`, right after `makeBuoy()` — ten wood slats lashed
+round two dark hoops, a funnel neck, and a loose coil of rope, all plain toon colours built from
+boxes, cylinders and a torus, the same blocky idiom the sandcastle and treasure chest already use.
+No `makeHuman`, no `randomPerson`, no draw from this world's own seeded `r()` at all — every shape
+and colour is a fixed literal, so the trap costs nothing timing-sensitive and could as easily have
+gone in first as last. It just got dropped in after the surfboard, closest in theme to the net-mender
+just up the sand from it.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+`game.travel(4, 'from-hub')`, then 3000 simulated frames sampling every NPC's own position every
+10th frame) swept the damp sand north of the dunes (ground height ≥ −0.05 m, clear of the real water,
+x 14–24, z 20–55) against both those samples and all 199 of the beach's own physics boxes: (24, 52)
+came back clearest, 8.5 m from the nearest box and 4.12 m from the net-mender herself, at a ground
+height of 0.03 m — right at the tideline, not underwater.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
+headless probe described above, deleted after use, nothing committed. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

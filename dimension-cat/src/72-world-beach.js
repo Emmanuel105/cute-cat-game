@@ -762,6 +762,26 @@ function buildBeach(game, entry) {
     // against the bootblack's own closer-still 0.32 m gap.
     const boardLines = ['🏄 "Fresh wax, nose to tail — not a patch missed."', '🏄 "One fin, dead centre. Older than it looks."', '🏄 "Planted nose-down so the wax doesn\'t melt off in the sun."'];
     game.addInteractable({ obj: board, radius: 0.9, label: () => 'Look at the surfboard', onUse: () => { SFX.click(); game.toast(rnd.pick(boardLines), 3000); } }); }
+  // the net-mender coils rope for gear she never actually sets, and this whole beach is thick with
+  // crabs, marching crabs, far-shore crabs, a crab who tells the fisherman where to cast — but nobody
+  // here ever set an actual crab trap. New `makeCrabTrap()` in `62-props-nature.js`, right after
+  // `makeBuoy()`: a tapered wicker basket of ten lashed slats round two hoops, a narrow funnel neck on
+  // top, and a short coil of rope trailing off the rim. Dropped a few steps down the sand from the
+  // net-mender's own stool toward the water, where she'd have hauled it up and left it to dry. Every
+  // mesh is a fixed shape and colour — no `r()` draw, no `makeHuman`, nothing timing-sensitive — so it
+  // costs this world's own seeded sequence nothing and could as easily have gone in first.
+  //
+  // A headless probe (`game.start('new')`, `game.travel(4, 'from-hub')`, then 3000 simulated frames
+  // sampling every NPC's own position every 10th frame) swept the damp sand north of the dunes (ground
+  // height ≥ -0.05, clear of the real water, x 14-24, z 20-55) against both those samples and all 199
+  // of the beach's own physics boxes: (24, 52) came back clearest, 8.5 m from the nearest box and
+  // 4.12 m from the net-mender herself, at a ground height of 0.03 m — right at the tideline, not
+  // underwater.
+  { const tx = 24, tz = 52;
+    const trap = placeT(game, U, makeCrabTrap(), tx, tz, 0.6);
+    boxT(game, tx, tz, 0.68, 0.63, 0.68, { cam: false });
+    const trapLines = ['🦀 "Empty again. They always find the one gap in the weave."', '🪤 "Baited it fresh this morning. Something ate the bait and left."', '🧺 "Every crab on this beach knows better than to go in there."'];
+    game.addInteractable({ obj: trap, radius: 1.6, label: () => 'Look at the crab trap', onUse: () => { SFX.click(); game.toast(rnd.pick(trapLines), 3000); } }); }
   // no world had a musician yet; one sits cross-legged in the dune grass west of the towels, strumming a ukulele toward the sunbathers
   { const mx = -34, mz = 0, mry = atan2(5 - mx, 10 - mz);
     const museWard = makeWardrobe(r, { shirts: [0xffd54a, 0xff7043, 0x2f6fd6], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0xefe7d8, 0x8d6e63] });

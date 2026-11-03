@@ -221,6 +221,21 @@ function makeBuoy(color = 0xd62839) {
   g.userData.update = (dt, t) => { g.position.y = g.userData.y0 + sin(t * 1.4 + g.position.x) * 0.12; g.rotation.x = sin(t * 1.1) * 0.08; g.rotation.z = cos(t * 0.9) * 0.08; };
   return g;
 }
+/** A woven crab trap: a tapered wicker basket standing on the sand, slats lashed round two hoops,
+ *  a narrow funnel neck on top a crab can wander into but never quite work out how to leave by, and a
+ *  short coil of rope left trailing off the rim, as if just hauled up and dropped. Faces no particular
+ *  way — it sits flat, so `ry` only turns the coil. */
+function makeCrabTrap() {
+  const g = new THREE.Group(), wood = mat(0x9a7a52, { roughness: 0.85 }), dark = mat(0x5a4030, { roughness: 0.8 }), rope = mat(0xc9a96a, { roughness: 0.95 });
+  const R = 0.3, H = 0.42;
+  mesh(G.cyl(R, R * 0.74, H, 10), wood, { y: H / 2, parent: g });
+  for (const hy of [0.05, H - 0.06]) mesh(G.torus(hy < H / 2 ? R * 1.02 : R * 0.76, 0.02, 5, 14), dark, { y: hy, rx: PI / 2, parent: g });
+  const n = 10;
+  for (let i = 0; i < n; i++) { const a = i / n * TAU; mesh(G.box(0.025, H * 0.86, 0.025), dark, { x: cos(a) * R * 0.95, z: sin(a) * R * 0.95, y: H / 2, parent: g }); }
+  mesh(G.cyl(R * 0.46, R * 0.18, 0.16, 8), dark, { y: H + 0.05, parent: g });   // the funnel neck
+  for (let i = 0; i < 3; i++) noInk(mesh(G.torus(0.12 - i * 0.02, 0.016, 5, 10), rope, { x: R + 0.1 + i * 0.03, y: 0.02, rx: PI / 2, ry: i * 0.6, parent: g }));
+  return g;
+}
 function makeBoat(color = 0x3f6fd6) {
   const g = new THREE.Group(), hull = mat(color, { roughness: 0.6 }), wood = mat(0xd9b98a, { roughness: 0.9, map: TEX.planks(30, 50) });
   mesh(G.bodySphere(16, 8), hull, { y: 0.2, sx: 0.8, sy: 0.45, sz: 1.9, parent: g });
