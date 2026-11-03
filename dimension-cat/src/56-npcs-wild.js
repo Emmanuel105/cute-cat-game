@@ -139,6 +139,10 @@ function makeQuadruped(o) {
     else if (o.ears === 'round') mesh(G.sphere(0.06, 10, 8), fur, { x: side * 0.13, y: 0.13, z: -0.02, parent: head });
     else mesh(G.earCone(o.ears === 'big' ? 0.07 : 0.05, o.ears === 'big' ? 0.2 : 0.14), fur, { x: side * 0.1, y: 0.16, z: -0.03, rz: side * -0.3, parent: head });
     if (o.antlers) { const a = group(side * 0.07, 0.15, -0.04, head); const bone = mat(0xd9c9a8, { roughness: 0.8 }); mesh(G.cyl(0.015, 0.02, 0.32, 6), bone, { y: 0.16, rz: side * -0.35, parent: a }); mesh(G.cyl(0.012, 0.015, 0.18, 6), bone, { x: side * 0.06, y: 0.28, rz: side * -1.0, parent: a }); mesh(G.cyl(0.011, 0.014, 0.16, 6), bone, { x: side * 0.02, y: 0.36, rz: side * 0.5, parent: a }); }
+    // a goat's horns: a single short, tapered sweep curving back and down from just above the ear,
+    // two segments rather than the antlers' three-way branch above. Gated behind `o.horns` so every
+    // other quadruped (dogs, foxes, the deer's own antlers) renders exactly as before.
+    if (o.horns) { const hn = group(side * 0.06, 0.16, -0.03, head); const horn = mat(0x3a332a, { roughness: 0.7 }); mesh(G.cyl(0.018, 0.026, 0.17, 7), horn, { y: 0.08, rz: side * -0.3, rx: -0.5, parent: hn }); mesh(G.cyl(0.012, 0.018, 0.14, 7), horn, { y: 0.17, z: -0.07, rz: side * -0.3, rx: -1.15, parent: hn }); }
   }
   // an optional collar: a flat band just under the chin, where head meets neck, plus a small hanging
   // bell charm. Gated behind `o.collar` (a color) so every quadruped built without it — every dog, fox,
@@ -182,6 +186,7 @@ const makeFactoryMouse = () => makeQuadruped({ color: 0x6e6559, color2: 0x453f35
 const makeAlleyRat = () => makeQuadruped({ color: 0x5c5448, color2: 0x322d26, belly: 0x847a68, ears: 'round', tail: 'long', bodyY: 0.1, length: 0.18, scale: 0.27, wag: 2.2 });
 const makeMintHare = () => makeQuadruped({ color: 0xcdf2e0, color2: 0xffffff, belly: 0xffffff, ears: 'big', tail: 'stub', bodyY: 0.2, length: 0.3, scale: 0.55, wag: 2 });
 const makeRaccoon = () => makeQuadruped({ color: 0x6b6b6b, color2: 0x2a2a2a, belly: 0xcfc9ba, ears: 'round', tail: 'bushy', bodyY: 0.22, length: 0.36, scale: 0.6, wag: 2 });
+const makeMountainGoat = () => makeQuadruped({ color: 0xe8e4d6, color2: 0xcfc8b2, belly: 0xf5f2e8, ears: 'big', tail: 'stub', horns: true, hooves: true, grazes: true, bodyY: 0.42, length: 0.58, neck: 0.1, scale: 0.85, wag: 1.2 });
 
 // ---------------------------------------------------------------- sandpiper (small shorebird, two legs, darts along the tideline)
 function makeSandpiper() {

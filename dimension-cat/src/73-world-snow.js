@@ -2044,6 +2044,40 @@ function buildSnowVillage(game, entry) {
     const jacksKid = kid(r.chance(0.5));
     game.npcs.push(new Kneeler(game, jacksKid, { x: kx, z: kz, ry: kry,
       cries: ["Threw it up, swept up four, caught it on the way back down — paws don't count, puss.", "Mind the slope. Let one roll and it's halfway down the mountain before you catch it.", "Six jacks, one bounce each. Nobody at this end of the village has beaten my best yet."] })); }
+  // every other world with real wildlife of its own (the Neighborhood's hare and fox, Whisper Woods'
+  // raccoon and hedgehog) has at least one small mammal that is purely a sighting rather than a pet or a
+  // herd animal — Frosty Peak's own husky (round 605) and the reindeer herd are both ambient, but
+  // nothing here was ever actually alpine. A mountain goat now keeps to a small scatter of grey rocks on
+  // the open snowfield south-west of the village, well clear of the trampoline and frost-bubble kids
+  // further west. New `horns` option on `makeQuadruped()` (56-npcs-wild.js, next to `antlers`): a short
+  // two-segment sweep curving back and down from just above the ear, gated so every other quadruped —
+  // every dog, fox, horse and the deer's own antlers — renders exactly as before. `makeMountainGoat()`
+  // (new, next to the other named presets) just sets `horns`, `hooves` and `grazes` on a pale, stocky
+  // build. New `SFX.bleat()` (30-audio.js, next to `ribbit()`), two short wavering notes, gated the same
+  // way the husky's own `SFX.woof()` was: nothing else calls it.
+  // A headless probe built the real mountain (`game.start('new')`, then `game.travel(5, 'from-hub')`
+  // waited out through its own portal-fade timer), sampled every NPC's own position every quarter second
+  // over 150 simulated seconds (so no wandering reindeer, husky, hare, arctic fox, sledder or mid-game
+  // kid could slip past unnoticed), then swept a 2 m grid of the open snowfield (radius 20-56, short of
+  // the radius (58) where snowRegion's own fill takes over) against both those samples and every one of
+  // the mountain's physics boxes: (-38, -10) came back clear by 7.23 m of the nearest box (the gondola
+  // station) and 7.51 m of the nearest other soul, with ground height varying only 0.47 m across the
+  // whole 8 m square around it — flat enough for the rocks to sit level and the goat's own 4 m leash to
+  // never bump the slope.
+  { const gx = -38, gz = -10, gry = atan2(0 - gx, 0 - gz);
+    const rockM = mat(0x7a7468, { roughness: 0.95, flatShading: true }), rx = gx + 1.3, rz = gz - 0.6;
+    const rockGrp = group(rx, P.ground0(rx, rz), rz, W);
+    mesh(G.sphere(0.38, 7, 5), rockM, { y: 0.2, ry: 0.4, parent: rockGrp });
+    mesh(G.sphere(0.3, 7, 5), rockM, { x: 0.32, y: 0.16, ry: 2.3, parent: rockGrp });
+    mesh(G.sphere(0.22, 6, 5), rockM, { x: -0.22, z: 0.2, y: 0.12, ry: 4.6, parent: rockGrp });
+    boxT(game, rx, rz, 0.55, 0.4, 0.5, { cam: false });
+    const goat = makeMountainGoat();
+    placeT(game, U, goat.group, gx, gz, gry);
+    game.npcs.push(new Wanderer(game, goat, { x: gx, z: gz, speed: 0.55, leash: 4, r: 0.28, height: 0.85, step: 0.22, idle: [2, 5], walk: [2, 4] }));
+    const goatId = game.namedFriend('goat');
+    game.addInteractable({ obj: goat.group, radius: 2.2, label: () => 'Pet the goat', onUse: () => {
+      game.befriend(goatId); SFX.bleat(); game.hearts(goat.group.position.x, 0.6, goat.group.position.z, 4);
+      game.toast('🐐 *flicks an ear, unimpressed, then goes right back to the rocks*'); } }); }
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

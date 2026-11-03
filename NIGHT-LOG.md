@@ -24464,3 +24464,40 @@ unchanged at 329 (no new collider, as expected), and Whisper Woods' own friend c
 119. No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite confirmed the interactable fires and the fairy's own position stays finite.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 891 — Frosty Peak finally gets a mountain goat
+
+Frosty Peak has had wildlife of its own for a long time now — a reindeer herd, a wandering husky,
+hares and an arctic fox — but nothing on that mountain was ever actually alpine. **A mountain goat
+now keeps to a small scatter of grey rocks on the open snowfield south-west of the village**, well
+clear of the trampoline and frost-bubble kids further west, grazing on its own patch when it isn't
+wandering, same as it can be petted: *"flicks an ear, unimpressed, then goes right back to the
+rocks."*
+
+New `horns` option on `makeQuadruped()` (56-npcs-wild.js, right next to the deer's own `antlers`): a
+short two-segment sweep curving back and down from just above the ear, rather than the antlers'
+three-way branch — gated so every other quadruped in the game (every dog, fox, horse and the deer
+themselves) renders exactly as before. `makeMountainGoat()` is a new named preset next to
+`makeRaccoon()` and the rest, just `horns`, `hooves` and `grazes` set on a pale, stocky build. New
+`SFX.bleat()` (30-audio.js, next to `ribbit()`) gives it two short wavering notes of its own, gated
+the same way the husky's own `SFX.woof()` was — nothing else in the game calls it.
+
+The goat is a plain `Wanderer` wrapped around a small rock cluster, the exact same `placeT` +
+`Wanderer` + `boxT` pairing the husky itself already uses, with its own `game.namedFriend('goat')` +
+`addInteractable` keyed straight to its rig (the same fix every other ambient quadruped turned friend
+in this game relies on, since `makeQuadruped()`'s rig carries none of `.look`/`.robot`/`.cookie` for
+`Wanderer`'s own `greetable()` to find on its own). A headless probe built the real mountain
+(`game.start('new')`, then `game.travel(5, 'from-hub')` waited out through its own portal-fade timer),
+sampled every NPC's own position every quarter second over 150 simulated seconds (so no wandering
+reindeer, husky, hare, arctic fox, sledder or mid-game kid could slip past unnoticed), then swept a
+2 m grid of the open snowfield against both those samples and every one of the mountain's physics
+boxes: (-38, -10) came back clear by 7.23 m of the nearest box (the gondola station) and 7.51 m of
+the nearest other soul, with ground height varying only 0.47 m across the whole 8 m square around
+it. A second headless pass walked the cat right up to the goat and confirmed the greet actually
+registers a new friend (`snow:goat`) and fires `SFX.bleat()` without error.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, 277 checks `ok`, 0 console warnings, and Frosty
+Peak's own friend count rose from 110 to 111. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probes above confirmed the
+goat wanders, grazes, stays on-leash and answers its own greeting. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
