@@ -23922,3 +23922,38 @@ count unchanged at 329 (no new physics box) and Sunny Shore's own friend count r
 115. No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite and the headless probe described above. Probe script deleted after use,
 nothing committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 876 — Frosty Peak finally gets its own game of jacks
+
+The Neighborhood (twice over), Candy Land, Robot City, Victorian and Sunny Shore all had a kid
+kneeling over a game of jacks by now — it never reached Frosty Peak, past its own hopscotch
+chalker, marbles ring and skateboard kid. **A bundled-up kid now kneels on the open snowfield west
+of the gondola station, jacks scattered on the packed snow and a small banded bouncy ball resting
+where it last came down.** *"Threw it up, swept up four, caught it on the way back down — paws
+don't count, puss."* *"Mind the slope. Let one roll and it's halfway down the mountain before you
+catch it."* *"Six jacks, one bounce each. Nobody at this end of the village has beaten my best
+yet."* Saying hello makes them the usual kind of friend — the only world left for this one is
+Whisper Woods.
+
+No new mesh and no new controller: the same six crossed-cylinder jacks and candy-striped ball
+every other world's jacks game already uses, and `Kneeler`'s own patting gesture (55-npcs.js)
+already reads as scooping them up — a placement, not a build. `kid()` is this file's own wardrobe
+helper, already used for the hopscotch chalker, the marbles kid and the skateboard kid on this
+mountain, so no new colour literal either beyond the jacks' own icy teal. Like those three, the
+jacks and ball sit on `P.ground0()` rather than a fixed y, since the snowfield slopes gently
+underfoot here too.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.load(5,
+'from-hub')`, then 3600 simulated frames sampling every NPC's and the squirrel's own position
+every 5th frame) swept a 2 m grid of the open snowfield (radius 15-55, short of the radius (58)
+where `snowRegion`'s own fill takes over) against both those 70,560 samples and all 816 of the
+mountain's own physics boxes, staying 6 m clear of every other hand-placed spot on the slope:
+(-52, 4) came back clearest, 10.1 m from the nearest box and 10.2 m from the nearest other soul, at
+radius 52.2 from the origin and clear of every one of `game.zones`'s own keep-out rectangles, with
+ground height varying only about 0.08 m across the jacks' own footprint.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box
+count unchanged at 329 (no new physics box, as expected) and Frosty Peak's own friend count rose
+to 110. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite and the headless probe described above. Probe script deleted after use,
+nothing committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
