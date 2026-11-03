@@ -10526,6 +10526,34 @@ function buildVictorian(game, entry) {
     W.add(jacksKid.group);
     game.npcs.push(new Kneeler(game, jacksKid, { x: kx, z: kz, ry: kry,
       cries: ["Threw it up, swept up four, caught it on the way back down — paws don't count, puss.", 'Mind where you kneel. These roll clean into the gutter if you tip one.', "Six jacks, one bounce each. Nobody this side of the square has beaten my best yet."] })); }
+  // Sunny Shore's had a stone skipper flinging flat stones into the sea since round 881 — the canal,
+  // the only other real stretch of open water in this town (boats, ducks, an angler, a mudlark,
+  // dragonflies, but nobody ever actually *throwing* anything into it), never caught up. A boy now
+  // stands on the north towpath well east of the duck pair, skipping a flat stone across the water in
+  // the same steady loop: three bounces, each lower and shorter than the last, then it sinks for good
+  // before the next one comes out. Same `StoneSkipper` controller (55-npcs.js) the beach already
+  // uses, unchanged — no new class, no new mesh, just a placement and a facing.
+  //
+  // Placed at (85, 24.4), facing +z (`ry: 0`) straight into the canal: a headless probe
+  // (`game.start('new')`, `game.travel(3, 'from-prev')` waited out through its real portal-fade
+  // timer, then a 3000-frame run sampling every NPC's and every interactable's own position every
+  // frame) found the spot 1.0 m north of the bank's own walkway box — the same offset the canal
+  // angler already stands at on his own stretch of towpath — never closer than 16.7 m to any wandering
+  // soul and 15.6 m to any other interactable over the whole run. The gap sits well clear of the duck
+  // pair's swim lane (x 46–64), the boat at x=70, the east bridge deck (x 101.8–106.2) and every lamp
+  // post (x ≤ 48); with `fx=0, fz=1` the three hops land at z=27.35, 29.05 and 30.15 — inside the
+  // water's own z 26–34 band the whole way, never short of it or past the far bank.
+  //
+  // Built dead last, right after the jacks kid above, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off this town's own shared `r()` sequence unconditionally, and anything
+  // built earlier would have had its own timing-sensitive pick shifted by it. `StoneSkipper`'s own
+  // draws (`this.t`, `this.wait`) come off the shared global `rnd()`, not this town's `r()`, so it
+  // costs nothing later either way.
+  { const skipWard = makeWardrobe(r, { shirts: [0x6a8a9a, 0x8a6a5a], pants: [0x2a2a2e, 0x3a3327] });
+    const skipper = makeHuman({ ...randomPerson(r, { female: false, child: true, wardrobe: skipWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(skipper.group);
+    game.npcs.push(new StoneSkipper(game, skipper, { x: 85, z: 24.4, ry: 0,
+      cries: ["Flat ones skip. Round ones just sink — found that out the hard way.", 'Careful, puss — mind the edge, the towpath drops off sharp.', "Three skips, same as every throw before it. Haven't missed all week."] })); }
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);

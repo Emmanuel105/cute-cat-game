@@ -24142,3 +24142,35 @@ new collider, as expected). No visual check was possible in this environment (no
 Playwright) — only the stub-three test suite and the headless probes described above, all deleted
 after use, nothing committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 882 — Victorian's canal finally gets a stone skipper too
+
+Sunny Shore got a stone skipper last round, flinging flat stones into the sea in a steady loop — but
+the canal, the town's own stretch of open water (boats, ducks, an angler, a mudlark and three
+dragonflies, yet nobody ever actually *throwing* anything into it), never caught up. **A boy now
+stands on the north towpath well east of the duck pair, skipping a flat stone across the canal: three
+bounces, each lower and shorter than the last, then it sinks for good before the next one comes
+out.** *"Flat ones skip. Round ones just sink — found that out the hard way."* *"Careful, puss — mind
+the edge, the towpath drops off sharp."* *"Three skips, same as every throw before it. Haven't missed
+all week."*
+
+No new mechanism: the exact same `StoneSkipper` controller (55-npcs.js) the beach already uses,
+unchanged — just a placement and a facing (`ry: 0`, straight into the water) instead of a new class.
+No new physics box either, same as the beach's own thrower — just the usual `addCircle` so he blocks
+the way like anyone else; `greetable()` makes him a friend to meet.
+
+Placed at (85, 24.4), 1.0 m north of the canal bank's own walkway box — the same offset the canal
+angler already stands at on his own stretch of towpath. A headless probe (`game.start('new')`,
+`game.travel(3, 'from-prev')` waited out through its real portal-fade timer, then a 3000-frame run
+sampling every NPC's and every interactable's own position every frame) found the spot never closer
+than 16.7 m to any wandering soul and 15.6 m to any other interactable over the whole run — clear of
+the duck pair's swim lane (x 46–64), the boat at x=70, the east bridge deck (x 101.8–106.2) and every
+lamp post (x ≤ 48). With the thrower facing straight across (`fx=0, fz=1`), the three hops land at
+z=27.35, 29.05 and 30.15 — inside the water's own z 26–34 band the whole way, never short of it or
+past the far bank.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329 (no new physics box) and Victorian's own friend count rose from 112 to 113, its
+walkable-ground percentage holding at 95%. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe described above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
