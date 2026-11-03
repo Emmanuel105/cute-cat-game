@@ -23645,3 +23645,34 @@ same as the skateboard before it) and the Neighborhood's own friend count rose f
 visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
 suite and the headless probe described above. Probe script deleted after use, nothing committed.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 868 — Victorian finally gets its own town crier
+
+The square had a newsboy working its east corner, calling "paper! read all about it!" since a few
+rounds back — but the cry a Victorian town square is at least as well known for, "oyez, oyez!", never
+had anyone to shout it. A town crier now works the matching corner on the west side of the lane, a
+brass hand bell raised and ringing in one fist.
+
+**A crier in a top hat and long coat stands at the lane's west corner, swinging a bell overhead.**
+*"Oyez, oyez! All is well in the square!"* *"Hear ye! A strange cat seen prowling the cobbles!"* *"Oyez!
+Nothing further to report. Oyez."* Saying hello makes him the usual kind of friend.
+
+New prop `makeTownBell()` (`60-props.js`, right after `makeNewspaperBundle`): a turned wooden handle
+over a flared brass skirt with the clapper just visible underneath. No new controller — `Vendor` again,
+the exact same reuse the newsboy already leans on, with the bell's own `userData.update` doing the
+ringing (`bell.rotation.z = sin(t*5)*0.4`, the same hook `Vendor.update()` already checks for on
+whatever it's holding).
+
+A headless probe (the real town built by chaining `game.travel(1/2/3, 'from-prev')` through the hub
+exactly as a real playthrough would, each step waited out through its own real portal-fade timer, then
+300 simulated seconds sampling every NPC's own position every sixth frame) swept the verge west of the
+lane — the newsboy's own corner's mirror, between the street's citywide keep-out band and the fountain's
+17 m circle — against both those samples and every one of the town's physics boxes: (-25.5, -28) came
+back clear by 7.8 m of the nearest box and 8.2 m of the nearest wandering soul, well past the toy
+troop's own drill line nearby.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, and
+Victorian's own friend count rose to 111. No visual check was possible in this environment (no browser,
+no Playwright) — only the stub-three test suite and the headless probe described above. Probe script
+deleted after use, nothing committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.

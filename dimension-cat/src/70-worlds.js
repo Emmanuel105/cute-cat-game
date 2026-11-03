@@ -8425,6 +8425,32 @@ function buildVictorian(game, entry) {
     const nb = new Vendor(game, newsboy, makeNewspaperBundle(), { x: nx, z: nz, ry, cryIcon: '📰',
       cries: ['Paper! Read all about it!', 'Clock tower strikes true again, shocking news!', "Cat spotted in the market square — you heard it here first!"] });
     game.npcs.push(nb); greetable(game, nb); }
+  // the newsboy works the east corner where the lane opens into the square — the one cry a Victorian
+  // town square is just as well remembered for, "oyez, oyez!", never had anyone to shout it. A town
+  // crier now works the matching west corner, a brass hand bell raised and swinging in one fist. New
+  // `makeTownBell()` (`60-props.js`, right after `makeNewspaperBundle`, the same held-prop pattern):
+  // a turned wooden handle over a flared brass skirt with its clapper just visible underneath. No new
+  // controller — `Vendor` again, exactly as the newsboy reuses it, with the bell's own `userData.update`
+  // doing the ringing (`bell.rotation.z = sin(t*5)*0.4`, `Vendor.update()` already calls
+  // `this.held.userData.update(dt, this.t)` if it finds one, the same hook the kite line and the
+  // pinwheels lean on elsewhere). A headless probe (the same stub-three harness `test/run.mjs` itself
+  // uses, with the real town built by chaining `game.travel(1/2/3, 'from-prev')` through the hub exactly
+  // as a real playthrough would, each step waited out through its own real portal-fade timer) sampled
+  // every NPC's own position every sixth frame over 300 simulated seconds, then swept the verge west of
+  // the lane — the same strip the newsboy's own corner sits in, between the street's own keep-out band
+  // (|z|<16, `game.zones`) and the fountain's 17 m circle — against both those samples and every one of
+  // the town's physics boxes: (-25.5, -28) came back clear by 7.8 m of the nearest box and 8.2 m of the
+  // nearest wandering soul, well past the toy troop's own drill line nearby and outside the fountain's
+  // circle, so clear of `victorianRegion`'s own fill too.
+  { const cxp = -25.5, czp = -28, ry = atan2(-1.2 - cxp, -30 - czp);
+    const crierWard = makeWardrobe(r, { shirts: [0x5a4a6a, 0x4a3a5a, 0x3a4a5a], pants: [0x2a2420], shoes: [0x2a2018] });
+    const crier = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.4), wardrobe: crierWard }),
+      pants: 0x1e1e24, coat: true, hat: 'top', hatColor: 0x1e1e24, buttons: 0xc8b878, bag: null, jacket: null, scarf: null });
+    W.add(crier.group);
+    const bell = makeTownBell(); bell.userData.update = (dt, t) => { bell.rotation.z = sin(t * 5) * 0.4; };
+    const cv = new Vendor(game, crier, bell, { x: cxp, z: czp, ry, cryIcon: '🔔',
+      cries: ['Oyez, oyez! All is well in the square!', 'Hear ye! A strange cat seen prowling the cobbles!', "Oyez! Nothing further to report. Oyez."] });
+    game.npcs.push(cv); greetable(game, cv); }
   // Candy Land, Sunny Shore, Frosty Peak and Whisper Woods all have something looping overhead by now
   // (butterflies, gulls, snow buntings, fairies and more butterflies) — Victorian's own sky over the market
   // square had nothing in it at all. Five doves now wheel above the square, white against the dusk sky, the

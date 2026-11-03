@@ -538,6 +538,15 @@ function makeNewspaperBundle() {
   mesh(G.cyl(0.006, 0.006, 0.12, 6), mat(0x8a3a3a, { roughness: 0.7 }), { y: 0.04, rx: PI / 2, parent: g });
   return g;
 }
+/** A brass hand bell with a turned wooden handle, for a town crier to ring overhead. */
+function makeTownBell() {
+  const g = new THREE.Group(), brass = mat(0xc9a84a, { metalness: 0.6, roughness: 0.3 }), wood = mat(0x6a4426, { roughness: 0.85 });
+  mesh(G.cyl(0.004, 0.012, 0.09, 8), wood, { y: 0.045, parent: g });                                      // handle, narrow at the top where the hand closes round it
+  mesh(G.cyl(0.055, 0.02, 0.11, 14), brass, { y: -0.055, parent: g });                                    // the bell itself, flared skirt
+  mesh(G.sphere(0.018, 10, 8), brass, { y: -0.01, shadow: 'none', parent: g });                           // domed crown where the handle meets the bell
+  mesh(G.sphere(0.014, 8, 6), mat(0x8a7a4a, { metalness: 0.5, roughness: 0.4 }), { y: -0.1, shadow: 'none', parent: g });   // the clapper, just visible below the skirt
+  return g;
+}
 /** A bootblack's shine box: a low wooden stand with a curved foot rest on top, a tin of polish and a brush left lying on the lid. Sits on the ground beside a kneeling bootblack. */
 function makeShineBox() {
   const g = new THREE.Group(), wood = mat(0x6a4426, { roughness: 0.9, map: TEX.planks(20, 20) }), dark = mat(0x3a2414, { roughness: 0.85 });
