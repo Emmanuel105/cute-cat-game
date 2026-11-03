@@ -291,6 +291,21 @@ function makeDolphin(o = {}) {
   return rig;
 }
 
+// ---------------------------------------------------------------- whale (surfaces far out at sea, same no-legs convention as the dolphin — moved and tilted by its caller)
+function makeWhale(o = {}) {
+  const g = new THREE.Group(), rig = { group: g };
+  const skin = mat(o.color ?? 0x3a4a56, { roughness: 0.45, metalness: 0.05 }), belly = mat(0xd8e0e4, { roughness: 0.5 }), dark = mat(0x12161a);
+  const body = group(0, 0, 0, g); rig.body = body;
+  mesh(G.bodySphere(18, 12), skin, { sx: 0.55, sy: 0.6, sz: 2.1, parent: body });
+  mesh(G.bodySphere(15, 10), belly, { y: -0.3, sx: 0.44, sy: 0.4, sz: 1.85, shadow: 'none', parent: body });
+  mesh(G.cone(0.14, 0.32, 4), skin, { y: 0.52, z: 0.3, sz: 1.4, shadow: 'none', parent: body });                     // low dorsal hump
+  for (const side of [1, -1]) mesh(G.box(0.55, 0.05, 0.3), skin, { x: side * 0.52, y: -0.15, z: 0.7, rz: side * 0.35, shadow: 'none', parent: body });   // pectoral fins
+  for (const side of [1, -1]) mesh(G.sphere(0.03, 6, 6), dark, { x: side * 0.2, y: 0.2, z: 1.5, shadow: 'none', parent: body });                        // eyes
+  mesh(G.box(1.3, 0.08, 0.45), skin, { z: -2.05, shadow: 'none', parent: body });                                     // tail fluke
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- penguin
 function makePenguin(o = {}) {
   const g = new THREE.Group(), rig = { group: g, flippers: [] }, k = o.scale ?? 1;

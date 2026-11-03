@@ -598,6 +598,36 @@ function buildBeach(game, entry) {
       d.rig.group.position.set(dcx + cos(a) * d.orad, waterY + arc * 1.3, dcz + sin(a) * d.orad);
       d.rig.group.rotation.set(arc > 0 ? -cos(lp * TAU) * 0.6 : 0, atan2(dx, dz), 0);
     } }); }
+  // the dolphin pod has porpoised its own circuit since the round above placed it, but the water past it
+  // — out where the fog starts swallowing the horizon — stayed just as empty as the rest of the open sea
+  // used to be. A lone whale now surfaces on a slow drifting circuit further out still (centre x=140,
+  // radius 18, so its own path spans x 122..158 — 14 m clear of the dolphins' own outer reach at x=108),
+  // breaching for a few seconds every 50-second lap and sinking back under for the rest: `group.visible`
+  // toggles off while submerged, the same trick the dolphins already use, so nothing is drawn mid-dive.
+  // No physics box, no zone and no greetable id, same reasoning the dolphins banked on: this circuit sits
+  // entirely past the wade-blocking box at x=33 the cat can never cross, so it is purely a sighting, never
+  // something the cat could reach. `makeWhale()` (new, right after `makeDolphin()` in 56-npcs-wild.js)
+  // takes no `r()` draw of its own — colour and every other number are fixed constants, the same choice
+  // the dolphins already made — so this costs nothing in the local `r()` sequence anything later in this
+  // build relies on; it is also built last of everything in this block, right after the pod.
+  { const wcx = 140, wcz = 0, waterY = 0, worad = 18, wospeed = 0.012, period = 50, breachFrac = 0.12;
+    const whale = makeWhale(); W.add(whale.group);
+    let spouted = false;
+    U.push((dt, t) => {
+      const a = t * wospeed, dx = -sin(a), dz = cos(a);
+      const k = (t % period) / period;
+      const breach = k < breachFrac ? sin((k / breachFrac) * PI) : 0;
+      whale.group.visible = breach > 0.03;
+      if (whale.group.visible) {
+        whale.group.position.set(wcx + cos(a) * worad, waterY - 0.85 + breach * 1.05, wcz + sin(a) * worad);
+        whale.group.rotation.set(-breach * 0.3, atan2(dx, dz), 0);
+        if (breach > 0.92 && !spouted) {
+          spouted = true;
+          game.fx.emit(whale.group.position.x, whale.group.position.y + 0.9, whale.group.position.z, { count: 10, colors: [0xeaf6ff, 0xffffff], speed: 1.1, up: 2.4, life: 1.1, gravity: 1.8, spread: 0.15 });
+          if (dist2(game.cat.group.position.x, game.cat.group.position.z, whale.group.position.x, whale.group.position.z) < 10000) SFX.wave();
+        }
+      } else spouted = false;
+    }); }
   // sandpipers dart along the tideline on the open sand, well clear of the crabs' own homes, the lighthouse rocks and the swim-flag posts — ambient like the crabs and gulls, no greeting, no effect on the friend count
   // all three now answer their own "Say hello to the sandpiper" prompt —
   // same root cause and fix as every other ambient `Hopper` critter this log has turned into a friend:

@@ -24375,3 +24375,37 @@ unchanged at 329 (no new collider, as expected), and Candy Land's own friend cou
 97. No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite and the two headless probes described above, both deleted after use, nothing
 committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 888 — Sunny Shore's open sea finally gets a whale
+
+The dolphin pod has porpoised its own circuit out past the pier since round 199-ish, but the water
+further out still — right where the fog starts swallowing the horizon — stayed exactly as empty as
+the rest of the open sea once was, and no world in the whole game had a whale. **A lone whale now
+surfaces on a slow drifting circuit well past the dolphins, breaching for a few seconds every fifty
+seconds and sinking back under for the rest of the lap** — a plume of spray bursts off its back at
+the top of each breach, with a wave-wash sound if the cat happens to be anywhere near enough shore
+to hear it.
+
+New rig `makeWhale()` (56-npcs-wild.js, right after `makeDolphin()`): the same no-legs,
+caller-moves-the-whole-rig convention the dolphin already uses, just a bigger body, a low dorsal
+hump instead of a fin, and a single flat tail fluke in place of the dolphin's beak. In
+72-world-beach.js it circles centre (140, 0) at an 18 m radius — so its path spans x 122..158, 14 m
+clear of the dolphin pod's own outer reach at x=108 — toggling `group.visible` off while submerged
+exactly the way the dolphins already do, so nothing is drawn mid-dive. No physics box, no zone, no
+greetable id: this circuit sits entirely past the wade-blocking box at x=33 the cat can never cross,
+so it was always going to be a sighting rather than something to reach, the same reasoning the
+dolphins themselves banked on. It draws no `r()` of its own — every number is a fixed constant, the
+same choice the dolphins made — so it costs nothing in the local seeded sequence anything later in
+this build relies on, and it's built last in this block, right after the pod.
+
+A headless probe (`game.start('new')`, `game.travel(4, 'from-hub')` waited out through its real
+portal-fade timer, then 3200 simulated frames — just over one full 50-second lap at the stub clock's
+fixed 1/60 s step) tagged the whale's own group with a throwaway `userData` flag to find it, then
+tracked it every frame: it surfaced and submerged at least once, every sampled position stayed
+finite, its peak height matched the arc math exactly (y = 0.20 at the top of a breach), and its x
+stayed inside the 122-158 band throughout. The flag was removed again afterward — nothing of the
+probe is in this commit. `node dimension-cat/test/run.mjs` ran clean: exit 0, 277 checks `ok`, 0
+console warnings. No visual check was possible in this environment (no browser, no Playwright) —
+the whale's shape, colour and the look of the spray haven't been seen, only confirmed not to crash
+and to move the way the code says it should. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
