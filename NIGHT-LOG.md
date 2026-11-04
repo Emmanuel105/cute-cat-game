@@ -24530,3 +24530,34 @@ swan's nearest approach (x=119). `node dimension-cat/test/run.mjs` ran clean: ex
 Playwright) — only the stub-three test suite and the headless probe above confirmed the swan swims,
 stays finite and answers its own greeting. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 893 — Robot City finally gets a sweeper-bot
+
+Robot City's factory floor has a furnace, a robot arm, a scrap crane and a window-washer rig that all
+clean *something* — but nothing ever actually swept the concrete itself. **A squat sweeper-bot now
+trundles a tight patch of open floor**, brush roller spinning whether it's parked or on the move.
+Saying hello gets a shrug of a reaction: *"🤖 *brush roller stutters to a stop, LED blinks twice, then
+rolls on sweeping*"*.
+
+New rig `makeSweeperBot()` (55-npcs.js, right after `makeRobot()`): a low disc shell, a flattened dome,
+a blinking status LED and a roller brush at the front built from eight thin fins radiating off a small
+cylinder, all parented to one group that spins continuously in `rig.animate` off `t` rather than `ph`
+— the same reason the robot statue's own antenna blink never stops either — so the brush keeps turning
+even while the bot is idle. No `.look`/`.robot`/`.cookie` flag on the rig, same as every other wild
+`Wanderer` in this log, so its own `greetable()` call quietly no-ops; a `game.namedFriend` plus a
+`game.addInteractable` tracked straight off `rig.group` gives it its own line instead of the generic
+"BEEP BOOP" every `rig.robot = true` wanderer in this city already uses.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, then
+`game.load(2, 'from-prev')` so the whole city's NPCs actually tick, then 2400 simulated frames
+sampling the bot's own position every frame) found its 2.5 m leash held exactly, the nearest other
+wandering soul never closer than 2.79 m over the whole run, and no collision with any physics box
+anywhere along the way. Before that, a static sweep of a disc of radius 2.5 around the chosen spot
+(20, -29) found it 4.9 m clear of the nearest box, 5.6 m clear of the nearest wandering soul at rest,
+and — after allowing for both this bot's own 2.1 m greet circle and the radar-dish tower's own 6.5 m
+"look up" radius centred on the next tower over at (32, -28) — still 0.95 m clear of the nearest other
+interactable. `node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings,
+and Robot City's own friend count rose from 97 to 98. No visual check was possible in this environment
+(no browser, no Playwright) — only the stub-three test suite and the headless probes above confirmed
+the bot patrols its patch, stays finite and answers its own greeting. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

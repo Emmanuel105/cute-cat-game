@@ -8156,6 +8156,29 @@ function buildRobotCity(game, entry) {
     W.add(jacksKid.group);
     game.npcs.push(new Kneeler(game, jacksKid, { x: kx, z: kz, ry: kry,
       cries: ["Threw it up, swept up three, caught it on the way back down — paws don't count, puss.", 'Mind where you step. Every one of these rolls clean under a conveyor if you tip it.', "Six jacks, no bounce to spare. Nobody on this floor's beaten my best either."] })); }
+  // every mop and vent in this city has been hand-waved as "nobody's job" by now (the camera, the vent,
+  // the washer rig), but nothing ever actually cleaned the factory floor. A squat sweeper-bot now
+  // trundles a tight patch of open concrete, brush roller spinning whether it's moving or parked. New
+  // rig `makeSweeperBot()` (55-npcs.js, right after `makeRobot()`): a low disc shell with a flattened
+  // dome, a blinking status LED and a roller brush at the front that keeps turning in `rig.animate` off
+  // `t`, not `ph`, so it never stops even while the bot is idle — same trick the robot statue's own
+  // antenna blink already uses. No `.look`/`.robot`/`.cookie` flag on the rig, same as every other
+  // unmet `Wanderer` in this log, so its own `greetable()` call quietly no-ops; a `game.namedFriend` +
+  // `game.addInteractable` tracked straight off `rig.group` gives it its own voice instead of the
+  // generic "BEEP BOOP" every `rig.robot = true` wanderer already uses.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: built the real city via
+  // `game.load(2, 'from-prev')`, then swept a disc of radius 2.5 around the candidate at quarter-metre
+  // steps) found (20, -29) clear by 4.9 m of the nearest physics box, 5.6 m of the nearest wandering
+  // soul, and — after allowing for both this bot's own 2.1 m greet circle and the radar-dish tower's own
+  // 6.5 m "look up" radius centred on the next tower over at (32, -28) — still 0.95 m clear of the
+  // nearest other interactable, with no `game.zones` rect anywhere in the swept disc. No new physics
+  // box: the shell is 0.2 m tall, same convention as the scrap-crab bot a short walk north, too low and
+  // too slow to need one of its own.
+  { const rig = makeSweeperBot(); W.add(rig.group);
+    game.npcs.push(new Wanderer(game, rig, { x: 20, z: -29, speed: r.range(0.4, 0.6), leash: 2.5, r: 0.3, height: 0.35, step: 0.15, idle: [1, 3], walk: [1.5, 3.5] }));
+    const sweeperId = game.namedFriend('sweeperbot');
+    game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the sweeper-bot', onUse: () => { game.befriend(sweeperId); SFX.beep(); game.hearts(rig.group.position.x, 0.3, rig.group.position.z, 3); game.toast('🤖 "*brush roller stutters to a stop, LED blinks twice, then rolls on sweeping*"'); } }); }
 
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };

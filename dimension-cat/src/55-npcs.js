@@ -431,6 +431,26 @@ function makeRobot() {
   return rig;
 }
 
+// ---------------------------------------------------------------- sweeper-bot rig: a low disc that trundles the factory floor, brush roller always turning
+function makeSweeperBot() {
+  const g = new THREE.Group(), rig = { group: g, legs: [], arms: [] };
+  const shell = mat(0x6a7078, { metalness: 0.55, roughness: 0.4 }), capM = mat(0x454b52, { metalness: 0.6, roughness: 0.35 }), bristle = mat(0x2a2d32, { roughness: 0.9 });
+  const body = group(0, 0, 0, g); rig.body = body;
+  mesh(G.cyl(0.27, 0.28, 0.1, 20), shell, { y: 0.07, parent: body });
+  mesh(G.sphere(0.2, 16, 10), capM, { y: 0.14, sy: 0.5, parent: body });
+  mesh(G.torus(0.27, 0.014, 6, 24), mat(0xdfe6ea, { metalness: 0.3, roughness: 0.4 }), { rx: PI / 2, y: 0.12, shadow: 'none', parent: body });
+  const led = mesh(G.sphere(0.022, 8, 6), glowMat(0x4ade80, 1.2), { y: 0.19, z: 0.11, shadow: 'none', parent: body });
+  const brush = group(0, 0.03, 0.26, body); rig.brush = brush;
+  mesh(G.cyl(0.03, 0.03, 0.3, 10), bristle, { rz: PI / 2, parent: brush });
+  for (let i = 0; i < 8; i++) { const fin = group(0, 0, 0, brush); fin.rotation.x = i / 8 * TAU; mesh(G.box(0.3, 0.07, 0.012), bristle, { y: 0.045, parent: fin }); }
+  rig.animate = (ph, moving, dt, t = 0) => {
+    brush.rotation.x += dt * (moving ? 10 : 3.5);
+    led.material.emissiveIntensity = 0.7 + max(0, sin(t * 3.2)) * 1.3;
+  };
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- robot dog rig
 function makeRoboDog() {
   const g = new THREE.Group(), rig = { group: g, legs: [] };
