@@ -3503,6 +3503,39 @@ function buildNeighborhood(game, entry) {
     game.npcs.push(new StoneSkipper(game, lakeSkipper, { x: -34, z: -40.1, ry: PI,
       cries: ["Three's my best. Dad taught me on this very lake.", 'Careful, puss — not as deep as it looks, but still a soaking.', "Flat stones skip. Round ones just plop."] })); }
 
+  // Frosty Peak has had a snowball fight since round 6 — two kids squared off and lobbing snow at each
+  // other across the square — but no other world ever got its warm-weather opposite number, the water
+  // balloon fight every real neighbourhood eventually has. Two kids now face off on a quiet patch of
+  // grass east of the street, lobbing a coloured balloon back and forth in the same crouch-dodge-throw
+  // shape, and a cat that wanders too close gets one lobbed straight at it instead: *"💦 "Oops — sorry,
+  // kitty!""*
+  //
+  // `SnowballFight` (55-npcs.js) gained three new, all-optional constructor fields — `color` for the
+  // ball mesh, `splashColors` for the burst (`game.fx.emit`) and `catIcon`/`catLine` for the toast when
+  // the cat gets hit — each defaulting to the exact literal the snowball fight already hardcoded, so
+  // Frosty Peak's own call (73-world-snow.js, no change there) renders identically to before. This
+  // build passes a bright balloon colour, a pale-blue/white splash (water, not snow) and its own line.
+  // No new controller, no new SFX: same crouch/dodge/pack-and-throw animation, same `SFX.bounce()` /
+  // `SFX.click()` / `SFX.tag()` the snowball fight already uses.
+  //
+  // A headless probe (a grid scan of `game.zones`, every physics box and every NPC's and interactable's
+  // own position right after `game.start('new')`, since every soul near this spot — the vegetable
+  // patch's kneeling forager, the nearby ground-hopper on its own 0.8 m leash — holds a fixed or
+  // tightly-leashed spot rather than roaming) found (4.5, -14) clear: the two kids themselves (2.25,-14)
+  // and (6.75,-14), 4.5 m apart, come no closer than 5.4 m to the nearest other soul and 5.5 m to the
+  // nearest physics box, well short of their own 0.9 m side-to-side dodge and the ball's flight path
+  // between them, and outside every `game.zones` rectangle.
+  //
+  // Built dead last, right after the lake skipper above, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off this village's own shared `r()` sequence unconditionally, and this is
+  // the first world the test suite builds, so anything built earlier here would have had its own
+  // timing-sensitive pick shifted by it.
+  { const balloonWard = makeWardrobe(r, { shirts: [0xff8a5c, 0x5cc8e8], pants: [0x3a3a40, 0x2e4a6e], shoes: [0xefe7d8, 0x8d6e63] });
+    const balloonKids = [false, true].map((female) => makeHuman({ ...randomPerson(r, { female, child: true, wardrobe: balloonWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false }));
+    for (const k of balloonKids) W.add(k.group);
+    game.npcs.push(new SnowballFight(game, balloonKids[0], balloonKids[1], { cx: 4.5, cz: -14, gap: 4.5,
+      color: r.pick([0xff5c8a, 0xffd166, 0x5cc8e8]), splashColors: [0x6fcdf2, 0xffffff, 0xbfe8ff], catIcon: '💦', catLine: 'Oops — sorry, kitty!' })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

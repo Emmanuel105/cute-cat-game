@@ -729,9 +729,11 @@ class Playmates {
 }
 
 // ---------------------------------------------------------------- snowball fight: two children pelting each other across the square
+// (also doubles, via `color`/`splashColors`/`catIcon`/`catLine`, as the Neighborhood's own water balloon fight — same crouch-and-throw shape, just coloured balloons bursting into a splash of droplets instead of a puff of snow)
 class SnowballFight {
-  constructor(game, rigA, rigB, { cx, cz, gap = 5 }) {
+  constructor(game, rigA, rigB, { cx, cz, gap = 5, color = 0xffffff, splashColors = [0xffffff, 0xeaf4ff], catIcon = '☃️', catLine = 'Got you, kitty!' }) {
     this.game = game; this.cx = cx; this.cz = cz; this.t = 0; this.thrower = 0; this.nextT = 1.1; this.throws = 0; this.catHit = false;
+    this.splashColors = splashColors; this.catIcon = catIcon; this.catLine = catLine;
     this.kids = [rigA, rigB].map((rig, i) => {
       const x = cx + (i ? gap / 2 : -gap / 2), z = cz;
       rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = i ? -PI / 2 : PI / 2;   // facing each other along x
@@ -739,7 +741,7 @@ class SnowballFight {
     });
     this.rig = rigA;
     this.balls = [];
-    for (let i = 0; i < 3; i++) { const m = mesh(G.sphere(0.11, 8, 6), mat(0xffffff, { roughness: 1 }), { parent: game.world }); m.visible = false; this.balls.push({ m, t: -1, wait: 0, dur: 0.55, from: V3(), to: V3() }); }
+    for (let i = 0; i < 3; i++) { const m = mesh(G.sphere(0.11, 8, 6), mat(color, { roughness: 1 }), { parent: game.world }); m.visible = false; this.balls.push({ m, t: -1, wait: 0, dur: 0.55, from: V3(), to: V3() }); }
   }
   throwAt(k, tx, ty, tz) {
     const b = this.balls.find((b) => b.t < 0); if (!b) return;
@@ -782,10 +784,10 @@ class SnowballFight {
       b.m.position.copy(b.from).lerp(b.to, u); b.m.position.y += sin(u * PI) * 1.1;
       if (u >= 1) {
         b.t = -1; b.m.visible = false;
-        this.game.fx.emit(b.to.x, b.to.y, b.to.z, { count: 14, colors: [0xffffff, 0xeaf4ff], speed: 1.6, up: 1.2, life: 0.6, gravity: 3 });
+        this.game.fx.emit(b.to.x, b.to.y, b.to.z, { count: 14, colors: this.splashColors, speed: 1.6, up: 1.2, life: 0.6, gravity: 3 });
         const hit = this.kids.find((k) => dist2(k.x, k.z, b.to.x, b.to.z) < 1.5);
         if (hit) hit.flinch = 0.5;
-        else if (dist2(cat.x, cat.z, b.to.x, b.to.z) < 2.5) { SFX.tag(); this.game.toast('\u2603\ufe0f "Got you, kitty!"'); }
+        else if (dist2(cat.x, cat.z, b.to.x, b.to.z) < 2.5) { SFX.tag(); this.game.toast(this.catIcon + ' "' + this.catLine + '"'); }
       }
     }
   }

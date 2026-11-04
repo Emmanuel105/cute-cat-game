@@ -24561,3 +24561,33 @@ and Robot City's own friend count rose from 97 to 98. No visual check was possib
 (no browser, no Playwright) — only the stub-three test suite and the headless probes above confirmed
 the bot patrols its patch, stays finite and answers its own greeting. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 894 — the Neighborhood finally gets a water balloon fight
+
+Frosty Peak has had two kids squaring off in a snowball fight since round 6, but no other world ever
+got its warm-weather opposite number. **Two kids now face off on a quiet patch of grass east of the
+street, lobbing a bright balloon back and forth** in the same crouch-dodge-throw scuffle, and a cat
+that wanders too close gets one lobbed straight at it instead: *"💦 "Oops — sorry, kitty!""*
+
+`SnowballFight` (55-npcs.js) gained three new, all-optional constructor fields — `color` for the ball
+mesh, `splashColors` for the burst and `catIcon`/`catLine` for the toast when the cat gets hit — each
+defaulting to the exact literal the snowball fight already hardcoded, so Frosty Peak's own call
+renders identically to before. This build just passes a bright balloon colour and a pale-blue/white
+splash instead of snow. No new controller, no new SFX: the same crouch/dodge/pack-and-throw animation
+and the same `SFX.bounce()` / `SFX.click()` / `SFX.tag()` calls the snowball fight already used.
+
+A headless probe (a grid scan of `game.zones`, every physics box and every NPC's own position right
+after `game.start('new')`) found (4.5, -14) clear: the two kids, 4.5 m apart, come no closer than 5.4 m
+to the nearest other soul (a kneeling forager and a tightly-leashed ground hopper near the vegetable
+patch, neither of which wanders) and 5.5 m to the nearest physics box. A second probe ran 2400
+simulated frames of the fight itself — 27 throws — and found every kid and every flying balloon stayed
+finite throughout, with the hopper's own worst-case approach (accounting for both sides' own wobble)
+settling at 4.62 m, still clear.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329 (no new collider, as expected) — the two kids aren't greetable, matching every other
+two-person game in this file (snowball fight, ball game, horseshoes, tag), so the Neighborhood's own
+friend count is unchanged at 87. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite and the headless probes above confirmed the fight runs,
+stays finite and keeps clear of its neighbours. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
