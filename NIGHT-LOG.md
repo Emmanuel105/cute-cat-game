@@ -25124,3 +25124,33 @@ unchanged at 329, and Whisper Woods' own friend count rose from 127 to 128 (conf
 pre-change build via `git stash`). No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 915 — Victorian's own bees get their own "say hello"
+
+Ten rounds planted a pair of bees over every one of the street's eleven flower baskets, and every
+one of those rounds' own comments called them out the same way: "not a greetable soul," unlike the
+belfry's bats and the canal's dragonflies nearby. But those two since picked up a "say hello"
+member each (rounds 911 and 912), and by now every other flock in the game answers the cat —
+crows, doves, snow buntings, seagulls, both sets of butterflies, both sets of dragonflies, the
+oak's own bats. The bees were the one holdout left. **The first bee over the eastmost basket,
+`vicLamps[10]`, now answers too.** *"*loops once over the basket, then straight back into its
+circle*"*
+
+The usual pattern, reused once more: the east basket's own `for (let bi = 0; bi < 2; bi++)` loop
+over `makeBee()` + `Flyer` (70-worlds.js, `buildVictorian`) now also captures its first iteration's
+rig into `friendlyBee`, and one `game.addInteractable` keys off `friendlyBee.group` directly with
+its own `game.namedFriend('bee')` id. `Flyer`'s own constructor already calls
+`game.world.add(rig.group)` itself, so no extra scene-graph wiring was needed, and the proximity
+check only compares `x`/`z`, so the usual 2.1 m radius still catches the cat passing underneath the
+basket even though the bee loops at y≈2.62, above the bobby's, the lamplighter's and the cat's own
+jump reach — the same height every earlier flyer-friend credit (the belfry's bats, both sets of
+dragonflies) relied on before it. No new physics box, no clearance probe needed — `Flyer` never
+touches the physics grid, and this basket's own ground-level clearance was already measured clean
+in the round that planted the bees. The other nine baskets' bees are untouched and still exactly as
+ungreetable as their own comments say. Reused `SFX.twinkle()`, the same cue every other small
+flying/iridescent critter in the game already uses, since the bee has none of its own.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329, and Victorian's own friend count rose from 117 to 118. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
