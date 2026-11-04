@@ -24785,6 +24785,35 @@ warnings, box count unchanged at 329 (no new collider, as expected), and Whisper
 count rose from 123 to 124. One run hit exit 1 on an unrelated check (the Victorian horse-and-carriage
 missing its own timing window) with every other check still `ok` — the same pre-existing flaky
 frame-count race this log has noted before — and cleared on the next run with no change to this file.
+
+## Round 902 — the Victorian horse-and-carriage flake, actually fixed this time
+
+Round 901 (and several before it, back to round 219) hit the same intermittent `exit 1` on "the
+Victorian horse and carriage are in the world and on the move" and shrugged it off as a pre-existing
+timing race. This round chased it down instead: running `test/run.mjs` on repeat reproduced it
+reliably within a handful of tries, and every failure printed a distance well past the check's own
+`dist > 3` bar — e.g. *"12.6 m in 6.67 s"* — with the check still failing. So the carriage was never
+the problem; the other half of the `&&` chain was. **The real bug was in the test, not the game.**
+
+`makeQuadruped()`'s `rig.animate` (56-npcs-wild.js) only swings a leg's hip by `sin(phase)` while
+`moving` is true; the instant the carriage halts for the bobby crossing its lane, the hip damps back
+toward 0 like any other idle quadruped — correct, desired animation. The check sampled hip rotation
+at the window's first frame and its last, and asserted the two differed by more than 0.05 rad. Over a
+400-frame (6.67 s) window against a patrol that halts the carriage more than once, both samples can
+land mid-halt — both near that same damped-to-zero resting angle — no matter how far the carriage
+actually travelled in between. A perfectly healthy gait then reads as "didn't move."
+
+Fix: track the *peak* `|hip.rotation.x|` reached anywhere across the 400 frames instead of a
+start-vs-end delta, and check that against a loose 0.15 rad floor (full stride amplitude is 0.55).
+A real stride swings well past that within a fraction of a second, so this only fails if the horse
+never strides at all in 6.67 s — what the check is actually meant to catch — with no blind spot for
+where the window happens to start or end.
+
+Verified the old code reproducibly: two fresh failures in eight repeat runs, both with `dist` already
+over the 3 m bar. With the fix in, 13 straight repeat runs of the full suite all passed clean (`exit
+0`), including one where `dist` dropped to 10.2 m from a longer halt — the peak-hip reading still came
+back a healthy 0.55 rad every time. No `src/` changes, so `dist/dimension_cat.html` is byte-identical
+to round 901's; only `test/run.mjs` changed.
 No visual check was possible in this environment (no browser, no Playwright) — only the stub-three
 test suite confirmed the fifth interactable fires independently of the other four and all five
 fairies' own positions stay finite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the

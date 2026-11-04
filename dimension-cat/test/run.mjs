@@ -247,10 +247,26 @@ for (const [idx, entry] of [[1, 'from-prev'], [2, 'from-prev'], [3, 'from-prev']
     // a full crossing (worst case ~3.5 s stalled) with room to spare, and filtering out any single-frame
     // jump of a metre or more also makes it immune to Vehicle's own x-wraps at the lane's `limit`, which a
     // net-displacement check over this many frames could otherwise land on.
-    const hc = game.npcs.find((n) => n.constructor.name === 'HorseCarriage'); const h0 = hc.horse.legs[0].hip.rotation.x;
-    let dist = 0, px = hc.x;
-    for (let i = 0; i < 400; i++) { game.loop(); const dx = hc.x - px; if (Math.abs(dx) < 1) dist += Math.abs(dx); px = hc.x; }
-    check(hc && hc.rig.group.parent === game.world && dist > 3 && Math.abs(hc.horse.legs[0].hip.rotation.x - h0) > 0.05 && Number.isFinite(hc.rig.group.position.y), `Victorian: the horse and carriage are in the world and on the move (${dist.toFixed(1)} m in 6.67 s)`);
+    // Round 902: that window fix never actually closed the flake — it only ever showed up as `dist`
+    // itself coming back short, when the real failure (confirmed by running the suite repeatedly until
+    // it reproduced: `dist` well over 3 m, e.g. "12.6 m in 6.67 s", with the check still failing) is the
+    // other half of the && chain, the hip-rotation delta. `makeQuadruped()`'s own `rig.animate`
+    // (56-npcs-wild.js) only advances the hip angle by `sin(phase)` while `moving` is true; the moment
+    // the carriage is halted it damps `hip.rotation.x` *back toward 0* instead, same as every other
+    // idle quadruped. `h0` is sampled at this window's first frame and compared to the value at its
+    // last frame — if the carriage happens to be mid-halt at both ends (two separate bobby-crossings
+    // landing near the window's two edges, not at all unlikely over 6.67 s of a 0.75 m/s patrol), both
+    // samples land near the same damped-to-0 resting angle regardless of how far the carriage travelled
+    // in between, and the delta check fails on a perfectly healthy gait. Tracking the *peak* hip
+    // amplitude reached anywhere in the window, instead of a start-vs-end delta, has no such blind
+    // spot: a `sin(phase)*0.55` swing reaches well past 0.05 within a fraction of one stride, so a loose
+    // 0.15 floor only fails if the horse never actually strides for the whole 6.67 s — exactly what this
+    // check is meant to catch, unlike the old delta's false negative on a carriage that strode plenty but
+    // happened to be resting at both ends.
+    const hc = game.npcs.find((n) => n.constructor.name === 'HorseCarriage');
+    let dist = 0, px = hc.x, peakHip = 0;
+    for (let i = 0; i < 400; i++) { game.loop(); const dx = hc.x - px; if (Math.abs(dx) < 1) dist += Math.abs(dx); px = hc.x; peakHip = Math.max(peakHip, Math.abs(hc.horse.legs[0].hip.rotation.x)); }
+    check(hc && hc.rig.group.parent === game.world && dist > 3 && peakHip > 0.15 && Number.isFinite(hc.rig.group.position.y), `Victorian: the horse and carriage are in the world and on the move (${dist.toFixed(1)} m in 6.67 s, peak hip ${peakHip.toFixed(2)} rad)`);
   }
   if (idx === 3) { const ll = game.npcs.find((n) => n.constructor.name === 'Lamplighter'); const lit0 = ll.lit; frames(2400); check(ll && ll.lit > lit0 && ll.lamps.length >= 8 && Number.isFinite(ll.rig.group.position.y), `Victorian: the lamplighter has attended to ${ll.lit - lit0} lamps in 40 s`); }
   if (idx === 3) { const ph = game.npcs.find((n) => n.constructor.name === 'Photographer'); frames(900); check(ph && ph.shots >= 1 && ph.camera.parent === game.world && Number.isFinite(ph.rig.group.position.y), `Victorian: the street photographer has taken ${ph ? ph.shots : 0} photos in 15 s`); }
