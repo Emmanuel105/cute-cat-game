@@ -24711,3 +24711,25 @@ change to this file. No visual check was possible in this environment (no browse
 only the stub-three test suite confirmed the third interactable fires independently of the other two
 and all three fairies' own positions stay finite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 899 — Whisper Woods' fourth loop-flying fairy becomes a friend
+
+Rounds 890, 897 and 898 closed the first three of the glade's five loop-flying fairies with their own
+"Say hello to the fairy" prompt; the fourth (i===3 in the same build loop) was still just as unmet.
+**It now answers too** — *"Five of us flit this glade. You've nearly met us all."*
+
+Same pattern as the previous three rounds, applied a fourth time: the fairy-building loop in
+`buildForest()` (74-world-forest.js) now also captures its fourth iteration's rig into
+`friendlyFairy4`, and a fourth `game.addInteractable` keys off `friendlyFairy4.group` directly with
+its own distinct `game.namedFriend('fairy-4')` id, so all four stack rather than overwrite each other.
+`Flyer`'s own constructor already calls `game.world.add(rig.group)` itself, so nothing extra was
+needed for the scene-graph check, and the loop's own `r.pick()`/`r.range()` draws are completely
+unchanged — only a capture and an interactable were added after the loop runs, so nothing later in
+this world's build had its own seeded pick shifted. Only the fifth fairy (i===4) is left unmet now.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329 (no new collider, as expected), and Whisper Woods' own friend count rose from 122 to
+123. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite confirmed the fourth interactable fires independently of the other three and
+all four fairies' own positions stay finite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
