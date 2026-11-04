@@ -110,5 +110,7 @@ class SoundKit {
   rustle() { this.noise({ dur: 0.16, vol: 0.06, filter: 1800, type: 'bandpass', slide: 1100 }); this.noise({ dur: 0.1, vol: 0.035, filter: 2600, type: 'bandpass', delay: 0.09 }); }
   /** A goat's bleat: two short nasal, wavering notes. */
   bleat() { this.tone({ freq: 380, slide: 320, type: 'sawtooth', dur: 0.18, vol: 0.09, filter: 1100, q: 3, vib: 22 }); this.tone({ freq: 340, slide: 300, type: 'sawtooth', dur: 0.14, vol: 0.07, delay: 0.17, filter: 1100, q: 3, vib: 22 }); }
+  /** A swan's hiss: one long sibilant noise swell, filter sliding down as it fades. */
+  hiss() { this.noise({ dur: 0.45, vol: 0.07, filter: 3400, type: 'bandpass', slide: 1200 }); }
 }
 const SFX = new SoundKit();

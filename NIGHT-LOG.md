@@ -24501,3 +24501,32 @@ Peak's own friend count rose from 110 to 111. No visual check was possible in th
 browser, no Playwright) — only the stub-three test suite and the headless probes above confirmed the
 goat wanders, grazes, stays on-leash and answers its own greeting. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 892 — Victorian's canal finally gets a swan
+
+The canal has had a duck pair since round 677, boats dotted the whole way out past both side bridges,
+an angler, a mudlark and three dragonflies — but never the one bird a real canal almost always has.
+**A swan now glides, alone and unhurried, along a quiet reach east of the east bridge**, well clear of
+everything else on the water. Saying hello makes it the usual kind of friend: *"🦢 *arches its neck
+and glides a little further off*"*.
+
+New `makeSwan()` (56-npcs-wild.js, right after `makeDuck`): a bigger body, a long near-upright neck
+(`rig.head` is the whole neck group, same convention the duck's own occasional dip already leans on)
+and an orange bill with a black knob, all white. New `SFX.hiss()` (30-audio.js, right after the
+goat's own `bleat()`), one long sibilant noise swell — nothing else in the game calls it. The swim
+loop itself is the exact same `sin(t)` lap the duck pair already uses, just slower and alone, at
+(128, 30) with a 9 m range (x 119–137). No new physics box: the swan floats on the same water strip
+the canal's own `P.addBox` calls already block for walking, so `game.addInteractable` just tracks its
+`group` through the lap, same as the ducks.
+
+A headless probe (`game.start('new')`, `game.load(3, 'from-prev')`, then 9600 simulated frames
+sampling the swan's own position every frame) confirmed the full 9 m lap stays finite throughout, that
+the nearest other interactable or NPC — a wandering outer-country extra, with no greet prompt of its
+own — never comes closer than 5.36 m, comfortably past the swan's own 4.8 m greet radius, and that the
+east bridge's own "look over the railing" circle (104, 30, radius 6.6) sits a clean 9 m past the
+swan's nearest approach (x=119). `node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`,
+0 console warnings, box count unchanged at 329 (no new collider, as expected), and Victorian's own
+`friendTotal` rose from 113 to 114. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite and the headless probe above confirmed the swan swims,
+stays finite and answers its own greeting. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.

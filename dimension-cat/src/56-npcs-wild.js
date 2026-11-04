@@ -280,6 +280,25 @@ function makeDuck(o = {}) {
   return rig;
 }
 
+// ---------------------------------------------------------------- swan (bigger than a duck, held upright on a long curved neck)
+function makeSwan() {
+  const g = new THREE.Group(), rig = { group: g };
+  const bodyM = mat(0xf4f4ee, { roughness: 0.75 }), billM = mat(0xe8820a, { roughness: 0.45 }), darkM = mat(0x1a1a1a, { roughness: 0.7 });
+  const body = group(0, 0.15, 0, g); rig.body = body;
+  mesh(G.bodySphere(16, 11), bodyM, { sx: 0.18, sy: 0.15, sz: 0.34, parent: body });
+  mesh(G.cone(0.09, 0.18, 8), bodyM, { y: 0.05, z: -0.22, rx: PI / 2.2, shadow: 'none', parent: body });              // tapered tail
+  for (const side of [1, -1]) mesh(G.box(0.1, 0.05, 0.22), bodyM, { x: side * 0.1, y: 0.04, z: -0.02, parent: body }); // folded wings
+  const neck = group(0, 0.11, 0.2, body); rig.head = neck; neck.rotation.x = -0.25;
+  mesh(G.capsule(0.045, 0.3, 8), bodyM, { y: 0.17, rx: PI / 2, parent: neck });
+  const head = group(0, 0.35, 0.05, neck);
+  mesh(G.sphere(0.058, 12, 9), bodyM, { parent: head });
+  mesh(G.cone(0.024, 0.09, 8), billM, { z: 0.08, rx: PI / 2, shadow: 'none', parent: head });
+  mesh(G.sphere(0.016, 6, 6), darkM, { z: 0.025, shadow: 'none', parent: head });                                     // black knob at the base of the bill
+  for (const side of [1, -1]) mesh(G.sphere(0.009, 6, 6), darkM, { x: side * 0.032, y: 0.012, z: 0.045, shadow: 'none', parent: head });
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- dolphin (porpoises in open water, no legs or ground contact — the whole rig is moved and tilted by its caller)
 function makeDolphin(o = {}) {
   const g = new THREE.Group(), rig = { group: g };

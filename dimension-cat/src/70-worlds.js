@@ -8931,6 +8931,41 @@ function buildVictorian(game, entry) {
       game.addInteractable({ obj: hen.group, radius: 4.6, label: () => 'Say hello to the duck', onUse: () => {
         game.befriend(chid); SFX.squawk(); game.hearts(hen.group.position.x, hen.group.position.y + 0.3, hen.group.position.z, 3);
         game.toast('🦆 "...Quack."'); } }); } }
+  // the canal has had a duck pair since round 677 and boats dotted all the way out past both side
+  // bridges, but nothing on this whole stretch of water was ever actually a swan — the one bird a real
+  // canal almost always has. One now glides, alone and unhurried, along the quiet reach east of the
+  // east bridge (104, 30) and well short of the easternmost boat (150, 30): a 36 m gap with nothing
+  // hand-placed in it at all. New `makeSwan()` (56-npcs-wild.js, right after `makeDuck`): a bigger
+  // body, a long near-upright neck (`rig.head` is the whole neck group, same convention the duck's own
+  // dip already leans on) and an orange bill with a black knob, all white. New `SFX.hiss()`
+  // (30-audio.js, right after the goat's own `bleat()`), one long sibilant noise swell — nothing else
+  // in the game calls it.
+  //
+  // Placed at (128, 30), swimming a 9 m lap the same `sin(t)` idiom the duck pair already uses, just
+  // slower and alone. The nearest hand-placed thing to either side is the east bridge's own "look over
+  // the railing" circle (104, 30, radius 6.6): the swan's own lap only ever comes as close as x=119,
+  // 15 m from the bridge centre, nearly 9 m clear of that circle's own edge. The boat at (150, 30) carries
+  // no physics box of its own (`makeBoat`'s only motion is its own `userData.update` bob) and sits
+  // 13 m past the swan's own furthest reach (x=137) regardless. The canal itself is blocked for
+  // walking bank to bank by the same `P.addBox` calls the duck pair's own comment already explains (a
+  // 4.0 m half-extent in z, centred on this same z=30), so the cat has to call across from the
+  // towpath — a 4.8 m radius clears that gap by a flat 0.8 m, same reasoning as the duck pair's own
+  // 4.6 m just above, with the extra half-metre for the swan's own larger reach. No new physics box of
+  // its own: `game.addInteractable` keys off the swan's own `group` directly, so the prompt follows it
+  // through its whole lap. `'swan'` is free in this world's own namedFriend keys so far.
+  { const sz = 30, sMid = 128, sRange = 9, sY = -0.3;
+    const swan = makeSwan(); W.add(swan.group);
+    U.push((dt, t) => {
+      const a = t * 0.045, facing = cos(a) >= 0 ? PI / 2 : -PI / 2;
+      swan.group.position.set(sMid + sin(a) * sRange, sY + sin(t * 1.4) * 0.01, sz);
+      swan.group.rotation.y = facing;
+      swan.head.rotation.x = -0.25 + (sin(t * 0.4) > 0.9 ? 0.45 : 0);   // the occasional dip toward the water
+    });
+    let hissT = 12; U.push((dt) => { hissT -= dt; if (hissT <= 0) { SFX.hiss(); hissT = rnd.range(16, 26); } });
+    const swanId = game.namedFriend('swan');
+    game.addInteractable({ obj: swan.group, radius: 4.8, label: () => 'Say hello to the swan', onUse: () => {
+      game.befriend(swanId); SFX.hiss(); game.hearts(swan.group.position.x, swan.group.position.y + 0.4, swan.group.position.z, 3);
+      game.toast('🦢 *arches its neck and glides a little further off*'); } }); }
   for (const x of [-52, -24, 8, 24, 48]) { place(game, U, makeLamp('victorian'), x, 25.3, 0); P.addBox(x, 2, 25.3, 0.4, 4, 0.4, { cam: false }); }
   // the canal had rowing boats but nobody minding a line; an old-timer takes the north bank between two lamps, rod dipped in
   { const anglerWard = makeWardrobe(r, { shirts: [0x4a5a4a, 0x5a4a3a, 0x3a4a5a], pants: [0x2e3a2e, 0x2a2a2a], shoes: [0x2a2018, 0x1e2020] });
