@@ -2396,6 +2396,36 @@ function buildForest(game, entry) {
     game.npcs.push(new StoneSkipper(game, pondSkipper, { x: 2.54, z: -9.15, ry: PI / 3,
       cries: ["Three's my best, same as everywhere else this works.", "Careful, puss — the glow doesn't mean warm.", 'Dad skips at the lake back home. Says this pond skips better.'] })); }
 
+  // Victorian's belfry and the stepping-stone glade's own owls, fairies and fireflies have all had
+  // something living up in the dark since early on, but the hollow oak itself — this wood's own home
+  // portal, standing since world 6 was first built — never got a single thing roosting in its own
+  // canopy. **Three bats now circle just above the oak's own treetop**, flitting the same wingbeat
+  // loop the Neighborhood's dusk sky and Victorian's belfry already use. No dialogue, no new mesh:
+  // like those two, they're a plain `Flyer` loop, not a greetable soul.
+  //
+  // Reuses `makeBat()` (56-npcs-wild.js) and the exact same `Flyer` controller (`cx`, `cz`, `r`, `h`,
+  // `speed`, `bob`, `wobble`, `phase`, `cw`) the pond's own dragonflies, the glade's fairies and the
+  // butterflies above already lean on. Centred on the oak itself (0, 50) at h=10.2 — above the oak's
+  // own topmost leaf sphere (local y=7.2, radius 2.4, so topping out at 9.6) and far above its own
+  // physics box (half-height 2.2, so topping out at 4.4) — with a 1.6 m radius, tucked in close over
+  // the canopy rather than the wider loops the dragonflies and fairies use elsewhere in this glade. No
+  // physics box of its own: nothing on the ground can ever reach this high, the same reasoning the
+  // belfry's own bats already relied on. `Flyer`'s own `h` is added to `ground0(x, z)` at runtime, the
+  // same local-origin height `makeHollowOak()`'s own leaf spheres use before the whole oak group is
+  // itself lifted onto the terrain by `oak.position.y` below, so the two line up without any extra
+  // adjustment for this slope.
+  //
+  // Built dead last, right after the pond's own stone skipper and right before `forestRegion()`, for
+  // the reason every other addition at the end of a world's build function already gives: `Flyer`'s
+  // own constructor draws unconditionally from the *shared* `rnd()` sequence, and anything built
+  // earlier in this wood would have had its own timing-sensitive pick shifted by it. `forestRegion()`,
+  // `makeHorizon()`, `makeHollowOak()` and `makeDayNight()` below draw only from this wood's own seeded
+  // `r()` or nothing at all, never the shared `rnd()`, so nothing after this point shifts either.
+  for (let bi = 0; bi < 3; bi++) {
+    const batRig = makeBat({ phase: bi * 2.1 });
+    game.npcs.push(new Flyer(game, batRig, { cx: 0, cz: 50, r: 1.6, h: 10.2, speed: 1.6 + bi * 0.3, bob: 0.3, wobble: 0.5, cw: bi % 2 === 0, phase: bi * 2.1 }));
+  }
+
   forestRegion(game, U, r, 58, WOODS_LIMIT - 8);
   makeHorizon(game, r, { clear: WOODS_LIMIT + 8, hills: true, hill: 0x2f4a30, rock: 0x3a4a3a, rock2: 0x44505a, snow: 0xdfe8f0, snowLine: 52, peaks: 28, woodCount: 460, woodBand: 44, woodHue: [0.26, 0.36], woodLight: [0.1, 0.2], trunk: 0x3a2a1c });
   // hollow oak home (north end of the stepping-stone path)

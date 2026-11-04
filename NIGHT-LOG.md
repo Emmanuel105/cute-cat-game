@@ -24591,3 +24591,40 @@ friend count is unchanged at 87. No visual check was possible in this environmen
 Playwright) — only the stub-three test suite and the headless probes above confirmed the fight runs,
 stays finite and keeps clear of its neighbours. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 895 — Whisper Woods' hollow oak finally gets a roost
+
+Victorian's belfry has had three bats circling its clock tower since round 892's predecessors, and the
+Neighborhood's own dusk sky gets them too, but the one landmark in the whole game that's actually a
+hollow tree never had anything roosting in it. **Three bats now circle just above the hollow oak's own
+treetop** — this wood's home portal, standing since the world was first built — flitting the same
+wingbeat loop the belfry's bats already use. No dialogue, no new mesh, and no greeting: like the
+belfry's own bats and the pond's dragonflies, they're a plain ambient `Flyer` loop, not a greetable
+soul.
+
+No new code beyond the loop itself: `makeBat()` (56-npcs-wild.js) and the exact same `Flyer` controller
+(`cx`, `cz`, `r`, `h`, `speed`, `bob`, `wobble`, `phase`, `cw`) the glade's own dragonflies, fairies and
+butterflies already lean on. Centred on the oak itself (0, 50) at `h=10.2` — above the oak's own
+topmost leaf sphere (local y=7.2, radius 2.4, topping out at 9.6) and far above its own physics box
+(half-height 2.2, topping out at 4.4) — with a tight 1.6 m radius hugging the canopy rather than the
+wider loops used elsewhere in this glade. No physics box of its own: nothing on the ground can ever
+reach this high, the same reasoning the belfry's own bats already relied on.
+
+Built dead last in `buildForest()`, right after the glowing pond's own stone skipper and right before
+`forestRegion()`, for the usual reason: `Flyer`'s own constructor draws unconditionally from the
+*shared* `rnd()` sequence, and anything built earlier in this wood would have had its own
+timing-sensitive pick shifted by it. Checked that `forestRegion()`, `makeHorizon()`, `makeHollowOak()`
+and `makeDayNight()` — everything still to come in the function — draw only from this wood's own seeded
+`r()` or nothing at all, so nothing after this point shifts either.
+
+A headless probe (`game.start('new')`, `game.travel(6, 'from-hub')` waited out for real against
+`game.worldIndex`, then 2400 simulated frames sampling all three bats' own positions every 10th frame)
+found them finite throughout, holding a tight y-range of 10.86–11.57 (ground height at (0, 50) is 1.04,
+so this sits just clear of the canopy's own local top at 9.6) and never closer than 11.84 m to any other
+NPC in the whole world — nothing on the ground gets anywhere near this height. `node
+dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged
+at 329 (no new collider, as expected), and Whisper Woods' own friend count unchanged at 119 (not a
+greetable soul, same as the belfry's bats). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe above confirmed the
+bats circle, stay finite and keep clear of everything else. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
