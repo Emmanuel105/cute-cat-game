@@ -24686,3 +24686,28 @@ unchanged at 329 (no new collider, as expected), and Whisper Woods' own friend c
 stub-three test suite confirmed the second interactable fires independently of the first and both
 fairies' own positions stay finite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 898 — Whisper Woods' third loop-flying fairy becomes a friend
+
+Rounds 890 and 897 closed the first two of the glade's five loop-flying fairies with their own "Say
+hello to the fairy" prompt; the third (i===2 in the same build loop) was still just as unmet. **It now
+answers too** — *"We're not lost. The glade just moves around a bit."*
+
+Same pattern as the previous two rounds, applied a third time: the fairy-building loop in
+`buildForest()` (74-world-forest.js) now also captures its third iteration's rig into
+`friendlyFairy3`, and a third `game.addInteractable` keys off `friendlyFairy3.group` directly with its
+own distinct `game.namedFriend('fairy-3')` id, so all three stack rather than overwrite each other.
+`Flyer`'s own constructor already calls `game.world.add(rig.group)` itself, so nothing extra was
+needed for the scene-graph check, and the loop's own `r.pick()`/`r.range()` draws are completely
+unchanged — only a capture and an interactable were added after the loop runs, so nothing later in
+this world's build had its own seeded pick shifted.
+
+`node dimension-cat/test/run.mjs` ran clean across three repeats: exit 0, all checks `ok`, 0 console
+warnings, box count unchanged at 329 (no new collider, as expected), and Whisper Woods' own friend
+count rose from 121 to 122. One run hit exit 1 with every individual check still `ok` — the same
+pre-existing flaky frame-count race this log has noted before (a Sunny Shore kite or Victorian
+horse-and-carriage occasionally missing its own timing window) — and cleared on the next run with no
+change to this file. No visual check was possible in this environment (no browser, no Playwright) —
+only the stub-three test suite confirmed the third interactable fires independently of the other two
+and all three fairies' own positions stay finite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
