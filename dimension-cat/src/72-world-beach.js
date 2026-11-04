@@ -560,7 +560,12 @@ function buildBeach(game, entry) {
     game.npcs.push(fw);
     const boldId = game.namedFriend('boldcrab');
     game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the crab', onUse: () => { game.befriend(boldId); SFX.chitter(); game.hearts(rig.group.position.x, 0.5, rig.group.position.z, 3); game.toast('🦀 *marches right up and taps a claw on your paw*'); } }); }
-  for (let i = 0; i < 7; i++) { const rig = makeSeagull({ phase: i * 1.3 }); game.npcs.push(new Flyer(game, rig, { cx: 14 + r.range(-8, 8), cz: r.range(-30, 30), r: r.range(9, 18), h: r.range(5, 11), speed: r.range(3.5, 5), bob: 1.2, wobble: 3, cw: i % 2 === 0, phase: i })); }
+  let friendlySeagull = null;
+  for (let i = 0; i < 7; i++) { const rig = makeSeagull({ phase: i * 1.3 }); game.npcs.push(new Flyer(game, rig, { cx: 14 + r.range(-8, 8), cz: r.range(-30, 30), r: r.range(9, 18), h: r.range(5, 11), speed: r.range(3.5, 5), bob: 1.2, wobble: 3, cw: i % 2 === 0, phase: i })); if (i === 0) friendlySeagull = rig; }
+  { const seagullId = game.namedFriend('seagull');
+    game.addInteractable({ obj: friendlySeagull.group, radius: 2.1, label: () => 'Say hello to the seagull', onUse: () => {
+      game.befriend(seagullId); SFX.squawk(); game.hearts(friendlySeagull.group.position.x, friendlySeagull.group.position.y, friendlySeagull.group.position.z, 3);
+      game.toast('🐦 "*wheels down low over the sand, squawks once, and climbs back into the flock*"'); } }); }
   // both turtles have been pure background since round 1, same as the crabs — unlike the dog and the
   // squirrel, neither was ever a friend to meet. Round 672 gave the second one, up at (24, 20), a "Pet
   // the turtle" prompt, but left the first one at (22, -2) exactly as before — same root cause, just

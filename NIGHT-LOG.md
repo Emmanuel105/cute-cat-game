@@ -24969,3 +24969,28 @@ warnings, box count unchanged at 329, and Candy Land's own friend count rose fro
 (confirmed against the pre-change build via `git stash`). No visual check was possible in this
 environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 909 — Sunny Shore's seagulls get their own "say hello"
+
+Last of the set: the crows, drone-flies, snow buntings, doves and both sets of butterflies have
+all had a flock member step up to meet the cat, but Sunny Shore's own seven seagulls — circling
+the pier and the open water since round 1, the beach's oldest unclaimed flock — were still
+loop-only scenery. **The first of the seven now answers the cat too.** *"*wheels down low over the
+sand, squawks once, and climbs back into the flock*"*
+
+The exact crow/dove/bunting pattern: the build's own `for (let i = 0; i < 7; i++)` loop over
+`makeSeagull()` + `Flyer` (72-world-beach.js, the beach build function) now also captures its
+first iteration's rig into `friendlySeagull`, and one `game.addInteractable` keys off
+`friendlySeagull.group` directly with its own `game.namedFriend('seagull')` id. `Flyer`'s own
+constructor already calls `game.world.add(rig.group)` itself, so no extra scene-graph wiring was
+needed, and the proximity check only compares `x`/`z`, so the usual 2.1 m radius still catches the
+cat passing underneath while this one loops 5-11 m up over the 9-18 m ring off the pier. No new
+physics box, no clearance probe needed — `Flyer` never touches the physics grid, same as every
+earlier flock credit. Reused `SFX.squawk()`, the seagull's own sound already heard from the crows,
+ducks and penguins elsewhere, since nothing here has a dedicated cry of its own.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at
+329, and Sunny Shore's own friend count rose from 116 to 117 (confirmed against the pre-change
+build via `git stash`). No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
