@@ -24845,3 +24845,26 @@ warnings, box count unchanged at 329 (no new collider, as expected), and Victori
 rose from 114 to 115. No visual check was possible in this environment (no browser, no Playwright) —
 only the stub-three test suite described above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 904 — Robot City's drone-flies get their own "say hello"
+
+Every other world's own flock gets a "say hello" eventually — the Neighborhood's mole, Whisper
+Woods' fairies, Sunny Shore's seagulls — but Robot City's little swarm of six drone-flies, buzzing
+loops over the factory floor since they were added, had never been more than scenery. **The first
+of the six now answers the cat.** *"*dips a wing, blinks its LED twice, and keeps circling*"*
+
+Exactly the fairy-loop pattern from rounds 890/897-901: the build's own `for (let i = 0; i < 6; i++)`
+loop over `makeDroneFly()` + `Flyer` (70-worlds.js, Robot City's build function) now also captures
+its first iteration's rig into `friendlyDroneFly`, and one `game.addInteractable` keys off
+`friendlyDroneFly.group` directly with its own `game.namedFriend('drone-fly')` id. `Flyer`'s own
+constructor already calls `game.world.add(rig.group)` itself, so no extra scene-graph wiring was
+needed, and the proximity check only compares `x`/`z`, so the usual 2.1 m radius still catches the
+cat passing underneath while this one loops 8-10.5 m up. No new physics box, no clearance probe
+needed — `Flyer` never touches the physics grid, the same reason every earlier flock credit (fairies,
+gulls, crabs) skipped one too.
+
+`node dimension-cat/test/run.mjs` ran clean across four repeats: exit 0, all checks `ok`, 0 console
+warnings, box count unchanged at 329, and Robot City's own friend count rose from 98 to 99 (confirmed
+against the pre-change build via `git stash`). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
