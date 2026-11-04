@@ -24994,3 +24994,29 @@ ducks and penguins elsewhere, since nothing here has a dedicated cry of its own.
 build via `git stash`). No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 910 — Whisper Woods' own butterflies finally get their own "say hello"
+
+Last of the butterfly flocks: Candy Land's castle butterflies (round 908) and the outer-country
+ones scattered round every world's edge (round 826 onward) both already have a member who answers
+the cat. Whisper Woods' own twelve, looping loose across the whole glade since this world's own
+build — the biggest butterfly flock in the game — had stayed loop-only scenery the entire time.
+**The first of the twelve now answers the cat too.** *"*Mind the fairies — we share this glade,
+and they land first.*"*
+
+The usual pattern: the build's own `for (let i = 0; i < 12; i++)` loop over `makeButterfly()` +
+`Flyer` (74-world-forest.js) now also captures its first iteration's rig into
+`friendlyForestButterfly`, and one `game.addInteractable` keys off `friendlyForestButterfly.group`
+directly with its own `game.namedFriend('forest-butterfly')` id — distinct from `candy-butterfly`
+and the `outer-butterfly*` ids so none of them collide. `Flyer`'s own constructor already calls
+`game.world.add(rig.group)` itself, so no extra scene-graph wiring was needed, and the proximity
+check only compares `x`/`z`, so the usual 2.1 m radius still catches the cat passing underneath
+while this one loops 0.7-2 m up over the whole -30..30 glade. No new physics box, no clearance
+probe needed — `Flyer` never touches the physics grid, same as every earlier flock credit. Reused
+`SFX.twinkle()`, the same sound every other butterfly in the game already uses.
+
+`node dimension-cat/test/run.mjs` ran clean across two repeats: exit 0, all checks `ok`, 0 console
+warnings, box count unchanged at 329, and Whisper Woods' own friend count rose from 124 to 125
+(confirmed against the pre-change build via `git stash`). No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
