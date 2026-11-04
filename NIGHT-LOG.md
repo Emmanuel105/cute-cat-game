@@ -24628,3 +24628,36 @@ greetable soul, same as the belfry's bats). No visual check was possible in this
 browser, no Playwright) — only the stub-three test suite and the headless probe above confirmed the
 bats circle, stay finite and keep clear of everything else. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 896 — Whisper Woods finally gets a caterpillar
+
+Every beetle-family critter this game has — the Neighborhood's ladybug, Robot City's scrap-bug, Sunny
+Shore's tiger beetle, Frosty Peak's frost beetle, Candy Land's gumdrop beetle, this very wood's own
+grasshopper — has a cousin somewhere else in the roster, but nothing in all seven worlds had ever been
+a caterpillar. **One now rides a leaf on the forest floor south of the stepping-stone glade**, a little
+travelling hump running the length of its six segments from tail to nose and back, feelers swaying,
+without ever actually leaving its spot — the cat can walk up and say hello, and it rears its head for a
+look before settling back down.
+
+New `makeCaterpillar()` (`56-npcs-wild.js`, grouped right next to the grasshopper it borrows its whole
+approach from): six shrinking segments in a row, a pale band on every other one, two thread feelers on
+the head segment. Same "perched; only animates" trick the grasshopper, the owls and the field ladybug
+already settled on — a plain `rig.group.position.set()`, no `Hopper`, no physics box, the ripple timed
+off the world clock `t` alone. It draws nothing from either the shared `rnd()` or this wood's own seeded
+`r()`, so it was dropped in right after the hollow oak's bats with no risk of shifting anything built
+before it.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+`game.travel(6, 'from-hub')`, then a grid scan of the open forest floor — radius 10-55, short of where
+`forestRegion()`'s own fill takes over — against all 679 of this wood's physics boxes and all 122 of its
+NPCs) found (14, -52) clearest: 7.72 m from the nearest box, 7.21 m from the nearest wandering soul and
+7.21 m from the nearest other interactable (the grasshopper's own "Say hello", well up the floor) —
+comfortably past the 1.6 m greet radius used here. `node dimension-cat/test/run.mjs` ran clean across
+several repeats: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 329 (no new
+collider, as expected), and Whisper Woods' own friend count rose from 119 to 120. Two unrelated,
+pre-existing flaky timing checks (a Sunny Shore kite and a Victorian horse-and-carriage, both frame-count
+races that occasionally miss their own window) were confirmed to fail at the same rate with this change
+stashed out as without it, so neither is new. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe above confirmed the
+caterpillar ripples in place and keeps well clear of everything else. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

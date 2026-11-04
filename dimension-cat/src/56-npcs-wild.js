@@ -718,6 +718,31 @@ function makeGrasshopper(color = 0x6fae3a) {
   return rig;
 }
 
+// ---------------------------------------------------------------- caterpillar (perched on a leaf; only animates — same trick as the owl and the
+// grasshopper just above: a travelling hump runs tail to nose and back, but the rig never actually moves from its spot)
+function makeCaterpillar(color = 0x8fbf4a) {
+  const g = new THREE.Group(), rig = { group: g };
+  const bodyM = mat(color, { roughness: 0.6 }), bandM = mat(0xf2e14a, { roughness: 0.55 }), darkM = mat(0x1c1a12, { roughness: 0.6 });
+  const body = group(0, 0, 0, g); rig.body = body;
+  const N = 6, spacing = 0.026;
+  rig.segs = [];
+  for (let i = 0; i < N; i++) {
+    const seg = group(0, 0, -i * spacing, body); rig.segs.push(seg);
+    const rad = 0.02 - i * 0.0012;
+    mesh(G.sphere(rad, 10, 8), bodyM, { parent: seg });
+    if (i % 2 === 1) mesh(G.torus(rad * 0.9, rad * 0.22, 5, 10), bandM, { rx: PI / 2, shadow: 'none', parent: seg });   // every other segment gets a pale band
+  }
+  const head = rig.segs[0];
+  for (const side of [1, -1]) mesh(G.sphere(0.0045, 6, 6), darkM, { x: side * 0.01, y: 0.006, z: 0.016, shadow: 'none', parent: head });   // tiny dark eye dots
+  for (const side of [1, -1]) { const ant = group(side * 0.008, 0.012, 0.012, head); rig['ant' + side] = ant; mesh(G.cyl(0.0018, 0.0018, 0.03, 4), darkM, { y: 0.015, rx: -0.5, parent: ant }); }
+  rig.animate = (ph, moving, dt, t = 0) => {
+    for (let i = 0; i < N; i++) rig.segs[i].position.y = Math.max(0, sin(t * 3 - i * 0.9)) * 0.012;   // the hump travels from tail to nose and back
+    for (const side of [1, -1]) rig['ant' + side].rotation.z = side * 0.25 + sin(t * 2 + side) * 0.08;
+  };
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- owl (perched; only animates)
 // `o.body`/`o.face` recolour it (a snowy owl for Frosty Peak); omitted, it's the brown tawny owl
 // Whisper Woods has always had, so every existing call is unaffected.

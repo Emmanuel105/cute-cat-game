@@ -2425,6 +2425,31 @@ function buildForest(game, entry) {
     const batRig = makeBat({ phase: bi * 2.1 });
     game.npcs.push(new Flyer(game, batRig, { cx: 0, cz: 50, r: 1.6, h: 10.2, speed: 1.6 + bi * 0.3, bob: 0.3, wobble: 0.5, cw: bi % 2 === 0, phase: bi * 2.1 }));
   }
+  // the grasshopper (round 880) proved this wood's own forest floor can host a "perched; only animates"
+  // critter with no new controller at all, but nothing in this whole game had ever been a caterpillar —
+  // not even the ladybug's long line of beetle cousins covers it. **One now rides a leaf on the forest
+  // floor south of the stepping-stone glade**, a little travelling hump running from tail to nose and
+  // back, feelers swaying, without ever actually leaving its spot.
+  //
+  // New `makeCaterpillar()` (56-npcs-wild.js, right after the grasshopper it's grouped with): six
+  // shrinking segments in a row, a pale band on every other one, two thread feelers on the head
+  // segment — the same "perched; only animates" trick the grasshopper, the owls and the field ladybug
+  // before it all settled on. A plain `rig.group.position.set()`, no `Hopper`, no physics box, its
+  // ripple timed off the world clock `t` alone inside a local `U.push`. It draws nothing from either
+  // the shared `rnd()` or this wood's own seeded `r()`, so nothing built earlier in this file shifts
+  // because of it, and it could as easily have gone in first as dead last.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // `game.travel(6, 'from-hub')`, then a grid scan of the open forest floor — radius 10-55, short of
+  // the radius (58) where `forestRegion()`'s own fill takes over — against every one of this wood's 679
+  // physics boxes and all 122 of its NPCs) found (14, -52) clearest: 7.72 m from the nearest box, 7.21 m
+  // from the nearest wandering soul and 7.21 m from the nearest other interactable (the grasshopper's
+  // own "Say hello", 8 m further up the floor) — comfortably past the 1.6 m radius this one uses too.
+  { const cx = 14, cz = -52;
+    const rig = makeCaterpillar(); rig.group.position.set(cx, P.ground0(cx, cz) + 0.02, cz); rig.group.rotation.y = 2.3; W.add(rig.group);
+    U.push((dt, t) => rig.animate(0, false, dt, t));
+    const caterpillarId = game.namedFriend('woods-caterpillar');
+    game.addInteractable({ obj: rig.group, radius: 1.6, label: () => 'Say hello to the caterpillar', onUse: () => { game.befriend(caterpillarId); SFX.chitter(); game.hearts(cx, 0.15, cz, 3); game.toast('🐛 "*rears its head segment up for a look, feelers quivering, then settles back onto the leaf*"'); } }); }
 
   forestRegion(game, U, r, 58, WOODS_LIMIT - 8);
   makeHorizon(game, r, { clear: WOODS_LIMIT + 8, hills: true, hill: 0x2f4a30, rock: 0x3a4a3a, rock2: 0x44505a, snow: 0xdfe8f0, snowLine: 52, peaks: 28, woodCount: 460, woodBand: 44, woodHue: [0.26, 0.36], woodLight: [0.1, 0.2], trunk: 0x3a2a1c });
