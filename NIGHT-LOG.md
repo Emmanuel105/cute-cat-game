@@ -25020,3 +25020,26 @@ warnings, box count unchanged at 329, and Whisper Woods' own friend count rose f
 (confirmed against the pre-change build via `git stash`). No visual check was possible in this
 environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 911 — Whisper Woods finally gets a pile of leaves
+
+Every autumn-flavoured corner of this wood — the giant mushrooms, the fairy ring, the hollow oak —
+had its own look by now, but the one thing you'd actually expect underfoot in a forest, a pile of
+fallen leaves, had never shown up anywhere in the whole game. **A boy now kneels beside a heap of
+them on the quiet forest floor south-east of the fairy ring, patting it back into shape.**
+*"Pile's nearly big enough — one good jump would ruin it, mind."*
+
+New `makeLeafPile()` (62-props-nature.js, next to `makeHollowLog`): a squashed four-sphere mound for
+bulk plus 22 scattered chunky leaf blades in a mixed autumn palette — same "chunky enough to read,
+not thin enough to ink" rule the cupcakes' own sprinkles already rely on. The boy himself needed no
+new controller at all: a plain `Kneeler`, the same one the hopscotch chalker and every world's own
+skateboard kid already use, so `greetable()` wires up his own "Say hello" prompt for free. A headless
+probe (`game.start('new')`, `game.travel(6, 'from-hub')`, 3600 simulated frames sampling every NPC's
+own position every 30th frame) swept the open floor against every one of this wood's physics boxes
+and every sample: (24, -18) came back clearest — 8.85 m from the nearest other box, 10.0 m from the
+nearest wandering soul — well south-east of the fairy ring and clear of the hollow oak's own path.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, and
+Whisper Woods' own friend count rose from 125 to 126. No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -785,6 +785,19 @@ function makeHollowLog(r = rnd) {
   for (let i = 0; i < 3; i++) { const m = makeMushroom(r.range(0.14, 0.24), r.pick([0, 30, 40]), r, false); m.position.set(r.range(-1.2, 1.2), R * 1.4, R * 0.75 + 0.05); m.rotation.x = -0.9; g.add(m); }
   return g;
 }
+/** A heaped pile of fallen leaves: a squashed mound for bulk, scattered chunky leaf blades over and around it in a mixed autumn palette. No animation of its own — a bakeable static prop, same as the sandcastle and the treasure chest. */
+function makeLeafPile(r = rnd) {
+  const g = new THREE.Group(), moundM = mat(0xa0602e, { roughness: 1 });
+  for (const [dx, dz, s] of [[0, 0, 1], [0.32, 0.16, 0.62], [-0.3, 0.2, 0.55], [0.08, -0.34, 0.5]]) {
+    mesh(G.sphere(0.5 * s, 8, 6), moundM, { x: dx, y: 0.1 * s, z: dz, sy: 0.4, shadow: 'both', parent: g });
+  }
+  const hues = [0xd2691e, 0xff8c3a, 0xe0a62e, 0xb5451f, 0x9c6b1f, 0xc9502a];
+  for (let i = 0; i < 22; i++) {
+    const a = r() * TAU, d = r.range(0, 0.78), h = r.range(0.08, 0.3);
+    mesh(G.box(0.16, 0.03, 0.2), mat(r.pick(hues), { roughness: 0.9 }), { x: cos(a) * d, y: h, z: sin(a) * d, ry: r() * TAU, rx: r.range(-0.3, 0.3), shadow: 'none', parent: g });
+  }
+  return g;
+}
 /** A zipline: a tall start platform, a cable to a low landing post, and a trolley that whizzes down again and again — with a squirrel hanging on. */
 function makeZipline(game, U, ax, az, bx, bz, r = rnd) {
   const P = game.physics, wood = mat(0x6b4a2a, { roughness: 0.95, map: TEX.planks(26, 30) }), dark = mat(0x5a3a1f, { roughness: 1 }), steel = mat(0x4a5058, { metalness: 0.8, roughness: 0.4 });

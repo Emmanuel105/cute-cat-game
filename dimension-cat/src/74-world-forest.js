@@ -2486,6 +2486,32 @@ function buildForest(game, entry) {
     const caterpillarId = game.namedFriend('woods-caterpillar');
     game.addInteractable({ obj: rig.group, radius: 1.6, label: () => 'Say hello to the caterpillar', onUse: () => { game.befriend(caterpillarId); SFX.chitter(); game.hearts(cx, 0.15, cz, 3); game.toast('🐛 "*rears its head segment up for a look, feelers quivering, then settles back onto the leaf*"'); } }); }
 
+  // every autumn-flavoured corner of this wood (the giant mushrooms, the fairy ring, the hollow oak)
+  // has had its own look for rounds now, but nothing in the whole glade was ever a pile of leaves — the
+  // one thing you would actually expect underfoot in a forest. A boy now kneels beside a heap of them on
+  // the quiet forest floor south-east of the fairy ring, patting it back into shape. `makeLeafPile()`
+  // (new, 62-props-nature.js, next to `makeHollowLog`): a squashed four-sphere mound for bulk plus 22
+  // scattered chunky leaf blades in a mixed autumn palette, the same "flat shapes built chunky enough to
+  // read, not thin enough to ink" rule the cupcakes' own sprinkles already rely on. The boy is a plain
+  // `Kneeler` (55-npcs.js), the same controller the hopscotch chalker and every world's own skateboard
+  // kid already use — `greetable()` wires his own "Say hello" prompt automatically, no extra code needed.
+  //
+  // A headless probe (`game.start('new')`, `game.travel(6, 'from-hub')`, then 3600 simulated frames
+  // sampling every NPC's own position every 30th frame) swept candidate points on the open floor against
+  // every one of this wood's physics boxes and every one of those samples: (24, -18) came back clearest
+  // of the lot — 8.85 m from the nearest other box and 10.0 m from the nearest wandering soul — well
+  // south-east of the fairy ring (0, 0, r18) and clear of the hollow oak's own path (the `zones.addSpan`
+  // strip below, -3..3 in x).
+  { const lpx = 24, lpz = -18;
+    const pile = makeLeafPile(r); placeT(game, U, pile, lpx, lpz, r() * TAU);
+    boxT(game, lpx, lpz, 0.8, 0.4, 0.8, { cam: false });
+    const kx = lpx - 1.4, kz = lpz - 1.8;
+    const rakeWard = makeWardrobe(r, { shirts: [0xd9822b, 0x5a8a4a, 0x8a5a3a] });
+    const raker = makeHuman({ ...randomPerson(r, { child: true, female: r.chance(0.5), wardrobe: rakeWard }), backpack: null });
+    W.add(raker.group);
+    game.npcs.push(new Kneeler(game, raker, { x: kx, z: kz, ry: atan2(lpx - kx, lpz - kz),
+      cries: ["Pile's nearly big enough — one good jump would ruin it, mind.", 'Careful, puss — four hours of raking, don\'t you dare.', 'Every leaf in this whole glade ends up here eventually.'] })); }
+
   forestRegion(game, U, r, 58, WOODS_LIMIT - 8);
   makeHorizon(game, r, { clear: WOODS_LIMIT + 8, hills: true, hill: 0x2f4a30, rock: 0x3a4a3a, rock2: 0x44505a, snow: 0xdfe8f0, snowLine: 52, peaks: 28, woodCount: 460, woodBand: 44, woodHue: [0.26, 0.36], woodLight: [0.1, 0.2], trunk: 0x3a2a1c });
   // hollow oak home (north end of the stepping-stone path)

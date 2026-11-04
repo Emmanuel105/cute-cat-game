@@ -7426,6 +7426,19 @@ function makeHollowLog(r = rnd) {
   for (let i = 0; i < 3; i++) { const m = makeMushroom(r.range(0.14, 0.24), r.pick([0, 30, 40]), r, false); m.position.set(r.range(-1.2, 1.2), R * 1.4, R * 0.75 + 0.05); m.rotation.x = -0.9; g.add(m); }
   return g;
 }
+/** A heaped pile of fallen leaves: a squashed mound for bulk, scattered chunky leaf blades over and around it in a mixed autumn palette. No animation of its own — a bakeable static prop, same as the sandcastle and the treasure chest. */
+function makeLeafPile(r = rnd) {
+  const g = new THREE.Group(), moundM = mat(0xa0602e, { roughness: 1 });
+  for (const [dx, dz, s] of [[0, 0, 1], [0.32, 0.16, 0.62], [-0.3, 0.2, 0.55], [0.08, -0.34, 0.5]]) {
+    mesh(G.sphere(0.5 * s, 8, 6), moundM, { x: dx, y: 0.1 * s, z: dz, sy: 0.4, shadow: 'both', parent: g });
+  }
+  const hues = [0xd2691e, 0xff8c3a, 0xe0a62e, 0xb5451f, 0x9c6b1f, 0xc9502a];
+  for (let i = 0; i < 22; i++) {
+    const a = r() * TAU, d = r.range(0, 0.78), h = r.range(0.08, 0.3);
+    mesh(G.box(0.16, 0.03, 0.2), mat(r.pick(hues), { roughness: 0.9 }), { x: cos(a) * d, y: h, z: sin(a) * d, ry: r() * TAU, rx: r.range(-0.3, 0.3), shadow: 'none', parent: g });
+  }
+  return g;
+}
 /** A zipline: a tall start platform, a cable to a low landing post, and a trolley that whizzes down again and again — with a squirrel hanging on. */
 function makeZipline(game, U, ax, az, bx, bz, r = rnd) {
   const P = game.physics, wood = mat(0x6b4a2a, { roughness: 0.95, map: TEX.planks(26, 30) }), dark = mat(0x5a3a1f, { roughness: 1 }), steel = mat(0x4a5058, { metalness: 0.8, roughness: 0.4 });
@@ -26135,6 +26148,32 @@ function buildForest(game, entry) {
     U.push((dt, t) => rig.animate(0, false, dt, t));
     const caterpillarId = game.namedFriend('woods-caterpillar');
     game.addInteractable({ obj: rig.group, radius: 1.6, label: () => 'Say hello to the caterpillar', onUse: () => { game.befriend(caterpillarId); SFX.chitter(); game.hearts(cx, 0.15, cz, 3); game.toast('🐛 "*rears its head segment up for a look, feelers quivering, then settles back onto the leaf*"'); } }); }
+
+  // every autumn-flavoured corner of this wood (the giant mushrooms, the fairy ring, the hollow oak)
+  // has had its own look for rounds now, but nothing in the whole glade was ever a pile of leaves — the
+  // one thing you would actually expect underfoot in a forest. A boy now kneels beside a heap of them on
+  // the quiet forest floor south-east of the fairy ring, patting it back into shape. `makeLeafPile()`
+  // (new, 62-props-nature.js, next to `makeHollowLog`): a squashed four-sphere mound for bulk plus 22
+  // scattered chunky leaf blades in a mixed autumn palette, the same "flat shapes built chunky enough to
+  // read, not thin enough to ink" rule the cupcakes' own sprinkles already rely on. The boy is a plain
+  // `Kneeler` (55-npcs.js), the same controller the hopscotch chalker and every world's own skateboard
+  // kid already use — `greetable()` wires his own "Say hello" prompt automatically, no extra code needed.
+  //
+  // A headless probe (`game.start('new')`, `game.travel(6, 'from-hub')`, then 3600 simulated frames
+  // sampling every NPC's own position every 30th frame) swept candidate points on the open floor against
+  // every one of this wood's physics boxes and every one of those samples: (24, -18) came back clearest
+  // of the lot — 8.85 m from the nearest other box and 10.0 m from the nearest wandering soul — well
+  // south-east of the fairy ring (0, 0, r18) and clear of the hollow oak's own path (the `zones.addSpan`
+  // strip below, -3..3 in x).
+  { const lpx = 24, lpz = -18;
+    const pile = makeLeafPile(r); placeT(game, U, pile, lpx, lpz, r() * TAU);
+    boxT(game, lpx, lpz, 0.8, 0.4, 0.8, { cam: false });
+    const kx = lpx - 1.4, kz = lpz - 1.8;
+    const rakeWard = makeWardrobe(r, { shirts: [0xd9822b, 0x5a8a4a, 0x8a5a3a] });
+    const raker = makeHuman({ ...randomPerson(r, { child: true, female: r.chance(0.5), wardrobe: rakeWard }), backpack: null });
+    W.add(raker.group);
+    game.npcs.push(new Kneeler(game, raker, { x: kx, z: kz, ry: atan2(lpx - kx, lpz - kz),
+      cries: ["Pile's nearly big enough — one good jump would ruin it, mind.", 'Careful, puss — four hours of raking, don\'t you dare.', 'Every leaf in this whole glade ends up here eventually.'] })); }
 
   forestRegion(game, U, r, 58, WOODS_LIMIT - 8);
   makeHorizon(game, r, { clear: WOODS_LIMIT + 8, hills: true, hill: 0x2f4a30, rock: 0x3a4a3a, rock2: 0x44505a, snow: 0xdfe8f0, snowLine: 52, peaks: 28, woodCount: 460, woodBand: 44, woodHue: [0.26, 0.36], woodLight: [0.1, 0.2], trunk: 0x3a2a1c });
