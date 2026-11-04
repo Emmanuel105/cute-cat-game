@@ -10287,7 +10287,22 @@ function buildNeighborhood(game, entry) {
       const period = 4.2, cyc = (t % period) / period, pop = cyc <= 0.5 ? 0 : sin((cyc - 0.5) * 2 * PI);
       mole.position.y = -0.18 + pop * 0.2;
       mole.rotation.y = pop > 0.3 ? sin(t * 3) * 0.4 * pop : 0;
-    }); }
+    });
+    // round 577 left the mole purely ambient — "no greeting" — the same gap every other bare `Hopper`
+    // critter in this game shipped with at some point, except the mole isn't even a `Hopper`: it's a
+    // hand-built group whose x/z never move at all, only `mole.position.y` bobbing it in and out of the
+    // burrow on the world clock. That makes it an easier target than any wandering creature: `interactables`
+    // only ever compares x/z (`game.loop`'s own `dist2(pos.x, pos.z, ...)` above), so the prompt sits
+    // still right over the burrow whether the mole is up or down, same footing as the hollow log's own
+    // hedgehog (round 750), which answers the cat whether its `Hopper` has it poking out or pulled back in.
+    // No new mesh, no new physics box: `game.namedFriend('mole')` plus a `game.addInteractable` keyed to
+    // `mole` itself, radius 1.0 m — smaller than the usual 2.1 m `Hopper`-creature greet circle, since this
+    // spot sits only 0.425 m clear of the scarecrow's own 2.2 m look radius at (14.5, -16.6) and tighter
+    // keeps most of the overlap out; what's left resolves the same way the hare's own prompt and the
+    // scarecrow's already do a few lines up, `game.loop`'s nearest-interactable search always preferring
+    // whichever centre is closer.
+    const moleId = game.namedFriend('mole');
+    game.addInteractable({ obj: mole, radius: 1.0, label: () => 'Say hello to the mole', onUse: () => { game.befriend(moleId); SFX.chitter(); game.hearts(mx, 0.1, mz, 3); game.toast('🕳️ *freezes mid-hitch, whiskers twitching, then drops straight back down the hole*'); } }); }
   // the field ladybug (round 461) and the hare and mole both already work this yard, but nothing has
   // ever actually sat on the vegetable patch's own leaves, the one spot a real pest would be. A
   // grasshopper now perches on one of the patch's own carrot leaves, hind legs cocked, antennae

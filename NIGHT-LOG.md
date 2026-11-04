@@ -24733,3 +24733,30 @@ unchanged at 329 (no new collider, as expected), and Whisper Woods' own friend c
 stub-three test suite confirmed the fourth interactable fires independently of the other three and
 all four fairies' own positions stay finite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 900 — the Neighborhood's mole finally meets the cat
+
+Round 577 gave the vegetable patch a mole that hitches itself out of its burrow every few seconds and
+ducks back down, but left it "pure ambient set dressing... no greeting" — the same gap this game's
+other bare wildlife (the hare, the raccoon, Robot City's factory mouse, the hollow log's own hedgehog)
+has shipped with at some point before a later round wired it up. **The cat succeeds where every other
+visitor to this yard has just walked past.** *"🕳️ freezes mid-hitch, whiskers twitching, then drops
+straight back down the hole."*
+
+The mole was never a `Hopper` to begin with — it's a hand-built group whose x/z never move at all,
+only its own `position.y` bobbing it in and out of the burrow on the world clock, with no `rnd()` draw
+either way. That makes it an easier target than any wandering creature: `game.loop`'s nearest-
+interactable search only ever compares x/z, so a prompt keyed to the mole's own group sits still right
+over the burrow whether it's up or down — same footing as the hollow log's hedgehog, which answers the
+cat whether its own `Hopper` has it poking out or pulled back in. No new mesh, no new physics box:
+`game.namedFriend('mole')` plus a `game.addInteractable` on the mole's own group, radius 1.0 m —
+smaller than the usual 2.1 m `Hopper`-creature greet circle, since round 577's own placement notes put
+this spot only 0.425 m clear of the scarecrow's own 2.2 m look radius at (14.5, -16.6); the tighter
+radius keeps most of the overlap out, and what's left resolves the same way the hare's own prompt and
+the scarecrow's already do a few lines up, the nearest centre always winning.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329 (no new physics box) and the Neighborhood's own friend count rose from 87 to 88, its
+walkable-ground percentage holding at 96%. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite described above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
