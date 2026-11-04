@@ -25069,3 +25069,30 @@ tiger beetle) already use, since the dragonfly has none of its own.
 via `git stash`). No visual check was possible in this environment (no browser, no Playwright) —
 only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 913 — Whisper Woods' pond dragonflies get their own "say hello"
+
+Round 912's own log named this pond trio as the other half of the pair — the canal's three
+dragonflies and the glowing pond's own three, both darting low over the water since the rounds that
+planted them, neither with a member who'd answer the cat. That round only closed the canal half.
+Whisper Woods' own three, looping over the glowing pond since this world's build, were still
+loop-only scenery. **The first of the pond's three now answers the cat too.** *"*skims a tight
+circle just above the glow, then peels back out over the pond*"*
+
+The usual pattern, reused once more: the build's own `for (let i = 0; i < 3; i++)` loop over
+`makeDragonfly()` + `Flyer` (74-world-forest.js, right after the pond's drake and hen) now also
+captures its first iteration's rig into `friendlyPondDragonfly`, and one `game.addInteractable`
+keys off `friendlyPondDragonfly.group` directly with its own `game.namedFriend('pond-dragonfly')`
+id — distinct from the canal's own `dragonfly` id so the two never collide. `Flyer`'s own
+constructor already calls `game.world.add(rig.group)` itself, so no extra scene-graph wiring was
+needed, and the proximity check only compares `x`/`z`, so the usual 2.1 m radius still catches the
+cat passing underneath while this one darts 0.3-0.55 m up over the already-documented clear band
+between the duck ring (2.3 m) and the reeds (past 5.0 m). No new physics box, no clearance probe
+needed — `Flyer` never touches the physics grid, same as every earlier flock credit. Reused
+`SFX.twinkle()`, the same cue the Victorian dragonfly and every other small flying/iridescent
+critter in the game already uses.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329, and Whisper Woods' own friend count rose from 126 to 127. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
