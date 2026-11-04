@@ -24760,3 +24760,32 @@ unchanged at 329 (no new physics box) and the Neighborhood's own friend count ro
 walkable-ground percentage holding at 96%. No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite described above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 901 — Whisper Woods' fifth and final loop-flying fairy becomes a friend
+
+Rounds 890, 897, 898 and 899 closed the first four of the glade's five loop-flying fairies with their
+own "Say hello to the fairy" prompt, each stacking on a distinct `game.namedFriend` id; the fifth and
+last (`i===4` in the same build loop) was still the one holdout. **She's met now too** — *"That's all
+five of us met. The sleeping one in the bud still doesn't count — she's shy."* (a nod to the separate,
+already-greetable fairy asleep in the flower bud elsewhere in this world, so nobody mistakes this for
+a sixth).
+
+Identical pattern to the previous four rounds: the fairy-building loop in `buildForest()`
+(74-world-forest.js) now also captures its fifth iteration's rig into `friendlyFairy5`, and a fifth
+`game.addInteractable` keys off `friendlyFairy5.group` directly with its own `game.namedFriend('fairy-5')`
+id, so all five stack rather than overwrite each other. `Flyer`'s own constructor already calls
+`game.world.add(rig.group)` itself, so nothing extra was needed for the scene-graph check, and the
+loop's own `r.pick()`/`r.range()` draws are unchanged — only a capture and an interactable were added
+after the loop runs, so no later seeded pick in this world's build shifted. All five loop-flying
+fairies are now greetable; only the sleeping bud fairy (a separate character, already wired) remains
+outside this set.
+
+`node dimension-cat/test/run.mjs` ran clean across four repeats: exit 0, all checks `ok`, 0 console
+warnings, box count unchanged at 329 (no new collider, as expected), and Whisper Woods' own friend
+count rose from 123 to 124. One run hit exit 1 on an unrelated check (the Victorian horse-and-carriage
+missing its own timing window) with every other check still `ok` — the same pre-existing flaky
+frame-count race this log has noted before — and cleared on the next run with no change to this file.
+No visual check was possible in this environment (no browser, no Playwright) — only the stub-three
+test suite confirmed the fifth interactable fires independently of the other four and all five
+fairies' own positions stay finite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.
