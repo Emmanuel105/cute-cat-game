@@ -24892,3 +24892,28 @@ warnings, box count unchanged at 329, and the Neighborhood's own friend count ro
 (confirmed against the pre-change build via `git stash`). No visual check was possible in this
 environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 906 — Frosty Peak's snow buntings get their own "say hello"
+
+Same gap, one world later: Candy Land's butterflies, Whisper Woods' fairies, Robot City's
+drone-flies and the Neighborhood's crows have all had a flock member step up and meet the cat, but
+Frosty Peak's own six snow buntings — wheeling white-and-dark over the village square since they
+were added — were still loop-only scenery. **The first of the six now answers the cat too.** *"*dips
+low over the square, gives a quick chirp, and climbs back into the flock*"*
+
+The exact crow/drone-fly pattern: the build's own `for (let i = 0; i < 6; i++)` loop over
+`makeSnowBird()` + `Flyer` (73-world-snow.js, the village build function) now also captures its first
+iteration's rig into `friendlySnowBird`, and one `game.addInteractable` keys off
+`friendlySnowBird.group` directly with its own `game.namedFriend('snow-bird')` id. `Flyer`'s own
+constructor already calls `game.world.add(rig.group)` itself, so no extra scene-graph wiring was
+needed, and the proximity check only compares `x`/`z`, so the usual 2.1 m radius still catches the
+cat passing underneath while this one loops 14-22 m up. No new physics box, no clearance probe needed
+— `Flyer` never touches the physics grid, same as every earlier flock credit. Reused `SFX.peck()` for
+the chirp (already a small bird's own sound, otherwise only heard from the forest woodpecker) since
+no dedicated bunting sound exists.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329, and Frosty Peak's own friend count rose from 111 to 112 (confirmed against the
+pre-change build via `git stash`). No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

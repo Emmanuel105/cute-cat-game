@@ -22537,7 +22537,20 @@ function buildSnowVillage(game, entry) {
   // wingtips and tail. Reuses the Flyer controller exactly as those other flocks do: it never touches the
   // ground or the physics grid, so (like the Candy Land butterflies) this needed no headless clearance
   // probe. Centred on the village square and high enough to clear the cabins and the zipline towers.
-  for (let i = 0; i < 6; i++) { const rig = makeSnowBird({ phase: i * 1.1 }); game.npcs.push(new Flyer(game, rig, { cx: 0, cz: 6, r: r.range(16, 30), h: r.range(14, 22), speed: r.range(1.6, 2.4), bob: 0.5, wobble: 1.4, cw: i % 2 === 0, phase: i * 1.1 })); }
+  // every other world's own flock gets a "say hello" eventually (Whisper Woods' fairies, Robot City's
+  // drone-flies, the Neighborhood's crows) — these six snow buntings had wheeled the village sky
+  // loop-only since they were added. First of the six now answers too, the exact same pattern:
+  // `Flyer`'s own constructor already calls `game.world.add(rig.group)` itself, so no extra scene-graph
+  // wiring, and the proximity check only compares x/z, never height, so the usual 2.1 m radius still
+  // catches the cat passing underneath while this one loops 14-22 m up. Reuses `SFX.peck()` (already a
+  // small bird's own chirp, just used for the woodpecker's pecking elsewhere) — no dedicated bunting
+  // sound exists.
+  let friendlySnowBird = null;
+  for (let i = 0; i < 6; i++) { const rig = makeSnowBird({ phase: i * 1.1 }); game.npcs.push(new Flyer(game, rig, { cx: 0, cz: 6, r: r.range(16, 30), h: r.range(14, 22), speed: r.range(1.6, 2.4), bob: 0.5, wobble: 1.4, cw: i % 2 === 0, phase: i * 1.1 })); if (i === 0) friendlySnowBird = rig; }
+  { const snowBirdId = game.namedFriend('snow-bird');
+    game.addInteractable({ obj: friendlySnowBird.group, radius: 2.1, label: () => 'Say hello to the snow bunting', onUse: () => {
+      game.befriend(snowBirdId); SFX.peck(); game.hearts(friendlySnowBird.group.position.x, friendlySnowBird.group.position.y, friendlySnowBird.group.position.z, 3);
+      game.toast('🐦 "*dips low over the square, gives a quick chirp, and climbs back into the flock*"'); } }); }
   // the Neighborhood's got its signpost, Candy Land its wishing well, Robot City a statue and now a
   // vending machine, Victorian a postbox and a clock tower, Sunny Shore a lighthouse — every other world
   // has at least one thing somebody clearly made on purpose, standing still, just to be looked at. Frosty
