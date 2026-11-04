@@ -24868,3 +24868,27 @@ warnings, box count unchanged at 329, and Robot City's own friend count rose fro
 against the pre-change build via `git stash`). No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 905 — the Neighborhood's crows get their own "say hello"
+
+Every other world's own flock gets this treatment eventually — Whisper Woods' fairies, Robot City's
+drone-flies, Sunny Shore's gulls — but the Neighborhood's own little murder of six crows, wheeling
+high over the street since they were first added, had stayed loop-only scenery the whole time.
+**The first of the six now answers the cat too.** *"*wheels once overhead, lets out a sharp caw, and
+falls back into formation*"*
+
+The exact drone-fly/fairy pattern from rounds 890-901/904: the build's own `for (let i = 0; i < 6;
+i++)` loop over `makeCrow()` + `Flyer` (70-worlds.js, `buildNeighborhood`) now also captures its
+first iteration's rig into `friendlyCrow`, and one `game.addInteractable` keys off
+`friendlyCrow.group` directly with its own `game.namedFriend('crow')` id, reusing `SFX.squawk()` for
+the caw (no dedicated crow sound exists). `Flyer`'s own constructor already calls
+`game.world.add(rig.group)` itself, so no extra scene-graph wiring was needed, and the proximity
+check only compares `x`/`z`, so the usual 2.1 m radius still catches the cat passing underneath while
+this one loops 11-15 m up. No new physics box, no clearance probe needed — `Flyer` never touches the
+physics grid, same as every earlier flock credit.
+
+`node dimension-cat/test/run.mjs` ran clean across four repeats: exit 0, all checks `ok`, 0 console
+warnings, box count unchanged at 329, and the Neighborhood's own friend count rose from 88 to 89
+(confirmed against the pre-change build via `git stash`). No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
