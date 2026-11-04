@@ -24942,3 +24942,30 @@ warnings, box count unchanged at 329, and Victorian's own friend count rose from
 (confirmed against the pre-change build via `git stash`). No visual check was possible in this
 environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 908 — Candy Land's own butterflies finally get their own "say hello"
+
+Last round's own write-up claimed Candy Land's butterflies already had this treatment — they
+don't. That credit belongs to the *outer-country* butterflies in `68-regions.js` (round 826 and
+after), a different, unrelated loop that only happens to share the same `makeButterfly()` rig;
+Candy Land's own six, looping over the castle's open heart since round 263 — the oldest flock in
+the whole game — had stayed loop-only scenery the entire time, same gap as the crows, drone-flies,
+snow buntings and doves before they got fixed. **The first of the six now answers the cat too.**
+*"*loops once around the cat's ears, dusted pink, then drifts back over the gumdrops*"*
+
+The usual pattern: the build's own `for (let i = 0; i < 6; i++)` loop over `makeButterfly()` +
+`Flyer` (70-worlds.js, `buildCandyLand`) now also captures its first iteration's rig into
+`friendlyButterfly`, and one `game.addInteractable` keys off `friendlyButterfly.group` directly
+with its own `game.namedFriend('candy-butterfly')` id — distinct from the outer-country
+butterflies' own ids so the two never collide. `Flyer`'s own constructor already calls
+`game.world.add(rig.group)` itself, so no extra scene-graph wiring was needed, and the proximity
+check only compares `x`/`z`, so the usual 2.1 m radius still catches the cat passing underneath
+while this one loops 1.2-2.4 m up. No new physics box, no clearance probe needed — `Flyer` never
+touches the physics grid, same as every earlier flock credit. Reused `SFX.twinkle()`, the exact
+sound the outer-country butterflies already use, since nothing here has a voice of its own.
+
+`node dimension-cat/test/run.mjs` ran clean across two repeats: exit 0, all checks `ok`, 0 console
+warnings, box count unchanged at 329, and Candy Land's own friend count rose from 97 to 98
+(confirmed against the pre-change build via `git stash`). No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
