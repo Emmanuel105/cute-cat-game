@@ -25043,3 +25043,29 @@ nearest wandering soul — well south-east of the fairy ring and clear of the ho
 Whisper Woods' own friend count rose from 125 to 126. No visual check was possible in this
 environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 912 — Victorian's canal dragonflies get their own "say hello"
+
+The canal's trio of dragonflies has darted low over the water since the round that planted them —
+same as Whisper Woods' own pond trio — but neither group ever got a member who'd answer the cat,
+unlike every other flock in the game by now (crows, doves, snow buntings, seagulls, both sets of
+butterflies). **The first of the canal's three now does.** *"*hovers a beat above the water, wings
+flashing, then zips back out over the reach*"*
+
+The usual pattern, reused once more: the build's own `for (let i = 0; i < 3; i++)` loop over
+`makeDragonfly()` + `Flyer` (70-worlds.js, `buildVictorian`) now also captures its first
+iteration's rig into `friendlyDragonfly`, and one `game.addInteractable` keys off
+`friendlyDragonfly.group` directly with its own `game.namedFriend('dragonfly')` id. `Flyer`'s own
+constructor already calls `game.world.add(rig.group)` itself, so no extra scene-graph wiring was
+needed, and the proximity check only compares `x`/`z`, so the usual 2.1 m radius still catches the
+cat passing underneath while this one darts 0.25-0.45 m up over the already-documented clear reach
+between the main bridge and the duck pair's swim lane. No new physics box, no clearance probe
+needed — `Flyer` never touches the physics grid, same as every earlier flock credit. Reused
+`SFX.twinkle()`, the same cue the game's other small flying/iridescent critters (butterflies, the
+tiger beetle) already use, since the dragonfly has none of its own.
+
+`node test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at
+329, and Victorian's own friend count rose from 116 to 117 (confirmed against the pre-change build
+via `git stash`). No visual check was possible in this environment (no browser, no Playwright) —
+only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.
