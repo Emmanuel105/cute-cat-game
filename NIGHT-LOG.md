@@ -24917,3 +24917,28 @@ unchanged at 329, and Frosty Peak's own friend count rose from 111 to 112 (confi
 pre-change build via `git stash`). No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 907 — Victorian's doves get their own "say hello"
+
+Same gap, one more world: Candy Land's butterflies, Robot City's drone-flies, the Neighborhood's
+crows and Frosty Peak's snow buntings have all had a flock member step up and meet the cat, but
+Victorian's five doves over the market square — only recently added to give the town a flock of its
+own — were still loop-only scenery. **The first of the five now answers the cat too.** *"*dips low
+over the square, coos once, and climbs back into the loop*"*
+
+The exact crow/drone-fly/snow-bunting pattern: the build's own `for (let i = 0; i < 5; i++)` loop
+over `makeDove()` + `Flyer` (70-worlds.js, `buildVictorian`) now also captures its first iteration's
+rig into `friendlyDove`, and one `game.addInteractable` keys off `friendlyDove.group` directly with
+its own `game.namedFriend('dove')` id. `Flyer`'s own constructor already calls
+`game.world.add(rig.group)` itself, so no extra scene-graph wiring was needed, and the proximity
+check only compares `x`/`z`, so the usual 2.1 m radius still catches the cat passing underneath while
+this one loops 7-12 m up. No new physics box, no clearance probe needed — `Flyer` never touches the
+physics grid, same as every earlier flock credit. Reused `SFX.peck()` for the coo (already a small
+bird's own soft sound, otherwise only heard from the forest woodpecker and Frosty Peak's snow
+bunting) since no dedicated dove sound exists.
+
+`node dimension-cat/test/run.mjs` ran clean across two repeats: exit 0, all checks `ok`, 0 console
+warnings, box count unchanged at 329, and Victorian's own friend count rose from 115 to 116
+(confirmed against the pre-change build via `git stash`). No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
