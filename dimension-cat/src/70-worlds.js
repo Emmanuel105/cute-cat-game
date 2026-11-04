@@ -8802,6 +8802,28 @@ function buildVictorian(game, entry) {
     const cv = new Vendor(game, crier, bell, { x: cxp, z: czp, ry, cryIcon: '🔔',
       cries: ['Oyez, oyez! All is well in the square!', 'Hear ye! A strange cat seen prowling the cobbles!', "Oyez! Nothing further to report. Oyez."] });
     game.npcs.push(cv); greetable(game, cv); }
+  // the newsboy works one corner where the lane meets the square and the crier works another, but no
+  // one in this whole town has ever claimed to know what happens next. A fortune teller now stands on
+  // the square's quiet south-east corner, a glowing crystal ball held up in one hand. New
+  // `makeCrystalBall()` (`60-props.js`, right after `makeToffeeApples`): a small brass ring cradling a
+  // glowing violet glass sphere, the same `glowMat` + `transparent` trick the campfire's own flame
+  // already uses. No new controller — `Vendor` again, exactly as the newsboy and crier already reuse
+  // it, so she gets the same periodic cry and, via `greetable()` afterwards, the same generic "say
+  // hello" friend credit — no custom `onUse` needed.
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses, with the real town built
+  // by chaining `game.travel(1/2/3, 'from-prev')` through the hub exactly as a real playthrough would)
+  // swept the open paving south-east of the fountain, outside its own 17 m circle and clear of both
+  // stall keepers already there: (25, -42) came back clear by 11.6 m of the nearest physics box and
+  // 14.9 m of the nearest wandering soul, flat ground, outside every one of `game.zones`' own rects
+  // and circles.
+  { const fx = 25, fz = -42, ry = atan2(-fx, -34 - fz);
+    const ftWard = makeWardrobe(r, { shirts: [0x6a2a7a], pants: [0x3a1a4a], shoes: [0x2a2018] });
+    const fortuneTeller = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: r.chance(0.5), wardrobe: ftWard }),
+      sleeves: true, dress: 0x6a2a7a, sash: 0xd4af37, scarf: 0xaa3a8a, glasses: false });
+    W.add(fortuneTeller.group);
+    const ft = new Vendor(game, fortuneTeller, makeCrystalBall(), { x: fx, z: fz, ry, cryIcon: '🔮',
+      cries: ["Cross my palm... oh, no pockets. I'll allow it, just this once.", 'The crystal shows a long, pampered life. For the cat, mostly.', 'I foresee... fish. Always fish, with you lot.'] });
+    game.npcs.push(ft); greetable(game, ft); }
   // Candy Land, Sunny Shore, Frosty Peak and Whisper Woods all have something looping overhead by now
   // (butterflies, gulls, snow buntings, fairies and more butterflies) — Victorian's own sky over the market
   // square had nothing in it at all. Five doves now wheel above the square, white against the dusk sky, the

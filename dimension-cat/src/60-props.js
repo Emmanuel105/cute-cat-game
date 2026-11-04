@@ -618,6 +618,14 @@ function makeToffeeApples() {
   }
   return g;
 }
+/** A fortune teller's crystal ball: a glowing glass sphere cradled in a small brass ring on a turned base, for her to hold up in one hand. */
+function makeCrystalBall() {
+  const g = new THREE.Group(), brass = mat(0xc9a84a, { metalness: 0.6, roughness: 0.3 });
+  mesh(G.cyl(0.075, 0.09, 0.025, 14), brass, { y: 0.0125, parent: g });                                                 // base
+  noInk(mesh(G.torus(0.07, 0.01, 6, 16), brass, { y: 0.08, rx: PI / 2, parent: g }));                                   // ring cradle
+  mesh(G.sphere(0.085, 16, 12), glowMat(0x9a5adf, 0.55, { transparent: true, opacity: 0.82 }), { y: 0.14, shadow: 'none', parent: g });
+  return g;
+}
 /** A free-standing coin-op gumball machine: a red cabinet, a glass globe packed with gumballs, a chrome collar and cap. */
 function makeGumballMachine(r) {
   const g = new THREE.Group();

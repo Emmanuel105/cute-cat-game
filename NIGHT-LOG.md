@@ -24818,3 +24818,30 @@ No visual check was possible in this environment (no browser, no Playwright) —
 test suite confirmed the fifth interactable fires independently of the other four and all five
 fairies' own positions stay finite. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 903 — Victorian finally gets a fortune teller
+
+Newsboy, town crier, chimney sweep, bootblack — the market square has had plenty of trades by now,
+but nobody in the whole town has ever claimed to know what happens next. **A fortune teller now
+stands on the square's quiet south-east corner, a glowing crystal ball held up in one hand.**
+*"Cross my palm... oh, no pockets. I'll allow it, just this once."* *"I foresee... fish. Always
+fish, with you lot."*
+
+New `makeCrystalBall()` (`60-props.js`, right after `makeToffeeApples`): a small brass ring cradling
+a glowing violet glass sphere, the same `glowMat` + `transparent` trick the campfire's own flame
+already uses. No new controller — she's a plain `Vendor`, exactly like the newsboy and the crier
+already are, so she gets the same periodic cry and, via `greetable()` straight after, the same
+generic "say hello" friend credit — no custom `onUse` needed, no new physics box either.
+
+Placement used a headless probe (the stub-three harness `test/run.mjs` itself uses, with the real
+town built by chaining `game.travel(1/2/3, 'from-prev')` through the hub exactly as a real
+playthrough would): swept the open paving south-east of the fountain, outside its own 17 m circle
+and clear of both stall keepers already on that side of the square. `(25, -42)` came back clear by
+11.6 m of the nearest physics box and 14.9 m of the nearest wandering soul, flat ground, outside
+every one of `game.zones`' own rects and circles.
+
+`node dimension-cat/test/run.mjs` ran clean across three repeats: exit 0, all checks `ok`, 0 console
+warnings, box count unchanged at 329 (no new collider, as expected), and Victorian's own friend count
+rose from 114 to 115. No visual check was possible in this environment (no browser, no Playwright) —
+only the stub-three test suite described above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
