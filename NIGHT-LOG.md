@@ -25096,3 +25096,31 @@ critter in the game already uses.
 unchanged at 329, and Whisper Woods' own friend count rose from 126 to 127. No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 914 — Whisper Woods' oak bats get their own "say hello"
+
+The hollow oak's three bats (round 913's predecessor round before it) have circled the treetop
+since they were planted, a plain `Flyer` loop like Victorian's belfry trio — but Victorian's own
+canal dragonflies and this wood's own pond dragonflies both picked up a "say hello" member in the
+last two rounds, and by now every other flock in the game (crows, doves, snow buntings, seagulls,
+both sets of butterflies, both sets of dragonflies) answers the cat the same way. **The first of
+the oak's three bats now does too.** *"*loops once, lower than it needs to, then straight back up
+into the leaves*"*
+
+The usual pattern: the build's own `for (let bi = 0; bi < 3; bi++)` loop over `makeBat()` +
+`Flyer` (74-world-forest.js, right after the pond's own dragonflies) now also captures its first
+iteration's rig into `friendlyOakBat`, and one `game.addInteractable` keys off `friendlyOakBat.group`
+directly with its own `game.namedFriend('oak-bat')` id. `Flyer`'s own constructor already calls
+`game.world.add(rig.group)` itself, so no extra scene-graph wiring was needed, and the proximity
+check only compares `x`/`z`, so the usual 2.1 m radius still catches the cat passing underneath the
+oak even though the bats loop a full 10.2 m up — the canopy here sits a third as high as Victorian's
+belfry trio (still left alone, at sixty feet, as a plain loop), so the same treatment reads fine. No
+new physics box, no clearance probe needed — `Flyer` never touches the physics grid, same as every
+earlier flock credit. Reused `SFX.chitter()`, the same small-creature cue the hare, mole, grasshopper
+and raccoon greetings already use, since the bat has none of its own.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329, and Whisper Woods' own friend count rose from 127 to 128 (confirmed against the
+pre-change build via `git stash`). No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

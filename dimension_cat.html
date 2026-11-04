@@ -26126,8 +26126,7 @@ function buildForest(game, entry) {
   // something living up in the dark since early on, but the hollow oak itself — this wood's own home
   // portal, standing since world 6 was first built — never got a single thing roosting in its own
   // canopy. **Three bats now circle just above the oak's own treetop**, flitting the same wingbeat
-  // loop the Neighborhood's dusk sky and Victorian's belfry already use. No dialogue, no new mesh:
-  // like those two, they're a plain `Flyer` loop, not a greetable soul.
+  // loop the Neighborhood's dusk sky and Victorian's belfry already use.
   //
   // Reuses `makeBat()` (56-npcs-wild.js) and the exact same `Flyer` controller (`cx`, `cz`, `r`, `h`,
   // `speed`, `bob`, `wobble`, `phase`, `cw`) the pond's own dragonflies, the glade's fairies and the
@@ -26141,16 +26140,30 @@ function buildForest(game, entry) {
   // itself lifted onto the terrain by `oak.position.y` below, so the two line up without any extra
   // adjustment for this slope.
   //
+  // Unlike the Victorian belfry trio (still a plain, ungreetable loop up at sixty feet), Victorian's
+  // canal dragonflies and this wood's own pond dragonflies both picked up a "say hello" member in the
+  // last two rounds, and every other flock in the game by now answers the cat the same way. The
+  // canopy here sits low enough (h=10.2, a third the belfry's height) that the same treatment reads
+  // fine: the first of the three now does too, same `addInteractable` keyed off its own rig, same
+  // 2.1 m radius every other flyer-friend already uses (the proximity check only compares `x`/`z`, so
+  // the cat catches it passing underneath the oak same as every dragonfly/butterfly credit before it).
+  //
   // Built dead last, right after the pond's own stone skipper and right before `forestRegion()`, for
   // the reason every other addition at the end of a world's build function already gives: `Flyer`'s
   // own constructor draws unconditionally from the *shared* `rnd()` sequence, and anything built
   // earlier in this wood would have had its own timing-sensitive pick shifted by it. `forestRegion()`,
   // `makeHorizon()`, `makeHollowOak()` and `makeDayNight()` below draw only from this wood's own seeded
   // `r()` or nothing at all, never the shared `rnd()`, so nothing after this point shifts either.
+  let friendlyOakBat = null;
   for (let bi = 0; bi < 3; bi++) {
     const batRig = makeBat({ phase: bi * 2.1 });
     game.npcs.push(new Flyer(game, batRig, { cx: 0, cz: 50, r: 1.6, h: 10.2, speed: 1.6 + bi * 0.3, bob: 0.3, wobble: 0.5, cw: bi % 2 === 0, phase: bi * 2.1 }));
+    if (bi === 0) friendlyOakBat = batRig;
   }
+  { const oakBatId = game.namedFriend('oak-bat');
+    game.addInteractable({ obj: friendlyOakBat.group, radius: 2.1, label: () => 'Say hello to the bat', onUse: () => {
+      game.befriend(oakBatId); SFX.chitter(); game.hearts(friendlyOakBat.group.position.x, friendlyOakBat.group.position.y, friendlyOakBat.group.position.z, 3);
+      game.toast('🦇 "*loops once, lower than it needs to, then straight back up into the leaves*"'); } }); }
   // the grasshopper (round 880) proved this wood's own forest floor can host a "perched; only animates"
   // critter with no new controller at all, but nothing in this whole game had ever been a caterpillar —
   // not even the ladybug's long line of beetle cousins covers it. **One now rides a leaf on the forest
