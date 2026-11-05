@@ -25472,3 +25472,23 @@ pond's three dragonflies is still a silent orbit.
 count unchanged at 329. No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 929 — Whisper Woods' third pond dragonfly gets its own "say hello"
+
+Round 928 wired up the glowing pond's second dragonfly and closed with a note that the third of the
+trio was still circling in silence. **That last dragonfly now answers back too, finishing the set.**
+*"flickers sideways over the glow, then settles back into the circling trio"*
+
+Same mechanism as its two orbit-mates: the pond's own `for (let i = 0; i < 3; i++)` loop over
+`makeDragonfly()` + `Flyer` (74-world-forest.js, `buildForest`) now also captures its third
+iteration's rig into `thirdPondDragonfly`, and a third `game.addInteractable` keys off that group
+directly with its own `game.namedFriend('pond-dragonfly-3')` id. No new mesh, no new physics box,
+no new `rnd()` draw from this world's own seeded `r` — the capture calls nothing, so nothing built
+later in this glade shifts. Same 2.1 m radius as the other two, which only compares x/z, so it still
+catches the cat passing underneath while this one darts its own 0.3–0.55 m up over the water. All
+three of the glowing pond's dragonflies now answer the cat.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 329, Whisper Woods' own friend count rose from 130 to 131. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
