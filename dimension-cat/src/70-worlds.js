@@ -10692,10 +10692,16 @@ function buildVictorian(game, entry) {
   // reason every other addition at the end of this function already gives: `Flyer`'s own constructor
   // draws unconditionally from the *shared* `rnd()` sequence, and anything built earlier in this town
   // would have had its own timing-sensitive pick shifted by it.
+  let friendlySouthBee = null;
   for (let bi = 0; bi < 2; bi++) {
     const southBeeRig = makeBee();
     game.npcs.push(new Flyer(game, southBeeRig, { cx: 24, cz: -6.4, r: 0.3, h: 2.62, speed: 1.6 + bi * 0.3, bob: 0.05, wobble: 0.12, cw: bi % 2 === 0, phase: bi * 2.6 + 3.3 }));
+    if (bi === 0) friendlySouthBee = southBeeRig;
   }
+  { const southBeeId = game.namedFriend('south-bee');
+    game.addInteractable({ obj: friendlySouthBee.group, radius: 2.1, label: () => 'Say hello to the bee', onUse: () => {
+      game.befriend(southBeeId); SFX.twinkle(); game.hearts(friendlySouthBee.group.position.x, friendlySouthBee.group.position.y, friendlySouthBee.group.position.z, 3);
+      game.toast('🐝 "*loops once over the basket, then straight back into its circle*"'); } }); }
   // the east, west, dead-centre and south baskets all got their own bees above; `vicLamps[9]` (x=45,
   // z=-6.4, basketHues[9 % 4] = the same amber/gold hue as `vicLamps[1]` and `vicLamps[5]`, the
   // plaza-side basket three strides from the clock tower whose own "look" prompt already shares a 0.9

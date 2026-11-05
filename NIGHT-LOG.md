@@ -25289,3 +25289,26 @@ mid-fence, fence, east-row) are still silent orbits.
 count unchanged at 329, and Victorian's own friend count rose from 120 to 121. No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 921 — Victorian's south-pavement basket's bees get their own "say hello"
+
+The east, west, dead-centre and south-of-the-square baskets' bees had all picked up their own "say
+hello" by round 920, but the south pavement's own basket — `vicLamps[7]` (x=24, z=-6.4), the one
+whose "look" prompt points across the street at the sleeping cat on the terrace window ledge — still
+had its pair of bees circling in silence. **That pair now answers back too.** *"loops once over the
+basket, then straight back into its circle"*
+
+Same trick as every basket before it: the south basket's own `for (let bi = 0; bi < 2; bi++)` loop
+over `makeBee()` + `Flyer` (70-worlds.js, `buildVictorian`) now captures its first iteration's rig
+into `friendlySouthBee`, and one `game.addInteractable` keys off its group directly with its own
+`game.namedFriend('south-bee')` id. No new mesh, no new physics box, no new `rnd()` draw — the
+capture calls nothing, so the shared sequence every later pick in this town depends on stays
+untouched. The prompt's usual 2.1 m radius overlaps the basket's own tighter 0.9 m "look" prompt at
+the same spot; the HUD's nearest-interactable rule sorts out which one shows, same as at the other
+baskets. Five baskets' worth of bees (plaza, westmost, mid-fence, fence, east-row) are still silent
+orbits.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 329. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
