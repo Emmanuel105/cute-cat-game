@@ -10838,17 +10838,39 @@ function buildVictorian(game, entry) {
   // it out even at ground level, a wandering gentleman's own home spot sitting well under a metre off,
   // and a bee circling 2.62 m up buys nothing there since that gentleman himself is the obstacle, not
   // the fence.
+  // Eight of the eleven baskets' bees had picked up their own "say hello" by round 925 (east, west,
+  // dead-centre, south, plaza, westmost, mid-fence and south-pavement-fence); the east-row basket here,
+  // `vicLamps[6]` (x=13.5, z=6.4, the dusty-rose basket on the north-row house's own fence), still had
+  // its pair circling in silence. **That pair now answers back too.**
+  //
+  // Same trick as every basket before it: the east-row basket's own `for (let bi = 0; bi < 2; bi++)`
+  // loop over `makeBee()` + `Flyer` now captures its first iteration's rig into `friendlyEastRowBee`,
+  // and one `game.addInteractable` keys off its group directly with its own
+  // `game.namedFriend('east-row-bee')` id. No new mesh, no new physics box, no new `rnd()` draw — the
+  // capture calls nothing, so the shared sequence every later pick in this town (the hedgehog built
+  // right after this loop, the watch-lamp bees and the squirrel) depends on stays untouched. The
+  // prompt's usual 2.1 m radius overlaps the basket's own tighter 0.9 m "look" prompt at the same spot;
+  // the HUD's nearest-interactable rule sorts out which one shows, same as at the other eight baskets.
+  // One basket's worth of bees (the watch-lamp one) is still a silent orbit; `vicLamps[2]` never got any
+  // bees at all.
+  //
   // No new mesh, no new physics box: the same `makeBee()` rig and `Flyer` controller the other eight
-  // baskets' bees already lean on, not a greetable soul.
+  // baskets' bees already lean on.
   //
   // Built dead last, right after the south-pavement-fence basket's own bees and right before the
   // squirrel, for the reason every other addition at the end of this function already gives: `Flyer`'s
   // own constructor draws unconditionally from the *shared* `rnd()` sequence, and anything built earlier
   // in this town would have had its own timing-sensitive pick shifted by it.
+  let friendlyEastRowBee = null;
   for (let bi = 0; bi < 2; bi++) {
     const eastRowBeeRig = makeBee();
     game.npcs.push(new Flyer(game, eastRowBeeRig, { cx: 13.5, cz: 6.4, r: 0.3, h: 2.62, speed: 1.6 + bi * 0.3, bob: 0.05, wobble: 0.12, cw: bi % 2 === 0, phase: bi * 2.6 + 8.8 }));
+    if (bi === 0) friendlyEastRowBee = eastRowBeeRig;
   }
+  { const eastRowBeeId = game.namedFriend('east-row-bee');
+    game.addInteractable({ obj: friendlyEastRowBee.group, radius: 2.1, label: () => 'Say hello to the bee', onUse: () => {
+      game.befriend(eastRowBeeId); SFX.twinkle(); game.hearts(friendlyEastRowBee.group.position.x, friendlyEastRowBee.group.position.y, friendlyEastRowBee.group.position.z, 3);
+      game.toast('🐝 "*loops once over the basket, then straight back into its circle*"'); } }); }
   // every other world long since got its own hedgehog — three marching in file through Whisper Woods
   // and a fourth poking its nose from a hollow log there — but Victorian, iron fences and hanging
   // baskets and all, never had one of its own. A hedgehog now snuffles through the long grass past

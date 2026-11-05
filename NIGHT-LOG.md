@@ -25403,3 +25403,27 @@ seven baskets. Two baskets' worth of bees (east-row, the watch-lamp one) are sti
 count unchanged at 329. No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 926 — Victorian's east-row flower-basket bees get their own "say hello"
+
+Eight of the eleven flower baskets' bees had picked up their own "say hello" by round 925 (east,
+west, dead-centre, south, plaza, westmost, mid-fence and south-pavement-fence), but the east-row
+basket — `vicLamps[6]` (x=13.5, z=6.4), the dusty-rose basket on the north-row house's own fence —
+still had its pair circling in silence. **That pair now answers back too.** *"loops once over the
+basket, then straight back into its circle"*
+
+Same trick as every basket before it: the east-row basket's own `for (let bi = 0; bi < 2; bi++)`
+loop over `makeBee()` + `Flyer` (70-worlds.js, `buildVictorian`) now captures its first iteration's
+rig into `friendlyEastRowBee`, and one `game.addInteractable` keys off its group directly with its
+own `game.namedFriend('east-row-bee')` id. No new mesh, no new physics box, no new `rnd()` draw —
+the capture calls nothing, so the shared sequence every later pick in this town (the hedgehog built
+right after this loop, the watch-lamp bees and the squirrel) depends on stays untouched. The
+prompt's usual 2.1 m radius overlaps the basket's own tighter 0.9 m "look" prompt at the same spot;
+the HUD's nearest-interactable rule sorts out which one shows, same as at the other eight baskets.
+One basket's worth of bees (the watch-lamp one) is still a silent orbit; `vicLamps[2]` never got any
+bees at all.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329. No visual check was possible in this environment (no browser, no Playwright) —
+only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.
