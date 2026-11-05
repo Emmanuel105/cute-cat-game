@@ -16809,6 +16809,38 @@ function buildRobotCity(game, entry) {
     const sweeperId = game.namedFriend('sweeperbot');
     game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the sweeper-bot', onUse: () => { game.befriend(sweeperId); SFX.beep(); game.hearts(rig.group.position.x, 0.3, rig.group.position.z, 3); game.toast('🤖 "*brush roller stutters to a stop, LED blinks twice, then rolls on sweeping*"'); } }); }
 
+  // the Neighborhood has had a paper-plane kid (`PaperPlaneKid`, 55-npcs.js: a folded-paper dart that
+  // glides out on a lerped arc and gets rebuilt for the next throw) since not long after this trick's
+  // sibling, the lake skipper, first spread to Candy Land and Victorian — but the kid never followed.
+  // **A boy now stands on the open factory floor folding and throwing paper planes, the only one on
+  // this concrete to fly without a rotor.** *"Folds a fresh one every throw — paws off, puss, that nose
+  // crease took three tries."* *"The robots glide on wheels. This one only glides when I throw it."*
+  // *"Longest flight yet — this floor's got updrafts no engineer ever installed."*
+  //
+  // No new controller and no new mesh asset: `PaperPlaneKid`'s own tiny folded-dart cone is built
+  // inline the same way the Neighborhood's already is, and its constructor calls `greetable()` itself,
+  // so a `makeHuman()` child rig needs no extra wiring to become a friend. The plane's own 3 m throw
+  // lands well inside the hand-built floor, short of the radius (98) where `robotRegion`'s own
+  // procedural fill takes over.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: built the real city via
+  // `game.load(2, 'from-prev')`, then 3600 simulated frames sampling every NPC's own position every
+  // frame) swept the open floor east of the spiderweb and north of the skyscraper ring: (20, 50) came
+  // back 2.4 m clear of the nearest physics box, 37.6 m clear of the nearest `game.zones` rect and
+  // never closer than 11.66 m to any wandering soul over the whole run. Facing south (ry = π) sends the
+  // plane's own landing spot to (20, 47), itself 5.4 m clear of the nearest box and 10.44 m clear of
+  // the nearest wandering soul — comfortably past the kid's own 0.4 m physics circle and 2.1 m greet
+  // radius alike.
+  //
+  // Built dead last, after the sweeper-bot above, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off this city's own shared `r()` sequence unconditionally, and anything
+  // built earlier would have had its own timing-sensitive pick shifted by it.
+  { const planeWard = makeWardrobe(r, { shirts: [0x40c4ff], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x3a2a1e, 0x2a2018] });
+    const planeKid = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, wardrobe: planeWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(planeKid.group);
+    game.npcs.push(new PaperPlaneKid(game, planeKid, { x: 20, z: 50, ry: PI,
+      cries: ["Folds a fresh one every throw — paws off, puss, that nose crease took three tries.", 'The robots glide on wheels. This one only glides when I throw it.', "Longest flight yet — this floor's got updrafts no engineer ever installed."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

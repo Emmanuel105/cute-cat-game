@@ -25580,3 +25580,27 @@ keeps its own 0.25-0.45 m bob over the reach, inside the already-documented clea
 unchanged at 329, Victorian's own friend count rose from 129 to 130. No visual check was possible in
 this environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 934 — Robot City gets its own paper-plane kid
+
+The Neighborhood has had a `PaperPlaneKid` (55-npcs.js: a folded-paper dart that glides out on a
+lerped arc, then gets rebuilt for the next throw) for a long while, but it never spread to any other
+world the way its sibling, the stone skipper, eventually did. **A boy now stands on Robot City's
+open factory floor folding and throwing paper planes — the only thing on that concrete that flies
+without a rotor.** *"Folds a fresh one every throw — paws off, puss, that nose crease took three
+tries."* *"The robots glide on wheels. This one only glides when I throw it."*
+
+No new controller and no new mesh: `PaperPlaneKid`'s own tiny folded-dart cone is built inline the
+same way the Neighborhood's already is, and its constructor calls `greetable()` itself, so the
+`makeHuman()` child rig needed no extra wiring to become a friend. A headless probe (built the real
+city via `game.load(2, 'from-prev')`, then 3600 simulated frames sampling every NPC's own position
+every frame) put the kid at (20, 50), facing south (ry = π): 2.4 m clear of the nearest physics box,
+37.6 m clear of the nearest `game.zones` rect, never closer than 11.66 m to any wandering soul over
+the whole run, with the plane's own 3 m throw landing at (20, 47), itself 5.4 m clear of the nearest
+box — all comfortably inside the radius (98) where `robotRegion`'s own procedural fill takes over,
+and clear of the sweeper-bot, the jacks kid and the spiderweb already standing on that floor.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329, Robot City's own friend count rose from 99 to 100. No visual check was possible in
+this environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
