@@ -25197,7 +25197,12 @@ function buildForest(game, entry) {
     mesh(G.box(0.52, 0.03, 0.46), dark, { y: 0.835, shadow: 'both', parent: hive });   // flat roof board
     mesh(G.cyl(0.035, 0.035, 0.05, 8), dark, { y: 0.235, z: 0.21, rx: PI / 2, shadow: 'none', parent: hive });   // entrance
     boxT(game, hx, hz, 0.3, 1.0, 0.25, { cam: false });
-    for (let i = 0; i < 3; i++) { const rig = makeBee(); game.npcs.push(new Flyer(game, rig, { cx: hx, cz: hz, r: rnd.range(0.35, 0.55), h: 1.0 + rnd.range(-0.1, 0.15), speed: rnd.range(2.6, 3.6), bob: 0.12, wobble: 0.15, cw: i % 2 === 0, phase: i * 2.1 })); }
+    let friendlyHiveBee = null;
+    for (let i = 0; i < 3; i++) { const rig = makeBee(); game.npcs.push(new Flyer(game, rig, { cx: hx, cz: hz, r: rnd.range(0.35, 0.55), h: 1.0 + rnd.range(-0.1, 0.15), speed: rnd.range(2.6, 3.6), bob: 0.12, wobble: 0.15, cw: i % 2 === 0, phase: i * 2.1 })); if (i === 0) friendlyHiveBee = rig; }
+    { const hiveBeeId = game.namedFriend('hive-bee');
+      game.addInteractable({ obj: friendlyHiveBee.group, radius: 2.1, label: () => 'Say hello to the bee', onUse: () => {
+        game.befriend(hiveBeeId); SFX.twinkle(); game.hearts(friendlyHiveBee.group.position.x, friendlyHiveBee.group.position.y, friendlyHiveBee.group.position.z, 3);
+        game.toast('🐝 "*peels off its own tight loop just long enough to be noticed, then back round the hive*"'); } }); }
     const bx = hx, bz = hz - 1.1, bry = atan2(hx - bx, hz - bz);
     const beeWard = makeWardrobe(r, { shirts: [0xece4d2], pants: [0xece4d2, 0xe3dcc8], shoes: [0x3a3226] });
     const keeper = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: beeWard }),

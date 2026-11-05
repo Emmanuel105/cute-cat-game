@@ -25209,3 +25209,36 @@ cue the oak's own bats already answer with, since this bat has none of its own.
 unchanged at 329, and Victorian's own friend count rose from 118 to 119. No visual check was possible
 in this environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 918 — Whisper Woods' own hive bees get their own "say hello"
+
+By now every other flock of small flying things in the game answers the cat — crows, doves, snow
+buntings, seagulls, both sets of butterflies, both sets of dragonflies, the oak's and the belfry's
+own bats, and the first of Victorian's eleven flower-basket bees. Whisper Woods has had a beekeeper
+of its own for a while too (a three-tier hive on the wood's western fringe, smoker in hand, three
+real bees looping tight circles above the roof) but those bees were never wired up — the keeper
+could be greeted, her own bees never could. **The first of the hive's three bees now answers too.**
+*"peels off its own tight loop just long enough to be noticed, then back round the hive"*
+
+The usual pattern, reused once more: the hive's own `for (let i = 0; i < 3; i++)` loop over
+`makeBee()` + `Flyer` (74-world-forest.js, right before the keeper) now also captures its first
+iteration's rig into `friendlyHiveBee`, and one `game.addInteractable` keys off `friendlyHiveBee.group`
+directly with its own `game.namedFriend('hive-bee')` id — distinct from Victorian's own `'bee'` id,
+since `namedFriend` ids are only unique per world anyway. `Flyer`'s own constructor already calls
+`game.world.add(rig.group)` itself, so no extra scene-graph wiring was needed, and the proximity
+check only compares `x`/`z`, so the usual 2.1 m radius still catches the cat passing the hive even
+though the loop sits at head height (h≈1.0, same as the keeper's own). No new physics box, no
+clearance probe needed — `Flyer` never touches the physics grid, same as every earlier flock credit,
+and the hive's own ground-level clearance was already measured clean when it first went in. The
+bee's own 2.1 m prompt circle does overlap the keeper's (they stand 1.1 m apart), same as several
+other close pairs already in the game (the pond's frogs, the glade's fairies) — the HUD just offers
+whichever of the two is nearer the cat, the usual nearest-interactable rule. Reused `SFX.twinkle()`,
+the same cue every other small flying/iridescent critter in the game already uses, since the bee has
+none of its own. This loop already drew from the shared global `rnd()` sequence rather than the
+world's own seeded `r()` (unlike most per-world flocks) — no new `rnd()` draw was added, only the
+capture of an existing iteration's rig and a static follow-up block, so the sequence is untouched.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329, and Whisper Woods' own friend count rose from 128 to 129. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
