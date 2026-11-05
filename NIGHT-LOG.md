@@ -25514,3 +25514,24 @@ hive's three bees is still a silent orbit.
 count unchanged at 329, Whisper Woods' own friend count rose from 131 to 132. No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 931 — Whisper Woods' third hive bee gets its own "say hello"
+
+Round 930 wired up the hollow oak hive's second bee and closed with a note that the third of the
+trio was still circling in silence. **That last hive bee now answers back too, finishing the set.**
+*"darts out wide over the clover, then tucks back into the circling trio"*
+
+Same mechanism as its two hive-mates: the hive's own `for (let i = 0; i < 3; i++)` loop over
+`makeBee()` + `Flyer` (74-world-forest.js, the beekeeper's hive) now also captures its third
+iteration's rig into `thirdHiveBee`, and a third `game.addInteractable` keys off that group directly
+with its own `game.namedFriend('hive-bee-3')` id. No new mesh, no new physics box, no new `rnd()`
+draw from this world's own seeded RNG — the capture calls nothing, so the beekeeper and her smoker
+built right after this block are untouched. Same 2.1 m radius as the other two, which only compares
+x/z, so it still catches the cat near whichever of the hive's three answering bees it happens to be
+nearer. All three of the hive's bees now answer the cat, same as the glowing pond's three
+dragonflies already do.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329, Whisper Woods' own friend count rose from 132 to 133. No visual check was possible
+in this environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
