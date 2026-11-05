@@ -25535,3 +25535,25 @@ dragonflies already do.
 unchanged at 329, Whisper Woods' own friend count rose from 132 to 133. No visual check was possible
 in this environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 932 — Victorian canal's second dragonfly gets its own "say hello"
+
+Round 912 put three dragonflies over the Victorian canal, but only the first of them ever answered
+the cat. Meanwhile the same trick on Whisper Woods' glowing pond (same rig, same `Flyer` controller)
+got its second and third dragonflies wired up back in rounds 928-929, leaving the canal's other two
+orbit-mates circling in silence. **The second of the canal's three dragonflies now answers too.**
+*"darts low across the reach, then wheels back into its own orbit"*
+
+Same mechanism as every flyer this trick has already been used on: the canal's own `for (let i = 0; i
+< 3; i++)` loop over `makeDragonfly()` + `Flyer` (70-worlds.js, `buildVictorian`) now also captures
+its second iteration's rig into `secondCanalDragonfly`, and a second `game.addInteractable` keys off
+that group directly with its own `game.namedFriend('canal-dragonfly-2')` id. No new mesh, no new
+physics box, no new `rnd()` draw — the capture calls nothing, so nothing built later in the town
+shifts. Same 2.1 m radius as the first, which only compares x/z, so it still catches the cat passing
+below while this one darts its own 0.25-0.45 m up over the reach, inside the already-documented clear
+zone from round 912. The canal's third dragonfly is still a silent orbit.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329, Victorian's own friend count rose from 128 to 129. No visual check was possible in
+this environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
