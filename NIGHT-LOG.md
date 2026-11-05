@@ -25427,3 +25427,27 @@ bees at all.
 unchanged at 329. No visual check was possible in this environment (no browser, no Playwright) —
 only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 927 — Victorian's watch-lamp flower-basket bees get their own "say hello"
+
+The last of the eleven flower baskets' bees, circling the watch-lamp basket (`vicLamps[8]`, x=34.5,
+z=6.4 — the post with its own "lost pocket watch" notice pinned up), was still a silent orbit after
+round 926 closed out the east-row basket. **That pair now answers back too, same as every basket
+before it.** *"loops once over the basket, then straight back into its circle"*
+
+Same trick as all ten baskets before it: the watch-lamp basket's own `for (let bi = 0; bi < 2; bi++)`
+loop over `makeBee()` + `Flyer` (70-worlds.js, `buildVictorian`) now captures its first iteration's
+rig into `friendlyWatchLampBee`, and one `game.addInteractable` keys off its group directly with its
+own `game.namedFriend('watch-lamp-bee')` id. No new mesh, no new physics box, no new `rnd()` draw —
+the capture calls nothing, so the squirrel built right after this loop is untouched. The prompt's
+usual 2.1 m radius overlaps both the basket's own "look" prompt and the lost-watch notice's own
+"read" prompt at the same post; the HUD's nearest-interactable rule sorts out which one shows, same
+as everywhere else this already happens. All eleven of Victorian's flower baskets are now accounted
+for: ten with their own bees that answer back, and `vicLamps[2]`, which an earlier round already
+ruled out as never having had bees at all. The flower-basket bee arc that started several rounds back
+is complete.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 329, and Victorian's own friend count rose from 127 to 128. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
