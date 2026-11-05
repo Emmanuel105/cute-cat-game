@@ -25154,3 +25154,30 @@ flying/iridescent critter in the game already uses, since the bee has none of it
 unchanged at 329, and Victorian's own friend count rose from 117 to 118. No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 916 — the eleventh of Candy Land's inner dozen lollipops finally gets looked at
+
+Ten of the twelve big candy-cane-striped lollipops ringing Candy Land's inner belt had their own
+"look" prompt by round 793 (the tenth, at the north-east corner). Two stayed bare — (-12, 12) and
+(14, 10) — logged across rounds 661, 665 and 793 as both pressed up against something else at well
+under a metre. **(14, 10) turns out to be worth a second look rather than another plain sweep: it's
+the exact centre the four ring-dancing gingerbread men circle, hand in hand, every nine seconds** —
+and that ring's own code (`RingDance.place()`) pins each dancer at a fixed 2.6 m from centre, never
+a hair closer, so the "within a metre" reading from those earlier rounds never actually held here.
+2.6 m clears the dozen's usual 2.2 m "look" radius with room to spare. *"The very lollipop the ring
+dance circles, hand in hand, every nine seconds — and nobody ever looked at it once."*
+
+No new mesh, no new physics box: `ringLollipop` captures the same loop's own existing return value
+for (14, 10), exactly like the ten lollipop prompts before it. A headless probe (`game.start('new')`,
+`game.travel(1, 'from-prev')`, 12,000 simulated frames sampling every NPC's own position every
+single frame) swept the spot against all 1902 of the land's physics boxes and every sample: the
+nearest box stayed 5.40 m clear and the nearest wandering soul/interactable (the ring's own dancers)
+held at exactly 2.60 m for the entire run — confirmed both by direct simulation and by reading
+`RingDance.place()` itself, which makes that 2.6 m a hard geometric floor rather than a probabilistic
+one. (-12, 12) stays bare: a genuine `Wanderer` there still closes to under 1.3 m over a long run, so
+it's left exactly where the earlier rounds left it.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 329 (the lollipop's own stem box already existed). No visual check was possible in
+this environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

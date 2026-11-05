@@ -12557,8 +12557,8 @@ function buildCandyLand(game, entry) {
       '🍭 "Finder keeps the stick either way." The cat has no plans to go looking.',
       '🍭 Someone has tied a scrap of licorice string to the corner, as if that proves anything. The cat sniffs it anyway.'];
     game.addInteractable({ obj: notice, radius: 2.2, label: () => 'Read the notice', onUse: () => { SFX.click(); game.toast(rnd.pick(lollipopLines), 3000); } }); }
-  let farLollipop = null, westLollipop = null, southLollipop = null, farSouthLollipop = null, southWestLollipop = null, northLollipop = null, midWestLollipop = null, southEastLollipop = null, eastLollipop = null, neLollipop = null;
-  for (const [x, z] of [[-12, 12], [14, 10], [-24, -8], [22, -26], [-34, 16], [36, 18], [-16, 32], [18, 34], [-40, -8], [40, -12], [-6, -34], [6, -48]]) { const s = r.range(1.1, 1.8), l = makeLollipop(s, r.pick([330, 0, 200, 50, 280, 120]), r.range(2.6, 4)); l.position.set(x, 0, z); l.rotation.y = r() * TAU; W.add(l); P.addBox(x, 1.5, z, 0.4, 3, 0.4, { cam: false }); if (x === 36 && z === 18) farLollipop = l; if (x === -34 && z === 16) westLollipop = l; if (x === -6 && z === -34) southLollipop = l; if (x === 6 && z === -48) farSouthLollipop = l; if (x === -40 && z === -8) southWestLollipop = l; if (x === -16 && z === 32) northLollipop = l; if (x === -24 && z === -8) midWestLollipop = l; if (x === 22 && z === -26) southEastLollipop = l; if (x === 40 && z === -12) eastLollipop = l; if (x === 18 && z === 34) neLollipop = l; }
+  let farLollipop = null, westLollipop = null, southLollipop = null, farSouthLollipop = null, southWestLollipop = null, northLollipop = null, midWestLollipop = null, southEastLollipop = null, eastLollipop = null, neLollipop = null, ringLollipop = null;
+  for (const [x, z] of [[-12, 12], [14, 10], [-24, -8], [22, -26], [-34, 16], [36, 18], [-16, 32], [18, 34], [-40, -8], [40, -12], [-6, -34], [6, -48]]) { const s = r.range(1.1, 1.8), l = makeLollipop(s, r.pick([330, 0, 200, 50, 280, 120]), r.range(2.6, 4)); l.position.set(x, 0, z); l.rotation.y = r() * TAU; W.add(l); P.addBox(x, 1.5, z, 0.4, 3, 0.4, { cam: false }); if (x === 36 && z === 18) farLollipop = l; if (x === -34 && z === 16) westLollipop = l; if (x === -6 && z === -34) southLollipop = l; if (x === 6 && z === -48) farSouthLollipop = l; if (x === -40 && z === -8) southWestLollipop = l; if (x === -16 && z === 32) northLollipop = l; if (x === -24 && z === -8) midWestLollipop = l; if (x === 22 && z === -26) southEastLollipop = l; if (x === 40 && z === -12) eastLollipop = l; if (x === 18 && z === 34) neLollipop = l; if (x === 14 && z === 10) ringLollipop = l; }
   // this inner dozen of big lollipops has stood since round 1, never looked at once — the notice cane
   // a few lines up and the wishing well further down both got their own "look" prompt, but every one of
   // these twelve was planted and forgotten. (36, 18), out past the east side of the candy-cane belt,
@@ -12673,6 +12673,30 @@ function buildCandyLand(game, entry) {
   // whole run, comfortably the widest margin of the three and well past the 2.2 m radius chosen.
   { const lollipopLines10 = ['🍭 "North-east corner of the belt — not much else out this way."', '🍭 "Same swirl, same stick, as quiet up here as anywhere in the dozen."', '😼 The cat gives the stick one more headbutt, finds the same no give as always, and wanders off.'];
     game.addInteractable({ obj: neLollipop, radius: 2.2, label: () => 'Look at the lollipop', onUse: () => { SFX.click(); game.toast(rnd.pick(lollipopLines10), 3000); } }); }
+  // ten of the inner dozen looked at, two still bare — (-12, 12) and (14, 10) — and rounds 661 and 793
+  // both logged them as pressed up against something else at well under a metre. (14, 10) turns out to
+  // be the one spot in the whole dozen worth a second look rather than another plain sweep: it is the
+  // exact centre the four ring-dancing gingerbread men further down this same function (`new
+  // RingDance(..., { cx: 14, cz: 10, r: 2.6 })`) have circled, hand in hand, since round 1 — and
+  // `RingDance.place()` (55-npcs.js)
+  // pins every dancer's own physics circle at `cx + cos(a)*r, cz + sin(a)*r` each frame, never a hair
+  // closer to centre than its own fixed `r`. That makes 2.6 m a hard geometric floor here, not a
+  // probabilistic one the way a `Wanderer`'s own roam is — no amount of simulated time can close it the
+  // way it apparently seemed to when this spot was last checked. 2.6 m clears the 2.2 m "look" radius
+  // the other ten lollipops in the dozen already use, with room to spare. (-12, 12) stays bare: a
+  // genuine `Wanderer` there still closes to under 1.3 m over a long run, the kind of gap this log never
+  // forces a radius onto.
+  //
+  // No new mesh, no new physics box, no new `r()` draw: `ringLollipop` just captures this one instance's
+  // own existing return value out of the same loop above, the same trick all ten lollipop prompts before
+  // it already used. A headless probe (the same stub-three harness `test/run.mjs` itself uses —
+  // `game.start('new')`, `game.travel(1, 'from-prev')`, 12,000 simulated frames sampling every NPC's own
+  // position every frame) swept this exact point against every one of the land's 1902 physics boxes and
+  // every sample: the nearest other box stayed 5.40 m clear throughout, and the nearest wandering soul
+  // and interactable alike — the ring's own dancers, by the geometry above — held at exactly 2.60 m for
+  // the whole run, never once inside the new prompt's 2.2 m reach.
+  { const lollipopLines11 = ['🍭 "The very lollipop the ring dance circles, hand in hand, every nine seconds — and nobody ever looked at it once."', '🍭 "Dead centre of the ring. Safest spot in the whole dozen — the dancers never once close the gap."', '😼 The cat headbutts the stick mid-dance. Four gingerbread men keep right on circling, unbothered.'];
+    game.addInteractable({ obj: ringLollipop, radius: 2.2, label: () => 'Look at the lollipop', onUse: () => { SFX.click(); game.toast(rnd.pick(lollipopLines11), 3000); } }); }
   for (let i = 0; i < 40; i++) { const x = r.range(-45, 45), z = r.range(-50, 40); if (abs(z + 18) < 5 || (abs(x) < 3 && abs(z) < 3)) continue; const l = makeLollipop(0.28, r.pick([330, 0, 200, 50, 280, 120]), r.range(0.5, 0.8)); l.position.set(x, 0, z); l.rotation.y = r() * TAU; W.add(l); }
   makeGumdrops(game, [[-8, 14, 4, 14], [10, -6, 4, 12], [-20, 2, 5, 16], [22, 6, 5, 16], [-30, -30, 6, 18], [30, -32, 6, 18], [0, 22, 6, 20], [-40, 20, 5, 14], [40, -2, 5, 14], [-52, 8, 7, 22], [54, 12, 7, 22], [-20, 50, 8, 24], [26, 52, 7, 20], [-50, -34, 6, 16], [52, -36, 6, 16], [10, -50, 6, 18]], r);
   for (const [x, z] of [[-40, 44], [44, 46], [-56, -10], [58, -14], [-14, -56], [22, -58], [-66, 16], [68, 4]]) { const s = r.range(1.2, 1.9), l = makeLollipop(s, r.pick([330, 0, 200, 50, 280, 120]), r.range(3, 4.5)); l.position.set(x, 0, z); l.rotation.y = r() * TAU; W.add(l); P.addBox(x, 1.5, z, 0.4, 3, 0.4, { cam: false }); }
