@@ -25242,3 +25242,26 @@ capture of an existing iteration's rig and a static follow-up block, so the sequ
 unchanged at 329, and Whisper Woods' own friend count rose from 128 to 129. No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 919 — Victorian's west flower-basket bees get their own "say hello"
+
+The east end's hanging basket got a pair of bees a few rounds back, and that pair picked up its own
+"say hello" right after — but nine more baskets down the street each got their own pair of bees too,
+all of them silent orbits. **The west end's own basket, `vicLamps[1]`, is the first of those nine to
+answer back.** *"loops once over the basket, then straight back into its circle"*
+
+The usual trick, reused once more: the west basket's own `for (let bi = 0; bi < 2; bi++)` loop over
+`makeBee()` + `Flyer` (70-worlds.js, `buildVictorian`, right after the east basket's bees) now
+captures its first iteration's rig into `friendlyWestBee`, and one `game.addInteractable` keys off
+its group directly with its own `game.namedFriend('west-bee')` id. No new physics box, no new
+`rnd()` draw: the capture itself calls nothing, so the shared sequence every later pick in this town
+depends on stays untouched. The prompt's usual 2.1 m radius only compares `x`/`z`, so it happily
+overlaps the basket's own tighter 0.9 m "look at the flower basket" prompt centred on the same spot —
+the HUD's nearest-interactable rule, already relied on at the pond's frogs and the glade's fairies,
+sorts out which one shows. Eight baskets' worth of bees (centre, south, plaza, westmost, mid-fence,
+fence, east-row, watch-lamp) are still silent orbits.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 329. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

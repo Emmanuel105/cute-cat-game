@@ -10629,15 +10629,27 @@ function buildVictorian(game, entry) {
   // the ground can reach this high, the same reasoning the east basket's own bees already relied on.
   //
   // Reuses the same `makeBee()` rig and `Flyer` controller the east basket's bees above already lean
-  // on. No dialogue, no new mesh: a plain orbit around the basket's own position, not a greetable
-  // soul. Built dead last, right after the east basket's own bees and right before the squirrel, for
-  // the reason every other addition at the end of this function already gives: `Flyer`'s own
-  // constructor draws unconditionally from the *shared* `rnd()` sequence, and anything built earlier
-  // in this town would have had its own timing-sensitive pick shifted by it.
+  // on, and — now that every other flock in the game answers the cat, the east basket's bees among
+  // them — the same "capture the first iteration's rig, add one `game.addInteractable`" trick too, so
+  // the west basket's own bee is a greetable soul at last, not just an orbit. Built dead last, right
+  // after the east basket's own bees and right before the squirrel, for the reason every other
+  // addition at the end of this function already gives: `Flyer`'s own constructor draws
+  // unconditionally from the *shared* `rnd()` sequence, and capturing an existing iteration's own
+  // return value (rather than drawing anything new) leaves that sequence untouched, so nothing built
+  // earlier in this town shifts. The prompt's own 2.1 m radius only compares `x`/`z`, same as every
+  // other flyer-friend credit, so it overlaps the basket's own tighter 0.9 m "look" prompt centred on
+  // the same spot — the HUD's usual nearest-interactable rule (already relied on at the pond's frogs
+  // and the glade's fairies) sorts out which one shows.
+  let friendlyWestBee = null;
   for (let bi = 0; bi < 2; bi++) {
     const westBeeRig = makeBee();
     game.npcs.push(new Flyer(game, westBeeRig, { cx: -49.5, cz: 6.4, r: 0.3, h: 2.62, speed: 1.6 + bi * 0.3, bob: 0.05, wobble: 0.12, cw: bi % 2 === 0, phase: bi * 2.6 + 1.1 }));
+    if (bi === 0) friendlyWestBee = westBeeRig;
   }
+  { const westBeeId = game.namedFriend('west-bee');
+    game.addInteractable({ obj: friendlyWestBee.group, radius: 2.1, label: () => 'Say hello to the bee', onUse: () => {
+      game.befriend(westBeeId); SFX.twinkle(); game.hearts(friendlyWestBee.group.position.x, friendlyWestBee.group.position.y, friendlyWestBee.group.position.z, 3);
+      game.toast('🐝 "*loops once over the basket, then straight back into its circle*"'); } }); }
   // the east and west baskets both got their own bees above; `vicLamps[5]` (x=3, z=-6.4, basketHues[5 %
   // 4] = the amber/gold hue), dead centre of the street and the first basket to ever get a "look"
   // prompt back in round 627, never got any. A third pair now circles that one too, same height and
