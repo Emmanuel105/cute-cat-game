@@ -25331,12 +25331,21 @@ function buildForest(game, entry) {
     mesh(G.box(0.52, 0.03, 0.46), dark, { y: 0.835, shadow: 'both', parent: hive });   // flat roof board
     mesh(G.cyl(0.035, 0.035, 0.05, 8), dark, { y: 0.235, z: 0.21, rx: PI / 2, shadow: 'none', parent: hive });   // entrance
     boxT(game, hx, hz, 0.3, 1.0, 0.25, { cam: false });
-    let friendlyHiveBee = null;
-    for (let i = 0; i < 3; i++) { const rig = makeBee(); game.npcs.push(new Flyer(game, rig, { cx: hx, cz: hz, r: rnd.range(0.35, 0.55), h: 1.0 + rnd.range(-0.1, 0.15), speed: rnd.range(2.6, 3.6), bob: 0.12, wobble: 0.15, cw: i % 2 === 0, phase: i * 2.1 })); if (i === 0) friendlyHiveBee = rig; }
+    let friendlyHiveBee = null, secondHiveBee = null;
+    for (let i = 0; i < 3; i++) { const rig = makeBee(); game.npcs.push(new Flyer(game, rig, { cx: hx, cz: hz, r: rnd.range(0.35, 0.55), h: 1.0 + rnd.range(-0.1, 0.15), speed: rnd.range(2.6, 3.6), bob: 0.12, wobble: 0.15, cw: i % 2 === 0, phase: i * 2.1 })); if (i === 0) friendlyHiveBee = rig; if (i === 1) secondHiveBee = rig; }
     { const hiveBeeId = game.namedFriend('hive-bee');
       game.addInteractable({ obj: friendlyHiveBee.group, radius: 2.1, label: () => 'Say hello to the bee', onUse: () => {
         game.befriend(hiveBeeId); SFX.twinkle(); game.hearts(friendlyHiveBee.group.position.x, friendlyHiveBee.group.position.y, friendlyHiveBee.group.position.z, 3);
         game.toast('🐝 "*peels off its own tight loop just long enough to be noticed, then back round the hive*"'); } }); }
+    // the hive's first bee has answered the cat since the block above, but its orbit-mate kept circling
+    // in silence. The second of the three now answers too: same `Flyer` orbit, same `game.addInteractable`
+    // keyed straight off its own group, no new mesh and no new physics box — the proximity check only
+    // compares x/z, so the usual 2.1 m radius still catches the cat whichever of the hive's two answering
+    // bees it happens to be nearer. The third bee is still a silent orbit.
+    { const secondHiveBeeId = game.namedFriend('hive-bee-2');
+      game.addInteractable({ obj: secondHiveBee.group, radius: 2.1, label: () => 'Say hello to the bee', onUse: () => {
+        game.befriend(secondHiveBeeId); SFX.twinkle(); game.hearts(secondHiveBee.group.position.x, secondHiveBee.group.position.y, secondHiveBee.group.position.z, 3);
+        game.toast('🐝 "*breaks from the circle for one low pass over the keeper\'s smoker, then back round the hive*"'); } }); }
     const bx = hx, bz = hz - 1.1, bry = atan2(hx - bx, hz - bz);
     const beeWard = makeWardrobe(r, { shirts: [0xece4d2], pants: [0xece4d2, 0xe3dcc8], shoes: [0x3a3226] });
     const keeper = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: beeWard }),
