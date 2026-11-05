@@ -25604,3 +25604,26 @@ and clear of the sweeper-bot, the jacks kid and the spiderweb already standing o
 unchanged at 329, Robot City's own friend count rose from 99 to 100. No visual check was possible in
 this environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 935 — Victorian's east-end flower basket gets its second bee a "say hello"
+
+Rounds long past wired up one bee out of each of the Victorian street's ten hanging flower
+baskets, but every basket's own *second* bee — sharing the same little circling pair — was always
+left out, the one gap the hive's three bees and the canal's three dragonflies never had, since
+those got every single member of their own trios answering in turn. **The east end basket's other
+bee now answers too.** *"peels off from its circling partner, dips low over the basket, then
+rejoins"*
+
+Same mechanism as every flyer this trick has been used on before: the east basket's own `for (let
+bi = 0; bi < 2; bi++)` loop over `makeBee()` + `Flyer` (70-worlds.js, `buildVictorian`) now also
+captures its second iteration's rig into `secondBee`, and a second `game.addInteractable` keys off
+that group directly with its own `game.namedFriend('bee-2')` id. No new mesh, no new physics box,
+no new `rnd()` draw — the capture calls nothing, so nothing built later in the town shifts, including
+the west basket's own bees built right after this block. Same 2.1 m radius as the first bee, which
+only compares x/z, so it still catches the cat near either bee circling this basket. The other nine
+baskets' second bees are still silent orbits — plenty left for another night.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 329, Victorian's own friend count rose from 130 to 131. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -19188,16 +19188,25 @@ function buildVictorian(game, entry) {
   // other addition at the end of this function already gives: `Flyer`'s own constructor draws
   // unconditionally from the *shared* `rnd()` sequence, and anything built earlier in this town would
   // have had its own timing-sensitive pick shifted by it.
-  let friendlyBee = null;
+  let friendlyBee = null, secondBee = null;
   for (let bi = 0; bi < 2; bi++) {
     const beeRig = makeBee();
     game.npcs.push(new Flyer(game, beeRig, { cx: 55.5, cz: 6.4, r: 0.3, h: 2.62, speed: 1.6 + bi * 0.3, bob: 0.05, wobble: 0.12, cw: bi % 2 === 0, phase: bi * 2.6 }));
     if (bi === 0) friendlyBee = beeRig;
+    if (bi === 1) secondBee = beeRig;
   }
   { const beeId = game.namedFriend('bee');
     game.addInteractable({ obj: friendlyBee.group, radius: 2.1, label: () => 'Say hello to the bee', onUse: () => {
       game.befriend(beeId); SFX.twinkle(); game.hearts(friendlyBee.group.position.x, friendlyBee.group.position.y, friendlyBee.group.position.z, 3);
       game.toast('🐝 "*loops once over the basket, then straight back into its circle*"'); } }); }
+  // the east basket's own bees have shared their airspace in a silent pair since the round above first
+  // wired one of them up — same gap the hive's three bees and the canal's three dragonflies already
+  // closed for every one of their own members, but never followed through on any of the ten baskets'
+  // own second bee. This basket's other bee, `secondBee`, now answers too.
+  { const bee2Id = game.namedFriend('bee-2');
+    game.addInteractable({ obj: secondBee.group, radius: 2.1, label: () => 'Say hello to the bee', onUse: () => {
+      game.befriend(bee2Id); SFX.twinkle(); game.hearts(secondBee.group.position.x, secondBee.group.position.y, secondBee.group.position.z, 3);
+      game.toast('🐝 "*peels off from its circling partner, dips low over the basket, then rejoins*"'); } }); }
   // the east end's basket got a couple of bees above — the west end's own, `vicLamps[1]` (x=-49.5,
   // z=6.4, the lamp whose own "look" prompt already calls it the one the lamplighter's round stops a
   // couple of strides short to light), never got any. A second pair now circles that basket too, same
