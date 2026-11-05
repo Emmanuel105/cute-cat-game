@@ -25649,3 +25649,30 @@ count unchanged at 329, Victorian's own friend count rose from 131 to 132 (confi
 probe that travels to Victorian and reads `game.friendTotal`). No visual check was possible in this
 environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 937 — Sunny Shore finally gets its own paper-plane kid
+
+The Neighborhood has had a `PaperPlaneKid` (55-npcs.js: a folded-paper dart that glides out on a
+lerped arc, then gets rebuilt for the next throw) for a long while, and round 934 carried it over to
+Robot City's factory floor — but it never reached Sunny Shore. **A boy now stands on the open dry
+sand west of the jacks game, folding and throwing paper planes out toward the dunes, the only thing
+on this beach that flies without feathers.** *"Folds a fresh one every throw — salt air warps the
+paper fast, puss."* *"Sea breeze keeps grabbing it sideways. One day I'll land it dead straight."*
+*"Longest flight yet — must be an updraft off the dunes."*
+
+No new controller and no new mesh: `PaperPlaneKid`'s own tiny folded-dart cone is built inline the
+same way the other two worlds' already are, and its constructor calls `greetable()` itself, so the
+`makeHuman()` child rig needed no extra wiring to become a friend — it reuses this beach's own
+`beachWard` wardrobe rather than drawing a new one. A headless probe (built the real shore via
+`game.load(4, 'from-hub')`, then a grid search of the open dry sand against this world's 264 physics
+boxes, 91 keep-out zones and 107 wandering souls) put the kid at (-16, 0), facing west (ry = -π/2):
+ground height 0.31 m (short of the dune ridge that only rises west of x = -24), 4.87 m clear of the
+nearest physics box, 8.05 m clear of the nearest wandering soul, with the plane's own 3 m throw
+landing at (-19, 0), itself 5.80 m clear of the nearest box and 7.0 m clear of the nearest wandering
+soul — both points well inside the radius (58) where `beachRegion`'s own procedural fill takes over.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 329, Sunny Shore's own friend count rose from 117 to 118 (confirmed against the
+pre-change build with the same probe). No visual check was possible in this environment (no browser,
+no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

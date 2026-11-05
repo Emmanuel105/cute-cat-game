@@ -21794,6 +21794,35 @@ function buildBeach(game, entry) {
     mesh(G.sphere(0.0452, 12, 8), mat(0xd62839, { roughness: 0.3 }), { sz: 0.5, shadow: 'none', parent: ball });
     game.npcs.push(new Kneeler(game, beachPerson(true, true), { x: kx, z: kz, ry: kry,
       cries: ["Threw it up, swept up five, caught it on the way back down — paws don't count, puss.", "Mind the wind. Blow one into a dune and it's gone for good.", "Six jacks, one bounce each. Nobody on this stretch of sand has beaten my best yet."] })); }
+  // the Neighborhood and, since round 934, Robot City both have a kid folding and throwing paper
+  // planes (`PaperPlaneKid`, 55-npcs.js: a folded-paper dart that glides out on a lerped arc and
+  // gets rebuilt for the next throw) — it never reached Sunny Shore. **A boy now stands on the open
+  // dry sand, folding and throwing paper planes out toward the dunes, the only thing on this beach
+  // that flies without feathers.** *"Folds a fresh one every throw — salt air warps the paper fast,
+  // puss."* *"Sea breeze keeps grabbing it sideways. One day I'll land it dead straight."*
+  // *"Longest flight yet — must be an updraft off the dunes."*
+  //
+  // No new controller and no new mesh: `PaperPlaneKid`'s own tiny folded-dart cone is built inline
+  // the same way the Neighborhood's and Robot City's already are, and its constructor calls
+  // `greetable()` itself, so the `makeHuman()` child rig needs no extra wiring to become a friend.
+  // Reuses this beach's own `beachWard` wardrobe rather than drawing a new one.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // `game.load(4, 'from-hub')`, then a grid search of the open dry sand against this world's 264
+  // physics boxes, 91 keep-out zones and 107 wandering souls) put (-16, 0) clearest among the flat,
+  // low sand — ground height 0.31 m, short of the dune ridge that only rises west of x = -24 — at
+  // 4.87 m clear of the nearest box and 8.05 m clear of the nearest wandering soul. Facing west
+  // (ry = -PI/2) sends the plane's own 3 m throw to (-19, 0), itself 5.80 m clear of the nearest box
+  // and 7.0 m clear of the nearest wandering soul, and both points sit at radius 16-19 from the
+  // origin, well inside the radius (58) where `beachRegion`'s own fill takes over.
+  //
+  // Built dead last, right after the jacks game, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off the shared `rnd()` sequence unconditionally, and anything built
+  // earlier on this beach would have had its own timing-sensitive pick shifted by it.
+  { const planeKid = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, wardrobe: beachWard }), hat: null, glasses: false });
+    W.add(planeKid.group);
+    game.npcs.push(new PaperPlaneKid(game, planeKid, { x: -16, z: 0, ry: -PI / 2,
+      cries: ["Folds a fresh one every throw — salt air warps the paper fast, puss.", "Sea breeze keeps grabbing it sideways. One day I'll land it dead straight.", 'Longest flight yet — must be an updraft off the dunes.'] })); }
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
