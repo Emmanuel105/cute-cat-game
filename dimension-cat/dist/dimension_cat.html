@@ -19061,8 +19061,7 @@ function buildVictorian(game, entry) {
   // the clock tower's own belfry, the five-metre stone block the four clock faces are set into, has
   // stood sixty feet up with nothing but a bell and a weathervane keeping it company since the town was
   // first built. **Three bats now flit around the belfry itself, circling past the clock faces at
-  // dusk-coloured height.** No dialogue, no new mesh: like the market square's own doves and the
-  // canal's own dragonflies above, they're a plain `Flyer` loop, not a greetable soul.
+  // dusk-coloured height.**
   //
   // Reuses `makeBat()` (56-npcs-wild.js, built for the Neighborhood's own dusk sky) and the exact same
   // `Flyer` controller (`cx`, `cz`, `r`, `h`, `speed`, `bob`, `wobble`, `phase`, `cw`) the doves and
@@ -19079,14 +19078,35 @@ function buildVictorian(game, entry) {
   // own: nothing on the ground can ever reach sixty feet up, the same reasoning the doves and
   // dragonflies above already relied on.
   //
+  // When these first went in, they were left a plain `Flyer` loop like the market square's own doves —
+  // but the oak's own bats in Whisper Woods (a near-identical trio, same `makeBat()` rig) have since
+  // picked up a "say hello" member of their own, and by now every other flock in the game answers the
+  // cat the same way (crows, doves, snow buntings, seagulls, both sets of butterflies, both sets of
+  // dragonflies, the oak's own bats). **The first of this belfry's own three now does too.** *"wheels
+  // once past the nearest clock face, then straight back up into the dark"*
+  //
+  // Same `addInteractable` keyed off the first iteration's own rig, same 2.1 m radius every other
+  // flyer-friend already uses — the proximity check only compares `x`/`z` against the cat, so the cat
+  // catches it passing underneath the tower same as it would at ground level, even though the loop
+  // itself sits sixty feet up. No new physics box, no clearance probe needed: `Flyer` never touches the
+  // physics grid, same as every earlier flock credit, and this spot's own ground-level clearance was
+  // already measured clean when the bats first went in. Reused `SFX.chitter()`, the same cue the oak's
+  // own bats already answer with, since this bat has none of its own.
+  //
   // Built dead last, right after the flower girl and right before the squirrel, for the reason every
   // other addition at the end of this function already gives: `Flyer`'s own constructor draws
   // unconditionally from the *shared* `rnd()` sequence, and anything built earlier in this town would
   // have had its own timing-sensitive pick shifted by it.
+  let friendlyBelfryBat = null;
   for (let bi = 0; bi < 3; bi++) {
     const batRig = makeBat({ phase: bi * 2.1 });
     game.npcs.push(new Flyer(game, batRig, { cx: 42, cz: 0, r: 3.6, h: 21.5, speed: 2.2 + bi * 0.35, bob: 0.5, wobble: 0.6, cw: bi % 2 === 0, phase: bi * 2.1 }));
+    if (bi === 0) friendlyBelfryBat = batRig;
   }
+  { const belfryBatId = game.namedFriend('belfry-bat');
+    game.addInteractable({ obj: friendlyBelfryBat.group, radius: 2.1, label: () => 'Say hello to the bat', onUse: () => {
+      game.befriend(belfryBatId); SFX.chitter(); game.hearts(friendlyBelfryBat.group.position.x, friendlyBelfryBat.group.position.y, friendlyBelfryBat.group.position.z, 3);
+      game.toast('🦇 "*wheels once past the nearest clock face, then straight back up into the dark*"'); } }); }
   // every lamp on the street has carried its own hanging flower basket for rounds now, and the
   // Neighborhood's garden, Victorian's own canal and the clock tower's belfry all got something living
   // nearby in turn — not one of the eleven baskets ever had, so a couple of bees now circle the

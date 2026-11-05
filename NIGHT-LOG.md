@@ -25181,3 +25181,31 @@ it's left exactly where the earlier rounds left it.
 count unchanged at 329 (the lollipop's own stem box already existed). No visual check was possible in
 this environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 917 — Victorian's own belfry bats get their own "say hello"
+
+The clock tower's three bats have circled the belfry, past the clock faces, since early on — a plain
+`Flyer` loop, same as the market square's doves and, until recently, the oak's own bats in Whisper
+Woods and the street's own bees. All three of those have since picked up a "say hello" member, and by
+now every other flock in the game answers the cat the same way (crows, doves, snow buntings, seagulls,
+both sets of butterflies, both sets of dragonflies, the oak's bats, the east basket's bee). The belfry
+trio was the one flyer-flock in the game still left untouched. **The first of the three bats now
+answers too.** *"wheels once past the nearest clock face, then straight back up into the dark"*
+
+The usual pattern, reused once more: the belfry's own `for (let bi = 0; bi < 3; bi++)` loop over
+`makeBat()` + `Flyer` (70-worlds.js, `buildVictorian`, right after the flower girl) now also captures
+its first iteration's rig into `friendlyBelfryBat`, and one `game.addInteractable` keys off
+`friendlyBelfryBat.group` directly with its own `game.namedFriend('belfry-bat')` id. `Flyer`'s own
+constructor already calls `game.world.add(rig.group)` itself, so no extra scene-graph wiring was
+needed, and the proximity check only compares `x`/`z`, so the usual 2.1 m radius still catches the cat
+passing underneath the tower even though the loop sits sixty feet up at h=21.5 — the highest any
+flyer-friend credit has reached yet, well above the oak's own bats (10.2 m) and the belfry's own
+physics box, which tops out at 18. No new physics box, no clearance probe needed — `Flyer` never
+touches the physics grid, same as every earlier flock credit, and this spot's own ground-level
+clearance was already measured clean when the bats first went in. Reused `SFX.chitter()`, the same
+cue the oak's own bats already answer with, since this bat has none of its own.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329, and Victorian's own friend count rose from 118 to 119. No visual check was possible
+in this environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
