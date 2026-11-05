@@ -25265,3 +25265,27 @@ fence, east-row, watch-lamp) are still silent orbits.
 count unchanged at 329. No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 920 — Victorian's dead-centre flower-basket bees get their own "say hello"
+
+The east and west baskets' bees each picked up their own "say hello" a couple of rounds back, but
+seven more basket pairs down the street — including the very first basket to ever get a "look"
+prompt, back in round 627 — were still silent orbits. **The dead-centre basket, `vicLamps[5]`
+(x=3, z=-6.4), is the next of those seven to answer back.** *"loops once over the basket, then
+straight back into its circle"*
+
+The usual trick, reused once more: the centre basket's own `for (let bi = 0; bi < 2; bi++)` loop
+over `makeBee()` + `Flyer` (70-worlds.js, `buildVictorian`, right after the west basket's bees) now
+captures its first iteration's rig into `friendlyCenterBee`, and one `game.addInteractable` keys off
+its group directly with its own `game.namedFriend('center-bee')` id. No new physics box, no new
+`rnd()` draw: the capture itself calls nothing, so the shared sequence every later pick in this town
+depends on stays untouched. The prompt's usual 2.1 m radius only compares `x`/`z`, so it happily
+overlaps the basket's own tighter 0.9 m "look at the flower basket" prompt centred on the same spot —
+the HUD's nearest-interactable rule, already relied on at the pond's frogs, the glade's fairies and
+the east/west baskets, sorts out which one shows. Six baskets' worth of bees (south, plaza, westmost,
+mid-fence, fence, east-row) are still silent orbits.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 329, and Victorian's own friend count rose from 120 to 121. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
