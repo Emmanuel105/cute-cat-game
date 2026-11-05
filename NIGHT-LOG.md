@@ -25676,3 +25676,26 @@ count unchanged at 329, Sunny Shore's own friend count rose from 117 to 118 (con
 pre-change build with the same probe). No visual check was possible in this environment (no browser,
 no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 938 — Victorian's plaza flower basket gets its second bee a "say hello"
+
+Rounds 935 and 936 started working down the list of Victorian flower baskets whose own second bee
+had never been wired up for a greet, closing the gap for the east-end and west baskets. **The
+plaza basket's own other bee — the one three strides from the clock tower — now answers too**,
+the third of the eleven to get both its bees greetable rather than just one. *"peels off from its
+circling partner, dips low over the basket, then rejoins"*
+
+Same mechanism as the two baskets before it: the plaza basket's own `for (let bi = 0; bi < 2;
+bi++)` loop over `makeBee()` + `Flyer` (70-worlds.js, `buildVictorian`) now also captures its
+second iteration's rig into `secondPlazaBee`, and a second `game.addInteractable` keys off that
+group directly with its own `game.namedFriend('plaza-bee-2')` id. No new mesh, no new physics box,
+no new `rnd()` draw — the capture calls nothing, so nothing built later in the town shifts. Same
+2.1 m radius as the first bee, which only compares x/z, so it still catches the cat near either bee
+circling this basket. Eight baskets' worth of second bees (dead-centre, south, westmost, mid-fence,
+fence, east-row, south-pavement, watch-lamp) are still silent orbits — plenty left for another
+night.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 329, Victorian's own friend count rose from 132 to 133. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
