@@ -25333,3 +25333,27 @@ baskets. Four baskets' worth of bees (westmost, mid-fence, fence, east-row) are 
 unchanged at 329, and Victorian's own friend count rose from 122 to 123. No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 923 — Victorian's westmost flower-basket bees get their own "say hello"
+
+The east, west, dead-centre, south-pavement and plaza baskets' bees had all picked up their own
+"say hello" by round 922, but three more basket pairs down the street were still silent orbits.
+**The westmost basket, `vicLamps[0]` (x=-60, z=-6.4), the deep fuchsia-pink one at the far end of
+the whole street, is the next of those three to answer back.** *"loops once over the basket, then
+straight back into its circle"*
+
+Same trick as every basket before it: the westmost basket's own `for (let bi = 0; bi < 2; bi++)`
+loop over `makeBee()` + `Flyer` (70-worlds.js, `buildVictorian`) now captures its first iteration's
+rig into `friendlyWestmostBee`, and one `game.addInteractable` keys off its group directly with its
+own `game.namedFriend('westmost-bee')` id. No new mesh, no new physics box, no new `rnd()` draw —
+the capture calls nothing, so the shared sequence every later pick in this town depends on stays
+untouched. The prompt's usual 2.1 m radius overlaps the basket's own 1.8 m open-street "look"
+prompt at the same spot; the HUD's nearest-interactable rule sorts out which one shows, same as at
+the other baskets. Three baskets' worth of bees (mid-fence, fence and east-row) are still silent
+orbits; `vicLamps[2]` never got any bees at all — ruled out even at ground level by the wandering
+gentleman's own home spot sitting under a metre off.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329, and Victorian's own friend count rose from 123 to 124. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
