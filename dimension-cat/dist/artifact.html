@@ -23903,12 +23903,22 @@ function buildForest(game, entry) {
   // first of the pond's three now does: same `Flyer` orbit, no new mesh, no new physics box — the
   // proximity check only compares x/z, so the usual 2.1 m radius still catches the cat passing below
   // while it darts 0.3-0.55 m up over the pond, inside the already-documented clear band above.
-  let friendlyPondDragonfly = null;
-  for (let i = 0; i < 3; i++) { const rig = makeDragonfly(r.pick([0x2f6a5a, 0x3a5a8a, 0x5a3a6a])); game.npcs.push(new Flyer(game, rig, { cx: 8, cz: -6, r: r.range(2.6, 4.0), h: r.range(0.3, 0.55), speed: r.range(1.6, 2.4), bob: 0.08, wobble: 0.4, cw: i % 2 === 0, phase: i * 2.4 })); if (i === 0) friendlyPondDragonfly = rig; }
+  let friendlyPondDragonfly = null, secondPondDragonfly = null;
+  for (let i = 0; i < 3; i++) { const rig = makeDragonfly(r.pick([0x2f6a5a, 0x3a5a8a, 0x5a3a6a])); game.npcs.push(new Flyer(game, rig, { cx: 8, cz: -6, r: r.range(2.6, 4.0), h: r.range(0.3, 0.55), speed: r.range(1.6, 2.4), bob: 0.08, wobble: 0.4, cw: i % 2 === 0, phase: i * 2.4 })); if (i === 0) friendlyPondDragonfly = rig; if (i === 1) secondPondDragonfly = rig; }
   { const pondDragonflyId = game.namedFriend('pond-dragonfly');
     game.addInteractable({ obj: friendlyPondDragonfly.group, radius: 2.1, label: () => 'Say hello to the dragonfly', onUse: () => {
       game.befriend(pondDragonflyId); SFX.twinkle(); game.hearts(friendlyPondDragonfly.group.position.x, friendlyPondDragonfly.group.position.y, friendlyPondDragonfly.group.position.z, 3);
       game.toast('✨ *skims a tight circle just above the glow, then peels back out over the pond*'); } }); }
+  // the pond's first dragonfly has answered the cat since the line above, but its two orbit-mates kept
+  // darting past in silence. The second of the three now answers too: same `Flyer` orbit, same
+  // `game.addInteractable` keyed straight off its own group, no new mesh and no new physics box — the
+  // proximity check only compares x/z, so the usual 2.1 m radius still catches the cat passing below
+  // while this one darts its own 0.3-0.55 m up over the pond, inside the already-documented clear band.
+  // The third of the pond's three is still a silent orbit.
+  { const secondPondDragonflyId = game.namedFriend('pond-dragonfly-2');
+    game.addInteractable({ obj: secondPondDragonfly.group, radius: 2.1, label: () => 'Say hello to the dragonfly', onUse: () => {
+      game.befriend(secondPondDragonflyId); SFX.twinkle(); game.hearts(secondPondDragonfly.group.position.x, secondPondDragonfly.group.position.y, secondPondDragonfly.group.position.z, 3);
+      game.toast('✨ *loops once low over the water, then slips back into its own orbit*'); } }); }
   for (let i = 0; i < 14; i++) { const a = i / 14 * TAU; const m = makeMushroom(0.45, r.pick([0, 300, 200]), r, true); placeT(game, U, m, cos(a) * 6.5 - 6, sin(a) * 6.5 + 8, 0); if (m.userData.update) U.push(m.userData.update); }
   // the storyteller and the ring-dance kids both swear three turns of the fairy ring earns a wish, but
   // the ring itself — the 14 mushrooms circling (-6, 8) above — had never actually granted one; nothing
