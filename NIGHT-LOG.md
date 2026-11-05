@@ -25557,3 +25557,26 @@ zone from round 912. The canal's third dragonfly is still a silent orbit.
 unchanged at 329, Victorian's own friend count rose from 128 to 129. No visual check was possible in
 this environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 933 — Victorian canal's third dragonfly gets its own "say hello"
+
+Round 932 wired up the canal's second dragonfly and closed on a note that the third of the trio was
+still circling in silence — the only dragonfly left in the game that didn't answer the cat, now that
+Whisper Woods' glowing pond finished its own trio back in rounds 928-929. **That last canal
+dragonfly now answers too, finishing the set.** *"loops once over the reach, then slips back into
+the circling trio"*
+
+Same mechanism as its two canal-mates: the canal's own `for (let i = 0; i < 3; i++)` loop over
+`makeDragonfly()` + `Flyer` (70-worlds.js, `buildVictorian`) now also captures its third iteration's
+rig into `thirdCanalDragonfly`, and a third `game.addInteractable` keys off that group directly with
+its own `game.namedFriend('canal-dragonfly-3')` id. No new mesh, no new physics box, no new `rnd()`
+draw from this world's own seeded RNG — the capture calls nothing, so nothing built later in the
+town shifts, including the clock tower and its own chime right after this block. Same 2.1 m radius
+as the other two, which only compares x/z, so it still catches the cat passing below while this one
+keeps its own 0.25-0.45 m bob over the reach, inside the already-documented clear zone from round
+912. All three of the canal's dragonflies now answer the cat, matching the glowing pond's three.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329, Victorian's own friend count rose from 129 to 130. No visual check was possible in
+this environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

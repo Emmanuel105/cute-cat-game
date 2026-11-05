@@ -9206,8 +9206,8 @@ function buildVictorian(game, entry) {
   // first of this canal trio now does: same `Flyer` orbit, no new mesh, no new physics box — the
   // proximity check only compares x/z, so the usual 2.1 m radius still catches the cat passing below
   // while it darts 0.25-0.45 m up over open water, well inside the already-documented clear zone above.
-  let friendlyDragonfly = null, secondCanalDragonfly = null;
-  for (let i = 0; i < 3; i++) { const rig = makeDragonfly(r.pick([0x2f6a5a, 0x3a5a8a, 0x5a3a6a])); game.npcs.push(new Flyer(game, rig, { cx: 30, cz: 30, r: 2.5, h: r.range(0.25, 0.45), speed: r.range(1.6, 2.4), bob: 0.08, wobble: 0.3, cw: i % 2 === 0, phase: i * 2.1 })); if (i === 0) friendlyDragonfly = rig; if (i === 1) secondCanalDragonfly = rig; }
+  let friendlyDragonfly = null, secondCanalDragonfly = null, thirdCanalDragonfly = null;
+  for (let i = 0; i < 3; i++) { const rig = makeDragonfly(r.pick([0x2f6a5a, 0x3a5a8a, 0x5a3a6a])); game.npcs.push(new Flyer(game, rig, { cx: 30, cz: 30, r: 2.5, h: r.range(0.25, 0.45), speed: r.range(1.6, 2.4), bob: 0.08, wobble: 0.3, cw: i % 2 === 0, phase: i * 2.1 })); if (i === 0) friendlyDragonfly = rig; if (i === 1) secondCanalDragonfly = rig; if (i === 2) thirdCanalDragonfly = rig; }
   { const dragonflyId = game.namedFriend('dragonfly');
     game.addInteractable({ obj: friendlyDragonfly.group, radius: 2.1, label: () => 'Say hello to the dragonfly', onUse: () => {
       game.befriend(dragonflyId); SFX.twinkle(); game.hearts(friendlyDragonfly.group.position.x, friendlyDragonfly.group.position.y, friendlyDragonfly.group.position.z, 3);
@@ -9223,6 +9223,16 @@ function buildVictorian(game, entry) {
     game.addInteractable({ obj: secondCanalDragonfly.group, radius: 2.1, label: () => 'Say hello to the dragonfly', onUse: () => {
       game.befriend(secondCanalDragonflyId); SFX.twinkle(); game.hearts(secondCanalDragonfly.group.position.x, secondCanalDragonfly.group.position.y, secondCanalDragonfly.group.position.z, 3);
       game.toast('✨ *darts low across the reach, then wheels back into its own orbit*'); } }); }
+  // the canal's first two dragonflies answer the cat since the two blocks above — Whisper Woods' own pond
+  // trio got all three of its own wired up back in rounds 928-929, leaving this canal's last orbit-mate
+  // as the only dragonfly in the game still circling in silence. It now answers too, finishing the set.
+  // Same mechanism as the two above: no new mesh, no new physics box — the proximity check only compares
+  // x/z, so the usual 2.1 m radius still catches the cat passing below while this one keeps its own
+  // 0.25-0.45 m bob over the reach, inside the already-documented clear zone above.
+  { const thirdCanalDragonflyId = game.namedFriend('canal-dragonfly-3');
+    game.addInteractable({ obj: thirdCanalDragonfly.group, radius: 2.1, label: () => 'Say hello to the dragonfly', onUse: () => {
+      game.befriend(thirdCanalDragonflyId); SFX.twinkle(); game.hearts(thirdCanalDragonfly.group.position.x, thirdCanalDragonfly.group.position.y, thirdCanalDragonfly.group.position.z, 3);
+      game.toast('✨ *loops once over the reach, then slips back into the circling trio*'); } }); }
   for (const [x, z, k2] of [[-30, 20, 'oak'], [36, 22, 'oak'], [-12, -50, 'birch'], [18, -52, 'birch'], [-66, -14, 'oak'], [66, 18, 'oak']]) addTree(game, k2, x, z, r);
   // clock tower plaza (east), time door (west)
   const tower = makeClockTower(game, 42, 0, U);
