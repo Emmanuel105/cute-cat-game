@@ -25380,3 +25380,26 @@ never got any bees at all, ruled out at ground level by the wandering gentleman'
 count unchanged at 329, and Victorian's own friend count rose from 124 to 125. No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 925 — Victorian's south-pavement fence basket's bees get their own "say hello"
+
+Seven of the eleven flower baskets' bees had picked up their own "say hello" by round 924 (east,
+west, dead-centre, south, plaza, westmost and mid-fence), but the fence basket on the south
+pavement — `vicLamps[3]` (x=-18, z=-6.4), the amber-orange basket out front of the chimney sweep's
+own house — still had its pair circling in silence. **That pair now answers back too.** *"loops
+once over the basket, then straight back into its circle"*
+
+Same trick as every basket before it: the fence basket's own `for (let bi = 0; bi < 2; bi++)` loop
+over `makeBee()` + `Flyer` (70-worlds.js, `buildVictorian`) now captures its first iteration's rig
+into `friendlyFenceBee`, and one `game.addInteractable` keys off its group directly with its own
+`game.namedFriend('fence-bee')` id. No new mesh, no new physics box, no new `rnd()` draw — the
+capture calls nothing, so the shared sequence every later pick in this town depends on stays
+untouched. The prompt's usual 2.1 m radius overlaps the basket's own tighter 0.9 m "look" prompt at
+the same spot; the HUD's nearest-interactable rule sorts out which one shows, same as at the other
+seven baskets. Two baskets' worth of bees (east-row, the watch-lamp one) are still silent orbits;
+`vicLamps[2]` never got any bees at all.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 329. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

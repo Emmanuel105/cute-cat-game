@@ -10800,27 +10800,30 @@ function buildVictorian(game, entry) {
     game.addInteractable({ obj: friendlyMidFenceBee.group, radius: 2.1, label: () => 'Say hello to the bee', onUse: () => {
       game.befriend(midFenceBeeId); SFX.twinkle(); game.hearts(friendlyMidFenceBee.group.position.x, friendlyMidFenceBee.group.position.y, friendlyMidFenceBee.group.position.z, 3);
       game.toast('🐝 "*loops once over the basket, then straight back into its circle*"'); } }); }
-  // seven of the eleven baskets have their own bees by now (east, west, dead-centre, south, plaza,
-  // westmost and mid-fence); `vicLamps[3]` (x=-18, z=-6.4, south pavement, the amber-orange basket out
-  // front of the chimney sweep's own house, whose "look" prompt round already settled on a tight 0.9 m
-  // radius to clear the garden fence 1.10 m off and the lamplighter's own closest patrol pass 1.13 m
-  // off) never got any. An eighth pair now circles that one too, same height and radius as the other
-  // seven: y=2.62, just above the basket's own y=2.55 — well above the fence line, the lamplighter's
-  // and the cat's own jump reach, the same reasoning every basket's own bees so far already relied on.
-  // The fence and the lamplighter's own close pass were only ever a ground-level concern for the
-  // basket's own "look" interactable circle; a bee circling 2.62 m up clears both without a fresh
-  // clearance probe, same conclusion the mid-fence basket's own round already reached.
-  // No new mesh, no new physics box: the same `makeBee()` rig and `Flyer` controller the other seven
-  // baskets' bees already lean on, not a greetable soul.
+  // seven of the eleven baskets' bees had picked up their own "say hello" by round 924 (east, west,
+  // dead-centre, south, plaza, westmost and mid-fence); `vicLamps[3]` (x=-18, z=-6.4, south pavement,
+  // the amber-orange basket out front of the chimney sweep's own house) still had its pair circling in
+  // silence. **That pair now answers back too.**
   //
-  // Built dead last, right after the mid-fence basket's own bees and right before the squirrel, for the
-  // reason every other addition at the end of this function already gives: `Flyer`'s own constructor
-  // draws unconditionally from the *shared* `rnd()` sequence, and anything built earlier in this town
-  // would have had its own timing-sensitive pick shifted by it.
+  // Same trick as every basket before it: the fence basket's own `for (let bi = 0; bi < 2; bi++)` loop
+  // over `makeBee()` + `Flyer` now captures its first iteration's rig into `friendlyFenceBee`, and one
+  // `game.addInteractable` keys off its group directly with its own `game.namedFriend('fence-bee')` id.
+  // No new mesh, no new physics box, no new `rnd()` draw — the capture calls nothing, so the shared
+  // sequence every later pick in this town depends on stays untouched. The prompt's usual 2.1 m radius
+  // overlaps the basket's own tighter 0.9 m "look" prompt at the same spot; the HUD's nearest-
+  // interactable rule sorts out which one shows, same as at the other seven baskets. Two baskets' worth
+  // of bees (east-row, the watch-lamp one) are still silent orbits; `vicLamps[2]` never got any bees at
+  // all.
+  let friendlyFenceBee = null;
   for (let bi = 0; bi < 2; bi++) {
     const fenceBeeRig = makeBee();
     game.npcs.push(new Flyer(game, fenceBeeRig, { cx: -18, cz: -6.4, r: 0.3, h: 2.62, speed: 1.6 + bi * 0.3, bob: 0.05, wobble: 0.12, cw: bi % 2 === 0, phase: bi * 2.6 + 7.7 }));
+    if (bi === 0) friendlyFenceBee = fenceBeeRig;
   }
+  { const fenceBeeId = game.namedFriend('fence-bee');
+    game.addInteractable({ obj: friendlyFenceBee.group, radius: 2.1, label: () => 'Say hello to the bee', onUse: () => {
+      game.befriend(fenceBeeId); SFX.twinkle(); game.hearts(friendlyFenceBee.group.position.x, friendlyFenceBee.group.position.y, friendlyFenceBee.group.position.z, 3);
+      game.toast('🐝 "*loops once over the basket, then straight back into its circle*"'); } }); }
   // eight of the eleven baskets have their own bees by now (east, west, dead-centre, south, plaza,
   // westmost, mid-fence and south-pavement fence); `vicLamps[6]` (x=13.5, z=6.4, the dusty-rose basket
   // on the north-row house's own fence, whose own "look" prompt round already measured the fence at
