@@ -25357,3 +25357,26 @@ gentleman's own home spot sitting under a metre off.
 unchanged at 329, and Victorian's own friend count rose from 123 to 124. No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 924 — Victorian's mid-fence flower-basket bees get their own "say hello"
+
+The east, west, dead-centre, south-pavement, plaza and westmost baskets' bees had all picked up
+their own "say hello" by round 923, but the mid-fence basket — `vicLamps[4]` (x=-7.5, z=6.4), on
+the north row, whose own "look" prompt round already settled on a tight 0.9 m radius to clear the
+house fence a stride off — still had its pair circling in silence. **That pair now answers back
+too.** *"loops once over the basket, then straight back into its circle"*
+
+Same trick as every basket before it: the mid-fence basket's own `for (let bi = 0; bi < 2; bi++)`
+loop over `makeBee()` + `Flyer` (70-worlds.js, `buildVictorian`) now captures its first iteration's
+rig into `friendlyMidFenceBee`, and one `game.addInteractable` keys off its group directly with its
+own `game.namedFriend('mid-fence-bee')` id. No new mesh, no new physics box, no new `rnd()` draw —
+the capture calls nothing, so the shared sequence every later pick in this town depends on stays
+untouched. The prompt's usual 2.1 m radius overlaps the basket's own tighter 0.9 m "look" prompt at
+the same spot; the HUD's nearest-interactable rule sorts out which one shows, same as at the other
+six baskets. Two baskets' worth of bees (fence, east-row) are still silent orbits; `vicLamps[2]`
+never got any bees at all, ruled out at ground level by the wandering gentleman's own home spot.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 329, and Victorian's own friend count rose from 124 to 125. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
