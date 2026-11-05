@@ -10702,26 +10702,35 @@ function buildVictorian(game, entry) {
     game.addInteractable({ obj: friendlySouthBee.group, radius: 2.1, label: () => 'Say hello to the bee', onUse: () => {
       game.befriend(southBeeId); SFX.twinkle(); game.hearts(friendlySouthBee.group.position.x, friendlySouthBee.group.position.y, friendlySouthBee.group.position.z, 3);
       game.toast('🐝 "*loops once over the basket, then straight back into its circle*"'); } }); }
-  // the east, west, dead-centre and south baskets all got their own bees above; `vicLamps[9]` (x=45,
-  // z=-6.4, basketHues[9 % 4] = the same amber/gold hue as `vicLamps[1]` and `vicLamps[5]`, the
-  // plaza-side basket three strides from the clock tower whose own "look" prompt already shares a 0.9
-  // m radius with the lamp post to clear the lamplighter's patrol route), never got any either. A
-  // fifth pair now circles that one too, same height and radius as the other four: y=2.62, just above
-  // the basket's own y=2.55 — well above the bobby's, the lamplighter's and the cat's own jump reach,
-  // the same reasoning every basket's own bees so far already relied on, so no fresh ground-level
-  // clearance probe was needed here either: the loop flies a flat 0.3 m circle at head height and
-  // above, well clear of the tight 0.9 m basket-prompt radius that only ever mattered for something
-  // standing on the pavement. No new mesh, no new physics box: the same `makeBee()` rig and `Flyer`
-  // controller the other four baskets' bees already lean on, not a greetable soul.
+  // the east, west, dead-centre and south baskets all got their own bees above, and all four picked up
+  // their own "say hello" since; `vicLamps[9]` (x=45, z=-6.4, basketHues[9 % 4] = the same amber/gold
+  // hue as `vicLamps[1]` and `vicLamps[5]`, the plaza-side basket three strides from the clock tower
+  // whose own "look" prompt already shares a 0.9 m radius with the lamp post to clear the
+  // lamplighter's patrol route) got a fifth pair of bees but never a greet of its own — the usual
+  // pattern, reused once more: the loop's own first iteration's rig is captured into
+  // `friendlyPlazaBee`, same height and radius as the rest (y=2.62, just above the basket's own
+  // y=2.55 — well above the bobby's, the lamplighter's and the cat's own jump reach), and a
+  // `game.addInteractable` keys off that rig's own group directly. No new mesh, no new physics box,
+  // no new `rnd()` draw: the capture itself calls nothing, so the shared sequence every later pick in
+  // this town depends on stays untouched. The prompt's usual 2.1 m radius only compares `x`/`z`, so it
+  // overlaps the basket's own tighter 0.9 m "look" prompt centred on the same spot — the HUD's
+  // nearest-interactable rule, already relied on at the pond's frogs, the glade's fairies and the
+  // east/west/centre/south baskets above, sorts out which one shows.
   //
   // Built dead last, right after the south basket's own bees and right before the squirrel, for the
   // reason every other addition at the end of this function already gives: `Flyer`'s own constructor
   // draws unconditionally from the *shared* `rnd()` sequence, and anything built earlier in this town
   // would have had its own timing-sensitive pick shifted by it.
+  let friendlyPlazaBee = null;
   for (let bi = 0; bi < 2; bi++) {
     const plazaBeeRig = makeBee();
     game.npcs.push(new Flyer(game, plazaBeeRig, { cx: 45, cz: -6.4, r: 0.3, h: 2.62, speed: 1.6 + bi * 0.3, bob: 0.05, wobble: 0.12, cw: bi % 2 === 0, phase: bi * 2.6 + 4.4 }));
+    if (bi === 0) friendlyPlazaBee = plazaBeeRig;
   }
+  { const plazaBeeId = game.namedFriend('plaza-bee');
+    game.addInteractable({ obj: friendlyPlazaBee.group, radius: 2.1, label: () => 'Say hello to the bee', onUse: () => {
+      game.befriend(plazaBeeId); SFX.twinkle(); game.hearts(friendlyPlazaBee.group.position.x, friendlyPlazaBee.group.position.y, friendlyPlazaBee.group.position.z, 3);
+      game.toast('🐝 "*loops once over the basket, then straight back into its circle*"'); } }); }
   // the east, west, dead-centre, south and plaza baskets all got their own bees above; `vicLamps[0]`
   // (x=-60, z=-6.4, basketHues[0 % 4] = the deep fuchsia-pink hue, the westmost basket on the whole
   // street, whose own "look" prompt round already gave it the usual 1.8 m open-street radius with
