@@ -26004,3 +26004,26 @@ unchanged at 330, Robot City's own friend count rose from 103 to 104 (confirmed 
 suite's own "to meet" probe for world 2). No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 951 — Robot City's sixth drone-fly closes out the swarm
+
+Round 950 wired up the fifth of Robot City's six circling drone-flies, leaving only the last one
+loop-only. **The sixth and final drone-fly (`i === 5`, counter-rotating since `i % 2 === 0` is
+false on the last odd index) now answers "Say hello to the drone-fly" too — every drone-fly in the
+factory-floor swarm can be greeted.** *"banks hard round the plaza statue, blinks its LED twice, and
+tucks back into the swarm"*
+
+Same mechanism as the first five: the swarm's own `for (let i = 0; i < 6; i++)` loop over
+`makeDroneFly()` + `Flyer` (70-worlds.js, `buildRobotCity`) now also captures its sixth iteration's
+rig into `sixthDroneFly`, and a sixth `game.addInteractable` keys off that rig directly with its own
+`game.namedFriend('drone-fly-6')` id. No new mesh, no new physics box, no new `rnd()` draw — the
+capture calls nothing, so nothing built later in the city shifts. Same 2.1 m radius as the other
+five, comparing x/z only, so it still catches the cat passing underneath. This closes out the
+swarm entirely — the pattern that ran through the Victorian flower-basket bees and Whisper Woods'
+dragonflies finally reaches every member of a looping flock in one world.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330, Robot City's own friend count rose from 104 to 105 (confirmed against the test
+suite's own "to meet" probe for world 2). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
