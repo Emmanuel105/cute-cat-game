@@ -19273,11 +19273,11 @@ function buildVictorian(game, entry) {
   // other addition at the end of this function already gives: `Flyer`'s own constructor draws
   // unconditionally from the *shared* `rnd()` sequence, and anything built earlier in this town would
   // have had its own timing-sensitive pick shifted by it.
-  let friendlyBelfryBat = null, secondBelfryBat = null;
+  let friendlyBelfryBat = null, secondBelfryBat = null, thirdBelfryBat = null;
   for (let bi = 0; bi < 3; bi++) {
     const batRig = makeBat({ phase: bi * 2.1 });
     game.npcs.push(new Flyer(game, batRig, { cx: 42, cz: 0, r: 3.6, h: 21.5, speed: 2.2 + bi * 0.35, bob: 0.5, wobble: 0.6, cw: bi % 2 === 0, phase: bi * 2.1 }));
-    if (bi === 0) friendlyBelfryBat = batRig; else if (bi === 1) secondBelfryBat = batRig;
+    if (bi === 0) friendlyBelfryBat = batRig; else if (bi === 1) secondBelfryBat = batRig; else if (bi === 2) thirdBelfryBat = batRig;
   }
   { const belfryBatId = game.namedFriend('belfry-bat');
     game.addInteractable({ obj: friendlyBelfryBat.group, radius: 2.1, label: () => 'Say hello to the bat', onUse: () => {
@@ -19290,6 +19290,13 @@ function buildVictorian(game, entry) {
     game.addInteractable({ obj: secondBelfryBat.group, radius: 2.1, label: () => 'Say hello to the bat', onUse: () => {
       game.befriend(secondBelfryBatId); SFX.chitter(); game.hearts(secondBelfryBat.group.position.x, secondBelfryBat.group.position.y, secondBelfryBat.group.position.z, 3);
       game.toast('🦇 "*peels off from the others, circles the clock face twice, then rejoins the loop*"'); } }); }
+  // The belfry's third and last bat (`bi === 2`, co-rotating with the first again since `i % 2 === 0`
+  // is true on the even index) was the only one left loop-only — closes out the trio entirely, same
+  // fix as the other two, a third distinct `game.namedFriend` id so it stacks with both.
+  { const thirdBelfryBatId = game.namedFriend('belfry-bat-3');
+    game.addInteractable({ obj: thirdBelfryBat.group, radius: 2.1, label: () => 'Say hello to the bat', onUse: () => {
+      game.befriend(thirdBelfryBatId); SFX.chitter(); game.hearts(thirdBelfryBat.group.position.x, thirdBelfryBat.group.position.y, thirdBelfryBat.group.position.z, 3);
+      game.toast('🦇 "*loops wide around the tower, chitters once, and dives back into the dark*"'); } }); }
   // every lamp on the street has carried its own hanging flower basket for rounds now, and the
   // Neighborhood's garden, Victorian's own canal and the clock tower's belfry all got something living
   // nearby in turn — not one of the eleven baskets ever had, so a couple of bees now circle the

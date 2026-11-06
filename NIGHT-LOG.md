@@ -26165,3 +26165,27 @@ unchanged at 330, the Victorian town's own friend count rose to 141 (confirmed a
 suite's own "to meet" probe for world 3). No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 958 — the Victorian belfry's third bat closes out the trio
+
+Round 957 wired up the second of the clock tower's three belfry bats, leaving the last one
+loop-only. **The third and final bat (`bi === 2`, co-rotating with the first again since
+`i % 2 === 0` is true on the even index) now answers "Say hello to the bat" too — every bat in the
+belfry can be greeted.** *"loops wide around the tower, chitters once, and dives back into the
+dark"*
+
+Same mechanism as the first two, and the same pattern this project has now run through for every
+flock in the game — crows, drone-flies, dragonflies, bats, flower-basket bees: the existing
+`for (let bi = 0; bi < 3; bi++)` loop over `makeBat()` + `Flyer` (70-worlds.js, `buildVictorian`)
+now also captures its third iteration's rig into `thirdBelfryBat`, and a third `game.addInteractable`
+keys off that rig directly with its own `game.namedFriend('belfry-bat-3')` id. No new mesh, no new
+physics box, no new `rnd()` draw — the capture calls nothing, so nothing built later in the town
+shifts, and `Flyer` never touches the physics grid so no clearance probe was needed either. Same
+2.1 m radius as the other two, comparing x/z only, so it still catches the cat passing underneath
+the tower while the bat loops 21.5 m up. This closes out the belfry's own trio entirely.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330, the Victorian town's own friend count rose from 141 to 142 (confirmed against the
+test suite's own "to meet" probe for world 3). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
