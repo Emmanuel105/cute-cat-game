@@ -19737,19 +19737,30 @@ function buildVictorian(game, entry) {
   // capture calls nothing, so the shared sequence the squirrel built right after this loop depends on
   // stays untouched. The prompt's usual 2.1 m radius overlaps both the basket's own "look" prompt and
   // the lost-watch notice's own "read" prompt at the same post; the HUD's nearest-interactable rule
-  // sorts out which one shows, same as at the other ten baskets. All eleven baskets are now accounted
-  // for: ten with their own bees that answer back, `vicLamps[2]` the one its own round already ruled
-  // out as never having had bees at all.
-  let friendlyWatchLampBee = null;
+  // sorts out which one shows, same as at the other ten baskets.
+  //
+  // Round 946 finishes the set: the watch-lamp basket's own other bee — the one sharing this circle
+  // with `friendlyWatchLampBee` above — now answers too, the eleventh and last of the eleven baskets to
+  // get both its bees greetable rather than just one. Same trick as the ten baskets before it:
+  // `secondWatchLampBee` captures the loop's own second iteration, and a second `game.addInteractable`
+  // keys off that group directly with its own `game.namedFriend('watch-lamp-bee-2')` id. All eleven
+  // baskets are now fully accounted for: ten with both their own bees answering back, `vicLamps[2]` the
+  // one its own round already ruled out as never having had bees at all.
+  let friendlyWatchLampBee = null, secondWatchLampBee = null;
   for (let bi = 0; bi < 2; bi++) {
     const watchLampBeeRig = makeBee();
     game.npcs.push(new Flyer(game, watchLampBeeRig, { cx: 34.5, cz: 6.4, r: 0.3, h: 2.62, speed: 1.6 + bi * 0.3, bob: 0.05, wobble: 0.12, cw: bi % 2 === 0, phase: bi * 2.6 + 9.9 }));
     if (bi === 0) friendlyWatchLampBee = watchLampBeeRig;
+    if (bi === 1) secondWatchLampBee = watchLampBeeRig;
   }
   { const watchLampBeeId = game.namedFriend('watch-lamp-bee');
     game.addInteractable({ obj: friendlyWatchLampBee.group, radius: 2.1, label: () => 'Say hello to the bee', onUse: () => {
       game.befriend(watchLampBeeId); SFX.twinkle(); game.hearts(friendlyWatchLampBee.group.position.x, friendlyWatchLampBee.group.position.y, friendlyWatchLampBee.group.position.z, 3);
       game.toast('🐝 "*loops once over the basket, then straight back into its circle*"'); } }); }
+  { const watchLampBee2Id = game.namedFriend('watch-lamp-bee-2');
+    game.addInteractable({ obj: secondWatchLampBee.group, radius: 2.1, label: () => 'Say hello to the bee', onUse: () => {
+      game.befriend(watchLampBee2Id); SFX.twinkle(); game.hearts(secondWatchLampBee.group.position.x, secondWatchLampBee.group.position.y, secondWatchLampBee.group.position.z, 3);
+      game.toast('🐝 "*peels off from its circling partner, dips low over the basket, then rejoins*"'); } }); }
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);

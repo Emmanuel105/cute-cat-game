@@ -25882,3 +25882,31 @@ unchanged at 330, Victorian's own friend count rose from 138 to 139 (confirmed a
 suite's own "to meet" probe for world 3). No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 946 — Watch-lamp flower basket's second bee gets a "say hello"
+
+Rounds 935, 936, 938, 939, 940, 941, 943, 944 and 945 worked down the list of Victorian flower
+baskets whose own second bee had never been wired up for a greet, closing the gap for the east,
+west, plaza, dead-centre, south, westmost, mid-fence, south-pavement-fence and east-row baskets.
+**The watch-lamp basket's own other bee — the one sharing its circle with the bee that already
+answers, by `vicLamps[8]` at x=34.5, z=6.4 — now answers too, the eleventh and last of the eleven
+baskets to get both its bees greetable rather than just one.** *"peels off from its circling
+partner, dips low over the basket, then rejoins"*
+
+Same mechanism as the ten baskets before it: the watch-lamp basket's own `for (let bi = 0; bi < 2;
+bi++)` loop over `makeBee()` + `Flyer` (70-worlds.js, `buildVictorian`) now also captures its second
+iteration's rig into `secondWatchLampBee`, and a second `game.addInteractable` keys off that group
+directly with its own `game.namedFriend('watch-lamp-bee-2')` id. No new mesh, no new physics box, no
+new `rnd()` draw — the capture calls nothing, so nothing built later in the town (the squirrel,
+right after this loop) shifts. Same 2.1 m radius as the first bee, which overlaps both the basket's
+own "look" prompt and the lost-watch notice's own "read" prompt at the same post; the HUD's
+nearest-interactable rule still sorts out which one shows. With this one done, all eleven of
+Victorian's flower-basket bee pairs are now fully wired — `vicLamps[2]` remains the one basket its
+own round already ruled out as never having had bees at all, so there is nothing left on this
+particular list for a future round.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330, Victorian's own friend count rose from 139 to 140 (confirmed against the test
+suite's own "to meet" probe for world 3). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
