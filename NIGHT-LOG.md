@@ -25962,3 +25962,24 @@ unchanged at 330, Robot City's own friend count rose from 101 to 102 (confirmed 
 suite's own "to meet" probe for world 2). No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 949 — Robot City's fourth drone-fly gets its own "say hello"
+
+Round 948 wired up the third of Robot City's six circling drone-flies, leaving three still
+loop-only. **The fourth of the six (`i === 3`, counter-rotating again since `i % 2 === 0` flips
+back to false on odd indices) now answers "Say hello to the drone-fly" too.** *"wobbles its rotors,
+blinks its LED twice, and settles back into the loop"*
+
+Same mechanism as the first three: the swarm's own `for (let i = 0; i < 6; i++)` loop over
+`makeDroneFly()` + `Flyer` (70-worlds.js, `buildRobotCity`) now also captures its fourth iteration's
+rig into `fourthDroneFly`, and a fourth `game.addInteractable` keys off that rig directly with its
+own `game.namedFriend('drone-fly-4')` id. No new mesh, no new physics box, no new `rnd()` draw —
+the capture calls nothing, so nothing built later in the city shifts. Same 2.1 m radius as the
+other three, comparing x/z only, so it still catches the cat passing underneath. Two more
+drone-flies (`i = 4..5`) are still loop-only — left for another night.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330, Robot City's own friend count rose from 102 to 103 (confirmed against the test
+suite's own "to meet" probe for world 2). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
