@@ -26050,3 +26050,25 @@ unchanged at 330, the Neighborhood's own friend count rose to at least 91 (the t
 "to meet" check for world 0 still passes). No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 953 — the Neighborhood's third crow gets its own "say hello"
+
+Round 952 wired up the second of the Neighborhood's six circling crows, leaving four still
+loop-only. **The third of the six (`i === 2`, co-rotating with the first again since `i % 2 === 0`
+is true on even indices) now answers "Say hello to the crow" too.** *"glides a tight loop over the
+chimneys, caws once, and settles back into line"*
+
+Same mechanism as every flock this project has worked through so far — crows, drone-flies,
+dragonflies, flower-basket bees: the existing `for (let i = 0; i < 6; i++)` loop over `makeCrow()` +
+`Flyer` (70-worlds.js, `buildNeighborhood`) now also captures its third iteration's rig into
+`thirdCrow`, and a third `game.addInteractable` keys off that rig directly with its own
+`game.namedFriend('crow-3')` id. No new mesh, no new physics box, no new `rnd()` draw — the capture
+calls nothing, so nothing built later in the Neighborhood shifts. Same 2.1 m radius as the other
+two, comparing x/z only, so it still catches the cat passing underneath while the crow loops
+11-15 m up. Three more crows (`i = 3..5`) are still loop-only — left for another night.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330, the Neighborhood's own friend count rose from 91 to 92 (confirmed against the
+test suite's own "to meet" probe for world 0). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
