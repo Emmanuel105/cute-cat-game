@@ -26238,3 +26238,27 @@ unchanged at 330, Sunny Shore's own friend count rose from 119 to 120 (confirmed
 suite's own "to meet" probe for world 4). No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 961 — Sunny Shore's fourth seagull gets its own "say hello"
+
+Round 960 wired up the third of Sunny Shore's seven seagulls, leaving four still loop-only. **The
+fourth gull (`i === 3`, counter-rotating since `i % 2 === 0` is false on the odd index) now answers
+"Say hello to the seagull" too.** *"circles once over your head, lets out a sharp cry, and settles
+back into formation"*
+
+Same mechanism as the first three, and the same pattern this project has run through for every flock
+in the game — crows, drone-flies, dragonflies, bats, flower-basket bees, and now this gull colony:
+the existing `for (let i = 0; i < 7; i++)` loop over `makeSeagull()` + `Flyer` (72-world-beach.js,
+`buildBeach`) now also captures its fourth iteration's rig into `fourthSeagull`, and a fourth
+`game.addInteractable` keys off that rig directly with its own `game.namedFriend('seagull-4')` id.
+No new mesh, no new physics box, no new `rnd()` draw — the capture calls nothing, so nothing built
+later on the beach shifts, and `Flyer` never touches the physics grid so no clearance probe was
+needed either. Same 2.1 m radius as the other three, comparing x/z only, so it still catches the cat
+passing underneath while the gull loops 5-11 m up. Three more gulls (`i = 4..6`) are still
+loop-only — left for another night.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330, Sunny Shore's own friend count rose from 120 to 121 (confirmed against the test
+suite's own "to meet" probe for world 4). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
