@@ -2166,8 +2166,8 @@ function buildNeighborhood(game, entry) {
   // already calls `game.world.add(rig.group)` itself, so no extra scene-graph wiring, and the
   // proximity check only compares x/z, never height, so the usual 2.1 m radius still catches the
   // cat passing underneath while this one loops 11-15 m up.
-  let friendlyCrow = null, secondCrow = null, thirdCrow = null;
-  for (let i = 0; i < 6; i++) { const rig = makeCrow({ phase: i * 1.15 }); game.npcs.push(new Flyer(game, rig, { cx: 0, cz: 14, r: r.range(22, 34), h: r.range(11, 15), speed: r.range(1.4, 2.0), bob: 0.5, wobble: 1.3, cw: i % 2 === 0, phase: i * 1.15 })); if (i === 0) friendlyCrow = rig; else if (i === 1) secondCrow = rig; else if (i === 2) thirdCrow = rig; }
+  let friendlyCrow = null, secondCrow = null, thirdCrow = null, fourthCrow = null;
+  for (let i = 0; i < 6; i++) { const rig = makeCrow({ phase: i * 1.15 }); game.npcs.push(new Flyer(game, rig, { cx: 0, cz: 14, r: r.range(22, 34), h: r.range(11, 15), speed: r.range(1.4, 2.0), bob: 0.5, wobble: 1.3, cw: i % 2 === 0, phase: i * 1.15 })); if (i === 0) friendlyCrow = rig; else if (i === 1) secondCrow = rig; else if (i === 2) thirdCrow = rig; else if (i === 3) fourthCrow = rig; }
   { const crowId = game.namedFriend('crow');
     game.addInteractable({ obj: friendlyCrow.group, radius: 2.1, label: () => 'Say hello to the crow', onUse: () => {
       game.befriend(crowId); SFX.squawk(); game.hearts(friendlyCrow.group.position.x, friendlyCrow.group.position.y, friendlyCrow.group.position.z, 3);
@@ -2186,6 +2186,13 @@ function buildNeighborhood(game, entry) {
     game.addInteractable({ obj: thirdCrow.group, radius: 2.1, label: () => 'Say hello to the crow', onUse: () => {
       game.befriend(crow3Id); SFX.squawk(); game.hearts(thirdCrow.group.position.x, thirdCrow.group.position.y, thirdCrow.group.position.z, 3);
       game.toast('🐦‍⬛ "*glides a tight loop over the chimneys, caws once, and settles back into line*"'); } }); }
+  // fourth of the six crows gets the same treatment, counter-rotating again (i % 2 === 0 is false on
+  // the odd index) — same pattern once more: the loop above already captures its rig, so this is just
+  // a fourth `game.namedFriend('crow-4')` and a fourth `game.addInteractable` keyed to it directly.
+  { const crow4Id = game.namedFriend('crow-4');
+    game.addInteractable({ obj: fourthCrow.group, radius: 2.1, label: () => 'Say hello to the crow', onUse: () => {
+      game.befriend(crow4Id); SFX.squawk(); game.hearts(fourthCrow.group.position.x, fourthCrow.group.position.y, fourthCrow.group.position.z, 3);
+      game.toast('🐦‍⬛ "*dips a wing over the eaves, caws twice, and wheels back to the others*"'); } }); }
 
   // a ukulele player stands in the quiet yard behind the north-row houses, strumming — Sunny Shore,
   // Frosty Peak and Victorian all have someone making music (a ukulele on the dunes, a juggling busker,
