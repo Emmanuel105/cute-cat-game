@@ -25748,3 +25748,27 @@ unchanged at 329, Victorian's own friend count rose from 134 to 135 (confirmed w
 probe that travels to Victorian and reads `game.friendTotal`). No visual check was possible in this
 environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 941 — Victorian's westmost flower basket gets its second bee a "say hello"
+
+Rounds 935, 936, 938, 939 and 940 worked down the list of Victorian flower baskets whose own second
+bee had never been wired up for a greet, closing the gap for the east, west, plaza, dead-centre and
+south baskets. **The westmost basket's own other bee — the one circling the fuchsia-pink basket at
+the street's far western end, past the toy pinwheel — now answers too**, the sixth of the eleven to
+get both its bees greetable rather than just one. *"peels off from its circling partner, dips low
+over the basket, then rejoins"*
+
+Same mechanism as the five baskets before it: the westmost basket's own `for (let bi = 0; bi < 2;
+bi++)` loop over `makeBee()` + `Flyer` (70-worlds.js, `buildVictorian`) now also captures its second
+iteration's rig into `secondWestmostBee`, and a second `game.addInteractable` keys off that group
+directly with its own `game.namedFriend('westmost-bee-2')` id. No new mesh, no new physics box, no
+new `rnd()` draw — the capture calls nothing, so nothing built later in the town shifts. Same 2.1 m
+radius as the first bee, which only compares x/z, so it still catches the cat near either bee
+circling this basket. Four baskets' worth of second bees (mid-fence, south-pavement-fence,
+east-row, watch-lamp) are still silent orbits — plenty left for another night.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329, Victorian's own friend count rose from 135 to 136 (confirmed against the test
+suite's own "to meet" probe for world 3). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
