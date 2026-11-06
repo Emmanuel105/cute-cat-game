@@ -2166,12 +2166,19 @@ function buildNeighborhood(game, entry) {
   // already calls `game.world.add(rig.group)` itself, so no extra scene-graph wiring, and the
   // proximity check only compares x/z, never height, so the usual 2.1 m radius still catches the
   // cat passing underneath while this one loops 11-15 m up.
-  let friendlyCrow = null;
-  for (let i = 0; i < 6; i++) { const rig = makeCrow({ phase: i * 1.15 }); game.npcs.push(new Flyer(game, rig, { cx: 0, cz: 14, r: r.range(22, 34), h: r.range(11, 15), speed: r.range(1.4, 2.0), bob: 0.5, wobble: 1.3, cw: i % 2 === 0, phase: i * 1.15 })); if (i === 0) friendlyCrow = rig; }
+  let friendlyCrow = null, secondCrow = null;
+  for (let i = 0; i < 6; i++) { const rig = makeCrow({ phase: i * 1.15 }); game.npcs.push(new Flyer(game, rig, { cx: 0, cz: 14, r: r.range(22, 34), h: r.range(11, 15), speed: r.range(1.4, 2.0), bob: 0.5, wobble: 1.3, cw: i % 2 === 0, phase: i * 1.15 })); if (i === 0) friendlyCrow = rig; else if (i === 1) secondCrow = rig; }
   { const crowId = game.namedFriend('crow');
     game.addInteractable({ obj: friendlyCrow.group, radius: 2.1, label: () => 'Say hello to the crow', onUse: () => {
       game.befriend(crowId); SFX.squawk(); game.hearts(friendlyCrow.group.position.x, friendlyCrow.group.position.y, friendlyCrow.group.position.z, 3);
       game.toast('🐦‍⬛ "*wheels once overhead, lets out a sharp caw, and falls back into formation*"'); } }); }
+  // second of the six crows gets the same treatment, counter-rotating (i % 2 === 0 is false on the odd
+  // index) — the exact drone-fly-swarm pattern: the loop above already captures its rig, so this is
+  // just a second `game.namedFriend('crow-2')` and a second `game.addInteractable` keyed to it directly.
+  { const crow2Id = game.namedFriend('crow-2');
+    game.addInteractable({ obj: secondCrow.group, radius: 2.1, label: () => 'Say hello to the crow', onUse: () => {
+      game.befriend(crow2Id); SFX.squawk(); game.hearts(secondCrow.group.position.x, secondCrow.group.position.y, secondCrow.group.position.z, 3);
+      game.toast('🐦‍⬛ "*banks low over the rooftops, caws twice, and climbs back into the circle*"'); } }); }
 
   // a ukulele player stands in the quiet yard behind the north-row houses, strumming — Sunny Shore,
   // Frosty Peak and Victorian all have someone making music (a ukulele on the dunes, a juggling busker,
