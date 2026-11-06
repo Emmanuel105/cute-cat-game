@@ -7167,8 +7167,8 @@ function buildRobotCity(game, entry) {
   // touches the ground or the physics grid and needed no headless clearance probe — only a flight height
   // (9 m, bobbing to 9.5) well clear of the tallest things anywhere near this stretch of floor (the
   // spotlight poles at y=6, the pipe runs at y=3.6, the furnace and robot arm further south).
-  let friendlyDroneFly = null;
-  for (let i = 0; i < 6; i++) { const rig = makeDroneFly({ phase: i * 1.2 }); game.npcs.push(new Flyer(game, rig, { cx: 0, cz: -10, r: r.range(12, 19), h: r.range(8, 10.5), speed: r.range(2.4, 3.4), bob: 0.5, wobble: 1.2, cw: i % 2 === 0, phase: i * 1.2 })); if (i === 0) friendlyDroneFly = rig; }
+  let friendlyDroneFly = null, secondDroneFly = null;
+  for (let i = 0; i < 6; i++) { const rig = makeDroneFly({ phase: i * 1.2 }); game.npcs.push(new Flyer(game, rig, { cx: 0, cz: -10, r: r.range(12, 19), h: r.range(8, 10.5), speed: r.range(2.4, 3.4), bob: 0.5, wobble: 1.2, cw: i % 2 === 0, phase: i * 1.2 })); if (i === 0) friendlyDroneFly = rig; else if (i === 1) secondDroneFly = rig; }
   // every world's own flock gets a "say hello" eventually — the fairies, the gulls, the crabs — but
   // these six drone-flies have buzzed the factory floor loop-only since they were first added. First of
   // the six now answers "Say hello to the drone-fly" too: `Flyer`'s own constructor already calls
@@ -7179,6 +7179,20 @@ function buildRobotCity(game, entry) {
     game.addInteractable({ obj: friendlyDroneFly.group, radius: 2.1, label: () => 'Say hello to the drone-fly', onUse: () => {
       game.befriend(droneFlyId); SFX.beep(); game.hearts(friendlyDroneFly.group.position.x, friendlyDroneFly.group.position.y, friendlyDroneFly.group.position.z, 3);
       game.toast('🤖 "*dips a wing, blinks its LED twice, and keeps circling*"'); } }); }
+  // the exact gap the Victorian flower-basket bees spent eleven straight rounds closing, pair by pair:
+  // only the first member of a looping flock ever got its own "say hello", the rest left as silent
+  // scenery. This city's own drone-fly swarm has the same gap — five of its six still loop-only. The
+  // second of the six (counter-rotating to the first, `i % 2 === 0` flips `cw` every other index) now
+  // answers too. Same mechanism as every bee and dragonfly pair before it: no new mesh, no new physics
+  // box, no new `rnd()` draw — `secondDroneFly` just captures the loop's own second iteration, and a
+  // second `game.addInteractable` keys off that rig directly with its own `game.namedFriend('drone-fly-2')`
+  // id. Same 2.1 m radius as the first, which only compares x/z, so it still catches the cat passing
+  // underneath regardless of which of the two it is nearer. Four more drone-flies (i=2..5) are still
+  // loop-only — plenty left for another night.
+  { const droneFly2Id = game.namedFriend('drone-fly-2');
+    game.addInteractable({ obj: secondDroneFly.group, radius: 2.1, label: () => 'Say hello to the drone-fly', onUse: () => {
+      game.befriend(droneFly2Id); SFX.beep(); game.hearts(secondDroneFly.group.position.x, secondDroneFly.group.position.y, secondDroneFly.group.position.z, 3);
+      game.toast('🤖 "*peels off its own loop, blinks its LED twice, and rejoins the circle*"'); } }); }
   makeWoodenDoor(game, 19, -15, 0, () => game.travel(3, 'from-prev'));
   const back = makeRingPortal(0xff5fd2, { frame: 0x3a4048 }); place(game, U, back, -10, 12, 0); P.addBox(-11.4, 1.3, 12, 0.5, 2.6, 0.6); P.addBox(-8.6, 1.3, 12, 0.5, 2.6, 0.6);
   game.addInteractable({ obj: back, radius: 2.4, label: () => 'Return to Candy Land', onUse: () => game.travel(1, 'from-next') });

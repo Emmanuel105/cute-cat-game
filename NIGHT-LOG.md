@@ -25910,3 +25910,34 @@ unchanged at 330, Victorian's own friend count rose from 139 to 140 (confirmed a
 suite's own "to meet" probe for world 3). No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 947 — Robot City's second drone-fly gets its own "say hello"
+
+Rounds 935-946 just finished closing this exact gap for all eleven of Victorian's flower-basket bee
+pairs: a loop builds several of the same flying creature, but only the first one ever gets wired up
+to say hello, leaving the rest as silent scenery. Robot City's own drone-fly swarm (`buildRobotCity`,
+70-worlds.js) has the identical shape — six drone-flies circle the factory floor between the
+conveyors and the statue plaza, and only the first of them (`i === 0`) has ever answered "Say hello
+to the drone-fly". **The second of the six — counter-rotating to the first, since `cw` flips every
+other index — now answers too.** *"peels off its own loop, blinks its LED twice, and rejoins the
+circle"*
+
+Same mechanism as every bee and dragonfly pair before it: the swarm's own `for (let i = 0; i < 6;
+i++)` loop over `makeDroneFly()` + `Flyer` now also captures its second iteration's rig into
+`secondDroneFly`, and a second `game.addInteractable` keys off that rig directly with its own
+`game.namedFriend('drone-fly-2')` id. No new mesh, no new physics box, no new `rnd()` draw — the
+capture calls nothing, so nothing built later in the city shifts. Same 2.1 m radius as the first
+drone-fly, which only compares x/z, never height, so it still catches the cat passing underneath
+regardless of which of the two loops nearer. Four more drone-flies (i = 2..5) are still loop-only —
+plenty left for another night.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330, Robot City's own friend count rose from 100 to 101 (confirmed against the test
+suite's own "to meet" probe for world 2). A headless probe (`game.start('new')`, `game.travel(2,
+'from-prev')`, a real 700ms wait for the portal's own fade, then 1200 simulated frames) found two
+distinct "Say hello to the drone-fly" interactables in the world; firing both produced
+`robot:drone-fly` and `robot:drone-fly-2` as two separate entries in `game.state.friends`, confirming
+the second one is wired independently rather than overwriting the first. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
+headless probe described above. Probe script deleted after use, nothing committed. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
