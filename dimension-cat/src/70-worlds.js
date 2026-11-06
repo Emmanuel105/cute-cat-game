@@ -3562,6 +3562,48 @@ function buildNeighborhood(game, entry) {
     game.npcs.push(new SnowballFight(game, balloonKids[0], balloonKids[1], { cx: 4.5, cz: -14, gap: 4.5,
       color: r.pick([0xff5c8a, 0xffd166, 0x5cc8e8]), splashColors: [0x6fcdf2, 0xffffff, 0xbfe8ff], catIcon: '💦', catLine: 'Oops — sorry, kitty!' })); }
 
+  // Balloons, lemonade and ice cream all have a seller on this street by now, but the one cart that
+  // belongs at every park — a popcorn stand — never did. One parks in the open field south of the
+  // street: a box cart in classic red-and-cream candy stripes, on the same two-wheels-plus-front-leg
+  // frame the ice-cream cart above already uses, under its own striped flat awning. A vendor with a
+  // paper box held up for the first taker. *"Popcorn! Hot and fresh!"* *"Butter or plain, kitty?"*
+  // *"Careful — some of this is for the pigeons."*
+  // New prop `makePopcornBox()` (62-props-nature.js, dropped in right by `makeChipsCone()`, the same
+  // paper-cone-for-a-vendor shape this file already has several of): a small striped box with a
+  // handful of kernel spheres piled over the rim. The cart body itself reuses the ice-cream cart's own
+  // construction outright — cooler box, lid trim, two back wheels, front leg, bent handle, two-pole
+  // striped awning — just recoloured paper-cream with red stripes instead of white with green, so no
+  // new geometry idea, only new materials and one extra pair of vertical stripe boxes on the front face.
+  // Placement: a static scan of this world's own `game.physics.boxes` and every NPC's position right
+  // after `game.start('new')` (not a multi-frame probe — nothing below has a long wander leash, so a
+  // single sample of each one's resting spot is enough) found (37, -43) clear by just over 13 m of the
+  // nearest other soul (the hula-hooper at (32,-55)) and well outside every `game.zones` rectangle,
+  // comfortably past the cart's own 0.8×0.5 m footprint and the side road's own edge at x=41.5.
+  // Built dead last, right after the balloon fight above, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off this village's own shared `r()` sequence unconditionally, and this
+  // is the first world the test suite builds, so anything built earlier here would have had its own
+  // timing-sensitive pick shifted by it.
+  { const cartX = 37, cartZ = -43;
+    const boxM = mat(0xfff8ea, { roughness: 0.6 }), stripeM = mat(0xd62839, { roughness: 0.55 }), wheelM = mat(0x2a2a2a, { roughness: 0.7 }), metalM = mat(0xc9a648, { metalness: 0.55, roughness: 0.4 });
+    const cart = group(cartX, 0, cartZ, W);
+    mesh(G.box(0.7, 0.5, 0.42), boxM, { y: 0.45, shadow: 'both', parent: cart });                  // cart body
+    mesh(G.box(0.72, 0.05, 0.44), stripeM, { y: 0.71, shadow: 'both', parent: cart });              // lid trim
+    for (const stripeX of [-0.2, 0, 0.2]) mesh(G.box(0.1, 0.46, 0.43), stripeM, { x: stripeX, y: 0.45, shadow: 'none', parent: cart });   // front candy stripes
+    for (const wx of [-0.26, 0.26]) mesh(G.cyl(0.14, 0.14, 0.06, 14), wheelM, { x: wx, y: 0.14, z: 0.24, rx: PI / 2, shadow: 'both', parent: cart });   // two wheels at the back
+    mesh(G.cyl(0.03, 0.03, 0.14, 8), metalM, { y: 0.14, z: -0.22, shadow: 'both', parent: cart });   // front support leg
+    const handle = group(0, 0.68, -0.21, cart);
+    mesh(G.cyl(0.02, 0.02, 0.4, 6), metalM, { y: 0.1, rx: -0.3, shadow: 'none', parent: handle });
+    mesh(G.cyl(0.02, 0.02, 0.3, 6), metalM, { y: 0.28, z: -0.12, rx: PI / 2 - 0.3, shadow: 'none', parent: handle });
+    for (const px of [-0.3, 0.3]) mesh(G.cyl(0.018, 0.018, 1.0, 6), metalM, { x: px, y: 1.2, shadow: 'none', parent: cart });   // two awning poles
+    for (let i = 0; i < 5; i++) mesh(G.box(0.16, 0.02, 0.5), i % 2 ? stripeM : boxM, { x: -0.32 + i * 0.16, y: 1.7, shadow: 'both', parent: cart });   // striped flat awning
+    P.addBox(cartX, 0.4, cartZ, 0.8, 0.8, 0.5, { cam: false });
+    const popWard = makeWardrobe(r, { shirts: [0xe9e5da, 0xffb3b3], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0xefe7d8, 0x8d6e63] });
+    const seller = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.2), wardrobe: popWard }),
+      apron: 0xf5f2ea, hat: 'cap', hatColor: 0xd62839, jacket: null, scarf: null }); W.add(seller.group);
+    const v = new Vendor(game, seller, makePopcornBox(), { x: cartX + 0.9, z: cartZ, ry: PI / 2, cryIcon: '🍿',
+      cries: ['Popcorn! Hot and fresh!', 'Butter or plain, kitty?', 'Careful — some of this is for the pigeons.'] });
+    game.npcs.push(v); greetable(game, v); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

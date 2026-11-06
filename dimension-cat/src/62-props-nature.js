@@ -625,6 +625,17 @@ function makeChipsCone() {
   }
   return g;
 }
+/** A striped paper box of popcorn for a vendor to hold up: red candy-stripe sides, kernels piled over the rim. */
+function makePopcornBox() {
+  const g = new THREE.Group(), paper = mat(0xfff8ea, { roughness: 0.85 }), stripe = mat(0xd62839, { roughness: 0.7 });
+  mesh(G.box(0.16, 0.22, 0.12), paper, { y: 0.11, parent: g });
+  for (const sx of [-0.05, 0.05]) mesh(G.box(0.028, 0.22, 0.122), stripe, { x: sx, y: 0.11, shadow: 'none', parent: g });
+  const kernel = mat(0xfff3d6, { roughness: 0.9 });
+  for (const [kx, ky, kz] of [[0, 0.225, 0], [0.04, 0.2, 0.03], [-0.045, 0.21, -0.02], [0.02, 0.23, -0.04], [-0.02, 0.2, 0.045], [0.05, 0.19, -0.03]]) {
+    mesh(G.sphere(0.028, 6, 5), kernel, { x: kx, y: ky, z: kz, shadow: 'none', parent: g });
+  }
+  return g;
+}
 /** A twist of brown paper full of roasted chestnuts, for a vendor to hold up — each one scored with a little cross-cut. */
 function makeChestnutCone() {
   const g = new THREE.Group(), paper = mat(0x8a6a4a, { roughness: 0.9 }), nut = mat(0x5a3a22, { roughness: 0.75 }), cut = mat(0xd9a15a, { roughness: 0.6 });

@@ -25772,3 +25772,40 @@ unchanged at 329, Victorian's own friend count rose from 135 to 136 (confirmed a
 suite's own "to meet" probe for world 3). No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 942 — the Neighborhood finally gets a popcorn cart
+
+Of the three carts/stands already working this street — balloons, lemonade, ice cream — none of
+them sold the other classic park treat. **A popcorn cart now parks in the open field south of the
+street**, a box cart in red-and-cream candy stripes under its own striped awning, with a vendor
+holding a striped box up for the first taker. *"Popcorn! Hot and fresh!"* *"Butter or plain,
+kitty?"* *"Careful — some of this is for the pigeons."*
+
+New prop `makePopcornBox()` (62-props-nature.js, dropped in next to `makeChipsCone()`, the same
+paper-cone-for-a-vendor shape that file already has several of): a small striped box with a
+handful of kernel spheres piled over the rim. The cart body itself reuses the Neighborhood's own
+ice-cream cart construction outright — cooler box, lid trim, two back wheels, front leg, bent
+handle, two-pole striped awning (70-worlds.js, `buildNeighborhood`) — just recoloured paper-cream
+with red stripes instead of white with green, plus one extra set of vertical stripe boxes on the
+front face, so no new geometry idea, only new materials. The vendor uses the ordinary `Vendor`
+controller (55-npcs.js) exactly as the other three carts do, with `greetable(game, v)` giving it a
+"Say hello" prompt with no custom `addInteractable` needed.
+
+Placement: a static scan of this world's own `game.physics.boxes` and every NPC's resting position
+right after `game.start('new')` (not a multi-frame probe like some earlier rounds used — nothing
+near this spot has a long wander leash, so a single sample of each one's spot was enough) found
+(37, -43) clear by just over 13 m of the nearest other soul (the hula-hooper at (32, -55)) and well
+outside every `game.zones` rectangle, comfortably past the cart's own small 0.8×0.5 m footprint and
+short of the side road's own edge at x=41.5. Built dead last in `buildNeighborhood`, right after the
+balloon-fight kids, for the usual reason: `makeHuman()` and `randomPerson()` both draw off this
+village's own shared `r()` sequence unconditionally, and the Neighborhood is the first world the
+test suite builds, so anything built earlier here would have had its own timing-sensitive pick
+shifted by it. First pass picked the same two-colour shirt wardrobe the ice-cream seller already
+uses and tripped the test's own "no two neighbours share a shirt colour" check — swapped the vendor
+onto its own cream/red pair instead and the suite went green.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+rose from 329 to 330 (one new static box for the cart itself), the Neighborhood's own friend count
+rose from 89 to 90 (confirmed against the test suite's own "to meet" probe for world 0). No visual
+check was possible in this environment (no browser, no Playwright) — only the stub-three test suite
+above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
