@@ -10745,16 +10745,23 @@ function buildVictorian(game, entry) {
   // other addition at the end of this function already gives: `Flyer`'s own constructor draws
   // unconditionally from the *shared* `rnd()` sequence, and anything built earlier in this town would
   // have had its own timing-sensitive pick shifted by it.
-  let friendlyBelfryBat = null;
+  let friendlyBelfryBat = null, secondBelfryBat = null;
   for (let bi = 0; bi < 3; bi++) {
     const batRig = makeBat({ phase: bi * 2.1 });
     game.npcs.push(new Flyer(game, batRig, { cx: 42, cz: 0, r: 3.6, h: 21.5, speed: 2.2 + bi * 0.35, bob: 0.5, wobble: 0.6, cw: bi % 2 === 0, phase: bi * 2.1 }));
-    if (bi === 0) friendlyBelfryBat = batRig;
+    if (bi === 0) friendlyBelfryBat = batRig; else if (bi === 1) secondBelfryBat = batRig;
   }
   { const belfryBatId = game.namedFriend('belfry-bat');
     game.addInteractable({ obj: friendlyBelfryBat.group, radius: 2.1, label: () => 'Say hello to the bat', onUse: () => {
       game.befriend(belfryBatId); SFX.chitter(); game.hearts(friendlyBelfryBat.group.position.x, friendlyBelfryBat.group.position.y, friendlyBelfryBat.group.position.z, 3);
       game.toast('🦇 "*wheels once past the nearest clock face, then straight back up into the dark*"'); } }); }
+  // The belfry's second bat (`bi === 1`, counter-rotating since `i % 2 === 0` is false on the odd
+  // index) was left loop-only when the first got its "say hello" — same fix, a second distinct
+  // `game.namedFriend` id so it stacks with the first rather than replacing it.
+  { const secondBelfryBatId = game.namedFriend('belfry-bat-2');
+    game.addInteractable({ obj: secondBelfryBat.group, radius: 2.1, label: () => 'Say hello to the bat', onUse: () => {
+      game.befriend(secondBelfryBatId); SFX.chitter(); game.hearts(secondBelfryBat.group.position.x, secondBelfryBat.group.position.y, secondBelfryBat.group.position.z, 3);
+      game.toast('🦇 "*peels off from the others, circles the clock face twice, then rejoins the loop*"'); } }); }
   // every lamp on the street has carried its own hanging flower basket for rounds now, and the
   // Neighborhood's garden, Victorian's own canal and the clock tower's belfry all got something living
   // nearby in turn — not one of the eleven baskets ever had, so a couple of bees now circle the

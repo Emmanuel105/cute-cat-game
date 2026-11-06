@@ -26140,3 +26140,28 @@ unchanged at 330, the Neighborhood's own friend count rose from 94 to 95 (confir
 test suite's own "to meet" probe for world 0). No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 957 — the Victorian belfry's second bat gets its own "say hello"
+
+Round 956 closed out the Neighborhood's own crow flock, so this round went hunting for the next
+flock in the game still carrying ungreeted members. The clock tower's belfry bats turned out to be
+one: three bats circle the tower sixty feet up, and only the first of them (`bi === 0`) had ever
+answered "Say hello to the bat" — the other two were still loop-only. **The second of the three
+(`bi === 1`, counter-rotating since `i % 2 === 0` is false on the odd index) now answers too.**
+*"peels off from the others, circles the clock face twice, then rejoins the loop"*
+
+Same mechanism as every flock this project has worked through — crows, drone-flies, dragonflies,
+dove, frogs, fairies, flower-basket bees: the existing `for (let bi = 0; bi < 3; bi++)` loop over
+`makeBat()` + `Flyer` (70-worlds.js, `buildVictorian`) now also captures its second iteration's rig
+into `secondBelfryBat`, and a second `game.addInteractable` keys off that rig directly with its own
+`game.namedFriend('belfry-bat-2')` id. No new mesh, no new physics box, no new `rnd()` draw — the
+capture calls nothing, so nothing built later in the town shifts, and `Flyer` never touches the
+physics grid so no clearance probe was needed either. Same 2.1 m radius as the first bat, comparing
+x/z only, so it still catches the cat passing underneath the tower while the bat loops 21.5 m up.
+The third bat (`bi = 2`) is still loop-only — left for another night.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330, the Victorian town's own friend count rose to 141 (confirmed against the test
+suite's own "to meet" probe for world 3). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
