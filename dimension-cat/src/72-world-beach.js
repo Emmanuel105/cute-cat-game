@@ -560,8 +560,8 @@ function buildBeach(game, entry) {
     game.npcs.push(fw);
     const boldId = game.namedFriend('boldcrab');
     game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the crab', onUse: () => { game.befriend(boldId); SFX.chitter(); game.hearts(rig.group.position.x, 0.5, rig.group.position.z, 3); game.toast('🦀 *marches right up and taps a claw on your paw*'); } }); }
-  let friendlySeagull = null, secondSeagull = null, thirdSeagull = null, fourthSeagull = null, fifthSeagull = null;
-  for (let i = 0; i < 7; i++) { const rig = makeSeagull({ phase: i * 1.3 }); game.npcs.push(new Flyer(game, rig, { cx: 14 + r.range(-8, 8), cz: r.range(-30, 30), r: r.range(9, 18), h: r.range(5, 11), speed: r.range(3.5, 5), bob: 1.2, wobble: 3, cw: i % 2 === 0, phase: i })); if (i === 0) friendlySeagull = rig; if (i === 1) secondSeagull = rig; if (i === 2) thirdSeagull = rig; if (i === 3) fourthSeagull = rig; if (i === 4) fifthSeagull = rig; }
+  let friendlySeagull = null, secondSeagull = null, thirdSeagull = null, fourthSeagull = null, fifthSeagull = null, sixthSeagull = null;
+  for (let i = 0; i < 7; i++) { const rig = makeSeagull({ phase: i * 1.3 }); game.npcs.push(new Flyer(game, rig, { cx: 14 + r.range(-8, 8), cz: r.range(-30, 30), r: r.range(9, 18), h: r.range(5, 11), speed: r.range(3.5, 5), bob: 1.2, wobble: 3, cw: i % 2 === 0, phase: i })); if (i === 0) friendlySeagull = rig; if (i === 1) secondSeagull = rig; if (i === 2) thirdSeagull = rig; if (i === 3) fourthSeagull = rig; if (i === 4) fifthSeagull = rig; if (i === 5) sixthSeagull = rig; }
   { const seagullId = game.namedFriend('seagull');
     game.addInteractable({ obj: friendlySeagull.group, radius: 2.1, label: () => 'Say hello to the seagull', onUse: () => {
       game.befriend(seagullId); SFX.squawk(); game.hearts(friendlySeagull.group.position.x, friendlySeagull.group.position.y, friendlySeagull.group.position.z, 3);
@@ -596,6 +596,13 @@ function buildBeach(game, entry) {
     game.addInteractable({ obj: fifthSeagull.group, radius: 2.1, label: () => 'Say hello to the seagull', onUse: () => {
       game.befriend(fifthSeagullId); SFX.squawk(); game.hearts(fifthSeagull.group.position.x, fifthSeagull.group.position.y, fifthSeagull.group.position.z, 3);
       game.toast('🐦 "*glides down close to your shoulder, then banks away laughing*"'); } }); }
+  // Round 963: sixth of the seven gulls (i === 5, counter-rotating again since i % 2 === 0 is false on
+  // the odd index). Same mechanism as the first five — capture the loop's sixth rig, no new mesh, no
+  // new physics box, no new `rnd()` draw — so nothing built later in Sunny Shore shifts.
+  { const sixthSeagullId = game.namedFriend('seagull-6');
+    game.addInteractable({ obj: sixthSeagull.group, radius: 2.1, label: () => 'Say hello to the seagull', onUse: () => {
+      game.befriend(sixthSeagullId); SFX.squawk(); game.hearts(sixthSeagull.group.position.x, sixthSeagull.group.position.y, sixthSeagull.group.position.z, 3);
+      game.toast('🐦 "*swoops low across your path, snatches a dropped crust, and vanishes back up into the flock*"'); } }); }
   // both turtles have been pure background since round 1, same as the crabs — unlike the dog and the
   // squirrel, neither was ever a friend to meet. Round 672 gave the second one, up at (24, 20), a "Pet
   // the turtle" prompt, but left the first one at (22, -2) exactly as before — same root cause, just

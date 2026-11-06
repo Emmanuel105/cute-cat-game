@@ -26286,3 +26286,27 @@ unchanged at 330, Sunny Shore's own friend count rose from 121 to 122 (confirmed
 suite's own "to meet" probe for world 4). No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 963 — Sunny Shore's sixth seagull gets its own "say hello"
+
+Round 962 wired up the fifth of Sunny Shore's seven seagulls, leaving two still loop-only. **The
+sixth gull (`i === 5`, counter-rotating since `i % 2 === 0` is false on the odd index) now answers
+"Say hello to the seagull" too.** *"swoops low across your path, snatches a dropped crust, and
+vanishes back up into the flock"*
+
+Same mechanism as the first five, and the same pattern this project has run through for every flock
+in the game — crows, drone-flies, dragonflies, bats, flower-basket bees, and now this gull colony:
+the existing `for (let i = 0; i < 7; i++)` loop over `makeSeagull()` + `Flyer` (72-world-beach.js,
+`buildBeach`) now also captures its sixth iteration's rig into `sixthSeagull`, and a sixth
+`game.addInteractable` keys off that rig directly with its own `game.namedFriend('seagull-6')` id.
+No new mesh, no new physics box, no new `rnd()` draw — the capture calls nothing, so nothing built
+later on the beach shifts, and `Flyer` never touches the physics grid so no clearance probe was
+needed either. Same 2.1 m radius as the other five, comparing x/z only, so it still catches the cat
+passing underneath while the gull loops 5-11 m up. One more gull (`i = 6`, the seventh and last) is
+still loop-only — a clean finish for another night.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330, Sunny Shore's own friend count rose from 122 to 123 (confirmed against the test
+suite's own "to meet" probe for world 4). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
