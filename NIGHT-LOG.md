@@ -26117,3 +26117,26 @@ unchanged at 330, the Neighborhood's own friend count rose from 93 to 94 (confir
 test suite's own "to meet" probe for world 0). No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 956 — the Neighborhood's sixth crow closes out the flock
+
+Round 955 wired up the fifth of the Neighborhood's six circling crows, leaving only the last one
+loop-only. **The sixth and final crow (`i === 5`, counter-rotating since `i % 2 === 0` is false on
+the last odd index) now answers "Say hello to the crow" too — every crow in the murder can be
+greeted.** *"skims the chimney pots once, caws twice, and vanishes back into the murder"*
+
+Same mechanism as the first five, and the same pattern this project has now run through for every
+flock in the game — crows, drone-flies, dragonflies, flower-basket bees: the existing
+`for (let i = 0; i < 6; i++)` loop over `makeCrow()` + `Flyer` (70-worlds.js, `buildNeighborhood`)
+now also captures its sixth iteration's rig into `sixthCrow`, and a sixth `game.addInteractable`
+keys off that rig directly with its own `game.namedFriend('crow-6')` id. No new mesh, no new
+physics box, no new `rnd()` draw — the capture calls nothing, so nothing built later in the
+Neighborhood shifts. Same 2.1 m radius as the other five, comparing x/z only, so it still catches
+the cat passing underneath while the crow loops 11-15 m up. This closes out the Neighborhood's own
+flock entirely.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330, the Neighborhood's own friend count rose from 94 to 95 (confirmed against the
+test suite's own "to meet" probe for world 0). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
