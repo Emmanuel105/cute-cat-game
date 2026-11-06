@@ -19462,16 +19462,24 @@ function buildVictorian(game, entry) {
   // only compares `x`/`z`, so it overlaps the basket's own tighter 0.9 m "look" prompt centred on the
   // same spot; the HUD's nearest-interactable rule, already relied on at the other six baskets, sorts
   // out which one shows.
-  let friendlyMidFenceBee = null;
+  let friendlyMidFenceBee = null, secondMidFenceBee = null;
   for (let bi = 0; bi < 2; bi++) {
     const midFenceBeeRig = makeBee();
     game.npcs.push(new Flyer(game, midFenceBeeRig, { cx: -7.5, cz: 6.4, r: 0.3, h: 2.62, speed: 1.6 + bi * 0.3, bob: 0.05, wobble: 0.12, cw: bi % 2 === 0, phase: bi * 2.6 + 6.6 }));
     if (bi === 0) friendlyMidFenceBee = midFenceBeeRig;
+    if (bi === 1) secondMidFenceBee = midFenceBeeRig;
   }
   { const midFenceBeeId = game.namedFriend('mid-fence-bee');
     game.addInteractable({ obj: friendlyMidFenceBee.group, radius: 2.1, label: () => 'Say hello to the bee', onUse: () => {
       game.befriend(midFenceBeeId); SFX.twinkle(); game.hearts(friendlyMidFenceBee.group.position.x, friendlyMidFenceBee.group.position.y, friendlyMidFenceBee.group.position.z, 3);
       game.toast('🐝 "*loops once over the basket, then straight back into its circle*"'); } }); }
+  // the east, west, dead-centre, south, plaza and westmost baskets' own second bees answered back in
+  // rounds 935, 936, 938, 939, 940 and 941; the mid-fence basket's other bee, `secondMidFenceBee`, now
+  // answers too, the seventh of the eleven to get both its bees greetable rather than just one.
+  { const midFenceBee2Id = game.namedFriend('mid-fence-bee-2');
+    game.addInteractable({ obj: secondMidFenceBee.group, radius: 2.1, label: () => 'Say hello to the bee', onUse: () => {
+      game.befriend(midFenceBee2Id); SFX.twinkle(); game.hearts(secondMidFenceBee.group.position.x, secondMidFenceBee.group.position.y, secondMidFenceBee.group.position.z, 3);
+      game.toast('🐝 "*peels off from its circling partner, dips low over the basket, then rejoins*"'); } }); }
   // seven of the eleven baskets' bees had picked up their own "say hello" by round 924 (east, west,
   // dead-centre, south, plaza, westmost and mid-fence); `vicLamps[3]` (x=-18, z=-6.4, south pavement,
   // the amber-orange basket out front of the chimney sweep's own house) still had its pair circling in
