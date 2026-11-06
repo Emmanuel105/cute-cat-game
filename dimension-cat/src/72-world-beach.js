@@ -560,12 +560,21 @@ function buildBeach(game, entry) {
     game.npcs.push(fw);
     const boldId = game.namedFriend('boldcrab');
     game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the crab', onUse: () => { game.befriend(boldId); SFX.chitter(); game.hearts(rig.group.position.x, 0.5, rig.group.position.z, 3); game.toast('🦀 *marches right up and taps a claw on your paw*'); } }); }
-  let friendlySeagull = null;
-  for (let i = 0; i < 7; i++) { const rig = makeSeagull({ phase: i * 1.3 }); game.npcs.push(new Flyer(game, rig, { cx: 14 + r.range(-8, 8), cz: r.range(-30, 30), r: r.range(9, 18), h: r.range(5, 11), speed: r.range(3.5, 5), bob: 1.2, wobble: 3, cw: i % 2 === 0, phase: i })); if (i === 0) friendlySeagull = rig; }
+  let friendlySeagull = null, secondSeagull = null;
+  for (let i = 0; i < 7; i++) { const rig = makeSeagull({ phase: i * 1.3 }); game.npcs.push(new Flyer(game, rig, { cx: 14 + r.range(-8, 8), cz: r.range(-30, 30), r: r.range(9, 18), h: r.range(5, 11), speed: r.range(3.5, 5), bob: 1.2, wobble: 3, cw: i % 2 === 0, phase: i })); if (i === 0) friendlySeagull = rig; if (i === 1) secondSeagull = rig; }
   { const seagullId = game.namedFriend('seagull');
     game.addInteractable({ obj: friendlySeagull.group, radius: 2.1, label: () => 'Say hello to the seagull', onUse: () => {
       game.befriend(seagullId); SFX.squawk(); game.hearts(friendlySeagull.group.position.x, friendlySeagull.group.position.y, friendlySeagull.group.position.z, 3);
       game.toast('🐦 "*wheels down low over the sand, squawks once, and climbs back into the flock*"'); } }); }
+  // Round 959: same flock, same gap every other flyer in the game has had closed one member at a time —
+  // the second seagull (i === 1, counter-rotating since i % 2 === 0 is false on the odd index) was still
+  // loop-only. No new mesh, no new physics box, no new `rnd()` draw: the capture calls nothing, so
+  // nothing built later in Sunny Shore shifts, and `Flyer` never touches the physics grid. Same 2.1 m
+  // radius, comparing x/z only, so it still catches the cat passing underneath the gull 5-11 m up.
+  { const secondSeagullId = game.namedFriend('seagull-2');
+    game.addInteractable({ obj: secondSeagull.group, radius: 2.1, label: () => 'Say hello to the seagull', onUse: () => {
+      game.befriend(secondSeagullId); SFX.squawk(); game.hearts(secondSeagull.group.position.x, secondSeagull.group.position.y, secondSeagull.group.position.z, 3);
+      game.toast('🐦 "*peels off from the others, dips a wing over the waves, and wheels back in*"'); } }); }
   // both turtles have been pure background since round 1, same as the crabs — unlike the dog and the
   // squirrel, neither was ever a friend to meet. Round 672 gave the second one, up at (24, 20), a "Pet
   // the turtle" prompt, but left the first one at (22, -2) exactly as before — same root cause, just

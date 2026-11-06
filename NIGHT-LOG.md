@@ -26189,3 +26189,28 @@ unchanged at 330, the Victorian town's own friend count rose from 141 to 142 (co
 test suite's own "to meet" probe for world 3). No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 959 — Sunny Shore's second seagull gets its own "say hello"
+
+Round 958 closed out the Victorian belfry's three bats, so this round went looking for the next
+flock still carrying ungreeted members and found one at the beach: seven seagulls wheel over Sunny
+Shore's dunes, and only the first of them (`i === 0`) had ever answered "Say hello to the seagull" —
+the other six were still loop-only. **The second of the seven (`i === 1`, counter-rotating since
+`i % 2 === 0` is false on the odd index) now answers too.** *"peels off from the others, dips a wing
+over the waves, and wheels back in"*
+
+Same mechanism as every flock this project has worked through — crows, drone-flies, dragonflies,
+bats, flower-basket bees: the existing `for (let i = 0; i < 7; i++)` loop over `makeSeagull()` +
+`Flyer` (72-world-beach.js, `buildBeach`) now also captures its second iteration's rig into
+`secondSeagull`, and a second `game.addInteractable` keys off that rig directly with its own
+`game.namedFriend('seagull-2')` id. No new mesh, no new physics box, no new `rnd()` draw — the
+capture calls nothing, so nothing built later on the beach shifts, and `Flyer` never touches the
+physics grid so no clearance probe was needed either. Same 2.1 m radius as the first gull, comparing
+x/z only, so it still catches the cat passing underneath while the gull loops 5-11 m up. Five more
+gulls (`i = 2..6`) are still loop-only — left for another night.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330, Sunny Shore's own friend count rose to 119 (confirmed against the test suite's own
+">= " threshold probe for world 4, which only ever tightens as the real count grows). No visual
+check was possible in this environment (no browser, no Playwright) — only the stub-three test suite
+above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
