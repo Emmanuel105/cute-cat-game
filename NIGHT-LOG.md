@@ -25723,3 +25723,28 @@ still silent or missing — plenty left for another night.
 count unchanged at 329, Victorian's own friend count rose from 133 to 134. No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 940 — Victorian's south flower basket gets its second bee a "say hello"
+
+Rounds 935, 936, 938 and 939 worked down the list of Victorian flower baskets whose own second bee
+had never been wired up for a greet, closing the gap for the east-end, west, plaza and dead-centre
+baskets. **The south basket's own other bee — the one over the basket at the main street's south
+side, x=24, z=-6.4 — now answers too**, the fifth of the eleven to get both its bees greetable
+rather than just one. *"peels off from its circling partner, dips low over the basket, then
+rejoins"*
+
+Same mechanism as the four baskets before it: the south basket's own `for (let bi = 0; bi < 2;
+bi++)` loop over `makeBee()` + `Flyer` (70-worlds.js, `buildVictorian`) now also captures its
+second iteration's rig into `secondSouthBee`, and a second `game.addInteractable` keys off that
+group directly with its own `game.namedFriend('south-bee-2')` id. No new mesh, no new physics box,
+no new `rnd()` draw — the capture calls nothing, so nothing built later in the town shifts. Same
+2.1 m radius as the first bee, which only compares x/z, so it still catches the cat near either bee
+circling this basket. Six baskets' worth of second bees (westmost, mid-fence, south-pavement-fence,
+east-row, watch-lamp) plus `vicLamps[2]` (which never got bees at all) are still silent, missing,
+or unwired — plenty left for another night.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 329, Victorian's own friend count rose from 134 to 135 (confirmed with a headless
+probe that travels to Victorian and reads `game.friendTotal`). No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
