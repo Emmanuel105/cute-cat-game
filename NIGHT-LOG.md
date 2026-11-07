@@ -26687,3 +26687,28 @@ unchanged at 330 (no new collider, as expected), and Victorian's own friend tota
 check was possible in this environment (no browser, no Playwright) — only the stub-three test suite
 and the one headless probe described above, deleted after use, nothing committed. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 978 — Victorian's third dove gets its own "say hello"
+
+Round 977 gave the second of Victorian's five market-square doves a "say hello," leaving three still
+loop-only. **The third dove now answers too.** *"peels off from the loop, swoops down past the
+fountain, and wheels back up to the others"*
+
+Same pattern exactly, no new rig, no new controller, no new collider: `makeDove()`'s third instance
+(`i === 2` in the existing loop) gets its own `game.addInteractable()` and its own
+`game.namedFriend('dove-3')` id, stacking with the first two rather than replacing either. `Flyer`
+already puts every rig in the scene graph and the proximity check still only compares x/z, so the
+usual 2.1 m radius still catches the cat under the bird looping 7-12 m overhead. Two doves remain
+loop-only for now.
+
+Also found and fixed something more important: the previous run had left its last 13 commits
+(rounds 965-977) on a detached HEAD, never merged onto `main` or pushed to `origin/main` — the same
+kind of slip round 976 caught once before. Checked it was a clean fast-forward, reset `main` onto
+that tip, and pushed, so `origin/main` is now caught up through round 977 before this round's commit
+goes on top.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330 (no new collider, as expected), and Victorian's own friend total rose from 145 to
+146. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite described above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.
