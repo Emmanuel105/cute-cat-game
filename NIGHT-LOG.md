@@ -26416,3 +26416,36 @@ unchanged at 330, Robot City's own friend count rose from 105 to 106 (confirmed 
 suite's own "to meet" probe for world 2). No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 968 — Victorian finally gets its own paper-plane kid
+
+The Neighborhood, Robot City and Sunny Shore have all had a `PaperPlaneKid` (55-npcs.js: a folded-paper
+dart that glides out on a lerped arc, then gets rebuilt for the next throw) for a while now, but the
+trick never reached the Victorian street. **A boy now stands on the open green well out past the town's
+back lanes, folding and throwing paper planes over the grass.** *"Folds a fresh one every throw — paws
+off, puss, that nose crease took three tries."* *"Longest glide yet. The gas lamps don't judge, at
+least."* *"One day I'll fold one that clears the lamp post. Not today."*
+
+No new controller and no new mesh: `PaperPlaneKid`'s own tiny folded-dart cone is built inline the same
+way the other three towns' already are, and its constructor calls `greetable()` itself, so the
+`makeHuman()` child rig needed no extra wiring to become a friend.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: built the real town via
+`game.load(3, 'from-prev')`, then 3600 simulated frames sampling every NPC's own position every frame)
+swept a grid of open-ground candidates within this town's own hand-built radius (88, where
+`victorianRegion`'s own procedural fill takes over) against both those samples and every one of the
+town's own physics boxes and `game.zones` rects: (-48, -36) came back 13.69 m clear of the nearest box,
+13.37 m clear of the nearest wandering soul and 20.0 m clear of the nearest zone rect — well south-west
+of the back lanes, nowhere near the canal, the market square or any flower basket. Facing north (ry = 0)
+sends the plane's own 3 m throw to (-48, -33), itself still 14.36 m clear of the nearest box.
+
+Verified past the test suite's own checks with a second headless probe: walked the cat beside the kid
+and called `game.interact()` — the label read "Say hi" and using it took `game.state.friends.size` from
+0 to 1. A 900-frame run of the real game loop watched the dart actually fly: finite positions throughout,
+and it landed exactly at the scripted (-48, -33).
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330 (no new collider, as expected), and Victorian's own friend count rose to 143. No visual
+check was possible in this environment (no browser, no Playwright) — only the stub-three test suite and
+the two headless probes described above, both deleted after use, nothing committed. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

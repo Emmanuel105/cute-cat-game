@@ -11345,6 +11345,37 @@ function buildVictorian(game, entry) {
     game.addInteractable({ obj: secondWatchLampBee.group, radius: 2.1, label: () => 'Say hello to the bee', onUse: () => {
       game.befriend(watchLampBee2Id); SFX.twinkle(); game.hearts(secondWatchLampBee.group.position.x, secondWatchLampBee.group.position.y, secondWatchLampBee.group.position.z, 3);
       game.toast('🐝 "*peels off from its circling partner, dips low over the basket, then rejoins*"'); } }); }
+  // the Neighborhood, Robot City and Sunny Shore all have a `PaperPlaneKid` (55-npcs.js: a folded-paper
+  // dart that glides out on a lerped arc and gets rebuilt for the next throw) by now, but it never
+  // reached this town. **A boy now stands on the open green well out past the back lanes, folding and
+  // throwing paper planes over the grass — no pigeon or dove out here to rival it.** *"Folds a fresh one
+  // every throw — paws off, puss, that nose crease took three tries."* *"Longest glide yet. The gas
+  // lamps don't judge, at least."* *"One day I'll fold one that clears the lamp post. Not today."*
+  //
+  // No new controller and no new mesh asset: `PaperPlaneKid`'s own tiny folded-dart cone is built
+  // inline the same way the other three towns' already are, and its constructor calls `greetable()`
+  // itself, so the `makeHuman()` child rig needs no extra wiring to become a friend.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: built the real town via
+  // `game.load(3, 'from-prev')`, then 3600 simulated frames sampling every NPC's own position every
+  // frame) swept a grid of open-ground candidates within this town's own hand-built radius (88, where
+  // `victorianRegion`'s own procedural fill takes over) against both those samples and every one of the
+  // town's own physics boxes and `game.zones` rects: (-48, -36) came back 13.69 m clear of the nearest
+  // box, 13.37 m clear of the nearest wandering soul and 20.0 m clear of the nearest zone rect — the
+  // open green south-west of the back lanes, nowhere near the canal, the market square or any of the
+  // flower baskets. Facing north (ry = 0, so `fx=0, fz=1`) sends the plane's own 3 m throw to
+  // (-48, -33), itself still 14.36 m clear of the nearest box and 11.9 m clear of the nearest wandering
+  // soul.
+  //
+  // Built dead last, right after the watch-lamp basket's own bees above and right before the squirrel,
+  // for the usual reason: `makeHuman()` and `randomPerson()` both draw off this town's own shared `r()`
+  // sequence unconditionally, and anything built earlier would have had its own timing-sensitive pick
+  // shifted by it.
+  { const planeWard = makeWardrobe(r, { shirts: [0x6a7a8a], pants: [0x2a2420, 0x3a3327], shoes: [0x2a2018] });
+    const planeKid = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, wardrobe: planeWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(planeKid.group);
+    game.npcs.push(new PaperPlaneKid(game, planeKid, { x: -48, z: -36, ry: 0,
+      cries: ["Folds a fresh one every throw — paws off, puss, that nose crease took three tries.", "Longest glide yet. The gas lamps don't judge, at least.", "One day I'll fold one that clears the lamp post. Not today."] })); }
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
