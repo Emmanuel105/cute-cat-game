@@ -2509,16 +2509,26 @@ function buildForest(game, entry) {
   // earlier in this wood would have had its own timing-sensitive pick shifted by it. `forestRegion()`,
   // `makeHorizon()`, `makeHollowOak()` and `makeDayNight()` below draw only from this wood's own seeded
   // `r()` or nothing at all, never the shared `rnd()`, so nothing after this point shifts either.
-  let friendlyOakBat = null;
+  let friendlyOakBat = null, secondOakBat = null;
   for (let bi = 0; bi < 3; bi++) {
     const batRig = makeBat({ phase: bi * 2.1 });
     game.npcs.push(new Flyer(game, batRig, { cx: 0, cz: 50, r: 1.6, h: 10.2, speed: 1.6 + bi * 0.3, bob: 0.3, wobble: 0.5, cw: bi % 2 === 0, phase: bi * 2.1 }));
     if (bi === 0) friendlyOakBat = batRig;
+    if (bi === 1) secondOakBat = batRig;
   }
   { const oakBatId = game.namedFriend('oak-bat');
     game.addInteractable({ obj: friendlyOakBat.group, radius: 2.1, label: () => 'Say hello to the bat', onUse: () => {
       game.befriend(oakBatId); SFX.chitter(); game.hearts(friendlyOakBat.group.position.x, friendlyOakBat.group.position.y, friendlyOakBat.group.position.z, 3);
       game.toast('🦇 "*loops once, lower than it needs to, then straight back up into the leaves*"'); } }); }
+  // The oak's canopy holds three bats on the same orbit, counter-rotating in pairs (`bi % 2 === 0`); only
+  // the first got a "say hello" when the trio was built. The second (`bi === 1`, counter-rotating since
+  // `bi % 2 === 0` is false on the odd index) now answers too, same mechanism, same `game.namedFriend` +
+  // `game.addInteractable` keyed straight off its own rig, no new mesh, no new physics box, no new `rnd()`
+  // draw — the capture above calls nothing, so nothing built later in this wood shifts.
+  { const oakBat2Id = game.namedFriend('oak-bat-2');
+    game.addInteractable({ obj: secondOakBat.group, radius: 2.1, label: () => 'Say hello to the bat', onUse: () => {
+      game.befriend(oakBat2Id); SFX.chitter(); game.hearts(secondOakBat.group.position.x, secondOakBat.group.position.y, secondOakBat.group.position.z, 3);
+      game.toast('🦇 "*peels off from the other two, circles the oak alone, then slips back into formation*"'); } }); }
   // the grasshopper (round 880) proved this wood's own forest floor can host a "perched; only animates"
   // critter with no new controller at all, but nothing in this whole game had ever been a caterpillar —
   // not even the ladybug's long line of beetle cousins covers it. **One now rides a leaf on the forest

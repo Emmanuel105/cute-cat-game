@@ -26334,3 +26334,27 @@ unchanged at 330, Sunny Shore's own friend count rose from 123 to 124 (confirmed
 suite's own "to meet" probe for world 4). No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 965 — Whisper Woods' second oak bat gets its own "say hello"
+
+The hollow oak's canopy has carried three bats on a tight orbit since round 924, but only the first
+of them (`bi === 0`) ever answered the cat. **The second bat (`bi === 1`, counter-rotating since
+`bi % 2 === 0` is false on the odd index) now answers "Say hello to the bat" too.** *"peels off from
+the other two, circles the oak alone, then slips back into formation"*
+
+Same mechanism as the first, and the same pattern this project has run through for every flock in the
+game — crows, drone-flies, dragonflies, bats (Victorian's belfry trio and now this oak trio), bees and
+seagulls: the existing `for (let bi = 0; bi < 3; bi++)` loop over `makeBat()` + `Flyer`
+(74-world-forest.js, the hollow oak's canopy build) now also captures its second iteration's rig into
+`secondOakBat`, and a second `game.addInteractable` keys off that rig directly with its own
+`game.namedFriend('oak-bat-2')` id. No new mesh, no new physics box, no new `rnd()` draw — the capture
+calls nothing, so nothing built later in this wood shifts, and `Flyer` never touches the physics grid
+so no clearance probe was needed either. Same 2.1 m radius as the first bat, comparing x/z only, so it
+still catches the cat passing underneath while the bat loops 10.2 m up over the oak's own canopy. One
+more bat (`bi = 2`) is still loop-only — left for another night.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330, Whisper Woods' own friend count rose from 133 to 134 (confirmed against the test
+suite's own "to meet" probe for world 6). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
