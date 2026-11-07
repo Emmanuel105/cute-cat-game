@@ -26310,3 +26310,27 @@ unchanged at 330, Sunny Shore's own friend count rose from 122 to 123 (confirmed
 suite's own "to meet" probe for world 4). No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 964 — Sunny Shore's seventh and last seagull gets its own "say hello"
+
+Round 963 wired up the sixth of Sunny Shore's seven seagulls, leaving exactly one still loop-only.
+**The seventh gull (`i === 6`, co-rotating with the first again since `i % 2 === 0` is true on the
+even index) now answers "Say hello to the seagull" too — closing out the flock.** *"trails the flock
+in a lazy loop, then drops in beside you for one last squawk"*
+
+Same mechanism as the first six, and the same pattern this project has run through for every flock in
+the game — crows, drone-flies, dragonflies, bats, flower-basket bees, and now this gull colony: the
+existing `for (let i = 0; i < 7; i++)` loop over `makeSeagull()` + `Flyer` (72-world-beach.js,
+`buildBeach`) now also captures its seventh and final iteration's rig into `seventhSeagull`, and a
+seventh `game.addInteractable` keys off that rig directly with its own `game.namedFriend('seagull-7')`
+id. No new mesh, no new physics box, no new `rnd()` draw — the capture calls nothing, so nothing built
+later on the beach shifts, and `Flyer` never touches the physics grid so no clearance probe was
+needed either. Same 2.1 m radius as the other six, comparing x/z only, so it still catches the cat
+passing underneath while the gull loops 5-11 m up. Every seagull on Sunny Shore's beach can now be
+greeted — the flock is done.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330, Sunny Shore's own friend count rose from 123 to 124 (confirmed against the test
+suite's own "to meet" probe for world 4). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
