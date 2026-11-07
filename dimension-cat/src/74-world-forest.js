@@ -642,8 +642,8 @@ function buildForest(game, entry) {
     game.addInteractable({ obj: friendlyFairy5.group, radius: 2.1, label: () => 'Say hello to the fairy', onUse: () => {
       game.befriend(fairy5Id); SFX.twinkle(); game.hearts(friendlyFairy5.group.position.x, friendlyFairy5.group.position.y, friendlyFairy5.group.position.z, 3);
       game.toast('🧚 "That\'s all five of us met. The sleeping one in the bud still doesn\'t count — she\'s shy."'); } }); }
-  let friendlyForestButterfly = null;
-  for (let i = 0; i < 12; i++) { const rig = makeButterfly(r.pick([300, 40, 200, 20, 260])); game.npcs.push(new Flyer(game, rig, { cx: r.range(-30, 30), cz: r.range(-30, 30), r: r.range(1.5, 4), h: r.range(0.7, 2), speed: r.range(0.8, 1.6), bob: 0.3, wobble: 0.8, cw: i % 2 === 0 })); if (i === 0) friendlyForestButterfly = rig; }
+  let friendlyForestButterfly = null, secondForestButterfly = null;
+  for (let i = 0; i < 12; i++) { const rig = makeButterfly(r.pick([300, 40, 200, 20, 260])); game.npcs.push(new Flyer(game, rig, { cx: r.range(-30, 30), cz: r.range(-30, 30), r: r.range(1.5, 4), h: r.range(0.7, 2), speed: r.range(0.8, 1.6), bob: 0.3, wobble: 0.8, cw: i % 2 === 0 })); if (i === 0) friendlyForestButterfly = rig; else if (i === 1) secondForestButterfly = rig; }
   // Candy Land's own castle butterflies and the outer-country ones got this treatment already
   // (rounds 826+ and 908); Whisper Woods' own twelve, scattered loose across the whole glade since
   // this world's own build, were the last unclaimed butterfly flock. Same fix, with its own id so it
@@ -652,6 +652,14 @@ function buildForest(game, entry) {
     game.addInteractable({ obj: friendlyForestButterfly.group, radius: 2.1, label: () => 'Say hello to the butterfly', onUse: () => {
       game.befriend(forestButterflyId); SFX.twinkle(); game.hearts(friendlyForestButterfly.group.position.x, friendlyForestButterfly.group.position.y, friendlyForestButterfly.group.position.z, 3);
       game.toast('🦋 "Mind the fairies — we share this glade, and they land first."'); } }); }
+  // Whisper Woods' twelve loose butterflies only had their first (i===0) wired up above, leaving
+  // eleven still loop-only. The second now answers too, with its own distinct id so it stacks
+  // rather than overwrite the first — same mechanism the Candy Land flock (rounds 981-985) used to
+  // close out all six of its own.
+  { const forestButterfly2Id = game.namedFriend('forest-butterfly-2');
+    game.addInteractable({ obj: secondForestButterfly.group, radius: 2.1, label: () => 'Say hello to the butterfly', onUse: () => {
+      game.befriend(forestButterfly2Id); SFX.twinkle(); game.hearts(secondForestButterfly.group.position.x, secondForestButterfly.group.position.y, secondForestButterfly.group.position.z, 3);
+      game.toast('🦋 "Twelve of us drift this glade — you\'ve only just started counting."'); } }); }
   // a woodcutter at the stump by the glade, splitting logs — rounds 602-608 gave six other worlds a
   // "look" prompt on some prop a working NPC stands beside but never acknowledges; Whisper Woods never
   // got its own. `cutterStump`, captured a few lines up from the same `placeT()` call that already

@@ -26884,3 +26884,31 @@ onto it before starting, same slip rounds 976, 979, 980 and 984 all hit before.
 unchanged at 330, and Candy Land's own friend total rose from 103 to 104. No visual check was possible
 in this environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 986 — Whisper Woods' second butterfly gets its own "say hello"
+
+Rounds 981-985 closed out all six of Candy Land's loop-flying butterflies with their own "say hello"
+greets. Whisper Woods has its own flock — twelve butterflies drifting loose across the whole glade —
+but only the first of them (wired up back when the flock was first built) ever answered. **The second
+now answers too.** *"Twelve of us drift this glade — you've only just started counting."*
+
+Same mechanism as every other flock this convention has touched: the build's existing
+`for (let i = 0; i < 12; i++)` loop over `makeButterfly()` + `Flyer` (74-world-forest.js,
+`buildWhisperWoods`) now also captures its second iteration's rig into `secondForestButterfly`, and a
+second `game.addInteractable` keys off that group directly with its own
+`game.namedFriend('forest-butterfly-2')` id, distinct from `forest-butterfly` so the two stack.
+`Flyer`'s constructor already puts the rig in the scene graph itself, so no extra wiring was needed,
+and the proximity check only compares `x`/`z`, so the usual 2.1 m radius still catches the cat passing
+underneath the butterfly's 0.7-2 m loop. No new mesh, no new physics box, no new `rnd()` draw. Reused
+`SFX.twinkle()`, same cue every other butterfly uses. Ten of Whisper Woods' twelve butterflies remain
+loop-only — a much longer tail than Candy Land's flock, left for other nights.
+
+This run also found the previous session's work sitting on a detached `HEAD`, with local `main`
+pointing at round 963's commit (a95f6f8) while `origin/main` already had round 985 (d4a964a) and 20
+commits between. Fast-forwarded local `main` onto `origin/main` before starting — same slip rounds
+976, 979, 980 and 984 all hit before.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330, and Whisper Woods' own friend total rose from 135 to 136. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
