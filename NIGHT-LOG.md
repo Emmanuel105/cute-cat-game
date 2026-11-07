@@ -26510,3 +26510,36 @@ unchanged at 330 (no new collider, as expected), and Candy Land's own friend cou
 No visual check was possible in this environment (no browser, no Playwright) — only the stub-three
 test suite and the two headless probes described above, both deleted after use, nothing committed.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 971 — the Neighborhood's own hare gets a bolder sibling
+
+Candy Land's sugar mouse, Robot City's scout-bot, Victorian's bold pigeon, Sunny Shore's bold crab,
+Frosty Peak's bold penguin and Whisper Woods' bold fox all peel away from their own kind to come and
+investigate the cat — the Neighborhood, where the whole trick started (round 1's own shy hare raiding
+the vegetable patch), was the one world left without one. **A second, bolder hare now bounds right up
+to meet the cat** instead of bolting for the cabbage row. *"bounds right up, thumps a hind foot once,
+and noses the cat's paw"*
+
+No new rig and no new controller: the exact same `makeHare()` shape the shy one already uses
+(56-npcs-wild.js), wrapped in `Follower` instead of `Hopper` — the same swap every other world's own
+bold critter already made. Placed on the quiet open field south of the street rather than anywhere
+near the vegetable patch, so the two hares never cross paths.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, then
+3600 simulated frames sampling every ground-based NPC's own position every 4th frame, flying `Flyer`s
+excluded since their footprint means nothing for a hare's clearance) swept a grid of the
+Neighborhood's own ground (limit 95, though everything built lives inside about ±50) against all 330
+of its physics boxes and every one of its 69 `game.zones` rects: (6, -42) came back 11.7 m clear of
+the nearest box, 11.3 m clear of the nearest wandering soul and 31.6 m clear of the nearest zone —
+well south of both the vegetable patch (12, -15) and the lake (-34, -48).
+
+Verified past the test suite's own checks with a second headless probe: walked the cat toward the new
+hare and let it run 300 frames — the hare closed the distance and sat `happy` (inside its own 1.6 m
+`keep` range) — then called `game.interact()` beside it: the label read "Say hello to the hare" and
+`game.state.friends.size` went from 0 to 1.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330 (no new collider, as expected), and the Neighborhood's own friend count rose from 95
+to 96. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite and the two headless probes described above, both deleted after use, nothing
+committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
