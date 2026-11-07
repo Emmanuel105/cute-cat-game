@@ -26761,3 +26761,29 @@ unchanged at 330 (no new collider, as expected), and Victorian's own friend tota
 148. No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite described above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 981 — Candy Land's second butterfly gets its own "say hello"
+
+With the dove flock closed out, Candy Land's own six butterflies (round 908, `candy-butterfly`) were
+the next flock still mostly loop-only: only the first of the six had ever been wired up to answer the
+cat, same gap the canal/pond dragonflies had before rounds 912-913 and 928-929 wired all three of each
+of those. **The second of Candy Land's six now answers too.** *"drifts away from the loop, circles the
+nearest gumdrop twice, then flutters back"*
+
+Same mechanism as every earlier flock credit: the build's own `for (let i = 0; i < 6; i++)` loop over
+`makeButterfly()` + `Flyer` (70-worlds.js, `buildCandyLand`) now also captures its second iteration's
+rig into `secondCandyButterfly`, and a second `game.addInteractable` keys off that group directly with
+its own `game.namedFriend('candy-butterfly-2')` id, distinct from `candy-butterfly` so the two stack
+rather than collide. `Flyer`'s own constructor already calls `game.world.add(rig.group)` itself, so no
+extra scene-graph wiring was needed, and the proximity check only compares `x`/`z`, so the usual 2.1 m
+radius still catches the cat passing underneath while this one loops 1.2-2.4 m up over the same open
+heart of the land the first butterfly already uses — no new mesh, no new physics box, no new `rnd()`
+draw. Reused `SFX.twinkle()`, the same cue every other butterfly in the game already uses. Four of
+Candy Land's six butterflies remain loop-only — left for another night, same as Whisper Woods' own
+twelve (only the first of which is wired) and the scattered outer-country butterflies.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330, and Candy Land's own friend total rose from 99 to 100 (confirmed against the
+pre-change build via `git stash`). No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

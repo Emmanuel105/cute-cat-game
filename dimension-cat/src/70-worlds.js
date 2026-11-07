@@ -4113,12 +4113,22 @@ function buildCandyLand(game, entry) {
   // reusing the exact `SFX.twinkle()` + "Say hello to the butterfly" pairing the outer-country
   // butterflies already use (68-regions.js), with a distinct `game.namedFriend` id so it stacks rather
   // than colliding with those.
-  let friendlyButterfly = null;
-  for (let i = 0; i < 6; i++) { const rig = makeButterfly(r.pick([330, 45, 190, 300])); game.npcs.push(new Flyer(game, rig, { cx: r.range(-32, 32), cz: r.range(-10, 40), r: r.range(2, 4.5), h: r.range(1.2, 2.4), speed: r.range(1, 1.8), bob: 0.4, wobble: 0.9, cw: i % 2 === 0 })); if (i === 0) friendlyButterfly = rig; }
+  let friendlyButterfly = null, secondCandyButterfly = null;
+  for (let i = 0; i < 6; i++) { const rig = makeButterfly(r.pick([330, 45, 190, 300])); game.npcs.push(new Flyer(game, rig, { cx: r.range(-32, 32), cz: r.range(-10, 40), r: r.range(2, 4.5), h: r.range(1.2, 2.4), speed: r.range(1, 1.8), bob: 0.4, wobble: 0.9, cw: i % 2 === 0 })); if (i === 0) friendlyButterfly = rig; if (i === 1) secondCandyButterfly = rig; }
   { const candyButterflyId = game.namedFriend('candy-butterfly');
     game.addInteractable({ obj: friendlyButterfly.group, radius: 2.1, label: () => 'Say hello to the butterfly', onUse: () => {
       game.befriend(candyButterflyId); SFX.twinkle(); game.hearts(friendlyButterfly.group.position.x, friendlyButterfly.group.position.y, friendlyButterfly.group.position.z, 3);
       game.toast('🦋 "*loops once around the cat\'s ears, dusted pink, then drifts back over the gumdrops*"'); } }); }
+  // The first of Candy Land's six butterflies has answered the cat since the block above, same as the
+  // crows, drone-flies, snow buntings, seagulls, bats and doves once they each got a flock member
+  // wired up one by one — the other five of this loop were left circling in silence. The second now
+  // answers too: same `Flyer` orbit, same `game.addInteractable` keyed straight off its own group, no
+  // new mesh and no new physics box — `Flyer` never touches the physics grid, so nothing here moves
+  // the gumdrop/lollipop/river/cottage clearances the loop above already documents.
+  { const secondCandyButterflyId = game.namedFriend('candy-butterfly-2');
+    game.addInteractable({ obj: secondCandyButterfly.group, radius: 2.1, label: () => 'Say hello to the butterfly', onUse: () => {
+      game.befriend(secondCandyButterflyId); SFX.twinkle(); game.hearts(secondCandyButterfly.group.position.x, secondCandyButterfly.group.position.y, secondCandyButterfly.group.position.z, 3);
+      game.toast('🦋 "*drifts away from the loop, circles the nearest gumdrop twice, then flutters back*"'); } }); }
 
   // candy canes, lollipops, gumdrops, cotton candy
   const canes = [[-6, 6], [7, 3], [-14, -4], [15, -8], [-22, 8], [24, 12], [-30, -2], [30, -4], [-10, 22], [12, 24], [-26, 20], [26, 24], [-18, -30], [16, -32], [-8, -40], [8, -42], [-36, -14], [34, -20], [-40, 26], [40, 30], [-28, -38], [26, -40], [-44, 4], [44, 8], [-2, 30], [4, -26], [-20, -12], [20, -14]];
