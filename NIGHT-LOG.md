@@ -26662,3 +26662,28 @@ one headless probe described above, deleted after use, nothing committed. Also f
 commits (rounds 965-975) that a previous run had left stranded on a detached HEAD, never pushed to
 `origin/main` — `main` is now caught up. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 977 — Victorian's second dove gets its own "say hello"
+
+Round 976 closed out Frosty Peak's six snow buntings, but Victorian's market square still had an
+older loose end: five doves wheel over the fountain, and only the first of them (`i === 0`) had ever
+been wired up to say hello, back when the flock was first given a greeter. The other four were still
+loop-only scenery. **The second dove now answers too.** *"banks away from the flock, circles once
+right overhead, and slips back into formation"*
+
+Same pattern exactly, no new rig, no new controller, no new collider: `makeDove()`'s second instance
+(`i === 1` in the existing loop) gets its own `game.addInteractable()` and its own
+`game.namedFriend('dove-2')` id, stacking with the first dove rather than replacing it. `Flyer`
+already puts every rig in the scene graph and the proximity check only compares x/z, so the usual
+2.1 m radius still catches the cat under the bird looping 7-12 m overhead. Three doves (and the pair
+of market-square pigeons) remain loop/hop-only for now.
+
+Verified with a headless probe (same stub-three harness `test/run.mjs` uses): entered the game,
+travelled to world 3, found two "Say hello to the dove" interactables, called the second one's
+`onUse()` directly — `game.state.friends.size` went 0 → 1 — then called the first dove's too and
+confirmed it stacked to 2, with `game.friendTotal` reading 145 for the world. `node
+dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330 (no new collider, as expected), and Victorian's own friend total is 145. No visual
+check was possible in this environment (no browser, no Playwright) — only the stub-three test suite
+and the one headless probe described above, deleted after use, nothing committed. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
