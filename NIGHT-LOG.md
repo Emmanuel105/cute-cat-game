@@ -26594,3 +26594,27 @@ unchanged at 330 (no new collider, as expected), and Frosty Peak's own friend co
 114. No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite and the one headless probe described above, deleted after use, nothing
 committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 974 — Frosty Peak's fourth snow bunting gets its own "say hello"
+
+Round 973 gave the third of Frosty Peak's six snow buntings a "say hello," leaving three still
+silent. **The fourth snow bunting now answers too.** *"lands a wingtip's width away on the snow,
+cocks its head, and is airborne again"*
+
+Same pattern exactly, no new rig, no new controller, no new collider: `makeSnowBird()`'s fourth
+instance (`i === 3` in the existing loop) gets its own `game.addInteractable()` and its own
+`game.namedFriend('snow-bird-4')` id, stacking with the first three rather than replacing any of
+them. `Flyer` already puts every rig in the scene graph and the proximity check still only compares
+x/z, so the usual 2.1 m radius catches the cat under the bird looping 14-22 m overhead.
+
+Verified with a headless probe (same stub-three harness `test/run.mjs` uses): clicked "Enter",
+travelled to world 5, found all four bunting interactables now present, walked the cat to the
+fourth one's position and called its `onUse()` directly — `game.state.friends.size` went from 0 to 1,
+with the first three buntings' own friend slots still separate and unaffected. A second probe printed
+`game.friendTotal` right after Frosty Peak builds to confirm the running total.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330 (no new collider, as expected), and Frosty Peak's own friend count rose from 114 to
+115. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite and the two headless probes described above, both deleted after use, nothing
+committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
