@@ -26449,3 +26449,35 @@ unchanged at 330 (no new collider, as expected), and Victorian's own friend coun
 check was possible in this environment (no browser, no Playwright) — only the stub-three test suite and
 the two headless probes described above, both deleted after use, nothing committed. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 969 — Victorian's market square gets a bolder pigeon
+
+Robot City's scout-bot, Sunny Shore's bold crab and Frosty Peak's bold penguin all peel away from their
+own flock to come and investigate the cat (`Follower`, 56-npcs-wild.js) — the one gap left was Victorian,
+whose own market square has had a quiet pair of pecking pigeons since round 1 but neither of them ever
+left their own tiny hop-leash. **A third pigeon now struts right out from the square to meet the cat
+instead of waiting to be found.** *"struts right up and bobs its head at the cat's paws"*
+
+No new rig and no new controller: the exact same `makePigeon()` the other two already use, wrapped in
+`Follower` instead of `Hopper` — the same swap Sunny Shore's bold crab and Frosty Peak's bold penguin
+already made. `makePigeon()`'s rig carries none of `.look`/`.robot`/`.cookie`, so the inner `Wanderer`'s
+own `greetable()` call still no-ops on it, same root cause as every other bare-rig Follower in the game;
+a plain `game.namedFriend('bold-pigeon')` plus a `game.addInteractable` keyed straight to the rig's own
+group gives it a voice regardless.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: the real town built via
+`game.travel(3, 'from-prev')`, then 3600 simulated frames sampling every NPC's own position every 4th
+frame) swept the plaza's open north edge, discarding `Flyer` samples first since a dove 7-12 m up over
+the square means nothing for a ground-based bird's x/z clearance: (0, -24) came back 6.6 m clear of the
+nearest physics box (the fountain's own basin) and 3.8 m clear of the nearest ground-based wandering
+soul, outside both nearby townsfolk's own 12 m leash from their homes at (-8,-34) and (8,-36), with the
+new pigeon's own 5 m wander leash keeping it well off the fountain, every stall and both other pigeons
+regardless of where they happen to be hopping. A second probe walked the cat right up to it and called
+`game.interact()`: the label read "Say hello to the pigeon" and `game.state.friends.size` went from 0
+to 1.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330 (no new collider, as expected), and Victorian's own friend count rose from 143 to 144.
+No visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
+suite and the two headless probes described above, both deleted after use, nothing committed. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -17698,6 +17698,23 @@ function buildVictorian(game, entry) {
       onHop: () => { if (rnd.chance(0.25)) SFX.chitter(); } }));
     const ratId = game.namedFriend('alley-rat');
     game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the rat', onUse: () => { game.befriend(ratId); SFX.chitter(); game.hearts(rig.group.position.x, 0.15, rig.group.position.z, 3); game.toast('🐀 *freezes mid-nibble, whiskers twitching, then bolts for the nearest shadow*'); } }); }
+  // Robot City's scout-bot, Sunny Shore's bold crab and Frosty Peak's bold penguin all peel off from
+  // their own flock to come and investigate the cat; the square's own pair of pigeons never had one.
+  // A third, bolder pigeon now struts right up to the cat instead of pecking at the cobbles under the
+  // fountain. Same `Follower` (56-npcs-wild.js) wrapping the exact `makePigeon()` rig the other two
+  // already use, parked on the plaza's quiet north edge rather than down by the fountain and the stalls.
+  // A headless probe (the stub-three harness `test/run.mjs` itself uses: the real town built via
+  // `game.travel(3, 'from-prev')`, then 3600 simulated frames sampling every NPC's own position every
+  // 4th frame, flying `Flyer`s excluded since their x/z footprint means nothing at 7-12 m up) swept the
+  // plaza's open north edge: (0, -24) came back 6.6 m clear of the nearest physics box (the fountain's
+  // own basin) and 3.8 m clear of the nearest ground-based wandering soul — outside both nearby
+  // townsfolk's own 12 m leash from (-8,-34) and (8,-36) — with its own 5 m wander leash keeping it off
+  // the fountain, every stall and both other pigeons regardless.
+  { const rig = makePigeon(); W.add(rig.group);
+    const fw = new Follower(game, rig, { x: 0, z: -24, r: 0.08, height: 0.15, step: 0.15, idle: [0.5, 2], walk: [1, 3], leash: 5, speed: 1.3, range: 10, keep: 1.6, sfx: () => SFX.chitter() });
+    game.npcs.push(fw);
+    const boldPigeonId = game.namedFriend('bold-pigeon');
+    game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the pigeon', onUse: () => { game.befriend(boldPigeonId); SFX.chitter(); game.hearts(rig.group.position.x, 0.2, rig.group.position.z, 3); game.toast('🐦 *struts right up and bobs its head at the cat\'s paws*'); } }); }
   // a juggler works the open cobbles between the fountain and the west-side stalls, three balls always in the air
   { const jx = -6, jz = -34;
     const juggler = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
