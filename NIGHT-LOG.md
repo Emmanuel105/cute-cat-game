@@ -26734,3 +26734,30 @@ warnings, box count unchanged at 330 (no new collider, as expected), and Victori
 rose from 146 to 147. No visual check was possible in this environment (no browser, no Playwright) —
 only the stub-three test suite and the one headless probe described above, deleted after use, nothing
 committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 980 — Victorian's fifth and last dove gets its own "say hello", closing out the flock
+
+Round 979 gave the fourth of Victorian's five market-square doves a "say hello," leaving just one
+still loop-only. **The fifth dove now answers too, finishing the set.** *"breaks from the circling
+flock, dips down to the fountain's edge, and flaps back up into the loop"*
+
+Same pattern as the other four, no new rig, no new controller, no new collider: the loop that builds
+`makeDove()`'s five instances now also captures the fifth (`i === 4`), and it gets its own
+`game.addInteractable()` plus its own `game.namedFriend('dove-5')` id, stacking with doves 1-4 rather
+than replacing any of them. `Flyer` already puts every rig in the scene graph and the proximity check
+still only compares x/z, so the usual 2.1 m radius still catches the cat under the bird looping
+7-12 m overhead. All five of Victorian's doves can now be greeted; none are loop-only scenery
+anymore.
+
+This run also found the previous session's work sitting on a detached `HEAD` again with the local
+`main` branch pointing at a much older commit (round ~966) — the same slip rounds 976 and 979 both
+hit before. A `git fetch origin main` showed it was only a stale local ref this time: `origin/main`
+already matched `HEAD` exactly (round 979's own commit), so the earlier push had gone through fine.
+Reset the local `main` branch onto `origin/main` before starting this round's work; nothing was lost
+and nothing needed re-pushing.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330 (no new collider, as expected), and Victorian's own friend total rose from 147 to
+148. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite described above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.
