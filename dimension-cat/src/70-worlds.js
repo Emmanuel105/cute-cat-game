@@ -8436,6 +8436,27 @@ function buildRobotCity(game, entry) {
     game.npcs.push(new PaperPlaneKid(game, planeKid, { x: 20, z: 50, ry: PI,
       cries: ["Folds a fresh one every throw — paws off, puss, that nose crease took three tries.", 'The robots glide on wheels. This one only glides when I throw it.', "Longest flight yet — this floor's got updrafts no engineer ever installed."] })); }
 
+  // every other world already has a creature that tags along rather than just wandering its own patch —
+  // Sunny Shore's bold crab, Frosty Peak's yellow-scarfed penguin, Whisper Woods' fox — but Robot City
+  // never had one. A small scout-bot now rolls after the cat across the open floor west of the
+  // skyscraper ring, peeling off to idle once it catches up. New rig `makeScoutBot()` (55-npcs.js,
+  // right after `makeSweeperBot()`): a boxy chassis on two stub wheels with a blinking amber beacon and
+  // a green eye that brightens while it's moving. `Follower` wraps a `Wanderer` the same way it already
+  // does for the other three tag-along creatures; `makeScoutBot()`'s rig carries none of `.look`/
+  // `.robot`/`.cookie` either, so a plain `game.namedFriend` + `game.addInteractable` on its own group
+  // gives it a voice, same fix every other unflagged creature in this city already needed.
+  //
+  // A headless probe swept the open floor west of the skyline ring over 400 simulated frames of every
+  // other NPC's own position: (-30, 15) came back 6.3 m clear of the nearest physics box and 7.6 m
+  // clear of the nearest wandering soul, with no `game.zones` rect anywhere near it — well inside the
+  // radius (98) where `robotRegion`'s own procedural fill takes over. No new physics box: same
+  // convention as the other three `Follower` creatures, all too small and slow to need one.
+  { const rig = makeScoutBot(); W.add(rig.group);
+    const fw = new Follower(game, rig, { x: -30, z: 15, r: 0.22, height: 0.3, step: 0.2, idle: [1, 3], walk: [1.5, 3.5], leash: 6, speed: 1.4, range: 12, keep: 1.8, sfx: () => SFX.beep() });
+    game.npcs.push(fw);
+    const scoutId = game.namedFriend('scoutbot');
+    game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the scout-bot', onUse: () => { game.befriend(scoutId); SFX.beep(); game.hearts(rig.group.position.x, 0.3, rig.group.position.z, 3); game.toast('🤖 "*beacon blinks twice, wheels chirp, then it rolls in a happy little circle*"'); } }); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

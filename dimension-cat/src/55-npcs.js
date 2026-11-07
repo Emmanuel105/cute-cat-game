@@ -451,6 +451,28 @@ function makeSweeperBot() {
   return rig;
 }
 
+// ---------------------------------------------------------------- scout-bot rig: a palm-sized drone that rolls along on two small wheels
+function makeScoutBot() {
+  const g = new THREE.Group(), rig = { group: g };
+  const shell = mat(0x7a8a9a, { metalness: 0.7, roughness: 0.3 }), dark = mat(0x2e3238, { metalness: 0.55, roughness: 0.5 });
+  const body = group(0, 0, 0, g); rig.body = body; rig.wheels = [];
+  mesh(G.box(0.24, 0.16, 0.28), shell, { y: 0.1, parent: body });
+  for (const side of [1, -1]) rig.wheels.push(mesh(G.cyl(0.07, 0.07, 0.04, 14), dark, { x: side * 0.15, y: 0.07, rz: PI / 2, parent: body }));
+  const dome = group(0, 0.19, 0.04, body); rig.head = dome;
+  mesh(G.sphere(0.09, 14, 10), shell, { sy: 0.65, parent: dome });
+  const eye = mesh(G.sphere(0.028, 8, 6), glowMat(0x4ade80, 1.4), { y: 0.015, z: 0.08, shadow: 'none', parent: dome });
+  mesh(G.cyl(0.005, 0.005, 0.1, 6), dark, { y: 0.1, parent: dome });
+  const led = mesh(G.sphere(0.018, 8, 6), glowMat(0xffd54a, 1.6), { y: 0.16, shadow: 'none', parent: dome });
+  rig.animate = (ph, moving, dt, t = 0) => {
+    body.position.y = moving ? abs(sin(ph * 1.6)) * 0.02 : 0;
+    for (const w of rig.wheels) w.rotation.x += dt * (moving ? 8 : 0);
+    led.material.emissiveIntensity = 0.8 + max(0, sin(t * 3.4)) * 1.2;
+    eye.material.emissiveIntensity = moving ? 1.9 : 1.1;
+  };
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- robot dog rig
 function makeRoboDog() {
   const g = new THREE.Group(), rig = { group: g, legs: [] };

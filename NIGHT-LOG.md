@@ -26382,3 +26382,37 @@ unchanged at 330, Whisper Woods' own friend count rose from 134 to 135 (confirme
 suite's own "to meet" probe for world 6). No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 967 — Robot City gets its own tag-along scout-bot
+
+Every world with a `Follower` creature — one that tags along after the cat instead of just wandering
+its own patch — got one a while back: Sunny Shore's bold crab, Frosty Peak's yellow-scarfed penguin,
+Whisper Woods' fox. Robot City, for all its wandering workers and patrolling sentries, never had one.
+**A small scout-bot now rolls after the cat across the open floor west of the skyline ring, catching
+up and idling nearby until the cat moves off again.** *"*beacon blinks twice, wheels chirp, then it
+rolls in a happy little circle*"*
+
+New rig `makeScoutBot()` (55-npcs.js, right after `makeSweeperBot()`): a boxy chassis on two stub
+wheels, a blinking amber beacon and a green eye that brightens while it's moving — built the same way
+every other small robot rig in this city already is (plain meshes, `bakeRig`, a per-frame `animate`
+closure), just smaller and simpler than the biped `makeRobot()`. `Follower` (56-npcs-wild.js) wraps a
+plain `Wanderer` the same way it already does for the other three tag-along creatures: it idles when
+the cat gets within 1.8 m, closes in whenever the gap opens past that but stays under 12 m, and falls
+back to ordinary wandering outside that band. The rig carries none of `.look`/`.robot`/`.cookie`, so
+`Wanderer`'s own `greetable()` call quietly no-ops on it — same root cause as the factory mouse, the
+scrap-crab and the sweeper-bot before it — so a plain `game.namedFriend('scoutbot')` plus a
+`game.addInteractable` keyed straight to the rig's own group gives it a voice instead.
+
+A headless probe (built the real city via `game.load(2, 'from-hub')`, then swept 400 simulated frames
+sampling every other NPC's own position every frame) checked a grid of open-floor candidates against
+both those samples and every one of the city's physics boxes: (-30, 15) came back 6.3 m clear of the
+nearest box and 7.6 m clear of the nearest wandering soul, with no `game.zones` rect anywhere near it —
+comfortably inside the radius (98) where `robotRegion`'s own procedural fill takes over. No new physics
+box: same convention as the other three `Follower` creatures, all too small and slow to need one of
+their own.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330, Robot City's own friend count rose from 105 to 106 (confirmed against the test
+suite's own "to meet" probe for world 2). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
