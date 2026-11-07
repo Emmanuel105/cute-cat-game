@@ -26830,3 +26830,30 @@ unchanged at 330, and Candy Land's own friend total rose from 101 to 102 (confir
 pre-change build). No visual check was possible in this environment (no browser, no Playwright) —
 only the stub-three test suite described above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 984 — Candy Land's fifth butterfly gets its own "say hello"
+
+Rounds 981-983 wired up the second, third and fourth of Candy Land's six butterflies, leaving two
+still loop-only. **The fifth now answers too.** *"tumbles once in the air, trailing a glint of gold
+dust, then rejoins the loop"*
+
+Same mechanism as the first four: the build's existing `for (let i = 0; i < 6; i++)` loop over
+`makeButterfly()` + `Flyer` (70-worlds.js, `buildCandyLand`) now also captures its fifth iteration's
+rig into `fifthCandyButterfly`, and a fifth `game.addInteractable` keys off that group directly with
+its own `game.namedFriend('candy-butterfly-5')` id, distinct from the first four so all five stack.
+`Flyer`'s constructor already puts the rig in the scene graph itself, so no extra wiring was needed,
+and the proximity check only compares `x`/`z`, so the usual 2.1 m radius still catches the cat passing
+underneath the butterfly's 1.2-2.4 m loop. No new mesh, no new physics box, no new `rnd()` draw.
+Reused `SFX.twinkle()`, same cue every other butterfly uses. Only the sixth of Candy Land's six
+butterflies remains loop-only now — left for another night.
+
+This run also found the previous session's work sitting on a detached `HEAD` again with the local
+`main` branch pointing at a much older commit (round ~963), same slip rounds 976, 979 and 980 all hit
+before. `git fetch origin main` confirmed `origin/main` already matched the detached `HEAD` exactly
+(round 983's own commit), so nothing was lost; fast-forwarded local `main` onto it before starting.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330, and Candy Land's own friend total rose from 102 to 103 (confirmed against the
+pre-change build via `git stash`). No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite described above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

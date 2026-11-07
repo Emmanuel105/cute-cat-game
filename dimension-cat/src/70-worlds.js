@@ -4113,8 +4113,8 @@ function buildCandyLand(game, entry) {
   // reusing the exact `SFX.twinkle()` + "Say hello to the butterfly" pairing the outer-country
   // butterflies already use (68-regions.js), with a distinct `game.namedFriend` id so it stacks rather
   // than colliding with those.
-  let friendlyButterfly = null, secondCandyButterfly = null, thirdCandyButterfly = null, fourthCandyButterfly = null;
-  for (let i = 0; i < 6; i++) { const rig = makeButterfly(r.pick([330, 45, 190, 300])); game.npcs.push(new Flyer(game, rig, { cx: r.range(-32, 32), cz: r.range(-10, 40), r: r.range(2, 4.5), h: r.range(1.2, 2.4), speed: r.range(1, 1.8), bob: 0.4, wobble: 0.9, cw: i % 2 === 0 })); if (i === 0) friendlyButterfly = rig; if (i === 1) secondCandyButterfly = rig; if (i === 2) thirdCandyButterfly = rig; if (i === 3) fourthCandyButterfly = rig; }
+  let friendlyButterfly = null, secondCandyButterfly = null, thirdCandyButterfly = null, fourthCandyButterfly = null, fifthCandyButterfly = null;
+  for (let i = 0; i < 6; i++) { const rig = makeButterfly(r.pick([330, 45, 190, 300])); game.npcs.push(new Flyer(game, rig, { cx: r.range(-32, 32), cz: r.range(-10, 40), r: r.range(2, 4.5), h: r.range(1.2, 2.4), speed: r.range(1, 1.8), bob: 0.4, wobble: 0.9, cw: i % 2 === 0 })); if (i === 0) friendlyButterfly = rig; if (i === 1) secondCandyButterfly = rig; if (i === 2) thirdCandyButterfly = rig; if (i === 3) fourthCandyButterfly = rig; if (i === 4) fifthCandyButterfly = rig; }
   { const candyButterflyId = game.namedFriend('candy-butterfly');
     game.addInteractable({ obj: friendlyButterfly.group, radius: 2.1, label: () => 'Say hello to the butterfly', onUse: () => {
       game.befriend(candyButterflyId); SFX.twinkle(); game.hearts(friendlyButterfly.group.position.x, friendlyButterfly.group.position.y, friendlyButterfly.group.position.z, 3);
@@ -4141,6 +4141,12 @@ function buildCandyLand(game, entry) {
     game.addInteractable({ obj: fourthCandyButterfly.group, radius: 2.1, label: () => 'Say hello to the butterfly', onUse: () => {
       game.befriend(fourthCandyButterflyId); SFX.twinkle(); game.hearts(fourthCandyButterfly.group.position.x, fourthCandyButterfly.group.position.y, fourthCandyButterfly.group.position.z, 3);
       game.toast('🦋 "*skims low over a candy cane, startles a sugar mouse, then wobbles back up into its loop*"'); } }); }
+  // Fifth of the six, same mechanism again: own Flyer rig already in the scene graph, own
+  // addInteractable keyed off that group, own namedFriend id so it stacks with the first four.
+  { const fifthCandyButterflyId = game.namedFriend('candy-butterfly-5');
+    game.addInteractable({ obj: fifthCandyButterfly.group, radius: 2.1, label: () => 'Say hello to the butterfly', onUse: () => {
+      game.befriend(fifthCandyButterflyId); SFX.twinkle(); game.hearts(fifthCandyButterfly.group.position.x, fifthCandyButterfly.group.position.y, fifthCandyButterfly.group.position.z, 3);
+      game.toast('🦋 "*tumbles once in the air, trailing a glint of gold dust, then rejoins the loop*"'); } }); }
 
   // candy canes, lollipops, gumdrops, cotton candy
   const canes = [[-6, 6], [7, 3], [-14, -4], [15, -8], [-22, 8], [24, 12], [-30, -2], [30, -4], [-10, 22], [12, 24], [-26, 20], [26, 24], [-18, -30], [16, -32], [-8, -40], [8, -42], [-36, -14], [34, -20], [-40, 26], [40, 30], [-28, -38], [26, -40], [-44, 4], [44, 8], [-2, 30], [4, -26], [-20, -12], [20, -14]];
