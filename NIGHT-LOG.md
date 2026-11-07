@@ -26808,3 +26808,25 @@ remain loop-only — left for another night.
 unchanged at 330, and Candy Land's own friend total rose from 100 to 101. No visual check was possible
 in this environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 983 — Candy Land's fourth butterfly gets its own "say hello"
+
+Rounds 981-982 wired up the second and third of Candy Land's six butterflies, leaving three still
+loop-only. **The fourth now answers too.** *"skims low over a candy cane, startles a sugar mouse,
+then wobbles back up into its loop"*
+
+Same mechanism as the first three: the build's existing `for (let i = 0; i < 6; i++)` loop over
+`makeButterfly()` + `Flyer` (70-worlds.js, `buildCandyLand`) now also captures its fourth iteration's
+rig into `fourthCandyButterfly`, and a fourth `game.addInteractable` keys off that group directly with
+its own `game.namedFriend('candy-butterfly-4')` id, distinct from the first three so all four stack.
+`Flyer`'s constructor already puts the rig in the scene graph itself, so no extra wiring was needed,
+and the proximity check only compares `x`/`z`, so the usual 2.1 m radius still catches the cat passing
+underneath the butterfly's 1.2-2.4 m loop. No new mesh, no new physics box, no new `rnd()` draw.
+Reused `SFX.twinkle()`, same cue every other butterfly uses. Two of Candy Land's six butterflies
+remain loop-only — left for another night.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330, and Candy Land's own friend total rose from 101 to 102 (confirmed against the
+pre-change build). No visual check was possible in this environment (no browser, no Playwright) —
+only the stub-three test suite described above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
