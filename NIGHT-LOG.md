@@ -26857,3 +26857,30 @@ unchanged at 330, and Candy Land's own friend total rose from 102 to 103 (confir
 pre-change build via `git stash`). No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite described above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 985 — Candy Land's sixth and last butterfly gets its own "say hello"
+
+Rounds 981-984 wired up the second through fifth of Candy Land's six butterflies, leaving only the
+sixth still looping in silence. **It now answers too, closing out the flock.** *"darts between two
+lollipops in a tight figure-eight, then settles back onto the loop"*
+
+Same mechanism as the first five: the build's existing `for (let i = 0; i < 6; i++)` loop over
+`makeButterfly()` + `Flyer` (70-worlds.js, `buildCandyLand`) now also captures its sixth and final
+iteration's rig into `sixthCandyButterfly`, and a sixth `game.addInteractable` keys off that group
+directly with its own `game.namedFriend('candy-butterfly-6')` id, distinct from the first five so all
+six stack. `Flyer`'s constructor already puts the rig in the scene graph itself, so no extra wiring
+was needed, and the proximity check only compares `x`/`z`, so the usual 2.1 m radius still catches the
+cat passing underneath the butterfly's 1.2-2.4 m loop. No new mesh, no new physics box, no new `rnd()`
+draw. Reused `SFX.twinkle()`, same cue every other butterfly uses. All six of Candy Land's butterflies
+now greet the cat — this flock is done.
+
+This run also found the previous session's work sitting on a detached `HEAD` again, with the local
+`main` branch pointing at a stale `origin/main` cached from an earlier fetch (round 984's commit was
+missing locally even though GitHub already had it). A fresh `git fetch origin main` confirmed
+`origin/main` matched the detached `HEAD` exactly, so nothing was lost; fast-forwarded local `main`
+onto it before starting, same slip rounds 976, 979, 980 and 984 all hit before.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330, and Candy Land's own friend total rose from 103 to 104. No visual check was possible
+in this environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
