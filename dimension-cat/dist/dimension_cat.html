@@ -23263,8 +23263,8 @@ function buildSnowVillage(game, entry) {
   // catches the cat passing underneath while this one loops 14-22 m up. Reuses `SFX.peck()` (already a
   // small bird's own chirp, just used for the woodpecker's pecking elsewhere) — no dedicated bunting
   // sound exists.
-  let friendlySnowBird = null, secondSnowBird = null;
-  for (let i = 0; i < 6; i++) { const rig = makeSnowBird({ phase: i * 1.1 }); game.npcs.push(new Flyer(game, rig, { cx: 0, cz: 6, r: r.range(16, 30), h: r.range(14, 22), speed: r.range(1.6, 2.4), bob: 0.5, wobble: 1.4, cw: i % 2 === 0, phase: i * 1.1 })); if (i === 0) friendlySnowBird = rig; else if (i === 1) secondSnowBird = rig; }
+  let friendlySnowBird = null, secondSnowBird = null, thirdSnowBird = null;
+  for (let i = 0; i < 6; i++) { const rig = makeSnowBird({ phase: i * 1.1 }); game.npcs.push(new Flyer(game, rig, { cx: 0, cz: 6, r: r.range(16, 30), h: r.range(14, 22), speed: r.range(1.6, 2.4), bob: 0.5, wobble: 1.4, cw: i % 2 === 0, phase: i * 1.1 })); if (i === 0) friendlySnowBird = rig; else if (i === 1) secondSnowBird = rig; else if (i === 2) thirdSnowBird = rig; }
   { const snowBirdId = game.namedFriend('snow-bird');
     game.addInteractable({ obj: friendlySnowBird.group, radius: 2.1, label: () => 'Say hello to the snow bunting', onUse: () => {
       game.befriend(snowBirdId); SFX.peck(); game.hearts(friendlySnowBird.group.position.x, friendlySnowBird.group.position.y, friendlySnowBird.group.position.z, 3);
@@ -23277,6 +23277,12 @@ function buildSnowVillage(game, entry) {
     game.addInteractable({ obj: secondSnowBird.group, radius: 2.1, label: () => 'Say hello to the snow bunting', onUse: () => {
       game.befriend(snowBird2Id); SFX.peck(); game.hearts(secondSnowBird.group.position.x, secondSnowBird.group.position.y, secondSnowBird.group.position.z, 3);
       game.toast('🐦 "*peels off from the flock for a moment, circles once overhead, and rejoins*"'); } }); }
+  // Round 973: third of the six snow buntings gets the same treatment, its own `namedFriend` id
+  // so it stacks with the first two rather than replacing either.
+  { const snowBird3Id = game.namedFriend('snow-bird-3');
+    game.addInteractable({ obj: thirdSnowBird.group, radius: 2.1, label: () => 'Say hello to the snow bunting', onUse: () => {
+      game.befriend(snowBird3Id); SFX.peck(); game.hearts(thirdSnowBird.group.position.x, thirdSnowBird.group.position.y, thirdSnowBird.group.position.z, 3);
+      game.toast('🐦 "*swoops down close, hovers a wingbeat above the cat\'s head, and wheels back up*"'); } }); }
   // the Neighborhood's got its signpost, Candy Land its wishing well, Robot City a statue and now a
   // vending machine, Victorian a postbox and a clock tower, Sunny Shore a lighthouse — every other world
   // has at least one thing somebody clearly made on purpose, standing still, just to be looked at. Frosty

@@ -26572,3 +26572,25 @@ unchanged at 330 (no new collider, as expected), and the Neighborhood's own frie
 to 96. No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite and the two headless probes described above, both deleted after use, nothing
 committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 973 — Frosty Peak's third snow bunting gets its own "say hello"
+
+Round 972 gave the second of Frosty Peak's six snow buntings a "say hello," leaving four still
+silent. **The third snow bunting now answers too.** *"swoops down close, hovers a wingbeat above the
+cat's head, and wheels back up"*
+
+Same pattern exactly, no new rig, no new controller, no new collider: `makeSnowBird()`'s third
+instance (`i === 2` in the existing loop) gets its own `game.addInteractable()` and its own
+`game.namedFriend('snow-bird-3')` id, stacking with the first two rather than replacing either.
+`Flyer` already puts every rig in the scene graph and the proximity check still only compares x/z,
+so the usual 2.1 m radius catches the cat under the bird looping 14-22 m overhead.
+
+Verified with a headless probe (same stub-three harness `test/run.mjs` uses): clicked "Enter",
+travelled to world 5, found all three bunting interactables now present, walked the cat to the
+third one's position and called its `onUse()` directly — `game.state.friends.size` went from 0 to 1.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330 (no new collider, as expected), and Frosty Peak's own friend count rose from 113 to
+114. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite and the one headless probe described above, deleted after use, nothing
+committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
