@@ -2509,12 +2509,13 @@ function buildForest(game, entry) {
   // earlier in this wood would have had its own timing-sensitive pick shifted by it. `forestRegion()`,
   // `makeHorizon()`, `makeHollowOak()` and `makeDayNight()` below draw only from this wood's own seeded
   // `r()` or nothing at all, never the shared `rnd()`, so nothing after this point shifts either.
-  let friendlyOakBat = null, secondOakBat = null;
+  let friendlyOakBat = null, secondOakBat = null, thirdOakBat = null;
   for (let bi = 0; bi < 3; bi++) {
     const batRig = makeBat({ phase: bi * 2.1 });
     game.npcs.push(new Flyer(game, batRig, { cx: 0, cz: 50, r: 1.6, h: 10.2, speed: 1.6 + bi * 0.3, bob: 0.3, wobble: 0.5, cw: bi % 2 === 0, phase: bi * 2.1 }));
     if (bi === 0) friendlyOakBat = batRig;
     if (bi === 1) secondOakBat = batRig;
+    if (bi === 2) thirdOakBat = batRig;
   }
   { const oakBatId = game.namedFriend('oak-bat');
     game.addInteractable({ obj: friendlyOakBat.group, radius: 2.1, label: () => 'Say hello to the bat', onUse: () => {
@@ -2529,6 +2530,14 @@ function buildForest(game, entry) {
     game.addInteractable({ obj: secondOakBat.group, radius: 2.1, label: () => 'Say hello to the bat', onUse: () => {
       game.befriend(oakBat2Id); SFX.chitter(); game.hearts(secondOakBat.group.position.x, secondOakBat.group.position.y, secondOakBat.group.position.z, 3);
       game.toast('🦇 "*peels off from the other two, circles the oak alone, then slips back into formation*"'); } }); }
+  // The third and last bat (`bi === 2`, co-rotating with the first again since `bi % 2 === 0` is true on
+  // the even index) now answers too, closing the oak's trio out — every bat on this canopy can be greeted.
+  // Same mechanism as the other two: `game.namedFriend` + `game.addInteractable` keyed straight off its
+  // own rig, no new mesh, no new physics box, no new `rnd()` draw.
+  { const oakBat3Id = game.namedFriend('oak-bat-3');
+    game.addInteractable({ obj: thirdOakBat.group, radius: 2.1, label: () => 'Say hello to the bat', onUse: () => {
+      game.befriend(oakBat3Id); SFX.chitter(); game.hearts(thirdOakBat.group.position.x, thirdOakBat.group.position.y, thirdOakBat.group.position.z, 3);
+      game.toast('🦇 "*does one last wide loop around the oak, then folds its wings and settles into the dark*"'); } }); }
   // the grasshopper (round 880) proved this wood's own forest floor can host a "perched; only animates"
   // critter with no new controller at all, but nothing in this whole game had ever been a caterpillar —
   // not even the ladybug's long line of beetle cousins covers it. **One now rides a leaf on the forest
