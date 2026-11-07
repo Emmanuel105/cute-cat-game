@@ -26538,6 +26538,35 @@ hare and let it run 300 frames — the hare closed the distance and sat `happy` 
 `keep` range) — then called `game.interact()` beside it: the label read "Say hello to the hare" and
 `game.state.friends.size` went from 0 to 1.
 
+## Round 972 — Frosty Peak's second snow bunting gets its own "say hello"
+
+Six snow buntings have wheeled high over Frosty Peak's village square since the flock was first added,
+but only the first of them ever answered a hello — the same gap every other world's own flock had
+before its second member got the same treatment (Sunny Shore's seagulls, the Neighborhood's crows,
+Victorian's belfry bats). **The second snow bunting now says hello too.** *"peels off from the flock
+for a moment, circles once overhead, and rejoins"*
+
+No new rig, no new controller and no new collider: the exact same `makeSnowBird()` already wheeling
+on its own `Flyer` loop (`r.range(16, 30)` out, `r.range(14, 22)` up, centred on the square) just gets
+a second `game.addInteractable()` pointed at `i === 1`'s own rig, with its own `game.namedFriend
+('snow-bird-2')` id so it stacks with the first rather than replacing it. `Flyer`'s constructor already
+adds every rig to the scene graph itself, and the proximity check only ever compares `x`/`z`, never
+height, so the usual 2.1 m radius still catches the cat passing underneath while the bird loops
+14-22 m overhead — exactly why none of this flock ever needed a clearance probe in the first place.
+
+Verified past the test suite's own checks with a headless probe (the stub-three harness `test/run.mjs`
+itself uses): clicked "Enter", travelled to world 5 (`game.travel(5, 'from-hub')`, polling the real
+520 ms portal-fade timer the way the suite's own world-to-world loop does), found both snow-bunting
+interactables, walked the cat to the second one's own position and called its `onUse()` directly — the
+label read "Say hello to the snow bunting" and `game.state.friends.size` went from 0 to 1, with the
+first bunting's own friend slot still separate and unaffected.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330 (no new collider, as expected), and Frosty Peak's own friend count rose from 112 to
+113. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite and the one headless probe described above, deleted after use, nothing
+committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
 `node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
 unchanged at 330 (no new collider, as expected), and the Neighborhood's own friend count rose from 95
 to 96. No visual check was possible in this environment (no browser, no Playwright) — only the
