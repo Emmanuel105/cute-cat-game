@@ -9113,8 +9113,8 @@ function buildVictorian(game, entry) {
   // the cat passing underneath while this one loops 7-12 m up. Reuses `SFX.peck()` for the coo
   // (already a small bird's own soft sound, otherwise only heard from the forest woodpecker and
   // Frosty Peak's own snow bunting) since no dedicated dove sound exists.
-  let friendlyDove = null, secondDove = null, thirdDove = null;
-  for (let i = 0; i < 5; i++) { const rig = makeDove({ phase: i * 1.3 }); game.npcs.push(new Flyer(game, rig, { cx: 0, cz: -34, r: r.range(9, 15), h: r.range(7, 12), speed: r.range(1.8, 2.6), bob: 0.5, wobble: 1.6, cw: i % 2 === 0, phase: i * 1.3 })); if (i === 0) friendlyDove = rig; if (i === 1) secondDove = rig; if (i === 2) thirdDove = rig; }
+  let friendlyDove = null, secondDove = null, thirdDove = null, fourthDove = null;
+  for (let i = 0; i < 5; i++) { const rig = makeDove({ phase: i * 1.3 }); game.npcs.push(new Flyer(game, rig, { cx: 0, cz: -34, r: r.range(9, 15), h: r.range(7, 12), speed: r.range(1.8, 2.6), bob: 0.5, wobble: 1.6, cw: i % 2 === 0, phase: i * 1.3 })); if (i === 0) friendlyDove = rig; if (i === 1) secondDove = rig; if (i === 2) thirdDove = rig; if (i === 3) fourthDove = rig; }
   { const doveId = game.namedFriend('dove');
     game.addInteractable({ obj: friendlyDove.group, radius: 2.1, label: () => 'Say hello to the dove', onUse: () => {
       game.befriend(doveId); SFX.peck(); game.hearts(friendlyDove.group.position.x, friendlyDove.group.position.y, friendlyDove.group.position.z, 3);
@@ -9130,6 +9130,11 @@ function buildVictorian(game, entry) {
     game.addInteractable({ obj: thirdDove.group, radius: 2.1, label: () => 'Say hello to the dove', onUse: () => {
       game.befriend(doveId3); SFX.peck(); game.hearts(thirdDove.group.position.x, thirdDove.group.position.y, thirdDove.group.position.z, 3);
       game.toast('🕊️ "*peels off from the loop, swoops down past the fountain, and wheels back up to the others*"'); } }); }
+  // fourth of the five doves now answers too, same pattern again. One dove remains loop-only.
+  { const doveId4 = game.namedFriend('dove-4');
+    game.addInteractable({ obj: fourthDove.group, radius: 2.1, label: () => 'Say hello to the dove', onUse: () => {
+      game.befriend(doveId4); SFX.peck(); game.hearts(fourthDove.group.position.x, fourthDove.group.position.y, fourthDove.group.position.z, 3);
+      game.toast('🕊️ "*drops out of the circling flock, glides low over the fountain, and climbs back to rejoin it*"'); } }); }
   // every other world had an animal of its own — Victorian never did, past the universal squirrel. A pair
   // of pigeons now peck about the market square's quiet east side, the way real ones always gather near a
   // fountain and a row of food stalls. Reuses makePigeon + Hopper exactly as the shore's sandpipers and the

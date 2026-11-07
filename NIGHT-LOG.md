@@ -26712,3 +26712,25 @@ unchanged at 330 (no new collider, as expected), and Victorian's own friend tota
 146. No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite described above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 979 — Victorian's fourth dove gets its own "say hello"
+
+Round 978 gave the third of Victorian's five market-square doves a "say hello," leaving two still
+loop-only. **The fourth dove now answers too.** *"drops out of the circling flock, glides low over
+the fountain, and climbs back to rejoin it"*
+
+Same pattern exactly, no new rig, no new controller, no new collider: `makeDove()`'s fourth instance
+(`i === 3` in the existing loop) gets its own `game.addInteractable()` and its own
+`game.namedFriend('dove-4')` id, stacking with the first three rather than replacing any of them.
+`Flyer` already puts every rig in the scene graph and the proximity check still only compares x/z, so
+the usual 2.1 m radius still catches the cat under the bird looping 7-12 m overhead. One dove remains
+loop-only.
+
+Verified with a headless probe (same stub-three harness `test/run.mjs` uses): entered the game,
+travelled to world 3, found four "Say hello to the dove" interactables, called the first three's
+`onUse()` and confirmed `game.state.friends.size` went 0 → 3, then called the fourth's and confirmed
+it stacked to 4. `node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console
+warnings, box count unchanged at 330 (no new collider, as expected), and Victorian's own friend total
+rose from 146 to 147. No visual check was possible in this environment (no browser, no Playwright) —
+only the stub-three test suite and the one headless probe described above, deleted after use, nothing
+committed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
