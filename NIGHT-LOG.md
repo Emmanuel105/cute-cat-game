@@ -26637,3 +26637,28 @@ unchanged at 330 (no new collider, as expected), and Frosty Peak's own friend co
 116 (world 5's "to meet" total). No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite described above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 976 — Frosty Peak's sixth and last snow bunting gets its own "say hello"
+
+Round 975 gave the fifth of Frosty Peak's six snow buntings a "say hello," leaving only the sixth
+circling the village sky in silence. **The sixth and last snow bunting now answers too, closing out
+the flock.** *"banks hard overhead, scatters a little flurry of snow off the roof, and settles back
+into formation"*
+
+Same pattern exactly, no new rig, no new controller, no new collider: `makeSnowBird()`'s sixth
+instance (`i === 5` in the existing loop) gets its own `game.addInteractable()` and its own
+`game.namedFriend('snow-bird-6')` id, stacking with the first five rather than replacing any of them.
+`Flyer` already puts every rig in the scene graph and the proximity check still only compares x/z, so
+the usual 2.1 m radius catches the cat under the bird looping 14-22 m overhead. Every bunting in the
+flock now greets the cat.
+
+Verified with a headless probe (same stub-three harness `test/run.mjs` uses): clicked "Enter",
+travelled to world 5, found all six bunting interactables present, walked the cat to the sixth one's
+position and called its `onUse()` directly — `game.state.friends.size` went from 0 to 1 and
+`game.friendTotal` read 117. `node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0
+console warnings, box count unchanged at 330 (no new collider, as expected). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
+one headless probe described above, deleted after use, nothing committed. Also found and pushed 11
+commits (rounds 965-975) that a previous run had left stranded on a detached HEAD, never pushed to
+`origin/main` — `main` is now caught up. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.
