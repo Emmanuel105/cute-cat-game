@@ -26481,3 +26481,32 @@ unchanged at 330 (no new collider, as expected), and Victorian's own friend coun
 No visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
 suite and the two headless probes described above, both deleted after use, nothing committed. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 970 — Candy Land's sugar mouse gets a bolder sibling
+
+Robot City's scout-bot, Sunny Shore's bold crab, Frosty Peak's bold penguin, Victorian's bold pigeon
+and Whisper Woods' bold fox all peel away from their own kind to come and investigate the cat — Candy
+Land, for all its sugar mouse, mint hare, peppermint sparrow and gumdrop toad, never had one of its
+own. **A second, bolder sugar mouse now scurries right up to meet the cat** instead of hopping about
+its own patch of grass. *"scurries right up and stands on its hind legs to sniff the cat's paw"*
+
+No new rig and no new controller: the exact same `makeSugarMouse()` the shy one already uses, wrapped
+in `Follower` (56-npcs-wild.js) instead of `Hopper` — the same swap every other world's own bold
+critter already made. A headless probe (the stub-three harness `test/run.mjs` itself uses:
+`game.start('new')` then `game.travel(1, 'from-hub')`, 3600 simulated frames sampling every
+ground-based NPC's and the squirrel's own position every 4th frame, flying `Flyer`s excluded since
+their footprint means nothing for a ground mouse) swept the open heart of the land against all 1902 of
+Candy Land's own physics boxes and every `game.zones` rect: (10, 39) came back 8.5 m clear of the
+nearest box, 8.8 m clear of the nearest wandering soul and 17.9 m clear of the nearest zone — north of
+the candy-cane patch, well short of the castle approach, with its own 5 m wander leash keeping it off
+every other creature's patch regardless of where each happens to be.
+
+Verified past the test suite with a second headless probe: walked the cat next to it and called
+`game.interact()` — the prompt read "Say hello to the mouse" and `game.state.friends.size` went from 0
+to 1.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330 (no new collider, as expected), and Candy Land's own friend count rose from 98 to 99.
+No visual check was possible in this environment (no browser, no Playwright) — only the stub-three
+test suite and the two headless probes described above, both deleted after use, nothing committed.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
