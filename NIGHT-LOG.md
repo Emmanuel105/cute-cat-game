@@ -27116,3 +27116,30 @@ fast-forwarded onto `HEAD`), so no work was actually at risk — just the branch
 unchanged at 330, and Whisper Woods' own friend total rose from 143 to 144. No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 995 — Whisper Woods' eleventh butterfly gets its own "say hello"
+
+Rounds 986-994 wired up the second through tenth of Whisper Woods' twelve loose butterflies,
+leaving two still loop-only. **The eleventh now answers too — only the twelfth still just
+loops.** *"Eleven of us. Just one left looping — the very last."*
+
+Same mechanism as every other butterfly this convention has touched: the build's existing
+`for (let i = 0; i < 12; i++)` loop over `makeButterfly()` + `Flyer` (74-world-forest.js,
+`buildForest`) now also captures its eleventh iteration's rig into `eleventhForestButterfly`, and
+an eleventh `game.addInteractable` keys off that group directly with its own
+`game.namedFriend('forest-butterfly-11')` id, distinct from the ten already wired so all eleven
+stack. `Flyer`'s constructor already puts the rig in the scene graph itself, so no extra wiring was
+needed, and the proximity check only compares `x`/`z`, so the usual 2.1 m radius still catches the
+cat passing underneath the butterfly's 0.7-2 m loop. No new mesh, no new physics box, no new
+`rnd()` draw. Reused `SFX.twinkle()`, same cue every other butterfly uses. Only the twelfth and
+last of Whisper Woods' butterflies remains loop-only — one round away from closing out the whole
+flock, and with it every flock in the game.
+
+This run also found local `main` sitting on a detached `HEAD`, pointed exactly at
+`origin/main` (round 994's commit). Reattached `main` to that commit before starting — same slip
+several earlier rounds have hit.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330, and Whisper Woods' own friend total rose from 144 to 145. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
