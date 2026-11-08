@@ -27563,3 +27563,37 @@ the fiddler and called `game.interact()` — the label read "Say hello", the arm
 over 400 simulated frames of sawing, and `game.state.friends.size` went from 0 to 1. No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above and the
 scratch probes. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1010 — Whisper Woods gets a third fiddler, and its own second musician
+
+Candy Land, Robot City and Victorian have all picked up a street fiddler over the last few rounds —
+Whisper Woods, for all its owls, fairies and its own ukulele player south of the glade, never had a
+second musician. **A fiddler now sits on a mossy stretch of forest floor out past the fairy ring,
+sawing a bow across a tiny violin tucked under the chin.** *"The ukulele player and I never play
+together — too far apart to hear each other, which suits us both."* *"Careful, puss — four strings, no
+yarn to bat at."* *"Even out here, something always stops to listen."*
+
+No new mechanism: `Fiddler` (55-npcs.js) and `makeFiddleCase()` (60-props.js) are reused verbatim from
+the other three worlds — only the wardrobe, case spot and lines are new. `placeT`/`boxT` take the place
+of the flat-floor towns' `place()`/`P.addBox()` for the case, the same terrain-aware pairing every other
+forest prop already relies on; `Fiddler`'s own constructor sets its rig's height straight from
+`game.physics.ground0()`, so it needed no extra placement call of its own.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, since
+there's no browser here to look at it: `game.start('new')`, `game.travel(6, 'from-hub')` waited out for
+real against `game.worldIndex`, then 1200 simulated frames sampling every NPC's and the squirrel's own
+position every 10th frame) swept a 1 m grid of the open forest floor (radius 10-55, short of the radius
+(58) where `forestRegion()`'s own fill takes over) against both those samples and all of this wood's 732
+physics boxes: (51, -20) came back 10.5 m clear of the nearest box and 10.8 m clear of the nearest
+wandering soul, at radius 54.8 from the origin — well past the wagon, the paper-plane kid and every other
+hand-placed landmark, which all sit on the west side of the wood, and 6.6 m outside the nearest
+`game.zones` rect. Facing the wood's own centre puts the case at (51.7, -19.6), itself still 10.9 m clear
+of the nearest box and 11.6 m clear of the nearest wandering soul.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330, and Whisper Woods' own friend total rose to 149 (up from 148). Verified past the test
+suite's own checks with a second headless probe: walked the cat up to the fiddler and called
+`game.interact()` — the label read "Say hello", `game.state.friends.size` went from 0 to 1, and the arms
+stayed finite over 400 simulated frames of sawing. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite above and the scratch probes. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

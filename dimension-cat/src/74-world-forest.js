@@ -2741,6 +2741,45 @@ function buildForest(game, entry) {
     W.add(planeKid.group);
     game.npcs.push(new PaperPlaneKid(game, planeKid, { x: pkx, z: pkz, ry: -PI / 2,
       cries: ["Folds this one from a curl of birch bark — paper never lasts past the dew up here.", "Careful, puss — nose-first in the moss, this one, same as every throw before it.", "Longest glide yet — the gap in the canopy carries it further than anywhere else in the wood."] })); }
+  // Candy Land, Robot City and Victorian all have a `Fiddler` (55-npcs.js) busking by now — Whisper
+  // Woods, for all its owls, fairies and its own ukulele player south of the glade, never had a second
+  // musician. **A fiddler now sits on a mossy log out past the fairy ring, sawing a bow across a tiny
+  // violin tucked under the chin.** *"The ukulele player and I never play together — too far apart to
+  // hear each other, which suits us both."* *"Careful, puss — four strings, no yarn to bat at."* *"Even
+  // out here, something always stops to listen."*
+  //
+  // No new mechanism: `Fiddler` (55-npcs.js) and `makeFiddleCase()` (60-props.js) are reused verbatim
+  // from Candy Land, Robot City and Victorian — only the wardrobe, case spot and lines are new.
+  // `placeT`/`boxT` take the place of the flat-floor towns' `place()`/`P.addBox()` for the case, the
+  // same terrain-aware pairing every other forest prop already relies on; `Fiddler`'s own constructor
+  // sets its rig's height from `game.physics.ground0()` directly, so it needed no extra placement call.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, since
+  // there's no browser here to look at it: `game.start('new')`, `game.travel(6, 'from-hub')` waited out
+  // for real against `game.worldIndex`, then 1200 simulated frames sampling every NPC's and the
+  // squirrel's own position every 10th frame) swept a 1 m grid of the open forest floor (radius 10-55,
+  // short of the radius (58) where `forestRegion()`'s own fill takes over) against both those samples
+  // and all of this wood's 732 physics boxes: (51, -20) came back 10.5 m clear of the nearest box and
+  // 10.8 m clear of the nearest wandering soul, at radius 54.8 from the origin — well past the wagon at
+  // (-29, -3), the paper-plane kid at (-46, 19) and every other hand-placed landmark, which all sit on
+  // the west side of the wood, and 6.6 m outside the nearest `game.zones` rect. Facing the wood's own
+  // centre (ry = atan2(-fx, -fz)) puts the case at (51.7, -19.6), itself still 10.9 m clear of the
+  // nearest box and 11.6 m clear of the nearest wandering soul.
+  //
+  // Built dead last, right after the paper-plane kid above and right before the squirrel spawn point,
+  // for the usual reason: `makeHuman()` and `randomPerson()` both draw off this wood's own shared `r()`
+  // sequence unconditionally, and anything built earlier would have had its own timing-sensitive pick
+  // shifted by it.
+  { const fx = 51, fz = -20, fry = atan2(-fx, -fz);
+    const fiddleWard = makeWardrobe(r, { shirts: [0x5a7a4a, 0x6b4f8a, 0x8a6a4a], pants: [0x3a4a2e, 0x2a2a2a], shoes: [0x3a2a1e, 0x1e2020] });
+    const fiddler = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: fiddleWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.25) });
+    W.add(fiddler.group);
+    game.npcs.push(new Fiddler(game, fiddler, { x: fx, z: fz, ry: fry,
+      cries: ["The ukulele player and I never play together — too far apart to hear each other, which suits us both.", 'Careful, puss — four strings, no yarn to bat at.', 'Even out here, something always stops to listen.'] }));
+    const caseX = fx + 0.7, caseZ = fz + 0.4;
+    placeT(game, U, makeFiddleCase(), caseX, caseZ, fry);
+    boxT(game, caseX, caseZ, 0.64, 0.12, 0.24, { cam: false }); }
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
