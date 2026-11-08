@@ -22388,6 +22388,41 @@ function buildBeach(game, entry) {
     W.add(planeKid.group);
     game.npcs.push(new PaperPlaneKid(game, planeKid, { x: -16, z: 0, ry: -PI / 2,
       cries: ["Folds a fresh one every throw — salt air warps the paper fast, puss.", "Sea breeze keeps grabbing it sideways. One day I'll land it dead straight.", 'Longest flight yet — must be an updraft off the dunes.'] })); }
+  // The Neighborhood's acorn cart (round 215), Candy Land's gumdrop cart (round 998), Robot City's
+  // bolt cart (round 999), Victorian's apple cart (round 1000) and Frosty Peak's pinecone cart (round
+  // 1001) were the only wagons in the game so far — Sunny Shore and Whisper Woods never got one.
+  // **Sunny Shore now has its own.** A beachcomber kid kneels on the open dry sand south-west of the
+  // marbles ring, loading seashells into a sun-gold wagon one at a time. *"Six shells already — the
+  // tide always leaves more than it takes."* *"Careful, puss — not a boat, this one, however much it
+  // looks like it floats."* *"One more good wave and I'll have a full load."*
+  //
+  // No new mechanism: `makeWagon()` (60-props.js) and `Kneeler` (55-npcs.js) are the exact pairing the
+  // other five wagons already use, just a sun-gold bed (0xe8923d) instead of cart-red, candy-pink,
+  // steel-grey, bottle-green or frost-blue. Like the rest of this sloping beach, this uses `placeT`
+  // (not `place()`) so the wagon and the kid both sit on the real sand height, and reuses this file's
+  // own `beachPerson()` helper (already used for the jacks girl and the paper-plane boy just above) for
+  // the hauler's wardrobe rather than drawing a fresh one. `Kneeler`'s own constructor calls
+  // `greetable()` itself, so this is a placement, not a new build.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // since there's no browser here to look at it: `game.start('new')`, `game.travel(4, 'from-hub')`
+  // waited out for real against `game.worldIndex`, then 3600 simulated frames sampling every NPC's own
+  // position every 10th frame) swept a 1 m grid of the open dry sand (radius 3-50, short of the radius
+  // (58) where `beachRegion`'s own fill takes over) against both those samples, all 264 of the beach's
+  // own physics boxes and `game.zones`: (-18, -25) came back 6.60 m clear of the nearest box and 6.32 m
+  // clear of the nearest wandering soul, at radius 30.8 from the origin — well clear of the jacks game
+  // at (-16, 8), the paper-plane kid's own patch at (-16, 0)-(-19, 0) and the portal approach's own
+  // keep-out span (x in [-52,-44], z in [-14,14]).
+  //
+  // Built dead last, right after the paper-plane kid, for the usual reason: `makeHuman()` and
+  // `randomPerson()` (inside `beachPerson()`) both draw off the shared `rnd()` sequence
+  // unconditionally, and anything built earlier on this beach would have had its own timing-sensitive
+  // pick shifted by it.
+  { const hx = -18, hz = -25, wx = hx + 0.8, wz = hz, wry = atan2(hx - wx, hz - wz);
+    const wagon = makeWagon(0xe8923d); placeT(game, U, wagon, wx, wz, wry);
+    const hauler = beachPerson(r.chance(0.5), true);
+    game.npcs.push(new Kneeler(game, hauler, { x: hx, z: hz, ry: atan2(wx - hx, wz - hz),
+      cries: ["Six shells already — the tide always leaves more than it takes.", "Careful, puss — not a boat, this one, however much it looks like it floats.", "One more good wave and I'll have a full load."] })); }
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

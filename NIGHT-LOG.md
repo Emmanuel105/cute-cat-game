@@ -27310,3 +27310,32 @@ first, less careful candidate (37, -5) would have sat right on top of.
 count unchanged at 330, and Frosty Peak's own friend total rose from 117 to 118. No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1002 — Sunny Shore gets its own wagon
+
+The Neighborhood's acorn cart (round 215), Candy Land's gumdrop cart (round 998), Robot City's bolt
+cart (round 999), Victorian's apple cart (round 1000) and Frosty Peak's pinecone cart (round 1001)
+were the only wagons in the game so far — Sunny Shore and Whisper Woods never got one. **Sunny Shore
+now has its own.** A beachcomber kid kneels on the open dry sand south-west of the marbles ring,
+loading seashells into a sun-gold wagon one at a time. *"Six shells already — the tide always leaves
+more than it takes."* *"Careful, puss — not a boat, this one, however much it looks like it floats."*
+
+No new mechanism: `makeWagon()` (60-props.js) and `Kneeler` (55-npcs.js) are the exact pairing the
+other five wagons already use, just a sun-gold bed (`0xe8923d`) instead of cart-red, candy-pink,
+steel-grey, bottle-green or frost-blue. Uses `placeT` (not `place()`) since this beach's sand slopes
+underfoot, and reuses this file's own `beachPerson()` helper — already doing duty for the jacks girl
+and the paper-plane boy just above — for the hauler's wardrobe, so no new colour literals either.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, since
+there's no browser here to look at it: `game.start('new')`, `game.travel(4, 'from-hub')` waited out
+for real against `game.worldIndex`, then 3600 simulated frames sampling every NPC's own position
+every 10th frame) swept a 1 m grid of the open dry sand (radius 3-50, short of the radius (58) where
+`beachRegion`'s own fill takes over) against both those samples, all 264 of the beach's own physics
+boxes and `game.zones`: (-18, -25) came back 6.60 m clear of the nearest box and 6.32 m clear of the
+nearest wandering soul, at radius 30.8 from the origin — well clear of the jacks game at (-16, 8), the
+paper-plane kid's own patch at (-16, 0)-(-19, 0) and the portal approach's own keep-out span.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 264, and Sunny Shore's own friend total rose from 124 to 125. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
