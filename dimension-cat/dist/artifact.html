@@ -24636,6 +24636,39 @@ function buildSnowVillage(game, entry) {
       hat: 'beanie', hatColor: 0x2e9e6e, coat: true, scarf: 0xd62839, cuffs: 0xffffff, glasses: false }); W.add(hauler.group);
     game.npcs.push(new Kneeler(game, hauler, { x: hx, z: hz, ry: atan2(wx - hx, wz - hz),
       cries: ["Six pinecones loaded already — the fire never has enough, this time of year.", "Careful, puss — not a sled, this one, however much it looks like it wants to slide.", "One more drift to clear before the overlook fire goes out."] })); }
+  // the Neighborhood, Candy Land, Robot City, Victorian and Sunny Shore all have a `PaperPlaneKid`
+  // (55-npcs.js: a folded-paper dart that glides out on a lerped arc and gets rebuilt for the next
+  // throw) by now — Frosty Peak and Whisper Woods are the only two worlds left without one. **A
+  // bundled-up kid now stands on the open snowfield east of the village, folding paper planes and
+  // sailing them out over the drifts.** *"Folds a fresh one every throw — the cold keeps the creases
+  // sharp."* *"Careful, puss — nose-first in a snowdrift, this one, same as every throw before it."*
+  // *"Longest glide yet — this mountain air carries it further than any valley ever did."*
+  //
+  // No new controller and no new mesh asset: `PaperPlaneKid`'s own tiny folded-dart cone is built
+  // inline the same way the other five worlds' already are, and its constructor calls `greetable()`
+  // itself, so the rig needs no extra wiring to become a friend. Reuses this file's own `kid()` helper
+  // (coat, beanie, scarf and mittens already on, same as every other child up here) rather than a bare
+  // `makeHuman()` + fresh wardrobe, since every other PaperPlaneKid build site only skips those because
+  // its own world has no cold-weather wardrobe to draw on in the first place.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, since
+  // there's no browser here to look at it: `game.start('new')`, `game.travel(5, 'from-hub')` waited out
+  // for real against its own portal-fade timer, then 3600 simulated frames sampling every NPC's own
+  // position every 10th frame) swept a 1 m grid of the open snowfield (radius 5-50, short of the radius
+  // (58) where `snowRegion`'s own fill takes over) against both those samples and all 817 of the
+  // mountain's own physics boxes: (37, -6) came back 8.04 m clear of the nearest box and 7.69 m clear
+  // of the nearest wandering soul, at radius 37.5 from the origin, on a gentle slope (ground height
+  // varying under 0.1 m across the kid's own footprint) — well clear of the ice sculpture at (50, -14)
+  // and every other hand-placed spot on this side of the mountain. Facing north (ry = 0) sends the
+  // plane's own 3 m throw to (37, -3), itself still 7.22 m clear of the nearest box and 6.39 m clear of
+  // the nearest wandering soul.
+  //
+  // Built dead last, right after the pinecone wagon above and right before the squirrel spawn point, so
+  // no earlier timing-sensitive pick off this mountain's own shared `r()` sequence was disturbed.
+  { const pkx = 37, pkz = -6;
+    const planeKid = kid(r.chance(0.5));
+    game.npcs.push(new PaperPlaneKid(game, planeKid, { x: pkx, z: pkz, ry: 0,
+      cries: ["Folds a fresh one every throw — the cold keeps the creases sharp.", "Careful, puss — nose-first in a snowdrift, this one, same as every throw before it.", "Longest glide yet — this mountain air carries it further than any valley ever did."] })); }
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

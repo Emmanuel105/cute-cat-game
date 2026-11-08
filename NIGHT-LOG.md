@@ -27402,3 +27402,37 @@ unchanged at 330, and Candy Land's own friend total rose from 105 to 106 (confir
 `game.friendTotal` after a real `game.travel(1, 'from-hub')`, not just read off the log). No visual
 check was possible in this environment (no browser, no Playwright) — only the stub-three test suite
 above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1005 — Frosty Peak gets its own paper-plane kid
+
+The Neighborhood, Candy Land, Robot City, Victorian and Sunny Shore all had a `PaperPlaneKid`
+(55-npcs.js: a folded-paper dart that glides out on a lerped arc, then gets rebuilt for the next
+throw) — Frosty Peak and Whisper Woods were the only two worlds left without one. **Frosty Peak now
+has its own.** A bundled-up kid stands on the open snowfield east of the village, folding paper planes
+and sailing them out over the drifts. *"Folds a fresh one every throw — the cold keeps the creases
+sharp."* *"Careful, puss — nose-first in a snowdrift, this one, same as every throw before it."*
+*"Longest glide yet — this mountain air carries it further than any valley ever did."*
+
+No new mechanism: `PaperPlaneKid`'s own tiny folded-dart cone and lerp-with-a-sine-arc throw are
+exactly what the other five worlds already use. The kid itself reuses this mountain's own `kid()`
+helper (coat, beanie, scarf and mittens already on, same as every other child up here) instead of a
+fresh `makeHuman()` + wardrobe, since the other five build sites only skip warm clothing because their
+own worlds have none to draw on. Its constructor calls `greetable()` itself, so no extra wiring was
+needed to make it a friend.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, since
+there's no browser here to look at it: `game.start('new')`, `game.travel(5, 'from-hub')` waited out
+for real against its own portal-fade timer, then 3600 simulated frames sampling every NPC's own
+position every 10th frame) swept a 1 m grid of the open snowfield (radius 5-50, short of the radius
+(58) where `snowRegion`'s own fill takes over) against both those samples and all 817 of the
+mountain's own physics boxes: (37, -6) came back 8.04 m clear of the nearest box and 7.69 m clear of
+the nearest wandering soul, at radius 37.5 from the origin, on a gentle slope — well clear of the ice
+sculpture at (50, -14) and every other hand-placed spot on this side of the mountain. Facing north
+(ry = 0) sends the plane's own 3 m throw to (37, -3), itself still 7.22 m clear of the nearest box and
+6.39 m clear of the nearest wandering soul.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330 (the exit-line count, taken in the Neighborhood), and Frosty Peak's own friend total
+rose from 118 to 119 (confirmed directly against the test's own "to meet" count before and after the
+change). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
