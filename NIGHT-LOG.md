@@ -27038,3 +27038,29 @@ Five of Whisper Woods' twelve butterflies remain loop-only — left for other ni
 unchanged at 330, and Whisper Woods' own friend total rose from 140 to 141. No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 992 — Whisper Woods' eighth butterfly gets its own "say hello"
+
+Rounds 986-991 wired up the second through seventh of Whisper Woods' twelve loose butterflies,
+leaving five still loop-only. **The eighth now answers too — two-thirds of the flock, four left
+looping.** *"Eight of us. Four left looping — they'll get their turn."*
+
+Same mechanism as every other butterfly this convention has touched: the build's existing
+`for (let i = 0; i < 12; i++)` loop over `makeButterfly()` + `Flyer` (74-world-forest.js,
+`buildForest`) now also captures its eighth iteration's rig into `eighthForestButterfly`, and an
+eighth `game.addInteractable` keys off that group directly with its own
+`game.namedFriend('forest-butterfly-8')` id, distinct from the seven already wired so all eight
+stack. `Flyer`'s constructor already puts the rig in the scene graph itself, so no extra wiring was
+needed, and the proximity check only compares `x`/`z`, so the usual 2.1 m radius still catches the
+cat passing underneath the butterfly's 0.7-2 m loop. No new mesh, no new physics box, no new
+`rnd()` draw. Reused `SFX.twinkle()`, same cue every other butterfly uses. Four of Whisper Woods'
+twelve butterflies remain loop-only — left for other nights.
+
+This run also found the previous session's work sitting on a detached `HEAD`, with local `main`
+pointing at round 988's commit while `origin/main` already had round 991. Reset local `main` onto
+`origin/main` before starting — same slip several earlier rounds have hit.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330, and Whisper Woods' own friend total rose from 141 to 142. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
