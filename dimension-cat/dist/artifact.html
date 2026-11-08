@@ -15626,6 +15626,27 @@ function buildRobotCity(game, entry) {
     // nearest by distance² (per `80-game.js`) if a cat ever stands where both would answer.
     const patientLines = ['🤖 "A dent above the knee joint — old damage, not new."', '🤖 "One access panel hangs by a single loose screw."', '🤖 "The diagnostic light just blinks amber. Nobody knows what amber means."'];
     game.addInteractable({ obj: patient.group, radius: 0.75, label: () => 'Look at the patient', onUse: () => { SFX.click(); game.toast(rnd.pick(patientLines), 3000); } }); }
+  // every other world now has a street musician — a ukulele player almost everywhere, Victorian its own
+  // fiddler at the clock tower — Robot City had a juggler but nobody actually playing anything, the one
+  // world left without a performer of its own. A fiddler now busks on a quiet side street north-west of
+  // downtown, sawing a bow across a tiny violin, same build as Victorian's own. Reuses `Fiddler`
+  // (55-npcs.js) and `makeFiddleCase()` (60-props.js) verbatim — only the wardrobe, lines and spot are new.
+  // A headless probe (the stub-three harness `test/run.mjs` itself uses: the real city built via
+  // `game.travel(2, 'from-prev')`, then a grid swept against every one of its physics boxes, its zones
+  // and every NPC's own built position) found (-21, 57) clear: 17.26 m from the nearest other soul (a
+  // wandering local) and well short of the radius (98) where `robotRegion()`'s own fill takes over.
+  // Facing roughly toward downtown (ry = atan2(0 - x, 0 - z)) puts the case at (-20.38, 56.48), clear by
+  // 16.87 m of the nearest other soul.
+  { const fx = -21, fz = 57, fry = atan2(0 - fx, 0 - fz);
+    const fiddleWard = makeWardrobe(r, { shirts: [0x5a4a6a, 0x3a4a5a, 0x4a5a6a], pants: [0x232c34, 0x2a2a30], shoes: [0x1a1a20] });
+    const fiddler = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: fiddleWard }),
+      hat: r.chance(0.4) ? 'cap' : null, hatColor: 0x3a4a5a, jacket: null, scarf: 0x8a1a1a, bag: null, glasses: false });
+    W.add(fiddler.group);
+    game.npcs.push(new Fiddler(game, fiddler, { x: fx, z: fz, ry: fry,
+      cries: ["Even down here, a tune carries further than you'd think.", 'Careful, puss — the rosin bites worse than the chrome.', 'No foreman out this far to tell me to stop.'] }));
+    const caseX = -20.38, caseZ = 56.48;
+    place(game, U, makeFiddleCase(), caseX, caseZ, fry);
+    P.addBox(caseX, 0.06, caseZ, 0.64, 0.12, 0.24, { cam: false }); }
   // an artist sets up an easel on the open floor, painting the giant robot statue and its neon glow across the plaza — the one world of the seven with no painter yet
   { const painterWard = makeWardrobe(r, { shirts: [0x4a5a6a, 0x5a4a6a, 0x3a4a5a], pants: [0x232c34, 0x2a2a30] });
     const painter = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: painterWard }),

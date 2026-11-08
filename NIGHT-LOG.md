@@ -27506,3 +27506,28 @@ browser, no Playwright) — only the stub-three test suite above, plus a scratch
 fiddler is in the scene graph, has a working "Say hello" prompt, and that its arm and head rotations
 stay finite over several hundred simulated frames. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1008 — Robot City gets a street fiddler
+
+Every other world had picked up a street musician by now — a ukulele player almost everywhere, and
+Victorian its own fiddler at the clock tower last round — but Robot City still only had a juggler;
+nobody down there was actually playing anything. **A fiddler now busks on a quiet side street
+north-west of downtown**, sawing a bow across a tiny violin, exactly the way Victorian's does.
+*"Even down here, a tune carries further than you'd think."* *"Careful, puss — the rosin bites worse
+than the chrome."* *"No foreman out this far to tell me to stop."*
+
+No new code: this reuses `Fiddler` (55-npcs.js) and `makeFiddleCase()` (60-props.js) verbatim, same
+human rig and wardrobe helpers every other person in the city already uses — only the wardrobe,
+lines and spot are new. A headless probe (the stub-three harness `test/run.mjs` itself uses: the real
+city built via `game.travel(2, 'from-prev')`, then a grid swept against every one of its physics
+boxes, its zones and every NPC's own built position) found (-21, 57) clear: 17.26 m from the nearest
+other soul and well short of the radius (98) where `robotRegion()`'s own fill takes over. Facing
+roughly toward downtown puts the tip case at (-20.38, 56.48), clear by 16.87 m of the nearest other
+soul.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330 (the exit-line count, taken in the Neighborhood), and Robot City's own friend total
+rose from 108 to 109 (confirmed directly against the test's own "to meet" count before and after the
+change, with `git stash` to get the old number). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
