@@ -27372,3 +27372,33 @@ sequence was disturbed.
 Woods' own friend total rose from 146 to 147. All seven worlds now have a wagon. No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1004 — Candy Land gets its own paper-plane kid
+
+The Neighborhood, Robot City and Sunny Shore all had a `PaperPlaneKid` (55-npcs.js: a folded-paper
+dart that glides out on a lerped arc, then gets rebuilt for the next throw) — Candy Land, Frosty Peak
+and Whisper Woods never got one. **Candy Land now has its own.** A boy stands on the open sweet-lands
+well out past the gumdrop wagon, folding candy-wrapper planes and sailing them out over the sugar
+grass. *"Folds a fresh one from a spare wrapper every throw."* *"Careful, puss — nose-first in the
+sugar grass, this one, same as every throw before it."* *"Longest glide yet — not even the gumdrop
+cart beats this for distance."*
+
+No new mechanism: `PaperPlaneKid`'s own tiny folded-dart cone and lerp-with-a-sine-arc throw are
+exactly what the other three lands already use, just placed here for the first time. Its constructor
+calls `greetable()` itself, so the `makeHuman()` child rig needed no extra wiring to become a friend.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, since
+there's no browser here to look at it: `game.start('new')`, `game.travel(1, 'from-hub')` waited out
+for real against `game.worldIndex`, then 3000 simulated frames sampling every NPC's and squirrel's own
+position every tenth frame) swept a 2 m grid of the open sweet-lands (radius 45-88, short of the
+radius (92) where `candyRegion`'s own procedural fill takes over) against both those samples and every
+one of the land's 1902 physics boxes: (-58, 66) came back 16.97 m clear of the nearest box and 16.03 m
+clear of the nearest wandering soul, at radius 87.9 from the origin — well clear of the gumdrop wagon,
+the toffee-apple seller, the hopscotch grid and the dog walker. Facing north sends the plane's own 3 m
+throw to (-58, 69), itself still 17.53 m clear of the nearest box and outside every zone rect.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330, and Candy Land's own friend total rose from 105 to 106 (confirmed directly against
+`game.friendTotal` after a real `game.travel(1, 'from-hub')`, not just read off the log). No visual
+check was possible in this environment (no browser, no Playwright) — only the stub-three test suite
+above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
