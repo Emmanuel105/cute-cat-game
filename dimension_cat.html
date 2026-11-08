@@ -17143,6 +17143,38 @@ function buildRobotCity(game, entry) {
     const boldFactoryMouseId = game.namedFriend('bold-factorymouse');
     game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the mouse', onUse: () => { game.befriend(boldFactoryMouseId); SFX.chitter(); game.hearts(rig.group.position.x, 0.2, rig.group.position.z, 3); game.toast('🐭 *scurries right up and stands on its hind legs to sniff the cat\'s paw*'); } }); }
 
+  // The Neighborhood's acorn cart (round 215) and Candy Land's gumdrop cart (round 998) are the only
+  // wagons in the whole game so far — Robot City, Victorian, Sunny Shore, Frosty Peak and Whisper
+  // Woods never got one. **Robot City now has its own.** A maintenance worker kneels on the open
+  // concrete south of the piñata post, loading spare bolts into a steel service wagon one at a time.
+  // *"Spare bolts, sorted by thread — foreman's orders."*
+  //
+  // No new mechanism: `makeWagon()` (60-props.js) and `Kneeler` (55-npcs.js) are the exact pairing the
+  // other two wagons already use, just a steel-grey bed (0x5a6270) instead of cart-red or candy-pink,
+  // and the worker's own fixed shirt colour (0xffb74d, hazard amber) not already handed out anywhere
+  // in this build. `Kneeler`'s own constructor calls `greetable()` itself, so this is a placement, not
+  // a new build.
+  //
+  // A headless probe (the stub-three harness `test/run.mjs` itself uses: `game.start('new')` then
+  // `game.travel(2, 'from-hub')`, 3600 simulated frames to let every wanderer, patroller and the catch
+  // pair actually move) sampled every NPC's own position every 10th frame, then swept a grid of the
+  // open floor (radius 15-90, short of the radius (98) where robotRegion's own procedural fill takes
+  // over) against both those samples, every one of the city's 330 physics boxes and `game.zones`:
+  // (6, -88) came back 17.2 m clear of the nearest box, 17.2 m clear of the nearest wandering soul, and
+  // outside every keep-out rectangle — well south of the piñata post at (2, -70) and inside the world's
+  // own 95 m movement limit.
+  //
+  // Built dead last, right after the bold factory mouse above, for the usual reason: `makeHuman()`
+  // draws three values off the *shared* `rnd()` sequence unconditionally, and a fresh rig built any
+  // earlier would shift that sequence and desync every other timing-sensitive pick already placed
+  // above.
+  { const wx = 6, wz = -88, bx = wx + 0.8, bz = wz, bry = atan2(wx - bx, wz - bz);
+    const wagon = makeWagon(0x5a6270); place(game, U, wagon, bx, bz, bry);
+    const wagonWard = makeWardrobe(r, { shirts: [0xffb74d], pants: [0x232c34, 0x2a2a30], shoes: [0x1a1a20, 0x201c18] });
+    const hauler = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: wagonWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false }); W.add(hauler.group);
+    game.npcs.push(new Kneeler(game, hauler, { x: wx, z: wz, ry: atan2(bx - wx, bz - wz),
+      cries: ["Spare bolts, sorted by thread — foreman's orders.", "Careful, puss — not a ride, this one.", "Last crate before shift change. Nearly there."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

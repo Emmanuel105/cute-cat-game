@@ -27222,3 +27222,28 @@ pick in this land's own seeded `r()` sequence was disturbed.
 count unchanged at 330, and Candy Land's own friend total rose from 104 to 105. No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 999 — Robot City gets its own wagon
+
+Only the Neighborhood's acorn cart (round 215) and Candy Land's gumdrop cart (round 998) had a
+wagon so far — Robot City, Victorian, Sunny Shore, Frosty Peak and Whisper Woods never got one.
+**Robot City now has its own.** A maintenance worker kneels on the open concrete well south of the
+piñata post, loading spare bolts into a steel-grey service wagon one at a time. *"Spare bolts,
+sorted by thread — foreman's orders."* *"Careful, puss — not a ride, this one."*
+
+No new mesh, no new controller: `makeWagon()` (60-props.js) and `Kneeler` (55-npcs.js) are the exact
+pairing the other two wagons already use, just a steel-grey bed (`0x5a6270`) instead of cart-red or
+candy-pink, and the worker's own fixed hazard-amber shirt (`0xffb74d`), not handed out anywhere else
+in this build. `Kneeler`'s own constructor calls `greetable()` itself, so this was a placement, not
+a new build. A headless probe (`game.start('new')`, `game.travel(2, 'from-hub')`, 3600 simulated
+frames sampling every NPC's own position every 10th frame) swept the open floor against the city's
+330 physics boxes, every wandering soul's position and `game.zones`: (6, -88) came back 17.2 m clear
+of the nearest box, 17.2 m clear of the nearest other soul, and outside every keep-out rectangle —
+well south of the piñata post at (2, -70) and inside the world's own 95 m movement limit. Built dead
+last, right after the bold factory mouse from round 997, so no earlier timing-sensitive pick in this
+city's own shared `r()`/`rnd()` sequence was disturbed.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330, and Robot City's own friend total rose from 107 to 108. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
