@@ -27247,3 +27247,33 @@ city's own shared `r()`/`rnd()` sequence was disturbed.
 unchanged at 330, and Robot City's own friend total rose from 107 to 108. No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1000 — Victorian gets its own wagon
+
+The Neighborhood's acorn cart (round 215), Candy Land's gumdrop cart (round 998) and Robot City's
+bolt cart (round 999) were the only wagons in the game so far — Victorian, Sunny Shore, Frosty Peak
+and Whisper Woods never got one. **Victorian now has its own.** A costermonger's boy kneels on the
+open green out past the town's back lanes, loading apples from a sack into a bottle-green wagon one
+at a time. *"Six apples loaded already, straight off the cart at market."* *"Careful, puss — not a
+ride, this one's spoken for."*
+
+No new mechanism: `makeWagon()` (60-props.js) and `Kneeler` (55-npcs.js) are the exact pairing the
+other three wagons already use, just a bottle-green bed (`0x2d5a3d`) instead of cart-red,
+candy-pink or steel-grey, and a flatcap on the boy instead of the usual bare head. `Kneeler`'s own
+constructor calls `greetable()` itself, so this is a placement, not a new build.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.travel(3,
+'from-prev')` waited out through its real portal-fade timer, then 3600 simulated frames sampling
+every NPC's own position every 10th frame) swept a 2 m grid of the open green (radius 20-85, short
+of the radius (88) where `victorianRegion`'s own procedural fill takes over) against both those
+samples, every one of the town's 572 physics boxes and `game.zones`: (-45, 71) came back 18.9 m
+clear of the nearest box, 19.1 m clear of the nearest wandering soul and outside every keep-out
+rectangle — well north of the paper-plane kid's own patch at (-48, -36) and clear of every terrace,
+the market square and the watch-lamp baskets. Built dead last, right after the paper-plane kid and
+right before the squirrel, so no earlier timing-sensitive pick off this town's own shared `r()`
+sequence was disturbed.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330, and Victorian's own friend total rose from 148 to 149. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
