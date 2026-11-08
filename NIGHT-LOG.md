@@ -27090,3 +27090,29 @@ starting — same slip several earlier rounds have hit.
 unchanged at 330, and Whisper Woods' own friend total rose from 142 to 143. No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 994 — Whisper Woods' tenth butterfly gets its own "say hello"
+
+Rounds 986-993 wired up the second through ninth of Whisper Woods' twelve loose butterflies,
+leaving three still loop-only. **The tenth now answers too — only two left looping.** *"Ten of us
+now. Just two left looping — they're next."*
+
+Same mechanism as every other butterfly this convention has touched: the build's existing
+`for (let i = 0; i < 12; i++)` loop over `makeButterfly()` + `Flyer` (74-world-forest.js,
+`buildForest`) now also captures its tenth iteration's rig into `tenthForestButterfly`, and a
+tenth `game.addInteractable` keys off that group directly with its own
+`game.namedFriend('forest-butterfly-10')` id, distinct from the nine already wired so all ten
+stack. `Flyer`'s constructor already puts the rig in the scene graph itself, so no extra wiring
+was needed, and the proximity check only compares `x`/`z`, so the usual 2.1 m radius still catches
+the cat passing underneath the butterfly's 0.7-2 m loop. No new mesh, no new physics box, no new
+`rnd()` draw. Reused `SFX.twinkle()`, same cue every other butterfly uses. Two of Whisper Woods'
+twelve butterflies remain loop-only — left for other nights.
+
+This run also found 29 commits sitting on a detached `HEAD` with local `main` stale behind them;
+`origin/main` already had all of them (`git push` reported "Everything up-to-date" once `main` was
+fast-forwarded onto `HEAD`), so no work was actually at risk — just the branch pointer was behind.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330, and Whisper Woods' own friend total rose from 143 to 144. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
