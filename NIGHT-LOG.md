@@ -27436,3 +27436,40 @@ unchanged at 330 (the exit-line count, taken in the Neighborhood), and Frosty Pe
 rose from 118 to 119 (confirmed directly against the test's own "to meet" count before and after the
 change). No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1006 — Whisper Woods gets its own paper-plane kid
+
+The Neighborhood, Candy Land, Robot City, Victorian, Sunny Shore and Frosty Peak all had a
+`PaperPlaneKid` (55-npcs.js: a folded-paper dart that glides out on a lerped arc, then gets rebuilt
+for the next throw) — Whisper Woods was the only world left without one. **It has its own now.** A
+kid stands on the open forest floor north-west of the fairy ring, folding curls of birch bark into
+darts and sailing them out over the moss. *"Folds this one from a curl of birch bark — paper never
+lasts past the dew up here."* *"Careful, puss — nose-first in the moss, this one, same as every
+throw before it."* *"Longest glide yet — the gap in the canopy carries it further than anywhere else
+in the wood."*
+
+No new mechanism: `PaperPlaneKid`'s own tiny folded-dart cone and lerp-with-a-sine-arc throw are
+exactly what the other six worlds already use. Built from a plain `makeHuman()` + `randomPerson()`
+off this wood's own seeded `r()`, the same pairing the leaf-pile raker and wagon hauler already use
+a little earlier in this file, rather than any special wardrobe helper (unlike Frosty Peak, this wood
+has no cold-weather rig to reuse). Its constructor calls `greetable()` itself, so the rig needed no
+extra wiring to become a friend.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, since
+there's no browser here to look at it: `game.start('new')`, `game.travel(6, 'from-hub')` waited out
+for real against `game.worldIndex`, then 3600 simulated frames sampling every NPC's own position
+every 10th frame) swept a 1 m grid of the open forest floor (radius 10-50, short of the radius (58)
+where `forestRegion()`'s own fill takes over) against both those samples and all 432 ground-level
+physics boxes of this wood's 732: (-46, 19) came back 8.17 m clear of the nearest box and 9.06 m
+clear of the nearest wandering soul, at radius 49.8 from the origin and flat to within 2 cm across
+the kid's own footprint — well clear of the wagon, the leaf pile, the fairy ring and every other
+hand-placed landmark on this side of the wood. Facing west (ry = -PI/2) sends the plane's own 3 m
+throw to (-49, 19), itself still 10.72 m clear of the nearest box and 9.22 m clear of the nearest
+wandering soul.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330 (the exit-line count, taken in the Neighborhood), and Whisper Woods' own friend
+total rose from 147 to 148 (confirmed directly against the test's own "to meet" count before and
+after the change). Every world in the game now has a paper-plane kid. No visual check was possible
+in this environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

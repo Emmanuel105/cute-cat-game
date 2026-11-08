@@ -2705,6 +2705,42 @@ function buildForest(game, entry) {
     W.add(hauler.group);
     game.npcs.push(new Kneeler(game, hauler, { x: hx, z: hz, ry: atan2(wx - hx, wz - hz),
       cries: ["Six toadstool caps loaded already — the fairy ring always wants more for its table.", "Careful, puss — not a hollow log, this one, however much it looks like one."] })); }
+  // the Neighborhood, Candy Land, Robot City, Victorian, Sunny Shore and Frosty Peak all have a
+  // `PaperPlaneKid` (55-npcs.js: a folded-paper dart that glides out on a lerped arc, then gets
+  // rebuilt for the next throw) by now — Whisper Woods was the last world without one. **It has its
+  // own now.** A kid stands on the open forest floor north-west of the fairy ring, folding curls of
+  // birch bark into darts and sailing them out over the moss. *"Folds this one from a curl of birch
+  // bark — paper never lasts past the dew up here."* *"Careful, puss — nose-first in the moss, this
+  // one, same as every throw before it."* *"Longest glide yet — the gap in the canopy carries it
+  // further than anywhere else in the wood."*
+  //
+  // No new mechanism: `PaperPlaneKid`'s own tiny folded-dart cone and lerp-with-a-sine-arc throw are
+  // exactly what the other six worlds already use. Built from a plain `makeHuman()` + `randomPerson()`
+  // off this wood's own seeded `r()`, the same pairing the leaf-pile raker and wagon hauler above
+  // already use, rather than any special wardrobe helper (this wood has no cold-weather rig like
+  // Frosty Peak's `kid()` to reuse). Its constructor calls `greetable()` itself, so the rig needed no
+  // extra wiring to become a friend.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // since there's no browser here to look at it: `game.start('new')`, `game.travel(6, 'from-hub')`
+  // waited out for real against `game.worldIndex`, then 3600 simulated frames sampling every NPC's own
+  // position every 10th frame) swept a 1 m grid of the open forest floor (radius 10-50, short of the
+  // radius (58) where `forestRegion()`'s own fill takes over) against both those samples and all 432
+  // ground-level physics boxes of this wood's 732: (-46, 19) came back 8.17 m clear of the nearest box
+  // and 9.06 m clear of the nearest wandering soul, at radius 49.8 from the origin and flat to within
+  // 2 cm across the kid's own footprint — well clear of the wagon above, the leaf pile, the fairy ring
+  // and every other hand-placed landmark on this side of the wood. Facing west (ry = -PI/2) sends the
+  // plane's own 3 m throw to (-49, 19), itself still 10.72 m clear of the nearest box and 9.22 m clear
+  // of the nearest wandering soul.
+  //
+  // Built dead last, right after the wagon above and right before the squirrel spawn point, so no
+  // earlier timing-sensitive pick off this wood's own shared `r()` sequence was disturbed.
+  { const pkx = -46, pkz = 19;
+    const planeWard = makeWardrobe(r, { shirts: [0x8a6a44, 0x5a7a4a, 0x6b4f3a], pants: [0x3a3a2a, 0x2e3a28] });
+    const planeKid = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, wardrobe: planeWard }), backpack: null });
+    W.add(planeKid.group);
+    game.npcs.push(new PaperPlaneKid(game, planeKid, { x: pkx, z: pkz, ry: -PI / 2,
+      cries: ["Folds this one from a curl of birch bark — paper never lasts past the dew up here.", "Careful, puss — nose-first in the moss, this one, same as every throw before it.", "Longest glide yet — the gap in the canopy carries it further than anywhere else in the wood."] })); }
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
