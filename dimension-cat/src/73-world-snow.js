@@ -2194,6 +2194,46 @@ function buildSnowVillage(game, entry) {
     const planeKid = kid(r.chance(0.5));
     game.npcs.push(new PaperPlaneKid(game, planeKid, { x: pkx, z: pkz, ry: 0,
       cries: ["Folds a fresh one every throw — the cold keeps the creases sharp.", "Careful, puss — nose-first in a snowdrift, this one, same as every throw before it.", "Longest glide yet — this mountain air carries it further than any valley ever did."] })); }
+  // Candy Land, Robot City, Victorian and Whisper Woods all have a `Fiddler` (55-npcs.js) busking by
+  // now — Frosty Peak, for all its carnival acts and its own cocoa vendor, never had a musician of its
+  // own. **A fiddler now busks on the open snowfield south-east of the village,** bundled against the
+  // cold, sawing a bow across a tiny violin tucked under the chin. *"Fingers go numb past the second
+  // string, some nights — doesn't stop me."* *"Careful, puss — four strings, no yarn to bat at."*
+  // *"Even up here, something always stops to listen."*
+  //
+  // No new mechanism: `Fiddler` (55-npcs.js) and `makeFiddleCase()` (60-props.js) are reused verbatim
+  // from the other four worlds — only the wardrobe, case spot and lines are new. `placeT`/`boxT` take
+  // the place of the flat-floor towns' `place()`/`P.addBox()` for the case, the same terrain-aware
+  // pairing every other mountain prop already relies on; `Fiddler`'s own constructor sets its rig's
+  // height straight from `game.physics.ground0()`, so it needed no extra placement call of its own.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, since
+  // there's no browser here to look at it: `game.start('new')`, `game.travel(5, 'from-hub')` waited out
+  // for real against its own portal-fade timer, then 3600 simulated frames sampling every NPC's own
+  // position every 10th frame) swept a 2 m grid of the open snowfield (radius 15-56, short of the radius
+  // (58) where `snowRegion`'s own fill takes over) against both those 36,822 samples and all 817 of the
+  // mountain's own physics boxes: (28, -18) came back 6.80 m clear of the nearest box and 7.07 m clear
+  // of the nearest wandering soul, at radius 33.3 from the origin, outside every one of `game.zones`'s
+  // own keep-out rectangles, and on a gentle slope (ground height varying about 0.13 m across the
+  // fiddler's own footprint) — well clear of the paper-plane kid at (37, -6) and every other hand-placed
+  // landmark on this side of the mountain. Facing the village (fry = atan2(0 - fx, 0 - fz)) puts the
+  // case at (28.7, -17.6), itself still 6.99 m clear of the nearest box and 6.65 m clear of the nearest
+  // wandering soul.
+  //
+  // Built dead last, right after the second paper-plane kid above and right before the squirrel spawn
+  // point, for the usual reason: `makeHuman()` and `randomPerson()` both draw off this mountain's own
+  // shared `r()` sequence unconditionally, and anything built earlier would have had its own
+  // timing-sensitive pick shifted by it.
+  { const fx = 28, fz = -18, fry = atan2(0 - fx, 0 - fz);
+    const fiddleWard = makeWardrobe(r, { shirts: [0x5a4a6a, 0x6a5a4a, 0x8a3a3a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const fiddler = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: fiddleWard }),
+      hat: 'beanie', hatColor: 0x8a3a3a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a, glasses: false });
+    W.add(fiddler.group);
+    game.npcs.push(new Fiddler(game, fiddler, { x: fx, z: fz, ry: fry,
+      cries: ['Fingers go numb past the second string, some nights — doesn\'t stop me.', 'Careful, puss — four strings, no yarn to bat at.', 'Even up here, something always stops to listen.'] }));
+    const caseX = fx + 0.7, caseZ = fz + 0.4;
+    placeT(game, U, makeFiddleCase(), caseX, caseZ, fry);
+    boxT(game, caseX, caseZ, 0.64, 0.12, 0.24, { cam: false }); }
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

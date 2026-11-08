@@ -1231,6 +1231,7 @@ class Fiddler {
   constructor(game, rig, { x, z, ry = 0, color = 0x6a4120, cries = null, cryIcon = '🎻' }) {
     this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10;
     this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    this.look = 0; this.lookW = 0;
     rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
     const woodM = mat(color, { roughness: 0.55 }), stringM = mat(0xe8e2d0, { roughness: 0.7 });
     this.violin = group(0.1, 0.63, 0.14, rig.spine);

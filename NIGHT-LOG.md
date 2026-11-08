@@ -27597,3 +27597,43 @@ suite's own checks with a second headless probe: walked the cat up to the fiddle
 stayed finite over 400 simulated frames of sawing. No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite above and the scratch probes. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1011 — Frosty Peak gets a fiddler, and a real bug fix for all five
+
+Victorian, Robot City, Candy Land and Whisper Woods all picked up a street fiddler over the last few
+rounds — Frosty Peak and Sunny Shore were the only two worlds left without one. **A fiddler now busks
+on the open snowfield south-east of the village**, bundled against the cold, sawing a bow across a tiny
+violin tucked under the chin. *"Fingers go numb past the second string, some nights — doesn't stop
+me."* *"Careful, puss — four strings, no yarn to bat at."* *"Even up here, something always stops to
+listen."*
+
+While building a headless probe to check this one's head stayed sane up close, it didn't: calling
+`game.interact()` on it left `head.rotation.y` as `NaN` within a single frame. `Fiddler`'s constructor
+(`55-npcs.js`) never set `this.look`/`this.lookW` before its `update()` started calling
+`Wanderer.prototype.lookAtCat` on itself every frame — every other class that borrows that method (over
+twenty of them, `YoYoer`, `JumpRoper`, `Painter`, the lot) sets both to `0` in its own constructor first.
+Undefined in, `NaN` out, forever, the moment the cat comes within about 6.5 m — which means **all four
+fiddlers shipped in earlier rounds have had the same broken head** this whole time, nobody just checked
+closely enough to notice (the test suite only checks `rig.group.position`, never the joints). Added the
+same `this.look = 0; this.lookW = 0;` line every other lookAtCat-user already has; this one line fixes
+Victorian's, Robot City's, Candy Land's and Whisper Woods' fiddlers too, not just Frosty Peak's new one.
+
+A headless probe (the stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+`game.travel(5, 'from-hub')` waited out for real against its own portal-fade timer, then 3600 simulated
+frames sampling every NPC's own position every 10th frame) swept a 2 m grid of the open snowfield
+(radius 15-56, short of the radius (58) where `snowRegion`'s own fill takes over) against both those
+36,822 samples and all 817 of the mountain's own physics boxes: (28, -18) came back 6.80 m clear of the
+nearest box and 7.07 m clear of the nearest wandering soul, at radius 33.3 from the origin, outside
+every one of `game.zones`'s own keep-out rectangles — well clear of the paper-plane kid at (37, -6) and
+every other hand-placed landmark on this side of the mountain. Facing the village puts the case at
+(28.7, -17.6), itself still 6.99 m clear of the nearest box and 6.65 m clear of the nearest wandering
+soul.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330, and Frosty Peak's own friend total rose from 119 to 120. Verified past the test
+suite's own checks with a second headless probe: walked the cat up to the fiddler and called
+`game.interact()` — the label read "Say hello", `game.state.friends.size` went from 0 to 1, and this
+time every arm, head and spine rotation stayed finite over 400 simulated frames of sawing (the bug above
+is what that same check caught before the fix went in). No visual check was possible in this environment
+(no browser, no Playwright) — only the stub-three test suite above and the scratch probes. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
