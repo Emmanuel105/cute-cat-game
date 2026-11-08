@@ -642,8 +642,8 @@ function buildForest(game, entry) {
     game.addInteractable({ obj: friendlyFairy5.group, radius: 2.1, label: () => 'Say hello to the fairy', onUse: () => {
       game.befriend(fairy5Id); SFX.twinkle(); game.hearts(friendlyFairy5.group.position.x, friendlyFairy5.group.position.y, friendlyFairy5.group.position.z, 3);
       game.toast('🧚 "That\'s all five of us met. The sleeping one in the bud still doesn\'t count — she\'s shy."'); } }); }
-  let friendlyForestButterfly = null, secondForestButterfly = null, thirdForestButterfly = null, fourthForestButterfly = null, fifthForestButterfly = null, sixthForestButterfly = null, seventhForestButterfly = null, eighthForestButterfly = null, ninthForestButterfly = null, tenthForestButterfly = null, eleventhForestButterfly = null;
-  for (let i = 0; i < 12; i++) { const rig = makeButterfly(r.pick([300, 40, 200, 20, 260])); game.npcs.push(new Flyer(game, rig, { cx: r.range(-30, 30), cz: r.range(-30, 30), r: r.range(1.5, 4), h: r.range(0.7, 2), speed: r.range(0.8, 1.6), bob: 0.3, wobble: 0.8, cw: i % 2 === 0 })); if (i === 0) friendlyForestButterfly = rig; else if (i === 1) secondForestButterfly = rig; else if (i === 2) thirdForestButterfly = rig; else if (i === 3) fourthForestButterfly = rig; else if (i === 4) fifthForestButterfly = rig; else if (i === 5) sixthForestButterfly = rig; else if (i === 6) seventhForestButterfly = rig; else if (i === 7) eighthForestButterfly = rig; else if (i === 8) ninthForestButterfly = rig; else if (i === 9) tenthForestButterfly = rig; else if (i === 10) eleventhForestButterfly = rig; }
+  let friendlyForestButterfly = null, secondForestButterfly = null, thirdForestButterfly = null, fourthForestButterfly = null, fifthForestButterfly = null, sixthForestButterfly = null, seventhForestButterfly = null, eighthForestButterfly = null, ninthForestButterfly = null, tenthForestButterfly = null, eleventhForestButterfly = null, twelfthForestButterfly = null;
+  for (let i = 0; i < 12; i++) { const rig = makeButterfly(r.pick([300, 40, 200, 20, 260])); game.npcs.push(new Flyer(game, rig, { cx: r.range(-30, 30), cz: r.range(-30, 30), r: r.range(1.5, 4), h: r.range(0.7, 2), speed: r.range(0.8, 1.6), bob: 0.3, wobble: 0.8, cw: i % 2 === 0 })); if (i === 0) friendlyForestButterfly = rig; else if (i === 1) secondForestButterfly = rig; else if (i === 2) thirdForestButterfly = rig; else if (i === 3) fourthForestButterfly = rig; else if (i === 4) fifthForestButterfly = rig; else if (i === 5) sixthForestButterfly = rig; else if (i === 6) seventhForestButterfly = rig; else if (i === 7) eighthForestButterfly = rig; else if (i === 8) ninthForestButterfly = rig; else if (i === 9) tenthForestButterfly = rig; else if (i === 10) eleventhForestButterfly = rig; else if (i === 11) twelfthForestButterfly = rig; }
   // Candy Land's own castle butterflies and the outer-country ones got this treatment already
   // (rounds 826+ and 908); Whisper Woods' own twelve, scattered loose across the whole glade since
   // this world's own build, were the last unclaimed butterfly flock. Same fix, with its own id so it
@@ -714,6 +714,14 @@ function buildForest(game, entry) {
     game.addInteractable({ obj: eleventhForestButterfly.group, radius: 2.1, label: () => 'Say hello to the butterfly', onUse: () => {
       game.befriend(forestButterfly11Id); SFX.twinkle(); game.hearts(eleventhForestButterfly.group.position.x, eleventhForestButterfly.group.position.y, eleventhForestButterfly.group.position.z, 3);
       game.toast('🦋 "Eleven of us. Just one left looping — the very last."'); } }); }
+  // The twelfth and last of Whisper Woods' twelve loose butterflies now answers too, same mechanism
+  // and its own distinct id so all twelve stack without colliding — closing out this glade's own
+  // flock, and with it every butterfly, fairy, dove, bunting and bat flock this convention has
+  // touched across the whole game.
+  { const forestButterfly12Id = game.namedFriend('forest-butterfly-12');
+    game.addInteractable({ obj: twelfthForestButterfly.group, radius: 2.1, label: () => 'Say hello to the butterfly', onUse: () => {
+      game.befriend(forestButterfly12Id); SFX.twinkle(); game.hearts(twelfthForestButterfly.group.position.x, twelfthForestButterfly.group.position.y, twelfthForestButterfly.group.position.z, 3);
+      game.toast('🦋 "Twelve of us, all met. Every last one of this glade now says hello."'); } }); }
   // a woodcutter at the stump by the glade, splitting logs — rounds 602-608 gave six other worlds a
   // "look" prompt on some prop a working NPC stands beside but never acknowledges; Whisper Woods never
   // got its own. `cutterStump`, captured a few lines up from the same `placeT()` call that already

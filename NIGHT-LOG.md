@@ -27143,3 +27143,27 @@ several earlier rounds have hit.
 unchanged at 330, and Whisper Woods' own friend total rose from 144 to 145. No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 996 — Whisper Woods' twelfth and last butterfly gets its own "say hello"
+
+Rounds 986-995 wired up the second through eleventh of Whisper Woods' twelve loose butterflies,
+leaving only the twelfth still loop-only. **It now answers too — closing out the whole flock.**
+*"Twelve of us, all met. Every last one of this glade now says hello."*
+
+Same mechanism as every other butterfly this convention has touched: the build's existing
+`for (let i = 0; i < 12; i++)` loop over `makeButterfly()` + `Flyer` (74-world-forest.js,
+`buildForest`) now also captures its twelfth and final iteration's rig into
+`twelfthForestButterfly`, and a twelfth `game.addInteractable` keys off that group directly with
+its own `game.namedFriend('forest-butterfly-12')` id, distinct from the eleven already wired so
+all twelve stack. `Flyer`'s constructor already puts the rig in the scene graph itself, so no
+extra wiring was needed, and the proximity check only compares `x`/`z`, so the usual 2.1 m radius
+still catches the cat passing underneath the butterfly's 0.7-2 m loop. No new mesh, no new physics
+box, no new `rnd()` draw. Reused `SFX.twinkle()`, same cue every other butterfly uses. This closes
+out Whisper Woods' own flock — and, as far as this convention's logs show, every loose flock
+(butterflies, fairies, doves, snow buntings, oak bats) this many-round streak set out to wire up
+across the whole game.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330, and Whisper Woods' own friend total rose from 145 to 146. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
