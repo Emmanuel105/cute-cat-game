@@ -27531,3 +27531,35 @@ rose from 108 to 109 (confirmed directly against the test's own "to meet" count 
 change, with `git stash` to get the old number). No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1009 — Candy Land gets a second busker, a fiddler
+
+Victorian and Robot City both picked up a street fiddler over the last two rounds — Candy Land, like
+every other world, already had a musician (a woman strumming a ukulele on the open grass), but had
+never had a second one. **A fiddler now busks on the far eastern sweet-lands, well past the gumdrop
+wagon,** a candy-striped violin tucked under the chin, sawing a bow back and forth. *"A tune's sweeter
+with a little rosin and a lot of sugar."* *"Careful, puss — four strings, no yarn."* *"Every grove
+needs a fiddle, same as it needs a gumdrop cart."*
+
+No new mechanism: `Fiddler` (55-npcs.js) and `makeFiddleCase()` (60-props.js) are reused verbatim from
+Victorian and Robot City — a small prop violin parented to the collar, a bow parented to the bow hand,
+both arms damped toward a target each frame — only the wardrobe, case placement and lines are new.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+`game.travel(1, 'from-hub')` waited out through its real portal-fade timer, then 3600 simulated frames
+sampling every NPC's and squirrel's own position every tenth frame) swept a 2 m grid of the open
+sweet-lands (radius 20-88, short of the radius (92) where `candyRegion`'s own procedural fill takes
+over) against both those samples and every one of the land's 1902 physics boxes: (74.5, 46.5) came
+back 13.9 m clear of the nearest box and 14.58 m clear of the nearest wandering soul, at radius 87.8 —
+well past the eastern wafer bridge and every other hand-placed landmark in this build, which all sit on
+the west and south sides of the land. Facing the land's own centre puts the tip case at (75.2, 46.9),
+itself still 14.26 m clear of the nearest box and 14.92 m clear of the nearest wandering soul.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330 (the exit-line count, taken in the Neighborhood), and Candy Land's own friend total
+rose from 106 to 107 (confirmed directly against the test's own "to meet" count before and after the
+change). Verified past the test suite's own checks with a second headless probe: walked the cat up to
+the fiddler and called `game.interact()` — the label read "Say hello", the arms and head stayed finite
+over 400 simulated frames of sawing, and `game.state.friends.size` went from 0 to 1. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above and the
+scratch probes. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

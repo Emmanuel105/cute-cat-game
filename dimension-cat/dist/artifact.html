@@ -14855,6 +14855,40 @@ function buildCandyLand(game, entry) {
     game.npcs.push(new PaperPlaneKid(game, planeKid, { x: -58, z: 66, ry: 0,
       cries: ['Folds a fresh one from a spare wrapper every throw.', 'Careful, puss — nose-first in the sugar grass, this one, same as every throw before it.', "Longest glide yet — not even the gumdrop cart beats this for distance."] })); }
 
+  // Victorian and Robot City both have a fiddler busking now (`Fiddler`: 55-npcs.js) — this land's own
+  // music, same as every other land's, comes from the ukulele player over by the candy-cane grove, and
+  // nobody here has ever played an actual fiddle. **A second busker now saws away on the open
+  // sweet-lands**, well past the gumdrop wagon, a candy-striped violin tucked under the chin. *"A tune's
+  // sweeter with a little rosin and a lot of sugar."* *"Careful, puss — four strings, no yarn."* *"Every
+  // grove needs a fiddle, same as it needs a gumdrop cart."*
+  //
+  // No new mechanism: `Fiddler` (55-npcs.js) and `makeFiddleCase()` (60-props.js) are reused verbatim from
+  // Victorian and Robot City — only the wardrobe, case colour and lines are new.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // `game.travel(1, 'from-hub')` waited out through its real portal-fade timer, then 3600 simulated
+  // frames sampling every NPC's and squirrel's own position every tenth frame) swept a 2 m grid of the
+  // open sweet-lands (radius 20-88, short of the radius (92) where `candyRegion`'s own procedural fill
+  // takes over) against both those samples and every one of the land's 1902 physics boxes: (74.5, 46.5)
+  // came back 13.9 m clear of the nearest box and 14.58 m clear of the nearest wandering soul, at radius
+  // 87.8 from the origin — well past the eastern wafer bridge and every other hand-placed landmark in
+  // this build, all of which sit on the west and south sides of the land. Facing the land's own centre
+  // (ry = atan2(-fx, -fz)) puts the tip case at (75.2, 46.9), itself still 14.26 m clear of the nearest
+  // box and 14.92 m clear of the nearest wandering soul.
+  //
+  // Built dead last, right after the paper-plane kid above, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off this land's own shared `r()` sequence unconditionally, and anything
+  // built earlier would have had its own timing-sensitive pick shifted by it.
+  { const fx = 74.5, fz = 46.5, fry = atan2(-fx, -fz);
+    const fiddler = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0xff6fb5, pants: 0x4a3b8a, shoes: 0x2c2c2c, hat: null, scarf: 0x7fd7ff, jacket: null, bag: null, glasses: false });
+    W.add(fiddler.group);
+    game.npcs.push(new Fiddler(game, fiddler, { x: fx, z: fz, ry: fry,
+      cries: ["A tune's sweeter with a little rosin and a lot of sugar.", 'Careful, puss — four strings, no yarn.', 'Every grove needs a fiddle, same as it needs a gumdrop cart.'] }));
+    const caseX = fx + 0.7, caseZ = fz + 0.4;
+    place(game, U, makeFiddleCase(), caseX, caseZ, fry);
+    P.addBox(caseX, 0.06, caseZ, 0.64, 0.12, 0.24, { cam: false }); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
