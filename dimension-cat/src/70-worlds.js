@@ -8532,6 +8532,33 @@ function buildRobotCity(game, entry) {
     const scoutId = game.namedFriend('scoutbot');
     game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the scout-bot', onUse: () => { game.befriend(scoutId); SFX.beep(); game.hearts(rig.group.position.x, 0.3, rig.group.position.z, 3); game.toast('🤖 "*beacon blinks twice, wheels chirp, then it rolls in a happy little circle*"'); } }); }
 
+  // every other world's own ground-bound creature has had a second, bolder sibling by now — the
+  // Neighborhood's hare, Candy Land's sugar mouse, Victorian's pigeon, Sunny Shore's crab, Frosty
+  // Peak's penguin, Whisper Woods' fox — all except Robot City's own shy factory mouse, which has sat
+  // put by the crates since round 762 and never got company. **A second, bolder factory mouse now
+  // scurries right up to meet the cat instead of hiding.** Same `makeFactoryMouse()` rig the shy one
+  // already uses, wrapped in `Follower` (56-npcs-wild.js) instead of `Hopper`, parked on open concrete
+  // east of the skyscraper ring, well clear of the crates, the scrap-crab and the scout-bot's own
+  // patch.
+  //
+  // A headless probe (the stub-three harness `test/run.mjs` itself uses: `game.start('new')` then
+  // `game.travel(2, 'from-hub')`, 1600 simulated frames sampling every NPC's own position every third
+  // frame) swept the open floor against all 1201 of the city's own physics boxes and those samples:
+  // (22, 12) came back 6.45 m clear of the nearest box and 5.37 m clear of the nearest wandering soul,
+  // well inside the radius (98) where `robotRegion`'s own procedural fill takes over and well past the
+  // shy factory mouse's own 1.3 m leash at (-19, 2).
+  //
+  // Built dead last, right after the scout-bot above and right before the squirrel-anchored spawn
+  // point, for the reason every other addition at the end of this function already gives: `Follower`'s
+  // own constructor (via the `Wanderer` it wraps) draws unconditionally from the *shared* `r()`
+  // sequence, and anything built earlier in this city would have had its own timing-sensitive pick
+  // shifted by it.
+  { const rig = makeFactoryMouse(); W.add(rig.group);
+    const fw = new Follower(game, rig, { x: 22, z: 12, r: 0.1, height: 0.18, step: 0.3, idle: [0.5, 2], walk: [1, 3], leash: 5, speed: 1.4, range: 10, keep: 1.6, sfx: () => SFX.chitter() });
+    game.npcs.push(fw);
+    const boldFactoryMouseId = game.namedFriend('bold-factorymouse');
+    game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the mouse', onUse: () => { game.befriend(boldFactoryMouseId); SFX.chitter(); game.hearts(rig.group.position.x, 0.2, rig.group.position.z, 3); game.toast('🐭 *scurries right up and stands on its hind legs to sniff the cat\'s paw*'); } }); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

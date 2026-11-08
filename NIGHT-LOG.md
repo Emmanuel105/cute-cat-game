@@ -27167,3 +27167,31 @@ across the whole game.
 unchanged at 330, and Whisper Woods' own friend total rose from 145 to 146. No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 997 — Robot City's shy factory mouse gets a bolder sibling
+
+Every other world's own shy ground creature had long since picked up a second, bolder sibling that
+scurries right up to the cat instead of hiding — the Neighborhood's hare, Candy Land's sugar mouse,
+Victorian's pigeon, Sunny Shore's crab, Frosty Peak's penguin, Whisper Woods' fox. Robot City's own
+factory mouse, sitting shy by the crates since round 762, was the only one left without company.
+**A second, bolder factory mouse now scurries right up to meet the cat.** Same grey `makeFactoryMouse()`
+rig the shy one already uses, wrapped in `Follower` (56-npcs-wild.js) instead of `Hopper`, so it closes
+the gap when the cat is nearby and otherwise wanders its own small patch. *"Scurries right up and stands
+on its hind legs to sniff the cat's paw"* — same line Candy Land's own bold mouse already uses, reused
+rather than reinvented.
+
+No new mesh, no new physics box, no new controller: `makeFactoryMouse()` and `Follower` are the exact
+pair every other "bold" sibling in this convention already leans on. Built dead last in
+`buildRobotCity` — right after the scout-bot and right before the squirrel-anchored spawn point — for
+the usual reason: `Follower`'s own constructor (via the `Wanderer` it wraps) draws unconditionally from
+the shared `r()` sequence, and anything built earlier in this city would have had its own
+timing-sensitive pick shifted by it. A headless probe (`game.start('new')`, `game.travel(2, 'from-hub')`,
+1600 simulated frames sampling every NPC's own position every third frame) swept the open floor east of
+the skyscraper ring against all 1201 of the city's own physics boxes and those samples: (22, 12) came
+back 6.45 m clear of the nearest box and 5.37 m clear of the nearest wandering soul, well clear of the
+shy factory mouse's own patch at (-19, 2), the scrap-crab and the scout-bot.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330, and Robot City's own friend total rose from 106 to 107. No visual check was possible
+in this environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
