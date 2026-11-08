@@ -26987,3 +26987,29 @@ earlier rounds have hit.
 unchanged at 330, and Whisper Woods' own friend total rose from 138 to 139. No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 990 — Whisper Woods' sixth butterfly gets its own "say hello"
+
+Rounds 986-989 wired up the second through fifth of Whisper Woods' twelve loose butterflies,
+leaving seven still loop-only. **The sixth now answers too — halfway through the flock.**
+*"Six of us, halfway through the flock. The rest still just loop."*
+
+Same mechanism as every other flock this convention has touched: the build's existing
+`for (let i = 0; i < 12; i++)` loop over `makeButterfly()` + `Flyer` (74-world-forest.js,
+`buildForest`) now also captures its sixth iteration's rig into `sixthForestButterfly`, and a
+sixth `game.addInteractable` keys off that group directly with its own
+`game.namedFriend('forest-butterfly-6')` id, distinct from the five already wired so all six
+stack. `Flyer`'s constructor already puts the rig in the scene graph itself, so no extra wiring
+was needed, and the proximity check only compares `x`/`z`, so the usual 2.1 m radius still
+catches the cat passing underneath the butterfly's 0.7-2 m loop. No new mesh, no new physics box,
+no new `rnd()` draw. Reused `SFX.twinkle()`, same cue every other butterfly uses. Six of Whisper
+Woods' twelve butterflies remain loop-only — left for other nights.
+
+This run also found the previous session's work sitting on a detached `HEAD`, with local `main`
+pointing at round 963's commit while `origin/main` already had round 989. Reset local `main` onto
+`origin/main` before starting — same slip several earlier rounds have hit.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330, and Whisper Woods' own friend total rose from 139 to 140. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
