@@ -27288,6 +27288,42 @@ function buildForest(game, entry) {
   C.add('star', 8, -6, P.ground0(8, -6) + 0.5); C.add('fish', -18, 8); C.add('yarn', 20, -24); C.add('mouse', -30, 26); C.add('star', 30, 12); C.add('fish', 4, 20); C.add('yarn', -34, -28); C.add('mouse', 24, -2);
   game.fx.setAmbient({ count: 120, radius: 20, colors: [0xd4ff6a, 0xa8ff9a, 0xfff3a0], rise: 0.08, drift: 0.4, life: 5, height: 2.6, yMin: 0.3 });
   makeDayNight(game, U, W);
+  // The Neighborhood's acorn cart (round 215), Candy Land's gumdrop cart (round 998), Robot City's
+  // bolt cart (round 999), Victorian's apple cart (round 1000), Frosty Peak's pinecone cart (round
+  // 1001) and Sunny Shore's shell cart (round 1002) were the only wagons in the game so far — Whisper
+  // Woods was the last world without one. **It has its own now.** A kid kneels in a quiet clearing west
+  // of the fairy ring, loading fallen toadstool caps into a rust-red wagon one at a time.
+  // *"Six toadstool caps loaded already — the fairy ring always wants more for its table."*
+  // *"Careful, puss — not a hollow log, this one, however much it looks like one."*
+  //
+  // No new mechanism: `makeWagon()` (60-props.js) and `Kneeler` (55-npcs.js) are the exact pairing
+  // every other wagon already uses, just a rust-red bed (`0xb33b2e`) instead of cart-red, candy-pink,
+  // steel-grey, bottle-green, frost-blue or sun-gold. `placeT`/`boxT` take the place of the flat-floor
+  // towns' `place()`/`P.addBox()`, since this wood's floor is gently uneven everywhere, the same
+  // terrain-aware pairing the leaf pile just above (and every other forest prop) already relies on.
+  // `Kneeler`'s own constructor calls `greetable()` itself, so this is a placement, not a new build.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, since
+  // there's no browser here to look at it: `game.start('new')`, `game.travel(6, 'from-hub')` waited out
+  // for real against `game.worldIndex`, then 3600 simulated frames sampling every NPC's own position
+  // every 10th frame) swept a 0.5 m grid of the open forest floor (radius 10-55, short of the radius
+  // (58) where `forestRegion`'s own fill takes over) against both those samples and all 432 ground-level
+  // physics boxes of this wood's 732: (-29, -3) came back 6.27 m clear of the nearest box and 6.36 m
+  // clear of the nearest wandering soul, at radius 29.2 from the origin and flat to within 6 cm across
+  // the wagon's own footprint — clear of the fairy ring at (0, 0, r18), the big tree/firefly cluster
+  // near (8, -6) and every other hand-placed landmark on this side of the wood.
+  //
+  // Built dead last, right after the day/night cycle hookup and right before the squirrel spawn point,
+  // for the usual reason: `makeHuman()` and `randomPerson()` both draw off this wood's own shared `r()`
+  // sequence unconditionally, and anything built earlier would have had its own timing-sensitive pick
+  // shifted by it.
+  { const hx = -29, hz = -3, wx = hx + 0.8, wz = hz, wry = atan2(hx - wx, hz - wz);
+    const wagon = makeWagon(0xb33b2e); placeT(game, U, wagon, wx, wz, wry);
+    const wagonWard = makeWardrobe(r, { shirts: [0x5a7a4a, 0x8a6a44, 0x6b4f8a], pants: [0x3a3a2a, 0x2e3a28] });
+    const hauler = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, wardrobe: wagonWard }), backpack: null });
+    W.add(hauler.group);
+    game.npcs.push(new Kneeler(game, hauler, { x: hx, z: hz, ry: atan2(wx - hx, wz - hz),
+      cries: ["Six toadstool caps loaded already — the fairy ring always wants more for its table.", "Careful, puss — not a hollow log, this one, however much it looks like one."] })); }
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

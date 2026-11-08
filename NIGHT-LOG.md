@@ -27339,3 +27339,36 @@ paper-plane kid's own patch at (-16, 0)-(-19, 0) and the portal approach's own k
 unchanged at 264, and Sunny Shore's own friend total rose from 124 to 125. No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1003 — Whisper Woods gets its own wagon
+
+The Neighborhood's acorn cart (round 215), Candy Land's gumdrop cart (round 998), Robot City's bolt
+cart (round 999), Victorian's apple cart (round 1000), Frosty Peak's pinecone cart (round 1001) and
+Sunny Shore's shell cart (round 1002) were the only wagons in the game so far — Whisper Woods was the
+last of the seven worlds without one. **It has its own now.** A kid kneels in a quiet clearing west of
+the fairy ring, loading fallen toadstool caps into a rust-red wagon one at a time. *"Six toadstool
+caps loaded already — the fairy ring always wants more for its table."* *"Careful, puss — not a
+hollow log, this one, however much it looks like one."*
+
+No new mechanism: `makeWagon()` (60-props.js) and `Kneeler` (55-npcs.js) are the exact pairing every
+other wagon already uses, just a rust-red bed (`0xb33b2e`) instead of the six colours already taken.
+`placeT`/`boxT` take the place of the flat-floor towns' `place()`, since Whisper Woods' floor is
+uneven everywhere, same as every other prop in this wood already relies on. `Kneeler`'s own
+constructor calls `greetable()` itself, so this is a placement, not a new build.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, since
+there's no browser here to look at it: `game.start('new')`, `game.travel(6, 'from-hub')` waited out
+for real against `game.worldIndex`, then 3600 simulated frames sampling every NPC's own position every
+10th frame) swept a 0.5 m grid of the open forest floor (radius 10-55, short of the radius (58) where
+`forestRegion`'s own fill takes over) against both those samples and all 432 ground-level physics
+boxes of this wood's 732: (-29, -3) came back 6.27 m clear of the nearest box and 6.36 m clear of the
+nearest wandering soul, at radius 29.2 from the origin and flat to within 6 cm across the wagon's own
+footprint — clear of the fairy ring, the firefly glade near (8, -6) and every other hand-placed
+landmark on this side of the wood. Built dead last, right after the day/night cycle hookup and right
+before the squirrel spawn point, so no earlier timing-sensitive pick off this wood's own shared `r()`
+sequence was disturbed.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, and Whisper
+Woods' own friend total rose from 146 to 147. All seven worlds now have a wagon. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
