@@ -3046,6 +3046,40 @@ class YoYoer {
   }
 }
 
+// ---------------------------------------------------------------- fiddler: a tiny violin tucked against the shoulder, one hand pinned to its neck, the other sawing a bow back and forth across the strings
+class Fiddler {
+  constructor(game, rig, { x, z, ry = 0, color = 0x6a4120, cries = null, cryIcon = '🎻' }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    const woodM = mat(color, { roughness: 0.55 }), stringM = mat(0xe8e2d0, { roughness: 0.7 });
+    this.violin = group(0.1, 0.63, 0.14, rig.spine);
+    this.violin.rotation.set(-0.3, 0, 0.5);
+    mesh(G.box(0.1, 0.24, 0.05), woodM, { parent: this.violin });                                       // the body, against the collar
+    mesh(G.cyl(0.015, 0.016, 0.2, 6), woodM, { y: 0.21, parent: this.violin });                         // the neck, up toward the chin
+    mesh(G.box(0.03, 0.03, 0.02), mat(0x1a1210), { y: 0.31, shadow: 'none', parent: this.violin });     // the scroll
+    for (let i = -1; i <= 1; i += 2) noInk(mesh(G.cyl(0.0015, 0.0015, 0.26, 4), stringM, { x: i * 0.014, y: 0.1, z: 0.027, parent: this.violin }));
+    this.bow = group(0, 0, 0, rig.hands[1]);
+    mesh(G.cyl(0.007, 0.007, 0.46, 5), mat(0x3a2a1a, { roughness: 0.7 }), { y: 0.23, z: 0.02, parent: this.bow });
+    noInk(mesh(G.cyl(0.0012, 0.0012, 0.44, 4), stringM, { y: 0.23, z: 0.04, parent: this.bow }));
+    this.circle = game.physics.addCircle(this, x, z, 0.35);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig, saw = sin(this.t * 7.2);
+    rig.animate(0, false, dt, this.t);
+    if (!rig.gesture) {
+      const L = rig.arms[0], R = rig.arms[1];
+      L.sh.rotation.x = damp(L.sh.rotation.x, -1.5, 10, dt); L.el.rotation.x = damp(L.el.rotation.x, -1.3, 10, dt); L.sh.rotation.z = 0.35;        // pinned up at the violin's own neck
+      R.sh.rotation.x = damp(R.sh.rotation.x, -1.0 + saw * 0.12, 10, dt); R.el.rotation.x = damp(R.el.rotation.x, -0.75 + saw * 0.22, 10, dt); R.sh.rotation.z = -0.3;   // the bow arm, sawing
+      rig.spine.rotation.z = damp(rig.spine.rotation.z, saw * 0.03, 6, dt); rig.spine.rotation.x = damp(rig.spine.rotation.x, 0.06, 6, dt);
+      rig.head.rotation.x = damp(rig.head.rotation.x, 0.16, 6, dt); rig.head.rotation.z = damp(rig.head.rotation.z, -0.2, 6, dt);
+    }
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- jump-roper: a thin rod pivots through the hips like a propeller, hands loosely gripping its ends, and the whole body hops clear each time it sweeps underfoot
 class JumpRoper {
   constructor(game, rig, color, { x, z, ry = 0, speed = 3.2, cries = null, cryIcon = '➰' }) {
@@ -5720,6 +5754,15 @@ function makeShineBox() {
   mesh(G.cyl(0.035, 0.035, 0.025, 12), mat(0x2a2a2a, { roughness: 0.5, metalness: 0.3 }), { x: -0.08, y: 0.195, z: -0.03, parent: g });   // tin of polish
   mesh(G.cyl(0.012, 0.012, 0.14, 8), mat(0x8a5a32, { roughness: 0.8 }), { x: 0.06, y: 0.185, z: 0.02, rz: PI / 2, ry: 0.3, parent: g });   // brush handle
   mesh(G.box(0.05, 0.02, 0.05), mat(0x2a1a10, { roughness: 0.95 }), { x: 0.12, y: 0.185, z: 0.03, parent: g });   // brush bristles
+  return g;
+}
+/** A fiddle case lying open on the ground beside a busker: a felt-lined tray with a raised rim at each end and a few coins tossed in. */
+function makeFiddleCase() {
+  const g = new THREE.Group(), shellM = mat(0x241a14, { roughness: 0.85 }), feltM = mat(0x5a1f28, { roughness: 0.95 }), goldM = mat(0xd4af37, { metalness: 0.7, roughness: 0.35 });
+  mesh(G.box(0.6, 0.05, 0.22), shellM, { y: 0.025, parent: g });                                                 // the base tray, flat on the cobbles
+  mesh(G.box(0.54, 0.015, 0.16), feltM, { y: 0.05, shadow: 'none', parent: g });                                 // felt lining
+  for (const s of [-1, 1]) mesh(G.box(0.03, 0.08, 0.22), shellM, { x: s * 0.3, y: 0.06, parent: g });             // raised rim at each end
+  for (const [cx, cz] of [[0.1, 0.03], [-0.08, -0.04], [0.18, -0.03]]) mesh(G.cyl(0.028, 0.028, 0.006, 10), goldM, { x: cx, y: 0.058, z: cz, rx: PI / 2, shadow: 'none', parent: g });   // a few coins
   return g;
 }
 /** A small brass table lamp, bell-shaded, for the yard sale table below. */
@@ -17963,6 +18006,32 @@ function buildVictorian(game, entry) {
     const shineLines = ["A mirror shine, if the light catches it right.", "Smells of polish and old leather.", "One boot done; one still to go."];
     game.addInteractable({ obj: shineBox, radius: 0.8, label: () => 'Look at the shine box', onUse: () => { SFX.click(); game.toast(rnd.pick(shineLines), 3000); } }); }
   for (const [x, z] of [[-14, -34], [14, -34], [0, -46]]) { place(game, U, makeLamp('victorian'), x, z, 0); P.addBox(x, 2, z, 0.4, 4, 0.4, { cam: false }); }
+  // the market square now has stall keepers, a newsboy, a juggler, a crumb-feeder and a bootblack, but
+  // no one making music — every street performer here works silently. A fiddler now busks on the
+  // square's own quiet west flank, just past the lamp, sawing a bow across a tiny violin tucked under
+  // the chin. New `Fiddler` (55-npcs.js): a standing controller built the same way `YoYoer` already is
+  // — a small prop (the violin) parented to `rig.spine` near the collar, a second (the bow) parented to
+  // `rig.hands[1]`, and the two matching arms (one pinned up at the violin's own neck, the other sawing
+  // back and forth) damped toward a target each frame rather than snapping. New prop `makeFiddleCase()`
+  // (60-props.js, right by `makeShineBox()`, the bootblack's own tip box above): an open felt-lined
+  // tray with a raised rim at each end and a few coins already in it, set down beside him.
+  // A headless probe (the stub-three harness `test/run.mjs` itself uses: the real town built via
+  // `game.travel(3, 'from-prev')`, then a grid swept against every physics box and every NPC's own
+  // position) found (-18, -34) clear: 3.8 m past the market square's own west lamp (-14, -34) — the
+  // nearest box anywhere near it — and 6.66 m clear of the nearest wandering soul (a pigeon over by the
+  // fountain), at radius 38.5 from the origin and outside the market square's own zone (centred (0,
+  // -34), radius 17: this spot sits 1 m past its bounding square on the x axis alone). Facing east
+  // into the square (ry = PI/2) puts the case at (-17.3, -33.6), 0.8 m clear of the fiddler's own 0.35
+  // m circle and 3.3 m clear of the lamp, itself still outside the market square's own zone.
+  { const fx = -18, fz = -34, fry = PI / 2;
+    const fiddler = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x5a4a6a, pants: 0x2a2420, shoes: 0x2a2018, hat: r.chance(0.5) ? 'flatcap' : null, scarf: 0x8a1a1a, jacket: null, bag: null, glasses: false });
+    W.add(fiddler.group);
+    game.npcs.push(new Fiddler(game, fiddler, { x: fx, z: fz, ry: fry,
+      cries: ['A penny for a tune, kitty?', "Careful — the last cat that got close found the rosin worse than the cold.", 'Every square needs a fiddle, same as it needs a fountain.'] }));
+    const caseX = fx + 0.7, caseZ = fz + 0.4;
+    place(game, U, makeFiddleCase(), caseX, caseZ, fry);
+    P.addBox(caseX, 0.06, caseZ, 0.64, 0.12, 0.24, { cam: false }); }
   { const CL = VICTORIAN_LIMIT * 2 + 20;   // the canal runs the whole width of the town
     const water = flatPlane(game, CL, 8, mat(0x1f4f6a, { roughness: 0.15, metalness: 0.2, transparent: true, opacity: 0.85, emissive: 0x0a2a3a, emissiveIntensity: 0.3, map: TEX.water() }), 0, 30, 0, -0.35); U.push((dt) => { water.material.map.offset.x += dt * 0.01; });
     for (const s of [-1, 1]) { mesh(G.box(CL, 0.8, 0.6), mat(0x6b6660, { roughness: 1, map: TEX.stone(30) }), { y: 0.1, z: 30 + s * 4.3, shadow: 'both', parent: W }); P.addBox(0, 0.4, 30 + s * 4.3, CL, 0.8, 0.6, { cam: false }); }

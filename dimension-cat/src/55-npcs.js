@@ -1226,6 +1226,40 @@ class YoYoer {
   }
 }
 
+// ---------------------------------------------------------------- fiddler: a tiny violin tucked against the shoulder, one hand pinned to its neck, the other sawing a bow back and forth across the strings
+class Fiddler {
+  constructor(game, rig, { x, z, ry = 0, color = 0x6a4120, cries = null, cryIcon = '🎻' }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    const woodM = mat(color, { roughness: 0.55 }), stringM = mat(0xe8e2d0, { roughness: 0.7 });
+    this.violin = group(0.1, 0.63, 0.14, rig.spine);
+    this.violin.rotation.set(-0.3, 0, 0.5);
+    mesh(G.box(0.1, 0.24, 0.05), woodM, { parent: this.violin });                                       // the body, against the collar
+    mesh(G.cyl(0.015, 0.016, 0.2, 6), woodM, { y: 0.21, parent: this.violin });                         // the neck, up toward the chin
+    mesh(G.box(0.03, 0.03, 0.02), mat(0x1a1210), { y: 0.31, shadow: 'none', parent: this.violin });     // the scroll
+    for (let i = -1; i <= 1; i += 2) noInk(mesh(G.cyl(0.0015, 0.0015, 0.26, 4), stringM, { x: i * 0.014, y: 0.1, z: 0.027, parent: this.violin }));
+    this.bow = group(0, 0, 0, rig.hands[1]);
+    mesh(G.cyl(0.007, 0.007, 0.46, 5), mat(0x3a2a1a, { roughness: 0.7 }), { y: 0.23, z: 0.02, parent: this.bow });
+    noInk(mesh(G.cyl(0.0012, 0.0012, 0.44, 4), stringM, { y: 0.23, z: 0.04, parent: this.bow }));
+    this.circle = game.physics.addCircle(this, x, z, 0.35);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig, saw = sin(this.t * 7.2);
+    rig.animate(0, false, dt, this.t);
+    if (!rig.gesture) {
+      const L = rig.arms[0], R = rig.arms[1];
+      L.sh.rotation.x = damp(L.sh.rotation.x, -1.5, 10, dt); L.el.rotation.x = damp(L.el.rotation.x, -1.3, 10, dt); L.sh.rotation.z = 0.35;        // pinned up at the violin's own neck
+      R.sh.rotation.x = damp(R.sh.rotation.x, -1.0 + saw * 0.12, 10, dt); R.el.rotation.x = damp(R.el.rotation.x, -0.75 + saw * 0.22, 10, dt); R.sh.rotation.z = -0.3;   // the bow arm, sawing
+      rig.spine.rotation.z = damp(rig.spine.rotation.z, saw * 0.03, 6, dt); rig.spine.rotation.x = damp(rig.spine.rotation.x, 0.06, 6, dt);
+      rig.head.rotation.x = damp(rig.head.rotation.x, 0.16, 6, dt); rig.head.rotation.z = damp(rig.head.rotation.z, -0.2, 6, dt);
+    }
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- jump-roper: a thin rod pivots through the hips like a propeller, hands loosely gripping its ends, and the whole body hops clear each time it sweeps underfoot
 class JumpRoper {
   constructor(game, rig, color, { x, z, ry = 0, speed = 3.2, cries = null, cryIcon = '➰' }) {

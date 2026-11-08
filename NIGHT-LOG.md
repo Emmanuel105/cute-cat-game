@@ -27473,3 +27473,36 @@ total rose from 147 to 148 (confirmed directly against the test's own "to meet" 
 after the change). Every world in the game now has a paper-plane kid. No visual check was possible
 in this environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1007 — Victorian gets a street fiddler
+
+The market square has had stall keepers, a newsboy, a juggler, a crumb-feeder and a bootblack for a
+while now, but nobody making any actual music — every street performer there worked in silence.
+**A fiddler now busks on the square's own quiet west flank**, just past the lamp, sawing a bow back
+and forth across a tiny violin tucked under the chin, an open case with a few coins already in it
+set down beside him. *"A penny for a tune, kitty?"* *"Careful — the last cat that got close found
+the rosin worse than the cold."* *"Every square needs a fiddle, same as it needs a fountain."*
+
+New controller `Fiddler` (55-npcs.js), built the same way `YoYoer` already is: a small prop (the
+violin) parented to `rig.spine` near the collar, a second (the bow) parented to `rig.hands[1]`, and
+the two arms damped toward a target each frame rather than snapping — one pinned up at the violin's
+own neck, the other sawing. New prop `makeFiddleCase()` (60-props.js, right by the bootblack's own
+`makeShineBox()`): an open felt-lined tray with a raised rim at each end and a few coins tossed in.
+
+A headless probe (the stub-three harness `test/run.mjs` itself uses: the real town built via
+`game.travel(3, 'from-prev')`, then a grid swept against every physics box and every NPC's own
+position) found (-18, -34) clear: 3.8 m past the market square's own west lamp at (-14, -34) — the
+nearest box anywhere near it — and 6.66 m clear of the nearest wandering soul (a pigeon over by the
+fountain), at radius 38.5 from the origin and outside the market square's own zone (centred (0, -34),
+radius 17: this spot sits 1 m past its bounding square on the x axis alone). Facing east into the
+square puts the case at (-17.3, -33.6), 0.8 m clear of the fiddler's own circle and 3.3 m clear of
+the lamp, itself still outside the market square's own zone.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330 (the exit-line count, taken in the Neighborhood), and Victorian's own friend total
+rose from 149 to 150 (confirmed directly against the test's own "to meet" count before and after the
+change, with `git stash` to get the old number). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite above, plus a scratch probe confirming the
+fiddler is in the scene graph, has a working "Say hello" prompt, and that its arm and head rotations
+stay finite over several hundred simulated frames. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

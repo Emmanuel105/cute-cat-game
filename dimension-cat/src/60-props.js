@@ -558,6 +558,15 @@ function makeShineBox() {
   mesh(G.box(0.05, 0.02, 0.05), mat(0x2a1a10, { roughness: 0.95 }), { x: 0.12, y: 0.185, z: 0.03, parent: g });   // brush bristles
   return g;
 }
+/** A fiddle case lying open on the ground beside a busker: a felt-lined tray with a raised rim at each end and a few coins tossed in. */
+function makeFiddleCase() {
+  const g = new THREE.Group(), shellM = mat(0x241a14, { roughness: 0.85 }), feltM = mat(0x5a1f28, { roughness: 0.95 }), goldM = mat(0xd4af37, { metalness: 0.7, roughness: 0.35 });
+  mesh(G.box(0.6, 0.05, 0.22), shellM, { y: 0.025, parent: g });                                                 // the base tray, flat on the cobbles
+  mesh(G.box(0.54, 0.015, 0.16), feltM, { y: 0.05, shadow: 'none', parent: g });                                 // felt lining
+  for (const s of [-1, 1]) mesh(G.box(0.03, 0.08, 0.22), shellM, { x: s * 0.3, y: 0.06, parent: g });             // raised rim at each end
+  for (const [cx, cz] of [[0.1, 0.03], [-0.08, -0.04], [0.18, -0.03]]) mesh(G.cyl(0.028, 0.028, 0.006, 10), goldM, { x: cx, y: 0.058, z: cz, rx: PI / 2, shadow: 'none', parent: g });   // a few coins
+  return g;
+}
 /** A small brass table lamp, bell-shaded, for the yard sale table below. */
 function makeOldLamp() {
   const g = new THREE.Group(), brass = mat(0xc9a84a, { metalness: 0.5, roughness: 0.4 }), shade = mat(0xe8dcc0, { roughness: 0.85 });

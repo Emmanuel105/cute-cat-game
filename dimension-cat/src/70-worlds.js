@@ -9406,6 +9406,32 @@ function buildVictorian(game, entry) {
     const shineLines = ["A mirror shine, if the light catches it right.", "Smells of polish and old leather.", "One boot done; one still to go."];
     game.addInteractable({ obj: shineBox, radius: 0.8, label: () => 'Look at the shine box', onUse: () => { SFX.click(); game.toast(rnd.pick(shineLines), 3000); } }); }
   for (const [x, z] of [[-14, -34], [14, -34], [0, -46]]) { place(game, U, makeLamp('victorian'), x, z, 0); P.addBox(x, 2, z, 0.4, 4, 0.4, { cam: false }); }
+  // the market square now has stall keepers, a newsboy, a juggler, a crumb-feeder and a bootblack, but
+  // no one making music — every street performer here works silently. A fiddler now busks on the
+  // square's own quiet west flank, just past the lamp, sawing a bow across a tiny violin tucked under
+  // the chin. New `Fiddler` (55-npcs.js): a standing controller built the same way `YoYoer` already is
+  // — a small prop (the violin) parented to `rig.spine` near the collar, a second (the bow) parented to
+  // `rig.hands[1]`, and the two matching arms (one pinned up at the violin's own neck, the other sawing
+  // back and forth) damped toward a target each frame rather than snapping. New prop `makeFiddleCase()`
+  // (60-props.js, right by `makeShineBox()`, the bootblack's own tip box above): an open felt-lined
+  // tray with a raised rim at each end and a few coins already in it, set down beside him.
+  // A headless probe (the stub-three harness `test/run.mjs` itself uses: the real town built via
+  // `game.travel(3, 'from-prev')`, then a grid swept against every physics box and every NPC's own
+  // position) found (-18, -34) clear: 3.8 m past the market square's own west lamp (-14, -34) — the
+  // nearest box anywhere near it — and 6.66 m clear of the nearest wandering soul (a pigeon over by the
+  // fountain), at radius 38.5 from the origin and outside the market square's own zone (centred (0,
+  // -34), radius 17: this spot sits 1 m past its bounding square on the x axis alone). Facing east
+  // into the square (ry = PI/2) puts the case at (-17.3, -33.6), 0.8 m clear of the fiddler's own 0.35
+  // m circle and 3.3 m clear of the lamp, itself still outside the market square's own zone.
+  { const fx = -18, fz = -34, fry = PI / 2;
+    const fiddler = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x5a4a6a, pants: 0x2a2420, shoes: 0x2a2018, hat: r.chance(0.5) ? 'flatcap' : null, scarf: 0x8a1a1a, jacket: null, bag: null, glasses: false });
+    W.add(fiddler.group);
+    game.npcs.push(new Fiddler(game, fiddler, { x: fx, z: fz, ry: fry,
+      cries: ['A penny for a tune, kitty?', "Careful — the last cat that got close found the rosin worse than the cold.", 'Every square needs a fiddle, same as it needs a fountain.'] }));
+    const caseX = fx + 0.7, caseZ = fz + 0.4;
+    place(game, U, makeFiddleCase(), caseX, caseZ, fry);
+    P.addBox(caseX, 0.06, caseZ, 0.64, 0.12, 0.24, { cam: false }); }
   { const CL = VICTORIAN_LIMIT * 2 + 20;   // the canal runs the whole width of the town
     const water = flatPlane(game, CL, 8, mat(0x1f4f6a, { roughness: 0.15, metalness: 0.2, transparent: true, opacity: 0.85, emissive: 0x0a2a3a, emissiveIntensity: 0.3, map: TEX.water() }), 0, 30, 0, -0.35); U.push((dt) => { water.material.map.offset.x += dt * 0.01; });
     for (const s of [-1, 1]) { mesh(G.box(CL, 0.8, 0.6), mat(0x6b6660, { roughness: 1, map: TEX.stone(30) }), { y: 0.1, z: 30 + s * 4.3, shadow: 'both', parent: W }); P.addBox(0, 0.4, 30 + s * 4.3, CL, 0.8, 0.6, { cam: false }); }
