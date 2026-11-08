@@ -27277,3 +27277,36 @@ sequence was disturbed.
 unchanged at 330, and Victorian's own friend total rose from 148 to 149. No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1001 — Frosty Peak gets its own wagon
+
+The Neighborhood's acorn cart (round 215), Candy Land's gumdrop cart (round 998), Robot City's bolt
+cart (round 999) and Victorian's apple cart (round 1000) were the only wagons in the game so far —
+Sunny Shore, Frosty Peak and Whisper Woods never got one. **Frosty Peak now has its own.** A
+bundled-up child kneels on the open snowfield south-east of the village, loading pinecones from a
+drift into a frost-blue wagon one at a time — kindling for the old-timer's fire down by the
+overlook. *"Six pinecones loaded already — the fire never has enough, this time of year."*
+*"Careful, puss — not a sled, this one, however much it looks like it wants to slide."*
+
+No new mechanism: `makeWagon()` (60-props.js) and `Kneeler` (55-npcs.js) are the exact pairing the
+other four wagons already use, just a frost-blue bed (`0x5a7a9e`) instead of cart-red, candy-pink,
+steel-grey or bottle-green. Unlike the other three (all flat-floor worlds), Frosty Peak's own
+snowfield slopes underfoot, so this uses `placeT`/`boxT` in place of `place()`, the same terrain-aware
+helpers the jacks game and the mountain goat's own rocks already rely on a little further up this
+same build function. `Kneeler`'s own constructor calls `greetable()` itself, so this is a placement,
+not a new build.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, since
+there's no browser here to look at it) built the real mountain (`game.start('new')`, then
+`game.travel(5, 'from-hub')` waited out through its own portal-fade timer), sampled every NPC's own
+position every 15th frame over 1800 simulated frames, then swept a 1 m grid of the open snowfield
+(radius 5-50, short of the radius (58) where `snowRegion`'s own fill takes over) against both those
+samples and all 455 of the mountain's own physics boxes: (15, 44) came back 7.88 m clear of the
+nearest box and 8.54 m clear of the nearest wandering soul, at radius 46.5 from the origin — well
+clear of the tag game at (38, 30) and, just as importantly, of the spiderweb at (35, -5) that a
+first, less careful candidate (37, -5) would have sat right on top of.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 330, and Frosty Peak's own friend total rose from 117 to 118. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

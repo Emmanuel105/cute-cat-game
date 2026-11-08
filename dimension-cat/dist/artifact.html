@@ -24534,6 +24534,42 @@ function buildSnowVillage(game, entry) {
     game.addInteractable({ obj: goat.group, radius: 2.2, label: () => 'Pet the goat', onUse: () => {
       game.befriend(goatId); SFX.bleat(); game.hearts(goat.group.position.x, 0.6, goat.group.position.z, 4);
       game.toast('🐐 *flicks an ear, unimpressed, then goes right back to the rocks*'); } }); }
+  // The Neighborhood's acorn cart (round 215), Candy Land's gumdrop cart (round 998), Robot City's
+  // bolt cart (round 999) and Victorian's apple cart (round 1000) were the only wagons in the whole
+  // game so far — Sunny Shore, Frosty Peak and Whisper Woods never got one. **Frosty Peak now has its
+  // own.** A bundled-up child kneels on the open snowfield south-east of the village, loading pinecones
+  // from a drift into a frost-blue wagon one at a time — kindling for the old-timer's fire down by the
+  // overlook. *"Six pinecones loaded already — the fire never has enough, this time of year."*
+  // *"Careful, puss — not a sled, this one, however much it looks like it wants to slide."*
+  //
+  // No new mechanism: `makeWagon()` (60-props.js) and `Kneeler` (55-npcs.js) are the exact pairing the
+  // other four wagons already use, just a frost-blue bed (`0x5a7a9e`) instead of cart-red, candy-pink,
+  // steel-grey or bottle-green. `placeT`/`boxT` take the place of the flat-floor worlds' `place()`,
+  // since the snowfield slopes gently underfoot here too — the same reasoning the jacks and the goat's
+  // own rocks just above already relied on. `Kneeler`'s own constructor calls `greetable()` itself, so
+  // this is a placement, not a new build.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, since
+  // there's no browser here to look at it) built the real mountain (`game.start('new')`, then
+  // `game.travel(5, 'from-hub')` waited out through its own portal-fade timer), sampled every NPC's own
+  // position every 15th frame over 1800 simulated frames, then swept a 1 m grid of the open snowfield
+  // (radius 5-50, short of the radius (58) where `snowRegion`'s own fill takes over) against both those
+  // samples and all 455 of the mountain's own physics boxes: (15, 44) came back 7.88 m clear of the
+  // nearest box and 8.54 m clear of the nearest wandering soul, at radius 46.5 from the origin, on a
+  // gentle slope (ground height varying about 0.1 m across the wagon's own footprint) — well clear of
+  // the tag game at (38, 30) and every other hand-placed spot on this slope.
+  //
+  // Built dead last, right after the mountain goat above and right before the squirrel spawn point, for
+  // the usual reason: `makeHuman()` and `randomPerson()` both draw off this mountain's own shared `r()`
+  // sequence unconditionally, and anything built earlier would have had its own timing-sensitive pick
+  // shifted by it.
+  { const hx = 15, hz = 44, wx = hx + 0.8, wz = hz, wry = atan2(hx - wx, hz - wz);
+    const wagon = makeWagon(0x5a7a9e); placeT(game, U, wagon, wx, wz, wry);
+    const wagonWard = makeWardrobe(r, { shirts: [0xd9c9a8, 0xbfe7ff], pants: [0x1e2a44, 0x3a3a3a] });
+    const hauler = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, wardrobe: wagonWard }),
+      hat: 'beanie', hatColor: 0x2e9e6e, coat: true, scarf: 0xd62839, cuffs: 0xffffff, glasses: false }); W.add(hauler.group);
+    game.npcs.push(new Kneeler(game, hauler, { x: hx, z: hz, ry: atan2(wx - hx, wz - hz),
+      cries: ["Six pinecones loaded already — the fire never has enough, this time of year.", "Careful, puss — not a sled, this one, however much it looks like it wants to slide.", "One more drift to clear before the overlook fire goes out."] })); }
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
