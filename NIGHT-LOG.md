@@ -27013,3 +27013,28 @@ pointing at round 963's commit while `origin/main` already had round 989. Reset 
 unchanged at 330, and Whisper Woods' own friend total rose from 139 to 140. No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 991 — Whisper Woods' seventh butterfly gets its own "say hello"
+
+Rounds 986-990 wired up the second through sixth of Whisper Woods' twelve loose butterflies,
+leaving six still loop-only. **The seventh now answers too — past the halfway mark.** *"Seven of
+us now. Past the halfway mark, if you're still counting."*
+
+Before picking this, the run checked whether any other flock in the game was still untouched —
+dragonflies, deer, foxes, hares, frogs, fairies and the hive bees in Whisper Woods itself, plus the
+belfry bats and lamp bees in Victorian, all turned out to be fully wired already (every member has
+its own "say hello"). The butterflies were the one flock still mid-way through, so the same
+mechanism continues: the build's existing `for (let i = 0; i < 12; i++)` loop over
+`makeButterfly()` + `Flyer` (74-world-forest.js, `buildForest`) now also captures its seventh
+iteration's rig into `seventhForestButterfly`, and a seventh `game.addInteractable` keys off that
+group directly with its own `game.namedFriend('forest-butterfly-7')` id, distinct from the six
+already wired so all seven stack. `Flyer`'s constructor already puts the rig in the scene graph
+itself, so no extra wiring was needed, and the proximity check only compares `x`/`z`, so the usual
+2.1 m radius still catches the cat passing underneath the butterfly's 0.7-2 m loop. No new mesh, no
+new physics box, no new `rnd()` draw. Reused `SFX.twinkle()`, same cue every other butterfly uses.
+Five of Whisper Woods' twelve butterflies remain loop-only — left for other nights.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330, and Whisper Woods' own friend total rose from 140 to 141. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
