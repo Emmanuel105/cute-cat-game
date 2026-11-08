@@ -27195,3 +27195,30 @@ shy factory mouse's own patch at (-19, 2), the scrap-crab and the scout-bot.
 unchanged at 330, and Robot City's own friend total rose from 106 to 107. No visual check was possible
 in this environment (no browser, no Playwright) — only the stub-three test suite above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 998 — Candy Land's own wagon hauler, the toy that never spread
+
+The Neighborhood has had a boy kneeling beside a little red wagon, loading acorns into it one at a
+time, since round 215 — every other wheeled-toy vignette in this game (the scooter, the
+skateboard) spread to all seven worlds in turn, but the wagon never got a second cart anywhere.
+**Candy Land now has one of its own.** A girl kneels on the open sweet-lands out past the
+cane-forest belt, loading loose gumdrops into a candy-pink wagon. *"Six gumdrops already, and
+there's always more past the cane trees."*
+
+No new mesh, no new controller: `makeWagon()` (60-props.js) and `Kneeler` (55-npcs.js) are the
+exact pair the Neighborhood's own hauler already uses, just placed again with a fresh hex
+(`0xff8fab`, candy pink, not the Neighborhood cart's red) so the two don't read as the same wagon.
+`Kneeler`'s own constructor calls `greetable()` itself, so this is a placement, not a build. A
+headless probe (`game.start('new')`, `game.travel(1, 'from-prev')` waited out through its real
+portal-fade timer, then 3000 simulated frames sampling every NPC's own position every tenth frame)
+swept a 2 m grid of the open sweet-lands (radius 45-90, short of the radius (92) where
+`candyRegion`'s own procedural fill takes over) against both those samples and every one of the
+land's 1902 physics boxes: (-36, 82) came back 17.73 m clear of the nearest other box and 26.71 m
+clear of the nearest wandering soul, at radius 89.6 — past the cane-forest belt and every other
+hand-placed prop in this build. Built dead last, right after the toffee-apple seller, so no earlier
+pick in this land's own seeded `r()` sequence was disturbed.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 330, and Candy Land's own friend total rose from 104 to 105. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

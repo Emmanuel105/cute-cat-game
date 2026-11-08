@@ -6204,6 +6204,33 @@ function buildCandyLand(game, entry) {
       cries: ["Toffee apples, get your toffee apples!", 'Careful, puss — all shell, no stick for you.', "Dipped fresh this morning. Mind the stick, mind your teeth."] });
     game.npcs.push(v7); greetable(game, v7); }
 
+  // the Neighborhood has had a boy kneeling beside a little red wagon, loading acorns into it one at a
+  // time, since round 215 — the one wheeled toy that never spread to any other world the way the
+  // scooter and the skateboard both did. A girl now kneels on the open sweet-lands out past the
+  // cane-forest belt, loading loose gumdrops into a wagon of her own. Same `makeWagon()` (60-props.js)
+  // and `Kneeler` (55-npcs.js) pairing the Neighborhood's own hauler already uses, unchanged — no new
+  // mesh, no new controller, just a placement (own candy-pink hex `0xff8fab`, not the Neighborhood
+  // wagon's red, so the two don't read as the same cart).
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` uses: `game.start('new')`,
+  // `game.travel(1, 'from-prev')` waited out through its real portal-fade timer, then 3000 simulated
+  // frames with every NPC's own position sampled every tenth frame) swept a 2 m grid of the open
+  // sweet-lands (radius 45-90, short of the radius (92) where `candyRegion`'s own procedural fill takes
+  // over) against both those samples and every one of the land's 1902 physics boxes: (-36, 82) came
+  // back 17.73 m clear of the nearest other box and 26.71 m clear of the nearest wandering soul, at
+  // radius 89.6 from the origin — past the cane-forest belt, clear of the hopscotch grid at (-85.2, 29),
+  // the dog walker at (-83, 5) and every other hand-placed prop in this build.
+  //
+  // Built dead last, right after the toffee-apple seller above, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off this land's own shared `r()` sequence unconditionally, and anything
+  // built earlier would have had its own timing-sensitive pick shifted by it.
+  { const hx = -36, hz = 82, wx = hx + 0.8, wz = hz, wry = atan2(hx - wx, hz - wz);
+    const wagon = makeWagon(0xff8fab); place(game, U, wagon, wx, wz, wry);
+    const wagonWard = makeWardrobe(r, { shirts: [0xffcc80], pants: [0xfff3b0, 0xbfe7ff] });
+    const hauler = makeHuman({ ...randomPerson(r, { female: true, child: true, wardrobe: wagonWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false }); W.add(hauler.group);
+    game.npcs.push(new Kneeler(game, hauler, { x: hx, z: hz, ry: atan2(wx - hx, wz - hz),
+      cries: ["Six gumdrops already, and there's always more past the cane trees.", "Careful, puss — not for riding in, this one's all mine.", "One more lap round the sweet-lands and this wagon's full."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
