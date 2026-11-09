@@ -28158,3 +28158,46 @@ then walked the cat to 1.2 m from the grinder and called `game.interact()` direc
 visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
 suite and the two headless probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 1025 — Frosty Peak gets a street organ grinder, the second of the three terrain worlds
+
+Victorian, Candy Land, Robot City, the Neighborhood and Sunny Shore all have a street organ grinder
+busking by now; Sunny Shore (the first terrain world) only got one once `OrganGrinder`'s own physics
+box (55-npcs.js) was switched to read `game.physics.ground0(ox, oz) + 0.68` instead of a bare 0.68, so
+it sits right on a slope instead of floating or sinking. **Frosty Peak is the next terrain world to
+get its own grinder: a hand-cranked barrel organ out on the open snowfield,** well past the village's
+own keep-out circle and clear of the fiddler and the knitter already up there. *"Tuppence a tune — the
+wind carries it further up here than it ever did in the village square."* *"Careful, puss — the cold
+seizes the gears same as everything else on this mountain."* *"Thirty tunes in the barrel, and the
+snow's never once thrown off the beat."* Whisper Woods is now the only world left without one.
+
+No new mechanism: `OrganGrinder` and `makeBarrelOrgan()` (60-props.js) are reused verbatim from the
+five worlds that already have one — only the wardrobe, spot and lines are new.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(5, 'from-hub')` waited out for real, then
+3600 simulated frames sampling every NPC's own position every 10th frame) swept a 2 m grid of the open
+snowfield (radius 28–55, short of the radius (58) where `snowRegion`'s own fill takes over) against
+both those samples and every one of the mountain's own physics boxes, rejecting anywhere `game.zones`
+already claims: (28, -30) came back best — 6.65 m clear of the nearest box and 12 m clear of the
+nearest wandering soul, at radius 41, comfortably past the fiddler at (28, -18) and the knitter at
+(16.5, -23), on ground levelling out at 0.18 m and varying only 0.087 m across the grinder's own
+footprint.
+
+Verified past the test suite with a second headless probe: found the new `OrganGrinder` in
+`game.npcs`, confirmed both its rig and the organ sit under `game.scene`, ran 600 simulated frames with
+the rig's position and head rotation staying finite throughout, and checked the organ's own physics
+box directly — its centre Y matches `ground0(ox, oz) + 0.68` exactly. Walked the cat to 1.2 m from the
+grinder: `game.nearest.label()` read "Say hello", and calling that interactable's `onUse()` directly
+took `game.state.friends.size` from 0 to 1 (`game.interact()` itself was a no-op in this probe only
+because `game.transitioning` was still true right after the portal travel — not a bug in the grinder).
+
+Found local `main` stuck behind `origin/main` again, same recovery as recent rounds: fast-forwarding
+failed outright ("refusing to merge unrelated histories" — a stale ref from an earlier container
+state), so `git checkout -B main origin/main` reset the local branch pointer to match the real pushed
+history before starting any work.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings. No visual
+check was possible in this environment (no browser, no Playwright) — only the stub-three test suite
+and the two headless probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.

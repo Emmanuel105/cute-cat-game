@@ -25310,6 +25310,41 @@ function buildSnowVillage(game, entry) {
     const kv = new Vendor(game, knitter, makeMittenPair(), { x: kx, z: kz, ry: kry, cryIcon: '\u{1F9E4}',
       cries: ['Red for luck, blue for the cold — can\'t go wrong either way.', "Careful, puss — wool, not a toy, and still on the needles' own dowel.", "Knit a fresh pair most weeks. Someone's always lost a glove on this mountain."] });
     game.npcs.push(kv); greetable(game, kv); }
+  // Victorian, Candy Land, Robot City, the Neighborhood and Sunny Shore all have a street organ
+  // grinder busking by now (55-npcs.js's `OrganGrinder`), the last of them (Sunny Shore) only once its
+  // own physics box was switched to read `game.physics.ground0(ox, oz) + 0.68` instead of a bare 0.68,
+  // so it would sit right on a slope instead of floating or sinking. **Frosty Peak is the next terrain
+  // world to get its own organ grinder: a hand-cranked barrel organ out on the open snowfield,** well
+  // past the village's own keep-out circle and clear of the fiddler and the knitter above. *"Tuppence a
+  // tune — the wind carries it further up here than it ever did in the village square."* *"Careful,
+  // puss — the cold seizes the gears same as everything else on this mountain."* *"Thirty tunes in the
+  // barrel, and the snow's never once thrown off the beat."* Whisper Woods remains the only world
+  // still without one.
+  //
+  // No new mechanism: `OrganGrinder` and `makeBarrelOrgan()` (60-props.js) are reused verbatim from the
+  // five worlds that already have one — only the wardrobe, spot and lines are new.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, `game.travel(5, 'from-hub')` waited out for real,
+  // then 3600 simulated frames sampling every NPC's own position every 10th frame) swept a 2 m grid of
+  // the open snowfield (radius 28-55, short of the radius (58) where `snowRegion`'s own fill takes
+  // over) against both those samples and every one of the mountain's own physics boxes, rejecting
+  // anywhere `game.zones` already claims: (28, -30) came back best, 6.65 m clear of the nearest box and
+  // 12 m clear of the nearest wandering soul, at radius 41 — comfortably past the fiddler at (28, -18)
+  // and the knitter at (16.5, -23) above — on ground levelling out at 0.18 m and varying only 0.087 m
+  // across the grinder's own footprint.
+  //
+  // Built dead last, right after the knitter above, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off this mountain's own shared `r()` sequence unconditionally.
+  { const gx = 28, gz = -30, gry = atan2(0 - gx, 0 - gz);
+    const grindWard = makeWardrobe(r, { shirts: [0x3f6b52, 0xb34b32, 0x4a5a7a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const grinder = makeHuman({ ...randomPerson(r, { female: r.chance(0.4), child: false, elder: r.chance(0.45), wardrobe: grindWard }),
+      hat: 'beanie', hatColor: 0x3a3a3a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a, glasses: r.chance(0.2) });
+    W.add(grinder.group);
+    const organ = makeBarrelOrgan();
+    game.npcs.push(new OrganGrinder(game, grinder, organ, { x: gx, z: gz, ry: gry, side: 1,
+      cries: ['Tuppence a tune — the wind carries it further up here than it ever did in the village square.', 'Careful, puss — the cold seizes the gears same as everything else on this mountain.', "Thirty tunes in the barrel, and the snow's never once thrown off the beat."] }));
+    U.push(organ.userData.update); }
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
