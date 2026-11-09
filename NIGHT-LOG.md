@@ -28327,3 +28327,41 @@ count unchanged at 1204 (the magician carries only a circle collider, like every
 performer), Robot City's own friend count rose from 112 to 113 ("113 to meet"). No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite and the two
 headless probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1029 — Victorian gets a magician too
+
+Candy Land and Robot City each had their own `Magician` by now; Victorian's own street performers — the
+fiddler by the fountain, the organ grinder on the north green — never had one. **A magician in a top hat
+now works the open lawn north-west of the terraces, well clear of the canal and the organ grinder's own
+corner**, the same wand-over-hand coin vanish, never quite caught in the act. *"Nothing up this sleeve,
+madam. Not even a chimney sweep's soot."* *"Watch closely, puss — the coin's gone. ...And it's back.
+Every time."* *"Not a trick the gaslamps could ever explain, even on their brightest night."*
+
+No new mechanism: `Magician` (`55-npcs.js`) reused verbatim a third time — only the wardrobe and the
+lines are new. This one gets `hat: 'top'` with a maroon band instead of the plain dark clothes the
+other two magicians wear, since `makeHuman`'s `'top'` hat option (built originally for a ringmaster-style
+look) was sitting there unused and a top hat suits a Victorian conjurer better than a bare head.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(3, 'from-prev')` waited out for real, then
+1800 simulated frames sampling every NPC's own position every 10th frame) swept a 1 m grid of the
+hand-built town against those 23,220 samples, every one of its 662 physics boxes and every `game.zones`
+rectangle, rejecting anywhere closer than 4.5 m to any of them: (-63, 49) came back clearest — 14.4 m
+from the nearest box, 16.2 m from the nearest wandering soul, at radius 79.8 from the origin and inside
+the hand-built area (`victorianRegion()`'s own procedural fill only starts at radius 88). Clear of the
+organ grinder at (41, 63.5) and the canal, which only spans z=24–36. Built dead last, right after the
+organ grinder and right before the squirrel, for the usual reason: `makeHuman()` and `randomPerson()`
+both draw off this town's own shared `r()` sequence unconditionally, and a fresh rig built any earlier
+would have shifted every other timing-sensitive pick already placed above.
+
+Verified past the test suite with a second headless probe: found the new `Magician` in `game.npcs` at
+exactly (-63, 49), confirmed its rig sits under the real scene graph, ran 1200 simulated frames watching
+the rig's position and head rotation stay finite throughout while the coin mesh toggled visible and
+hidden on schedule (both states actually observed), then walked the cat to 1.5 m away — `game.nearest`
+read "Say hello" — and calling `onUse()` took `game.state.friends.size` from 0 to 1.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box count
+unchanged at 662 (the magician carries only a circle collider, like every other standing performer),
+Victorian's own friend count rose from 151 to 152 ("152 to meet"). No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite and the two headless probes
+above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

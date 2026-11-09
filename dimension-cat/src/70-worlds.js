@@ -12044,6 +12044,35 @@ function buildVictorian(game, entry) {
       cries: ['Tuppence a tune, if you please — and mind where those paws go.', "Careful, puss — mind the pipes, they don't take kindly to being climbed.", "Thirty tunes in the barrel. Nobody's ever once stood still for all thirty."] }));
     U.push(organ.userData.update); }
 
+  // Candy Land and Robot City each have their own `Magician` by now; Victorian's own street performers —
+  // the fiddler by the fountain, the organ grinder on the north green — have never had one either. **A
+  // magician in a top hat now works the open lawn north-west of the terraces, well clear of the canal and
+  // the organ grinder's own corner:** the same wand-over-hand coin vanish, never quite caught in the act.
+  // *"Nothing up this sleeve, madam. Not even a chimney sweep's soot."* *"Watch closely, puss — the coin's
+  // gone. ...And it's back. Every time."* *"Not a trick the gaslamps could ever explain, even on their
+  // brightest night."*
+  //
+  // No new mechanism: `Magician` (55-npcs.js) reused verbatim, same as Robot City's reskin — only the
+  // wardrobe (black frock coat, `hat: 'top'` with a maroon band, already built for a bobby's helmet and a
+  // ringmaster alike) and the lines are new.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, `game.travel(3, 'from-prev')` waited out for real, then
+  // 1800 simulated frames sampling every NPC's own position every 10th frame) swept a 1 m grid of the
+  // hand-built town against those 23,220 samples, every one of its 662 physics boxes and every
+  // `game.zones` rectangle: (-63, 49) came back clearest — 14.4 m from the nearest box, 16.2 m from the
+  // nearest wandering soul, at radius 79.8 from the origin and inside the hand-built area (`victorianRegion`'s
+  // own procedural fill only starts at radius 88). Built dead last, right after the organ grinder and right
+  // before the squirrel, for the usual reason: `makeHuman()` and `randomPerson()` both draw off this town's
+  // own shared `r()` sequence unconditionally.
+  { const mx = -63, mz = 49, mry = atan2(0 - mx, 0 - mz);
+    const magicianWard = makeWardrobe(r, { shirts: [0x1a1a22, 0x2e2e38], pants: [0x1a1a22, 0x2a2a34] });
+    const magician = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: magicianWard }),
+      jacket: true, hat: 'top', hatColor: 0x1a1a22, hatBand: 0x8b1a1a, scarf: null, bag: null, backpack: null, glasses: false });
+    W.add(magician.group);
+    const magicLines = ['Nothing up this sleeve, madam. Not even a chimney sweep’s soot.', "Watch closely, puss — the coin's gone. ...And it's back. Every time.", 'Not a trick the gaslamps could ever explain, even on their brightest night.'];
+    game.npcs.push(new Magician(game, magician, { x: mx, z: mz, ry: mry, cries: magicLines })); }
+
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
