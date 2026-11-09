@@ -28036,3 +28036,38 @@ remembering for the next of these probes), walked the cat to 1.5 m from the grin
 `node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings. No visual
 check was possible in this environment (no browser, no Playwright) — only the stub-three test suite and
 the two headless probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1022 — Robot City gets a street organ grinder
+
+Victorian and Candy Land picked up a street organ grinder over the last two rounds — the same rollout
+the fiddler and the wagon each already made across six of the seven lands. **Robot City is the third
+stop: a hand-cranked barrel organ, the one unpowered busker in a whole city that charges everything
+else at a pylon, now stands on a quiet stretch of open factory floor north of the fiddler's side
+street.** *"Tuppence a tune — cheaper than anything else running on batteries in this town."*
+*"Careful, puss — the pipes don't bite, but the gears underneath still might."* *"Thirty tunes in the
+barrel. Not one robot in this city has ever learned to hum along."*
+
+No new mechanism: `OrganGrinder` (`55-npcs.js`) and `makeBarrelOrgan()` (`60-props.js`) are reused
+verbatim from the first two stops — only the wardrobe, spot and lines are new, same choice every one
+of these rollouts has made since the wagon's own first round. Built dead last in `buildRobotCity()`,
+right after the fortune machine, since `makeHuman()`/`randomPerson()` draw off the city's shared `r()`
+sequence and anything built earlier would desync a timing-sensitive pick already placed above.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(2, 'from-prev')` waited out for real, then a
+15×13 grid swept against all 1203 of the city's physics boxes and all 98 NPCs already standing in it)
+found (12, 44) the best open spot north of downtown: 7.53 m clear of the nearest box and 7.62 m clear
+of the nearest wandering soul, at radius 45.6 — well short of the radius (98) where `robotRegion()`'s
+own procedural fill takes over, and clear of both the fiddler at (-21, 57) and the painter at (0, 27).
+
+Verified past the test suite with a second headless probe: found the new `OrganGrinder` in `game.npcs`,
+confirmed both its rig and the organ sit under `game.world` in the scene graph, ran 700 simulated
+frames with the rig's position and head rotation staying finite throughout, then set the cat 1.3 m
+from the grinder and called `game.interact()` directly — the prompt read "Say hello" and
+`game.state.friends.size` went 0 → 1.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box count
+for the Neighborhood (the last world the suite travels to) unchanged at 330 — Robot City's own count
+rose by one for the organ's physics box, same as both earlier stops. No visual check was possible in
+this environment (no browser, no Playwright) — only the stub-three test suite and the two headless
+probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
