@@ -28405,3 +28405,45 @@ unchanged at 331 (the magician carries only a circle collider, like every other 
 the Neighborhood's own friend count rose to 98 ("98 to meet"). No visual check was possible in this
 environment (no browser, no Playwright) — only the stub-three test suite and the two headless probes
 above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1031 — Sunny Shore gets a magician too
+
+Candy Land, Robot City, Victorian and the Neighborhood all had their own `Magician` by now; Sunny
+Shore, the first of the three terrain worlds, never had one. **A magician now works a flat, quiet
+patch of dry sand up in the dune grove, north-west of the water — the same wand-over-hand coin vanish,
+never quite caught in the act, but this one's traded the usual funereal black tailcoat for an open
+shirt and shorts, the first magician in any of the seven worlds seen dressed for the weather.**
+*"Nothing up this sleeve. Not even a grain of sand, and believe me, I've checked."* *"Watch closely,
+puss — the coin's gone. ...And it's back. Every time."* *"Not even the gulls have caught how it's
+done, and they watch everything that glints."*
+
+No new mechanism: `Magician` (`55-npcs.js`) reused verbatim a fifth time — only the wardrobe and lines
+are new. `Magician`'s own constructor already reads its height straight off `game.physics.ground0()`,
+the same terrain-aware convention the beach's fiddler and organ grinder already rely on, so it needed
+no `placeT`/`boxT` call of its own — just `W.add()` and a push onto `game.npcs`.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(4, 'from-prev')` waited out for real, then
+1800 simulated frames sampling every NPC's own position every 10th frame) swept a 1 m grid of the open
+dry sand (x in [-50, 10], z in [-50, 50], radius under 50 — short of the 58 where `beachRegion()`'s own
+fill takes over) against those 19,980 samples, all 266 of the beach's own physics boxes, and every one
+of `game.zones`'s own rectangles — which on this beach includes a span covering the whole eastern half
+(`x > 12`), the wet sand and the sea, ruling that side out entirely. (-33, 37) came back clearest: 7.29 m
+from the nearest box (a palm trunk in the dune grove), 8.85 m from the nearest wandering soul, at
+radius 49.6 from the origin, on ground levelling out at 0.605 m with under 1 cm of slope across a 1 m
+square — comfortably inside the hand-built dunes and well clear of the fiddler and the organ grinder.
+Built dead last, right after the organ grinder, for the usual reason: `makeHuman()` and `randomPerson()`
+both draw off the shared `r()` sequence unconditionally (the squirrel on this beach was built early
+already, so there was no risk of shifting it).
+
+Verified past the test suite with a second headless probe: found the new `Magician` in `game.npcs` at
+exactly (-33, 37), confirmed its rig sits under the real scene graph, ran 1200 simulated frames watching
+the rig's position and head rotation stay finite throughout while the coin mesh toggled visible and
+hidden on schedule (both states actually observed), then walked the cat to 1 m away — `game.nearest`
+read "Say hello" — and calling `onUse()` took `game.state.friends.size` from 0 to 1.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 331 (the magician carries only a circle collider, like every other standing performer),
+Sunny Shore's own friend count rose from 127 to 128 ("128 to meet"). No visual check was possible in
+this environment (no browser, no Playwright) — only the stub-three test suite and the two headless
+probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

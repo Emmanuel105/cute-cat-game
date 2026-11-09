@@ -2331,6 +2331,46 @@ function buildBeach(game, entry) {
     game.npcs.push(new OrganGrinder(game, grinder, organ, { x: gx, z: gz, ry: gry, side: 1,
       cries: ['Tuppence a tune — the gulls join in whether they’re paid or not.', 'Careful, puss — sand in the gears, and this one’s never once made it back to the shop for a clean.', 'Thirty tunes in the barrel, and not the tide nor the wind has ever once thrown off the beat.'] }));
     U.push(organ.userData.update); }
+
+  // Candy Land, Robot City, Victorian and the Neighborhood all have their own `Magician` (55-npcs.js)
+  // by now; Sunny Shore, the first of the three terrain worlds, never had one. **A magician works a
+  // flat stretch of dry sand up in the dune grove, north-west of the water — the same wand-over-hand
+  // coin vanish, never quite caught in the act, but this one's traded the usual black tailcoat for an
+  // open shirt and shorts: the first of the five to be seen out of funereal black.** *"Nothing up this
+  // sleeve. Not even a grain of sand, and believe me, I've checked."* *"Watch closely, puss — the
+  // coin's gone. ...And it's back. Every time."* *"Not even the gulls have caught how it's done, and
+  // they watch everything that glints."*
+  //
+  // No new mechanism: `Magician` (55-npcs.js) reused verbatim a fifth time, same as every other world
+  // — only the wardrobe (no jacket, no hat, a loud shirt and shorts instead) and the lines are new.
+  // `Magician`'s own constructor already sets its rig's height straight from `game.physics.ground0()`,
+  // the same terrain-aware convention the fiddler above relies on, so it needed no extra placement
+  // call of its own.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, `game.travel(4, 'from-prev')` waited out for real,
+  // then 1800 simulated frames sampling every NPC's own position every 10th frame) swept a 1 m grid of
+  // the open dry sand (x in [-50, 10], z in [-50, 50], radius under 50 — short of the 58 where
+  // `beachRegion()`'s own fill takes over) against both those 19,980 samples and all 266 of the beach's
+  // own physics boxes, rejecting anywhere any of `game.zones`'s own rectangles already claims (the wet
+  // sand and sea span among them, which rules out the whole eastern half of the beach): (-33, 37) came
+  // back clearest — 7.29 m from the nearest box (a palm trunk in the dune grove), 8.85 m from the
+  // nearest wandering soul, at radius 49.6 from the origin, on ground levelling out at 0.605 m (under 1
+  // cm of slope across a 1 m square) — comfortably inside the hand-built dunes and well clear of the
+  // fiddler and the organ grinder above.
+  //
+  // Built dead last, right after the organ grinder above, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off the shared `r()` sequence unconditionally, and anything built
+  // earlier on this beach would have had its own timing-sensitive pick shifted by it. (The squirrel was
+  // built early on this beach already, so no shift risk there.)
+  { const mx = -33, mz = 37, mry = atan2(0 - mx, 0 - mz);
+    const magicianWard = makeWardrobe(r, { shirts: [0xff6f61, 0x4fc3f7, 0xffd54a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0xefe7d8, 0x8d6e63] });
+    const magician = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: magicianWard }),
+      shorts: true, hat: null, glasses: r.chance(0.4) });
+    W.add(magician.group);
+    const magicLines = ["Nothing up this sleeve. Not even a grain of sand, and believe me, I've checked.", "Watch closely, puss — the coin's gone. ...And it's back. Every time.", 'Not even the gulls have caught how it’s done, and they watch everything that glints.'];
+    game.npcs.push(new Magician(game, magician, { x: mx, z: mz, ry: mry, cries: magicLines })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
