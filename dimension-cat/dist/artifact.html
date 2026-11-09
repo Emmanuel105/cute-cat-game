@@ -2807,6 +2807,7 @@ class Seesaw {
 class Bouncer {
   constructor(game, rig, trampoline, { x, z, ry = 0, height = 0.68, cycle = 1.05, t0 = 0 }) {
     this.game = game; this.rig = rig; this.x = x; this.z = z; this.height = height; this.cycle = cycle; this.t = t0;
+    this.look = 0; this.lookW = 0;
     this.base = game.physics.ground0(x, z) + trampoline.userData.matY;
     rig.group.position.set(x, this.base, z); rig.group.rotation.y = ry;
     this.circle = game.physics.addCircle(this, x, z, 0.5);

@@ -27709,3 +27709,35 @@ went `NaN`.
 unchanged at 330 (a pure logic fix adds no new geometry or colliders). No visual check was possible in
 this environment (no browser, no Playwright) — only the stub-three test suite and the two headless
 probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1014 — the trampoline kid's head goes blank too
+
+Rounds 1011 and 1013 chased down a bug where `lookAtCat` (the code that turns an NPC's head to
+follow the cat) goes `NaN` forever the instant the cat comes within range, in any class whose
+constructor never set `this.look`/`this.lookW` to 0 first — fixed in the fiddlers, then in nine more
+classes found by hand. That sweep still missed one: **`Bouncer`**, the kid bouncing on the
+trampoline mat in every single world (Neighborhood, Candy Land, Robot City, Victorian, Sunny Shore,
+Frosty Peak and Whisper Woods all have one). Its constructor called `greetable()` but never touched
+`this.look`, so the same `undefined`-in, `NaN`-out mechanism applied from the first frame the cat got
+close, same as the fiddlers before round 1011's fix.
+
+Caught this by writing a small script to scan every class in `55-npcs.js` for one that calls
+`lookAtCat` without setting `this.look` anywhere in its body, then checking each flagged hit by
+hand (several were false positives — `Tetherball`, `Seesaw`, `Talkers`, `TugOfWar`, `Badminton` and
+`SackRace` all set `look: 0` inside a per-player `ctl` object literal rather than `this.look =`,
+which is the correct and already-safe pattern). `Bouncer` was the one real miss. Fixed with the same
+one-line cure as every time before: `this.look = 0; this.lookW = 0;` added right after `this.t = t0;`
+in its constructor, before `rig.group.position.set(...)`.
+
+Verified with a headless probe (same stub-three harness as `test/run.mjs` builds the game against):
+found the Neighborhood's own `Bouncer` instance, put the cat 1 m off its side, and ran 60 simulated
+frames of `update()` directly. Before the fix, `head.rotation.y` was `NaN` from frame 0 onward, with
+`look` and `lookW` both `NaN`. After the fix, `head.rotation.y` settled at a finite value and the head
+visibly turned toward the cat. A second probe traveled to all seven worlds in turn, found each one's
+own trampoline `Bouncer`, and confirmed `Number.isFinite(rig.head.rotation.y)` held true in every one
+after 200 frames with the cat parked beside it.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330 (a pure logic fix touching no geometry or colliders). No visual check was possible in
+this environment (no browser, no Playwright) — only the stub-three test suite and the two headless
+probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
