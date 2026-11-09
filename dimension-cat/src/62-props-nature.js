@@ -929,6 +929,23 @@ function makeHerbBundle() {
   for (const [x, z] of [[0.02, 0.015], [-0.015, -0.02], [0.03, -0.01]]) mesh(G.sphere(0.012, 6, 5), mat(0xb5342f, { roughness: 0.6 }), { x, y: 0.26, z, shadow: 'none', parent: g });   // rosehip berries
   return g;
 }
+/** A pair of knitted mittens on a short wooden dowel, one red and one blue, each with a cream cuff
+ * stripe and a stitched-on thumb, hung by a twine loop for a winter-market vendor to hold up. */
+function makeMittenPair() {
+  const g = new THREE.Group(), wood = mat(0x8a5a32, { roughness: 0.9 });
+  noInk(mesh(G.cyl(0.015, 0.015, 0.3, 8), wood, { y: 0.32, rz: PI / 2, parent: g }));
+  const mitten = (x, hue, cuffHue) => {
+    const m = group(x, 0, 0, g);
+    const body = mat(hue, { roughness: 0.85 }), cuff = mat(cuffHue, { roughness: 0.85 });
+    noInk(mesh(G.cyl(0.006, 0.006, 0.2, 4), wood, { y: 0.22, parent: m }));
+    mesh(G.box(0.1, 0.14, 0.055), body, { y: 0.1, shadow: 'none', parent: m });
+    mesh(G.box(0.045, 0.065, 0.045), body, { x: -0.065, y: 0.11, rz: 0.3, shadow: 'none', parent: m });   // thumb
+    mesh(G.box(0.104, 0.03, 0.06), cuff, { y: 0.17, shadow: 'none', parent: m });   // cuff stripe
+  };
+  mitten(-0.13, 0xd62839, 0xf7f3ec);
+  mitten(0.13, 0x2f6fd6, 0xf7f3ec);
+  return g;
+}
 /**
  * A knee-high orb web slung between two twig stakes: eight silk spokes and three concentric rings
  * (full toruses — the web's own local plane is XY, which is exactly how a torus already sits, so the

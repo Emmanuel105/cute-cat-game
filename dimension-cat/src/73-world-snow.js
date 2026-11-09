@@ -2234,6 +2234,44 @@ function buildSnowVillage(game, entry) {
     const caseX = fx + 0.7, caseZ = fz + 0.4;
     placeT(game, U, makeFiddleCase(), caseX, caseZ, fry);
     boxT(game, caseX, caseZ, 0.64, 0.12, 0.24, { cam: false }); }
+  // Candy Land has five market vendors by now, Victorian has seven, even Whisper Woods has two since
+  // its own herbalist's round — Frosty Peak, for everything else on this mountain, still had only the
+  // one cocoa seller by the fire. **A knitter now stands out on the open snowfield, a pair of mittens
+  // held up by their dowel for anyone passing,** one red, one blue, both cuffed in cream wool. *"Red
+  // for luck, blue for the cold — can't go wrong either way."* *"Careful, puss — wool, not a toy, and
+  // still on the needles' own dowel."* *"Knit a fresh pair most weeks. Someone's always lost a glove
+  // on this mountain."*
+  //
+  // No new controller: `Vendor` (55-npcs.js) is the exact pairing every other world's own stall keeper
+  // already uses, just holding a new prop, `makeMittenPair()` (62-props-nature.js, right after
+  // `makeHerbBundle`) — a short wooden dowel with a red mitten and a blue mitten hanging by twine, each
+  // with its own cream cuff stripe and a stitched thumb, built from the same small-box-cluster trick
+  // every other hand-held prop in this file already uses. `Vendor`'s own constructor skips
+  // `greetable()` on purpose ("the world gives the vendor its own prompt"), so this one calls it
+  // explicitly straight after, the same fix every other vendor's own round already used.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, since
+  // there's no browser here to look at it: `game.start('new')`, `game.travel(5, 'from-hub')` waited out
+  // for real against its own portal-fade timer, then 3600 simulated frames sampling every NPC's own
+  // position every 10th frame) swept a 2 m grid of the open snowfield (radius 15-56, short of the
+  // radius (58) where `snowRegion`'s own fill takes over) against both those samples and all 818 of the
+  // mountain's own physics boxes: (16.5, -23) came back 7.02 m clear of the nearest box and 7.83 m
+  // clear of the nearest wandering soul, at radius 28.6 from the origin, outside every one of
+  // `game.zones`'s own keep-out rectangles and the village's own circle (radius 26), and on a gentle
+  // slope (ground height varying about 0.07 m across the knitter's own footprint) — well clear of the
+  // birdwatcher at (30, 10) and every other hand-placed landmark on this side of the mountain. Facing
+  // the village (ry = atan2(0 - 16.5, 0 - -23)) keeps the whole rig on that same gentle slope.
+  //
+  // Built dead last, right after the fiddler above and right before the squirrel spawn point, since
+  // `makeHuman()` and `randomPerson()` both draw off this mountain's own shared `r()` sequence
+  // unconditionally.
+  { const kx = 16.5, kz = -23, kry = atan2(0 - kx, 0 - kz);
+    const knitWard = makeWardrobe(r, { shirts: [0x6a4a5a, 0x4a5a6a, 0x5a6a4a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const knitter = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.35), wardrobe: knitWard }),
+      hat: 'beanie', hatColor: 0x6a4a5a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a }); W.add(knitter.group);
+    const kv = new Vendor(game, knitter, makeMittenPair(), { x: kx, z: kz, ry: kry, cryIcon: '\u{1F9E4}',
+      cries: ['Red for luck, blue for the cold — can\'t go wrong either way.', "Careful, puss — wool, not a toy, and still on the needles' own dowel.", "Knit a fresh pair most weeks. Someone's always lost a glove on this mountain."] });
+    game.npcs.push(kv); greetable(game, kv); }
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

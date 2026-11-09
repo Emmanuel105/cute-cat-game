@@ -27868,3 +27868,44 @@ unchanged at 330 (a stone-skipper's own physics circle, same convention every ot
 already uses). No visual check was possible in this environment (no browser, no Playwright) — only
 the stub-three test suite and the two headless probes above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1018 — Frosty Peak gets a second vendor, a knitter selling mittens
+
+Candy Land has five market vendors by now, Victorian has seven, even Whisper Woods has two since its
+own herbalist's round last night — Frosty Peak, for everything else on this mountain, still had only
+the one cocoa seller by the fire. **A knitter now stands out on the open snowfield, a pair of
+mittens held up by their own dowel for anyone passing,** one red, one blue, both cuffed in cream
+wool. *"Red for luck, blue for the cold — can't go wrong either way."* *"Careful, puss — wool, not a
+toy, and still on the needles' own dowel."* *"Knit a fresh pair most weeks. Someone's always lost a
+glove on this mountain."*
+
+No new controller: `Vendor` (55-npcs.js) is the exact pairing every other world's own stall keeper
+already uses, just holding a new prop, `makeMittenPair()` (62-props-nature.js, right after
+`makeHerbBundle`) — a short wooden dowel with a red mitten and a blue mitten hanging by twine, each
+with its own cream cuff stripe and a stitched thumb, built from the same small-box-cluster trick
+every other hand-held prop in this file already uses. `Vendor`'s own constructor skips `greetable()`
+on purpose ("the world gives the vendor its own prompt"), so this one calls it explicitly straight
+after, the same fix every other vendor's own round already used.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, since
+there's no browser here to look at it: `game.start('new')`, `game.travel(5, 'from-hub')` waited out
+for real against its own portal-fade timer, then 3600 simulated frames sampling every NPC's own
+position every 10th frame) swept a 2 m grid of the open snowfield (radius 15–56, short of the radius
+(58) where `snowRegion`'s own fill takes over) against both those samples and all 818 of the
+mountain's own physics boxes: (16.5, -23) came back 7.02 m clear of the nearest box and 7.83 m clear
+of the nearest wandering soul, at radius 28.6 from the origin, outside every one of `game.zones`'s
+own keep-out rectangles and the village's own circle (radius 26), and on a gentle slope (ground
+height varying about 0.07 m across the knitter's own footprint).
+
+Verified past the test suite with a second headless probe: hit the same snag every post-travel probe
+in this log eventually hits — `game.interact()` no-ops while `game.transitioning` is still true, and
+that flag only clears on a real `setTimeout(…, 500)`, which a tight synchronous frame loop never lets
+fire. Added a genuine `await sleep(600)` after the travel-wait loop to let it clear, then confirmed
+the prompt read "Say hello", that `game.interact()` turned it into a real friend (`friends.size` 0 →
+1), and that the rig's position and head rotation stayed finite over 400 simulated frames.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330 (the vendor's own physics circle, same convention every other greetable NPC already
+uses), and Frosty Peak's own friend total rose by one. No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite and the two headless probes
+above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
