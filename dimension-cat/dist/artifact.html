@@ -12427,6 +12427,37 @@ function buildNeighborhood(game, entry) {
       cries: ["Tuppence a tune, if the kitty's got a coin.", "Careful, puss — mind the pipes, they don't take kindly to climbing.", "Thirty tunes in the barrel — the stilt-walker down the way has never once kept the beat."] }));
     U.push(organ.userData.update); }
 
+  // Candy Land, Robot City and Victorian all have their own `Magician` by now (55-npcs.js) — the
+  // Neighborhood, the one flat-floor world without it, never had its own. **A magician in a plain
+  // dark suit now works a quiet stretch of open lawn east of the side road,** well clear of the
+  // stilt-walker's pacing line and the organ grinder's own corner, the same wand-over-hand coin
+  // vanish, never quite caught in the act. *"Nothing up this sleeve. Not even the paper I never did
+  // deliver."* *"Watch closely, puss — the coin's gone. ...And it's back. Every time."* *"Not a
+  // single neighbour's ever caught how it's done, and they've all been watching for years."*
+  //
+  // No new mechanism: `Magician` (55-npcs.js) reused verbatim a fourth time — only the wardrobe and
+  // the lines are new, the same reskin-not-new-code choice this log keeps making.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, then 4000 simulated frames sampling every NPC's own
+  // position every 15th frame) swept a 2 m grid of the open lawn against those samples, all 308 of the
+  // village's own physics boxes and every `game.zones` rectangle, keeping only points with radius under
+  // 85 — well inside `P.setLimit(95)`'s own walkable edge: (60, -49) came back clearest — 13.0 m from
+  // the nearest box (a lamp post), 13.8 m from the nearest wandering soul, at radius 77.5 from the
+  // origin, outside every zone and clear of the stilt-walker's line ((14,-34)-(14,-28)), the hula-hooper
+  // at (32,-55) and the organ grinder at (16,-56).
+  //
+  // Built dead last, right after the organ grinder above and right before `makeDayNight`, for the usual
+  // reason: `makeHuman()` and `randomPerson()` both draw off this street's own shared `r()` sequence
+  // unconditionally, and this is the first world the test suite builds, so anything built earlier here
+  // would have had its own timing-sensitive pick shifted by it.
+  { const mx = 60, mz = -49, mry = atan2(0 - mx, 0 - mz);
+    const magicianWard = makeWardrobe(r, { shirts: [0x1a1a22, 0x2e2e38], pants: [0x1a1a22, 0x2a2a34] });
+    const magician = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: magicianWard }),
+      jacket: true, hat: null, scarf: null, bag: null, backpack: null, glasses: false }); W.add(magician.group);
+    const magicLines = ['Nothing up this sleeve. Not even the paper I never did deliver.', "Watch closely, puss — the coin's gone. ...And it's back. Every time.", "Not a single neighbour's ever caught how it's done, and they've all been watching for years."];
+    game.npcs.push(new Magician(game, magician, { x: mx, z: mz, ry: mry, cries: magicLines })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

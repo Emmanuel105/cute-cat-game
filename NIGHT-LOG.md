@@ -28365,3 +28365,43 @@ unchanged at 662 (the magician carries only a circle collider, like every other 
 Victorian's own friend count rose from 151 to 152 ("152 to meet"). No visual check was possible in this
 environment (no browser, no Playwright) — only the stub-three test suite and the two headless probes
 above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1030 — the Neighborhood gets a magician too
+
+Candy Land, Robot City and Victorian each had their own `Magician` by now; the Neighborhood, the one
+flat-floor world without it, never had one. **A magician in a plain dark suit now works a quiet
+stretch of open lawn east of the side road,** well clear of the stilt-walker's pacing line and the
+organ grinder's own corner, the same wand-over-hand coin vanish, never quite caught in the act.
+*"Nothing up this sleeve. Not even the paper I never did deliver."* *"Watch closely, puss — the coin's
+gone. ...And it's back. Every time."* *"Not a single neighbour's ever caught how it's done, and
+they've all been watching for years."*
+
+No new mechanism: `Magician` (`55-npcs.js`) reused verbatim a fourth time — only the wardrobe (plain
+dark shirt and jacket, no hat) and the lines are new, the same reskin-not-new-code choice this log
+keeps making.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, then 4000 simulated frames sampling every NPC's own
+position every 15th frame) swept a 2 m grid of the village's open ground against those samples, all
+308 of its own physics boxes and every `game.zones` rectangle, rejecting anywhere closer than 5 m to a
+box or any point with radius 85 or more — comfortably inside `P.setLimit(95)`'s own walkable edge:
+(60, -49) came back clearest — 13.0 m from the nearest box (a lamp post), 13.8 m from the nearest
+wandering soul, at radius 77.5 from the origin. Clear of the stilt-walker's line ((14,-34)-(14,-28)),
+the hula-hooper at (32,-55) and the organ grinder at (16,-56). Built dead last, right after the organ
+grinder and right before `makeDayNight`, for the usual reason: `makeHuman()` and `randomPerson()` both
+draw off this street's own shared `r()` sequence unconditionally, and this is the first world the test
+suite builds, so anything built earlier here would have had its own timing-sensitive pick shifted by
+it.
+
+Verified past the test suite with a second headless probe: found the new `Magician` in `game.npcs` at
+exactly (60, 0, -49), confirmed its rig sits under the real scene graph, ran 1200 simulated frames
+watching the rig's position and head rotation stay finite throughout while the coin mesh toggled
+visible and hidden on schedule (both states actually observed), then walked the cat to 1 m away —
+`game.nearest.label()` read "Say hello" — and calling `onUse()` took `game.state.friends.size` from 0
+to 1.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box count
+unchanged at 331 (the magician carries only a circle collider, like every other standing performer),
+the Neighborhood's own friend count rose to 98 ("98 to meet"). No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite and the two headless probes
+above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
