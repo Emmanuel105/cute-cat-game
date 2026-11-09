@@ -27637,3 +27637,38 @@ time every arm, head and spine rotation stayed finite over 400 simulated frames 
 is what that same check caught before the fix went in). No visual check was possible in this environment
 (no browser, no Playwright) — only the stub-three test suite above and the scratch probes. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1012 — Sunny Shore gets its own fiddler, the last of the seven
+
+Victorian, Robot City, Candy Land, Whisper Woods and Frosty Peak had all picked up a street fiddler
+over the last several rounds — Sunny Shore, for all its ukulele player and its juggler, was the only
+world left without one. **A fiddler now busks on the open dry sand south-east of the beachcomber,**
+bare-legged in the sun, sawing a bow across a tiny violin tucked under the chin. *"Salt air swells the
+wood something awful — out here, so does everything else."* *"Careful, puss — four strings, no yarn to
+bat at."* *"Even over the surf, something always stops to listen."*
+
+No new mechanism: `Fiddler` (55-npcs.js) and `makeFiddleCase()` (60-props.js) are reused verbatim from
+the other five worlds — only the wardrobe, case spot and lines are new. `placeT`/`boxT` take the place
+of the flat-floor towns' `place()`/`P.addBox()` for the case, the same terrain-aware pairing every other
+sloping prop on this beach already relies on. `Fiddler`'s constructor already carries the `this.look = 0;
+this.lookW = 0;` fix from round 1011, so this one shipped with a sane head from the start.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, since
+there's no browser here to look at it: `game.start('new')`, `game.travel(4, 'from-hub')` waited out for
+real against `game.worldIndex`, then 3600 simulated frames sampling every NPC's own position every 10th
+frame) swept a 1 m grid of the open dry sand (x in [-22, 10], z in [-50, 15], short of the radius (58)
+where `beachRegion()`'s own fill takes over, and outside every one of `game.zones`'s own keep-out
+rectangles) against both those samples and all 264 of the beach's own physics boxes: (10, -32) came
+back 11.93 m clear of the nearest box and 5.0 m clear of the nearest wandering soul (the beachcomber at
+(5, -32)), at radius 33.5 from the origin, on a flat stretch (ground height varying under 0.05 m across
+the fiddler's own footprint). Facing the village puts the case at (10.7, -31.6), itself still 11.61 m
+clear of the nearest box and 4.26 m clear of the nearest wandering soul.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box count
+unchanged at 330, and Sunny Shore's own friend total rose from 125 to 126. Verified past the test
+suite's own checks with a second headless probe: walked the cat up to the fiddler and called
+`game.interact()` (after waiting out `game.transitioning`, the fade-lock the travel itself sets) — the
+label read "Say hello", `game.state.friends.size` went from 0 to 1, and every arm, head and spine
+rotation stayed finite over 400 simulated frames of sawing. No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite above and the scratch probes.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
