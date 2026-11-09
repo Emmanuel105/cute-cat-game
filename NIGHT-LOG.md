@@ -27996,3 +27996,43 @@ unchanged at 330 for the Neighborhood (the last world the suite travels to; Vict
 rose by one for the organ's physics box). No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite and the two headless probes above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1021 — Candy Land gets a street organ grinder
+
+Checked which land had had the fewest mentions in the log lately: Candy Land's last change was round
+1009's second busker, twelve rounds back, and a plain `game.npcs.push` count across the four lands
+built in `70-worlds.js` put it lowest at 68 (Victorian's 89, the most, carries a lot of one-off extras
+no other land has yet). **A travelling organ grinder now stands on the open sweet-lands, well east of
+the second fiddler, winding a barrel organ on its own folding leg** — Victorian got the first one last
+round; this is the second stop on what the fiddler and the wagon both already made a seven-land
+rollout. *"Tuppence a tune, same price in every land, puss or no puss."* *"Careful, puss — the pipes
+don't take kindly to climbing, same as every other organ's ever told you."* *"Three dozen tunes in
+this barrel. The gumdrop wagon's never once kept up with the beat."*
+
+No new mechanism at all: `OrganGrinder` (55-npcs.js) and `makeBarrelOrgan()` (60-props.js) are reused
+verbatim from Victorian, only the wardrobe and lines are new, and the organ's own `userData.update`
+(the crank spin) goes on this land's `U` list the same way Victorian's did.
+
+Found the local `main` branch stuck 63-odd rounds behind `origin/main` in this container (a detached
+`HEAD` already sat on the real, current history) — reset it to match `origin/main` before touching
+anything, same recovery round 98 once needed.
+
+A headless probe (the stub-three harness `test/run.mjs` itself uses, started with
+`elements.get('enter').listeners.click[0]()` then `game.travel(1, 'from-prev')` waited out through its
+real portal-fade timer) checked a short list of open spots on the sweet-lands against the land's own
+1903 physics boxes and all 89 NPCs already standing in it: (70, -5) came back 7.41 m clear of the
+nearest box (a lollipop trunk near (62, -4)) and 14.51 m clear of the nearest wandering soul, at radius
+70.2 from the origin — well short of the radius (92) where `candyRegion`'s own procedural fill takes
+over.
+
+Verified past the test suite with a second headless probe: found the new `OrganGrinder` in `game.npcs`,
+confirmed both its rig and the organ sit under the scene graph, ran 600 simulated frames with the rig's
+position and head rotation staying finite throughout and no console warnings. Clicked "ENTER" the way
+the real start screen does (`game.started` has to be true before `step()` — and so `game.interact()` —
+ever runs; an earlier pass without it left `game.nearest` stuck `null` the whole time, which is worth
+remembering for the next of these probes), walked the cat to 1.5 m from the grinder, and called
+`game.interact()` directly: the prompt read "Say hello" and `game.state.friends.size` went 0 → 1.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings. No visual
+check was possible in this environment (no browser, no Playwright) — only the stub-three test suite and
+the two headless probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

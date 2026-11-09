@@ -14996,6 +14996,44 @@ function buildCandyLand(game, entry) {
     place(game, U, makeFiddleCase(), caseX, caseZ, fry);
     P.addBox(caseX, 0.06, caseZ, 0.64, 0.12, 0.24, { cam: false }); }
 
+  // Victorian got its own street organ grinder last round (`OrganGrinder`: 55-npcs.js,
+  // `makeBarrelOrgan()`: 60-props.js) — same rollout the fiddler got across five lands over rounds
+  // 1007-1012 before this land's own second busker closed that one out. This land's music so far is
+  // the ukulele player by the candy-cane grove and the second busker's fiddle out past the gumdrop
+  // wagon; nobody here has ever wound a crank. **A travelling organ grinder now stands on the open
+  // sweet-lands, well east of the second fiddler, winding a barrel organ on its own folding leg.**
+  // *"Tuppence a tune, same price in every land, puss or no puss."* *"Careful, puss — the pipes don't
+  // take kindly to climbing, same as every other organ's ever told you."* *"Three dozen tunes in this
+  // barrel. The gumdrop wagon's never once kept up with the beat."*
+  //
+  // No new mechanism: `OrganGrinder` and `makeBarrelOrgan()` are reused verbatim from Victorian — only
+  // the wardrobe and lines are new, same reskin-not-new-code choice every rollout in this log has made
+  // since the wagon's own first round.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.travel(1, 'from-prev')` waited out through its real portal-fade timer, then 60 simulated
+  // frames) checked a short list of open spots on the sweet-lands against the land's own 1903 physics
+  // boxes and all 89 NPCs already standing in it: (70, -5) came back 7.41 m clear of the nearest box
+  // (a lollipop trunk near (62, -4)) and 14.51 m clear of the nearest wandering soul (a Sitter pair out
+  // at (82, 4)), at radius 70.2 from the origin — well short of the radius (92) where `candyRegion`'s
+  // own procedural fill takes over, and clear of the chocolate-river ducks 13 m south and the second
+  // fiddler 51.7 m to the north-east. Facing the land's own centre (ry = atan2(-fx, -fz)) needs no
+  // extra clearance check: the grinder's own 0.4 m circle and the organ's 0.55 m sideways offset both
+  // fit comfortably inside that same margin.
+  //
+  // Built dead last, right after the second fiddler above and right before the squirrel, for the usual
+  // reason: `makeHuman()` and `randomPerson()` both draw off this land's own shared `r()` sequence
+  // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted
+  // by it.
+  { const gx = 70, gz = -5, gry = atan2(-gx, -gz);
+    const grinder = makeHuman({ ...randomPerson(r, { female: r.chance(0.35), child: false, elder: r.chance(0.5) }),
+      shirt: 0x6a1a1a, pants: 0x3a3327, shoes: 0x2c2c2c, hat: 'flatcap', hatColor: 0x3a3327, coat: true, scarf: 0xffd54a, bag: null, backpack: null, glasses: false });
+    W.add(grinder.group);
+    const organ = makeBarrelOrgan();
+    game.npcs.push(new OrganGrinder(game, grinder, organ, { x: gx, z: gz, ry: gry, side: 1,
+      cries: ['Tuppence a tune, same price in every land, puss or no puss.', "Careful, puss — the pipes don't take kindly to climbing, same as every other organ's ever told you.", "Three dozen tunes in this barrel. The gumdrop wagon's never once kept up with the beat."] }));
+    U.push(organ.userData.update); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
