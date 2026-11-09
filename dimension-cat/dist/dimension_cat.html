@@ -17411,6 +17411,59 @@ function buildRobotCity(game, entry) {
     game.npcs.push(new StoneSkipper(game, skipper, { x: -8, z: -64, ry: 0, cryIcon: '⚙️',
       cries: ["Breaktime's the only time I get to do this.", 'Careful, puss — spare part, not a toy.', "Three skips, best I've managed all shift."] })); }
 
+  // Victorian has a fortune teller reading a crystal ball, but a whole city of robots never had
+  // anything that claimed to see the future of its own — a coin-operated fortune machine, the
+  // Zoltar kind with a glowing head behind glass, now stands on the open factory floor, chrome and
+  // neon, dispensing a slip to anyone who walks up.
+  //
+  // New prop, built straight into this function rather than a shared `makeXxx()` factory — it's a
+  // one-off landmark, the same way the statue, the radar dish and the security camera above are, used
+  // nowhere else in this file. No new controller and no `game.npcs` entry either: like those three, it
+  // is an inert group handed straight to `game.addInteractable`, not an NPC the test's own friend count
+  // needs to track. A single AABB box (`P.addBox`) stands in for the whole cabinet rather than its true
+  // rotated footprint — the box's own 1.0 m side is sized to the cabinet's own diagonal, so it bounds
+  // the shape at any facing, the same trick the knitter's own mitten dowel never needed but a rotated
+  // box always does.
+  //
+  // A headless probe (the stub-three harness `test/run.mjs` itself uses: `game.start('new')` then
+  // `game.travel(2, 'from-hub')` waited out for real, then 1800 simulated frames sampling every NPC's
+  // own position every 5th frame) swept the open floor (radius 20-65, short of the radius (98) where
+  // `robotRegion`'s own procedural fill takes over) against those samples and every one of the city's
+  // physics boxes: (-35, -11) came back 8.00 m clear of the nearest box (the hand-placed tower at
+  // (-38, 0)) and 8.60 m clear of the nearest wandering soul, at radius 36.7 from the origin, with
+  // `game.zones.blocked()` false there. Facing the plaza (ry = atan2(0 - x, 0 - z) = 1.266 rad) needs no
+  // extra clearance check: the cabinet itself is the only thing this spot has ever needed room for.
+  { const fx = -35, fz = -11, fry = atan2(0 - fx, 0 - fz);
+    const root = group(fx, 0, fz, W); root.rotation.y = fry;
+    const steel = mat(0x2e343c, { metalness: 0.55, roughness: 0.4 }), trimM = mat(0xffd54a, { metalness: 0.5, roughness: 0.35 }),
+      glassM = mat(0x8fd9ff, { metalness: 0.1, roughness: 0.05, pbr: true, transparent: true, opacity: 0.32 }),
+      skinM = mat(0xd7dde3, { metalness: 0.6, roughness: 0.3 });
+    mesh(G.box(0.85, 0.12, 0.65), steel, { y: 0.06, shadow: 'both', parent: root });            // base platform
+    mesh(G.box(0.62, 1.3, 0.5), steel, { y: 0.77, shadow: 'both', parent: root });               // cabinet body
+    noInk(mesh(G.box(0.02, 1.3, 0.02), trimM, { x: -0.31, y: 0.77, z: 0.26, shadow: 'none', parent: root }));
+    noInk(mesh(G.box(0.02, 1.3, 0.02), trimM, { x: 0.31, y: 0.77, z: 0.26, shadow: 'none', parent: root }));
+    mesh(G.box(0.5, 0.74, 0.03), glassM, { y: 0.86, z: 0.255, shadow: 'none', parent: root });   // the window
+    const head = group(0, 0.92, 0.1, root);
+    mesh(G.sphere(0.16, 14, 12), skinM, { parent: head });
+    const eyeL = mesh(G.sphere(0.035, 8, 6), glowMat(0x00e5ff, 1.4), { x: -0.065, y: 0.02, z: 0.14, shadow: 'none', parent: head });
+    const eyeR = mesh(G.sphere(0.035, 8, 6), glowMat(0x00e5ff, 1.4), { x: 0.065, y: 0.02, z: 0.14, shadow: 'none', parent: head });
+    const ant = mesh(G.cyl(0.012, 0.012, 0.22, 6), steel, { y: 0.2, parent: head });
+    const antTip = mesh(G.sphere(0.03, 8, 6), glowMat(0xff2fd0, 1.2), { y: 0.11, parent: ant });
+    const bulbs = [-0.26, -0.13, 0, 0.13, 0.26].map((bx) => mesh(G.sphere(0.028, 8, 6), glowMat(0xffb300, 0.6), { x: bx, y: 1.47, z: 0.27, shadow: 'none', parent: root }));   // marquee lights
+    mesh(G.box(0.1, 0.07, 0.03), steel, { y: 0.45, z: 0.28, parent: root });                     // coin plate
+    noInk(mesh(G.box(0.07, 0.015, 0.01), mat(0x0c0c0c), { y: 0.45, z: 0.295, parent: root }));   // the slot
+    P.addBox(fx, 0.835, fz, 1.0, 1.67, 1.0);
+    U.push((dt, t) => {
+      eyeL.material.emissiveIntensity = eyeR.material.emissiveIntensity = 1.0 + max(0, sin(t * 3)) * 1.1;
+      head.rotation.y = sin(t * 0.5) * 0.3;
+      antTip.material.emissiveIntensity = sin(t * 6) > 0.5 ? 1.8 : 0.3;
+      bulbs.forEach((b, i) => { b.material.emissiveIntensity = sin(t * 4 - i * 1.1) > 0.2 ? 1.4 : 0.15; });
+    });
+    const fortuneLines = ['🔮 "ANALYSIS COMPLETE: good fortune, within acceptable tolerances."', '🔮 "Careful, puss — paper slip, not a toy. Batteries not included either way."', '🔮 "Printed the same ninety-nine fortunes since the city went up. Nobody has ever gotten a repeat."'];
+    game.addInteractable({ obj: root, radius: 2.2, label: () => 'Try the fortune machine', onUse: () => {
+      SFX.chime(); game.fx.emit(fx, 1.3, fz, { count: 10, colors: [0x00e5ff, 0xff2fd0, 0xffd54a], speed: 1.0, up: 1.4, life: 0.8, gravity: 1.6 });
+      game.toast(rnd.pick(fortuneLines), 3200); } }); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

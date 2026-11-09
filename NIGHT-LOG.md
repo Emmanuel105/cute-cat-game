@@ -27909,3 +27909,42 @@ unchanged at 330 (the vendor's own physics circle, same convention every other g
 uses), and Frosty Peak's own friend total rose by one. No visual check was possible in this
 environment (no browser, no Playwright) — only the stub-three test suite and the two headless probes
 above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1019 — Robot City gets a fortune machine
+
+Victorian has a woman reading a crystal ball on a street corner — a whole city of robots, for all its
+bots and buskers, never had anything that claimed to know the future. **A coin-operated fortune
+machine now stands on the open factory floor**, the Zoltar kind: a chrome cabinet with a glowing head
+behind glass, an antenna blinking on top and a row of marquee bulbs chasing along its roof. *"ANALYSIS
+COMPLETE: good fortune, within acceptable tolerances."* *"Careful, puss — paper slip, not a toy.
+Batteries not included either way."* *"Printed the same ninety-nine fortunes since the city went up.
+Nobody has ever gotten a repeat."*
+
+No new controller and no `game.npcs` entry: like the statue, the radar dish and the security camera
+already standing in this city, it's an inert prop built straight into `buildRobotCity` and handed to
+`game.addInteractable` directly, animated by a plain `U.push` closure (eyes pulsing, head swivelling
+slowly, antenna tip and marquee bulbs blinking) rather than anything the friend count needs to track.
+A single AABB box stands in for the whole rotated cabinet, its 1.0 m side sized to the cabinet's own
+diagonal so it bounds the shape at any facing.
+
+Checked first that this was actually new: no world had a "fortune" prop or line anywhere outside
+Victorian's own crystal-ball reader, and no busker in the game plays anything but a ukulele or a
+fiddle — a fortune-telling machine is a different idea from both, not another variation on either.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(2, 'from-hub')` waited out for real, then 1800 simulated frames
+sampling every NPC's own position every 5th frame) swept the open floor (radius 20–65, short of the
+radius (98) where `robotRegion`'s own procedural fill takes over) against those samples and every one
+of the city's physics boxes: (-35, -11) came back 8.00 m clear of the nearest box (the hand-placed
+tower at (-38, 0)) and 8.60 m clear of the nearest wandering soul, at radius 36.7 from the origin, with
+`game.zones.blocked()` false there.
+
+Verified past the test suite with a second headless probe: found the new "Try the fortune machine"
+interactable, confirmed its group sits under `game.world` in the scene graph, walked the cat up and
+called `onUse()` directly — it ran without throwing, emitted a particle burst and a toast, and 600
+more simulated frames afterward raised no console warnings and left the cat's own position finite.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings. No visual
+check was possible in this environment (no browser, no Playwright) — only the stub-three test suite
+and the two headless probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.
