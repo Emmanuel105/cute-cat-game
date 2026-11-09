@@ -27672,3 +27672,40 @@ label read "Say hello", `game.state.friends.size` went from 0 to 1, and every ar
 rotation stayed finite over 400 simulated frames of sawing. No visual check was possible in this
 environment (no browser, no Playwright) — only the stub-three test suite above and the scratch probes.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1013 — the fiddler's NaN head bug was never just the fiddler's
+
+Round 1011 found that `Fiddler`'s constructor never set `this.look`/`this.lookW` before `update()`
+started calling `Wanderer.prototype.lookAtCat` on itself every frame, so `head.rotation.y` went `NaN`
+within a frame of the cat coming near — and fixed it with one line, `this.look = 0; this.lookW = 0;`,
+the same line every other `lookAtCat`-borrowing class already carried. That round only checked the
+fiddlers, since that's what it had just built. Going through every class in `55-npcs.js` that borrows
+`lookAtCat` (over thirty of them) by hand, nine more turned out to have exactly the same hole and had
+had it since the round that introduced them: **`YoYoer`, `JumpRoper`, `HulaHooper`, `FrisbeePlayer`,
+`StoneSkipper`, `PaperPlaneKid`, `PogoHopper`, `PinataSwinger` and `Archer`** — a yo-yo player, a
+jump-roper, a hula-hooper, a frisbee thrower, every stone-skipper and paper-plane kid in the game, a
+pogo-hopper, a piñata-swinger and an archer, spread across all seven worlds. Every one of them has had
+a head stuck on `NaN` from the first frame the cat came within about 6.5 m, the entire time it's existed
+— the classes that build their rigs straight (`this.look = 0` in the constructor) were always fine; it
+was only the ones built bare that broke.
+
+Confirmed with a headless probe before touching anything: a fresh `YoYoer` instance, `inst.update(0.016)`
+called directly, left `inst.look` and `inst.lookW` as `NaN` in that single call — undefined in, `NaN`
+out, forever after, exactly the mechanism round 1011 found. Added the same one line,
+`this.look = 0; this.lookW = 0;`, to each of the nine constructors, right where every working class
+already has it (after the `cries`/`cryIcon`/`cryT` setup, before `rig.group.position.set`). No new mesh,
+no new physics box, no behaviour change beyond the head actually working.
+
+Verified past the test suite with a second headless probe: `game.start('new')`, then for each of the
+nine classes, found an instance in the Neighborhood, put the cat 1 m off its side, and ran 400 simulated
+frames. Every one came back with `Number.isFinite(rig.head.rotation.y)` true the whole way through —
+`YoYoer`, `StoneSkipper`, `PaperPlaneKid`, `PogoHopper`, `PinataSwinger` and `Archer` all show the head
+actually swung toward the cat (`look` settling near ±1.57 rad, `lookW` near 1); `JumpRoper`,
+`HulaHooper` and `FrisbeePlayer` stayed at `look = 0` for this particular approach angle (outside the
+±1.6 rad "roughly in front" cone `lookAtCat` itself checks, same as any `Wanderer`), but never once
+went `NaN`.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330 (a pure logic fix adds no new geometry or colliders). No visual check was possible in
+this environment (no browser, no Playwright) — only the stub-three test suite and the two headless
+probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -1200,6 +1200,7 @@ class YoYoer {
   constructor(game, rig, color, { x, z, ry = 0, cries = null, cryIcon = '🪀' }) {
     this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10;
     this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    this.look = 0; this.lookW = 0;
     rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
     const hand = rig.hands[1];
     this.string = mesh(G.cyl(0.004, 0.004, 1, 4), mat(0xe8e2d0, { roughness: 0.9 }), { parent: hand });
@@ -1266,6 +1267,7 @@ class JumpRoper {
   constructor(game, rig, color, { x, z, ry = 0, speed = 3.2, cries = null, cryIcon = '➰' }) {
     this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10; this.a = rnd() * PI; this.speed = speed;
     this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    this.look = 0; this.lookW = 0;
     rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
     const k = rig.k, h = 0.85 * k;
     this.pivot = group(0, h, 0.14 * k, rig.group);
@@ -1292,6 +1294,7 @@ class HulaHooper {
   constructor(game, rig, color, { x, z, ry = 0, cries = null, cryIcon = '⭕' }) {
     this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10;
     this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    this.look = 0; this.lookW = 0;
     rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
     const k = rig.k;
     this.hoop = group(0, 0.92 * k, 0, rig.body);
@@ -1319,6 +1322,7 @@ class FrisbeePlayer {
   constructor(game, rig, color, { x, z, ry = 0, cries = null, cryIcon = '🥏' }) {
     this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10;
     this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    this.look = 0; this.lookW = 0;
     rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
     const k = rig.k, hand = rig.hands[1];
     this.disc = group(0, 0, 0, hand);
@@ -1347,6 +1351,7 @@ class StoneSkipper {
   constructor(game, rig, { x, z, ry = 0, cries = null, cryIcon = '🪨' }) {
     this.game = game; this.rig = rig; this.x = x; this.z = z; this.ry = ry; this.t = rnd() * 10;
     this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    this.look = 0; this.lookW = 0;
     rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
     this.fx = sin(ry); this.fz = cos(ry);
     this.stone = mesh(G.cyl(0.07, 0.06, 0.02, 8), mat(0x8c8a7e, { roughness: 0.85 }));
@@ -1391,6 +1396,7 @@ class PaperPlaneKid {
   constructor(game, rig, { x, z, ry = 0, cries = null, cryIcon = '🛩️' }) {
     this.game = game; this.rig = rig; this.x = x; this.z = z; this.ry = ry; this.t = rnd() * 10;
     this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    this.look = 0; this.lookW = 0;
     rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
     this.fx = sin(ry); this.fz = cos(ry);
     const paperM = mat(0xf2ead6, { roughness: 0.85 });
@@ -1435,6 +1441,7 @@ class PogoHopper {
   constructor(game, rig, color, { x, z, ry = 0, height = 0.42, cycle = 0.72, cries = null, cryIcon = '🤸' }) {
     this.game = game; this.rig = rig; this.x = x; this.z = z; this.height = height; this.cycle = cycle; this.t = rnd() * cycle;
     this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    this.look = 0; this.lookW = 0;
     this.base = game.physics.ground0(x, z);
     rig.group.position.set(x, this.base, z); rig.group.rotation.y = ry;
     const k = rig.k, poleM = mat(color, { roughness: 0.4, metalness: 0.3 }), coilM = mat(0x9a9a9a, { metalness: 0.7, roughness: 0.4 });
@@ -1468,6 +1475,7 @@ class PinataSwinger {
   constructor(game, rig, stickColor, { x, z, ry = 0, cries = null, cryIcon = '🪅' }) {
     this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = 0;
     this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0; this.struck = false;
+    this.look = 0; this.lookW = 0;
     rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
     const k = rig.k, hand = rig.hands[1];
     mesh(G.cyl(0.02 * k, 0.026 * k, 0.72 * k, 8), mat(stickColor, { roughness: 0.6 }), { y: 0.36 * k, z: 0.03 * k, parent: hand });
@@ -1902,6 +1910,7 @@ class Archer {
     this.game = game; this.rig = rig; this.arrow = arrow; this.x = x; this.z = z; this.ry = ry; this.dur = dur; this.arc = arc;
     this.t = rnd() * 10; this.state = 'draw'; this.timer = rnd.range(0.6, 1.6); this.flight = 0; this.shots = 0;
     this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(5, 10) : 0;
+    this.look = 0; this.lookW = 0;
     rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
     this.target = V3(x + sin(ry) * dist, game.physics.ground0(x, z) + 0.95 * rig.k + 0.15, z + cos(ry) * dist);
     this.from = V3(); this.to = V3();
