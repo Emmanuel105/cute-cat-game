@@ -25551,6 +25551,40 @@ function buildSnowVillage(game, entry) {
     game.npcs.push(new OrganGrinder(game, grinder, organ, { x: gx, z: gz, ry: gry, side: 1,
       cries: ['Tuppence a tune — the wind carries it further up here than it ever did in the village square.', 'Careful, puss — the cold seizes the gears same as everything else on this mountain.', "Thirty tunes in the barrel, and the snow's never once thrown off the beat."] }));
     U.push(organ.userData.update); }
+  // Candy Land, Robot City, Victorian, the Neighborhood and Sunny Shore all have their own `Magician`
+  // by now (55-npcs.js) — Frosty Peak is the next terrain world to get one: a coin-vanishing performer
+  // out on the open snowfield, well past the village's own keep-out circle and clear of the grinder,
+  // the fiddler and the knitter above. Whisper Woods remains the only world still without one.
+  // *"Nothing up this sleeve. Not even a glove — I lost the pair somewhere on this mountain."* *"Watch
+  // closely, puss — the coin's gone. ...And it's back. Every time."* *"Not even the yeti's caught how
+  // it's done, and he's got nothing better to do up here."*
+  //
+  // No new mechanism: `Magician` (55-npcs.js) reused verbatim a sixth time — only the wardrobe (a coat
+  // and beanie instead of the usual tailcoat and top hat, the same mountain-wear every other human here
+  // wears) and the lines are new. `Magician`'s own constructor already sets its rig's height straight
+  // from `game.physics.ground0()`, the same terrain-aware convention the grinder above relies on, so it
+  // needed no extra placement call of its own.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, `game.travel(5, 'from-hub')` waited out for real, then
+  // 3600 simulated frames sampling every NPC's own position every 10th frame) swept a 1 m grid of the
+  // open snowfield (radius 24-55, short of the radius (58) where `snowRegion`'s own fill takes over)
+  // against both those samples and every one of the mountain's own physics boxes, rejecting anywhere
+  // closer than 5 m to a box or 8 m to a wandering soul, then picked the flattest survivor: (-42, 8)
+  // came back clearest — 5.23 m from the nearest box, 8.49 m from the nearest wandering soul, at radius
+  // 42.8 from the origin, on ground levelling out at 0.524 m with under 3 cm of slope across a 0.5 m
+  // square — well clear of the grinder at (28, -30), the fiddler at (28, -18) and the knitter at
+  // (16.5, -23) above.
+  //
+  // Built dead last, right after the grinder above, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off this mountain's own shared `r()` sequence unconditionally.
+  { const mx = -42, mz = 8, mry = atan2(0 - mx, 0 - mz);
+    const magicianWard = makeWardrobe(r, { shirts: [0x2a2a2a, 0x3a3a4a, 0x4a3a3a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018, 0x3a2a1a] });
+    const magician = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: magicianWard }),
+      hat: 'beanie', hatColor: 0x3a3a3a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a, glasses: r.chance(0.3) });
+    W.add(magician.group);
+    const magicLines = ["Nothing up this sleeve. Not even a glove — I lost the pair somewhere on this mountain.", "Watch closely, puss — the coin's gone. ...And it's back. Every time.", "Not even the yeti's caught how it’s done, and he's got nothing better to do up here."];
+    game.npcs.push(new Magician(game, magician, { x: mx, z: mz, ry: mry, cries: magicLines })); }
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

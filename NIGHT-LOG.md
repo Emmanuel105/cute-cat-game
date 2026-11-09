@@ -28447,3 +28447,42 @@ unchanged at 331 (the magician carries only a circle collider, like every other 
 Sunny Shore's own friend count rose from 127 to 128 ("128 to meet"). No visual check was possible in
 this environment (no browser, no Playwright) — only the stub-three test suite and the two headless
 probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1032 — Frosty Peak gets a magician too
+
+Candy Land, Robot City, Victorian, the Neighborhood and Sunny Shore all had their own `Magician` by
+now; Frosty Peak, the second of the three terrain worlds, never had one. **A magician now works a
+quiet, flat stretch of open snowfield north-west of the village, bundled up in a coat and beanie
+instead of the usual tailcoat — the same wand-over-hand coin vanish, never quite caught in the act.**
+*"Nothing up this sleeve. Not even a glove — I lost the pair somewhere on this mountain."* *"Watch
+closely, puss — the coin's gone. ...And it's back. Every time."* *"Not even the yeti's caught how it's
+done, and he's got nothing better to do up here."* Whisper Woods remains the only world still without
+one.
+
+No new mechanism: `Magician` (`55-npcs.js`) reused verbatim a sixth time — only the wardrobe and lines
+are new. `Magician`'s own constructor already reads its height straight off `game.physics.ground0()`,
+the same terrain-aware convention the grinder and fiddler on this mountain already rely on, so it
+needed no `placeT`/`boxT` call of its own — just `W.add()` and a push onto `game.npcs`.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(5, 'from-hub')` waited out for real, then
+3600 simulated frames sampling every NPC's own position every 10th frame) swept a 1-2 m grid of the
+open snowfield (radius 24-55, short of the radius (58) where `snowRegion`'s own fill takes over)
+against those samples and all 819 of the mountain's own physics boxes, rejecting anywhere closer than
+5 m to a box or 8 m to a wandering soul, then picked the flattest survivor: (-42, 8) came back clearest
+— 5.23 m from the nearest box, 8.49 m from the nearest wandering soul, at radius 42.8 from the origin,
+on ground levelling out at 0.524 m with under 3 cm of slope across a 0.5 m square — well clear of the
+organ grinder at (28, -30), the fiddler at (28, -18) and the knitter at (16.5, -23).
+
+Verified past the test suite with a second headless probe: found the new `Magician` in `game.npcs` at
+exactly (-42, 0.524, 8), confirmed its rig sits under the real scene graph, ran 1200 simulated frames
+watching the rig's position and head rotation stay finite throughout while the coin mesh toggled
+visible and hidden on schedule (both states actually observed), then walked the cat to 0.9 m away —
+`game.nearest.label()` read "Say hello" — and calling `onUse()` took `game.state.friends.size` from 0
+to 1.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged (the magician carries only a circle collider, like every other standing performer), Frosty
+Peak's own friend count rose from 122 to 123 ("123 to meet"). No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite and the two headless probes
+above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
