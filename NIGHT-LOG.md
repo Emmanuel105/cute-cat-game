@@ -27821,3 +27821,50 @@ warnings, box count unchanged at 330 (a vendor's own circle, same convention eve
 NPC already uses), and Whisper Woods' own friend total rose from 149 to 150. No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
 two headless probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1017 — Robot City gets its own stone-skipper, a washer across the concrete
+
+The Neighborhood, Candy Land, Victorian and Whisper Woods all have someone skimming a flat stone
+over water, and Frosty Peak's own curling lane covers the same idea on ice — Robot City, for all its
+wide-open concrete floor, never got the one throw that needs nobody on the other end and no water at
+all. **A worker on a break now skims a stray washer across the factory floor**, three shrinking hops,
+same as every other stone-skipper in the game. *"Breaktime's the only time I get to do this."*
+*"Careful, puss — spare part, not a toy."* *"Three skips, best I've managed all shift."*
+
+Checked first whether this was really missing: built a table of every controller class against every
+world from the source directly (`new X(game` calls bucketed by each world's own `buildWorld` function
+boundaries in `70-worlds.js`, plus the three terrain files). Every other animated-vignette controller
+in `55-npcs.js` already turned up in all seven worlds (or was deliberately world-specific — `Sledder`
+and `SnowballFight` only make sense on snow, `Mechanic`/`Loader`/`RoboDog` only in a world full of
+robots) — `StoneSkipper` was the one real gap, present in five of the seven and absent from both Robot
+City and Frosty Peak. Peak turned out already covered: it has its own curling lane (sweeper, broom
+and sliding stone) a few hundred lines into `73-world-snow.js`, the same gag in a different coat.
+Robot City had nothing.
+
+No new controller and no new mesh: `StoneSkipper` (55-npcs.js) reused verbatim, its own flat grey disc
+already reading as a washer as easily as a pebble. Only the wardrobe, cries and spot are new, placed
+dead last in `buildRobotCity`, right after the crossing guard (round 1015) — `makeHuman()` draws off
+this city's own shared `r()` sequence unconditionally, and building the rig any earlier would desync
+every other timing-sensitive pick already placed above it.
+
+A headless probe (the stub-three harness `test/run.mjs` itself uses: `game.start('new')` then
+`game.travel(2, 'from-hub')`, 1800 simulated frames sampling every NPC's own position every 5th frame)
+swept the open floor (radius 20–65, short of the radius (98) where `robotRegion`'s own procedural fill
+takes over) against those samples and every one of the city's 330 physics boxes, well clear of the
+piñata post at (2, -70), the wagon hauler at (6, -88) and the crossing guard at (0, -42): (-8, -64)
+came back 13.82 m clear of the nearest box and 12.55 m clear of the nearest wandering soul. A second
+pass checked all 24 facings in 15° steps for the one that keeps the stone's own three-hop arc (5.75 m
+end to end) clearest the whole way across — facing north (ry = 0, back toward downtown) keeps every
+hop at least 10.6 m clear of the nearest box and 11.7 m clear of the nearest other soul.
+
+Verified past the test suite with a second headless probe: `game.start('new')`, travelled to Robot
+City (waiting out the real portal-fade timer rather than guessing a frame count), found the new
+`StoneSkipper` in `game.npcs` and confirmed its rig sits under `game.world` in the scene graph, that
+its interactable reads "Say hello", that calling it moved `game.state.friends.size` from 0 to 1, and
+that `rig.head.rotation.y` and `rig.group.position` stayed finite over 400 simulated frames of hopping.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330 (a stone-skipper's own physics circle, same convention every other greetable NPC
+already uses). No visual check was possible in this environment (no browser, no Playwright) — only
+the stub-three test suite and the two headless probes above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

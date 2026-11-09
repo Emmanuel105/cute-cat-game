@@ -17365,6 +17365,35 @@ function buildRobotCity(game, entry) {
     game.npcs.push(new CrossingGuard(game, guard, { x: 0, z: -42, ry: 0,
       cries: ["Hold up — forklift's got the right of way.", 'Nobody\'s dented a bot on my watch.', "Mind the lane, puss — wheels don't swerve for cats."] })); }
 
+  // the Neighborhood, Candy Land, Victorian and Whisper Woods all have somebody skimming a stone over
+  // water, and Frosty Peak's own sweeper slides a curling stone down the ice — Robot City, for all its
+  // flat open concrete, never got the one throw that needs nobody on the other end and no water at all.
+  // A worker on a break now skims a stray washer across the factory floor, three shrinking hops just
+  // like every other stone-skipper in the game.
+  //
+  // No new controller: `StoneSkipper` (55-npcs.js) reused verbatim — its own grey disc already reads as
+  // a washer as easily as a pebble, so no new mesh either. Only the wardrobe, cries and spot are new.
+  //
+  // A headless probe (the stub-three harness `test/run.mjs` itself uses: `game.start('new')` then
+  // `game.travel(2, 'from-hub')`, 1800 simulated frames sampling every NPC's own position every 5th
+  // frame) swept the open floor (radius 20-65, short of the radius (98) where `robotRegion`'s own
+  // procedural fill takes over) against those samples and every one of the city's physics boxes, well
+  // clear of the piñata post at (2, -70), the wagon hauler at (6, -88) and the crossing guard just
+  // above at (0, -42): (-8, -64) came back 13.82 m clear of the nearest box and 12.55 m clear of the
+  // nearest wandering soul. Facing north (ry = 0, back toward downtown) keeps every one of the three
+  // hops at least 10.6 m clear of the nearest box and 11.7 m clear of the nearest other soul the whole
+  // way across.
+  //
+  // Built dead last, right after the crossing guard above, for the usual reason: `makeHuman()` draws
+  // off this city's own shared `r()` sequence unconditionally, and a fresh rig built any earlier would
+  // desync every other timing-sensitive pick already placed above.
+  { const skipWard = makeWardrobe(r, { shirts: [0x6a7480, 0x4a5560], pants: [0x232c34, 0x2a2a30], shoes: [0x1a1a20, 0x201c18] });
+    const skipper = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: skipWard }),
+      hat: 'cap', hatColor: 0x2a2a2a, stripes: 0xe8e8e8, jacket: null, scarf: null, bag: null, backpack: null, glasses: false });
+    W.add(skipper.group);
+    game.npcs.push(new StoneSkipper(game, skipper, { x: -8, z: -64, ry: 0, cryIcon: '⚙️',
+      cries: ["Breaktime's the only time I get to do this.", 'Careful, puss — spare part, not a toy.', "Three skips, best I've managed all shift."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
