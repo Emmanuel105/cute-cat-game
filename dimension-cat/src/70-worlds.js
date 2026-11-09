@@ -3662,6 +3662,42 @@ function buildNeighborhood(game, entry) {
       cries: ['Popcorn! Hot and fresh!', 'Butter or plain, kitty?', 'Careful — some of this is for the pigeons.'] });
     game.npcs.push(v); greetable(game, v); }
 
+  // Victorian, Candy Land and Robot City all have a street organ grinder busking by now
+  // (`OrganGrinder`: 55-npcs.js) — the Neighborhood, the one flat-floor world without it, never had
+  // its own. **A hand-cranked barrel organ now stands on the quiet field south of the side road,**
+  // on its own folding leg, winding out a tune for whoever passes by. *"Tuppence a tune, if the
+  // kitty's got a coin."* *"Careful, puss — mind the pipes, they don't take kindly to climbing."*
+  // *"Thirty tunes in the barrel — the stilt-walker down the way has never once kept the beat."*
+  //
+  // No new mechanism: `OrganGrinder` (55-npcs.js) and `makeBarrelOrgan()` (60-props.js) are reused
+  // verbatim from the other three stops — only the wardrobe, spot and lines are new. This rounds out
+  // the organ grinder's run across every flat-floor world; the three terrain worlds (Sunny Shore,
+  // Frosty Peak, Whisper Woods) stay out of scope for it, since `OrganGrinder`'s own organ collider
+  // (`game.physics.addBox(ox, 0.68, oz, ...)`) sits at a fixed world-space height rather than one
+  // relative to `game.physics.ground0()`, and would float or sink wherever the ground isn't flat.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()` then 30 simulated frames, since the Neighborhood is
+  // already the world the real start screen opens straight into) swept a 2 m grid of the open field
+  // south of the side road (x in [10, 40], z in [-60, -30], outside every one of `game.zones`'s own
+  // rectangles) against all 330 of the village's own physics boxes and all 83 NPCs already standing
+  // in it: (16, -56) came back 13.95 m clear of the nearest box and 11.4 m clear of the nearest
+  // wandering soul (the kneeling treasure-hunter at (2.9, -54)), well short of both the stilt-walker's
+  // own pacing line and the hula-hooper at (32, -55).
+  //
+  // Built dead last, right after the popcorn cart above and right before `makeDayNight`, for the
+  // usual reason: `makeHuman()` and `randomPerson()` both draw off this village's own shared `r()`
+  // sequence unconditionally, and this is the first world the test suite builds, so anything built
+  // earlier here would have had its own timing-sensitive pick shifted by it.
+  { const gx = 16, gz = -56, gry = 0;
+    const grinderWard = makeWardrobe(r, { shirts: [0xb5651d, 0x5c3a21], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x5a4530, 0x2a2018] });
+    const grinder = makeHuman({ ...randomPerson(r, { female: r.chance(0.35), child: false, elder: r.chance(0.5), wardrobe: grinderWard }),
+      hat: 'flatcap', hatColor: 0x3a3327, jacket: 0x5a3a2a, scarf: 0x6a1a1a, bag: null, backpack: null, glasses: false }); W.add(grinder.group);
+    const organ = makeBarrelOrgan();
+    game.npcs.push(new OrganGrinder(game, grinder, organ, { x: gx, z: gz, ry: gry, side: 1,
+      cries: ["Tuppence a tune, if the kitty's got a coin.", "Careful, puss — mind the pipes, they don't take kindly to climbing.", "Thirty tunes in the barrel — the stilt-walker down the way has never once kept the beat."] }));
+    U.push(organ.userData.update); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

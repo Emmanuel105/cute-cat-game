@@ -28071,3 +28071,49 @@ for the Neighborhood (the last world the suite travels to) unchanged at 330 — 
 rose by one for the organ's physics box, same as both earlier stops. No visual check was possible in
 this environment (no browser, no Playwright) — only the stub-three test suite and the two headless
 probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1023 — the Neighborhood gets a street organ grinder
+
+Victorian, Candy Land and Robot City all picked up a street organ grinder over the last three rounds
+— every flat-floor world except the one where the player actually starts. **A hand-cranked barrel
+organ now stands on the quiet field south of the side road, on its own folding leg, winding out a
+tune for whoever passes by.** *"Tuppence a tune, if the kitty's got a coin."* *"Careful, puss — mind
+the pipes, they don't take kindly to climbing."* *"Thirty tunes in the barrel — the stilt-walker down
+the way has never once kept the beat."*
+
+No new mechanism: `OrganGrinder` (55-npcs.js) and `makeBarrelOrgan()` (60-props.js) are reused
+verbatim from the other three stops — only the wardrobe, spot and lines are new. This rounds out the
+organ grinder's run across every flat-floor world; the three terrain worlds (Sunny Shore, Frosty
+Peak, Whisper Woods) are staying out of scope for it on purpose, since `OrganGrinder`'s own organ
+collider (`game.physics.addBox(ox, 0.68, oz, ...)`) is placed at a fixed world-space height rather
+than one relative to `game.physics.ground0()`, and would float or sink wherever the ground isn't
+flat — worth remembering if a future round wants to take that on properly.
+
+Found the local `main` branch stuck well behind `origin/main` in this container again (no common
+ancestor at all this time — a stale ref from an earlier container state) — worked from a detached
+`HEAD` on `origin/main` instead of resetting it, same recovery prior rounds have needed.
+
+A headless probe (the stub-three harness `test/run.mjs` itself uses, started with
+`elements.get('enter').listeners.click[0]()` then 30 simulated frames, since the Neighborhood is the
+world the real start screen opens straight into) swept a 2 m grid of the open field south of the side
+road (x in [10, 40], z in [-60, -30], outside every one of `game.zones`'s own rectangles) against all
+330 of the village's own physics boxes and all 83 NPCs already standing in it: (16, -56) came back
+13.95 m clear of the nearest box and 11.4 m clear of the nearest wandering soul (the kneeling
+treasure-hunter at (2.9, -54)), well short of both the stilt-walker's own pacing line and the
+hula-hooper at (32, -55).
+
+The first run through `test/run.mjs` caught a real bug before it shipped: the grinder's own wardrobe
+reused a shirt colour (`0xc9b896`) already worn by the honey-hive keeper elsewhere in the village,
+tripping the "no two neighbours wear the same shirt" check (70 colours for 71 people) — swapped in
+two fresh colours and it passed clean.
+
+Verified past the test suite with a second headless probe: found the new `OrganGrinder` in
+`game.npcs`, confirmed both its rig and the organ sit under the scene graph, ran 600 simulated frames
+with the rig's position and head rotation staying finite throughout and no console warnings. Walked
+the cat to 1.2 m from the grinder and called `game.interact()` directly: the prompt read "Say hello"
+and `game.state.friends.size` went 0 → 1.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings. No
+visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
+suite and the two headless probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.
