@@ -2815,6 +2815,42 @@ function buildForest(game, entry) {
     const hv = new Vendor(game, herbalist, makeHerbBundle(), { x: hbx, z: hbz, ry: hbry, cryIcon: '🌿',
       cries: ["Sage for the nerves, lavender for sleep — rosehip just because it's pretty.", "Careful, puss — dried, not catnip, whatever your nose is telling you.", "Every sprig picked within an hour's walk of this very spot."] });
     game.npcs.push(hv); greetable(game, hv); }
+  // Victorian, Candy Land, Robot City, the Neighborhood, Sunny Shore and Frosty Peak all have a street
+  // organ grinder busking by now (55-npcs.js's `OrganGrinder`, fixed rounds back to read its own
+  // physics box off `game.physics.ground0(ox, oz) + 0.68` rather than a bare 0.68, so it sits right on
+  // a slope instead of floating or sinking) — Whisper Woods is the last of the seven left without one.
+  // **A hand-cranked barrel organ now busks on the open forest floor east of the fiddler, well clear of
+  // the stepping-stone path and the herbalist's own stall above.** *"Tuppence a tune — even the owls
+  // stop to listen, once in a while."* *"Careful, puss — damp wood and brass gears, and this one's
+  // never once made it out of these trees for a clean."* *"Thirty tunes in the barrel, and the moss
+  // underfoot has never once thrown off the beat."*
+  //
+  // No new mechanism: `OrganGrinder` and `makeBarrelOrgan()` (60-props.js) are reused verbatim from the
+  // six worlds that already have one — only the wardrobe, spot and lines are new.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, `game.travel(6, 'from-hub')` waited out for real,
+  // then 1800 simulated frames sampling every NPC's own position every 15th frame) swept a 2 m grid of
+  // the open forest floor (radius 20-54, short of the radius (58) where `forestRegion`'s own fill
+  // takes over) against both those samples and every one of the wood's own physics boxes, rejecting
+  // anywhere `game.zones` already claims: (50.5, -11.5) came back best on a finer 0.5 m re-sweep of the
+  // area, 8.03 m clear of the nearest box and 8.51 m clear of the nearest wandering soul (comfortably
+  // past both the fiddler and the herbalist's stall above), at radius 51.8, on ground levelling out at
+  // 0.78 m and varying only 3.1 cm across the grinder's own footprint.
+  //
+  // Built dead last, right after the herbalist above and right before the squirrel spawn point, for the
+  // usual reason: `makeHuman()` and `randomPerson()` both draw off this wood's own shared `r()`
+  // sequence unconditionally, and anything built earlier would have had its own timing-sensitive pick
+  // shifted by it.
+  { const gx = 50.5, gz = -11.5, gry = atan2(0 - gx, 0 - gz);
+    const grindWard = makeWardrobe(r, { shirts: [0x6b8a5a, 0x5a4a6a, 0x8a6a4a], pants: [0x3a4a2e, 0x2a2a2a], shoes: [0x3a2a1e, 0x1e2020] });
+    const grinder = makeHuman({ ...randomPerson(r, { female: r.chance(0.4), child: false, elder: r.chance(0.45), wardrobe: grindWard }),
+      hat: 'flatcap', hatColor: 0x4a4030, bag: null, backpack: null, glasses: r.chance(0.2) });
+    W.add(grinder.group);
+    const organ = makeBarrelOrgan();
+    game.npcs.push(new OrganGrinder(game, grinder, organ, { x: gx, z: gz, ry: gry, side: 1,
+      cries: ['Tuppence a tune — even the owls stop to listen, once in a while.', "Careful, puss — damp wood and brass gears, and this one's never once made it out of these trees for a clean.", "Thirty tunes in the barrel, and the moss underfoot has never once thrown off the beat."] }));
+    U.push(organ.userData.update); }
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
