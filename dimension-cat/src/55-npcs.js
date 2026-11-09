@@ -1660,6 +1660,37 @@ class Mechanic {
   }
 }
 
+// ---------------------------------------------------------------- organ grinder: a barrel organ on its own leg stands beside the player, one arm turning a crank in a steady circle while the other steadies the cabinet
+class OrganGrinder {
+  constructor(game, rig, organ, { x, z, ry = 0, side = 1, cries = null, cryIcon = '🎶' }) {
+    this.game = game; this.rig = rig; this.organ = organ; this.x = x; this.z = z; this.side = side; this.t = rnd() * 10;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    this.look = 0; this.lookW = 0;
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    const ox = x + cos(ry) * 0.55 * side, oz = z - sin(ry) * 0.55 * side;
+    organ.position.set(ox, game.physics.ground0(ox, oz), oz); organ.rotation.y = ry; game.world.add(organ);
+    game.physics.addBox(ox, 0.68, oz, 0.85, 1.36, 0.85, { cam: false });
+    this.circle = game.physics.addCircle(this, x, z, 0.4);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig, spin = this.t * 3.4;
+    rig.animate(0, false, dt, this.t);
+    if (!rig.gesture) {
+      const crankArm = rig.arms[this.side > 0 ? 1 : 0], steadyArm = rig.arms[this.side > 0 ? 0 : 1];
+      crankArm.sh.rotation.x = damp(crankArm.sh.rotation.x, -1.1 + sin(spin) * 0.3, 10, dt);
+      crankArm.el.rotation.x = damp(crankArm.el.rotation.x, -1.0 + cos(spin) * 0.35, 10, dt);
+      crankArm.sh.rotation.z = (this.side > 0 ? -1 : 1) * 0.3;
+      steadyArm.sh.rotation.x = damp(steadyArm.sh.rotation.x, -0.3, 10, dt); steadyArm.el.rotation.x = damp(steadyArm.el.rotation.x, -0.35, 10, dt);
+      steadyArm.sh.rotation.z = (this.side > 0 ? 1 : -1) * 0.25;
+      rig.spine.rotation.x = damp(rig.spine.rotation.x, 0.06, 6, dt);
+      rig.head.rotation.x = damp(rig.head.rotation.x, 0.1, 6, dt);
+    }
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- forager: kneels by the mushroom patch, reaching down to pick and lifting each one up before tucking it away
 class Forager {
   constructor(game, rig, { x, z, ry = 0, cries = null, cryIcon = '🍄' }) {

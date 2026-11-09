@@ -11833,6 +11833,49 @@ function buildVictorian(game, entry) {
     game.npcs.push(new Kneeler(game, hauler, { x: hx, z: hz, ry: atan2(wx - hx, wz - hz),
       cries: ["Six apples loaded already, straight off the cart at market.", "Careful, puss — not a ride, this one's spoken for.", "Last few before the costermonger comes to collect."] })); }
 
+  // every street performer in this town has been a solo act — a fiddler, a juggler, a trio of carol
+  // singers — nobody has ever worked with a machine. **A street organ grinder now stands on the open
+  // green north-east of the terraces,** winding a barrel organ on its own folding leg, five brass
+  // pipes ranked along the top. *"Tuppence a tune, if you please — and mind where those paws go."*
+  // *"Careful, puss — mind the pipes, they don't take kindly to being climbed."* *"Thirty tunes in the
+  // barrel. Nobody's ever once stood still for all thirty."*
+  //
+  // New `OrganGrinder` class (55-npcs.js, right after `Mechanic`, the only other controller that
+  // already stands a rig next to a second free-standing object rather than something held in a hand):
+  // the organ is a second group placed to the rig's own side (the same `sin`/`cos` offset trick
+  // `Mechanic` already uses for its robot, just sideways instead of forward) and added to `game.world`
+  // directly, not parented to the rig, since it stands on its own leg rather than being carried. The
+  // near arm sweeps shoulder and elbow through a steady circle (`sin`/`cos` of a shared phase, the
+  // same damped-circle trick `YoYoer`'s drop cycle and `Fiddler`'s bow already lean on) while the far
+  // arm just rests against the cabinet. New prop `makeBarrelOrgan()` (60-props.js, right after
+  // `makeFiddleCase()`): a painted cabinet on a single folding leg, five pipes on top and its own
+  // crank — this one is genuinely free-standing, so it carries its own `userData.update` (spinning the
+  // crank on the shared world clock) and is pushed onto this world's own `U` list, rather than
+  // following a hand the way every other hand-held prop in this file already does.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, `game.travel(3, 'from-hub')`, then 1800 simulated
+  // frames sampling every NPC's and the squirrel's own position every 10th frame) swept a 1.5 m grid
+  // of the open green north-east of the terraces (short of the radius (88) where `victorianRegion`'s
+  // own procedural fill takes over) against both those 14,940 samples and all 330 of the town's own
+  // physics boxes: (41, 63.5) came back 10.7 m clear of the nearest box and 10.7 m clear of the
+  // nearest wandering soul, at radius 75.6 from the origin and outside every one of `game.zones`'s own
+  // keep-out rectangles and circles — comfortable room to spare for the grinder's own 0.4 m circle and
+  // the organ's 0.55 m sideways offset besides.
+  //
+  // Built dead last, right after the wagon above and right before the squirrel, for the usual reason:
+  // `makeHuman()` and `randomPerson()` both draw off this town's own shared `r()` sequence
+  // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted
+  // by it.
+  { const gx = 41, gz = 63.5, gry = 0;
+    const grinder = makeHuman({ ...randomPerson(r, { female: r.chance(0.35), child: false, elder: r.chance(0.5), wardrobe: vicWard }),
+      hat: 'flatcap', hatColor: 0x3a3327, coat: true, scarf: 0x6a1a1a, bag: null, backpack: null, glasses: false });
+    W.add(grinder.group);
+    const organ = makeBarrelOrgan();
+    game.npcs.push(new OrganGrinder(game, grinder, organ, { x: gx, z: gz, ry: gry, side: 1,
+      cries: ['Tuppence a tune, if you please — and mind where those paws go.', "Careful, puss — mind the pipes, they don't take kindly to being climbed.", "Thirty tunes in the barrel. Nobody's ever once stood still for all thirty."] }));
+    U.push(organ.userData.update); }
+
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);

@@ -3473,6 +3473,37 @@ class Mechanic {
   }
 }
 
+// ---------------------------------------------------------------- organ grinder: a barrel organ on its own leg stands beside the player, one arm turning a crank in a steady circle while the other steadies the cabinet
+class OrganGrinder {
+  constructor(game, rig, organ, { x, z, ry = 0, side = 1, cries = null, cryIcon = '🎶' }) {
+    this.game = game; this.rig = rig; this.organ = organ; this.x = x; this.z = z; this.side = side; this.t = rnd() * 10;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    this.look = 0; this.lookW = 0;
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    const ox = x + cos(ry) * 0.55 * side, oz = z - sin(ry) * 0.55 * side;
+    organ.position.set(ox, game.physics.ground0(ox, oz), oz); organ.rotation.y = ry; game.world.add(organ);
+    game.physics.addBox(ox, 0.68, oz, 0.85, 1.36, 0.85, { cam: false });
+    this.circle = game.physics.addCircle(this, x, z, 0.4);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig, spin = this.t * 3.4;
+    rig.animate(0, false, dt, this.t);
+    if (!rig.gesture) {
+      const crankArm = rig.arms[this.side > 0 ? 1 : 0], steadyArm = rig.arms[this.side > 0 ? 0 : 1];
+      crankArm.sh.rotation.x = damp(crankArm.sh.rotation.x, -1.1 + sin(spin) * 0.3, 10, dt);
+      crankArm.el.rotation.x = damp(crankArm.el.rotation.x, -1.0 + cos(spin) * 0.35, 10, dt);
+      crankArm.sh.rotation.z = (this.side > 0 ? -1 : 1) * 0.3;
+      steadyArm.sh.rotation.x = damp(steadyArm.sh.rotation.x, -0.3, 10, dt); steadyArm.el.rotation.x = damp(steadyArm.el.rotation.x, -0.35, 10, dt);
+      steadyArm.sh.rotation.z = (this.side > 0 ? 1 : -1) * 0.25;
+      rig.spine.rotation.x = damp(rig.spine.rotation.x, 0.06, 6, dt);
+      rig.head.rotation.x = damp(rig.head.rotation.x, 0.1, 6, dt);
+    }
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- forager: kneels by the mushroom patch, reaching down to pick and lifting each one up before tucking it away
 class Forager {
   constructor(game, rig, { x, z, ry = 0, cries = null, cryIcon = '🍄' }) {
@@ -5767,6 +5798,28 @@ function makeFiddleCase() {
   mesh(G.box(0.54, 0.015, 0.16), feltM, { y: 0.05, shadow: 'none', parent: g });                                 // felt lining
   for (const s of [-1, 1]) mesh(G.box(0.03, 0.08, 0.22), shellM, { x: s * 0.3, y: 0.06, parent: g });             // raised rim at each end
   for (const [cx, cz] of [[0.1, 0.03], [-0.08, -0.04], [0.18, -0.03]]) mesh(G.cyl(0.028, 0.028, 0.006, 10), goldM, { x: cx, y: 0.058, z: cz, rx: PI / 2, shadow: 'none', parent: g });   // a few coins
+  return g;
+}
+/** A barrel organ on its own single folding leg, five brass pipes ranked along the top and a crank
+    that turns on its own clock, for a street organ grinder to stand beside and wind. Free-standing —
+    not held — so it gets its own `userData.update` rather than following a hand. */
+function makeBarrelOrgan() {
+  const g = new THREE.Group();
+  const wood = mat(0x6a4426, { roughness: 0.75, map: TEX.planks(20, 28) }), trim = mat(0xc9a84a, { metalness: 0.55, roughness: 0.35 });
+  const panel = mat(0xaa1f2a, { roughness: 0.6 }), dark = mat(0x2a1a10, { roughness: 0.85 });
+  mesh(G.box(0.46, 0.5, 0.3), wood, { y: 0.78, parent: g });                                             // the cabinet
+  mesh(G.box(0.47, 0.03, 0.31), trim, { y: 1.015, shadow: 'none', parent: g });                          // top trim band
+  mesh(G.box(0.47, 0.03, 0.31), trim, { y: 0.545, shadow: 'none', parent: g });                          // bottom trim band
+  mesh(G.box(0.28, 0.3, 0.02), panel, { y: 0.78, z: 0.16, parent: g });                                  // the painted front panel
+  const heights = [0.18, 0.26, 0.32, 0.26, 0.18];
+  for (let i = 0; i < heights.length; i++) { const h = heights[i]; mesh(G.cyl(0.035, 0.035, h, 10), trim, { x: -0.16 + i * 0.08, y: 1.03 + h / 2, parent: g }); }   // the pipes
+  mesh(G.cyl(0.032, 0.026, 0.76, 8), dark, { y: 0.39, z: 0.12, rx: 0.12, parent: g });                   // the single folding leg
+  mesh(G.cyl(0.05, 0.05, 0.03, 10), dark, { y: 0.01, z: 0.21, parent: g });                               // its foot
+  mesh(G.cyl(0.018, 0.018, 0.14, 8), trim, { x: 0.16, y: 0.78, rz: PI / 2, shadow: 'none', parent: g });  // the axle stub
+  const crank = group(0.23, 0.78, 0, g);
+  mesh(G.cyl(0.013, 0.013, 0.09, 8), trim, { z: 0.045, rx: PI / 2, shadow: 'none', parent: crank });      // the crank arm, out from the axle
+  mesh(G.cyl(0.022, 0.022, 0.05, 8), dark, { z: 0.09, rz: PI / 2, shadow: 'none', parent: crank });       // the handle grip, parallel to the axle
+  g.userData.update = (dt, t) => { crank.rotation.x = t * 3.4; };
   return g;
 }
 /** A small brass table lamp, bell-shaded, for the yard sale table below. */
@@ -20472,6 +20525,49 @@ function buildVictorian(game, entry) {
     const hauler = makeHuman({ ...randomPerson(r, { female: false, child: true, wardrobe: wagonWard }), hat: 'flatcap', hatColor: 0x3a3327, scarf: null, jacket: null, bag: null, backpack: null, glasses: false }); W.add(hauler.group);
     game.npcs.push(new Kneeler(game, hauler, { x: hx, z: hz, ry: atan2(wx - hx, wz - hz),
       cries: ["Six apples loaded already, straight off the cart at market.", "Careful, puss — not a ride, this one's spoken for.", "Last few before the costermonger comes to collect."] })); }
+
+  // every street performer in this town has been a solo act — a fiddler, a juggler, a trio of carol
+  // singers — nobody has ever worked with a machine. **A street organ grinder now stands on the open
+  // green north-east of the terraces,** winding a barrel organ on its own folding leg, five brass
+  // pipes ranked along the top. *"Tuppence a tune, if you please — and mind where those paws go."*
+  // *"Careful, puss — mind the pipes, they don't take kindly to being climbed."* *"Thirty tunes in the
+  // barrel. Nobody's ever once stood still for all thirty."*
+  //
+  // New `OrganGrinder` class (55-npcs.js, right after `Mechanic`, the only other controller that
+  // already stands a rig next to a second free-standing object rather than something held in a hand):
+  // the organ is a second group placed to the rig's own side (the same `sin`/`cos` offset trick
+  // `Mechanic` already uses for its robot, just sideways instead of forward) and added to `game.world`
+  // directly, not parented to the rig, since it stands on its own leg rather than being carried. The
+  // near arm sweeps shoulder and elbow through a steady circle (`sin`/`cos` of a shared phase, the
+  // same damped-circle trick `YoYoer`'s drop cycle and `Fiddler`'s bow already lean on) while the far
+  // arm just rests against the cabinet. New prop `makeBarrelOrgan()` (60-props.js, right after
+  // `makeFiddleCase()`): a painted cabinet on a single folding leg, five pipes on top and its own
+  // crank — this one is genuinely free-standing, so it carries its own `userData.update` (spinning the
+  // crank on the shared world clock) and is pushed onto this world's own `U` list, rather than
+  // following a hand the way every other hand-held prop in this file already does.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, `game.travel(3, 'from-hub')`, then 1800 simulated
+  // frames sampling every NPC's and the squirrel's own position every 10th frame) swept a 1.5 m grid
+  // of the open green north-east of the terraces (short of the radius (88) where `victorianRegion`'s
+  // own procedural fill takes over) against both those 14,940 samples and all 330 of the town's own
+  // physics boxes: (41, 63.5) came back 10.7 m clear of the nearest box and 10.7 m clear of the
+  // nearest wandering soul, at radius 75.6 from the origin and outside every one of `game.zones`'s own
+  // keep-out rectangles and circles — comfortable room to spare for the grinder's own 0.4 m circle and
+  // the organ's 0.55 m sideways offset besides.
+  //
+  // Built dead last, right after the wagon above and right before the squirrel, for the usual reason:
+  // `makeHuman()` and `randomPerson()` both draw off this town's own shared `r()` sequence
+  // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted
+  // by it.
+  { const gx = 41, gz = 63.5, gry = 0;
+    const grinder = makeHuman({ ...randomPerson(r, { female: r.chance(0.35), child: false, elder: r.chance(0.5), wardrobe: vicWard }),
+      hat: 'flatcap', hatColor: 0x3a3327, coat: true, scarf: 0x6a1a1a, bag: null, backpack: null, glasses: false });
+    W.add(grinder.group);
+    const organ = makeBarrelOrgan();
+    game.npcs.push(new OrganGrinder(game, grinder, organ, { x: gx, z: gz, ry: gry, side: 1,
+      cries: ['Tuppence a tune, if you please — and mind where those paws go.', "Careful, puss — mind the pipes, they don't take kindly to being climbed.", "Thirty tunes in the barrel. Nobody's ever once stood still for all thirty."] }));
+    U.push(organ.userData.update); }
 
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;

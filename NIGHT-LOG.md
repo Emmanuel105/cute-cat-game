@@ -27948,3 +27948,51 @@ more simulated frames afterward raised no console warnings and left the cat's ow
 check was possible in this environment (no browser, no Playwright) — only the stub-three test suite
 and the two headless probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 1020 — Victorian gets a street organ grinder
+
+Checked first whether this was already done: Victorian's market square already has a newsboy, a
+bootblack with his own shine box, a town crier and a fiddler — but no busker has ever worked with a
+machine, and nothing called "organ", "barrel" or "crank" turned up anywhere in the source. **A street
+organ grinder now stands on the open green north-east of the terraces,** winding a barrel organ on
+its own folding leg, five brass pipes ranked along the top. *"Tuppence a tune, if you please — and
+mind where those paws go."* *"Careful, puss — mind the pipes, they don't take kindly to being
+climbed."* *"Thirty tunes in the barrel. Nobody's ever once stood still for all thirty."*
+
+New `OrganGrinder` class (`55-npcs.js`, right after `Mechanic`, the only other controller that already
+stands a rig next to a second free-standing object rather than something held in a hand): the organ
+is a second group placed to the rig's own side — the same `sin`/`cos` offset trick `Mechanic` already
+uses for its robot, just sideways instead of forward — and added to `game.world` directly rather than
+parented to the rig, since it stands on its own leg instead of being carried. The near arm sweeps
+shoulder and elbow through a steady circle (`sin`/`cos` of a shared phase, the same damped-circle
+trick `YoYoer`'s drop cycle and `Fiddler`'s bow already lean on) while the far arm just rests against
+the cabinet. New prop `makeBarrelOrgan()` (`60-props.js`, right after `makeFiddleCase()`): a painted
+cabinet on a single folding leg, five pipes on top and its own crank — genuinely free-standing, so it
+carries its own `userData.update` (spinning the crank on the shared world clock) rather than
+following a hand the way every other hand-held prop in this file already does, and gets pushed onto
+Victorian's own `U` list so it keeps turning instead of freezing into the bake.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(3, 'from-hub')`, then 1800 simulated frames
+sampling every NPC's and the squirrel's own position every 10th frame) swept a 1.5 m grid of the open
+green north-east of the terraces (short of the radius (88) where `victorianRegion`'s own procedural
+fill takes over) against both those 14,940 samples and all 330 of the town's own physics boxes: (41,
+63.5) came back 10.7 m clear of the nearest box and 10.7 m clear of the nearest wandering soul, at
+radius 75.6 from the origin and outside every one of `game.zones`'s own keep-out rectangles and
+circles — comfortable room for the grinder's own 0.4 m circle and the organ's 0.55 m sideways offset
+besides.
+
+Verified past the test suite with a second headless probe: found the new `OrganGrinder` instance in
+`game.npcs`, confirmed both its rig and the organ sit under `game.world` in the scene graph, ran 700
+simulated frames and watched the crank's own rotation actually advance (0 → 17.6 rad) while the rig's
+position and head rotation stayed finite throughout. Hit the same snag every post-travel probe in
+this log eventually hits — `game.interact()` no-ops while `game.transitioning` is still true, which
+only clears after `travel()`'s own two chained `setTimeout`s (520 ms then 500 ms, over a second in
+all, not the 500-600 ms earlier rounds budgeted) — a plain `await sleep(2000)` cleared it reliably,
+after which `game.interact()` turned the "Say hello" prompt into a real friend (`friends.size` 0 → 1).
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330 for the Neighborhood (the last world the suite travels to; Victorian's own box count
+rose by one for the organ's physics box). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the two headless probes above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -567,6 +567,28 @@ function makeFiddleCase() {
   for (const [cx, cz] of [[0.1, 0.03], [-0.08, -0.04], [0.18, -0.03]]) mesh(G.cyl(0.028, 0.028, 0.006, 10), goldM, { x: cx, y: 0.058, z: cz, rx: PI / 2, shadow: 'none', parent: g });   // a few coins
   return g;
 }
+/** A barrel organ on its own single folding leg, five brass pipes ranked along the top and a crank
+    that turns on its own clock, for a street organ grinder to stand beside and wind. Free-standing —
+    not held — so it gets its own `userData.update` rather than following a hand. */
+function makeBarrelOrgan() {
+  const g = new THREE.Group();
+  const wood = mat(0x6a4426, { roughness: 0.75, map: TEX.planks(20, 28) }), trim = mat(0xc9a84a, { metalness: 0.55, roughness: 0.35 });
+  const panel = mat(0xaa1f2a, { roughness: 0.6 }), dark = mat(0x2a1a10, { roughness: 0.85 });
+  mesh(G.box(0.46, 0.5, 0.3), wood, { y: 0.78, parent: g });                                             // the cabinet
+  mesh(G.box(0.47, 0.03, 0.31), trim, { y: 1.015, shadow: 'none', parent: g });                          // top trim band
+  mesh(G.box(0.47, 0.03, 0.31), trim, { y: 0.545, shadow: 'none', parent: g });                          // bottom trim band
+  mesh(G.box(0.28, 0.3, 0.02), panel, { y: 0.78, z: 0.16, parent: g });                                  // the painted front panel
+  const heights = [0.18, 0.26, 0.32, 0.26, 0.18];
+  for (let i = 0; i < heights.length; i++) { const h = heights[i]; mesh(G.cyl(0.035, 0.035, h, 10), trim, { x: -0.16 + i * 0.08, y: 1.03 + h / 2, parent: g }); }   // the pipes
+  mesh(G.cyl(0.032, 0.026, 0.76, 8), dark, { y: 0.39, z: 0.12, rx: 0.12, parent: g });                   // the single folding leg
+  mesh(G.cyl(0.05, 0.05, 0.03, 10), dark, { y: 0.01, z: 0.21, parent: g });                               // its foot
+  mesh(G.cyl(0.018, 0.018, 0.14, 8), trim, { x: 0.16, y: 0.78, rz: PI / 2, shadow: 'none', parent: g });  // the axle stub
+  const crank = group(0.23, 0.78, 0, g);
+  mesh(G.cyl(0.013, 0.013, 0.09, 8), trim, { z: 0.045, rx: PI / 2, shadow: 'none', parent: crank });      // the crank arm, out from the axle
+  mesh(G.cyl(0.022, 0.022, 0.05, 8), dark, { z: 0.09, rz: PI / 2, shadow: 'none', parent: crank });       // the handle grip, parallel to the axle
+  g.userData.update = (dt, t) => { crank.rotation.x = t * 3.4; };
+  return g;
+}
 /** A small brass table lamp, bell-shaded, for the yard sale table below. */
 function makeOldLamp() {
   const g = new THREE.Group(), brass = mat(0xc9a84a, { metalness: 0.5, roughness: 0.4 }), shade = mat(0xe8dcc0, { roughness: 0.85 });
