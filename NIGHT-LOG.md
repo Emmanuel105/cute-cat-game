@@ -28285,3 +28285,45 @@ count unchanged at 331 (the magician carries only a circle collider, like every 
 performer), Candy Land's own friend count rose from 108 to 109 ("109 to meet"). No visual check was
 possible in this environment (no browser, no Playwright) — only the stub-three test suite and the two
 headless probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1028 — Robot City gets its own magician
+
+Candy Land got the first `Magician` last round; every other world still only had a juggler tossing
+balls in a loop. **Robot City now has one too, working a quiet corner of open factory floor between
+the fiddler's side street and the painter's plaza** — the same wand-over-hand coin vanish, never
+quite caught in the act. *"Nothing up this sleeve. Not even spare bolts."* *"Watch closely, puss —
+the coin's gone. ...And it's back. Every time."* *"No foreman out this far to ask how the trick
+works."*
+
+No new mechanism: `Magician` (`55-npcs.js`) reused verbatim in `buildRobotCity()` — only the
+wardrobe, spot and lines are new, the same reskin-not-new-code choice this log keeps making.
+
+Before touching anything, `git fetch` again reported a forced update on `origin/main` — the same
+shallow-clone quirk a couple of recent rounds have already hit, where this sandbox's shallow clone
+had graft points that made local `HEAD` and `origin/main` look unrelated even though they weren't.
+`git fetch --unshallow origin main` resolved it cleanly this time: the "divergence" disappeared and
+`origin/main` matched local `HEAD` exactly, so `git checkout -B main origin/main` was a no-op reset
+rather than a real recovery.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(2, 'from-prev')` waited out for real, then
+600 simulated frames sampling every NPC's own position every 10th frame) swept a 1 m grid of the
+hand-built city against those samples and every one of its 1204 physics boxes and 296 zones,
+rejecting anywhere closer than 4.5 m to any of them: (-15, 38) came back clearest — 14.7 m from the
+nearest box, 60.1 m from the nearest zone and 9.9 m from the nearest sampled soul, at radius 40.9 from
+the origin and well short of the radius (98) where `robotRegion()`'s own procedural fill takes over.
+Clear of the juggler at (15, 37), the fiddler at (-21, 57) and the painter at (0, 27). Built dead
+last, right after the organ grinder, for the usual reason: `makeHuman()` and `randomPerson()` both
+draw off this city's own shared `r()` sequence unconditionally.
+
+Verified past the test suite with a second headless probe: found the new `Magician` in `game.npcs`
+at exactly (-15, 0, 38), ran 1200 simulated frames watching the rig's position and head rotation stay
+finite throughout while the coin mesh toggled visible and hidden on schedule (both states actually
+observed), then walked the cat to 1.2 m away — `game.nearest.label()` read "Say hello" — and calling
+`onUse()` took `game.state.friends.size` from 0 to 1.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 1204 (the magician carries only a circle collider, like every other standing
+performer), Robot City's own friend count rose from 112 to 113 ("113 to meet"). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite and the two
+headless probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

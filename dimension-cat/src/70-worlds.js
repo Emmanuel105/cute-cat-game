@@ -8954,6 +8954,37 @@ function buildRobotCity(game, entry) {
       cries: ["Tuppence a tune — cheaper than anything else running on batteries in this town.", "Careful, puss — the pipes don't bite, but the gears underneath still might.", "Thirty tunes in the barrel. Not one robot in this city has ever learned to hum along."] }));
     U.push(organ.userData.update); }
 
+  // Candy Land got the first magician (round 1027) — every other world still only has a juggler
+  // tossing balls in a loop. A magician now works a quiet corner of open factory floor between the
+  // fiddler's side street and the painter's plaza: a wand sweeps over the other hand, and the coin
+  // cupped there blinks out on a sparkle and lands back a couple of seconds later, never quite caught
+  // in the act. *"Nothing up this sleeve. Not even spare bolts."* *"Watch closely, puss — the coin's
+  // gone. ...And it's back. Every time."* *"No foreman out this far to ask how the trick works."*
+  //
+  // No new mechanism: `Magician` (55-npcs.js) is reused verbatim — only the wardrobe, spot and lines
+  // are new, the same reskin-not-new-code choice every rollout in this log has made.
+  //
+  // A headless probe (the stub-three harness `test/run.mjs` itself uses: the real city built via
+  // `game.travel(2, 'from-prev')`, then 600 simulated frames sampling every NPC's own position every
+  // 10th frame, swept against every one of the city's 1204 physics boxes and 296 zones) found (-15, 38)
+  // clear: 14.7 m from the nearest box, 60.1 m from the nearest zone and 9.9 m from the nearest sampled
+  // soul, at radius 40.9 from the origin — well short of the radius (98) where `robotRegion()`'s own
+  // procedural fill takes over, and clear of the juggler at (15, 37), the fiddler at (-21, 57) and the
+  // painter at (0, 27). Facing downtown (ry = atan2(0 - x, 0 - z)) needs no extra clearance check: the
+  // magician's own 0.4 m circle fits comfortably inside that same margin.
+  //
+  // Built dead last, right after the fortune machine and organ grinder above, for the usual reason:
+  // `makeHuman()` and `randomPerson()` both draw off this city's own shared `r()` sequence
+  // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted
+  // by it.
+  { const mx = -15, mz = 38, mry = atan2(0 - mx, 0 - mz);
+    const magicianWard = makeWardrobe(r, { shirts: [0x3a3a44, 0x2a2a34], pants: [0x1a1a22, 0x232c34] });
+    const magician = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: magicianWard }),
+      jacket: 0x2a3242, hat: null, scarf: 0x00e5ff, bag: null, backpack: null, glasses: false });
+    W.add(magician.group);
+    const magicLines = ['Nothing up this sleeve. Not even spare bolts.', "Watch closely, puss — the coin's gone. ...And it's back. Every time.", 'No foreman out this far to ask how the trick works.'];
+    game.npcs.push(new Magician(game, magician, { x: mx, z: mz, ry: mry, cries: magicLines })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
