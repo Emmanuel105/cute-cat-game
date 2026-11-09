@@ -28117,3 +28117,44 @@ and `game.state.friends.size` went 0 → 1.
 visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
 suite and the two headless probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 1024 — Sunny Shore gets a street organ grinder, the first of the three terrain worlds
+
+Victorian, Candy Land, Robot City and the Neighborhood all picked up a street organ grinder over the
+last four rounds, but the three terrain worlds (Sunny Shore, Frosty Peak, Whisper Woods) were left out
+on purpose — the organ's own physics box sat at a fixed world-space height rather than one relative to
+the ground underneath it, so it would float or sink wherever the sand, snow or forest floor wasn't
+flat. **That one-line bug is fixed (`OrganGrinder`, 55-npcs.js: the box now reads
+`game.physics.ground0(ox, oz) + 0.68` instead of a bare `0.68`, the same ground-relative convention
+`boxT` already uses everywhere else on sloped terrain), and Sunny Shore becomes the first terrain
+world to get its own grinder: a hand-cranked barrel organ parked on the open dry sand in the dunes'
+south-west corner.** *"Tuppence a tune — the gulls join in whether they're paid or not."* *"Careful,
+puss — sand in the gears, and this one's never once made it back to the shop for a clean."* *"Thirty
+tunes in the barrel, and not the tide nor the wind has ever once thrown off the beat."*
+
+No new mechanism beyond that fix: `OrganGrinder` and `makeBarrelOrgan()` (60-props.js) are reused
+verbatim from the four flat-floor worlds — only the wardrobe, spot and lines are new. Frosty Peak and
+Whisper Woods are still left for a future round; this one only had room to prove the fix and roll it
+out once.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(4, 'from-hub')` waited out for real, then
+1800 simulated frames sampling every NPC's own position every 10th frame) swept a 1.5 m grid of the
+open dry sand (x and z in [-45, 45], radius under 55 — short of the 58 where `beachRegion()`'s own
+fill takes over) against both those samples and all of the beach's own physics boxes, rejecting
+anywhere `game.zones` already claims and anywhere the ground wasn't flat to within 8 cm across a 1 m
+square: (-37.5, -39) came back best — 7.5 m clear of the nearest box and 7.74 m clear of the nearest
+wandering soul (past the chopper, the sack race lane and the dog walker on that side of the dunes), at
+radius 54.2, on ground levelling out at 0.6 m.
+
+Verified past the test suite with a second headless probe: found the new `OrganGrinder` in
+`game.npcs`, confirmed both its rig and the organ sit under `game.scene`, ran 700 simulated frames
+with the rig's position and head rotation staying finite throughout, checked the organ's own physics
+box directly — its centre Y now matches `ground0(ox, oz) + 0.68` exactly rather than a bare `0.68` —
+then walked the cat to 1.2 m from the grinder and called `game.interact()` directly: the prompt read
+"Say hello" and `game.state.friends.size` went 0 → 1.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings. No
+visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
+suite and the two headless probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.

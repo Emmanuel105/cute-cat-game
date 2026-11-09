@@ -3482,7 +3482,7 @@ class OrganGrinder {
     rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
     const ox = x + cos(ry) * 0.55 * side, oz = z - sin(ry) * 0.55 * side;
     organ.position.set(ox, game.physics.ground0(ox, oz), oz); organ.rotation.y = ry; game.world.add(organ);
-    game.physics.addBox(ox, 0.68, oz, 0.85, 1.36, 0.85, { cam: false });
+    game.physics.addBox(ox, game.physics.ground0(ox, oz) + 0.68, oz, 0.85, 1.36, 0.85, { cam: false });
     this.circle = game.physics.addCircle(this, x, z, 0.4);
     greetable(game, this);
   }
@@ -22979,6 +22979,44 @@ function buildBeach(game, entry) {
     const caseX = fx + 0.7, caseZ = fz + 0.4;
     placeT(game, U, makeFiddleCase(), caseX, caseZ, fry);
     boxT(game, caseX, caseZ, 0.64, 0.12, 0.24, { cam: false }); }
+  // Victorian, Candy Land, Robot City and the Neighborhood all have a street organ grinder busking
+  // by now (55-npcs.js's `OrganGrinder`) — every flat-floor world, and none of the three terrain
+  // worlds, since the organ's own physics box used to sit at a fixed world-space height rather than
+  // one relative to the ground underneath it, which would float or sink on any slope. That box now
+  // reads `game.physics.ground0(ox, oz) + 0.68` instead of a bare `0.68` (55-npcs.js), the same
+  // ground-relative convention `boxT` already uses everywhere else on this beach. **Sunny Shore is the
+  // first terrain world to get its own organ grinder: a hand-cranked barrel organ on the open dry sand
+  // in the dunes' south-west corner,** well back from the water and every hand-placed landmark closer
+  // to the pier. *"Tuppence a tune — the gulls join in whether they're paid or not."* *"Careful, puss
+  // — sand in the gears, and this one's never once made it back to the shop for a clean."* *"Thirty
+  // tunes in the barrel, and not the tide nor the wind has ever once thrown off the beat."*
+  //
+  // No new mechanism beyond that one-line fix: `OrganGrinder` and `makeBarrelOrgan()` (60-props.js)
+  // are reused verbatim from the four flat-floor worlds — only the wardrobe, spot and lines are new.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, `game.travel(4, 'from-hub')` waited out for real,
+  // then 1800 simulated frames sampling every NPC's own position every 10th frame) swept a 1.5 m grid
+  // of the open dry sand (x in [-45, 45], z in [-45, 45], radius under 55 — short of the 58 where
+  // `beachRegion()`'s own fill takes over) against both those samples and all of the beach's own
+  // physics boxes, rejecting anywhere `game.zones` already claims and anywhere the ground wasn't flat
+  // to within 8 cm across a 1 m square: (-37.5, -39) came back best, 7.5 m clear of the nearest box
+  // and 7.74 m clear of the nearest wandering soul, at radius 54.2 — comfortably past the chopper, the
+  // sack race lane and the dog walker on that side of the dunes, and on ground levelling out at 0.6 m
+  // so the fixed-height organ box now sits right.
+  //
+  // Built dead last, right after the fiddler above, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off the shared `r()` sequence unconditionally, and anything built
+  // earlier on this beach would have had its own timing-sensitive pick shifted by it.
+  { const gx = -37.5, gz = -39, gry = atan2(0 - gx, 0 - gz);
+    const grindWard = makeWardrobe(r, { shirts: [0xb34b32, 0x3f6b52, 0x5c4a7a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0xefe7d8, 0x8d6e63] });
+    const grinder = makeHuman({ ...randomPerson(r, { female: r.chance(0.4), child: false, elder: r.chance(0.45), wardrobe: grindWard }),
+      hat: 'sunhat', hatColor: 0xd9c9a8, bag: null, backpack: null, glasses: r.chance(0.2) });
+    W.add(grinder.group);
+    const organ = makeBarrelOrgan();
+    game.npcs.push(new OrganGrinder(game, grinder, organ, { x: gx, z: gz, ry: gry, side: 1,
+      cries: ['Tuppence a tune — the gulls join in whether they’re paid or not.', 'Careful, puss — sand in the gears, and this one’s never once made it back to the shop for a clean.', 'Thirty tunes in the barrel, and not the tide nor the wind has ever once thrown off the beat.'] }));
+    U.push(organ.userData.update); }
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

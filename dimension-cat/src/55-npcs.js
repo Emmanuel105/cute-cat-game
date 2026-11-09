@@ -1669,7 +1669,7 @@ class OrganGrinder {
     rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
     const ox = x + cos(ry) * 0.55 * side, oz = z - sin(ry) * 0.55 * side;
     organ.position.set(ox, game.physics.ground0(ox, oz), oz); organ.rotation.y = ry; game.world.add(organ);
-    game.physics.addBox(ox, 0.68, oz, 0.85, 1.36, 0.85, { cam: false });
+    game.physics.addBox(ox, game.physics.ground0(ox, oz) + 0.68, oz, 0.85, 1.36, 0.85, { cam: false });
     this.circle = game.physics.addCircle(this, x, z, 0.4);
     greetable(game, this);
   }
