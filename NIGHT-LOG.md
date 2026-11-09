@@ -28239,3 +28239,49 @@ friend count for world 6 ticked up by one, "151 to meet", a reported figure rath
 assertion, so nothing else needed to change). No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite and the two headless probes above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1027 — Candy Land gets a magician
+
+Every world has had a juggler for rounds now, but nobody actually working a trick — this land's own
+`Juggler` only ever tosses three balls in a loop. **A magician now works the open sweet-grass
+south-east of the chocolate river: a wand sweeps over the other hand, and the coin cupped there
+blinks out on a sparkle and lands back a couple of seconds later, never quite caught in the act.**
+*"Nothing up this sleeve. Mostly marzipan, if you must know."* *"Watch closely, puss — the coin's
+gone. ...And it's back. Every time."* *"Even the Candy Queen can't work out where it goes."*
+
+New `Magician` class in `55-npcs.js`, right after `Detectorist`: the same build as every other solo
+street performer in this town (`Juggler`, `Fiddler`, `YoYoer`...) — a wand mesh parented to
+`rig.hands[0]`, a coin parented to `rig.hands[1]`, `greetable()` called in the constructor so the
+usual "Say hello" prompt comes for free off the human rig itself, no hand-rolled `namedFriend` or
+`addInteractable` needed. Learned from round 1011-1012's audit of nine other classes: `this.look`
+and `this.lookW` are initialized before `Wanderer.prototype.lookAtCat.call(this, dt)` ever runs, so
+the head doesn't lock up on `NaN` the first time the cat comes within range.
+
+Before placing it, found this session's local `main` had drifted from `origin/main` after an earlier
+container's force-push rewrote history (`git fetch` reported it outright: "main -> origin/main
+(forced update)"); `git checkout -B main origin/main` reset the local branch to match the real pushed
+history — the same recovery a couple of recent rounds have already needed — before any work started.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(1, 'from-prev')` waited out for real, then
+600 simulated frames sampling every NPC's own position every 10th frame) swept a 2 m grid of the
+hand-built sweet-lands against those samples and every one of this land's 1904 physics boxes and 463
+zones, rejecting anywhere closer than 4.5 m to a sampled NPC: (27, -31) came back clearest — 6.8 m
+clear of the nearest box, 9.0 m clear of the nearest zone (the chocolate river's own keep-out band,
+which ends at z=-22) and 18.0 m clear of the nearest wandering soul, 41.1 m out from the origin and
+comfortably short of the candy-cane forest ring that only starts filling in at radius 56. Built dead
+last, right after the bubble-blower and before the squirrel, for the usual reason: `makeHuman()` and
+`randomPerson()` both draw off this land's own shared `r()` sequence unconditionally, and a fresh rig
+built any earlier would have shifted every other timing-sensitive pick already placed above.
+
+Verified past the test suite with a second headless probe: found the new `Magician` in `game.npcs`,
+confirmed its rig sits under the real scene graph, ran 1200 simulated frames watching the rig's
+position and head rotation stay finite throughout while the coin mesh toggled visible and hidden on
+schedule (both states were actually observed), then walked the cat to 1.5 m away — `game.nearest`
+read "Say hello" — and calling `onUse()` took `game.state.friends.size` from 0 to 1.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 331 (the magician carries only a circle collider, like every other standing
+performer), Candy Land's own friend count rose from 108 to 109 ("109 to meet"). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite and the two
+headless probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

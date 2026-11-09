@@ -2142,6 +2142,42 @@ class Detectorist {
   }
 }
 
+// ---------------------------------------------------------------- magician: a wand sweeps over the other hand, and the coin cupped there blinks out and back with a sparkle every couple of seconds
+class Magician {
+  constructor(game, rig, { x, z, ry = 0, cries = null, cryIcon = '🎩' }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10; this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false; this.state = 'idle'; this.timer = 0;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    this.vanishT = rnd.range(1.5, 3); this.vanished = false;
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    const wand = group(0, 0.02, 0.06, rig.hands[0]); wand.rotation.x = -0.4;
+    mesh(G.cyl(0.012, 0.012, 0.5, 6), mat(0x1a1a22, { roughness: 0.4 }), { y: 0.25, parent: wand });
+    mesh(G.sphere(0.022, 8, 6), mat(0xf7f3ec, { roughness: 0.3 }), { y: 0.5, parent: wand });
+    this.coin = group(0, 0.06, 0, rig.hands[1]); this.coinWorld = V3();
+    mesh(G.cyl(0.045, 0.045, 0.01, 12), mat(0xffd54a, { metalness: 0.6, roughness: 0.3 }), { rx: PI / 2, parent: this.coin });
+    this.circle = game.physics.addCircle(this, x, z, 0.4);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig, sweep = sin(this.t * 1.4) * 0.4;
+    rig.animate(0, false, dt, this.t);
+    if (!rig.gesture) {
+      const A = rig.arms[0], B = rig.arms[1];
+      A.sh.rotation.x = damp(A.sh.rotation.x, -1.1 + sweep * 0.3, 10, dt); A.sh.rotation.z = damp(A.sh.rotation.z, 0.3, 10, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.6, 10, dt);
+      B.sh.rotation.x = damp(B.sh.rotation.x, -0.9, 10, dt); B.el.rotation.x = damp(B.el.rotation.x, -1.0, 10, dt); B.sh.rotation.z = damp(B.sh.rotation.z, -0.35, 10, dt);
+      rig.spine.rotation.x = damp(rig.spine.rotation.x, 0.08, 6, dt); rig.head.rotation.x = damp(rig.head.rotation.x, 0.2, 6, dt);
+    }
+    this.vanishT -= dt;
+    if (this.vanishT <= 0) {
+      this.vanished = !this.vanished; this.coin.visible = !this.vanished;
+      this.vanishT = this.vanished ? rnd.range(1, 1.8) : rnd.range(1.8, 3);
+      SFX.twinkle(); this.coin.getWorldPosition(this.coinWorld);
+      this.game.fx.emit(this.coinWorld.x, this.coinWorld.y, this.coinWorld.z, { count: 7, colors: [0xffd54a, 0xfff3a0, 0xffffff], speed: 1.0, up: 1.1, life: 0.5, gravity: 3 });
+    }
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- juggler: stands on the spot, three balls looping hand to hand, never dropped
 class Juggler {
   constructor(game, rig, colors, { x, z, ry = 0, cries = null, cryIcon = '🤹' }) {

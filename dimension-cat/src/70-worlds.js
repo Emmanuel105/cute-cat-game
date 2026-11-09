@@ -5951,6 +5951,38 @@ function buildCandyLand(game, entry) {
     let bubbleCryT = r.range(4, 9);
     U.push((dt) => { bubbleCryT -= dt; if (bubbleCryT <= 0) { bubbleCryT = r.range(9, 16); const c = game.cat.group.position; if (dist2(bkx, bkz, c.x, c.z) < 400) { game.toast('🫧 "' + r.pick(bubbleLines) + '"', 2400); SFX.talk(); } } }); }
 
+  // every world has had a juggler for rounds now, but nobody actually working a proper trick — this
+  // land's own `Juggler` only ever tosses balls in a loop. A magician now works the open sweet-grass
+  // south-east of the chocolate river, well clear of both the river angler up at the north bank and the
+  // duck pair's own swim lane out past the east bridge: a wand sweeps over the other hand, and the coin
+  // cupped there blinks out on a sparkle and lands back a couple of seconds later, never quite caught in
+  // the act. *"Nothing up this sleeve. Mostly marzipan, if you must know."* *"Watch closely, puss — the
+  // coin's gone. ...And it's back. Every time."* *"Even the Candy Queen can't work out where it goes."*
+  //
+  // New `Magician` (55-npcs.js, right after `Detectorist`): same build as every other solo street
+  // performer in this town — `rig.hands[0]`/`[1]` carry a new wand and coin mesh, `greetable()` wires
+  // the usual "Say hello" prompt off the human rig itself, no hand-rolled `namedFriend`/`addInteractable`
+  // needed. `this.look`/`this.lookW` are set before `lookAtCat()` ever runs, the fix nine other classes
+  // needed back in round 1011-1012.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.travel(1,
+  // 'from-prev')`, then 600 simulated frames sampling every NPC's own position every 10th frame) swept
+  // a 2 m grid of the hand-built sweet-lands south of the river against those samples and every one of
+  // this land's own physics boxes and zones: (27, -31) came back clearest — 6.8 m from the nearest box,
+  // 9.0 m from the nearest zone (the chocolate river's own keep-out, which ends at z=-22) and 18.0 m from
+  // the nearest wandering soul, 41.1 m out from the origin and comfortably short of the candy-cane
+  // forest ring that only starts at radius 56. Built dead last, right after the bubble-blower, for the
+  // usual reason: `makeHuman()` and `randomPerson()` both draw off this land's own shared `r()`
+  // sequence unconditionally, and a fresh rig built any earlier would shift every other timing-sensitive
+  // pick already placed above.
+  { const mx = 27, mz = -31, mry = atan2(0 - mx, -18 - mz);
+    const magicianWard = makeWardrobe(r, { shirts: [0x1a1a22, 0x2e2e38], pants: [0x1a1a22, 0x2a2a34] });
+    const magician = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: magicianWard }),
+      jacket: true, hat: null, scarf: null, bag: null, backpack: null, glasses: false });
+    W.add(magician.group);
+    const magicLines = ['Nothing up this sleeve. Mostly marzipan, if you must know.', "Watch closely, puss — the coin's gone. ...And it's back. Every time.", "Even the Candy Queen can't work out where it goes."];
+    game.npcs.push(new Magician(game, magician, { x: mx, z: mz, ry: mry, cries: magicLines })); }
+
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('star', 7, -6); C.add('yarn', -9, 9); C.add('fish', -16, -13); C.add('mouse', 16, -9); C.add('star', -10, -27); C.add('yarn', 22, 4); C.add('mouse', -28, 26); C.add('fish', 14, -44); C.add('star', 0, -56); C.add('mouse', -58, 30); C.add('yarn', 60, 36);
