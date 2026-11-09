@@ -910,6 +910,25 @@ function makeHoneyJarStand() {
   mesh(G.cyl(0.06, 0.06, 0.01, 10), honey, { y: 0.006, z: 0.32, shadow: 'none', parent: g });   // a drip that reached the ground
   return g;
 }
+/** A small hand-tied bundle of dried herbs — sage, lavender and a few sprigs with rosehip berries
+ * still on — bound at the stems with a wrap of twine, for a forest herbalist to hold up. */
+function makeHerbBundle() {
+  const g = new THREE.Group(), twine = mat(0x8a7148, { roughness: 0.9 });
+  mesh(G.cyl(0.03, 0.045, 0.14, 8), twine, { y: 0.07, parent: g });
+  mesh(G.torus(0.04, 0.008, 5, 12), mat(0x6b5a3a, { roughness: 0.8 }), { y: 0.11, rx: PI / 2, shadow: 'none', parent: g });
+  const sprig = (hue, sat, light, x, z, h, lean) => {
+    const stem = group(x, 0.14, z, g); stem.rotation.x = lean;
+    mesh(G.cyl(0.006, 0.01, h, 5), twine, { y: h / 2, parent: stem });
+    const leafM = mat(new THREE.Color().setHSL(hue, sat, light), { roughness: 0.75 });
+    for (let i = 0; i < 5; i++) mesh(G.sphere(0.018, 6, 5), leafM, { y: h * 0.4 + i * h * 0.12, x: (i % 2 ? 1 : -1) * 0.025, shadow: 'none', parent: stem });
+  };
+  sprig(0.28, 0.35, 0.42, -0.04, 0.02, 0.26, -0.08);   // sage
+  sprig(0.28, 0.3, 0.38, 0.03, -0.02, 0.24, 0.1);       // sage, a touch darker
+  sprig(0.75, 0.3, 0.55, 0.0, 0.03, 0.22, -0.15);       // lavender
+  sprig(0.08, 0.4, 0.35, -0.025, -0.03, 0.2, 0.18);     // dried gold
+  for (const [x, z] of [[0.02, 0.015], [-0.015, -0.02], [0.03, -0.01]]) mesh(G.sphere(0.012, 6, 5), mat(0xb5342f, { roughness: 0.6 }), { x, y: 0.26, z, shadow: 'none', parent: g });   // rosehip berries
+  return g;
+}
 /**
  * A knee-high orb web slung between two twig stakes: eight silk spokes and three concentric rings
  * (full toruses — the web's own local plane is XY, which is exactly how a torus already sits, so the

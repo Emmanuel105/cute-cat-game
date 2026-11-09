@@ -27779,3 +27779,45 @@ unchanged at 330 (one new physics circle for the guard's own feet, same conventi
 greetable NPC already uses, didn't move the total shown by the suite). No visual check was possible
 in this environment (no browser, no Playwright) — only the stub-three test suite and the two headless
 probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1016 — Whisper Woods gets a second stall, an old herbalist
+
+Candy Land alone has five market vendors by now (ice cream, popcorn, candy, lollipops, toffee
+apples), Victorian has seven, and even Robot City and Sunny Shore have two or three — but Whisper
+Woods has had only the one berry seller since round 926. **An old herbalist now stands on the open
+forest floor north-east of the glade, a hand-tied bundle of dried sage, lavender and rosehip held
+up for anyone passing.** *"Sage for the nerves, lavender for sleep — rosehip just because it's
+pretty."* *"Careful, puss — dried, not catnip, whatever your nose is telling you."* *"Every sprig
+picked within an hour's walk of this very spot."*
+
+No new controller: `Vendor` (55-npcs.js) is the exact pairing every other world's own stall keeper
+already uses, just holding a new prop, `makeHerbBundle()` (62-props-nature.js, right after
+`makeHoneyJarStand`) — a twine-wrapped stem with four tiny sprigs (two sage, one lavender, one dried
+gold) and three rosehip berries, built from the same small-sphere-cluster trick `makeFlowerBouquet`
+already uses, just muted instead of bright. `Vendor`'s own constructor skips `greetable()` on
+purpose ("the world gives the vendor its own prompt"), so this one calls it explicitly straight
+after, the same fix the berry seller's own round already used.
+
+Spent a while first hunting for a gap to close in an already-enumerated loop (Victorian's eleventh
+flower basket, two of Frosty Peak's outlying ice crystals) before writing headless probes to check
+them fresh — all three are still genuinely blocked (the lamplighter's own round stops 1.13 m off the
+Victorian basket; a wandering penguin comes within 0.61 m of one ice crystal and a trailside prop
+sits 0.54 m from the other), so those stay bare, same verdict their own earlier rounds already
+reached. Built a scratch headless-probe harness instead (same stub-three bundle `test/run.mjs`
+builds, reused directly rather than rewritten each time) to find new ground: `game.start('new')`,
+`game.travel(6, 'from-prev')` waited out for real, then 2400 simulated frames sampling every NPC's
+own position every 10th frame, swept against every physics box on a 2 m grid of the open floor
+(radius 10–54, short of `forestRegion()`'s own fill at 58). (51, 17) came back 8.70 m clear of the
+nearest box and 10.44 m clear of the nearest wandering soul — on the opposite side of the glade from
+the fiddler at (51, -20), with `game.zones.blocked` clear and the ground flat to within 5 cm. Built
+dead last, right after the fiddler and right before the squirrel spawn point, since `makeHuman()`
+and `randomPerson()` both draw off this wood's own shared `r()` sequence unconditionally.
+
+Verified past the test suite's own checks with a second headless probe: walked the cat up to the
+herbalist and called the interactable's own `onUse()` directly — the label read "Say hello",
+`friends.size` went from 0 to 1, and the rig's head rotation and position stayed finite over 400
+simulated frames. `node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console
+warnings, box count unchanged at 330 (a vendor's own circle, same convention every other greetable
+NPC already uses), and Whisper Woods' own friend total rose from 149 to 150. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
+two headless probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

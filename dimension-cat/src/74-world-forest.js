@@ -2780,6 +2780,41 @@ function buildForest(game, entry) {
     const caseX = fx + 0.7, caseZ = fz + 0.4;
     placeT(game, U, makeFiddleCase(), caseX, caseZ, fry);
     boxT(game, caseX, caseZ, 0.64, 0.12, 0.24, { cam: false }); }
+  // every other world's own vendor cluster runs to several stalls by now (Candy Land alone has five);
+  // Whisper Woods has had only the one berry seller since round 926. An old herbalist now stands on a
+  // quiet stretch of forest floor north-east of the glade, a hand-tied bundle of dried sage, lavender
+  // and rosehip held up for anyone passing. *"Sage for the nerves, lavender for sleep — rosehip just
+  // because it's pretty."* *"Careful, puss — dried, not catnip, whatever your nose is telling you."*
+  // *"Every sprig picked within an hour's walk of this very spot."*
+  //
+  // No new mechanism: `Vendor` (55-npcs.js) is the exact pairing every other world's own stall keeper
+  // already uses, holding `makeHerbBundle()` (new, 62-props-nature.js, right after `makeHoneyJarStand`)
+  // in place of a basket or tray. `Vendor`'s own constructor skips `greetable()` on purpose ("the world
+  // gives the vendor its own prompt"), so this one calls it explicitly straight after, the same fix the
+  // berry seller's own round already used.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, since
+  // there's no browser here to look at it: `game.start('new')`, `game.travel(6, 'from-hub')` waited out
+  // for real against `game.worldIndex`, then 2400 simulated frames sampling every NPC's own position
+  // every 10th frame) swept a 2 m grid of the open forest floor (radius 10-54, short of the radius (58)
+  // where `forestRegion()`'s own fill takes over) against both those samples and all of this wood's
+  // physics boxes: (51, 17) came back 8.70 m clear of the nearest box and 10.44 m clear of the nearest
+  // wandering soul, at radius 53.8 from the origin — on the opposite side of the glade from the fiddler
+  // above (51, -20) and every other hand-placed landmark, with `game.zones.blocked` clear and the
+  // ground flat to within 5 cm across the stall's own footprint.
+  //
+  // Built dead last, right after the fiddler above and right before the squirrel spawn point, for the
+  // usual reason: `makeHuman()` and `randomPerson()` both draw off this wood's own shared `r()`
+  // sequence unconditionally, and anything built earlier would have had its own timing-sensitive pick
+  // shifted by it.
+  { const hbx = 51, hbz = 17, hbry = atan2(-hbx, -hbz);
+    const herbWard = makeWardrobe(r, { shirts: [0x6a7a4a, 0x5a4a6a, 0x7a6a4a] });
+    const herbalist = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: true, wardrobe: herbWard }),
+      apron: 0xd9c9a8, hat: 'flatcap', hatColor: 0x4a4030, bag: null, jacket: null, scarf: null, glasses: r.chance(0.4) });
+    W.add(herbalist.group);
+    const hv = new Vendor(game, herbalist, makeHerbBundle(), { x: hbx, z: hbz, ry: hbry, cryIcon: '🌿',
+      cries: ["Sage for the nerves, lavender for sleep — rosehip just because it's pretty.", "Careful, puss — dried, not catnip, whatever your nose is telling you.", "Every sprig picked within an hour's walk of this very spot."] });
+    game.npcs.push(hv); greetable(game, hv); }
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
