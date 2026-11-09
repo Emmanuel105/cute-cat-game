@@ -27741,3 +27741,41 @@ after 200 frames with the cat parked beside it.
 unchanged at 330 (a pure logic fix touching no geometry or colliders). No visual check was possible in
 this environment (no browser, no Playwright) — only the stub-three test suite and the two headless
 probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1015 — Robot City gets its own crossing guard
+
+Every world with Candy Land's cane-ring roads has had a human directing traffic for a while —
+the Neighborhood and Victorian both have a `CrossingGuard` (55-npcs.js: a lollipop-style stop-sign
+raised and lowered every few seconds, built on `Birder`'s own binocular-raise rig) holding up cars
+at a junction — but Robot City, where wandering bots crisscross the open factory floor on their own
+patrol loops instead of driving lanes, never got one. **A safety marshal now stands on the open
+concrete, raising a stop-sign on a pole as if halting bot traffic at an unmarked crossing.**
+*"Hold up — forklift's got the right of way."* *"Nobody's dented a bot on my watch."* *"Mind the
+lane, puss — wheels don't swerve for cats."* Hazard-amber vest, cyan cap band — the same hi-vis
+palette this city's other safety workers already wear, not the wagon hauler's plain amber shirt a
+few lines up in the same build function.
+
+No new controller or mesh: `CrossingGuard`'s constructor already calls `greetable()` itself, so this
+is a placement, not a new build. A headless probe (the stub-three harness `test/run.mjs` itself uses:
+`game.start('new')` then `game.travel(2, 'from-hub')`, 1800 simulated frames sampling every NPC's own
+position every 5th frame) swept the open floor (radius 20–65, short of the radius (98) where
+`robotRegion`'s own procedural fill takes over) against those samples, every one of the city's
+physics boxes and `game.zones`: (0, -42) came back 2.7 m clear of the nearest box and 14.8 m clear of
+the nearest wandering soul, with no `game.zones` rect anywhere near it — well clear of the piñata
+post at (2, -70) and the wagon hauler's own spot at (6, -88). Built dead last in the function, after
+the wagon hauler, for the usual reason: `makeHuman()` draws off this city's own shared `r()` sequence
+unconditionally, and a fresh rig built any earlier would desync every other timing-sensitive pick
+already placed above.
+
+Verified past the test suite with a second headless probe: `game.start('new')`, travelled to Robot
+City, stood the cat 1.2 m in front of the guard, and confirmed the prompt read "Say hello", that
+`game.interact()` turned it into a real friend (`friends.size` 0 → 1), and that `rig.head.rotation`
+stayed finite over 400 simulated frames of the raise/lower cycle (the bug rounds 1011–1014 hunted
+down doesn't apply here — `CrossingGuard`'s own constructor already sets `this.look = 0` before
+`update()` ever runs).
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 330 (one new physics circle for the guard's own feet, same convention every other
+greetable NPC already uses, didn't move the total shown by the suite). No visual check was possible
+in this environment (no browser, no Playwright) — only the stub-three test suite and the two headless
+probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -17308,6 +17308,37 @@ function buildRobotCity(game, entry) {
     game.npcs.push(new Kneeler(game, hauler, { x: wx, z: wz, ry: atan2(bx - wx, bz - wz),
       cries: ["Spare bolts, sorted by thread — foreman's orders.", "Careful, puss — not a ride, this one.", "Last crate before shift change. Nearly there."] })); }
 
+  // the Neighborhood and Victorian both have a crossing guard holding up traffic at a junction
+  // (`CrossingGuard`, 55-npcs.js — a lollipop-sign-style raise/lower cycle, same as `Birder`'s
+  // binoculars) — Robot City, with wandering bots crisscrossing its open floor on their own patrol
+  // loops, never got one. **A safety marshal now stands on the open concrete, raising a stop-sign on a
+  // pole every few seconds as if halting bot traffic at an unmarked crossing.** *"Hold up — forklift's
+  // got the right of way."* *"Nobody's dented a bot on my watch."* *"Mind the lane, puss — wheels don't
+  // swerve for cats."*
+  //
+  // No new controller: `CrossingGuard`'s constructor calls `greetable()` itself, so this is a
+  // placement, not a new build. Hazard-amber vest and cyan cap band, matching the hi-vis palette this
+  // city's other safety workers already wear, not the wagon hauler's own plain amber shirt a few lines
+  // up.
+  //
+  // A headless probe (the stub-three harness `test/run.mjs` itself uses: `game.start('new')` then
+  // `game.travel(2, 'from-hub')`, 1800 simulated frames sampling every NPC's own position every 5th
+  // frame) swept the open floor (radius 20-65, short of the radius (98) where `robotRegion`'s own
+  // procedural fill takes over) against those samples, every one of the city's physics boxes and
+  // `game.zones`: (0, -42) came back 2.7 m clear of the nearest box and 14.8 m clear of the nearest
+  // wandering soul, with no `game.zones` rect anywhere near it — well clear of the piñata post at
+  // (2, -70) and the wagon hauler's own spot at (6, -88).
+  //
+  // Built dead last, right after the wagon hauler above, for the usual reason: `makeHuman()` draws off
+  // this city's own shared `r()` sequence unconditionally, and a fresh rig built any earlier would
+  // shift that sequence and desync every other timing-sensitive pick already placed above.
+  { const guardWard = makeWardrobe(r, { shirts: [0xffb300], pants: [0x232c34, 0x2a2a30], shoes: [0x1a1a20, 0x201c18] });
+    const guard = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.2), wardrobe: guardWard }),
+      hat: 'cap', hatColor: 0x2a2a2a, hatBand: 0x00e5ff, stripes: 0xe8e8e8, scarf: null, jacket: null, bag: null, backpack: null, glasses: r.chance(0.25) });
+    W.add(guard.group);
+    game.npcs.push(new CrossingGuard(game, guard, { x: 0, z: -42, ry: 0,
+      cries: ["Hold up — forklift's got the right of way.", 'Nobody\'s dented a bot on my watch.', "Mind the lane, puss — wheels don't swerve for cats."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
