@@ -15169,6 +15169,70 @@ function buildCandyLand(game, entry) {
       cries: ['Tuppence a tune, same price in every land, puss or no puss.', "Careful, puss — the pipes don't take kindly to climbing, same as every other organ's ever told you.", "Three dozen tunes in this barrel. The gumdrop wagon's never once kept up with the beat."] }));
     U.push(organ.userData.update); }
 
+  // Victorian has a fortune teller reading a crystal ball and Robot City a coin-operated fortune
+  // machine (round 1019) — but a chrome Zoltar cabinet is a strange fit for a land built entirely out
+  // of sugar, and nobody here has ever told a fortune at all. **A giant fortune cookie, already
+  // cracked in two, now sits propped open on a candy-cane striped stand** on the open sweet-lands
+  // past the second fiddler and the organ grinder, a glowing paper slip tucked in the crack between
+  // its sugar-glazed shells. *"🥠 A sweet tooth today brings a sweeter tomorrow."* *"🥠 Careful, puss
+  // — paper wrapper, not a treat. The fortune's the only thing inside."* *"🥠 Baked fresh at dawn,
+  // same as every cookie in this land — dawn just never actually comes here."*
+  //
+  // No new controller and no `game.npcs` entry: like Robot City's own machine, it's an inert group
+  // handed straight to `game.addInteractable`, animated by a plain `U.push` closure (the whole cookie
+  // rocking gently on its stand, the paper slip's glow pulsing, three marquee-style candy lights round
+  // the collar blinking in sequence) rather than anything the friend count needs to track. A single
+  // AABB box stands in for the whole shape, sized to bound the propped-open shells at any facing, the
+  // same trick Robot City's own rotated cabinet already uses. The two shells are a plain `G.dome()`
+  // each (the same hemisphere geometry the igloos and the aurora artist's own stool already use),
+  // hinged at a shared pivot and rotated apart around Z like an open book standing on its spine —
+  // no new geometry helper needed.
+  //
+  // Checked first that this was actually new: no world outside Victorian's crystal-ball reader and
+  // Robot City's own machine has a "fortune" prop or line anywhere, and nothing anywhere in the game
+  // is shaped like a fortune cookie.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.travel(1, 'from-prev')` waited out through its real portal-fade timer, then 3600 simulated
+  // frames sampling every NPC's own position every 10th frame) swept a 2 m grid of the open
+  // sweet-lands (radius 15-80, short of the radius (92) where `candyRegion`'s own fill takes over)
+  // against those 32,760 samples and all 1904 of this land's own physics boxes, rejecting anywhere
+  // `game.zones` already claims: (-75, 22.5) came back clearest — 10.6 m clear of the nearest box and
+  // 11.5 m clear of the nearest wandering soul, at radius 78.3 from the origin, well past the second
+  // fiddler at (74.5, 46.5) and the organ grinder at (70, -5) on the land's own east side. Facing the
+  // land's own centre (ry = atan2(-fx, -fz)) needs no extra clearance check: the stand's own 0.5 m
+  // footprint fits comfortably inside that same margin.
+  { const fx = -75, fz = 22.5, fry = atan2(-fx, -fz);
+    const root = group(fx, 0, fz, W); root.rotation.y = fry;
+    const caneRed = mat(0xe0453f, { roughness: 0.5 }), caneWhite = mat(0xfff8ef, { roughness: 0.45 }),
+      goldM = mat(0xffd54a, { metalness: 0.4, roughness: 0.4 }),
+      cookieM = mat(0xd9a257, { roughness: 0.75 }), cookieDark = mat(0xb9823f, { roughness: 0.8 }),
+      slipM = glowMat(0xfff3d6, 1.0);
+    mesh(G.cyl(0.42, 0.46, 0.14, 16), caneWhite, { y: 0.07, shadow: 'both', parent: root });   // base plinth
+    const standH = 0.6;
+    const stand = group(0, 0.14, 0, root);
+    for (let i = 0; i < 8; i++) mesh(G.box(0.08, standH, 0.08), i % 2 ? caneRed : caneWhite, { x: 0.3 * cos(i / 8 * TAU), y: standH / 2, z: 0.3 * sin(i / 8 * TAU), shadow: 'both', parent: stand });
+    mesh(G.cyl(0.33, 0.33, 0.05, 16), goldM, { y: standH + 0.025, parent: stand });             // gold collar
+    mesh(G.box(0.09, 0.07, 0.03), goldM, { y: standH * 0.55, z: 0.31, parent: stand });          // coin plate
+    noInk(mesh(G.box(0.06, 0.015, 0.01), mat(0x2a2016), { y: standH * 0.55, z: 0.325, parent: stand }));   // the slot
+    const bulbs = [-0.26, 0, 0.26].map((bx, i) => mesh(G.sphere(0.028, 8, 6), glowMat([0xff6fb5, 0xffd54a, 0x7fd7ff][i], 0.7), { x: bx, y: standH + 0.1, z: 0.27, shadow: 'none', parent: stand }));
+    const hinge = group(0, standH + 0.06, 0, stand);
+    const shellL = group(0, 0, 0, hinge); shellL.rotation.z = 0.55;
+    mesh(G.dome(0.3, 16, 10), cookieM, { parent: shellL });
+    const shellR = group(0, 0, 0, hinge); shellR.rotation.z = -0.55;
+    mesh(G.dome(0.3, 16, 10), cookieDark, { parent: shellR });
+    const slip = noInk(mesh(G.box(0.16, 0.26, 0.012), slipM, { y: 0.1, rx: -0.4, shadow: 'none', parent: hinge }));
+    P.addBox(fx, 0.55, fz, 0.9, 1.1, 0.9);
+    U.push((dt, t) => {
+      root.rotation.z = sin(t * 0.35) * 0.015;
+      slipM.emissiveIntensity = 1.0 + max(0, sin(t * 1.4)) * 0.9;
+      bulbs.forEach((b, i) => { b.material.emissiveIntensity = sin(t * 3.4 - i * 1.3) > 0.1 ? 1.3 : 0.15; });
+    });
+    const cookieLines = ['🥠 "A sweet tooth today brings a sweeter tomorrow."', '🥠 Careful, puss — paper wrapper, not a treat. The fortune\'s the only thing inside.', '🥠 Baked fresh at dawn, same as every cookie in this land — dawn just never actually comes here.'];
+    game.addInteractable({ obj: root, radius: 2.2, label: () => 'Crack the fortune cookie', onUse: () => {
+      SFX.chime(); game.fx.emit(fx, 1.0, fz, { count: 10, colors: [0xff6fb5, 0xffd54a, 0x7fd7ff], speed: 1.0, up: 1.4, life: 0.8, gravity: 1.6 });
+      game.toast(rnd.pick(cookieLines), 3200); } }); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

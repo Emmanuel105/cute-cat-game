@@ -28529,3 +28529,43 @@ standing performer), Whisper Woods' own friend count rose from 151 to 152 ("152 
 check was possible in this environment (no browser, no Playwright) — only the stub-three test suite and
 the two headless probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 1034 — Candy Land gets a fortune cookie machine
+
+Victorian has a fortune teller reading a crystal ball and Robot City its own coin-operated fortune
+machine (round 1019), but a chrome Zoltar cabinet never belonged in a land built out of sugar, and
+nobody there had ever told a fortune at all. **A giant fortune cookie, already cracked in two, now sits
+propped open on a candy-cane striped stand** on the open sweet-lands past the second fiddler and the
+organ grinder — two sugar-glazed shells leaning apart like an open book, a glowing paper slip tucked in
+the crack, three candy-coloured bulbs blinking round the gold collar underneath. *"🥠 A sweet tooth
+today brings a sweeter tomorrow."* *"🥠 Careful, puss — paper wrapper, not a treat. The fortune's the
+only thing inside."* *"🥠 Baked fresh at dawn, same as every cookie in this land — dawn just never
+actually comes here."*
+
+No new controller and no `game.npcs` entry: like Robot City's own machine, it's an inert group handed
+straight to `game.addInteractable`, animated by a plain `U.push` closure (the whole thing rocking gently
+on its stand, the slip's glow pulsing, the three bulbs blinking in sequence). The two cookie shells are
+just a `G.dome()` each — the same hemisphere geometry the igloos already use — hinged at a shared pivot
+and rotated apart around Z like a book standing open on its spine, so no new geometry helper was needed.
+Checked first that this was actually new: no world outside Victorian's reader and Robot City's machine
+has a "fortune" prop or line anywhere, and nothing in the game is shaped like a cookie.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.travel(1, 'from-prev')` waited out through its real portal-fade timer, then 3600 simulated frames
+sampling every NPC's own position every 10th frame) swept a 2 m grid of the open sweet-lands (radius
+15-80, short of the radius (92) where `candyRegion`'s own fill takes over) against those 32,760 samples
+and all 1904 of this land's own physics boxes, rejecting anywhere `game.zones` already claims: (-75,
+22.5) came back clearest — 10.6 m clear of the nearest box and 11.5 m clear of the nearest wandering
+soul, at radius 78.3 from the origin, well past the second fiddler and the organ grinder on the land's
+own east side.
+
+Verified past the test suite with a second headless probe: found the new "Crack the fortune cookie"
+interactable, confirmed its group sits under the real scene graph, ran 600 simulated frames with the
+cat's own position staying finite, called `onUse()` directly — it ran without throwing, emitted a
+particle burst and a toast — then ran 600 more frames with everything still finite.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, Candy
+Land's own friend total unchanged at 109 (the cookie machine is inert, like Robot City's machine, and
+was never going to move it). No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite and the two headless probes above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
