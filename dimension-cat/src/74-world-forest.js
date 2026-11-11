@@ -2851,6 +2851,40 @@ function buildForest(game, entry) {
     game.npcs.push(new OrganGrinder(game, grinder, organ, { x: gx, z: gz, ry: gry, side: 1,
       cries: ['Tuppence a tune — even the owls stop to listen, once in a while.', "Careful, puss — damp wood and brass gears, and this one's never once made it out of these trees for a clean.", "Thirty tunes in the barrel, and the moss underfoot has never once thrown off the beat."] }));
     U.push(organ.userData.update); }
+  // Candy Land, Robot City, Victorian, the Neighborhood, Sunny Shore and Frosty Peak all have their own
+  // `Magician` (55-npcs.js) by now; Whisper Woods was the last of the seven left without one. A
+  // coin-vanishing performer now works a quiet, flat stretch of forest floor north-west of the glade,
+  // well clear of the hollow oak, the wagon and every other hand-placed landmark on this side of the
+  // wood. *"Nothing up this sleeve. Not even a firefly, and believe me, they get into everything out
+  // here."* *"Watch closely, puss — the coin's gone. ...And it's back. Every time."* *"Not even the
+  // owls have caught how it's done, and they don't miss much."*
+  //
+  // No new mechanism: `Magician` (55-npcs.js) reused verbatim a seventh time, closing out the set —
+  // only the wardrobe (woodland greens and browns instead of the usual tailcoat) and the lines are new.
+  // `Magician`'s own constructor already sets its rig's height straight from `game.physics.ground0()`,
+  // the same terrain-aware convention the fiddler, herbalist and grinder above all rely on, so it
+  // needed no `placeT`/`boxT` call of its own.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, `game.travel(6, 'from-hub')` waited out for real,
+  // then 2400 simulated frames sampling every NPC's and the squirrel's own position every 10th frame)
+  // swept a 2 m grid of the open forest floor (radius 10-55, short of the radius (58) where
+  // `forestRegion()`'s own fill takes over) against those 22,560 samples, all 734 of this wood's own
+  // physics boxes, and every one of `game.zones`'s own rectangles, then re-swept the best quadrant at
+  // 0.5 m: (-22, 49.5) came back clearest — 7.47 m from the nearest box, 16.79 m from the nearest
+  // wandering soul, at radius 54.2 from the origin, on ground levelling out at 1.159 m with under 1.5 cm
+  // of slope across a 0.5 m square — 22 m clear of the hollow oak at (0, 50), 38.8 m clear of the
+  // paper-plane kid, and far past the fiddler, herbalist and grinder clustered on the wood's east side.
+  //
+  // Built dead last, right after the organ grinder above, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off this wood's own shared `r()` sequence unconditionally.
+  { const mx = -22, mz = 49.5, mry = atan2(0 - mx, 0 - mz);
+    const magicianWard = makeWardrobe(r, { shirts: [0x3a4a2e, 0x5a7a4a, 0x4a3a2a], pants: [0x2a2a2a, 0x3a3a2a], shoes: [0x3a2a1e, 0x1e2020] });
+    const magician = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: magicianWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.2) });
+    W.add(magician.group);
+    const magicLines = ["Nothing up this sleeve. Not even a firefly, and believe me, they get into everything out here.", "Watch closely, puss — the coin's gone. ...And it's back. Every time.", "Not even the owls have caught how it's done, and they don't miss much."];
+    game.npcs.push(new Magician(game, magician, { x: mx, z: mz, ry: mry, cries: magicLines })); }
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

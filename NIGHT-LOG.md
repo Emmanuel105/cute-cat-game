@@ -28486,3 +28486,46 @@ unchanged (the magician carries only a circle collider, like every other standin
 Peak's own friend count rose from 122 to 123 ("123 to meet"). No visual check was possible in this
 environment (no browser, no Playwright) — only the stub-three test suite and the two headless probes
 above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1033 — Whisper Woods gets a magician too, the last of the seven
+
+Candy Land, Robot City, Victorian, the Neighborhood, Sunny Shore and Frosty Peak all had their own
+`Magician` by now; Whisper Woods was the last of the seven worlds without one. **A coin-vanishing
+magician now works a quiet, flat stretch of forest floor north-west of the glade, dressed in woodland
+greens and browns instead of the usual tailcoat.** *"Nothing up this sleeve. Not even a firefly, and
+believe me, they get into everything out here."* *"Watch closely, puss — the coin's gone. ...And it's
+back. Every time."* *"Not even the owls have caught how it's done, and they don't miss much."* Every
+world now has its own magician.
+
+No new mechanism: `Magician` (`55-npcs.js`) reused verbatim a seventh time, closing out the set — only
+the wardrobe and lines are new. `Magician`'s own constructor already reads its height straight off
+`game.physics.ground0()`, the same terrain-aware convention the fiddler, herbalist and organ grinder on
+this wood's own east side already rely on, so it needed no `placeT`/`boxT` call of its own — just
+`W.add()` and a push onto `game.npcs`.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(6, 'from-hub')` waited out for real, then
+2400 simulated frames sampling every NPC's and the squirrel's own position every 10th frame) swept a
+2 m grid of the open forest floor (x and z in [-56, 56], radius 10-55, short of the radius (58) where
+`forestRegion()`'s own fill takes over) against those 22,560 samples, all 734 of this wood's own
+physics boxes, and every one of `game.zones`'s own 224 rectangles, then re-swept the best quadrant at
+0.5 m. (-22, 49.5) came back clearest: 7.47 m from the nearest box, 16.79 m from the nearest wandering
+soul, at radius 54.2 from the origin, on ground levelling out at 1.159 m with under 1.5 cm of slope
+across a 0.5 m square — 22 m clear of the hollow oak at (0, 50), 38.8 m clear of the paper-plane kid,
+and far past the fiddler, herbalist and organ grinder all clustered on the wood's east side. Built dead
+last, right after the organ grinder, for the usual reason: `makeHuman()` and `randomPerson()` both draw
+off this wood's own shared `r()` sequence unconditionally.
+
+Verified past the test suite with a second headless probe: found the new `Magician` in `game.npcs` at
+exactly (-22, 1.159, 49.5), confirmed its rig sits under the real scene graph, ran 1200 simulated frames
+watching the rig's position and head rotation stay finite throughout while the coin mesh toggled
+visible and hidden on schedule (both states actually observed), then walked the cat to 0.9 m away —
+`game.nearest.label()` read "Say hello" — and calling `onUse()` took `game.state.friends.size` from 0
+to 1.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 331 in the Neighborhood (the magician carries only a circle collider, like every other
+standing performer), Whisper Woods' own friend count rose from 151 to 152 ("152 to meet"). No visual
+check was possible in this environment (no browser, no Playwright) — only the stub-three test suite and
+the two headless probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.
