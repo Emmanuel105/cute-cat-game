@@ -28569,3 +28569,44 @@ Land's own friend total unchanged at 109 (the cookie machine is inert, like Robo
 was never going to move it). No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite and the two headless probes above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1035 — Frosty Peak gets its own stone-skipper, the last of the seven
+
+Candy Land, Robot City, Victorian, the Neighborhood, Sunny Shore and Whisper Woods all had their own
+`StoneSkipper` by now; Frosty Peak was the last of the seven worlds without one. **A kid now flings
+flat stones across the frozen pond's own south-west corner**, well clear of the ice fisherman's hole
+to the north and the bolder skater's own patrol line back and forth across the middle. *"Six skids,
+that time — new record!"* *"Careful, puss, that one's a keeper."* *"Doesn't sink out here. Doesn't
+need to."*
+
+No new mechanism: `StoneSkipper` (`55-npcs.js`) never actually animated a splash or a sinking stone in
+the first place — its own three shrinking hops just toggle the stone's visibility off and vanish it
+after the third landing — so reused verbatim here it reads just as well as a stone skidding and
+spinning across hard ice as it does skipping across open water. The kid stands at (13.5, 3.5), facing
+south-west (ry = -2.0) so the stone's three hops land at (12.2, 1.9), (11.0, 0.7) and (10.2, -0.1),
+all on the open snow south-west of the pond rather than the water itself — the class's own hop math
+reaches to an absolute world y = 0 regardless of local terrain, the same simplification the existing
+Sunny Shore and Whisper Woods skippers already carry (ground height there sits at 0.22 m and 0.48 m
+respectively, not a true 0), so this one's ground height of 0.55-0.65 m along the throw is in the same
+range those two already shipped with.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(5, 'from-hub')` waited out through its real
+520 ms portal-fade timer, then 1800 simulated frames sampling every NPC's own position every sixth
+frame) checked the stand point and all three hop landing points against every one of the mountain's
+819 physics boxes: the nearest box stayed 3.9-5.7 m clear along the whole throw, and ground height
+varied under 0.1 m across it. Chose the pond's south-west corner specifically to stay clear of the
+fisherman's hole (north, at (18, 11.5)) and the bold skater's own east-west patrol line through the
+pond's centre (z = 8, x from 14.5 to 21.5).
+
+Verified past the test suite with a second headless probe: found the new `StoneSkipper` in `game.npcs`
+at exactly (13.5, 0.574, 3.5), confirmed its rig sits under the real scene graph, ran 1200 simulated
+frames watching both the rig's and the thrown stone's own position stay finite throughout, then walked
+the cat to within a metre — `game.nearest.label()` read "Say hi" — and calling `onUse()` took
+`game.state.friends.size` from 0 to 1.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 331 (the skipper carries only a circle collider, like every other standing performer),
+Frosty Peak's own friend count rose to 124 ("124 to meet"). No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite and the two headless probes
+above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
