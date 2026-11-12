@@ -2371,6 +2371,50 @@ function buildBeach(game, entry) {
     const magicLines = ["Nothing up this sleeve. Not even a grain of sand, and believe me, I've checked.", "Watch closely, puss — the coin's gone. ...And it's back. Every time.", 'Not even the gulls have caught how it’s done, and they watch everything that glints.'];
     game.npcs.push(new Magician(game, magician, { x: mx, z: mz, ry: mry, cries: magicLines })); }
 
+  // Sunny Shore, the first of the three terrain worlds, gets its own basketball hoop — the fifth of
+  // the seven worlds to get the makeHoop()/Baller pairing (after the Neighborhood, Candy Land, Robot
+  // City and Victorian, rounds 1037-1040). **A kid in a faded orange jersey dribbles alone on a flat
+  // stretch of hard sand up in the north-west dunes,** lofting the ball up through a pole-mounted hoop
+  // before it drops straight back into her waiting hand to dribble again. *"Court's dry till the tide
+  // turns — plenty of shots left in me."* *"Mind the gulls, puss — they've swiped the ball twice
+  // already."* *"Lifeguard's never once called a foul on a crab underfoot."*
+  //
+  // No new prop and no new controller: the same `makeHoop()` (60-props.js) and `Baller` (55-npcs.js)
+  // every flat-floor world already uses. The only wrinkle a terrain world adds: `Baller`'s own
+  // constructor already reads its rig's height straight off `game.physics.ground0()`, so it needed no
+  // change, but the hoop's own group and its pole's physics box both have to read off that same
+  // `ground0(hx, hz)` instead of a bare `0` — the same ground-relative convention `boxT`/`placeT`
+  // already use everywhere else on this beach.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, `game.travel(4, 'from-hub')` waited out for real —
+  // its own 520 ms `setTimeout` has to actually fire before any of the beach's 112 NPCs exist, or a
+  // sweep just finds the Neighborhood's own furniture still standing — then 1800 simulated frames,
+  // then a 1 m grid of the dry sand swept against all 266 of the beach's own physics boxes, every one
+  // of `game.zones`'s rectangles and circles, and all 112 NPCs' live positions) found (-54, 6) clear
+  // for the hoop's own pole — radius 54.3 from the origin, short of the 58 where `beachRegion()`'s own
+  // fill takes over, 7.2 m from the nearest box and 7.9 m from the nearest wandering soul — and
+  // (-54, 11.5) for the kid, 5.5 m further along the hoop's own facing (the same offset every other
+  // world used), 5.9 m clear of the nearest box and 5.1 m clear of the nearest NPC, on ground levelling
+  // out within a centimetre across the whole stretch between them.
+  //
+  // Built dead last, right after the magician above, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off this beach's own shared `r()` sequence unconditionally, and
+  // anything built earlier would have had its own timing-sensitive pick shifted by it. (The squirrel
+  // was built early on this beach already, so no shift risk there.)
+  { const hx = -54, hz = 6, bx = -54, bz = 11.5, bry = atan2(hx - bx, hz - bz), poleH = 2.55;
+    const hy0 = P.ground0(hx, hz);
+    const hoop = makeHoop(poleH); hoop.position.set(hx, hy0, hz); W.add(hoop);
+    P.addBox(hx, hy0 + poleH / 2, hz, 0.14, poleH, 0.14, { cam: false });
+    const [rimX, rimY, rimZ] = hoop.userData.rim;
+    const baller = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true }),
+      shirt: 0xff6a00, pants: 0x1a1a22, shoes: 0xffffff, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(baller.group);
+    const ball = mesh(G.sphere(0.12, 10, 8), mat(0xe8742c, { roughness: 0.65 }), { parent: W });
+    const ballerLines = ["Court's dry till the tide turns — plenty of shots left in me.", "Mind the gulls, puss — they've swiped the ball twice already.", "Lifeguard's never once called a foul on a crab underfoot."];
+    game.npcs.push(new Baller(game, baller, ball, { x: bx, z: bz, ry: bry,
+      hoopX: hx + rimX, hoopY: hy0 + rimY, hoopZ: hz + rimZ, cries: ballerLines })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

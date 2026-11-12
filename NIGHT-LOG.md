@@ -28816,3 +28816,41 @@ prompt took `game.state.friends.size` from 0 to 1.
 own friend total rose from 152 to 153. No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite and the two headless probes above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1041 — Sunny Shore gets a basketball hoop, the fifth of the seven and the first terrain world
+
+The Neighborhood, Candy Land, Robot City and Victorian all had their own basketball hoop by round
+1040, and no terrain world had one yet. **A kid in a faded orange jersey now dribbles alone on a flat
+stretch of hard sand up in the north-west dunes,** lofting the ball up through a pole-mounted hoop
+before it drops straight back into her waiting hand to dribble again. *"Court's dry till the tide
+turns — plenty of shots left in me."* *"Mind the gulls, puss — they've swiped the ball twice already."*
+*"Lifeguard's never once called a foul on a crab underfoot."*
+
+No new prop and no new controller: the same `makeHoop()` (`60-props.js`) and `Baller` (`55-npcs.js`)
+the other four worlds already use. The one wrinkle a terrain world adds over a flat-floor one: the
+hoop's own group and its pole's physics box both have to read their height off
+`game.physics.ground0(hx, hz)` instead of a bare `0` — `Baller`'s own constructor already does this for
+its rig, so the controller itself needed no change at all.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(4, 'from-hub')` waited out for real — its
+own 520 ms `setTimeout` has to actually fire before any of the beach's NPCs exist, or a sweep just
+finds the Neighborhood's own furniture still standing in for it — then 1800 simulated frames, then a
+1 m grid of the dry sand swept against all 266 of the beach's own physics boxes, every one of
+`game.zones`'s rectangles and circles, and all 112 of the beach's NPCs' live positions) found (-54, 6)
+clear for the hoop's own pole — radius 54.3 from the origin, short of the 58 where `beachRegion()`'s
+own fill takes over, 7.2 m from the nearest box and 7.9 m from the nearest wandering soul — and
+(-54, 11.5) for the kid, 5.5 m further along the hoop's own facing (the same offset every other world
+used), 5.9 m clear of the nearest box and 5.1 m clear of the nearest NPC, on ground levelling out
+within a centimetre across the whole stretch between them.
+
+A second headless probe ran 2400 simulated frames with the game actually started, confirmed the new
+`Baller` sits in the scene graph, watched all three phases (`dribble`, `rise`, `fall`) pass with the
+ball's position staying finite throughout, then walked the cat up to the kid and confirmed the "Say
+hi" prompt took `game.state.friends.size` from 0 to 1 (and stayed at 1 on a second greeting, same as
+every other friend).
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, Sunny
+Shore's own friend total rose from 128 to 129. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the two headless probes above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
