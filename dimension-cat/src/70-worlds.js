@@ -3768,6 +3768,50 @@ function buildNeighborhood(game, entry) {
     place(game, U, makeFiddleCase(), caseX, caseZ, fry);
     P.addBox(caseX, 0.06, caseZ, 0.64, 0.12, 0.24, { cam: false }); }
 
+  // the Neighborhood has had almost every yard game and busking act in the book for a while now, but
+  // basketball — the one driveway game every real cul-de-sac has — had never shown up in the whole
+  // game. A kid now dribbles alone on a quiet stretch of the open south field, well clear of the
+  // tug-of-war pair, and lofts the ball up through a pole-mounted hoop every few seconds before it
+  // drops straight back down into her waiting hand to dribble again.
+  //
+  // New prop `makeHoop()` (60-props.js): a thin pole, a cantilevered arm, a backboard with a painted
+  // trim, an orange rim and a net of straight hanging cords — the same vertical-strand simplification
+  // `makeVolleyballNet()` already gets away with, rather than a true tapered cone. New controller
+  // `Baller` (55-npcs.js): the ball is its own free mesh, not a child of the rig's hand, the same cheat
+  // `Juggler`'s three balls already use; it bounces between a low point and a hand-height point while
+  // idle, then arcs up to the rim and straight back down again — a lerp between two fixed points with a
+  // sine bump added for height, the same shape `Horseshoes`' own lob already uses.
+  //
+  // A headless probe (`game.start('new')`, 2400 simulated frames sampling every NPC's own position
+  // every frame) swept the open south field against every one of the street's physics boxes and every
+  // other NPC's own position: the hoop's own pole at (-16, -47) and the spot where the kid stands,
+  // (-16, -41.5), 5.5 m off, both came back clear — 6.7 m and 10.6 m from the nearest box, 8.4 m and
+  // 8.3 m from the nearest other soul (the tug-of-war pair's own station at (-8, -42)). The shot's own
+  // arc peaks at the rim, (-16, 2.05, -46.4), well clear of the ground the whole way, so it never
+  // touches the walkability sweep's own under-1.6m band.
+  //
+  // Built dead last of everything this street adds, right after the fiddler above and right before
+  // `makeDayNight`, for the usual reason: `makeHuman()` and `randomPerson()` both draw off this
+  // street's own shared `r()` sequence unconditionally, and this is the first world the test suite
+  // builds, so anything built earlier here would have had its own timing-sensitive pick shifted by it.
+  // No `cries` at all, the same fix the fiddler above needed: the Neighborhood is the one world whose
+  // build-and-test window shares a single run of simulated frames with its own behaviour checks, and a
+  // `cries` branch is the only place `Baller.update()` ever touches the *shared* global `rnd()`
+  // sequence — every other timer it runs on (the dribble length, the shot arc, the initial `this.t`
+  // offset) is either a fixed constant or drawn once at construction, dead last, so nothing built
+  // earlier is shifted by it. The explicit shirt colour (0x1f6feb) was checked against all 73 of the
+  // street's other people first.
+  { const hx = -16, hz = -47, bx = -16, bz = -41.5, bry = atan2(hx - bx, hz - bz), poleH = 2.55;
+    const hoop = makeHoop(poleH); hoop.position.set(hx, P.ground0(hx, hz), hz); W.add(hoop);
+    P.addBox(hx, poleH / 2, hz, 0.14, poleH, 0.14, { cam: false });
+    const [rimX, rimY, rimZ] = hoop.userData.rim;
+    const baller = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true }),
+      shirt: 0x1f6feb, pants: 0x1a1a22, shoes: 0xffffff, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(baller.group);
+    const ball = mesh(G.sphere(0.12, 10, 8), mat(0xe8742c, { roughness: 0.65 }), { parent: W });
+    game.npcs.push(new Baller(game, baller, ball, { x: bx, z: bz, ry: bry,
+      hoopX: hx + rimX, hoopY: P.ground0(hx, hz) + rimY, hoopZ: hz + rimZ })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

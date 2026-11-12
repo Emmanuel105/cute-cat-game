@@ -745,6 +745,23 @@ function makeSkateboard(color = 0xff6fb5) {
   }
   return g;
 }
+/** A pole-mounted basketball hoop: a thin pole, a cantilevered arm, a backboard with a painted trim, an orange rim and a hanging net of straight cords. Faces +z (the rim projects toward the shooter). `userData.rim` gives the rim's own local [x,y,z], for a caller aiming a ball at it. */
+function makeHoop(poleH = 2.55, rimY = 2.05) {
+  const g = new THREE.Group(), rimR = 0.23;
+  const poleM = mat(0x3a3a3a, { roughness: 0.6, metalness: 0.4 }), boardM = mat(0xf2f2ec, { roughness: 0.5 }), trimM = mat(0xd62839, { roughness: 0.6 }), rimM = mat(0xff6a00, { roughness: 0.5, metalness: 0.25 }), netM = mat(0xece7da, { roughness: 0.9, transparent: true, opacity: 0.8 });
+  mesh(G.cyl(0.055, 0.065, poleH, 10), poleM, { y: poleH / 2, parent: g });
+  mesh(G.box(0.07, 0.07, 0.42), poleM, { y: poleH - 0.15, z: 0.21, parent: g });   // arm cantilevering the board forward
+  const board = group(0, poleH - 0.15, 0.42, g);
+  mesh(G.box(0.85, 0.55, 0.035), boardM, { parent: board });
+  for (const [bx, by, bw, bh] of [[0, 0.24, 0.85, 0.05], [0, -0.24, 0.85, 0.05], [-0.4, 0, 0.05, 0.55], [0.4, 0, 0.05, 0.55]]) mesh(G.box(bw, bh, 0.01), trimM, { x: bx, y: by, z: 0.023, shadow: 'none', parent: board });   // the shooter's square, painted on
+  const cz = 0.42 + rimR;
+  mesh(G.torus(rimR, 0.018, 6, 16), rimM, { y: rimY, z: cz, rx: PI / 2, shadow: 'none', parent: g });
+  const netTopY = rimY - 0.02, netH = 0.32, netR = rimR * 0.9;
+  for (let i = 0; i < 8; i++) { const a = i / 8 * TAU; noInk(mesh(G.cyl(0.006, 0.006, netH, 4), netM, { x: cos(a) * netR, y: netTopY - netH / 2, z: cz + sin(a) * netR, shadow: 'none', parent: g })); }
+  for (const yy of [netTopY, netTopY - netH * 0.5, netTopY - netH]) noInk(mesh(G.torus(netR, 0.006, 4, 14), netM, { y: yy, z: cz, rx: PI / 2, shadow: 'none', parent: g }));
+  g.userData.rim = [0, rimY, cz];
+  return g;
+}
 /** A little red wagon: a bed on four wheels with a steel tow handle resting on the ground. Faces +z. */
 function makeWagon(color = 0xc1272d) {
   const g = new THREE.Group(), bedM = mat(color, { roughness: 0.55, metalness: 0.15 }), wheelM = mat(0x1e1a18, { roughness: 0.8 }), hubM = mat(0xc8ccd2, { metalness: 0.6, roughness: 0.4 }), steel = mat(0x8a8f96, { metalness: 0.6, roughness: 0.4 });

@@ -4029,6 +4029,54 @@ class Juggler {
   }
 }
 
+// ---------------------------------------------------------------- solo basketball shooter: dribbles in place by a hoop (ball bouncing free of the hand, same cheat `Juggler`'s balls use), then lofts a shot in a quick up-and-back arc that peaks at the rim before dropping back into the waiting hand to resume dribbling
+class Baller {
+  constructor(game, rig, ball, { x, z, ry = 0, hoopX, hoopY, hoopZ, cries = null, cryIcon = '🏀' }) {
+    this.game = game; this.rig = rig; this.ball = ball; this.x = x; this.z = z;
+    this.hoopX = hoopX; this.hoopY = hoopY; this.hoopZ = hoopZ;
+    this.t = rnd() * 10; this.look = 0; this.lookW = 0;
+    this.phase = 'dribble'; this.dribbleCycle = 3.2; this.dribbleT = this.dribbleCycle; this.bounceT = 0;
+    this.flight = 0; this.dur = 0.55; this.from = V3(); this.to = V3();
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    this.state = 'idle';
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    rig.idleT = 1e6; rig.blinkT = 1e6;   // too absorbed in the game to fidget or blink: keeps `rig.animate()`'s own idle-gesture pick and blink-reset (both shared `rnd()` draws) from ever firing and shifting anything timed off that same sequence
+    this.circle = game.physics.addCircle(this, x, z, 0.4);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig, P = this.game.physics, baseY = P.ground0(this.x, this.z), ry = rig.group.rotation.y;
+    rig.animate(0, false, dt, this.t);
+    const fx = sin(ry) * 0.2, fz = cos(ry) * 0.2, handY = baseY + 0.62 * rig.k, lowY = baseY + 0.1;
+    if (this.phase === 'dribble') {
+      this.bounceT += dt * 4.4; const b = abs(sin(this.bounceT));
+      this.ball.position.set(this.x + fx, lowY + b * (handY - lowY), this.z + fz);
+      this.ball.rotation.x += dt * 5;
+      if (!rig.gesture) { const A = rig.arms[0]; A.sh.rotation.x = damp(A.sh.rotation.x, -0.3 - (1 - b) * 0.5, 10, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.6 - (1 - b) * 0.6, 10, dt); A.sh.rotation.z = damp(A.sh.rotation.z, 0.35, 10, dt); }
+      this.dribbleT -= dt;
+      if (this.dribbleT <= 0) {
+        this.phase = 'rise'; this.flight = 0; this.dur = 0.55;
+        this.from.set(this.x + fx, handY, this.z + fz); this.to.set(this.hoopX, this.hoopY, this.hoopZ);
+        rig.gesture = 'throw'; rig.gT = 0;
+      }
+    } else {   // 'rise': arcs up to the rim; 'fall': the same arc in reverse, back down into the waiting hand
+      this.flight += dt; const u = min(1, this.flight / this.dur);
+      this.ball.position.copy(this.from).lerp(this.to, u);
+      this.ball.position.y += sin(u * PI) * (this.phase === 'rise' ? 1.1 : 0.4);
+      this.ball.rotation.x += dt * 6;
+      if (u >= 1) {
+        if (this.phase === 'rise') {
+          SFX.bounce();   // no `game.fx.emit()` burst here: it draws a handful of values per particle off the *shared* `rnd()` sequence every cycle, the same hazard `cries` already is for this one world
+          this.phase = 'fall'; this.flight = 0; this.dur = 0.5;
+          this.from.copy(this.to); this.to.set(this.x + fx, handY, this.z + fz);
+        } else { this.phase = 'dribble'; this.dribbleT = this.dribbleCycle; this.bounceT = 0; }
+      }
+    }
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- squirrel controller: stays on its spot, fidgets, watches the cat
 class Squirrel {
   constructor(game, x, z, id) {
@@ -6019,6 +6067,23 @@ function makeSkateboard(color = 0xff6fb5) {
     mesh(G.box(0.2, 0.02, 0.04), truckM, { parent: truck });
     for (const x of [-0.095, 0.095]) mesh(G.cyl(0.045, 0.045, 0.03, 10), wheelM, { x, rz: PI / 2, parent: truck });
   }
+  return g;
+}
+/** A pole-mounted basketball hoop: a thin pole, a cantilevered arm, a backboard with a painted trim, an orange rim and a hanging net of straight cords. Faces +z (the rim projects toward the shooter). `userData.rim` gives the rim's own local [x,y,z], for a caller aiming a ball at it. */
+function makeHoop(poleH = 2.55, rimY = 2.05) {
+  const g = new THREE.Group(), rimR = 0.23;
+  const poleM = mat(0x3a3a3a, { roughness: 0.6, metalness: 0.4 }), boardM = mat(0xf2f2ec, { roughness: 0.5 }), trimM = mat(0xd62839, { roughness: 0.6 }), rimM = mat(0xff6a00, { roughness: 0.5, metalness: 0.25 }), netM = mat(0xece7da, { roughness: 0.9, transparent: true, opacity: 0.8 });
+  mesh(G.cyl(0.055, 0.065, poleH, 10), poleM, { y: poleH / 2, parent: g });
+  mesh(G.box(0.07, 0.07, 0.42), poleM, { y: poleH - 0.15, z: 0.21, parent: g });   // arm cantilevering the board forward
+  const board = group(0, poleH - 0.15, 0.42, g);
+  mesh(G.box(0.85, 0.55, 0.035), boardM, { parent: board });
+  for (const [bx, by, bw, bh] of [[0, 0.24, 0.85, 0.05], [0, -0.24, 0.85, 0.05], [-0.4, 0, 0.05, 0.55], [0.4, 0, 0.05, 0.55]]) mesh(G.box(bw, bh, 0.01), trimM, { x: bx, y: by, z: 0.023, shadow: 'none', parent: board });   // the shooter's square, painted on
+  const cz = 0.42 + rimR;
+  mesh(G.torus(rimR, 0.018, 6, 16), rimM, { y: rimY, z: cz, rx: PI / 2, shadow: 'none', parent: g });
+  const netTopY = rimY - 0.02, netH = 0.32, netR = rimR * 0.9;
+  for (let i = 0; i < 8; i++) { const a = i / 8 * TAU; noInk(mesh(G.cyl(0.006, 0.006, netH, 4), netM, { x: cos(a) * netR, y: netTopY - netH / 2, z: cz + sin(a) * netR, shadow: 'none', parent: g })); }
+  for (const yy of [netTopY, netTopY - netH * 0.5, netTopY - netH]) noInk(mesh(G.torus(netR, 0.006, 4, 14), netM, { y: yy, z: cz, rx: PI / 2, shadow: 'none', parent: g }));
+  g.userData.rim = [0, rimY, cz];
   return g;
 }
 /** A little red wagon: a bed on four wheels with a steel tow handle resting on the ground. Faces +z. */
@@ -12503,6 +12568,50 @@ function buildNeighborhood(game, entry) {
     const caseX = fx + 0.7, caseZ = fz + 0.4;
     place(game, U, makeFiddleCase(), caseX, caseZ, fry);
     P.addBox(caseX, 0.06, caseZ, 0.64, 0.12, 0.24, { cam: false }); }
+
+  // the Neighborhood has had almost every yard game and busking act in the book for a while now, but
+  // basketball — the one driveway game every real cul-de-sac has — had never shown up in the whole
+  // game. A kid now dribbles alone on a quiet stretch of the open south field, well clear of the
+  // tug-of-war pair, and lofts the ball up through a pole-mounted hoop every few seconds before it
+  // drops straight back down into her waiting hand to dribble again.
+  //
+  // New prop `makeHoop()` (60-props.js): a thin pole, a cantilevered arm, a backboard with a painted
+  // trim, an orange rim and a net of straight hanging cords — the same vertical-strand simplification
+  // `makeVolleyballNet()` already gets away with, rather than a true tapered cone. New controller
+  // `Baller` (55-npcs.js): the ball is its own free mesh, not a child of the rig's hand, the same cheat
+  // `Juggler`'s three balls already use; it bounces between a low point and a hand-height point while
+  // idle, then arcs up to the rim and straight back down again — a lerp between two fixed points with a
+  // sine bump added for height, the same shape `Horseshoes`' own lob already uses.
+  //
+  // A headless probe (`game.start('new')`, 2400 simulated frames sampling every NPC's own position
+  // every frame) swept the open south field against every one of the street's physics boxes and every
+  // other NPC's own position: the hoop's own pole at (-16, -47) and the spot where the kid stands,
+  // (-16, -41.5), 5.5 m off, both came back clear — 6.7 m and 10.6 m from the nearest box, 8.4 m and
+  // 8.3 m from the nearest other soul (the tug-of-war pair's own station at (-8, -42)). The shot's own
+  // arc peaks at the rim, (-16, 2.05, -46.4), well clear of the ground the whole way, so it never
+  // touches the walkability sweep's own under-1.6m band.
+  //
+  // Built dead last of everything this street adds, right after the fiddler above and right before
+  // `makeDayNight`, for the usual reason: `makeHuman()` and `randomPerson()` both draw off this
+  // street's own shared `r()` sequence unconditionally, and this is the first world the test suite
+  // builds, so anything built earlier here would have had its own timing-sensitive pick shifted by it.
+  // No `cries` at all, the same fix the fiddler above needed: the Neighborhood is the one world whose
+  // build-and-test window shares a single run of simulated frames with its own behaviour checks, and a
+  // `cries` branch is the only place `Baller.update()` ever touches the *shared* global `rnd()`
+  // sequence — every other timer it runs on (the dribble length, the shot arc, the initial `this.t`
+  // offset) is either a fixed constant or drawn once at construction, dead last, so nothing built
+  // earlier is shifted by it. The explicit shirt colour (0x1f6feb) was checked against all 73 of the
+  // street's other people first.
+  { const hx = -16, hz = -47, bx = -16, bz = -41.5, bry = atan2(hx - bx, hz - bz), poleH = 2.55;
+    const hoop = makeHoop(poleH); hoop.position.set(hx, P.ground0(hx, hz), hz); W.add(hoop);
+    P.addBox(hx, poleH / 2, hz, 0.14, poleH, 0.14, { cam: false });
+    const [rimX, rimY, rimZ] = hoop.userData.rim;
+    const baller = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true }),
+      shirt: 0x1f6feb, pants: 0x1a1a22, shoes: 0xffffff, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(baller.group);
+    const ball = mesh(G.sphere(0.12, 10, 8), mat(0xe8742c, { roughness: 0.65 }), { parent: W });
+    game.npcs.push(new Baller(game, baller, ball, { x: bx, z: bz, ry: bry,
+      hoopX: hx + rimX, hoopY: P.ground0(hx, hz) + rimY, hoopZ: hz + rimZ })); }
 
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);

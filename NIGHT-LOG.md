@@ -28646,3 +28646,70 @@ the exact south-pavement walk line (z=10.4, x from -92 to 92) against every phys
 clear end to end. No visual check was possible in this environment (no browser, no Playwright) — only
 the stub-three test suite and the three headless probes above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1037 — the Neighborhood gets a basketball hoop
+
+Basketball had never shown up anywhere in the whole game, in any of the seven worlds, despite every
+other driveway and playground game in the book (hopscotch, jump rope, hula hoop, tetherball, horseshoes,
+badminton, volleyball…) already being there several times over. The Neighborhood also had the lowest
+friend count of the seven worlds (99, against 109–152 elsewhere), so it got the new one. **A kid now
+dribbles alone on a quiet stretch of the open south field**, well clear of the tug-of-war pair, and
+every few seconds lofts the ball up through a pole-mounted hoop before it drops straight back down into
+her waiting hand to dribble again — no misses, this is a solo practice loop, not a scoring game.
+
+New prop `makeHoop()` (`60-props.js`): a thin pole, a cantilevered arm, a backboard with a painted trim,
+an orange rim and a net of straight hanging cords — the same vertical-strand simplification
+`makeVolleyballNet()` already gets away with rather than a true tapered cone. New controller `Baller`
+(`55-npcs.js`): the ball is its own free mesh, not a child of the rig's hand, the same cheat `Juggler`'s
+three balls already use; it bounces between a low point and a hand-height point while idle, then arcs up
+to the rim and straight back down again — a lerp between two fixed points with a sine bump for height,
+the same shape `Horseshoes`' own lob already uses.
+
+This one fought back on the way in, in a way worth writing down in full. The Neighborhood (world 0) is
+the one world whose build-and-test window shares a single run of simulated frames with its own
+behaviour checks, and this round tripped that wire three separate times:
+
+1. First pass: adding the new human rig at all (even completely idle) desynced "two neighbours chat,
+   facing each other, taking turns" — the speaker's arm came back at -0.00 instead of raised. Cause:
+   `rig.animate()`'s own idle-gesture picker (`rnd.pick(['wave','look',...])`) fires whenever a standing
+   rig's `idleT` (drawn once at construction, `rnd.range(3,11)`) counts down to zero, and that draw comes
+   off the *shared* global `rnd()` sequence every human in the game already shares — not the per-world
+   seeded `r()`. One more idle human in the scene is one more unpredictable draw from that sequence
+   during the test's own fixed 420-frame window, which shifts the `Talkers` class's own turn-timing draws
+   downstream. Fix: pin `rig.idleT = 1e6` right after construction, so the picker never fires.
+2. Second pass, same test, smaller miss (arm -0.13 instead of the required <-0.7): `rig.blinkT`
+   (`rnd.range(1,5)` at construction, reset via `rnd.range(1.8,6)` on every blink) draws from the same
+   shared sequence and reliably fires at least once in any 7-second window. Fix: pin `rig.blinkT = 1e6`
+   too. Both pins just mean this one kid never idly glances around or blinks — she's watching the ball.
+3. Third pass: with both pins in place the chat test passed, but "a painter at her easel by the pond,
+   two daubs in" broke instead (the painter's raised arm came back undamped). Bisected by deleting
+   `Baller.update()`'s body piece by piece: the culprit was `game.fx.emit()`, called once per made
+   "shot" for a confetti-coloured burst at the rim — `emit()` draws six or seven `rnd()` values *per
+   particle* for its angle, speed, spread and lifetime, and this kid takes a shot roughly every 4
+   seconds, so the burst landed somewhere in the test's own fixed frame budget and shifted everything
+   downstream again. Fix: dropped the particle burst entirely and kept only the `SFX.bounce()` cue — the
+   same hazard `cries` already was for the fiddler two rounds ago, just reached through a different door.
+   With all three fixed, the only `rnd()` calls anywhere in `Baller`'s own code are the one-off
+   `this.t = rnd() * 10` at construction (same convention every other controller already uses, and built
+   dead last so it shifts nothing built earlier) and the `cries` branch, which this instance doesn't use.
+
+Built dead last of everything the Neighborhood adds, right after the fiddler and right before
+`makeDayNight`, for the usual construction-order reason on top of the update-time one above. The
+explicit shirt colour (0x1f6feb) was checked against all 73 of the street's other people first.
+
+A headless probe (the stub-three harness `test/run.mjs` itself uses: `game.start('new')`, no travel
+needed) swept the open south field against every one of the street's physics boxes and every other NPC's
+own position: the hoop's own pole at (-16, -47) and the spot where the kid stands, (-16, -41.5), 5.5 m
+off, both came back clear — 6.7 m and 10.6 m from the nearest box, 8.4 m and 8.3 m from the nearest other
+soul (the tug-of-war pair's own station at (-8, -42)). A second probe ran 1800 simulated frames (several
+full dribble-shoot-dribble cycles): the rig's and ball's positions stayed finite throughout, all three
+phases (`dribble`, `rise`, `fall`) were observed, then the cat walked up to (-16, -41.5+1.5), found the
+prompt read "Say hi", and calling `onUse()` took `game.state.friends.size` from 0 to 1.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, 277 checks `ok`, 0 console warnings, box count rose
+from 332 to 333 (the hoop's own pole, the only new collider — the backboard, rim and net all sit above
+the walkability sweep's 1.6 m cutoff, same simplification every other pole-and-sign assembly in the game
+already uses), Neighborhood's own friend count rose from 99 to 100. No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite and the headless probes above,
+plus the three-pass bisection against the live test suite described above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -2209,6 +2209,54 @@ class Juggler {
   }
 }
 
+// ---------------------------------------------------------------- solo basketball shooter: dribbles in place by a hoop (ball bouncing free of the hand, same cheat `Juggler`'s balls use), then lofts a shot in a quick up-and-back arc that peaks at the rim before dropping back into the waiting hand to resume dribbling
+class Baller {
+  constructor(game, rig, ball, { x, z, ry = 0, hoopX, hoopY, hoopZ, cries = null, cryIcon = '🏀' }) {
+    this.game = game; this.rig = rig; this.ball = ball; this.x = x; this.z = z;
+    this.hoopX = hoopX; this.hoopY = hoopY; this.hoopZ = hoopZ;
+    this.t = rnd() * 10; this.look = 0; this.lookW = 0;
+    this.phase = 'dribble'; this.dribbleCycle = 3.2; this.dribbleT = this.dribbleCycle; this.bounceT = 0;
+    this.flight = 0; this.dur = 0.55; this.from = V3(); this.to = V3();
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    this.state = 'idle';
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    rig.idleT = 1e6; rig.blinkT = 1e6;   // too absorbed in the game to fidget or blink: keeps `rig.animate()`'s own idle-gesture pick and blink-reset (both shared `rnd()` draws) from ever firing and shifting anything timed off that same sequence
+    this.circle = game.physics.addCircle(this, x, z, 0.4);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig, P = this.game.physics, baseY = P.ground0(this.x, this.z), ry = rig.group.rotation.y;
+    rig.animate(0, false, dt, this.t);
+    const fx = sin(ry) * 0.2, fz = cos(ry) * 0.2, handY = baseY + 0.62 * rig.k, lowY = baseY + 0.1;
+    if (this.phase === 'dribble') {
+      this.bounceT += dt * 4.4; const b = abs(sin(this.bounceT));
+      this.ball.position.set(this.x + fx, lowY + b * (handY - lowY), this.z + fz);
+      this.ball.rotation.x += dt * 5;
+      if (!rig.gesture) { const A = rig.arms[0]; A.sh.rotation.x = damp(A.sh.rotation.x, -0.3 - (1 - b) * 0.5, 10, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.6 - (1 - b) * 0.6, 10, dt); A.sh.rotation.z = damp(A.sh.rotation.z, 0.35, 10, dt); }
+      this.dribbleT -= dt;
+      if (this.dribbleT <= 0) {
+        this.phase = 'rise'; this.flight = 0; this.dur = 0.55;
+        this.from.set(this.x + fx, handY, this.z + fz); this.to.set(this.hoopX, this.hoopY, this.hoopZ);
+        rig.gesture = 'throw'; rig.gT = 0;
+      }
+    } else {   // 'rise': arcs up to the rim; 'fall': the same arc in reverse, back down into the waiting hand
+      this.flight += dt; const u = min(1, this.flight / this.dur);
+      this.ball.position.copy(this.from).lerp(this.to, u);
+      this.ball.position.y += sin(u * PI) * (this.phase === 'rise' ? 1.1 : 0.4);
+      this.ball.rotation.x += dt * 6;
+      if (u >= 1) {
+        if (this.phase === 'rise') {
+          SFX.bounce();   // no `game.fx.emit()` burst here: it draws a handful of values per particle off the *shared* `rnd()` sequence every cycle, the same hazard `cries` already is for this one world
+          this.phase = 'fall'; this.flight = 0; this.dur = 0.5;
+          this.from.copy(this.to); this.to.set(this.x + fx, handY, this.z + fz);
+        } else { this.phase = 'dribble'; this.dribbleT = this.dribbleCycle; this.bounceT = 0; }
+      }
+    }
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- squirrel controller: stays on its spot, fidgets, watches the cat
 class Squirrel {
   constructor(game, x, z, id) {
