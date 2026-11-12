@@ -28997,3 +28997,35 @@ Shore's own friend total rose from 129 to 130. No visual check was possible in t
 browser, no Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Frosty Peak and Whisper Woods remain
 the only two worlds without a crossing guard of their own.
+
+## Round 1046 — Frosty Peak gets its own crossing guard
+
+The Neighborhood, Robot City, Victorian, Candy Land and Sunny Shore all have their own `CrossingGuard`
+(55-npcs.js — the same raise/lower lollipop-sign cycle `Birder` uses for binoculars), but Frosty Peak
+never got one. **A ski-patrol marshal now stands on the open snowfield just past the village's own
+clearing, lifting a red-and-white stop sign overhead every few seconds as if halting traffic on a
+mountain with no road at all.** Red parka, white beanie and a white band across the chest — the same
+two colours as the sign disc and rim the controller already builds for every other world's guard, so
+for once the joke writes itself: the guard matches their own sign. *"Hold up, puss — reindeer always
+get the right of way up here."* *"Not one sled's ever actually crossed this exact patch, but you can't
+be too careful."* *"Mind the ice underfoot — slicker than it looks."*
+
+No new controller: `CrossingGuard`'s own constructor calls `greetable()` itself, so this is a
+placement, not a new build.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.travel(5, 'from-hub')` waited out through its real portal-fade timer, then 10,800 simulated
+frames — 180 s — sampling every one of the mountain's 108 NPCs' own position every 5th frame, 233,280
+samples in all) swept the open snowfield (radius under 45, short of where `snowRegion`'s own fill
+takes over) against those samples, all 821 of this mountain's own physics boxes and every one of
+`game.zones`'s 154 rectangles: (4, 27) came back clearest, just outside the village's own 26 m
+keep-out circle — 5.7 m clear of the nearest box and 8.1 m clear of the nearest wandering soul, a full
+metre clear of the keep-out circle's own edge even with a 1 m pad, and nowhere near any hand-placed
+igloo, pond or snowman. Ground there runs 0.90-1.00 m across the guard's own footprint, no steeper
+than the village's own gentle swell, so no terrain grading was needed.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, Frosty
+Peak's own friend total rose from 125 to 126. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Whisper Woods remains the only world
+without a crossing guard of its own.

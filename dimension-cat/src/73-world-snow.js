@@ -2399,6 +2399,38 @@ function buildSnowVillage(game, entry) {
     game.npcs.push(new Baller(game, baller, ball, { x: bx, z: bz, ry: bry,
       hoopX: hx + rimX, hoopY: hy0 + rimY, hoopZ: hz + rimZ, cries: ballerLines })); }
 
+  // The Neighborhood, Robot City, Victorian, Candy Land and Sunny Shore all have their own
+  // `CrossingGuard` (55-npcs.js — the lollipop-sign raise/lower cycle `Birder`'s binoculars already
+  // use, a sign on a pole instead of the glasses) watching over traffic that never actually comes;
+  // Frosty Peak was the only one of the first six still without one, Whisper Woods the last.
+  // **A ski-patrol marshal now stands on the open snowfield just past the village's own clearing,
+  // lifting a red-and-white stop sign overhead every few seconds as if halting traffic on a mountain
+  // with no road at all** — red parka, white beanie and a white band across the chest, the same two
+  // colours as the sign disc and rim the controller already builds for every other world's guard.
+  // *"Hold up, puss — reindeer always get the right of way up here."* *"Not one sled's ever actually
+  // crossed this exact patch, but you can't be too careful."* *"Mind the ice underfoot — slicker than
+  // it looks."*
+  //
+  // No new controller: `CrossingGuard`'s own constructor calls `greetable()` itself, so this is a
+  // placement, not a new build.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.travel(5,
+  // 'from-hub')` waited out through its real portal-fade timer, then 10,800 simulated frames — 180 s —
+  // sampling every one of the mountain's 108 NPCs' own position every 5th frame, 233,280 samples in
+  // all) swept the open snowfield (radius under 45, short of where `snowRegion`'s own fill takes over)
+  // against those samples, all 821 of this mountain's own physics boxes and every one of `game.zones`'s
+  // 154 rectangles: (4, 27) came back clearest just outside the village's own 26 m keep-out circle —
+  // 5.7 m clear of the nearest box and 8.1 m clear of the nearest wandering soul, a full metre clear of
+  // the keep-out circle's own edge even with a 1 m pad, and nowhere near any hand-placed igloo, pond or
+  // snowman. Ground there runs 0.90-1.00 m across the guard's own footprint, no steeper than the
+  // village's own gentle swell, so no terrain grading was needed.
+  { const guard = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.2) }),
+      shirt: 0xd62839, pants: 0x2a2a2a, shoes: r.pick([0x2a2018, 0x1e1a18]),
+      coat: true, stripes: 0xf7f3ec, hat: 'beanie', hatColor: 0xf7f3ec, cuffs: 0x3a3a3a, scarf: null, bag: null, backpack: null, glasses: r.chance(0.2) });
+    W.add(guard.group);
+    game.npcs.push(new CrossingGuard(game, guard, { x: 4, z: 27, ry: atan2(0 - 4, 0 - 27),
+      cries: ['Hold up, puss — reindeer always get the right of way up here.', "Not one sled's ever actually crossed this exact patch, but you can't be too careful.", 'Mind the ice underfoot — slicker than it looks.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
