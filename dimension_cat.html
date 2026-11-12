@@ -25955,6 +25955,52 @@ function buildSnowVillage(game, entry) {
     W.add(magician.group);
     const magicLines = ["Nothing up this sleeve. Not even a glove — I lost the pair somewhere on this mountain.", "Watch closely, puss — the coin's gone. ...And it's back. Every time.", "Not even the yeti's caught how it’s done, and he's got nothing better to do up here."];
     game.npcs.push(new Magician(game, magician, { x: mx, z: mz, ry: mry, cries: magicLines })); }
+
+  // The Neighborhood, Candy Land, Robot City, Victorian and Sunny Shore all have their own
+  // basketball hoop by round 1041 — Frosty Peak is the sixth of the seven worlds to get the
+  // `makeHoop()`/`Baller` pairing, and the second terrain world after Sunny Shore. **A kid in a
+  // faded orange jersey — no coat, no gloves — dribbles alone on a bare patch of windswept rock out
+  // on the open snowfield,** lofting the ball up through a pole-mounted hoop before it drops
+  // straight back into her waiting hand to dribble again. *"Court's one patch of bare rock the wind
+  // swept clean — the only level ground this high up."* *"Mind the ice, puss — the rim's slicker
+  // than the net."* *"Mum says I'll catch cold out here. Mum's probably right."*
+  //
+  // No new prop and no new controller: the same `makeHoop()` (`60-props.js`) and `Baller`
+  // (`55-npcs.js`) every other world already uses. The same wrinkle Sunny Shore's round 1041
+  // already worked out for the first terrain world applies again here: the hoop's own group and its
+  // pole's physics box both read their height off `game.physics.ground0(hx, hz)` instead of a bare
+  // `0` — `Baller`'s own constructor already does this for its rig, so the controller itself needed
+  // no change.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, `game.travel(5, 'from-hub')` waited out for real,
+  // then 3600 simulated frames, then a 1 m grid of the open snowfield (radius 22-55, short of the
+  // radius (58) where `snowRegion`'s own fill takes over) swept against all 820 of the mountain's own
+  // physics boxes, `game.zones` itself, and all 107 NPCs' live positions) found (-19, 46) clear for
+  // the hoop's own pole — radius 49.8 from the origin, 8.1 m from the nearest box and 8.2 m from the
+  // nearest wandering soul — and (-19, 51.5) for the kid, 5.5 m further along the hoop's own facing
+  // (the same offset every other world used), 8.3 m clear of the nearest box and 8.7 m clear of the
+  // nearest NPC, well past the grinder at (28, -30), the fiddler at (28, -18), the knitter at
+  // (16.5, -23) and the magician at (-42, 8) above. Ground drops gently from 2.03 m at the pole to
+  // 1.76 m at the kid's own spot (about a 5% grade over the 5.5 m between them) but varies under
+  // 3 cm across either one's own footprint.
+  //
+  // Built dead last, right after the magician above, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off this mountain's own shared `r()` sequence unconditionally, and
+  // anything built earlier would have had its own timing-sensitive pick shifted by it.
+  { const hx = -19, hz = 46, bx = -19, bz = 51.5, bry = atan2(hx - bx, hz - bz), poleH = 2.55;
+    const hy0 = P.ground0(hx, hz);
+    const hoop = makeHoop(poleH); hoop.position.set(hx, hy0, hz); W.add(hoop);
+    P.addBox(hx, hy0 + poleH / 2, hz, 0.14, poleH, 0.14, { cam: false });
+    const [rimX, rimY, rimZ] = hoop.userData.rim;
+    const baller = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true }),
+      shirt: 0xff6a00, pants: 0x1a1a22, shoes: 0xffffff, hat: null, scarf: null, jacket: null, coat: false, bag: null, backpack: null, glasses: false });
+    W.add(baller.group);
+    const ball = mesh(G.sphere(0.12, 10, 8), mat(0xe8742c, { roughness: 0.65 }), { parent: W });
+    const ballerLines = ["Court's one patch of bare rock the wind swept clean — the only level ground this high up.", "Mind the ice, puss — the rim's slicker than the net.", "Mum says I'll catch cold out here. Mum's probably right."];
+    game.npcs.push(new Baller(game, baller, ball, { x: bx, z: bz, ry: bry,
+      hoopX: hx + rimX, hoopY: hy0 + rimY, hoopZ: hz + rimZ, cries: ballerLines })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

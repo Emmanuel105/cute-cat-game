@@ -28854,3 +28854,42 @@ every other friend).
 Shore's own friend total rose from 128 to 129. No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite and the two headless probes above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1042 — Frosty Peak gets a basketball hoop, the sixth of the seven and the second terrain world
+
+The Neighborhood, Candy Land, Robot City, Victorian and Sunny Shore all had their own basketball hoop
+by round 1041, leaving only the two remaining worlds without one. **A kid in a faded orange jersey —
+no coat, no gloves — now dribbles alone on a bare patch of windswept rock out on the open snowfield,**
+lofting the ball up through a pole-mounted hoop before it drops straight back into her waiting hand to
+dribble again. *"Court's one patch of bare rock the wind swept clean — the only level ground this high
+up."* *"Mind the ice, puss — the rim's slicker than the net."* *"Mum says I'll catch cold out here.
+Mum's probably right."*
+
+No new prop and no new controller: the same `makeHoop()` (`60-props.js`) and `Baller` (`55-npcs.js`)
+every other world already uses. The same wrinkle Sunny Shore's round 1041 worked out for the first
+terrain world applies again: the hoop's own group and its pole's physics box both read their height
+off `game.physics.ground0(hx, hz)` instead of a bare `0`, and `Baller`'s own constructor already does
+the same for its rig.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(5, 'from-hub')` waited out for real, then
+3600 simulated frames, then a 1 m grid of the open snowfield (radius 22-55, short of the radius (58)
+where `snowRegion`'s own fill takes over) swept against all 820 of the mountain's own physics boxes,
+`game.zones` itself, and all 107 NPCs' live positions) found (-19, 46) clear for the hoop's own pole —
+radius 49.8 from the origin, 8.1 m from the nearest box and 8.2 m from the nearest wandering soul — and
+(-19, 51.5) for the kid, 5.5 m further along the hoop's own facing (the same offset every other world
+used), 8.3 m clear of the nearest box and 8.7 m clear of the nearest NPC, well past the grinder at
+(28, -30), the fiddler at (28, -18), the knitter at (16.5, -23) and the magician at (-42, 8). Ground
+drops gently from 2.03 m at the pole to 1.76 m at the kid's own spot (about a 5% grade over the 5.5 m
+between them) but varies under 3 cm across either one's own footprint.
+
+A second headless probe ran 2400 simulated frames with the game actually started, confirmed the new
+`Baller` sits in the scene graph, watched all three phases (`dribble`, `rise`, `fall`) pass with the
+ball's position staying finite throughout, then walked the cat up to the kid and confirmed the "Say
+hi" prompt took `game.state.friends.size` from 0 to 1.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, Frosty
+Peak's own friend total rose from 124 to 125. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the two headless probes above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Only Whisper Woods remains without
+a basketball hoop.
