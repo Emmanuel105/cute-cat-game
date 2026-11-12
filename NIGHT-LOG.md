@@ -29129,3 +29129,36 @@ where `victorianRegion`'s own procedural fill takes over, and outside every zone
 own friend total rose from 153 to 154. No visual check was possible in this environment (no browser,
 no Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1050 — Robot City's far scrapyards get their first wild creature
+
+Sunny Shore's far-shore crabs, Frosty Peak's deer and penguins and Whisper Woods' deer, foxes and
+butterflies have each had their own wild-creature loop out in `fillRing`'s deep country since rounds
+816-858 — but Robot City's own far scrapyards, past the last hand-placed crate pile and furnace, never
+got one of their own; the dozen robots `robotRegion()` already scatters out there are the only things
+that move, and a robot isn't wildlife. **A scrap rat now scurries the industrial wastes: the exact same
+`makeAlleyRat()` rig Victorian's own back-alley rat already uses, this one roaming loose on a
+`Wanderer` instead of pinned to a market stall on a `Hopper`.** *"*freezes, whiskers twitching, then
+darts off between two crates*"*
+
+Same root cause as every other creature in this log: `makeAlleyRat()`'s rig carries none of
+`.look`/`.robot`/`.cookie`, so `Wanderer`'s own `greetable()` call quietly no-ops on it. Six rats were
+dropped into the deep scrapyard ring (68-regions.js, right after the existing twelve-robot loop, same
+`r.range(inner, outer*0.85)` spawn as that loop), but only the first (i===0) got the manual
+`game.namedFriend` + `game.addInteractable` fix this round — the other five are left for future rounds,
+same one-at-a-time pattern as every other wildlife loop in this log. No new mesh, no new physics box:
+the rat is pure `makeAlleyRat()` + `Wanderer`, wired up after the loop already exists so it draws
+nothing extra from this world's own seeded `r()` sequence and shifts no later pick in this build.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(2, 'from-hub')` waited out for real against its own portal-fade timer,
+then 3600 simulated frames) found and tracked all six rats by their shared `leash === 7`: every one's
+position stayed finite the whole run, each wandering a modest few metres from its own spawn deep in the
+scrapyard ring (radius 98-400 from the origin, the same band the existing robot loop already uses),
+and the city's own physics box count was unaffected (1205 with the rats in, matching a fresh build
+without them).
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, Robot
+City's own friend total rose from 114 to 115. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
