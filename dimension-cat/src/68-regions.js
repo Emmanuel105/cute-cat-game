@@ -234,8 +234,8 @@ function robotRegion(game, U, r, inner, outer) {
   // `r()` sequence and shifts no later pick in this build. No new mesh, no new physics box. The
   // second (i===1) got the same fix in round 1051, same pattern this project has run through for every
   // flock in the game once the first member is wired up — gulls, crows, drone-flies, bats, bees. The
-  // third (i===2) gets it this round. Three are left for future rounds, same one-at-a-time pattern as
-  // everywhere else in this log.
+  // third (i===2) got it in round 1052, and the fourth (i===3) gets it this round. Two are left for
+  // future rounds, same one-at-a-time pattern as everywhere else in this log.
   for (let i = 0; i < 6; i++) {
     const a = r() * TAU, d = r.range(inner, outer * 0.85), x = cos(a) * d, z = sin(a) * d;
     const rig = makeAlleyRat(); W.add(rig.group);
@@ -255,6 +255,11 @@ function robotRegion(game, U, r, inner, outer) {
       game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the rat', onUse: () => {
         game.befriend(thirdRatId); SFX.chitter(); game.hearts(rig.group.position.x, 0.2, rig.group.position.z, 3);
         game.toast('🐀 "*drags a bent washer twice its size toward a crack in the fence*"'); } });
+    } else if (i === 3) {
+      const fourthRatId = game.namedFriend('outer-rat-4');
+      game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the rat', onUse: () => {
+        game.befriend(fourthRatId); SFX.chitter(); game.hearts(rig.group.position.x, 0.2, rig.group.position.z, 3);
+        game.toast('🐀 "*noses through a puddle of rust-coloured water, then shakes off each paw in turn*"'); } });
     }
   }
 }
