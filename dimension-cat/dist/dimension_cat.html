@@ -17985,6 +17985,48 @@ function buildRobotCity(game, entry) {
     const magicLines = ['Nothing up this sleeve. Not even spare bolts.', "Watch closely, puss — the coin's gone. ...And it's back. Every time.", 'No foreman out this far to ask how the trick works.'];
     game.npcs.push(new Magician(game, magician, { x: mx, z: mz, ry: mry, cries: magicLines })); }
 
+  // The Neighborhood and Candy Land both have a basketball hoop by now (rounds 1037-1038) and no other
+  // world has followed yet. A kid dribbles alone on a quiet stretch of open factory floor east of
+  // downtown, well clear of the whole fiddler/painter/juggler/organ-grinder/magician cluster and the
+  // south yard's sentry and tag robots, lofting the ball up through a pole-mounted hoop before it
+  // drops straight back into her waiting hand. *"Analysis complete: the rim has a 0% defect rate. The
+  // shooter's has not been measured."* *"No league out here, puss. Just the hoop, the ball, and
+  // whatever the radar dish logs it as."* *"Foreman clocked forty-one thousand shots this month. Called
+  // it 'reflex maintenance.'"*
+  //
+  // No new prop and no new controller: this is the same `makeHoop()` (60-props.js) and `Baller`
+  // (55-npcs.js) the Neighborhood introduced two rounds ago, just a third instance with its own
+  // position, wardrobe and lines, the same reskin-not-new-code choice every rollout in this log has
+  // made. The shirt colour (0xff6a00) is the hoop's own rim colour, worn as a jersey.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, `game.travel(2, 'from-prev')` waited out for real,
+  // then 2400 simulated frames sampling every NPC's own live position every frame) swept the open
+  // ground east of downtown — radius 15-90, short of the radius (98) where `robotRegion()`'s own
+  // procedural fill takes over — against all 1204 of the city's physics boxes and all 100 NPCs already
+  // in it, after first rejecting anything inside any of the city's 296 zones: (60, -3) came back for the
+  // kid, 5.8 m clear of the nearest box and 12.8 m clear of the nearest NPC sampled over the full 2400
+  // frames, and (60, 2) for the hoop itself, 5 m further along +z (the direction the hoop's own rim
+  // always projects toward, unrotated), 7.0 m clear of its own nearest box and 10.4 m clear of the
+  // nearest NPC over the same run — at radius 60, well clear of the downtown cluster (nearest soul the
+  // magician at (-15, 38)) and the south yard (sentry patrol roughly x∈[-15,15], z∈[-35,-45]; tag
+  // robots' own leash circle near (28, -40)).
+  //
+  // Built dead last, right after the magician above, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off this city's own shared `r()` sequence unconditionally, and anything
+  // built earlier would have had its own timing-sensitive pick shifted by it.
+  { const hx = 60, hz = 2, bx = 60, bz = -3, bry = atan2(hx - bx, hz - bz), poleH = 2.55;
+    const hoop = makeHoop(poleH); hoop.position.set(hx, P.ground0(hx, hz), hz); W.add(hoop);
+    P.addBox(hx, poleH / 2, hz, 0.14, poleH, 0.14, { cam: false });
+    const [rimX, rimY, rimZ] = hoop.userData.rim;
+    const baller = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true }),
+      shirt: 0xff6a00, pants: 0x1a1a22, shoes: 0xffffff, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(baller.group);
+    const ball = mesh(G.sphere(0.12, 10, 8), mat(0xe8742c, { roughness: 0.65 }), { parent: W });
+    const ballerLines = ['Analysis complete: the rim has a 0% defect rate. The shooter\'s has not been measured.', 'No league out here, puss. Just the hoop, the ball, and whatever the radar dish logs it as.', 'Foreman clocked forty-one thousand shots this month. Called it ‘reflex maintenance.’'];
+    game.npcs.push(new Baller(game, baller, ball, { x: bx, z: bz, ry: bry,
+      hoopX: hx + rimX, hoopY: P.ground0(hx, hz) + rimY, hoopZ: hz + rimZ, cries: ballerLines })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

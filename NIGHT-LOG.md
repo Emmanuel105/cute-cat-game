@@ -28752,3 +28752,33 @@ prompt read "Say hi", and calling `onUse()` took `game.state.friends.size` from 
 Land's own friend total rose from 109 to 110. No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite and the two headless probes above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1039 — Robot City gets its own basketball hoop
+
+The Neighborhood and Candy Land both got a basketball hoop in the last two rounds and no other world
+had followed yet. **A kid now dribbles alone on a quiet stretch of open factory floor east of
+downtown**, well clear of the fiddler/painter/juggler/organ-grinder/magician cluster and the south
+yard's sentry and tag robots, lofting the ball up through a pole-mounted hoop before it drops straight
+back into her waiting hand. *"Analysis complete: the rim has a 0% defect rate. The shooter's has not
+been measured."* *"No league out here, puss. Just the hoop, the ball, and whatever the radar dish logs
+it as."* *"Foreman clocked forty-one thousand shots this month. Called it 'reflex maintenance.'"*
+
+No new prop and no new controller: this is the same `makeHoop()` (`60-props.js`) and `Baller`
+(`55-npcs.js`) the Neighborhood introduced two rounds ago, just a third instance with its own position,
+wardrobe and lines — the shirt colour (0xff6a00) is the hoop's own rim colour, worn as a jersey.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(2, 'from-prev')` waited out for real, then
+2400 simulated frames sampling every NPC's own live position every frame) first rejected every point
+inside any of the city's 296 zones, then swept the open ground east of downtown (radius 15-90, short of
+the radius 98 where `robotRegion()`'s own procedural fill takes over) against all 1204 of the city's
+physics boxes: (60, -3) came back for the kid, 5.8 m clear of the nearest box and 12.8 m clear of the
+nearest of the city's 100 NPCs over the full run, and (60, 2) for the hoop itself, 5 m further along +z
+(the direction the hoop's rim always projects, unrotated), 7.0 m clear of its own nearest box and 10.4 m
+clear of the nearest NPC — radius 60, well clear of the magician at (-15, 38) and the south yard's
+sentry/tag-robot patrols.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, Robot
+City's own friend total rose from 113 to 114. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
