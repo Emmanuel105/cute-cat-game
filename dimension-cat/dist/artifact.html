@@ -6062,6 +6062,15 @@ function makeSkateboard(color = 0xff6fb5) {
   }
   return g;
 }
+/** A chimney sweep's besom: a long handle with a flared dark bristle head at one end, lying on the ground beside a small tied soot sack. Faces +z, bristle head at +z. */
+function makeSweepBrush(color = 0x6b4a2e) {
+  const g = new THREE.Group(), handleM = mat(color, { roughness: 0.75 }), bristleM = mat(0x241f1a, { roughness: 0.9 }), sackM = mat(0x3a3a3a, { roughness: 0.85 });
+  mesh(G.cyl(0.022, 0.026, 0.92, 8), handleM, { y: 0.025, z: -0.14, rx: PI / 2, parent: g });
+  mesh(G.cone(0.1, 0.3, 10), bristleM, { y: 0.07, z: 0.46, rx: -PI / 2, parent: g });
+  mesh(G.sphere(0.12, 10, 8), sackM, { x: -0.3, y: 0.11, z: -0.32, parent: g });
+  mesh(G.cyl(0.018, 0.018, 0.08, 8), sackM, { x: -0.3, y: 0.23, z: -0.32, parent: g });
+  return g;
+}
 /** A pole-mounted basketball hoop: a thin pole, a cantilevered arm, a backboard with a painted trim, an orange rim and a hanging net of straight cords. Faces +z (the rim projects toward the shooter). `userData.rim` gives the rim's own local [x,y,z], for a caller aiming a ball at it. */
 function makeHoop(poleH = 2.55, rimY = 2.05) {
   const g = new THREE.Group(), rimR = 0.23;
@@ -21233,6 +21242,47 @@ function buildVictorian(game, entry) {
     const ballerLines = ["Tuppence a shot, though nobody's ever once paid it.", 'Watch the net, puss — tear it twice and the cobbler charges for thread.', "The vicar reckons the clang carries further than the church bell. He's not wrong."];
     game.npcs.push(new Baller(game, baller, ball, { x: bx, z: bz, ry: bry,
       hoopX: hx + rimX, hoopY: P.ground0(hx, hz) + rimY, hoopZ: hz + rimZ, cries: ballerLines })); }
+
+  // Every terrace house on this street has puffed its own chimney smoke since the row went up
+  // (`addChimneySmoke`, right where each house is placed above), but nobody who actually swept those
+  // chimneys clean enough to smoke so well has ever shown up to take the credit. **A chimney sweep's
+  // boy now kneels in the back lane behind the north terrace, soot sack at his elbow, checking his
+  // besom's bristle head before he shoulders it and moves on to the next row of pots.** *"Every one of
+  // these flues, top to bottom, soot to my elbows. Not one gaslamp's worth of thanks for it."*
+  // *"Mind the sack, puss — tip it over and we're both wearing it home."* *"Besom's good for a few more
+  // rows yet. Handle's the part that always gives out first."*
+  //
+  // New prop `makeSweepBrush()` (60-props.js, right after `makeSkateboard`): a plain wooden handle and
+  // a flared dark bristle head, lying on the cobbles beside a small tied soot sack — thin and flat
+  // enough that, like the scooter and the skateboard already lying around this town, it needs no
+  // physics box of its own. `Kneeler` (55-npcs.js) reused verbatim, the same "checking gear before
+  // getting back to it" idiom every scooter and skateboard kid in the game already uses; its own
+  // constructor calls `greetable()`, so no new wiring. Soot-dark wardrobe (no jacket, no hat band) —
+  // every other child in this town wears brighter clothes, so the colour alone tells the joke.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(3, 'from-prev')` waited out for real against its own portal-fade
+  // timer, then 3600 simulated frames sampling every one of this town's 130 NPCs' own position every
+  // 6th frame, 78,600 samples in all) swept the back lane behind the north terrace (the open strip past
+  // the houses' own rear wall, clear of every front garden, fence and the main street itself) against
+  // those samples, all 663 of this town's own physics boxes and every one of `game.zones`'s 245
+  // rectangles: (-63, 20) came back clear for the brush and sack — 5.2 m from the nearest box, 10 m
+  // from the nearest wandering soul — and (-62.1, 20) for the boy himself, 0.9 m south along the
+  // brush's own facing, 5.0 m clear of the nearest box and 9.1 m clear of the nearest other soul. Both
+  // sit at radius 66 from the origin, well inside the hand-built town (`victorianRegion()`'s own
+  // procedural fill only starts at radius 88) and outside every zone.
+  //
+  // Built dead last, right after the basketball-hoop boy above, for the usual reason: `makeHuman()`
+  // and `randomPerson()` both draw off this town's own shared `r()` sequence unconditionally, and
+  // anything built earlier would have had its own timing-sensitive pick shifted by it.
+  { const sx = -63, sz = 20, kx = sx + 0.9, kz = sz, ry = atan2(sx - kx, sz - kz);
+    const brush = makeSweepBrush(); place(game, U, brush, sx, sz, 0);
+    const sweepWard = makeWardrobe(r, { shirts: [0x5a5248, 0x4a443c], pants: [0x2a2622, 0x332e28], shoes: [0x2a2018] });
+    const sweep = makeHuman({ ...randomPerson(r, { female: false, child: true, wardrobe: sweepWard }),
+      hat: 'flatcap', hatColor: 0x2a2622, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(sweep.group);
+    const sweepLines = ['Every one of these flues, top to bottom, soot to my elbows. Not one gaslamp’s worth of thanks for it.', "Mind the sack, puss — tip it over and we're both wearing it home.", "Besom's good for a few more rows yet. Handle's the part that always gives out first."];
+    game.npcs.push(new Kneeler(game, sweep, { x: kx, z: kz, ry, cries: sweepLines })); }
 
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;

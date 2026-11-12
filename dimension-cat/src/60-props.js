@@ -745,6 +745,15 @@ function makeSkateboard(color = 0xff6fb5) {
   }
   return g;
 }
+/** A chimney sweep's besom: a long handle with a flared dark bristle head at one end, lying on the ground beside a small tied soot sack. Faces +z, bristle head at +z. */
+function makeSweepBrush(color = 0x6b4a2e) {
+  const g = new THREE.Group(), handleM = mat(color, { roughness: 0.75 }), bristleM = mat(0x241f1a, { roughness: 0.9 }), sackM = mat(0x3a3a3a, { roughness: 0.85 });
+  mesh(G.cyl(0.022, 0.026, 0.92, 8), handleM, { y: 0.025, z: -0.14, rx: PI / 2, parent: g });
+  mesh(G.cone(0.1, 0.3, 10), bristleM, { y: 0.07, z: 0.46, rx: -PI / 2, parent: g });
+  mesh(G.sphere(0.12, 10, 8), sackM, { x: -0.3, y: 0.11, z: -0.32, parent: g });
+  mesh(G.cyl(0.018, 0.018, 0.08, 8), sackM, { x: -0.3, y: 0.23, z: -0.32, parent: g });
+  return g;
+}
 /** A pole-mounted basketball hoop: a thin pole, a cantilevered arm, a backboard with a painted trim, an orange rim and a hanging net of straight cords. Faces +z (the rim projects toward the shooter). `userData.rim` gives the rim's own local [x,y,z], for a caller aiming a ball at it. */
 function makeHoop(poleH = 2.55, rimY = 2.05) {
   const g = new THREE.Group(), rimR = 0.23;

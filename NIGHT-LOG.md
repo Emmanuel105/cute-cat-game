@@ -29095,3 +29095,37 @@ wandering robot over the full run. No interactable already on this floor sits wi
 count unchanged at 333 (the forklift carries no physics box of its own). No visual check was possible
 in this environment (no browser, no Playwright) — only the stub-three test suite and the headless
 probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1049 — Victorian's chimney sweep boy takes the credit
+
+Every terrace house on the Victorian street has puffed its own chimney smoke since the row went up,
+but nobody who ever swept those chimneys clean enough to smoke so well had actually shown up. **A
+chimney sweep's boy now kneels in the back lane behind the north terrace, soot sack at his elbow,
+checking his besom's bristle head before he shoulders it and moves on to the next row of pots.**
+*"Every one of these flues, top to bottom, soot to my elbows. Not one gaslamp's worth of thanks for
+it."* *"Mind the sack, puss — tip it over and we're both wearing it home."* *"Besom's good for a few
+more rows yet. Handle's the part that always gives out first."*
+
+New prop `makeSweepBrush()` (60-props.js, right after `makeSkateboard`): a plain wooden handle and a
+flared dark bristle head lying on the cobbles beside a small tied soot sack — thin and flat enough,
+like every scooter and skateboard already lying around this town, that it needs no physics box of its
+own. `Kneeler` (55-npcs.js) reused verbatim, the same "checking gear before getting back to it" idiom
+every scooter and skateboard kid in the game already uses; its own constructor calls `greetable()`, so
+no new wiring was needed. Soot-dark wardrobe only — no jacket, no hat band, no new face feature — the
+colour alone against every brighter-dressed child in this town carries the joke.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(3, 'from-prev')` waited out for real against its own portal-fade
+timer, then 3600 simulated frames sampling every one of this town's 130 NPCs' own position every 6th
+frame, 78,600 samples in all) swept the open back lane behind the north terrace — past the houses' own
+rear wall, clear of every front garden, fence and the main street — against those samples, all 663 of
+this town's own physics boxes and every one of `game.zones`'s 245 rectangles: (-63, 20) came back
+clear for the brush and sack (5.2 m from the nearest box, 10 m from the nearest wandering soul) and
+(-62.1, 20) for the boy himself (5.0 m clear of the nearest box, 9.1 m clear of the nearest other
+soul), both at radius 66 from the origin — well inside the hand-built town, short of the radius (88)
+where `victorianRegion`'s own procedural fill takes over, and outside every zone.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, Victorian's
+own friend total rose from 153 to 154. No visual check was possible in this environment (no browser,
+no Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
