@@ -28886,6 +28886,53 @@ function buildForest(game, entry) {
     W.add(magician.group);
     const magicLines = ["Nothing up this sleeve. Not even a firefly, and believe me, they get into everything out here.", "Watch closely, puss — the coin's gone. ...And it's back. Every time.", "Not even the owls have caught how it's done, and they don't miss much."];
     game.npcs.push(new Magician(game, magician, { x: mx, z: mz, ry: mry, cries: magicLines })); }
+  // The Neighborhood, Candy Land, Robot City, Victorian, Sunny Shore and Frosty Peak all have their own
+  // basketball hoop by now — Whisper Woods was the last of the seven left without one. **A kid in a
+  // faded orange jersey now dribbles alone on a quiet stretch of forest floor, well south-west of
+  // everything else in this wood,** lofting the ball up through a pole-mounted hoop before it drops
+  // straight back into her waiting hand to dribble again. *"Floor's packed dirt and moss, not a proper
+  // court, but it bounces true enough."* *"Mind your tail, puss — the net eats anything that strays too
+  // close."* *"No teammates out here, just the echo off the trees."*
+  //
+  // No new prop and no new controller: the same `makeHoop()` (`60-props.js`) and `Baller` (`55-npcs.js`)
+  // every other world already uses. The same terrain wrinkle Sunny Shore's and Frosty Peak's own rounds
+  // already worked out applies here too: the hoop's own group and its pole's physics box both read their
+  // height off `game.physics.ground0(hx, hz)` instead of a bare `0` — `Baller`'s own constructor already
+  // does the same for its rig, so the controller itself needed no change.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, `game.travel(6, 'from-hub')` waited out for real, then
+  // 3600 simulated frames, then a 1 m grid of the open forest floor (radius 15-54, short of the radius
+  // (58) where `forestRegion`'s own fill takes over) swept against all 734 of this wood's own physics
+  // boxes, every one of `game.zones`'s own 224 rectangles, and all 129 NPCs' live positions) found
+  // (-53, -3) clear for the hoop's own pole — radius 53.1 from the origin, 8.8 m from the nearest box
+  // and 9.3 m from the nearest wandering soul — and (-53, -8.5) for the kid, 5.5 m further along the
+  // hoop's own facing (the same offset every other world used), 8.5 m clear of the nearest box and
+  // 6.0 m clear of the nearest NPC, on the quiet south-west side of the wood far from the wagon, the
+  // paper-plane kid and every other hand-placed landmark. Ground drops gently from 1.31 m at the pole
+  // to 0.99 m at the kid's own spot (about a 6% grade over the 5.5 m between them) but varies under
+  // 7 cm across either one's own footprint.
+  //
+  // A second headless probe ran 2400 simulated frames with the game actually started, confirmed the new
+  // `Baller` sits in the scene graph, watched all three phases (`dribble`, `rise`, `fall`) pass with the
+  // ball's position staying finite throughout, then walked the cat up to the kid and confirmed the "Say
+  // hi" prompt took `game.state.friends.size` from 0 to 1.
+  //
+  // Built dead last, right after the magician above, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off this wood's own shared `r()` sequence unconditionally, and anything
+  // built earlier would have had its own timing-sensitive pick shifted by it.
+  { const hx = -53, hz = -3, bx = -53, bz = -8.5, bry = atan2(hx - bx, hz - bz), poleH = 2.55;
+    const hy0 = P.ground0(hx, hz);
+    const hoop = makeHoop(poleH); hoop.position.set(hx, hy0, hz); W.add(hoop);
+    P.addBox(hx, hy0 + poleH / 2, hz, 0.14, poleH, 0.14, { cam: false });
+    const [rimX, rimY, rimZ] = hoop.userData.rim;
+    const baller = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true }),
+      shirt: 0xff6a00, pants: 0x1a1a22, shoes: 0xffffff, hat: null, scarf: null, jacket: null, coat: false, bag: null, backpack: null, glasses: false });
+    W.add(baller.group);
+    const ball = mesh(G.sphere(0.12, 10, 8), mat(0xe8742c, { roughness: 0.65 }), { parent: W });
+    const ballerLines = ["Floor's packed dirt and moss, not a proper court, but it bounces true enough.", "Mind your tail, puss — the net eats anything that strays too close.", "No teammates out here, just the echo off the trees."];
+    game.npcs.push(new Baller(game, baller, ball, { x: bx, z: bz, ry: bry,
+      hoopX: hx + rimX, hoopY: hy0 + rimY, hoopZ: hz + rimZ, cries: ballerLines })); }
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

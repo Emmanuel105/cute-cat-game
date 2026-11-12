@@ -28893,3 +28893,43 @@ Peak's own friend total rose from 124 to 125. No visual check was possible in th
 browser, no Playwright) — only the stub-three test suite and the two headless probes above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Only Whisper Woods remains without
 a basketball hoop.
+
+## Round 1043 — Whisper Woods gets its own basketball hoop, the last of the seven
+
+The Neighborhood, Candy Land, Robot City, Victorian, Sunny Shore and Frosty Peak all had their own
+basketball hoop by round 1042, leaving only Whisper Woods without one. **A kid in a faded orange jersey
+now dribbles alone on a quiet stretch of forest floor, well south-west of everything else in this
+wood,** lofting the ball up through a pole-mounted hoop before it drops straight back into her waiting
+hand to dribble again. *"Floor's packed dirt and moss, not a proper court, but it bounces true enough."*
+*"Mind your tail, puss — the net eats anything that strays too close."* *"No teammates out here, just
+the echo off the trees."*
+
+No new prop and no new controller: the same `makeHoop()` (`60-props.js`) and `Baller` (`55-npcs.js`)
+every other world already uses. The same terrain wrinkle Sunny Shore's and Frosty Peak's own rounds
+already worked out applies here too: the hoop's own group and its pole's physics box both read their
+height off `game.physics.ground0(hx, hz)` instead of a bare `0` — `Baller`'s own constructor already
+does the same for its rig, so the controller itself needed no change.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(6, 'from-hub')` waited out for real, then
+3600 simulated frames, then a 1 m grid of the open forest floor (radius 15-54, short of the radius (58)
+where `forestRegion`'s own fill takes over) swept against all 734 of this wood's own physics boxes,
+every one of `game.zones`'s own 224 rectangles, and all 129 NPCs' live positions) found (-53, -3) clear
+for the hoop's own pole — radius 53.1 from the origin, 8.8 m from the nearest box and 9.3 m from the
+nearest wandering soul — and (-53, -8.5) for the kid, 5.5 m further along the hoop's own facing (the
+same offset every other world used), 8.5 m clear of the nearest box and 6.0 m clear of the nearest NPC,
+on the quiet south-west side of the wood far from the wagon, the paper-plane kid and every other
+hand-placed landmark. Ground drops gently from 1.31 m at the pole to 0.99 m at the kid's own spot (about
+a 6% grade over the 5.5 m between them) but varies under 7 cm across either one's own footprint.
+
+A second headless probe ran 2400 simulated frames with the game actually started, confirmed the new
+`Baller` sits in the scene graph, watched all three phases (`dribble`, `rise`, `fall`) pass with the
+ball's position staying finite throughout, then walked the cat up to the kid and confirmed the "Say
+hi" prompt took `game.state.friends.size` from 0 to 1 (and stayed at 1 on a second greeting, same as
+every other friend).
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, Whisper
+Woods' own friend total rose from 152 to 153. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the two headless probes above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy. All seven worlds now have their own
+basketball hoop.
