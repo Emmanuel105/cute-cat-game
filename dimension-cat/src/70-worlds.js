@@ -12314,6 +12314,45 @@ function buildVictorian(game, entry) {
     const magicLines = ['Nothing up this sleeve, madam. Not even a chimney sweep’s soot.', "Watch closely, puss — the coin's gone. ...And it's back. Every time.", 'Not a trick the gaslamps could ever explain, even on their brightest night.'];
     game.npcs.push(new Magician(game, magician, { x: mx, z: mz, ry: mry, cries: magicLines })); }
 
+  // The Neighborhood, Candy Land and Robot City all have a basketball hoop by now (rounds 1037-1039)
+  // and no other world has followed yet. **A barefoot urchin now dribbles alone on the open green
+  // south-west of the terraces**, well clear of the frisbee thrower, the hopscotch chalker and the
+  // skateboard kid, lofting the ball up through a pole-mounted hoop before it drops straight back into
+  // her waiting hand to dribble again. *"Tuppence a shot, though nobody's ever once paid it."* *"Watch
+  // the net, puss — tear it twice and the cobbler charges for thread."* *"The vicar reckons the clang
+  // carries further than the church bell. He's not wrong."*
+  //
+  // No new prop and no new controller: the same `makeHoop()` (60-props.js) and `Baller` (55-npcs.js)
+  // the other three worlds already use, just a fourth instance with its own position, wardrobe and
+  // lines. The shirt colour (0xff6a00) is the hoop's own rim colour, worn as a jersey, the same choice
+  // Robot City made — checked against all six other shirt colours this town's own people wear.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, `game.travel(3, 'from-prev')` waited out for real,
+  // then a 1 m grid of the open ground south-west of the terraces swept against all 662 of the town's
+  // physics boxes, every one of `game.zones`'s rectangles and circles, and all 130 NPCs already in it)
+  // found (-40, -71) clear for the hoop's own pole — 32.1 m from the nearest box, 14.3 m from the
+  // nearest NPC (the frisbee thrower at (-26, -76)) — and (-40, -65.5) for the kid, 5.5 m further
+  // north along the hoop's own facing, 9.7 m clear of the nearest hand-placed vignette, the hopscotch
+  // chalker at (-45.9, -57.85). Both sit at radius 81-83 from the origin, inside the hand-built town
+  // (`victorianRegion()`'s own procedural fill only starts at radius 88).
+  //
+  // Built dead last, right after the magician above and right before the squirrel, for the usual
+  // reason: `makeHuman()` and `randomPerson()` both draw off this town's own shared `r()` sequence
+  // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted
+  // by it.
+  { const hx = -40, hz = -71, bx = -40, bz = -65.5, bry = atan2(hx - bx, hz - bz), poleH = 2.55;
+    const hoop = makeHoop(poleH); hoop.position.set(hx, P.ground0(hx, hz), hz); W.add(hoop);
+    P.addBox(hx, poleH / 2, hz, 0.14, poleH, 0.14, { cam: false });
+    const [rimX, rimY, rimZ] = hoop.userData.rim;
+    const baller = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true }),
+      shirt: 0xff6a00, pants: 0x1a1a22, shoes: 0xffffff, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(baller.group);
+    const ball = mesh(G.sphere(0.12, 10, 8), mat(0xe8742c, { roughness: 0.65 }), { parent: W });
+    const ballerLines = ["Tuppence a shot, though nobody's ever once paid it.", 'Watch the net, puss — tear it twice and the cobbler charges for thread.', "The vicar reckons the clang carries further than the church bell. He's not wrong."];
+    game.npcs.push(new Baller(game, baller, ball, { x: bx, z: bz, ry: bry,
+      hoopX: hx + rimX, hoopY: P.ground0(hx, hz) + rimY, hoopZ: hz + rimZ, cries: ballerLines })); }
+
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);

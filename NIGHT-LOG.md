@@ -28782,3 +28782,37 @@ sentry/tag-robot patrols.
 City's own friend total rose from 113 to 114. No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1040 — Victorian gets its own basketball hoop, the fourth of the seven
+
+The Neighborhood, Candy Land and Robot City all had a basketball hoop by rounds 1037-1039 and no
+other world had followed yet. **A barefoot urchin now dribbles alone on the open green south-west of
+the terraces**, well clear of the frisbee thrower, the hopscotch chalker and the skateboard kid,
+lofting the ball up through a pole-mounted hoop before it drops straight back into her waiting hand to
+dribble again. *"Tuppence a shot, though nobody's ever once paid it."* *"Watch the net, puss — tear it
+twice and the cobbler charges for thread."* *"The vicar reckons the clang carries further than the
+church bell. He's not wrong."*
+
+No new prop and no new controller: the same `makeHoop()` (60-props.js) and `Baller` (55-npcs.js) the
+other three worlds already use, just a fourth instance with its own position, wardrobe and lines. The
+shirt colour (0xff6a00) is the hoop's own rim colour, worn as a jersey, the same choice Robot City made.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(3, 'from-prev')` waited out for real, then a
+1 m grid of the open ground south-west of the terraces swept against all 662 of the town's physics
+boxes, every one of `game.zones`'s rectangles and circles, and all 130 NPCs already in it) found
+(-40, -71) clear for the hoop's own pole — 32.1 m from the nearest box, 14.3 m from the nearest NPC (the
+frisbee thrower at (-26, -76)) — and (-40, -65.5) for the kid, 5.5 m further north along the hoop's own
+facing, 9.7 m clear of the nearest hand-placed vignette, the hopscotch chalker at (-45.9, -57.85). Both
+sit at radius 81-83 from the origin, inside the hand-built town (`victorianRegion()`'s own procedural
+fill only starts at radius 88).
+
+A second headless probe ran 1800 simulated frames with the game actually started, found the new
+`Baller` in `game.npcs`, watched all three phases (`dribble`, `rise`, `fall`) pass with the ball's and
+rig's positions staying finite throughout, then walked the cat up to the kid and confirmed the "Say hi"
+prompt took `game.state.friends.size` from 0 to 1.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, Victorian's
+own friend total rose from 152 to 153. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite and the two headless probes above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
