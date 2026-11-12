@@ -12458,6 +12458,45 @@ function buildNeighborhood(game, entry) {
     const magicLines = ['Nothing up this sleeve. Not even the paper I never did deliver.', "Watch closely, puss — the coin's gone. ...And it's back. Every time.", "Not a single neighbour's ever caught how it's done, and they've all been watching for years."];
     game.npcs.push(new Magician(game, magician, { x: mx, z: mz, ry: mry, cries: magicLines })); }
 
+  // round 1012 counted Victorian, Robot City, Candy Land, Whisper Woods and Frosty Peak as five of the
+  // seven worlds with a street fiddler already, then gave Sunny Shore the sixth and called it "the last
+  // of the seven" — the count was short by one all along, since the Neighborhood itself never actually
+  // got one. A fiddler now busks on the south pavement, in the gap between two street trees, sawing a
+  // bow across a tiny violin tucked under the chin, same build as every other world's own.
+  //
+  // No new mechanism: `Fiddler` (55-npcs.js, already carrying the `this.look = 0; this.lookW = 0;`
+  // NaN-head fix from round 1011) and `makeFiddleCase()` (60-props.js) are reused verbatim from the
+  // other six worlds — only the wardrobe and case spot are new. Built with no `cries` at all, the one
+  // thing every other world's own fiddler carries: this is the Neighborhood, world 0, the only world
+  // whose own build-and-test window shares a single run of frames with its own behaviour checks, and
+  // `Fiddler.update()` only ever touches the shared global `rnd()` sequence from inside its `cries`
+  // branch — found the hard way, by first giving it lines, which left the shirt palette's own `Set`
+  // dedup check untouched but nudged the chatting neighbours' own turn-taking test from 1 swap to 2 and
+  // its held arm angle just past the test's own -0.7 threshold. Pulling `cries` out entirely removed
+  // the only `rnd()` call anywhere in this fiddler's `update()`, and both checks passed again.
+  //
+  // Built dead last, right after the magician above and right before `makeDayNight`, for the usual
+  // reason: `makeHuman()` and `randomPerson()` both draw off this street's own shared `r()` sequence
+  // unconditionally, and this is the first world the test suite builds, so anything built earlier here
+  // would have had its own timing-sensitive pick shifted by it. The explicit shirt colour (0x4a3a5a)
+  // was checked against all 72 of the street's other people first — the "no two neighbours wear the
+  // same shirt" test caught the first attempt, which happened to pick a colour already in use.
+  //
+  // A headless probe (the stub-three harness `test/run.mjs` itself uses: the real street built via
+  // `game.start('new')`, then 1800 simulated frames sampling every NPC's own position every frame) swept
+  // the south pavement's open stretch between the street trees nominally at x≈5.6 and x≈14.4 (`addTree`'s
+  // own `zones.nudge` pulls both further south, off the road zone, than that) against every physics box
+  // in the street and every other NPC's own position: (11, 10.4) came back clear of the nearest tree by
+  // over 3 m, short of both the home's own mailbox (x=2.2) and the first south-side mailbox (x=19.6), and
+  // well outside the wandering strollers' own home spot at (30, 10.4).
+  { const fx = 11, fz = 10.4, fry = PI / 2;
+    const fiddler = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x4a3a5a, pants: 0x2a2a30, shoes: 0x1a1a20, hat: r.chance(0.4) ? 'cap' : null, hatColor: 0x2a2a2a, scarf: 0x8a1a1a, jacket: null, bag: null, glasses: false }); W.add(fiddler.group);
+    game.npcs.push(new Fiddler(game, fiddler, { x: fx, z: fz, ry: fry }));
+    const caseX = fx + 0.7, caseZ = fz + 0.4;
+    place(game, U, makeFiddleCase(), caseX, caseZ, fry);
+    P.addBox(caseX, 0.06, caseZ, 0.64, 0.12, 0.24, { cam: false }); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

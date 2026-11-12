@@ -28610,3 +28610,39 @@ unchanged at 331 (the skipper carries only a circle collider, like every other s
 Frosty Peak's own friend count rose to 124 ("124 to meet"). No visual check was possible in this
 environment (no browser, no Playwright) — only the stub-three test suite and the two headless probes
 above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1036 — the Neighborhood finally gets its own fiddler
+
+Round 1012 counted "Victorian, Robot City, Candy Land, Whisper Woods and Frosty Peak" as five of the
+seven worlds with a street fiddler already, then gave Sunny Shore the sixth and called it **"the last
+of the seven"** — but five plus Sunny Shore is six, not seven, and the miscount left the Neighborhood,
+the very first world, as the one that never actually got one. A fiddler now busks on the south
+pavement between two of the street's own trees, sawing a bow across a tiny violin tucked under the
+chin, same build as every other world's own, with a felt-lined case for tips set down beside him.
+
+No new mechanism: `Fiddler` and `makeFiddleCase()` (already shipped to six worlds) are reused verbatim
+— only the wardrobe and the spot (11, 10.4) are new. Two things bit on the way in, both already flagged
+by this log's own conventions. First, the "no two neighbours wear the same shirt" check (73 people now)
+caught the first colour picked, since it collided with an existing neighbour's — a probe dumping every
+current shirt hex before picking (0x4a3a5a) fixed that outright. Second, giving this fiddler `cries`
+nudged two already-passing checks in the Neighborhood itself: the chatting neighbours' turn-taking test
+went from 1 swap in 7s to 2, and their held arm angle slid just past the test's own -0.7 threshold — the
+Neighborhood is world 0, the only world whose build-and-test window shares a single run of simulated
+frames with its own behaviour checks, and `Fiddler.update()`'s only `rnd()` call lives inside its
+`cries` branch. Dropping `cries` entirely (this fiddler busks in silence, unlike its six siblings) fixed
+both. Built dead last in the function, right after the magician and right before `makeDayNight`, same
+reasoning as always: `randomPerson()` draws off this street's own shared `r()` sequence unconditionally.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 332 (the fiddle case carries no `walk:false`, same as every sibling, but it's short enough
+to clear the walkability test's own under-0.4m filter regardless), Neighborhood's own friend count rose
+from 98 to 99. Verified past the suite with two headless probes (the stub-three harness `test/run.mjs`
+itself uses): one dumped all 73 shirt colours before picking a free one; the other clicked "enter" (the
+first probe forgot this and got a `null` "nearest" for it, since `game.step()` — and its nearest-prompt
+logic — never runs until `game.started`), ran 600 simulated frames confirming the rig's position and
+head rotation stayed finite throughout, walked the cat to (11, 10.9) and found the prompt read "Say
+hello", then called `onUse()` and watched `game.state.friends.size` go from 0 to 1. A third pass swept
+the exact south-pavement walk line (z=10.4, x from -92 to 92) against every physics box and found it
+clear end to end. No visual check was possible in this environment (no browser, no Playwright) — only
+the stub-three test suite and the three headless probes above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
