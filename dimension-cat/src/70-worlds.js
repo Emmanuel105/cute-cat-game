@@ -3255,6 +3255,12 @@ function buildNeighborhood(game, entry) {
       game.addInteractable({ obj: bats[0].group, radius: 2.1, label: () => bats[0].group.visible ? 'Say hello to the bat' : null, onUse: () => {
         game.befriend(parkBatId); SFX.chitter(); game.hearts(bats[0].group.position.x, bats[0].group.position.y, bats[0].group.position.z, 3);
         game.toast('🦇 "*peels off from the loop, dips low over the park, then climbs back into formation*"'); } }); }
+    // Three of the four still flew on, unanswered. The second, `bats[1]`, gets the same fix now —
+    // same visible-gated label, same y-included hearts burst, same one-at-a-time pattern.
+    { const parkBat2Id = game.namedFriend('park-bat-2');
+      game.addInteractable({ obj: bats[1].group, radius: 2.1, label: () => bats[1].group.visible ? 'Say hello to the bat' : null, onUse: () => {
+        game.befriend(parkBat2Id); SFX.chitter(); game.hearts(bats[1].group.position.x, bats[1].group.position.y, bats[1].group.position.z, 3);
+        game.toast('🦇 "*breaks formation for one wobbly loop, then falls back into line*"'); } }); }
   }
 
   // Every yard feature on this street so far — the pinwheel, the sprinkler, the sundial — sits on
