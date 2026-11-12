@@ -3267,6 +3267,14 @@ function buildNeighborhood(game, entry) {
       game.addInteractable({ obj: bats[2].group, radius: 2.1, label: () => bats[2].group.visible ? 'Say hello to the bat' : null, onUse: () => {
         game.befriend(parkBat3Id); SFX.chitter(); game.hearts(bats[2].group.position.x, bats[2].group.position.y, bats[2].group.position.z, 3);
         game.toast('🦇 "*loops once right over your head, close enough to feel the wingbeat*"'); } }); }
+    // One of the four still flew on, unanswered. The fourth and last, `bats[3]`, gets the same fix
+    // now — same visible-gated label, same y-included hearts burst, same one-at-a-time pattern. All
+    // four park bats are greetable friends now, closing out this flock the same way the belfry trio
+    // and the oak trio were closed out before it.
+    { const parkBat4Id = game.namedFriend('park-bat-4');
+      game.addInteractable({ obj: bats[3].group, radius: 2.1, label: () => bats[3].group.visible ? 'Say hello to the bat' : null, onUse: () => {
+        game.befriend(parkBat4Id); SFX.chitter(); game.hearts(bats[3].group.position.x, bats[3].group.position.y, bats[3].group.position.z, 3);
+        game.toast('🦇 "*trails the others by a wingbeat, then swoops in to catch up*"'); } }); }
   }
 
   // Every yard feature on this street so far — the pinwheel, the sprinkler, the sundial — sits on

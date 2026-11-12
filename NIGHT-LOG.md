@@ -29362,3 +29362,23 @@ unchanged at 333, the Neighborhood's own friend total rose from 102 to 103 (worl
 check). No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 1060 — the Neighborhood's fourth and last park bat answers back too
+
+Rounds 1057-1059 wired up three of the park's four night bats (`bats[0]`, `bats[1]`, `bats[2]`) to a
+"say hello" prompt, leaving the fourth still flying the silent Lissajous loop unanswered after dusk.
+**The fourth and last, `bats[3]`, now gets the same fix, closing out the flock.** *"trails the others
+by a wingbeat, then swoops in to catch up"*
+
+Same root cause, same fix as the first three: a fourth `game.namedFriend('park-bat-4')` plus a
+`game.addInteractable` keyed straight to `bats[3].group`, with the label gated on
+`bats[3].group.visible` so the prompt only shows once the day/night toggle has actually faded the bat
+in after dusk. No new mesh, no new physics box, no `rnd()` draw — the fix only reads a rig the loop
+already built. All four park bats are greetable friends now, the same way the belfry's own trio in
+Victorian and the oak's own trio in Whisper Woods were closed out before them.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 333, the Neighborhood's own friend total rose from 103 to 104 (world 0's "to meet"
+check). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.
