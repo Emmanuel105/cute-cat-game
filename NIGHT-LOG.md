@@ -28964,3 +28964,36 @@ browser, no Playwright) — only the stub-three test suite and the headless prob
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Robot City, the Neighborhood and
 Victorian still have the only other three crossing guards; Sunny Shore, Frosty Peak and Whisper Woods
 remain without one.
+
+## Round 1045 — Sunny Shore gets its own crossing guard
+
+The Neighborhood, Robot City, Victorian and Candy Land all have their own `CrossingGuard`
+(55-npcs.js — the same raise/lower lollipop-sign cycle `Birder` uses for binoculars), but Sunny Shore
+never got one. **A lifeguard-orange warden now stands on the open sand north of the lifeguard chair,
+lifting a peppermint-striped stop sign overhead every few seconds as if halting foot traffic at the
+water's edge** — the same joke Candy Land's own guard makes about a wagon that never actually moves,
+reused here for the tide instead of a cart. *"Hold up, puss — wait for the tide to finish its own
+business."* *"Thirty summers on this stretch, not one soul caught out by the water yet."* *"No racing
+past the flag when it's up, now."*
+
+No new controller: `CrossingGuard`'s own constructor calls `greetable()` itself, so this is a
+placement, not a new build. Hi-vis orange jacket and white stripes over a plain tee and navy shorts,
+cap and sunglasses, in place of the other four guards' own amber or candy-cane palette, to read as a
+lifeguard rather than a traffic warden.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(4, 'from-hub')` waited out through its real portal-fade timer, then
+10,800 simulated frames — 180 s — sampling every one of the beach's 113 NPCs' own position every
+3rd-5th frame) swept the open dry sand (ground height under 2.6 m, radius 3-55, short of where
+`beachRegion`'s own fill takes over) against those samples, all 267 of this shore's own physics boxes
+and every one of `game.zones`'s rectangles, with a second pass narrowed to the strip nearest the
+tideline (x 4-12) since a tide-themed guard reads best close to the water: (4, 32) came back clearest
+there — 5.02 m clear of the nearest box (a swim-flag post) and 7.05 m clear of the nearest wandering
+soul over the full run, at radius 32.2 from the origin, a few metres from the two friends at (14, 34)
+already remarking "Tide's coming in" and short of both swim flags' own 2.2 m interact radius.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, Sunny
+Shore's own friend total rose from 129 to 130. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Frosty Peak and Whisper Woods remain
+the only two worlds without a crossing guard of their own.
