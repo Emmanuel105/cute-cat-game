@@ -3238,7 +3238,24 @@ function buildNeighborhood(game, entry) {
         const dx = p2.x - p.x, dz = p2.z - p.z; if (dx * dx + dz * dz > 1e-6) rig.group.rotation.y = atan2(dx, dz);
         rig.animate(0, true, dt, t);
       });
-    }); }
+    });
+    // These four have flown a silent loop over the park since the round that first put them in the
+    // sky — unlike the belfry's own trio and the oak's own trio (both added later, both greetable from
+    // the start), none of them ever got a "say hello". The first of the four, `bats[0]`, gets one now,
+    // the same one-at-a-time fix every other flock in the game has already gone through once. The
+    // label reads `bats[0].group.visible` straight off the live group rather than keeping a second
+    // copy of `night`: `worldCtl.update` (which runs this world's `U` list, including the toggle just
+    // above) fires ahead of the interactable scan in `game.step()`, so the flag is already current for
+    // this frame by the time the prompt is computed, and returns `null` while the bat is invisible by
+    // day so the prompt never appears with nothing on screen to answer it. No physics box, same
+    // reasoning as the rest of this flock: the prompt's distance check only compares `x`/`z` against
+    // the cat, not `y`, the same convention every other flyer-friend credit in the game already relies
+    // on despite flying well above jump height.
+    { const parkBatId = game.namedFriend('park-bat');
+      game.addInteractable({ obj: bats[0].group, radius: 2.1, label: () => bats[0].group.visible ? 'Say hello to the bat' : null, onUse: () => {
+        game.befriend(parkBatId); SFX.chitter(); game.hearts(bats[0].group.position.x, bats[0].group.position.y, bats[0].group.position.z, 3);
+        game.toast('🦇 "*peels off from the loop, dips low over the park, then climbs back into formation*"'); } }); }
+  }
 
   // Every yard feature on this street so far — the pinwheel, the sprinkler, the sundial — sits on
   // somebody's own front lawn; the field behind the second row of houses (row two sits at z=28, the

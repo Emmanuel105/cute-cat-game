@@ -29303,3 +29303,25 @@ Victorian's own friend total rose from 154 to 155 (confirmed with a scratch prob
 meet" checks). No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite and the scratch probes above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1057 — the Neighborhood's night bats finally answer back
+
+Four bats have flown a silent Lissajous loop over the park after dusk since the round that first put
+them in the sky, but unlike the belfry's own trio in Victorian and the oak's own trio in Whisper
+Woods — both added later, both greetable from day one — none of the four ever got a "say hello".
+**The first of the four now does.** *"peels off from the loop, dips low over the park, then climbs
+back into formation"*
+
+No new mesh, no new physics box, no `rnd()` draw: the fix only adds a `game.namedFriend('park-bat')`
+and a `game.addInteractable` keyed to the loop's own first rig (`bats[0]`), the same one-at-a-time
+pattern this project has run through for every other flock. The one wrinkle this flock has that the
+others don't is the day/night toggle itself — these bats fade in and out with `game.dayPhase`, so the
+prompt's `label()` reads `bats[0].group.visible` straight off the live group (already current for the
+frame, since `worldCtl.update` runs the toggle before the interactable scan) and returns `null` while
+the bat is invisible by day, so there's nothing to answer with nothing on screen.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 333, the Neighborhood's own friend total rose to 101 (world 0's "to meet" check, which
+asserts `>= 11`, now reads higher by one). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
