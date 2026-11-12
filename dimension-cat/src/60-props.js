@@ -1480,6 +1480,23 @@ function makeScrapCrane(game, x, z, ry) {
   };
   return g;
 }
+// small unmanned forklift robot: chassis on four wheels, a mast with a pair of fork tines at the front
+function makeForkliftBot(game) {
+  const g = group(0, 0, 0, game.world);
+  const body = mat(0xffc11e, { roughness: 0.5, metalness: 0.3 }), dark = mat(0x2b2f36, { metalness: 0.8, roughness: 0.3 }), steel = mat(0x8a939c, { metalness: 0.7, roughness: 0.35 });
+  mesh(G.box(0.62, 0.42, 0.9), body, { y: 0.4, shadow: 'both', parent: g });
+  mesh(G.box(0.5, 0.3, 0.3), dark, { y: 0.76, z: -0.12, parent: g });   // backrest, no driver — nothing's ever sat here
+  const wheels = [];
+  for (const [wx, wz] of [[-0.33, 0.28], [0.33, 0.28], [-0.33, -0.28], [0.33, -0.28]]) wheels.push(mesh(G.cyl(0.16, 0.16, 0.14, 12), dark, { x: wx, y: 0.16, z: wz, rz: PI / 2, shadow: 'none', parent: g }));
+  const mast = group(0, 0, 0.5, g);
+  for (const mx of [-0.18, 0.18]) mesh(G.box(0.06, 1.1, 0.06), steel, { x: mx, y: 0.55, parent: mast });
+  const forks = group(0, 0.08, 0, mast);
+  mesh(G.box(0.4, 0.24, 0.07), dark, { y: 0.14, parent: forks });
+  for (const tx of [-0.14, 0.14]) mesh(G.box(0.07, 0.05, 0.55), dark, { x: tx, z: 0.3, parent: forks });
+  const beacon = mesh(G.sphere(0.06, 8, 6), glowMat(0xffae00, 2), { y: 0.95, z: -0.12, shadow: 'none', parent: g });
+  g.userData.wheels = wheels; g.userData.forks = forks; g.userData.beacon = beacon;
+  return g;
+}
 
 // ---------------------------------------------------------------- victorian
 function makeVicHouse(o, r = rnd) {

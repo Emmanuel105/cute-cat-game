@@ -29061,3 +29061,37 @@ Woods' own friend total rose from 153 to 154. No visual check was possible in th
 browser, no Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. All seven worlds now have their own
 crossing guard.
+
+## Round 1048 — Robot City's forklift bot finally shows up
+
+Four loose crates scattered round the factory floor each picked up their own "look" toast over past
+rounds, and every one of those four lines leans on the same joke — a "forklift bot" with a route that
+never quite reaches wherever that particular crate happens to sit. The bot itself never once actually
+showed up anywhere in the game. **It does now: a small unmanned forklift shuttles back and forth
+along the open lane between the two main conveyor belts, forks rising and falling as if lifting a
+pallet at each end, an amber beacon blinking on top, four wheels turning as it rolls.** *"So THIS is
+the forklift bot everyone keeps blaming."* *"Must be the only route it actually runs — every crate on
+the floor swears it never comes their way."* *"Nobody's driving it. Hasn't needed to, not since round
+one."*
+
+New `makeForkliftBot()` (60-props.js, right after `makeScrapCrane`): a yellow chassis on four wheels
+with a two-rail mast and a pair of fork tines at the front, no cab and no driver — the same
+"automation, nobody at the wheel" joke the crane and the robot arm already lean on. Its motion is a
+pure `sin(t)` sweep along x at a fixed z, the same idiom every pinwheel, weathervane and swinging claw
+in the game already uses, so it costs nothing from the shared `rnd()` sequence and carries no physics
+box or circle of its own — nothing here for the cat to collide with, only to watch, same as the
+crane's magnet or a conveyor's own sliding crates.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(2, 'from-hub')` waited out through its real portal-fade timer, then
+3600 simulated frames sampling every one of this city's 87 NPCs' own position every 5th frame) swept
+the lane itself (x -9..9, z=-6, the open gap between conveyor `cA` at (-12,-6) and `cB` at (12,-6))
+against those samples and every ground-level physics box (filtering out anything overhead, the same
+`minY >= 1.6` rule `test/run.mjs`'s own `solidAt` check uses): the tightest stretch, x -5..5, stayed
+1.7 m clear of a thin sign panel at z -4.3..-4.1 the whole way, and never closer than 3.25 m to any
+wandering robot over the full run. No interactable already on this floor sits within 6 m of the lane.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 333 (the forklift carries no physics box of its own). No visual check was possible
+in this environment (no browser, no Playwright) — only the stub-three test suite and the headless
+probe above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
