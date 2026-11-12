@@ -28713,3 +28713,42 @@ already uses), Neighborhood's own friend count rose from 99 to 100. No visual ch
 environment (no browser, no Playwright) — only the stub-three test suite and the headless probes above,
 plus the three-pass bisection against the live test suite described above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1038 — Candy Land gets its own basketball hoop
+
+The Neighborhood got the game's first basketball hoop last round and no other world had followed yet
+— and Candy Land was still the lowest-friend-count world after it (109, against 113-152 elsewhere).
+**A kid now dribbles alone on the open sweet-lands past the donuts and marshmallow bushes**, well clear
+of the candy-cane forest ring, lofting a ball up through a pole-mounted hoop before it drops straight
+back into her waiting hand — the same no-miss solo practice loop the Neighborhood's kid already runs.
+*"🏀 Practising for the big game. There is no big game."* *"🍬 Even here, it still bounces like any other
+ball."*
+
+No new prop and no new controller: this is the exact same `makeHoop()` (`60-props.js`) and `Baller`
+(`55-npcs.js`) the Neighborhood introduced last round, just a second instance with its own position and
+its own kid, built from this land's own `randomPerson(r, { child: true, wardrobe: ... })` the way every
+other Candy Land vignette already is. `Baller`'s constructor already pins `rig.idleT`/`rig.blinkT` to
+keep the kid from fidgeting mid-dribble, and its own `update()` never touches a particle burst (dropped
+in the Neighborhood round for the same reason), so unlike the Neighborhood this land had no shared-frame
+hazard to work around — Candy Land isn't the world whose build shares a frame budget with its own
+behaviour checks.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.travel(1, 'from-prev')`, a 1 m grid swept out to radius 54 — short of the candy-cane-forest ring at
+56-76 and nowhere near `candyRegion`'s own inner=92 hand-off) against all 1904 of this land's physics
+boxes and every NPC's own live position found the open ground past the donuts and marshmallow bushes:
+(-33, 32) for the kid, 8.9 m clear of both the nearest hand-placed candy cane and the nearest wandering
+critter (a `Hopper`), and (-37, 36) for the hoop itself, 5.7 m further out along the same line, 8.3 m
+clear of its own nearest cane — neither point inside any `game.zones` rectangle.
+
+Verified past the test suite with a second headless probe: found the new `Baller` in `game.npcs`, ran
+1800 simulated frames with the game actually started (clicking "enter" first — skipping that, as a first
+pass did, leaves `game.step()` and its nearest-prompt logic dormant and the kid frozen in `dribble`
+forever, same trap a past round hit), observed all three phases (`dribble`, `rise`, `fall`), confirmed
+the rig's and ball's positions stayed finite throughout, then walked the cat to (-33, 33.5), found the
+prompt read "Say hi", and calling `onUse()` took `game.state.friends.size` from 0 to 1.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, Candy
+Land's own friend total rose from 109 to 110. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the two headless probes above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

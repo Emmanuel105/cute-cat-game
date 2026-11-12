@@ -4880,6 +4880,27 @@ function buildCandyLand(game, entry) {
     U.push((dt) => { dripT -= dt; if (dripT <= 0) { dripT = rnd.range(2.5, 4.5); game.fx.emit(fx, fy0 + 2.15, fz, { count: 5, color: 0x3a1a08, speed: 0.3, up: 0.1, life: 1.1, gravity: 2.4, spread: 0.3 }); } });
     const fountainLines = ['🍫 "Three tiers, and not one of them has ever run dry."', '🍓 "Four strawberries, and the fountain never once complains about sharing."', '🍫 "Sounds just like the river, if the river only had to fill one bowl."'];
     game.addInteractable({ obj: fountain, radius: 3.0, label: () => 'Look at the chocolate fountain', onUse: () => { SFX.click(); game.toast(rnd.pick(fountainLines), 3000); } }); }
+  // The Neighborhood got the game's first basketball hoop a round ago, and no other world had one yet.
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.travel(1,
+  // 'from-prev')`, then a 1 m grid swept out to radius 54 — short of the explicit candy-cane-forest ring
+  // at 56-76 and nowhere near `candyRegion`'s own inner=92 hand-off) against every one of this land's
+  // 1904 physics boxes and every NPC's own live position found the open ground past the two donuts and
+  // the marshmallow bushes, out beyond the cane ring's own gap: (-33, 32) for the kid, 8.9 m clear of
+  // both the nearest hand-placed cane and the nearest wandering critter, and (-37, 36) for the hoop
+  // itself, 5.7 m further out along the same line, 8.3 m clear of its own nearest cane. Same `makeHoop()`
+  // and `Baller` controller the Neighborhood's kid already uses — no new prop, no new class.
+  { const hx = -37, hz = 36, bx = -33, bz = 32, bry = atan2(hx - bx, hz - bz), poleH = 2.55;
+    const hoop = makeHoop(poleH); hoop.position.set(hx, P.ground0(hx, hz), hz); W.add(hoop);
+    P.addBox(hx, poleH / 2, hz, 0.14, poleH, 0.14, { cam: false });
+    const [rimX, rimY, rimZ] = hoop.userData.rim;
+    const hoopWard = makeWardrobe(r, { shirts: [0xff6fb5, 0x7fd7ff, 0xffd54a] });
+    const baller = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, wardrobe: hoopWard }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(baller.group);
+    const ball = mesh(G.sphere(0.12, 10, 8), mat(0xe8742c, { roughness: 0.65 }), { parent: W });
+    const hoopLines = ['🏀 "Practising for the big game. There is no big game."', '🍬 "Even here, it still bounces like any other ball."', '🧁 "Swish. Every single time. Nobody else is keeping score."'];
+    game.npcs.push(new Baller(game, baller, ball, { x: bx, z: bz, ry: bry,
+      hoopX: hx + rimX, hoopY: P.ground0(hx, hz) + rimY, hoopZ: hz + rimZ, cries: hoopLines, cryIcon: '🏀' })); }
   candyRegion(game, U, r, 92, CANDY_LIMIT - 8);
   for (const [x, z] of [[-14, 18], [18, 16], [-8, -10], [10, -12], [-28, 8], [30, 4], [-22, 30], [22, 32], [-34, -32], [34, -36], [2, -30]]) { const b = makeMarshmallowBush(r); b.position.set(x, 0, z); W.add(b); P.addBox(x, 0.5, z, 1.2, 1, 1.2, { cam: false }); }
   for (const [x, z, ry, c] of [[-16, 8, 0.3, 0xff6fb5], [20, -8, -0.8, 0x7fd7ff], [0, 26, 1.5, 0xffd54a]]) { const d = makeDonut(c); d.position.set(x, 0, z); d.rotation.y = ry; W.add(d); addRotBox(game, x, 1.2, z, 0.6, 2.4, 3.4, ry, { cam: false }); }
