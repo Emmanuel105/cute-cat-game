@@ -12164,6 +12164,12 @@ function buildNeighborhood(game, entry) {
       game.addInteractable({ obj: bats[1].group, radius: 2.1, label: () => bats[1].group.visible ? 'Say hello to the bat' : null, onUse: () => {
         game.befriend(parkBat2Id); SFX.chitter(); game.hearts(bats[1].group.position.x, bats[1].group.position.y, bats[1].group.position.z, 3);
         game.toast('🦇 "*breaks formation for one wobbly loop, then falls back into line*"'); } }); }
+    // Two of the four still flew on, unanswered. The third, `bats[2]`, gets the same fix now —
+    // same visible-gated label, same y-included hearts burst, same one-at-a-time pattern.
+    { const parkBat3Id = game.namedFriend('park-bat-3');
+      game.addInteractable({ obj: bats[2].group, radius: 2.1, label: () => bats[2].group.visible ? 'Say hello to the bat' : null, onUse: () => {
+        game.befriend(parkBat3Id); SFX.chitter(); game.hearts(bats[2].group.position.x, bats[2].group.position.y, bats[2].group.position.z, 3);
+        game.toast('🦇 "*loops once right over your head, close enough to feel the wingbeat*"'); } }); }
   }
 
   // Every yard feature on this street so far — the pinwheel, the sprinkler, the sundial — sits on
