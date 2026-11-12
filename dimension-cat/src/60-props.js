@@ -754,6 +754,26 @@ function makeSweepBrush(color = 0x6b4a2e) {
   mesh(G.cyl(0.018, 0.018, 0.08, 8), sackM, { x: -0.3, y: 0.23, z: -0.32, parent: g });
   return g;
 }
+/** A shoeshine box: a low wooden crate with a cast-iron foot bracket on top, one boot left propped on the bracket, three polish tins lined along the side and a rag draped over the front edge. Faces +z, bracket and boot toward +z. */
+function makeShoeshineBox(color = 0x5a4530) {
+  const g = new THREE.Group();
+  const woodM = mat(color, { roughness: 0.75 }), darkWoodM = mat(0x3a2c20, { roughness: 0.7 }), metalM = mat(0x2a2a2a, { roughness: 0.5, metalness: 0.35 });
+  const leatherM = mat(0x241a14, { roughness: 0.6 }), soleM = mat(0x1a1410, { roughness: 0.8 });
+  const tinA = mat(0x2a2018, { roughness: 0.55, metalness: 0.2 }), tinB = mat(0x7a3a1e, { roughness: 0.55, metalness: 0.2 });
+  const ragM = mat(0xc9a86a, { roughness: 0.9, side: THREE.DoubleSide });
+  mesh(G.box(0.42, 0.34, 0.32), woodM, { y: 0.17, shadow: 'both', parent: g });
+  mesh(G.box(0.46, 0.04, 0.36), darkWoodM, { y: 0.36, shadow: 'both', parent: g });
+  mesh(G.box(0.16, 0.05, 0.1), metalM, { y: 0.415, z: 0.1, shadow: 'both', parent: g });
+  const boot = group(0, 0.415, 0.1, g); boot.rotation.y = 0.15;
+  mesh(G.box(0.1, 0.09, 0.22), leatherM, { y: 0.085, z: 0.02, parent: boot });
+  mesh(G.box(0.095, 0.11, 0.07), leatherM, { y: 0.14, z: -0.08, parent: boot });
+  mesh(G.box(0.1, 0.02, 0.24), soleM, { y: 0.025, z: 0.02, parent: boot });
+  mesh(G.cyl(0.035, 0.035, 0.05, 10), tinA, { x: -0.2, y: 0.395, z: -0.08, parent: g });
+  mesh(G.cyl(0.035, 0.035, 0.05, 10), tinB, { x: -0.2, y: 0.395, z: 0, parent: g });
+  mesh(G.cyl(0.035, 0.035, 0.05, 10), tinA, { x: -0.2, y: 0.395, z: 0.08, parent: g });
+  mesh(G.box(0.14, 0.015, 0.1), ragM, { x: 0.12, y: 0.385, z: 0.16, ry: 0.3, parent: g });
+  return g;
+}
 /** A pole-mounted basketball hoop: a thin pole, a cantilevered arm, a backboard with a painted trim, an orange rim and a hanging net of straight cords. Faces +z (the rim projects toward the shooter). `userData.rim` gives the rim's own local [x,y,z], for a caller aiming a ball at it. */
 function makeHoop(poleH = 2.55, rimY = 2.05) {
   const g = new THREE.Group(), rimR = 0.23;

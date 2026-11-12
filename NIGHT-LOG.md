@@ -29271,3 +29271,35 @@ unchanged at 333, Robot City's own friend total rose from 119 to 120 (confirmed 
 suite's own "to meet" probe for world 2). No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1056 — Victorian gets a shoeshine boy
+
+Every gentleman on this street steps out in a top hat and a cane, but the town never had anywhere to
+have a boot seen to. **A shoeshine box now sits on the south back lane, east of the market-square
+lane, with a boy kneeling beside it.** *"Spit and polish, puss. There's no shortcut to a proper
+shine."*
+
+New prop `makeShoeshineBox()` (`60-props.js`, right after `makeSweepBrush`): a low wooden crate with a
+cast-iron foot bracket on top, one boot left propped on it, three polish tins lined along the side and
+a rag draped over the front edge. Pure static mesh, no `userData.update`, baked with the rest of the
+town the same as the chimney sweep's own brush and sack. The boy himself reuses `Kneeler` exactly as
+the sweep does — its own patting-the-ground animation already reads as a brush working a boot, so no
+new controller was needed, only a new prop and a new person; `Kneeler`'s constructor calls
+`greetable()` itself, so no extra friend-wiring either.
+
+A headless probe (the same stub-three harness `test/run.mjs` uses: `game.start('new')`,
+`game.travel(3, 'from-prev')` waited out for real against its own portal-fade timer, then 3600
+simulated frames sampling every one of the town's own NPCs' positions) swept the south back lane east
+of the market square against those samples, every one of the town's own physics boxes and every one of
+`game.zones`'s own keep-out rectangles: (35, -20) came back clear for the box itself — 5.0 m from the
+nearest box, 10.0 m from the nearest wandering soul — and (36, -20) for the boy, 0.9 m east of the
+box's own facing, comfortably clear too. Both sit at radius 40 from the origin, well inside the
+hand-built town.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 333 (Neighborhood's own count, the world the suite samples — the new box is Victorian's),
+Victorian's own friend total rose from 154 to 155 (confirmed with a scratch probe reading
+`game.friendTotal` after a real `travel(3, 'from-prev')`, same technique as the test suite's own "to
+meet" checks). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite and the scratch probes above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

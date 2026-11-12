@@ -6071,6 +6071,26 @@ function makeSweepBrush(color = 0x6b4a2e) {
   mesh(G.cyl(0.018, 0.018, 0.08, 8), sackM, { x: -0.3, y: 0.23, z: -0.32, parent: g });
   return g;
 }
+/** A shoeshine box: a low wooden crate with a cast-iron foot bracket on top, one boot left propped on the bracket, three polish tins lined along the side and a rag draped over the front edge. Faces +z, bracket and boot toward +z. */
+function makeShoeshineBox(color = 0x5a4530) {
+  const g = new THREE.Group();
+  const woodM = mat(color, { roughness: 0.75 }), darkWoodM = mat(0x3a2c20, { roughness: 0.7 }), metalM = mat(0x2a2a2a, { roughness: 0.5, metalness: 0.35 });
+  const leatherM = mat(0x241a14, { roughness: 0.6 }), soleM = mat(0x1a1410, { roughness: 0.8 });
+  const tinA = mat(0x2a2018, { roughness: 0.55, metalness: 0.2 }), tinB = mat(0x7a3a1e, { roughness: 0.55, metalness: 0.2 });
+  const ragM = mat(0xc9a86a, { roughness: 0.9, side: THREE.DoubleSide });
+  mesh(G.box(0.42, 0.34, 0.32), woodM, { y: 0.17, shadow: 'both', parent: g });
+  mesh(G.box(0.46, 0.04, 0.36), darkWoodM, { y: 0.36, shadow: 'both', parent: g });
+  mesh(G.box(0.16, 0.05, 0.1), metalM, { y: 0.415, z: 0.1, shadow: 'both', parent: g });
+  const boot = group(0, 0.415, 0.1, g); boot.rotation.y = 0.15;
+  mesh(G.box(0.1, 0.09, 0.22), leatherM, { y: 0.085, z: 0.02, parent: boot });
+  mesh(G.box(0.095, 0.11, 0.07), leatherM, { y: 0.14, z: -0.08, parent: boot });
+  mesh(G.box(0.1, 0.02, 0.24), soleM, { y: 0.025, z: 0.02, parent: boot });
+  mesh(G.cyl(0.035, 0.035, 0.05, 10), tinA, { x: -0.2, y: 0.395, z: -0.08, parent: g });
+  mesh(G.cyl(0.035, 0.035, 0.05, 10), tinB, { x: -0.2, y: 0.395, z: 0, parent: g });
+  mesh(G.cyl(0.035, 0.035, 0.05, 10), tinA, { x: -0.2, y: 0.395, z: 0.08, parent: g });
+  mesh(G.box(0.14, 0.015, 0.1), ragM, { x: 0.12, y: 0.385, z: 0.16, ry: 0.3, parent: g });
+  return g;
+}
 /** A pole-mounted basketball hoop: a thin pole, a cantilevered arm, a backboard with a painted trim, an orange rim and a hanging net of straight cords. Faces +z (the rim projects toward the shooter). `userData.rim` gives the rim's own local [x,y,z], for a caller aiming a ball at it. */
 function makeHoop(poleH = 2.55, rimY = 2.05) {
   const g = new THREE.Group(), rimR = 0.23;
@@ -21339,6 +21359,36 @@ function buildVictorian(game, entry) {
     W.add(sweep.group);
     const sweepLines = ['Every one of these flues, top to bottom, soot to my elbows. Not one gaslamp’s worth of thanks for it.', "Mind the sack, puss — tip it over and we're both wearing it home.", "Besom's good for a few more rows yet. Handle's the part that always gives out first."];
     game.npcs.push(new Kneeler(game, sweep, { x: kx, z: kz, ry, cries: sweepLines })); }
+  // every gentleman on this street steps out in a top hat and a cane, but not one of them has ever had
+  // his boots seen to. A shoeshine box now sits on the south back lane east of the market-square lane,
+  // a single boot left propped on its cast-iron foot bracket, three polish tins lined along the side
+  // and a rag draped over the front edge. New `makeShoeshineBox()` (60-props.js, right after
+  // `makeSweepBrush`): a pure static mesh, no `userData.update`, baked with the rest of this town same
+  // as the sack and brush above. The boy kneeling beside it reuses `Kneeler` exactly as the chimney
+  // sweep does — its own patting-the-ground animation reads just as well as a brush working a boot,
+  // so no new controller was needed, only a new prop and a new person.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // `game.travel(3, 'from-prev')` waited out for real against its own portal-fade timer, then 3600
+  // simulated frames sampling every one of this town's own NPCs' positions) swept the south back lane
+  // east of the market square against those samples, every one of this town's own physics boxes and
+  // every one of `game.zones`'s own keep-out rectangles: (35, -20) came back clear for the box itself
+  // — 5.0 m from the nearest box, 10.0 m from the nearest wandering soul — and (36, -20) for the boy
+  // himself, 0.9 m east of the box's own facing, the same clearance his own kneeling radius (0.35)
+  // needs many times over. Both sit at radius 40 from the origin, well inside the hand-built town.
+  //
+  // Built dead last, right after the chimney sweep above, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off this town's own shared `r()` sequence unconditionally, and anything
+  // built earlier would have had its own timing-sensitive pick shifted by it.
+  { const sx = 35, sz = -20, kx = sx + 0.9, kz = sz, ry = atan2(sx - kx, sz - kz);
+    const box = makeShoeshineBox(); place(game, U, box, sx, sz, 0);
+    P.addBox(sx, 0.21, sz, 0.5, 0.42, 0.4, { cam: false });
+    const shineWard = makeWardrobe(r, { shirts: [0xcfc6b0, 0xb8ae96], pants: [0x3a342a, 0x443c30], shoes: [0x2a2018] });
+    const shiner = makeHuman({ ...randomPerson(r, { female: false, child: true, wardrobe: shineWard }),
+      hat: 'flatcap', hatColor: 0x443c30, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(shiner.group);
+    const shineLines = ["Spit and polish, puss. There's no shortcut to a proper shine.", "Left one's always scuffed worse than the right. Can't think why.", "Tuppence a boot, and worth every farthing of it."];
+    game.npcs.push(new Kneeler(game, shiner, { x: kx, z: kz, ry, cries: shineLines })); }
 
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;

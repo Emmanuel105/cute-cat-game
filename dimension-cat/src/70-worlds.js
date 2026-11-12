@@ -12463,6 +12463,36 @@ function buildVictorian(game, entry) {
     W.add(sweep.group);
     const sweepLines = ['Every one of these flues, top to bottom, soot to my elbows. Not one gaslamp’s worth of thanks for it.', "Mind the sack, puss — tip it over and we're both wearing it home.", "Besom's good for a few more rows yet. Handle's the part that always gives out first."];
     game.npcs.push(new Kneeler(game, sweep, { x: kx, z: kz, ry, cries: sweepLines })); }
+  // every gentleman on this street steps out in a top hat and a cane, but not one of them has ever had
+  // his boots seen to. A shoeshine box now sits on the south back lane east of the market-square lane,
+  // a single boot left propped on its cast-iron foot bracket, three polish tins lined along the side
+  // and a rag draped over the front edge. New `makeShoeshineBox()` (60-props.js, right after
+  // `makeSweepBrush`): a pure static mesh, no `userData.update`, baked with the rest of this town same
+  // as the sack and brush above. The boy kneeling beside it reuses `Kneeler` exactly as the chimney
+  // sweep does — its own patting-the-ground animation reads just as well as a brush working a boot,
+  // so no new controller was needed, only a new prop and a new person.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // `game.travel(3, 'from-prev')` waited out for real against its own portal-fade timer, then 3600
+  // simulated frames sampling every one of this town's own NPCs' positions) swept the south back lane
+  // east of the market square against those samples, every one of this town's own physics boxes and
+  // every one of `game.zones`'s own keep-out rectangles: (35, -20) came back clear for the box itself
+  // — 5.0 m from the nearest box, 10.0 m from the nearest wandering soul — and (36, -20) for the boy
+  // himself, 0.9 m east of the box's own facing, the same clearance his own kneeling radius (0.35)
+  // needs many times over. Both sit at radius 40 from the origin, well inside the hand-built town.
+  //
+  // Built dead last, right after the chimney sweep above, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off this town's own shared `r()` sequence unconditionally, and anything
+  // built earlier would have had its own timing-sensitive pick shifted by it.
+  { const sx = 35, sz = -20, kx = sx + 0.9, kz = sz, ry = atan2(sx - kx, sz - kz);
+    const box = makeShoeshineBox(); place(game, U, box, sx, sz, 0);
+    P.addBox(sx, 0.21, sz, 0.5, 0.42, 0.4, { cam: false });
+    const shineWard = makeWardrobe(r, { shirts: [0xcfc6b0, 0xb8ae96], pants: [0x3a342a, 0x443c30], shoes: [0x2a2018] });
+    const shiner = makeHuman({ ...randomPerson(r, { female: false, child: true, wardrobe: shineWard }),
+      hat: 'flatcap', hatColor: 0x443c30, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(shiner.group);
+    const shineLines = ["Spit and polish, puss. There's no shortcut to a proper shine.", "Left one's always scuffed worse than the right. Can't think why.", "Tuppence a boot, and worth every farthing of it."];
+    game.npcs.push(new Kneeler(game, shiner, { x: kx, z: kz, ry, cries: shineLines })); }
 
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
