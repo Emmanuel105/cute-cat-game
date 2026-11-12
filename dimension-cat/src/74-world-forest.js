@@ -2932,6 +2932,38 @@ function buildForest(game, entry) {
     const ballerLines = ["Floor's packed dirt and moss, not a proper court, but it bounces true enough.", "Mind your tail, puss — the net eats anything that strays too close.", "No teammates out here, just the echo off the trees."];
     game.npcs.push(new Baller(game, baller, ball, { x: bx, z: bz, ry: bry,
       hoopX: hx + rimX, hoopY: hy0 + rimY, hoopZ: hz + rimZ, cries: ballerLines })); }
+  // The Neighborhood, Candy Land, Robot City, Victorian, Sunny Shore and Frosty Peak all have their
+  // own `CrossingGuard` (55-npcs.js — the same raise/lower lollipop-sign cycle `Birder` uses for
+  // binoculars), the same running joke about traffic that never comes; Whisper Woods was the last
+  // world without one. **A forest ranger now stands on a quiet stretch of open woodland floor
+  // south-west of the glade, lifting a stop sign overhead every few seconds as if there were ever a
+  // road to cross out here at all.** Moss-green jacket over a khaki shirt with the same cream stripe
+  // and dark cap every other guard's own jacket carries, just in forest colours instead of hi-vis
+  // amber, candy-cane red, Robot City's cyan band, Victorian brown or lifeguard orange.
+  // *"Hold up, puss — deer get the right of way out here, same as everywhere else in this wood."*
+  // *"Not one cart's ever come through — the roots would stop it long before I did."* *"Mind your
+  // step, mind. Nothing out here is as flat as it looks."*
+  //
+  // No new controller: `CrossingGuard`'s own constructor calls `greetable()` itself, so this is a
+  // placement, not a new build.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.travel(6, 'from-hub')` waited out for real against its own portal-fade timer, then 10,800
+  // simulated frames — 180 s — sampling every one of the wood's 130 NPCs' own position every 4th
+  // frame, 351,000 samples in all) swept the open forest floor (radius 20-46, well short of the radius
+  // (58) where `forestRegion`'s own fill takes over, and clear of the ball-game kids' own clearing
+  // near (-43, -3)) against those samples, all 735 of this wood's own physics boxes and every one of
+  // `game.zones`'s 224 rectangles: (-38, -11) came back clearest — 6.66 m clear of the nearest box and
+  // 7.25 m clear of the nearest wandering soul over the full run, at radius 39.6 from the fairy ring,
+  // south-west of it and nowhere near the leaf pile, the wagon or any hand-placed tree, rock or stump.
+  { const gx = -38, gz = -11;
+    const guard = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.2) }),
+      shirt: 0xc9b896, pants: 0x2a2a2a, shoes: r.pick([0x2a2018, 0x1e1a18]),
+      jacket: 0x3a7d44, stripes: 0xf0e6c8, hat: 'cap', hatColor: 0x2a2a2a, scarf: null, bag: null, backpack: null, glasses: r.chance(0.2) });
+    W.add(guard.group);
+    game.npcs.push(new CrossingGuard(game, guard, { x: gx, z: gz, ry: atan2(0 - gx, 0 - gz),
+      cries: ['Hold up, puss — deer get the right of way out here, same as everywhere else in this wood.', "Not one cart's ever come through — the roots would stop it long before I did.", 'Mind your step, mind. Nothing out here is as flat as it looks.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

@@ -29029,3 +29029,35 @@ Peak's own friend total rose from 125 to 126. No visual check was possible in th
 browser, no Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Whisper Woods remains the only world
 without a crossing guard of its own.
+
+## Round 1047 — Whisper Woods gets its own crossing guard, the last of the seven
+
+The Neighborhood, Candy Land, Robot City, Victorian, Sunny Shore and Frosty Peak all have their own
+`CrossingGuard` (55-npcs.js — the same raise/lower lollipop-sign cycle `Birder` uses for binoculars),
+the same running joke about traffic that never actually comes; Whisper Woods was the only world left
+without one. **A forest ranger now stands on a quiet stretch of open woodland floor south-west of the
+glade, lifting a stop sign overhead every few seconds as if there were ever a road to cross out here
+at all.** Moss-green jacket over a khaki shirt with the cream stripe and dark cap every other guard's
+own jacket carries, just in forest colours instead of hi-vis amber, candy-cane red, Robot City's cyan
+band, Victorian brown or lifeguard orange. *"Hold up, puss — deer get the right of way out here, same
+as everywhere else in this wood."* *"Not one cart's ever come through — the roots would stop it long
+before I did."* *"Mind your step, mind. Nothing out here is as flat as it looks."*
+
+No new controller: `CrossingGuard`'s own constructor calls `greetable()` itself, so this is a
+placement, not a new build.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.travel(6, 'from-hub')` waited out for real against its own portal-fade timer, then 10,800
+simulated frames — 180 s — sampling every one of the wood's 130 NPCs' own position every 4th frame,
+351,000 samples in all) swept the open forest floor (radius 20-46, well short of the radius (58) where
+`forestRegion`'s own fill takes over, and clear of the ball-game kids' own clearing near (-43, -3))
+against those samples, all 735 of this wood's own physics boxes and every one of `game.zones`'s 224
+rectangles: (-38, -11) came back clearest — 6.66 m clear of the nearest box and 7.25 m clear of the
+nearest wandering soul over the full run, at radius 39.6 from the fairy ring, south-west of it and
+nowhere near the leaf pile, the wagon or any hand-placed tree, rock or stump.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, Whisper
+Woods' own friend total rose from 153 to 154. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy. All seven worlds now have their own
+crossing guard.
