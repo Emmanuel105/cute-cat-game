@@ -15402,6 +15402,36 @@ function buildCandyLand(game, entry) {
       SFX.chime(); game.fx.emit(fx, 1.0, fz, { count: 10, colors: [0xff6fb5, 0xffd54a, 0x7fd7ff], speed: 1.0, up: 1.4, life: 0.8, gravity: 1.6 });
       game.toast(rnd.pick(cookieLines), 3200); } }); }
 
+  // the Neighborhood, Robot City and Victorian all have their own `CrossingGuard` (55-npcs.js — a
+  // lollipop-sign-style raise/lower cycle, same as `Birder`'s binoculars) standing watch over real
+  // traffic; Candy Land, all open sweet-grass between the chocolate river and the castle, never got
+  // one of its own. **A guard in candy-cane red and white now stands on the open field between the
+  // three wafer bridges and the castle gate, lifting a peppermint-striped stop sign overhead every few
+  // seconds as if halting cart traffic at an unmarked crossing.** *"Hold up, puss — the gumdrop wagon's
+  // got the right of way."* *"Not a single sticky mishap on my watch."* *"Mind the toffee drips —
+  // this crossing gets slippery some mornings."*
+  //
+  // No new controller: `CrossingGuard`'s constructor calls `greetable()` itself, so this is a
+  // placement, not a new build. Candy-cane palette (red jacket, white stripes, white cap) in place of
+  // the other three guards' own hi-vis amber, to match the land it stands in.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.travel(1, 'from-prev')` waited out through its real portal-fade timer, then 1800 simulated
+  // frames sampling every NPC's own position every 5th frame — 360 snapshots of all 92 NPCs, 33,120
+  // samples in all) swept a 2 m grid of the open field (x -60..60, z 10..60, radius capped at 55) south
+  // of the castle against those samples, all 1890 of this land's own physics boxes, and every one of
+  // `game.zones`'s 451 rectangles: (-2, 16) came back clearest — 8.7 m clear of the nearest box and
+  // 12.8 m clear of the nearest wandering soul, well short of the chocolate river band (z -22..-14) to
+  // the south and the castle gate (z 150) far to the north, and nowhere near any hand-placed cane or
+  // lollipop. Flat ground there (`ground0` returns 0 across this whole plane), so no terrain check
+  // was needed.
+  { const guardWard = makeWardrobe(r, { shirts: [0xe0453f], pants: [0xfff8ef, 0x2a2a2a], shoes: [0xfff8ef, 0x2a2016] });
+    const guard = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.2), wardrobe: guardWard }),
+      hat: 'cap', hatColor: 0xfff8ef, hatBand: 0xe0453f, jacket: 0xe0453f, stripes: 0xfff8ef, scarf: null, bag: null, backpack: null, glasses: r.chance(0.2) });
+    W.add(guard.group);
+    game.npcs.push(new CrossingGuard(game, guard, { x: -2, z: 16, ry: 0,
+      cries: ["Hold up, puss — the gumdrop wagon's got the right of way.", 'Not a single sticky mishap on my watch.', 'Mind the toffee drips — this crossing gets slippery some mornings.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

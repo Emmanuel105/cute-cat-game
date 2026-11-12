@@ -28933,3 +28933,34 @@ Woods' own friend total rose from 152 to 153. No visual check was possible in th
 browser, no Playwright) — only the stub-three test suite and the two headless probes above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. All seven worlds now have their own
 basketball hoop.
+
+## Round 1044 — Candy Land gets its own crossing guard
+
+The Neighborhood, Robot City and Victorian all had their own `CrossingGuard` (55-npcs.js — the same
+raise/lower lollipop-sign cycle `Birder` uses for binoculars), but Candy Land, all open sweet-grass
+between the chocolate river and the castle, never got one. **A guard in candy-cane red and white now
+stands on the open field between the three wafer bridges and the castle gate, lifting a peppermint-
+striped stop sign overhead every few seconds as if halting cart traffic at an unmarked crossing.**
+*"Hold up, puss — the gumdrop wagon's got the right of way."* *"Not a single sticky mishap on my
+watch."* *"Mind the toffee drips — this crossing gets slippery some mornings."*
+
+No new controller: `CrossingGuard`'s constructor calls `greetable()` itself, so this is a placement,
+not a new build. Candy-cane palette (red jacket, white stripes, white cap) in place of the other
+three guards' own hi-vis amber, to match the land it stands in.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.travel(1, 'from-prev')` waited out through its real portal-fade timer, then 1800 simulated
+frames sampling every NPC's own position every 5th frame — 360 snapshots of all 92 NPCs, 33,120
+samples in all) swept a 2 m grid of the open field (x -60..60, z 10..60, radius capped at 55) south
+of the castle against those samples, all 1890 of this land's own physics boxes, and every one of
+`game.zones`'s 451 rectangles: (-2, 16) came back clearest — 8.7 m clear of the nearest box and 12.8 m
+clear of the nearest wandering soul, well short of the chocolate river band (z -22..-14) to the south
+and the castle gate (z 150) far to the north, and nowhere near any hand-placed cane or lollipop. Flat
+ground there (`ground0` returns 0 across this whole plane), so no terrain check was needed.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, Candy
+Land's own friend total rose from 110 to 111. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Robot City, the Neighborhood and
+Victorian still have the only other three crossing guards; Sunny Shore, Frosty Peak and Whisper Woods
+remain without one.
