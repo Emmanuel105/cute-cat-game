@@ -231,8 +231,10 @@ function robotRegion(game, U, r, inner, outer) {
   // `game.namedFriend` + `game.addInteractable` fix as the crab, the deer, the fox and the penguin,
   // keyed straight to its own `rig.group` so the prompt follows it through its usual 7 m leash — wired
   // up after the `Wanderer` already exists, so it draws nothing extra from this world's own seeded
-  // `r()` sequence and shifts no later pick in this build. No new mesh, no new physics box. The other
-  // five are left for future rounds, same one-at-a-time pattern as everywhere else in this log.
+  // `r()` sequence and shifts no later pick in this build. No new mesh, no new physics box. The
+  // second (i===1) gets the same fix this round, same pattern this project has run through for every
+  // flock in the game once the first member is wired up — gulls, crows, drone-flies, bats, bees. Four
+  // are left for future rounds, same one-at-a-time pattern as everywhere else in this log.
   for (let i = 0; i < 6; i++) {
     const a = r() * TAU, d = r.range(inner, outer * 0.85), x = cos(a) * d, z = sin(a) * d;
     const rig = makeAlleyRat(); W.add(rig.group);
@@ -242,6 +244,11 @@ function robotRegion(game, U, r, inner, outer) {
       game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the rat', onUse: () => {
         game.befriend(outerRatId); SFX.chitter(); game.hearts(rig.group.position.x, 0.2, rig.group.position.z, 3);
         game.toast('🐀 "*freezes, whiskers twitching, then darts off between two crates*"'); } });
+    } else if (i === 1) {
+      const secondRatId = game.namedFriend('outer-rat-2');
+      game.addInteractable({ obj: rig.group, radius: 2.1, label: () => 'Say hello to the rat', onUse: () => {
+        game.befriend(secondRatId); SFX.chitter(); game.hearts(rig.group.position.x, 0.2, rig.group.position.z, 3);
+        game.toast('🐀 "*sits up on its haunches, sniffs the air, then drops back down and scuttles under a crate*"'); } });
     }
   }
 }

@@ -29162,3 +29162,26 @@ without them).
 City's own friend total rose from 114 to 115. No visual check was possible in this environment (no
 browser, no Playwright) — only the stub-three test suite and the headless probe above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1051 — Robot City's scrapyard gets its second scrap rat
+
+Round 1050 gave the deep scrapyard ring its first wild creature — six `makeAlleyRat()` rigs on
+`Wanderer`s roaming the far industrial wastes, but only the first (i===0) was wired up to answer
+"Say hello to the rat"; the other five were left loop-only for future rounds. **The second rat
+(i===1) now gets the same fix.** *"sits up on its haunches, sniffs the air, then drops back down and
+scuttles under a crate"*
+
+Same root cause and same fix as the first: `makeAlleyRat()`'s rig carries none of
+`.look`/`.robot`/`.cookie`, so `Wanderer`'s own `greetable()` call quietly no-ops on it. A second
+`game.namedFriend('outer-rat-2')` + `game.addInteractable`, keyed to the second loop iteration's own
+`rig.group` with the same 2.1 m radius and 7 m leash as the first, wired up after the `Wanderer`
+already exists — same one-at-a-time pattern this project has run through for every other flock (gulls,
+crows, drone-flies, bats, bees). No new mesh, no new physics box, no new `rnd()` draw: the fix only
+reads a rig the loop already built, so nothing later in this world's build shifts. Four rats are still
+loop-only — left for another night.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 333, Robot City's own friend total rose from 115 to 116 (confirmed against the test
+suite's own "to meet" probe for world 2). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
