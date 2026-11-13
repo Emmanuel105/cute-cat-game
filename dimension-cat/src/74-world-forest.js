@@ -50,6 +50,37 @@ function buildForest(game, entry) {
     game.addInteractable({ obj: hen.group, radius: 2.4, label: () => 'Say hello to the duck', onUse: () => {
       game.befriend(hid); SFX.squawk(); game.hearts(hen.group.position.x, hen.group.position.y + 0.3, hen.group.position.z, 3);
       game.toast('🦆 "...Quack."'); } }); }
+  // the park pond and the lake both got a koi pair swimming beneath their own surface in two recent
+  // rounds, but this glade's own glowing pond — the last pond in the game with nothing actually living
+  // IN its water, only on top of it — never did. Two koi now circle beneath the glow too, a pale
+  // gold-and-cream pair and a plain deep violet one, so they don't read as a repeat of either
+  // Neighborhood pond. Pure ambient wildlife, same footing as both of theirs: no "say hello" yet, no
+  // effect on the friend count.
+  //
+  // No new mesh, no new controller: `makeKoi()` is reused verbatim. Read straight off the source rather
+  // than a live probe, the same shortcut the lake's own round took. The duck pair above already swims a
+  // clear 2.3 m ring inside this same pond; the reeds `makeGlowPond` scatters (`62-props-nature.js`, the
+  // loop just after the lily pads) sit at `rad + r.range(0.5, 1.2)` with `rad` = 4.5 here, so never closer
+  // than 5.0 m out. A 3.2 m koi ring clears the duck ring by 0.9 m and the reed line by 1.8 m. The lily
+  // pads (the loop just before the reeds, `d = r() * rad * 0.7`, so out to 3.15 m) float flat on the
+  // surface at local y=0.06 — a koi swims 0.08 m *under* the surface, the same depth convention the park
+  // pond's and the lake's own koi already use, so there is nothing at this radius for them to clip
+  // through even where a lily pad happens to land above them. The water disc itself sits at local y=0.02
+  // (`makeGlowPond`), so 0.08 m under it is `P.ground0(8, -6) - 0.06` in world space — the same offset
+  // the lake's own flat-ground koi swim at, just anchored to this glade's own uneven terrain height
+  // instead of a fixed 0. Fixed phases and speeds, not drawn from this world's own seeded `r` or the
+  // shared `rnd()`, the same caution every other background swimmer in this glade already takes, so this
+  // costs no later mushroom hue or butterfly colour pick.
+  { const kcx = 8, kcz = -6, krad = 3.2, kY0 = P.ground0(kcx, kcz) - 0.06;
+    const koiA = makeKoi({ color: 0xd8c8a0, white: true }); W.add(koiA.group);
+    const koiB = makeKoi({ color: 0x4a3a6a }); W.add(koiB.group);
+    const koi = [[koiA, 2.0, 0.11], [koiB, 5.1, 0.08]];
+    U.push((dt, t) => { for (const [k, phase, speed] of koi) {
+      const a = t * speed + phase, dx = -sin(a), dz = cos(a);
+      k.group.position.set(kcx + cos(a) * krad, kY0, kcz + sin(a) * krad);
+      k.group.rotation.y = atan2(dx, dz);
+      k.group.rotation.z = sin(t * 2.6 + phase) * 0.1;
+    } }); }
   // the pond had ducks paddling on it, frogs hopping its rim and an angler working its edge, but nothing
   // ever skimmed low over the water itself. Three dragonflies now dart over the glowing pond, each its
   // own radius between the duck ring (2.3 m) and the reeds that only start past 5.0 m out, its own height,

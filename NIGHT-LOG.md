@@ -30116,3 +30116,34 @@ do with the Neighborhood. No visual check was possible in this environment (no b
 only the stub-three test suite above, so whether the lake's koi actually read clearly through its own
 water is unverified, same caveat as the park pond's pair. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1081 — the glowing pond gets its koi too, the last of the three
+
+The park pond and the lake both got a koi pair in rounds 1079 and 1080, but Whisper Woods' own glowing
+pond — the last body of water in the whole game with nothing actually living *in* its water, only on top
+of it — was still untouched. **Two koi now circle beneath the glow**, a pale gold-and-cream pair and a
+plain deep violet one, so the three ponds don't all look the same from above. Pure ambient wildlife, same
+footing as the other two: no "say hello" yet, no effect on the friend count.
+
+No new mesh and no new controller: `makeKoi()` is reused verbatim, same as the lake's own pair. The
+placement was worked out from the source rather than a live probe, the same shortcut the lake round took.
+The glowing pond's own duck pair already swims a clear 2.3 m ring; `makeGlowPond`'s reeds sit at
+`rad + r.range(0.5, 1.2)` with `rad=4.5` here, so never closer than 5.0 m out. A 3.2 m koi ring clears
+both with room to spare, and the lily pads that float flat on the surface at y=0.06 can't clip with a koi
+swimming 0.08 m *under* that surface regardless of radius — different depths, same as the ducks and the
+lily pads never collide either. This pond sits on bumpy forest terrain rather than the Neighborhood's
+flat ground, so the koi's depth is anchored to `P.ground0(8, -6) - 0.06` instead of a fixed offset, but
+it is the identical "0.08 m under the water disc's own local y=0.02" convention both earlier koi pairs
+already use. Fixed phases and speeds, off both this world's own seeded `r` and the shared `rnd()`, the
+same caution every other background swimmer in this glade already takes.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (no new collider was needed, same as both earlier koi rounds). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above, so
+whether the koi actually read clearly through the glowing pond's own cyan-tinted water, rather than
+sitting invisibly beneath it or clipping through a lily pad, is unverified, same caveat as the first two
+ponds. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. All three of the game's
+translucent ponds now have koi; the Victorian canal and the chocolate river were checked too but left
+alone — the canal already has its own single fish stationed under the angler's hook from an earlier
+round, and the chocolate river's own "water" is an opaque chocolate-textured plane, so a submerged koi
+there would just be hidden.
