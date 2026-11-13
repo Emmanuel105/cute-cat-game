@@ -18329,6 +18329,48 @@ function buildRobotCity(game, entry) {
     game.npcs.push(new Patroller(game, rig, { points, speed: 1.0, pause: [1.4, 2.0], pauseAll: true, loop: true, r: 0.42, height: 1.9,
       cries: courierLines, cryIcon: '📦', onArrive: () => SFX.beep() })); }
 
+  // Victorian, Frosty Peak, Whisper Woods and Sunny Shore all have a chestnut roaster at her own
+  // glowing brazier by now; Robot City, Candy Land and the Neighborhood are the three still without
+  // one. An earlier attempt at the Neighborhood broke its own timing-sensitive "neighbours chat" check
+  // (every `Vendor` draws one `rnd()` tick in its own constructor, `cries` or not), so this city gets
+  // the fifth roaster instead of a sixth attempt there — and "robots don't eat" fits this city's own
+  // running joke better than a snowfield or a beach ever could.
+  // **A roaster now works the open factory floor east of the south yard, her brazier glowing beside
+  // her, a paper cone of chestnuts held out to whoever wanders past.** *"Chestnuts, hot off the coals
+  // — still the only thing on this floor that runs on fire, not voltage."* *"Careful, puss — mind the
+  // sparks, this brazier's older than half the machines in here."* *"Robots don't eat. Everyone else
+  // on this floor still lines up anyway."* The brazier itself answers a look of its own, same as the
+  // other four.
+  //
+  // No new mesh and no new controller: `makeChestnutBrazier()` (60-props.js) and `makeChestnutCone()`
+  // (62-props-nature.js) are both reused verbatim a fifth time, and `Vendor` (55-npcs.js) already
+  // holds an oil can, a pretzel and a synth-coffee cup elsewhere in this city. `place()`/`P.addBox()`
+  // rather than the terrain worlds' `placeT`/`boxT`, since this floor is flat, same as Victorian's own
+  // copy, and the brazier's own `userData.update` (vent glow, light flicker) rides into `U` through
+  // `place()`.
+  //
+  // A headless probe (the stub-three harness, `game.travel(2, 'from-prev')` waited out for real, then
+  // 3600 simulated frames sampling all 88 of this city's NPCs every 10th frame) swept a 3 m grid of
+  // the open floor (radius 40-75 from the origin) against all 324 physics boxes over 0.3 m tall, those
+  // samples and `game.zones`' own 69 rectangles: (48, -21) for the roaster and (48, -22.5) for the
+  // brazier came back clear by 6.9 m of the nearest box and 13.4 m of the nearest sampled soul, on
+  // flat floor (ground0 = 0) well short of the radius (98) where `robotRegion()`'s own procedural
+  // fill takes over. Built dead last, right after the courier-bot above: `makeHuman()`,
+  // `randomPerson()` and `Vendor` all draw off this city's own shared `r()` sequence unconditionally,
+  // so anything built earlier here would have had its own pick shifted.
+  { const vx = 48, vz = -21, bx = 48, bz = -22.5, vry = atan2(bx - vx, bz - vz);
+    const roastWard = makeWardrobe(r, { shirts: [0x4a5a6a, 0x5a4a3a, 0x3a4a4a], pants: [0x232c34, 0x2a2a24] });
+    const roaster = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: roastWard }),
+      apron: 0x2a2f38, hat: 'cap', hatColor: 0x3a4a5a, jacket: null, scarf: null, bag: null, glasses: r.chance(0.3) });
+    W.add(roaster.group);
+    const brazier = place(game, U, makeChestnutBrazier(), bx, bz, 0);
+    P.addBox(bx, 0.3, bz, 0.3, 0.65, 0.3, { cam: false });
+    const v = new Vendor(game, roaster, makeChestnutCone(), { x: vx, z: vz, ry: vry, cryIcon: '🌰',
+      cries: ['Chestnuts, hot off the coals — still the only thing on this floor that runs on fire, not voltage.', "Careful, puss — mind the sparks, this brazier's older than half the machines in here.", "Robots don't eat. Everyone else on this floor still lines up anyway."] });
+    game.npcs.push(v); greetable(game, v);
+    const brazierLines = ['The vents glow a steady orange, same as they have for longer than anyone here can place.', 'Warm enough to feel through the factory draft, even this far from the furnace.', 'A crack, a hiss, and a curl of steam off the lid.'];
+    game.addInteractable({ obj: brazier, radius: 1.2, label: () => 'Look at the brazier', onUse: () => { SFX.click(); game.toast(rnd.pick(brazierLines), 3000); } }); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

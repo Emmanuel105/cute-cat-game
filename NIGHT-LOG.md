@@ -29839,3 +29839,37 @@ count 333 (unchanged — the Neighborhood attempt never got far enough to touch 
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Four roasters now: a Victorian canal
 bank, a mountain snowfield, a forest clearing and a beach dune — three worlds (the Neighborhood, Candy
 Land, Robot City) still have none.
+
+## Round 1073 — Robot City gets a chestnut roaster too, running on fire instead of voltage
+
+A fifth chestnut roaster, reusing `makeChestnutBrazier()`/`makeChestnutCone()` and `Vendor` verbatim,
+same as the other four. The Neighborhood is still skipped — the earlier attempt there broke the
+"neighbours chat" test, since every `Vendor` draws one `rnd()` tick in its own constructor whether or
+not it carries `cries` — so this round went to Robot City instead, which turned out to fit the joke
+better than a mountain or a beach ever did.
+
+**A roaster now works the open factory floor east of the south yard, her brazier glowing beside her.**
+*"Chestnuts, hot off the coals — still the only thing on this floor that runs on fire, not voltage."*
+*"Careful, puss — mind the sparks, this brazier's older than half the machines in here."* *"Robots
+don't eat. Everyone else on this floor still lines up anyway."* The brazier answers a look of its own,
+same as the other four.
+
+No new mesh and no new controller: `place()`/`P.addBox()` sit the drum on the flat factory floor
+(this city has no terrain to use `placeT`/`boxT` for), and the brazier's own `userData.update` rides
+into the world's `U` list through `place()`. Built dead last, right after the courier-bot, since
+`makeHuman()`/`randomPerson()`/`Vendor` all draw off this city's own shared `r()` sequence.
+
+A headless probe (the stub-three harness, `game.travel(2, 'from-prev')` waited out for real, then 3600
+simulated frames sampling all 88 of this city's NPCs every 10th frame) swept a 3 m grid of the open
+floor (radius 40-75 from the origin) against all 324 physics boxes over 0.3 m tall, those samples and
+`game.zones`: (48, -21) for the roaster and (48, -22.5) for the brazier came back clear by 6.9 m of
+the nearest box and 13.4 m of the nearest sampled soul, on flat floor (ground0 = 0), well short of the
+radius (98) where `robotRegion()`'s own procedural fill takes over. A second script confirmed the
+roaster sits in the scene graph, stays finite after 900 simulated frames, standing at her own spot
+reads "Say hello" and turns her into a friend (0 → 1), and standing at the brazier's own spot reads
+"Look at the brazier" instead. `node dimension-cat/test/run.mjs` ran clean: exit 0, 277 checks, all
+`ok`, no console warnings, box count unchanged for the Neighborhood at 333. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
+probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Five roasters
+now: a Victorian canal bank, a mountain snowfield, a forest clearing, a beach dune and a factory floor
+— only the Neighborhood and Candy Land still have none.
