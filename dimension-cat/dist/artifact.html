@@ -29307,6 +29307,41 @@ function buildForest(game, entry) {
     game.npcs.push(new CrossingGuard(game, guard, { x: gx, z: gz, ry: atan2(0 - gx, 0 - gz),
       cries: ['Hold up, puss — deer get the right of way out here, same as everywhere else in this wood.', "Not one cart's ever come through — the roots would stop it long before I did.", 'Mind your step, mind. Nothing out here is as flat as it looks.'] })); }
 
+  // Victorian's town square, Candy Land's giant fortune cookie and Robot City's coin-op machine have
+  // all told a fortune for rounds now; Whisper Woods, moss and toadstools and all, never had anyone
+  // offer one. **An old hermit now crouches on a quiet patch of forest floor south-west of the glade,
+  // a glowing crystal ball held up in one hand.** *"The moss remembers more than I do, some days."*
+  // *"I see... a long nap in a patch of sun. For you, obviously."* *"Fortunes, fresh fortunes — tuppence,
+  // or a good scratch behind the ears."*
+  //
+  // No new mechanism: `Vendor` (55-npcs.js) reused a third time in this very file (the berry seller and
+  // the herbalist above already lean on it) holding `makeCrystalBall()` (60-props.js, built for
+  // Victorian's own fortune teller) rather than a new prop. `Vendor` doesn't call `greetable()` itself,
+  // so `game.npcs.push(ft); greetable(game, ft);` right after makes her a proper friend rather than
+  // scenery, the same wiring the berry seller and herbalist both use.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(6, 'from-hub')` waited out for real against `game.worldIndex` and
+  // `game.transitioning`, then 1800 simulated frames sampling every NPC's own position every 10th
+  // frame) swept a 6 m grid across the whole glade core, then a 2 m grid over the best quadrant:
+  // (-18, -20) came back clear — 5.5 m from the nearest physics box and 8.2 m from the nearest
+  // wandering soul (fairies' own flight samples included), on ground levelling out at 1.27 m, 21.9 m
+  // from the crossing guard above and clear of the fairies' own loop centres (all within
+  // x∈[-16,16], z∈[-14,18]) and the forager's mushroom patch at (-9,-24).
+  //
+  // Built dead last, right after the crossing guard above and right before the squirrel spawn point,
+  // for the usual reason: `makeHuman()` and `randomPerson()` both draw off this wood's own shared `r()`
+  // sequence unconditionally, and anything built earlier would have had its own timing-sensitive pick
+  // shifted by it.
+  { const fx = -18, fz = -20, fry = atan2(0 - fx, 0 - fz);
+    const ftWard = makeWardrobe(r, { shirts: [0x5a3a6a, 0x3a4a5a], pants: [0x2a2420], shoes: [0x2a2018] });
+    const fortuneTeller = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: true, wardrobe: ftWard }),
+      sleeves: true, dress: 0x5a3a6a, sash: 0x8a6a4a, scarf: 0x6a4a8a, hat: null, jacket: null, bag: null, glasses: false });
+    W.add(fortuneTeller.group);
+    const ft = new Vendor(game, fortuneTeller, makeCrystalBall(), { x: fx, z: fz, ry: fry, cryIcon: '🔮',
+      cries: ['The moss remembers more than I do, some days.', 'I see... a long nap in a patch of sun. For you, obviously.', 'Fortunes, fresh fortunes — tuppence, or a good scratch behind the ears.'] });
+    game.npcs.push(ft); greetable(game, ft); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

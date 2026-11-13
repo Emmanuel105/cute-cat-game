@@ -29382,3 +29382,42 @@ unchanged at 333, the Neighborhood's own friend total rose from 103 to 104 (worl
 check). No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 1061 — Whisper Woods gets its own fortune teller
+
+Victorian's town square, Candy Land's giant fortune cookie and Robot City's coin-op machine have all
+told a fortune for a long time now, but the other four worlds never had one — and the "flock answers
+back" vein this log has mined for the last several hundred rounds (bats, crows, drone-flies, bees,
+butterflies, scrap rats, seagulls) finally turned up empty: every last flyer and critter in every
+world now answers the cat. Time for something new instead.
+
+**An old hermit now crouches on a quiet patch of forest floor south-west of Whisper Woods' glade, a
+glowing crystal ball held up in one hand.** *"The moss remembers more than I do, some days."* *"I
+see... a long nap in a patch of sun. For you, obviously."* *"Fortunes, fresh fortunes — tuppence, or
+a good scratch behind the ears."*
+
+No new mechanism: `Vendor` (`55-npcs.js`), already reused twice in this same file for the berry
+seller and the herbalist, holds `makeCrystalBall()` (`60-props.js`, built originally for Victorian's
+own fortune teller) instead of a new prop. `Vendor` doesn't call `greetable()` itself, so
+`game.npcs.push(ft); greetable(game, ft);` right after makes her a proper friend, the same wiring the
+berry seller and herbalist both use.
+
+Finding a spot took real care this round: a first headless probe travelled to the wrong world
+entirely (`game.travel()`'s own real-timer portal fade never resolves inside a tight synchronous
+frame loop — the fix, same as `test/run.mjs` already does, is `while (game.transitioning) { await
+sleep(60); game.loop(); }`, actually yielding to Node's event loop between checks) and reported a
+Neighborhood location as if it were Sunny Shore's beach. Once that was caught, a real probe (`game.
+start('new')`, `game.travel(6, 'from-hub')` properly awaited, then 1800 simulated frames sampling
+every NPC's own position every 10th frame) swept a 6 m grid across the glade core, then a 2 m grid
+over the best quadrant: (-18, -20) came back clear — 5.5 m from the nearest physics box, 8.2 m from
+the nearest wandering soul (fairies' own flight samples included), ground levelling out at 1.27 m,
+well clear of the crossing guard, the forager's mushroom patch and every fairy loop's own centre.
+
+Verified beyond the test suite's own checks: a second headless script confirmed the new `Vendor` is
+in the scene graph at the expected position, teleported the cat beside her, and confirmed
+`game.nearest.label()` reads "Say hello" and `onUse()` takes `game.state.friends` from 0 to 1.
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 333, Whisper Woods' own friend total rose from 154 to 155 (confirmed by diffing against
+unmodified `HEAD`). No visual check was possible in this environment (no browser, no Playwright) —
+only the stub-three test suite and the scratch probes above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
