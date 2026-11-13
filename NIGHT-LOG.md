@@ -30087,3 +30087,32 @@ unchanged at 334 (no new collider was needed) and the Neighborhood's own friend 
 Playwright) — only the stub-three test suite above, so whether the koi actually read clearly through the
 pond's own transparent water, rather than just sitting invisibly beneath it, is unverified. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1080 — the lake gets its own koi too
+
+The park pond got its first koi last round, but the Neighborhood's other body of water — the lake up by
+the jetty — never got the same treatment, even though its own duck pair already proved there was nothing
+wrong with swimming there. **Two koi now circle beneath the lake's surface too**, a duller, darker pair
+(muddy gold and slate-with-a-pale-saddle) than the park pond's bright orange-and-white ones, so the two
+ponds don't look identical from above. Pure ambient wildlife, same footing as the park pond's own pair:
+no "say hello" yet, no effect on the friend count.
+
+No new mesh and no new controller: `makeKoi()` is reused verbatim, same as last round. The placement
+risk was already retired by this very lake's own duck pair — the koi reuse that exact ring (centre
+(-37, -51), radius 2.2), already verified 2.0 m clear of the fishing hole and 3.4 m clear of the jetty at
+every point, just 0.08 m under the water's own surface instead of on top of it (this pond's water disc
+sits at local y=0.02, same as the park pond's, since both come from the same `makePond()`). No physics
+box needed, the same reasoning the park pond's koi, the open-sea dolphins and the whale already lean on.
+Fixed phases and speeds, off both this world's own seeded `r` and the shared `rnd()`, for the same reason
+every other Neighborhood pond-dweller stays off both.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box count
+unchanged at 334 (no new collider was needed) and the Neighborhood's own friend total unchanged at 105
+(the koi add no friend yet). One unrelated test — the Sunny Shore kite flyer's height-and-line check —
+flickered FAIL on one of several back-to-back runs with no code touched and passed clean on every other
+run before and after; it reads real elapsed time per frame rather than a fixed step, so it looks like
+pre-existing timing jitter in this sandbox rather than anything this round changed, and it has nothing to
+do with the Neighborhood. No visual check was possible in this environment (no browser, no Playwright) —
+only the stub-three test suite above, so whether the lake's koi actually read clearly through its own
+water is unverified, same caveat as the park pond's pair. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
