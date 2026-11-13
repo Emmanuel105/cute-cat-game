@@ -29725,3 +29725,46 @@ at 333 (no new physics box — the courier needs none), and Frosty Peak's own fr
 to 128. No visual check was possible in this environment (no browser, no Playwright) — only the
 stub-three test suite and the scratch probes above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy. All seven worlds now have someone delivering something.
+
+## Round 1070 — Frosty Peak gets a chestnut roaster, the brazier's first trip out of Victorian
+
+Rounds 1065-1069 gave all seven worlds a courier, and 1061-1064 gave all seven a fortune teller, so
+the obvious chains were done. Victorian's canal bank, though, has had a chestnut roaster at a glowing
+brazier for a few hundred rounds and no other world ever got one — even though a cold mountain wants a
+brazier far more than a mild town does. **A roaster now works the open snow south-west of Frosty
+Peak's village, her brazier glowing beside her, a paper cone of chestnuts held out to whoever comes up
+the slope.** *"Hot chestnuts! Only hot thing on this mountain that isn't the fire."* *"Mind the
+griddle, puss — snow melts off it before it lands."* *"Nobody walks past a brazier in this cold.
+Nobody ever has."* The drum itself answers a look of its own, same as Victorian's: *"The vents glow a
+deep, steady orange — the snow has melted back in a ring around it."*
+
+No new mesh and no new controller: `makeChestnutBrazier()` (60-props.js) and `makeChestnutCone()`
+(62-props-nature.js) are reused verbatim from Victorian's roaster, and `Vendor` (55-npcs.js) already
+holds a cocoa mug, a ball of wool, a crystal ball and a fiddle elsewhere on this mountain. The one
+real difference from Victorian is the terrain: `placeT`/`boxT` instead of flat-world `place`/`addBox`,
+so the drum sits on the snow rather than floating over it, and its own `userData.update` (the vent glow
+and light flicker) rides into the world's `U` list through `placeT`. Built after `snowRegion()` and
+dead last in the build, so `fillRing`'s own `bakeDeep` never sees it and nothing built earlier has its
+`r()` draws shifted. Wardrobe is the cocoa seller's proven beanie-coat-scarf-cuffs combination rather
+than Victorian's apron, which has never been worn over a coat in this codebase.
+
+A headless probe (the stub-three harness `test/run.mjs` itself uses: `game.travel(5, 'from-hub')`
+waited out for real, then 3600 simulated frames sampling all 111 of this mountain's NPCs every 10th
+frame) swept a 1 m grid of the snowfield against all 779 physics boxes, those samples and
+`game.zones`, keeping only spots whose ground varies under 10 cm across a 1.8 m footprint — a brazier
+on a slope would sit with one side in the air, and the first spot the sweep liked had a 43 cm drop
+across it. (-11, -30.6) for the roaster and (-11, -29.3) for the brazier, and the whole corridor
+between them, stay at least 4.4 m from the nearest box and 6.5 m from the nearest sampled soul, on
+ground running 0.493-0.560 m, with no other prompt inside 8 m and at radius 32 — close enough to the
+village that the slope down from it is actually walked.
+
+Verified past the test suite with a second headless script: the roaster is in the scene graph holding
+the 16-part cone, stays finite in position and head rotation over 900 simulated frames, the brazier
+sits at y=0.494 (terrain height, not floating), `game.nearest.label()` reads "Say hello" and `onUse()`
+takes `game.state.friends` from empty to one member (`snow:87`), and standing by the drum instead
+gives "Look at the brazier". `node dimension-cat/test/run.mjs` ran clean: exit 0, 277 checks, all `ok`,
+`no console warnings (0)`, box count for the Neighborhood unchanged at 333 — Frosty Peak's own count
+rose by one for the brazier — and this mountain's friend total rose from 128 to 129. No visual check
+was possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
+probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Victorian is
+no longer the only world that smells of roasting chestnuts; the other five still are.

@@ -2507,6 +2507,47 @@ function buildSnowVillage(game, entry) {
       cries: ["The mountain keeps more secrets than I do, and I've got a crystal ball.", 'I see... a long walk home, and someone forgetting their mittens. Again.', "A shiny pebble, or a scratch behind the ears — I don't charge extra for the cold."] });
     game.npcs.push(ft); greetable(game, ft); }
 
+  // Victorian's canal bank has had a chestnut roaster at her own brazier for a few hundred rounds now
+  // — hot chestnuts being about the most Victorian thing a street corner can sell — and no other world
+  // ever got one, even though a cold mountain wants a brazier far more than a mild town does.
+  // **A roaster now works the open snow south-west of the village, her brazier glowing beside her, a
+  // paper cone of chestnuts held out to whoever comes up the slope.** *"Hot chestnuts! Only hot thing
+  // on this mountain that isn't the fire."* *"Mind the griddle, puss — snow melts off it before it
+  // lands."* *"Nobody walks past a brazier in this cold. Nobody ever has."* The brazier itself answers
+  // a look of its own, same as Victorian's does.
+  //
+  // No new mesh and no new controller: `makeChestnutBrazier()` (60-props.js) and `makeChestnutCone()`
+  // (62-props-nature.js) are both reused verbatim from Victorian's roaster, and `Vendor` (55-npcs.js)
+  // already holds a mug, a ball of wool, a crystal ball and a fiddle elsewhere on this mountain. Only
+  // the wardrobe, the spot and the lines are new. `placeT`/`boxT` rather than Victorian's flat-world
+  // `place`/`P.addBox`, so the drum sits on the snow instead of floating over it, and the brazier's own
+  // `userData.update` (its vent glow and light flicker) rides into `U` through `placeT` — built after
+  // `snowRegion()` above, so `fillRing`'s own `bakeDeep` never sees it and it cannot freeze.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.travel(5,
+  // 'from-hub')` waited out for real against `game.worldIndex` and `game.transitioning`, then 3600
+  // simulated frames sampling every one of this mountain's 111 NPCs every 10th frame) swept a 1 m grid
+  // of the snowfield (radius 22-54, short of the radius (58) where `snowRegion`'s own fill takes over)
+  // against all 779 physics boxes, those samples and `game.zones`, keeping only spots whose ground
+  // varies under 10 cm across a 1.8 m footprint — a brazier on a slope would sit with one side in the
+  // air. The roaster's own spot and the brazier's, and the whole 2.5 m corridor between them, stay at
+  // least 4.4 m from the nearest box and 6.5 m from the nearest sampled soul, on ground running
+  // 0.493-0.560 m, with no other prompt inside 8 m. Built dead last, right before the squirrel spawn
+  // point, for the usual reason: `makeHuman()`, `randomPerson()` and `Vendor` all draw off a shared
+  // sequence unconditionally, so anything built earlier would have had its own pick shifted.
+  { const vx = -11, vz = -30.6, bx = -11, bz = -29.3, vry = atan2(bx - vx, bz - vz);
+    const roastWard = makeWardrobe(r, { shirts: [0x8a3a3a, 0x5a4a3a, 0x6a4a3a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const roaster = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.4), wardrobe: roastWard }),
+      hat: 'beanie', hatColor: 0x6a4a3a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a });
+    W.add(roaster.group);
+    const brazier = placeT(game, U, makeChestnutBrazier(), bx, bz, 0);
+    boxT(game, bx, bz, 0.6, 0.65, 0.6, { cam: false });
+    const v = new Vendor(game, roaster, makeChestnutCone(), { x: vx, z: vz, ry: vry, cryIcon: '🌰',
+      cries: ["Hot chestnuts! Only hot thing on this mountain that isn't the fire.", 'Mind the griddle, puss — snow melts off it before it lands.', 'Nobody walks past a brazier in this cold. Nobody ever has.'] });
+    game.npcs.push(v); greetable(game, v);
+    const brazierLines = ['The vents glow a deep, steady orange — the snow has melted back in a ring around it.', 'Warm enough to feel from a step away, even up here.', 'A crack, a hiss, and a curl of steam off the lid.'];
+    game.addInteractable({ obj: brazier, radius: 1.2, label: () => 'Look at the brazier', onUse: () => { SFX.click(); game.toast(rnd.pick(brazierLines), 3000); } }); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
