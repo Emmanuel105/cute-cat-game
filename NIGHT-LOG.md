@@ -29572,3 +29572,45 @@ from 120 to 121. No visual check was possible in this environment (no browser, n
 the stub-three test suite and the scratch probes above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy. The Neighborhood, Victorian and now Robot City all have
 someone delivering something; Candy Land, Sunny Shore, Frosty Peak and Whisper Woods still don't.
+
+## Round 1066 — Candy Land gets its own gingerbread courier
+
+Round 1065 gave Robot City a courier-bot and noted Candy Land, Sunny Shore, Frosty Peak and Whisper
+Woods still had nobody delivering anything. **A gingerbread courier now toddles a slow square circuit
+of open sweet-lands floor in a quiet south-west stretch,** well clear of the chocolate river, the
+cane-forest ring and every hand-placed cane or lollipop, pausing at each corner for a line before
+waddling on to the next. *"Peppermint drops for the castle kitchen. Mind the corner."* *"Toffee —
+careful, it melts if you run with it."* *"Delivery logged. Next stop: everywhere, eventually."*
+
+No new mesh and no new controller: `makeGingerbread()` (55-npcs.js) is the exact rig every other
+gingerbread man in this land already uses, and `Patroller` (55-npcs.js) — already driving the
+Neighborhood's own postie and Robot City's own courier-bot — calls `greetable()` itself, so no extra
+wiring was needed to make it a friend. `makeGingerbread()`'s own rig carries `.cookie`, not `.look` or
+`.robot`, so `greetable()`'s usual toast swaps in the same "Hee hee! Mind my icing!" line every other
+gingerbread man in the land already answers with.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(1, 'from-prev')` waited out for real through its own portal-fade
+timer — the first attempt skipped that real `setTimeout` wait and silently measured world 0 instead
+of Candy Land, a mistake caught by checking `game.worldIndex` before trusting any of the numbers —
+then 3600 simulated frames sampling every NPC's own live position every 10th frame) swept a grid of
+the open sweet-lands floor (radius 15-90 from the origin, clear of the chocolate river band z -24..-12)
+against all 1890 of this land's own physics boxes carrying a collider between knee and head height and
+those samples, rejecting anywhere `game.zones`'s own 451 rectangles already claim: an 8x8 m square
+loop centred (-44, -76) came back clearest — every point along every side at least 9.8 m from the
+nearest box or sampled NPC — comfortably inside the radius (92) where `candyRegion`'s own procedural
+fill takes over and clear of the hand-placed cane-forest ring (radius 56-76). Built dead last of
+everything this land adds: neither `makeGingerbread()` nor this block's own fixed `points`/`cries`
+arrays draw anything off this land's own seeded `r()` sequence, so nothing built earlier here is
+shifted by it.
+
+Verified beyond the test suite's own checks: a second headless script confirmed the courier is in the
+scene graph, found it mid-circuit at (-43.2, -80.0), teleported the cat beside it, and confirmed
+`game.nearest.label()` reads "Say hello" and `onUse()` takes `game.state.friends` from empty to one
+member. `node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box
+count unchanged at 333 (no new physics box — the courier needs none), and Candy Land's own friend
+total rose from 111 to 112 (confirmed against the pre-change build via `git stash`). No visual check
+was possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
+scratch probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. The
+Neighborhood, Victorian, Robot City and now Candy Land all have someone delivering something; Sunny
+Shore, Frosty Peak and Whisper Woods still don't.
