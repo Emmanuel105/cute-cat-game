@@ -15736,6 +15736,34 @@ function buildCandyLand(game, entry) {
     const brazierLines = ['The vents glow a steady orange against all this pink.', "Warm enough to melt a gumdrop, if anyone ever dropped one in.", 'A crack, a hiss, and a curl of smoke drifting off toward the cane-forest.'];
     game.addInteractable({ obj: brazier, radius: 1.2, label: () => 'Look at the brazier', onUse: () => { SFX.click(); game.toast(rnd.pick(brazierLines), 3000); } }); }
 
+  // round 1077 gave the Victorian canal the game's first water wheel, and no other world has had one
+  // since — but the chocolate river is the one other stretch of flowing water in the whole game (the
+  // Neighborhood's pond, Whisper Woods' glow pond and Robot City's coolant tanks all sit still). A
+  // second mill wheel now turns against the river's own north bank trim, far out past every hand-placed
+  // thing near the water: the three wafer bridges (x=-44, 0, 46), the angler (26, -13), the swimming
+  // ducks (x 61-79) and the stone-skipper (150, -13.5) all stay well east of it. Placed at (-150, -14.7),
+  // the same 0.1 m margin inside the river's own collision box (-21.4..-14.6 in z) that round 1077's
+  // wheel kept inside the canal's wall box, so no new physics box is needed — the river's existing
+  // `walk: false` span already keeps the cat out of the whole stretch. `ry: PI` flips the wheel to face
+  // south into the water instead of north onto the bank, the mirror of round 1077's unrotated mount
+  // against the canal's own north-to-south wall-to-water direction; the wheel itself is built from four
+  // identical spokes and eight identical rim boards, so the flip costs nothing visually.
+  //
+  // No new mesh, no new controller: `makeWaterWheel()` (62-props-nature.js) is reused verbatim, spinning
+  // on the world clock alone (`pivot.rotation.z = t * 0.65`) — no draw from this land's own seeded `r`,
+  // so nothing later in this build shifts. A headless probe (the stub-three harness, clicking the start
+  // button the way `test/run.mjs` does, then `game.travel(1, 'from-prev')` waited out for real against
+  // its own portal-fade timer, then 3600 simulated frames sampling every one of this land's own NPCs
+  // every 10th frame) swept the river's own north bank out at x=-150 against every physics box and every
+  // sampled NPC position: 30.3 m clear of the nearest other box (a candy-cane trunk out at (-161, 14),
+  // part of `candyRegion`'s own procedural fill) and 67.6 m clear of the nearest wandering soul, at
+  // radius 150.7 from the origin — the same distance out the stone-skipper already stands on the
+  // opposite bank. A second script confirmed the wheel group sits in the scene graph at exactly
+  // (-150, 0, -14.7) facing south, that its pivot — a `Group` with the hub, four spokes and eight rim
+  // boards (13 children, same as round 1077's) — keeps turning and stays finite over hundreds of
+  // simulated frames, and that the world's own `U` list is still the only thing driving it.
+  place(game, U, makeWaterWheel(), -150, -14.7, PI);
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

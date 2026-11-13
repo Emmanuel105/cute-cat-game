@@ -30017,3 +30017,42 @@ the boards read as boards rather than a blur of boxes) is unverified. Rebuilt `d
 `dist/artifact.html` and the root copy. First water wheel in the game, and the first genuinely new
 ambient-prop type in a good many rounds rather than another world picking up something the other six
 already had.
+
+## Round 1078 — the chocolate river gets its own water wheel
+
+Round 1077 gave the Victorian canal the game's first water wheel and called it a one-off, since no
+other world has a real current running through it — but the chocolate river turned out to be exactly
+that other stretch of flowing water (the Neighborhood's pond, Whisper Woods' glow pond and Robot
+City's coolant tanks all sit still by comparison). **A second mill wheel now turns against the
+chocolate river's own north bank, far out on the quiet stretch past every bridge, angler and duck in
+the land**, rim boards dipping toward the fudge-brown current. No dialogue, no new friend — same as
+round 1077's wheel, a pure "look, don't touch" prop.
+
+No new mesh and no new controller: `makeWaterWheel()` (62-props-nature.js) is reused completely
+unchanged, spinning on the world clock alone (`pivot.rotation.z = t * 0.65`) — it draws from nothing
+but `t`, so placing it costs no later pick in this land's own seeded `r`. Placed at (-150, -14.7),
+mirroring round 1077's own margin: 0.1 m inside the river's existing collision span (z -21.4..-14.6),
+the same way last round's wheel sat 0.1 m inside the canal's own wall box, so the river's existing
+`walk: false` block is doing the work and no new physics box was needed. The only real difference from
+round 1077 is a 180° turn (`ry: PI`): the Victorian canal's wall sits north of its water with the water
+increasing in z, so that wheel faced unrotated; the chocolate river's north bank has the water
+decreasing in z, so this one is turned to face the opposite way. The wheel is built from four identical
+spokes and eight identical rim boards, so the flip changes nothing anyone would notice.
+
+A headless probe (the stub-three harness, clicking the start button the way `test/run.mjs` does, then
+`game.travel(1, 'from-prev')` waited out for real against its own portal-fade timer, then 3600
+simulated frames sampling every one of this land's own NPCs every 10th frame) swept the river's north
+bank at x=-150 against every one of the land's 1891 physics boxes and those samples: 30.3 m clear of
+the nearest other box (a candy-cane trunk at (-161, 14), part of `candyRegion`'s own procedural fill)
+and 67.6 m clear of the nearest wandering soul, at radius 150.7 from the origin — about the same
+distance out the stone-skipper already stands on the opposite bank. A second script confirmed the
+wheel sits in the scene graph at exactly (-150, 0, -14.7) facing south, and that its pivot — a `Group`
+with 13 children, the hub plus four spokes plus eight rim boards, same as round 1077's — keeps turning
+and stays finite (rotation.z climbing steadily, never NaN) over hundreds of simulated frames.
+`node dimension-cat/test/run.mjs` ran clean: exit 0, 277 checks, all `ok`, no console warnings, box
+count unchanged at 334 (as expected — no new collider was needed). No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite and the probes above, so
+whether the wheel actually reads against the chocolate current rather than clipping through the bank's
+own decorative trim is unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy. The game's second water wheel, and Victorian's canal is no longer the only stretch of water doing
+actual work.
