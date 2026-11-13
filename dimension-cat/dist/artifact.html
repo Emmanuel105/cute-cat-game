@@ -4526,6 +4526,22 @@ function makeSwan() {
   return rig;
 }
 
+// ---------------------------------------------------------------- koi (swims below a pond's surface, no legs or ground contact — the whole rig is moved and tilted by its caller, same convention as the dolphin and the whale)
+function makeKoi(o = {}) {
+  const g = new THREE.Group(), rig = { group: g };
+  const skin = mat(o.color ?? 0xe8642a, { roughness: 0.4, metalness: 0.1 }), pale = mat(0xf3e9d8, { roughness: 0.45 }), dark = mat(0x161414);
+  const body = group(0, 0, 0, g); rig.body = body;
+  mesh(G.bodySphere(14, 10), skin, { sx: 0.06, sy: 0.1, sz: 0.26, parent: body });
+  if (o.white) mesh(G.bodySphere(12, 9), pale, { y: 0.02, z: -0.05, sx: 0.05, sy: 0.08, sz: 0.14, shadow: 'none', parent: body });   // a white saddle patch, koi-style
+  for (const side of [1, -1]) mesh(G.box(0.015, 0.05, 0.07), skin, { x: side * 0.035, y: -0.015, z: 0.06, rz: side * 0.35, shadow: 'none', parent: body });   // pectoral fins, swept back
+  mesh(G.cone(0.08, 0.09, 4), skin, { y: 0.09, z: -0.02, sx: 0.18, shadow: 'none', parent: body });   // dorsal fin
+  mesh(G.box(0.015, 0.13, 0.14), skin, { y: 0, z: -0.32, shadow: 'none', parent: body });   // caudal (tail) fin, flat and upright
+  for (const side of [1, -1]) mesh(G.sphere(0.012, 6, 6), dark, { x: side * 0.025, y: 0.02, z: 0.12, shadow: 'none', parent: body });   // eyes
+  for (const side of [1, -1]) noInk(mesh(G.cyl(0.004, 0.004, 0.06, 4), dark, { x: side * 0.012, y: -0.015, z: 0.145, rx: 1.3, ry: side * 0.3, shadow: 'none', parent: body }));   // barbels, drooping near the mouth
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- dolphin (porpoises in open water, no legs or ground contact — the whole rig is moved and tilted by its caller)
 function makeDolphin(o = {}) {
   const g = new THREE.Group(), rig = { group: g };
@@ -10378,6 +10394,37 @@ function buildNeighborhood(game, entry) {
     game.addInteractable({ obj: hen.group, radius: 2.4, label: () => 'Say hello to the duck', onUse: () => {
       game.befriend(hid); SFX.squawk(); game.hearts(hen.group.position.x, hen.group.position.y + 0.3, hen.group.position.z, 3);
       game.toast('🦆 "...Quack."'); } }); }
+  // the park pond's duck pair has paddled its own surface since round 199 and the lake's own pair
+  // since a later round, but nothing has ever actually lived IN either pond's own water, only on top
+  // of it. Two koi now circle slowly beneath this pond's surface, visible through the water's own
+  // translucent blue — ambient wildlife, same footing as every pure-background pond creature before a
+  // later round gave one of them a "say hello" prompt: no greeting yet, no effect on the friend count.
+  //
+  // New `makeKoi()` (`56-npcs-wild.js`, right after `makeDuck()`'s own goose-free neighbour `makeSwan()`):
+  // a laterally-flattened `bodySphere` body, a dorsal fin, a flat caudal fin and two drooping barbels
+  // (`noInk()`-wrapped, the same treatment every other thin strand in this game already gets — the wind
+  // chime's strings, the weathervane's spindle). No legs, no ground contact: the same "moved and tilted
+  // by its caller" convention the dolphin and the whale already use, so `bakeRig()` collapses the whole
+  // rig into one baked mesh same as theirs.
+  //
+  // Reuses the exact 2.0 m ring the duck pair already swims — verified clear of both the lily pads near
+  // the centre and the stone ring at the edge — just 0.08 m under the water's own surface (the pond's
+  // water disc sits at y=0.02) rather than on top of it, so no new clearance probe was needed: anything
+  // that already fits the duck ring fits here too, and swimming below the surface needs no physics box
+  // of its own, the same reasoning the dolphins and the whale already lean on. Fixed phases and speeds,
+  // not drawn from this world's own seeded `r` or the shared `rnd()`, for the same reason the pond's own
+  // ducks stay off both: the Neighborhood is the one world every test travel starts from, and its own
+  // timing-sensitive checks (the painter's held pose among them) are tuned to an exact draw count.
+  { const kcx = -12, kcz = 46, krad = 2.0, kY = -0.06;
+    const koiA = makeKoi({ color: 0xe8642a, white: true }); W.add(koiA.group);
+    const koiB = makeKoi({ color: 0xd8501a }); W.add(koiB.group);
+    const koi = [[koiA, 0.6, 0.1], [koiB, 3.4, 0.13]];
+    U.push((dt, t) => { for (const [k, phase, speed] of koi) {
+      const a = t * speed + phase, dx = -sin(a), dz = cos(a);
+      k.group.position.set(kcx + cos(a) * krad, kY, kcz + sin(a) * krad);
+      k.group.rotation.y = atan2(dx, dz);
+      k.group.rotation.z = sin(t * 2.6 + phase) * 0.1;
+    } }); }
   const bench = makeBench(); place(game, U, bench, 6, 40, PI); P.addBox(6, 0.4, 40, 1.9, 0.8, 0.6, { cam: false });
   const parkLamp = makeLamp('modern'); place(game, U, parkLamp, -4, 38, PI / 2); P.addBox(-4, 2, 38, 0.3, 4, 0.3, { cam: false });
   // the street's own lamp posts have gone bare since the Neighborhood was first built; this one, the

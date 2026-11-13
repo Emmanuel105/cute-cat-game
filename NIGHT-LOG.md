@@ -30056,3 +30056,34 @@ whether the wheel actually reads against the chocolate current rather than clipp
 own decorative trim is unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy. The game's second water wheel, and Victorian's canal is no longer the only stretch of water doing
 actual work.
+
+## Round 1079 — the park pond gets its first koi
+
+The park pond's duck pair has paddled the surface since round 199, and the lake got its own pair in a
+later round, but in 1078 rounds nothing has ever actually lived *in* either pond's own water — only on
+top of it. **Two koi now circle slowly beneath the park pond's surface**, orange-and-white and plain
+copper, visible through the water's own translucent blue. Pure ambient wildlife for now, the same
+footing every other pond, river and lake creature in this game started on before a later round gave one
+of them a "say hello" — no greeting yet, no effect on the friend count.
+
+New `makeKoi()` (`56-npcs-wild.js`, right after `makeSwan()`): a laterally-flattened `bodySphere` body,
+a dorsal fin, a flat caudal fin and two drooping barbels (`noInk()`-wrapped, the same treatment every
+other thin strand in this game already gets — the wind chime's strings, the weathervane's spindle). No
+legs, no ground contact: the same "moved and tilted by its caller" convention the dolphin and the whale
+already use, so `bakeRig()` collapses the whole rig into one baked mesh same as theirs.
+
+No new placement risk: the koi reuse the exact 2.0 m ring the park pond's own duck pair already swims —
+already verified clear of both the lily pads near the centre and the stone ring at the edge — just
+0.08 m under the water's own surface (the pond's water disc sits at y=0.02) instead of on top of it, so
+no new clearance probe was needed. Swimming below the surface needs no physics box of its own either,
+the same reasoning the open-sea dolphins and whale on Sunny Shore already lean on. Fixed phases and
+speeds, never drawn from this world's own seeded `r` or the shared `rnd()`, for the same reason the
+pond's own ducks stay off both: the Neighborhood is the one world every test travel starts from, and its
+own timing-sensitive checks (the painter's held pose among them) are tuned to an exact draw count.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (no new collider was needed) and the Neighborhood's own friend total unchanged at 105
+(the koi add no friend yet). No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite above, so whether the koi actually read clearly through the
+pond's own transparent water, rather than just sitting invisibly beneath it, is unverified. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

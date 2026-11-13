@@ -299,6 +299,22 @@ function makeSwan() {
   return rig;
 }
 
+// ---------------------------------------------------------------- koi (swims below a pond's surface, no legs or ground contact — the whole rig is moved and tilted by its caller, same convention as the dolphin and the whale)
+function makeKoi(o = {}) {
+  const g = new THREE.Group(), rig = { group: g };
+  const skin = mat(o.color ?? 0xe8642a, { roughness: 0.4, metalness: 0.1 }), pale = mat(0xf3e9d8, { roughness: 0.45 }), dark = mat(0x161414);
+  const body = group(0, 0, 0, g); rig.body = body;
+  mesh(G.bodySphere(14, 10), skin, { sx: 0.06, sy: 0.1, sz: 0.26, parent: body });
+  if (o.white) mesh(G.bodySphere(12, 9), pale, { y: 0.02, z: -0.05, sx: 0.05, sy: 0.08, sz: 0.14, shadow: 'none', parent: body });   // a white saddle patch, koi-style
+  for (const side of [1, -1]) mesh(G.box(0.015, 0.05, 0.07), skin, { x: side * 0.035, y: -0.015, z: 0.06, rz: side * 0.35, shadow: 'none', parent: body });   // pectoral fins, swept back
+  mesh(G.cone(0.08, 0.09, 4), skin, { y: 0.09, z: -0.02, sx: 0.18, shadow: 'none', parent: body });   // dorsal fin
+  mesh(G.box(0.015, 0.13, 0.14), skin, { y: 0, z: -0.32, shadow: 'none', parent: body });   // caudal (tail) fin, flat and upright
+  for (const side of [1, -1]) mesh(G.sphere(0.012, 6, 6), dark, { x: side * 0.025, y: 0.02, z: 0.12, shadow: 'none', parent: body });   // eyes
+  for (const side of [1, -1]) noInk(mesh(G.cyl(0.004, 0.004, 0.06, 4), dark, { x: side * 0.012, y: -0.015, z: 0.145, rx: 1.3, ry: side * 0.3, shadow: 'none', parent: body }));   // barbels, drooping near the mouth
+  bakeRig(g);
+  return rig;
+}
+
 // ---------------------------------------------------------------- dolphin (porpoises in open water, no legs or ground contact — the whole rig is moved and tilted by its caller)
 function makeDolphin(o = {}) {
   const g = new THREE.Group(), rig = { group: g };

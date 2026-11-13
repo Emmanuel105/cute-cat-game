@@ -1460,6 +1460,37 @@ function buildNeighborhood(game, entry) {
     game.addInteractable({ obj: hen.group, radius: 2.4, label: () => 'Say hello to the duck', onUse: () => {
       game.befriend(hid); SFX.squawk(); game.hearts(hen.group.position.x, hen.group.position.y + 0.3, hen.group.position.z, 3);
       game.toast('🦆 "...Quack."'); } }); }
+  // the park pond's duck pair has paddled its own surface since round 199 and the lake's own pair
+  // since a later round, but nothing has ever actually lived IN either pond's own water, only on top
+  // of it. Two koi now circle slowly beneath this pond's surface, visible through the water's own
+  // translucent blue — ambient wildlife, same footing as every pure-background pond creature before a
+  // later round gave one of them a "say hello" prompt: no greeting yet, no effect on the friend count.
+  //
+  // New `makeKoi()` (`56-npcs-wild.js`, right after `makeDuck()`'s own goose-free neighbour `makeSwan()`):
+  // a laterally-flattened `bodySphere` body, a dorsal fin, a flat caudal fin and two drooping barbels
+  // (`noInk()`-wrapped, the same treatment every other thin strand in this game already gets — the wind
+  // chime's strings, the weathervane's spindle). No legs, no ground contact: the same "moved and tilted
+  // by its caller" convention the dolphin and the whale already use, so `bakeRig()` collapses the whole
+  // rig into one baked mesh same as theirs.
+  //
+  // Reuses the exact 2.0 m ring the duck pair already swims — verified clear of both the lily pads near
+  // the centre and the stone ring at the edge — just 0.08 m under the water's own surface (the pond's
+  // water disc sits at y=0.02) rather than on top of it, so no new clearance probe was needed: anything
+  // that already fits the duck ring fits here too, and swimming below the surface needs no physics box
+  // of its own, the same reasoning the dolphins and the whale already lean on. Fixed phases and speeds,
+  // not drawn from this world's own seeded `r` or the shared `rnd()`, for the same reason the pond's own
+  // ducks stay off both: the Neighborhood is the one world every test travel starts from, and its own
+  // timing-sensitive checks (the painter's held pose among them) are tuned to an exact draw count.
+  { const kcx = -12, kcz = 46, krad = 2.0, kY = -0.06;
+    const koiA = makeKoi({ color: 0xe8642a, white: true }); W.add(koiA.group);
+    const koiB = makeKoi({ color: 0xd8501a }); W.add(koiB.group);
+    const koi = [[koiA, 0.6, 0.1], [koiB, 3.4, 0.13]];
+    U.push((dt, t) => { for (const [k, phase, speed] of koi) {
+      const a = t * speed + phase, dx = -sin(a), dz = cos(a);
+      k.group.position.set(kcx + cos(a) * krad, kY, kcz + sin(a) * krad);
+      k.group.rotation.y = atan2(dx, dz);
+      k.group.rotation.z = sin(t * 2.6 + phase) * 0.1;
+    } }); }
   const bench = makeBench(); place(game, U, bench, 6, 40, PI); P.addBox(6, 0.4, 40, 1.9, 0.8, 0.6, { cam: false });
   const parkLamp = makeLamp('modern'); place(game, U, parkLamp, -4, 38, PI / 2); P.addBox(-4, 2, 38, 0.3, 4, 0.3, { cam: false });
   // the street's own lamp posts have gone bare since the Neighborhood was first built; this one, the
