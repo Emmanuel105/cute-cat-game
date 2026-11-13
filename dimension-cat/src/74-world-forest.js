@@ -2660,6 +2660,44 @@ function buildForest(game, entry) {
     game.npcs.push(new Kneeler(game, raker, { x: kx, z: kz, ry: atan2(lpx - kx, lpz - kz),
       cries: ["Pile's nearly big enough — one good jump would ruin it, mind.", 'Careful, puss — four hours of raking, don\'t you dare.', 'Every leaf in this whole glade ends up here eventually.'] })); }
 
+  // Rounds 1065-1067 gave Robot City a courier-bot, Candy Land a gingerbread courier and Sunny Shore a
+  // supply runner; the night log noted Frosty Peak and Whisper Woods still had nobody delivering
+  // anything. **A basket courier now carries a mushroom-and-preserves round in a slow square loop on
+  // the forest floor south-east of the fairy ring,** pausing at each corner for a line before trudging
+  // on to the next. *"Chanterelles for the knitter, blackberry jam for the treehouse."* *"Mind the
+  // roots, puss — I've turned an ankle on this round before."* *"Basket's lighter on the way back.
+  // Always is."*
+  //
+  // No new mesh and no new controller: an ordinary `makeHuman()` with the same earthy wardrobe this
+  // wood's own leaf-raking boy already wears, and `Patroller` (55-npcs.js) — already driving every
+  // other world's own courier before this one — calls `greetable()` itself, so no extra wiring was
+  // needed to make the runner a friend.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, `game.travel(6, 'from-hub')` waited out for real
+  // against `game.worldIndex`, then 3600 simulated frames sampling every NPC's own live position every
+  // 10th frame) swept 6x6 and 8x8 m square loops across the forest floor at 1-2 m steps, checking the
+  // whole perimeter of each candidate, not just its four corners. This wood is far denser with props
+  // and wandering animals than the beach or the mountain — nothing came back anywhere near as clear as
+  // earlier rounds found elsewhere — but an 8x8 loop centred (6, -31) held up best: every point on its
+  // own perimeter at least 3.32 m from the nearest of this wood's own physics boxes (a tree trunk near
+  // (12, -39) is the closest) and at least 3.0 m from every sampled NPC position over that same 60 s
+  // sweep (the reading sitter at (14, -32) is the closest soul) — comfortably inside the radius (58)
+  // where `forestRegion()`'s own procedural fill takes over, clear of the fairy ring, the kite kid, the
+  // forager and the leaf pile built above.
+  //
+  // Built dead last of everything this wood adds, right after the leaf pile above: `makeHuman()` and
+  // `randomPerson()` both draw off this wood's own shared `r()` sequence unconditionally, and anything
+  // built earlier would have had its own timing-sensitive pick shifted by it.
+  { const points = [[2, -35], [10, -35], [10, -27], [2, -27]];
+    const courierWard = makeWardrobe(r, { shirts: [0xd9822b, 0x5a8a4a, 0x8a5a3a], pants: [0x3a4a2e, 0x4a3a28] });
+    const courier = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: courierWard }),
+      hat: r.chance(0.5) ? 'cap' : null, backpack: 0x5a4a3a });
+    W.add(courier.group);
+    const courierLines = ["Chanterelles for the knitter, blackberry jam for the treehouse.", "Mind the roots, puss — I've turned an ankle on this round before.", 'Basket\'s lighter on the way back. Always is.'];
+    game.npcs.push(new Patroller(game, courier, { points, speed: 0.9, pause: [1.3, 1.9], pauseAll: true, loop: true, r: 0.35, height: 1.8,
+      cries: courierLines, cryIcon: '🧺' })); }
+
   forestRegion(game, U, r, 58, WOODS_LIMIT - 8);
   makeHorizon(game, r, { clear: WOODS_LIMIT + 8, hills: true, hill: 0x2f4a30, rock: 0x3a4a3a, rock2: 0x44505a, snow: 0xdfe8f0, snowLine: 52, peaks: 28, woodCount: 460, woodBand: 44, woodHue: [0.26, 0.36], woodLight: [0.1, 0.2], trunk: 0x3a2a1c });
   // hollow oak home (north end of the stepping-stone path)

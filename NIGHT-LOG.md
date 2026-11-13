@@ -29652,3 +29652,42 @@ from 131 to 132. No visual check was possible in this environment (no browser, n
 the stub-three test suite and the scratch probes above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy. The Neighborhood, Victorian, Robot City, Candy Land and now
 Sunny Shore all have someone delivering something; Frosty Peak and Whisper Woods still don't.
+
+## Round 1068 — Whisper Woods gets its own basket courier
+
+Rounds 1065-1067 gave Robot City, Candy Land and Sunny Shore their own couriers; the log noted Frosty
+Peak and Whisper Woods still had nobody delivering anything. **A basket courier now carries a
+mushroom-and-preserves round in a slow square loop on the forest floor south-east of the fairy ring,**
+pausing at each corner for a line before trudging on to the next. *"Chanterelles for the knitter,
+blackberry jam for the treehouse."* *"Mind the roots, puss — I've turned an ankle on this round
+before."* *"Basket's lighter on the way back. Always is."*
+
+No new mesh and no new controller: an ordinary `makeHuman()` with the same earthy wardrobe this
+wood's own leaf-raking boy already wears, and `Patroller` (55-npcs.js) — already driving every other
+world's own courier before this one — calls `greetable()` itself, so no extra wiring was needed.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(6, 'from-hub')` waited out for real against
+`game.worldIndex`, then 3600 simulated frames sampling every NPC's own live position every 10th frame)
+swept 6x6 and 8x8 m square loops across the forest floor, checking the whole perimeter of each
+candidate rather than just its four corners. This wood turned out far denser with props and wandering
+animals than the beach or the mountain — nothing came back anywhere near as clear as earlier rounds
+found elsewhere, and Frosty Peak was tried first and abandoned for exactly this reason, its own best
+candidate never clearing 2.6 m. An 8x8 loop centred (6, -31) on Whisper Woods' own floor held up best:
+every point on its own perimeter at least 3.32 m from the nearest of this wood's physics boxes (a tree
+trunk near (12, -39) is the closest) and at least 3.0 m from every sampled NPC position over that same
+60 s sweep (the reading sitter at (14, -32) is the closest soul) — comfortably inside the radius (58)
+where `forestRegion()`'s own procedural fill takes over, and clear of the fairy ring, the kite kid, the
+forager and the leaf pile this wood already had.
+
+Verified beyond the test suite's own checks: a second headless script confirmed the courier is in the
+scene graph, found it mid-circuit at (9.75, -35.0) after 10 simulated seconds, and confirmed
+`game.nearest.label()` reads "Say hello" and `onUse()` takes `game.state.friends` from empty to one
+member. `node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box
+count unchanged at 333 (no new physics box — the courier needs none). No visual check was possible in
+this environment (no browser, no Playwright) — only the stub-three test suite and the scratch probes
+above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. The Neighborhood,
+Victorian, Robot City, Candy Land, Sunny Shore and now Whisper Woods all have someone delivering
+something; Frosty Peak alone still doesn't — its own snowfield is simply too crowded with pines and
+hand-placed props for an 8x8 loop to clear decently, so it may need a different shape (a thin corridor
+rather than a square) or a stationary vendor instead of a patrol route next time.
