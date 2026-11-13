@@ -30184,3 +30184,43 @@ friend total went up by one (122 → 123) as expected. No visual check was possi
 reads as watching the mechanic rather than just standing nearby, or whether its shrunk scale looks right
 next to a full-size robot, is unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 1083 — Victorian's shoeshine boy finally gets a customer
+
+The south back lane's shoeshine boy (rounds a while back) has been scrubbing an unseen boot since the
+day he arrived, and the build-time comment that placed him already named the gap outright: "every
+gentleman on this street steps out in a top hat and a cane, but not one of them has ever had his boots
+seen to." Giving him a boy to do the shining only closed half of that — nobody's boots were actually
+*in* the chair. **A top-hatted gentleman now stands on the lane's other side, leaning on his own cane
+while the boy works.** *"Tuppence well spent — can't walk into the club with scuffed boots."* *"Mind the
+cat doesn't trip the boy mid-polish."* *"There. Now I'll actually be seen in these."* He's a friend to
+meet like any other Victorian, not a customer with anything to buy.
+
+No new mesh and no new controller: `Charger` (55-npcs.js) already does nothing but hold an idle pose and
+greet — the same job it does for Robot City's plugged-in robots and Whisper Woods' own beekeeper — so a
+gentleman standing still, weight on his cane, reads exactly right without a new animation. `cane: true`
+plants one hand on the cane the way every caned Victorian elder in this town already does, and `Charger`
+calls `greetable()` itself, so no extra wiring was needed. No new physics box either, same as the
+mechanic's trainee two rounds back — just a greet circle.
+
+Placed on the lane's west side, directly opposite the shiner across the shoeshine box, both facing in:
+the box sits at (35, -20) with a 0.5 x 0.4 m footprint, the shiner kneels 0.65 m clear of its east edge
+at (35.9, -20). The gentleman mirrors that from the west side at (34, -20), 0.75 m clear of the box's own
+west edge, facing `ry = atan2(35 - 34, -20 - -20) = PI/2` — the same atan2-toward-the-box convention the
+shiner's own `ry` already uses, just from the opposite side. A headless probe (a scratch script on the
+same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, `game.travel(3, 'from-prev')`
+waited out for real against its own portal-fade timer, then 300 simulated seconds sampling every NPC's
+position every quarter second) confirmed (34, -20) clear of every one of this town's 664 physics boxes
+(nearest is the shoeshine box itself, 0.75 m off) and never closer than 1.9 m to the shiner, the nearest
+other soul, who never moves from his own kneeling spot. Outside every one of `game.zones`'s 245 keep-out
+rectangles too, and the back lane isn't one of the roads `test/run.mjs` itself walks end to end, so there
+was nothing to re-check there. Built dead last of everything this town adds, right after the postman, so
+it draws from the very tail of this world's own local `r()` sequence and leaves every earlier pick alone.
+
+`node dimension-cat/test/run.mjs` ran clean twice in a row: exit 0, all checks `ok`, 0 console warnings,
+box count unchanged at 334 (no new collider, just a circle), and Victorian's own friend total went up by
+one (156 → 157) as expected, confirmed against the previous commit with `git stash`. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above, so
+whether the gentleman actually reads as waiting for a shine rather than just standing nearby, or whether
+his cane and top hat look right next to the boy's own kneeling pose, is unverified. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
