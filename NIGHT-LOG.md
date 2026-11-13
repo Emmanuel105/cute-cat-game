@@ -29800,3 +29800,42 @@ distance 0 from its own spot). `node dimension-cat/test/run.mjs` ran clean: exit
 possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
 probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. All three
 roasters now sit a long way apart: a Victorian canal bank, a mountain snowfield, and a forest clearing.
+
+## Round 1072 — Sunny Shore gets a chestnut roaster too, in the dunes
+
+Victorian's canal bank, Frosty Peak's snowfield and Whisper Woods' clearing all have a chestnut
+roaster at her own glowing brazier by now. A fourth try was first aimed at the Neighborhood, since a
+street-corner roaster felt like a natural fit there too — but a headless probe caught it immediately:
+every `Vendor` draws one `rnd()` tick in its own constructor (`this.t = rnd() * 10`) whether or not it
+carries `cries`, and the Neighborhood is the one world whose build shares a single run of simulated
+frames with `test/run.mjs`'s own behaviour checks. That single extra draw was enough to nudge the
+"two neighbours chat, taking turns" check's sampled arm angle from -0.76 to -0.37, just past its own
+-0.7 threshold — the same fragility the fiddler and the basketball kid ran into a while back, except
+this time removing `cries` wasn't the fix, since the stray draw lives in the constructor, not the cry
+timer. Reverted that attempt whole and picked Sunny Shore instead, where no such check exists.
+
+**A roaster has set up anyway, deep in the dunes west of the tug-of-war, her brazier glowing against
+the sand.** Hot chestnuts are an odd sell on a beach, and that's the joke. *"Hot chestnuts! Don't ask
+why — just enjoy them."* *"Sand in the griddle again. Happens every time."* *"Coldest evenings on this
+whole coast, right here by the dunes."* The brazier answers a look of its own, same as the other three.
+
+No new mesh and no new controller: `makeChestnutBrazier()` (60-props.js) and `makeChestnutCone()`
+(62-props-nature.js) are reused a fourth time, and `Vendor` (55-npcs.js) already holds a
+fish-and-chips cone, an ice cream cone, a coconut drink and a crystal ball elsewhere on this beach.
+`placeT`/`boxT` sit the drum on the dune sand, and the brazier's own `userData.update` rides into the
+world's `U` list through `placeT`, same as the other two terrain worlds' copies.
+
+A headless probe (the stub-three harness, `game.travel(4, 'from-hub')` waited out for real, then 1800
+simulated frames sampling all 116 of this beach's NPCs every 10th frame) swept a 2 m grid of the dune
+sand (radius ≤ 56, short of the radius 58 where `beachRegion`'s own fill takes over) against all 154
+physics boxes over 0.3 m tall, those samples and `game.zones`: (-54, -9.3) for the vendor and
+(-54, -10.7) for the brazier came back clear by 9-10 m of the nearest box and 10 m of the nearest
+sampled soul, well past the supply runner's own loop, on dune ground levelling out at 1.43-1.50 m. A
+second script confirmed the vendor sits in the scene graph, stays finite after 900 frames, standing at
+her own spot reads "Say hello" and turns her into a friend (0 → 1), standing at the brazier's own spot
+reads "Look at the brazier" instead, and the drum sits at y=1.449 (dune height, not floating).
+`node dimension-cat/test/run.mjs` ran clean: exit 0, 277 checks, all `ok`, no console warnings, box
+count 333 (unchanged — the Neighborhood attempt never got far enough to touch it). Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Four roasters now: a Victorian canal
+bank, a mountain snowfield, a forest clearing and a beach dune — three worlds (the Neighborhood, Candy
+Land, Robot City) still have none.

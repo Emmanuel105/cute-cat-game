@@ -24062,6 +24062,44 @@ function buildBeach(game, entry) {
     game.npcs.push(new Patroller(game, runner, { points, speed: 0.95, pause: [1.3, 1.9], pauseAll: true, loop: true, r: 0.35, height: 1.8,
       cries: runnerLines, cryIcon: '🧺' })); }
 
+  // Victorian's canal bank, Frosty Peak's snowfield and Whisper Woods' clearing all have a chestnut
+  // roaster at her own glowing brazier by now — Sunny Shore, Candy Land, Robot City and the
+  // Neighborhood never got one. Hot chestnuts are an odd sell on a beach, and that's exactly the
+  // joke: **a roaster has set up anyway, deep in the dunes west of the tug-of-war, her brazier
+  // glowing against the sand,** convinced the cold evenings out here are reason enough.
+  //
+  // No new mesh and no new controller: `makeChestnutBrazier()` (60-props.js) and `makeChestnutCone()`
+  // (62-props-nature.js) are reused verbatim a fourth time, and `Vendor` (55-npcs.js) already holds a
+  // fish-and-chips cone, an ice cream cone, a coconut drink and a crystal ball elsewhere on this
+  // beach. `placeT`/`boxT` sit the drum on the dune sand rather than floating over it, and the
+  // brazier's own `userData.update` (vent glow, light flicker) rides into this world's `U` list
+  // through `placeT`, the same as Frosty Peak's and Whisper Woods' own copies.
+  //
+  // A headless probe (`game.start('new')`, `game.travel(4, 'from-hub')` waited out for real against
+  // `game.worldIndex` and `game.transitioning`, then 1800 simulated frames sampling every one of this
+  // beach's 116 NPCs every 10th frame) swept a 2 m grid of the dune sand (radius ≤ 56, short of the
+  // radius (58) where `beachRegion`'s own fill takes over) against all 154 of the beach's physics
+  // boxes over 0.3 m tall, those samples and `game.zones`: (-54, -9.3) for the vendor and (-54, -10.7)
+  // for the brazier came back clear by 9-10 m of the nearest box and 10 m of the nearest sampled
+  // soul, well past the supply runner's own square loop further north-east, on dune ground levelling
+  // out at 1.43-1.50 m across the footprint between them.
+  //
+  // Built dead last of everything this beach adds, right after the supply runner above: `makeHuman()`
+  // and `randomPerson()` both draw off this beach's own shared `r()` sequence unconditionally, and
+  // anything built earlier would have had its own timing-sensitive pick shifted by it.
+  { const vx = -54, vz = -9.3, bx = -54, bz = -10.7, vry = atan2(bx - vx, bz - vz);
+    const roastWard = makeWardrobe(r, { shirts: [0x8a3a3a, 0x5a4a3a, 0x3a4a4a], pants: [0x2a2420, 0x2a2a24], shoes: [0x2a2018, 0x1e1a16] });
+    const roaster = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.4), wardrobe: roastWard }),
+      hat: r.chance(0.5) ? 'flatcap' : 'beanie', hatColor: 0x3a3327, coat: true, scarf: 0x8a6a4a, cuffs: 0x3a3a3a, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(roaster.group);
+    const brazier = placeT(game, U, makeChestnutBrazier(), bx, bz, 0);
+    boxT(game, bx, bz, 0.3, 0.65, 0.3, { cam: false });
+    const v = new Vendor(game, roaster, makeChestnutCone(), { x: vx, z: vz, ry: vry, cryIcon: '🌰',
+      cries: ["Hot chestnuts! Don't ask why — just enjoy them.", "Sand in the griddle again. Happens every time.", "Coldest evenings on this whole coast, right here by the dunes."] });
+    game.npcs.push(v); greetable(game, v);
+    const brazierLines = ['The vents glow a deep, steady orange against the sand.', 'Warm enough to feel over the sea breeze.', 'A crack, a hiss, and a curl of smoke drifting off toward the dunes.'];
+    game.addInteractable({ obj: brazier, radius: 1.2, label: () => 'Look at the brazier', onUse: () => { SFX.click(); game.toast(rnd.pick(brazierLines), 3000); } }); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
