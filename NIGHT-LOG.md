@@ -29912,3 +29912,36 @@ no Playwright) — only the stub-three test suite and the probes above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Six roasters now: a Victorian canal
 bank, a mountain snowfield, a forest clearing, a beach dune, a factory floor and a sweet-lands floor
 — only the Neighborhood still has none.
+
+## Round 1075 — the Neighborhood finally gets its own chestnut roaster too, the last of the seven
+
+Six worlds have had a chestnut roaster worked by its own `Vendor` for a few rounds now — the
+Neighborhood, round 1074's log noted, was the only one left, and an earlier attempt there had broken
+the chatting-neighbours test (every `Vendor` draws one `rnd()` tick in its own constructor, `cries` or
+not, and this is the one world whose build-and-test window shares its own run of simulated frames with
+the checks that watch it). This round sidesteps the problem instead of retrying it head-on: no vendor
+at all, just the brazier itself, left glowing and untended in the grass behind the back row of houses,
+chestnuts still cooking with nobody around to sell them.
+
+**A chestnut brazier now sits abandoned behind the Neighborhood's own back-row houses, vents glowing,
+nobody tending it.** *"🌰 The vents glow, the chestnuts cook, and not a soul's standing over it."*
+*"😼 Puss sniffs the warm paper smell and finds no one to beg from."* *"🏠 Somebody on this street left
+a fire going. Again."* It's a "look" prompt only, the same wiring the scarecrow and the spiderweb
+already use — no new friend to meet, since there's nobody there.
+
+No new mesh, no new controller: `makeChestnutBrazier()` (60-props.js) is the identical drum the other
+six worlds already use. Leaving out the `Vendor` (and the person, wardrobe and `randomPerson()` roll
+that would come with it) means this addition draws nothing at all from the shared `rnd()` or this
+street's own seeded `r()` at build time, so it genuinely can't shift anything else's timing — the exact
+failure mode the earlier attempt hit. A headless probe (`game.start('new')`, 1800 simulated frames
+sampling every NPC's own position every frame) swept the grass behind the back row of houses near
+x=-45 and x=-63 against every physics box, `game.zones` and every sampled NPC position: (-45, 34) came
+back 2.8 m clear of the nearest box (the house's own back wall) and 7.6 m clear of the nearest
+wandering soul, well east of the spiderweb at (-58, 44) and outside every zone. A second script
+confirmed the brazier sits in the scene graph at a finite position, and that standing at its own spot
+reads "Look at the brazier" and its `onUse()` runs cleanly. `node dimension-cat/test/run.mjs` ran
+clean: exit 0, 277 checks, all `ok`, no console warnings, box count up by exactly one (333 → 334, the
+brazier's own collider). No visual check was possible in this environment (no browser, no Playwright)
+— only the stub-three test suite and the probes above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy. All seven worlds now have a chestnut roaster of some kind —
+six with a vendor selling from it, and the Neighborhood's own left burning with nobody in sight.

@@ -12777,6 +12777,37 @@ function buildNeighborhood(game, entry) {
     const ft = new Vendor(game, fortuneTeller, makeCrystalBall(), { x: fx, z: fz, ry: fry });
     game.npcs.push(ft); greetable(game, ft); }
 
+  // Victorian, Frosty Peak, Whisper Woods, Sunny Shore, Robot City and Candy Land all have a chestnut
+  // roaster going by now, each one worked by its own `Vendor` — the Neighborhood is the seventh and the
+  // only one left. A new `Vendor` here is exactly what broke the chatting neighbours' test the one time
+  // this was tried before (every `Vendor` draws a `rnd()` tick in its own constructor, `cries` or not,
+  // and this street's build-and-test window shares its own run of simulated frames with the checks that
+  // watch it), so this roaster gets no vendor at all: just the brazier itself, left glowing and
+  // untended in the quiet grass behind the back row of houses, chestnuts still roasting with nobody in
+  // sight to sell them. *"🌰 The vents glow, the chestnuts cook, and not a soul's standing over it."*
+  // *"😼 Puss sniffs the warm paper smell and finds no one to beg from."* *"🏠 Somebody on this street
+  // left a fire going. Again."*
+  //
+  // No new mesh, no new controller: `makeChestnutBrazier()` (60-props.js) is the identical drum the
+  // other six worlds already use, just with no `Vendor` built alongside it — only a `game.addInteractable`
+  // "look" prompt, the same wiring the spiderweb and the scarecrow elsewhere in this file both use, and
+  // neither one draws from the shared `rnd()` or this street's own seeded `r()` at build time.
+  //
+  // A headless probe (`game.start('new')`, 1800 simulated frames sampling every NPC's own position every
+  // frame) swept the grass behind the back row of houses near x=-45 and x=-63 against every one of this
+  // village's own physics boxes, `game.zones` and every sampled NPC position: (-45, 34) came back 2.8 m
+  // clear of the nearest box (the house's own back wall) and 7.6 m clear of the nearest wandering soul,
+  // well east of the spiderweb at (-58, 44) and outside every zone.
+  //
+  // Built dead last, right after the fortune teller above and right before `makeDayNight` — though with
+  // no `rnd()` or `r()` draw of its own, this is the one addition in this file whose spot in the build
+  // order genuinely doesn't matter.
+  { const bx = -45, bz = 34;
+    const brazier = place(game, U, makeChestnutBrazier(), bx, bz, 0);
+    P.addBox(bx, 0.3, bz, 0.3, 0.65, 0.3, { cam: false });
+    const brazierLines = ["🌰 The vents glow, the chestnuts cook, and not a soul's standing over it.", '😼 Puss sniffs the warm paper smell and finds no one to beg from.', '🏠 Somebody on this street left a fire going. Again.'];
+    game.addInteractable({ obj: brazier, radius: 1.2, label: () => 'Look at the brazier', onUse: () => { SFX.click(); game.toast(rnd.pick(brazierLines), 3000); } }); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
