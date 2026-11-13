@@ -29493,3 +29493,44 @@ has no physics box, same as the other three), Frosty Peak's own friend total ros
 browser, no Playwright) — only the stub-three test suite and the scratch probes above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. The Neighborhood is now the only
 world left without a fortune teller of its own.
+
+## Round 1064 — the Neighborhood gets its own fortune teller, the last of the seven
+
+Round 1063 left the Neighborhood as the only one of the seven worlds without a crystal-ball fortune
+teller, after Victorian, Sunny Shore, Frosty Peak and Whisper Woods all got their own in earlier
+rounds. **A fortune teller now sits cross-legged on the open south field, her crystal ball glowing on
+a little brass tripod in front of her,** well clear of the tug-of-war pair, the hopscotch grid and the
+basketball hoop. All seven worlds now have one.
+
+Same mechanism as the other four: `Vendor` (55-npcs.js) holding `makeCrystalBall()` (60-props.js)
+instead of a new prop, with `game.npcs.push(ft); greetable(game, ft);` right after since `Vendor`
+doesn't call `greetable()` itself. Built with no `cries` at all, the same fix the Neighborhood's own
+fiddler and basketball kid both needed before — this is the one world whose build-and-test window
+shares a single run of simulated frames with its own behaviour checks. That turned up a real bug in
+`Vendor` itself, not just a style choice: every other cry-driven NPC class only draws its `cryT` timer
+from the shared global `rnd()` when `cries` is actually set (`cries ? rnd.range(...) : 0`), but
+`Vendor`'s constructor drew it unconditionally. A cries-less `Vendor` had never been built before, so
+nothing had caught it — adding one shifted the global `rnd()` sequence by one extra draw at startup,
+and a chaotic twenty-plus seconds later that was enough for a park wanderer to end up 0.4 m from the
+balloon seller's own greet spot, stealing the "Take a balloon" prompt and failing two unrelated tests
+(the cyclist's hip-rotation delta and the balloon-prompt check). Fixed at the root: `Vendor.cryT` is
+now `cries ? rnd.range(3, 7) : 0`, matching every other class — safe everywhere else, since `cryT` is
+only ever read inside the existing `if (this.cries)` guard, so no Vendor with real cries changes
+behaviour at all.
+
+A headless probe (`game.start('new')`, 2400 simulated frames sampling every NPC's own position every
+10th frame) swept the open south field below the baller/tug-of-war/hopscotch cluster against every
+physics box, every sampled NPC position and `game.zones`: (-10, -58) came back clear by 12.4 m of the
+nearest box and 13.5 m of the nearest wandering soul, flat ground, left untouched by
+`game.zones.nudge()`. Dress colour is a plain teal rather than the violet the other four fortune
+tellers share, since nothing about the colour is load-bearing.
+
+Verified beyond the test suite's own checks: a second headless script confirmed the new `Vendor` is
+in the scene graph at (-10, -58), teleported the cat beside her, and confirmed `game.nearest.label()`
+reads "Say hello" and `onUse()` takes `game.state.friends` from empty to one member.
+`node dimension-cat/test/run.mjs` ran clean: exit 0, 277 checks, all `ok`, 0 console warnings, box
+count unchanged at 333 (the crystal ball has no physics box, same as the other four), the Neighborhood's
+own friend total rose from 104 to 105. No visual check was possible in this environment (no browser,
+no Playwright) — only the stub-three test suite and the scratch probes above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy. All seven worlds now have their own
+fortune teller.

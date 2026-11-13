@@ -1503,7 +1503,7 @@ class PinataSwinger {
 class Vendor {
   constructor(game, rig, held, { x, z, ry = 0, cries = null, cryIcon = '\ud83c\udf88' }) {
     this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10; this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false;
-    this.state = 'idle'; this.timer = 0; this.cries = cries; this.cryIcon = cryIcon; this.cryT = rnd.range(3, 7); this.held = held;
+    this.state = 'idle'; this.timer = 0; this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(3, 7) : 0; this.held = held;
     rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
     rig.hands[1].add(held);
     this.circle = game.physics.addCircle(this, x, z, 0.35);   // no greetable(): the world gives the vendor its own prompt

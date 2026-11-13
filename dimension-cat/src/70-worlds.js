@@ -3849,6 +3849,38 @@ function buildNeighborhood(game, entry) {
     game.npcs.push(new Baller(game, baller, ball, { x: bx, z: bz, ry: bry,
       hoopX: hx + rimX, hoopY: P.ground0(hx, hz) + rimY, hoopZ: hz + rimZ })); }
 
+  // Victorian, Sunny Shore, Frosty Peak and Whisper Woods all have their own fortune teller holding a
+  // crystal ball by now — the Neighborhood, the very first world anyone sees, never got one. A fortune
+  // teller now sits cross-legged on a folding lawn chair out on the open south field, well clear of the
+  // tug-of-war pair, the hopscotch grid and the basketball hoop, her crystal ball glowing on a little
+  // brass tripod in front of her.
+  //
+  // Same mechanism as the other four: `Vendor` (55-npcs.js) holding `makeCrystalBall()` (60-props.js)
+  // instead of a new prop — no new controller needed. `Vendor` doesn't call `greetable()` itself, so
+  // `game.npcs.push(ft); greetable(game, ft);` right after makes her a proper friend, the same wiring
+  // every vendor in every other world already uses. Built with no `cries` at all, the same fix the
+  // fiddler and the basketball kid above both needed: the Neighborhood is the one world whose
+  // build-and-test window shares a single run of simulated frames with its own behaviour checks, and a
+  // `cries` branch is the only place `Vendor.update()` ever touches the *shared* global `rnd()`
+  // sequence. Dress colour is a plain teal rather than the violet the other three share, since nothing
+  // about the colour is load-bearing and every other hand-placed person on this street already has a
+  // colour of their own.
+  //
+  // A headless probe (`game.start('new')`, 2400 simulated frames sampling every NPC's own position
+  // every 10th frame) swept the open south field below the baller/tug-of-war/hopscotch cluster against
+  // every one of the street's physics boxes, every sampled NPC position and `game.zones`: (-10, -58)
+  // came back clear by 12.4 m of the nearest box and 13.5 m of the nearest wandering soul — 27.9 m from
+  // the hopscotch grid and 42.1 m from the metal detectorist further east — on flat ground (y=0), and
+  // `game.zones.nudge()` left the point untouched, so it sits outside every rect and circle the street
+  // already claims.
+  { const fx = -10, fz = -58, fry = atan2(0 - fx, -40 - fz);
+    const ftWard = makeWardrobe(r, { shirts: [0x1a5a4a], pants: [0x1a2a30], shoes: [0x2a2018] });
+    const fortuneTeller = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: r.chance(0.5), wardrobe: ftWard }),
+      sleeves: true, dress: 0x1a5a4a, sash: 0xd4af37, scarf: 0x2a7a6a, glasses: false });
+    W.add(fortuneTeller.group);
+    const ft = new Vendor(game, fortuneTeller, makeCrystalBall(), { x: fx, z: fz, ry: fry });
+    game.npcs.push(ft); greetable(game, ft); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
