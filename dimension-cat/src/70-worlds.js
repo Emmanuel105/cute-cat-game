@@ -9365,6 +9365,39 @@ function buildRobotCity(game, entry) {
     game.npcs.push(new Baller(game, baller, ball, { x: bx, z: bz, ry: bry,
       hoopX: hx + rimX, hoopY: P.ground0(hx, hz) + rimY, hoopZ: hz + rimZ, cries: ballerLines })); }
 
+  // the Neighborhood has had a postie doing her rounds since round 15 and Victorian a static pillar
+  // postbox since round 364, but nobody in this whole city has ever actually delivered anything. A
+  // courier-bot now trundles a slow square circuit of open factory floor east of downtown, well clear
+  // of the fiddler/painter/juggler/organ-grinder/magician cluster, the south yard's sentry and tag
+  // robots, and the basketball hoop further out, pausing at each corner for a beep before rolling on
+  // to the next.
+  //
+  // No new mesh and no new controller: `makeRobot()` (55-npcs.js) is the exact rig every wandering
+  // factory robot in this city already uses, and `Patroller` (55-npcs.js) — already driving the
+  // Neighborhood's own postie — calls `greetable()` itself, so no extra wiring is needed to make it a
+  // friend. `makeRobot()`'s own rig carries none of `.look`, only `.robot`, so `greetable()`'s usual
+  // human-flavoured toast is swapped for the same "BEEP BOOP" line every other robot already answers
+  // with — no new text needed either.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(2, 'from-prev')` waited out for real, then 3600 simulated
+  // frames sampling every NPC's own live position every 10th frame) swept a grid of the open floor
+  // east of downtown (x 14-32, z -28..-8) against all 309 of the city's physics boxes carrying a
+  // collider between knee and head height and those samples, rejecting anywhere `game.zones`' own 69
+  // rectangles already claim: an 8x8 m square loop at (22,-22) / (30,-22) / (30,-14) / (22,-14) came
+  // back clear the whole way round — every corner at least 5.46 m from the nearest box and 5.5 m from
+  // the nearest sampled NPC, every side of the square clear by at least 5.46 m along its own length —
+  // well inside the radius (98) where `robotRegion()`'s own procedural fill takes over.
+  //
+  // Built dead last of everything this city adds, right after the basketball kid above: neither
+  // `makeRobot()` nor this block's own fixed `points`/`cries` arrays draw anything off this city's own
+  // seeded `r()` sequence, so nothing built earlier here is shifted by it.
+  { const points = [[22, -22], [30, -22], [30, -14], [22, -14]];
+    const rig = makeRobot(); W.add(rig.group);
+    const courierLines = ['Parcel for bay four. Mind the corner.', 'Chassis parts. Careful — one of them rattles.', 'Beep. Delivery logged. Beep.'];
+    game.npcs.push(new Patroller(game, rig, { points, speed: 1.0, pause: [1.4, 2.0], pauseAll: true, loop: true, r: 0.42, height: 1.9,
+      cries: courierLines, cryIcon: '📦', onArrive: () => SFX.beep() })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

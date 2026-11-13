@@ -29534,3 +29534,41 @@ own friend total rose from 104 to 105. No visual check was possible in this envi
 no Playwright) — only the stub-three test suite and the scratch probes above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. All seven worlds now have their own
 fortune teller.
+
+## Round 1065 — Robot City gets its own courier-bot
+
+The Neighborhood has had a postie doing her rounds since round 15 and Victorian a static pillar
+postbox since round 364, but nobody in this whole city had ever actually delivered anything. **A
+courier-bot now trundles a slow square circuit of open factory floor east of downtown,** well clear
+of the fiddler/painter/juggler/organ-grinder/magician cluster, the south yard's sentry and tag robots,
+and the basketball hoop further out, pausing at each corner for a beep before rolling on to the next.
+*"Parcel for bay four. Mind the corner."* *"Chassis parts. Careful — one of them rattles."* *"Beep.
+Delivery logged. Beep."*
+
+No new mesh and no new controller: `makeRobot()` (55-npcs.js) is the exact rig every wandering
+factory robot in this city already uses, and `Patroller` (55-npcs.js) — already driving the
+Neighborhood's own postie — calls `greetable()` itself, so no extra wiring was needed to make it a
+friend. Since `makeRobot()`'s rig carries `.robot` and not `.look`, `greetable()`'s usual toast swaps
+in the same "BEEP BOOP. HELLO, SMALL CAT." line every other robot in the city already answers with.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(2, 'from-prev')` waited out for real, then 3600 simulated frames
+sampling every NPC's own live position every 10th frame) swept a grid of the open floor east of
+downtown (x 14-32, z -28..-8) against all 309 of the city's physics boxes carrying a collider between
+knee and head height and those samples, rejecting anywhere `game.zones`'s own 69 rectangles already
+claim: an 8x8 m square loop at (22,-22) / (30,-22) / (30,-14) / (22,-14) came back clear the whole way
+round — every corner at least 5.46 m from the nearest box and 5.5 m from the nearest sampled NPC,
+every side of the square clear by at least 5.46 m along its own length — well inside the radius (98)
+where `robotRegion()`'s own procedural fill takes over. Built dead last of everything this city adds:
+neither `makeRobot()` nor this block's own fixed `points`/`cries` arrays draw anything off this city's
+own seeded `r()` sequence, so nothing built earlier here is shifted by it.
+
+Verified beyond the test suite's own checks: a second headless script confirmed the courier is in the
+scene graph, found it mid-circuit at (27.0, -22), teleported the cat beside it, and confirmed
+`game.nearest.label()` reads "Beep hello" and `onUse()` takes `game.state.friends` from 0 to 1.
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 333 (no new physics box — the courier needs none), Robot City's own friend total rose
+from 120 to 121. No visual check was possible in this environment (no browser, no Playwright) — only
+the stub-three test suite and the scratch probes above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy. The Neighborhood, Victorian and now Robot City all have
+someone delivering something; Candy Land, Sunny Shore, Frosty Peak and Whisper Woods still don't.
