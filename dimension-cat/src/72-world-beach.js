@@ -2480,6 +2480,42 @@ function buildBeach(game, entry) {
       cries: ['The tide knows your fortune before you do — I just translate.', 'I see... sand in a very particular place later today.', "A shell, a shiny pebble, or a scratch behind the ears — I'm not fussy about payment."] });
     game.npcs.push(ft); greetable(game, ft); }
 
+  // Rounds 1065-1066 gave Robot City a courier-bot and Candy Land a gingerbread courier, and the
+  // night log noted Sunny Shore, Frosty Peak and Whisper Woods still had nobody delivering anything.
+  // **A supply runner now carries an ice-and-towels round in a slow square loop in the dunes north of
+  // the tug-of-war,** pausing at each corner for a line before trudging on to the next. *"Ice for the
+  // cart, towels for the huts — mind the rope, puss!"* *"Cold drinks through here, if the tug-of-war
+  // doesn't trip me first."* *"Delivery's done when the ice stops rattling in the cooler."*
+  //
+  // No new mesh and no new controller: an ordinary `makeHuman()` in this beach's own `beachWard`
+  // (same as every other sunbather on this sand) and `Patroller` (55-npcs.js) — already driving this
+  // beach's own boardwalk stilt walker, and Robot City's and Candy Land's own couriers before that —
+  // calls `greetable()` itself, so no extra wiring is needed to make the runner a friend.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, `game.travel(4, 'from-hub')` waited out for real
+  // against `game.worldIndex`, then 3600 simulated frames sampling every NPC's own live position
+  // every 10th frame) swept an 8x8 m square loop across the dunes at 2 m steps, this time checking the
+  // whole perimeter of each candidate at 0.4-0.5 m intervals rather than just its four corners (an
+  // earlier corner-only pass missed a tiny prop sitting well inside one "clear" square). (-44, 20)
+  // came back the best-defended spot still inside the radius (58) where `beachRegion()`'s own
+  // procedural fill takes over: every point on its own 8x8 perimeter at least 1.75 m from the nearest
+  // of the beach's 150 knee-to-head physics boxes (a hut post at (-42, 22) is the closest), and at
+  // least 2.3 m from every one of the 41,400 sampled NPC positions collected over that same 60 s
+  // sweep — comfortably clear of the tug-of-war rope at (-51.3, 20), the skipping game further north
+  // and the sandcastle crew further out still.
+  //
+  // Built dead last of everything this beach adds, right after the fortune teller above: `makeHuman()`
+  // and `randomPerson()` both draw off this beach's own shared `r()` sequence unconditionally, and
+  // anything built earlier would have had its own timing-sensitive pick shifted by it.
+  { const points = [[-48, 16], [-40, 16], [-40, 24], [-48, 24]];
+    const runner = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: beachWard }),
+      shorts: true, hat: r.chance(0.5) ? 'cap' : null, glasses: r.chance(0.3) });
+    W.add(runner.group);
+    const runnerLines = ['Ice for the cart, towels for the huts — mind the rope, puss!', "Cold drinks through here, if the tug-of-war doesn't trip me first.", 'Delivery’s done when the ice stops rattling in the cooler.'];
+    game.npcs.push(new Patroller(game, runner, { points, speed: 0.95, pause: [1.3, 1.9], pauseAll: true, loop: true, r: 0.35, height: 1.8,
+      cries: runnerLines, cryIcon: '🧺' })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

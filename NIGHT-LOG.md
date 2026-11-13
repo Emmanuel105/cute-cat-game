@@ -29614,3 +29614,41 @@ was possible in this environment (no browser, no Playwright) — only the stub-t
 scratch probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. The
 Neighborhood, Victorian, Robot City and now Candy Land all have someone delivering something; Sunny
 Shore, Frosty Peak and Whisper Woods still don't.
+
+## Round 1067 — Sunny Shore gets its own supply runner
+
+Rounds 1065-1066 gave Robot City a courier-bot and Candy Land a gingerbread courier; the log noted
+Sunny Shore, Frosty Peak and Whisper Woods still had nobody delivering anything. **A supply runner now
+carries an ice-and-towels round in a slow square loop in the dunes north of the tug-of-war,** pausing
+at each corner for a line before trudging on to the next. *"Ice for the cart, towels for the huts —
+mind the rope, puss!"* *"Cold drinks through here, if the tug-of-war doesn't trip me first."*
+*"Delivery's done when the ice stops rattling in the cooler."*
+
+No new mesh and no new controller: an ordinary `makeHuman()` in this beach's own `beachWard` (same as
+every other sunbather on this sand) and `Patroller` (55-npcs.js) — already driving this beach's own
+boardwalk stilt walker, and Robot City's and Candy Land's own couriers before that — calls
+`greetable()` itself, so no extra wiring was needed to make the runner a friend.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(4, 'from-hub')` waited out for real against
+`game.worldIndex`, then 3600 simulated frames sampling every NPC's own live position every 10th frame)
+swept 8x8 m square loops across the dunes at 2 m steps. This time it checked the *whole perimeter* of
+each candidate at 0.4-0.5 m intervals instead of just its four corners — an earlier corner-only pass
+on this same beach turned up a "clear" square with a prop sitting well inside it, caught only by
+re-checking the full outline. (-44, 20) came back the best-defended spot still inside the radius (58)
+where `beachRegion()`'s own procedural fill takes over: every point on its own 8x8 perimeter at least
+1.75 m from the nearest of the beach's 150 knee-to-head physics boxes (a hut post at (-42, 22) is the
+closest), and at least 2.3 m from every one of the 41,400 sampled NPC positions collected over that
+same 60 s sweep — tighter than the clearances earlier rounds found on quieter worlds, but this beach
+is a crowded one, and the loop sits clear of the tug-of-war rope at (-51.3, 20), the skipping game
+further north and the sandcastle crew further out still.
+
+Verified beyond the test suite's own checks: a second headless script confirmed the runner is in the
+scene graph, found it mid-circuit, and confirmed `game.nearest.label()` reads "Say hello" and
+`onUse()` takes `game.state.friends` from empty to one member (`beach:86`). `node
+dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 333 (no new physics box — the runner needs none), and Sunny Shore's own friend total rose
+from 131 to 132. No visual check was possible in this environment (no browser, no Playwright) — only
+the stub-three test suite and the scratch probes above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy. The Neighborhood, Victorian, Robot City, Candy Land and now
+Sunny Shore all have someone delivering something; Frosty Peak and Whisper Woods still don't.
