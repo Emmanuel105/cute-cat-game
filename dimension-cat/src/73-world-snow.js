@@ -2431,6 +2431,45 @@ function buildSnowVillage(game, entry) {
     game.npcs.push(new CrossingGuard(game, guard, { x: 4, z: 27, ry: atan2(0 - 4, 0 - 27),
       cries: ['Hold up, puss — reindeer always get the right of way up here.', "Not one sled's ever actually crossed this exact patch, but you can't be too careful.", 'Mind the ice underfoot — slicker than it looks.'] })); }
 
+  // Victorian, Whisper Woods and Sunny Shore all have their own fortune teller holding a crystal
+  // ball (round 1062 gave Sunny Shore the last of those three) — Frosty Peak and the Neighborhood
+  // are the only two worlds left without one. **A fortune teller now sits cross-legged on a fur
+  // blanket out on the open snowfield, her crystal ball balanced on a little tripod of lashed
+  // branches in front of her,** reading palms (and paws) in the cold well clear of every other
+  // hand-placed soul on this mountain. *"The mountain keeps more secrets than I do, and I've got a
+  // crystal ball."* *"I see... a long walk home, and someone forgetting their mittens. Again."*
+  // *"A shiny pebble, or a scratch behind the ears — I don't charge extra for the cold."*
+  //
+  // No new mechanism: `Vendor` (55-npcs.js), already used four times over on this mountain (the
+  // cocoa seller, the snow-sweeper, the knitter and the fiddler), holds `makeCrystalBall()`
+  // (60-props.js, built for Victorian's own fortune teller and reused twice since) instead of a new
+  // prop. `Vendor` doesn't call `greetable()` itself, so `game.npcs.push(ft); greetable(game, ft);`
+  // right after makes her a proper friend rather than scenery, the same wiring every other vendor on
+  // this mountain already uses.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, `game.travel(5, 'from-hub')` waited out for real
+  // against `game.transitioning`, then 3600 simulated frames sampling every NPC's own position every
+  // 10th frame) swept a 2 m grid of the open snowfield (radius 26-55, short of the radius (58) where
+  // `snowRegion`'s own fill takes over), rejecting anywhere `game.zones` already claims: (-37, 33)
+  // came back clearest — 6.3 m from the nearest physics box, 7.3 m from the nearest wandering soul
+  // (every NPC's own samples included) and 22 m from the grinder, fiddler, knitter, magician, hoop
+  // and crossing guard built above, on ground levelling out at 1.49 m with under 4 cm of slope across
+  // the fortune teller's own footprint.
+  //
+  // Built dead last, right after the crossing guard above and right before the squirrel spawn point,
+  // for the usual reason: `makeHuman()` and `randomPerson()` both draw off this mountain's own shared
+  // `r()` sequence unconditionally, and anything built earlier would have had its own timing-sensitive
+  // pick shifted by it.
+  { const fx = -37, fz = 33, fry = atan2(0 - fx, 0 - fz);
+    const ftWard = makeWardrobe(r, { shirts: [0x2e4a6e, 0x3a3a4a], pants: [0x2a2420], shoes: [0x2a2018] });
+    const fortuneTeller = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: true, wardrobe: ftWard }),
+      sleeves: true, dress: 0x2e4a6e, sash: 0xd9c9a8, scarf: 0x9ab8d0, hat: null, jacket: null, coat: false, bag: null, backpack: null, glasses: false });
+    W.add(fortuneTeller.group);
+    const ft = new Vendor(game, fortuneTeller, makeCrystalBall(), { x: fx, z: fz, ry: fry, cryIcon: '🔮',
+      cries: ["The mountain keeps more secrets than I do, and I've got a crystal ball.", 'I see... a long walk home, and someone forgetting their mittens. Again.', "A shiny pebble, or a scratch behind the ears — I don't charge extra for the cold."] });
+    game.npcs.push(ft); greetable(game, ft); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

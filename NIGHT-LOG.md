@@ -29456,3 +29456,40 @@ No visual check was possible in this environment (no browser, no Playwright) —
 test suite and the scratch probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy. The Neighborhood and Frosty Peak are the only two worlds left without a fortune teller
 of their own.
+
+## Round 1063 — Frosty Peak gets its own fortune teller too
+
+Round 1062 gave Sunny Shore the last of the three worlds (Victorian, Whisper Woods) that already had
+a crystal-ball fortune teller, leaving the Neighborhood and Frosty Peak as the only two still without
+one. **A fortune teller now sits cross-legged on a fur blanket out on Frosty Peak's open snowfield,
+her crystal ball balanced on a little tripod of lashed branches,** reading palms (and paws) in the
+cold, well clear of every other hand-placed soul on the mountain. *"The mountain keeps more secrets
+than I do, and I've got a crystal ball."* *"I see... a long walk home, and someone forgetting their
+mittens. Again."* *"A shiny pebble, or a scratch behind the ears — I don't charge extra for the
+cold."*
+
+Same mechanism as the other three: `Vendor` (55-npcs.js), already used four times over on this
+mountain (cocoa seller, snow-sweeper, knitter, fiddler), holds `makeCrystalBall()` (60-props.js)
+instead of a new prop. `Vendor` doesn't call `greetable()` itself, so `game.npcs.push(ft);
+greetable(game, ft);` right after makes her a proper friend, the same wiring every other vendor on
+this mountain already uses. Wardrobe is a plain dress, sash and scarf — no coat — the same silhouette
+the other three fortune tellers use, since nothing in this codebase has yet combined `coat` and
+`dress` on one rig and this was no place to find out blind.
+
+A headless probe (`elements.get('enter').listeners.click[0]()`, `game.travel(5, 'from-hub')` waited
+out for real against `game.transitioning`, then 3600 simulated frames sampling every NPC's own
+position every 10th frame) swept a 2 m grid of the open snowfield (radius 26-55, short of the radius
+(58) where `snowRegion`'s own fill takes over), rejecting anywhere `game.zones` already claims:
+(-37, 33) came back clearest — 6.3 m from the nearest physics box, 7.3 m from the nearest wandering
+soul and 22 m from the grinder, fiddler, knitter, magician, hoop and crossing guard already on this
+mountain, on ground levelling out at 1.49 m with under 4 cm of slope across her own footprint.
+
+Verified beyond the test suite's own checks: a second headless script confirmed the new `Vendor` is
+in the scene graph at (-37, 33), teleported the cat beside her, and confirmed `game.nearest.label()`
+reads "Say hello" and `onUse()` takes `game.state.friends` from 0 to 1. `node dimension-cat/test/run.mjs`
+ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 333 (the crystal ball
+has no physics box, same as the other three), Frosty Peak's own friend total rose from 126 to 127
+(confirmed by diffing against unmodified `HEAD`). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the scratch probes above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy. The Neighborhood is now the only
+world left without a fortune teller of its own.
