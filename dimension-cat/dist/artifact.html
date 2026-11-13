@@ -29668,6 +29668,48 @@ function buildForest(game, entry) {
       cries: ['The moss remembers more than I do, some days.', 'I see... a long nap in a patch of sun. For you, obviously.', 'Fortunes, fresh fortunes — tuppence, or a good scratch behind the ears.'] });
     game.npcs.push(ft); greetable(game, ft); }
 
+  // Victorian's canal bank and, since round 1070, Frosty Peak's snowfield both have a chestnut roaster
+  // at her own glowing brazier; Whisper Woods never got one, even though roasting chestnuts over an
+  // open fire is at least as much a woodland thing as a mountain one. **A roaster now works a quiet
+  // clearing deep in the woods, her brazier glowing beside her, a paper cone of chestnuts held out to
+  // whoever wanders this far out.** *"Chestnuts, hot off the fire — mind they don't scorch your
+  // whiskers."* *"Furthest I've ever set up from a road. Worth it for the quiet."* *"Nobody's chased me
+  // off this clearing yet. The trees don't seem to mind the smoke."* The brazier itself answers a look
+  // of its own, same as the other two.
+  //
+  // No new mesh and no new controller: `makeChestnutBrazier()` (60-props.js) and `makeChestnutCone()`
+  // (62-props-nature.js) are reused verbatim a third time, and `Vendor` (55-npcs.js) already holds a
+  // fruit basket, an herb bundle and a crystal ball elsewhere in this wood. `placeT`/`boxT` sit the drum
+  // on the forest floor rather than floating over it, and the brazier's own `userData.update` (its vent
+  // glow and light flicker) rides into `U` through `placeT`.
+  //
+  // A headless probe (the stub-three harness `test/run.mjs` itself uses: `game.travel(6, 'from-hub')`
+  // waited out for real against `game.worldIndex` and `game.transitioning`, then 3600 simulated frames
+  // sampling every one of this wood's 133 NPCs every 10th frame) swept a 1 m grid of the floor (radius
+  // 20-54, short of the radius (58) where `forestRegion`'s own fill takes over) against all 669 of this
+  // wood's physics boxes over 0.3 m tall, those samples and `game.zones`, keeping only spots whose
+  // ground varies under 10 cm across a roughly 1.3 m footprint. (-52, 11) for the roaster and (-52,
+  // 12.3) for the brazier, and the corridor between them, stay at least 6.8 m from the nearest box and
+  // 9 m from the nearest sampled soul, on ground levelling out at 0.91-0.95 m, well clear of the
+  // crossing guard, the hermit fortune teller and every hand-placed tree, rock or stump above.
+  //
+  // Built dead last, right after the fortune teller above and right before the squirrel spawn point,
+  // for the usual reason: `makeHuman()`, `randomPerson()` and `Vendor` all draw off this wood's own
+  // shared `r()` sequence unconditionally, so anything built earlier would have had its own pick
+  // shifted.
+  { const vx = -52, vz = 11, bx = -52, bz = 12.3, vry = atan2(bx - vx, bz - vz);
+    const roastWard = makeWardrobe(r, { shirts: [0x8a3a3a, 0x5a4a3a, 0x6a4a3a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const roaster = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.4), wardrobe: roastWard }),
+      hat: 'beanie', hatColor: 0x3a4a2a, coat: true, scarf: 0x8a6a4a, cuffs: 0x3a3a3a, jacket: null });
+    W.add(roaster.group);
+    const brazier = placeT(game, U, makeChestnutBrazier(), bx, bz, 0);
+    boxT(game, bx, bz, 0.6, 0.65, 0.6, { cam: false });
+    const v = new Vendor(game, roaster, makeChestnutCone(), { x: vx, z: vz, ry: vry, cryIcon: '🌰',
+      cries: ["Chestnuts, hot off the fire — mind they don't scorch your whiskers.", "Furthest I've ever set up from a road. Worth it for the quiet.", "Nobody's chased me off this clearing yet. The trees don't seem to mind the smoke."] });
+    game.npcs.push(v); greetable(game, v);
+    const brazierLines = ['The vents glow a deep, steady orange against the dark of the trees.', 'Warm enough to feel from a step away, even out here.', 'A crack, a hiss, and a curl of smoke drifting up through the branches.'];
+    game.addInteractable({ obj: brazier, radius: 1.2, label: () => 'Look at the brazier', onUse: () => { SFX.click(); game.toast(rnd.pick(brazierLines), 3000); } }); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

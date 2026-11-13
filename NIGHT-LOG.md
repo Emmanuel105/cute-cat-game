@@ -29768,3 +29768,35 @@ rose by one for the brazier — and this mountain's friend total rose from 128 t
 was possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
 probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Victorian is
 no longer the only world that smells of roasting chestnuts; the other five still are.
+
+## Round 1071 — Whisper Woods gets its own chestnut roaster
+
+Round 1070 gave Frosty Peak a chestnut roaster at a glowing brazier, reused verbatim from Victorian's
+own on the canal bank — the first time either had left that town. Whisper Woods never got one either,
+and roasting chestnuts over an open fire fits a forest clearing at least as well as a cold mountain.
+**A roaster now works a quiet clearing deep in the woods, her brazier glowing beside her, a paper cone
+of chestnuts held out to whoever wanders this far out.** *"Chestnuts, hot off the fire — mind they
+don't scorch your whiskers."* *"Furthest I've ever set up from a road. Worth it for the quiet."*
+*"Nobody's chased me off this clearing yet. The trees don't seem to mind the smoke."* The brazier
+itself answers a look of its own, same as the other two.
+
+No new mesh and no new controller: `makeChestnutBrazier()` (60-props.js) and `makeChestnutCone()`
+(62-props-nature.js) are reused a third time, and `Vendor` (55-npcs.js) already holds a fruit basket,
+an herb bundle and a crystal ball elsewhere in this wood. `placeT`/`boxT` sit the drum on the forest
+floor, and the brazier's `userData.update` (vent glow, light flicker) rides into the world's `U` list
+through `placeT`. Built dead last, right after the fortune teller and right before the squirrel spawn,
+so nothing earlier in this wood's own `r()` sequence shifts.
+
+A headless probe (the stub-three harness, travelled to world 6, 3600 simulated frames sampling all 133
+NPCs every 10th frame) swept a 1 m grid of the floor (radius 20-54, short of the radius 58 where
+`forestRegion`'s fill takes over) against all 669 physics boxes over 0.3 m tall, those samples and
+`game.zones`. (-52, 11) for the roaster and (-52, 12.3) for the brazier came back clear — at least
+6.8 m from the nearest box and 9 m from the nearest sampled soul, ground levelling out at 0.91-0.95 m,
+well clear of the crossing guard and the hermit fortune teller. A second script confirmed the roaster
+sits in the scene graph, stays finite after 900 simulated frames, and that standing by her shows "Say
+hello" (at distance 0 from her own spot) while standing by the brazier shows "Look at the brazier" (at
+distance 0 from its own spot). `node dimension-cat/test/run.mjs` ran clean: exit 0, 277 checks, all
+`ok`, no console warnings, box count unchanged for the Neighborhood at 333. No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite and the
+probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. All three
+roasters now sit a long way apart: a Victorian canal bank, a mountain snowfield, and a forest clearing.
