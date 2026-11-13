@@ -29981,3 +29981,39 @@ same as every other world's own courier). No visual check was possible in this e
 browser, no Playwright) — only the stub-three test suite and the probes above. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. All seven worlds now have someone
 actually delivering the post, not just somewhere to post it.
+
+## Round 1077 — the Victorian canal finally gets a water wheel
+
+The canal has had boats, ducks, a swan, an angler, a mudlark and three dragonflies for rounds now,
+but checking across every world turned up something odd: in 1076 rounds nothing in the whole game
+had ever been a water wheel, even though the canal is the one stretch of water practically built for
+one. **A wooden mill wheel now turns against the canal's north bank wall, out past the quiet west
+bridge, its rim boards dipping into the water as it spins.** It's a pure "look, don't touch" prop —
+no dialogue, no new friend — just something turning quietly where the town had nothing at all.
+
+New `makeWaterWheel()` (62-props-nature.js, right after `makeBoat`): a post and bracket bolted to the
+bank wall holding a short iron axle, a through-spoked hub and eight rim boards, the axle running
+along local z so the disc itself spins in the x-y plane the way a wheel mounted flush to a wall
+actually would — not lying flat like the garden pinwheel, which spins the same way but about a
+different axis. The whole assembly turns on `pivot.rotation.z = t * 0.65`, the world clock alone,
+same deterministic trick the pinwheel and the clock tower's own weathervane already use — no draw
+from Victorian's own seeded `r`, so nothing later in that build shifts.
+
+Placed at (-80, 25.9), on the stretch of towpath between the west bridge (x=-96) and the nearest lamp
+(x=-52) that round 1076's own postman comment already flagged as having nothing hand-placed in it. No
+new physics box was needed at all: the wheel's own footprint sits entirely inside the canal's existing
+wall box (z 25.4-26.0) and the water's own walk-blocking span (z 26-34), both already keeping the cat
+out of that stretch, so there was nothing new to clip a path or a road on. A headless probe (the
+stub-three harness, `game.start('new')` then `game.travel(3, 'from-prev')` waited out for real against
+`game.worldIndex`/`game.transitioning`, then 3600 simulated frames sampling every NPC's own position
+every 10th frame) confirmed the wheel group sits in the scene graph at exactly (-80, 0, 25.9), that no
+NPC ever wanders within 17.6 m of it, and that its pivot — found with 13 children, the hub plus four
+spokes plus eight rim boards — keeps turning and stays finite (rotation.z climbing steadily, never
+NaN) over thousands of simulated frames. `node dimension-cat/test/run.mjs` ran clean: exit 0, 277
+checks, all `ok`, no console warnings, box count unchanged at 334 (as expected — the new prop needed
+no collider of its own). No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite and the probe above, so the wheel's actual look (whether
+the boards read as boards rather than a blur of boxes) is unverified. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy. First water wheel in the game, and the first genuinely new
+ambient-prop type in a good many rounds rather than another world picking up something the other six
+already had.

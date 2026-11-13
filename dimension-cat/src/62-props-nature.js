@@ -246,6 +246,28 @@ function makeBoat(color = 0x3f6fd6) {
   g.userData.update = (dt, t) => { g.position.y = g.userData.y0 + sin(t * 1.2) * 0.08; g.rotation.z = sin(t * 0.9) * 0.06; g.rotation.x = cos(t * 0.7) * 0.03; sail.rotation.y = sin(t * 0.6) * 0.12; };
   return g;
 }
+/**
+ * A wooden mill wheel bolted to a bank wall, a short axle carrying it out over the water: a
+ * through-spoked hub and eight rim boards that dip into the surface as the whole wheel turns on
+ * the world clock `t` alone, same deterministic trick the garden pinwheel and the weathervane
+ * already use. Faces +z (the axle runs along local z, so the disc itself turns in the x-y plane,
+ * the way a real wheel mounted flush to a wall would, rather than lying flat like a pinwheel).
+ */
+function makeWaterWheel() {
+  const g = new THREE.Group(), wood = mat(0x5a3f28, { roughness: 0.85 }), postM = mat(0x3f2c1c, { roughness: 0.9 }), iron = mat(0x26231f, { metalness: 0.55, roughness: 0.55 });
+  const R = 0.9, axleY = 0.55, postH = axleY + 0.25;
+  mesh(G.box(0.14, postH, 0.14), postM, { y: postH / 2, parent: g });
+  mesh(G.box(0.14, 0.14, 0.4), postM, { y: axleY, z: 0.2, parent: g });
+  mesh(G.cyl(0.06, 0.06, 0.7, 10), iron, { y: axleY, z: 0.35, rx: PI / 2, parent: g });
+  const pivot = group(0, axleY, 0.35, g);
+  mesh(G.cyl(0.15, 0.15, 0.5, 10), wood, { rx: PI / 2, parent: pivot });
+  for (let i = 0; i < 4; i++) mesh(G.box(R * 1.3, 0.07, 0.07), wood, { rz: i * PI / 4, parent: pivot });
+  const n = 8, padLen = 0.3, d = R + padLen / 2;
+  for (let i = 0; i < n; i++) { const a = i / n * TAU;
+    mesh(G.box(padLen, 0.05, 0.5), wood, { x: cos(a) * d, y: sin(a) * d, rz: a, parent: pivot }); }
+  g.userData.update = (dt, t) => { pivot.rotation.z = t * 0.65; };
+  return g;
+}
 function makeRock(r = rnd, color = 0x7d7a72, s = 1) {
   const g = new THREE.Group(), m = mat(color, { roughness: 1, flatShading: true });
   const n = r.int(2, 4); for (let i = 0; i < n; i++) mesh(G.sphere(1, 7, 5), m, { x: r.range(-0.4, 0.4) * s, y: r.range(0.1, 0.4) * s, z: r.range(-0.4, 0.4) * s, sx: r.range(0.5, 0.9) * s, sy: r.range(0.35, 0.7) * s, sz: r.range(0.5, 0.9) * s, ry: r() * TAU, parent: g });

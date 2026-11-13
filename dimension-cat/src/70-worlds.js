@@ -10564,6 +10564,29 @@ function buildVictorian(game, entry) {
     game.addInteractable({ obj: thirdCanalDragonfly.group, radius: 2.1, label: () => 'Say hello to the dragonfly', onUse: () => {
       game.befriend(thirdCanalDragonflyId); SFX.twinkle(); game.hearts(thirdCanalDragonfly.group.position.x, thirdCanalDragonfly.group.position.y, thirdCanalDragonfly.group.position.z, 3);
       game.toast('✨ *loops once over the reach, then slips back into the circling trio*'); } }); }
+  // the canal has boats, ducks, a swan, an angler, a mudlark and three dragonflies by now, but nothing
+  // ever actually worked the water itself — no world in the whole game has a water wheel. The west
+  // bridge's own reach (round 1076's postman comment called the verge out there "fewest footsteps,
+  // same fog") has nothing hand-placed between the bridge at x=-96 and the nearest lamp at x=-52. A
+  // mill wheel now turns against the north bank wall at (-80, 25.9), bolted flush to the wall the same
+  // way the lamps bolt to their own posts, axle running out over the water so the rim boards dip into
+  // the surface as it turns — new `makeWaterWheel()` (62-props-nature.js, right after `makeBoat`): a
+  // post and bracket holding a short iron axle, a through-spoked hub and eight rim boards, the whole
+  // wheel spinning on the world clock `t` alone (`pivot.rotation.z = t * 0.65`), the same deterministic
+  // trick the garden pinwheel and the clock tower's own weathervane already use — no draw from this
+  // world's own seeded `r`, so nothing later in this build shifts.
+  //
+  // A headless probe (the stub-three harness, `game.start('new')` then `game.travel(3, 'from-prev')`
+  // waited out for real against its own portal-fade timer, then 3600 simulated frames sampling every
+  // one of this town's own NPCs' positions every 10th frame) swept the wheel's own footprint — a 1.3 m
+  // tangential reach either side of (-80, 26.25), the disc's actual centre once the 0.35 m bracket is
+  // added to the wall-mounted post's own z — against every physics box and every sampled NPC position:
+  // 12.6 m clear of the west bridge's own parapet (edge at x=-93.7) and 28 m clear of the nearest lamp
+  // post (x=-52), with nothing wandering anywhere near that stretch of towpath. The wheel itself adds
+  // no physics box: it sits entirely inside the canal's own existing wall box (z 25.4-26.0) and the
+  // water's own walk:false span (z 26-34), both already blocking the cat from ever reaching it, the
+  // same reasoning the duck pair's own comment above already spells out for that whole stretch of bank.
+  place(game, U, makeWaterWheel(), -80, 25.9, 0);
   for (const [x, z, k2] of [[-30, 20, 'oak'], [36, 22, 'oak'], [-12, -50, 'birch'], [18, -52, 'birch'], [-66, -14, 'oak'], [66, 18, 'oak']]) addTree(game, k2, x, z, r);
   // clock tower plaza (east), time door (west)
   const tower = makeClockTower(game, 42, 0, U);
