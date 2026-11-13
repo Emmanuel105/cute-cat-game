@@ -21644,6 +21644,45 @@ function buildVictorian(game, entry) {
     W.add(shiner.group);
     const shineLines = ["Spit and polish, puss. There's no shortcut to a proper shine.", "Left one's always scuffed worse than the right. Can't think why.", "Tuppence a boot, and worth every farthing of it."];
     game.npcs.push(new Kneeler(game, shiner, { x: kx, z: kz, ry, cries: shineLines })); }
+  // round 364 gave this town a red pillar postbox out past the last house on the south row, and every
+  // other world has had an actual person walking an actual round since rounds 1065-1069 (the
+  // Neighborhood's own postie older still, since round 15) — but nobody in this whole town ever
+  // delivered anything to that postbox, or to anyone else. **A postman now walks a short beat along
+  // the verge between the last terrace house and the pillar box, satchel on his hip, scarlet tunic
+  // the one splash of colour on an otherwise soot-grey round.** *"Second delivery of the day, and
+  // that pillar box hasn't had a letter dropped in it since Tuesday."* *"Mind the satchel, puss —
+  // nothing in it smells of fish, more's the pity."* *"Fog, frost or a flooded towpath, the post still
+  // gets through. Mostly."*
+  //
+  // No new mesh and no new controller: an ordinary `makeHuman()` in a scarlet jacket (the same
+  // 0x8b1a1a the pillar box itself is painted) over dark trousers, a satchel standing in for the
+  // mailbag, and `Patroller` (55-npcs.js) — already driving the Neighborhood's own postie and every
+  // other world's own courier — with a plain two-point route and `loop` left at its `false` default,
+  // so he walks there and back rather than round a square. `Patroller` calls `greetable()` itself, so
+  // no extra wiring was needed.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // `game.travel(3, 'from-prev')` waited out for real against its own portal-fade timer, then 3600
+  // simulated frames sampling every one of this town's own NPCs' positions every 10th frame) swept the
+  // verge between the last south-row house (fence ending x=65.9) and the pillar postbox (x=84, z=-7.3)
+  // at 1 m steps along a two-point line against both those samples and every one of the town's own
+  // physics boxes: a line from (70, -10) to (80, -5) came back clear the whole way (`solidAt`, the
+  // exact check `test/run.mjs`'s own road walk uses, never trips), never closer than 4.4 m to the
+  // postbox's own box and 11.9 m to the nearest other soul, at radius 71-82 from the origin — like the
+  // postbox itself, inside the street's own wide keep-out span but clear of every actual box in it, and
+  // comfortably short of the radius (88) where victorianRegion's own procedural fill takes over.
+  //
+  // Built dead last, right after the shoeshine boy above, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off this town's own shared `r()` sequence unconditionally, and anything
+  // built earlier would have had its own timing-sensitive pick shifted by it.
+  { const points = [[70, -10], [80, -5]];
+    const postWard = makeWardrobe(r, { shirts: [0xcfc6b0, 0xb8ae96], pants: [0x1e1e24, 0x2a2622], shoes: [0x2a2018] });
+    const postman = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: r.chance(0.2), wardrobe: postWard }),
+      jacket: 0x8b1a1a, pants: 0x1e1e24, hat: 'cap', hatColor: 0x1e1e24, bag: 0x5a3a28, scarf: null, glasses: r.chance(0.2) });
+    W.add(postman.group);
+    const postLines = ['Second delivery of the day, and that pillar box hasn\'t had a letter dropped in it since Tuesday.', 'Mind the satchel, puss — nothing in it smells of fish, more\'s the pity.', 'Fog, frost or a flooded towpath, the post still gets through. Mostly.'];
+    game.npcs.push(new Patroller(game, postman, { points, speed: 0.95, pause: [1.3, 1.9], r: 0.35, height: 1.8,
+      cries: postLines, cryIcon: '✉️' })); }
 
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;

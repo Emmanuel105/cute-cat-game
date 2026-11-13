@@ -29945,3 +29945,39 @@ brazier's own collider). No visual check was possible in this environment (no br
 — only the stub-three test suite and the probes above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy. All seven worlds now have a chestnut roaster of some kind —
 six with a vendor selling from it, and the Neighborhood's own left burning with nobody in sight.
+
+## Round 1076 — Victorian finally gets its own postman
+
+Round 364 gave this town a red pillar postbox out past the last house on the south row, and every
+other world has had someone actually walking a delivery round since rounds 1065-1069 (the
+Neighborhood's own postie older still, since round 15) — but Victorian only ever had the static box,
+never anyone dropping a letter in it. **A postman now walks a short beat along the verge between the
+last terrace house and the pillar box, satchel on his hip, a scarlet tunic the one splash of colour on
+an otherwise soot-grey round.** *"Second delivery of the day, and that pillar box hasn't had a letter
+dropped in it since Tuesday."* *"Mind the satchel, puss — nothing in it smells of fish, more's the
+pity."* *"Fog, frost or a flooded towpath, the post still gets through. Mostly."*
+
+No new mesh and no new controller: an ordinary `makeHuman()` in a scarlet jacket (the same 0x8b1a1a
+the pillar box itself is painted) over dark trousers, a bag standing in for the mailbag, and
+`Patroller` (55-npcs.js) — already driving the Neighborhood's own postie and every other world's own
+courier — with a plain two-point route and `loop` left at its `false` default, so he walks there and
+back rather than round a square. `Patroller` calls `greetable()` itself, so no extra wiring was needed.
+
+A headless probe (the stub-three harness, `game.start('new')` then `game.travel(3, 'from-prev')`
+waited out for real against its own portal-fade timer, then 3600 simulated frames sampling every one
+of this town's own NPCs' positions every 10th frame) swept the verge between the last south-row
+house's own fence (ending x=65.9) and the pillar postbox (x=84, z=-7.3) at 1 m steps along a two-point
+line against both those samples and every one of the town's own physics boxes, using the same
+`solidAt` check `test/run.mjs`'s own road walk uses: a line from (70, -10) to (80, -5) came back clear
+the whole way, never closer than 4.4 m to the postbox's own box and 11.9 m to the nearest other soul,
+at radius 71-82 from the origin — like the postbox itself, inside the street's own wide keep-out span
+but clear of every actual box in it, and short of the radius (88) where victorianRegion's own
+procedural fill takes over. A second script confirmed the postman sits in the scene graph, walks the
+route (finite position after 600 more simulated frames), and that standing next to him and calling his
+"Say hello" interactable's `onUse()` takes `game.state.friends` from empty to one member, the label
+flipping to "Say hello again". `node dimension-cat/test/run.mjs` ran clean: exit 0, 277 checks, all
+`ok`, no console warnings, box count unchanged at 334 (the postman needs no physics box of his own,
+same as every other world's own courier). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite and the probes above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy. All seven worlds now have someone
+actually delivering the post, not just somewhere to post it.
