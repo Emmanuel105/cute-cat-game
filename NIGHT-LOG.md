@@ -30147,3 +30147,40 @@ translucent ponds now have koi; the Victorian canal and the chocolate river were
 alone — the canal already has its own single fish stationed under the angler's hook from an earlier
 round, and the chocolate river's own "water" is an opaque chocolate-textured plane, so a submerged koi
 there would just be hidden.
+
+## Round 1082 — Robot City's mechanic gets a trainee
+
+Robot City has had a mechanic kneeling over a patient robot, wrench in hand, since rounds 602-605 — but
+nobody was ever watching her learn the trade. **A trainee bot now stands a few steps off to the side of
+the workbench, noticeably smaller than every other robot in the city, watching the wrench work instead
+of lending a hand.** *"Logging every strike. For science."* *"Beep... one day it'll be my turn with the
+wrench."* *"Supervisor says watch first, touch nothing. Mostly the second part."* It's a friend to meet
+like any other robot in this city — a beep and a little hop, not a wave.
+
+No new mesh and no new controller: `makeRobot()` is the exact rig the juggler and the mechanic's own
+patient already use, just scaled 0.58x on its group — since `bakeRig()` already collapsed it to one
+mesh before this runs, scaling the whole group is one uniform shrink, and the leg chain's own feet sit
+at local y≈0 already, so it lands standing on the floor rather than floating or sinking in. `Wanderer`
+is reused verbatim, the same "stand and watch" trick every small bystander in this game already gets,
+with a short 0.5 m leash so it barely drifts and a shrunk collider (`r: 0.22`, `height: 1.1`) to match
+its size; `Wanderer`'s own constructor calls `greetable()`, so no extra wiring was needed to make it a
+friend, and since its rig carries `.robot` rather than `.look`, greetable's usual "BEEP BOOP" answers a
+look same as every other robot here.
+
+A headless probe (the stub-three test harness, `game.travel(2, 'from-prev')` waited out for real, then
+300 simulated frames so the mechanic and patient were already standing) swept candidates right off the
+workbench: (3.3, 17.6) came back clear by 1.01 m of the patient's own physics box and 1.36 m of the
+mechanic's own stand, on flat floor, outside every one of this city's 296 zone rectangles. `ry` points
+it at the patient rather than a fixed constant, so it reads as watching the work rather than just
+standing nearby. Built dead last of everything this city adds, right after the chestnut roaster, both
+so it stays last in `game.npcs` (keeping the existing "first robot Wanderer" test pointed at the robot
+it's always found) and because `Wanderer`'s own constructor draws several ticks off the shared `rnd()`
+sequence the same way every other wanderer in the game already does.
+
+`node dimension-cat/test/run.mjs` ran clean twice in a row: exit 0, all 277 checks `ok`, 0 console
+warnings, box count unchanged at 334 (no new collider was needed, just a circle), and Robot City's own
+friend total went up by one (122 → 123) as expected. No visual check was possible in this environment
+(no browser, no Playwright) — only the stub-three test suite above, so whether the trainee actually
+reads as watching the mechanic rather than just standing nearby, or whether its shrunk scale looks right
+next to a full-size robot, is unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.

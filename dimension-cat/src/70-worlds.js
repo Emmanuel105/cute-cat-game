@@ -9635,6 +9635,43 @@ function buildRobotCity(game, entry) {
     const brazierLines = ['The vents glow a steady orange, same as they have for longer than anyone here can place.', 'Warm enough to feel through the factory draft, even this far from the furnace.', 'A crack, a hiss, and a curl of steam off the lid.'];
     game.addInteractable({ obj: brazier, radius: 1.2, label: () => 'Look at the brazier', onUse: () => { SFX.click(); game.toast(rnd.pick(brazierLines), 3000); } }); }
 
+  // the mechanic has had a patient to work on since rounds 602-605, but nobody was ever watching her
+  // learn the trade. A trainee bot — noticeably smaller, same `makeRobot()` rig scaled down — now
+  // stands a few steps off to the side of the workbench, facing the wrench work, "logging" every
+  // strike instead of lending a hand.
+  // *"Logging every strike. For science."* *"Beep... one day it'll be my turn with the wrench."*
+  // *"Supervisor says watch first, touch nothing. Mostly the second part."*
+  //
+  // No new mesh and no new controller: `makeRobot()` (55-npcs.js) is the same rig the juggler and
+  // the mechanic's own patient already use, just scaled 0.58x on its group — a baked rig (`bakeRig()`
+  // collapses it to one mesh before this runs) scales as one uniform piece, and its own leg chain
+  // already keeps its feet at local y≈0, so shrinking it about its own origin leaves it standing on
+  // the floor rather than sinking in or floating. `Wanderer` (55-npcs.js) is reused verbatim for the
+  // "stand and watch" behaviour every other small bystander in this game already gets, with a leash
+  // short enough (0.5 m) that it barely drifts from its spot, and `r: 0.22`/`height: 1.1` shrunk to
+  // match so the physics engine doesn't swing a full-size collider or headroom check around a
+  // half-size body; `Wanderer`'s own constructor calls `greetable()`, so no extra wiring is needed to
+  // make it a friend, and its rig carries `.robot` (not `.look`), so greetable's usual "BEEP BOOP" line
+  // answers a look same as every other robot in this city.
+  //
+  // A headless probe (the stub-three harness, `game.travel(2, 'from-prev')` waited out for real, then
+  // 300 simulated frames so the mechanic/patient pair were already standing) swept candidates right
+  // off the workbench: (3.3, 17.6) came back clear by 1.01 m of the patient's own physics box
+  // (x 1.7-2.3, z 16.85-17.45) and 1.36 m of the mechanic's own stand — on this city's flat floor
+  // (ground0 = 0 there) and outside every one of the 296 zone rectangles `game.zones` was holding at
+  // the time. `ry` points it at the patient rather than a fixed constant, so it reads as watching the
+  // work and not just standing nearby.
+  //
+  // Built dead last of everything this city adds, right after the chestnut roaster above: `Wanderer`'s
+  // own constructor draws several ticks off the shared `rnd()` sequence (every wanderer in the game
+  // already does this, win or lose a cry list), same as any other bystander added here would, and
+  // pushing it last keeps it last in `game.npcs` too, so the existing "first robot Wanderer found" test
+  // for this city still finds the one it always has.
+  { const tx = 3.3, tz = 17.6, try_ = atan2(2 - tx, 17.3 - tz);
+    const trainee = makeRobot(); trainee.group.scale.setScalar(0.58); trainee.k = 0.58 * 0.8; W.add(trainee.group);
+    game.npcs.push(new Wanderer(game, trainee, { x: tx, z: tz, angle: try_, leash: 0.5, speed: 0.5, r: 0.22, height: 1.1, idle: [3, 6], walk: [1, 1.6],
+      cries: ['Logging every strike. For science.', "Beep... one day it'll be my turn with the wrench.", 'Supervisor says watch first, touch nothing. Mostly the second part.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
