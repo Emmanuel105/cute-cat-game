@@ -2445,6 +2445,41 @@ function buildBeach(game, entry) {
     game.npcs.push(new Baller(game, baller, ball, { x: bx, z: bz, ry: bry,
       hoopX: hx + rimX, hoopY: hy0 + rimY, hoopZ: hz + rimZ, cries: ballerLines })); }
 
+  // Victorian and Whisper Woods both have their own fortune teller holding a crystal ball (round 1061
+  // gave Whisper Woods the last of those two), but the Neighborhood, Sunny Shore and Frosty Peak never
+  // got one. **A fortune teller now sits cross-legged on a straw mat up past the dune grass, her
+  // crystal ball balanced on a little driftwood tripod in front of her,** reading palms (and paws)
+  // between the volleyball net and the kite flyer. *"The tide knows your fortune before you do —
+  // I just translate."* *"I see... sand in a very particular place later today."* *"A shell, a shiny
+  // pebble, or a scratch behind the ears — I'm not fussy about payment."*
+  //
+  // No new mechanism: `Vendor` (55-npcs.js), already used eight times over on this beach, holds
+  // `makeCrystalBall()` (60-props.js, built for Victorian's own fortune teller and reused for Whisper
+  // Woods') instead of a new prop. `Vendor` doesn't call `greetable()` itself, so
+  // `game.npcs.push(ft); greetable(game, ft);` right after makes her a proper friend rather than
+  // scenery, the same wiring every other vendor on this beach already uses.
+  //
+  // A headless probe (`game.start('new')`, `game.travel(4, 'from-hub')` waited out for real against
+  // `game.worldIndex` and `game.transitioning`, then 1800 simulated frames sampling every NPC's own
+  // position every 10th frame) swept a 2 m grid of the dry sand inside the hand-built heart (radius ≤
+  // 56, short of the radius (58) where `beachRegion`'s own fill takes over), rejecting anywhere
+  // `game.zones` already claims: (-6, 46) came back clearest — 6.0 m from the nearest physics box (the
+  // volleyball net's own post) and 5.8 m from the nearest wandering soul (the kite flyer's own samples
+  // included), on ground levelling out at 0.644 m.
+  //
+  // Built dead last, right after the basketball hoop above, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off this beach's own shared `r()` sequence unconditionally, and anything
+  // built earlier would have had its own timing-sensitive pick shifted by it. (The squirrel was built
+  // early on this beach already, so no shift risk there.)
+  { const fx = -6, fz = 46, fry = atan2(0 - fx, 0 - fz);
+    const ftWard = makeWardrobe(r, { shirts: [0xff7043, 0x2e9e6e], pants: [0x8a6a4a, 0x3a3a3a], shoes: [0xefe7d8, 0x8d6e63] });
+    const fortuneTeller = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: true, wardrobe: ftWard }),
+      sleeves: true, dress: 0x5a3a6a, sash: 0xffd54a, scarf: 0x2e9e6e, hat: null, jacket: null, bag: null, glasses: false });
+    W.add(fortuneTeller.group);
+    const ft = new Vendor(game, fortuneTeller, makeCrystalBall(), { x: fx, z: fz, ry: fry, cryIcon: '🔮',
+      cries: ['The tide knows your fortune before you do — I just translate.', 'I see... sand in a very particular place later today.', "A shell, a shiny pebble, or a scratch behind the ears — I'm not fussy about payment."] });
+    game.npcs.push(ft); greetable(game, ft); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

@@ -29421,3 +29421,38 @@ unchanged at 333, Whisper Woods' own friend total rose from 154 to 155 (confirme
 unmodified `HEAD`). No visual check was possible in this environment (no browser, no Playwright) —
 only the stub-three test suite and the scratch probes above. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1062 — Sunny Shore gets its own fortune teller too
+
+Round 1061 gave Whisper Woods a crystal-ball fortune teller, closing out the second of the two worlds
+(Victorian being the first) that had one. That still left the Neighborhood, Sunny Shore and Frosty
+Peak without one. **A fortune teller now sits cross-legged on a straw mat up past the dune grass on
+Sunny Shore, her crystal ball balanced on a little driftwood tripod in front of her,** reading palms
+(and paws) between the volleyball net and the kite flyer. *"The tide knows your fortune before you
+do — I just translate."* *"I see... sand in a very particular place later today."* *"A shell, a shiny
+pebble, or a scratch behind the ears — I'm not fussy about payment."*
+
+Same mechanism as Victorian's and Whisper Woods' own: `Vendor` (55-npcs.js), already used eight times
+over on this beach, holds `makeCrystalBall()` (60-props.js) instead of a new prop. `Vendor` doesn't
+call `greetable()` itself, so `game.npcs.push(ft); greetable(game, ft);` right after makes her a
+proper friend, the same wiring every other vendor on this beach already uses.
+
+A headless probe (`game.start('new')`, `game.travel(4, 'from-hub')` waited out for real against
+`game.worldIndex` and `game.transitioning`, then 1800 simulated frames sampling every NPC's own
+position every 10th frame) swept a 2 m grid of the dry sand inside the hand-built heart (radius ≤ 56,
+short of the radius (58) where `beachRegion`'s own fill takes over), rejecting anywhere `game.zones`
+already claims: (-6, 46) came back clearest — 6.0 m from the nearest physics box (the volleyball
+net's own post) and 5.8 m from the nearest wandering soul (the kite flyer's own samples included), on
+ground levelling out at 0.644 m. Built dead last, right after the basketball hoop, for the usual
+reason: `makeHuman()` and `randomPerson()` both draw off this beach's own shared `r()` sequence
+unconditionally.
+
+Verified beyond the test suite's own checks: a second headless script confirmed the new `Vendor` is
+in the scene graph, teleported the cat beside her, and confirmed `game.nearest.label()` reads "Say
+hello" and `onUse()` takes `game.state.friends` from 0 to 1. `node dimension-cat/test/run.mjs` ran
+clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 333, Sunny Shore's own
+friend total rose by one (world 4's "to meet" check, a floor of `>= 14`, now clears it by more).
+No visual check was possible in this environment (no browser, no Playwright) — only the stub-three
+test suite and the scratch probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy. The Neighborhood and Frosty Peak are the only two worlds left without a fortune teller
+of their own.
