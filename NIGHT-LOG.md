@@ -29873,3 +29873,42 @@ possible in this environment (no browser, no Playwright) — only the stub-three
 probes above. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Five roasters
 now: a Victorian canal bank, a mountain snowfield, a forest clearing, a beach dune and a factory floor
 — only the Neighborhood and Candy Land still have none.
+
+## Round 1074 — Candy Land gets a chestnut roaster too, the sixth of the seven
+
+Five worlds had a chestnut roaster at her own glowing brazier; the Neighborhood and Candy Land were
+the only two left. An earlier attempt at the Neighborhood broke its own timing-sensitive "neighbours
+chat" check (every `Vendor` draws one `rnd()` tick in its own constructor, `cries` or not), so this
+round went to Candy Land instead — a vendor selling something warm on a plane built entirely out of
+sugar turned out to be a better joke than a sixth attempt at the Neighborhood's own one.
+
+**A roaster now works the open sweet-lands floor well south-east of the gingerbread courier's own
+square, her brazier glowing beside her, a paper cone of chestnuts held out to whoever wanders past.**
+*"Hot chestnuts, fresh off the coals — the one thing in this whole land that isn't made of sugar."*
+*"Careful, puss — that griddle's hotter than any gumdrop ever got."* *"Everyone else round here sells
+something sweet. I'm the only one selling something warm."* The brazier answers a look of its own,
+same as the other five.
+
+No new mesh and no new controller: `makeChestnutBrazier()` (60-props.js) and `makeChestnutCone()`
+(62-props-nature.js) are both reused verbatim a sixth time, and `Vendor` (55-npcs.js) already holds
+the balloon seller and this land's own stalls elsewhere. `place()`/`P.addBox()` rather than the
+terrain worlds' `placeT`/`boxT`, since this floor is flat, same as the other two flat worlds' own
+copies, and the brazier's own `userData.update` rides into the world's `U` list through `place()`.
+Built dead last of everything this land adds, right after the gingerbread courier, since
+`makeHuman()`/`randomPerson()`/`Vendor` all draw off this land's own shared `r()` sequence.
+
+A headless probe (the stub-three harness, `game.travel(1, 'from-prev')` waited out for real, then
+3600 simulated frames sampling all 94 of this land's NPCs every 10th frame) swept a 3 m grid of the
+open floor (radius 20-85 from the origin, clear of the chocolate river band and the cane-forest
+ring's own margin) against all 1884 physics boxes over 0.3 m tall, those samples and `game.zones`:
+(20, -80.5) for the roaster and (20, -81.8) for the brazier came back clear by 11.1 m of the nearest
+box and 12.2 m of the nearest sampled soul, well inside the radius (92) where `candyRegion()`'s own
+procedural fill takes over. A second script confirmed the roaster sits in the scene graph, stays
+finite after 1200 simulated frames, and that standing at her own spot reads "Say hello" (turning her
+into a friend) while standing at the brazier's own spot reads "Look at the brazier" instead.
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, no console warnings, box count
+unchanged for the Neighborhood at 333. No visual check was possible in this environment (no browser,
+no Playwright) — only the stub-three test suite and the probes above. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Six roasters now: a Victorian canal
+bank, a mountain snowfield, a forest clearing, a beach dune, a factory floor and a sweet-lands floor
+— only the Neighborhood still has none.

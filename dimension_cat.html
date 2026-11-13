@@ -15638,6 +15638,51 @@ function buildCandyLand(game, entry) {
     game.npcs.push(new Patroller(game, rig, { points, speed: 0.85, pause: [1.4, 2.0], pauseAll: true, loop: true, r: 0.4, height: 1.4,
       cries: courierLines, cryIcon: '📦', onArrive: () => SFX.click() })); }
 
+  // Victorian, Frosty Peak, Whisper Woods, Sunny Shore and Robot City all have a chestnut roaster at
+  // her own glowing brazier by now; Candy Land and the Neighborhood are the only two still without
+  // one. An earlier attempt at the Neighborhood broke its own timing-sensitive "neighbours chat" check
+  // (every `Vendor` draws one `rnd()` tick in its own constructor, `cries` or not), so this land gets
+  // the sixth roaster instead of a second attempt there — and hot chestnuts are an even odder sell
+  // here than they were on the beach, which is exactly why they fit.
+  // **A roaster now works the open sweet-lands floor well south-east of the gingerbread courier's own
+  // square, her brazier glowing beside her, a paper cone of chestnuts held out to whoever wanders
+  // past.** *"Hot chestnuts, fresh off the coals — the one thing in this whole land that isn't made
+  // of sugar."* *"Careful, puss — that griddle's hotter than any gumdrop ever got."* *"Everyone else
+  // round here sells something sweet. I'm the only one selling something warm."* The brazier itself
+  // answers a look of its own, same as the other five.
+  //
+  // No new mesh and no new controller: `makeChestnutBrazier()` (60-props.js) and `makeChestnutCone()`
+  // (62-props-nature.js) are both reused verbatim a sixth time, and `Vendor` (55-npcs.js) already
+  // holds the balloon seller and this land's own stalls elsewhere. `place()`/`P.addBox()` rather than
+  // the terrain worlds' `placeT`/`boxT`, since this floor is flat, same as the other two flat worlds'
+  // own copies, and the brazier's own `userData.update` (vent glow, light flicker) rides into `U`
+  // through `place()`.
+  //
+  // A headless probe (the stub-three harness, `game.travel(1, 'from-prev')` waited out for real, then
+  // 3600 simulated frames sampling all 94 of this land's own NPCs every 10th frame) swept a 3 m grid
+  // of the open floor (radius 20-85 from the origin, clear of the chocolate river band z -24..-12 and
+  // the cane-forest ring's own margin, radius 50-80) against all 1884 physics boxes over 0.3 m tall,
+  // those samples and `game.zones`' own rectangles: (20, -80.5) for the roaster and (20, -81.8) for
+  // the brazier came back clear by 11.1 m of the nearest box and 12.2 m of the nearest sampled soul —
+  // well south of the games cluster and 60 m east of the gingerbread courier's own square, inside the
+  // radius (92) where `candyRegion`'s own procedural fill takes over.
+  //
+  // Built dead last, right after the gingerbread courier above: `makeHuman()`, `randomPerson()` and
+  // `Vendor` all draw off this land's own shared `r()` sequence unconditionally, so anything built
+  // earlier here would have had its own pick shifted.
+  { const vx = 20, vz = -80.5, bx = 20, bz = -81.8, vry = atan2(bx - vx, bz - vz);
+    const roastWard = makeWardrobe(r, { shirts: [0xff8fc2, 0xfff0a0, 0x9fd8ff], pants: [0x6a4a3a, 0x4a3a2f] });
+    const roaster = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: roastWard }),
+      apron: 0xfff6ea, hat: r.chance(0.5) ? 'flatcap' : 'bonnet', hatColor: 0xff8fc2, scarf: null, jacket: null, bag: null, glasses: r.chance(0.3) });
+    W.add(roaster.group);
+    const brazier = place(game, U, makeChestnutBrazier(), bx, bz, 0);
+    P.addBox(bx, 0.3, bz, 0.3, 0.65, 0.3, { cam: false });
+    const v = new Vendor(game, roaster, makeChestnutCone(), { x: vx, z: vz, ry: vry, cryIcon: '🌰',
+      cries: ["Hot chestnuts, fresh off the coals — the one thing in this whole land that isn't made of sugar.", "Careful, puss — that griddle's hotter than any gumdrop ever got.", "Everyone else round here sells something sweet. I'm the only one selling something warm."] });
+    game.npcs.push(v); greetable(game, v);
+    const brazierLines = ['The vents glow a steady orange against all this pink.', "Warm enough to melt a gumdrop, if anyone ever dropped one in.", 'A crack, a hiss, and a curl of smoke drifting off toward the cane-forest.'];
+    game.addInteractable({ obj: brazier, radius: 1.2, label: () => 'Look at the brazier', onUse: () => { SFX.click(); game.toast(rnd.pick(brazierLines), 3000); } }); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
