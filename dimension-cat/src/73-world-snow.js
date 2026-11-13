@@ -2548,6 +2548,37 @@ function buildSnowVillage(game, entry) {
     const brazierLines = ['The vents glow a deep, steady orange — the snow has melted back in a ring around it.', 'Warm enough to feel from a step away, even up here.', 'A crack, a hiss, and a curl of steam off the lid.'];
     game.addInteractable({ obj: brazier, radius: 1.2, label: () => 'Look at the brazier', onUse: () => { SFX.click(); game.toast(rnd.pick(brazierLines), 3000); } }); }
 
+  // the baller (round 1046) has dribbled her windswept patch of rock alone since the first terrain
+  // world got its own `makeHoop()`/`Baller` pairing — every other world's own hoop has had nobody
+  // ever stop to actually watch one. A bundled-up kid sibling now stands a few steps west of the
+  // court, hands buried deep in a coat two sizes too big, watching every shot go up and drop straight
+  // back into her waiting hand. *"She never misses from that spot. Never has."* *"Too cold to just
+  // stand here. Worth it, though."* *"I'll get a turn once my toes thaw out."*
+  //
+  // No new mesh and no new controller: the watcher reuses this village's own `kid()` helper (built
+  // earlier in this function for the snowball fight and the game of tag) for the same bundled
+  // coat-and-beanie look every other child on this mountain already wears, and `Wanderer` (55-npcs.js)
+  // for the "stand and watch" behaviour this log's other bystanders (Robot City's trainee bot, round
+  // 1082) already use — a short leash (0.5 m) keeps it from wandering off the spot. `Wanderer`'s own
+  // constructor calls `greetable()` itself, so no extra wiring was needed to make it a friend.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.travel(5,
+  // 'from-hub')` waited out for real against its own portal-fade timer, then 3600 simulated frames —
+  // 60 s — sampling every NPC's own position every 5th frame) swept hand-picked spots to the baller's
+  // own west and found (-24, 51.5) clear by 7.33 m of the nearest of this mountain's 780 physics boxes
+  // and 4.17 m of the nearest wandering soul, 5 m due west of the baller's own spot (-19, 51.5),
+  // outside every one of `game.zones`'s 156 rectangles. `ry` points it at the baller rather than a
+  // fixed constant, so it reads as watching the game and not just standing nearby.
+  //
+  // Built dead last of everything this mountain adds, right after the chestnut roaster above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` (inside `kid()`) both draw off this mountain's own
+  // shared `r()` sequence unconditionally, and anything built earlier would have had its own
+  // timing-sensitive pick shifted by it.
+  { const wx = -24, wz = 51.5, wry = atan2(-19 - wx, 51.5 - wz);
+    const watcher = kid(r.chance(0.5));
+    game.npcs.push(new Wanderer(game, watcher, { x: wx, z: wz, angle: wry, leash: 0.5, speed: 0.4, r: 0.3, height: 1.3, idle: [3, 6], walk: [1, 1.6],
+      cries: ['She never misses from that spot. Never has.', 'Too cold to just stand here. Worth it, though.', "I'll get a turn once my toes thaw out."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

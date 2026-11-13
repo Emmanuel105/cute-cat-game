@@ -30224,3 +30224,37 @@ possible in this environment (no browser, no Playwright) — only the stub-three
 whether the gentleman actually reads as waiting for a shine rather than just standing nearby, or whether
 his cane and top hat look right next to the boy's own kneeling pose, is unverified. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1084 — Frosty Peak's baller gets an audience of one
+
+Frosty Peak's basketball kid (round 1046) has dribbled her windswept patch of rock alone ever since —
+every world's own hoop girl gets the "dribbles alone" line in the build comments, but up here, where the
+cold thins out foot traffic more than anywhere else, nobody had ever actually stopped to watch one play.
+**A bundled-up kid sibling now stands a few steps west of the court, hands buried deep in a coat two
+sizes too big, watching every shot go up and drop straight back into her waiting hand.** *"She never
+misses from that spot. Never has."* *"Too cold to just stand here. Worth it, though."* *"I'll get a turn
+once my toes thaw out."* It's a friend to meet like any other kid on this mountain.
+
+No new mesh and no new controller: the watcher reuses this village's own `kid()` helper (`73-world-snow.js`,
+built earlier in the same function for the snowball fight and the game of tag) for the same bundled
+coat-and-beanie look every other child here already wears, and `Wanderer` for the "stand and watch"
+behaviour this log's other bystanders — Robot City's mechanic trainee two rounds back among them —
+already use, with a short 0.5 m leash so it barely drifts from its spot. `Wanderer`'s own constructor
+calls `greetable()` itself, so no extra wiring was needed.
+
+A headless probe (the stub-three test harness, `game.travel(5, 'from-hub')` waited out for real against
+its own portal-fade timer, then 3600 simulated frames) swept hand-picked spots to the baller's own west
+and found (-24, 51.5) clear by 7.33 m of the nearest of this mountain's 780 physics boxes and 4.17 m of
+the nearest wandering soul — 5 m due west of the baller's own spot, outside every one of `game.zones`'s
+156 rectangles. `ry` points the watcher at the baller rather than a fixed constant, so it reads as
+watching the game rather than just standing nearby. Built dead last of everything this mountain adds,
+right after the chestnut roaster, since `kid()` draws off this mountain's own shared `r()` sequence
+unconditionally and anything built earlier would have had its own pick shifted.
+
+`node dimension-cat/test/run.mjs` ran clean twice in a row: exit 0, all 277 checks `ok`, 0 console
+warnings, box count unchanged at 334 (no new collider, just a circle), and Frosty Peak's own friend
+total went up by one (129 → 130) as expected. No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite above, so whether the watcher actually reads as
+following the game rather than just standing nearby, or whether her bundled coat looks right next to the
+baller's bare-armed jersey, is unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.
