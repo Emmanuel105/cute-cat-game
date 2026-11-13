@@ -1466,6 +1466,43 @@ function buildSnowVillage(game, entry) {
     const web = placeT(game, U, makeSpiderweb(r), wx, wz, atan2(0 - wx, 0 - wz));
     const webLines = ['🕸️ "Spun before the first snowfall, and rimed with frost ever since — the dew never quite freezes solid."', '🕷️ "Holding dead centre, same as its cousins down in the woods and on the shore."', '❄️ "The wind off the peak sets it swaying, but never once tears a strand."'];
     game.addInteractable({ obj: web, radius: 1.8, label: () => 'Look at the web', onUse: () => { SFX.click(); game.toast(rnd.pick(webLines), 3000); } }); }
+  // Rounds 1065-1068 gave Robot City, Candy Land, Sunny Shore and Whisper Woods their own courier in a
+  // slow square loop; the night log flagged Frosty Peak as the one world left without — its own
+  // snowfield too crowded with pines and hand-placed props for an 8x8 loop to ever clear decently, and
+  // closed by suggesting a thin corridor instead of a square next time. **A mail courier now plods a
+  // short beat back and forth across the open snowfield north of the village,** pausing at each end for
+  // a line before trudging back. *"Post for the mountain — rain, snow or avalanche, same as always."*
+  // *"Mind the bag, puss — nothing in there smells of fish, promise."* *"Lighter satchel on the way
+  // back. Always is."*
+  //
+  // No new mesh and no new controller: an ordinary `makeHuman()` in this mountain's own cold-weather
+  // wardrobe, a `backpack` standing in for the mailbag, and `Patroller` (55-npcs.js) — already driving
+  // every other world's own courier, plus the hiker, the Victorian bobby and the lamplighter — calls
+  // `greetable()` itself, so no extra wiring was needed. A straight two-point route with `loop` left at
+  // its `false` default walks there and back rather than round a square, which is what let this clear a
+  // mountain too dense for the 8x8 loop every earlier round in the set tried first.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `elements.get('enter')
+  // .listeners.click[0]()`, `game.travel(5, 'from-hub')` waited out for real against `game.worldIndex`,
+  // then 600 simulated frames sampling every NPC's own live position every 5th frame, 13,200 samples
+  // over all 110 of this mountain's own NPCs) swept straight line segments across the open snowfield at
+  // 2 m steps in both axes and both diagonals against all 821 of this mountain's own physics boxes,
+  // checking 9 points along each candidate rather than just its ends. Nothing within 20 m of the village
+  // cleared 2.6 m on both counts — the same wall every square-loop probe before this one hit first — but
+  // a 10 m line centred (2, 40), well north of the last cabin and the snow-bunting flock's own circling
+  // ring, held up: re-checked at 41 points (0.25 m spacing) along its whole length, it never comes
+  // closer than 3.14 m to the nearest physics box or 8.94 m to any sampled NPC position over that same
+  // 10 s sweep, comfortably inside the radius (58) where `snowRegion()`'s own procedural fill takes over
+  // and outside every zone this mountain registers. Ground height varies well under a metre across the
+  // whole line, nothing like the sled run's own slope.
+  { const points = [[-3, 40], [7, 40]];
+    const courierWard = makeWardrobe(r, { shirts: [0x8a5a3a, 0x3a5a8a, 0x5a6a4a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const courier = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: courierWard }),
+      hat: 'beanie', hatColor: 0x3a5a8a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a, backpack: 0x6a4a3a });
+    W.add(courier.group);
+    const courierLines = ['Post for the mountain — rain, snow or avalanche, same as always.', 'Mind the bag, puss — nothing in there smells of fish, promise.', 'Lighter satchel on the way back. Always is.'];
+    game.npcs.push(new Patroller(game, courier, { points, speed: 0.9, pause: [1.3, 1.9], r: 0.35, height: 1.8,
+      cries: courierLines, cryIcon: '✉️' })); }
   snowRegion(game, U, r, 58, PEAK_LIMIT - 8);
   makeHorizon(game, r, { clear: PEAK_LIMIT + 8, hills: true, hill: 0xe8eef6, rock: 0x6a7a94, rock2: 0x7e8ea6, snow: 0xf6fbff, snowLine: 26, peaks: 32, peakH: [46, 110], woodCount: 300, woodHue: [0.32, 0.42], woodLight: [0.12, 0.2], trunk: 0x4a3a2a });
   // gondola home (bottom station of the village)

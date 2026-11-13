@@ -29691,3 +29691,37 @@ Victorian, Robot City, Candy Land, Sunny Shore and now Whisper Woods all have so
 something; Frosty Peak alone still doesn't — its own snowfield is simply too crowded with pines and
 hand-placed props for an 8x8 loop to clear decently, so it may need a different shape (a thin corridor
 rather than a square) or a stationary vendor instead of a patrol route next time.
+
+## Round 1069 — Frosty Peak gets its own mail courier, the last of the seven
+
+Rounds 1065-1068 gave Robot City, Candy Land, Sunny Shore and Whisper Woods a courier walking a slow
+square loop; round 1068 left Frosty Peak as the one world still without, noting its snowfield was too
+crowded with pines and hand-placed props for an 8x8 loop to clear decently, and suggested a thin
+corridor instead of a square next time. **A mail courier now plods a short beat back and forth across
+the open snowfield north of the village,** pausing at each end for a line before trudging back.
+*"Post for the mountain — rain, snow or avalanche, same as always."* *"Mind the bag, puss — nothing in
+there smells of fish, promise."* *"Lighter satchel on the way back. Always is."*
+
+No new mesh and no new controller: an ordinary `makeHuman()` in cold-weather clothes with a `backpack`
+standing in for the mailbag, and `Patroller` (55-npcs.js) with a plain two-point route and `loop` left
+at its `false` default, so it walks there and back instead of round a square — that's what let this
+clear ground the earlier square-loop attempt couldn't. `Patroller` calls `greetable()` itself, so no
+extra wiring was needed.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: travelled to world 5,
+simulated 600 frames sampling every one of this mountain's 110 NPCs every 5th frame) swept straight
+line segments across the open snowfield at 2 m steps along both axes and both diagonals against all
+821 of this mountain's physics boxes. Nothing within 20 m of the village cleared 2.6 m on both counts —
+the same wall the square-loop attempts kept hitting — but a 10 m line centred (2, 40), well north of
+the last cabin, held up: re-checked at 41 points along its length, it never comes closer than 3.14 m to
+the nearest physics box or 8.94 m to any sampled NPC position, comfortably inside the radius (58) where
+the procedural snowfield fill takes over and outside every zone this mountain registers.
+
+Verified beyond the test suite: a second headless script confirmed the courier sits in the scene
+graph, walks the route (moved from x=-2.82 toward x=1.19 over 5 simulated seconds), and that standing
+next to it shows "Say hello" and `onUse()` takes `game.state.friends` from empty to one member. `node
+dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged
+at 333 (no new physics box — the courier needs none), and Frosty Peak's own friend total rose from 127
+to 128. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite and the scratch probes above. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy. All seven worlds now have someone delivering something.
