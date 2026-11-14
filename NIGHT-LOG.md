@@ -30488,3 +30488,40 @@ one (114 → 115, confirmed by the same headless probe before the change). No vi
 in this environment (no browser, no Playwright) — only the stub-three test suite above, so whether the
 toe-tapping pose actually reads as "listening" rather than just standing nearby is unverified. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1092 — Sunny Shore's juggler finally gets a watcher
+
+Whisper Woods' juggler got a watcher a few rounds back, and the other five jugglers scattered round
+the game still perform to nobody — but Sunny Shore's own, working the open sand between the towels and
+the lifeguard chair since this beach was built, had never had anyone stop either. **A towel-goer now
+stands a few steps off, arms folded, watching the three balls climb and fall instead of walking past.**
+*"Three's easy, he says. Try telling that to the rest of us."* *"Careful, puss — don't go under his
+feet."* *"I've been watching ten minutes and he hasn't dropped one yet."* Saying hello makes her a
+friend, same as anyone else on this beach.
+
+No new mesh or controller: `beachPerson()` (this world's own wardrobe helper, already used for every
+towel-goer and sunbather on this sand) builds the usual human rig, and `Wanderer` (`55-npcs.js`) gives
+her the same "stand and watch" behaviour the organ-grinder listeners already use elsewhere, with a
+short leash (0.5 m) keeping her parked by the juggler rather than wandering off across the sand.
+`Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was needed to make her a
+friend.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(4, 'from-prev')` waited out for real against
+`game.worldIndex`, then 60 simulated frames so the juggler was already in position) swept a 0.5 m grid
+2-5 m out from the juggler's own spot (3, 16) against all 262 of this beach's physics boxes, its zone
+list and all 117 NPCs already standing in it: (0, 12) came back clearest — over 7 m from the nearest
+box and exactly 5 m from the nearest other soul, the juggler himself. `angle` points her at the
+juggler rather than a fixed constant, so she reads as watching the act and not just standing nearby.
+
+Built dead last of everything this beach adds, right after the chestnut vendor (round 1075), for the
+usual reason: `beachPerson()`/`randomPerson()` both draw off this beach's own shared `r()` sequence
+unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted by it.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box count
+unchanged at 334 (no new collider, just a greet circle), and Sunny Shore's own friend total went up by
+one (133 → 134, confirmed against the previous commit with `git stash`). No visual check was possible
+in this environment (no browser, no Playwright) — only the stub-three test suite above, so whether the
+arms-folded pose actually reads as "watching" rather than just standing nearby is unverified. Five
+jugglers (Neighborhood, Candy Land's jester, Robot City's robot, Victorian, Frosty Peak) are still
+performing to nobody. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

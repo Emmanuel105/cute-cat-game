@@ -24698,6 +24698,33 @@ function buildBeach(game, entry) {
     const brazierLines = ['The vents glow a deep, steady orange against the sand.', 'Warm enough to feel over the sea breeze.', 'A crack, a hiss, and a curl of smoke drifting off toward the dunes.'];
     game.addInteractable({ obj: brazier, radius: 1.2, label: () => 'Look at the brazier', onUse: () => { SFX.click(); game.toast(rnd.pick(brazierLines), 3000); } }); }
 
+  // Whisper Woods' own juggler finally got a watcher a few rounds back, but Sunny Shore's — working
+  // the open sand between the towels and the lifeguard chair since this world was built — has
+  // performed to nobody the whole time. A towel-goer now stands a few steps off, arms folded,
+  // watching the three balls climb and fall instead of walking past.
+  //
+  // No new mesh or controller: `beachPerson()` (this world's own wardrobe helper, defined at the top
+  // of `buildBeach`) builds the usual human rig, and `Wanderer` (`55-npcs.js`) gives her the same
+  // "stand and watch" behaviour the organ-grinder listeners already use elsewhere, with a short leash
+  // (0.5 m) keeping her parked by the juggler rather than wandering off across the sand. `Wanderer`'s
+  // own constructor calls `greetable()` itself, so no extra wiring was needed to make her a friend.
+  //
+  // A headless probe (`game.start('new')`, `game.travel(4, 'from-prev')` waited out for real against
+  // `game.worldIndex`, then 60 simulated frames so the juggler was already in position) swept a 0.5 m
+  // grid 2-5 m out from the juggler's own spot (3, 16) against all 262 of this beach's physics boxes,
+  // its zone list and all 117 NPCs already standing in it: (0, 12) came back clearest — over 7 m from
+  // the nearest box and exactly 5 m from the nearest other soul, the juggler himself. `angle` points
+  // her at the juggler rather than a fixed constant, so she reads as watching the act and not just
+  // standing nearby.
+  //
+  // Built dead last of everything this beach adds, right after the chestnut vendor above, for the
+  // usual reason: `beachPerson()`/`randomPerson()` both draw off this beach's own shared `r()`
+  // sequence unconditionally, and anything built earlier would have had its own timing-sensitive pick
+  // shifted by it.
+  { const wx = 0, wz = 12, jx = 3, jz = 16;
+    game.npcs.push(new Wanderer(game, beachPerson(r.chance(0.5), false), { x: wx, z: wz, angle: atan2(jx - wx, jz - wz), speed: 0.3, leash: 0.5, idle: [3, 6],
+      cries: ["Three's easy, he says. Try telling that to the rest of us.", "Careful, puss — don't go under his feet.", "I've been watching ten minutes and he hasn't dropped one yet."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
