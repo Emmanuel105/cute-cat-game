@@ -30451,3 +30451,40 @@ one (158 → 159, confirmed against the previous commit with `git stash`). No vi
 this environment (no browser, no Playwright) — only the stub-three test suite above, so whether the
 head-tipped pose actually reads as "listening" rather than just standing nearby is unverified. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1091 — Candy Land's organ grinder finally gets a listener too, the last of the three
+
+Robot City's organ grinder got a listener two rounds back, Victorian's got one last round, and Candy
+Land has had its own travelling organ grinder winding a barrel out on the open sweet-lands since round
+~1012 — nobody there had ever stopped to listen either. **A sweet-shop local now stands five metres
+south of the grinder, arms folded, toe tapping along to the tune instead of walking straight past it.**
+*"Tuppence a tune, same price in every land, and worth every bit of it."* *"Careful, puss — he's three
+songs deep and hasn't dropped a note."* *"Didn't think a barrel organ could sound this sweet. Maybe
+it's just this place."* Saying hello makes her the usual kind of friend — the last organ grinder in the
+game to get one.
+
+No new mesh or controller: `makeHuman()`/`randomPerson()` (`55-npcs.js`) build the usual human rig, and
+`Wanderer` (`55-npcs.js`) gives her the same "stand and watch" behaviour Robot City's and Victorian's
+own listeners already use, with a short leash (0.5 m) keeping her parked by the organ rather than
+wandering off across the sweet-lands. `Wanderer`'s own constructor calls `greetable()` itself, so no
+extra wiring was needed.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(1, 'from-prev')` waited out for real against
+its own portal-fade timer, then 60 simulated frames so the grinder was already in position) swept a
+0.5 m grid 1.5-5 m out from the grinder's own spot (70, -5) against all 1891 of this land's physics
+boxes, its 451 zone rectangles and all 96 NPCs already standing in it: (70, -10), five metres due
+south, came back clearest — 4.6 m from the nearest box and exactly 5 m from the nearest other soul, the
+grinder himself. `ry` points her at the grinder rather than a fixed constant, so she reads as listening
+to the tune and not just standing nearby.
+
+Built dead last of everything this land adds, right after the unicyclist (round 1085), for the usual
+reason: `makeHuman()`/`randomPerson()` both draw off this land's own shared `r()` sequence
+unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted by it.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count
+unchanged at 334 (no new collider, just a greet circle), and Candy Land's own friend total went up by
+one (114 → 115, confirmed by the same headless probe before the change). No visual check was possible
+in this environment (no browser, no Playwright) — only the stub-three test suite above, so whether the
+toe-tapping pose actually reads as "listening" rather than just standing nearby is unverified. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

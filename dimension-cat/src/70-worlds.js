@@ -6937,6 +6937,40 @@ function buildCandyLand(game, entry) {
     game.npcs.push(new Unicyclist(game, rider, makeUnicycle(0xffd54a), { a: [13, 2], b: [19, 2], cryIcon: '🎪',
       cries: ["Nobody's seen me fall yet — and I'm not starting today.", 'Careful, puss — one wheel, no room for passengers.', "Thirty metres of pavement would be nice. Six will do."] })); }
 
+  // Robot City's organ grinder got a listener two rounds back and Victorian's got one last round —
+  // this land has had its own travelling organ grinder (above) winding the same barrel out on the
+  // open sweet-lands and nobody here had stopped to listen either, the last of the three. **A sweet-
+  // shop local now stands five metres south of the grinder, arms folded, toe tapping along to the
+  // tune instead of walking straight past it.** *"Tuppence a tune, same price in every land, and
+  // worth every bit of it."* *"Careful, puss — he's three songs deep and hasn't dropped a note."*
+  // *"Didn't think a barrel organ could sound this sweet. Maybe it's just this place."*
+  //
+  // No new mesh or controller: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig,
+  // and `Wanderer` (55-npcs.js) gives her the same "stand and watch" behaviour Robot City's and
+  // Victorian's own listeners already use, with a short leash (0.5 m) keeping her parked by the organ
+  // rather than wandering off across the sweet-lands. `Wanderer`'s own constructor calls `greetable()`
+  // itself, so no extra wiring was needed.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, `game.travel(1, 'from-prev')` waited out for real
+  // against its own portal-fade timer, then 60 simulated frames so the grinder was already in
+  // position) swept a 0.5 m grid 1.5-5 m out from the grinder's own spot (70, -5) against all 1891 of
+  // this land's physics boxes, its 451 zone rectangles and all 96 NPCs already standing in it: (70,
+  // -10), five metres due south, came back clearest — 4.6 m from the nearest box and exactly 5 m from
+  // the nearest other soul, the grinder himself. `ry` points her at the grinder rather than a fixed
+  // constant, so she reads as listening to the tune and not just standing nearby.
+  //
+  // Built dead last of everything this land adds, right after the unicyclist above, for the usual
+  // reason: `makeHuman()`/`randomPerson()` both draw off this land's own shared `r()` sequence
+  // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted
+  // by it.
+  { const lx = 70, lz = -10, lry = atan2(70 - lx, -5 - lz);
+    const listener = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: r.chance(0.6) }),
+      shirt: 0xff9ecf, pants: 0x4a3b8a, shoes: 0x3a2c2c, hat: r.chance(0.4) ? 'bonnet' : null, hatColor: 0xffd54a, scarf: 0x7fd7ff, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(listener.group);
+    game.npcs.push(new Wanderer(game, listener, { x: lx, z: lz, angle: lry, leash: 0.5, speed: 0.4, r: 0.3, idle: [3, 6], walk: [1, 1.6],
+      cries: ['Tuppence a tune, same price in every land, and worth every bit of it.', "Careful, puss — he's three songs deep and hasn't dropped a note.", "Didn't think a barrel organ could sound this sweet. Maybe it's just this place."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
