@@ -30757,3 +30757,39 @@ commit). No visual check was possible in this environment (no browser, no Playwr
 stub-three test suite above, so whether the pose actually reads as "watching" is unverified. Five of the
 seven magicians — Neighborhood, Candy Land, Victorian, Sunny Shore and Whisper Woods — are still
 performing to nobody. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1099 — Candy Land's own magician finally gets a watcher
+
+Rounds 1097 and 1098 gave Robot City's and Frosty Peak's magicians a watcher, narrowing the list of
+seven solo magicians down to five: the Neighborhood (flagged fragile last round — an attempt there
+collides with the squirrel's own random walk through the shared `rnd()` sequence), Candy Land,
+Victorian, Sunny Shore and Whisper Woods. This round takes Candy Land, a different world from the
+flagged one. **A sweet-shop clerk, apron still dusted in sugar, now lingers a few steps off the open
+sweet-grass on her break, watching the coin trick instead of getting back to the gumdrops.**
+*"Marzipan or not, I still don't see where that coin goes."* *"Careful, puss — he doesn't like an
+audience sneaking up from behind."* *"Same trick, same spot, every single day off. I keep meaning to
+catch it."* Saying hello makes her a friend like anyone else in this land.
+
+No new mesh or controller: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig, and
+`Wanderer` (55-npcs.js) gives her the same "stand and watch" behaviour every other watcher in this game
+already uses, with a short leash (0.5 m) keeping her parked by the magician rather than wandering off
+across the sweet-grass. `Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was
+needed.
+
+A headless probe (the stub-three harness, `game.travel(1, 'from-prev')` waited out for real against its
+own portal-fade timer, then 60 simulated frames so the magician was already in position) swept a 0.5 m
+grid 1.5-6 m out from the magician's own spot (27, -31) against all 1891 of this land's physics boxes,
+its zone list (the chocolate river's keep-out among them) and all 98 NPCs already standing in it:
+(32.5, -29) came back clearest — 6.46 m from the nearest box and 5.85 m from the nearest other soul, the
+magician himself.
+
+Built dead last, right after the magician and right before the squirrel, for the usual reason:
+`makeHuman()`/`randomPerson()` both draw off this land's own shared `r()` sequence unconditionally, and
+anything built earlier here would have had its own timing-sensitive pick shifted by it. `node
+dimension-cat/test/run.mjs` ran clean: exit 0, all 290 checks `ok`, 0 console warnings, box count
+unchanged at 334 (no new collider, just a greet circle), and Candy Land's own friend total went up by
+one (116 → 117, confirmed against `world 1: 117 to meet` and a `git stash` diff against the previous
+commit). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above, so whether the pose actually reads as "watching" is unverified. Four of the
+seven magicians — Neighborhood, Victorian, Sunny Shore and Whisper Woods — are still performing to
+nobody. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

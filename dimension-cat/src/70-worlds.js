@@ -6317,6 +6317,39 @@ function buildCandyLand(game, entry) {
     const magicLines = ['Nothing up this sleeve. Mostly marzipan, if you must know.', "Watch closely, puss — the coin's gone. ...And it's back. Every time.", "Even the Candy Queen can't work out where it goes."];
     game.npcs.push(new Magician(game, magician, { x: mx, z: mz, ry: mry, cries: magicLines })); }
 
+  // Robot City's and Frosty Peak's own magicians (rounds 1097-1098) each picked up a watcher off the
+  // same `Wanderer` "stand and watch" pattern the juggler and organ grinder already use everywhere —
+  // this land's own magician, built right above, had worked alone since round 1012. **A sweet-shop
+  // clerk, apron still dusted in sugar, now lingers a few steps off the open sweet-grass on her break,
+  // watching the coin trick instead of getting back to the gumdrops.** *"Marzipan or not, I still don't
+  // see where that coin goes."* *"Careful, puss — he doesn't like an audience sneaking up from
+  // behind."* *"Same trick, same spot, every single day off. I keep meaning to catch it."* Saying
+  // hello makes her a friend like anyone else in this land.
+  //
+  // No new mesh or controller: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig,
+  // and `Wanderer` (55-npcs.js) gives her the same "stand and watch" behaviour every other watcher in
+  // this game already uses, with a short leash (0.5 m) keeping her parked by the magician rather than
+  // wandering off across the sweet-grass. `Wanderer`'s own constructor calls `greetable()` itself, so
+  // no extra wiring was needed.
+  //
+  // A headless probe (the stub-three harness, `game.travel(1, 'from-prev')` waited out for real
+  // against its own portal-fade timer, then 60 simulated frames so the magician was already in
+  // position) swept a 0.5 m grid 1.5-6 m out from the magician's own spot (27, -31) against all 1891
+  // of this land's physics boxes, its zone list (the chocolate river's keep-out among them) and all 98
+  // NPCs already standing in it: (32.5, -29) came back clearest — 6.46 m from the nearest box and
+  // 5.85 m from the nearest other soul, the magician himself.
+  //
+  // Built dead last, right after the magician above and right before the squirrel below, for the usual
+  // reason: `makeHuman()`/`randomPerson()` both draw off this land's own shared `r()` sequence
+  // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted by
+  // it.
+  { const wx = 32.5, wz = -29, mx2 = 27, mz2 = -31;
+    const watcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
+      shirt: 0xf2c6d8, pants: 0xffffff, shoes: 0xf7e7c6, hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.3) });
+    W.add(watcher.group);
+    game.npcs.push(new Wanderer(game, watcher, { x: wx, z: wz, angle: atan2(mx2 - wx, mz2 - wz), leash: 0.5, speed: 0.4, idle: [3, 6], walk: [1, 1.6],
+      cries: ["Marzipan or not, I still don't see where that coin goes.", "Careful, puss — he doesn't like an audience sneaking up from behind.", "Same trick, same spot, every single day off. I keep meaning to catch it."] })); }
+
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('star', 7, -6); C.add('yarn', -9, 9); C.add('fish', -16, -13); C.add('mouse', 16, -9); C.add('star', -10, -27); C.add('yarn', 22, 4); C.add('mouse', -28, 26); C.add('fish', 14, -44); C.add('star', 0, -56); C.add('mouse', -58, 30); C.add('yarn', 60, 36);
