@@ -30640,3 +30640,42 @@ in this environment (no browser, no Playwright) — only the stub-three test sui
 clipboard-under-arm pose actually reads as "watching" rather than just standing nearby is unverified.
 Only Candy Land's own jester is still performing to nobody. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1096 — Candy Land's own jester finally gets a watcher
+
+Last round closed with one juggler left performing to an empty room: Robot City's got its watcher,
+which left only Candy Land's own court jester — juggling gumdrops in the hall between the gate and the
+empty throne since round ~500 — with nobody stopping to watch. **A page now lingers a couple of steps
+further in, between the jester and the dais, pausing on an errand to watch instead of hurrying past.**
+*"Three balls and never a drop — better rhythm than the queen's own clock."* *"Careful, puss — walk
+under that arc and you'll wear a gumdrop."* *"Half my chores can wait. This one can't."* Saying hello
+makes him a friend, same as anyone else in the castle.
+
+No new mesh or controller: `makeHuman()`/`randomPerson()` (`55-npcs.js`) build the usual human rig, and
+`Wanderer` (`55-npcs.js`) gives him the same "stand and watch" behaviour every other watcher in this
+game already uses, with a short leash (0.5 m) keeping him parked in the hall rather than wandering off
+toward the dais. `Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was
+needed.
+
+A headless probe (the same stub-three harness `test/run.mjs` uses: `elements.get('enter')
+.listeners.click[0]()`, `game.travel(1, 'from-prev')` waited out for real against its own portal-fade
+timer, then 60 simulated frames so the jester was already in position) swept a 0.25 m grid 2-6 m out
+from the jester's own spot (0, 140) against all 1891 of this land's physics boxes — filtering out the
+hall's own roof slab and overhead flags the same way `test/run.mjs`'s own `solidAt` tells overhead from
+underfoot, since a first pass without that filter found the whole hall "blocked" by the ceiling — and
+all 97 NPCs already standing in it: (0, 142), two metres north toward the throne, came back clearest —
+5.11 m from the nearest box and 7.03 m from the nearest other soul, well clear of the gate guard
+patrolling five metres south. `angle` points him at the jester rather than a fixed constant, so he
+reads as watching the act and not just standing nearby.
+
+Built dead last of everything this land adds, right after the organ grinder's own listener, for the
+usual reason: `makeHuman()`/`randomPerson()` both draw off this land's own shared `r()` sequence
+unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted by it.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box count
+unchanged at 334 (no new collider, just a greet circle), and Candy Land's own friend total went up by
+one (115 → 116, confirmed against the previous commit with `git stash`). No visual check was possible
+in this environment (no browser, no Playwright) — only the stub-three test suite above, so whether the
+page's pose actually reads as "watching" rather than just standing nearby is unverified. Every juggler
+in the game now has someone watching. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.

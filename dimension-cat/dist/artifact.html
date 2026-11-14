@@ -15986,6 +15986,41 @@ function buildCandyLand(game, entry) {
     game.npcs.push(new Wanderer(game, listener, { x: lx, z: lz, angle: lry, leash: 0.5, speed: 0.4, r: 0.3, idle: [3, 6], walk: [1, 1.6],
       cries: ['Tuppence a tune, same price in every land, and worth every bit of it.', "Careful, puss — he's three songs deep and hasn't dropped a note.", "Didn't think a barrel organ could sound this sweet. Maybe it's just this place."] })); }
 
+  // Robot City's own juggler got a watcher last round, which left exactly one juggler in the whole
+  // game performing to nobody: this land's own court jester, juggling gumdrops in the empty hall
+  // between the gate and the throne since round ~500. A page now lingers a couple of steps further
+  // in, between the jester and the dais, pausing on an errand to watch instead of hurrying past.
+  // *"Three balls and never a drop — better rhythm than the queen's own clock."* *"Careful, puss —
+  // walk under that arc and you'll wear a gumdrop."* *"Half my chores can wait. This one can't."*
+  //
+  // No new mesh or controller: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig,
+  // and `Wanderer` (55-npcs.js) gives him the same "stand and watch" behaviour every other watcher in
+  // this game already uses, with a short leash (0.5 m) keeping him parked in the hall rather than
+  // wandering off toward the dais. `Wanderer`'s own constructor calls `greetable()` itself, so no
+  // extra wiring was needed to make him a friend.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` uses: `elements.get('enter')
+  // .listeners.click[0]()`, `game.travel(1, 'from-prev')` waited out for real against its own
+  // portal-fade timer, then 60 simulated frames so the jester was already in position) swept a
+  // 0.25 m grid 2-6 m out from the jester's own spot (0, 140) against all 1891 of this land's
+  // physics boxes (ignoring the hall's own roof slab and the overhead flags, the same y-band
+  // `test/run.mjs`'s own `solidAt` already uses to tell overhead from underfoot) and all 97 NPCs
+  // already standing in it: (0, 142), two metres north toward the throne, came back clearest — 5.11 m
+  // from the nearest box and 7.03 m from the nearest other soul, well clear of the gate guard
+  // patrolling five metres south. `angle` points him at the jester rather than a fixed constant, so
+  // he reads as watching the act and not just standing nearby.
+  //
+  // Built dead last of everything this land adds, right after the organ grinder's own listener above,
+  // for the usual reason: `makeHuman()`/`randomPerson()` both draw off this land's own shared `r()`
+  // sequence unconditionally, and anything built earlier would have had its own timing-sensitive pick
+  // shifted by it.
+  { const wx = 0, wz = 142, jx2 = 0, jz2 = 140;
+    const watcher = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: r.chance(0.3) }),
+      shirt: 0x8a4a9a, pants: 0xfff6fb, shoes: 0xffd54a, hat: null, jacket: null, scarf: 0xff6fb5, bag: null, backpack: null, glasses: false });
+    W.add(watcher.group);
+    game.npcs.push(new Wanderer(game, watcher, { x: wx, z: wz, angle: atan2(jx2 - wx, jz2 - wz), leash: 0.5, speed: 0.4, idle: [3, 6], walk: [1, 1.6],
+      cries: ["Three balls and never a drop — better rhythm than the queen's own clock.", 'Careful, puss — walk under that arc and you\'ll wear a gumdrop.', 'Half my chores can wait. This one can\'t.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
