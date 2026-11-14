@@ -30525,3 +30525,39 @@ in this environment (no browser, no Playwright) — only the stub-three test sui
 arms-folded pose actually reads as "watching" rather than just standing nearby is unverified. Five
 jugglers (Neighborhood, Candy Land's jester, Robot City's robot, Victorian, Frosty Peak) are still
 performing to nobody. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1093 — Frosty Peak's juggler finally gets a watcher
+
+Whisper Woods' and Sunny Shore's jugglers each got a watcher a few rounds back, and the mountain's own
+busker — working the open snow since round ~500 — had never had anyone stop either. **A bundled-up
+local now stands a few steps off, mittened hands tucked under her arms, watching the three balls climb
+and fall instead of trudging past.** *"Three, in this cold. I can't even feel my own fingers."* *"Mind
+the ice, puss — he's not the only one who could slip."* *"Hasn't dropped one yet. I'm half convinced
+they're frozen to his hands."* Saying hello makes her a friend, the usual way.
+
+No new mesh or controller: `makeHuman()`/`randomPerson()` (`55-npcs.js`) build the usual human rig, and
+`Wanderer` (`55-npcs.js`) gives her the same "stand and watch" behaviour this mountain's own baller-
+watcher already uses, with a short leash (0.5 m) keeping her parked by the juggler rather than
+wandering off across the snow. `Wanderer`'s own constructor calls `greetable()` itself, so no extra
+wiring was needed.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: the
+start screen's own click, `game.travel(5, 'from-hub')` waited out for real against `game.worldIndex`,
+then 60 simulated frames) swept a 0.5 m grid 2-8 m out from the juggler's own spot (20, -8) against all
+780 of this mountain's physics boxes, its 156 `game.zones` rectangles and all 113 NPCs already standing
+in it, keeping only spots close enough to read as watching: (23.5, -11.5) came back clearest of those —
+4 m from the nearest box and almost exactly 5 m (4.9 m) from the nearest other soul, the juggler
+himself. `ry` points her at the juggler rather than a fixed constant, so she reads as watching the act
+and not just standing nearby.
+
+Built dead last of everything this mountain adds, right after the baller's own watcher, for the usual
+reason: `makeHuman()`/`randomPerson()` both draw off this mountain's own shared `r()` sequence
+unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted by it.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count
+unchanged at 334 (no new collider, just a greet circle), and Frosty Peak's own friend total went up by
+one (130 → 131, confirmed against the previous commit with `git stash`). No visual check was possible
+in this environment (no browser, no Playwright) — only the stub-three test suite above, so whether the
+arms-crossed pose actually reads as "watching" rather than just standing nearby is unverified. Three
+jugglers (Neighborhood, Candy Land's jester, Robot City's robot) are still performing to nobody.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

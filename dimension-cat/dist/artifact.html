@@ -27325,6 +27325,41 @@ function buildSnowVillage(game, entry) {
     game.npcs.push(new Wanderer(game, watcher, { x: wx, z: wz, angle: wry, leash: 0.5, speed: 0.4, r: 0.3, height: 1.3, idle: [3, 6], walk: [1, 1.6],
       cries: ['She never misses from that spot. Never has.', 'Too cold to just stand here. Worth it, though.', "I'll get a turn once my toes thaw out."] })); }
 
+  // Whisper Woods' and Sunny Shore's own jugglers have each had a watcher for a few rounds now — the
+  // busker working this mountain's own snowfield since round ~500 was still performing to nobody.
+  // **A bundled-up local now stands a few steps off, mittened hands tucked under her arms, watching
+  // the three balls climb and fall instead of trudging past.** *"Three, in this cold. I can't even
+  // feel my own fingers."* *"Mind the ice, puss — he's not the only one who could slip."* *"Hasn't
+  // dropped one yet. I'm half convinced they're frozen to his hands."* Saying hello makes her the
+  // usual kind of friend.
+  //
+  // No new mesh or controller: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig,
+  // and `Wanderer` (55-npcs.js) gives her the same "stand and watch" behaviour the baller's own
+  // watcher above already uses, with a short leash (0.5 m) keeping her parked by the juggler rather
+  // than wandering off across the snow. `Wanderer`'s own constructor calls `greetable()` itself, so no
+  // extra wiring was needed.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.travel(5,
+  // 'from-hub')` waited out for real against `game.worldIndex`, then 60 simulated frames so the
+  // juggler was already in position) swept a 0.5 m grid 2-8 m out from the juggler's own spot (20, -8)
+  // against all 780 of this mountain's physics boxes, its 156 `game.zones` rectangles and all 113
+  // NPCs already standing in it, keeping only spots close enough to read as watching: (23.5, -11.5)
+  // came back clearest of those — 4 m from the nearest box and almost exactly 5 m (4.9 m) from the
+  // nearest other soul, the juggler himself. `ry` points her at the juggler rather than a fixed
+  // constant, so she reads as watching the act and not just standing nearby.
+  //
+  // Built dead last of everything this mountain adds, right after the baller's own watcher above, for
+  // the usual reason: `makeHuman()`/`randomPerson()` both draw off this mountain's own shared `r()`
+  // sequence unconditionally, and anything built earlier would have had its own timing-sensitive pick
+  // shifted by it.
+  { const wx = 23.5, wz = -11.5, jx = 20, jz = -8;
+    const watchWard = makeWardrobe(r, { shirts: [0x6a4a5a, 0x4a5a6a, 0x5a4a3a], pants: [0x2a2a2a, 0x3a3a3a] });
+    const watcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: watchWard }),
+      hat: 'beanie', hatColor: 0x6a4a5a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a, bag: null, backpack: null, glasses: false });
+    W.add(watcher.group);
+    game.npcs.push(new Wanderer(game, watcher, { x: wx, z: wz, angle: atan2(jx - wx, jz - wz), leash: 0.5, speed: 0.3, idle: [3, 6],
+      cries: ["Three, in this cold. I can't even feel my own fingers.", "Mind the ice, puss — he's not the only one who could slip.", "Hasn't dropped one yet. I'm half convinced they're frozen to his hands."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
