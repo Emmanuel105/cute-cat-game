@@ -22297,6 +22297,39 @@ function buildVictorian(game, entry) {
     game.npcs.push(new Wanderer(game, listener, { x: lx, z: lz, angle: lry, leash: 0.5, speed: 0.4, r: 0.3, idle: [3, 6], walk: [1, 1.6],
       cries: ['Tuppence a tune, and worth every farthing of it.', "Careful, puss — he's three songs deep and showing no sign of stopping.", "Haven't heard a barrel organ since I was a boy. Some things don't need improving."] })); }
 
+  // Rounds 1097-1099 gave Robot City's, Frosty Peak's and Candy Land's own magicians a watcher;
+  // Victorian's own (above, on the open lawn north-west of the terraces) has still worked alone since
+  // round 1012. **An errand boy, satchel still over one shoulder, has paused his round a few steps off
+  // to watch the coin vanish instead of finishing his delivery.** *"Message'll keep a minute — nobody's
+  // ever once caught where that coin goes."* *"Mind your paws, puss — he doesn't care for an audience
+  // sneaking up from behind."* *"Four deliveries behind already. Still worth the look."*
+  //
+  // No new mesh or controller: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig,
+  // and `Wanderer` (55-npcs.js) gives him the same "stand and watch" behaviour every other watcher in
+  // this game already uses, with a short leash (0.5 m) keeping him parked by the magician rather than
+  // wandering off across the lawn. `Wanderer`'s own constructor calls `greetable()` itself, so no extra
+  // wiring was needed.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: the real start button
+  // click, then `game.travel(3, 'from-prev')` waited out for real against its own portal-fade timer,
+  // then 1800 simulated frames so the magician and every other NPC were already in position) swept a
+  // 0.25 m grid 1.8-5 m out from the magician's own spot (-63, 49) against all 664 of the town's
+  // physics boxes, its zones and all 137 NPCs already standing in it: (-66.5, 49) came back clearest at
+  // that range — 14.4 m from the nearest box and exactly 3.5 m from the nearest other soul, the
+  // magician himself, on the same flat lawn the magician stands on (no slope to speak of either side).
+  //
+  // Built dead last of everything this town adds, right after the organ listener above and right
+  // before the squirrel below, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this
+  // town's own shared `r()` sequence unconditionally, and anything built earlier would have had its
+  // own timing-sensitive pick shifted by it.
+  { const mex = -66.5, mez = 49, mery = atan2(-63 - mex, 49 - mez);
+    const errandWard = makeWardrobe(r, { shirts: [0x6a5a42, 0x4a4a52, 0x3a3327], pants: [0x2a2a2a, 0x3a3327] });
+    const errandBoy = makeHuman({ ...randomPerson(r, { female: r.chance(0.3), child: true, elder: false, wardrobe: errandWard }),
+      hat: 'flatcap', hatColor: 0x3a3327, bag: 0x5a3a28, scarf: null, jacket: null, backpack: null, glasses: false });
+    W.add(errandBoy.group);
+    game.npcs.push(new Wanderer(game, errandBoy, { x: mex, z: mez, angle: mery, leash: 0.5, speed: 0.4, r: 0.3, idle: [3, 6], walk: [1, 1.6],
+      cries: ["Message'll keep a minute — nobody's ever once caught where that coin goes.", "Mind your paws, puss — he doesn't care for an audience sneaking up from behind.", "Four deliveries behind already. Still worth the look."] })); }
+
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);

@@ -30793,3 +30793,38 @@ commit). No visual check was possible in this environment (no browser, no Playwr
 stub-three test suite above, so whether the pose actually reads as "watching" is unverified. Four of the
 seven magicians — Neighborhood, Victorian, Sunny Shore and Whisper Woods — are still performing to
 nobody. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1100 — Victorian's own magician finally gets a watcher
+
+Rounds 1097-1099 gave Robot City's, Frosty Peak's and Candy Land's own magicians a watcher, narrowing
+the list of solo magicians down to four: Neighborhood (flagged fragile two rounds back — an attempt
+there collides with the squirrel's own random walk through the shared `rnd()` sequence), Victorian,
+Sunny Shore and Whisper Woods. This round takes Victorian, whose own magician (round 1012, the open
+lawn north-west of the terraces) has worked alone ever since. **An errand boy, satchel still over one
+shoulder, has paused his round a few steps off to watch the coin vanish instead of finishing his
+delivery.** *"Message'll keep a minute — nobody's ever once caught where that coin goes."* *"Mind your
+paws, puss — he doesn't care for an audience sneaking up from behind."* *"Four deliveries behind
+already. Still worth the look."* Saying hello makes him a friend like anyone else in this town.
+
+No new mesh or controller: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig, and
+`Wanderer` (55-npcs.js) gives him the same "stand and watch" behaviour every other watcher in this game
+already uses, with a short leash (0.5 m) keeping him parked by the magician rather than wandering off
+across the lawn. `Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was needed.
+
+A headless probe (the stub-three harness, the real start button click, then `game.travel(3, 'from-prev')`
+waited out for real against its own portal-fade timer, then 1800 simulated frames so the magician and
+every other NPC were already in position) swept a 0.25 m grid 1.8-5 m out from the magician's own spot
+(-63, 49) against all 664 of the town's physics boxes, its zones and all 137 NPCs already standing in
+it: (-66.5, 49) came back clearest at that range — 14.4 m from the nearest box and exactly 3.5 m from
+the nearest other soul, the magician himself, on the same flat lawn the magician stands on.
+
+Built dead last of everything this town adds, right after the organ listener and right before the
+squirrel, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this town's own shared
+`r()` sequence unconditionally, and anything built earlier would have had its own timing-sensitive pick
+shifted by it. `node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console
+warnings, box count unchanged at 334 (no new collider, just a greet circle), and Victorian's own friend
+total went up by one (159 → 160, confirmed against `world 3: 160 to meet` and a `git stash` diff against
+the previous commit). No visual check was possible in this environment (no browser, no Playwright) —
+only the stub-three test suite above, so whether the pose actually reads as "watching" is unverified.
+Three of the seven magicians — Neighborhood, Sunny Shore and Whisper Woods — are still performing to
+nobody. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
