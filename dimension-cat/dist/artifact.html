@@ -30346,6 +30346,35 @@ function buildForest(game, entry) {
     const brazierLines = ['The vents glow a deep, steady orange against the dark of the trees.', 'Warm enough to feel from a step away, even out here.', 'A crack, a hiss, and a curl of smoke drifting up through the branches.'];
     game.addInteractable({ obj: brazier, radius: 1.2, label: () => 'Look at the brazier', onUse: () => { SFX.click(); game.toast(rnd.pick(brazierLines), 3000); } }); }
 
+  // the juggler above has practiced alone in his clearing ever since Whisper Woods got one (this
+  // file's own build comment calls it "an audience of nobody but the butterflies") — nobody in this
+  // whole wood had ever actually stopped to watch him. A woodland local now stands a few steps south
+  // of the clearing, head tipped back tracking the balls.
+  //
+  // No new mesh or controller: `Wanderer` (55-npcs.js) gives the same "stand and watch" behaviour this
+  // log's other bystanders — Frosty Peak's baller audience, Robot City's organ-grinder listener —
+  // already use, with a short leash (0.5 m) keeping her parked rather than wandering into the trees.
+  // `Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was needed.
+  //
+  // A headless probe (the stub-three harness `test/run.mjs` itself uses: `game.travel(6, 'from-hub')`
+  // waited out for real against `game.worldIndex` and `game.transitioning`) swept a ring 2.5-5 m out
+  // from the juggler's own spot (28, -8) against this wood's physics boxes, its circles and every
+  // other NPC: (28, -13), five metres due south, came back clearest — 4.6 m from the nearest box and
+  // 6.9 m from the nearest other soul (the juggler himself, 5 m away) — and outside every rectangle
+  // `game.zones` was holding. `ry` points her at the juggler rather than a fixed constant, so she
+  // reads as watching the act and not just standing nearby.
+  //
+  // Built dead last, right after the chestnut roaster above and right before the squirrel spawn
+  // point, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this wood's own shared
+  // `r()` sequence unconditionally, so anything built earlier would have had its own pick shifted.
+  { const wx = 28, wz = -13, wry = atan2(28 - wx, -8 - wz);
+    const watchWard = makeWardrobe(r, { shirts: [0x4a6a5a, 0x6a5a4a, 0x3a4a3a], pants: [0x3a3a3a, 0x2a2a2a], shoes: [0x3a2a1e, 0x2a2018] });
+    const watcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.35), wardrobe: watchWard }),
+      hat: r.chance(0.4) ? 'flatcap' : null, hatColor: 0x3a4030, bag: null, jacket: null, scarf: null, glasses: false });
+    W.add(watcher.group);
+    game.npcs.push(new Wanderer(game, watcher, { x: wx, z: wz, angle: wry, leash: 0.5, speed: 0.4, r: 0.3, height: 1.6, idle: [3, 6], walk: [1, 1.6],
+      cries: ["Three in the air and never a dropped one. Wish I could say the same for my firewood stacking.", "Careful, puss — walk under those and you'll wear one.", "Half the wood doesn't know he's out here. Their loss."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

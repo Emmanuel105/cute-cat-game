@@ -30378,3 +30378,41 @@ one (123 → 124) as expected. No visual check was possible in this environment 
 Playwright) — only the stub-three test suite above, so whether the toe-tapping pose actually reads as
 "listening" rather than just standing nearby is unverified. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1089 — Whisper Woods' juggler finally gets a watcher
+
+The juggler in the clearing east of the hollow-log cluster (round ~1061) has had this file's own build
+comment call out his situation since the round that placed him: "three balls in the air, an audience of
+nobody but the butterflies." Nobody in the whole wood had ever actually stopped to watch him, the same
+gap this log has now closed for Frosty Peak's baller, Robot City's organ grinder and two of Victorian's
+bootblacks. **A woodland local now stands five metres south of the clearing, head tipped back, tracking
+the balls.** *"Three in the air and never a dropped one. Wish I could say the same for my firewood
+stacking."* *"Careful, puss — walk under those and you'll wear one."* *"Half the wood doesn't know he's
+out here. Their loss."* Saying hello makes her the usual kind of friend.
+
+No new mesh or controller: `Wanderer` (`55-npcs.js`) gives the same "stand and watch" behaviour this
+log's other bystanders already use, with a short leash (0.5 m) keeping her parked rather than wandering
+into the trees, and `makeWardrobe()`/`randomPerson()` (`55-npcs.js`) build the usual human rig in earthy
+colours already at home in this wood. `Wanderer`'s own constructor calls `greetable()` itself, so no
+extra wiring was needed.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.travel(6, 'from-hub')` waited out for real against `game.worldIndex` and `game.transitioning`)
+swept a ring 2.5-5 m out from the juggler's own spot (28, -8) in 0.5 m steps against this wood's 670
+physics boxes, its 119 circles and all 134 NPCs: (28, -13), five metres due south, came back clearest —
+4.6 m from the nearest box and 6.9 m from the nearest other soul (the juggler himself, 5 m away) — and
+outside every rectangle `game.zones` was holding. The ground there slopes gently (1.04 m, against 1.36 m
+at the juggler's own spot, varying under 3 cm across a half-metre step), flat enough to stand on. `ry`
+points her at the juggler rather than a fixed constant, so she reads as watching the act and not just
+standing nearby.
+
+Built dead last of everything this wood adds, right after the chestnut roaster (round 1071) and right
+before the squirrel spawn point, since `makeHuman()`/`randomPerson()` both draw off this wood's own
+shared `r()` sequence unconditionally and anything built earlier would have had its own pick shifted.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box count
+unchanged at 334 (no new collider, just a greet circle), and Whisper Woods' own friend total went up by
+one (157 → 158 confirmed against the previous commit with `git stash`). No visual check was possible in
+this environment (no browser, no Playwright) — only the stub-three test suite above, so whether the
+head-tipped-back pose actually reads as "watching" rather than just standing nearby is unverified.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
