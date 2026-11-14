@@ -30828,3 +30828,45 @@ the previous commit). No visual check was possible in this environment (no brows
 only the stub-three test suite above, so whether the pose actually reads as "watching" is unverified.
 Three of the seven magicians — Neighborhood, Sunny Shore and Whisper Woods — are still performing to
 nobody. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1101 — Sunny Shore's own magician finally gets a watcher
+
+Rounds 1097-1100 gave Robot City's, Frosty Peak's, Candy Land's and Victorian's own magicians a
+watcher, narrowing the list of solo magicians down to three: Neighborhood (flagged fragile — an
+earlier attempt there collided with the squirrel's own random walk through the shared `rnd()`
+sequence), Sunny Shore and Whisper Woods. This round takes Sunny Shore, whose own magician (round
+1041, the dune grove north-west of the water) has worked the dry sand alone ever since. **A
+beachcomber, canvas bag for shells slung over one shoulder, has stopped sweeping the sand to watch
+the coin trick instead.** *"Found a sand dollar and a shark's tooth today. Still haven't found where
+that coin goes."* *"Mind your paws, puss — he doesn't care for an audience sneaking up from behind."*
+*"Same spot, same trick, every low tide. I keep meaning to just ask him."* Saying hello makes him a
+friend like anyone else on this beach.
+
+No new mesh or controller: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig —
+the shell bag is just the existing `bag` wardrobe option, already a strap-and-pouch mesh, not a new
+one — and `Wanderer` (55-npcs.js) gives him the same "stand and watch" behaviour every other watcher
+in this game already uses, with a short leash (0.5 m) keeping him parked by the magician rather than
+wandering off across the dunes. `Wanderer`'s own constructor already reads its rig's height straight
+off `game.physics.ground0()`, the same terrain-aware convention the magician itself relies on, and
+calls `greetable()` itself, so no extra wiring was needed.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(4, 'from-hub')` waited out for real, then
+1800 simulated frames so the magician and every other NPC were already in position) swept a 0.5 m
+grid 3-6 m out from the magician's own spot (-33, 37) against all 262 of this beach's own physics
+boxes, its zone list and all 117 other NPCs already standing in it: (-30, 37.5) came back clearest —
+6.25 m from the nearest box and exactly 3.04 m from the nearest other soul, the magician himself, on
+ground levelling out at 0.543 m with under 1 cm of slope across a 0.5 m square, at radius 48 from the
+origin — short of the 58 where `beachRegion()`'s own fill takes over, the same margin the magician
+itself keeps.
+
+Built dead last, right after the magician above, for the usual reason: `makeHuman()`/`randomPerson()`
+both draw off this beach's own shared `r()` sequence unconditionally, and anything built earlier here
+would have had its own timing-sensitive pick shifted by it. (The squirrel was built early on this
+beach already, so no shift risk there.) `node dimension-cat/test/run.mjs` ran clean: exit 0, all 277
+checks `ok`, 0 console warnings, box count unchanged at 334 (no new collider, just a greet circle),
+and Sunny Shore's own friend total went up by one (134 → 135, confirmed against `world 4: 135 to
+meet`). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above, so whether the pose actually reads as "watching" is unverified. Two of
+the seven magicians — Neighborhood and Whisper Woods — are still performing to nobody. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

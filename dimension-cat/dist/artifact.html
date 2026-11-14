@@ -24743,6 +24743,44 @@ function buildBeach(game, entry) {
     const magicLines = ["Nothing up this sleeve. Not even a grain of sand, and believe me, I've checked.", "Watch closely, puss — the coin's gone. ...And it's back. Every time.", 'Not even the gulls have caught how it’s done, and they watch everything that glints.'];
     game.npcs.push(new Magician(game, magician, { x: mx, z: mz, ry: mry, cries: magicLines })); }
 
+  // Robot City's, Frosty Peak's, Candy Land's and Victorian's own magicians (rounds 1097-1100) each
+  // picked up a watcher off the back of the same pattern; this beach's own magician, built right
+  // above and working the dune grove alone since round 1041, is next. **A beachcomber, canvas bag
+  // for shells slung over one shoulder, has stopped sweeping the sand to watch the coin trick
+  // instead.** *"Found a sand dollar and a shark's tooth today. Still haven't found where that coin
+  // goes."* *"Mind your paws, puss — he doesn't care for an audience sneaking up from behind."*
+  // *"Same spot, same trick, every low tide. I keep meaning to just ask him."* Saying hello makes him
+  // a friend like anyone else on this beach.
+  //
+  // No new mesh or controller: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig
+  // (the shell bag is just the existing `bag` wardrobe option, already a strap-and-pouch mesh, not a
+  // new one), and `Wanderer` (55-npcs.js) gives him the same "stand and watch" behaviour every other
+  // watcher in this game already uses, with a short leash (0.5 m) keeping him parked by the magician
+  // rather than wandering off across the dunes. `Wanderer`'s own constructor already reads its rig's
+  // height straight off `game.physics.ground0()`, the same terrain-aware convention the magician
+  // above relies on, and calls `greetable()` itself, so no extra wiring was needed.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, `game.travel(4, 'from-hub')` waited out for real,
+  // then 1800 simulated frames so the magician and every other NPC were already in position) swept a
+  // 0.5 m grid 3-6 m out from the magician's own spot (-33, 37) against all 262 of this beach's own
+  // physics boxes, its zone list and all 117 other NPCs already standing in it: (-30, 37.5) came back
+  // clearest — 6.25 m from the nearest box and exactly 3.04 m from the nearest other soul, the
+  // magician himself, on ground levelling out at 0.543 m with under 1 cm of slope across a 0.5 m
+  // square, at radius 48 from the origin — short of the 58 where `beachRegion()`'s own fill takes
+  // over, same margin the magician itself keeps.
+  //
+  // Built dead last, right after the magician above, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off this beach's own shared `r()` sequence unconditionally, and
+  // anything built earlier here would have had its own timing-sensitive pick shifted by it. (The
+  // squirrel was built early on this beach already, so no shift risk there.)
+  { const wx = -30, wz = 37.5, mx2 = -33, mz2 = 37;
+    const watcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0xc9a876, pants: 0x3f6b52, shoes: 0xefe7d8, shorts: true, hat: 'sunhat', hatColor: 0xd9c9a8, bag: 0x8d6e63, backpack: null, glasses: r.chance(0.3) });
+    W.add(watcher.group);
+    game.npcs.push(new Wanderer(game, watcher, { x: wx, z: wz, angle: atan2(mx2 - wx, mz2 - wz), leash: 0.5, speed: 0.4, idle: [3, 6], walk: [1, 1.6],
+      cries: ["Found a sand dollar and a shark's tooth today. Still haven't found where that coin goes.", 'Mind your paws, puss — he doesn’t care for an audience sneaking up from behind.', 'Same spot, same trick, every low tide. I keep meaning to just ask him.'] })); }
+
   // Sunny Shore, the first of the three terrain worlds, gets its own basketball hoop — the fifth of
   // the seven worlds to get the makeHoop()/Baller pairing (after the Neighborhood, Candy Land, Robot
   // City and Victorian, rounds 1037-1040). **A kid in a faded orange jersey dribbles alone on a flat
