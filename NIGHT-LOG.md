@@ -30344,3 +30344,37 @@ check `ok`, 0 console warnings, box count unchanged at 334, Victorian's friend t
 environment (no browser, no Playwright) — only the stub-three suite above, so whether the pose actually
 reads as "waiting for a shine" rather than just standing nearby is unverified. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1088 — Robot City's organ grinder finally gets a listener
+
+The organ grinder (round 1021) has wound out the same tune on its quiet corner of factory floor ever
+since Robot City got its own barrel organ — nobody in the whole city had ever actually stopped to
+listen. **An elderly citizen now stands a few steps off, arms folded, toe tapping along to the tune
+instead of walking straight past it.** *"Only tune in this whole city that doesn't need a charge."*
+*"Careful, puss — he's three songs deep and showing no sign of stopping."* *"Tuppence well spent. The
+scrap-bots don't hum half as sweet."* Saying hello makes him the usual kind of friend.
+
+No new mesh or controller: `makeHuman()`/`randomPerson()` (`55-npcs.js`) build the usual human rig, and
+`Wanderer` (`55-npcs.js`) gives him the same "stand and watch" behaviour this city's own mechanic's
+trainee bot (round 1082) already uses, with a short leash (0.5 m) keeping him parked by the organ
+rather than wandering off across the factory floor. `Wanderer`'s own constructor calls `greetable()`
+itself, so no extra wiring was needed to make him a friend.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(2, 'from-prev')` waited out for real against
+its own portal-fade timer, then 60 simulated frames so the grinder was already in position) swept a
+handful of spots around the organ's own corner against all 1206 of the city's physics boxes and all 110
+NPCs already standing in it: (14.5, 46.5) came back clear by 3.24 m of the nearest box and 3.54 m of
+the nearest wandering soul — the grinder himself, 3.54 m away — and outside every one of the 296 zone
+rectangles `game.zones` was holding at the time. `ry` points her at the grinder rather than a fixed
+constant, so she reads as listening to the tune and not just standing nearby.
+
+Built dead last of everything this city adds, right after the mechanic's trainee above, since
+`makeHuman()` and `randomPerson()` both draw off this city's own shared `r()` sequence unconditionally.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count
+unchanged at 334 (no new collider, just a greet circle), and Robot City's own friend total went up by
+one (123 → 124) as expected. No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite above, so whether the toe-tapping pose actually reads as
+"listening" rather than just standing nearby is unverified. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

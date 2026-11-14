@@ -18706,6 +18706,38 @@ function buildRobotCity(game, entry) {
     game.npcs.push(new Wanderer(game, trainee, { x: tx, z: tz, angle: try_, leash: 0.5, speed: 0.5, r: 0.22, height: 1.1, idle: [3, 6], walk: [1, 1.6],
       cries: ['Logging every strike. For science.', "Beep... one day it'll be my turn with the wrench.", 'Supervisor says watch first, touch nothing. Mostly the second part.'] })); }
 
+  // the organ grinder (round 1021) has wound out tunes on this quiet stretch of factory floor ever
+  // since Robot City got its own barrel organ — nobody in the whole city had ever actually stopped
+  // to listen. An elderly citizen now stands a few steps off, arms folded, toe tapping along to the tune
+  // instead of walking straight past it like everyone else here always has. *"Only tune in this
+  // whole city that doesn't need a charge."* *"Careful, puss — he's three songs deep and showing no
+  // sign of stopping."* *"Tuppence well spent. The scrap-bots don't hum half as sweet."*
+  //
+  // No new mesh or controller: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig,
+  // and `Wanderer` (55-npcs.js) gives it the same "stand and watch" behaviour the mechanic's own
+  // trainee bot above already uses, with a short leash (0.5 m) keeping it parked by the organ rather
+  // than wandering off across the factory floor. `Wanderer`'s own constructor calls `greetable()`
+  // itself, so no extra wiring is needed to make it a friend.
+  //
+  // A headless probe (the stub-three harness, `game.travel(2, 'from-prev')` waited out for real
+  // against its own portal-fade timer, then 60 simulated frames so the grinder was already in
+  // position) swept a handful of spots around the organ's own corner: (14.5, 46.5) came back clear
+  // by 3.24 m of the nearest of this city's 1206 physics boxes and 3.54 m of the nearest wandering
+  // soul — the grinder itself, 3.54 m away — and outside every one of the 296 zone rectangles
+  // `game.zones` was holding at the time. `ry` points it at the grinder rather than a fixed constant,
+  // so it reads as listening to the tune and not just standing nearby.
+  //
+  // Built dead last of everything this city adds, right after the mechanic's trainee above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this city's own shared `r()` sequence
+  // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted
+  // by it.
+  { const lx = 14.5, lz = 46.5, lry = atan2(12 - lx, 44 - lz);
+    const listener = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x3a4a52, pants: 0x2a2a30, shoes: 0x1a1a20, hat: null, jacket: 0x33404a, scarf: null, bag: null, backpack: null });
+    W.add(listener.group);
+    game.npcs.push(new Wanderer(game, listener, { x: lx, z: lz, angle: lry, leash: 0.5, speed: 0.4, r: 0.3, height: 1.6, idle: [3, 6], walk: [1, 1.6],
+      cries: ["Only tune in this whole city that doesn't need a charge.", "Careful, puss — he's three songs deep and showing no sign of stopping.", "Tuppence well spent. The scrap-bots don't hum half as sweet."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
