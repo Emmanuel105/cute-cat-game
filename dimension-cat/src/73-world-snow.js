@@ -2614,6 +2614,44 @@ function buildSnowVillage(game, entry) {
     game.npcs.push(new Wanderer(game, watcher, { x: wx, z: wz, angle: atan2(jx - wx, jz - wz), leash: 0.5, speed: 0.3, idle: [3, 6],
       cries: ["Three, in this cold. I can't even feel my own fingers.", "Mind the ice, puss — he's not the only one who could slip.", "Hasn't dropped one yet. I'm half convinced they're frozen to his hands."] })); }
 
+  // Candy Land, Robot City, Victorian, the Neighborhood and Sunny Shore have all had someone stop to
+  // watch their own `Magician` for a few rounds now (round 1097 onward) — this mountain's own, built
+  // back in round 1033, was still performing to nobody, same as the juggler above used to be. **A
+  // tourist in borrowed mittens now stands a few steps off, thermos tucked under one arm, watching the
+  // coin vanish instead of trudging on toward the village.** *"Even my cocoa's gone cold twice over
+  // and I still haven't looked away."* *"Careful, puss — he said the coin vanishes. Didn't say
+  // anything about kittens."* *"Eleven times this week. I still don't know where it goes."* Saying
+  // hello makes her the usual kind of friend.
+  //
+  // No new mesh or controller: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig,
+  // and `Wanderer` (55-npcs.js) gives her the same "stand and watch" behaviour the juggler's own
+  // watcher above already uses, with a short leash (0.5 m) keeping her parked by the magician rather
+  // than wandering off across the snowfield. `Wanderer`'s own constructor calls `greetable()` itself,
+  // so no extra wiring was needed.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.travel(5,
+  // 'from-hub')` waited out for real against its own portal-fade timer, then 60 simulated frames so
+  // the magician and the juggler's own watcher above were already in position) swept a 0.5 m grid 3-7 m
+  // out from the magician's own spot (-42, 8) against all 780 of this mountain's physics boxes, its
+  // zone list and all 114 NPCs already standing in it: (-36, 8.5) came back clearest — 6.07 m from the
+  // nearest box and 6.02 m from the nearest other soul, the magician himself, on ground sloping gently
+  // (under 5 cm per half metre across the square) rather than the flat footing most watchers get, which
+  // this mountain's own terrain rarely offers this close to anyone else. `angle` points her at the
+  // magician rather than a fixed constant, so she reads as watching the trick and not just standing
+  // nearby.
+  //
+  // Built dead last of everything this mountain adds, right after the juggler's own watcher above, for
+  // the usual reason: `makeHuman()`/`randomPerson()` both draw off this mountain's own shared `r()`
+  // sequence unconditionally, and anything built earlier would have had its own timing-sensitive pick
+  // shifted by it.
+  { const wx = -36, wz = 8.5, mx = -42, mz = 8;
+    const touristWard = makeWardrobe(r, { shirts: [0x8a5a4a, 0x4a6a5a, 0x5a4a7a], pants: [0x2a2a2a, 0x3a3a3a] });
+    const tourist = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: touristWard }),
+      hat: 'beanie', hatColor: 0x8a5a4a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a, bag: null, backpack: null, glasses: r.chance(0.3) });
+    W.add(tourist.group);
+    game.npcs.push(new Wanderer(game, tourist, { x: wx, z: wz, angle: atan2(mx - wx, mz - wz), leash: 0.5, speed: 0.3, idle: [3, 6],
+      cries: ["Even my cocoa's gone cold twice over and I still haven't looked away.", "Careful, puss — he said the coin vanishes. Didn't say anything about kittens.", "Eleven times this week. I still don't know where it goes."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

@@ -30721,3 +30721,39 @@ total went up by one (125 → 126, confirmed against `world 2: 126 to meet`). No
 in this environment (no browser, no Playwright) — only the stub-three test suite above. Six of the seven
 magicians, and the Neighborhood's own in particular, are still performing to nobody. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1098 — Frosty Peak's own magician finally gets a watcher
+
+Round 1097 gave Robot City's magician a watcher but flagged the Neighborhood's own as fragile ground —
+an earlier attempt there collided with the squirrel's own random walk through the shared `rnd()`
+sequence. This round goes after a different one instead: **a tourist in borrowed mittens now stands a
+few steps off the mountain's own magician, thermos tucked under one arm, watching the coin vanish
+instead of trudging on toward the village.** *"Even my cocoa's gone cold twice over and I still haven't
+looked away."* *"Careful, puss — he said the coin vanishes. Didn't say anything about kittens."*
+*"Eleven times this week. I still don't know where it goes."* Saying hello makes her a friend like
+anyone else up here.
+
+No new mesh or controller: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig, and
+`Wanderer` (55-npcs.js) gives her the same "stand and watch" behaviour this mountain's own juggler
+watcher already uses, with a short leash (0.5 m) keeping her parked by the magician instead of
+wandering off across the snowfield. `Wanderer`'s own constructor calls `greetable()` itself, so no extra
+wiring was needed.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.travel(5, 'from-hub')`
+waited out for real against its own portal-fade timer, then 60 simulated frames so the magician and the
+juggler's own watcher were already in position) swept a 0.5 m grid 3-7 m out from the magician's own
+spot (-42, 8) against all 780 of this mountain's physics boxes, its zone list and all 114 NPCs already
+standing in it: (-36, 8.5) came back clearest — 6.07 m from the nearest box and 6.02 m from the nearest
+other soul, the magician himself, on ground sloping gently (under 5 cm per half metre across the
+square) rather than dead flat, which this close to anyone else is about as good as this terrain offers.
+
+Built dead last of everything this mountain adds, right after the juggler's own watcher, for the usual
+reason: `makeHuman()`/`randomPerson()` both draw off this mountain's own shared `r()` sequence
+unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted by it.
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (no new collider, just a greet circle), and Frosty Peak's own friend total went up by
+one (131 → 132, confirmed against `world 5: 132 to meet` and a `git stash` diff against the previous
+commit). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above, so whether the pose actually reads as "watching" is unverified. Five of the
+seven magicians — Neighborhood, Candy Land, Victorian, Sunny Shore and Whisper Woods — are still
+performing to nobody. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
