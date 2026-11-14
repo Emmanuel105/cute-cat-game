@@ -12922,6 +12922,36 @@ function buildNeighborhood(game, entry) {
     const ft = new Vendor(game, fortuneTeller, makeCrystalBall(), { x: fx, z: fz, ry: fry });
     game.npcs.push(ft); greetable(game, ft); }
 
+  // Whisper Woods', Sunny Shore's and Frosty Peak's own jugglers have each had a watcher for a few
+  // rounds now — the Neighborhood's own, working the open grass east of the park since round 120, had
+  // never had anyone stop either. A neighbour now stands a few steps off, arms folded, watching the
+  // three balls climb and fall instead of walking past.
+  //
+  // No new mesh or controller: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig,
+  // and `Wanderer` (55-npcs.js) gives her the same "stand and watch" behaviour the other three
+  // watchers already use, with a short leash (0.5 m) keeping her parked by the juggler rather than
+  // wandering off across the grass. `Wanderer`'s own constructor calls `greetable()` itself, so no
+  // extra wiring was needed to make her a friend.
+  //
+  // A headless probe (`game.loop()` run for 60 simulated frames so the juggler was already in
+  // position, since the Neighborhood is the one world already built on module load) swept a 0.5 m
+  // grid 3-5.5 m out from the juggler's own spot (40, 40) against all 334 of this street's physics
+  // boxes, its zone list and all 88 NPCs already standing in it: (41, 44.5) came back clearest — over
+  // 10 m from the nearest box and 4.6 m from the nearest other soul, the juggler himself. `angle`
+  // points her at the juggler rather than a fixed constant, so she reads as watching the act and not
+  // just standing nearby. The explicit shirt colour (0xe07a5f) was checked against all 75 of the
+  // street's other people first — the "no two neighbours wear the same shirt" test catches a clash.
+  //
+  // Built dead last, right after the fortune teller above and right before the chestnut brazier,
+  // for the usual reason: `makeHuman()` and `randomPerson()` both draw off this street's own shared
+  // `r()` sequence unconditionally, and this is the first world the test suite builds, so anything
+  // built earlier here would have had its own timing-sensitive pick shifted by it.
+  { const wx = 41, wz = 44.5, jx = 40, jz = 40;
+    const watcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
+      shirt: 0xe07a5f, hat: null, scarf: null, jacket: null, bag: null, backpack: null }); W.add(watcher.group);
+    game.npcs.push(new Wanderer(game, watcher, { x: wx, z: wz, angle: atan2(jx - wx, jz - wz), speed: 0.3, leash: 0.5, idle: [3, 6],
+      cries: ["Three balls, same hand speed every time — I timed him once.", "Careful, puss, don't go tripping him up.", "He's out here every evening, rain or not."] })); }
+
   // Victorian, Frosty Peak, Whisper Woods, Sunny Shore, Robot City and Candy Land all have a chestnut
   // roaster going by now, each one worked by its own `Vendor` — the Neighborhood is the seventh and the
   // only one left. A new `Vendor` here is exactly what broke the chatting neighbours' test the one time

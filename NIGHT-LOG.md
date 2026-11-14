@@ -30561,3 +30561,42 @@ in this environment (no browser, no Playwright) — only the stub-three test sui
 arms-crossed pose actually reads as "watching" rather than just standing nearby is unverified. Three
 jugglers (Neighborhood, Candy Land's jester, Robot City's robot) are still performing to nobody.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1094 — the Neighborhood's own juggler finally gets a watcher
+
+Whisper Woods', Sunny Shore's and Frosty Peak's jugglers each got a watcher over the last few rounds,
+but the Neighborhood's own — working the open grass east of the park since round 120, the very first
+juggler the game ever got — had never had anyone stop either. **A neighbour now stands a few steps
+off, arms folded, watching the three balls climb and fall instead of walking past.** *"Three balls,
+same hand speed every time — I timed him once."* *"Careful, puss, don't go tripping him up."* *"He's
+out here every evening, rain or not."* Saying hello makes her a friend, same as anyone else on the
+street.
+
+No new mesh or controller: `makeHuman()`/`randomPerson()` (`55-npcs.js`) build the usual human rig,
+and `Wanderer` (`55-npcs.js`) gives her the same "stand and watch" behaviour the other three watchers
+already use, with a short leash (0.5 m) keeping her parked by the juggler rather than wandering off
+across the grass. `Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was
+needed to make her a friend.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses — the
+Neighborhood is the one world already built on module load, so no travel or click was needed, just 60
+simulated frames so the juggler was already in position) swept a 0.5 m grid 3-5.5 m out from the
+juggler's own spot (40, 40) against all 334 of this street's physics boxes, its zone list and all 88
+NPCs already standing in it: (41, 44.5) came back clearest — over 10 m from the nearest box and 4.6 m
+from the nearest other soul, the juggler himself. `angle` points her at the juggler rather than a
+fixed constant, so she reads as watching the act and not just standing nearby.
+
+Built dead last of everything this street adds, right after the fortune teller (round ~900s) and right
+before the chestnut brazier, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this
+street's own shared `r()` sequence unconditionally, and the Neighborhood is the first world the test
+suite builds, so anything built earlier would have had its own timing-sensitive pick shifted by it.
+The explicit shirt colour (0xe07a5f) was checked against all 75 of the street's other people first —
+the "no two neighbours wear the same shirt" test catches a clash.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box count
+unchanged at 334 (no new collider, just a greet circle), and the Neighborhood's own friend total went
+up by one (105 → 106, confirmed against the previous commit with `git stash`). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above, so
+whether the arms-folded pose actually reads as "watching" rather than just standing nearby is
+unverified. Two jugglers (Candy Land's jester, Robot City's robot) are still performing to nobody.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
