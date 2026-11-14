@@ -12990,6 +12990,44 @@ function buildNeighborhood(game, entry) {
     const brazierLines = ["🌰 The vents glow, the chestnuts cook, and not a soul's standing over it.", '😼 Puss sniffs the warm paper smell and finds no one to beg from.', '🏠 Somebody on this street left a fire going. Again.'];
     game.addInteractable({ obj: brazier, radius: 1.2, label: () => 'Look at the brazier', onUse: () => { SFX.click(); game.toast(rnd.pick(brazierLines), 3000); } }); }
 
+  // Six of the magician's own kin (Candy Land, Robot City, Victorian, Sunny Shore, Frosty Peak,
+  // Whisper Woods) each picked up a watcher over the last several rounds — the Neighborhood's own
+  // magician, built earlier in this file, was the last one still performing to nobody, flagged
+  // fragile each time because this street is the one world whose build-and-test window shares a
+  // single run of simulated frames with its own behaviour checks. **A neighbour now stands a few
+  // steps off, watching the coin trick instead of walking past.**
+  //
+  // No new mesh or controller: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer` gives
+  // her the same "stand and watch" behaviour every other watcher in this set already uses, with a
+  // short leash (0.5 m) keeping her parked by the magician rather than wandering off down the street.
+  // `Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was needed. Built with
+  // no `cries` at all, the same fix the fiddler, the basketball kid and the fortune teller above all
+  // needed: the first attempt gave her three lines, same as the juggler's own watcher gets away with,
+  // and it broke three unrelated checks (the squirrel's greet prompt, the HUD's friend count snapshot,
+  // a cyclist's own lane position) by shifting the shared `rnd()` sequence `Wanderer`'s `cries` branch
+  // draws from on top of the draws `Wanderer.move()` already makes on every idle→walk transition —
+  // apparently tolerable once already, not twice over. Dropping `cries` restored a clean run. The
+  // explicit shirt colour (0x7a3a9a) was checked against every other shirt on this street first — the
+  // "no two neighbours wear the same shirt" test catches a clash either way.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.loop()` run for 1800 simulated frames, since the Neighborhood is the one world already built
+  // on module load) swept a 0.25 m grid 3-4.5 m out from the magician's own spot (60, -49) against all
+  // 334 of this street's physics boxes, `game.zones` and all 89 NPCs already standing in it: (55.5,
+  // -49) came back clearest — 11.7 m from the nearest box and exactly 4.5 m from the nearest other
+  // soul, the magician himself, on flat ground (y=0) at radius 74 from the origin, well inside
+  // `P.setLimit(95)`'s own walkable edge and outside every zone. `angle` points her at the magician
+  // rather than a fixed constant, so she reads as watching the act and not just standing nearby.
+  //
+  // Built dead last, right after the brazier above and right before `makeDayNight`, for the usual
+  // reason: `makeHuman()` and `randomPerson()` both draw off this street's own shared `r()` sequence
+  // unconditionally, and this is the first world the test suite builds, so anything built earlier here
+  // would have had its own timing-sensitive pick shifted by it.
+  { const wx = 55.5, wz = -49, gx = 60, gz = -49;
+    const watcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
+      shirt: 0x7a3a9a, hat: null, scarf: null, jacket: null, bag: null, backpack: null }); W.add(watcher.group);
+    game.npcs.push(new Wanderer(game, watcher, { x: wx, z: wz, angle: atan2(gx - wx, gz - wz), speed: 0.3, leash: 0.5, idle: [3, 6] })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

@@ -30912,3 +30912,52 @@ previous commit). No visual check was possible in this environment (no browser, 
 the stub-three test suite above, so whether the pose actually reads as "watching" is unverified. Only
 one of the seven magicians — Neighborhood, still flagged fragile — is left performing to nobody.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1103 — the Neighborhood's own magician finally gets a watcher, the last of the seven
+
+Six of the magician's own kin — Candy Land, Robot City, Victorian, Sunny Shore, Frosty Peak, Whisper
+Woods — each picked up a watcher over the last several rounds. The Neighborhood's own was the one left
+standing alone each time, flagged fragile every round it came up: this street is the only world whose
+build-and-test window shares a single run of simulated frames with its own behaviour checks, so
+anything new added to it risks nudging the shared `rnd()` sequence other, unrelated checks depend on.
+**A neighbour now stands a few steps off the magician's own lawn, watching the coin trick instead of
+walking past.** No lines for her this time — more on that below.
+
+No new mesh or controller: `makeHuman()`/`randomPerson()` build the usual rig, and `Wanderer`
+(55-npcs.js) gives her the same "stand and watch" behaviour every other watcher in this set already
+uses, with a short leash (0.5 m) keeping her parked by the magician rather than wandering off down the
+street. `Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was needed.
+
+The first attempt gave her three lines of banter, the same `cries` every other magician's watcher in
+this set carries. It broke the build: `node test/run.mjs` failed three checks that have nothing to do
+with the magician at all — the squirrel's own greet prompt, the HUD's friend-count snapshot, and a
+cyclist's own lane position a few seconds into the drive. All three read off the shared `rnd()`
+sequence at specific points in the same frame run this street's own test window shares with its build,
+and `Wanderer.move()` already draws from that sequence on every idle→walk transition regardless of
+`cries` — the juggler's own watcher (a few rounds back) proved that much is tolerable. A second,
+independent draw from the `cries` branch on top of it was apparently one too many. Dropping `cries`
+entirely — the same fix the fiddler, the basketball kid and the fortune teller needed earlier in this
+same file — put the run back to clean. So this watcher, alone among her own kind in every other world,
+watches in silence.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.loop()` run for 1800 simulated frames, since the Neighborhood is the one world already built on
+module load) swept a 0.25 m grid 3-4.5 m out from the magician's own spot (60, -49) against all 334 of
+this street's physics boxes, `game.zones` and all 89 NPCs already standing in it: (55.5, -49) came back
+clearest — 11.7 m from the nearest box and exactly 4.5 m from the nearest other soul, the magician
+himself, on flat ground (y=0) at radius 74 from the origin, well inside `P.setLimit(95)`'s own walkable
+edge and outside every zone. `angle` points her at the magician rather than a fixed constant, so she
+reads as watching the act and not just standing nearby. The explicit shirt colour (0x7a3a9a) was
+checked against every other shirt on this street first.
+
+Built dead last, right after the untended chestnut brazier and right before `makeDayNight`, for the
+usual reason: `makeHuman()` and `randomPerson()` both draw off this street's own shared `r()` sequence
+unconditionally, and this is the first world the test suite builds, so anything built earlier here
+would have had its own timing-sensitive pick shifted by it. `node dimension-cat/test/run.mjs` ran
+clean on the second attempt: exit 0, all 277 checks `ok`, 0 console warnings, box count unchanged at
+334 (no new collider, just a greet circle), and the Neighborhood's own friend total went up by one
+(106 → 107, confirmed against `world 0: 107 to meet` and a `git stash` diff against the previous
+commit). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above, so whether the pose actually reads as "watching" is unverified. All seven
+of the game's magicians now have someone standing by. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
