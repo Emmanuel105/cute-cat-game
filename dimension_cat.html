@@ -31007,6 +31007,46 @@ function buildForest(game, entry) {
     game.npcs.push(new Wanderer(game, forager, { x: fwx, z: fwz, angle: fwry, leash: 0.5, speed: 0.4, r: 0.3, idle: [3, 6], walk: [1, 1.6],
       cries: ["Thought I'd seen every trick these woods had. Not this one.", "Mind the basket, puss — knock it and we're both down on our knees sorting caps from leaves.", "Half-full an hour ago, half-full now. Some things are worth the standing still for."] })); }
 
+  // Victorian, Candy Land, Robot City, the Neighborhood, Sunny Shore and Frosty Peak have all had
+  // someone stop to listen to their own organ grinder for several rounds now — this wood's own barrel
+  // organ, built east of the fiddler a few rounds back, was the last of the seven still playing to
+  // nobody. **A woodland local now stands a few steps north-east of the organ, arms folded, listening
+  // instead of walking on past.** *"Thirty tunes in the barrel, and I think I've found the one I
+  // like best."* *"Careful, puss — he's three songs deep and the damp hasn't slowed him down yet."*
+  // *"Even the owls stop for this one. Can't say I'm any wiser than they are."* Saying hello makes her
+  // the usual kind of friend. Every organ grinder in the game now has somebody stopped to listen.
+  //
+  // No new mesh or controller: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig,
+  // and `Wanderer` (55-npcs.js) gives her the same "stand and watch" behaviour every other
+  // organ-grinder listener in this game already uses, with a short leash (0.5 m) keeping her parked by
+  // the organ rather than wandering off across the forest floor. `Wanderer`'s own constructor calls
+  // `greetable()` itself, so no extra wiring was needed.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, `game.travel(6, 'from-hub')` waited out for real
+  // against its own portal-fade timer — a real 700 ms sleep, since `travel()`'s fade runs on a genuine
+  // `setTimeout`, not simulated frames — then 3600 simulated frames so the grinder was well into his
+  // own cranking) swept a 0.25 m grid 3-6 m out from the grinder's own spot (50.5, -11.5) against all
+  // 670 of this wood's own physics boxes, its 229 `game.zones` rectangles and all 136 NPCs already
+  // standing in it: (55.5, -14.75) came back clearest — 5.58 m from the nearest box, 6.52 m from the
+  // nearest zone rectangle and exactly 5.96 m from the nearest other soul, the grinder himself, on
+  // ground levelling out at 0.99 m with under 2 cm of slope across a 0.25 m square — well clear of the
+  // fiddler at (51, -20) and the herbalist's stall at (51, 17) above. `angle` points her at the
+  // grinder rather than a fixed constant, so she reads as listening to the tune and not just standing
+  // nearby.
+  //
+  // Built dead last, right after the forager above and right before the squirrel spawn point, for the
+  // usual reason: `makeHuman()` and `randomPerson()` both draw off this wood's own shared `r()`
+  // sequence unconditionally, and anything built earlier would have had its own timing-sensitive pick
+  // shifted by it.
+  { const wx = 55.5, wz = -14.75, gx = 50.5, gz = -11.5;
+    const listenWard = makeWardrobe(r, { shirts: [0x4a6a7a, 0x8a5a6a, 0x6a7a3a], pants: [0x3a3a2a, 0x2a2a2a], shoes: [0x3a2a1e, 0x2a2018] });
+    const listener = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: listenWard }),
+      hat: r.chance(0.3) ? 'flatcap' : null, hatColor: 0x3a4030, bag: null, backpack: null, glasses: r.chance(0.2) });
+    W.add(listener.group);
+    game.npcs.push(new Wanderer(game, listener, { x: wx, z: wz, angle: atan2(gx - wx, gz - wz), leash: 0.5, speed: 0.3, idle: [3, 6],
+      cries: ["Thirty tunes in the barrel, and I think I've found the one I like best.", "Careful, puss — he's three songs deep and the damp hasn't slowed him down yet.", "Even the owls stop for this one. Can't say I'm any wiser than they are."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

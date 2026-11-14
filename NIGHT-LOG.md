@@ -31113,3 +31113,45 @@ browser, no Playwright) — only the stub-three test suite above, so whether the
 (stuck on an old ref, same recurring drift this log has caught a few rounds running now) — fast-forwarded
 it cleanly (a strict ancestor, nothing to rebase) before starting this round's own change. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1108 — Whisper Woods' own organ grinder finally gets a listener, the last of the seven
+
+Victorian, Candy Land, Robot City, the Neighborhood, Sunny Shore and Frosty Peak all picked up a
+listener for their own street organ grinder over the last several rounds — Whisper Woods' own barrel
+organ, built east of the fiddler a few rounds back, was the last of the seven still playing to nobody.
+**A woodland local now stands a few steps north-east of the organ, arms folded, listening instead of
+walking on past.** *"Thirty tunes in the barrel, and I think I've found the one I like best."*
+*"Careful, puss — he's three songs deep and the damp hasn't slowed him down yet."* *"Even the owls
+stop for this one. Can't say I'm any wiser than they are."* Saying hello makes her the usual kind of
+friend. Every organ grinder in the game now has somebody stopped to listen.
+
+No new mesh or controller: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig, and
+`Wanderer` (55-npcs.js) gives her the same "stand and watch" behaviour every other organ-grinder
+listener in this game already uses, with a short leash (0.5 m) keeping her parked by the organ rather
+than wandering off across the forest floor. `Wanderer`'s own constructor calls `greetable()` itself, so
+no extra wiring was needed.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(6, 'from-hub')` waited out for real against
+its own portal-fade timer — a real 700 ms sleep, since `travel()`'s fade runs on a genuine `setTimeout`,
+not simulated frames — then 3600 simulated frames so the grinder was well into his own cranking) swept
+a 0.25 m grid 3-6 m out from the grinder's own spot (50.5, -11.5) against all 670 of this wood's own
+physics boxes, its 229 `game.zones` rectangles and all 136 NPCs already standing in it: (55.5, -14.75)
+came back clearest — 5.58 m from the nearest box, 6.52 m from the nearest zone rectangle and exactly
+5.96 m from the nearest other soul, the grinder himself, on ground levelling out at 0.99 m with under
+2 cm of slope across a 0.25 m square — well clear of the fiddler at (51, -20) and the herbalist's stall
+at (51, 17). `angle` points her at the grinder rather than a fixed constant, so she reads as listening
+to the tune and not just standing nearby.
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt: exit 0, all 277 checks `ok`, 0 console
+warnings, box count unchanged at 334 (no new collider, just a greet circle), and Whisper Woods' own
+friend total went up by one (159 → 160, confirmed against `world 6: 160 to meet`). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above, so
+whether the pose actually reads as "listening" is unverified. Every organ grinder in the game now has
+someone stopped to listen to it — the set that started with Robot City back around round 1021 is
+finally closed. Also found on the way in: 21 commits from earlier rounds (round 1087 through round
+1107) had been made on a detached `HEAD` and never reached `origin/main` by the time this round started
+— the same recurring drift this log has now caught several rounds running — fast-forwarded local `main`
+to that work and confirmed it was already on `origin/main` (a stale local ref from before this session's
+first `git fetch`, not actually lost work) before starting this round's own change. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
