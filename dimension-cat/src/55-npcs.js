@@ -2410,3 +2410,39 @@ class Cyclist extends Vehicle {
   }
 }
 
+// ---------------------------------------------------------------- unicyclist: rides a short strip and back, pedals turning the one wheel beneath, arms out for balance
+class Unicyclist {
+  constructor(game, rig, uni, { a, b, speed = 1.6, seat = 0.95, pause = [1, 2.2], cries = null, cryIcon = '🎪' }) {
+    this.game = game; this.rig = rig; this.uni = uni; this.a = a; this.b = b; this.speed = speed; this.pauseRange = pause;
+    this.k = 0; this.dir = 1; this.wait = rnd.range(...pause); this.t = rnd() * 10;
+    this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false; this.state = 'idle'; this.timer = 0;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    game.world.add(uni.group);
+    rig.group.position.set(0, seat - 0.9 * rig.k, 0); uni.group.add(rig.group);
+    this.x = a[0]; this.z = a[1]; this.circle = game.physics.addCircle(this, this.x, this.z, 0.35);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const [ax, az] = this.a, [bx, bz] = this.b, dx = bx - ax, dz = bz - az, L = Math.hypot(dx, dz), heading = atan2(dx, dz);
+    if (this.wait > 0) this.wait -= dt;
+    else {
+      this.k += this.dir * this.speed * dt / L;
+      if (this.k >= 1) { this.k = 1; this.dir = -1; this.wait = rnd.range(...this.pauseRange); }
+      else if (this.k <= 0) { this.k = 0; this.dir = 1; this.wait = rnd.range(...this.pauseRange); }
+    }
+    const x = ax + dx * this.k, z = az + dz * this.k, y = this.game.physics.ground0(x, z);
+    this.x = x; this.z = z; this.circle.x = x; this.circle.z = z;
+    this.uni.group.position.set(x, y, z); this.uni.group.rotation.y = this.dir >= 0 ? heading : heading + PI;
+    const roll = this.wait > 0 ? 0 : this.speed * 2.6;
+    for (const w of this.uni.wheels) w.rotation.x += this.dir * roll * dt;
+    this.uni.crank.rotation.x += this.dir * roll * dt;
+    const rig = this.rig, ph = this.uni.wheels[0].rotation.x;
+    rig.animate(0, false, dt, this.t);
+    rig.legs.forEach((L, i) => { const p = ph + i * PI; L.hip.rotation.x = -1.0 + sin(p) * 0.5; L.knee.rotation.x = 1.0 + cos(p) * 0.55; L.ankle.rotation.x = 0.25; });
+    if (!rig.gesture) for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -0.15, 8, dt); A.sh.rotation.z = damp(A.sh.rotation.z, (A === rig.arms[0] ? 1 : -1) * (1.05 + sin(this.t * 1.3 + (A === rig.arms[0] ? 0 : PI)) * 0.18), 8, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.12, 8, dt); }
+    rig.group.rotation.z = sin(this.t * 1.7) * 0.05;   // a small side-to-side wobble, balancing on the one wheel
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+

@@ -824,6 +824,21 @@ function makeBike(color = 0xd62839) {
   g.userData.crank = crank;
   return { group: g, wheels, crank };
 }
+/** A unicycle: a single wheel in a wishbone fork, cranked pedals mounted straight on its own hub, a short seat post up to the saddle — no handlebars, the rider's hands are free. Same wheel-plus-crank shape `makeBike()` already builds, just the one wheel and no frame to speak of. */
+function makeUnicycle(color = 0xd62839) {
+  const g = new THREE.Group(), frame = mat(color, { roughness: 0.4, metalness: 0.3 }), dark = mat(0x1e1a18, { roughness: 0.8 }), rim = mat(0xc8ccd2, { metalness: 0.6, roughness: 0.4 });
+  const wheel = group(0, 0.32, 0, g), wheels = [wheel];
+  mesh(G.torus(0.3, 0.05, 6, 22), dark, { ry: PI / 2, parent: wheel });
+  mesh(G.cyl(0.27, 0.27, 0.02, 12), rim, { rz: PI / 2, shadow: 'none', parent: wheel });
+  for (let i = 0; i < 3; i++) mesh(G.box(0.012, 0.54, 0.012), rim, { rx: i * PI / 3, shadow: 'none', parent: wheel });
+  const tube = (x1, y1, z1, x2, y2, z2, r = 0.02) => { const L = Math.hypot(x2 - x1, y2 - y1, z2 - z1), t = group((x1 + x2) / 2, (y1 + y2) / 2, (z1 + z2) / 2, g); t.lookAt(x2, y2, z2); mesh(G.cyl(r, r, L, 6), frame, { rx: PI / 2, parent: t }); };
+  for (const s of [1, -1]) tube(s * 0.05, 0.32, 0, s * 0.03, 0.9, 0);   // the fork, wrapping the wheel on both sides, hub to seat
+  mesh(G.cyl(0.02, 0.02, 0.12, 8), frame, { y: 0.95, parent: g });        // short seat post
+  mesh(G.box(0.2, 0.05, 0.12), dark, { y: 1.02, parent: g });             // saddle
+  const crank = group(0, 0.32, 0, g); for (const s of [1, -1]) { mesh(G.box(0.03, 0.17, 0.03), rim, { x: s * 0.1, y: s * 0.07, parent: crank }); mesh(G.box(0.1, 0.03, 0.06), dark, { x: s * 0.16, y: s * 0.14, parent: crank }); }
+  g.userData.crank = crank;
+  return { group: g, wheels, crank };
+}
 /** A kettle barbecue: a domed bowl on three splayed legs, a grate with a couple of patties, coals glowing underneath, and its own lid lifted off and leaning against the bowl. `userData.update` flickers the coals and their light. */
 function makeGrill() {
   const g = new THREE.Group(), body = mat(0x2e3a3e, { roughness: 0.45, metalness: 0.4 }), steel = mat(0x9aa3ad, { roughness: 0.35, metalness: 0.6 });

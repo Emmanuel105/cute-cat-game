@@ -30258,3 +30258,40 @@ browser, no Playwright) — only the stub-three test suite above, so whether the
 following the game rather than just standing nearby, or whether her bundled coat looks right next to the
 baller's bare-armed jersey, is unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 1085 — Candy Land gets its own unicyclist
+
+This land already has a juggler by the throne, a stilt walker south of the sweet-lands and a girl
+chalking hopscotch — every street act in the game so far has kept both feet on the ground or a ball in
+the air, and across 1084 rounds nobody had ever actually balanced on a single wheel. **A performer in a
+gold-trimmed unicycle now rides a short stretch of open grass between the castle and the hand-placed
+candy-cane belt, out and back, pedalling the whole way with both arms thrown wide for balance.** *"Nobody's
+seen me fall yet — and I'm not starting today."* *"Careful, puss — one wheel, no room for passengers."*
+*"Thirty metres of pavement would be nice. Six will do."* Saying hello makes him the usual kind of
+friend.
+
+New `Unicyclist` class (`55-npcs.js`) and `makeUnicycle()` prop (`60-props.js`, the same wheel-plus-crank
+shape `makeBike()` already builds for the game's cyclists, just the one wheel in a wishbone fork and no
+handlebars — the rider's hands are free). The legs pedal in a circle exactly like `Cyclist`'s own riders,
+timed off the wheel's own rotation rather than a walk cycle, and the whole rig rocks gently side to side
+on a wobble a two-wheeled bike never needs. No new physics box beyond the usual 0.35 m greet circle —
+the rider's own hips are parented straight into the unicycle's own group, so one `position.set` a frame
+moves both.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(1, 'from-prev')` waited out for real against its own portal-fade
+timer, then 3000 simulated frames sampling every NPC's own position every tenth frame) swept a line in
+0.25 m steps from (13, 2) to (19, 2): the whole six metres came back clear by at least 5.80 m of the
+nearest of this land's 1891 physics boxes and 13.23 m of the nearest wandering soul the entire way, well
+short of the cane-forest ring (radius 56) and 15 m from the Neighborhood portal at (7, 11), so the cat
+sees the act on the way in without ever riding through it. Built dead last of everything this land adds,
+right after the chocolate river's own second water wheel, since `makeHuman()` and `randomPerson()` both
+draw off this land's own shared `r()` sequence unconditionally.
+
+`node dimension-cat/test/run.mjs` ran clean twice in a row: exit 0, every check `ok`, 0 console
+warnings, box count unchanged at 334 (no new collider, just a greet circle), and Candy Land's own friend
+total went up by one (113 → 114) as expected, confirmed against the previous commit with `git stash`. No
+visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
+suite above, so whether the pedalling actually reads as circular rather than just twitchy, or whether
+the wobble looks like balance rather than a glitch, is unverified. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

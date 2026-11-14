@@ -6895,6 +6895,35 @@ function buildCandyLand(game, entry) {
   // simulated frames, and that the world's own `U` list is still the only thing driving it.
   place(game, U, makeWaterWheel(), -150, -14.7, PI);
 
+  // this land has a juggler, a stilt walker and a chalker, every street act keeping both feet down or a
+  // ball in the air — never anyone balanced on a single wheel. A performer now rides a short stretch of
+  // open grass on a unicycle, out and back, pedalling the whole way, both arms thrown wide for balance.
+  // New `Unicyclist` class (`55-npcs.js`) and `makeUnicycle()` prop (`60-props.js`, the same wheel-plus-
+  // crank shape `makeBike()` already builds, just the one wheel in a wishbone fork and no handlebars)
+  // — the legs pedal in a circle exactly like `Cyclist`'s own riders, timed off the wheel's own rotation
+  // rather than a walk cycle, and the whole rig rocks gently side to side on the wobble a unicycle
+  // actually has that a bike never does.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` uses: `game.start('new')`,
+  // `game.travel(1, 'from-prev')` waited out for real against its own portal-fade timer, then 3000
+  // simulated frames sampling every NPC's own position every tenth frame) swept a line in 0.25 m steps
+  // from (13, 2) to (19, 2), between the castle and the hand-placed cane belt: the whole six metres came
+  // back clear by at least 5.80 m of the nearest of this land's 1891 physics boxes and 13.23 m of the
+  // nearest wandering soul the entire way, well short of the cane-forest ring (radius 56) and 15 m from
+  // the Neighborhood portal at (7, 11), so the cat sees the act on the way in without ever riding through it.
+  //
+  // Built dead last of everything this land adds, right after the chocolate river's own water wheel, for
+  // the usual reason: `makeHuman()` and `randomPerson()` both draw off this land's own shared `r()`
+  // sequence unconditionally, and anything built earlier would have had its own timing-sensitive pick
+  // shifted by it. `Unicyclist`'s own draws (`this.t`, `this.wait`, `this.cryT`) come off the shared
+  // global `rnd()`, not this land's `r()`, so it costs nothing later either way.
+  { const uniWard = makeWardrobe(r, { shirts: [0x7fd7ff, 0xff6fb5], pants: [0x1a1a1a] });
+    const rider = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: uniWard }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(rider.group);
+    game.npcs.push(new Unicyclist(game, rider, makeUnicycle(0xffd54a), { a: [13, 2], b: [19, 2], cryIcon: '🎪',
+      cries: ["Nobody's seen me fall yet — and I'm not starting today.", 'Careful, puss — one wheel, no room for passengers.', "Thirty metres of pavement would be nice. Six will do."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
