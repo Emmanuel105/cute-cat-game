@@ -25072,6 +25072,39 @@ function buildBeach(game, entry) {
     game.npcs.push(new Wanderer(game, beachPerson(r.chance(0.5), false), { x: wx, z: wz, angle: atan2(jx - wx, jz - wz), speed: 0.3, leash: 0.5, idle: [3, 6],
       cries: ["Three's easy, he says. Try telling that to the rest of us.", "Careful, puss — don't go under his feet.", "I've been watching ten minutes and he hasn't dropped one yet."] })); }
 
+  // Victorian, Candy Land, Robot City and the Neighborhood all got a listener for their own street
+  // organ grinder (rounds 1088, 1090, 1091, 1104), but none of the three terrain worlds did — this
+  // beach's own barrel organ, cranking away in the dunes' south-west corner since round 1024, has
+  // played to nobody the whole time. **A beachgoer now stands a few steps north of the organ,
+  // arms folded, listening instead of walking on.** *"Tuppence a tune and sand in every gear —
+  // somehow it never misses a beat."* *"Careful, puss — he's three songs deep and in no hurry to
+  // stop."* *"Half the dunes can hear this, whether they asked to or not."* Saying hello makes her
+  // the usual kind of friend.
+  //
+  // No new mesh or controller: `beachPerson()` (this world's own wardrobe helper, defined at the top
+  // of `buildBeach`) builds the usual human rig, and `Wanderer` (55-npcs.js) gives her the same
+  // "stand and watch" behaviour every other organ-grinder listener in this game already uses, with a
+  // short leash (0.5 m) keeping her parked by the organ rather than wandering off across the dunes.
+  // `Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was needed.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, `game.travel(4, 'from-hub')` waited out for real
+  // against `game.worldIndex`, then 1800 simulated frames so the grinder was already in position)
+  // swept a 0.25 m grid 3-5 m out from the organ's own spot (-37.5, -39) against all 262 of this
+  // beach's own physics boxes, `game.zones` and all 119 NPCs already standing in it: (-37.5, -34),
+  // five metres due north, came back clearest — 4.96 m from the nearest box and exactly 5 m from the
+  // nearest other soul (the grinder himself), on ground levelling out at 0.615 m with well under a
+  // centimetre of slope across a 0.5 m square. `angle` points her at the grinder rather than a fixed
+  // constant, so she reads as listening to the tune and not just standing nearby.
+  //
+  // Built dead last of everything this beach adds, right after the juggler's own watcher above, for
+  // the usual reason: `beachPerson()`/`randomPerson()` both draw off this beach's own shared `r()`
+  // sequence unconditionally, and anything built earlier would have had its own timing-sensitive pick
+  // shifted by it.
+  { const wx = -37.5, wz = -34, gx = -37.5, gz = -39;
+    game.npcs.push(new Wanderer(game, beachPerson(r.chance(0.5), false), { x: wx, z: wz, angle: atan2(gx - wx, gz - wz), speed: 0.3, leash: 0.5, idle: [3, 6],
+      cries: ['Tuppence a tune and sand in every gear — somehow it never misses a beat.', "Careful, puss — he's three songs deep and in no hurry to stop.", 'Half the dunes can hear this, whether they asked to or not.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

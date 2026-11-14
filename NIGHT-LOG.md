@@ -31042,3 +31042,37 @@ unverified. Also found on the way in: local `main` was 18 commits behind `origin
 ref from before the detached-HEAD recovery two rounds back) — fast-forwarded it before starting this
 round's own change, with nothing to rebase. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 1106 — Sunny Shore's own organ grinder finally gets a listener
+
+Victorian, Candy Land, Robot City and the Neighborhood all picked up a listener for their own street
+organ grinder over the last several rounds, but none of the three terrain worlds did — Sunny Shore's
+own barrel organ, cranking away in the dunes' south-west corner since round 1024, has played to
+nobody the whole time it's been there. **A beachgoer now stands five metres north of the organ, arms
+folded, listening instead of walking on.** *"Tuppence a tune and sand in every gear — somehow it
+never misses a beat."* *"Careful, puss — he's three songs deep and in no hurry to stop."* *"Half the
+dunes can hear this, whether they asked to or not."* Saying hello makes her the usual kind of friend.
+
+No new mesh or controller: `beachPerson()` (this world's own wardrobe helper in `72-world-beach.js`)
+builds the usual human rig, and `Wanderer` (`55-npcs.js`) gives her the same "stand and watch"
+behaviour every other organ-grinder listener in this game already uses, with a short leash (0.5 m)
+keeping her parked by the organ rather than wandering off across the dunes. `Wanderer`'s own
+constructor calls `greetable()` itself, so no extra wiring was needed to make her a friend.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(4, 'from-hub')` waited out for real against
+`game.worldIndex`, then 1800 simulated frames so the grinder was already in position) swept a 0.25 m
+grid 3-5 m out from the organ's own spot (-37.5, -39) against all 262 of this beach's own physics
+boxes, `game.zones` and all 119 NPCs already standing in it: (-37.5, -34), five metres due north, came
+back clearest — 4.96 m from the nearest box and exactly 5 m from the nearest other soul (the grinder
+himself), on ground levelling out at 0.615 m with well under a centimetre of slope across a 0.5 m
+square. `angle` points her at the grinder rather than a fixed constant, so she reads as listening to
+the tune and not just standing nearby.
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt: exit 0, all 277 checks `ok`, 0
+console warnings, box count unchanged at 334 (no new collider, just a greet circle), and Sunny
+Shore's own friend total went up by one (135 → 136, confirmed against `world 4: 136 to meet`). No
+visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
+suite above, so whether the pose actually reads as "listening" is unverified. Frosty Peak's and
+Whisper Woods' own organ grinders are the two still left without one. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
