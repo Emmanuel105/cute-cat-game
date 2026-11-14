@@ -13011,6 +13011,41 @@ function buildVictorian(game, entry) {
     const custLines = ["Tuppence well spent — can't walk into the club with scuffed boots.", "Mind the cat doesn't trip the boy mid-polish.", "There. Now I'll actually be seen in these."];
     game.npcs.push(new Charger(game, customer, { x: 34, z: -20, ry: PI / 2, cryIcon: '👞', cries: custLines })); }
 
+  // the market square's own bootblack boy (above, by the fountain) has been scrubbing an unseen boot
+  // since the round that built him — the exact same half-finished vignette the back-lane shoeshine boy
+  // just had closed for him two blocks up. **A bonneted matron now stands over the shine box's far
+  // side, boot propped on its rest while the boy works.** *"Mind you don't miss a spot, there's a good
+  // lad."* *"The cat can wait its turn — I was here first."* *"Tuppence, and worth every farthing for
+  // a shine this good."*
+  //
+  // Reuses `Charger` verbatim, the same fix the back-lane customer just above used: an idle standing
+  // pose and nothing else, greet-only, no new collider beyond the usual 0.35 m circle. The bootblack's
+  // own shine box sits at `(boxX, boxZ) = (bx + sin(ry) * 0.32, bz + cos(ry) * 0.32)` off his build
+  // above (`bx = 2, bz = -41, ry = atan2(0 - bx, -34 - bz)`); the matron stands 0.75 m further out
+  // along that same facing line, facing back the opposite way (`ry + PI`) — the box between the two of
+  // them exactly as it sits between the back-lane pair.
+  //
+  // A headless probe (the stub-three harness `test/run.mjs` itself uses: `game.start('new')`, then
+  // `game.travel(1, 'from-prev')`, `game.travel(2, 'from-prev')` and `game.travel(3, 'from-prev')`,
+  // each waited out for real against its own portal-fade timer) found that spot clear by 0.60 m of the
+  // nearest of this town's 664 physics boxes (the shine box itself) and 1.07 m of the nearest other
+  // soul (the bootblack, the only one who ever stands this close to anybody). Still inside the same
+  // market-square zone the bootblack himself already stands in — a paved plaza full of standing
+  // townsfolk, not a road the cat needs clear — so that's expected, not a problem.
+  //
+  // Built dead last of everything this town adds, right after the back-lane customer above, for the
+  // same reason given there: `makeHuman()` and `randomPerson()` both draw off this town's own shared
+  // `r()` sequence unconditionally, and anything built earlier would have had its own timing-sensitive
+  // pick shifted by it.
+  { const bx2 = 2, bz2 = -41, ry2 = atan2(0 - bx2, -34 - bz2);
+    const boxX2 = bx2 + sin(ry2) * 0.32, boxZ2 = bz2 + cos(ry2) * 0.32;
+    const mx = boxX2 + sin(ry2) * 0.75, mz = boxZ2 + cos(ry2) * 0.75, mry = ry2 + PI;
+    const matron = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: r.chance(0.5) }),
+      sleeves: true, dress: 0x8a2a3a, sash: 0xd4af37, hat: 'bonnet', hatColor: 0x8a2a3a, scarf: null, jacket: null, bag: null, backpack: null, glasses: r.chance(0.2) });
+    W.add(matron.group);
+    const matronLines = ["Mind you don't miss a spot, there's a good lad.", "The cat can wait its turn — I was here first.", "Tuppence, and worth every farthing for a shine this good."];
+    game.npcs.push(new Charger(game, matron, { x: mx, z: mz, ry: mry, cryIcon: '👞', cries: matronLines })); }
+
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);

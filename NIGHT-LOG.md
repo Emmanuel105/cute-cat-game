@@ -30320,3 +30320,27 @@ was possible in this environment (no browser, no Playwright) — only the stub-t
 so whether the second rider's pose actually reads as sitting rather than floating, or whether two
 riders on opposite seats look balanced rather than lopsided, is unverified. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1087 — Victorian's market-square bootblack finally gets a customer
+
+The back-lane shoeshine boy got a customer last round, but the town's *other* bootblack — the one
+working the market square by the fountain, built several rounds earlier — had been scrubbing an unseen
+boot the whole time too, same half-finished gap. **A bonneted matron now stands over his shine box's
+far side, boot propped on the rest while he works.** *"Mind you don't miss a spot, there's a good lad."*
+*"The cat can wait its turn — I was here first."* *"Tuppence, and worth every farthing for a shine this
+good."*
+
+No new mesh or controller: reuses `Charger` verbatim, same as the back-lane fix — an idle standing pose,
+greet-only, no new collider beyond the usual 0.35 m circle. She stands 0.75 m past the shine box along
+the same line the boy already faces it from, facing back the opposite way, the box between them exactly
+like the back-lane pair.
+
+A headless probe (the stub-three test harness itself, real town built via sequential `travel(1/2/3,
+'from-prev')` each waited out against its own portal-fade timer) found the spot clear by 0.60 m of the
+nearest of this town's 664 physics boxes (the shine box itself) and 1.07 m of the nearest other soul
+(the boy, the only one who ever stands this close). `node dimension-cat/test/run.mjs`: exit 0, every
+check `ok`, 0 console warnings, box count unchanged at 334, Victorian's friend total up by one (157 →
+158, confirmed against the previous commit with `git stash`). No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three suite above, so whether the pose actually
+reads as "waiting for a shine" rather than just standing nearby is unverified. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
