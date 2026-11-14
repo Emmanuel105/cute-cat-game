@@ -30295,3 +30295,28 @@ visual check was possible in this environment (no browser, no Playwright) — on
 suite above, so whether the pedalling actually reads as circular rather than just twitchy, or whether
 the wobble looks like balance rather than a glitch, is unverified. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1086 — Candy Land's carousel gets a second rider
+
+The sweet-lands' carousel (round 525) has turned with exactly one gingerbread rider on its green seat
+ever since — five of its six candy-striped seats have sat empty the whole time. **A second
+gingerbread man now rides the pink seat opposite, orbiting the centre pole right alongside the
+first.** *"Round and round — and two riders along for the ride now."* *"Four empty seats left. The
+green one and the pink one are taken."* *"Spins on its own, mostly. Two gingerbread men never seem
+to mind the company."*
+
+No new mesh, no new controller, no new physics box: `makeGingerbread()` builds the same rig the first
+rider already uses, parented straight onto `carousel.pivot` (`70-worlds.js`, Candy Land's build) so it
+spins for free alongside the first — pure set dressing, same as before, not a friend to meet. The only
+new arithmetic is the seat position: seat index 0 sits at angle `a = 0`, so local `(sx, sz) = (cos(0) *
+1.3, sin(0) * 1.3) = (1.3, 0)`, the mirror image of the first rider's seat (index 3, `a = PI`, local
+`(-1.3, 0)`). Both seats share the same seat-top height regardless of angle, so the rig still sits at
+local `y = 0.76`. Facing outward works out to `rotation.y = PI/2 - a` generally — the first rider's own
+`-PI/2` is just that formula evaluated at `a = PI` — so the new seat at `a = 0` gets `PI/2`.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count
+unchanged at 334 (no new collider, the ride's own existing box already covers it). No visual check
+was possible in this environment (no browser, no Playwright) — only the stub-three test suite above,
+so whether the second rider's pose actually reads as sitting rather than floating, or whether two
+riders on opposite seats look balanced rather than lopsided, is unverified. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

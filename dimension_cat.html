@@ -13727,7 +13727,20 @@ function buildCandyLand(game, entry) {
       rider.group.position.set(-1.3, 0.76, 0);
       rider.group.rotation.y = -PI / 2;   // facing outward, away from the centre pole, along local -X
       carousel.pivot.add(rider.group); }
-    const carouselLines = ['🎠 "Round and round — and one rider finally along for the ride."', '🎠 "Five empty seats now. The green one\'s taken."', '🎠 "Spins on its own, mostly. One gingerbread man never seems to mind the company."'];
+    // a second rider, finally, on the pink seat (seat index 0: `a = 0`, so local (sx, sz) =
+    // (cos(0) * 1.3, sin(0) * 1.3) = (1.3, 0)). Same seat-top math as the green seat's own rider —
+    // the formula doesn't depend on which seat it is, only the radius, so the rig still sits at local
+    // y = 0.76 with its feet on the cushion. Outward at this seat points along local +X rather than
+    // -X, so the facing angle flips sign too: for a seat at angle `a` from the centre, facing outward
+    // works out to `rotation.y = PI/2 - a` (the green seat's own `-PI/2` is just this formula at
+    // a = PI); at a = 0 that's `PI/2`. Parented to the same `carousel.pivot`, so it orbits for free
+    // alongside the first rider — pure set dressing again, no greeting, no physics box, no draw from
+    // this world's own seeded `r` or the shared `rnd()` sequence.
+    { const rider2 = makeGingerbread();
+      rider2.group.position.set(1.3, 0.76, 0);
+      rider2.group.rotation.y = PI / 2;   // facing outward, away from the centre pole, along local +X
+      carousel.pivot.add(rider2.group); }
+    const carouselLines = ['🎠 "Round and round — and two riders along for the ride now."', '🎠 "Four empty seats left. The green one and the pink one are taken."', '🎠 "Spins on its own, mostly. Two gingerbread men never seem to mind the company."'];
     game.addInteractable({ obj: carousel.group, radius: 3.4, label: () => 'Look at the carousel', onUse: () => { SFX.click(); game.toast(rnd.pick(carouselLines), 3000); } }); }
   // the Candy Queen's castle, up the lane to the north — houmoungous, and you can walk right in — with a little candy village on the approach
   game.zones.addCircle(0, 150, 27);
