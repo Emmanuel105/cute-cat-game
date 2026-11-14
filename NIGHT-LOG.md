@@ -30679,3 +30679,45 @@ in this environment (no browser, no Playwright) — only the stub-three test sui
 page's pose actually reads as "watching" rather than just standing nearby is unverified. Every juggler
 in the game now has someone watching. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 1097 — Robot City's own magician finally gets a watcher
+
+Every juggler in the game got a watcher over the last several rounds, but all seven `Magician`s
+(55-npcs.js, round 1027 onward) have worked alone the whole time, despite this city's own already
+boasting "Not a single neighbour's ever caught how it's done, and they've all been watching for
+years" — nobody had, because there was nobody there. **A technician now lingers a few steps off this
+city's own magician, watching the coin vanish instead of walking past it.** *"Not a single circuit
+board out here has ever caught how that coin moves."* *"Careful, puss — don't spook him mid-trick."*
+*"He's done that vanish every shift for a year. I still don't know where it goes."* Saying hello makes
+her a friend, same as anyone else in the city.
+
+No new mesh or controller: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig, and
+`Wanderer` (55-npcs.js) gives her the same "stand and watch" behaviour every watcher in this game
+already uses, with a short leash (0.5 m) keeping her parked by the magician rather than wandering off.
+`Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was needed.
+
+This one was tried in the Neighborhood first, next to its own magician (round 1030), since that world
+builds fastest to test against. It broke three unrelated checks — the squirrel's own prompt, the HUD
+friend count, and the cyclist's westbound ride — every time, regardless of the new watcher's exact spot
+or idle timing. The cause: `Wanderer`'s constructor draws four numbers from the shared global `rnd()`
+no matter what's passed in, and an existing neighbour (home (4, 44), leash far longer than 0.5 m)
+already wanders within 5 m of the squirrel at (9, 47) in the untouched game — any extra draw earlier in
+the run nudges her random walk enough to land her exactly on the squirrel's spot by the time that check
+runs. Retrying the identical change in Robot City instead — a different world with its own squirrel and
+its own margins — sidestepped it cleanly, which points at this specific Neighborhood near-miss as the
+fragile part rather than the watcher pattern itself.
+
+A headless probe (the stub-three harness, `game.travel(2, 'from-prev')` waited out for real against its
+own portal-fade timer, then 60 simulated frames so the magician was already in position) swept a 0.5 m
+grid 1.5-6 m out from the magician's own spot (-15, 38) against all 1206 of this city's physics boxes,
+its zone list and all 112 NPCs already standing in it: (-9.5, 38.5) came back clearest — 14.0 m from
+the nearest box and 5.52 m from the nearest other soul, the magician himself.
+
+Built dead last of everything this city adds, right after the juggler's own watcher (round 1095), for
+the usual reason: `makeHuman()`/`randomPerson()` both draw off this city's own shared `r()` sequence
+unconditionally. `node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console
+warnings, box count unchanged at 334 (no new collider, just a greet circle), and Robot City's own friend
+total went up by one (125 → 126, confirmed against `world 2: 126 to meet`). No visual check was possible
+in this environment (no browser, no Playwright) — only the stub-three test suite above. Six of the seven
+magicians, and the Neighborhood's own in particular, are still performing to nobody. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

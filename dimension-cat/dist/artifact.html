@@ -18865,6 +18865,38 @@ function buildRobotCity(game, entry) {
     game.npcs.push(new Wanderer(game, watcher, { x: wx, z: wz, angle: atan2(jx - wx, jz - wz), leash: 0.5, speed: 0.4, idle: [3, 6], walk: [1, 1.6],
       cries: ["Recreational subroutine's been running eleven months straight. Not one dropped bolt on record.", "Careful, puss — walk under that loop and you'll wear one.", "Foreman logs it as 'morale equipment'. Nobody's corrected him."] })); }
 
+  // Every world's own `Magician` (55-npcs.js) has worked alone since round 1033 — this city's own
+  // included, tucked between the fiddler's side street and the painter's plaza since round 1028 —
+  // and not one of the seven ever had anyone stop to watch, unlike the juggler and the organ grinder
+  // on this same factory floor by now. **A technician now lingers a few steps off, watching the coin
+  // vanish instead of walking past it.**
+  //
+  // No new mesh or controller: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig,
+  // and `Wanderer` (55-npcs.js) gives her the same "stand and watch" behaviour every other watcher in
+  // this game already uses, with a short leash (0.5 m) keeping her parked by the magician rather than
+  // wandering off across the factory floor. `Wanderer`'s own constructor calls `greetable()` itself,
+  // so no extra wiring was needed.
+  //
+  // A headless probe (the stub-three harness, `game.travel(2, 'from-prev')` waited out for real
+  // against its own portal-fade timer, then 60 simulated frames so the magician was already in
+  // position) swept a 0.5 m grid 1.5-6 m out from the magician's own spot (-15, 38) against all 1206
+  // of this city's physics boxes, its zone list and all 112 NPCs already standing in it: (-9.5, 38.5)
+  // came back clearest — 14.0 m from the nearest box and 5.52 m from the nearest other soul, the
+  // magician himself. `angle` points her at the magician rather than a fixed constant, so she reads
+  // as watching the trick and not just standing nearby.
+  //
+  // Built dead last of everything this city adds, right after the juggler's own watcher above, for
+  // the usual reason: `makeHuman()`/`randomPerson()` both draw off this city's own shared `r()`
+  // sequence unconditionally, and anything built earlier would have had its own timing-sensitive pick
+  // shifted by it. She's a human `Wanderer`, not a robot one, so the "first robot Wanderer found" test
+  // for this city (test/run.mjs) still finds the trainee bot it always has.
+  { const wx = -9.5, wz = 38.5, mx = -15, mz = 38;
+    const watcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
+      shirt: 0x6d8a9a, pants: 0x2a2a30, shoes: 0x1a1a20, hat: null, jacket: 0x33404a, scarf: null, bag: null, backpack: null, glasses: r.chance(0.3) });
+    W.add(watcher.group);
+    game.npcs.push(new Wanderer(game, watcher, { x: wx, z: wz, angle: atan2(mx - wx, mz - wz), leash: 0.5, speed: 0.4, idle: [3, 6], walk: [1, 1.6],
+      cries: ["Not a single circuit board out here has ever caught how that coin moves.", "Careful, puss — don't spook him mid-trick.", "He's done that vanish every shift for a year. I still don't know where it goes."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
