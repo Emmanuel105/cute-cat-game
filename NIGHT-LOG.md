@@ -31076,3 +31076,40 @@ visual check was possible in this environment (no browser, no Playwright) — on
 suite above, so whether the pose actually reads as "listening" is unverified. Frosty Peak's and
 Whisper Woods' own organ grinders are the two still left without one. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1107 — Frosty Peak's own organ grinder finally gets a listener
+
+Victorian, Candy Land, Robot City, the Neighborhood and Sunny Shore all picked up a listener for
+their own street organ grinder over the last several rounds — Frosty Peak's own barrel organ, cranking
+away out on the open snowfield since round 1024, had played to nobody the whole time. **A bundled-up
+local now stands a few steps south-west of the organ, arms folded, listening instead of trudging on
+across the snow.** *"Tuppence a tune, if he's still got feeling in those fingers."* *"Careful, puss —
+he's three songs deep and the cold hasn't caught him yet."* *"Didn't think I'd stop for a barrel organ
+in a place this cold. Here I am."* Saying hello makes her the usual kind of friend. Whisper Woods' own
+organ grinder is now the only one left without a listener.
+
+No new mesh or controller: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig, and
+`Wanderer` (55-npcs.js) gives her the same "stand and watch" behaviour every other organ-grinder
+listener in this game already uses, with a short leash (0.5 m) keeping her parked by the organ rather
+than wandering off across the snow. `Wanderer`'s own constructor calls `greetable()` itself, so no
+extra wiring was needed.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(5, 'from-hub')` waited out for real against
+its own portal-fade timer — a real 700 ms sleep, since `travel()`'s fade runs on a genuine
+`setTimeout`, not simulated frames — then 3600 simulated frames so the grinder was well into his own
+cranking) swept a 0.25 m grid 3.5-5.5 m out from the grinder's own spot (28, -30) against all 780 of
+this mountain's physics boxes and its 156 `game.zones` rectangles: (26, -35) came back clearest — 5.3 m
+from the nearest box and 5.39 m from the nearest other soul, the grinder himself, on ground levelling
+out at -0.39 m with under 4 cm of slope across a 0.25 m square. `angle` points her at the grinder
+rather than a fixed constant, so she reads as listening to the tune and not just standing nearby.
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt after the fix above: exit 0, all 277
+checks `ok`, 0 console warnings, box count unchanged at 334 (no new collider, just a greet circle), and
+Frosty Peak's own friend total went up by one (132 → 133, confirmed against `world 5: 133 to meet` and
+a `git stash` diff against the previous commit). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite above, so whether the pose actually reads as
+"listening" is unverified. Also found on the way in: local `main` was 20 commits behind `origin/main`
+(stuck on an old ref, same recurring drift this log has caught a few rounds running now) — fast-forwarded
+it cleanly (a strict ancestor, nothing to rebase) before starting this round's own change. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
