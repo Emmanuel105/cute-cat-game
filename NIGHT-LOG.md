@@ -30600,3 +30600,43 @@ possible in this environment (no browser, no Playwright) — only the stub-three
 whether the arms-folded pose actually reads as "watching" rather than just standing nearby is
 unverified. Two jugglers (Candy Land's jester, Robot City's robot) are still performing to nobody.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1095 — Robot City's own juggler finally gets a watcher
+
+Every other world's juggler has had someone stop to watch by now — Whisper Woods, Sunny Shore, Frosty
+Peak, the Neighborhood over the last several rounds — but Robot City's own (a robot tossing three bolts
+on the open factory floor since round ~975) and Candy Land's jester were the two left out. **A
+technician now stands a few steps off the robot juggler's loop, clipboard under one arm, watching
+instead of walking past.** *"Recreational subroutine's been running eleven months straight. Not one
+dropped bolt on record."* *"Careful, puss — walk under that loop and you'll wear one."* *"Foreman logs
+it as 'morale equipment'. Nobody's corrected him."* Saying hello makes her a friend, same as anyone
+else in the city.
+
+No new mesh or controller: `makeHuman()`/`randomPerson()` (`55-npcs.js`) build the usual human rig, and
+`Wanderer` (`55-npcs.js`) gives her the same "stand and watch" behaviour every other watcher in this
+game already uses, with a short leash (0.5 m) keeping her parked by the juggler rather than wandering
+off across the factory floor. `Wanderer`'s own constructor calls `greetable()` itself, so no extra
+wiring was needed to make her a friend.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: the real
+city built via `game.travel(2, 'from-prev')` waited out for real against its own portal-fade timer,
+then 60 simulated frames so the juggler was already in position) swept a grid 2-6 m out from the
+juggler's own spot (15, 37) against all 1206 of this city's physics boxes and all 111 NPCs already
+standing in it: (12, 37) came back clearest — 6.72 m from the nearest box and exactly 3 m from the
+nearest other soul, the juggler himself — and outside every one of the 296 zone rectangles `game.zones`
+was holding at the time. `angle` points her at the juggler rather than a fixed constant, so she reads
+as watching the act and not just standing nearby.
+
+Built dead last of everything this city adds, right after the organ-grinder's own listener, for the
+usual reason: `makeHuman()`/`randomPerson()` both draw off this city's own shared `r()` sequence
+unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted by it.
+She's a human `Wanderer`, not a robot one, so the test suite's "first robot Wanderer found" check for
+this city still finds the trainee bot it always has.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box count
+unchanged at 334 (no new collider, just a greet circle), and Robot City's own friend total went up by
+one (124 → 125, confirmed against the previous commit with `git stash`). No visual check was possible
+in this environment (no browser, no Playwright) — only the stub-three test suite above, so whether the
+clipboard-under-arm pose actually reads as "watching" rather than just standing nearby is unverified.
+Only Candy Land's own jester is still performing to nobody. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

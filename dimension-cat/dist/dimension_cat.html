@@ -18802,6 +18802,41 @@ function buildRobotCity(game, entry) {
     game.npcs.push(new Wanderer(game, listener, { x: lx, z: lz, angle: lry, leash: 0.5, speed: 0.4, r: 0.3, height: 1.6, idle: [3, 6], walk: [1, 1.6],
       cries: ["Only tune in this whole city that doesn't need a charge.", "Careful, puss — he's three songs deep and showing no sign of stopping.", "Tuppence well spent. The scrap-bots don't hum half as sweet."] })); }
 
+  // the robot juggler north of the factory floor (round ~975) has tossed its three bolts in a loop
+  // ever since, same as every other world's juggler — but of the whole seven, only this one and Candy
+  // Land's own jester had never had anyone actually stop to watch. A technician now stands a few
+  // steps off, clipboard tucked under one arm, watching the loop instead of walking past it like
+  // everyone else on this floor always has. *"Recreational subroutine's been running eleven months
+  // straight. Not one dropped bolt on record."* *"Careful, puss — walk under that loop and you'll wear
+  // one."* *"Foreman logs it as 'morale equipment'. Nobody's corrected him."*
+  //
+  // No new mesh or controller: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig,
+  // and `Wanderer` (55-npcs.js) gives her the same "stand and watch" behaviour every other watcher in
+  // this game already uses, with a short leash (0.5 m) keeping her parked by the juggler rather than
+  // wandering off across the open floor. `Wanderer`'s own constructor calls `greetable()` itself, so
+  // no extra wiring was needed to make her a friend.
+  //
+  // A headless probe (the stub-three harness, `game.travel(2, 'from-prev')` waited out for real
+  // against its own portal-fade timer, then 60 simulated frames so the juggler was already in
+  // position) swept a grid 2-6 m out from the juggler's own spot (15, 37) against all 1206 of this
+  // city's physics boxes and all 111 NPCs already standing in it: (12, 37) came back clear — 6.72 m
+  // from the nearest box and exactly 3 m from the nearest other soul, the juggler himself — and
+  // outside every one of the 296 zone rectangles `game.zones` was holding at the time. `angle` points
+  // her at the juggler rather than a fixed constant, so she reads as watching the act and not just
+  // standing nearby.
+  //
+  // Built dead last of everything this city adds, right after the organ listener above, for the usual
+  // reason: `makeHuman()`/`randomPerson()` both draw off this city's own shared `r()` sequence
+  // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted
+  // by it. She's a human Wanderer, not a robot one, so the "first robot Wanderer found" test for this
+  // city (test/run.mjs) still finds the trainee bot it always has, same as the organ listener above.
+  { const wx = 12, wz = 37, jx = 15, jz = 37;
+    const watcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
+      shirt: 0x8a6a3a, pants: 0x2a2a30, shoes: 0x1a1a20, hat: null, jacket: 0x33404a, scarf: null, bag: null, backpack: null, glasses: r.chance(0.3) });
+    W.add(watcher.group);
+    game.npcs.push(new Wanderer(game, watcher, { x: wx, z: wz, angle: atan2(jx - wx, jz - wz), leash: 0.5, speed: 0.4, idle: [3, 6], walk: [1, 1.6],
+      cries: ["Recreational subroutine's been running eleven months straight. Not one dropped bolt on record.", "Careful, puss — walk under that loop and you'll wear one.", "Foreman logs it as 'morale equipment'. Nobody's corrected him."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
