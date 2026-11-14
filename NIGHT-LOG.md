@@ -31006,3 +31006,39 @@ listen. Also found and fixed on the way in: 17 commits from earlier rounds (roun
 this machine, untracked by the remote. Fast-forwarded local `main` to that work, re-ran the test suite
 clean against it, and pushed it before starting this round's own change, so none of it was lost.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1105 — Candy Land's own unicyclist finally gets a watcher
+
+Round 1085 gave Candy Land its own unicyclist, riding six metres of open grass out and back on a
+single wheel — and every street act built since then has since picked up someone who actually stops
+(the jester a page, the three organ grinders a listener each), while the one performer balanced on a
+single wheel stayed the one nobody had planted a foot for. **A passer-by now stands four and a half
+metres south of the ride, arms folded, watching her pedal out and back instead of walking on toward
+the bridge.** *"One wheel. I can't even manage two feet most mornings."* *"Careful, puss — she's never
+once put a foot down, don't you be the first thing that makes her."* *"Six metres out, six metres
+back, same as every lap before it. I could watch this all day."*
+
+No new mesh or controller: `makeHuman()`/`randomPerson()` build the usual rig, and `Wanderer` gives him
+the same "stand and watch" behaviour every other watcher in this game already uses, with a short leash
+(0.5 m) keeping him south of the ride. `Wanderer`'s own constructor calls `greetable()` itself, so no
+extra wiring was needed.
+
+A headless probe (the stub-three harness `test/run.mjs` itself uses, with the start screen clicked and
+`game.travel(1, 'from-prev')` waited out for real against its own portal-fade timer, then 3000
+simulated frames so the rider was well into her own back-and-forth) swept a 0.25 m grid south of her
+six-metre line, (13, 2) to (19, 2), scoring each point against this land's 1891 physics boxes, its zone
+rectangles, and the ride itself as a moving segment rather than a point: the whole band at z=-2.5 came
+back clear from x=13 to x=17.75, at least 5.2 m from the nearest box and better than 13 m from the
+nearest other soul. (16, -2.5) sits dead south of the ride's own midpoint — the same 4.5 m the organ
+grinder's own listener keeps from her grinder — and `angle` points him at that midpoint rather than the
+rider's own shifting position, so he reads as watching the whole run and not just one end of it.
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt: exit 0, all 277 checks `ok`, 0
+console warnings, box count unchanged at 334 (no new collider, just a greet circle), and Candy Land's
+own friend total went up by one (117 → 118, confirmed against `world 1: 118 to meet` and a `git stash`
+diff against the previous commit). No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite above, so whether the pose actually reads as "watching" is
+unverified. Also found on the way in: local `main` was 18 commits behind `origin/main` (stuck on an old
+ref from before the detached-HEAD recovery two rounds back) — fast-forwarded it before starting this
+round's own change, with nothing to rebase. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.

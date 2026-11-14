@@ -16135,6 +16135,43 @@ function buildCandyLand(game, entry) {
     game.npcs.push(new Wanderer(game, watcher, { x: wx, z: wz, angle: atan2(jx2 - wx, jz2 - wz), leash: 0.5, speed: 0.4, idle: [3, 6], walk: [1, 1.6],
       cries: ["Three balls and never a drop — better rhythm than the queen's own clock.", 'Careful, puss — walk under that arc and you\'ll wear a gumdrop.', 'Half my chores can wait. This one can\'t.'] })); }
 
+  // the unicyclist above (round 1085) has pedalled her own six metres of open grass solo ever since —
+  // every other street act in this land has since picked up someone who actually stops (the jester a
+  // page, the organ grinder a listener), and the one performer actually balanced on a single wheel was
+  // still the one nobody had planted a foot for. **A passer-by now stands south of the ride, arms
+  // folded, watching her pedal out and back instead of walking on toward the bridge.** *"One wheel. I
+  // can't even manage two feet most mornings."* *"Careful, puss — she's never once put a foot down,
+  // don't you be the first thing that makes her."* *"Six metres out, six metres back, same as every
+  // lap before it. I could watch this all day."*
+  //
+  // No new mesh or controller: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig,
+  // and `Wanderer` (55-npcs.js) gives him the same "stand and watch" behaviour every other watcher in
+  // this game already uses, with a short leash (0.5 m) keeping him south of the ride rather than
+  // wandering into it. `Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was
+  // needed to make him a friend.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` uses: `elements.get('enter')
+  // .listeners.click[0]()`, `game.travel(1, 'from-prev')` waited out for real against its own
+  // portal-fade timer, then 3000 simulated frames so the rider was well into her own back-and-forth)
+  // swept a 0.25 m grid south of her six-metre line, (13, 2) to (19, 2), scoring each point against the
+  // nearest of this land's 1891 physics boxes, its zone rectangles, and the ride itself as a moving
+  // segment rather than a point: the whole band at z=-2.5 came back clear from x=13 to x=17.75, at
+  // least 5.2 m from the nearest box and better than 13 m from the nearest other soul the entire way.
+  // (16, -2.5) sits dead south of the ride's own midpoint, 4.5 m out — the same distance the organ
+  // grinder's own listener keeps from her grinder. `angle` points him at that midpoint rather than the
+  // rider's own shifting position, so he reads as watching the whole run and not just one end of it.
+  //
+  // Built dead last of everything this land adds, right after the jester's own watcher above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this land's own shared `r()` sequence
+  // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted
+  // by it.
+  { const sx = 16, sz = -2.5, mx = 16, mz = 2;
+    const spectator = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x5a8a6a, pants: 0x3a2c2c, shoes: 0x2a2020, hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: false });
+    W.add(spectator.group);
+    game.npcs.push(new Wanderer(game, spectator, { x: sx, z: sz, angle: atan2(mx - sx, mz - sz), leash: 0.5, speed: 0.4, idle: [3, 6], walk: [1, 1.6],
+      cries: ["One wheel. I can't even manage two feet most mornings.", "Careful, puss — she's never once put a foot down, don't you be the first thing that makes her.", 'Six metres out, six metres back, same as every lap before it. I could watch this all day.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
