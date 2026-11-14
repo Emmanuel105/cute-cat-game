@@ -4036,6 +4036,42 @@ function buildNeighborhood(game, entry) {
       shirt: 0x7a3a9a, hat: null, scarf: null, jacket: null, bag: null, backpack: null }); W.add(watcher.group);
     game.npcs.push(new Wanderer(game, watcher, { x: wx, z: wz, angle: atan2(gx - wx, gz - wz), speed: 0.3, leash: 0.5, idle: [3, 6] })); }
 
+  // Robot City's organ grinder got a listener, Victorian's got one, and Candy Land's got one, "the
+  // last of the three" flat-floor lands with a travelling barrel organ — but the Neighborhood's own
+  // organ grinder, built back near the popcorn cart above, was never in scope for that round and never
+  // got one either: nobody on this street had stopped to listen. **A neighbour now stands a few steps
+  // west of the barrel organ, arms folded, listening instead of walking past.**
+  //
+  // No new mesh or controller: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer` gives
+  // her the same "stand and watch" behaviour every other organ-grinder listener in this set already
+  // uses, with a short leash (0.5 m) keeping her parked by the organ rather than wandering off down
+  // the street. `Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was
+  // needed. Built with no `cries` at all, the same fix the magician's own watcher above needed: this
+  // street is the one world whose build-and-test window shares a single run of simulated frames with
+  // its own behaviour checks, and a `cries` branch on a `Wanderer` draws an extra, timing-sensitive
+  // pick from the shared `rnd()` sequence the moment it first fires, which shifts whatever unrelated
+  // check happens to land on the same frame afterwards. The explicit shirt colour (0x2a9d8f) was
+  // checked against every other shirt on this street first — the "no two neighbours wear the same
+  // shirt" test catches a clash either way.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()` then 30 simulated frames, since the Neighborhood is
+  // already the world the real start screen opens straight into) swept a 0.5 m grid 2-5 m out from the
+  // organ's own spot (16, -56) against all 334 of this street's physics boxes, `game.zones` and every
+  // NPC already standing in it: (11, -56) came back clearest — 5.1 m from the nearest box and exactly
+  // 5 m from the nearest other soul, the grinder himself, on flat ground (y=0) outside every zone.
+  // `angle` points her at the grinder rather than a fixed constant, so she reads as listening to the
+  // tune and not just standing nearby.
+  //
+  // Built dead last, right after the magician's own watcher above and right before `makeDayNight`, for
+  // the usual reason: `makeHuman()` and `randomPerson()` both draw off this street's own shared `r()`
+  // sequence unconditionally, and this is the first world the test suite builds, so anything built
+  // earlier here would have had its own timing-sensitive pick shifted by it.
+  { const lx = 11, lz = -56, gx = 16, gz = -56;
+    const grinderListener = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: r.chance(0.5) }),
+      shirt: 0x2a9d8f, hat: null, scarf: null, jacket: null, bag: null, backpack: null }); W.add(grinderListener.group);
+    game.npcs.push(new Wanderer(game, grinderListener, { x: lx, z: lz, angle: atan2(gx - lx, gz - lz), speed: 0.3, leash: 0.5, idle: [3, 6] })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

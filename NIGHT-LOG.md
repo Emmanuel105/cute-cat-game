@@ -30961,3 +30961,48 @@ commit). No visual check was possible in this environment (no browser, no Playwr
 stub-three test suite above, so whether the pose actually reads as "watching" is unverified. All seven
 of the game's magicians now have someone standing by. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1104 — the Neighborhood's own organ grinder finally gets a listener too
+
+Robot City's organ grinder got a listener, then Victorian's, then Candy Land's, logged as "the last of
+the three" — but that count only ever covered the three lands where the barrel organ had been rolled
+out stop by stop from round 1021 on. The Neighborhood got its own organ grinder in a later round, after
+that trio had already closed out, and nobody ever came back to give her one. **A neighbour now stands a
+few steps west of the barrel organ, arms folded, listening instead of walking past.** No lines for her
+either, for the same reason the magician's own watcher went quiet two rounds back.
+
+No new mesh or controller: `makeHuman()`/`randomPerson()` build the usual rig, and `Wanderer`
+(55-npcs.js) gives her the same "stand and watch" behaviour every other organ-grinder listener in this
+set already uses, with a short leash (0.5 m) keeping her parked by the organ rather than wandering off
+down the street. `Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was
+needed. Built with no `cries` from the start this time, skipping the failed first attempt the
+magician's watcher had to make: this street is the one world whose build-and-test window shares a
+single run of simulated frames with its own behaviour checks, and a `cries` branch on a `Wanderer`
+draws an extra, timing-sensitive pick from the shared `rnd()` sequence the moment it first fires, which
+shifts whatever unrelated check happens to land on the same frame afterwards. The explicit shirt colour
+(0x2a9d8f) was checked against every other shirt on this street first — a plain grep for every
+`shirt:` override already in this file came up clean.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()` then 30 simulated frames, since the Neighborhood is
+already the world the real start screen opens straight into) swept a 0.5 m grid 2-5 m out from the
+organ's own spot (16, -56) against all 334 of this street's physics boxes, `game.zones` and every NPC
+already standing in it: (11, -56) came back clearest — 5.1 m from the nearest box and exactly 5 m from
+the nearest other soul, the grinder himself, on flat ground (y=0) outside every zone and well clear of
+the stilt-walker's pacing line and the hula-hooper at (32, -55). `angle` points her at the grinder
+rather than a fixed constant, so she reads as listening to the tune and not just standing nearby.
+
+Built dead last, right after the magician's own watcher and right before `makeDayNight`, for the usual
+reason: `makeHuman()` and `randomPerson()` both draw off this street's own shared `r()` sequence
+unconditionally, and this is the first world the test suite builds, so anything built earlier here
+would have had its own timing-sensitive pick shifted by it. `node dimension-cat/test/run.mjs` ran clean
+on the first attempt: exit 0, all 277 checks `ok`, 0 console warnings, box count unchanged at 334 (no
+new collider, just a greet circle), and the Neighborhood's own friend total went up by one (107 → 108,
+confirmed against `world 0: 108 to meet`). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite above, so whether the pose actually reads as
+"listening" is unverified. Every organ grinder in every flat-floor world now has somebody stopped to
+listen. Also found and fixed on the way in: 17 commits from earlier rounds (round 1087 through round
+1103) had been made on a detached `HEAD` and never reached `origin/main` — they were still sitting on
+this machine, untracked by the remote. Fast-forwarded local `main` to that work, re-ran the test suite
+clean against it, and pushed it before starting this round's own change, so none of it was lost.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
