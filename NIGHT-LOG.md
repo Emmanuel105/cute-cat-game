@@ -30870,3 +30870,45 @@ meet`). No visual check was possible in this environment (no browser, no Playwri
 stub-three test suite above, so whether the pose actually reads as "watching" is unverified. Two of
 the seven magicians — Neighborhood and Whisper Woods — are still performing to nobody. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1102 — Whisper Woods' own magician finally gets a watcher
+
+Rounds 1097-1101 gave Robot City's, Frosty Peak's, Candy Land's, Victorian's and Sunny Shore's own
+magicians a watcher, narrowing the list of solo magicians down to two: Neighborhood (flagged fragile
+several rounds back — an attempt there collides with the squirrel's own random walk through the
+shared `rnd()` sequence) and Whisper Woods. This round takes Whisper Woods, whose own magician (built
+on the quiet, flat stretch of forest floor north-west of the glade) has worked alone since it got one.
+**A mushroom forager, wicker basket half full of chanterelles, has stopped filling it to watch the
+coin trick instead.** *"Thought I'd seen every trick these woods had. Not this one."* *"Mind the
+basket, puss — knock it and we're both down on our knees sorting caps from leaves."* *"Half-full an
+hour ago, half-full now. Some things are worth the standing still for."* Saying hello makes her a
+friend like anyone else in this wood.
+
+No new mesh or controller: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig — the
+basket is just the existing `bag` wardrobe option, already a strap-and-pouch mesh, not a new one — and
+`Wanderer` (55-npcs.js) gives her the same "stand and watch" behaviour every other watcher in this game
+already uses, with a short leash (0.5 m) keeping her parked by the magician rather than wandering off
+into the trees. `Wanderer`'s own constructor already reads its rig's height straight off
+`game.physics.ground0()`, the same terrain-aware convention the magician itself relies on, and calls
+`greetable()` itself, so no extra wiring was needed.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(6, 'from-hub')` waited out for real against its own portal-fade
+timer, then 2400 simulated frames sampling every NPC's own position every 10th frame) swept a 0.5 m
+grid 1.5-6 m out from the magician's own spot (-22, 49.5) against all 670 of this wood's own physics
+boxes, its zone list and all 32,400 of those samples: (-26.23, 47.96) came back clearest at the
+3-4.5 m range kept for every other watcher in this set — 6.71 m from the nearest box and exactly 4.5 m
+from the nearest other soul, the magician himself — on ground levelling out at 1.215 m with under 2 cm
+of slope across a 0.3 m square, at radius 54.7 from the origin, the same margin the magician itself
+already keeps short of the 58 where `forestRegion()`'s own fill takes over.
+
+Built dead last, right after the juggler's own watcher (a prior round), for the usual reason:
+`makeHuman()`/`randomPerson()` both draw off this wood's own shared `r()` sequence unconditionally,
+and anything built earlier would have had its own timing-sensitive pick shifted by it. `node
+dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box count
+unchanged at 334 (no new collider, just a greet circle), and Whisper Woods' own friend total went up
+by one (158 → 159, confirmed against `world 6: 159 to meet` and a `git stash` diff against the
+previous commit). No visual check was possible in this environment (no browser, no Playwright) — only
+the stub-three test suite above, so whether the pose actually reads as "watching" is unverified. Only
+one of the seven magicians — Neighborhood, still flagged fragile — is left performing to nobody.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

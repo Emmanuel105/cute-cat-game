@@ -30780,6 +30780,46 @@ function buildForest(game, entry) {
     game.npcs.push(new Wanderer(game, watcher, { x: wx, z: wz, angle: wry, leash: 0.5, speed: 0.4, r: 0.3, height: 1.6, idle: [3, 6], walk: [1, 1.6],
       cries: ["Three in the air and never a dropped one. Wish I could say the same for my firewood stacking.", "Careful, puss — walk under those and you'll wear one.", "Half the wood doesn't know he's out here. Their loss."] })); }
 
+  // Every other world's own `Magician` picked up a watcher between rounds 1097 and 1101 (Robot City,
+  // Frosty Peak, Candy Land, Victorian, Sunny Shore); the coin-vanishing performer built above on this
+  // wood's own quiet north-west stretch (round, forest.js, near the hollow oak) had worked alone ever
+  // since. **A mushroom forager, wicker basket half full of chanterelles, has stopped filling it to
+  // watch the coin trick instead.** *"Thought I'd seen every trick these woods had. Not this one."*
+  // *"Mind the basket, puss — knock it and we're both down on our knees sorting caps from leaves."*
+  // *"Half-full an hour ago, half-full now. Some things are worth the standing still for."* Saying
+  // hello makes her a friend like anyone else in this wood.
+  //
+  // No new mesh or controller: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig —
+  // the basket is just the existing `bag` wardrobe option, already a strap-and-pouch mesh, not a new
+  // one — and `Wanderer` (55-npcs.js) gives her the same "stand and watch" behaviour every other
+  // watcher in this game already uses, with a short leash (0.5 m) keeping her parked by the magician
+  // rather than wandering off into the trees. `Wanderer`'s own constructor already reads its rig's
+  // height straight off `game.physics.ground0()`, the same terrain-aware convention the magician
+  // itself relies on, and calls `greetable()` itself, so no extra wiring was needed.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(6, 'from-hub')` waited out for real against its own portal-fade
+  // timer, then 2400 simulated frames sampling every NPC's own position every 10th frame) swept a
+  // 0.5 m grid 1.5-6 m out from the magician's own spot (-22, 49.5) against all 670 of this wood's own
+  // physics boxes, its zone list and all 32,400 of those samples: (-26.23, 47.96) came back clearest at
+  // the 3-4.5 m range kept for every other watcher in this set — 6.71 m from the nearest box and
+  // exactly 4.5 m from the nearest other soul, the magician himself — on ground levelling out at
+  // 1.215 m with under 2 cm of slope across a 0.3 m square, at radius 54.7 from the origin, the same
+  // margin the magician itself already keeps short of the 58 where `forestRegion()`'s own fill takes
+  // over.
+  //
+  // Built dead last, right after the juggler's own watcher above and right before the squirrel spawn
+  // point, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this wood's own shared
+  // `r()` sequence unconditionally, and anything built earlier would have had its own timing-sensitive
+  // pick shifted by it.
+  { const fwx = -26.23, fwz = 47.96, fwry = atan2(-22 - fwx, 49.5 - fwz);
+    const forageWard = makeWardrobe(r, { shirts: [0x5a6a4a, 0x6a5a3a, 0x4a3a2a], pants: [0x3a3a2a, 0x2a2a2a], shoes: [0x3a2a1e, 0x2a2018] });
+    const forager = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: forageWard }),
+      hat: r.chance(0.4) ? 'flatcap' : null, hatColor: 0x3a4030, bag: 0x5a4a3a, jacket: null, scarf: null, glasses: false });
+    W.add(forager.group);
+    game.npcs.push(new Wanderer(game, forager, { x: fwx, z: fwz, angle: fwry, leash: 0.5, speed: 0.4, r: 0.3, idle: [3, 6], walk: [1, 1.6],
+      cries: ["Thought I'd seen every trick these woods had. Not this one.", "Mind the basket, puss — knock it and we're both down on our knees sorting caps from leaves.", "Half-full an hour ago, half-full now. Some things are worth the standing still for."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
