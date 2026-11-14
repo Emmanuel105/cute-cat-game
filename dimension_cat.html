@@ -22070,6 +22070,41 @@ function buildVictorian(game, entry) {
     const matronLines = ["Mind you don't miss a spot, there's a good lad.", "The cat can wait its turn — I was here first.", "Tuppence, and worth every farthing for a shine this good."];
     game.npcs.push(new Charger(game, matron, { x: mx, z: mz, ry: mry, cryIcon: '👞', cries: matronLines })); }
 
+  // the organ grinder (round 1020) has wound out the same tune on this quiet green ever since
+  // Victorian got its own barrel organ — nobody in the whole town had ever actually stopped to
+  // listen, the same gap this log closed for Robot City's own organ grinder last round. **An elderly
+  // gentleman now stands a few steps off the organ, hands clasped behind his back, head tipped
+  // toward the tune instead of walking straight past it like everyone else here always has.**
+  // *"Tuppence a tune, and worth every farthing of it."* *"Careful, puss — he's three songs deep and
+  // showing no sign of stopping."* *"Haven't heard a barrel organ since I was a boy. Some things
+  // don't need improving."*
+  //
+  // No new mesh or controller: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig
+  // off this town's own shared `vicWard` wardrobe bag, and `Wanderer` (55-npcs.js) gives him the same
+  // "stand and watch" behaviour Robot City's own listener already uses, with a short leash (0.5 m)
+  // keeping him parked by the organ rather than wandering off across the green. `Wanderer`'s own
+  // constructor calls `greetable()` itself, so no extra wiring was needed.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, `game.travel(3, 'from-prev')` waited out for real
+  // against its own portal-fade timer, then 60 simulated frames so the grinder was already in
+  // position) swept a 0.5 m grid 1.5-4 m out from the grinder's own spot (41, 63.5) against all 664
+  // of the town's physics boxes, its 245 zone rectangles and all 136 NPCs already standing in it:
+  // (37, 63.5) came back clearest — 4.13 m from the nearest box and exactly 4 m from the nearest
+  // other soul, the grinder himself. `ry` points him at the grinder rather than a fixed constant, so
+  // he reads as listening to the tune and not just standing nearby.
+  //
+  // Built dead last of everything this town adds, right after the matron above, for the usual
+  // reason: `makeHuman()`/`randomPerson()` both draw off this town's own shared `r()` sequence
+  // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted
+  // by it.
+  { const lx = 37, lz = 63.5, lry = atan2(41 - lx, 63.5 - lz);
+    const listener = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: true, wardrobe: vicWard }),
+      pants: 0x1e1e24, coat: true, hat: 'flatcap', hatColor: 0x3a3327, scarf: 0x4a2b2b, bag: null, backpack: null, glasses: r.chance(0.3), beard: false, moustache: true });
+    W.add(listener.group);
+    game.npcs.push(new Wanderer(game, listener, { x: lx, z: lz, angle: lry, leash: 0.5, speed: 0.4, r: 0.3, idle: [3, 6], walk: [1, 1.6],
+      cries: ['Tuppence a tune, and worth every farthing of it.', "Careful, puss — he's three songs deep and showing no sign of stopping.", "Haven't heard a barrel organ since I was a boy. Some things don't need improving."] })); }
+
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);

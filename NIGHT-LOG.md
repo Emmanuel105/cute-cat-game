@@ -30416,3 +30416,38 @@ one (157 → 158 confirmed against the previous commit with `git stash`). No vis
 this environment (no browser, no Playwright) — only the stub-three test suite above, so whether the
 head-tipped-back pose actually reads as "watching" rather than just standing nearby is unverified.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1090 — Victorian's organ grinder finally gets a listener too
+
+Robot City's organ grinder got a listener last round. Victorian has had its own barrel organ busking
+on the open green north-east of the terraces since round 1020 and nobody there had ever stopped to
+listen either. **An elderly gentleman now stands a few steps off the organ, hands clasped behind his
+back, head tipped toward the tune instead of walking straight past it like everyone else in the town
+always has.** *"Tuppence a tune, and worth every farthing of it."* *"Careful, puss — he's three songs
+deep and showing no sign of stopping."* *"Haven't heard a barrel organ since I was a boy. Some things
+don't need improving."*
+
+No new mesh or controller: `makeHuman()`/`randomPerson()` (`55-npcs.js`) build the usual human rig off
+this town's own shared `vicWard` wardrobe bag, and `Wanderer` (`55-npcs.js`) gives him the same "stand
+and watch" behaviour Robot City's own listener already uses, with a short leash (0.5 m) keeping him
+parked by the organ rather than wandering off across the green. `Wanderer`'s own constructor calls
+`greetable()` itself, so no extra wiring was needed to make him a friend.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(3, 'from-prev')` waited out for real against
+its own portal-fade timer, then 60 simulated frames so the grinder was already in position) swept a
+0.5 m grid 1.5-4 m out from the grinder's own spot (41, 63.5) against all 664 of the town's physics
+boxes, its 245 zone rectangles and all 136 NPCs already standing in it: (37, 63.5) came back clearest —
+4.13 m from the nearest box and exactly 4 m from the nearest other soul, the grinder himself. `ry`
+points him at the grinder rather than a fixed constant, so he reads as listening to the tune and not
+just standing nearby.
+
+Built dead last of everything this town adds, right after the market-square matron (round 1087), since
+`makeHuman()` and `randomPerson()` both draw off this town's own shared `r()` sequence unconditionally.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count
+unchanged at 334 (no new collider, just a greet circle), and Victorian's own friend total went up by
+one (158 → 159, confirmed against the previous commit with `git stash`). No visual check was possible in
+this environment (no browser, no Playwright) — only the stub-three test suite above, so whether the
+head-tipped pose actually reads as "listening" rather than just standing nearby is unverified. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
