@@ -32045,3 +32045,39 @@ whether the watcher's pose actually reads as "watching" is unverified. `YoYoer` 
 worlds; two still perform for nobody (Frosty Peak, Whisper Woods).
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1131 — Frosty Peak's yo-yo kid gets a watcher too
+
+Continuing the chain from the last five rounds: the Neighborhood's yo-yo kid got a watcher at round
+1126, Candy Land's own the round after that (1127), Robot City's (1128), Victorian's (1129) and Sunny
+Shore's (1130) — but Frosty Peak's own `YoYoer`, working the disc on the open snowfield south-east of
+the village, had never been touched. **A hiker now stands a few steps south-west of him, watching the
+disc drop and climb without a tangle.** *"Forty drops and not one tangle — I've counted."* *"Careful,
+puss — it swings wider than it looks, out here."* *"Best free show on the mountain, and I've seen it
+every day this week."*
+
+No new class or mesh: `makeHuman()`/`randomPerson()` build the usual human rig and `Wanderer`
+(`55-npcs.js`) gives him the same "stand and watch" behaviour every other watcher on this mountain
+already uses, with a short leash (0.5 m) keeping him parked by the yo-yo kid's own spot.
+`Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was needed. Built dead
+last of everything this mountain adds, right after the fiddler listener, same reason as always:
+`makeHuman()`/`randomPerson()` draw off this mountain's own shared `r()` sequence unconditionally.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(5, 'from-hub')` waited out for real against its own portal-fade
+timer, then 500 simulated frames so every reindeer, hare, arctic fox and penguin was already moving,
+then sampled every NPC's own position every quarter second over 30 more simulated seconds) swept a
+0.5 m grid 2.5-7 m out from the yo-yo kid's own spot (29, -43) against all 780 of this mountain's
+physics boxes and all other NPCs sampled on it: (25, -40) came back clearest — 5.44 m from the
+nearest box and 5 m from the nearest other soul (the yo-yo kid himself) at every sample, at radius
+47.2 from the origin, short of the radius (58) where `snowRegion()`'s own procedural fill takes over,
+with the ground levelling out to under 8 cm of slope across the square. `angle` points him at the
+yo-yo kid's own fixed spot, so he reads as watching the act and not just standing nearby.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, and Frosty
+Peak's own friend total went up by one (134 → 135, confirmed against a stashed re-run of the old code
+printing "134 to meet"). No visual check was possible in this environment (no browser, no Playwright)
+— only the stub-three test suite above, so whether the watcher's pose actually reads as "watching" is
+unverified. `YoYoer` plays in all seven worlds; one still performs for nobody (Whisper Woods).
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
