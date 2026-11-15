@@ -25174,6 +25174,43 @@ function buildBeach(game, entry) {
     game.npcs.push(new Wanderer(game, beachPerson(r.chance(0.5), false), { x: wx, z: wz, angle: atan2(gx - wx, gz - wz), speed: 0.3, leash: 0.5, idle: [3, 6],
       cries: ['Tuppence a tune and sand in every gear — somehow it never misses a beat.', "Careful, puss — he's three songs deep and in no hurry to stop.", 'Half the dunes can hear this, whether they asked to or not.'] })); }
 
+  // The Neighborhood and Robot City's own fiddlers each picked up a listener over rounds 1109-1110 —
+  // this beach's own, busking on the open dry sand south-east of the beachcomber since round 1021,
+  // was still playing to nobody. **A beachgoer now stands a few steps north-west of the fiddler, bare
+  // feet in the dry sand, listening instead of walking on toward the water.** *"Salt air swells the
+  // wood something awful, he says — swells the audience too, apparently."* *"Careful, puss — four
+  // strings, no yarn to bat at."* *"Even over the surf, something always stops to listen. Turns out
+  // it's me."* Saying hello makes her the usual kind of friend.
+  //
+  // No new mesh or controller: `beachPerson()` (this world's own wardrobe helper, defined at the top
+  // of `buildBeach`) builds the usual human rig, and `Wanderer` (55-npcs.js) gives her the same
+  // "stand and watch" behaviour every other listener in this game already uses, with a short leash
+  // (0.5 m) keeping her parked by the fiddler rather than wandering off toward the water. `Wanderer`'s
+  // own constructor already reads its rig's height straight off `game.physics.ground0()`, the same
+  // terrain-aware convention the fiddler itself relies on, and calls `greetable()` itself, so no extra
+  // wiring was needed.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, `game.travel(4, 'from-hub')` waited out for real
+  // against its own 520 ms `setTimeout`, then 3600 simulated frames so every NPC on this beach was
+  // already in position) swept a 0.25 m grid 2.5-6.5 m out from the fiddler's own spot (10, -32)
+  // against all 262 of this beach's own physics boxes (the fiddle case among them), its 89
+  // `game.zones` rectangles and all 120 NPCs already standing in it, rejecting anywhere the ground
+  // sloped over 8 cm across a 0.25 m square: (7.25, -26.25) came back clearest — 6.1 m from the
+  // nearest box and 6.17 m from the nearest other soul, the fiddler himself, at radius 27.2 from the
+  // origin — well short of the 58 where `beachRegion()`'s own fill takes over — on ground levelling
+  // out at 0.52 m with barely over a centimetre of slope across the square. `angle` points her at the
+  // fiddler rather than a fixed constant, so she reads as listening to the tune and not just standing
+  // nearby.
+  //
+  // Built dead last of everything this beach adds, right after the organ-grinder listener above, for
+  // the usual reason: `beachPerson()`/`randomPerson()` both draw off this beach's own shared `r()`
+  // sequence unconditionally, and anything built earlier would have had its own timing-sensitive pick
+  // shifted by it.
+  { const wx = 7.25, wz = -26.25, fx = 10, fz = -32;
+    game.npcs.push(new Wanderer(game, beachPerson(r.chance(0.5), false), { x: wx, z: wz, angle: atan2(fx - wx, fz - wz), speed: 0.3, leash: 0.5, idle: [3, 6],
+      cries: ['Salt air swells the wood something awful, he says — swells the audience too, apparently.', "Careful, puss — four strings, no yarn to bat at.", "Even over the surf, something always stops to listen. Turns out it's me."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

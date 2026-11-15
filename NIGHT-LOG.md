@@ -31232,3 +31232,37 @@ visual check was possible in this environment (no browser, no Playwright) — on
 test suite above, so whether the pose actually reads as "listening" is unverified. Five fiddlers
 across the other five worlds (Candy Land, Frosty Peak, Sunny Shore, Victorian, Whisper Woods) are
 still playing to nobody. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1111 — Sunny Shore's own fiddler finally gets a listener
+
+Third of the five remaining fiddlers to get this treatment, after the Neighborhood (round 1109)
+and Robot City (round 1110). Sunny Shore's own fiddler has busked on the open dry sand
+south-east of the beachcomber since round 1021 without anyone stopping to listen. **A beachgoer
+now stands a few steps north-west of the fiddler, bare feet in the dry sand, listening instead of
+walking on toward the water.** *"Salt air swells the wood something awful, he says — swells the
+audience too, apparently."* *"Even over the surf, something always stops to listen. Turns out it's
+me."*
+
+No new mesh or controller: `beachPerson()` (this world's own wardrobe helper in 72-world-beach.js)
+builds the rig and `Wanderer` (55-npcs.js) gives her the same "stand and watch" behaviour every
+other listener in this game already uses, with a short leash (0.5 m) keeping her parked by the
+fiddler. `Wanderer`'s own constructor already reads its rig's height off `game.physics.ground0()`
+and calls `greetable()` itself, so this was a drop-in addition with no extra wiring.
+
+A headless probe (the same stub-three harness `test/run.mjs` uses: `game.travel(4, 'from-hub')`
+waited out for real, then 3600 simulated frames so every NPC was in position) swept a 0.25 m grid
+2.5-6.5 m out from the fiddler's own spot (10, -32) against all 262 of this beach's physics boxes
+(the fiddle case included), its 89 `game.zones` rectangles and all 120 NPCs already standing in
+it, rejecting any ground sloping over 8 cm per 0.25 m square. (7.25, -26.25) came back clearest —
+6.1 m from the nearest box, 6.17 m from the nearest other soul (the fiddler himself), at radius
+27.2 from the origin (well inside the hand-built area), on ground levelling out at 0.52 m with
+barely a centimetre of slope. `angle` points her at the fiddler so she reads as listening rather
+than just standing nearby.
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt: exit 0, every check `ok`, 0
+console warnings, box count unchanged at 334 (just a greet circle, no new collider), and Sunny
+Shore's own friend total went up by one (136 → 137, confirmed against `world 4: 137 to meet`). No
+visual check was possible in this environment (no browser, no Playwright) — only the stub-three
+test suite above, so whether the pose actually reads as "listening" is unverified. Four fiddlers
+across the other four worlds (Candy Land, Frosty Peak, Victorian, Whisper Woods) are still
+playing to nobody. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
