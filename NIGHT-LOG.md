@@ -31566,3 +31566,45 @@ Also found on the way in: this sandbox's local `main` was once again sitting on 
 and set it tracking `origin/main` before starting this round's own change.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1119 — Sunny Shore's basketball kid gets a watcher too
+
+The Neighborhood, Candy Land, Robot City and Victorian have all given their basketball kid a watcher
+over the last four rounds (1115-1118) — Sunny Shore's own kid, dribbling alone up in the north-west
+dunes since round 1040, was still shooting to nobody. **A beachgoer now stands a few steps off, arms
+folded, watching the ball go up and drop straight back into her waiting hand instead of wandering off
+across the sand.** *"Court's dry till the tide turns, she says — plenty of shots left in her."*
+*"Mind your tail, puss — that ball bounces further out here than you'd think."* *"Best seat on the
+sand, and it's free."* It's a friend to meet like any other soul on this beach.
+
+No new mesh or controller: `beachPerson()` (this beach's own wardrobe helper in `72-world-beach.js`)
+builds the usual human rig, and `Wanderer` (`55-npcs.js`) gives her the same "stand and watch"
+behaviour every other watcher in this game already uses, with a short leash (0.5 m) keeping her
+parked by the court. `Wanderer`'s own constructor already reads its rig's height straight off
+`game.physics.ground0()`, the same terrain-aware convention the baller itself relies on (this is the
+first terrain world of the three to get this pairing a watcher, after the four flat-floor worlds), and
+calls `greetable()` itself, so no extra wiring was needed.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.travel(4, 'from-hub')` waited out for real, then 1800 simulated frames so the baller was already
+in position) swept a 0.25 m grid 2-6 m out from the baller's own spot (-54, 11.5) against all 262 of
+this beach's own physics boxes, `game.zones` and all 121 NPCs already standing in it, rejecting
+anywhere over radius 56 (short of the 58 where `beachRegion()`'s own fill takes over) or sloping over
+8 cm across a 0.5 m square: (-53.5, 16) came back clearest — 6.5 m from the nearest box and 4.53 m
+from the nearest other soul, the baller herself, on ground levelling out at 1.07 m. `angle` points her
+at the baller rather than a fixed constant, so she reads as watching the game and not just standing
+nearby.
+
+Built dead last of everything this beach adds, right after the fiddler's own listener, for the usual
+reason: `beachPerson()`/`randomPerson()` both draw off this beach's own shared `r()` sequence
+unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted by
+it.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (no new collider, just a greet circle), and Sunny Shore's own friend total went up by
+one (137 → 138, confirmed against the test's own "world 4: 138 to meet" line). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above, so
+whether the watcher's pose actually reads as "watching" is unverified. One of the seven basketball
+hoops (Whisper Woods) is still shooting to nobody.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

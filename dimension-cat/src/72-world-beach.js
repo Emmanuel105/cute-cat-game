@@ -2689,6 +2689,40 @@ function buildBeach(game, entry) {
     game.npcs.push(new Wanderer(game, beachPerson(r.chance(0.5), false), { x: wx, z: wz, angle: atan2(fx - wx, fz - wz), speed: 0.3, leash: 0.5, idle: [3, 6],
       cries: ['Salt air swells the wood something awful, he says — swells the audience too, apparently.', "Careful, puss — four strings, no yarn to bat at.", "Even over the surf, something always stops to listen. Turns out it's me."] })); }
 
+  // The Neighborhood, Candy Land, Robot City and Victorian have all given their basketball hoop an
+  // audience by now (rounds 1115-1118) — Sunny Shore's own kid, dribbling alone up in the north-west
+  // dunes since round 1040, was still shooting to nobody. **A beachgoer now stands a few steps off,
+  // arms folded, watching the ball go up and drop straight back into her waiting hand.** *"Court's
+  // dry till the tide turns, she says — plenty of shots left in her."* *"Mind your tail, puss — that
+  // ball bounces further out here than you'd think."* *"Best seat on the sand, and it's free."* It's
+  // a friend to meet like any other soul on this beach.
+  //
+  // No new prop and no new controller: `beachPerson()` (this world's own wardrobe helper, defined at
+  // the top of `buildBeach`) builds the usual human rig, and `Wanderer` (55-npcs.js) gives her the
+  // same "stand and watch" behaviour every other watcher in this game already uses, with a short
+  // leash (0.5 m) keeping her parked by the court rather than wandering off across the dunes.
+  // `Wanderer`'s own constructor already reads its rig's height straight off
+  // `game.physics.ground0()`, the same terrain-aware convention the baller itself relies on, and
+  // calls `greetable()` itself, so no extra wiring was needed.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, `game.travel(4, 'from-hub')` waited out for real,
+  // then 1800 simulated frames so the baller was already in position) swept a 0.25 m grid 2-6 m out
+  // from the baller's own spot (-54, 11.5) against all 262 of this beach's own physics boxes,
+  // `game.zones` and all 121 NPCs already standing in it, rejecting anywhere over radius 56 (short of
+  // the 58 where `beachRegion()`'s own fill takes over) or sloping over 8 cm across a 0.5 m square:
+  // (-53.5, 16) came back clearest — 6.5 m from the nearest box and 4.53 m from the nearest other
+  // soul, the baller herself, on ground levelling out at 1.07 m. `angle` points her at the baller
+  // rather than a fixed constant, so she reads as watching the game and not just standing nearby.
+  //
+  // Built dead last of everything this beach adds, right after the fiddler's own listener above, for
+  // the usual reason: `beachPerson()`/`randomPerson()` both draw off this beach's own shared `r()`
+  // sequence unconditionally, and anything built earlier would have had its own timing-sensitive pick
+  // shifted by it.
+  { const wx = -53.5, wz = 16, bx2 = -54, bz2 = 11.5;
+    game.npcs.push(new Wanderer(game, beachPerson(true, false), { x: wx, z: wz, angle: atan2(bx2 - wx, bz2 - wz), speed: 0.3, leash: 0.5, idle: [3, 6],
+      cries: ["Court's dry till the tide turns, she says — plenty of shots left in her.", "Mind your tail, puss — that ball bounces further out here than you'd think.", 'Best seat on the sand, and it’s free.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
