@@ -31698,3 +31698,45 @@ Also found on the way in: this sandbox's local `main` was once again sitting on 
 and set it tracking `origin/main` before starting this round's own change.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+
+## Round 1122 — Candy Land's stilt walker gets a watcher too
+
+Same follow-up as last round, one world over: `StiltWalker` reached all seven worlds back at round
+776, and only the Neighborhood has ever given its own one an audience (round 1121). Candy Land's
+performer, pacing his candy-cane-striped trousers back and forth on a short line south of the
+sweet-lands, was still towering over nobody. **A local now stands a step south of his pacing line,
+watching him go up and down without a wobble.** *"Eleven years on and I still flinch when he turns at
+the end."* *"Careful, puss — those canes aren't candy canes, whatever they look like."* *"Best seat
+in the land for it, and it's free."*
+
+No new class or mesh: `makeHuman()`/`randomPerson()` (`55-npcs.js`) build the usual human rig, and
+`Wanderer` (`55-npcs.js`) gives him the same "stand and watch" behaviour every other watcher in this
+land already uses, with a short leash (0.5 m) keeping him parked by the pacing line. `Wanderer`'s own
+constructor calls `greetable()` itself, so no extra wiring was needed.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.travel(1, 'from-next')` waited out for real against its own portal-fade timer, then 500
+simulated frames so the stilt walker was already pacing) swept a 0.5 m grid 2.5-6 m out from his own
+pacing line ((2,-82) to (8,-82)) against all 1891 of this land's physics boxes, its 451 `game.zones`
+rectangles and all 101 other NPCs already standing in it: (2.5, -83) came back clearest — 11.84 m
+from the nearest box, 9.87 m clear of the nearest zone rectangle's own edge and 13.23 m from the
+nearest other soul (the gumdrop vendor), on flat ground (`ground0` returns 0 here) and outside every
+`game.zones` entry this land holds. `angle` points him at the middle of the pacing line rather than a
+fixed constant, so he reads as watching the act and not just standing nearby.
+
+`node dimension-cat/test/run.mjs` ran clean across several repeat runs: exit 0, all 277 checks `ok`,
+0 console warnings, box count unchanged at 334 (just a greet circle), and Candy Land's own friend
+total went up by one (120 → 121, confirmed against the test's own "121 to meet" line). One lone run
+during development came back `exit 1` with no `FAIL:` line printed anywhere in its output — looked
+like a timing fluke in the suite's own real `setTimeout` portal-fade wait rather than anything this
+change broke, and several more runs right after all came back clean. No visual check was possible in
+this environment (no browser, no Playwright) — only the stub-three test suite above, so whether the
+watcher's pose actually reads as "watching" is unverified. Five of the seven stilt walkers (Robot
+City, Victorian, Sunny Shore, Frosty Peak, Whisper Woods) are still performing for nobody.
+
+This sandbox's `main` was found pointing at a stale commit again while `HEAD` sat detached 1 commit
+ahead but exactly matching `origin/main` once fetched — fast-forwarded `main` to `HEAD` and set it
+tracking `origin/main` before starting this round's own change.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

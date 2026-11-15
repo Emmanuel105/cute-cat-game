@@ -7359,6 +7359,43 @@ function buildCandyLand(game, entry) {
     game.npcs.push(new Wanderer(game, watcher, { x: wx, z: wz, angle: atan2(bx2 - wx, bz2 - wz), leash: 0.5, speed: 0.4, idle: [3, 6], walk: [1, 1.6],
       cries: ['Forty shots in a row, and I stopped counting the misses.', "Careful, puss — stray balls roll faster downhill than you'd think out here.", "Best seat in the land, and it's free."] })); }
 
+  // The Neighborhood gave its own stilt walker a watcher last round — `StiltWalker` (55-npcs.js,
+  // `extends Patroller`) reached all seven worlds back at round 776, but only that one street ever
+  // circled back and gave hers an audience. This land's own performer, pacing candy-cane-striped
+  // trousers back and forth on his short line south of the sweet-lands, was still towering over
+  // nobody. **A local now stands a step south of his pacing line, watching him go up and down without
+  // a wobble.** *"Eleven years on and I still flinch when he turns at the end."* *"Careful, puss —
+  // those canes aren't candy canes, whatever they look like."* *"Best seat in the land for it, and
+  // it's free."* It's a friend to meet like any other soul in this land.
+  //
+  // No new class or mesh: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig, and
+  // `Wanderer` (55-npcs.js) gives him the same "stand and watch" behaviour every other watcher in this
+  // land already uses, with a short leash (0.5 m) keeping him parked by the pacing line rather than
+  // wandering off across the grass. `Wanderer`'s own constructor calls `greetable()` itself, so no
+  // extra wiring was needed to make him a friend.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.travel(1, 'from-next')` waited out for real against its own portal-fade timer, then 500
+  // simulated frames so the stilt walker was already pacing) swept a 0.5 m grid 2.5-6 m out from his
+  // own pacing line ((2,-82) to (8,-82)) against all 1891 of this land's physics boxes, its 451
+  // `game.zones` rectangles and all 101 other NPCs already standing in it: (2.5, -83) came back
+  // clearest — 11.84 m from the nearest box, 9.87 m clear of the nearest zone rectangle's own edge and
+  // 13.23 m from the nearest other soul (the gumdrop vendor), on flat ground (`ground0` returns 0
+  // here, same as the stilt walker's own spot) and outside every `game.zones` entry this land holds.
+  // `angle` points him at the middle of the pacing line rather than a fixed constant, so he reads as
+  // watching the act and not just standing nearby.
+  //
+  // Built dead last of everything this land adds, right after the basketball watcher above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this land's own shared `r()` sequence
+  // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted
+  // by it.
+  { const swx = 2.5, swz = -83, midX = 5, midZ = -82;
+    const stiltWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x6a9a8a, hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: false });
+    W.add(stiltWatcher.group);
+    game.npcs.push(new Wanderer(game, stiltWatcher, { x: swx, z: swz, angle: atan2(midX - swx, midZ - swz), leash: 0.5, speed: 0.4, idle: [3, 6], walk: [1, 1.6],
+      cries: ['Eleven years on and I still flinch when he turns at the end.', "Careful, puss — those canes aren't candy canes, whatever they look like.", "Best seat in the land for it, and it's free."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
