@@ -31651,3 +31651,50 @@ Also found on the way in: this sandbox's local `main` was once again sitting on 
 and set it tracking `origin/main` before starting this round's own change.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1121 — the Neighborhood's stilt walker gets a watcher of her own
+
+Juggler, magician, organ grinder, fiddler and basketball kid have each had a watcher or listener added
+across all seven worlds by now — `StiltWalker` reached every world back at round 776, but nobody ever
+circled back to give any of the seven their own audience. This street's own kid, pacing her short
+line on the quiet field south of the street on her homemade stilts since round 772, was still
+performing for nobody. **A neighbour now stands a few steps east of her pacing line, watching her go
+up and down on the homemade pair without a wobble.**
+
+No new class or mesh: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer` gives her the
+same "stand and watch" behaviour every other watcher and listener on this street already uses, with a
+short leash (0.5 m) keeping her parked by the field. Built with no `cries` at all, the same fix every
+watcher and listener on this street has needed since the magician's own watcher broke three unrelated
+checks the one time a second `cries`-bearing `Wanderer` ran in the same build-and-test window — the
+Neighborhood is the one world whose build-and-test window shares a single run of simulated frames
+with its own behaviour checks. The explicit shirt colour (0xa0785a) was checked against all 80 other
+shirts already on this street first.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, 60
+simulated frames so the stilt walker was already pacing) swept a 0.5 m grid 2.5-6 m out from her own
+pacing line ((14,-34) to (14,-28)) against all 334 of this street's physics boxes, its 69
+`game.zones` rectangles and all 92 other NPCs already standing in it: (17, -29) came back clearest —
+12.47 m from the nearest box and 14.3 m from the nearest other soul, on flat ground and outside every
+zone. `angle` points her at the middle of the pacing line rather than a fixed constant, so she reads
+as watching the act and not just standing nearby.
+
+First attempt rolled `elder: r.chance(0.3)` for her like most of this street's other watchers, which
+built clean but broke an unrelated, already-passing check 150 lines away in the test file — "two
+neighbours chat, facing each other, taking turns" failed because the chat pair's own `Wanderer`-style
+turn-timer draws from the same shared `rnd()` sequence this new Wanderer's idle/walk cycling also
+draws from during the simulated window, shifting exactly when the second neighbour's turn lands.
+Dropping the extra `r.chance()` draw (fixed `elder: false` instead) put the shared sequence back in
+a place where both checks pass. `node dimension-cat/test/run.mjs` now runs clean: exit 0, all 277
+checks `ok`, 0 console warnings, box count unchanged at 334 (just a greet circle), and the
+Neighborhood's own friend total went up by one (110 → 111, confirmed against the test's own "the
+Neighborhood has 111 people to meet" line). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite above, so whether the watcher's pose actually
+reads as "watching" is unverified. Six of the seven stilt walkers (Candy Land, Robot City, Victorian,
+Sunny Shore, Frosty Peak, Whisper Woods) are still performing for nobody.
+
+Also found on the way in: this sandbox's local `main` was once again sitting on a detached `HEAD`
+(ninth time now), 34 commits ahead of local `main`'s own stale pointer though exactly matching
+`origin/main` once fetched, so nothing had actually been lost. Fast-forwarded `main` to that `HEAD`
+and set it tracking `origin/main` before starting this round's own change.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
