@@ -31423,6 +31423,48 @@ function buildForest(game, entry) {
     game.npcs.push(new Wanderer(game, listener, { x: wx, z: wz, angle: atan2(gx - wx, gz - wz), leash: 0.5, speed: 0.3, idle: [3, 6],
       cries: ["Thirty tunes in the barrel, and I think I've found the one I like best.", "Careful, puss — he's three songs deep and the damp hasn't slowed him down yet.", "Even the owls stop for this one. Can't say I'm any wiser than they are."] })); }
 
+  // The Neighborhood, Candy Land, Robot City, Victorian, Sunny Shore and Frosty Peak all gave their
+  // own basketball kid a watcher over rounds 1115-1119 — this wood's own baller, dribbling alone on
+  // the packed dirt south-west of the glade since this file's own hoop went in, was the last of the
+  // seven still shooting to nobody. **A woodland local now stands a few steps off, arms folded,
+  // watching the ball go up through the pole-mounted hoop and drop straight back into her waiting
+  // hand.** *"Not a soul passes this far south, and still she never misses twice in a row."* *"Mind
+  // your tail, puss — she's better at this than the squirrels give her credit for."* *"No scoreboard,
+  // no crowd, just me and the echo keeping count."* It's a friend to meet like any other soul in this
+  // wood — every basketball hoop in the game now has somebody watching.
+  //
+  // No new mesh or controller: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig,
+  // and `Wanderer` (55-npcs.js) gives her the same "stand and watch" behaviour every other watcher in
+  // this game already uses, with a short leash (0.5 m) keeping her parked by the court rather than
+  // wandering off into the trees. `Wanderer`'s own constructor already reads its rig's height straight
+  // off `game.physics.ground0()`, the same terrain-aware convention the baller itself relies on, and
+  // calls `greetable()` itself, so no extra wiring was needed.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, `game.travel(6, 'from-hub')` waited out for real
+  // against its own portal-fade timer — a genuine 700 ms sleep, not simulated frames — then 3600
+  // simulated frames so the baller was well into her own dribbling) swept a 0.5 m grid 2-6 m out from
+  // the baller's own spot (-53, -8.5) against all 670 of this wood's own physics boxes, its 229
+  // `game.zones` rectangles and all 136 other NPCs already standing in it: (-50, -9) came back
+  // clearest — 6.17 m from the nearest box, 2.83 m clear of the nearest zone rectangle's own edge and
+  // 6.04 m from the nearest other soul (a marcher passing through), 3.04 m from the baller herself, at
+  // radius 50.8 from the origin (short of the 58 where `forestRegion()`'s own fill takes over), on
+  // ground levelling out at 0.90 m with 3.2 cm of slope across a 0.5 m square. `angle` points her at
+  // the baller rather than a fixed constant, so she reads as watching the game and not just standing
+  // nearby.
+  //
+  // Built dead last of everything this wood adds, right after the organ-grinder listener above, for
+  // the usual reason: `makeHuman()` and `randomPerson()` both draw off this wood's own shared `r()`
+  // sequence unconditionally, and anything built earlier would have had its own timing-sensitive pick
+  // shifted by it.
+  { const wx = -50, wz = -9, bx2 = -53, bz2 = -8.5;
+    const courtWard = makeWardrobe(r, { shirts: [0x4a6a5a, 0x6a5a4a, 0x3a4a3a], pants: [0x3a3a3a, 0x2a2a2a], shoes: [0x3a2a1e, 0x2a2018] });
+    const watcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.25), wardrobe: courtWard }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(watcher.group);
+    game.npcs.push(new Wanderer(game, watcher, { x: wx, z: wz, angle: atan2(bx2 - wx, bz2 - wz), leash: 0.5, speed: 0.4, idle: [3, 6],
+      cries: ["Not a soul passes this far south, and still she never misses twice in a row.", "Mind your tail, puss — she's better at this than the squirrels give her credit for.", 'No scoreboard, no crowd, just me and the echo keeping count.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

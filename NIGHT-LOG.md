@@ -31608,3 +31608,46 @@ whether the watcher's pose actually reads as "watching" is unverified. One of th
 hoops (Whisper Woods) is still shooting to nobody.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1120 — Whisper Woods' basketball kid gets a watcher too, the last of the seven
+
+The Neighborhood, Candy Land, Robot City, Victorian, Sunny Shore and Frosty Peak all gave their own
+basketball kid a watcher over rounds 1115-1119 — Whisper Woods' own baller, dribbling alone on the
+packed dirt south-west of the glade, was the last of the seven still shooting to nobody. **A woodland
+local now stands a few steps off, arms folded, watching the ball go up through the pole-mounted hoop
+and drop straight back into her waiting hand.** *"Not a soul passes this far south, and still she
+never misses twice in a row."* *"Mind your tail, puss — she's better at this than the squirrels give
+her credit for."* *"No scoreboard, no crowd, just me and the echo keeping count."* It's a friend to
+meet like any other soul in this wood — every basketball hoop in the game now has somebody watching it.
+
+No new mesh or controller: `makeHuman()`/`randomPerson()` (`55-npcs.js`) build the usual human rig,
+and `Wanderer` (`55-npcs.js`) gives her the same "stand and watch" behaviour every other watcher in
+this game already uses, with a short leash (0.5 m) keeping her parked by the court rather than
+wandering off into the trees. `Wanderer`'s own constructor calls `greetable()` itself, so no extra
+wiring was needed.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.travel(6, 'from-hub')` waited out for real against its own portal-fade timer — a genuine 700 ms
+sleep, not simulated frames — then 3600 simulated frames so the baller was well into her own
+dribbling) swept a 0.5 m grid 2-6 m out from the baller's own spot (-53, -8.5) against all 670 of this
+wood's own physics boxes, its 229 `game.zones` rectangles and all 136 other NPCs already standing in
+it: (-50, -9) came back clearest — 6.17 m from the nearest box, 2.83 m clear of the nearest zone
+rectangle's own edge and 6.04 m from the nearest other soul (a marcher passing through), 3.04 m from
+the baller herself, at radius 50.8 from the origin (short of the 58 where `forestRegion()`'s own fill
+takes over), on ground levelling out at 0.90 m with 3.2 cm of slope across a 0.5 m square. `angle`
+points her at the baller rather than a fixed constant, so she reads as watching the game and not just
+standing nearby.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (no new collider, just a greet circle), and Whisper Woods' own friend total went up
+by one (160 → 161, confirmed by diffing against the unmodified build). No visual check was possible in
+this environment (no browser, no Playwright) — only the stub-three test suite above, so whether the
+watcher's pose actually reads as "watching" is unverified. All seven basketball hoops in the game now
+have a watcher.
+
+Also found on the way in: this sandbox's local `main` was once again sitting on a detached `HEAD`
+(eighth time now), 33 commits ahead of local `main`'s own stale pointer though exactly matching
+`origin/main` once fetched, so nothing had actually been lost. Fast-forwarded `main` to that `HEAD`
+and set it tracking `origin/main` before starting this round's own change.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
