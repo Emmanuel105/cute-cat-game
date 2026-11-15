@@ -31527,3 +31527,42 @@ so nothing had actually been lost, just the branch pointer itself. Fast-forwarde
 and set it tracking `origin/main` before starting this round's own change.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1118 — Victorian's basketball kid gets a watcher too
+
+The Neighborhood, Candy Land and Robot City have all given their basketball kid a watcher over the
+last three rounds (1115-1117) — Victorian's own kid, dribbling alone on the green south-west of the
+terraces since round 1039, was still shooting to nobody. **A local now stands a few steps off to the
+side, arms folded, watching the ball go up and drop straight back into her waiting hand.** *"Tuppence
+a shot, and she's never once dropped it on herself."* *"Mind your tail, puss — that ball comes down
+faster than it looks."* *"Free as the air out here, and still the best show on the street."* It's a
+friend to meet like any other soul in this town.
+
+No new mesh or controller: `makeHuman()`/`randomPerson()` (`55-npcs.js`) build the usual human rig,
+and `Wanderer` (`55-npcs.js`) gives him the same "stand and watch" behaviour every other watcher in
+this game already uses, with a short leash (0.5 m) keeping him parked by the court rather than
+wandering off across the green. `Wanderer`'s own constructor calls `greetable()` itself, so no extra
+wiring was needed.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.travel(3, 'from-prev')` waited out for real against its own portal-fade timer, then 60
+simulated frames so the kid was already in position) swept a grid 3-4.5 m out from the baller's own
+spot (-40, -65.5) against all 664 of the town's physics boxes, its 245 `game.zones` rectangles and
+all 139 NPCs already standing in it: (-36.5, -63.5) came back clearest — 8.18 m from the nearest box
+and 4.03 m from the nearest other soul, the baller herself, outside every zone. `angle` points him at
+the baller rather than a fixed constant, so he reads as watching the game and not just standing
+nearby.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (no new collider, just a greet circle), and Victorian's own friend total went up by
+one (161 → 162, confirmed by diffing against the unmodified build). No visual check was possible in
+this environment (no browser, no Playwright) — only the stub-three test suite above, so whether the
+watcher's pose actually reads as "watching" is unverified. Two of the seven basketball hoops (Sunny
+Shore, Whisper Woods) are still shooting to nobody.
+
+Also found on the way in: this sandbox's local `main` was once again sitting on a detached `HEAD`
+(seventh time now), 1 commit ahead of local `main`'s own stale pointer though exactly matching
+`origin/main` once fetched, so nothing had actually been lost. Fast-forwarded `main` to that `HEAD`
+and set it tracking `origin/main` before starting this round's own change.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
