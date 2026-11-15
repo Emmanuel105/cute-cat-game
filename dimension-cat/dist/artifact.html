@@ -31828,6 +31828,45 @@ function buildForest(game, entry) {
     game.npcs.push(new Wanderer(game, watcher, { x: wx, z: wz, angle: atan2(bx2 - wx, bz2 - wz), leash: 0.5, speed: 0.4, idle: [3, 6],
       cries: ["Not a soul passes this far south, and still she never misses twice in a row.", "Mind your tail, puss — she's better at this than the squirrels give her credit for.", 'No scoreboard, no crowd, just me and the echo keeping count.'] })); }
 
+  // The Neighborhood's yo-yo kid got a watcher at round 1126, Candy Land's own the round after that
+  // (1127), Robot City's (1128), Victorian's (1129), Sunny Shore's (1130) and Frosty Peak's (1131) —
+  // but this wood's own `YoYoer`, working the disc on the open ground east of the glade since earlier
+  // in this build, was the last of the seven still performing for nobody. **A woodland local now
+  // stands a few steps east of her, watching the disc drop and climb without a tangle.** *"Forty
+  // drops and not one tangle — I've counted."* *"Careful, puss — it swings wider than it looks, out
+  // here."* *"Best free show in these woods, and I've seen it every day this week."*
+  //
+  // No new class or mesh: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig and
+  // `Wanderer` (55-npcs.js) gives him the same "stand and watch" behaviour every other watcher in this
+  // wood already uses, with a short leash (0.5 m) keeping him parked by the yo-yo kid's own spot
+  // rather than wandering off into the trees. `Wanderer`'s own constructor already reads its rig's
+  // height straight off `game.physics.ground0()`, the same terrain-aware convention the yo-yo kid
+  // itself relies on, and calls `greetable()` itself, so no extra wiring was needed.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.load(6, 'from-hub')` to skip the real-timer portal fade, then 500 simulated frames so every
+  // deer, fox and flying fairy was already moving, then sampled every NPC's own position every
+  // quarter second over 30 more simulated seconds) swept a 0.25 m grid 2.5-7 m out from the yo-yo
+  // kid's own spot (34, 0) against all 670 of this wood's own physics boxes, its 229 `game.zones`
+  // rectangles and all those samples: (40.34, 2.31) came back clearest — 6.73 m from the nearest box,
+  // 6.83 m from the nearest zone rectangle and 6.75 m from the nearest other soul at every sample, at
+  // radius 40.4 from the origin, short of the radius (58) where `forestRegion()`'s own procedural
+  // fill takes over, with the ground levelling out at 1.135 m and under 3 mm of slope across the
+  // square. `angle` points him at the yo-yo kid's own fixed spot, so he reads as watching the act and
+  // not just standing nearby.
+  //
+  // Built dead last of everything this wood adds, right after the basketball watcher above, same
+  // reason as always: `makeHuman()`/`randomPerson()` draw off this wood's own shared `r()` sequence
+  // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted
+  // by it. `YoYoer` plays in all seven worlds; every one now has a watcher of its own.
+  { const wx = 40.34, wz = 2.31, yoyoX = 34, yoyoZ = 0;
+    const yoyoWatcherWard = makeWardrobe(r, { shirts: [0x5a6a4a, 0x6a5a3a, 0x4a3a2a], pants: [0x3a3a2a, 0x2a2a2a], shoes: [0x3a2a1e, 0x2a2018] });
+    const yoyoWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: yoyoWatcherWard }),
+      hat: r.chance(0.4) ? 'cap' : null, hatColor: 0x3a4a3a, bag: null, backpack: null, jacket: null, scarf: null, glasses: false });
+    W.add(yoyoWatcher.group);
+    game.npcs.push(new Wanderer(game, yoyoWatcher, { x: wx, z: wz, angle: atan2(yoyoX - wx, yoyoZ - wz), leash: 0.5, speed: 0.3, idle: [3, 6],
+      cries: ["Forty drops and not one tangle — I've counted.", 'Careful, puss — it swings wider than it looks, out here.', 'Best free show in these woods, and I\'ve seen it every day this week.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

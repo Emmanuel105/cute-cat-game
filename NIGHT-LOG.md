@@ -32081,3 +32081,39 @@ printing "134 to meet"). No visual check was possible in this environment (no br
 unverified. `YoYoer` plays in all seven worlds; one still performs for nobody (Whisper Woods).
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1132 — Whisper Woods' yo-yo kid gets a watcher too, the last of the seven
+
+Closing out the chain from the last six rounds: the Neighborhood's yo-yo kid got a watcher at round
+1126, Candy Land's own the round after that (1127), Robot City's (1128), Victorian's (1129), Sunny
+Shore's (1130) and Frosty Peak's (1131) — but this wood's own `YoYoer`, working the disc on the open
+ground east of the glade since earlier in this build, was the last of the seven still performing for
+nobody. **A woodland local now stands a few steps east of her, watching the disc drop and climb
+without a tangle.** *"Forty drops and not one tangle — I've counted."* *"Careful, puss — it swings
+wider than it looks, out here."* *"Best free show in these woods, and I've seen it every day this
+week."*
+
+No new class or mesh: `makeHuman()`/`randomPerson()` build the usual human rig and `Wanderer`
+(`55-npcs.js`) gives him the same "stand and watch" behaviour every other watcher in this wood
+already uses, with a short leash (0.5 m) keeping him parked by the yo-yo kid's own spot. `Wanderer`'s
+own constructor calls `greetable()` itself, so no extra wiring was needed.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, calling
+`game.load(6, 'from-hub')` directly to skip the real-timer portal fade, then 500 simulated frames so
+every deer, fox and flying fairy was already moving, then sampling every NPC's own position every
+quarter second over 30 more simulated seconds) swept a 0.25 m grid 2.5-7 m out from the yo-yo kid's
+own spot (34, 0) against all 670 of this wood's own physics boxes, its 229 `game.zones` rectangles
+and all those samples: (40.34, 2.31) came back clearest — 6.73 m from the nearest box, 6.83 m from
+the nearest zone rectangle and 6.75 m from the nearest other soul at every sample, at radius 40.4 from
+the origin, short of the radius (58) where `forestRegion()`'s own procedural fill takes over, with
+the ground levelling out at 1.135 m and under 3 mm of slope across the square. `angle` points him at
+the yo-yo kid's own fixed spot, so he reads as watching the act and not just standing nearby.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334, and Whisper Woods' own friend total went up by one (161 → 162, confirmed against a
+`git stash` re-run of the old code printing "161 to meet"). No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite above, so whether the
+watcher's pose actually reads as "watching" is unverified. `YoYoer` plays in all seven worlds, and
+every one of them now has a watcher of its own — the chain that started at round 1126 is complete.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
