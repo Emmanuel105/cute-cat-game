@@ -11633,6 +11633,34 @@ function buildVictorian(game, entry) {
     mesh(G.box(0.42, 0.06, 0.24), mat(0x2a1c12, { roughness: 0.8 }), { x: cx, y: 0.03, z: cz, ry: 0.4, parent: W });   // the open case
     mesh(G.box(0.36, 0.03, 0.18), mat(0x6b4a2b, { roughness: 0.9 }), { x: cx, y: 0.065, z: cz, ry: 0.4, parent: W }); // its plush lining
     for (const [dx, dz] of [[-0.05, 0.03], [0.04, -0.02], [0.0, 0.04]]) mesh(G.cyl(0.025, 0.025, 0.006, 10), mat(0xc9a227, { metalness: 0.7, roughness: 0.35 }), { x: cx + dx, y: 0.09, z: cz + dz, parent: W }); }   // a few coins
+  // Five other worlds' own fiddlers (the Neighborhood, Robot City, Sunny Shore, Frosty Peak, Candy
+  // Land) have each picked up a listener over rounds 1109-1113 — Victorian's own fiddler, resting
+  // between tunes at the clock tower's foot since this town was first built, is the last of six still
+  // playing to nobody. **A passer-by now stands a few steps north-east of him, listening instead of
+  // crossing on toward the side road.** No new mesh or controller: `makeHuman()`/`randomPerson()`
+  // (55-npcs.js) build the usual human rig, and `Wanderer` gives her the same "stand and watch"
+  // behaviour every other listener in this game already uses, with a short leash (0.5 m) keeping her
+  // parked by the fiddler rather than wandering off. `Wanderer`'s own constructor already reads its
+  // rig's height off `game.physics.ground0()` and calls `greetable()` itself, so this was a drop-in
+  // addition with no extra wiring. Built dead last of everything this plaza adds, the usual reason:
+  // `makeHuman()`/`randomPerson()` draw off this town's own shared `r()` sequence unconditionally, and
+  // anything built earlier would have had its own timing-sensitive pick shifted by it.
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.travel(3,
+  // 'from-prev')` waited out for real against its own portal-fade timer, then 3600 simulated frames so
+  // every NPC in this town was already in position) swept a 0.5 m grid 2.5-10 m out from the fiddler's
+  // own spot (39, 6) against all 664 of this town's own physics boxes, all 245 `game.zones`
+  // rectangles and all 138 NPCs already standing in it: (42, 10.5) came back clearest inside the
+  // tightest 5.5 m ring — 6.0 m from the nearest box and 5.15-5.41 m from the nearest other soul, the
+  // fiddler himself — still inside the clock tower plaza's own keep-out circle (radius 11, centred
+  // (42, 0)) that keeps `victorianRegion`'s own fill off it, on flat ground (`ground0` = 0 there).
+  // `angle` points her at the fiddler rather than a fixed constant, so she reads as listening to the
+  // tune and not just standing nearby.
+  { const lx = 42, lz = 10.5;
+    const listenWard = makeWardrobe(r, { shirts: [0x4a3a5a, 0x3a4a3a, 0x5a3a3a], pants: [0x1e1e24, 0x2a2a30], shoes: [0x1a1410, 0x2a1e16] });
+    const fiddleListener = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: listenWard }),
+      pants: 0x1e1e24, hat: r.chance(0.3) ? 'bonnet' : null, hatColor: 0x3a3327, coat: true, buttons: null, scarf: 0x4a3a3a, beard: false, glasses: false });
+    W.add(fiddleListener.group);
+    game.npcs.push(new Wanderer(game, fiddleListener, { x: lx, z: lz, angle: atan2(39 - lx, 6 - lz), leash: 0.5, speed: 0.3, idle: [3, 6] })); }
   // every other world already had a Painter at an easel (the Neighborhood, Robot City, Sunny Shore, Frosty
   // Peak and Whisper Woods) — Victorian's clock tower plaza had the tower itself and nothing else, the one
   // open space in the hand-built town with no one in it at all. An artist now sets up in its south-east

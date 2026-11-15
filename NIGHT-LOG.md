@@ -31360,3 +31360,51 @@ round running that has had to recover from the exact same drift — worth a huma
 environment keeps handing back a detached `HEAD` instead of `main` itself at the start of a run.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1114 — Victorian's own fiddler finally gets a listener
+
+Last of the six fiddlers to get this treatment, after the Neighborhood (round 1109), Robot City
+(round 1110), Sunny Shore (round 1111), Frosty Peak (round 1112) and Candy Land (round 1113).
+Victorian's own fiddler has rested between tunes at the foot of the clock tower, violin and bow in
+hand, since the town was first built — nobody ever stopped to listen. **A passer-by now stands a
+few steps north-east of him in the plaza, listening instead of crossing on toward the side road.**
+*"Tuppence for a tune, if you fancy one."* *"Just resting the bow arm, puss."* *"Wind me up and I'll
+play Greensleeves."*
+
+No new mesh or controller: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig,
+and `Wanderer` (55-npcs.js) gives her the same "stand and watch" behaviour every other listener in
+this game already uses, with a short leash (0.5 m) keeping her parked by the fiddler. `Wanderer`'s
+own constructor already reads its rig's height off `game.physics.ground0()` and calls
+`greetable()` itself, so this was a drop-in addition with no extra wiring. Built dead last of
+everything this plaza adds, the usual reason: `makeHuman()`/`randomPerson()` draw off this town's
+own shared `r()` sequence unconditionally, and anything built earlier would have had its own
+timing-sensitive pick shifted by it.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.travel(3, 'from-prev')` waited out for real against its own portal-fade timer, then 3600
+simulated frames so every NPC in this town was already in position) swept a 0.5 m grid 2.5-10 m out
+from the fiddler's own spot (39, 6) against all 664 of this town's physics boxes, its 245
+`game.zones` rectangles and all 138 NPCs already standing in it: (42, 10.5) came back clearest
+inside the tightest 5.5 m ring — 6.0 m from the nearest box and 5.15-5.41 m from the nearest other
+soul (the fiddler himself), still inside the clock tower plaza's own keep-out circle (radius 11,
+centred (42, 0)) that keeps `victorianRegion`'s own fill off it, on flat ground. `angle` points her
+at the fiddler rather than a fixed constant, so she reads as listening to the tune and not just
+standing nearby.
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt (after fixing one scoping slip —
+the fiddler's own `fx`/`fz` were local to its own block and had already gone out of scope by the
+time this listener's block ran): exit 0, every check `ok`, 0 console warnings, box count unchanged
+at 334 (just a greet circle, no new collider), and Victorian's own friend total went up by one (160
+→ 161, confirmed against `world 3: 161 to meet`). No visual check was possible in this environment
+(no browser, no Playwright) — only the stub-three test suite above, so whether the pose actually
+reads as "listening" is unverified. All six of this game's own fiddlers now have someone stopping
+to listen.
+
+Also found and fixed on the way in, a fourth time now: this sandbox's local `main` was once again
+sitting on a *detached* `HEAD`, though this time it matched `origin/main` exactly (`git push`
+reported "Everything up-to-date" once the branch ref was restored) — so nothing had actually been
+lost, just the branch pointer itself. Restored `main` to point at that `HEAD` with `git
+update-ref`/`git symbolic-ref` before starting this round's own change. Still worth a human looking
+at why the environment keeps handing back a detached `HEAD` instead of `main` at the start of a run.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
