@@ -25592,6 +25592,39 @@ function buildBeach(game, entry) {
     game.npcs.push(new Wanderer(game, beachPerson(true, false), { x: wx, z: wz, angle: atan2(bx2 - wx, bz2 - wz), speed: 0.3, leash: 0.5, idle: [3, 6],
       cries: ["Court's dry till the tide turns, she says — plenty of shots left in her.", "Mind your tail, puss — that ball bounces further out here than you'd think.", 'Best seat on the sand, and it’s free.'] })); }
 
+  // The Neighborhood, Candy Land, Robot City and Victorian have all given their own `StiltWalker`
+  // a watcher by now (rounds 1121-1124) — Sunny Shore's own boardwalk performer, pacing a short
+  // line on the dry dune sand north of the marbles ring in candy-striped stilts since round 774,
+  // was still towering over nobody. **A beachgoer now stands a few steps east of his pacing line,
+  // watching the stilts go up and down without a wobble.** *"Tide's not the only thing that comes
+  // up this high round here."* *"Careful, puss — stand too close and he'll step clean over your
+  // tail."* *"Kids on the pier bet he'd topple by now. I've got my own money on never."*
+  //
+  // No new prop and no new controller: `beachPerson()` (this world's own wardrobe helper) builds
+  // the usual human rig, and `Wanderer` (55-npcs.js) gives him the same "stand and watch"
+  // behaviour every other watcher on this beach already uses, with a short leash (0.5 m) keeping
+  // him parked by the pacing line rather than wandering off across the dunes. `Wanderer`'s own
+  // constructor calls `greetable()` itself, so no extra wiring was needed to make him a friend.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.travel(4, 'from-hub')` waited out for real against `game.worldIndex`, then 500 simulated
+  // frames so the stilt walker was already pacing) swept a 0.5 m grid across the usual 2.5-7 m
+  // "watching distance" band around his own pacing line ((-39,26) to (-33,26)) against all 262 of
+  // this beach's own physics boxes, its 89 `game.zones` rectangles and all 122 other NPCs already
+  // standing on it, rejecting anywhere past radius 55 (short of the 58 where `beachRegion()`'s own
+  // fill takes over): (-26.5, 25) came back clearest — 5.76 m from the nearest box, 17.0 m clear of
+  // the nearest zone rectangle's own edge and 5.66 m from the nearest other soul (the marbles kid),
+  // 6.58 m out from the pacing line itself. `angle` points him at the middle of the pacing line
+  // rather than a fixed constant, so he reads as watching the act and not just standing nearby.
+  //
+  // Built dead last of everything this beach adds, right after the basketball watcher above, for
+  // the usual reason: `beachPerson()`/`randomPerson()` both draw off this beach's own shared `r()`
+  // sequence unconditionally, and anything built earlier would have had its own timing-sensitive
+  // pick shifted by it.
+  { const wx3 = -26.5, wz3 = 25, midX = -36, midZ = 26;
+    game.npcs.push(new Wanderer(game, beachPerson(r.chance(0.5), false), { x: wx3, z: wz3, angle: atan2(midX - wx3, midZ - wz3), speed: 0.3, leash: 0.5, idle: [3, 6],
+      cries: ["Tide's not the only thing that comes up this high round here.", "Careful, puss — stand too close and he'll step clean over your tail.", "Kids on the pier bet he'd topple by now. I've got my own money on never."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

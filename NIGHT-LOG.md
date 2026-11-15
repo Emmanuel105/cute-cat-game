@@ -31824,3 +31824,41 @@ fetched — fast-forwarded `main` to `HEAD` and set it tracking `origin/main` be
 round's own change.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+
+## Round 1125 — Sunny Shore's stilt walker gets a watcher too, the last of the seven
+
+Same follow-up, closing it out: `StiltWalker` reached all seven worlds back at round 776, and the
+Neighborhood (round 1121), Candy Land (1122), Robot City (1123) and Victorian (1124) have all since
+given their own one an audience. Sunny Shore's own boardwalk performer, pacing a short line on the
+dry dune sand north of the marbles ring in candy-striped stilts since round 774, was still towering
+over nobody. **A beachgoer now stands a few steps east of his pacing line, watching the stilts go
+up and down without a wobble.** *"Tide's not the only thing that comes up this high round here."*
+*"Careful, puss — stand too close and he'll step clean over your tail."* *"Kids on the pier bet
+he'd topple by now. I've got my own money on never."*
+
+No new class or mesh: `makeHuman()`/`randomPerson()` (via this beach's own `beachPerson()` wardrobe
+helper, `72-world-beach.js`) build the usual human rig, and `Wanderer` (`55-npcs.js`) gives him the
+same "stand and watch" behaviour every other watcher on this beach already uses, with a short leash
+(0.5 m) keeping him parked by the pacing line rather than wandering off across the dunes.
+`Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was needed.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.travel(4, 'from-hub')` waited out for real against `game.worldIndex`, then 500 simulated
+frames so the stilt walker was already pacing) swept a 0.5 m grid across the usual 2.5-7 m
+"watching distance" band around his own pacing line ((-39,26) to (-33,26)) against all 262 of this
+beach's own physics boxes, its 89 `game.zones` rectangles and all 122 other NPCs already standing
+on it, rejecting anywhere past radius 55 (short of the 58 where `beachRegion()`'s own fill takes
+over): (-26.5, 25) came back clearest — 5.76 m from the nearest box, 17.0 m clear of the nearest
+zone rectangle's own edge and 5.66 m from the nearest other soul (the marbles kid), 6.58 m out from
+the pacing line itself. `angle` points him at the middle of the pacing line rather than a fixed
+constant, so he reads as watching the act and not just standing nearby.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (just a greet circle), and Sunny Shore's own friend total went up by one (138 →
+139, confirmed against the test's own "139 to meet" line, and against a stashed re-run of the old
+code printing "138 to meet"). No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite above, so whether the watcher's pose actually reads as
+"watching" is unverified. All seven stilt walkers in the game now have someone watching them pace.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
