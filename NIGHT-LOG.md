@@ -31782,3 +31782,45 @@ This sandbox's `main` was found detached from `HEAD` again (tenth time now), exa
 starting this round's own change.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+
+## Round 1124 — Victorian's stilt walker gets a watcher too
+
+Same follow-up, a fourth world over: `StiltWalker` reached all seven worlds back at round 776, and
+so far only the Neighborhood (round 1121), Candy Land (round 1122) and Robot City (round 1123) have
+given their own one an audience. Victorian's own top-hatted performer, pacing candy-striped trousers
+on a short line on the quiet green south-west of the market square since round 2894, was still
+towering over nobody. **A local now stands a few steps east of his pacing line, watching the stilts go
+up and down without a wobble.** *"Eleven years on those poles and he's never once come down early."*
+*"Careful, puss — stand too close and he'll step clean over your tail."* *"Best free show in the
+square, and I've seen it a hundred times."*
+
+No new class or mesh: `makeHuman()`/`randomPerson()` (`55-npcs.js`) build the usual human rig, and
+`Wanderer` (`55-npcs.js`) gives him the same "stand and watch" behaviour every other watcher in this
+town already uses, with a short leash (0.5 m) keeping him parked by the pacing line. `Wanderer`'s own
+constructor calls `greetable()` itself, so no extra wiring was needed.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.travel(3, 'from-prev')` waited out for real against its own portal-fade and load timers, then
+500 simulated frames so the stilt walker was already pacing) swept a 0.5 m grid across the usual
+2.5-7 m "watching distance" band around his own pacing line ((-18,-80) to (-12,-80)) against all 664
+of this town's physics boxes, its 245 `game.zones` rectangles and all 140 other NPCs already standing
+in it: (-8, -76.5) came back clearest — 10.81 m from the nearest box, 12.41 m clear of the nearest
+zone rectangle's own edge and 10.59 m from the nearest other soul, 5.3 m out from the pacing line
+itself, on flat ground (`ground0` returns 0 here, same as the stilt walker's own spot). `angle`
+points him at the middle of the pacing line rather than a fixed constant, so he reads as watching the
+act and not just standing nearby.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 334 (just a greet circle), and Victorian's own friend total went up by one (162 →
+163, confirmed against the test's own "163 to meet" line, and against a stashed re-run of the old
+code printing "162 to meet"). No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite above, so whether the watcher's pose actually reads as
+"watching" is unverified. Three of the seven stilt walkers (Sunny Shore, Frosty Peak, Whisper Woods)
+are still performing for nobody.
+
+This sandbox's `main` was found detached from `HEAD` again, exactly matching `origin/main` once
+fetched — fast-forwarded `main` to `HEAD` and set it tracking `origin/main` before starting this
+round's own change.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

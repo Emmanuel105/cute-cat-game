@@ -22821,6 +22821,42 @@ function buildVictorian(game, entry) {
     game.npcs.push(new Wanderer(game, watcher, { x: wx, z: wz, angle: atan2(wbx - wx, wbz - wz), leash: 0.5, speed: 0.4, idle: [3, 6], walk: [1, 1.6],
       cries: ["Tuppence a shot, and she's never once dropped it on herself.", 'Mind your tail, puss — that ball comes down faster than it looks.', 'Free as the air out here, and still the best show on the street.'] })); }
 
+  // Candy Land's and Robot City's stilt walkers both got a watcher last round (1122, 1123), and the
+  // Neighborhood's the round before that — but this town's own top-hatted performer, pacing a short
+  // line on the quiet green south-west of the square since round 2894, was still towering over
+  // nobody. **A local now stands a few steps east of his pacing line, watching the candy-striped
+  // trousers go up and down without a wobble.** *"Eleven years on those poles and he's never once
+  // come down early."* *"Careful, puss — stand too close and he'll step clean over your tail."*
+  // *"Best free show in the square, and I've seen it a hundred times."*
+  //
+  // No new class or mesh: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig, and
+  // `Wanderer` (55-npcs.js) gives him the same "stand and watch" behaviour every other watcher in this
+  // town already uses, with a short leash (0.5 m) keeping him parked by the pacing line rather than
+  // wandering off across the green. `Wanderer`'s own constructor calls `greetable()` itself, so no
+  // extra wiring was needed to make him a friend.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.travel(3, 'from-prev')` waited out for real against its own portal-fade and load timers,
+  // then 500 simulated frames so the stilt walker was already pacing) swept a 0.5 m grid across the
+  // usual 2.5-7 m "watching distance" band around his own pacing line ((-18,-80) to (-12,-80))
+  // against all 664 of this town's physics boxes, its 245 `game.zones` rectangles and all 140 other
+  // NPCs already standing in it: (-8, -76.5) came back clearest — 10.81 m from the nearest box, 12.41
+  // m clear of the nearest zone rectangle's own edge and 10.59 m from the nearest other soul, 5.3 m
+  // out from the pacing line itself, on flat ground (`ground0` returns 0 here, same as the stilt
+  // walker's own spot). `angle` points him at the middle of the pacing line rather than a fixed
+  // constant, so he reads as watching the act and not just standing nearby.
+  //
+  // Built dead last of everything this town adds, right after the basketball watcher above and right
+  // before the squirrel below, for the usual reason: `makeHuman()`/`randomPerson()` both draw off
+  // this town's own shared `r()` sequence unconditionally, and anything built earlier would have had
+  // its own timing-sensitive pick shifted by it.
+  { const swx = -8, swz = -76.5, midX = -15, midZ = -80;
+    const stiltWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, scarf: null, bag: null, backpack: null, glasses: false });
+    W.add(stiltWatcher.group);
+    game.npcs.push(new Wanderer(game, stiltWatcher, { x: swx, z: swz, angle: atan2(midX - swx, midZ - swz), leash: 0.5, speed: 0.4, idle: [3, 6], walk: [1, 1.6],
+      cries: ['Eleven years on those poles and he\'s never once come down early.', "Careful, puss — stand too close and he'll step clean over your tail.", 'Best free show in the square, and I\'ve seen it a hundred times.'] })); }
+
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
