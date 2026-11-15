@@ -31485,3 +31485,45 @@ whether the pose actually reads as "watching" is unverified. Four of the seven b
 (Candy Land, Victorian, Sunny Shore, Whisper Woods) are still shooting to nobody.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1117 — Candy Land's own basketball kid gets a watcher too
+
+The Neighborhood, Robot City and Frosty Peak have all given their basketball hoop an audience over
+the last two rounds (1037, 1115, 1116) — Candy Land's own kid, dribbling alone out past the two donuts
+since round 1038, was still shooting to nobody. **A local now stands a few steps off, arms crossed,
+watching the ball go up and drop straight back into her hand instead of wandering off toward the
+gumdrop wagon.** *"Forty shots in a row, and I stopped counting the misses."* *"Careful, puss — stray
+balls roll faster downhill than you'd think out here."* *"Best seat in the land, and it's free."* It's
+a friend to meet like any other soul in this land.
+
+No new mesh or controller: `makeHuman()`/`randomPerson()` (`55-npcs.js`) build the usual human rig, and
+`Wanderer` (`55-npcs.js`) gives her the same "stand and watch" behaviour every other watcher in this
+game already uses, with a short leash (0.5 m) keeping her parked by the court. `Wanderer`'s own
+constructor calls `greetable()` itself, so no extra wiring was needed.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.travel(1, 'from-prev')`, then 60 simulated frames so the kid was already in position) swept a
+0.5 m grid 2-6 m out from the baller's own spot (-33, 32) against all 1891 of this land's physics
+boxes, its 451 `game.zones` rectangles and all 101 NPCs already standing in it: (-27.5, 34) came back
+clearest — 5.96 m from the nearest box and 5.85 m from the nearest other soul, the baller herself,
+outside every zone. `angle` points her at the baller rather than a fixed constant, so she reads as
+watching the game and not just standing nearby.
+
+Built dead last of everything this land adds, right after the fiddler's own listener, for the usual
+reason: `makeHuman()`/`randomPerson()` both draw off this land's own shared `r()` sequence
+unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted by it.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (no new collider, just a greet circle), and Candy Land's own friend total went up by
+one (119 → 120, confirmed against the test's own "world 1: 120 to meet" line). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above, so
+whether the watcher's pose actually reads as "watching" is unverified. Three of the seven basketball
+hoops (Victorian, Sunny Shore, Whisper Woods) are still shooting to nobody.
+
+Also found on the way in, a sixth time now: this sandbox's local `main` was once again sitting on a
+detached `HEAD`, 30 commits ahead of local `main` though — once fetched — already matching
+`origin/main` exactly (`git push` reported "Everything up-to-date" once the branch ref was restored),
+so nothing had actually been lost, just the branch pointer itself. Fast-forwarded `main` to that `HEAD`
+and set it tracking `origin/main` before starting this round's own change.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
