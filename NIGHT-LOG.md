@@ -31933,3 +31933,41 @@ only the stub-three test suite above, so whether the watcher's pose actually rea
 unverified. `YoYoer` plays in all seven worlds; five still perform for nobody.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1128 — Robot City's yo-yo kid gets a watcher too
+
+Continuing the chain from the last two rounds: the Neighborhood's yo-yo kid got a watcher at round
+1126, Candy Land's own the round after that (1127), but `YoYoer` — on duty here since round 267,
+working the disc on the open factory floor south of the statue plaza, between the swing set and the
+seesaw — had never been touched. **An off-shift worker now stands a few steps west of him, watching
+the disc drop and climb without a tangle.** *"No hands on the catch, every single time. I'd have
+dropped it on my own foot by now."* *"Careful, puss — it swings wider than it looks."* *"Robots just
+stare. No idea why."*
+
+No new class or mesh: `makeHuman()`/`randomPerson()` build the usual human rig and `Wanderer`
+(`55-npcs.js`) gives him the same "stand and watch" behaviour every other watcher in this city
+already uses, with a short leash (0.5 m) keeping him parked by the yo-yo kid's own spot.
+`Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was needed. Built dead
+last of everything this city adds (right after the stilt-walker watcher from round 1123), same
+reason as always: `makeHuman()`/`randomPerson()` draw off this city's own shared `r()` sequence
+unconditionally.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.travel(2, 'from-prev')` waited out for real against its own portal-fade timer, then 500
+simulated frames so the yo-yo kid and every wandering robot pack, the sentry's patrol and the tag,
+catch and ring-dance pairs had already settled) swept a 0.5 m grid 2.5-7 m out from the yo-yo kid's
+own spot (-56, -46) against all of this city's physics boxes, its `game.zones` rectangles and all
+other NPCs already standing on it: (-62.5, -43.5) came back clearest — 6.97 m from the nearest box,
+6.18 m clear of the nearest zone rectangle's own edge and 6.96 m from the nearest other soul (the
+yo-yo kid himself), at radius 76 from the origin, comfortably short of the radius (98) where
+`robotRegion()`'s own procedural fill takes over. `angle` points him at the yo-yo kid's own fixed
+spot, so he reads as watching the act and not just standing nearby.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (just a greet circle), and Robot City's own friend total went up by one (129 → 130,
+confirmed against a stashed re-run of the old code printing "129 to meet"). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above, so
+whether the watcher's pose actually reads as "watching" is unverified. `YoYoer` plays in all seven
+worlds; four still perform for nobody (Victorian, Sunny Shore, Frosty Peak, Whisper Woods).
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -19416,6 +19416,40 @@ function buildRobotCity(game, entry) {
     game.npcs.push(new Wanderer(game, stiltWatcher, { x: wx2, z: wz2, angle: atan2(midX2 - wx2, midZ2 - wz2), leash: 0.5, speed: 0.4, idle: [3, 6], walk: [1, 1.6],
       cries: ['Scrap-steel poles, hazard tape, and he still hasn\'t fallen once this shift.', "Careful, puss — his stilts are taller than your whole jump.", 'Beats watching the belt all shift. At least this one wobbles on purpose.'] })); }
 
+  // The Neighborhood's yo-yo kid got a watcher two rounds ago (round 1126), Candy Land's own the round
+  // after that (1127) — but this city's own yo-yo kid, working the disc on the open factory floor south
+  // of the statue plaza since round 267, was still performing for nobody. **An off-shift worker now
+  // stands a few steps west of him, watching the disc drop and climb without a tangle.** *"No hands on
+  // the catch, every single time. I'd have dropped it on my own foot by now."* *"Careful, puss — it
+  // swings wider than it looks."* *"Robots just stare. No idea why."*
+  //
+  // No new class or mesh: `makeHuman()`/`randomPerson()` build the usual human rig, and `Wanderer`
+  // gives him the same "stand and watch" behaviour every other watcher in this city already uses,
+  // with a short leash (0.5 m) keeping him parked by the yo-yo kid's own spot rather than wandering
+  // off across the floor. `Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring
+  // was needed.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.travel(2, 'from-prev')` waited out for real against its own portal-fade timer, then 500
+  // simulated frames so the yo-yo kid was already going) swept a 0.5 m grid 2.5-7 m out from his own
+  // spot (-56, -46) against all of this city's physics boxes, its `game.zones` rectangles and all
+  // other NPCs already standing on it: (-62.5, -43.5) came back clearest — 6.97 m from the nearest
+  // box, 6.18 m clear of the nearest zone rectangle's own edge and 6.96 m from the nearest other soul
+  // (the yo-yo kid himself), at radius 76 from the origin, comfortably short of the radius (98) where
+  // `robotRegion()`'s own procedural fill takes over. `angle` points him at the yo-yo kid's own fixed
+  // spot, so he reads as watching the act and not just standing nearby.
+  //
+  // Built dead last of everything this city adds, right after the stilt-walker watcher above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this city's own shared `r()` sequence
+  // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted
+  // by it.
+  { const wx3 = -62.5, wz3 = -43.5, yx3 = -56, yz3 = -46;
+    const yoyoWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x5a7a9a, pants: 0x2a2a30, shoes: 0x1a1a20, hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.3) });
+    W.add(yoyoWatcher.group);
+    game.npcs.push(new Wanderer(game, yoyoWatcher, { x: wx3, z: wz3, angle: atan2(yx3 - wx3, yz3 - wz3), leash: 0.5, speed: 0.4, idle: [3, 6], walk: [1, 1.6],
+      cries: ["No hands on the catch, every single time. I'd have dropped it on my own foot by now.", 'Careful, puss — it swings wider than it looks.', 'Robots just stare. No idea why.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
