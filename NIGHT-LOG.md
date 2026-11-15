@@ -31458,3 +31458,30 @@ human looking at why the environment keeps handing back a detached `HEAD` instea
 start of a run.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1116 — the Neighborhood's own basketball kid gets a watcher too
+
+Frosty Peak (round 1084) and Robot City (round 1115) both gave their basketball hoop an audience —
+the Neighborhood's own kid, dribbling alone on the open south field since round 1037, the very first
+hoop the game ever got, was still shooting to nobody. **A neighbour now stands a few steps south of
+the hoop, arms folded, watching the ball go up and drop straight back into her hand.** No new mesh or
+controller: a plain `Wanderer` with a short leash, pointed at the baller rather than a fixed angle, so
+she reads as watching the game through the hoop rather than just standing nearby. No `cries` — the
+Neighborhood is the one world whose build-and-test window shares a run of simulated frames with its
+own checks, and a second `cries`-bearing `Wanderer` broke three unrelated tests the one time an
+earlier round tried it, so this one keeps quiet like every other listener/watcher on this street.
+
+A headless probe (the stub-three harness `test/run.mjs` itself uses, 60 simulated frames so the kid
+was already in position) swept a 0.5 m grid 2-6 m out from the hoop's own spot (-16, -47) against all
+334 of this street's physics boxes, its 69 `game.zones` rectangles and all 92 NPCs already standing
+in it: (-16, -52) came back clearest — 4.93 m from the nearest box and 8.49 m from the nearest other
+soul (the fortune teller at (-10, -58)), flat ground, outside every zone.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 334 (just a greet circle), and the Neighborhood's own friend total went up by one
+(109 → 110, confirmed against the test's own "world 0: 110 to meet" line). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above, so
+whether the pose actually reads as "watching" is unverified. Four of the seven basketball hoops
+(Candy Land, Victorian, Sunny Shore, Whisper Woods) are still shooting to nobody.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -13094,6 +13094,43 @@ function buildNeighborhood(game, entry) {
       shirt: 0xb5543a, hat: null, scarf: null, jacket: null, bag: null, backpack: null }); W.add(fiddleListener.group);
     game.npcs.push(new Wanderer(game, fiddleListener, { x: lx, z: lz, angle: atan2(fx - lx, fz - lz), speed: 0.3, leash: 0.5, idle: [3, 6] })); }
 
+  // Frosty Peak's and Robot City's own basketball kids have each picked up an audience over the last
+  // two rounds — this street's own kid, dribbling alone on the open south field since round 1037, the
+  // very first hoop the game ever got, was still shooting to nobody. **A neighbour now stands a few
+  // steps south of the hoop, arms folded, watching the ball go up and drop straight back into her
+  // waiting hand.**
+  //
+  // No new mesh or controller: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer` gives
+  // her the same "stand and watch" behaviour every other watcher and listener on this street already
+  // uses, with a short leash (0.5 m) keeping her parked by the hoop rather than wandering off across
+  // the field. `Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was needed.
+  // Built with no `cries` at all, the same fix every watcher and listener on this street has needed
+  // since the magician's own watcher broke three unrelated checks the one time it tried a second
+  // `cries`-bearing `Wanderer` in the same build-and-test window: the Neighborhood is the one world
+  // whose build-and-test window shares a single run of simulated frames with its own behaviour checks,
+  // and a `cries` branch on a `Wanderer` draws an extra, timing-sensitive pick from the shared `rnd()`
+  // sequence the moment it first fires. The explicit shirt colour (0x4a7a9a) was checked against
+  // every other shirt on this street first — the "no two neighbours wear the same shirt" test catches
+  // a clash either way.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.loop()` run for 60 simulated frames, since the Neighborhood is the one world already built
+  // on module load) swept a 0.5 m grid 2-6 m out from the hoop's own spot (-16, -47) against all 334
+  // of this street's physics boxes, its 69 `game.zones` rectangles and all 92 NPCs already standing
+  // in it: (-16, -52) came back clearest — 4.93 m from the nearest box and 8.49 m from the nearest
+  // other soul (the fortune teller at (-10, -58)), on flat ground (y=0) and outside every zone. `angle`
+  // points her at the baller rather than a fixed constant, so she reads as watching the game through
+  // the hoop and not just standing nearby.
+  //
+  // Built dead last, right after the fiddler's own listener above and right before `makeDayNight`, for
+  // the usual reason: `makeHuman()` and `randomPerson()` both draw off this street's own shared `r()`
+  // sequence unconditionally, and this is the first world the test suite builds, so anything built
+  // earlier here would have had its own timing-sensitive pick shifted by it.
+  { const wx = -16, wz = -52, bx = -16, bz = -41.5;
+    const ballWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
+      shirt: 0x4a7a9a, hat: null, scarf: null, jacket: null, bag: null, backpack: null }); W.add(ballWatcher.group);
+    game.npcs.push(new Wanderer(game, ballWatcher, { x: wx, z: wz, angle: atan2(bx - wx, bz - wz), speed: 0.3, leash: 0.5, idle: [3, 6] })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
