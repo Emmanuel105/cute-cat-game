@@ -19078,6 +19078,38 @@ function buildRobotCity(game, entry) {
     game.npcs.push(new Wanderer(game, watcher, { x: wx, z: wz, angle: atan2(mx - wx, mz - wz), leash: 0.5, speed: 0.4, idle: [3, 6], walk: [1, 1.6],
       cries: ["Not a single circuit board out here has ever caught how that coin moves.", "Careful, puss — don't spook him mid-trick.", "He's done that vanish every shift for a year. I still don't know where it goes."] })); }
 
+  // the magician and the juggler both picked up an audience of one earlier this round's own
+  // predecessors, and the Neighborhood's own fiddler got the first listener any busker in this game
+  // has ever had (round 1109) — this city's own fiddler, busking on the quiet side street north-west
+  // of downtown since round 1021, was still playing to nobody. **A worker now stands a few steps
+  // south-west of the fiddler, arms crossed, listening instead of walking back to the factory floor.**
+  //
+  // No new mesh or controller: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig,
+  // and `Wanderer` (55-npcs.js) gives her the same "stand and watch" behaviour every other watcher and
+  // listener in this game already uses, with a short leash (0.5 m) keeping her parked by the fiddler
+  // rather than wandering off down the side street. `Wanderer`'s own constructor calls `greetable()`
+  // itself, so no extra wiring was needed.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, `game.travel(2, 'from-prev')` waited out for real
+  // against its own portal-fade timer, then 60 simulated frames) swept a 0.5 m grid 2.5-6 m out from
+  // the fiddler's own spot (-21, 57) against every one of this city's physics boxes, every
+  // `game.zones` rectangle and every NPC already standing in it: (-26, 54) came back clearest — 6.44 m
+  // from the nearest box, 41.45 m from the nearest zone rectangle (this side street sits well short of
+  // `robotRegion()`'s own fill) and 5.83 m from the nearest other soul, the fiddler himself, on flat
+  // ground (y=0, no measurable slope). `angle` points her at the fiddler rather than a fixed constant,
+  // so she reads as listening to the tune and not just standing nearby.
+  //
+  // Built dead last of everything this city adds, right after the magician's own watcher above, for
+  // the usual reason: `makeHuman()`/`randomPerson()` both draw off this city's own shared `r()`
+  // sequence unconditionally, and anything built earlier would have had its own timing-sensitive pick
+  // shifted by it.
+  { const lx = -26, lz = 54, fx = -21, fz = 57;
+    const fiddleListener = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x5a6a5a, pants: 0x2a2a30, shoes: 0x1a1a20, hat: null, jacket: 0x33403a, scarf: null, bag: null, backpack: null, glasses: r.chance(0.3) });
+    W.add(fiddleListener.group);
+    game.npcs.push(new Wanderer(game, fiddleListener, { x: lx, z: lz, angle: atan2(fx - lx, fz - lz), leash: 0.5, speed: 0.4, idle: [3, 6], walk: [1, 1.6] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

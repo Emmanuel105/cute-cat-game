@@ -31192,3 +31192,43 @@ friend total went up by one (108 → 109, confirmed against `world 0: 109 to mee
 possible in this environment (no browser, no Playwright) — only the stub-three test suite above, so
 whether the pose actually reads as "listening" is unverified. Six fiddlers across the other six worlds
 are still playing to nobody. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1110 — Robot City's own fiddler finally gets a listener
+
+The Neighborhood's own fiddler got the first listener any busker in this game has ever had last
+round (1109), closing out a streak that started back around round 1021 with the magicians and
+organ grinders. Of the other six fiddlers still playing to nobody, Robot City's own — busking on a
+quiet side street north-west of downtown since round 1021 — got this round's turn. **A worker now
+stands a few steps south-west of the fiddler, arms crossed, listening instead of walking back to
+the factory floor.** No dialogue — built with no `cries`, matching the plain "stand and watch"
+listeners elsewhere in this game that don't talk.
+
+No new mesh or controller: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig,
+and `Wanderer` (55-npcs.js) gives her the same behaviour every other watcher and listener already
+uses, with a short leash (0.5 m) keeping her parked by the fiddler. `Wanderer`'s own constructor
+calls `greetable()` itself, so no extra wiring was needed. Built dead last of everything this city
+adds, same reason as always: this world's own shared `r()` sequence is timing-sensitive, and
+anything built earlier would have shifted every pick after it.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(2, 'from-prev')` waited out for real
+against its own portal-fade timer, then 60 simulated frames) swept a 0.5 m grid 2.5-6 m out from the
+fiddler's own spot (-21, 57) against every one of this city's physics boxes, every `game.zones`
+rectangle and every NPC already standing in it: (-26, 54) came back clearest — 6.44 m from the
+nearest box, 41.45 m from the nearest zone rectangle and 5.83 m from the nearest other soul, the
+fiddler himself, on flat ground with no measurable slope. `angle` points her at the fiddler rather
+than a fixed constant, so she reads as listening to the tune and not just standing nearby.
+
+Also found and fixed on the way in: local `main` and `origin/main` were 23 commits behind the
+previous session's own detached `HEAD` — the same recurring drift this log has flagged several
+rounds running. Fast-forwarded local `main` to that work (a clean fast-forward, no divergence) and
+pushed before starting this round's own change, so nothing from rounds 1087-1109 was at risk of
+being lost.
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt: exit 0, every check `ok`, 0
+console warnings, box count unchanged at 334 (no new collider, just a greet circle), and Robot
+City's own friend total went up by one (126 → 127, confirmed against `world 2: 127 to meet`). No
+visual check was possible in this environment (no browser, no Playwright) — only the stub-three
+test suite above, so whether the pose actually reads as "listening" is unverified. Five fiddlers
+across the other five worlds (Candy Land, Frosty Peak, Sunny Shore, Victorian, Whisper Woods) are
+still playing to nobody. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
