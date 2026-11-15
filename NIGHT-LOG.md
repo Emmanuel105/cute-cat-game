@@ -32008,3 +32008,40 @@ watcher's pose actually reads as "watching" is unverified. `YoYoer` plays in all
 still perform for nobody (Sunny Shore, Frosty Peak, Whisper Woods).
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1130 — Sunny Shore's yo-yo kid gets a watcher too
+
+Continuing the chain from the last four rounds: the Neighborhood's yo-yo kid got a watcher at round
+1126, Candy Land's own the round after that (1127), Robot City's the round after that (1128),
+Victorian's the round after that (1129) — but Sunny Shore's own `YoYoer`, working the disc on the
+open dry sand south of the lighthouse since round 1126, had never been touched. **A beachgoer now
+stands a few steps north-east of her, watching the disc drop and climb without a tangle.** *"Forty
+drops and not one tangle — I've counted."* *"Careful, puss — it swings wider than it looks, out
+here."* *"Best free show on the sand, and I've seen it every day this week."*
+
+No new class or mesh: `beachPerson()`/`randomPerson()` build the usual human rig and `Wanderer`
+(`55-npcs.js`) gives him the same "stand and watch" behaviour every other watcher on this beach
+already uses, with a short leash (0.5 m) keeping him parked by the yo-yo kid's own spot.
+`Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was needed. Built dead
+last of everything this beach adds (right after the stilt-walker watcher from round 1125), same
+reason as always: `beachPerson()`/`randomPerson()` draw off this beach's own shared `r()` sequence
+unconditionally.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, calling
+`game.load(4, 'from-hub')` directly to skip the real-timer portal fade, then sampling every NPC's own
+position every quarter second over 30 simulated seconds so no wandering crab, turtle, sandpiper or
+dolphin mid-leap could slip past unnoticed) swept a 0.5 m grid 2.5-7 m out from the yo-yo kid's own
+spot (-14, -48) against all of this beach's own physics boxes and all other NPCs sampled on it:
+(-20.5, -50) came back clearest — 6.92 m from the nearest box and 6.80 m from the nearest other soul
+(the yo-yo kid herself) at every sample, at radius 54.0 from the origin, short of the radius (58)
+where `beachRegion()`'s own procedural fill takes over. `angle` points him at the yo-yo kid's own
+fixed spot, so he reads as watching the act and not just standing nearby.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (just a greet circle), and Sunny Shore's own friend total went up by one (139 →
+140, confirmed against a stashed re-run of the old code printing "139 to meet"). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above, so
+whether the watcher's pose actually reads as "watching" is unverified. `YoYoer` plays in all seven
+worlds; two still perform for nobody (Frosty Peak, Whisper Woods).
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
