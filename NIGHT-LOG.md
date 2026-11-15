@@ -31740,3 +31740,45 @@ ahead but exactly matching `origin/main` once fetched — fast-forwarded `main` 
 tracking `origin/main` before starting this round's own change.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+
+## Round 1123 — Robot City's stilt walker gets a watcher too
+
+Same follow-up, a third world over: `StiltWalker` reached all seven worlds back at round 776, and so
+far only the Neighborhood (round 1121) and Candy Land (round 1122) have ever given their own one an
+audience. Robot City's own pipe-stilt worker, pacing a short line on the open factory floor north of
+the scrap crane in his safety-orange jumpsuit, was still towering over nobody. **An off-shift worker
+now stands a few steps south-east of his pacing line, watching the scrap-steel poles go up and down
+without a wobble.** *"Scrap-steel poles, hazard tape, and he still hasn't fallen once this shift."*
+*"Careful, puss — his stilts are taller than your whole jump."* *"Beats watching the belt all shift.
+At least this one wobbles on purpose."*
+
+No new class or mesh: `makeHuman()`/`randomPerson()` (`55-npcs.js`) build the usual human rig, and
+`Wanderer` (`55-npcs.js`) gives her the same "stand and watch" behaviour every other watcher in this
+city already uses, with a short leash (0.5 m) keeping her parked by the pacing line rather than
+wandering off across the floor. `Wanderer`'s own constructor calls `greetable()` itself, so no extra
+wiring was needed to make her a friend.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.travel(2, 'from-prev')` waited out for real against its own portal-fade timer, then 500
+simulated frames so the stilt walker was already pacing) swept a 0.5 m grid 2.5-7 m out from his own
+pacing line ((12,-30) to (18,-30)) against all 1206 of this city's physics boxes, its 296
+`game.zones` rectangles and all 115 other NPCs already standing in it: (21, -36) came back clearest —
+7.16 m from the nearest box, 21.5 m clear of the nearest zone rectangle's own edge and 6.73 m from
+the nearest other soul (the stilt walker himself, at the near end of his line), on flat floor
+(`ground0` returns 0 here, same as the stilt walker's own spot). `angle` points her at the middle of
+the pacing line rather than a fixed constant, so she reads as watching the act and not just standing
+nearby.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 334 (just a greet circle), and Robot City's own friend total went up by one (128 →
+129, confirmed against the test's own "129 to meet" line). No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite above, so whether the
+watcher's pose actually reads as "watching" is unverified. Four of the seven stilt walkers
+(Victorian, Sunny Shore, Frosty Peak, Whisper Woods) are still performing for nobody.
+
+This sandbox's `main` was found detached from `HEAD` again (tenth time now), exactly matching
+`origin/main` once fetched — fast-forwarded `main` to `HEAD` and set it tracking `origin/main` before
+starting this round's own change.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
