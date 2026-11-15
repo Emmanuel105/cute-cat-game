@@ -31971,3 +31971,40 @@ whether the watcher's pose actually reads as "watching" is unverified. `YoYoer` 
 worlds; four still perform for nobody (Victorian, Sunny Shore, Frosty Peak, Whisper Woods).
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1129 — Victorian's yo-yo kid gets a watcher too
+
+Continuing the chain from the last three rounds: the Neighborhood's yo-yo kid got a watcher at round
+1126, Candy Land's own the round after that (1127), Robot City's the round after that (1128) — but
+`YoYoer`, working the disc on the grass between the kite kid and the chestnut roaster since round
+~1040, had never been touched in Victorian. **A local now stands a few steps north-east of him,
+watching the disc drop and climb without a tangle.** *"Forty drops and not one tangle — I've
+counted."* *"Mind your paws, puss — it swings wider than it looks."* *"Best free show on the green,
+and I've seen it every day this week."*
+
+No new class or mesh: `makeHuman()`/`randomPerson()` build the usual human rig and `Wanderer`
+(`55-npcs.js`) gives him the same "stand and watch" behaviour every other watcher in this town
+already uses, with a short leash (0.5 m) keeping him parked by the yo-yo kid's own spot.
+`Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was needed. Built dead
+last of everything this town adds (right after the stilt-walker watcher from round 1123), same
+reason as always: `makeHuman()`/`randomPerson()` draw off this town's own shared `r()` sequence
+unconditionally.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.travel(3, 'from-prev')` waited out for real against its own portal-fade timer, then sampled
+every NPC's own position every quarter second over 30 simulated seconds, so no wandering urchin or
+kite-flying kid mid-stroll could slip past unnoticed) swept a 0.5 m grid 2.5-7 m out from the yo-yo
+kid's own spot (61, 48) against all 334 of the town's physics boxes and all other NPCs sampled on
+it: (62, 54) came back clearest — 3.79 m from the nearest box and 10.15 m from the nearest other
+soul at every sample, at radius 82.2 from the origin, short of the radius (88) where
+`victorianRegion()`'s own procedural fill takes over. `angle` points him at the yo-yo kid's own fixed
+spot, so he reads as watching the act and not just standing nearby.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (just a greet circle), and Victorian's own friend total went up by one (163 → 164,
+confirmed against the test's own "world 3: 164 to meet" line). No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite above, so whether the
+watcher's pose actually reads as "watching" is unverified. `YoYoer` plays in all seven worlds; three
+still perform for nobody (Sunny Shore, Frosty Peak, Whisper Woods).
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

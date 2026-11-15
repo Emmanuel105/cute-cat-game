@@ -22941,6 +22941,41 @@ function buildVictorian(game, entry) {
     game.npcs.push(new Wanderer(game, stiltWatcher, { x: swx, z: swz, angle: atan2(midX - swx, midZ - swz), leash: 0.5, speed: 0.4, idle: [3, 6], walk: [1, 1.6],
       cries: ['Eleven years on those poles and he\'s never once come down early.', "Careful, puss — stand too close and he'll step clean over your tail.", 'Best free show in the square, and I\'ve seen it a hundred times.'] })); }
 
+  // The Neighborhood's, Candy Land's and Robot City's own yo-yo kids all got a watcher over the last
+  // three rounds (1126-1128) — but this town's own child, working the disc on the grass between the
+  // kite kid and the chestnut roaster since round ~1040, was still performing for nobody. **A local
+  // now stands a few steps north-east of him, watching the disc drop and climb without a tangle.**
+  // *"Forty drops and not one tangle — I've counted."* *"Mind your paws, puss — it swings wider than
+  // it looks."* *"Best free show on the green, and I've seen it every day this week."*
+  //
+  // No new class or mesh: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig, and
+  // `Wanderer` (55-npcs.js) gives him the same "stand and watch" behaviour every other watcher in
+  // this town already uses, with a short leash (0.5 m) keeping him parked by the yo-yo kid's own spot
+  // rather than wandering off across the green. `Wanderer`'s own constructor calls `greetable()`
+  // itself, so no extra wiring was needed.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.travel(3, 'from-prev')` waited out for real against its own portal-fade timer, then sampled
+  // every NPC's own position every quarter second over 30 simulated seconds, so no wandering urchin
+  // or kite-flying kid mid-stroll could slip past unnoticed) swept a 0.5 m grid 2.5-7 m out from the
+  // yo-yo kid's own spot (61, 48) against all 334 of the town's physics boxes and all other NPCs
+  // sampled on it: (62, 54) came back clearest — 3.79 m from the nearest box (a hedge south of the
+  // kite kid's own patch) and 10.15 m from the nearest other soul at every sample, at radius 82.2
+  // from the origin, short of the radius (88) where `victorianRegion()`'s own procedural fill takes
+  // over. `angle` points him at the yo-yo kid's own fixed spot, so he reads as watching the act and
+  // not just standing nearby.
+  //
+  // Built dead last of everything this town adds, right after the stilt-walker watcher above and
+  // right before the squirrel below, for the usual reason: `makeHuman()`/`randomPerson()` both draw
+  // off this town's own shared `r()` sequence unconditionally, and anything built earlier would have
+  // had its own timing-sensitive pick shifted by it.
+  { const wx4 = 62, wz4 = 54, yx4 = 61, yz4 = 48;
+    const yoyoWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, scarf: null, bag: null, backpack: null, glasses: false });
+    W.add(yoyoWatcher.group);
+    game.npcs.push(new Wanderer(game, yoyoWatcher, { x: wx4, z: wz4, angle: atan2(yx4 - wx4, yz4 - wz4), leash: 0.5, speed: 0.4, idle: [3, 6], walk: [1, 1.6],
+      cries: ["Forty drops and not one tangle — I've counted.", 'Mind your paws, puss — it swings wider than it looks.', "Best free show on the green, and I've seen it every day this week."] })); }
+
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
