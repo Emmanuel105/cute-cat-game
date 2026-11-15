@@ -31897,3 +31897,39 @@ no Playwright) — only the stub-three test suite above, so whether the watcher'
 as "watching" is unverified. `YoYoer` plays in all seven worlds; six still perform for nobody.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1127 — Candy Land's yo-yo kid gets a watcher too
+
+Continuing the chain started last round: the Neighborhood's yo-yo kid picked up a watcher at round
+1126, but every other world's own `YoYoer` — juggler, magician, organ grinder, fiddler, basketball
+kid and stilt walker's own treatment notwithstanding — still performed for nobody. Candy Land's own
+yo-yo kid has worked the open grass east of the big lollipops since round 267. **A gingerbread-land
+local now stands a few steps west of him, watching the disc drop and climb without a tangle.** Built
+with no dialogue at all, the same fix every watcher elsewhere has needed since the magician's own
+broke three checks the one time a second `cries`-bearing `Wanderer` ran in the same build-and-test
+window.
+
+No new class or mesh: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer` gives him the
+same "stand and watch" behaviour every other watcher in this world already uses, with a short leash
+(0.5 m) keeping him parked by the field. The shirt colour (0x5a7a4a) was picked clear of every other
+shirt already handed out across this world's own build function — Candy Land's own test run never
+checks for shirt clashes (that check only runs on the Neighborhood), but there was no reason to
+collide anyway.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.travel(1, 'from-next')`, then 500 simulated frames so every wandering gingerbread man, ring
+dancer and tag pair had already settled) swept a 0.5 m grid 4-6.5 m out from the yo-yo kid's own spot
+(32, 38) against all 334 of this world's physics boxes, its 69 `game.zones` rectangles and all 95
+other NPCs already in it: (26.5, 38) came back clearest — 6.37 m from the nearest box, 6.6 m clear of
+the nearest zone rectangle's own edge and 8.5 m from the nearest other soul, 5.5 m out from the
+yo-yo kid himself. `ry` points him at the yo-yo kid's own fixed spot, so he reads as watching the act
+and not just standing nearby.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (just a greet circle), and Candy Land's own friend total went up by one (121 → 122,
+confirmed against the test's own "world 1: 122 to meet" line, and against round 1122's own log entry
+printing "120 → 121"). No visual check was possible in this environment (no browser, no Playwright) —
+only the stub-three test suite above, so whether the watcher's pose actually reads as "watching" is
+unverified. `YoYoer` plays in all seven worlds; five still perform for nobody.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

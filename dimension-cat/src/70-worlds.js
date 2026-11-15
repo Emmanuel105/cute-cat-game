@@ -5659,6 +5659,23 @@ function buildCandyLand(game, entry) {
     W.add(yoyoKid.group);
     game.npcs.push(new YoYoer(game, yoyoKid, 0xff6fb5, { x: 32, z: 38, ry: atan2(0 - 32, 0 - 38),
       cries: ["Forty drops and no tangles yet, puss!", 'Careful — it swings wider than it looks.', "Nearly a loop-the-loop, that time."] })); }
+  // the Neighborhood's own yo-yo kid got a watcher at round 1126 — this one, standing here since round
+  // 267 (well before that), never had. A gingerbread-land local now stands a few steps west of him,
+  // watching the disc drop and climb without a tangle. `Wanderer` gives him the same "stand and watch"
+  // behaviour every other watcher on this street already uses, with a short leash (0.5 m) keeping him
+  // parked by the field. Built with no `cries` at all, the same fix every watcher elsewhere has needed
+  // since the magician's own watcher broke three unrelated checks the one time a second `cries`-bearing
+  // `Wanderer` ran in the same build-and-test window. A headless probe (`game.travel(1, 'from-next')`,
+  // then 500 simulated frames so every wandering gingerbread man and tag pair had already settled)
+  // swept a 0.5 m grid 4-6.5 m out from the yo-yo kid's own spot (32, 38) against all 334 of this
+  // world's physics boxes, its 69 `game.zones` rectangles and all 95 other NPCs already in it: (26.5,
+  // 38) came back clearest — 6.37 m from the nearest box, 6.6 m clear of the nearest zone rectangle's
+  // own edge and 8.5 m from the nearest other soul, 5.5 m out from the yo-yo kid himself. `ry` points
+  // him at the yo-yo kid's own fixed spot, so he reads as watching the act and not just standing nearby.
+  { const yvx = 26.5, yvz = 38, yoyoX = 32, yoyoZ = 38;
+    const yoyoWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x5a7a4a, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false }); W.add(yoyoWatcher.group);
+    game.npcs.push(new Wanderer(game, yoyoWatcher, { x: yvx, z: yvz, angle: atan2(yoyoX - yvx, yoyoZ - yvz), speed: 0.3, leash: 0.5, idle: [3, 6] })); }
   // Whisper Woods, Sunny Shore and the Neighborhood all have a jump-rope kid by now — Candy Land, for
   // all its yo-yo kid a few lines up, never had one. A child skips rope on the open grass out past the
   // hand-placed candy-cane ring (that loop only reaches out to `d: r.range(56, 76)`), short of the
