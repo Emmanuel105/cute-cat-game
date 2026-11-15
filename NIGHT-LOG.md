@@ -31408,3 +31408,53 @@ update-ref`/`git symbolic-ref` before starting this round's own change. Still wo
 at why the environment keeps handing back a detached `HEAD` instead of `main` at the start of a run.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1115 — Robot City's basketball kid gets a watcher too
+
+Frosty Peak's basketball kid got the first audience of any of the seven hoops three rounds back
+(round 1084) — this city's own kid, dribbling alone on the open factory floor east of downtown since
+round 1039, was still shooting to nobody. **An off-shift worker now leans a few steps east of the
+hoop, arms crossed, watching the ball go up and drop straight back into her hand instead of heading
+for the gate.** *"Forty-one thousand shots logged this month and she's still not bored of it."*
+*"Careful, puss — stand under that hoop and the foreman logs you as a rebound."* *"Beats watching the
+belt all shift. At least this one moves because she wants to."* It's a friend to meet like any other
+worker in this city.
+
+No new mesh or controller: `makeHuman()`/`randomPerson()` (`55-npcs.js`) build the usual human rig, and
+`Wanderer` (`55-npcs.js`) gives him the same "stand and watch" behaviour every other watcher in this
+game already uses, with a short leash (0.5 m) keeping him parked by the hoop rather than wandering off
+across the factory floor. `Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring
+was needed to make him a friend.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.travel(2, 'from-prev')` waited out for real against its own portal-fade timer, then 60 simulated
+frames so the kid was already in position) swept a 0.5 m grid 2-6 m out from the baller's own spot
+(60, -3) against all 1206 of this city's physics boxes, its 296 `game.zones` rectangles and all 114
+NPCs already standing in it: (65.5, -1) came back clearest — 6.17 m from the nearest box and 5.85 m
+from the nearest other soul, the baller herself, on flat floor, well short of the radius where
+`robotRegion()`'s own procedural fill takes over. `angle` points him at the baller rather than a fixed
+constant, so he reads as watching the game and not just standing nearby.
+
+Built dead last of everything this city adds, right after the fiddler's own listener, for the usual
+reason: `makeHuman()`/`randomPerson()` both draw off this city's own shared `r()` sequence
+unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted by
+it. He's a human `Wanderer`, not a robot one, so the test suite's "first robot Wanderer found" check
+for this city still finds the trainee bot it always has.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (no new collider, just a greet circle), and Robot City's own friend total went up by
+one (127 → 128, confirmed against the test's own "world 2: 128 to meet" line). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above, so
+whether the watcher's arms-crossed pose actually reads as "watching" rather than just standing nearby
+is unverified. Five of the seven basketball hoops (Neighborhood, Candy Land, Victorian, Sunny Shore,
+Whisper Woods) are still shooting to nobody.
+
+Also found and fixed on the way in, a fifth time now: this sandbox's local `main` was once again
+sitting on a detached `HEAD`, 28 commits ahead of local `main` though — once fetched — already
+matching `origin/main` exactly (`git push` reported "Everything up-to-date" once the branch ref was
+restored), so nothing had actually been lost, just the branch pointer itself. Fast-forwarded `main` to
+that `HEAD` and set it tracking `origin/main` before starting this round's own change. Still worth a
+human looking at why the environment keeps handing back a detached `HEAD` instead of `main` at the
+start of a run.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

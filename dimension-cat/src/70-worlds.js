@@ -10162,6 +10162,40 @@ function buildRobotCity(game, entry) {
     W.add(fiddleListener.group);
     game.npcs.push(new Wanderer(game, fiddleListener, { x: lx, z: lz, angle: atan2(fx - lx, fz - lz), leash: 0.5, speed: 0.4, idle: [3, 6], walk: [1, 1.6] })); }
 
+  // Frosty Peak's own basketball kid got an audience of one three rounds back (round 1084) — the
+  // first of the seven hoops (round 1037-1043) to get one. This city's own kid, dribbling alone on
+  // the open factory floor east of downtown since round 1039, was still shooting to nobody. **An
+  // off-shift worker now leans a few steps east of the hoop, arms crossed, watching the ball go up
+  // and drop straight back into her hand instead of heading for the gate.**
+  //
+  // No new mesh or controller: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig,
+  // and `Wanderer` (55-npcs.js) gives him the same "stand and watch" behaviour every other watcher in
+  // this game already uses, with a short leash (0.5 m) keeping him parked by the hoop rather than
+  // wandering off across the factory floor. `Wanderer`'s own constructor calls `greetable()` itself,
+  // so no extra wiring was needed to make him a friend.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.travel(2, 'from-prev')` waited out for real against its own portal-fade timer, then 60
+  // simulated frames so the kid was already in position) swept a 0.5 m grid 2-6 m out from the
+  // baller's own spot (60, -3) against all 1206 of this city's physics boxes, its 296 `game.zones`
+  // rectangles and all 114 NPCs already standing in it: (65.5, -1) came back clearest — 6.17 m from
+  // the nearest box and 5.85 m from the nearest other soul, the baller herself, on flat floor, well
+  // short of the radius where `robotRegion()`'s own procedural fill takes over. `angle` points him at
+  // the baller rather than a fixed constant, so he reads as watching the game and not just standing
+  // nearby.
+  //
+  // Built dead last of everything this city adds, right after the fiddler's own listener above, for
+  // the usual reason: `makeHuman()`/`randomPerson()` both draw off this city's own shared `r()`
+  // sequence unconditionally, and anything built earlier would have had its own timing-sensitive pick
+  // shifted by it. He's a human `Wanderer`, not a robot one, so the test suite's "first robot
+  // Wanderer found" check for this city still finds the trainee bot it always has.
+  { const wx = 65.5, wz = -1, bx = 60, bz = -3;
+    const ballWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
+      shirt: 0x5a6a7a, pants: 0x2a2a30, shoes: 0x1a1a20, hat: null, jacket: 0x33404a, scarf: null, bag: null, backpack: null, glasses: r.chance(0.3) });
+    W.add(ballWatcher.group);
+    game.npcs.push(new Wanderer(game, ballWatcher, { x: wx, z: wz, angle: atan2(bx - wx, bz - wz), leash: 0.5, speed: 0.4, idle: [3, 6], walk: [1, 1.6],
+      cries: ["Forty-one thousand shots logged this month and she's still not bored of it.", 'Careful, puss — stand under that hoop and the foreman logs you as a rebound.', 'Beats watching the belt all shift. At least this one moves because she wants to.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
