@@ -2688,6 +2688,45 @@ function buildSnowVillage(game, entry) {
     game.npcs.push(new Wanderer(game, listener, { x: wx, z: wz, angle: atan2(gx - wx, gz - wz), leash: 0.5, speed: 0.3, idle: [3, 6],
       cries: ["Tuppence a tune, if he's still got feeling in those fingers.", "Careful, puss — he's three songs deep and the cold hasn't caught him yet.", "Didn't think I'd stop for a barrel organ in a place this cold. Here I am."] })); }
 
+  // The Neighborhood, Robot City and Sunny Shore have each picked up a listener for their own fiddler
+  // over rounds 1109-1111 — this mountain's own, busking on the open snowfield since earlier in this
+  // build, was still sawing away to nobody. **A hiker now stands a few steps north-east of the
+  // fiddler, hands stuffed deep in her coat pockets, listening instead of trudging on toward the
+  // village.** *"Four strings and a beanie pulled low — somehow it never misses a note."* *"Careful,
+  // puss — his bow moves faster than your tail right now."* *"Didn't plan on stopping. The tune had
+  // other ideas."* Saying hello makes her the usual kind of friend. Candy Land, Victorian and Whisper
+  // Woods remain the only worlds whose own fiddler still plays to nobody.
+  //
+  // No new mesh or controller: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig,
+  // and `Wanderer` (55-npcs.js) gives her the same "stand and watch" behaviour every other listener in
+  // this game already uses, with a short leash (0.5 m) keeping her parked by the fiddler rather than
+  // wandering off across the snow. `Wanderer`'s own constructor already reads its rig's height off
+  // `game.physics.ground0()`, the same terrain-aware convention the fiddler itself relies on, and
+  // calls `greetable()` itself, so no extra wiring was needed.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, `game.travel(5, 'from-hub')` waited out for real
+  // against its own 520 ms `setTimeout`, then 3600 simulated frames so every NPC on this mountain was
+  // already in position) swept a 0.5 m grid 2.5-7 m out from the fiddler's own spot (28, -18) against
+  // all 780 of this mountain's physics boxes, its 156 `game.zones` rectangles and all 116 NPCs already
+  // standing in it: (32, -23.5) came back clearest — 6.50 m from the nearest box, 6 m from the nearest
+  // zone rectangle and 7.63 m from the nearest other soul, at radius 39.7 from the origin, on ground
+  // levelling out around 0.52 m with under 8 cm of slope across the square. `angle` points her at the
+  // fiddler rather than a fixed constant, so she reads as listening to the tune and not just standing
+  // nearby.
+  //
+  // Built dead last of everything this mountain adds, right after the organ-grinder listener above,
+  // for the usual reason: `makeHuman()`/`randomPerson()` both draw off this mountain's own shared
+  // `r()` sequence unconditionally, and anything built earlier would have had its own timing-sensitive
+  // pick shifted by it.
+  { const wx = 32, wz = -23.5, fx = 28, fz = -18;
+    const fanWard = makeWardrobe(r, { shirts: [0x7a9ab0, 0xb08a5a, 0x5a7a6a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const fiddleFan = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: fanWard }),
+      hat: 'beanie', hatColor: 0x5a7a6a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a, bag: null, backpack: null, glasses: false });
+    W.add(fiddleFan.group);
+    game.npcs.push(new Wanderer(game, fiddleFan, { x: wx, z: wz, angle: atan2(fx - wx, fz - wz), leash: 0.5, speed: 0.3, idle: [3, 6],
+      cries: ['Four strings and a beanie pulled low — somehow it never misses a note.', 'Careful, puss — his bow moves faster than your tail right now.', "Didn't plan on stopping. The tune had other ideas."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

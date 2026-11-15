@@ -31266,3 +31266,50 @@ visual check was possible in this environment (no browser, no Playwright) — on
 test suite above, so whether the pose actually reads as "listening" is unverified. Four fiddlers
 across the other four worlds (Candy Land, Frosty Peak, Victorian, Whisper Woods) are still
 playing to nobody. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1112 — Frosty Peak's own fiddler finally gets a listener
+
+Fourth of the five remaining fiddlers to get this treatment, after the Neighborhood (round 1109),
+Robot City (round 1110) and Sunny Shore (round 1111). Frosty Peak's own fiddler has busked on the
+open snowfield south-east of the village since this mountain's own round 1013 build without anyone
+stopping to listen. **A hiker now stands a few steps north-east of the fiddler, hands stuffed deep
+in her coat pockets, listening instead of trudging on toward the village.** *"Four strings and a
+beanie pulled low — somehow it never misses a note."* *"Careful, puss — his bow moves faster than
+your tail right now."* *"Didn't plan on stopping. The tune had other ideas."*
+
+No new mesh or controller: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig,
+and `Wanderer` (55-npcs.js) gives her the same "stand and watch" behaviour every other listener in
+this game already uses, with a short leash (0.5 m) keeping her parked by the fiddler. `Wanderer`'s
+own constructor already reads its rig's height off `game.physics.ground0()` and calls `greetable()`
+itself, so this was a drop-in addition with no extra wiring. Built dead last of everything this
+mountain adds, the usual reason: `makeHuman()`/`randomPerson()` draw off this mountain's own shared
+`r()` sequence unconditionally, and anything built earlier would have had its own timing-sensitive
+pick shifted by it.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(5, 'from-hub')` waited out for real
+against its own 520 ms `setTimeout`, then 3600 simulated frames so every NPC on this mountain was
+already in position) swept a 0.5 m grid 2.5-7 m out from the fiddler's own spot (28, -18) against
+all 780 of this mountain's physics boxes, its 156 `game.zones` rectangles and all 116 NPCs already
+standing in it: (32, -23.5) came back clearest — 6.50 m from the nearest box, 6 m from the nearest
+zone rectangle and 7.63 m from the nearest other soul, at radius 39.7 from the origin, on ground
+levelling out around 0.52 m with under 8 cm of slope across the square. `angle` points her at the
+fiddler rather than a fixed constant, so she reads as listening to the tune and not just standing
+nearby.
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt: exit 0, every check `ok`, 0
+console warnings, box count unchanged at 334 for the Neighborhood (no new collider for this one,
+just a greet circle), and Frosty Peak's own friend total went up by one (133 → 134, confirmed
+against `world 5: 134 to meet`). No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite above, so whether the pose actually reads as
+"listening" is unverified. Three fiddlers across the other three worlds (Candy Land, Victorian,
+Whisper Woods) are still playing to nobody.
+
+Also found and fixed on the way in: this sandbox's local `main` was sitting on a *detached* `HEAD`
+25 commits ahead of both local `main` and `origin/main`, meaning rounds 1087-1111 had never actually
+landed on a branch or been pushed — they'd have been lost outright when this sandbox was reclaimed.
+Fast-forwarded local `main` to that `HEAD` (a clean fast-forward, no divergence to resolve) and
+pushed before starting this round's own change. Worth a human glancing at the environment setup —
+this is the second round running this log has had to recover from the exact same drift.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
