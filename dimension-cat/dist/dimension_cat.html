@@ -13172,6 +13172,39 @@ function buildNeighborhood(game, entry) {
       shirt: 0xa0785a, hat: null, scarf: null, jacket: null, bag: null, backpack: null }); W.add(stiltWatcher.group);
     game.npcs.push(new Wanderer(game, stiltWatcher, { x: swx, z: swz, angle: atan2(stiltMidX - swx, stiltMidZ - swz), speed: 0.3, leash: 0.5, idle: [3, 6] })); }
 
+  // `YoYoer` has stood on the open field south of the street since round ~1040 but nobody ever gave
+  // any world's yo-yo kid the watcher/listener treatment the juggler, magician, organ grinder,
+  // fiddler, basketball kid and stilt walker have all picked up by now. **A neighbour now stands a
+  // few steps north of the yo-yo kid, watching the disc drop and climb without a tangle.**
+  //
+  // No new class or mesh: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer` gives him
+  // the same "stand and watch" behaviour every other watcher and listener on this street already
+  // uses, with a short leash (0.5 m) keeping him parked by the field rather than wandering off. Built
+  // with no `cries` at all, the same fix every watcher and listener on this street has needed since
+  // the magician's own watcher broke three unrelated checks the one time a second `cries`-bearing
+  // `Wanderer` ran in the same build-and-test window. The explicit shirt colour (0x6a4a8a) was
+  // checked against every other shirt already on this street first, and against the shared `ward`
+  // bag's own 18-colour `SHIRT_COLORS` list — the "no two neighbours wear the same shirt" test
+  // catches a clash either way.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.loop()` run for 60 simulated frames, since the Neighborhood is the one world already built
+  // on module load) swept a 0.5 m grid 2.5-7 m out from the yo-yo kid's own spot (-12,-26) against
+  // all 334 of this street's physics boxes, its 69 `game.zones` rectangles and all 110 other NPCs
+  // already standing in it: (-10.5, -20) came back clearest — 6.1 m from the nearest box, 16.4 m
+  // clear of the nearest zone rectangle's own edge and 5.83 m from the nearest other soul, 6.18 m
+  // out from the yo-yo kid himself. `angle` points him at the yo-yo kid's own fixed spot, so he reads
+  // as watching the act and not just standing nearby.
+  //
+  // Built dead last, right after the stilt watcher above and right before `makeDayNight`, for the
+  // usual reason: `makeHuman()` and `randomPerson()` both draw off this street's own shared `r()`
+  // sequence unconditionally, and this is the first world the test suite builds, so anything built
+  // earlier here would have had its own timing-sensitive pick shifted by it.
+  { const yvx = -10.5, yvz = -20, yoyoX = -12, yoyoZ = -26;
+    const yoyoWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
+      shirt: 0x6a4a8a, hat: null, scarf: null, jacket: null, bag: null, backpack: null }); W.add(yoyoWatcher.group);
+    game.npcs.push(new Wanderer(game, yoyoWatcher, { x: yvx, z: yvz, angle: atan2(yoyoX - yvx, yoyoZ - yvz), speed: 0.3, leash: 0.5, idle: [3, 6] })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

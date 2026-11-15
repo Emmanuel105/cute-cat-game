@@ -31862,3 +31862,38 @@ Playwright) — only the stub-three test suite above, so whether the watcher's p
 "watching" is unverified. All seven stilt walkers in the game now have someone watching them pace.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1126 — the Neighborhood's yo-yo kid gets a watcher too
+
+Juggler, magician, organ grinder, fiddler, basketball kid and stilt walker have all had a watcher or
+listener added across every world by now, but `YoYoer` — on duty since round ~1040, working a yo-yo
+on the open field south of the street — had never been touched. **A neighbour now stands a few
+steps north of the yo-yo kid, watching the disc drop and climb without a tangle.** Built with no
+dialogue at all, same as every other Neighborhood watcher since the magician's own broke three
+checks the one time a second `cries`-bearing `Wanderer` ran in this world's own build-and-test
+window.
+
+No new class or mesh: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer` gives him
+the same "stand and watch" behaviour every other watcher on this street already uses, with a short
+leash (0.5 m) keeping him parked by the field rather than wandering off. The explicit shirt colour
+(0x6a4a8a) was checked against every other shirt already on this street, and against the shared
+`ward` bag's own 18-colour `SHIRT_COLORS` list, to dodge the "no two neighbours wear the same shirt"
+check either way.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.loop()` run for 60 simulated frames, since the Neighborhood is the one world already built on
+module load) swept a 0.5 m grid 2.5-7 m out from the yo-yo kid's own spot (-12,-26) against all 334
+of this street's physics boxes, its 69 `game.zones` rectangles and all 110 other NPCs already
+standing in it: (-10.5, -20) came back clearest — 6.1 m from the nearest box, 16.4 m clear of the
+nearest zone rectangle's own edge and 5.83 m from the nearest other soul, 6.18 m out from the yo-yo
+kid himself. `angle` points him at the yo-yo kid's own fixed spot, so he reads as watching the act
+and not just standing nearby.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 334 (just a greet circle), and the Neighborhood's own friend total went up by one
+(111 → 112, confirmed against the test's own "112 to meet" line, and against the previous round's
+own log entry printing "111 to meet"). No visual check was possible in this environment (no browser,
+no Playwright) — only the stub-three test suite above, so whether the watcher's pose actually reads
+as "watching" is unverified. `YoYoer` plays in all seven worlds; six still perform for nobody.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
