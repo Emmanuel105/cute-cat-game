@@ -7217,6 +7217,43 @@ function buildCandyLand(game, entry) {
     game.npcs.push(new Wanderer(game, spectator, { x: sx, z: sz, angle: atan2(mx - sx, mz - sz), leash: 0.5, speed: 0.4, idle: [3, 6], walk: [1, 1.6],
       cries: ["One wheel. I can't even manage two feet most mornings.", "Careful, puss — she's never once put a foot down, don't you be the first thing that makes her.", 'Six metres out, six metres back, same as every lap before it. I could watch this all day.'] })); }
 
+  // The Neighborhood, Robot City, Sunny Shore and Frosty Peak have each picked up a listener for
+  // their own fiddler over rounds 1109-1112 — this land's own second busker, sawing away on the open
+  // sweet-lands since round 1017, was still playing to nobody. **A sugar-dusted onlooker now stands a
+  // few steps south of the fiddler, swaying slightly, listening instead of wandering off toward the
+  // gumdrop wagon.** *"Didn't plan on stopping. The tune had other ideas."* *"Careful, puss — his bow
+  // moves faster than your tail right now."* *"Four strings and a candy-striped case — somehow it
+  // never misses a note."*
+  //
+  // No new mesh or controller: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig,
+  // and `Wanderer` (55-npcs.js) gives her the same "stand and watch" behaviour every other listener in
+  // this game already uses, with a short leash (0.5 m) keeping her parked by the fiddler rather than
+  // wandering off toward the gumdrop wagon. `Wanderer`'s own constructor already reads its rig's
+  // height off `game.physics.ground0()`, the same terrain-aware convention the fiddler itself relies
+  // on, and calls `greetable()` itself, so this was a drop-in addition with no extra wiring.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.travel(1, 'from-hub')` waited out for real against its own portal-fade timer, then 3600
+  // simulated frames so every NPC on this land was already in position) swept a 0.5 m grid 2.5-12 m
+  // out from the fiddler's own spot (74.5, 46.5) against all 1891 of this land's physics boxes, all
+  // 451 `game.zones` rectangles and all 100 NPCs already standing in it, keeping only points inside
+  // the radius (92) where `candyRegion`'s own procedural fill takes over: (74, 43.5) came back 6.17 m
+  // from the nearest box, 3.04 m from the nearest other soul (the fiddler himself), at radius 85.84
+  // from the origin — well inside the hand-built sweet-lands, clear of the chocolate river's own band
+  // (z -22..-14) and every other hand-placed landmark in this build. `angle` points her at the fiddler
+  // so she reads as listening to the tune and not just standing nearby.
+  //
+  // Built dead last of everything this land adds, right after the unicyclist's own watcher above, for
+  // the usual reason: `makeHuman()`/`randomPerson()` both draw off this land's own shared `r()`
+  // sequence unconditionally, and anything built earlier would have had its own timing-sensitive pick
+  // shifted by it.
+  { const lx = 74, lz = 43.5;
+    const listener = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x8a5fb5, pants: 0x2c2c2c, shoes: 0x1a1a20, hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: false });
+    W.add(listener.group);
+    game.npcs.push(new Wanderer(game, listener, { x: lx, z: lz, angle: atan2(74.5 - lx, 46.5 - lz), leash: 0.5, speed: 0.4, idle: [3, 6], walk: [1, 1.6],
+      cries: ['Didn’t plan on stopping. The tune had other ideas.', 'Careful, puss — his bow moves faster than your tail right now.', 'Four strings and a candy-striped case — somehow it never misses a note.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

@@ -31313,3 +31313,50 @@ pushed before starting this round's own change. Worth a human glancing at the en
 this is the second round running this log has had to recover from the exact same drift.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1113 — Candy Land's own fiddler finally gets a listener
+
+Fifth of the six fiddlers to get this treatment, after the Neighborhood (round 1109), Robot City
+(round 1110), Sunny Shore (round 1111) and Frosty Peak (round 1112). Candy Land's own second
+busker has sawed away on the open sweet-lands since round 1017 without anyone stopping to listen.
+**A sugar-dusted onlooker now stands a few steps south of the fiddler, swaying slightly, listening
+instead of wandering off toward the gumdrop wagon.** *"Didn't plan on stopping. The tune had other
+ideas."* *"Careful, puss — his bow moves faster than your tail right now."* *"Four strings and a
+candy-striped case — somehow it never misses a note."*
+
+No new mesh or controller: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig,
+and `Wanderer` (55-npcs.js) gives her the same "stand and watch" behaviour every other listener in
+this game already uses, with a short leash (0.5 m) keeping her parked by the fiddler. `Wanderer`'s
+own constructor already reads its rig's height off `game.physics.ground0()` and calls
+`greetable()` itself, so this was a drop-in addition with no extra wiring. Built dead last of
+everything this land adds, the usual reason: `makeHuman()`/`randomPerson()` draw off this land's
+own shared `r()` sequence unconditionally, and anything built earlier would have had its own
+timing-sensitive pick shifted by it.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.travel(1, 'from-hub')` waited out for real against its own portal-fade timer, then 3600
+simulated frames so every NPC on this land was already in position) swept a 0.5 m grid 2.5-12 m
+out from the fiddler's own spot (74.5, 46.5) against all 1891 of this land's physics boxes, all
+451 `game.zones` rectangles and all 100 NPCs already standing in it, keeping only points inside the
+radius (92) where `candyRegion`'s own procedural fill takes over: (74, 43.5) came back clearest —
+6.17 m from the nearest box, 3.04 m from the nearest other soul (the fiddler himself), at radius
+85.84 from the origin, well inside the hand-built sweet-lands and clear of the chocolate river's
+own band (z -22..-14). `angle` points her at the fiddler so she reads as listening rather than just
+standing nearby.
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt: exit 0, every check `ok`, 0
+console warnings, box count unchanged (just a greet circle, no new collider), and Candy Land's own
+friend total went up by one (118 → 119, confirmed against `world 1: 119 to meet`). No visual check
+was possible in this environment (no browser, no Playwright) — only the stub-three test suite
+above, so whether the pose actually reads as "listening" is unverified. Two fiddlers across the two
+remaining worlds (Victorian, Whisper Woods) are still playing to nobody.
+
+Also found and fixed on the way in, a third time now: this sandbox's local `main` was again sitting
+on a *detached* `HEAD`, this time 26 commits ahead of both local `main` and `origin/main` — all of
+rounds 1087-1112 had never actually landed on a branch or been pushed, and would have been lost
+outright when this sandbox was reclaimed. Fast-forwarded local `main` to that `HEAD` (a clean
+fast-forward, no divergence) and pushed before starting this round's own change. This is the third
+round running that has had to recover from the exact same drift — worth a human looking at why the
+environment keeps handing back a detached `HEAD` instead of `main` itself at the start of a run.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
