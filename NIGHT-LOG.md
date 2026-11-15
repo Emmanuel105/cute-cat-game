@@ -31155,3 +31155,40 @@ finally closed. Also found on the way in: 21 commits from earlier rounds (round 
 to that work and confirmed it was already on `origin/main` (a stale local ref from before this session's
 first `git fetch`, not actually lost work) before starting this round's own change. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1109 — the Neighborhood's own fiddler finally gets a listener, the first of the seven
+
+Every busking fiddler in this game — Victorian, Robot City, Candy Land, Whisper Woods, Frosty Peak,
+Sunny Shore and the Neighborhood itself — got its own street performer over rounds 1007-1012, the same
+rollout that gave five lands a barrel organ too. The barrel organs have all picked up a listener since
+(round 1108 closed out the last of those), but no fiddler anywhere had ever gotten one. **A neighbour
+now stands a few steps north-west of the Neighborhood's own fiddler, on the quiet grass short of the
+path, listening instead of walking on past.** No dialogue — this street's fiddler never got any `cries`
+either, for the same reason below — so it is a silent audience of one, the way the organ-grinder
+listener a few steps away already is.
+
+No new mesh or controller: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual rig and
+`Wanderer` (55-npcs.js) gives her the same "stand and watch" behaviour the magician's watcher and the
+organ-grinder listener on this same street already use, with a short leash (0.5 m) keeping her parked
+by the fiddler. `Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was needed.
+Built with no `cries`, the same fix every other listener on this street already needed: the Neighborhood
+is the one world whose build-and-test window shares a single run of simulated frames with its own
+behaviour checks, and a `cries` branch on a `Wanderer` draws a timing-sensitive pick from the shared
+`rnd()` sequence the moment it first fires. The shirt colour (0xb5543a) was checked against every other
+shirt on this street first.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()` then 30 simulated frames) swept a 0.25 m grid 2.5-6.5 m out
+from the fiddler's own spot (11, 10.4) against all 334 of this street's physics boxes, its 69
+`game.zones` rectangles and every other NPC already standing in it: (9.5, 6.4) came back clearest —
+3.0 m from the nearest box, 3.2 m from the nearest zone rectangle and 4.27 m from the nearest other
+soul, the fiddler himself, on flat ground with no measurable slope, well clear of the fiddle case at
+(11.7, 10.8) and the street trees. `angle` points her at the fiddler rather than a fixed constant, so
+she reads as listening to the tune and not just standing nearby.
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt: exit 0, every check `ok`, 0 console
+warnings, box count unchanged at 334 (no new collider, just a greet circle), and the Neighborhood's own
+friend total went up by one (108 → 109, confirmed against `world 0: 109 to meet`). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above, so
+whether the pose actually reads as "listening" is unverified. Six fiddlers across the other six worlds
+are still playing to nobody. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

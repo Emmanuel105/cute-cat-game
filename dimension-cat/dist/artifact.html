@@ -13057,6 +13057,43 @@ function buildNeighborhood(game, entry) {
       shirt: 0x2a9d8f, hat: null, scarf: null, jacket: null, bag: null, backpack: null }); W.add(grinderListener.group);
     game.npcs.push(new Wanderer(game, grinderListener, { x: lx, z: lz, angle: atan2(gx - lx, gz - lz), speed: 0.3, leash: 0.5, idle: [3, 6] })); }
 
+  // every street performer on this road has picked up an audience over the last several rounds —
+  // the magician, the organ grinder — but the fiddler, busking on the south pavement since round
+  // 1012, was never in scope for any of that and still plays to nobody. **A neighbour now stands a
+  // few steps north-west of the fiddler, on the quiet grass short of the path, listening instead of
+  // walking on past.** No world's own fiddler has a listener yet — the Neighborhood's own is the
+  // first of the seven.
+  //
+  // No new mesh or controller: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer`
+  // gives her the same "stand and watch" behaviour every organ-grinder listener and magician's
+  // watcher on this street already uses, with a short leash (0.5 m) keeping her parked by the
+  // fiddler rather than wandering off. `Wanderer`'s own constructor calls `greetable()` itself, so no
+  // extra wiring was needed. Built with no `cries` at all, the same fix every other listener on this
+  // street already needed: this is the one world whose build-and-test window shares a single run of
+  // simulated frames with its own behaviour checks, and a `cries` branch on a `Wanderer` draws an
+  // extra, timing-sensitive pick from the shared `rnd()` sequence the moment it first fires. The
+  // explicit shirt colour (0xb5543a) was checked against every other shirt on this street first — the
+  // "no two neighbours wear the same shirt" test catches a clash either way.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()` then 30 simulated frames) swept a 0.25 m grid 2.5-6.5 m
+  // out from the fiddler's own spot (11, 10.4) against all 334 of this street's physics boxes, its 69
+  // `game.zones` rectangles and every other NPC already standing in it: (9.5, 6.4) came back clearest —
+  // 3.0 m from the nearest box, 3.2 m from the nearest zone rectangle and 4.27 m from the nearest other
+  // soul, the fiddler himself, on flat ground (y=0, no measurable slope) well clear of the fiddle case
+  // at (11.7, 10.8) and the street trees nominally at x≈5.6 and x≈14.4. `angle` points her at the
+  // fiddler rather than a fixed constant, so she reads as listening to the tune and not just standing
+  // nearby.
+  //
+  // Built dead last, right after the organ-grinder listener above and right before `makeDayNight`,
+  // for the usual reason: `makeHuman()` and `randomPerson()` both draw off this street's own shared
+  // `r()` sequence unconditionally, and this is the first world the test suite builds, so anything
+  // built earlier here would have had its own timing-sensitive pick shifted by it.
+  { const lx = 9.5, lz = 6.4, fx = 11, fz = 10.4;
+    const fiddleListener = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.4) }),
+      shirt: 0xb5543a, hat: null, scarf: null, jacket: null, bag: null, backpack: null }); W.add(fiddleListener.group);
+    game.npcs.push(new Wanderer(game, fiddleListener, { x: lx, z: lz, angle: atan2(fx - lx, fz - lz), speed: 0.3, leash: 0.5, idle: [3, 6] })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
