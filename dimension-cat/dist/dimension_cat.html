@@ -17540,6 +17540,22 @@ function buildRobotCity(game, entry) {
     W.add(jumper.group);
     game.npcs.push(new JumpRoper(game, jumper, 0xff6fb5, { x: jx, z: jz, ry: atan2(0 - jx, 0 - jz),
       cries: ['Two hundred and not a single trip!', "Careful, puss — it swings wider than it looks.", "Robots don't skip. Something about the gears."] })); }
+  // Candy Land and the Neighborhood's jump-ropers both picked up a watcher over the last two rounds —
+  // Robot City's own (just above, skipping rope since round ~267) never had one either. A city local
+  // now stands a few steps south-west of her, watching the rope go round. `Wanderer` gives him the same
+  // "stand and watch" behaviour every other watcher in this build already uses, with a short leash
+  // (0.5 m) keeping him parked by the floor. A headless probe (`game.load(2, 'from-prev')`, every NPC's
+  // own position sampled every quarter second over 25 simulated seconds so no wandering robot pack, the
+  // sentry's patrol, the loaders, nor the tag, catch or ring dance mid-turn could slip past unnoticed)
+  // swept a 1 m grid 4-7 m out from the jump-roper's own spot (-46, -31) against all of this city's
+  // physics boxes, its zone rectangles and every one of those samples: (-52, -28) came back clearest —
+  // 7.3 m from the nearest box, 8.7 m clear of the nearest zone rectangle and 6.7 m from the nearest
+  // other soul. `angle` points him at the jump-roper's own fixed spot, so he reads as watching the act
+  // and not just standing nearby.
+  { const jrvx = -52, jrvz = -28, jropeX = -46, jropeZ = -31;
+    const jrWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x7a8aa0, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false }); W.add(jrWatcher.group);
+    game.npcs.push(new Wanderer(game, jrWatcher, { x: jrvx, z: jrvz, angle: atan2(jropeX - jrvx, jropeZ - jrvz), speed: 0.3, leash: 0.5, idle: [3, 6] })); }
   // the Neighborhood, Candy Land, Victorian, Sunny Shore and Whisper Woods all have a hula hooper —
   // Robot City, the last of the three the hula hoop still hadn't reached, now gets its own, well clear
   // of the playground cluster on the open factory floor to its east. `HulaHooper` needs no held prop

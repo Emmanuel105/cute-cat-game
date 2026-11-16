@@ -32178,3 +32178,31 @@ watcher's pose actually reads as "watching" is unverified. Five worlds' jump-rop
 Victorian, Sunny Shore, Frosty Peak, Whisper Woods) still perform for nobody.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+## Round 1135 — Robot City's jump-roper gets a watcher too
+
+Continuing the chain the Neighborhood and Candy Land started the last two rounds: Robot City's own
+jump-rope kid has been skipping rope on the open factory floor since round ~267, but — like five other
+worlds' jump-ropers — never had anyone watching. **A city local now stands a few steps south-west of
+her, watching the rope go round.**
+
+No new class or mesh: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer` gives him the
+same "stand and watch" behaviour every other watcher in this build already uses, with a short leash
+(0.5 m) keeping him parked by the floor.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, calling
+`game.load(2, 'from-prev')` to build the real Robot City, then sampling every NPC's own position every
+quarter second over 25 simulated seconds so no wandering robot pack, the sentry's patrol, the loaders,
+nor the tag, catch or ring dance mid-turn could slip past unnoticed) swept a 1 m grid 4-7 m out from the
+jump-roper's own spot (-46, -31) against all of this city's physics boxes and zone rectangles and every
+one of those samples: (-52, -28) came back clearest — 7.3 m from the nearest box, 8.7 m clear of the
+nearest zone rectangle and 6.7 m from the nearest other soul. `angle` points him at the jump-roper's own
+fixed spot, so he reads as watching the act and not just standing nearby.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, and Robot
+City's own friend total went up by one (130 → 131, confirmed against a `git stash` re-run of the old
+code printing "130 to meet"). No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite above, so whether the watcher's pose actually reads as
+"watching" is unverified. Four worlds' jump-ropers (Victorian, Sunny Shore, Frosty Peak, Whisper Woods)
+still perform for nobody.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
