@@ -1041,6 +1041,29 @@ function buildBeach(game, entry) {
   { const jx = -39, jz = 30.5;
     game.npcs.push(new JumpRoper(game, beachPerson(r.chance(0.5), true), 0xa8ff9a, { x: jx, z: jz, ry: atan2(0 - jx, 0 - jz), cryIcon: '➰',
       cries: ["Thirty in a row, watch!", "Careful, puss — don't trip over the rope.", "Sand makes it twice the workout, honest."] })); }
+  // The Neighborhood, Candy Land, Robot City and Victorian's own jump-ropers have each picked up a
+  // watcher over the last four rounds; Sunny Shore's own jump-roper, skipping on the open sand just
+  // above since this beach was first built, is next (Frosty Peak and Whisper Woods remain). **A
+  // beachgoer now stands a few steps south-east of her, watching the rope go round.**
+  //
+  // No new mesh or controller: `beachPerson()` (this file's own wardrobe helper, already used for the
+  // jump-roper herself and every other beachgoer in this file) builds the usual rig and adds it to
+  // the world on its own, and `Wanderer` (55-npcs.js) gives him the same "stand and watch" behaviour
+  // every other watcher in this build already uses, with a short leash (0.5 m) keeping him parked by
+  // the sand.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.load(4, 'from-hub')` to build the real Sunny Shore, 500 simulated frames so every crab,
+  // turtle, sandpiper and dolphin had already settled, then sampling every NPC's and the squirrel's
+  // own position every quarter second over 30 more simulated seconds) swept a 0.5 m grid 2.5-8 m out
+  // from the jump-roper's own spot (-39, 30.5) against all 262 of this beach's own physics boxes, its
+  // 89 `game.zones` rectangles and every one of those samples: (-34.5, 32.5) came back clearest —
+  // 4.8 m from the nearest box, 7.7 m clear of the nearest zone rectangle and 4.7 m from the nearest
+  // other soul.
+  { const wx = -34.5, wz = 32.5;
+    const jumpWatcher = beachPerson(r.chance(0.5), false);
+    game.npcs.push(new Wanderer(game, jumpWatcher, { x: wx, z: wz, angle: atan2(-39 - wx, 30.5 - wz), leash: 0.5, speed: 0.4, idle: [3, 6],
+      cries: ["Thirty in a row — she's not wrong.", 'Mind your tail, puss — the rope swings wider than it looks.', 'Better than lying on a towel, I suppose.'] })); }
   // the Neighborhood, Robot City, Victorian and Whisper Woods all pair a stroller with a dog on a
   // lead (`DogWalker`), but Sunny Shore's own dog, just below, only ever had its own patch of sand to
   // wander — nobody here had come for an actual walk. `DogWalker`'s own friend key is now configurable

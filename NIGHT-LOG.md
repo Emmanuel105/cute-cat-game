@@ -32235,3 +32235,35 @@ watcher's pose actually reads as "watching" is unverified. Three worlds' jump-ro
 Frosty Peak, Whisper Woods) still perform for nobody.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1137 — Sunny Shore's jump-roper gets a watcher too
+
+Continuing the chain from the last four rounds: Sunny Shore's own jump-rope kid has been skipping on
+the open dry sand since this beach was first built, but — like the Neighborhood, Candy Land, Robot
+City and Victorian's jump-ropers before this round — never had anyone watching. **A beachgoer now
+stands a few steps south-east of her, watching the rope go round.** *"Thirty in a row — she's not
+wrong."*
+
+No new class or mesh: `beachPerson()` (this beach's own wardrobe helper, already used for the
+jump-roper herself and every other beachgoer in this file) builds the usual rig and adds it to the
+world on its own, and `Wanderer` gives him the same "stand and watch" behaviour every other watcher
+in this build already uses, with a short leash (0.5 m) keeping him parked by the sand.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, calling
+`game.load(4, 'from-hub')` to build the real Sunny Shore, 500 simulated frames so every crab, turtle,
+sandpiper and dolphin had already settled, then sampling every NPC's and the squirrel's own position
+every quarter second over 30 more simulated seconds) swept a 0.5 m grid 2.5-8 m out from the
+jump-roper's own spot (-39, 30.5) against all 262 of this beach's own physics boxes, its 89
+`game.zones` rectangles and every one of those samples: (-34.5, 32.5) came back clearest — 4.8 m from
+the nearest box, 7.7 m clear of the nearest zone rectangle and 4.7 m from the nearest other soul.
+`angle` points him at the jump-roper's own fixed spot, so he reads as watching the act and not just
+standing nearby.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334, and Sunny Shore's own friend total went up by one (140 → 141, confirmed against a
+`git stash` re-run of the old code printing "140 to meet"). No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite above, so whether the
+watcher's pose actually reads as "watching" is unverified. Two worlds' jump-ropers (Frosty Peak,
+Whisper Woods) still perform for nobody.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
