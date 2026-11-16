@@ -2834,6 +2834,40 @@ function buildSnowVillage(game, entry) {
     game.npcs.push(new Wanderer(game, hoopWatcher, { x: wx, z: wz, angle: atan2(hoopX - wx, hoopZ - wz), speed: 0.3, leash: 0.5, idle: [3, 6],
       cries: ["Sixty spins and the cold doesn't touch her — I don't know how.", 'Careful, puss — the ring swings wider than it looks.', "Beats standing still for warmth, I suppose — wish I'd thought of it."] })); }
 
+  // Sunny Shore, Candy Land, Robot City and Victorian's own pogo stick kids have each picked up a
+  // watcher over the last several rounds — this mountain's own `PogoHopper`, bouncing on the open
+  // snowfield south of the village since earlier in this build, was next (only Whisper Woods' pogo
+  // kid remains without one). **A hiker now stands a few steps north-east of him, watching him
+  // bounce.** *"A thousand and still going — my knees ache just watching."* *"Careful, puss — give
+  // him room to land."* *"Don't look — actually, look, he's rather good at this."*
+  //
+  // No new class or mesh: `makeHuman()`/`randomPerson()` build the usual human rig and `Wanderer`
+  // (55-npcs.js) gives her the same "stand and watch" behaviour every other watcher on this mountain
+  // already uses, with a short leash (0.5 m) keeping her parked by the pogo kid's own spot rather
+  // than wandering off across the snow.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(5, 'from-prev')` to build the real mountain, 600 simulated frames
+  // so every reindeer, hare, arctic fox and penguin had already settled, then measuring real
+  // clearance to each physics box's and `game.zones` rectangle's own edge) swept a grid 2.5-8 m out
+  // from the pogo kid's own spot (6.5, -42): (13.21, -45.88) came back clearest — 6.33 m from the
+  // nearest box, 6.21 m clear of the nearest zone rectangle and 6.16 m from the nearest other soul,
+  // at radius 47.7 from the origin, short of the radius (58) where `snowRegion()`'s own procedural
+  // fill takes over. `angle` points her at the pogo kid's own fixed spot, so she reads as watching
+  // the act and not just standing nearby.
+  //
+  // Built dead last of everything this mountain adds, same reason as every watcher above:
+  // `makeHuman()`/`randomPerson()` draw off this mountain's own shared `r()` sequence
+  // unconditionally, and building any earlier would desync every timing-sensitive pick already
+  // placed.
+  { const wx = 13.21, wz = -45.88, pogoX6 = 6.5, pogoZ6 = -42;
+    const pogoWatcherWard = makeWardrobe(r, { shirts: [0x6a8a4a, 0x8a4a6a, 0x4a6a8a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const pogoWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: pogoWatcherWard }),
+      hat: 'beanie', hatColor: 0x8a4a4a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a, bag: null, backpack: null, glasses: false });
+    W.add(pogoWatcher.group);
+    game.npcs.push(new Wanderer(game, pogoWatcher, { x: wx, z: wz, angle: atan2(pogoX6 - wx, pogoZ6 - wz), speed: 0.3, leash: 0.5, idle: [3, 6],
+      cries: ['A thousand and still going — my knees ache just watching.', 'Careful, puss — give him room to land.', "Don't look — actually, look, he's rather good at this."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

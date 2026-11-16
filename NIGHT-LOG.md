@@ -32700,3 +32700,37 @@ stub-three test suite above. Frosty Peak and Whisper Woods' pogo kids still perf
 the Neighborhood's remains the open question noted in round 1147 (a fresh watcher rig there desyncs
 the two-neighbours-chat timing test via the shared `rnd()` sequence) — four of the seven done so far.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1151 — Frosty Peak's pogo stick kid gets a watcher too
+
+Sunny Shore's, Candy Land's, Robot City's and Victorian's own pogo stick kids have each had a
+watcher over the last several rounds (1146-1150) — Frosty Peak's own kid, bouncing on the open
+snowfield south of the village since round ~560, was still clearing a thousand bounces for nobody.
+**A hiker now stands a few steps north-east of him, watching him bounce.** *"A thousand and still
+going — my knees ache just watching."* *"Careful, puss — give him room to land."* *"Don't look —
+actually, look, he's rather good at this."*
+
+Same `Wanderer`-watcher pattern used for every other performer picking one up lately: no new class,
+no new mesh, just `makeHuman()` + `Wanderer` (55-npcs.js) with a short leash (0.5 m) and `angle`
+pointed at the pogo kid's own fixed spot.
+
+Placed via a headless probe on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(5, 'from-prev')` to build the real mountain, 600 simulated frames so
+every reindeer, hare, arctic fox and penguin had already settled, then a grid swept 2.5-8 m out from
+the pogo kid's own spot (6.5, -42) measuring real clearance to every one of the mountain's 422
+physics boxes, its 156 `game.zones` rectangles and all 120 other NPCs already standing in it: (13.21,
+-45.88) came back clearest — 6.33 m from the nearest box, 6.21 m clear of the nearest zone
+rectangle's own edge and 6.16 m from the nearest other soul, at radius 47.7 from the origin, short of
+the radius (58) where `snowRegion()`'s own procedural fill takes over. Built dead last of everything
+this mountain adds, for the usual reason: `makeHuman()`/`randomPerson()` draw off this mountain's own
+shared `r()` sequence unconditionally.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, and
+Frosty Peak's own friend total went up by one (137 → 138, confirmed against the NIGHT-LOG's own
+running count from round 1131). No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite above. Only Whisper Woods' pogo kid still performs for
+nobody, and the Neighborhood's remains the open question noted in round 1147 (a fresh watcher rig
+there desyncs the two-neighbours-chat timing test via the shared `rnd()` sequence) — five of the
+seven done so far.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
