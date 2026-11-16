@@ -30320,3 +30320,36 @@ was possible in this environment (no browser, no Playwright) — only the stub-t
 so whether the second rider's pose actually reads as sitting rather than floating, or whether two
 riders on opposite seats look balanced rather than lopsided, is unverified. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1087 — Victorian gets its own unicyclist too
+
+Candy Land got the game's first `Unicyclist` just last round (1085) — this town's own fiddler, juggler,
+organ grinder, magician and stilt walker have never shared a street with one either. **A music-hall act
+now pedals a short stretch of open green north of the basketball court, out and back, both arms thrown
+wide for balance.** *"Not a penny-farthing, mind — just the one wheel and twice the nerve."* *"Mind your
+tail, puss — this contraption has no brakes to speak of."* *"The halls wanted thirty feet of stage. Six
+of green does just as well."* Saying hello makes him the usual kind of friend.
+
+No new mesh, no new controller: `Unicyclist` (55-npcs.js) and `makeUnicycle()` (60-props.js) are reused
+verbatim from Candy Land's own debut — only the wardrobe (a cream shirt banded in the same maroon this
+town's postbox and postman already wear) and the lines are new. `Unicyclist`'s own draws (`this.t`,
+`this.wait`, `this.cryT`) come off the shared global `rnd()` rather than this town's own seeded `r()`,
+so placing it here costs nothing later in this build either way.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(3, 'from-prev')` waited out for real against
+its own portal-fade timer, then 3600 simulated frames sampling every one of this town's own NPCs'
+positions every 10th frame) swept several open patches of this town against those samples, all 664 of
+its physics boxes and every one of `game.zones`'s 245 rectangles. The green north of the basketball
+court (the hoop sits at (-40, -71)) came back clearest of the lot: a line from (-40, -50) to (-34, -50)
+stayed clear the whole way — 11.6 m from the nearest box and 9.8 m from the nearest wandering soul
+throughout — at radius 62 from the origin, well inside the hand-built town (`victorianRegion()`'s own
+procedural fill only starts at radius 88) and outside every zone.
+
+`node dimension-cat/test/run.mjs` ran clean twice in a row: exit 0, every check `ok`, 0 console
+warnings, box count unchanged at 334 (no new collider, just the usual 0.35 m greet circle), and
+Victorian's own friend total went up by one (157 → 158), confirmed against the previous commit with
+`git stash`. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above, so whether the pedalling actually reads as circular rather than twitchy,
+or whether the cream-and-maroon waistcoat looks right on a unicycle in a town this buttoned-up, is
+unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -22003,6 +22003,39 @@ function buildVictorian(game, entry) {
     const custLines = ["Tuppence well spent — can't walk into the club with scuffed boots.", "Mind the cat doesn't trip the boy mid-polish.", "There. Now I'll actually be seen in these."];
     game.npcs.push(new Charger(game, customer, { x: 34, z: -20, ry: PI / 2, cryIcon: '👞', cries: custLines })); }
 
+  // Candy Land got the game's first `Unicyclist` last round (1085) — this town's own fiddler, juggler,
+  // organ grinder, magician and stilt walker have never shared a street with one either. **A music-hall
+  // act now pedals a short stretch of open green north of the basketball court, out and back, both
+  // arms thrown wide for balance.** *"Not a penny-farthing, mind — just the one wheel and twice the
+  // nerve."* *"Mind your tail, puss — this contraption has no brakes to speak of."* *"The halls wanted
+  // thirty feet of stage. Six of green does just as well."*
+  //
+  // No new mesh, no new controller: `Unicyclist` (55-npcs.js) and `makeUnicycle()` (60-props.js) are
+  // reused verbatim from Candy Land's own debut last round — only the wardrobe (a cream shirt banded in
+  // the same maroon this town's postbox and postman already wear) and the lines are new. `Unicyclist`'s
+  // own draws (`this.t`, `this.wait`, `this.cryT`) come off the shared global `rnd()` rather than this
+  // town's own seeded `r()`, so placing it here costs nothing later in this build either way.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, `game.travel(3, 'from-prev')` waited out for real
+  // against its own portal-fade timer, then 3600 simulated frames sampling every one of this town's own
+  // NPCs' positions every 10th frame) swept the open green north of the basketball court (the hoop sits
+  // at (-40, -71)) against those samples, all 664 of the town's own physics boxes and every one of
+  // `game.zones`'s 245 rectangles: a line from (-40, -50) to (-34, -50) came back clear the whole way —
+  // 11.6 m from the nearest box and 9.8 m from the nearest wandering soul throughout, at radius 62 from
+  // the origin, well inside the hand-built town (`victorianRegion()`'s own procedural fill only starts
+  // at radius 88) and outside every zone.
+  //
+  // Built dead last of everything this town adds, right after the shoeshine customer above, for the
+  // usual reason: `makeHuman()` and `randomPerson()` both draw off this town's own shared `r()` sequence
+  // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted by
+  // it.
+  { const rider = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
+      shirt: 0xf7f3ec, stripes: 0x8b1a1a, pants: 0x1e1e24, shoes: 0x2a1e16, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(rider.group);
+    game.npcs.push(new Unicyclist(game, rider, makeUnicycle(0x8b1a1a), { a: [-40, -50], b: [-34, -50], cryIcon: '🎪',
+      cries: ["Not a penny-farthing, mind — just the one wheel and twice the nerve.", "Mind your tail, puss — this contraption has no brakes to speak of.", "The halls wanted thirty feet of stage. Six of green does just as well."] })); }
+
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
