@@ -21228,6 +21228,36 @@ function buildVictorian(game, entry) {
     W.add(jumper.group);
     game.npcs.push(new JumpRoper(game, jumper, 0x2f6fd6, { x: jx, z: jz, ry: atan2(0 - jx, 0 - jz),
       cries: ['A hundred skips and not a trip!', "Mind your tail, puss — the rope swings wider than it looks.", 'Better than catch for keeping warm.'] })); }
+  // The Neighborhood, Candy Land and Robot City's own jump-ropers have each picked up a watcher over
+  // the last three rounds — Victorian's, skipping on the open grass above since this town was first
+  // built, is the last of four still going unwatched (Sunny Shore, Frosty Peak and Whisper Woods
+  // remain). **A passer-by now stands a few steps east of her, watching the rope go round.**
+  //
+  // No new class or mesh: `makeHuman()`/`randomPerson()` build the usual period rig and `Wanderer`
+  // gives him the same "stand and watch" behaviour every other watcher in this town already uses,
+  // with a short leash (0.5 m) keeping him parked by the grass. Built with no `cries` at all, the
+  // same fix every watcher in this build needs once a second `cries`-bearing `Wanderer` risks firing
+  // in the same window as the one it's watching.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.travel(3,
+  // 'from-prev')` waited out against its own portal-fade timer, then 500 simulated frames so every
+  // urchin, dancer and tag pair had already settled, then every NPC's own position sampled every
+  // quarter second over 30 more simulated seconds) swept a 0.5 m grid 2.5-8 m out from the jump-roper's
+  // own spot (-10, 65) against all of this town's physics boxes, every `game.zones` rectangle and all
+  // 141 other NPCs over every sample: (-3, 65) came back clear by 24.6 m of the nearest box, 22 m of
+  // the nearest zone rectangle's own edge, and held at a steady 7 m from the jump-roper herself — the
+  // nearest other soul throughout, and nobody else ever came closer. `angle` points him at the
+  // jump-roper's own fixed spot, so he reads as watching the act and not just standing nearby.
+  //
+  // Built dead last in this town's own build order, the usual reason: `makeHuman()`/`randomPerson()`
+  // draw off this town's own shared `r()` sequence unconditionally, and anything built earlier would
+  // have had its own timing-sensitive pick shifted by it.
+  { const jwx = -3, jwz = 65;
+    const jumpWatchWard = makeWardrobe(r, { shirts: [0x3a4a5a, 0x5a3a4a, 0x4a5a2a], pants: [0x1e1e24, 0x2a2a30], shoes: [0x1a1410, 0x2a1e16] });
+    const jumpWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: jumpWatchWard }),
+      hat: r.chance(0.3) ? 'flatcap' : null, hatColor: 0x3a3327, scarf: 0x4a3a3a, beard: false, glasses: false });
+    W.add(jumpWatcher.group);
+    game.npcs.push(new Wanderer(game, jumpWatcher, { x: jwx, z: jwz, angle: atan2(-10 - jwx, 65 - jwz), leash: 0.5, speed: 0.3, idle: [3, 6] })); }
   // the Neighborhood, Candy Land, Robot City, Sunny Shore and Whisper Woods all have a hula hooper by
   // now — Victorian and Frosty Peak were the only two worlds left without one. A girl now spins a
   // hoop on the open grass south of the terraces, well past every hand-placed prop and game on the

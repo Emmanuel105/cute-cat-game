@@ -32206,3 +32206,32 @@ Playwright) — only the stub-three test suite above, so whether the watcher's p
 still perform for nobody.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1136 — Victorian's jump-roper gets a watcher too
+
+Continuing the chain from the last three rounds: Victorian's own jump-rope kid has been skipping on
+the open grass north of the ring dance since this town was first built, but — like three other
+worlds' jump-ropers — never had anyone watching. **A passer-by now stands a few steps east of her,
+watching the rope go round.**
+
+No new class or mesh: `makeHuman()`/`randomPerson()` build the usual period rig and `Wanderer` gives
+him the same "stand and watch" behaviour every other watcher in this town already uses, with a short
+leash (0.5 m) keeping him parked by the grass.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, calling
+`game.travel(3, 'from-prev')` to build the real Victorian town, 500 simulated frames so every urchin,
+dancer and tag pair had already settled, then sampling every NPC's own position every quarter second
+over 30 more simulated seconds) swept a grid 2.5-8 m out from the jump-roper's own spot (-10, 65)
+against all of this town's physics boxes, every `game.zones` rectangle and every other NPC: (-3, 65)
+came back clear by 24.6 m of the nearest box, 22 m of the nearest zone rectangle, and held a steady
+7 m from the jump-roper herself at every sample — the nearest other soul throughout, so nobody else
+ever came closer.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334, and Victorian's own friend total went up by one (164 → 165, confirmed against a
+`git stash` re-run of the old code printing "164 to meet"). No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite above, so whether the
+watcher's pose actually reads as "watching" is unverified. Three worlds' jump-ropers (Sunny Shore,
+Frosty Peak, Whisper Woods) still perform for nobody.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
