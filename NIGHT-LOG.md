@@ -32527,3 +32527,37 @@ stub-three test suite above, so whether the watcher's pose actually reads as "wa
 Only one world's hula hooper (Whisper Woods) now performs for nobody — the last of the set.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1146 — Whisper Woods' hula hooper gets a watcher too, the last of the seven
+
+The Neighborhood, Candy Land, Robot City, Victorian, Sunny Shore and Frosty Peak's own hula hoopers
+have each picked up a watcher over rounds 1140-1145 — this wood's own `HulaHooper`, spinning her ring
+south of the glade since earlier in this build, was the last of the seven still performing for nobody.
+**A woodland local now stands a few steps south-west of her, watching the ring go round.** *"Fifty
+spins, and the squirrels still won't join in — more fool them."* *"Careful, puss — the ring swings
+wider than it looks."* *"Keeps her warmer than standing still, same as she always says."*
+
+No new class or mesh: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig and
+`Wanderer` (55-npcs.js) gives him the same "stand and watch" behaviour every other watcher in this
+wood already uses, with a short leash (0.5 m) keeping him parked by her own spot rather than wandering
+off into the trees. `Wanderer`'s own constructor already reads its rig's height straight off
+`game.physics.ground0()` and calls `greetable()` itself, so no extra wiring was needed.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(6, 'from-hub')` waited out for real, then
+500 simulated frames so every deer, fox, flying fairy and squirrel had already settled, then sampling
+every NPC's and the squirrel's own position every quarter second over 30 more simulated seconds) swept
+a 0.5 m grid 2.5-8 m out from the hula hooper's own spot (-8, -41) against all 428 of this wood's own
+physics boxes (within foot-to-head height) and its 229 `game.zones` rectangles: (-11.5, -34.9) came
+back clearest — 3.95 m from the nearest box, 16.94 m clear of the nearest zone rectangle and 4.06 m
+from the nearest other soul, at radius 36.8 from the origin, well short of the radius (58) where
+`forestRegion()`'s own procedural fill takes over. `angle` points him at the hula hooper's own fixed
+spot, so he reads as watching the act and not just standing nearby.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, and
+Whisper Woods' own friend total went up by one (163 → 164, confirmed via a `git stash` re-run of the
+old code). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above, so whether the watcher's pose actually reads as "watching" is unverified.
+Every world's hula hooper now has a watcher of her own — the last of the seven.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

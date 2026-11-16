@@ -3338,6 +3338,43 @@ function buildForest(game, entry) {
     game.npcs.push(new Wanderer(game, jumpWatcher, { x: wx, z: wz, angle: atan2(jumpX - wx, jumpZ - wz), leash: 0.5, speed: 0.3, idle: [3, 6],
       cries: ["Two hundred, and I haven't tripped once.", 'Careful, puss — mind the vines, she nearly caught one last week.', "Best free show in these woods, and I've seen it every day this week."] })); }
 
+  // The Neighborhood, Candy Land, Robot City, Victorian, Sunny Shore and Frosty Peak's own hula
+  // hoopers have each picked up a watcher over rounds 1140-1145 — this wood's own `HulaHooper`,
+  // spinning her ring south of the glade since earlier in this build, was the last of the seven still
+  // performing for nobody. **A woodland local now stands a few steps south-west of her, watching the
+  // ring go round.** *"Fifty spins, and the squirrels still won't join in — more fool them."*
+  // *"Careful, puss — the ring swings wider than it looks."* *"Keeps her warmer than standing still,
+  // same as she always says."*
+  //
+  // No new class or mesh: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig and
+  // `Wanderer` (55-npcs.js) gives him the same "stand and watch" behaviour every other watcher in this
+  // wood already uses, with a short leash (0.5 m) keeping him parked by her own spot rather than
+  // wandering off into the trees. `Wanderer`'s own constructor already reads its rig's height straight
+  // off `game.physics.ground0()` and calls `greetable()` itself, so no extra wiring was needed.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, `game.travel(6, 'from-hub')` waited out for real,
+  // then 500 simulated frames so every deer, fox, flying fairy and squirrel had already settled, then
+  // sampling every NPC's and the squirrel's own position every quarter second over 30 more simulated
+  // seconds) swept a 0.5 m grid 2.5-8 m out from the hula hooper's own spot (-8, -41) against all 428
+  // of this wood's own physics boxes (within foot-to-head height) and its 229 `game.zones` rectangles:
+  // (-11.5, -34.9) came back clearest — 3.95 m from the nearest box, 16.94 m clear of the nearest zone
+  // rectangle and 4.06 m from the nearest other soul, at radius 36.8 from the origin, well short of
+  // the radius (58) where `forestRegion()`'s own procedural fill takes over. `angle` points him at the
+  // hula hooper's own fixed spot, so he reads as watching the act and not just standing nearby.
+  //
+  // Built dead last of everything this wood adds, same reason as always: `makeHuman()`/`randomPerson()`
+  // draw off this wood's own shared `r()` sequence unconditionally, and anything built earlier would
+  // have had its own timing-sensitive pick shifted by it. Every world's hula hooper now has a watcher
+  // of her own — the last of the seven.
+  { const wx = -11.5, wz = -34.9, hoopX = -8, hoopZ = -41;
+    const hoopWatcherWard = makeWardrobe(r, { shirts: [0x4a6a4a, 0x6a4a4a, 0x4a4a6a], pants: [0x2a2a2a, 0x3a2a1e], shoes: [0x3a2a1e, 0x2a2018] });
+    const hoopWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: hoopWatcherWard }),
+      hat: r.chance(0.4) ? 'cap' : null, hatColor: 0x3a4a3a, bag: null, backpack: null, jacket: null, scarf: null, glasses: false });
+    W.add(hoopWatcher.group);
+    game.npcs.push(new Wanderer(game, hoopWatcher, { x: wx, z: wz, angle: atan2(hoopX - wx, hoopZ - wz), leash: 0.5, speed: 0.3, idle: [3, 6],
+      cries: ["Fifty spins, and the squirrels still won't join in — more fool them.", 'Careful, puss — the ring swings wider than it looks.', "Keeps her warmer than standing still, same as she always says."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
