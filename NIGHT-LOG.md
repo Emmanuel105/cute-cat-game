@@ -32825,3 +32825,36 @@ above and the probe. The other five worlds' frisbee throwers (the Neighborhood, 
 Sunny Shore, Frosty Peak) still perform for nobody — two of the seven done so far.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1155 — Robot City's frisbee thrower gets a watcher too
+
+Continuing the chain: Whisper Woods (1153) and Candy Land (1154) already got theirs, so Robot City's
+own off-shift worker — tossing a disc straight up off the open floor south of the card table since
+round 422 — is next. **Another worker now leans against the floor a few steps south-east of him,
+watching the disc rise and fall on her own break.** *"Break's five minutes, same as his — she just
+spends hers watching instead of throwing."* *"Careful, puss — mind your tail, that one's coming down
+fast."* *"Sector 7's had worse ways to kill five minutes."*
+
+Same pattern as every other watcher in this file: no new class or mesh, just `makeHuman()` +
+`randomPerson()` for the rig and `Wanderer` (55-npcs.js) for the "stand and watch" behaviour, short
+leash (0.5 m), `angle` pointed at the thrower's own fixed spot (7, -66). Dialogue rides `Wanderer`'s
+own built-in `cries` option, seeded off Robot City's own local `r()` sequence rather than the shared
+global `rnd()` the thrower's own cries deliberately avoid (an extra global draw there once shifted the
+Victorian carriage check from a pass to a fail) — this sequence is local to the city, so it costs
+nothing elsewhere.
+
+Placed via a headless probe on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+`game.travel(2, 'from-prev')` waited out for real, then 300 simulated seconds so every wandering,
+patrolling and ball-tossing robot pack had already settled, then a 0.25 m grid swept 2.5-9 m out from
+the thrower's own spot against all 1206 of the city's physics boxes, its 296 `game.zones` rectangles
+and all 110 other NPCs already standing in it: (13.5, -63) came back clearest — 7.41 m from the
+nearest box and 7.16 m from the nearest other soul, well short of the radius (98) where
+`robotRegion()`'s own procedural fill takes over.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, and
+confirmed by `git stash` that Robot City's own friend total went up by one (133 → 134). No visual
+check was possible in this environment (no browser, no Playwright) — only the stub-three test suite
+above and the probe. `FrisbeePlayer` now has a watcher in three of the seven worlds (Whisper Woods,
+Candy Land, Robot City); the Neighborhood, Victorian, Sunny Shore and Frosty Peak are still left.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
