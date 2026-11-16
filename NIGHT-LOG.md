@@ -32267,3 +32267,35 @@ watcher's pose actually reads as "watching" is unverified. Two worlds' jump-rope
 Whisper Woods) still perform for nobody.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1138 — Frosty Peak's jump-roper gets a watcher too
+
+Continuing the chain from the last five rounds: Frosty Peak's own jump-rope kid has been skipping on
+the open snowfield west of the swing-and-seesaw cluster since earlier in this build, but — like the
+Neighborhood, Candy Land, Robot City, Victorian and Sunny Shore's jump-ropers before this round — never
+had anyone watching. **A hiker now stands a few steps north-east of him, watching the rope go round.**
+*"Two hundred, she says — and I believe every one of them."* *"Wish I'd thought of that — warmer than
+standing here, certainly."*
+
+No new class or mesh: `makeHuman()`/`randomPerson()` build the usual human rig and `Wanderer`
+(55-npcs.js) gives him the same "stand and watch" behaviour every other watcher on this mountain already
+uses, with a short leash (0.5 m) keeping him parked by the jump-roper's own spot.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(5, 'from-prev')` to build the real mountain, 500 simulated frames so
+every reindeer, hare, arctic fox and penguin had already settled, then sampling every NPC's own
+position every quarter second over 50 more simulated seconds) swept a 1 m grid 2.5-8 m out from the
+jump-roper's own spot (-48, 14) against all 780 of this mountain's physics boxes and its 156
+`game.zones` rectangles: (-43, 20) came back clearest — 5.8 m from the nearest box, 6 m clear of the
+nearest zone rectangle and 7.81 m from the nearest other soul (the jump-roper himself). `angle` points
+him at the jump-roper's own fixed spot, so he reads as watching the act and not just standing nearby.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (the mountain's own box count of 780 is a separate, in-world total that the top-level
+suite doesn't print), and Frosty Peak's own friend total went up by one (135 → 136, confirmed against a
+`git stash` re-run of the old code printing "135 to meet"). No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite above, so whether the
+watcher's pose actually reads as "watching" is unverified. Only Whisper Woods' jump-roper still performs
+for nobody — the last of the seven.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
