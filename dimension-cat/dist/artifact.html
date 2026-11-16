@@ -24212,6 +24212,29 @@ function buildBeach(game, entry) {
   { const hx = -24, hz = 36;
     game.npcs.push(new HulaHooper(game, beachPerson(r.chance(0.5), true), r.pick([0xff6fb5, 0xffd54a, 0x7fe0ff]), { x: hx, z: hz, ry: atan2(0 - hx, 0 - hz), cryIcon: '⭕',
       cries: ["A hundred spins and counting!", "Better than swimming for keeping warm.", "The crabs just stare — never join in."] })); }
+  // The Neighborhood, Candy Land, Robot City and Victorian's own hula hoopers have each picked up a
+  // watcher over the last four rounds; Sunny Shore's own, spinning her ring on the open sand just
+  // above since this beach was first built, is next (Frosty Peak and Whisper Woods remain). **A
+  // beachgoer now stands a few steps south of her, watching the ring go round.**
+  //
+  // No new mesh or controller: `beachPerson()` (this file's own wardrobe helper, already used for the
+  // hula hooper herself and every other beachgoer in this file) builds the usual rig and adds it to
+  // the world on its own, and `Wanderer` (55-npcs.js) gives him the same "stand and watch" behaviour
+  // every other watcher in this build already uses, with a short leash (0.5 m) keeping him parked by
+  // the sand.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.load(4, 'from-hub')` to build the real Sunny Shore, 500 simulated frames so every crab,
+  // turtle, sandpiper and dolphin had already settled, then sampling every NPC's and the squirrel's
+  // own position every quarter second over 30 more simulated seconds) swept a 0.5 m grid 2.5-8 m out
+  // from the hula hooper's own spot (-24, 36) against all 213 of this beach's own physics boxes, its
+  // 85 `game.zones` rectangles and every one of those samples: (-24, 30) came back clearest — 5.75 m
+  // from the nearest box, 17.4 m clear of the nearest zone rectangle and 5.6 m from the nearest other
+  // soul.
+  { const hwx = -24, hwz = 30;
+    const hoopWatcher = beachPerson(r.chance(0.5), false);
+    game.npcs.push(new Wanderer(game, hoopWatcher, { x: hwx, z: hwz, angle: atan2(-24 - hwx, 36 - hwz), leash: 0.5, speed: 0.4, idle: [3, 6],
+      cries: ["A hundred spins — I counted!", 'Mind your tail, puss — that ring has some reach.', "Beats sitting on a towel, I suppose."] })); }
   // every other world has a jump-roper by now; Sunny Shore had the yo-yo and hula hoop above but never
   // the rope. `JumpRoper` needs no held prop beyond the loose grip at each hand it builds itself, so this
   // is a placement, not a build, reusing the same `beachPerson()` wardrobe helper as the two kids above.

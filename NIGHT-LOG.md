@@ -32462,3 +32462,33 @@ had been force-updated with an unrelated-looking history (same artifact noted in
 session just moved its local `main` branch back onto `origin/main` before committing.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1144 — Sunny Shore's hula hooper gets a watcher too
+
+Continuing the "give the performer a watcher" chain: the Neighborhood, Candy Land, Robot City and
+Victorian's own hula hoopers have each picked up a watcher over the last four rounds, but Sunny
+Shore's own girl — spinning her ring on the open sand north of the dunes since this beach was first
+built — never had one. **A beachgoer now stands a few steps south of her, watching the ring go
+round.**
+
+No new mesh or controller: `beachPerson()` (this file's own wardrobe helper, already used for the
+hula hooper herself and every other beachgoer in this file) builds the usual rig and adds it to the
+world on its own, and `Wanderer` (55-npcs.js) gives him the same "stand and watch" behaviour every
+other watcher in this build already uses, with a short leash (0.5 m) keeping him parked by the sand.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.load(4, 'from-hub')` to build the real Sunny Shore, 500 simulated frames so every crab, turtle,
+sandpiper and dolphin had already settled, then sampling every NPC's and the squirrel's own position
+every quarter second over 30 more simulated seconds) swept a 0.5 m grid 2.5-8 m out from the hula
+hooper's own spot (-24, 36) against all 213 of this beach's own physics boxes, its 85 `game.zones`
+rectangles and every one of those samples: (-24, 30) came back clearest — 5.75 m from the nearest box,
+17.4 m clear of the nearest zone rectangle and 5.6 m from the nearest other soul. `angle` points him
+at her own fixed spot, so he reads as watching the act and not just standing nearby.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, and Sunny
+Shore's own friend total went up by one (141 → 142, confirmed via a `git stash` re-run of the old
+code). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above, so whether the watcher's pose actually reads as "watching" is unverified.
+Two other worlds' hula hoopers (Frosty Peak, Whisper Woods) still perform for nobody.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
