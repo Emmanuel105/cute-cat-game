@@ -32794,3 +32794,34 @@ other six worlds' frisbee throwers (the Neighborhood, Candy Land, Robot City, Vi
 Frosty Peak) still perform for nobody — one of the seven done so far.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1154 — Candy Land's frisbee thrower gets a watcher too
+
+Continuing the chain started last round: Whisper Woods' thrower picked up a watcher in round 1153,
+so Candy Land's own thrower — lobbing his gumdrop-pink disc on the sweet-lands' far south-west corner
+since round ~411 — is next. **A sweet-shop local now stands a few steps north of him, watching the
+disc rise and fall.** *"Keeps catching it clean — one of these days he'll land it in the chocolate
+river."* *"Careful, puss — mind your tail, that one's coming down fast."* *"Sweetest catch in the
+land, and he makes it look easy."*
+
+Same pattern as every watcher in this file: no new class or mesh, just `makeHuman()` + `randomPerson()`
+for the rig and `Wanderer` (55-npcs.js) for the "stand and watch" behaviour, short leash (0.5 m),
+`angle` pointed at the thrower's own fixed spot (-77, -35).
+
+Placed via a headless probe on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+`game.travel(1, 'from-hub')`, 2400 simulated frames so every marching, dancing and tag-playing
+gingerbread man had already settled, then a 0.25 m grid swept 2.5-9 m out from the thrower's own spot
+against all 334 of this land's physics boxes, its 69 `game.zones` rectangles and all 97 other NPCs
+already standing in it: (-78, -26) came back clearest — 11.8 m from the nearest box, 9.0 m clear of
+the nearest zone rectangle's own edge and 10.8 m from the nearest other soul, at radius 82 from the
+origin, well short of the radius (92) where `candyRegion()`'s own procedural fill takes over. Built
+dead last of everything this land adds, for the usual reason: `makeHuman()`/`randomPerson()` draw off
+this land's own shared `r()` sequence unconditionally.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, and
+confirmed by `git stash` that Candy Land's own friend total went up by one (125 → 126). No visual
+check was possible in this environment (no browser, no Playwright) — only the stub-three test suite
+above and the probe. The other five worlds' frisbee throwers (the Neighborhood, Robot City, Victorian,
+Sunny Shore, Frosty Peak) still perform for nobody — two of the seven done so far.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
