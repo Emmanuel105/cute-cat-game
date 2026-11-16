@@ -17631,6 +17631,23 @@ function buildRobotCity(game, entry) {
     W.add(hoopKid.group);
     game.npcs.push(new HulaHooper(game, hoopKid, 0x7fe0ff, { x: -62, z: 2, ry: atan2(0 - -62, 0 - 2),
       cries: ['Sixty spins before lunch, easy!', "Careful, puss — the ring's wider than it looks from out there.", "Robots just roll past. No idea what they're missing."] })); }
+  // Robot City's own jump-roper (a few lines up) picked up a watcher this same street of rounds —
+  // its hula hooper just above, spinning her ring since round ~1037, never had one, the last of this
+  // city's own performers still working for nobody. A city local now stands a few steps south-west of
+  // her, watching the ring go round. `Wanderer` gives him the same "stand and watch" behaviour every
+  // other watcher in this build already uses, with a short leash (0.5 m) keeping him parked by the
+  // floor. A headless probe (`game.load(2, 'from-prev')`, 500 simulated frames so every wandering
+  // robot pack, the sentry's patrol and the loaders had settled, then every NPC's own position sampled
+  // every quarter second over 25 more simulated seconds) swept a grid 4-8 m out from the hula hooper's
+  // own spot (-62, 2) against all of this city's physics boxes, its `game.zones` rectangles and every
+  // sampled soul: (-68.3, -1) came back clearest in that 4-7 m band — 8.9 m from the nearest box, 37 m
+  // clear of the nearest zone rectangle and exactly 7 m from the nearest other soul (the hula hooper
+  // herself). `angle` points him at her own fixed spot, so he reads as watching the act and not just
+  // standing nearby.
+  { const hwx = -68.3, hwz = -1, hoopX = -62, hoopZ = 2;
+    const hoopWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x8aa0c0, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false }); W.add(hoopWatcher.group);
+    game.npcs.push(new Wanderer(game, hoopWatcher, { x: hwx, z: hwz, angle: atan2(hoopX - hwx, hoopZ - hwz), speed: 0.3, leash: 0.5, idle: [3, 6] })); }
   // the Neighborhood, Candy Land and Victorian all have a kid kneeling by a wobbly scooter — Robot City,
   // the last flat-floored city of the three, never had one. A boy kneels on the open concrete south of
   // the kite flyer's own patch, tightening his scooter's back wheel. Same `makeScooter()` + `Kneeler`

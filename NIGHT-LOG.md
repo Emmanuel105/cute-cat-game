@@ -32401,3 +32401,31 @@ fetch origin main` showed they matched all along. No commits were ever at risk; 
 warning at the top of this round's sandbox was the same shallow-clone artifact, not a real divergence.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1142 — Robot City's hula hooper gets a watcher too
+
+Continuing the "give the performer a watcher" chain: Robot City's jump-roper picked up a watcher a
+few rounds back, but its hula hooper — spinning her ring on the open factory floor since round ~1037
+— never had one, the last of this city's own performers still working for nobody. **A city local now
+stands a few steps south-west of her, watching the ring go round.**
+
+No new class or mesh: `makeHuman()`/`randomPerson()` build the usual human rig and `Wanderer`
+(55-npcs.js) gives him the same "stand and watch" behaviour every other watcher in this file already
+uses, with a short leash (0.5 m) keeping him parked by the floor. A headless probe (a scratch script
+on the same stub-three harness `test/run.mjs` itself uses: `game.load(2, 'from-prev')`, 500 simulated
+frames so every wandering robot pack, the sentry's patrol and the loaders had settled, then every
+NPC's position sampled every quarter second over 25 more simulated seconds) swept a grid 4-8 m out
+from the hula hooper's own spot (-62, 2) against all 1206 of this city's physics boxes, its 296
+`game.zones` rectangles and every sampled soul: (-68.3, -1) came back clearest in the 4-7 m band — 8.9
+m from the nearest box, 37 m clear of the nearest zone rectangle and exactly 7 m from the nearest
+other soul (the hula hooper herself). `angle` points him at her own fixed spot, so he reads as
+watching the act and not just standing nearby.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, and Robot
+City's own friend total went up by one (131 → 132, confirmed against a `git stash` re-run of the old
+code printing "131 to meet"). No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite above, so whether the watcher's pose actually reads as
+"watching" is unverified. Four other worlds' hula hoopers (Victorian, Sunny Shore, Frosty Peak,
+Whisper Woods) still perform for nobody.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
