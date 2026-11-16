@@ -32605,3 +32605,33 @@ Candy Land, Robot City, Victorian, Frosty Peak and Whisper Woods' pogo kids stil
 nobody — only one of the seven done so far.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1148 — Candy Land's pogo stick kid gets a watcher too
+
+**A sweet-shop local now stands south-west of Candy Land's pogo stick kid, watching him bounce** —
+the second of the seven worlds to get this round's "watcher" treatment, after last round's Sunny
+Shore. Same `Wanderer`-watcher pattern used for every other solo performer so far (the juggler,
+magician, basketball kid, stilt walker, yo-yo kid, jump-roper, hula hooper): no new class, no new
+mesh, just `makeHuman()` + `Wanderer` with a short leash and `angle` pointed at the pogo kid's own
+fixed spot. *"Ninety-one he said, but I've lost count twice already."* *"Careful, puss — give him
+room to land, that spring's got some kick."* *"Best seat in the land for it, and it smells like
+caramel from here."*
+
+Placed via the same kind of headless position probe as always: `game.start('new')` then
+`game.travel(1, 'from-hub')`, 2400 simulated frames to let every marching, dancing and tag-playing
+gingerbread man settle, then a 0.25 m grid swept 2.5-8 m out from the pogo kid's own spot (-67,
+-31.5) against all 334 of this land's physics boxes, its 69 `game.zones` rectangles and all 97
+other NPCs already standing in it. (-74, -28) came back clearest — 9.23 m from the nearest box, 7.00
+m clear of the nearest zone rectangle's own edge and 9.63 m from the nearest other soul, at radius
+79.1 from the origin, well inside the 92 m where `candyRegion()`'s own procedural fill takes over.
+Built dead last of everything this land adds, right after the hula-hoop watcher, so the fresh rig's
+draw off the shared `r()` sequence couldn't desync anything already placed.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, and
+Candy Land's own friend total went up by one (124 → 125). No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite above. The Neighborhood
+(where the first attempt broke the two-neighbours-chat timing test, per round 1147's note), Robot
+City, Victorian, Frosty Peak and Whisper Woods' pogo kids still perform for nobody — two of the
+seven done so far, Neighborhood still an open question.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
