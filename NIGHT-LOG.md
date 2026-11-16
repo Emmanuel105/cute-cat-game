@@ -32635,3 +32635,34 @@ City, Victorian, Frosty Peak and Whisper Woods' pogo kids still perform for nobo
 seven done so far, Neighborhood still an open question.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1149 — Robot City's pogo stick kid gets a watcher too
+
+**An off-shift worker now stands west of Robot City's pogo stick kid, watching him clear the floor
+vents** — the third of the seven worlds to get this round's "watcher" treatment, after Sunny Shore
+(round ~1146) and Candy Land (round 1148). Same `Wanderer`-watcher pattern used for every other solo
+performer so far: no new class, no new mesh, just `makeHuman()` + `Wanderer` with a short leash and
+`angle` pointed at the pogo kid's own fixed spot. A human contractor rather than a robot — same
+reason the pogo kid himself is human: `makeRobot()`'s rig never sets `rig.legs` the way `PogoHopper`
+needs. *"Boss docks you a credit if you land in one of those, you know."* *"Careful, puss — give him
+room to land."* *"Ninety-six and still counting. Kid's got more patience than the whole night
+shift."*
+
+Placed via the same kind of headless position probe as always: `game.start('new')`, then
+`game.travel(2, 'from-hub')` waited out for real against its own 520 ms portal-fade timer (a plain
+`setTimeout` sleep in the scratch script, not a simulated frame — `travel()` only calls `load()`
+inside its own real `setTimeout`), then 3600 simulated frames to let every wanderer, patroller and
+the pogo kid himself settle. A 0.25 m grid swept 2.5-10 m out from the pogo kid's own spot (22, 71)
+against all 1206 of this city's physics boxes, its 296 `game.zones` rectangles and all 119 other
+NPCs already standing in it: (15, 71) came back clearest among the tighter radii — 8.35 m from the
+nearest box, 19.98 m clear of the nearest zone rectangle's own edge and 7 m from the nearest other
+soul (the pogo kid himself — nobody else was anywhere nearby out to the full 7 m search radius).
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, and
+Robot City's own friend total went up by one (113 → 114). No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite above. Victorian, Frosty
+Peak and Whisper Woods' pogo kids still perform for nobody, and the Neighborhood's remains the open
+question noted in round 1147 (a fresh watcher rig there desyncs the two-neighbours-chat timing test
+via the shared `rnd()` sequence) — three of the seven done so far.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
