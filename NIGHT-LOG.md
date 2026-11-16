@@ -32666,3 +32666,37 @@ question noted in round 1147 (a fresh watcher rig there desyncs the two-neighbou
 via the shared `rnd()` sequence) — three of the seven done so far.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1150 — Victorian's pogo stick kid gets a watcher too
+
+Sunny Shore's, Candy Land's and Robot City's own pogo stick kids have each had a watcher over the
+last few rounds (1146-1149) — Victorian's own urchin, bouncing on the cobble south-west of the
+market square since round ~558, was still clearing a hundred bounces for nobody. **A local now
+stands a few steps west of him, watching the spring do its work.** *"Tuppence says he clears a
+hundred — I'll hold the stake."* *"Mind your tail, puss — that spring's got more kick than it
+looks."* *"Lost count twice already. He has too, by the sound of it."*
+
+Same `Wanderer`-watcher pattern used for every other performer picking one up lately: no new class,
+no new mesh, just `makeHuman()` + `Wanderer` (55-npcs.js) with a short leash (0.5 m) and `angle`
+pointed at the pogo kid's own fixed spot.
+
+Placed via the same kind of headless position probe as the last few rounds: `game.start('new')`,
+`game.travel(3, 'from-hub')` waited out for real against its own portal-fade timer, then 2400
+simulated frames so every urchin, stilt walker and yo-yo kid had already settled. A 0.5 m grid swept
+2.5-8 m out from the pogo kid's own spot (-6, -66) against all 664 of this town's physics boxes, its
+245 `game.zones` rectangles and all 144 other NPCs already standing in it: (-14, -66) came back
+clearest — 11.16 m from the nearest box, 10.77 m clear of the nearest zone rectangle's own edge and
+8 m from the nearest other soul (the pogo kid himself, at the full 8 m search radius — nobody else
+was anywhere nearby), at radius 67.5 from the origin, well short of the radius (88) where
+`victorianRegion()`'s own procedural fill takes over, and clear of both the sack race's own lane and
+the market-square lane. Built dead last of everything this town adds, right after the yo-yo watcher,
+for the usual reason: `makeHuman()`/`randomPerson()` both draw off this town's own shared `r()`
+sequence unconditionally.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, and
+Victorian's own friend total went up by one (166 → 167), confirmed against the previous commit with
+`git stash`. No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above. Frosty Peak and Whisper Woods' pogo kids still perform for nobody, and
+the Neighborhood's remains the open question noted in round 1147 (a fresh watcher rig there desyncs
+the two-neighbours-chat timing test via the shared `rnd()` sequence) — four of the seven done so far.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

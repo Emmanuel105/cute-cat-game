@@ -23240,6 +23240,41 @@ function buildVictorian(game, entry) {
     game.npcs.push(new Wanderer(game, yoyoWatcher, { x: wx4, z: wz4, angle: atan2(yx4 - wx4, yz4 - wz4), leash: 0.5, speed: 0.4, idle: [3, 6], walk: [1, 1.6],
       cries: ["Forty drops and not one tangle — I've counted.", 'Mind your paws, puss — it swings wider than it looks.', "Best free show on the green, and I've seen it every day this week."] })); }
 
+  // Sunny Shore's, Candy Land's and Robot City's own pogo stick kids have each had a watcher over the
+  // last few rounds (1146-1149) — this town's own urchin, bouncing on the cobble south-west of the
+  // market square since round ~558, was still clearing a hundred bounces for nobody. **A local now
+  // stands a few steps west of him, watching the spring do its work.** *"Tuppence says he clears a
+  // hundred — I'll hold the stake."* *"Mind your tail, puss — that spring's got more kick than it
+  // looks."* *"Lost count twice already. He has too, by the sound of it."*
+  //
+  // No new class or mesh: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig, and
+  // `Wanderer` (55-npcs.js) gives him the same "stand and watch" behaviour every other watcher in this
+  // town already uses, with a short leash (0.5 m) keeping him parked by the pogo kid's own spot.
+  // `Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was needed.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(3, 'from-hub')` waited out for real against its own portal-fade
+  // timer, then 2400 simulated frames so every urchin, stilt walker and yo-yo kid had already settled)
+  // swept a 0.5 m grid 2.5-8 m out from the pogo kid's own spot (-6, -66) against all 664 of this
+  // town's physics boxes, its 245 `game.zones` rectangles and all 144 other NPCs already standing in
+  // it: (-14, -66) came back clearest — 11.16 m from the nearest box, 10.77 m clear of the nearest
+  // zone rectangle's own edge and 8 m from the nearest other soul (the pogo kid himself, at the full
+  // 8 m search radius — nobody else was anywhere nearby), at radius 67.5 from the origin, well short
+  // of the radius (88) where `victorianRegion()`'s own procedural fill takes over, and clear of both
+  // the sack race's own lane and the market-square lane. `angle` points him at the pogo kid's own
+  // fixed spot, so he reads as watching the act and not just standing nearby.
+  //
+  // Built dead last of everything this town adds, right after the yo-yo watcher above and right before
+  // the squirrel below, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this town's
+  // own shared `r()` sequence unconditionally, and anything built earlier would have had its own
+  // timing-sensitive pick shifted by it.
+  { const wx5 = -14, wz5 = -66, pogoX5 = -6, pogoZ5 = -66;
+    const pogoWatcher5 = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.2) });
+    W.add(pogoWatcher5.group);
+    game.npcs.push(new Wanderer(game, pogoWatcher5, { x: wx5, z: wz5, angle: atan2(pogoX5 - wx5, pogoZ5 - wz5), leash: 0.5, speed: 0.4, idle: [3, 6], walk: [1, 1.6],
+      cries: ["Tuppence says he clears a hundred — I'll hold the stake.", "Mind your tail, puss — that spring's got more kick than it looks.", 'Lost count twice already. He has too, by the sound of it.'] })); }
+
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
