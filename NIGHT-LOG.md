@@ -32149,3 +32149,32 @@ six of them (Candy Land, Robot City, Victorian, Sunny Shore, Frosty Peak, Whispe
 perform for nobody.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1134 — Candy Land's jump-roper gets a watcher too
+
+Continuing the chain the Neighborhood started last round: the jump-rope kid has been skipping rope
+on Candy Land's open grass since round ~267, well before the Neighborhood's own jump-roper, but
+never had anyone watching. **A gingerbread-land local now stands a few steps south of her, watching
+the rope go round.**
+
+No new class or mesh: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer` gives him the
+same "stand and watch" behaviour every other watcher in this build already uses, with a short leash
+(0.5 m) keeping him parked by the field.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, calling
+`game.travel(1, 'from-prev')` to build the real Candy Land, 500 simulated frames so every marching,
+dancing and tag-playing gingerbread man had already settled, then sampling every NPC's own position
+every quarter second over 30 more simulated seconds) swept a 1 m grid 4-7 m out from the jump-roper's
+own spot (-59, 50) against all 334 of this world's physics boxes, its 69 `game.zones` rectangles and
+every one of those samples: (-59, 43) came back clearest — 10.9 m from the nearest box, 11.6 m clear
+of the nearest zone rectangle and 12.1 m from the nearest other soul. `ry` points him at the
+jump-roper's own fixed spot, so he reads as watching the act and not just standing nearby.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334, and Candy Land's own friend total went up by one (122 → 123, confirmed against a
+`git stash` re-run of the old code printing "122 to meet"). No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite above, so whether the
+watcher's pose actually reads as "watching" is unverified. Five worlds' jump-ropers (Robot City,
+Victorian, Sunny Shore, Frosty Peak, Whisper Woods) still perform for nobody.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

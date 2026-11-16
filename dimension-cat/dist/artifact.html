@@ -14709,6 +14709,22 @@ function buildCandyLand(game, entry) {
     W.add(roper.group);
     game.npcs.push(new JumpRoper(game, roper, 0xffd54a, { x: -59, z: 50, ry: atan2(0 - (-59), 0 - 50),
       cries: ['Two hundred and not a single trip!', 'Careful, puss — it swings wider than it looks.', 'The gingerbread men never bounce this well.'] })); }
+  // The Neighborhood's own jump-roper picked up a watcher at round 1134 (this one has been skipping
+  // rope here since round ~267, well before that, and nobody ever stopped to watch). A gingerbread-land
+  // local now stands a few steps south of her, watching the rope go round. `Wanderer` gives him the
+  // same "stand and watch" behaviour every other watcher in this build already uses, with a short
+  // leash (0.5 m) keeping him parked by the field. A headless probe (`game.travel(1, 'from-prev')`,
+  // 500 simulated frames so every marching, dancing and tag-playing gingerbread man had already
+  // settled, then every NPC's own position sampled every quarter second over 30 more simulated
+  // seconds) swept a 1 m grid 4-7 m out from the jump-roper's own spot (-59, 50) against all 334 of
+  // this world's physics boxes, its 69 `game.zones` rectangles and every one of those samples: (-59,
+  // 43) came back clearest — 10.9 m from the nearest box, 11.6 m clear of the nearest zone rectangle's
+  // own edge and 12.1 m from the nearest other soul. `ry` points him at the jump-roper's own fixed
+  // spot, so he reads as watching the act and not just standing nearby.
+  { const jvx = -59, jvz = 43, jropeX = -59, jropeZ = 50;
+    const jumpWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0xd98f4a, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false }); W.add(jumpWatcher.group);
+    game.npcs.push(new Wanderer(game, jumpWatcher, { x: jvx, z: jvz, angle: atan2(jropeX - jvx, jropeZ - jvz), speed: 0.3, leash: 0.5, idle: [3, 6] })); }
   // the Neighborhood, Sunny Shore and Whisper Woods all have a hula hooper by now — Candy Land, for all
   // its yo-yo kid and jump-rope kid a few lines up, never had one. A child works a hula hoop on the open
   // grass well past the candy-cane ring (which only runs out to `d: r.range(56, 76)`), clear of every
