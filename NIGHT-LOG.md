@@ -32117,3 +32117,35 @@ watcher's pose actually reads as "watching" is unverified. `YoYoer` plays in all
 every one of them now has a watcher of its own — the chain that started at round 1126 is complete.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1133 — the Neighborhood's own jump-roper finally gets a watcher
+
+A new chain, not a continuation of the last one: the yo-yo kid, hula-hooper and jump-roper have all
+stood on this street's open field south of the road since round ~1040, but only the yo-yo kid (round
+1126 onward) ever picked up a watcher. **A neighbour now stands a few steps south-west of the
+jump-roper, watching the rope go round without a trip.**
+
+No new class or mesh: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer` gives him the
+same "stand and watch" behaviour every other watcher on this street already uses, with a short leash
+(0.5 m) keeping him parked by the field rather than wandering off. Built with no `cries`, the same
+fix every watcher on this street has needed since the magician's own watcher broke three unrelated
+checks the one time a second `cries`-bearing `Wanderer` ran in the same build-and-test window.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.loop()` run for 500 simulated frames so every stroller and dog was already moving, then 30 more
+simulated seconds sampled every quarter second) swept a 0.5 m grid 2.5-7 m out from the jump-roper's
+own spot (18, -44) against all 334 of this street's physics boxes, its 69 `game.zones` rectangles and
+all 95 other NPCs over every sample: (11.5, -46.5) came back clearest — 10.19 m from the nearest box,
+30 m clear of the nearest zone rectangle and 6.96 m from the nearest other soul (the jump-roper
+herself) at every sample. `angle` points him at the jump-roper's own fixed spot, so he reads as
+watching the act and not just standing nearby.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334, and the Neighborhood's own friend total went up by one (112 → 113, confirmed
+against a `git stash` re-run of the old code printing "112 to meet"). No visual check was possible in
+this environment (no browser, no Playwright) — only the stub-three test suite above, so whether the
+watcher's pose actually reads as "watching" is unverified. `JumpRoper` plays in all seven worlds, and
+six of them (Candy Land, Robot City, Victorian, Sunny Shore, Frosty Peak, Whisper Woods) still
+perform for nobody.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

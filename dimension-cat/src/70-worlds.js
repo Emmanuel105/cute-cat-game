@@ -4213,6 +4213,39 @@ function buildNeighborhood(game, entry) {
       shirt: 0x6a4a8a, hat: null, scarf: null, jacket: null, bag: null, backpack: null }); W.add(yoyoWatcher.group);
     game.npcs.push(new Wanderer(game, yoyoWatcher, { x: yvx, z: yvz, angle: atan2(yoyoX - yvx, yoyoZ - yvz), speed: 0.3, leash: 0.5, idle: [3, 6] })); }
 
+  // Every performer on this street who has picked up a watcher so far (the juggler, magician, organ
+  // grinder, fiddler, basketball kid, stilt walker, yo-yo kid) got one before the jump-roper did —
+  // she's been skipping rope on the same open field since round ~1040 and nobody ever stopped to
+  // watch. **A neighbour now stands a few steps south-west of her, watching the rope go round
+  // without a trip.**
+  //
+  // No new class or mesh: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer` gives him
+  // the same "stand and watch" behaviour every other watcher on this street already uses, with a
+  // short leash (0.5 m) keeping him parked by the field rather than wandering off. Built with no
+  // `cries` at all, the same fix every watcher on this street has needed since the magician's own
+  // watcher broke three unrelated checks the one time a second `cries`-bearing `Wanderer` ran in the
+  // same build-and-test window. The explicit shirt colour (0x3fae9a) was checked against every other
+  // shirt already on this street first — the "no two neighbours wear the same shirt" test catches a
+  // clash either way.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.loop()` run for 500 simulated frames so every stroller and dog was already moving, then 30
+  // more simulated seconds sampled every quarter second) swept a 0.5 m grid 2.5-7 m out from the
+  // jump-roper's own spot (18,-44) against all 334 of this street's physics boxes, its 69
+  // `game.zones` rectangles and all 95 other NPCs over every sample: (11.5, -46.5) came back
+  // clearest — 10.19 m from the nearest box, 30 m clear of the nearest zone rectangle's own edge and
+  // 6.96 m from the nearest other soul (the jump-roper herself) at every sample. `angle` points him
+  // at the jump-roper's own fixed spot, so he reads as watching the act and not just standing nearby.
+  //
+  // Built dead last, right after the yo-yo watcher above and right before `makeDayNight`, for the
+  // usual reason: `makeHuman()` and `randomPerson()` both draw off this street's own shared `r()`
+  // sequence unconditionally, and this is the first world the test suite builds, so anything built
+  // earlier here would have had its own timing-sensitive pick shifted by it.
+  { const jvx = 11.5, jvz = -46.5, jropeX = 18, jropeZ = -44;
+    const jumpWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
+      shirt: 0x3fae9a, hat: null, scarf: null, jacket: null, bag: null, backpack: null }); W.add(jumpWatcher.group);
+    game.npcs.push(new Wanderer(game, jumpWatcher, { x: jvx, z: jvz, angle: atan2(jropeX - jvx, jropeZ - jvz), speed: 0.3, leash: 0.5, idle: [3, 6] })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
