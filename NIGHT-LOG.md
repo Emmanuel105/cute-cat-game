@@ -32561,3 +32561,47 @@ stub-three test suite above, so whether the watcher's pose actually reads as "wa
 Every world's hula hooper now has a watcher of her own — the last of the seven.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1147 — Sunny Shore's pogo stick kid gets a watcher
+
+The last stretch of rounds gave the juggler, magician, organ grinder, fiddler, basketball kid,
+stilt walker, yo-yo kid, jump-roper and hula hooper a watcher in every world that has one. The pogo
+stick kid — bouncing on the dry sand west of the volleyball court since round ~881 — had never had
+one anywhere. **A beachgoer now stands a few steps south of him on Sunny Shore, watching him
+bounce.** *"However many thousand that is now, he's still counting."* *"Careful, puss — give him
+room to land."* *"Best keep that towel of mine well clear, the way he's going."*
+
+No new prop and no new controller: `beachPerson()` (72-world-beach.js's own wardrobe helper) builds
+the usual human rig and `Wanderer` (55-npcs.js) gives him the same "stand and watch" behaviour every
+other watcher on this beach already uses, with a short leash (0.5 m) keeping him parked by the pogo
+kid's own spot.
+
+This round first tried the Neighborhood's own pogo kid (round ~1081) instead, built the same way,
+dead last in `buildNeighborhood`, exactly like every stilt-walker/yo-yo/jump-rope/hula-hoop watcher
+before it. It broke `test/run.mjs`'s "two neighbours chat" check: the extra `Wanderer` draws four
+more numbers off the *shared* `rnd()` sequence at construction (`phase`, `timer`, `t`, `cryT` — the
+last one unconditional even with no `cries` set), and that was enough to shift *when* the talking
+neighbour's own idle-gesture roll landed relative to her turn to speak, leaving her mid-"shift"
+gesture (a non-speaking pose) right when the test sampled her arm angle. A scratch diagnostic script
+confirmed it directly: `turnT`/`speaker` logged frame-by-frame showed two turns happening fine, but
+the speaker's arm stayed flat because `rig.gesture === 'shift'` was blocking the talking-arm pose
+that frame. The Neighborhood is the one world with timing-tight checks like this (the chat and the
+children's tag game), so the fix was simply to build the watcher somewhere else instead of fighting
+the shared RNG — Sunny Shore has no such check.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.travel(4, 'from-hub')` waited out for real, then 1800 simulated frames so every crab, seagull,
+turtle and sunbather had already settled, sampling every NPC's own position every 15th frame
+throughout) swept a 0.5 m grid 2.5-7 m out from the pogo kid's own spot (-28, -20) against all 125 of
+this beach's own physics boxes and its 88 `game.zones` rectangles: (-28, -27) came back clearest —
+6.69 m from the nearest box, 11.89 m clear of the nearest zone rectangle and 6.40 m from the nearest
+other soul, at radius 38.9 from the origin, short of the radius (58) where `beachRegion()`'s own
+procedural fill takes over. `angle` points him at the pogo kid's own fixed spot.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, and
+Sunny Shore's own friend total went up by one (142 → 143). No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite above. The Neighborhood,
+Candy Land, Robot City, Victorian, Frosty Peak and Whisper Woods' pogo kids still perform for
+nobody — only one of the seven done so far.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

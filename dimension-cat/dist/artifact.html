@@ -26018,6 +26018,39 @@ function buildBeach(game, entry) {
     game.npcs.push(new Wanderer(game, beachPerson(r.chance(0.5), false), { x: wx4, z: wz4, angle: atan2(yx2 - wx4, yz2 - wz4), speed: 0.3, leash: 0.5, idle: [3, 6],
       cries: ["Forty drops and not one tangle — I've counted.", "Careful, puss — it swings wider than it looks, out here.", "Best free show on the sand, and I've seen it every day this week."] })); }
 
+  // The Neighborhood, Candy Land, Robot City, Victorian, Sunny Shore (the yo-yo kid, two blocks
+  // back), Frosty Peak and Whisper Woods have each given a solo performer after another a watcher
+  // over the last stretch of rounds — this beach's own pogo stick kid, bouncing on the dry sand
+  // west of the volleyball court since round ~881, was still skipped. **A beachgoer now stands a
+  // few steps south of him, watching him bounce.** *"However many thousand that is now, he's still
+  // counting."* *"Careful, puss — give him room to land."* *"Best keep that towel of mine well
+  // clear, the way he's going."*
+  //
+  // No new prop and no new controller: `beachPerson()` (this world's own wardrobe helper) builds
+  // the usual human rig, and `Wanderer` (55-npcs.js) gives him the same "stand and watch" behaviour
+  // every other watcher on this beach already uses, with a short leash (0.5 m) keeping him parked
+  // by the pogo kid's own spot. `Wanderer`'s own constructor calls `greetable()` itself, so no
+  // extra wiring was needed.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.travel(4, 'from-hub')` waited out for real, then 1800 simulated frames so every crab,
+  // seagull, turtle and sunbather had already settled, then sampling every NPC's own position every
+  // 15th frame throughout) swept a 0.5 m grid 2.5-7 m out from the pogo kid's own spot (-28, -20)
+  // against all 125 of this beach's own physics boxes (within foot-to-head height) and its 88
+  // `game.zones` rectangles: (-28, -27) came back clearest — 6.69 m from the nearest box, 11.89 m
+  // clear of the nearest zone rectangle and 6.40 m from the nearest other soul, at radius 38.9 from
+  // the origin, well short of the radius (58) where `beachRegion()`'s own procedural fill takes
+  // over. `angle` points him at the pogo kid's own fixed spot, so he reads as watching the act and
+  // not just standing nearby.
+  //
+  // Built dead last of everything this beach adds, right after the yo-yo kid's own watcher above,
+  // for the usual reason: `beachPerson()`/`randomPerson()` both draw off this beach's own shared
+  // `r()` sequence unconditionally, and anything built earlier would have had its own
+  // timing-sensitive pick shifted by it.
+  { const wx5 = -28, wz5 = -27, pgX = -28, pgZ = -20;
+    game.npcs.push(new Wanderer(game, beachPerson(r.chance(0.5), false), { x: wx5, z: wz5, angle: atan2(pgX - wx5, pgZ - wz5), speed: 0.3, leash: 0.5, idle: [3, 6],
+      cries: ["However many thousand that is now, he's still counting.", "Careful, puss — give him room to land.", "Best keep that towel of mine well clear, the way he's going."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
