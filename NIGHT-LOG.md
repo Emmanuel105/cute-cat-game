@@ -32734,3 +32734,30 @@ there desyncs the two-neighbours-chat timing test via the shared `rnd()` sequenc
 seven done so far.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1152 — Whisper Woods' pogo stick kid gets a watcher too, the last of the seven
+
+Sunny Shore, Candy Land, Robot City, Victorian and Frosty Peak's own pogo stick kids have each
+picked up a watcher over rounds 1146-1151 — Whisper Woods' own kid, bouncing on the open woodland
+floor west of the hollow oak's own path since round ~561, was the last one still performing for
+nobody. **A woodland local now stands a few steps north-west of him, watching him bounce.** *"Boing
+after boing after boing — I don't know how he doesn't get dizzy."* *"Careful, puss — give him room
+to land."* *"Lost count somewhere past the owls, same as he did."*
+
+Same `Wanderer`-watcher pattern as every other world's pick-up: no new class or mesh, just
+`makeHuman()` + `Wanderer` (55-npcs.js) with a short leash (0.5 m) and `angle` pointed at the pogo
+kid's own fixed spot. A headless probe (`game.start('new')`, `game.load(6, 'from-hub')`, 3600
+simulated frames, then a 0.25 m grid swept 2.5-9 m out from the pogo kid's own spot (-47, 28) against
+all 670 of this wood's own physics boxes, its 229 `game.zones` rectangles and every NPC and squirrel
+sampled along the way) found (-44.22, 23.55) clearest — only 4.88 m to the nearest other soul rather
+than the 6-11 m most of this wood's other watchers got, since this corner is already crowded with the
+sunbather, the stilt walker and the marching hedgehogs, but still well clear of everything.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, and
+confirmed by `git stash` that Whisper Woods' own friend total went up by one (164 → 165). No visual
+check was possible in this environment (no browser, no Playwright) — only the stub-three test suite
+above. `PogoHopper` now has a watcher in six of the seven worlds; only the Neighborhood's remains the
+open question from round 1147 (a fresh watcher rig there desyncs the two-neighbours-chat timing test
+via the shared `rnd()` sequence).
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

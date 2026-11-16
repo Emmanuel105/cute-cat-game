@@ -32432,6 +32432,46 @@ function buildForest(game, entry) {
     game.npcs.push(new Wanderer(game, hoopWatcher, { x: wx, z: wz, angle: atan2(hoopX - wx, hoopZ - wz), leash: 0.5, speed: 0.3, idle: [3, 6],
       cries: ["Fifty spins, and the squirrels still won't join in — more fool them.", 'Careful, puss — the ring swings wider than it looks.', "Keeps her warmer than standing still, same as she always says."] })); }
 
+  // The Neighborhood, Candy Land, Robot City, Victorian, Sunny Shore and Frosty Peak's own pogo stick
+  // kids have each picked up a watcher over rounds 1146-1151 — this wood's own `PogoHopper`, bouncing
+  // on the quiet stretch of woodland floor west of the hollow oak's own path since round ~561, was the
+  // last of the seven still performing for nobody. **A woodland local now stands a few steps north-west
+  // of him, watching him bounce.** *"Boing after boing after boing — I don't know how he doesn't get
+  // dizzy."* *"Careful, puss — give him room to land."* *"Lost count somewhere past the owls, same as
+  // he did."*
+  //
+  // No new class or mesh: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig and
+  // `Wanderer` (55-npcs.js) gives her the same "stand and watch" behaviour every other watcher in this
+  // wood already uses, with a short leash (0.5 m) keeping her parked by the pogo kid's own spot rather
+  // than wandering off into the trees. `Wanderer`'s own constructor already reads its rig's height
+  // straight off `game.physics.ground0()` and calls `greetable()` itself, so no extra wiring was needed.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(6, 'from-hub')` to build the real wood, 3600 simulated frames so
+  // every deer, fox, hare and flying fairy had already settled, every NPC's and the squirrel's own
+  // position sampled every 10th frame) swept a 0.25 m grid 2.5-9 m out from the pogo kid's own spot
+  // (-47, 28) against all 670 of this wood's own physics boxes, its 229 `game.zones` rectangles and all
+  // those samples: (-44.22, 23.55) came back clearest — 4.91 m from the nearest box, 7.24 m clear of the
+  // nearest zone rectangle and 4.88 m from the nearest other soul, at radius 50.1 from the origin, short
+  // of the radius (56-58) where `forestRegion()`'s own procedural fill takes over, in the same crowded
+  // west end of the wood as the sunbather, the stilt walker and the marching hedgehogs, so clearance ran
+  // tighter here than most of this wood's other watchers. `angle` points her at the pogo kid's own fixed
+  // spot, so she reads as watching the act and not just standing nearby.
+  //
+  // Built dead last of everything this wood adds, same reason as always: `makeHuman()`/`randomPerson()`
+  // draw off this wood's own shared `r()` sequence unconditionally, and anything built earlier would
+  // have had its own timing-sensitive pick shifted by it. `PogoHopper` plays in all seven worlds; every
+  // one now has a watcher of its own — the last of the seven (the Neighborhood's own remains the open
+  // question noted in round 1147: a fresh watcher rig there desyncs the two-neighbours-chat timing test
+  // via the shared `rnd()` sequence).
+  { const wx = -44.22, wz = 23.55, pogoX7 = -47, pogoZ7 = 28;
+    const pogoWatcherWard = makeWardrobe(r, { shirts: [0x4a5a6a, 0x6a4a4a, 0x5a6a4a], pants: [0x2a2a2a, 0x3a3a2a], shoes: [0x3a2a1e, 0x2a2018] });
+    const pogoWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: pogoWatcherWard }),
+      hat: r.chance(0.4) ? 'cap' : null, hatColor: 0x4a3a4a, bag: null, backpack: null, jacket: null, scarf: null, glasses: false });
+    W.add(pogoWatcher.group);
+    game.npcs.push(new Wanderer(game, pogoWatcher, { x: wx, z: wz, angle: atan2(pogoX7 - wx, pogoZ7 - wz), leash: 0.5, speed: 0.3, idle: [3, 6],
+      cries: ["Boing after boing after boing — I don't know how he doesn't get dizzy.", 'Careful, puss — give him room to land.', 'Lost count somewhere past the owls, same as he did.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
