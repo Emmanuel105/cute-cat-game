@@ -32299,3 +32299,34 @@ watcher's pose actually reads as "watching" is unverified. Only Whisper Woods' j
 for nobody — the last of the seven.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1139 — Whisper Woods' jump-roper gets a watcher too, the last of the seven
+
+Continuing the chain from the last six rounds: Whisper Woods' own jump-rope kid has been skipping on
+the open ground deep in the south of these woods since earlier in this build, but — like the
+Neighborhood, Candy Land, Robot City, Victorian, Sunny Shore and Frosty Peak's jump-ropers before this
+round — never had anyone watching. **A woodland local now stands a few steps north of her, watching the
+rope go round.** *"Two hundred, and I haven't tripped once."* *"Careful, puss — mind the vines, she
+nearly caught one last week."*
+
+No new class or mesh: `makeHuman()`/`randomPerson()` build the usual human rig and `Wanderer`
+(55-npcs.js) gives him the same "stand and watch" behaviour every other watcher in this wood already
+uses, with a short leash (0.5 m) keeping him parked by the jump-roper's own spot.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(6, 'from-hub')` to build the real Whisper Woods, 500 simulated frames so
+every deer, fox and flying fairy was already moving, then sampling every NPC's own position every
+quarter second over 30 more simulated seconds) swept a 0.5 m grid 2.5-8 m out from the jump-roper's own
+spot (8, -48) against all 670 of this wood's own physics boxes and its 229 `game.zones` rectangles:
+(0.5, -47) came back clearest — 6.58 m from the nearest box, 15.46 m from the nearest zone rectangle and
+6.66 m from the nearest other soul (the jump-roper herself). `angle` points him at the jump-roper's own
+fixed spot, so he reads as watching the act and not just standing nearby.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334, and Whisper Woods' own friend total went up by one (162 → 163, confirmed against a
+`git stash` re-run of the old code printing "162 to meet"). No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite above, so whether the
+watcher's pose actually reads as "watching" is unverified. All seven worlds' jump-ropers now have
+someone watching them — the last of the chain.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
