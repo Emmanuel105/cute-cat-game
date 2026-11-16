@@ -32330,3 +32330,38 @@ watcher's pose actually reads as "watching" is unverified. All seven worlds' jum
 someone watching them — the last of the chain.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1140 — the Neighborhood's hula hooper finally gets a watcher
+
+Continuing the "give the performer a watcher" chain: the juggler, magician, organ grinder, fiddler,
+basketball kid, stilt walker, yo-yo kid and jump-roper have all picked up watchers on this street over
+the last several rounds, but the hula hooper — spinning her ring on the same open field since round
+1037 — never had. **A neighbour now stands a few steps south-west of her, watching the ring go round.**
+
+No new class or mesh: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer` (55-npcs.js)
+gives her the same "stand and watch" behaviour every other watcher on this street already uses, with a
+short leash (0.5 m) keeping her parked by the field. No `cries` on her either, for the same reason every
+watcher here has avoided a second `cries`-bearing `Wanderer` since the magician's own watcher first broke
+three unrelated checks.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.loop()` for 500 simulated frames so every stroller and dog was already moving, then 20 more
+simulated seconds sampled every quarter second) swept a 0.5 m grid 2.5-7 m out from the hula hooper's own
+spot (32, -55) against all 334 of this street's physics boxes, its 69 `game.zones` rectangles and every
+other NPC's position over every sample: (25.5, -57.5) came back clearest — 8.59 m from the nearest box,
+16 m clear of the nearest zone rectangle and 6.96 m from the nearest other soul (the hula hooper
+herself). `angle` points her at the hula hooper's own fixed spot, so she reads as watching the act and
+not just standing nearby.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334, and the Neighborhood's own friend total went up by one (113 → 114). No visual check
+was possible in this environment (no browser, no Playwright) — only the stub-three test suite above, so
+whether the watcher's pose actually reads as "watching" is unverified. Six other worlds' hula hoopers
+still perform for nobody.
+
+Before this round, this sandbox found its own `main` sitting on a detached HEAD 50 commits behind
+`origin/main` with an unrelated git history — a leftover from an earlier session's environment reset.
+`origin/main` turned out to already carry that work (it had been force-updated separately), so no commits
+were lost; this session just fast-forwarded its local `main` to match before starting new work.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
