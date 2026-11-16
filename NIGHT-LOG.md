@@ -32365,3 +32365,39 @@ Before this round, this sandbox found its own `main` sitting on a detached HEAD 
 were lost; this session just fast-forwarded its local `main` to match before starting new work.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1141 — Candy Land's hula hooper gets a watcher too
+
+Continuing the "give the performer a watcher" chain started last round: the Neighborhood's hula
+hooper got hers at round 1140, but Candy Land's own ring-spinner — working the open grass out past
+the candy-cane border since round ~1037 — still performed for nobody. **A gingerbread-land local now
+stands a few steps south-west of her, watching the ring go round.** *"Sixty spins and she still
+hasn't slowed down — I lost count an hour ago."* *"Careful, puss — stand clear, that ring whips wider
+than it looks from here."* *"Best seat in the land for it, and it's free."*
+
+No new class or mesh: `makeHuman()`/`randomPerson()` build the usual human rig and `Wanderer`
+(55-npcs.js) gives him the same "stand and watch" behaviour every other watcher in this land already
+uses, with a short leash (0.5 m) keeping him parked by the field. A headless probe (the same
+stub-three harness `test/run.mjs` uses: `game.travel(1, 'from-prev')`, 500 simulated frames so every
+marching, dancing and tag-playing gingerbread man had settled, then every NPC's position sampled
+every quarter second over 30 more simulated seconds) swept a 0.5 m grid 2.5–8 m out from the hula
+hooper's own spot (39, -77) against all 1891 of this land's physics boxes, its 451 `game.zones`
+rectangles and every sampled soul: (31.5, -79.5) came back clearest — 10.06 m from the nearest box,
+9.78 m clear of the nearest zone rectangle and 7.91 m from the nearest other soul (the hula hooper
+herself). `angle` points him at her fixed spot, so he reads as watching rather than just standing
+nearby.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 334, and Candy Land's own friend total went up by one (123 → 124, confirmed via the
+same probe script before and after the change). No visual check was possible in this environment (no
+browser, no Playwright) — only the stub-three test suite above, so whether the watcher's pose actually
+reads as "watching" is unverified. Five other worlds' hula hoopers (Robot City, Victorian, Sunny
+Shore, Frosty Peak, Whisper Woods) still perform for nobody.
+
+Also sorted out a stale-fetch false alarm at the start of this round: the local clone's cached
+`origin/main` tracking ref pointed at round 1086 (50 commits behind, and shallow enough that git saw
+it as an unrelated history), while the actual GitHub `main` was already at round 1140 — a plain `git
+fetch origin main` showed they matched all along. No commits were ever at risk; the "detached HEAD"
+warning at the top of this round's sandbox was the same shallow-clone artifact, not a real divergence.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
