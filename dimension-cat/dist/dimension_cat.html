@@ -17477,6 +17477,44 @@ function buildRobotCity(game, entry) {
     const frisbeeLines = ["Break's five minutes. Long enough for a throw.", "Careful, puss — mind your tail, this one's coming down fast.", "Highest one yet. Sector 7's roof isn't that close. Probably."];
     let frisbeeCryT = r.range(3, 7);
     U.push((dt) => { frisbeeCryT -= dt; if (frisbeeCryT <= 0) { frisbeeCryT = r.range(8, 14); const c = game.cat.group.position; if (dist2(fx, fz, c.x, c.z) < 400) { game.toast('🥏 "' + r.pick(frisbeeLines) + '"', 2400); SFX.talk(); } } }); }
+  // This city's off-shift worker has been tossing a disc straight up off the open floor south of the
+  // card table since round 422, and nobody had ever stopped to watch him land it. **Another worker
+  // now leans against the floor a few steps south-east of him, watching the disc rise and fall on
+  // her own break.** *"Break's five
+  // minutes, same as his — she just spends hers watching instead of throwing."* *"Careful, puss —
+  // mind your tail, that one's coming down fast."* *"Sector 7's had worse ways to kill five
+  // minutes."*
+  //
+  // No new class or mesh: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig and
+  // `Wanderer` (55-npcs.js) gives her the same "stand and watch" behaviour the game's other watchers
+  // (the hula-hoop and jump-rope crowds, the pogo kid's own audiences) already use, with a short
+  // leash (0.5 m) keeping her parked by the thrower's own spot rather than wandering off across the
+  // floor. `Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was needed to
+  // make her a friend. Dialogue rides `Wanderer`'s own built-in `cries` option, seeded off this city's
+  // own shared `r()` sequence — the synth-coffee-vendor lesson above (the global `rnd()` sequence
+  // costs a test-order shift) only applies to that global sequence, not this local one.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(2, 'from-prev')` waited out for real against its own portal-
+  // fade timer, then 300 simulated seconds so every wandering, patrolling and ball-tossing robot pack
+  // had already settled) swept a 0.25 m grid 2.5-9 m out from the thrower's own spot (7, -66) against
+  // all 1206 of this city's physics boxes, its 296 `game.zones` rectangles and all 110 other NPCs
+  // already standing in it: (13.5, -63) came back clearest — 7.41 m from the nearest box and 7.16 m
+  // from the nearest other soul, at radius 64.4 from the origin, well short of the radius (98) where
+  // `robotRegion()`'s own procedural fill takes over. `angle` points her at the thrower's own fixed
+  // spot, so she reads as watching the act and not just standing nearby.
+  //
+  // Built dead last of everything this city adds, right after the frisbee thrower above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this city's own shared `r()` sequence
+  // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted
+  // by it.
+  { const fwx = 13.5, fwz = -63, frisbeeX4 = 7, frisbeeZ4 = -66;
+    const frisbeeWatcherWard = makeWardrobe(r, { shirts: [0x4a5a6a, 0x3a4a5a, 0x5a4a6a], pants: [0x232c34, 0x2a2a30] });
+    const frisbeeWatcher4 = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: frisbeeWatcherWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.3) });
+    W.add(frisbeeWatcher4.group);
+    game.npcs.push(new Wanderer(game, frisbeeWatcher4, { x: fwx, z: fwz, angle: atan2(frisbeeX4 - fwx, frisbeeZ4 - fwz), leash: 0.5, speed: 0.4, idle: [3, 6], walk: [1, 1.6],
+      cries: ["Break's five minutes, same as his — she just spends hers watching instead of throwing.", "Careful, puss — mind your tail, that one's coming down fast.", "Sector 7's had worse ways to kill five minutes."] })); }
   // The Neighborhood's had a horseshoe pit since round 299, and nobody else ever got a game of pitch-
   // and-catch that needs nothing but a patch of open floor and two players with nowhere else to be.
   // Two off-shift service robots now lob a spare magnetic coupling ring back and forth between a pair

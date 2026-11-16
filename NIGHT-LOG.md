@@ -30320,3 +30320,38 @@ was possible in this environment (no browser, no Playwright) — only the stub-t
 so whether the second rider's pose actually reads as sitting rather than floating, or whether two
 riders on opposite seats look balanced rather than lopsided, is unverified. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1087 — Robot City's frisbee thrower gets a watcher
+
+Robot City's off-shift worker has been tossing a disc straight up off the open floor south of the
+card table since round 422, and in all that time nobody had ever stopped to watch him land it.
+**Another worker now leans against the floor a few steps south-east of him, watching the disc rise
+and fall on her own break.** *"Break's five minutes, same as his — she just spends hers watching
+instead of throwing."* *"Careful, puss — mind your tail, that one's coming down fast."* *"Sector 7's
+had worse ways to kill five minutes."*
+
+No new class or mesh: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig and
+`Wanderer` (55-npcs.js) gives her the same "stand and watch" behaviour the game's other watchers
+already use elsewhere, with a short leash (0.5 m) keeping her parked by the thrower's own spot.
+`Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was needed to make her a
+friend. Dialogue rides `Wanderer`'s own built-in `cries` option, seeded off Robot City's own local
+`r()` sequence rather than the shared global `rnd()` the thrower's own cries avoid for a documented
+reason (an extra global draw once shifted the Victorian carriage check from a pass to a fail) — this
+sequence is local to the city, so it costs nothing elsewhere.
+
+Placed via a headless probe on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+`game.travel(2, 'from-prev')` waited out for real, then 300 simulated seconds so every wandering,
+patrolling and ball-tossing robot pack had already settled, then a 0.25 m grid swept 2.5-9 m out from
+the thrower's own spot (7, -66) against all 1206 of the city's physics boxes, its 296 `game.zones`
+rectangles and all 110 other NPCs already standing in it: (13.5, -63) came back clearest — 7.41 m from
+the nearest box and 7.16 m from the nearest other soul, well short of the radius (98) where
+`robotRegion()`'s own procedural fill takes over.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, and
+confirmed by `git stash` that Robot City's own friend total went up by one (123 → 124). No visual
+check was possible in this environment (no browser, no Playwright) — only the stub-three test suite
+above and the probe. Robot City's own thrower has never had company watching before; the other six
+worlds' frisbee throwers (the Neighborhood, Candy Land, Victorian, Sunny Shore, Frosty Peak, Whisper
+Woods) still perform for nobody.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
