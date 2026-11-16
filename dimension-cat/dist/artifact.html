@@ -21357,6 +21357,23 @@ function buildVictorian(game, entry) {
     W.add(hoopKid.group);
     game.npcs.push(new HulaHooper(game, hoopKid, 0xc9516a, { x: hx, z: hz, ry: atan2(0 - hx, 0 - hz),
       cries: ["A hundred round and not a wobble, guv'nor!", "Mind your tail, puss — it swings wider than it looks.", "Found it behind the market stalls. Nobody's claimed it yet."] })); }
+  // Continuing the "give the performer a watcher" street of rounds: the Neighborhood, Candy Land and
+  // Robot City's own hula hoopers all picked one up — Victorian's own girl, spinning her ring south of
+  // the terraces just above, never had one. A town local now stands a few steps south-east of her,
+  // watching the ring go round. `Wanderer` gives her the same "stand and watch" behaviour every other
+  // watcher in this file already uses, with a short leash (0.5 m) keeping her parked by the grass.
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.travel(3,
+  // 'from-prev')`, 500 simulated frames so every urchin, dancer and tag pair had already settled, then
+  // every NPC's own position sampled every quarter second over 30 more simulated seconds) swept a grid
+  // 2.5-8 m out from the hula hooper's own spot (50, -46) against all of this town's physics boxes, its
+  // own `game.zones` rectangles and every sampled soul: (56.1, -40.9) came back clearest — 7.2 m from
+  // the nearest box, 9.6 m clear of the nearest zone rectangle and 8.2 m from the nearest other soul
+  // (the hula hooper herself). `angle` points her at the hula hooper's own fixed spot, so she reads as
+  // watching the act and not just standing nearby.
+  { const hwx = 56.1, hwz = -40.9;
+    const hoopWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x5a6a4a, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false }); W.add(hoopWatcher.group);
+    game.npcs.push(new Wanderer(game, hoopWatcher, { x: hwx, z: hwz, angle: atan2(50 - hwx, -46 - hwz), speed: 0.3, leash: 0.5, idle: [3, 6] })); }
   // the Neighborhood and Candy Land both have a kid kneeling by a wobbly scooter — Victorian, for all
   // nine of its own games and vignettes on the north bank by now, never had one. A girl kneels in the
   // open grass west of the catch pair, tightening her scooter's back wheel. Same `makeScooter()` +

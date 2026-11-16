@@ -32429,3 +32429,36 @@ Playwright) — only the stub-three test suite above, so whether the watcher's p
 Whisper Woods) still perform for nobody.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1143 — Victorian's hula hooper gets a watcher too
+
+Continuing the "give the performer a watcher" chain: the Neighborhood, Candy Land and Robot City's
+hula hoopers all picked up a watcher over the last three rounds, but Victorian's own girl — spinning
+her ring on the open grass south of the terraces — never had one. **A town local now stands a few
+steps south-east of her, watching the ring go round.**
+
+No new class or mesh: `makeHuman()`/`randomPerson()` build the usual human rig and `Wanderer`
+(55-npcs.js) gives her the same "stand and watch" behaviour every other watcher in this file already
+uses, with a short leash (0.5 m) keeping her parked by the grass. A headless probe (the same
+stub-three harness `test/run.mjs` itself uses: `game.travel(3, 'from-prev')`, 500 simulated frames so
+every urchin, dancer and tag pair had already settled, then every NPC's own position sampled every
+quarter second over 30 more simulated seconds) swept a grid 2.5-8 m out from the hula hooper's own
+spot (50, -46) against all 334 of this town's physics boxes, its 69 `game.zones` rectangles and every
+sampled soul: (56.1, -40.9) came back clearest — 7.2 m from the nearest box, 9.6 m clear of the
+nearest zone rectangle and 8.2 m from the nearest other soul (the hula hooper herself). `angle` points
+her at the hula hooper's own fixed spot, so she reads as watching the act and not just standing
+nearby.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334, and Victorian's own friend total went up by one (165 → 166, confirmed via a
+`git stash` re-run of the old code). No visual check was possible in this environment (no browser, no
+Playwright) — only the stub-three test suite above, so whether the watcher's pose actually reads as
+"watching" is unverified. Three other worlds' hula hoopers (Sunny Shore, Frosty Peak, Whisper Woods)
+still perform for nobody.
+
+This sandbox again found its local `main` on a detached HEAD matching an old commit while `origin/main`
+had been force-updated with an unrelated-looking history (same artifact noted in round 1141) — a plain
+`git fetch origin main` showed the two actually matched once refreshed, so nothing was at risk; this
+session just moved its local `main` branch back onto `origin/main` before committing.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
