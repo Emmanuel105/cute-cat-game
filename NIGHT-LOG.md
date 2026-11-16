@@ -32492,3 +32492,38 @@ stub-three test suite above, so whether the watcher's pose actually reads as "wa
 Two other worlds' hula hoopers (Frosty Peak, Whisper Woods) still perform for nobody.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1145 — Frosty Peak's hula hooper gets a watcher too
+
+Continuing the "give the performer a watcher" chain: the Neighborhood, Candy Land, Robot City,
+Victorian and Sunny Shore's own hula hoopers have each picked up a watcher over the last several
+rounds, but this mountain's own girl — spinning her ring on the open snowfield north of the ice pond
+since earlier in this build — never had one. **A hiker now stands a few steps south-west of her,
+watching the ring go round.** *"Sixty spins and the cold doesn't touch her — I don't know how."*
+*"Careful, puss — the ring swings wider than it looks."* *"Beats standing still for warmth, I
+suppose — wish I'd thought of it."*
+
+No new class or mesh: `makeHuman()`/`randomPerson()` build the usual human rig and `Wanderer`
+(55-npcs.js) gives him the same "stand and watch" behaviour every other watcher on this mountain
+already uses, with a short leash (0.5 m) keeping him parked by the snow. Built dead last of everything
+this mountain adds, right after the existing yo-yo and jump-rope watchers, same reason as always:
+`makeHuman()`/`randomPerson()` draw off this mountain's own shared `r()` sequence unconditionally.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(5, 'from-prev')` to build the real mountain, 500 simulated frames so
+every reindeer, hare, arctic fox and penguin had already settled, then sampling every NPC's own
+position every quarter second over 30 more simulated seconds) swept a 0.5 m grid 2.5-8 m out from the
+hula hooper's own spot (12, 52) against all 780 of this mountain's physics boxes and its 156
+`game.zones` rectangles: (5, 53) came back clearest — 8.5 m from the nearest box, 6.6 m clear of the
+nearest zone rectangle and 7 m from the nearest other soul (the hula hooper herself), at radius 53.2
+from the origin, short of the radius (58) where `snowRegion()`'s own procedural fill takes over.
+`angle` points him at the hula hooper's own fixed spot, so he reads as watching the act and not just
+standing nearby.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, and
+Frosty Peak's own friend total went up by one (136 → 137, confirmed via a `git stash` re-run of the
+old code). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above, so whether the watcher's pose actually reads as "watching" is unverified.
+Only one world's hula hooper (Whisper Woods) now performs for nobody — the last of the set.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
