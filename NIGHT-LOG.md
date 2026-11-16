@@ -32761,3 +32761,36 @@ open question from round 1147 (a fresh watcher rig there desyncs the two-neighbo
 via the shared `rnd()` sequence).
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1153 — Whisper Woods' frisbee thrower finally gets a watcher
+
+The last seven-round chain (pogo stick kids, 1146-1152) just wrapped up, so this one starts a fresh
+one: `FrisbeePlayer` has played in all seven worlds since round 411, but nobody had ever stopped to
+watch the throw land until now. **A woodland local now stands a few steps south-east of this wood's
+own thrower, watching the disc rise and fall.** *"Keeps catching it clean — one of these days he
+won't."* *"Careful, puss — mind your tail, that one is coming down fast."* *"The owls don't seem to
+mind it either."*
+
+Same pattern every other watcher in this file uses: no new class or mesh, just `makeHuman()` +
+`randomPerson()` for the rig and `Wanderer` (55-npcs.js) for the "stand and watch" behaviour, with a
+short leash (0.5 m) and `angle` pointed at the thrower's own fixed spot (13, 53) so he reads as
+watching the act rather than just standing nearby.
+
+Placed via a headless probe on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+`game.travel(6, 'from-hub')` waited out for real, then every NPC's and the squirrel's own position
+sampled every half second over 90 simulated seconds (long enough for every deer, fox, frog and fairy
+to clear any one spot several times over), then a grid swept 2.5-9 m out from the thrower's own spot
+against all 670 of this wood's own physics boxes and its 229 `game.zones` rectangles: (17, 48) came
+back clear — 5.63 m from the nearest box, 14 m clear of the nearest zone rectangle and 5.62 m from the
+nearest other soul. Built dead last of everything this build adds, for the usual reason:
+`makeHuman()`/`randomPerson()` draw off this wood's own shared `r()` sequence unconditionally, and
+anything built earlier would have had its own timing-sensitive pick shifted by it.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, and
+Whisper Woods' own friend total went up by one (165 → 166, confirmed with a second headless probe
+reading `game.friendTotal` straight off the built world). No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite above and the probes. The
+other six worlds' frisbee throwers (the Neighborhood, Candy Land, Robot City, Victorian, Sunny Shore,
+Frosty Peak) still perform for nobody — one of the seven done so far.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

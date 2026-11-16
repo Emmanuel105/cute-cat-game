@@ -32465,6 +32465,41 @@ function buildForest(game, entry) {
     game.npcs.push(new Wanderer(game, pogoWatcher, { x: wx, z: wz, angle: atan2(pogoX7 - wx, pogoZ7 - wz), leash: 0.5, speed: 0.3, idle: [3, 6],
       cries: ["Boing after boing after boing — I don't know how he doesn't get dizzy.", 'Careful, puss — give him room to land.', 'Lost count somewhere past the owls, same as he did.'] })); }
 
+  // The Neighborhood, Robot City, Victorian, Candy Land, Sunny Shore and Frosty Peak all have somebody
+  // tossing a disc straight up for the fun of it (round 1147 and the five after it), but this wood's own
+  // `FrisbeePlayer`, lobbing his bark-brown disc on the quiet stretch of forest floor north-east of the
+  // glade since earlier in this build, never had anyone actually watch it land. **A woodland local now
+  // stands a few steps south-east of him, watching the disc rise and fall.** *"Keeps catching it clean —
+  // one of these days he won't."* *"Careful, puss — mind your tail, that one's coming down fast."* *"The
+  // owls don't seem to mind it either."*
+  //
+  // No new class or mesh: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig and
+  // `Wanderer` (55-npcs.js) gives him the same "stand and watch" behaviour every other watcher in this
+  // wood already uses, with a short leash (0.5 m) keeping him parked by the thrower's own spot rather
+  // than wandering off into the trees. `Wanderer`'s own constructor already reads its rig's height
+  // straight off `game.physics.ground0()` and calls `greetable()` itself, so no extra wiring was needed.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(6, 'from-hub')` waited out for real, then every NPC's and the
+  // squirrel's own position sampled every half second over 90 simulated seconds — long enough for every
+  // deer, fox, frog and fairy to clear any one spot several times over) swept a grid 2.5-9 m out from the
+  // thrower's own spot (13, 53) against all 670 of this wood's own physics boxes, its 229 `game.zones`
+  // rectangles and all those samples: (17, 48) came back clear — 5.63 m from the nearest box, 14 m clear
+  // of the nearest zone rectangle and 5.62 m from the nearest other soul, at radius 50.4 from the origin,
+  // short of the radius (58) where `forestRegion()`'s own fill takes over. `angle` points him at the
+  // thrower's own fixed spot, so he reads as watching the act and not just standing nearby.
+  //
+  // Built dead last of everything this wood adds, same reason as always: `makeHuman()`/`randomPerson()`
+  // draw off this wood's own shared `r()` sequence unconditionally, and anything built earlier would have
+  // had its own timing-sensitive pick shifted by it.
+  { const fwx = 17, fwz = 48, frisbeeX = 13, frisbeeZ = 53;
+    const frisbeeWatcherWard = makeWardrobe(r, { shirts: [0x5a6a4a, 0x6a4a4a, 0x4a4a6a], pants: [0x2a2a2a, 0x3a2a1e], shoes: [0x3a2a1e, 0x2a2018] });
+    const frisbeeWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: frisbeeWatcherWard }),
+      hat: r.chance(0.4) ? 'cap' : null, hatColor: 0x3a3a4a, bag: null, backpack: null, jacket: null, scarf: null, glasses: false });
+    W.add(frisbeeWatcher.group);
+    game.npcs.push(new Wanderer(game, frisbeeWatcher, { x: fwx, z: fwz, angle: atan2(frisbeeX - fwx, frisbeeZ - fwz), leash: 0.5, speed: 0.3, idle: [3, 6],
+      cries: ["Keeps catching it clean — one of these days he won't.", 'Careful, puss — mind your tail, that one is coming down fast.', "The owls don't seem to mind it either."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
