@@ -33337,6 +33337,45 @@ function buildForest(game, entry) {
     game.npcs.push(new Wanderer(game, listener, { x: lx, z: lz, angle: atan2(fx - lx, fz - lz), leash: 0.5, speed: 0.3, idle: [3, 6],
       cries: ["Doesn't need the ukulele player — four strings carry fine on their own out here.", "Careful, puss — he's three songs deep and hasn't noticed either of us.", "Didn't plan on stopping. Didn't plan on the fiddle either, by the sound of it."] })); }
 
+  // The Neighborhood, Candy Land, Robot City, Victorian, Sunny Shore and Frosty Peak's own
+  // `PaperPlaneKid`s have all picked up a watcher by now (rounds 1172-1177); this wood's own kid,
+  // folding birch-bark darts out over the moss north-west of the fairy ring since round 1177's
+  // predecessor added him here, was still throwing to nobody. **A walker now stands a few steps
+  // south-west of him on the open forest floor, watching the dart glide instead of wandering on.**
+  // *"Folds this one from a curl of birch bark too — says there's no other way, up here."*
+  // *"Careful, puss — swat that one and he just folds another."* *"Longest glide yet, or so he
+  // tells it every time."* Saying hello makes her the usual kind of friend. Every `PaperPlaneKid` in
+  // this game now has a watcher.
+  //
+  // No new class or mesh: the usual `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js),
+  // the same "stand and watch" behaviour every other watcher in this game already uses, with a short
+  // leash (0.5 m) and `angle` pointed at the kid's own fixed spot rather than a constant.
+  // `Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was needed.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, `game.travel(6, 'from-hub')` waited out for real
+  // against its own transition-done flag, then 3600 simulated frames sampling every NPC's own
+  // position every 10th frame) swept a 0.25 m grid 2.5-6 m out from the kid's own spot (-46, 19),
+  // excluding a 1.3 m band either side of the dart's own flight line (it glides west from (-46, 19)
+  // toward (-49, 19)), against all 670 of this wood's own physics boxes and its 229 `game.zones`
+  // rectangles: (-47.5, 15.25) came back clearest within the close-in (≤4 m) band this game's other
+  // six watchers all used — 4.97 m from the nearest box, 3.96 m clear of the nearest zone rectangle
+  // and 4.04 m from the kid himself (the nearest other soul over the whole run), south-west of him on
+  // ground levelling out at 1.00 m with only 3 cm of slope across her own footprint, and well short
+  // of the radius (58) where `forestRegion()`'s own fill takes over.
+  //
+  // Built dead last of everything this wood adds, right after the fiddler's own listener above, for
+  // the usual reason: `makeHuman()`/`randomPerson()` both draw off this wood's own shared `r()`
+  // sequence unconditionally, and anything built earlier would have had its own timing-sensitive pick
+  // shifted by it. All seven worlds' `PaperPlaneKid`s now have a watcher.
+  { const dartWx = -47.5, dartWz = 15.25, dartKidX3 = -46, dartKidZ3 = 19;
+    const dartWatcherWard = makeWardrobe(r, { shirts: [0x6a4a4a, 0x4a6a6a, 0x6a6a4a], pants: [0x3a3a2a, 0x2e3a28] });
+    const dartWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: dartWatcherWard }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: r.chance(0.2) });
+    W.add(dartWatcher.group);
+    game.npcs.push(new Wanderer(game, dartWatcher, { x: dartWx, z: dartWz, angle: atan2(dartKidX3 - dartWx, dartKidZ3 - dartWz), speed: 0.3, leash: 0.5, idle: [3, 6],
+      cries: ["Folds this one from a curl of birch bark too — says there's no other way, up here.", 'Careful, puss — swat that one and he just folds another.', 'Longest glide yet, or so he tells it every time.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

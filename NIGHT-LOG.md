@@ -33629,3 +33629,39 @@ friend total went up by one (140 → 141 to meet, confirmed against the previous
 whether the two locals' stance actually reads as one scene together is unverified. Whisper Woods is
 the last of the seven worlds whose own paper-plane kid is still waiting on a watcher. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1178 — Whisper Woods' paper-plane kid gets a watcher too, closing out the set
+
+The Neighborhood, Candy Land, Robot City, Victorian, Sunny Shore and Frosty Peak's own
+`PaperPlaneKid`s have all picked up a watcher by now; this wood's own kid, folding birch-bark darts
+out over the moss north-west of the fairy ring since round 1177's predecessor planted him there,
+was the last one still throwing to nobody. **A walker now stands a few steps south-west of him on
+the open forest floor, watching the dart glide instead of wandering on.** *"Folds this one from a
+curl of birch bark too — says there's no other way, up here."* *"Careful, puss — swat that one and
+he just folds another."* *"Longest glide yet, or so he tells it every time."* Saying hello makes
+her the usual kind of friend. Every `PaperPlaneKid` in this game now has a watcher, closing out a
+run that started seven rounds back.
+
+No new class or mesh: the usual `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js), the
+same "stand and watch" behaviour every other watcher in this game already uses, with a short leash
+(0.5 m) and `angle` pointed at the kid's own fixed spot rather than a constant.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(6, 'from-hub')` waited out for real against its own transition
+flag, then 3600 simulated frames sampling every NPC's own position every 10th frame) swept a
+0.25 m grid 2.5-6 m out from the kid's own spot (-46, 19), excluding a 1.3 m band either side of
+the dart's own flight line (it glides west from (-46, 19) toward (-49, 19)), against all 670 of
+this wood's own physics boxes and its 229 `game.zones` rectangles: (-47.5, 15.25) came back
+clearest within the close-in (≤4 m) band this game's other six watchers all used — 4.97 m from the
+nearest box, 3.96 m clear of the nearest zone rectangle and 4.04 m from the kid himself (the
+nearest other soul over the whole run), south-west of him on ground levelling out at 1.00 m with
+only 3 cm of slope across her own footprint, and well short of the radius (58) where
+`forestRegion()`'s own fill takes over.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 334 (no new collider, just the usual 0.5 m greet circle), and Whisper Woods' own
+friend total went up by one (169 → 170 to meet, confirmed against the previous commit with
+`git stash`). No visual check was possible in this environment (no browser, no Playwright), so
+whether the two locals' stance actually reads as one scene together is unverified. All seven
+worlds' paper-plane kids now have a watcher. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
