@@ -33531,3 +33531,35 @@ total went up by one (136 → 137 to meet, confirmed against the previous commit
 visual check was possible in this environment (no browser, no Playwright), so whether the two locals'
 stance actually reads as one scene together is unverified. Four worlds' own paper-plane kids are
 still waiting on a watcher. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1175 — Victorian's paper-plane kid gets a watcher too
+
+The Neighborhood, Candy Land and Robot City's own paper-plane kids picked up a watcher the last
+three rounds; this town's own boy, folding and throwing paper planes over the open green out past
+the back lanes since round 1174, was still throwing to nobody. **A lamplighter now stands a few
+steps east of him on the same green, watching the dart glide instead of walking his round.** *"Same
+fold every throw — he'll have the knack of it before I've lit the second lamp."* *"Mind the nose
+crease, puss — that one took three tries to get right."* *"Clears the lamp post yet? Not today, but
+closer than yesterday."* Saying hello makes him the usual kind of friend.
+
+No new class or mesh: the usual `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js), the
+same "stand and watch" behaviour every other watcher in this town already uses, with a short leash
+(0.5 m) and `angle` pointed at the kid's own fixed spot rather than a constant.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(3, 'from-prev')` waited out through its real portal-fade timer,
+then 3600 simulated frames sampling every NPC's own position every 10th frame) swept a 0.5 m grid
+2.5-6 m out from the kid's own spot (-48, -36), excluding a band either side of the dart's own
+flight line, against all 334 of this town's physics boxes, its 69 `game.zones` rectangles and every
+one of those samples: (-45, -36) came back clearest in that close-in band — 6.96 m from the nearest
+box, 4 m clear of the nearest zone rectangle and 7.81 m from the nearest wandering soul over the
+whole run, due east of the kid and well inside the radius (88) where this town's own hand-built
+layout gives way to procedural fill.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 334 (no new collider, just the usual 0.5 m greet circle), and Victorian's own
+friend total went up by one (170 → 171 to meet, confirmed against the previous commit with
+`git stash`). No visual check was possible in this environment (no browser, no Playwright), so
+whether the two locals' stance actually reads as one scene together is unverified. Three worlds —
+Sunny Shore, Frosty Peak and Whisper Woods — still have a paper-plane kid waiting on a watcher.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

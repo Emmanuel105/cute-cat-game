@@ -14759,6 +14759,40 @@ function buildVictorian(game, entry) {
     game.npcs.push(new Unicyclist(game, rider, makeUnicycle(0x7a1f2b), { a: [12, 63], b: [16.2, 58.8], cryIcon: '🎪',
       cries: ['Tuppence in the hat if you fancy the show, puss or no.', "Mind your tail — one wheel leaves no room to swerve.", 'Thirty laps before supper. Thirty-one if the crowd\'s generous.'] })); }
 
+  // The Neighborhood, Candy Land and Robot City's own `PaperPlaneKid`s have all picked up a watcher by
+  // now (rounds 1172-1174); this town's own boy, folding and throwing paper planes over the open green
+  // out past the back lanes since round 1174, was still throwing to nobody. **A lamplighter now stands a
+  // few steps east of him on the same green, watching the dart glide instead of walking his round.**
+  // *"Same fold every throw — he'll have the knack of it before I've lit the second lamp."* *"Mind the
+  // nose crease, puss — that one took three tries to get right."* *"Clears the lamp post yet? Not
+  // today, but closer than yesterday."*
+  //
+  // No new class or mesh: the usual `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js), the
+  // same "stand and watch" behaviour every other watcher in this town already uses, with a short leash
+  // (0.5 m) and `angle` pointed at the kid's own fixed spot rather than a constant. `Wanderer`'s own
+  // constructor calls `greetable()` itself, so no extra wiring was needed.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(3, 'from-prev')` waited out through its real portal-fade timer,
+  // then 3600 simulated frames sampling every NPC's own position every 10th frame) swept a 0.5 m grid
+  // 2.5-6 m out from the kid's own spot (-48, -36), excluding a band either side of the dart's own
+  // flight line (x=-48, z -37..-32) so the watcher doesn't plant himself in its path, against all 334 of
+  // this town's physics boxes, its 69 `game.zones` rectangles and every one of those samples: (-45, -36)
+  // came back clearest in that close-in band — 6.96 m from the nearest box, 4 m clear of the nearest
+  // zone rectangle and 7.81 m from the nearest wandering soul over the whole run, due east of the kid
+  // and well short of the radius (88) where `victorianRegion()`'s own procedural fill takes over.
+  //
+  // Built dead last of everything this town adds, right after the unicyclist above and right before the
+  // squirrel below, for the usual reason: `makeHuman()` and `randomPerson()` both draw off this town's
+  // own shared `r()` sequence unconditionally, and anything built earlier would have had its own
+  // timing-sensitive pick shifted by it.
+  { const dartWvx = -45, dartWvz = -36, dartKidX = -48, dartKidZ = -36;
+    const dartKidWatcher2 = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(dartKidWatcher2.group);
+    game.npcs.push(new Wanderer(game, dartKidWatcher2, { x: dartWvx, z: dartWvz, angle: atan2(dartKidX - dartWvx, dartKidZ - dartWvz), speed: 0.1, leash: 0.5, idle: [3, 6],
+      cries: ["Same fold every throw — he'll have the knack of it before I've lit the second lamp.", 'Mind the nose crease, puss — that one took three tries to get right.', "Clears the lamp post yet? Not today, but closer than yesterday."] })); }
+
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
