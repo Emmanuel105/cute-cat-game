@@ -29457,6 +29457,43 @@ function buildSnowVillage(game, entry) {
     game.npcs.push(new Unicyclist(game, rider, makeUnicycle(0x1565c0), { a: [-19, 29], b: [-13, 29], cryIcon: '🎪',
       cries: ["Harder than it looks on packed snow — ask me how many times I've gone over.", "Mind yourself, puss — one wheel's got no room to swerve out here.", 'Lost count somewhere past thirty laps. Keeps the cold off, if nothing else.'] })); }
 
+  // Candy Land, Robot City, Victorian, Sunny Shore and Whisper Woods' own stone/pond skimmers have
+  // all picked up a watcher over the last few rounds; this mountain's own stone kid, flinging flat
+  // stones across the ice's south-west corner, was still throwing to nobody. **A local now stands a
+  // few steps east of him on the dry snow, watching the stone skid and spin across the ice.**
+  // *"Six skids, same as he keeps telling everyone."* *"Careful, puss — that ice won't crack under a
+  // stone, but it might under you."* *"Best skid all winter, and now at least somebody saw it."*
+  //
+  // No new mesh or controller: a plain adult `makeHuman()`/`randomPerson()` rig, and `Wanderer`
+  // (55-npcs.js) gives him the same "stand and watch" behaviour every other watcher in this game
+  // already uses, with a short leash (0.5 m) keeping him parked by the stone kid's own spot. `angle`
+  // points him at the kid's own fixed spot rather than a constant, so he reads as watching the throw
+  // and not just standing nearby.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(5, 'from-hub')` waited out for real against its own portal-fade
+  // timer, then 3600 simulated frames sampling every ground-level NPC's own position every 10th
+  // frame) swept a 0.25 m grid 1.8-3.5 m out from the stone kid's own spot (13.5, 3.5), excluding
+  // anything within about 70° of the stone's own throw line so the watcher doesn't plant himself in
+  // its path: (16, 2.5) came back clearest — 5.96 m from the nearest physics box and 2.29 m from the
+  // nearest other soul over the full 60 s run, on a gentle 0.6 m rise (under 1.5 cm of slope per half
+  // metre) well clear of both the ice pond (radius 5 around (18, 8)) and the bolder skater's own
+  // patrol line across the middle.
+  //
+  // Built dead last of everything this mountain adds, right after the unicyclist above, for the usual
+  // reason: `makeHuman()`/`randomPerson()` both draw off this mountain's own shared `r()` sequence
+  // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted
+  // by it. `StoneSkipper` now has a watcher in six of the seven worlds that use it; the Neighborhood
+  // is the only one still unaccompanied — it shares its own build-and-test window with its behaviour
+  // checks (see round 1162's note on the shared `rnd()` sequence), so whoever tackles it should expect
+  // to rerun the full suite after any wardrobe or timing pick, not just the usual clearance probe.
+  { const stoneWatcherWard = makeWardrobe(r, { shirts: [0x4a6a8a, 0x6a4a6a, 0x8a6a4a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const stoneWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: stoneWatcherWard }),
+      hat: 'beanie', hatColor: 0x3a6a8a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a });
+    W.add(stoneWatcher.group);
+    game.npcs.push(new Wanderer(game, stoneWatcher, { x: 16, z: 2.5, angle: atan2(13.5 - 16, 3.5 - 2.5), speed: 0.3, leash: 0.5, idle: [3, 6],
+      cries: ['Six skids, same as he keeps telling everyone.', "Careful, puss — that ice won't crack under a stone, but it might under you.", 'Best skid all winter, and now at least somebody saw it.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

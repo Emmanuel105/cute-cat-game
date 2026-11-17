@@ -33304,3 +33304,40 @@ still unaccompanied — the Neighborhood in particular shares its own build-and-
 behaviour checks (see round 1162's note on the shared `rnd()` sequence), so whoever tackles it should
 expect to rerun the full suite after any wardrobe or timing pick, not just the usual clearance probe.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1168 — Frosty Peak's stone skipper gets a watcher too
+
+Candy Land, Robot City, Victorian, Whisper Woods and Sunny Shore's own stone skimmers have all
+picked up a watcher over the last five rounds; Frosty Peak's own stone kid, flinging flat stones
+across the frozen pond's south-west corner since the round that finally gave the mountain its own
+`StoneSkipper`, was still throwing to nobody. **A local now stands a few steps east of him on the dry
+snow, watching the stone skid and spin across the ice.** *"Six skids, same as he keeps telling
+everyone."* *"Careful, puss — that ice won't crack under a stone, but it might under you."* *"Best
+skid all winter, and now at least somebody saw it."*
+
+No new mesh and no new controller: a plain adult `makeHuman()`/`randomPerson()` rig and `Wanderer`
+(55-npcs.js), the same "stand and watch" behaviour every other watcher in this game already uses,
+with a short leash (0.5 m) and `angle` pointed at the stone kid's own fixed spot rather than a
+constant.
+
+A headless probe (the stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+`game.travel(5, 'from-hub')` waited out for real against its own portal-fade timer, then 3600
+simulated frames sampling every ground-level NPC's own position every 10th frame) swept a 0.25 m
+grid 1.8-3.5 m out from the stone kid's own spot (13.5, 3.5), excluding anything within about 70° of
+the stone's own throw line so the watcher doesn't plant himself in its path: (16, 2.5) came back
+clearest — 5.96 m from the nearest physics box and 2.29 m from the nearest other soul over the full
+60 s run, on a gentle 0.6 m rise (under 1.5 cm of slope per half metre), well clear of both the ice
+pond (radius 5 around (18, 8)) and the bolder skater's own patrol line across the middle.
+
+Built dead last of everything this mountain adds, right after the unicyclist, for the usual reason:
+`makeHuman()`/`randomPerson()` both draw off this mountain's own shared `r()` sequence
+unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted by
+it. `node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box
+count unchanged at 334 (no new collider, just a greet circle), and Frosty Peak's own friend total
+went up by one (139 → 140 to meet). No visual check was possible in this environment (no browser, no
+Playwright), so whether the two locals' stance actually reads as one scene together is unverified.
+`StoneSkipper` now has a watcher in six of the seven worlds that use it; only the Neighborhood is
+still unaccompanied — it shares its own build-and-test window with its behaviour checks (see round
+1162's note on the shared `rnd()` sequence), so whoever tackles it should expect to rerun the full
+suite after any wardrobe or timing pick, not just the usual clearance probe. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
