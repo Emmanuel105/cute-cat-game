@@ -32936,3 +32936,36 @@ above and the probe, so whether the pedalling actually reads as circular, or whe
 wobble looks like balance rather than a glitch, is unverified. `Unicyclist` now has a rider in two of the
 seven worlds (Candy Land, Robot City); the Neighborhood, Victorian, Sunny Shore, Frosty Peak and Whisper
 Woods are still left. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1158 — Victorian gets its own unicyclist
+
+`Unicyclist` (55-npcs.js) picked up its second rider only last round, in Robot City; the Neighborhood,
+Victorian, Sunny Shore, Frosty Peak and Whisper Woods all still had both feet on the ground everywhere.
+**A street performer now does laps on a single wheel, burgundy-trimmed to match the Victorian town's own
+brickwork, on the open green north-east of the market square.** *"Tuppence in the hat if you fancy the
+show, puss or no."* *"Mind your tail — one wheel leaves no room to swerve."* *"Thirty laps before supper.
+Thirty-one if the crowd's generous."* Saying hello makes her the usual kind of friend.
+
+No new class or prop: `makeUnicycle()` (60-props.js) already takes a colour, so this one just asks for
+a Victorian burgundy (`0x7a1f2b`) instead of Candy Land's gold or Robot City's cyan. The rider is a plain
+`makeHuman()` + `randomPerson()` townsperson with a dark/burgundy wardrobe, same as the other two.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+`game.travel(3, 'from-prev')` waited out for real against its own portal-fade timer, then 300 simulated
+seconds so every urchin, stilt walker, yo-yo kid and pogo watcher had already settled) swept a 3 m grid
+from 20 to 75 m out — inside the hand-built town's own radius (88) but clear of the crowded centre —
+testing a 6 m line in four directions at every point against all 664 of the town's physics boxes, its
+245 `game.zones` rectangles and all 144 other NPCs already standing in it. The diagonal from (12, 63) to
+(16.2, 58.8) came back clearest: 12.9 m from the nearest box, 12.87 m clear of the nearest zone
+rectangle and 12.9 m from the nearest other soul the whole way, far from the yo-yo watcher (62, 54) and
+the pogo watcher (-14, -66) added in earlier rounds. Built dead last of everything this town adds, right
+after the pogo watcher and right before the squirrel, for the usual reason: `makeHuman()`/`randomPerson()`
+draw off this town's own shared `r()` sequence unconditionally.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, and box
+count unchanged at 664 (no new collider beyond the usual 0.35 m greet circle). No visual check was
+possible in this environment (no browser, no Playwright) — only the stub-three test suite above and the
+probe, so whether the pedalling actually reads as circular is unverified. `Unicyclist` now has a rider
+in three of the seven worlds (Candy Land, Robot City, Victorian); the Neighborhood, Sunny Shore, Frosty
+Peak and Whisper Woods are still left. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.

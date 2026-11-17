@@ -14426,6 +14426,42 @@ function buildVictorian(game, entry) {
     game.npcs.push(new Wanderer(game, pogoWatcher5, { x: wx5, z: wz5, angle: atan2(pogoX5 - wx5, pogoZ5 - wz5), leash: 0.5, speed: 0.4, idle: [3, 6], walk: [1, 1.6],
       cries: ["Tuppence says he clears a hundred — I'll hold the stake.", "Mind your tail, puss — that spring's got more kick than it looks.", 'Lost count twice already. He has too, by the sound of it.'] })); }
 
+  // `Unicyclist` (55-npcs.js) has had two riders so far — Candy Land's performer between the castle and
+  // the cane belt (round 1085) and Robot City's maintenance tech doing laps in the east yard (round
+  // 1157) — and this town, the shore, the peak and the woods still have both feet on the ground
+  // everywhere. **A street performer now does laps on a single wheel, burgundy-trimmed to match the
+  // town's own brickwork, on the open green north-east of the market square.** *"Tuppence in the hat if
+  // you fancy the show, puss or no."* *"Mind your tail — one wheel leaves no room to swerve."*
+  // *"Thirty laps before supper. Thirty-one if the crowd's generous."*
+  //
+  // No new class or mesh: `Unicyclist` and `makeUnicycle()` (60-props.js) already exist from round
+  // 1085; this one just asks `makeUnicycle()` for the town's own burgundy (`0x7a1f2b`) instead of
+  // Candy Land's gold or Robot City's cyan, and gives the rider a plain `makeHuman()` townsperson same
+  // as the other two.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // `game.travel(3, 'from-prev')` waited out for real against its own portal-fade timer, then 300
+  // simulated seconds so every urchin, stilt walker, yo-yo kid and pogo watcher had already settled)
+  // swept a 3 m grid from 20 to 75 m out against every one of this town's 664 physics boxes, its 245
+  // `game.zones` rectangles and all 144 other NPCs already standing in it, testing a 6 m line in four
+  // directions at every point: the diagonal from (12, 63) to (16.2, 58.8) came back clearest — 12.9 m
+  // from the nearest box, 12.87 m clear of the nearest zone rectangle and 12.9 m from the nearest other
+  // soul the whole way, at radius 61-64 from the origin, well short of the radius (88) where
+  // `victorianRegion()`'s own procedural fill takes over, and far from the yo-yo watcher (62, 54) and
+  // the pogo watcher (-14, -66) added in earlier rounds.
+  //
+  // Built dead last of everything this town adds, right after the pogo watcher above and right before
+  // the squirrel below, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this town's
+  // own shared `r()` sequence unconditionally, and anything built earlier would have had its own
+  // timing-sensitive pick shifted by it. `Unicyclist`'s own draws come off the shared global `rnd()`,
+  // not this town's `r()`, so it costs nothing later either way.
+  { const uniWard = makeWardrobe(r, { shirts: [0x7a1f2b, 0x2a2a30], pants: [0x1a1a1a] });
+    const rider = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: uniWard }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(rider.group);
+    game.npcs.push(new Unicyclist(game, rider, makeUnicycle(0x7a1f2b), { a: [12, 63], b: [16.2, 58.8], cryIcon: '🎪',
+      cries: ['Tuppence in the hat if you fancy the show, puss or no.', "Mind your tail — one wheel leaves no room to swerve.", 'Thirty laps before supper. Thirty-one if the crowd\'s generous.'] })); }
+
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
