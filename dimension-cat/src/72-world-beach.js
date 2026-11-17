@@ -2904,6 +2904,39 @@ function buildBeach(game, entry) {
     game.npcs.push(new Unicyclist(game, rider, makeUnicycle(0xff7043), { a: [-22, -17], b: [-17.8, -21.2], cryIcon: '🎪',
       cries: ["Soft sand's worse for balance than cobbles, believe me.", "Careful, puss — one wheel leaves no room to swerve, same as everywhere else.", 'Lost count of the laps somewhere past low tide.'] })); }
 
+  // Candy Land, Robot City, Victorian and Whisper Woods' own stone skimmers have all picked up a
+  // watcher by now (rounds 1163-1166) — this beach's own stone skipper, flinging a flat one out past
+  // the tideline since round ~1935, was still throwing to nobody. **A beachgoer now stands a few
+  // steps inland of him, watching the stone hop three times before it sinks.** *"Takes a flat one,
+  // same as he keeps telling everyone."* *"Careful, puss — you'll end up in the sea chasing that."*
+  // *"Best skip all week, and now at least somebody saw it."*
+  //
+  // No new mesh or controller: `beachPerson()` (this beach's own wardrobe helper) builds the usual
+  // human rig, and `Wanderer` (55-npcs.js) gives her the same "stand and watch" behaviour every other
+  // watcher in this game already uses, with a short leash (0.5 m) keeping her parked by the skipper's
+  // own spot. `angle` points her at the skipper's own fixed spot rather than a constant, so she reads
+  // as watching the throw and not just standing nearby.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(4, 'from-hub')` waited out for real against `game.worldIndex`
+  // and `game.transitioning`, then 3600 simulated frames sampling every ground-level NPC's own
+  // position every 10th frame) swept a 0.5 m grid 2.5-6 m out from the skipper's own spot (20.5, 29)
+  // against all 215 of this beach's own physics boxes (within knee-to-head height), its zone list —
+  // excluding the one giant span that only keeps the wet sand clear of plants, since the skipper
+  // himself already stands inside it — and those samples: (20, 32) came back clearest on dry sand
+  // (ground 0.238 m, under a centimetre of slope across the square) — 7.10 m from the nearest box and
+  // 3.06 m from the nearest other soul (a wide-ranging wanderer up near the lifeguard chair, at its
+  // closest pass of the whole 60 s run), at radius 37.7 from the origin, well short of the radius (58)
+  // where `beachRegion()`'s own procedural fill takes over.
+  //
+  // Built dead last of everything this beach adds, right after the unicyclist above, for the usual
+  // reason: `beachPerson()`/`randomPerson()` both draw off this beach's own shared `r()` sequence
+  // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted
+  // by it.
+  { const wx6 = 20, wz6 = 32, skX = 20.5, skZ = 29;
+    game.npcs.push(new Wanderer(game, beachPerson(r.chance(0.5), false), { x: wx6, z: wz6, angle: atan2(skX - wx6, skZ - wz6), speed: 0.3, leash: 0.5, idle: [3, 6],
+      cries: ["Takes a flat one, same as he keeps telling everyone.", "Careful, puss — you'll end up in the sea chasing that.", 'Best skip all week, and now at least somebody saw it.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

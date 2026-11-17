@@ -33265,3 +33265,42 @@ are still unaccompanied — the Neighborhood in particular shares its own build-
 behaviour checks (see round 1162's note on the shared `rnd()` sequence), so whoever tackles it should
 expect to rerun the full suite after any wardrobe or timing pick, not just the usual clearance probe.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1167 — Sunny Shore's stone skipper gets a watcher too
+
+Candy Land, Robot City, Victorian and Whisper Woods' own stone/pond skimmers have all picked up a
+watcher over the last four rounds; this beach's own skipper, flinging a flat stone out past the
+tideline since round ~1935, was still throwing to nobody. **A beachgoer now stands a few steps
+inland of him, watching the stone hop three times before it sinks.** *"Takes a flat one, same as he
+keeps telling everyone."* *"Careful, puss — you'll end up in the sea chasing that."* *"Best skip all
+week, and now at least somebody saw it."*
+
+No new mesh and no new controller: the usual `beachPerson()`/`randomPerson()` rig and `Wanderer`
+(55-npcs.js), the same "stand and watch" behaviour every other watcher in this game already uses,
+with a short leash (0.5 m) and `angle` pointed at the skipper's own fixed spot rather than a
+constant.
+
+A headless probe (the stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+`game.travel(4, 'from-hub')` waited out for real against `game.worldIndex` and `game.transitioning`,
+then 3600 simulated frames sampling every ground-level NPC's own position every 10th frame) swept a
+0.5 m grid 2.5-6 m out from the skipper's own spot (20.5, 29) against all of this beach's own physics
+boxes and its zone list — skipping the one giant span that only keeps the wet sand clear of plants,
+since the skipper himself already stands inside it, and respecting only the small hand-placed
+circles. (20, 32) came back clearest on dry sand (ground 0.238 m, under a centimetre of slope): 7.10
+m from the nearest box and 3.06 m from the nearest other soul (a wide-ranging local up near the
+lifeguard chair, at its closest pass over the whole 60 s run) — tighter than most of this game's other
+watchers, since that one wanderer's own leash occasionally swings it through this stretch of sand, but
+never close enough to collide.
+
+Built dead last of everything this beach adds, right after the unicyclist (round 1161ish), for the
+usual reason: `beachPerson()`/`randomPerson()` both draw off this beach's own shared `r()` sequence
+unconditionally. `node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console
+warnings, box count unchanged at 334, and Sunny Shore's own friend total went up by one (144 → 145 to
+meet), confirmed against the previous commit with `git stash`. No visual check was possible in this
+environment (no browser, no Playwright), so whether the two locals' stance actually reads as one scene
+together is unverified. `StoneSkipper` now has a watcher in five of the seven worlds that use it
+(Candy Land, Robot City, Victorian, Whisper Woods, Sunny Shore); Frosty Peak and the Neighborhood are
+still unaccompanied — the Neighborhood in particular shares its own build-and-test window with its
+behaviour checks (see round 1162's note on the shared `rnd()` sequence), so whoever tackles it should
+expect to rerun the full suite after any wardrobe or timing pick, not just the usual clearance probe.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
