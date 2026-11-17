@@ -33224,3 +33224,44 @@ now has a watcher in three of the seven worlds (Candy Land, Robot City, Victoria
 Frosty Peak, Whisper Woods and the Neighborhood are still unaccompanied, good candidates for whoever
 runs the next several rounds. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 1166 — Whisper Woods' pond skipper gets a watcher too
+
+Candy Land, Robot City and Victorian's own stone/washer-skimmers all picked up a watcher over the
+last three rounds; this wood's own pond skipper — a kid skipping a stone across the glowing pond's own
+water since well before the frogs got names — never had one either. **A second local now stands a
+few steps back on the pond's own dry south-west bank, watching the stone skip.** *"Three skips, same
+as every throw before it."* *"Careful, puss — the glow doesn't mean warm, same as she keeps telling
+everyone."* *"Best bank on the whole pond for it, this."*
+
+No new mesh and no new controller: the usual `makeHuman()`/`randomPerson()` rig and `Wanderer`
+(55-npcs.js), the same "stand and watch" behaviour every other watcher in this game already uses,
+with a short leash (0.5 m) so it barely drifts from its spot, and `angle` pointed at the skipper's own
+fixed spot rather than a constant, so it reads as watching the act and not just standing nearby.
+
+A headless probe (the stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+`game.travel(6, 'from-hub')` waited out for real against its own portal-fade timer, then 2600
+simulated frames sampling every NPC's own position every 5th frame — long enough for the frogs' own
+leashed wander to clear any one spot several times over) swept a grid of the pond's own dry south-
+west bank (outside the pond's own 4.8 m radius) against every one of this wood's physics boxes
+carrying a collider between knee and head height, every one of `game.zones`'s 69 rectangles and those
+samples: (-0.25, -11.75), 3.8 m south-west of the skipper's own spot — clear of both frog3 (2.4, -6)
+and frog4 (5.2, -10.85) rather than sharing either one's own patch — came back clearest: 7.45 m from
+the nearest box and 12.29 m from the nearest other soul.
+
+Built dead last of everything this wood adds, right after the unicyclist (round 1162), for the usual
+reason: `makeHuman()`/`randomPerson()` both draw off this wood's own shared `r()` sequence
+unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted by
+it.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 334 (no new collider, just a greet circle), and Whisper Woods' own friend total
+went up by one (167 → 168 to meet), confirmed against the previous commit with `git stash`. No visual
+check was possible in this environment (no browser, no Playwright), so whether the two locals' stance
+actually reads as one scene together, or whether her stance clearly reads as watching rather than just
+standing nearby, is unverified. `StoneSkipper` now has a watcher in four of the seven worlds that use
+it (Candy Land, Robot City, Victorian, Whisper Woods); Sunny Shore, Frosty Peak and the Neighborhood
+are still unaccompanied — the Neighborhood in particular shares its own build-and-test window with its
+behaviour checks (see round 1162's note on the shared `rnd()` sequence), so whoever tackles it should
+expect to rerun the full suite after any wardrobe or timing pick, not just the usual clearance probe.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

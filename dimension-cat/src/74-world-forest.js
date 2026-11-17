@@ -3487,6 +3487,39 @@ function buildForest(game, entry) {
     game.npcs.push(new Unicyclist(game, rider, makeUnicycle(0x3a7d3c), { a: [14, -51], b: [14, -45], cryIcon: '🎪',
       cries: ["Roots everywhere out here — you'd think I'd have learned by now.", "Mind the puss, one wheel's no good for dodging.", "Lost count somewhere past when the fireflies came out, and they're not out yet."] })); }
 
+  // Candy Land, Robot City and Victorian's own stone/washer-skimmers have all had somebody watching
+  // the throw for a few rounds now; this wood's own pond skipper, the kid skipping a stone across the
+  // glow, never did. **A second local now stands a few steps back on the dry south-west bank,
+  // watching the stone skip.** *"Three skips, same as every throw before it."* *"Careful, puss — the
+  // glow doesn't mean warm, same as she keeps telling everyone."* *"Best bank on the whole pond for
+  // it, this."*
+  //
+  // No new mesh and no new controller: the usual `makeHuman()`/`randomPerson()` rig and `Wanderer`
+  // (55-npcs.js), the same "stand and watch" behaviour every other watcher in this game already uses,
+  // with a short leash (0.5 m) and `angle` pointed at the skipper's own fixed spot rather than a
+  // constant, so it reads as watching the act and not just standing nearby.
+  //
+  // A headless probe (the stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // `game.travel(6, 'from-hub')` waited out for real against its own portal-fade timer, then 2600
+  // simulated frames sampling every NPC's own position every 5th frame — long enough for the frogs'
+  // own leashed wander to clear any one spot several times over) swept a grid of the pond's own dry
+  // south-west bank (outside the pond's own 4.8 m radius) against every one of this wood's physics
+  // boxes carrying a collider between knee and head height, every one of `game.zones`'s 69 rectangles
+  // and those samples: (-0.25, -11.75), 3.8 m south-west of the skipper's own spot — away from both
+  // frog3 (2.4, -6) and frog4 (5.2, -10.85) rather than sharing either one's own patch — came back
+  // clearest: 7.45 m from the nearest box and 12.29 m from the nearest other soul.
+  //
+  // Built dead last of everything this wood adds, right after the unicyclist above, same reason as
+  // always: `makeHuman()`/`randomPerson()` draw off this wood's own shared `r()` sequence
+  // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted.
+  { const wx = -0.25, wz = -11.75, wry = atan2(2.54 - wx, -9.15 - wz);
+    const watchWard = makeWardrobe(r, { shirts: [0x8a6a4a, 0x4a6a8a], pants: [0x2e3a2e, 0x3a2a3a] });
+    const watcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: watchWard }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: r.chance(0.2) });
+    W.add(watcher.group);
+    game.npcs.push(new Wanderer(game, watcher, { x: wx, z: wz, angle: wry, leash: 0.5, speed: 0.5, idle: [3, 6], walk: [1, 1.6],
+      cries: ['Three skips, same as every throw before it.', 'Careful, puss — the glow doesn\'t mean warm, same as she keeps telling everyone.', 'Best bank on the whole pond for it, this.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
