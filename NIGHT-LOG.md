@@ -32858,3 +32858,44 @@ above and the probe. `FrisbeePlayer` now has a watcher in three of the seven wor
 Candy Land, Robot City); the Neighborhood, Victorian, Sunny Shore and Frosty Peak are still left.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1156 — the Neighborhood's frisbee thrower gets a watcher too
+
+Continuing the chain: Whisper Woods (1153), Candy Land (1154) and Robot City (1155) already got
+theirs, so the Neighborhood's own frisbee thrower — tossing his disc straight up off the back field
+since round 411 — is next. **A neighbour now stands a few steps south-west of him, watching the disc
+rise and fall.** Highest one yet, same as always, and one of these days that roof really will stop
+him.
+
+Same pattern as the other three: no new class or mesh, just `makeHuman()` + `randomPerson()` for the
+rig and `Wanderer` (55-npcs.js) for the "stand and watch" behaviour. This one came with a wrinkle the
+other three didn't hit: the Neighborhood is the *first* world the test suite builds, and a much later
+check in that same test — the westbound cyclist's exact pedal-hip swing after a fixed 2-second window
+— turned out to be sensitive to `Wanderer`'s habit of drawing from the shared *global* `rnd()`
+sequence every time it switches between idling and walking, for as long as the world keeps running. A
+first attempt (a `cries` line plus a shorter custom `walk` range, both used by this week's other three
+frisbee watchers) drew more often than the Neighborhood's own five existing watchers do and passed
+every check except that one — the cyclist's hip swing dropped from a healthy 0.28 rad to 0.007 rad,
+just under the test's own 0.05 rad floor. Matching the exact options shape the Neighborhood's five
+existing watchers (the grinder listener, the fiddle listener, the ball watcher, the stilt watcher, the
+hula-hoop watcher) already use — `speed: 0.3, leash: 0.5, idle: [3, 6]`, no `cries`, no custom
+`walk` — was enough to bring it back over threshold, so this watcher stays silent, same as its five
+neighbours.
+
+Placed via a headless probe on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`
+then 300 simulated seconds so every wanderer, the postie, the cyclist and the dog walker had already
+settled, then a 0.25 m grid swept 2.5-9 m out from the thrower's own spot (39, 53) against all 334 of
+this street's physics boxes, its 69 `game.zones` rectangles and all 97 other NPCs already standing in
+it: (35.25, 48) came back clearest — 6.0 m from the nearest box, 6.0 m clear of the nearest zone
+rectangle's own edge and 6.2 m from the nearest other soul. Built dead last of everything this street
+adds, right after the hula-hoop watcher and right before `makeDayNight`, for the usual reason:
+`makeHuman()`/`randomPerson()` draw off this street's own shared `r()` sequence unconditionally.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, and the
+Neighborhood's own friend total went up by one (114 → 115, confirmed by the HUD check in the same
+run). No visual check was possible in this environment (no browser, no Playwright) — only the
+stub-three test suite above and the probe. `FrisbeePlayer` now has a watcher in four of the seven
+worlds (Whisper Woods, Candy Land, Robot City, the Neighborhood); Victorian, Sunny Shore and Frosty
+Peak are still left.
+
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
