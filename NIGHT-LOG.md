@@ -33596,3 +33596,36 @@ No visual check was possible in this environment (no browser, no Playwright), so
 locals' stance actually reads as one scene together is unverified. Two worlds — Frosty Peak and
 Whisper Woods — still have a paper-plane kid waiting on a watcher. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1177 — Frosty Peak's paper-plane kid gets a watcher too
+
+The Neighborhood, Candy Land, Robot City, Victorian and Sunny Shore's own paper-plane kids have all
+picked up a watcher the last five rounds; this mountain's own kid, folding and sailing darts out
+over the open snowfield east of the village, was still throwing to nobody. **A bundled-up local now
+stands a few steps west of him on the dry snow, watching the dart glide instead of walking on.**
+*"Same fold every throw — must be the cold, the paper won't hold a crease any other way."*
+*"Careful, puss — swat that one and he just folds another."* *"Furthest glide yet, or so he says
+after every single one."* Saying hello makes him the usual kind of friend.
+
+No new class or mesh: the usual `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js), the
+same "stand and watch" behaviour every other watcher on this mountain already uses, with a short
+leash (0.5 m) and `angle` pointed at the kid's own fixed spot rather than a constant.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(5, 'from-hub')` waited out for real against its own portal-fade
+timer, then 3600 simulated frames sampling every NPC's own position every 10th frame) swept a 0.25 m
+grid 2.5-6 m out from the kid's own spot (37, -6), excluding a 1 m band either side of the dart's own
+flight line, against all 780 of this mountain's own physics boxes and its 156 `game.zones`
+rectangles: (34.5, -6) came back clearest at the close end of that band — 5.7 m from the nearest box,
+8.5 m clear of the nearest zone rectangle and exactly the 2.5 m leash distance from the kid himself
+(the nearest other soul over the whole run), due west of him on a gentle slope (ground height varying
+about 0.1 m across his own footprint) and well short of the radius (58) where `snowRegion()`'s own
+procedural fill takes over.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 334 (no new collider, just the usual 0.5 m greet circle), and Frosty Peak's own
+friend total went up by one (140 → 141 to meet, confirmed against the previous commit with
+`git stash`). No visual check was possible in this environment (no browser, no Playwright), so
+whether the two locals' stance actually reads as one scene together is unverified. Whisper Woods is
+the last of the seven worlds whose own paper-plane kid is still waiting on a watcher. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
