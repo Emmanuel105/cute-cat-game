@@ -33192,3 +33192,35 @@ build-and-test window with its behaviour checks (see round 1162's note on the sh
 sequence), so whoever tackles it should expect to rerun the full suite after any wardrobe or timing
 pick, not just the usual clearance probe. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 1165 — Victorian's canal skipper gets a watcher too
+
+`StoneSkipper` got its first two watchers in Candy Land and Robot City over the last two rounds;
+Victorian's own canal boy, skipping flat stones into the water at (85, 24.4) since round 882, never
+had one either. **A passer-by now stands six metres back on the dry side of the towpath, facing
+south toward the canal, watching the stones skip.** *"Three skips, same as every throw before it."*
+*"Careful, puss — mind the edge, that towpath drops off sharp."* *"Best stretch of canal for it,
+this."*
+
+No new class or mesh: the usual `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js), the
+same "stand and watch" behaviour every other watcher in this game uses, with a short leash (0.5 m)
+and `angle` pointed at the skipper's own fixed spot.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(3, 'from-prev')` waited out through its real portal-fade timer,
+then 3000 simulated frames sampling every NPC's own position every tenth frame) swept a grid 2.5-6 m
+out from the skipper's own spot against every one of the town's physics boxes and all those samples.
+(85, 18.4), six metres due north — away from the canal itself, which runs south of z=26 — came back
+clearest: 7.0 m from the nearest box and 6.0 m from the nearest wandering soul.
+
+Built right after the skipper itself, for the usual reason: `makeHuman()`/`randomPerson()` both draw
+off this town's own shared `r()` sequence unconditionally, and anything built earlier would have had
+its own timing-sensitive pick shifted by it.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings. No
+visual check was possible in this environment (no browser, no Playwright), so whether the watcher's
+stance and the skipper's own throw actually read as one scene together is unverified. `StoneSkipper`
+now has a watcher in three of the seven worlds (Candy Land, Robot City, Victorian); Sunny Shore,
+Frosty Peak, Whisper Woods and the Neighborhood are still unaccompanied, good candidates for whoever
+runs the next several rounds. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.
