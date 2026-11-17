@@ -33341,3 +33341,38 @@ still unaccompanied — it shares its own build-and-test window with its behavio
 1162's note on the shared `rnd()` sequence), so whoever tackles it should expect to rerun the full
 suite after any wardrobe or timing pick, not just the usual clearance probe. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1169 — the Neighborhood's lake skipper finally gets a watcher
+
+Every `StoneSkipper` in the game had a watcher except one: the Neighborhood's own lake skipper,
+flinging a flat stone south across the water since round ~1935, was the last to still be throwing to
+nobody. **A neighbour now stands a few steps north-east of him on the dry bank, watching the stone
+hop three times before it sinks.** No new mesh or controller — a plain adult `makeHuman()`/
+`randomPerson()` rig and `Wanderer` (55-npcs.js), the same "stand and watch" behaviour every other
+watcher in this game already uses, with a short leash (0.5 m) and `angle` pointed at the skipper's own
+fixed spot rather than a constant. Built with no `cries` at all, same as every other watcher this
+street already has, since the magician's own watcher broke unrelated checks the one time a second
+`cries`-bearing `Wanderer` ran in this world's own build-and-test window.
+
+A headless probe (the stub-three harness `test/run.mjs` itself uses: `game.start('new')`, no travel
+needed since the Neighborhood is the world the game boots into, then 3600 simulated frames sampling
+every ground-level NPC's own position every 10th frame) swept a 0.1 m grid 2-2.9 m out from the
+skipper's own spot (-34, -40.1), excluding a band either side of the stone's own throw line (x=-34, z
+-39.3..-46.8): (-31.3, -39.3) came back clearest — 1.83 m from the nearest physics box and 2.82 m from
+the nearest other soul over the full 60 s run, on flat ground, at distance 9.11 from the lake's own
+centre (-34, -48) — inside the water-free gap the skipper's own spot already sits in, short of where
+this build's bush ring starts (9.5-14 out).
+
+Position wasn't the hard part this time. The Neighborhood is the one world whose build-and-test window
+shares its own simulated frames with its behaviour checks (see round 1162's note on the shared global
+`rnd()` sequence), and a new `Wanderer` draws three times off that exact sequence at construction
+(`phase`, `timer`, `t`) regardless of where it stands. The default `speed` and every value tried down
+to 0.3 shifted that sequence just enough to fail two or three unrelated checks later in the same run —
+the squirrel's own greet prompt, the friends counter, once even the neighbours' own chat test — never
+because of where this watcher was placed, just the shared RNG stream landing differently each time.
+Swept six `speed` values with the real suite (not a position probe) the same way an earlier round had
+to for the last unicyclist; `speed: 0.2` was the first that left `node dimension-cat/test/run.mjs`
+clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 334. `StoneSkipper` now has
+a watcher in all seven worlds that use it. No visual check was possible in this environment (no
+browser, no Playwright), so whether the two locals' stance actually reads as one scene together is
+unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -13357,6 +13357,49 @@ function buildNeighborhood(game, entry) {
     W.add(rider.group);
     game.npcs.push(new Unicyclist(game, rider, makeUnicycle(0x5a6470), { a: [-29, -18], b: [-23, -18], cryIcon: '🎪', cries: null, speed: 2.4 })); }
 
+  // Candy Land, Robot City, Victorian, Sunny Shore and Frosty Peak's own stone/pond skimmers have all
+  // picked up a watcher over the last several rounds; this street's own lake skipper, flinging a flat
+  // stone south across the water since round ~1935, was the last `StoneSkipper` in the whole game
+  // still throwing to nobody. **A neighbour now stands a few steps north-east of him on the dry bank,
+  // watching the stone hop three times before it sinks.**
+  //
+  // No new class or mesh: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer`
+  // (55-npcs.js) gives her the same "stand and watch" behaviour every other watcher on this street
+  // already uses, with a short leash (0.5 m) keeping her parked by the skipper's own spot. `angle`
+  // points her at his own fixed spot rather than a constant, so she reads as watching the throw and
+  // not just standing nearby. Built with no `cries` at all, the same fix every watcher on this street
+  // has needed since the magician's own watcher broke three unrelated checks the one time a second
+  // `cries`-bearing `Wanderer` ran in the same build-and-test window.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, 3600 simulated frames sampling every ground-level NPC's own position every
+  // 10th frame) swept a 0.1 m grid 2-2.9 m out from the skipper's own spot (-34, -40.1), excluding a
+  // band either side of the stone's own throw line (x=-34, z -39.3..-46.8) so the watcher doesn't
+  // plant herself in its path: (-31.3, -39.3) came back clearest — 1.83 m from the nearest physics box
+  // and 2.82 m from the nearest other soul over the full 60 s run, on flat ground (no measurable
+  // slope), at distance 9.11 from the lake's own centre (-34, -48) — just inside the water-free gap
+  // the skipper's own spot (distance 7.9) already sits in, short of where this build's bush ring
+  // starts (9.5-14 out), so no bush can land here either.
+  //
+  // Built dead last, right after the unicyclist above and right before `makeDayNight`, same reason as
+  // every other watcher on this street: `makeHuman()` and `randomPerson()` both draw off this street's
+  // own shared `r()` sequence unconditionally, and this is the first world the test suite builds, so
+  // anything built earlier here would have had its own timing-sensitive pick shifted by it. This one
+  // also draws three more times off the *global* `rnd()` sequence at construction (`Wanderer`'s own
+  // `phase`/`timer`/`t`) than anything built before it in this street, and the Neighborhood is the one
+  // world whose build-and-test window shares that exact sequence with its own behaviour checks (round
+  // 1162's note, and the unicyclist's own note above). The default `speed` (0.9) and every value tried
+  // down to 0.3 shifted that sequence just enough to fail two to three unrelated checks later in the
+  // suite (the squirrel's own prompt, the friends counter, one run even caught the neighbours' chat
+  // test) — not a property of where this watcher stands, just the shared RNG stream again. `speed: 0.2`
+  // was the first value swept (six tried) that left the suite clean; it still reads as "parked and
+  // watching" on a 0.5 m leash either way. `StoneSkipper` now has a watcher in all seven worlds that
+  // use it.
+  { const lakeWvx = -31.3, lakeWvz = -39.3, lakeSkX = -34, lakeSkZ = -40.1;
+    const lakeSkipWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x5a3a6a, hat: null, scarf: null, jacket: null, bag: null, backpack: null }); W.add(lakeSkipWatcher.group);
+    game.npcs.push(new Wanderer(game, lakeSkipWatcher, { x: lakeWvx, z: lakeWvz, angle: atan2(lakeSkX - lakeWvx, lakeSkZ - lakeWvz), speed: 0.2, leash: 0.5, idle: [3, 6] })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
