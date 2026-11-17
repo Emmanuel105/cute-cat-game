@@ -32758,6 +32758,43 @@ function buildForest(game, entry) {
     game.npcs.push(new Wanderer(game, frisbeeWatcher, { x: fwx, z: fwz, angle: atan2(frisbeeX - fwx, frisbeeZ - fwz), leash: 0.5, speed: 0.3, idle: [3, 6],
       cries: ["Keeps catching it clean — one of these days he won't.", 'Careful, puss — mind your tail, that one is coming down fast.', "The owls don't seem to mind it either."] })); }
 
+  // `Unicyclist` (55-npcs.js) has had five riders so far — Candy Land's performer (round 1085),
+  // Robot City's maintenance tech, Victorian's street performer, Sunny Shore's beachgoer and Frosty
+  // Peak's hiker — and this wood, along with the Neighborhood, still has both feet on the ground
+  // everywhere. **A woodland local now does laps on a single wheel, moss-green to match nobody else's
+  // wardrobe, on a quiet stretch of forest floor south of the fairy ring and the ukulele player, well
+  // clear of everything else this wood has built.** *"Roots everywhere out here — you'd think I'd have
+  // learned by now."* *"Mind the puss, one wheel's no good for dodging."* *"Lost count somewhere past
+  // the fireflies came out, and they're not out yet."*
+  //
+  // No new class or mesh: `Unicyclist` and `makeUnicycle()` (60-props.js) already exist from round
+  // 1085; this one just asks `makeUnicycle()` for a moss green (`0x3a7d3c`) instead of Candy Land's
+  // gold, Robot City's cyan, Victorian's burgundy, Sunny Shore's coral or Frosty Peak's ice blue, and
+  // gives the rider a plain `makeHuman()` local — no coat, bag or hat, same bare rig every other
+  // world's rider uses so nothing clips through the pedalling legs.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(6, 'from-hub')`, 60 simulated frames so the build settles, then a
+  // position sample from every NPC every half second over 90 simulated seconds — long enough for every
+  // deer, fox, frog and fairy to clear any one spot several times over) swept a 2 m grid across the
+  // whole glade (radius 10-52, short of the radius (58) where `forestRegion()`'s own fill takes over),
+  // testing a 6 m line in both the +x and +z directions at every point against all 670 of this wood's
+  // own physics boxes, its 229 `game.zones` rectangles and every one of those samples. The line from
+  // (14, -51) to (14, -45) came back clearest: 5.56 m from the nearest box, 5.33 m clear of the nearest
+  // zone rectangle and a full 6 m from the nearest other soul the whole way, at radius 50 from the
+  // origin. Ground height only moves 0.86-0.92 m across the whole line, flat enough for a wheel.
+  //
+  // Built dead last of everything this wood adds, right after the frisbee watcher above, same reason
+  // as always: `makeHuman()`/`randomPerson()` draw off this wood's own shared `r()` sequence
+  // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted
+  // by it. `Unicyclist`'s own draws come off the shared global `rnd()`, not this wood's `r()`, so it
+  // costs nothing later either way.
+  { const rider = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
+      shirt: 0x6a7a4a, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(rider.group);
+    game.npcs.push(new Unicyclist(game, rider, makeUnicycle(0x3a7d3c), { a: [14, -51], b: [14, -45], cryIcon: '🎪',
+      cries: ["Roots everywhere out here — you'd think I'd have learned by now.", "Mind the puss, one wheel's no good for dodging.", "Lost count somewhere past when the fireflies came out, and they're not out yet."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

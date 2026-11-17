@@ -33054,3 +33054,38 @@ the Neighborhood and Whisper Woods are still left — the Neighborhood in partic
 colour explicitly outside `SHIRT_COLORS` *and* a build position chosen with its chat test's timing in
 mind, not just the usual zone/box/NPC clearance check. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1161 — Whisper Woods gets its own unicyclist
+
+`Unicyclist` (round 1085) now has a sixth rider. **A woodland local does laps on a single wheel,
+moss green, on a quiet stretch of forest floor well south of the fairy ring and the ukulele player.**
+*"Roots everywhere out here — you'd think I'd have learned by now."* *"Mind the puss, one wheel's no
+good for dodging."* *"Lost count somewhere past when the fireflies came out, and they're not out
+yet."*
+
+No new class or mesh: reused `makeUnicycle()` (60-props.js) with a moss green (`0x3a7d3c`) instead of
+Candy Land's gold, Robot City's cyan, Victorian's burgundy, Sunny Shore's coral or Frosty Peak's ice
+blue, and a plain `makeHuman()` rider — same bare rig every other world's rider uses.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+`game.load(6, 'from-hub')`, 60 simulated frames to settle the build, then a position sample from every
+NPC every half second over 90 simulated seconds) swept a 2 m grid across the glade (radius 10-52, short
+of the radius (58) where `forestRegion()`'s own fill takes over), testing a 6 m line in both the +x and
++z directions at every point against all 670 of this wood's physics boxes, its 229 `game.zones`
+rectangles and every sampled NPC position. The line from (14, -51) to (14, -45) came back clearest:
+5.56 m from the nearest box, 5.33 m clear of the nearest zone rectangle, and a full 6 m from the nearest
+other soul the whole way, at radius 50 from the origin — comfortably clear of the ukulele player, the
+fiddler and everything else this wood has built. Ground height moves only 0.86-0.92 m across the line,
+flat enough for a wheel.
+
+Built dead last of everything this wood adds, right after the frisbee watcher, for the usual reason:
+`makeHuman()`/`randomPerson()` draw off this wood's own shared `r()` sequence unconditionally.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings. No visual
+check was possible in this environment (no browser, no Playwright) — only the stub-three test suite
+above and the probe, so whether the pedalling actually reads as circular on uneven forest floor is
+unverified. `Unicyclist` now has a rider in six of the seven worlds (Candy Land, Robot City, Victorian,
+Sunny Shore, Frosty Peak, Whisper Woods); only the Neighborhood is left, and it needs either a colour
+explicitly outside `SHIRT_COLORS` *and* a build position chosen with its chat test's timing in mind, not
+just the usual zone/box/NPC clearance check. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.
