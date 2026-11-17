@@ -32899,3 +32899,40 @@ worlds (Whisper Woods, Candy Land, Robot City, the Neighborhood); Victorian, Sun
 Peak are still left.
 
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1157 — Robot City gets its own unicyclist
+
+`Unicyclist` (55-npcs.js) has had exactly one rider since round 1085 — Candy Land's own performer
+pedalling between the castle and the cane belt — and every other city, town and shore in the game
+still had both feet on the ground. **An off-duty maintenance tech now does laps on a cyan-trimmed
+unicycle on the open floor between Robot City's east-yard towers, pedalling the whole way with both
+arms out for balance, same as the first rider.** *"Gyroscope's holding — don't tell the supervisor."*
+*"One wheel, zero complaints filed. Yet."* *"Break's over in five. Four more laps."* Saying hello makes
+her the usual kind of friend.
+
+No new class or prop: `makeUnicycle()` (60-props.js) already takes a colour, so this one just asks for
+the city's own signature cyan (`0x00e5ff`) instead of Candy Land's gold. The rider is a plain
+`makeHuman()` + `randomPerson()` townsperson with a dark/teal wardrobe, same as every other human
+working this city's floor.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+`game.travel(2, 'from-prev')` waited out for real against its own portal-fade timer, then 300
+simulated seconds so every wanderer, patroller and ball-tossing robot pack had already settled) swept a
+4 m grid from 20 to 90 m out — inside the hand-built city's own radius (98) but clear of the crowded
+centre — testing a 6 m line both ways at every point against all 1206 of the city's physics boxes, its
+296 `game.zones` rectangles and all 121 other NPCs already standing in it (eleven more watchers have
+moved into this city since the carousel round). The line from (28, -47) to (28, -41) came back
+clearest: 9.0 m from the nearest box, 8.79 m from the nearest other soul and 26.8 m from the nearest
+zone rectangle the whole way — 52 m out from the plaza, comfortably short of where `robotRegion()`'s
+own procedural fill takes over. Built dead last of everything this city adds, right after the pogo
+watcher above, for the usual reason: `makeHuman()`/`randomPerson()` draw off this city's own shared
+`r()` sequence unconditionally.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box count
+unchanged at 334 (no new collider beyond the usual 0.35 m greet circle), and Robot City's own friend
+total went up by one (134 → 135, confirmed against the previous commit with `git stash`). No visual
+check was possible in this environment (no browser, no Playwright) — only the stub-three test suite
+above and the probe, so whether the pedalling actually reads as circular, or whether the second rider's
+wobble looks like balance rather than a glitch, is unverified. `Unicyclist` now has a rider in two of the
+seven worlds (Candy Land, Robot City); the Neighborhood, Victorian, Sunny Shore, Frosty Peak and Whisper
+Woods are still left. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

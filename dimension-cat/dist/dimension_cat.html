@@ -19781,6 +19781,28 @@ function buildRobotCity(game, entry) {
     game.npcs.push(new Wanderer(game, pogoWatcher4, { x: wx4, z: wz4, angle: atan2(pogoX4 - wx4, pogoZ4 - wz4), leash: 0.5, speed: 0.4, idle: [3, 6], walk: [1, 1.6],
       cries: ['Boss docks you a credit if you land in one of those, you know.', 'Careful, puss — give him room to land.', "Ninety-six and still counting. Kid's got more patience than the whole night shift."] })); }
 
+  // `Unicyclist` (55-npcs.js) has had exactly one rider since round 1085 — Candy Land's own performer
+  // pedalling between the castle and the cane belt — and every other city, town and shore in the game
+  // still has both feet on the ground. Robot City gets the second: an off-duty maintenance tech, cyan
+  // trim on her unicycle to match the rest of the city's own glow, doing laps on the open floor between
+  // the east-yard towers while her shift timer runs down.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // `game.travel(2, 'from-prev')` waited out for real against its own portal-fade timer, then 300
+  // simulated seconds so every wanderer, patroller and ball-tossing robot pack had already settled) swept
+  // a 4 m grid from 20 to 90 m out — inside the hand-built city's own radius (98) but clear of the
+  // crowded centre — testing a 6 m line both ways at every point against all 1206 of the city's physics
+  // boxes, its 296 `game.zones` rectangles and all 121 other NPCs already standing in it. The line from
+  // (28, -47) to (28, -41) came back clearest: 9.0 m from the nearest box, 8.79 m from the nearest other
+  // soul and 26.8 m from the nearest zone rectangle the whole way — 52 m out from the plaza, comfortably
+  // short of where `robotRegion()`'s own procedural fill takes over.
+  { const uniWard = makeWardrobe(r, { shirts: [0x3a4a5a, 0x00838f], pants: [0x232c34, 0x2a2a30] });
+    const rider = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: uniWard }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(rider.group);
+    game.npcs.push(new Unicyclist(game, rider, makeUnicycle(0x00e5ff), { a: [28, -47], b: [28, -41], cryIcon: '🎪',
+      cries: ["Gyroscope's holding — don't tell the supervisor.", 'One wheel, zero complaints filed. Yet.', "Break's over in five. Four more laps."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
