@@ -18706,6 +18706,44 @@ function buildRobotCity(game, entry) {
     game.npcs.push(new Wanderer(game, trainee, { x: tx, z: tz, angle: try_, leash: 0.5, speed: 0.5, r: 0.22, height: 1.1, idle: [3, 6], walk: [1, 1.6],
       cries: ['Logging every strike. For science.', "Beep... one day it'll be my turn with the wrench.", 'Supervisor says watch first, touch nothing. Mostly the second part.'] })); }
 
+  // Candy Land has had its own unicyclist since round 1085; every other world, this city included, has
+  // kept both feet (or treads) on the ground since. A maintenance tech now rides a cyan-trimmed
+  // unicycle back and forth across a stretch of open concrete in the quiet west yard, pedalling the
+  // whole way, both arms out for balance.
+  // *"Gyroscope's holding. Don't ask what happens if it isn't."* *"One wheel, zero complaints filed.
+  // Yet."* *"Supervisor wants this logged as 'core maintenance exercise.' It's a unicycle."* Saying
+  // hello makes her the usual kind of friend.
+  //
+  // No new class or prop: `Unicyclist` (55-npcs.js) and `makeUnicycle()` (60-props.js) are reused
+  // verbatim a second time, just asking for this city's own signature cyan (`0x00e5ff`, the same glow
+  // the floor, the camera LED and the neon signs already use) instead of Candy Land's gold. The rider
+  // is a plain `makeHuman()` + `randomPerson()` townsperson in a dark/teal wardrobe, same as every
+  // other human working this city's floor, with every accessory switched off so nothing flaps while
+  // she pedals.
+  //
+  // A headless probe (the stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // `game.travel(2, 'from-prev')` waited out for real against its own portal-fade timer, then 300
+  // simulated seconds with every NPC's own position swept into a point cloud every third frame, so
+  // the sentry's and RoboDog's full rectangular patrols count as occupied ground, not just wherever
+  // they happened to be standing) tested a 6 m line out in the quiet west yard against all 1203 of the
+  // city's physics boxes, its 296 `game.zones` rectangles and that whole swept-NPC point cloud: (-70,
+  // -7) to (-64, -7) came back clear the whole way — at least 7.99 m from the nearest box (the west
+  // skyline tower at x -82.6 to -68.5) and 9.9 m from the nearest point any NPC's own patrol or wander
+  // ever reached, 30+ m from the nearest zone rectangle — on this city's flat floor (ground0 = 0) at
+  // radius 64-70 from the origin, comfortably inside where `robotRegion()`'s own procedural fill takes
+  // over (radius 98).
+  //
+  // Built dead last of everything this city adds, right after the mechanic's trainee above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` draw off this city's own shared `r()` sequence
+  // unconditionally, and `Unicyclist`'s own draws (`this.t`, `this.wait`, `this.cryT`) come off the
+  // shared global `rnd()` instead, so nothing built earlier or later here is shifted by it either way.
+  { const uniWard = makeWardrobe(r, { shirts: [0x2a3a44, 0x3a4a54], pants: [0x1a1a1a] });
+    const rider = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: uniWard }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(rider.group);
+    game.npcs.push(new Unicyclist(game, rider, makeUnicycle(0x00e5ff), { a: [-70, -7], b: [-64, -7], cryIcon: '🔧',
+      cries: ["Gyroscope's holding. Don't ask what happens if it isn't.", 'One wheel, zero complaints filed. Yet.', "Supervisor wants this logged as 'core maintenance exercise.' It's a unicycle."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

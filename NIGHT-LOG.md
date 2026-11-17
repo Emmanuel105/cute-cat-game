@@ -30320,3 +30320,41 @@ was possible in this environment (no browser, no Playwright) — only the stub-t
 so whether the second rider's pose actually reads as sitting rather than floating, or whether two
 riders on opposite seats look balanced rather than lopsided, is unverified. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1087 — Robot City gets its own unicyclist
+
+Candy Land's performer has had the city's only unicycle since round 1085; every other world,
+including this one, has kept both feet (or treads) on the ground since. **A maintenance tech now
+rides a cyan-trimmed unicycle back and forth across a stretch of open concrete in the quiet west
+yard, pedalling the whole way, both arms out for balance.** *"Gyroscope's holding. Don't ask what
+happens if it isn't."* *"One wheel, zero complaints filed. Yet."* *"Supervisor wants this logged as
+'core maintenance exercise.' It's a unicycle."* Saying hello makes her the usual kind of friend.
+
+No new class or prop: `Unicyclist` (55-npcs.js) and `makeUnicycle()` (60-props.js) are reused
+verbatim a second time, just asking for this city's own signature cyan (`0x00e5ff`, the same glow
+the floor, the camera LED and the neon signs already use) instead of Candy Land's gold. The rider is
+a plain `makeHuman()` + `randomPerson()` townsperson in a dark/teal wardrobe, same as every other
+human working this city's floor, every accessory switched off so nothing flaps while she pedals.
+
+Found with a headless probe (the stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+`game.travel(2, 'from-prev')` waited out for real against its own portal-fade timer, then 300
+simulated seconds with every NPC's own position swept into a point cloud every third frame — so the
+sentry's and RoboDog's full rectangular patrols count as occupied ground, not just wherever they
+happened to be standing at the end). A 6 m line out in the quiet west yard came back clear the whole
+way: (-70, -7) to (-64, -7), at least 7.99 m from the nearest of the city's 1203 physics boxes, 9.9 m
+from the nearest point any NPC's own patrol or wander ever reached in the full sweep, and 30+ m from
+the nearest of the 296 `game.zones` rectangles — on this city's flat floor (ground0 = 0) at radius
+64-70 from the origin, comfortably inside where `robotRegion()`'s own procedural fill takes over
+(radius 98). Built dead last of everything this city adds, right after the mechanic's trainee: this
+city's own shared `r()` sequence feeds `makeHuman()`/`randomPerson()` here, while `Unicyclist`'s own
+draws ride the shared global `rnd()` instead, so nothing built earlier or later is shifted either way.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 334 (no new collider beyond the usual 0.35 m greet circle), and Robot City's own
+friend total went up by one (123 → 124, confirmed against the previous commit with `git stash`). No
+visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
+suite and the probe above, so whether the pedalling actually reads as circular, or whether the wobble
+looks like balance rather than a glitch, is unverified. `Unicyclist` now has a rider in two of the
+seven worlds (Candy Land, Robot City); the Neighborhood, Victorian, Sunny Shore, Frosty Peak and
+Whisper Woods are still left. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.
