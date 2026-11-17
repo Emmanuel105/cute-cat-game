@@ -30320,3 +30320,38 @@ was possible in this environment (no browser, no Playwright) — only the stub-t
 so whether the second rider's pose actually reads as sitting rather than floating, or whether two
 riders on opposite seats look balanced rather than lopsided, is unverified. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1087 — the Neighborhood finally gets its own unicyclist
+
+Candy Land has had a unicyclist since round 1085 — nobody on this street had ever balanced on a
+single wheel. **A rider now pedals a short stretch of open grass east of the park, between the
+juggler's own pitch and the side road, out and back, both arms thrown wide for balance.** *"Six
+metres of grass and not a soul in my way."* *"Careful, puss — one wheel, no room for passengers."*
+*"Side road's right there — I'll stick to the grass."* Saying hello makes her the usual kind of
+friend.
+
+No new mesh and no new controller: the same `Unicyclist` class and `makeUnicycle()` prop Candy Land
+already built, just a new rider on a different stretch of grass, own small wardrobe rather than the
+street's shared `ward` bag.
+
+A headless probe (`game.start('new')`, 3600 simulated frames sampling every NPC's own position every
+10th frame) swept the grass between the juggler at (40, 40) and the side road's own zone
+(`Z.addSpan(41.5, -65, 46.5, 65)`): a line from (48, 40) to (54, 40) came back clear by 3.85-5.24 m of
+the nearest physics box the whole way and 7.5-9.0 m of the nearest wandering soul over the full 60 s
+run, clear of the juggler, the kneeling chalker further east and the frisbee player to the north.
+
+Position wasn't the hard part. The Neighborhood is the one world whose build-and-test window shares
+its own simulated frames with its behaviour checks (see round 1037's note on the shared global
+`rnd()` sequence), and `Unicyclist` redraws its `wait` off that same sequence every time it reaches
+either end of its line — at the default `speed` (1.6, same as Candy Land's rider) this shifted the
+chatting neighbours' own turn-taking timer just enough that `node dimension-cat/test/run.mjs` failed
+their test outright (0 turns in 7 s). Swept `speed` with the real suite the same way round 1037 had
+to settle its own timing fights; 0.5, 0.8 and 1.0 all came back clean, so `speed: 0.8` was kept — a
+walking pace rather than Candy Land's brisker ride. `node dimension-cat/test/run.mjs` ran clean: exit 0, all
+277 checks `ok`, 0 console warnings, box count unchanged at 334 (no new collider, just the usual
+0.35 m greet circle), and the Neighborhood's own friend total went up by one (105 → 106 to meet,
+confirmed against the previous commit with `git stash`). No visual check was possible in this
+environment (no browser, no Playwright) — only the stub-three test suite above, so whether the
+pedalling actually reads as circular rather than twitchy, or whether the wobble looks like balance
+rather than a glitch, is unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.

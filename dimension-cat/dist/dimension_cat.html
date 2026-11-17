@@ -12960,6 +12960,36 @@ function buildNeighborhood(game, entry) {
     const brazierLines = ["🌰 The vents glow, the chestnuts cook, and not a soul's standing over it.", '😼 Puss sniffs the warm paper smell and finds no one to beg from.', '🏠 Somebody on this street left a fire going. Again.'];
     game.addInteractable({ obj: brazier, radius: 1.2, label: () => 'Look at the brazier', onUse: () => { SFX.click(); game.toast(rnd.pick(brazierLines), 3000); } }); }
 
+  // Candy Land has had a unicyclist since round 1085 — nobody on this street had ever balanced on one
+  // wheel. A rider now pedals a short stretch of open grass east of the park, between the juggler's own
+  // pitch and the side road, out and back, both arms thrown wide for balance, same `Unicyclist` class and
+  // `makeUnicycle()` prop Candy Land already built.
+  //
+  // A headless probe (`game.start('new')`, 3600 simulated frames sampling every NPC's own position every
+  // 10th frame) swept the grass between the juggler at (40, 40) and the side road's own zone
+  // (`Z.addSpan(41.5, -65, 46.5, 65)`): a line from (48, 40) to (54, 40) came back clear by 3.85-5.24 m of
+  // the nearest physics box the whole way and 7.5-9.0 m of the nearest wandering soul over the full 60 s
+  // run — clear of the juggler, the kneeling chalker further east at (54.2, 47.5) and the frisbee player
+  // north at (39, 53), and 1.5 m past the side road's own zone.
+  //
+  // Own small wardrobe, not the street's shared `ward` bag; placed last, right before `makeDayNight`,
+  // since `makeHuman()`/`randomPerson()` both draw off this street's own seeded `r()` unconditionally and
+  // anything built earlier would have had its own pick shifted.
+  //
+  // The default `speed` (1.6) left the chatting neighbours' own test failing — this is the one world
+  // whose build-and-test window shares its own simulated frames with its behaviour checks (see round
+  // 1037's note on the shared global `rnd()` sequence), and `Unicyclist` redraws its `wait` off that same
+  // sequence every time it reaches an end of its line, so a faster rider shifts the `Talkers` pair's own
+  // turn-taking timer by the time the chat test samples it. Swept `speed` with the real suite the same
+  // way that round had to; 0.5, 0.8 and 1.0 all left it clean, so `speed: 0.8` was kept — close to a
+  // walking pace rather than Candy Land's brisker 1.6.
+  { const uniWard = makeWardrobe(r, { shirts: [0x4ade80, 0xff6fb5], pants: [0x2c2c2c] });
+    const rider = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: uniWard }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(rider.group);
+    game.npcs.push(new Unicyclist(game, rider, makeUnicycle(0x2f9ccf), { a: [48, 40], b: [54, 40], speed: 0.8, cryIcon: '🎪',
+      cries: ["Six metres of grass and not a soul in my way.", 'Careful, puss — one wheel, no room for passengers.', "Side road's right there — I'll stick to the grass."] })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
