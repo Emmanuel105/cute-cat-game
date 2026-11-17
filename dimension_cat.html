@@ -29259,6 +29259,48 @@ function buildSnowVillage(game, entry) {
     game.npcs.push(new Wanderer(game, pogoWatcher, { x: wx, z: wz, angle: atan2(pogoX6 - wx, pogoZ6 - wz), speed: 0.3, leash: 0.5, idle: [3, 6],
       cries: ['A thousand and still going — my knees ache just watching.', 'Careful, puss — give him room to land.', "Don't look — actually, look, he's rather good at this."] })); }
 
+  // `Unicyclist` (55-npcs.js) has had four riders so far — Candy Land's performer between the castle
+  // and the cane belt (round 1085), Robot City's maintenance tech in the east yard (round 1157),
+  // Victorian's street performer on the green by the market square (round 1158) and Sunny Shore's
+  // beachgoer on the dry sand (round 1159) — and this mountain, the Neighborhood and Whisper Woods
+  // still have both feet on the ground everywhere. **A hiker now does laps on a single wheel, ice-blue
+  // to match nobody else's wardrobe, on a quiet stretch of snowfield north of the village, well past
+  // the woodcutter's own patch.** *"Harder than it looks on packed snow — ask me how many times I've
+  // gone over."* *"Mind yourself, puss — one wheel's got no room to swerve out here."* *"Lost count
+  // somewhere past thirty laps. Keeps the cold off, if nothing else."*
+  //
+  // No new class or mesh: `Unicyclist` and `makeUnicycle()` (60-props.js) already exist from round
+  // 1085; this one just asks `makeUnicycle()` for an ice blue (`0x1565c0`) instead of Candy Land's
+  // gold, Robot City's cyan, Victorian's burgundy or Sunny Shore's coral, and gives the rider a plain
+  // `makeHuman()` hiker — no coat or beanie, same bare rig the other three worlds' riders use, since
+  // none of them needed bulky winter clothing clipping through the pedalling legs.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(5, 'from-prev')` to build the real mountain, 600 simulated frames
+  // so every reindeer, hare, arctic fox and penguin had already settled, then 6000 more simulated
+  // frames with a snapshot of every NPC's own position taken every 50th frame — 120 snapshots spanning
+  // 100 simulated seconds) swept a 1 m grid across the whole village bowl (radius ≤ 50, short of the
+  // radius (58) where `snowRegion()`'s own procedural fill takes over) testing a 6 m line in the +x
+  // direction at every point against all 780 of this mountain's physics boxes and its 156 `game.zones`
+  // rectangles first, then checking the best candidates against every one of those 120 NPC snapshots.
+  // The line from (-19, 29) to (-13, 29) came back clearest: 4.9-7.0 m from the nearest box, 3 m clear
+  // of the village-centre zone's own edge (the 26 m keep-clear circle around the campfire, not a real
+  // obstacle underfoot) the whole way, and never closer than 13.23 m to another soul (the woodcutter)
+  // at any sampled moment across the full 100 seconds — at radius 33 from the origin, a quiet corner
+  // of the snowfield nobody else had claimed. Ground height only rises 0.42-0.62 m across the whole
+  // line, gentle enough for a wheel.
+  //
+  // Built dead last of everything this mountain adds, right after the pogo watcher above, same reason
+  // as always: `makeHuman()`/`randomPerson()` draw off this mountain's own shared `r()` sequence
+  // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted
+  // by it. `Unicyclist`'s own draws come off the shared global `rnd()`, not this mountain's `r()`, so
+  // it costs nothing later either way.
+  { const rider = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
+      shirt: 0x5a7a9a, hat: null, scarf: null, jacket: null, coat: false, bag: null, backpack: null, glasses: false });
+    W.add(rider.group);
+    game.npcs.push(new Unicyclist(game, rider, makeUnicycle(0x1565c0), { a: [-19, 29], b: [-13, 29], cryIcon: '🎪',
+      cries: ["Harder than it looks on packed snow — ask me how many times I've gone over.", "Mind yourself, puss — one wheel's got no room to swerve out here.", 'Lost count somewhere past thirty laps. Keeps the cold off, if nothing else.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

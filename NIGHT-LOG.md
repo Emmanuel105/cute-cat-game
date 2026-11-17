@@ -33008,3 +33008,49 @@ whether the pedalling actually reads as circular, or whether the sand under it l
 wheel, is unverified. `Unicyclist` now has a rider in four of the seven worlds (Candy Land, Robot City,
 Victorian, Sunny Shore); the Neighborhood, Frosty Peak and Whisper Woods are still left. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1160 — Frosty Peak gets its own unicyclist
+
+`Unicyclist` (round 1085) now has a fifth rider. **A hiker does laps on a single wheel, ice-blue
+trimmed, on a quiet stretch of snowfield north of the village, well past the woodcutter's own
+patch.** *"Harder than it looks on packed snow — ask me how many times I've gone over."* *"Mind
+yourself, puss — one wheel's got no room to swerve out here."* *"Lost count somewhere past thirty
+laps. Keeps the cold off, if nothing else."*
+
+No new class or mesh: reused `makeUnicycle()` (60-props.js) with an ice blue (`0x1565c0`) instead of
+Candy Land's gold, Robot City's cyan, Victorian's burgundy or Sunny Shore's coral, and a plain
+`makeHuman()` hiker with no coat or beanie — same bare rig the other three worlds' riders use, since
+bulky winter clothing would clip through the pedalling legs.
+
+The first attempt put the new rider in the Neighborhood instead, on the back field near the hula
+hooper — it looked fine and the probe checked out clean, but it broke the "two neighbours chat,
+taking turns" test: the Neighborhood is the one world the test suite builds first, and *any* new NPC
+built there draws from the shared global `rnd()` sequence at construction, permanently shifting every
+later draw anyone makes off that same sequence for the rest of the run. Dropping the new rider's
+`cries` (which would have drawn from `rnd()` again mid-test) wasn't enough on its own — the construction-
+time draws alone were already enough to nudge the chat NPC's own speaker-swap timing right up against
+the test's 7-second window, catching one neighbour's arm mid-animation instead of settled. Rather than
+chase that further, the rider moved to Frosty Peak instead, which has no such test.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+`game.load(5, 'from-prev')`, 600 simulated frames so every reindeer, hare, arctic fox and penguin had
+already settled, then 6000 more simulated frames with a snapshot of every NPC's own position taken
+every 50th frame — 120 snapshots spanning 100 simulated seconds) swept a 1 m grid across the whole
+village bowl (radius ≤ 50, short of the radius (58) where `snowRegion()`'s own procedural fill takes
+over), testing a 6 m line at every point against all 780 of this mountain's physics boxes and its 156
+`game.zones` rectangles first, then against every one of those 120 NPC snapshots. The line from
+(-19, 29) to (-13, 29) came back clearest: 4.9-7.0 m from the nearest box, 3 m clear of the
+village-centre zone's own edge (the 26 m keep-clear circle round the campfire, not a real obstacle
+underfoot) the whole way, and never closer than 13.23 m to another soul (the woodcutter) across the
+full 100 seconds — a quiet corner of the snowfield nobody else had claimed. Ground height only rises
+0.42-0.62 m across the line, gentle enough for a wheel.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings. No
+visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
+suite above and the probe, so whether the pedalling actually reads as circular on snow, or whether a
+13 m-isolated rider feels like part of the village or off on his own, is unverified. `Unicyclist` now
+has a rider in five of the seven worlds (Candy Land, Robot City, Victorian, Sunny Shore, Frosty Peak);
+the Neighborhood and Whisper Woods are still left — the Neighborhood in particular needs either a
+colour explicitly outside `SHIRT_COLORS` *and* a build position chosen with its chat test's timing in
+mind, not just the usual zone/box/NPC clearance check. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
