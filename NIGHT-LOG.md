@@ -33501,3 +33501,33 @@ friend total went up by one (127 → 128 to meet, confirmed against the previous
 whether the two locals' stance actually reads as one scene together is unverified. Five worlds' own
 paper-plane kids are still waiting on a watcher. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1174 — Robot City's paper-plane kid gets a watcher too
+
+The Neighborhood and Candy Land's own paper-plane kids picked up a watcher the last two rounds; this
+city's own boy, folding and throwing planes dead straight down the open factory floor since not long
+after the lake-skipper trick first spread here, was still throwing to nobody. **An off-shift worker
+now stands a few steps north-east of him, watching the dart glide instead of heading for the gate.**
+*"Same fold every throw — bet he could do it with his eyes shut by now."* *"Careful, puss — swat
+that one and he just folds another."* *"Furthest one yet. Shift's almost worth it for this."*
+Saying hello makes her the usual kind of friend.
+
+No new class or mesh: the usual `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js), the
+same "stand and watch" behaviour every other watcher in this city already uses, with a short leash
+(0.5 m) and `angle` pointed at the kid's own fixed spot rather than a constant.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(2, 'from-prev')`, then 3600 simulated frames sampling every NPC's own
+position every 10th frame) swept a 0.5 m grid 3-4.5 m out from the kid's own spot (20, 50), skipping
+a 1.2 m band either side of his own throw line (x=20, straight down to z=47), against all 1206 of
+this city's physics boxes, its 296 `game.zones` rectangles and every one of those samples: (22, 46)
+came back clearest — 6.46 m from the nearest box, 41.2 m clear of the nearest zone rectangle and
+4.47 m from the nearest wandering soul over the whole run, 2 m off to the side of the throw line
+rather than in front of or behind it.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count
+unchanged at 334 (no new collider, just the usual 0.5 m greet circle), and Robot City's own friend
+total went up by one (136 → 137 to meet, confirmed against the previous commit with `git stash`). No
+visual check was possible in this environment (no browser, no Playwright), so whether the two locals'
+stance actually reads as one scene together is unverified. Four worlds' own paper-plane kids are
+still waiting on a watcher. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
