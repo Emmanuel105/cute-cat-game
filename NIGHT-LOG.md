@@ -33407,3 +33407,35 @@ one (169 → 170 to meet). No visual check was possible in this environment (no 
 Playwright), so whether the two locals' stance actually reads as one scene together is unverified.
 Every `Juggler` in the game now has a watcher. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 1171 — Whisper Woods' fiddler finally gets a listener, the last of the seven
+
+The Neighborhood, Robot City, Sunny Shore, Frosty Peak, Candy Land and Victorian had each picked up a
+listener for their own busking `Fiddler` over rounds 1109-1114 — this wood's own, sawing away on a
+mossy log out past the fairy ring since round 1010, was the only one left still playing to nobody.
+**A walker now stands a few steps north-west of the fiddler, on the open forest floor, listening
+instead of wandering on.** *"Doesn't need the ukulele player — four strings carry fine on their own
+out here."* *"Careful, puss — he's three songs deep and hasn't noticed either of us."* *"Didn't plan
+on stopping. Didn't plan on the fiddle either, by the sound of it."* Saying hello makes her the usual
+kind of friend.
+
+No new mesh or controller: the usual `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js),
+the same "stand and watch" behaviour every other listener in this game already uses, with a short
+leash (0.5 m) and `angle` pointed at the fiddler's own fixed spot rather than a constant.
+
+A headless probe (the stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+`game.travel(6, 'from-hub')` waited out for real against its own portal-fade timer, then 3600
+simulated frames sampling every NPC's own position every 10th frame) swept a ring 2.5-5.5 m out from
+the fiddler's own spot (51, -20) against every one of this wood's 414 physics boxes, its 229
+`game.zones` rectangles and every sampled NPC position: (47.8, -19.1) came back clearest in the
+nearest band — 3.6 m from the nearest box and 3.32 m from the nearest wandering soul over the full
+60 s run, on ground levelling out at 1.13 m with under 2 cm of slope across a 0.3 m square, 3.32 m
+from the fiddler himself and 3.93 m from his own fiddle case.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count
+unchanged at 334 (no new collider, just the usual 0.5 m greet circle), and Whisper Woods' own friend
+total went up by one (168 → 169 to meet, confirmed against the previous commit with `git stash`). No
+visual check was possible in this environment (no browser, no Playwright) — only the stub-three test
+suite above, so whether the two locals' stance actually reads as one scene together is unverified.
+Every busking `Fiddler` in the game now has a listener. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

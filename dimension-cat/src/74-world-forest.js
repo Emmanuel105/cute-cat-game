@@ -3520,6 +3520,42 @@ function buildForest(game, entry) {
     game.npcs.push(new Wanderer(game, watcher, { x: wx, z: wz, angle: wry, leash: 0.5, speed: 0.5, idle: [3, 6], walk: [1, 1.6],
       cries: ['Three skips, same as every throw before it.', 'Careful, puss — the glow doesn\'t mean warm, same as she keeps telling everyone.', 'Best bank on the whole pond for it, this.'] })); }
 
+  // the Neighborhood, Robot City, Sunny Shore, Frosty Peak, Candy Land and Victorian have each picked
+  // up a listener for their own fiddler over rounds 1109-1114 — this wood's own, sawing away on a
+  // mossy log out past the fairy ring since round 1010, was the only one left still playing to
+  // nobody. **A walker now stands a few steps north-west of the fiddler, on the open forest floor,
+  // listening instead of wandering on.** *"Doesn't need the ukulele player — four strings carry fine
+  // on their own out here."* *"Careful, puss — he's three songs deep and hasn't noticed either of
+  // us."* *"Didn't plan on stopping. Didn't plan on the fiddle either, by the sound of it."* Saying
+  // hello makes her the usual kind of friend. Every busking fiddler in this game now has a listener.
+  //
+  // No new mesh or controller: the usual `makeHuman()`/`randomPerson()` rig and `Wanderer`
+  // (55-npcs.js), the same "stand and watch" behaviour every other listener in this game already
+  // uses, with a short leash (0.5 m) and `angle` pointed at the fiddler's own fixed spot rather than a
+  // constant, so it reads as listening to the tune and not just standing nearby. `Wanderer`'s own
+  // constructor calls `greetable()` itself, so no extra wiring was needed.
+  //
+  // A headless probe (the stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // `game.travel(6, 'from-hub')` waited out for real against its own portal-fade timer, then 3600
+  // simulated frames sampling every NPC's own position every 10th frame) swept a ring 2.5-5.5 m out
+  // from the fiddler's own spot (51, -20) against every one of this wood's 414 physics boxes, its 229
+  // `game.zones` rectangles and every sampled NPC position: (47.8, -19.1) came back clearest in the
+  // nearest band — 3.6 m from the nearest box and 3.32 m from the nearest wandering soul over the
+  // full 60 s run, on ground levelling out at 1.13 m with under 2 cm of slope across a 0.3 m square,
+  // 3.32 m from the fiddler himself and 3.93 m from his own fiddle case at (51.7, -19.6).
+  //
+  // Built dead last of everything this wood adds, right after the pond skipper's own watcher above,
+  // same reason as always: `makeHuman()`/`randomPerson()` draw off this wood's own shared `r()`
+  // sequence unconditionally, and anything built earlier would have had its own timing-sensitive pick
+  // shifted.
+  { const lx = 47.8, lz = -19.1, fx = 51, fz = -20;
+    const listenWard = makeWardrobe(r, { shirts: [0x6a7a8a, 0x8a6a7a], pants: [0x2a2a3a, 0x3a2a2a] });
+    const listener = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: listenWard }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: r.chance(0.2) });
+    W.add(listener.group);
+    game.npcs.push(new Wanderer(game, listener, { x: lx, z: lz, angle: atan2(fx - lx, fz - lz), leash: 0.5, speed: 0.3, idle: [3, 6],
+      cries: ["Doesn't need the ukulele player — four strings carry fine on their own out here.", "Careful, puss — he's three songs deep and hasn't noticed either of us.", "Didn't plan on stopping. Didn't plan on the fiddle either, by the sound of it."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
