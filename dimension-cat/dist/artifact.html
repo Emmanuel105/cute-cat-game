@@ -19314,6 +19314,34 @@ function buildRobotCity(game, entry) {
     game.npcs.push(new StoneSkipper(game, skipper, { x: -8, z: -64, ry: 0, cryIcon: '⚙️',
       cries: ["Breaktime's the only time I get to do this.", 'Careful, puss — spare part, not a toy.', "Three skips, best I've managed all shift."] })); }
 
+  // Candy Land's towpath skipper got a watcher (round 1163); this city's own washer-skimmer, right
+  // above, never had anyone clock off to watch him do it. A second worker now stands a few steps
+  // south, on her own break, watching the washer skip.
+  //
+  // No new class or mesh: `makeHuman()`/`randomPerson()` build the usual rig, `Wanderer` gives her
+  // the same "stand and watch" behaviour every other watcher in this game uses, with a short leash
+  // (0.5 m) and `angle` pointed at the skipper's own fixed spot.
+  //
+  // A headless probe (the stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // `game.travel(2, 'from-hub')`, 1800 simulated frames sampling every NPC's own position every 5th
+  // frame) swept a grid 2.5-6 m out from the skipper's own spot, skipping the three-hop corridor
+  // itself (which runs north from the skipper toward downtown), against every one of the city's
+  // physics boxes, its `game.zones` rectangles and all those samples: (-8, -69), five metres due
+  // south of the skipper and facing him (`ry: 0`, same convention his own `fz = cos(ry)` uses), came
+  // back clearest — 10.6 m from the nearest box, 21.6 m clear of the nearest zone rectangle and
+  // 11.2 m from the nearest other soul, all three comfortably past the skipper's own clearances.
+  //
+  // Built dead last, right after the skipper above, for the usual reason: `makeHuman()` draws off
+  // this city's own shared `r()` sequence unconditionally, and a fresh rig built any earlier would
+  // desync every other timing-sensitive pick already placed above.
+  { const skWx = -8, skWz = -69, skipX2 = -8, skipZ2 = -64;
+    const skipWatchWard = makeWardrobe(r, { shirts: [0xff8a3c, 0x3ca0ff], pants: [0x232c34, 0x2a2a30], shoes: [0x1a1a20, 0x201c18] });
+    const skipWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.2), wardrobe: skipWatchWard }),
+      hat: 'cap', hatColor: 0x2a2a2a, stripes: 0xe8e8e8, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.2) });
+    W.add(skipWatcher.group);
+    game.npcs.push(new Wanderer(game, skipWatcher, { x: skWx, z: skWz, angle: atan2(skipX2 - skWx, skipZ2 - skWz), leash: 0.5, speed: 0.3, idle: [3, 6], walk: [1, 1.6],
+      cries: ["Three skips, same as every throw before it.", 'Careful, puss — spare part, not a toy, same as she keeps telling him.', "Best break of the shift, this."] })); }
+
   // Victorian has a fortune teller reading a crystal ball, but a whole city of robots never had
   // anything that claimed to see the future of its own — a coin-operated fortune machine, the
   // Zoltar kind with a glowing head behind glass, now stands on the open factory floor, chrome and

@@ -33158,3 +33158,37 @@ stance and the skipper's own throw actually read as one scene together is unveri
 now has a watcher in one of the seven worlds; the other six (Neighborhood, Robot City, Victorian,
 Sunny Shore, Frosty Peak, Whisper Woods) are still unaccompanied, a good candidate for whoever runs
 the next several rounds. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1164 — Robot City's stone skipper gets a watcher too
+
+`StoneSkipper` (round ~500s) got its first watcher in Candy Land last round; Robot City's own
+washer-skimmer, breaktime stone-skips across the open factory floor at (-8, -64) since the city's
+build, never had one either. **A second worker now stands five metres south, on her own break,
+watching the washer skip.** *"Three skips, same as every throw before it."* *"Careful, puss — spare
+part, not a toy, same as she keeps telling him."* *"Best break of the shift, this."*
+
+No new class or mesh: the usual `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js), the
+same "stand and watch" behaviour every other watcher in this game uses, with a short leash (0.5 m)
+and `angle` pointed at the skipper's own fixed spot.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(2, 'from-hub')`, 1800 simulated frames sampling every NPC's own
+position every 5th frame) swept a grid 2.5-6 m out from the skipper's own spot, skipping the
+three-hop corridor itself, against every one of the city's physics boxes, its `game.zones`
+rectangles and all those samples. (-8, -69), five metres due south and facing the skipper, came
+back clearest: 10.6 m from the nearest box, 21.6 m clear of the nearest zone rectangle and 11.2 m
+from the nearest other soul, all three past what the skipper's own spot gets.
+
+Built dead last of everything this city adds, right after the skipper, for the usual reason:
+`makeHuman()`/`randomPerson()` both draw off this city's own shared `r()` sequence unconditionally,
+and anything built earlier would have had its own timing-sensitive pick shifted by it.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings. No
+visual check was possible in this environment (no browser, no Playwright), so whether the two
+workers' break actually reads as one scene together is unverified. `StoneSkipper` now has a watcher
+in two of the seven worlds (Candy Land, Robot City); Victorian, Sunny Shore, Frosty Peak, Whisper
+Woods and the Neighborhood are still unaccompanied — the Neighborhood in particular shares its own
+build-and-test window with its behaviour checks (see round 1162's note on the shared `rnd()`
+sequence), so whoever tackles it should expect to rerun the full suite after any wardrobe or timing
+pick, not just the usual clearance probe. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
