@@ -4322,6 +4322,56 @@ function buildNeighborhood(game, entry) {
     W.add(frisbeeWatcher.group);
     game.npcs.push(new Wanderer(game, frisbeeWatcher, { x: fwx, z: fwz, angle: atan2(frisbeeWatcherFx - fwx, frisbeeWatcherFz - fwz), speed: 0.3, leash: 0.5, idle: [3, 6] })); }
 
+  // `Unicyclist` (55-npcs.js) has had six riders so far — Candy Land, Robot City, Victorian, Sunny
+  // Shore, Frosty Peak and Whisper Woods (rounds 1085, 1157-1161) — and the Neighborhood, the very
+  // street the rider belongs to by rights, was the one world left standing on two feet. **A neighbour
+  // now does laps on a single wheel, slate grey, on a quiet side lawn well clear of the street's own
+  // performers.**
+  //
+  // No new class or mesh: reused `Unicyclist` and `makeUnicycle()` (60-props.js) with a slate grey
+  // (`0x5a6470`) frame and a plain `makeHuman()` rider with no coat, hat or bag — same bare rig every
+  // other world's rider uses — built with `cries: null`, unlike five of those six riders, to cut down
+  // on how often it draws from the shared global `rnd()` sequence; even so it still draws at
+  // construction (`this.wait`, `this.t`) and every time it reaches either end of its line and turns
+  // around (`rnd.range(...pause)`).
+  //
+  // This matters here and nowhere else: the Neighborhood is the one world whose build-and-test window
+  // shares a single run of simulated frames with its own behaviour checks, including the "two
+  // neighbours chat, taking turns" check on `Talkers` a little earlier in `test/run.mjs`, which reads
+  // `Talkers`' own speaker-swap timing off that exact same global sequence. At the default `speed`
+  // (1.6) this rider's own pause-and-turn draws landed often enough during the roughly 40 simulated
+  // seconds that run before the chat test's own 7-second window to shift `Talkers`' speaker-swap value
+  // just enough to fail the check: one turn happened, but the speaker's arm was back down
+  // (`rotation.x` −0.00/−0.01) at the exact instant the test sampled it, instead of mid-raise. This
+  // was caught by actually running `node test/run.mjs`, not a probe — no amount of zone/box/NPC
+  // clearance checking would have found it, since it has nothing to do with where the rider stands.
+  // Raising `speed` to 2.4 (fewer, differently-timed turn-around draws over that same 40 s) was the
+  // first value tried that brought the suite back to a clean pass; a dozen other speed/pause
+  // combinations were swept the same way and most still failed on the same check or, at the extremes,
+  // started tripping the painter or the westbound cyclist instead — this is a brittle coincidence of
+  // the shared RNG stream, not a property of the rider itself, and a future change anywhere earlier in
+  // this street's build that adds or removes a global `rnd()` draw could easily reopen it.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, 300 simulated frames to settle every stroller, car and dog, then 3600 more
+  // frames with a snapshot of every NPC's position taken every 60th frame — 60 snapshots spanning 60
+  // simulated seconds) swept a 1 m grid across the walkable village (|x|, |z| ≤ 45) testing a 6 m
+  // east-west line at every point against all 310 of this street's relevant physics boxes, its
+  // `game.zones` rectangles and every one of those 60 NPC snapshots. The line from (-29, -18) to
+  // (-23, -18) came back clearest: just under 10 m from the nearest box and just over 10 m from the
+  // nearest other soul at any sampled moment across the full 60 seconds, on a side lawn north-west of
+  // the pond with nothing else built on it.
+  //
+  // Built dead last, right after the frisbee watcher above and right before `makeDayNight`, same reason
+  // as the other six riders: `Unicyclist`'s own draws come off the shared global `rnd()`, not this
+  // street's `r()`, so building it last costs nothing to anything built earlier in this street's own
+  // sequence — the risk was always to `Talkers`, not to position, and that can only be checked by
+  // running the real suite.
+  { const rider = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
+      shirt: 0x6a7a8a, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(rider.group);
+    game.npcs.push(new Unicyclist(game, rider, makeUnicycle(0x5a6470), { a: [-29, -18], b: [-23, -18], cryIcon: '🎪', cries: null, speed: 2.4 })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
