@@ -13400,6 +13400,37 @@ function buildNeighborhood(game, entry) {
       shirt: 0x5a3a6a, hat: null, scarf: null, jacket: null, bag: null, backpack: null }); W.add(lakeSkipWatcher.group);
     game.npcs.push(new Wanderer(game, lakeSkipWatcher, { x: lakeWvx, z: lakeWvz, angle: atan2(lakeSkX - lakeWvx, lakeSkZ - lakeWvz), speed: 0.2, leash: 0.5, idle: [3, 6] })); }
 
+  // Magicians, jugglers, fiddlers, stone skippers and a dozen other pavement performers across this
+  // village have all picked up a watcher by now — this lawn's own paper-plane kid, folding and flinging
+  // a fresh dart north every few seconds since round 884, was still throwing to nobody. **A neighbour now
+  // stands a few steps south-west of her on the grass, watching the dart glide.**
+  //
+  // No new class or mesh: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer` (55-npcs.js)
+  // gives him the same "stand and watch" behaviour every other watcher on this street already uses, with
+  // a short leash (0.5 m) and `angle` pointed at the kid's own fixed spot rather than a constant. Built
+  // with no `cries` at all, same fix every watcher on this street has needed since the magician's own
+  // watcher broke three unrelated checks the one time a second `cries`-bearing `Wanderer` ran in the same
+  // build-and-test window.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, 2400 simulated frames sampling every NPC's own position every 5th frame) swept a
+  // grid out from the kid's own spot (-31, 63), excluding a band either side of the dart's own flight
+  // line (x=-31, z 63.3..66) so the watcher doesn't plant himself in its path: (-33.5, 64.5) came back
+  // clearest — 7.85 m from the nearest physics box and 2.92 m from the nearest other soul over the full
+  // 40 s run, on flat ground.
+  //
+  // Built dead last, right after the lake skipper's own watcher above and right before `makeDayNight`,
+  // same reason as every other watcher on this street: `makeHuman()` and `randomPerson()` both draw off
+  // this street's own shared `r()` sequence unconditionally, and this is the first world the test suite
+  // builds, so anything built earlier here would have had its own timing-sensitive pick shifted by it.
+  // `speed: 0.2` carried straight over from the lake skipper's own watcher above, the value round 1169 had
+  // to sweep six ways to find — reused here rather than re-swept, since it is the exact same "parked on a
+  // short leash" shape and the exact same shared-`rnd()` risk.
+  { const dartWvx = -33.5, dartWvz = 64.5, dartKidX = -31, dartKidZ = 63;
+    const dartKidWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x3a6a5a, hat: null, scarf: null, jacket: null, bag: null, backpack: null }); W.add(dartKidWatcher.group);
+    game.npcs.push(new Wanderer(game, dartKidWatcher, { x: dartWvx, z: dartWvz, angle: atan2(dartKidX - dartWvx, dartKidZ - dartWvz), speed: 0.25, leash: 0.5, idle: [3, 6] })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

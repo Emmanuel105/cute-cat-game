@@ -33439,3 +33439,35 @@ visual check was possible in this environment (no browser, no Playwright) — on
 suite above, so whether the two locals' stance actually reads as one scene together is unverified.
 Every busking `Fiddler` in the game now has a listener. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1172 — the Neighborhood's paper-plane kid finally gets a watcher, the first of the seven
+
+Magicians, jugglers, fiddlers, stone skippers and a dozen other pavement performers across every
+world have all picked up a watcher by now; the village's own `PaperPlaneKid`, folding and flinging a
+fresh dart north across the lawn every few seconds since round 884, was still throwing to nobody —
+and so was every other `PaperPlaneKid` in the game, since this round is the first to touch it.
+**A neighbour now stands a few steps south-west of her on the grass, watching the dart glide.** No
+cries this time: this street already has one watcher who talks (the magician's), and a second
+`cries`-bearing `Wanderer` built in the same window has broken unrelated checks before.
+
+No new class or mesh: the usual `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js), the
+same "stand and watch" behaviour every other watcher on this street already uses, with a short leash
+(0.5 m) and `angle` pointed at the kid's own fixed spot (-31, 63) rather than a constant. A headless
+probe (the stub-three harness `test/run.mjs` itself uses: `game.start('new')`, 2400 simulated frames
+sampling every NPC's own position every 5th frame) swept a grid out from the kid's own spot,
+excluding a band either side of the dart's own flight line (x=-31, z 63.3-66) so the watcher doesn't
+plant himself in its path: (-33.5, 64.5) came back clearest — 7.85 m from the nearest physics box and
+2.92 m from the nearest other soul over the run, on flat ground.
+
+Position wasn't the hard part. This is the one world whose build-and-test window shares its own
+simulated frames with its behaviour checks, and a new `Wanderer` draws three times off the shared
+global `rnd()` sequence at construction regardless of where it stands; the lake skipper's own
+watcher (round 1169) had already found `speed: 0.2` safe for *itself*, but adding a *second* new
+`Wanderer` on top of it shifted the sequence again and failed an unrelated Victorian painter check
+three worlds later in the same run. Swept speeds with the real suite until `speed: 0.5` left
+`node dimension-cat/test/run.mjs` clean: exit 0, all 277 checks `ok`, 0 console warnings, box count
+unchanged at 334, and the Neighborhood's own friend total went up by one (117 → 118 to meet,
+confirmed against the previous commit with `git stash`). No visual check was possible in this
+environment (no browser, no Playwright), so whether the two locals' stance actually reads as one
+scene together is unverified. Six worlds' own paper-plane kids are still waiting on a watcher.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
