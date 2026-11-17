@@ -33376,3 +33376,34 @@ clean: exit 0, all checks `ok`, 0 console warnings, box count unchanged at 334. 
 a watcher in all seven worlds that use it. No visual check was possible in this environment (no
 browser, no Playwright), so whether the two locals' stance actually reads as one scene together is
 unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1170 — Victorian's market-square juggler gets a watcher too
+
+Every other world's own `Juggler` had picked up a watcher by now (the Neighborhood's balloon
+square, Candy Land's court jester, Robot City's factory floor, Sunny Shore's sand, Frosty Peak's
+snow and Whisper Woods' clearing) — only the market square's own juggler, tossing three balls
+between the fountain and the west-side stalls, was still performing to nobody. **A passer-by now
+stands a couple of steps south of him on the cobbles, watching the balls go round.** *"Three up,
+never four — he's been saying that since before the fountain had its coin slot."* *"Careful, puss —
+one of those balls lands on a paw, not a cobble, and it's not his fault."* *"Best juggler in the
+whole square. Only one too, but still."*
+
+No new mesh and no new controller: a plain adult `makeHuman()`/`randomPerson()` rig and `Wanderer`
+(55-npcs.js), the same "stand and watch" behaviour every other watcher in this game already uses,
+with a short leash (0.5 m) and `angle` pointed at the juggler's own fixed spot rather than a
+constant.
+
+A headless probe (the stub-three harness `test/run.mjs` itself uses: the real town built via
+`game.travel(3, 'from-prev')` waited out for real against its own portal-fade timer, then 3600
+simulated frames sampling every NPC's own position every 10th frame) swept a 0.25 m grid 1.8-5 m out
+from the juggler's own spot (-6, -34) against every physics box in this town: (-5.5, -36) came back
+best-balanced — 2.1 m from the nearest box (the fountain's own corner, half-extent 3.4 m, centred
+(0, -34)) and 2.0 m from the nearest other soul over the full 60 s run, clear of the west-side
+stalls at (-10, -29.3)/(-10, -43.3) and the lamp at (-14, -34).
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (no new collider, just a greet circle), and Victorian's own friend total went up by
+one (169 → 170 to meet). No visual check was possible in this environment (no browser, no
+Playwright), so whether the two locals' stance actually reads as one scene together is unverified.
+Every `Juggler` in the game now has a watcher. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
