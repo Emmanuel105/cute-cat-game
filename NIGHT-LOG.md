@@ -33563,3 +33563,36 @@ friend total went up by one (170 → 171 to meet, confirmed against the previous
 whether the two locals' stance actually reads as one scene together is unverified. Three worlds —
 Sunny Shore, Frosty Peak and Whisper Woods — still have a paper-plane kid waiting on a watcher.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1176 — Sunny Shore's paper-plane kid gets a watcher too
+
+The Neighborhood, Candy Land, Robot City and Victorian's own paper-plane kids have all picked up a
+watcher the last four rounds; this beach's own boy, folding and throwing paper planes out toward
+the dunes since round 937, was still throwing to nobody. **A beachgoer now stands a few steps
+south-west of him on the open dry sand, watching the dart glide instead of walking on down the
+beach.** *"Folds a fresh one every throw — salt air warps the paper fast, same as he keeps
+saying."* *"Careful, puss — swat that one and he just folds another."* *"Furthest one yet, or so he
+tells it every time."* Saying hello makes her the usual kind of friend.
+
+No new class or mesh: the usual `makeHuman()`/`randomPerson()` rig (via this beach's own
+`beachPerson()` helper) and `Wanderer` (55-npcs.js), the same "stand and watch" behaviour every
+other watcher on this beach already uses, with a short leash (0.5 m) and `angle` pointed at the
+kid's own fixed spot rather than a constant.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(4, 'from-hub')` waited out for real against `game.worldIndex`,
+then 3600 simulated frames sampling every NPC's own position every 10th frame) swept a 0.5 m grid
+2.5-6 m out from the kid's own spot (-16, 0), excluding a band either side of the dart's own flight
+line (z in [-1.3, 1.3], the line it glides along from (-16.3, 0) to (-19, 0)), against all 215 of
+this beach's own physics boxes and its 88 `game.zones` rectangles: (-18, -2) came back clearest in
+that close-in band — 4.32 m from the nearest box, 6.17 m clear of the nearest zone rectangle and
+2.42 m from the nearest other soul (the kid himself) over the whole run, south-west of the kid and
+well short of the radius (58) where `beachRegion()`'s own procedural fill takes over.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box count
+unchanged at 334 (no new collider, just the usual 0.5 m greet circle), and Sunny Shore's own friend
+total went up by one (145 → 146 to meet, confirmed against the previous commit with `git stash`).
+No visual check was possible in this environment (no browser, no Playwright), so whether the two
+locals' stance actually reads as one scene together is unverified. Two worlds — Frosty Peak and
+Whisper Woods — still have a paper-plane kid waiting on a watcher. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
