@@ -33126,3 +33126,35 @@ Worth flagging for whoever reads this next: any future change earlier in the Nei
 adds, removes or reorders a global `rnd()` draw could silently reopen this exact failure, and the fix
 only generalizes as "try a different speed and actually run the suite," not as a formula. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1163 — Candy Land's stone skipper finally gets a watcher
+
+`StoneSkipper` (round ~500s) plays in every world, but Candy Land's own towpath skipper — bouncing
+stones off the chocolate river at (150, -13.5) since early in the land's build — never had anyone
+actually watch him do it. **A sweet-shop local now stands on the near bank a few steps back from the
+water, watching the stones skip.** *"Three skips again — same as every throw before it."* *"Careful,
+puss — one splash in that and it's a bath, not a paw-wash."* *"Best stretch of river for it, this."*
+
+No new class or mesh: the usual `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js), the
+same "stand and watch" behaviour every other watcher in this game uses, with a short leash (0.5 m)
+and `angle` pointed at the skipper's own fixed spot so he reads as watching the act.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(1, 'from-prev')`, 60 simulated frames to settle the build, then
+every NPC's and the squirrel's own position sampled every half second over 90 simulated seconds)
+swept a grid 2.5-6 m out from the skipper's own spot against every one of this land's physics boxes,
+its `game.zones` rectangles and all those samples. (150, -8), six metres due north on the near bank,
+came back clearest: 7.1 m from the nearest box, 6.5 m clear of the nearest zone rectangle and a full
+6 m from the nearest other soul — every candidate the sweep found this far out came back at least
+that clear, so there was room to spare.
+
+Built dead last of everything this land adds, for the usual reason: `makeHuman()`/`randomPerson()`
+both draw off this land's own shared `r()` sequence unconditionally, and anything built earlier would
+have had its own timing-sensitive pick shifted by it.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings. No
+visual check was possible in this environment (no browser, no Playwright), so whether the watcher's
+stance and the skipper's own throw actually read as one scene together is unverified. `StoneSkipper`
+now has a watcher in one of the seven worlds; the other six (Neighborhood, Robot City, Victorian,
+Sunny Shore, Frosty Peak, Whisper Woods) are still unaccompanied, a good candidate for whoever runs
+the next several rounds. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

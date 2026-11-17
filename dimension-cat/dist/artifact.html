@@ -16708,6 +16708,33 @@ function buildCandyLand(game, entry) {
     game.npcs.push(new Wanderer(game, frisbeeWatcher3, { x: fwx, z: fwz, angle: atan2(frisbeeX3 - fwx, frisbeeZ3 - fwz), leash: 0.5, speed: 0.4, idle: [3, 6], walk: [1, 1.6],
       cries: ["Keeps catching it clean — one of these days he'll land it in the chocolate river.", "Careful, puss — mind your tail, that one's coming down fast.", "Sweetest catch in the land, and he makes it look easy."] })); }
 
+  // `StoneSkipper` plays in every world (round ~?); this land's own towpath skipper, bouncing stones
+  // off the chocolate river at (150, -13.5), never had anyone watch him do it. A sweet-shop local now
+  // stands a few steps back on the near bank, watching the stones skip.
+  //
+  // No new class or mesh: `makeHuman()`/`randomPerson()` build the usual rig, `Wanderer` gives him
+  // the same "stand and watch" behaviour every other watcher in this land uses, with a short leash
+  // (0.5 m) and `angle` pointed at the skipper's own fixed spot.
+  //
+  // A headless probe (same stub-three harness as `test/run.mjs`: `game.start('new')`,
+  // `game.travel(1, 'from-prev')`, then every NPC's and the squirrel's own position sampled every
+  // half second over 90 simulated seconds) swept a grid 2.5-6 m out from the skipper's own spot
+  // against every one of this land's physics boxes, its `game.zones` rectangles and all those
+  // samples: (150, -8) came back clear on every front — 7.1 m from the nearest box, 6.5 m clear of
+  // the nearest zone rectangle and a full 6 m from the nearest other soul.
+  //
+  // Built dead last of everything this land adds, right after the frisbee watcher above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this land's own shared `r()` sequence
+  // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted
+  // by it.
+  { const skWx = 150, skWz = -8, skipX2 = 150, skipZ2 = -13.5;
+    const skipWatcherWard = makeWardrobe(r, { shirts: [0xe08a9a, 0x8ad0c0], pants: [0xfff3b0, 0xbfe7ff] });
+    const skipWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: skipWatcherWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: false });
+    W.add(skipWatcher.group);
+    game.npcs.push(new Wanderer(game, skipWatcher, { x: skWx, z: skWz, angle: atan2(skipX2 - skWx, skipZ2 - skWz), leash: 0.5, speed: 0.3, idle: [3, 6], walk: [1, 1.6],
+      cries: ["Three skips again — same as every throw before it.", "Careful, puss — one splash in that and it's a bath, not a paw-wash.", "Best stretch of river for it, this."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
