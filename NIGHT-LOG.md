@@ -33471,3 +33471,33 @@ confirmed against the previous commit with `git stash`). No visual check was pos
 environment (no browser, no Playwright), so whether the two locals' stance actually reads as one
 scene together is unverified. Six worlds' own paper-plane kids are still waiting on a watcher.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1173 — Candy Land's paper-plane kid gets a watcher too
+
+The Neighborhood's own dart-thrower picked up a watcher last round, the first of the seven; this
+land's own boy, folding and sailing candy-wrapper darts north over the sugar grass out past the
+gumdrop wagon since round 1123, was still throwing to nobody. **A sweet-shop local now stands a few
+steps west of him on the sugar grass, watching the dart glide.** No cries this time: this land
+already has watchers that talk, and a second `cries`-bearing `Wanderer` built in the same window has
+broken unrelated checks before.
+
+No new class or mesh: the usual `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js), the
+same "stand and watch" behaviour every other watcher in this land already uses, with a short leash
+(0.5 m) and `angle` pointed at the kid's own fixed spot rather than a constant.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(1, 'from-prev')` waited out through its real portal-fade timer,
+then 3000 simulated frames sampling every NPC's own position every tenth frame) swept a 0.5 m grid
+2.5-6 m out from the kid's own spot (-58, 66) against every one of this land's 1891 physics boxes,
+its 451 `game.zones` rectangles and all those samples: (-54, 66) came back clearest in that close-in
+band — 3.54 m from the nearest box, 1.27 m clear of the nearest zone rectangle and 4 m from the
+nearest other soul, due west of the kid and clear of the dart's own flight line (which runs north
+along x=-58).
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 334 (no new collider, just the usual 0.5 m greet circle), and Candy Land's own
+friend total went up by one (127 → 128 to meet, confirmed against the previous commit with
+`git stash`). No visual check was possible in this environment (no browser, no Playwright), so
+whether the two locals' stance actually reads as one scene together is unverified. Five worlds' own
+paper-plane kids are still waiting on a watcher. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

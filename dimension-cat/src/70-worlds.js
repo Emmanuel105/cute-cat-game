@@ -7824,6 +7824,37 @@ function buildCandyLand(game, entry) {
     game.npcs.push(new Wanderer(game, skipWatcher, { x: skWx, z: skWz, angle: atan2(skipX2 - skWx, skipZ2 - skWz), leash: 0.5, speed: 0.3, idle: [3, 6], walk: [1, 1.6],
       cries: ["Three skips again — same as every throw before it.", "Careful, puss — one splash in that and it's a bath, not a paw-wash.", "Best stretch of river for it, this."] })); }
 
+  // The Neighborhood's own `PaperPlaneKid` (55-npcs.js) picked up a watcher last round, the first of
+  // the seven; this land's own boy, folding and sailing candy-wrapper darts north over the sugar
+  // grass out past the gumdrop wagon since round 1123, was still throwing to nobody. **A sweet-shop
+  // local now stands a few steps west of him on the sugar grass, watching the dart glide.**
+  //
+  // No new class or mesh: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer`
+  // (55-npcs.js) gives her the same "stand and watch" behaviour every other watcher in this land
+  // already uses, with a short leash (0.5 m) and `angle` pointed at the kid's own fixed spot rather
+  // than a constant. Built with no `cries` at all, same fix every watcher on this land has needed
+  // since the magician's own watcher first broke unrelated checks the one time a second
+  // `cries`-bearing `Wanderer` ran in the same build-and-test window.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(1, 'from-prev')` waited out through its real portal-fade
+  // timer, then 3000 simulated frames sampling every NPC's own position every tenth frame) swept a
+  // 0.5 m grid 2.5-6 m out from the kid's own spot (-58, 66) against every one of this land's 1891
+  // physics boxes, its 451 `game.zones` rectangles and all those samples: (-54, 66) came back
+  // clearest in that close-in band — 3.54 m from the nearest box, 1.27 m clear of the nearest zone
+  // rectangle and 4 m from the nearest other soul, due west of the kid and clear of the dart's own
+  // flight line (which runs north along x=-58).
+  //
+  // Built dead last of everything this land adds, right after the towpath skipper's own watcher
+  // above, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this land's own
+  // shared `r()` sequence unconditionally, and anything built earlier would have had its own
+  // timing-sensitive pick shifted by it.
+  { const planeWvx = -54, planeWvz = 66, planeKidX = -58, planeKidZ = 66;
+    const planeKidWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: false });
+    W.add(planeKidWatcher.group);
+    game.npcs.push(new Wanderer(game, planeKidWatcher, { x: planeWvx, z: planeWvz, angle: atan2(planeKidX - planeWvx, planeKidZ - planeWvz), leash: 0.5, speed: 0.3, idle: [3, 6], walk: [1, 1.6] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
