@@ -2867,6 +2867,43 @@ function buildBeach(game, entry) {
     game.npcs.push(new Wanderer(game, beachPerson(r.chance(0.5), false), { x: wx5, z: wz5, angle: atan2(pgX - wx5, pgZ - wz5), speed: 0.3, leash: 0.5, idle: [3, 6],
       cries: ["However many thousand that is now, he's still counting.", "Careful, puss — give him room to land.", "Best keep that towel of mine well clear, the way he's going."] })); }
 
+  // `Unicyclist` (55-npcs.js) has had three riders so far — Candy Land's performer between the
+  // castle and the cane belt (round 1085), Robot City's maintenance tech in the east yard (round
+  // 1157) and Victorian's street performer on the green by the market square (round 1158) — and
+  // Sunny Shore, Frosty Peak and Whisper Woods still have both feet on the ground everywhere. **A
+  // beachgoer now does laps on a single wheel, coral-trimmed to match this beach's own wardrobe, on
+  // the open dry sand south-east of the pogo stick kid.** *"Soft sand's worse for balance than
+  // cobbles, believe me."* *"Careful, puss — one wheel leaves no room to swerve, same as
+  // everywhere else."* *"Lost count of the laps somewhere past low tide."*
+  //
+  // No new class or mesh: `Unicyclist` and `makeUnicycle()` (60-props.js) already exist from round
+  // 1085; this one just asks `makeUnicycle()` for a beach coral (`0xff7043`, the same shirt colour
+  // `beachWard` above already offers) instead of Candy Land's gold, Robot City's cyan or
+  // Victorian's burgundy, and gives the rider a plain `beachPerson()` rig — which already calls
+  // `W.add(rig.group)` itself — same as every other beachgoer here.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(4, 'from-hub')`, then 6000 simulated frames with a snapshot of
+  // every NPC's own position taken every 50th frame throughout — 120 snapshots spanning 100
+  // simulated seconds, so a wandering local's closest approach anywhere in that span got caught,
+  // not just wherever it happened to stand at one instant) swept a 2 m grid from radius 8 to 48 —
+  // short of the radius (58) where `beachRegion()`'s own fill takes over — testing a 6 m line in
+  // four directions at every point against all 215 of this beach's own physics boxes and its 88
+  // `game.zones` rectangles first, then checking the best candidates against every one of those 120
+  // NPC snapshots. The diagonal from (-22, -17) to (-17.8, -21.2) came back clearest: 6.37 m from
+  // the nearest box and 9.73 m clear of the nearest zone rectangle the whole way, and never closer
+  // than 3.81 m to another soul at any sampled moment over the full 100 seconds — at radius 28 from
+  // the origin, comfortably clear of the pogo kid's own spot (-28, -20) and its watcher (-28, -27).
+  //
+  // Built dead last of everything this beach adds, right after the pogo kid's own watcher above,
+  // for the usual reason: `beachPerson()`/`randomPerson()` both draw off this beach's own shared
+  // `r()` sequence unconditionally, and anything built earlier would have had its own
+  // timing-sensitive pick shifted by it. `Unicyclist`'s own draws come off the shared global
+  // `rnd()`, not this beach's `r()`, so it costs nothing later either way.
+  { const rider = beachPerson(r.chance(0.5), false);
+    game.npcs.push(new Unicyclist(game, rider, makeUnicycle(0xff7043), { a: [-22, -17], b: [-17.8, -21.2], cryIcon: '🎪',
+      cries: ["Soft sand's worse for balance than cobbles, believe me.", "Careful, puss — one wheel leaves no room to swerve, same as everywhere else.", 'Lost count of the laps somewhere past low tide.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

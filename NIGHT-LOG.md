@@ -32969,3 +32969,42 @@ probe, so whether the pedalling actually reads as circular is unverified. `Unicy
 in three of the seven worlds (Candy Land, Robot City, Victorian); the Neighborhood, Sunny Shore, Frosty
 Peak and Whisper Woods are still left. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 1159 — Sunny Shore gets its own unicyclist
+
+`Unicyclist` (55-npcs.js) had three riders — Candy Land (round 1085), Robot City (round 1157) and
+Victorian (round 1158) — and the Neighborhood, Sunny Shore, Frosty Peak and Whisper Woods all still had
+both feet on the ground everywhere. **A beachgoer now does laps on a single wheel, coral-trimmed to
+match this beach's own wardrobe, on the open dry sand south-east of the pogo stick kid.** *"Soft sand's
+worse for balance than cobbles, believe me."* *"Careful, puss — one wheel leaves no room to swerve, same
+as everywhere else."* *"Lost count of the laps somewhere past low tide."* Saying hello makes her the
+usual kind of friend.
+
+No new class or prop: `makeUnicycle()` (60-props.js) already takes a colour, so this one just asks for
+a beach coral (`0xff7043`, the same shirt colour this world's own `beachWard` already offers) instead of
+Candy Land's gold, Robot City's cyan or Victorian's burgundy. The rider is a plain `beachPerson()` rig,
+same as every other local on this beach.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+`game.load(4, 'from-hub')`, then 6000 simulated frames with a snapshot of every NPC's own position taken
+every 50th frame throughout — 120 snapshots spanning 100 simulated seconds, so a wandering local's
+closest approach anywhere in that span got caught, not just wherever it happened to stand at one
+instant) swept a 2 m grid from radius 8 to 48 out — short of the radius (58) where `beachRegion()`'s own
+procedural fill takes over — testing a 6 m line in four directions at every point against all 215 of
+this beach's own physics boxes and its 88 `game.zones` rectangles first, then checking the strongest
+candidates against every one of those 120 NPC snapshots. The diagonal from (-22, -17) to (-17.8, -21.2)
+came back clearest: 6.37 m from the nearest box and 9.73 m clear of the nearest zone rectangle the whole
+way, and never closer than 3.81 m to another soul at any sampled moment across the full 100 seconds — at
+radius 28 from the origin, comfortably clear of the pogo kid's own spot (-28, -20) and its watcher
+(-28, -27) from an earlier round.
+
+Built dead last of everything this beach adds, for the usual reason: `beachPerson()`/`randomPerson()`
+draw off this beach's own shared `r()` sequence unconditionally.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, and box count
+unchanged at 334 (no new collider beyond the usual 0.35 m greet circle). No visual check was possible in
+this environment (no browser, no Playwright) — only the stub-three test suite above and the probe, so
+whether the pedalling actually reads as circular, or whether the sand under it looks flat enough for a
+wheel, is unverified. `Unicyclist` now has a rider in four of the seven worlds (Candy Land, Robot City,
+Victorian, Sunny Shore); the Neighborhood, Frosty Peak and Whisper Woods are still left. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
