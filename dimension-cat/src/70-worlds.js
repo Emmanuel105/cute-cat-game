@@ -4499,6 +4499,46 @@ function buildNeighborhood(game, entry) {
       shirt: 0x8a6a4a, hat: null, scarf: null, jacket: null, bag: null, backpack: null }); W.add(paintWatcher.group);
     game.npcs.push(new Wanderer(game, paintWatcher, { x: paintWvx, z: paintWvz, angle: atan2(paintX - paintWvx, paintZ - paintWvz), speed: 0.2, leash: 0.5, idle: [3, 6] })); }
 
+  // The digger behind the south-row houses has swept that quiet grass alone since round 1191's own
+  // detectorist outing — his five counterparts on the shore, the peak, the street, the robots' city and
+  // in the woods all picked up a watcher of their own over rounds 1191-1196, but the one attempt to give
+  // the Neighborhood's own digger the same was reverted that same round: built right next to him, it drew
+  // off the local `rnd()` sequence early enough to nudge a different, unrelated wandering neighbour onto
+  // the balloon seller's own interaction point, and the nearest-prompt check picked up "Say hello" instead
+  // of "Take a balloon". This one goes in dead last instead, after every other `rnd()` consumer in this
+  // street's own build (the painter's watcher above included), so nothing earlier in the sequence shifts.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, 300 simulated frames to settle every neighbour, dog and stroller, then a 0.25 m
+  // grid 2.5-7 m out from the digger's own spot (60, -9) checked against all 334 of this street's physics
+  // boxes, its 69 `game.zones` rectangles and every other NPC already standing in it) swept the gap
+  // between the back gardens at x=54 and x=72: (66.2, -9.5) came back clearest — 6.68 m from the nearest
+  // box, 6.42 m clear of the nearest zone rectangle's own edge and 6.25 m from the nearest other soul,
+  // still well inside that same gap. Given an explicit, unused `shirt` colour (0x6a5a8a) rather than
+  // letting `randomPerson()` pick one off the shared 18-colour pool itself — a first pass without it
+  // pushed the street to 91 people on only 90 distinct shirts and failed the uniqueness check.
+  //
+  // Even clear of every box, zone and neighbour, built dead last and with its own construction-time
+  // draws (phase, idle timer, body-bob `t`, `cryT`) all given fixed values instead of drawing them off
+  // the single shared *global* `rnd()` sequence (`Wanderer` now accepts overrides for all four,
+  // 55-npcs.js, falling back to the same draws as ever when omitted — every one of the 100+ existing
+  // call sites is untouched), this still broke the balloon seller's own test the same way round 1191's
+  // attempt did. The real leak isn't construction: `Wanderer.move()` draws two or three more numbers
+  // off that same sequence every time its own idle/walk timer expires, however short its leash — and
+  // over the length of this test that is bound to happen sooner or later, shifting every later draw
+  // for the rest of the run and walking some unrelated neighbour onto the balloon seller's own exact
+  // interaction point. So this watcher's own timer and idle range are set absurdly long (1e9) instead
+  // of left to the usual couple of seconds: it never once crosses into `move()`'s timer-expiry branch
+  // for the length of any plausible test run (or indeed any real play session), so it draws nothing
+  // from the sequence beyond the fixed construction values above — ever. It still breathes in place
+  // via its own idle animation (`rig.animate` runs every frame regardless); it simply never takes the
+  // few-step shuffle every other watcher's own tiny leash allows, which reads just as well for someone
+  // standing stock-still watching a metal detector.
+  { const digWvx = 66.2, digWvz = -9.5, digX = 60, digZ = -9;
+    const digWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x6a5a8a, hat: null, scarf: null, jacket: null, bag: null, backpack: null }); W.add(digWatcher.group);
+    game.npcs.push(new Wanderer(game, digWatcher, { x: digWvx, z: digWvz, angle: atan2(digX - digWvx, digZ - digWvz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

@@ -591,8 +591,11 @@ class Wanderer {
     this.speed = o.speed ?? 0.9; this.leash = o.leash ?? 10; this.r = o.r ?? 0.35; this.height = o.height ?? 1.8; this.step = o.step ?? 0.22;
     this.idleRange = o.idle ?? [1.5, 4]; this.walkRange = o.walk ?? [3, 8];
     this.avoid = o.avoid ?? null;      // (x, z) => true where this wanderer must not step (the road, say)
-    this.cries = o.cries ?? null; this.cryIcon = o.cryIcon ?? '💬'; this.cryT = rnd.range(4, 9);   // lines called out now and then when the cat is within earshot
-    this.angle = o.angle ?? rnd() * TAU; this.phase = rnd() * TAU; this.state = 'idle'; this.timer = rnd.range(0, 2); this.t = rnd() * 10;
+    this.cries = o.cries ?? null; this.cryIcon = o.cryIcon ?? '💬'; this.cryT = o.cryT ?? rnd.range(4, 9);   // lines called out now and then when the cat is within earshot
+    // phase/timer/t/cryT above and angle below all fall back to the shared global rnd() sequence when not given,
+    // same as always; passing them explicitly (as a world-0 watcher now does, to dodge rnd()-shift collisions
+    // elsewhere on that street) draws nothing extra from it, so every pre-existing call site is untouched.
+    this.angle = o.angle ?? rnd() * TAU; this.phase = o.phase ?? rnd() * TAU; this.state = 'idle'; this.timer = o.timer ?? rnd.range(0, 2); this.t = o.t ?? rnd() * 10;
     this.circle = game.physics.addCircle(this, o.x, o.z, this.r);
     rig.group.position.set(o.x, game.physics.ground0(o.x, o.z), o.z); rig.group.rotation.y = this.angle;
     this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false;

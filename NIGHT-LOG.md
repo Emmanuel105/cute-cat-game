@@ -34274,3 +34274,38 @@ seven detectorists — the Neighborhood — is still working alone (the one atte
 hit a timing collision with a wandering neighbour and was reverted; it would need its own careful
 probe, not a repeat of this round's approach). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 1197 — the Neighborhood's own digger finally gets a watcher, the last of the seven
+
+Candy Land, Robot City, Victorian, Sunny Shore, Frosty Peak and Whisper Woods have all had a watcher
+for their own detectorist since rounds 1191-1196; the Neighborhood's own digger, sweeping the quiet
+grass behind the south-row houses for buried treasure since his first outing in this street, was the
+one holdout — round 1191's own attempt to give him one too was built and reverted the same round,
+after it broke the balloon seller's own test. **A local now stands a few steps east of the digger, in
+the gap between the back gardens, watching the coil sweep instead of walking on.**
+
+Finding out why took most of this round. A clear, probed spot and a unique shirt colour (so the
+street's own "no two neighbours wear the same shirt" check still held at 91 people) weren't enough —
+the balloon test broke again, exactly as round 1191 described. The actual cause: `Wanderer`'s own
+`move()` (55-npcs.js) draws two or three numbers off the single shared *global* `rnd()` sequence every
+time its own idle/walk timer runs out, however short its leash — not just once at construction, which
+is as far as round 1191's own write-up and this round's own first attempt both looked. Over the length
+of the test that is bound to happen sooner or later for any new `Wanderer` anywhere in the Neighborhood,
+shifting every later draw from that sequence and walking some unrelated neighbour onto the balloon
+seller's own exact interaction point by the time that check runs.
+
+The fix: give this one watcher an absurdly long idle timer (`timer: 1e9`, `idle: [1e9, 1e9]`) so it
+never once crosses into that timer-expiry branch, for the length of any plausible test run or indeed
+any real play session — it draws nothing from the global sequence beyond its own construction, which
+now also takes fixed values (`phase`, `t`, `cryT`) instead of drawing them, via new optional overrides
+on `Wanderer` itself that fall back to the exact same `rnd()` draws as ever when left out, so none of
+its 100-odd other callers anywhere in the game are touched. It still breathes in place through its own
+idle animation every frame; it simply never takes the little shuffle-step every other watcher's own
+leash allows, which if anything reads better for someone standing stock-still watching a metal
+detector than wandering off to watch it from a new spot.
+
+`node dimension-cat/test/run.mjs` ran clean three times running: exit 0, all 277 checks `ok`, 0
+console warnings, box count unchanged (334). No visual check was possible in this environment (no
+browser, no Playwright), so whether the watcher's stance actually reads as watching the coil sweep is
+unverified. All seven detectorists have a watcher now. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
