@@ -34059,3 +34059,45 @@ and fixed the repo's own local `main` branch pointer sitting detached three comm
 tip at the start of this round — same stale-bookkeeping issue earlier rounds have hit — with a
 plain fast-forward, before starting; the commits had already reached `origin/main`, so nothing was
 lost. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1191 — Candy Land's detectorist gets a watcher, the first of the seven
+
+`Detectorist` (55-npcs.js) sweeps a metal detector in every one of the seven worlds — the
+Neighborhood's digger behind the south-row houses, Candy Land's own scanner, and the same act in
+Robot City, Victorian, Sunny Shore, Frosty Peak and Whisper Woods — and until now not one of them
+had ever picked up a watcher, unlike the juggler, the painter and a dozen other performers already
+staffed with one. **A gingerbread-village local now stands a few steps south-west of Candy Land's
+own scanner, watching the coil sweep the grass instead of walking on past.**
+
+No new class or mesh: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer`
+(55-npcs.js) gives him the same "stand and watch" behaviour every other watcher in this game
+already uses, with a short leash (0.5 m) and `angle` pointed at the scanner's own fixed spot (23,
+27) rather than a constant. Built with no `cries` of its own, same as the magician's own watcher in
+this land, so a second `cries`-bearing `Wanderer` never lands in the same build-and-test window.
+
+First attempt put this in the Neighborhood instead, at its own digger (60, -9) — a probed, clear
+spot (6.6 m from the nearest box, 6.3 m from the nearest other soul) that nonetheless broke two
+unrelated checks: `Wanderer`'s constructor always draws three numbers off the single shared global
+`rnd()` sequence (a phase, an idle timer, a body-bob offset) regardless of any option passed in, so
+adding one anywhere shifts every later `rnd()` draw for the rest of that test run. In the
+Neighborhood that shift landed a *different*, pre-existing wandering neighbour right on top of the
+balloon seller's own interaction point by the time the test reached it, so the nearest-prompt check
+picked up "Say hello" instead of "Take a balloon" and failed. Reverted that attempt whole and moved
+the same watcher to Candy Land instead, where the equivalent test checks (the marching guards, the
+gingerbread ring-dance) are fixed-geometry rather than dependent on exactly where some unrelated
+wanderer happens to be standing, so the same kind of shift has nothing fragile to land on.
+
+A headless probe (the same stub-three harness `test/run.mjs` uses: `game.start('new')`,
+`game.travel(1, 'from-prev')`, 300 simulated frames to settle every wandering gingerbread man, then
+a 0.25 m grid 2.5-7 m out from the scanner's own spot checked against all 1891 of this land's
+physics boxes, its 451 `game.zones` rectangles and every other NPC already standing in it) swept the
+whole ring: (18.5, 22.75) came back clearest — 6.15 m from the nearest box, well clear of the
+nearest zone rectangle and 6.19 m from the nearest other soul.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged (334 in the Neighborhood — the reverted attempt left no trace), and Candy Land's own
+friend total went up by one (129 → 130 to meet). No visual check was possible in this environment
+(no browser, no Playwright), so whether the watcher's stance actually reads as watching the coil
+sweep is unverified. Six of the seven detectorists — the Neighborhood, Robot City, Victorian, Sunny
+Shore, Frosty Peak and Whisper Woods — are still working alone. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

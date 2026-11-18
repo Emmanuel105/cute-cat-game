@@ -6904,6 +6904,38 @@ function buildCandyLand(game, entry) {
     game.npcs.push(new Wanderer(game, watcher, { x: wx, z: wz, angle: atan2(mx2 - wx, mz2 - wz), leash: 0.5, speed: 0.4, idle: [3, 6], walk: [1, 1.6],
       cries: ["Marzipan or not, I still don't see where that coin goes.", "Careful, puss — he doesn't like an audience sneaking up from behind.", "Same trick, same spot, every single day off. I keep meaning to catch it."] })); }
 
+  // `Detectorist` (55-npcs.js) sweeps a metal detector in every world — this land's own scanner
+  // above, plus the Neighborhood, Robot City, Victorian, Sunny Shore, Frosty Peak and Whisper Woods'
+  // own searchers — and not one of the seven has ever picked up a watcher, unlike the juggler, the
+  // painter and a dozen other performers already standing in this land. This land's own scanner is
+  // the first. **A gingerbread-village local now stands a few steps south-west of him, watching the
+  // coil sweep the grass instead of walking on past.**
+  //
+  // No new class or mesh: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer`
+  // (55-npcs.js) gives him the same "stand and watch" behaviour every other watcher in this land
+  // already uses, with a short leash (0.5 m) and `angle` pointed at the scanner's own fixed spot (23,
+  // 27) rather than a constant. Built with no `cries` of its own, the same fix the magician's own
+  // watcher above needed, so a second `cries`-bearing `Wanderer` never lands in the same
+  // build-and-test window.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(1, 'from-prev')`, 300 simulated frames to settle every
+  // wandering gingerbread man, then a 0.25 m grid 2.5-7 m out from the scanner's own spot checked
+  // against all 1891 of this land's physics boxes, its 451 `game.zones` rectangles and every other
+  // NPC already standing in it) swept the whole ring: (18.5, 22.75) came back clearest — 6.15 m from
+  // the nearest box, well outside the nearest zone rectangle's own edge and 6.19 m clear of the
+  // nearest other soul, open grass south-west of the detector's own patch.
+  //
+  // Built dead last, right after the magician's own watcher above and right before the squirrel
+  // below, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this land's own shared
+  // `r()` sequence unconditionally, and anything built earlier would have had its own timing-sensitive
+  // pick shifted by it.
+  { const dwx = 18.5, dwz = 22.75, dsx = 23, dsz = 27;
+    const digWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x8a6a7a, hat: null, scarf: null, jacket: null, bag: null, backpack: null });
+    W.add(digWatcher.group);
+    game.npcs.push(new Wanderer(game, digWatcher, { x: dwx, z: dwz, angle: atan2(dsx - dwx, dsz - dwz), speed: 0.2, leash: 0.5, idle: [3, 6] })); }
+
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('star', 7, -6); C.add('yarn', -9, 9); C.add('fish', -16, -13); C.add('mouse', 16, -9); C.add('star', -10, -27); C.add('yarn', 22, 4); C.add('mouse', -28, 26); C.add('fish', 14, -44); C.add('star', 0, -56); C.add('mouse', -58, 30); C.add('yarn', 60, 36);
