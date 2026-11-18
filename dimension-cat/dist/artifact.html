@@ -30169,6 +30169,40 @@ function buildSnowVillage(game, entry) {
     game.npcs.push(new Wanderer(game, frisWatcher, { x: frisWx, z: frisWz, angle: atan2(frisKidX - frisWx, frisKidZ - frisWz), speed: 0.3, leash: 0.5, idle: [3, 6],
       cries: ["Straight up and straight back — he's never once had to chase it.", "Careful, puss — mind your tail, this one's coming down fast.", "Says the cold doesn't bother him anymore. I don't believe him for a second."] })); }
 
+  // `Detectorist` (55-npcs.js) sweeps a metal detector in every one of the seven worlds; Candy Land,
+  // Robot City, Victorian and Sunny Shore's own scanners have all picked up a watcher by now (rounds
+  // 1191-1194), but this mountain's own searcher, sweeping the open snow west of the reindeer herd
+  // for Copper's loose bell since round 499, was still working to nobody. **A local now stands a few
+  // steps south-west of him on the open snow, watching the coil sweep instead of trudging on.**
+  // Reused the searcher's own three lines rather than inventing new ones, same as the beach's own
+  // watcher did last round.
+  //
+  // No new class or mesh: the usual `makeHuman()`/`randomPerson()` rig in this mountain's own
+  // beanie-and-coat wardrobe, and `Wanderer` (55-npcs.js) for the same "stand and watch" behaviour
+  // every other watcher on this mountain already uses, with a short leash (0.5 m) and `angle`
+  // pointed at the searcher's own fixed spot (-30, -9) rather than a constant. `Wanderer`'s own
+  // constructor calls `greetable()` itself, so no extra wiring was needed.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(5, 'from-hub')`, 3600 simulated frames sampling every NPC's own
+  // position every 10th frame to settle every wanderer, dancer and swinger) swept a 0.25 m grid
+  // 2.5-7 m out from the searcher's own spot against all of this mountain's own physics boxes
+  // (knee-to-head height only), its `game.zones` rectangles and all of those position samples:
+  // (-31, -12) came back clearest — 6.20 m from the nearest box, 5 m clear of the nearest zone
+  // rectangle and 3.16 m from the nearest other soul (the searcher himself, which is the point),
+  // open snow at radius 33.5 from the origin, well short of the radius (58) where `snowRegion()`'s
+  // own procedural fill takes over.
+  //
+  // Built dead last of everything this mountain adds, for the usual reason: `makeHuman()`/
+  // `randomPerson()` both draw off this mountain's own shared `r()` sequence unconditionally, and
+  // anything built earlier would have had its own timing-sensitive pick shifted by it.
+  { const detWx = -31, detWz = -12, detSx = -30, detSz = -9;
+    const detWatcherWard = makeWardrobe(r, { shirts: [0x8a6a4a, 0x4a8a6a, 0x6a4a8a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const detWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: detWatcherWard }),
+      hat: 'beanie', hatColor: 0x8a6a4a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a, glasses: false }); W.add(detWatcher.group);
+    game.npcs.push(new Wanderer(game, detWatcher, { x: detWx, z: detWz, angle: atan2(detSx - detWx, detSz - detWz), speed: 0.3, leash: 0.5, idle: [3, 6],
+      cries: ["One of Copper's bells came loose out here somewhere.", "Careful, puss, don't step on it first.", "This thing beeps at every buckle-sized rock."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

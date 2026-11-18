@@ -34203,3 +34203,38 @@ seven detectorists — the Neighborhood, Frosty Peak and Whisper Woods — are s
 Neighborhood's own attempt at round 1191 hit a timing collision with a wandering neighbour and was
 reverted; it would need its own careful probe, not a repeat of this round's approach). Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1195 — Frosty Peak's detectorist gets a watcher, the fifth of the seven
+
+Candy Land, Robot City, Victorian and Sunny Shore's own scanners have all picked up a watcher over
+the last four rounds (1191-1194); this mountain's own searcher, sweeping the open snow west of the
+reindeer herd for one of Copper's loose harness bells since round 499, was still working to nobody.
+**A local now stands a few steps south-west of him on the open snow, watching the coil sweep instead
+of trudging on.** Reused the searcher's own three lines of dialogue rather than inventing new ones —
+*"One of Copper's bells came loose out here somewhere."* *"Careful, puss, don't step on it first."*
+*"This thing beeps at every buckle-sized rock."* — same choice the beach's own watcher made last
+round.
+
+No new class or mesh: the usual `makeHuman()`/`randomPerson()` rig in this mountain's own
+beanie-and-coat wardrobe, and `Wanderer` (55-npcs.js) for the same "stand and watch" behaviour every
+other watcher on this mountain already uses, with a short leash (0.5 m) and `angle` pointed at the
+searcher's own fixed spot (-30, -9) rather than a constant. `Wanderer`'s own constructor calls
+`greetable()` itself, so no extra wiring was needed.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(5, 'from-hub')`, 3600 simulated frames sampling every NPC's own
+position every 10th frame to settle every wanderer, dancer and swinger) swept a 0.25 m grid 2.5-7 m
+out from the searcher's own spot against this mountain's own physics boxes (knee-to-head height
+only), its `game.zones` rectangles and all of those position samples: (-31, -12) came back clearest
+— 6.20 m from the nearest box, 5 m clear of the nearest zone rectangle and 3.16 m from the nearest
+other soul (the searcher himself, which is the point), open snow at radius 33.5 from the origin,
+well short of the radius (58) where `snowRegion()`'s own procedural fill takes over.
+
+`node dimension-cat/test/run.mjs` ran clean three times running: exit 0, all 277 checks `ok`, 0
+console warnings, box count unchanged (334), and Frosty Peak's own friend total went up by one (144
+→ 145) to meet. No visual check was possible in this environment (no browser, no Playwright), so
+whether the watcher's stance actually reads as watching the coil sweep is unverified. Two of the
+seven detectorists — the Neighborhood and Whisper Woods — are still working alone (the
+Neighborhood's own attempt at round 1191 hit a timing collision with a wandering neighbour and was
+reverted; it would need its own careful probe, not a repeat of this round's approach). Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
