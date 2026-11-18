@@ -34135,3 +34135,37 @@ possible in this environment (no browser, no Playwright), so whether the watcher
 reads as watching the coil sweep is unverified. Five of the seven detectorists — the Neighborhood,
 Victorian, Sunny Shore, Frosty Peak and Whisper Woods — are still working alone. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1193 — Victorian's detectorist gets a watcher, the third of the seven
+
+Candy Land and Robot City's own scanners picked up watchers in the last two rounds (1191, 1192);
+Victorian's own relic hunter, sweeping the north bank's quiet grass for buried coins since the kite
+kid's round, was still working to nobody. **A passer-by now stands a few steps north-east of the
+relic hunter, watching the coil sweep the grass instead of carrying on toward the games cluster.**
+
+No new class or mesh: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer` (55-npcs.js)
+gives him the same "stand and watch" behaviour every other watcher in this town already uses, with a
+short leash (0.5 m) and `angle` pointed at the relic hunter's own fixed spot (-45, 42) rather than a
+constant. Built with no `cries` of its own, so a second `cries`-bearing `Wanderer` never lands in the
+same build-and-test window, and placed dead last of everything this town adds — right after the
+painter's own watcher and right before the squirrel — for the usual reason: `makeHuman()` and
+`randomPerson()` both draw off this town's own shared `r()` sequence unconditionally, and anything
+built earlier would have had its own timing-sensitive pick shifted by it.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(3, 'from-prev')`, 3600 simulated frames sampling every NPC's own
+position every 10th frame to settle every wanderer, dancer and swinger, then a 0.5 m grid 2.5-7 m out
+from the relic hunter's own spot checked against all 334 of this town's physics boxes, its 69
+`game.zones` rectangles and all 37,080 of those position samples) swept the ring: (-39.5, 46) came
+back clearest — 8.80 m from the nearest box, 14.69 m clear of the nearest zone rectangle and 8.73 m
+from the nearest other soul over the whole run, still well inside the radius (88) where
+`victorianRegion()`'s own procedural fill takes over.
+
+`node dimension-cat/test/run.mjs` ran clean three times running: exit 0, all 278 checks `ok`, 0
+console warnings, box count unchanged (334), and Victorian's own friend total went up by one (173 →
+174) to meet. No visual check was possible in this environment (no browser, no Playwright), so
+whether the watcher's stance actually reads as watching the coil sweep is unverified. Four of the
+seven detectorists — the Neighborhood, Sunny Shore, Frosty Peak and Whisper Woods — are still working
+alone (the Neighborhood's own attempt at round 1191 hit a timing collision with a wandering neighbour
+and was reverted; it would need its own careful probe, not a repeat of this round's approach).
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
