@@ -34341,3 +34341,31 @@ the watcher's stance actually reads as watching the line is unverified. Six angl
 alone — Robot City, Victorian, Sunny Shore, Frosty Peak, Whisper Woods and, last as usual given its own
 rnd()-shift hazard (round 1197), the Neighborhood. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1199 — Robot City's drain-fishing technician gets a watcher too
+
+Second of the angler-watcher set, after Candy Land's river last round. Robot City has no lake, so its
+own angler is a maintenance technician fishing a floor drain for bolts the factory floor keeps
+swallowing (round 925 or so) — now she has company. **A local stands two metres off her stool, on the
+open factory floor, watching the magnet-line dip into the grate instead of wandering off.**
+
+A headless probe (`game.travel(2, 'from-prev')`, the same stub-three harness `test/run.mjs` itself
+uses) sampled every NPC's own position every quarter second over 300 simulated seconds — long enough
+for every wandering, patrolling and ball-tossing robot pack to clear the spot several times over — then
+swept a 0.25 m grid 1.8-3 m out from the technician's own stool at (1, 67) against those samples, all
+1206 of the city's physics boxes and `game.zones`: (-1, 68) came back clear by 10.8 m of the nearest
+box, 4.9 m clear of the drain grate itself (1, 63.5), and 2.2 m from the technician, the nearest other
+soul over the whole run.
+
+No new class: the same `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js) every other
+watcher in this series already uses, short leash (0.5 m), no `cries` of its own, `angle` pointing at
+the technician's own fixed stool. `Wanderer`'s own constructor calls `greetable()` itself, so no extra
+wiring was needed.
+
+`node dimension-cat/test/run.mjs` ran clean three times running: exit 0, all checks `ok`, 0 console
+warnings, box count unchanged (334), and Robot City's own friend total went up by one (139 → 140) to
+meet. No visual check was possible in this environment (no browser, no Playwright), so whether the
+watcher's stance actually reads as watching the line is unverified. Five anglers are still working
+alone — Victorian, Sunny Shore, Frosty Peak, Whisper Woods and, last as usual given its own rnd()-shift
+hazard (round 1197), the Neighborhood. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.

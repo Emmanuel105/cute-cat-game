@@ -18328,6 +18328,20 @@ function buildRobotCity(game, entry) {
     W.add(drainTech.group);
     game.npcs.push(new IceFisher(game, drainTech, makeIceStool(), { x: fx, z: fz, ry: fry, holeX: hx, holeZ: hz, holeY: 0.05, cryIcon: '🧲',
       cries: ['Fourth bolt down there this week.', "Careful, puss — mind the line, that pull is stronger than it looks.", "Robots don't fish. Can't blame them — nothing down there but hardware."] })); }
+  // every world's angler has started picking up a watcher a few rounds back — the Neighborhood's lake
+  // jetty, Candy Land's chocolate river — and Robot City's own drain-fishing technician, the one angler
+  // in the game with no actual water, is next. A headless probe (`game.travel(2, 'from-prev')`, the
+  // same stub-three harness `test/run.mjs` itself uses) sampled every NPC's own position every quarter
+  // second over 300 simulated seconds — long enough for every wandering, patrolling and ball-tossing
+  // robot pack to clear the spot several times over — then swept a 0.25 m grid 1.8-3 m out from the
+  // technician's own stool against those samples, all 1206 of the city's physics boxes and `game.zones`:
+  // (-1, 68) came back clear by 10.8 m of the nearest box, 4.9 m clear of the drain grate itself, and
+  // 2.2 m from the technician, the nearest other soul over the whole run.
+  { const drainWatcherX = -1, drainWatcherZ = 68, drainStoolX = 1, drainStoolZ = 67;
+    const drainWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
+      shirt: 0x6fa8ff, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false }); W.add(drainWatcher.group);
+    game.npcs.push(new Wanderer(game, drainWatcher, { x: drainWatcherX, z: drainWatcherZ,
+      angle: atan2(drainStoolX - drainWatcherX, drainStoolZ - drainWatcherZ), speed: 0.3, leash: 0.5, idle: [3, 6] })); }
   // Victorian's two retired gents have had a draughts board between them since round 354 — Robot City
   // never had a game for the off-shift workers. Two of them now sit either side of an upturned steel
   // drum out on the open floor north of the city, a checkers board welded to its lid, mid-game. No new
