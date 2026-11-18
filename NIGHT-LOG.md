@@ -33993,3 +33993,36 @@ console warnings, box count unchanged (670 in Whisper Woods), and Whisper Woods'
 went up by one to meet. No visual check was possible in this environment (no browser, no
 Playwright), so whether the watcher's stance actually reads as one scene with the easel is
 unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1189 — Sunny Shore's painter gets a watcher too
+
+Checked the actual source rather than trust this log's own running tally — the last few rounds'
+"Nth of the seven" counts didn't agree with each other once the painter watcher code itself was
+greped for. Found four of the seven already done (the Neighborhood, Candy Land, Robot City, Whisper
+Woods) and three still bare (Victorian, Sunny Shore, Frosty Peak). **Sunny Shore's own painter, at
+her easel south of the lighthouse, now has a sunbather pausing on the open sand a few steps toward
+the water to watch the red-and-white bands take shape in paint**, instead of walking on past —
+Victorian's and Frosty Peak's painters are the two still left.
+
+No new class or mesh: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer`
+(55-npcs.js) gives her the same "stand and watch" behaviour every other watcher in this game
+already uses, with a short leash (0.5 m) and `angle` pointed at the painter's own fixed spot (0,
+-40) rather than a constant. Built with no `cries` of its own, the same fix every watcher before
+her has needed, so a second `cries`-bearing `Wanderer` never lands in the same build-and-test
+window.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.load(4, 'from-hub')`, 300 simulated frames to settle every wandering crab, gull and
+sunbather, then a 0.25 m grid 2.5-7 m out from the painter's own spot checked against all 273 of
+this beach's physics boxes and every other soul already standing on it) swept the ring: (7, -40)
+came back clearest — 5.7 m from the nearest box (the lighthouse-corner rock scatter) and exactly 7
+m from the nearest other soul, the painter herself. It lands inside the lighthouse's own
+region-fill exclusion zone, same as the painter, the keeper, the rocks and the chip stand already
+do, so it steals no clearance from `beachRegion`'s own fill further out. The shirt colour
+(0x26a69a, a teal) was checked against every other shirt already built nearby first.
+
+`node dimension-cat/test/run.mjs` ran clean three times running: exit 0, every check `ok`, 0
+console warnings, box count unchanged (334 on Sunny Shore), and Sunny Shore's own friend total went
+up by one (147 → 148 to meet). No visual check was possible in this environment (no browser, no
+Playwright), so whether the watcher's stance actually reads as one scene with the easel is
+unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

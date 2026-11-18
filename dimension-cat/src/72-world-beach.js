@@ -146,6 +146,33 @@ function buildBeach(game, entry) {
     W.add(painter.group);
     game.npcs.push(new Painter(game, painter, makeEasel(), { x: px, z: pz, ry,
       cries: ['That red band never sits quite straight, does it.', 'Best light on the coast, this time of day.', "Careful, puss - wet paint, if you can believe it dries out here at all."] })); }
+  // the Neighborhood's, Candy Land's, Robot City's and Whisper Woods' own painters have all picked up
+  // a watcher by now, after noticing every artist in this game had been performing to nobody —
+  // Victorian's, Sunny Shore's and Frosty Peak's own painters were still the three left. **A sunbather
+  // in a towel wrap now stands on the open sand a few steps toward the water from this easel, watching
+  // the lighthouse take shape in paint instead of walking on down the beach.**
+  //
+  // No new class or mesh: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer`
+  // (55-npcs.js) gives her the same "stand and watch" behaviour every other watcher in this game
+  // already uses, with a short leash (0.5 m) and `angle` pointed at the painter's own fixed spot
+  // (0, -40) rather than a constant. Built with no `cries` of its own, the same fix every watcher
+  // before her has needed, so a second `cries`-bearing `Wanderer` never lands in the same
+  // build-and-test window.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.load(4, 'from-hub')`, 300 simulated frames to settle every wandering crab, gull and
+  // sunbather, then a 0.25 m grid 2.5-7 m out from the painter's own spot checked against all 273 of
+  // this beach's physics boxes and every other soul already standing on it) swept the ring: (7, -40)
+  // came back clearest — 5.7 m from the nearest box (the lighthouse-corner rock scatter) and exactly
+  // 7 m from the nearest other soul, the painter herself. It sits inside the lighthouse's own
+  // region-fill exclusion zone, same as the painter, the keeper, the rocks and the chip stand already
+  // do, so it steals no clearance from `beachRegion`'s own fill further out. The shirt colour
+  // (0x26a69a, a teal) was checked against every other shirt already built nearby first.
+  { const wx = 7, wz = -40, wpx = 0, wpz = -40;
+    const watcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
+      shirt: 0x26a69a, pants: 0xe8d9b0, shoes: 0xefe7d8, hat: 'sunhat', hatColor: 0xfff3d6, glasses: r.chance(0.3), jacket: null, scarf: null, bag: null, backpack: null });
+    W.add(watcher.group);
+    game.npcs.push(new Wanderer(game, watcher, { x: wx, z: wz, angle: atan2(wpx - wx, wpz - wz), leash: 0.5, speed: 0.3, idle: [3, 6] })); }
   // the ice-cream seller works the sunbathing crowd, but nobody sold the other half of a day at the
   // seaside — a fish-and-chips stand on the quiet open sand south of the lighthouse, past its rocks.
   // A headless probe swept a grid of candidates across the hand-built heart against every physics box
