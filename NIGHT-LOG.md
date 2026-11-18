@@ -33806,3 +33806,34 @@ and re-running — so three clean back-to-back runs were taken as the real signa
 No visual check was possible in this environment (no browser, no Playwright), so whether the
 lamplighter's walk and flare actually read well against the lanterns' own low light is unverified.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1183 — the Neighborhood's gondola lanterns get their own lamplighter
+
+Round 1182 gave Frosty Peak's own welcome-arch lanterns a lamplighter after they'd glowed, untended,
+since the path went in — but the exact same gap sat right at home: the row of six lanterns by the
+Neighborhood's own gondola station (west edge, by the way up the mountain) had never had one either.
+**A neighbour now works the row with a pole, giving each lantern a flare as he reaches it, there and
+back along the path from the street to the station.** *"One more lit, one more to go."* *"Careful,
+puss — mind the pole."* *"Last stop before the mountain."* Saying hello makes him the usual kind of
+friend.
+
+No new mesh or controller: `makeLanternPath` already hands back its lamp array (round 1182's own
+fix, for exactly this reuse) and `Lamplighter` (55-npcs.js) already knows how to patrol one — already
+working the Victorian gas lamps, this same street's own southern lamps, and now Frosty Peak's arch
+lanterns too. Walking points come straight from each lamp's own position, 1.1 m in from it, so there
+was no new ground to clear beyond the lamps' own existing physics boxes.
+
+The only real trap here was the Neighborhood's own shared RNG sequence: a first pass placed the new
+`makeWardrobe()`/`randomPerson()` draw right after the lantern path itself, mid-build, and that
+alone was enough to shift every later wardrobe pick in the street and collide two unrelated
+neighbours' shirt colours (`FAIL: no two neighbours wear the same shirt`) — the exact failure mode
+round 1162's and 1169's own notes warned about. Moving the same code to the very end of the build,
+right after the paper-plane kid's own watcher and right before `makeDayNight` (the convention every
+other late addition to this street already follows), fixed it with no other change.
+
+`node dimension-cat/test/run.mjs` ran clean three times running: exit 0, every check `ok`, 0 console
+warnings, box count unchanged at 334, and the Neighborhood's own friend total went up by one (118 →
+119 to meet). Frosty Peak still has a second, unattended lantern path of its own down by the zipline
+landing — left for another round. No visual check was possible in this environment (no browser, no
+Playwright), so whether the lamplighter's walk and flare actually read well next to the gondola
+station is unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

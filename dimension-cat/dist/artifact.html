@@ -11174,7 +11174,7 @@ function buildNeighborhood(game, entry) {
   const beachGate = makeBeachGate(game, 78, 22, PI / 2, () => game.travel(WORLD_INDEX('beach'), 'from-hub')); U.push(beachGate.userData.update);
   flatPlane(game, 30, 3, walk, 60, 22, 0, 0.02);                                                                             // boardwalk from the road out to the arch
   const gondola = makeGondolaStation(game, -72, -40, PI / 2, () => game.travel(WORLD_INDEX('snow'), 'from-hub')); U.push(gondola.userData.update);
-  makeLanternPath(game, -50, -12, -66, -36, 6);
+  const gondolaLanterns = makeLanternPath(game, -50, -12, -66, -36, 6);
   const hollow = makeHollowOak(game, 40, 78, PI, () => game.travel(WORLD_INDEX('forest'), 'from-hub')); U.push(hollow.userData.update);
   for (let i = 0; i < 10; i++) { const z = 56 + i * 2.2, x = 8 + i * 3.0 + sin(i) * 0.8; mesh(G.cyl(0.55, 0.6, 0.1, 9), mat(0x8a8a80, { roughness: 1 }), { x, y: 0.05, z, ry: r() * TAU, shadow: 'receive', parent: W }); }   // stepping stones to the oak
   const signpost = place(game, U, makeSignpost([['Park & portal', 0, 50], ['Sunny Shore', 78, 22], ['Frosty Peak', -72, -40], ['Whisper Woods', 40, 78]], -4.4, 8.9), -4.4, 8.9, 0); P.addBox(-4.4, 1.2, 8.9, 0.3, 2.4, 0.3, { cam: false });
@@ -13433,6 +13433,26 @@ function buildNeighborhood(game, entry) {
     const dartKidWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
       shirt: 0x3a6a5a, hat: null, scarf: null, jacket: null, bag: null, backpack: null }); W.add(dartKidWatcher.group);
     game.npcs.push(new Wanderer(game, dartKidWatcher, { x: dartWvx, z: dartWvz, angle: atan2(dartKidX - dartWvx, dartKidZ - dartWvz), speed: 0.1, leash: 0.5, idle: [3, 6] })); }
+
+  // the row of lanterns by the gondola station (near the west edge, built back when the station itself
+  // went in) has glowed, untended, since it went in — the same gap Frosty Peak's own welcome-arch
+  // lanterns had until last round. `makeLanternPath` already hands back its lamp meshes for exactly
+  // this reuse, and `Lamplighter` (55-npcs.js, already working the Victorian gas lamps and this
+  // street's own southern lamps) needs nothing new: walking points come straight from each lamp's own
+  // position, 1.1 m in from it, so there's no new ground to clear beyond the lamps' own existing
+  // physics boxes.
+  //
+  // Built dead last, right after the paper-plane kid's own watcher above and right before
+  // `makeDayNight`, same reason as every other addition on this street: `makeHuman()` and
+  // `randomPerson()` both draw off this street's own shared `r()` sequence unconditionally, and this
+  // is the first world the test suite builds, so anything built earlier here would have had its own
+  // timing-sensitive pick shifted by it.
+  { const lampWard = makeWardrobe(r, { shirts: [0x6a4a5a, 0x4a6a7a, 0x7a6a4a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const lamplighter = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: lampWard }),
+      hat: 'cap', hatColor: 0x2a2a2a, pole: true, jacket: null, scarf: null, bag: null, backpack: null });
+    W.add(lamplighter.group);
+    game.npcs.push(new Lamplighter(game, lamplighter, gondolaLanterns, { speed: 0.8,
+      cries: ['One more lit, one more to go.', 'Careful, puss — mind the pole.', 'Last stop before the mountain.'] })); }
 
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
