@@ -783,6 +783,30 @@ function buildForest(game, entry) {
     W.add(artist.group);
     game.npcs.push(new Painter(game, artist, makeEasel(), { x: 6, z: 20, ry: -2.0,
       cries: ['The light here is far too good to waste.', "I swear that mushroom moved when I wasn't looking.", 'Nearly got the whiskers right, this time.'] })); }
+  // the Neighborhood's, Candy Land's and Robot City's own painters all picked up a watcher over the
+  // last three rounds, after noticing every artist in this game had been performing to nobody —
+  // Victorian's and Whisper Woods' own painters were the two left. **A hiker now stands a few steps
+  // north-east of this glade's easel, watching the mushrooms take shape in paint instead of walking
+  // on toward the treehouse.**
+  //
+  // No new class or mesh: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer`
+  // (55-npcs.js) gives her the same "stand and watch" behaviour every other watcher in this game
+  // already uses, with a short leash (0.5 m) and `angle` pointed at the painter's own fixed spot
+  // rather than a constant. Built with no `cries` of its own, the same fix every watcher before her
+  // has needed, so a second `cries`-bearing `Wanderer` never lands in the same build-and-test window.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.travel(6, 'from-hub')`, 300 simulated frames to settle every wandering deer, fox and owl,
+  // then a 0.25 m grid 2.5-7 m out from the painter's own spot (6, 20) checked against all 670 of
+  // this wood's physics boxes, its 229 `game.zones` rectangles and every other soul already standing
+  // in it) swept the ring: (10, 23.4) came back clear — 5.43 m from the nearest box, 5.4 m clear of
+  // the nearest zone rectangle's own edge and 5.25 m from the nearest other soul, the painter
+  // himself. The shirt colour (0x8a5a3a, a rust brown) was checked against every other shirt already
+  // built nearby first.
+  { const fwx = 10, fwz = 23.4, fpx = 6, fpz = 20;
+    const fwatcher = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: false }), shirt: 0x8a5a3a, pants: 0x3a4a3a, shoes: 0x3a2a1e, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(fwatcher.group);
+    game.npcs.push(new Wanderer(game, fwatcher, { x: fwx, z: fwz, angle: atan2(fpx - fwx, fpz - fwz), leash: 0.5, speed: 0.4, idle: [3, 6], walk: [1, 1.6] })); }
   // a child chases fireflies near the glade with a jam-jar, never quite catching one — the dialogue has
   // named the jar since round 127's own build, but nothing was ever actually in the kid's hand. One now
   // hangs from a wire bail handle gripped in the right fist: empty glass, same as the cries keep admitting.

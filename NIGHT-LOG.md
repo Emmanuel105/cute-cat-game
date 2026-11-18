@@ -33965,3 +33965,31 @@ warnings, box count unchanged at 334, and Candy Land's own friend total went up 
 meet). No visual check was possible in this environment (no browser, no Playwright), so whether the
 watcher's stance actually reads as one scene with the easel is unverified. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1188 — Whisper Woods' painter gets a watcher too
+
+The last three rounds gave the Neighborhood's, Candy Land's and Robot City's own painters their
+first watchers, leaving only Victorian's and Whisper Woods' artists still performing to nobody.
+**A hiker now stands a few steps north-east of the mushroom-glade easel, watching the painting take
+shape instead of walking on toward the treehouse** — the fourth of the seven, two still to go.
+
+No new class or mesh: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer`
+(55-npcs.js) gives her the same "stand and watch" behaviour every other watcher in this game
+already uses, with a short leash (0.5 m) and `angle` pointed at the painter's own fixed spot rather
+than a constant. Built with no `cries` of its own, the same fix every watcher before her has
+needed, so a second `cries`-bearing `Wanderer` never lands in the same build-and-test window.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.travel(6, 'from-hub')`, 300 simulated frames to settle every wandering deer, fox and owl,
+then a 0.25 m grid 2.5-7 m out from the painter's own spot (6, 20) checked against all 670 of this
+wood's physics boxes, its 229 `game.zones` rectangles and every other soul already standing in it)
+swept the ring: (10, 23.4) came back clear — 5.43 m from the nearest box, 5.4 m clear of the
+nearest zone rectangle's own edge and 5.25 m from the nearest other soul, the painter himself. The
+shirt colour (0x8a5a3a, a rust brown) was checked against every other shirt already built nearby
+first.
+
+`node dimension-cat/test/run.mjs` ran clean three times running: exit 0, every check `ok`, 0
+console warnings, box count unchanged (670 in Whisper Woods), and Whisper Woods' own friend total
+went up by one to meet. No visual check was possible in this environment (no browser, no
+Playwright), so whether the watcher's stance actually reads as one scene with the easel is
+unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
