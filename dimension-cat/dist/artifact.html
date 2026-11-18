@@ -27064,6 +27064,39 @@ function buildBeach(game, entry) {
     game.npcs.push(new Wanderer(game, beachPerson(r.chance(0.5), false), { x: pwx, z: pwz, angle: atan2(pkX - pwx, pkZ - pwz), speed: 0.1, leash: 0.5, idle: [3, 6],
       cries: ["Folds a fresh one every throw — salt air warps the paper fast, same as he keeps saying.", 'Careful, puss — swat that one and he just folds another.', 'Furthest one yet, or so he tells it every time.'] })); }
 
+  // `Detectorist` (55-npcs.js) sweeps a metal detector in every one of the seven worlds; Candy
+  // Land, Robot City and Victorian's own scanners have all picked up a watcher by now (rounds
+  // 1191-1193), but this beach's own hunter, sweeping the open sand between the ice-cream cart and
+  // the sunbathers since round 591, was still working to nobody. **A beachcomber now stands a few
+  // steps west of him on the dry sand, watching the coil sweep instead of walking on down the
+  // beach.** *"Found a bottle cap last week. Figures."* *"Careful, puss, you'll set it off."* *"One
+  // day it'll be real treasure."*
+  //
+  // No new class or mesh: the usual `beachPerson()`/`randomPerson()` rig and `Wanderer`
+  // (55-npcs.js), the same "stand and watch" behaviour every other watcher on this beach already
+  // uses, with a short leash (0.5 m) and `angle` pointed at the hunter's own fixed spot (-6, 18)
+  // rather than a constant. `Wanderer`'s own constructor calls `greetable()` itself, so no extra
+  // wiring was needed. Reused the detectorist's own three lines rather than inventing new ones, same
+  // as every other scanner-watcher this series has built so far.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(4, 'from-hub')` waited out for real against
+  // `game.worldIndex` and `game.transitioning`, then 3600 simulated frames sampling every NPC's own
+  // position every 10th frame) swept a 0.25 m grid 2.5-7 m out from the hunter's own spot against
+  // all 112 of this beach's own physics boxes (within knee-to-head height), its 92 `game.zones`
+  // rectangles and all 47,520 of those position samples: (-11, 18.75) came back clearest — 5.07 m
+  // from the nearest box, 18.21 m clear of the nearest zone rectangle and 5.06 m from the nearest
+  // other soul over the whole run, open dry sand at radius 21.8 from the origin, well short of the
+  // radius (58) where `beachRegion()`'s own procedural fill takes over.
+  //
+  // Built dead last of everything this beach adds, right after the paper-plane kid's own watcher
+  // above, for the usual reason: `beachPerson()`/`randomPerson()` both draw off this beach's own
+  // shared `r()` sequence unconditionally, and anything built earlier would have had its own
+  // timing-sensitive pick shifted by it.
+  { const dwx = -11, dwz = 18.75, dhx = -6, dhz = 18;
+    game.npcs.push(new Wanderer(game, beachPerson(r.chance(0.5), false), { x: dwx, z: dwz, angle: atan2(dhx - dwx, dhz - dwz), speed: 0.1, leash: 0.5, idle: [3, 6],
+      cries: ['Found a bottle cap last week. Figures.', 'Careful, puss, you\'ll set it off.', "One day it'll be real treasure."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

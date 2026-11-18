@@ -34169,3 +34169,37 @@ seven detectorists — the Neighborhood, Sunny Shore, Frosty Peak and Whisper Wo
 alone (the Neighborhood's own attempt at round 1191 hit a timing collision with a wandering neighbour
 and was reverted; it would need its own careful probe, not a repeat of this round's approach).
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1194 — Sunny Shore's detectorist gets a watcher, the fourth of the seven
+
+Candy Land, Robot City and Victorian's own scanners have all picked up a watcher by now (rounds
+1191-1193); this beach's own hunter, sweeping the open sand between the ice-cream cart and the
+sunbathers since round 591, was still working to nobody. **A beachcomber now stands a few steps west
+of him on the dry sand, watching the coil sweep instead of walking on down the beach.** *"Found a
+bottle cap last week. Figures."* *"Careful, puss, you'll set it off."* *"One day it'll be real
+treasure."* — the hunter's own three lines, reused rather than invented fresh, same as the series has
+done throughout.
+
+No new class or mesh: the usual `beachPerson()`/`randomPerson()` rig and `Wanderer` (55-npcs.js), the
+same "stand and watch" behaviour every other watcher on this beach already uses, with a short leash
+(0.5 m) and `angle` pointed at the hunter's own fixed spot (-6, 18) rather than a constant.
+`Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was needed.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(4, 'from-hub')` waited out for real against `game.worldIndex` and
+`game.transitioning`, then 3600 simulated frames sampling every NPC's own position every 10th frame)
+swept a 0.25 m grid 2.5-7 m out from the hunter's own spot against all 112 of this beach's own
+physics boxes (within knee-to-head height), its 92 `game.zones` rectangles and all 47,520 of those
+position samples: (-11, 18.75) came back clearest — 5.07 m from the nearest box, 18.21 m clear of the
+nearest zone rectangle and 5.06 m from the nearest other soul over the whole run, open dry sand at
+radius 21.8 from the origin, well short of the radius (58) where `beachRegion()`'s own procedural
+fill takes over.
+
+`node dimension-cat/test/run.mjs` ran clean three times running: exit 0, all 277 checks `ok`, 0
+console warnings, box count unchanged (334), and Sunny Shore's own friend total went up by one (148 →
+149) to meet. No visual check was possible in this environment (no browser, no Playwright), so
+whether the watcher's stance actually reads as watching the coil sweep is unverified. Three of the
+seven detectorists — the Neighborhood, Frosty Peak and Whisper Woods — are still working alone (the
+Neighborhood's own attempt at round 1191 hit a timing collision with a wandering neighbour and was
+reverted; it would need its own careful probe, not a repeat of this round's approach). Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
