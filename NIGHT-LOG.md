@@ -33907,6 +33907,35 @@ whether the watcher's stance actually reads as one scene with the easel is unver
 
 ## Round 1186 — Candy Land's painter gets a watcher too
 
+## Round 1187 — Robot City's painter gets a watcher too, the sixth of the seven
+
+Rounds 1185 and 1186 gave the Neighborhood's and Candy Land's own painters their first watchers,
+after noticing every painter in the game had been performing to nobody. **A technician now stands a
+few steps east of Robot City's own easel, on the open floor toward downtown, watching the giant
+robot statue take shape in paint.** Five of the seven artists still had nobody watching before this
+round; now only Victorian's and Whisper Woods' own painters are left.
+
+No new class or mesh: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer` (55-npcs.js)
+gives her the same "stand and watch" behaviour every other watcher in this game already uses, with a
+short leash (0.5 m) and `angle` pointed at the painter's own fixed spot (0, 27) rather than a
+constant. Built with no `cries` of its own, the same fix every watcher has needed since the first
+one that shipped alongside a second `cries`-bearing `Wanderer` broke the build.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.load(2, 'from-prev')`, 300 simulated frames to settle every wandering local, the ring-dancers
+and the tag/catch pairs, then a 0.25 m grid 2.5–7 m out from the painter's own spot checked against
+all 1206 of Robot City's physics boxes, its 296 `game.zones` rectangles and every other soul already
+standing in it) swept the ring: (5, 27) came back clear — 5.54 m from the nearest box, nowhere near
+any zone rectangle (nothing is zoned this far out on the statue plaza's own open floor) and exactly
+5 m from the nearest other soul, the painter herself. The shirt colour (0x4a8a6a, a teal green) was
+checked against every other explicit shirt colour already built in this city first.
+
+`node dimension-cat/test/run.mjs` ran clean three times running: exit 0, every check `ok`, 0 console
+warnings, and Robot City's own friend total went up by one (137 → 138 to meet). No visual check was
+possible in this environment (no browser, no Playwright), so whether the watcher's stance actually
+reads as one scene with the easel is unverified. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
+
 Last round gave the Neighborhood's own painter the first watcher of the seven, after noticing every
 other painter in the game was still performing to nobody. **A gingerbread-village neighbour now
 stands a few steps north of Candy Land's own painter, on the open grass toward the candy-cane ring,

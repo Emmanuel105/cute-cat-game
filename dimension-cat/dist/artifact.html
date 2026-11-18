@@ -17755,6 +17755,27 @@ function buildRobotCity(game, entry) {
     W.add(painter.group);
     game.npcs.push(new Painter(game, painter, makeEasel(), { x: 0, z: 27, ry: -1.68,
       cries: ['Trying to get the neon just right.', 'Nobody paints chrome. Someone should.', "That statue holds still, at least - unlike some cats."] })); }
+  // Robot City's own painter is the sixth of the seven artists to pick up a watcher, after the
+  // Neighborhood's and Candy Land's own in the last two rounds. A technician now stands a few steps
+  // east of the easel, on the open floor toward downtown, watching the statue take shape in paint.
+  //
+  // No new class or mesh: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer`
+  // (55-npcs.js) gives her the same "stand and watch" behaviour every other watcher in this game
+  // already uses, with a short leash (0.5 m) and `angle` pointed at the painter's own fixed spot
+  // rather than a constant. Built with no `cries` of its own, same as every watcher before her, so
+  // a second `cries`-bearing `Wanderer` never lands in the same build-and-test window.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.load(2, 'from-prev')`, 300 simulated frames to settle every wandering local, the
+  // ring-dancers and the tag/catch pairs, then a 0.25 m grid 2.5-7 m out from the painter's own spot
+  // (0, 27) checked against all 1206 of this world's physics boxes and its 296 `game.zones`
+  // rectangles) found (5, 27) clear: 5.54 m from the nearest box, well past the nearest zone
+  // rectangle (nothing is zoned this far out on the statue plaza's own open floor) and exactly 5 m
+  // from the nearest other soul — the painter herself.
+  { const rwvx = 5, rwvz = 27, rpx = 0, rpz = 27;
+    const robotWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.2) }),
+      shirt: 0x4a8a6a, hat: null, scarf: null, jacket: null, bag: null, backpack: null }); W.add(robotWatcher.group);
+    game.npcs.push(new Wanderer(game, robotWatcher, { x: rwvx, z: rwvz, angle: atan2(rpx - rwvx, rpz - rwvz), speed: 0.2, leash: 0.5, idle: [3, 6] })); }
   // a worker robot recharges at a pylon on the quiet side of the statue plaza — the "CHARGE" sign never had a customer until now
   { const px = -36, pz = 12, rx = -37, rz = 12;
     const steel = mat(0x5a6470, { metalness: 0.75, roughness: 0.35 });
