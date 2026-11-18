@@ -25142,6 +25142,24 @@ function buildBeach(game, entry) {
   { const fx = -19, fz = -14;
     game.npcs.push(new FrisbeePlayer(game, beachPerson(r.chance(0.5), false), r.pick([0xff6f3c, 0xffd54a, 0x7fe0ff]), { x: fx, z: fz, ry: atan2(0 - fx, 0 - fz), cryIcon: '🥏',
       cries: ["Highest throw yet, that one!", "Careful, puss — mind your head on the way down.", "Wind's just right for this, out here."] })); }
+  // Sunny Shore and Frosty Peak have been the only two worlds left where the frisbee thrower still
+  // played to an empty beach — every other world's own thrower picked up a watcher rounds ago. A
+  // towel-free local now stands a few steps south-west of this one, arms crossed, watching the disc
+  // rise and drop instead of wandering on. Built with the beach's own shared `beachPerson()`, same as
+  // the thrower, so no new wardrobe or colour pick.
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, since
+  // there's no browser here to look at it) built the real Sunny Shore (`game.start('new')`, then
+  // `game.travel(4, 'from-hub')` waited out for real against its own transition flag, then 300
+  // simulated seconds so every crab, turtle, sunbather and dog had already settled), swept a 0.25 m
+  // grid 2.5-6 m out from the thrower's own spot (-19, -14) against all 334 of this coast's own
+  // physics boxes, its 69 `game.zones` rectangles and every other NPC already standing in it:
+  // (-20.25, -17.25) came back clearest in that close-in band — 8.74 m from the nearest box, 13.85 m
+  // clear of the nearest zone rectangle and 8.54 m from the thrower himself, south-west of him on the
+  // same open dry sand well short of the radius (58) where `beachRegion()`'s own procedural fill
+  // takes over.
+  { const fwx = -20.25, fwz = -17.25, frisbeeWatcherFx = -19, frisbeeWatcherFz = -14;
+    game.npcs.push(new Wanderer(game, beachPerson(r.chance(0.5), false), { x: fwx, z: fwz, angle: atan2(frisbeeWatcherFx - fwx, frisbeeWatcherFz - fwz), leash: 0.5, speed: 0.3, idle: [3, 6],
+      cries: ["Same five minutes, every afternoon.", "Careful, puss — mind your tail, that one's coming down fast.", "Highest one yet, or so he tells it every time."] })); }
   // the beach dog keeps to its own patch of sand — it does not follow the cat
   const dog = makeDog(0xc8925a); W.add(dog.group); game.npcs.push(new Wanderer(game, dog, { x: -2, z: 28, speed: 1.1, leash: 7, r: 0.35, height: 0.9, step: 0.3, idle: [1.5, 4], walk: [2, 5] }));
   let woofT = rnd.range(6, 12); U.push((dt) => { woofT -= dt; if (woofT <= 0) { SFX.woof(); woofT = rnd.range(10, 20); } });

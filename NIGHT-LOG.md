@@ -33697,3 +33697,35 @@ total went up by one (171 → 172 to meet, confirmed against the previous commit
 No visual check was possible in this environment (no browser, no Playwright), so whether the two
 locals' stance actually reads as one scene together is unverified. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1180 — Sunny Shore's frisbee thrower gets a watcher too
+
+Victorian's own thrower picked up a watcher last round, leaving Sunny Shore and Frosty Peak as the
+only two worlds whose own frisbee thrower still played to an empty beach or slope. **A towel-free
+local now stands a few steps south-west of this coast's own thrower, arms crossed, watching the
+disc rise and drop instead of wandering on.** *"Same five minutes, every afternoon."* *"Careful,
+puss — mind your tail, that one's coming down fast."* *"Highest one yet, or so he tells it every
+time."* Saying hello makes her the usual kind of friend. Frosty Peak is now the only world left
+whose own thrower still performs for nobody.
+
+No new class or mesh: the same shared `beachPerson()` rig this world's own thrower already uses
+(no new wardrobe or colour pick) and `Wanderer` (55-npcs.js) for the usual "stand and watch"
+behaviour every other watcher in this game already uses, with a short leash (0.5 m) and `angle`
+pointed at the thrower's own fixed spot rather than a constant.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, then `game.travel(4, 'from-hub')` waited out for real against its own
+transition flag, then 300 simulated seconds so every crab, turtle, sunbather and dog had already
+settled) swept a 0.25 m grid 2.5-6 m out from the thrower's own spot (-19, -14) against all 334 of
+this coast's own physics boxes, its 69 `game.zones` rectangles and every other NPC already standing
+in it: (-20.25, -17.25) came back clearest in that close-in band — 8.74 m from the nearest box,
+13.85 m clear of the nearest zone rectangle and 8.54 m from the thrower himself, south-west of him
+on the same open dry sand well short of the radius (58) where `beachRegion()`'s own procedural fill
+takes over.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (no new collider, just the usual 0.5 m greet circle), and Sunny Shore's own friend
+total went up by one (146 → 147 to meet, confirmed against the previous commit with `git stash`).
+No visual check was possible in this environment (no browser, no Playwright), so whether the two
+locals' stance actually reads as one scene together is unverified. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
