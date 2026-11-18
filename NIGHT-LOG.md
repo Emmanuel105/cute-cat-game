@@ -34026,3 +34026,36 @@ console warnings, box count unchanged (334 on Sunny Shore), and Sunny Shore's ow
 up by one (147 → 148 to meet). No visual check was possible in this environment (no browser, no
 Playwright), so whether the watcher's stance actually reads as one scene with the easel is
 unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1190 — Victorian's painter gets a watcher too, the last of the seven
+
+Checked the source rather than trust the running tally again — all six other worlds' own painters
+(the Neighborhood, Candy Land, Robot City, Whisper Woods, Sunny Shore, and Victorian's own
+`Painter` right there at the clock tower) had picked up a watcher except one: the clock tower
+plaza's artist, painting the tower in its south-east corner since round 1101, was the last of the
+seven still working to nobody. **A passer-by now stands on the open paving east of the easel,
+watching the canvas fill in instead of carrying on toward the high street.**
+
+No new class or mesh: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer`
+(55-npcs.js) gives him the same "stand and watch" behaviour every other watcher in this game
+already uses, with a short leash (0.5 m) and `angle` pointed at the painter's own fixed spot (48,
+6) rather than a constant. Built with no `cries` of its own — the dart-kid watcher built earlier in
+this same town already carries one this round, and two `cries`-bearing `Wanderer`s in one
+build-and-test window has broken unrelated timing checks before.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.travel(3, 'from-prev')`, 300 simulated frames to settle the bobby, the carriage and every
+wanderer, then a 0.25 m grid 2.5-7 m out from the painter's own spot checked against all 663 of
+this town's physics boxes and its 251 `game.zones` rectangles) swept the ring: (52.25, 0.5) came
+back clearest — 6.46 m from the nearest box (the clock tower's own base), 6.75 m clear of the
+nearest other soul (the painter herself), and 10.3 m from the tower's own centre, still inside the
+plaza's own 11 m keep-out circle that keeps `victorianRegion`'s own fill off it.
+
+`node dimension-cat/test/run.mjs` ran clean three times running: exit 0, every check `ok`, 0
+console warnings, box count unchanged (334), and Victorian's own friend total went up by one (172 →
+173 to meet). No visual check was possible in this environment (no browser, no Playwright), so
+whether the watcher's stance actually reads as one scene with the easel is unverified. Also found
+and fixed the repo's own local `main` branch pointer sitting detached three commits behind the real
+tip at the start of this round — same stale-bookkeeping issue earlier rounds have hit — with a
+plain fast-forward, before starting; the commits had already reached `origin/main`, so nothing was
+lost. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

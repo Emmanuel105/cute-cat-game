@@ -14920,6 +14920,38 @@ function buildVictorian(game, entry) {
     game.npcs.push(new Wanderer(game, dartKidWatcher2, { x: dartWvx, z: dartWvz, angle: atan2(dartKidX - dartWvx, dartKidZ - dartWvz), speed: 0.1, leash: 0.5, idle: [3, 6],
       cries: ["Same fold every throw — he'll have the knack of it before I've lit the second lamp.", 'Mind the nose crease, puss — that one took three tries to get right.', "Clears the lamp post yet? Not today, but closer than yesterday."] })); }
 
+  // every other world's own painter has picked up a watcher over the last five rounds (the
+  // Neighborhood, Candy Land, Robot City, Whisper Woods, Sunny Shore) — Victorian's own artist, set up
+  // in the clock tower plaza's south-east corner since round 1101, was the last of the seven still
+  // painting to nobody. **A passer-by now stands a few steps further out on the plaza's open paving,
+  // east of the easel, watching the canvas fill in instead of carrying on toward the high street.**
+  //
+  // No new class or mesh: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer`
+  // (55-npcs.js) gives him the same "stand and watch" behaviour every other watcher in this game
+  // already uses, with a short leash (0.5 m) and `angle` pointed at the painter's own fixed spot
+  // rather than a constant. Built with no `cries` of its own, the same fix every watcher before him
+  // has needed, so a second `cries`-bearing `Wanderer` never lands in the same build-and-test window
+  // (the dart kid's own watcher above already carries one this round).
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.travel(3, 'from-prev')`, 300 simulated frames to settle the bobby, the carriage and every
+  // wanderer, then a 0.25 m grid 2.5-7 m out from the painter's own spot (48, 6) checked against all
+  // 663 of this town's physics boxes and its 251 `game.zones` rectangles) swept the ring: (52.25, 0.5)
+  // came back clearest — 6.46 m from the nearest box (the clock tower's own base), 6.75 m clear of the
+  // nearest other soul (the painter herself), still 10.3 m from the tower's own centre and so still
+  // inside the plaza's own 11 m keep-out circle that keeps `victorianRegion`'s own fill off it.
+  //
+  // Built dead last of everything this town adds, right after the dart kid's own watcher above and
+  // right before the squirrel below, for the usual reason: `makeHuman()` and `randomPerson()` both
+  // draw off this town's own shared `r()` sequence unconditionally, and anything built earlier here
+  // would have had its own timing-sensitive pick shifted by it.
+  { const vwx = 52.25, vwz = 0.5, vpx = 48, vpz = 6;
+    const vicWatchWard = makeWardrobe(r, { shirts: [0x3a5a6a, 0x4a3a2a], pants: [0x1e1e24, 0x2a2a30] });
+    const vicPaintWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: vicWatchWard }),
+      pants: 0x1e1e24, hat: r.chance(0.3) ? 'flatcap' : null, hatColor: 0x2a2a24, coat: true, buttons: null, scarf: null, beard: false, glasses: false });
+    W.add(vicPaintWatcher.group);
+    game.npcs.push(new Wanderer(game, vicPaintWatcher, { x: vwx, z: vwz, angle: atan2(vpx - vwx, vpz - vwz), speed: 0.2, leash: 0.5, idle: [3, 6] })); }
+
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
