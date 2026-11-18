@@ -31165,6 +31165,33 @@ function buildForest(game, entry) {
     W.add(angler.group);
     game.npcs.push(new IceFisher(game, angler, makeIceStool(), { x: 8, z: -1, ry: PI, holeX: 8, holeZ: -3, holeY: P.ground0(8, -6) + 0.06,
       cries: ['Something bites in that glow, I swear.', "Careful, puss - don't spook them.", 'Caught one shaped like a star, once.'] })); }
+  // every world's own angler has picked up a watcher in recent rounds — the Neighborhood's lake jetty,
+  // Candy Land's chocolate river, Robot City's drain, Victorian's canal and Frosty Peak's ice hole — but
+  // this glade's own angler, working the glowing pond's edge since round one, never did. **A local now
+  // stands three metres north of his stool, watching the line dip into the glow instead of wandering off.**
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.travel(6, 'from-hub')`, then 18000 simulated frames — 300 simulated seconds at the fixed 1/60 s
+  // step — sampling all 149 of this wood's NPCs' own positions every 15th frame, long enough for every
+  // wandering deer, fox, hare, frog and dragonfly to clear the spot several times over) swept a 0.25 m
+  // grid 1.6-3 m out from the angler's own stool at (8, -1): (8, 2), three metres due north, came back
+  // clear by 10.7 m from the nearest of this wood's 715 physics boxes and 3.0 m from the nearest other
+  // soul sampled over the whole run — the angler himself; the two pond-rim frogs that spawn closest to
+  // this spot (at (10.8, -1.15) and (5.2, -1.15), each with its own 4 m hop leash) never actually came
+  // any nearer than that over the full 300 seconds. `game.zones`' own pond keep-out circle ((8, -6),
+  // radius 7) does reach this far north and cover the spot — the angler's own stool sits inside it too —
+  // so it was no use as a check here, the same dead end Frosty Peak's own clearing-circle note hit a few
+  // rounds back; the physics boxes and the other NPCs sampled over time are what actually matter at a
+  // spot like this.
+  //
+  // No new class: the same `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js) every other
+  // watcher in this series already uses, short leash (0.5 m), no `cries` of its own, `angle` pointing at
+  // the angler's own fixed seat. `Wanderer`'s own constructor calls `greetable()` itself, so no extra
+  // wiring was needed.
+  { const pwx = 8, pwz = 2, apx = 8, apz = -1;
+    const pondWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }), shirt: 0x6a4a7a, pants: 0x3a3a4a, shoes: 0x2a2018, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(pondWatcher.group);
+    game.npcs.push(new Wanderer(game, pondWatcher, { x: pwx, z: pwz, angle: atan2(apx - pwx, apz - pwz), leash: 0.5, speed: 0.4, idle: [3, 6], walk: [1, 1.6] })); }
   // an old woman knits on the western stump, a ball of wool in her lap - the "eastern stump" whittler's quiet counterpart
   { const knitter = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: true, hairStyle: 'bun' }), shirt: 0x8a4a5a, apron: 0xd9c9a8, skirt: 0x4a3a5a, shoes: 0x3a2a1e, hat: 'bonnet', hatColor: 0x6b4f8a, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
     W.add(knitter.group);

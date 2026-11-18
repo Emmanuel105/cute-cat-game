@@ -34429,3 +34429,33 @@ skipped for now rather than risk a figure that sinks into the sea the moment it 
 anglers are still working alone — Whisper Woods and, last as usual given its own rnd()-shift hazard
 (round 1197), the Neighborhood. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 1202 — Whisper Woods' pond angler gets a watcher too
+
+Fifth of the angler-watcher set, after Candy Land's river, Robot City's drain, Victorian's canal and
+Frosty Peak's ice hole. The glowing pond's own old-timer has fished its edge alone since round one —
+now he has company. **A local stands three metres north of his stool, watching the line dip into the
+glow instead of wandering off.**
+
+A headless probe (`game.travel(6, 'from-hub')`, the same stub-three harness `test/run.mjs` itself uses,
+18000 simulated frames — 300 simulated seconds at the fixed 1/60 s step — sampling all 149 of this
+wood's NPCs' own positions every 15th frame, long enough for every wandering deer, fox, hare, frog and
+dragonfly to clear the spot several times over) swept a 0.25 m grid 1.6-3 m out from the angler's own
+stool at (8, -1): (8, 2) came back clear by 10.7 m from the nearest of this wood's 715 physics boxes
+and 3.0 m from the nearest other soul over the whole run — the angler himself; the two pond-rim frogs
+that spawn closest to this spot, each with its own 4 m hop leash, never actually came any nearer than
+that over the full 300 seconds. `game.zones`' own pond keep-out circle ((8, -6), radius 7) reaches this
+far north and covers the spot too — the angler's own stool sits inside it — so it was no use as a check
+here, the same dead end Frosty Peak's own clearing hit a few rounds back.
+
+No new class: the same `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js) every other
+watcher in this series already uses, short leash (0.5 m), no `cries` of its own, `angle` pointing at
+the angler's own fixed seat. `Wanderer`'s own constructor calls `greetable()` itself, so no extra
+wiring was needed.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged (334, since a `Wanderer` registers a physics circle, not a box), and Whisper Woods' own friend
+total went up by one (172 → 173) to meet. No visual check was possible in this environment (no browser,
+no Playwright), so whether the watcher's stance actually reads as watching the line is unverified. One
+angler is still working alone — the Neighborhood's, last as usual given its own rnd()-shift hazard
+(round 1197). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
