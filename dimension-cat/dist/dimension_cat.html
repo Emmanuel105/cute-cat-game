@@ -29825,6 +29825,46 @@ function buildSnowVillage(game, entry) {
     game.npcs.push(new Wanderer(game, dartWatcher, { x: dartWx, z: dartWz, angle: atan2(dartKidX2 - dartWx, dartKidZ2 - dartWz), speed: 0.3, leash: 0.5, idle: [3, 6],
       cries: ["Same fold every throw — must be the cold, the paper won't hold a crease any other way.", 'Careful, puss — swat that one and he just folds another.', 'Furthest glide yet, or so he says after every single one.'] })); }
 
+  // Victorian and Sunny Shore's own frisbee throwers picked up a watcher the last two rounds, leaving
+  // this mountain as the only world left whose own thrower (built round ~413, up near the sled run)
+  // still tossed his disc to nobody. **A bundled-up local now stands a few steps south-east of him on
+  // the dry snow, watching the disc rise and drop instead of trudging past.** *"Straight up and
+  // straight back — he's never once had to chase it."* *"Careful, puss — mind your tail, this one's
+  // coming down fast."* *"Says the cold doesn't bother him anymore. I don't believe him for a
+  // second."* Saying hello makes him the usual kind of friend. Every one of the seven worlds' own
+  // frisbee throwers now has a watcher.
+  //
+  // No new class or mesh: a plain adult `makeHuman()`/`randomPerson()` rig in this mountain's own
+  // beanie-and-coat wardrobe, and `Wanderer` (55-npcs.js) for the same "stand and watch" behaviour
+  // every other watcher on this mountain already uses, with a short leash (0.5 m) and `angle` pointed
+  // at the thrower's own fixed spot rather than a constant. `Wanderer`'s own constructor calls
+  // `greetable()` itself, so no extra wiring was needed.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(5, 'from-hub')` waited out for real against its own portal-fade
+  // timer, then 3600 simulated frames sampling every NPC's own position every 10th frame, since the
+  // disc rises and falls straight up off the thrower's own spot rather than travelling anywhere) swept
+  // a 0.25 m grid 2.5-6 m out from the thrower's own spot (-9, -40) against all 780 of this mountain's
+  // own physics boxes and its 156 `game.zones` rectangles: (-10.25, -42.25) came back clearest at the
+  // close-in end of that band — 3.16 m from the nearest box, 3.25 m clear of the nearest zone
+  // rectangle and 2.57 m from the thrower himself (the nearest other soul over the whole run, which
+  // never changed as the sled run, snowball fight and the rest of this mountain's own wanderers moved
+  // through the 60 s window), south-east of him on ground levelling out at 0.97 m with only 4 cm of
+  // slope across his own footprint, and well short of the radius (58) where `snowRegion()`'s own fill
+  // takes over.
+  //
+  // Built dead last of everything this mountain adds, right after the paper-plane kid's own watcher
+  // above, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this mountain's own
+  // shared `r()` sequence unconditionally, and anything built earlier would have had its own
+  // timing-sensitive pick shifted by it.
+  { const frisWx = -10.25, frisWz = -42.25, frisKidX = -9, frisKidZ = -40;
+    const frisWatcherWard = makeWardrobe(r, { shirts: [0x5a6a8a, 0x8a5a6a, 0x6a8a5a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const frisWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: frisWatcherWard }),
+      hat: 'beanie', hatColor: 0x5a6a8a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a, glasses: false });
+    W.add(frisWatcher.group);
+    game.npcs.push(new Wanderer(game, frisWatcher, { x: frisWx, z: frisWz, angle: atan2(frisKidX - frisWx, frisKidZ - frisWz), speed: 0.3, leash: 0.5, idle: [3, 6],
+      cries: ["Straight up and straight back — he's never once had to chase it.", "Careful, puss — mind your tail, this one's coming down fast.", "Says the cold doesn't bother him anymore. I don't believe him for a second."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

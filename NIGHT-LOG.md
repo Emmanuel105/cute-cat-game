@@ -33729,3 +33729,37 @@ total went up by one (146 → 147 to meet, confirmed against the previous commit
 No visual check was possible in this environment (no browser, no Playwright), so whether the two
 locals' stance actually reads as one scene together is unverified. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1181 — Frosty Peak's frisbee thrower gets a watcher too, the last of the seven
+
+Sunny Shore's own thrower picked up a watcher last round, leaving Frosty Peak as the only world
+left whose own frisbee thrower — tossing his disc straight up off the palm since round ~413, up
+near the sled run — still performed for nobody. **A bundled-up local now stands a few steps
+south-east of him on the dry snow, watching the disc rise and drop instead of trudging past.**
+*"Straight up and straight back — he's never once had to chase it."* *"Careful, puss — mind your
+tail, this one's coming down fast."* *"Says the cold doesn't bother him anymore. I don't believe
+him for a second."* Saying hello makes him the usual kind of friend. Every one of the seven worlds'
+own frisbee throwers now has a watcher.
+
+No new class or mesh: a plain adult `makeHuman()`/`randomPerson()` rig in this mountain's own
+beanie-and-coat wardrobe, and `Wanderer` (55-npcs.js) for the usual "stand and watch" behaviour
+every other watcher in this game already uses, with a short leash (0.5 m) and `angle` pointed at
+the thrower's own fixed spot rather than a constant.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, then `game.travel(5, 'from-hub')` waited out for real against its own
+transition flag, then 3600 simulated frames sampling every NPC's own position every 10th frame —
+60 s, long enough for the sled run and snowball fight and every other wanderer on this mountain to
+have moved through) swept a 0.25 m grid 2.5-6 m out from the thrower's own spot (-9, -40) against
+all 780 of this mountain's own physics boxes and its 156 `game.zones` rectangles: (-10.25, -42.25)
+came back clearest at the close-in end of that band — 3.16 m from the nearest box, 3.25 m clear of
+the nearest zone rectangle and 2.57 m from the thrower himself (the nearest other soul over the
+whole 60 s run, unchanged by anything else wandering through), south-east of him on ground
+levelling out at 0.97 m with only 4 cm of slope across his own footprint, and well short of the
+radius (58) where `snowRegion()`'s own fill takes over.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, and
+Frosty Peak's own friend total went up by one (141 → 142 to meet). No visual check was possible in
+this environment (no browser, no Playwright), so whether the two locals' stance actually reads as
+one scene together is unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.
