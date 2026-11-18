@@ -27376,6 +27376,28 @@ function buildSnowVillage(game, entry) {
       hat: 'beanie', hatColor: 0x3a4a5a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a }); W.add(angler.group);
     game.npcs.push(new IceFisher(game, angler, makeIceStool(), { x: 18, z: 14.3, ry: PI, holeX: 18, holeZ: 11.5, holeY,
       cries: ['Not a bite in an hour...', "Careful, puss, don't scare them off.", 'Best fishing hole on the mountain, this.'] })); }
+  // fourth of the angler-watcher set, after Candy Land's river, Robot City's drain and Victorian's
+  // canal last round. This mountain's own old-timer has fished his hole alone since round one — a
+  // local now stands two metres east of his stool, watching the line instead of wandering off.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses, `game.travel(5,
+  // 'from-prev')` then 300 simulated seconds sampling every NPC's own position every quarter second)
+  // swept a 0.25 m grid 1.8-3 m out from the angler's own stool at (18, 14.3): (19.8, 14.3) came back
+  // clear — 6.1 m from the nearest physics box and 4.2 m from the nearest other soul sampled over the
+  // whole run. `game.zones` itself is no use as a check here: this whole clearing sits inside the
+  // single 26 m circle (round 795 or so) that keeps the procedural outer country off the hand-built
+  // village, so every existing igloo and the pond are "inside a zone" too — it is the physics boxes
+  // and the other NPCs that actually matter, not that circle.
+  //
+  // No new class: the same `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js) every other
+  // watcher in this series already uses, short leash (0.5 m), no `cries` of its own, `angle` pointing
+  // at the angler's own fixed seat. `Wanderer`'s own constructor calls `greetable()` itself, so no
+  // extra wiring was needed.
+  { const holeWatcherX = 19.8, holeWatcherZ = 14.3, holeAnglerX = 18, holeAnglerZ = 14.3;
+    const holeWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
+      shirt: 0x8a3a3a, hat: 'beanie', hatColor: 0x3a3a4a, coat: true, scarf: 0xe8d8b8, bag: null, backpack: null, glasses: false }); W.add(holeWatcher.group);
+    game.npcs.push(new Wanderer(game, holeWatcher, { x: holeWatcherX, z: holeWatcherZ,
+      angle: atan2(holeAnglerX - holeWatcherX, holeAnglerZ - holeWatcherZ), speed: 0.3, leash: 0.5, idle: [3, 6] })); }
   // the angler's rod has dipped into this hole since round one, but nothing has ever actually lived
   // in the water itself — the same gap round 798 closed for Sunny Shore's tide pool with a seahorse
   // and a comb jelly. A small trout now keeps station just under the hole's surface, nose into the

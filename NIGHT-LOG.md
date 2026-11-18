@@ -34396,3 +34396,36 @@ watcher's stance actually reads as watching the line is unverified. Four anglers
 alone — Sunny Shore, Frosty Peak, Whisper Woods and, last as usual given its own rnd()-shift hazard
 (round 1197), the Neighborhood. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 1201 — Frosty Peak's ice-fisherman gets a watcher too
+
+Fourth of the angler-watcher set, after Candy Land's river, Robot City's drain and Victorian's canal.
+Frosty Peak's own old-timer has fished his hole at the pond's edge alone since round one — now he has
+company. **A local stands two metres east of his stool, watching the line dip into the ice instead of
+wandering off.**
+
+Frosty Peak's angler sits in the open village clearing rather than on a narrow bank, so the usual
+headless probe (`game.travel(5, 'from-prev')`, the same stub-three harness `test/run.mjs` itself uses,
+sampling every NPC's own position every quarter second over 300 simulated seconds) swept a 0.25 m grid
+1.8-3 m out from his stool at (18, 14.3): (19.8, 14.3), two metres due east, came back clear by 6.1 m
+from the nearest physics box and 4.2 m from the nearest other soul over the whole run. `game.zones`
+turned out to be no use as a check here — this whole clearing sits inside the single 26 m circle
+(round 795 or so) that keeps the procedural outer country off the hand-built village, so every
+existing igloo and the pond are "inside a zone" too; it's the physics boxes and the other NPCs
+sampled over time that actually matter at this spot, not that circle.
+
+No new class: the same `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js) every other
+watcher in this series already uses, short leash (0.5 m), no `cries` of its own, `angle` pointing at
+the angler's own fixed seat. `Wanderer`'s own constructor calls `greetable()` itself, so no extra
+wiring was needed.
+
+`node dimension-cat/test/run.mjs` ran clean three times running: exit 0, all checks `ok`, 0 console
+warnings, box count unchanged (334, since a `Wanderer` registers a physics circle, not a box), and
+Frosty Peak's own friend total went up by one (145 → 146) to meet. No visual check was possible in
+this environment (no browser, no Playwright), so whether the watcher's stance actually reads as
+watching the line is unverified. Sunny Shore's own angler sits at the far end of a narrow pier over
+open water — its `Wanderer` would need a deck-height override this series hasn't built yet, so it's
+skipped for now rather than risk a figure that sinks into the sea the moment it takes a step. Two
+anglers are still working alone — Whisper Woods and, last as usual given its own rnd()-shift hazard
+(round 1197), the Neighborhood. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.
