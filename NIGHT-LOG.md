@@ -33904,3 +33904,35 @@ warnings, box count unchanged at 334, and the Neighborhood's own friend total we
 future rounds. No visual check was possible in this environment (no browser, no Playwright), so
 whether the watcher's stance actually reads as one scene with the easel is unverified. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1186 — Candy Land's painter gets a watcher too
+
+Last round gave the Neighborhood's own painter the first watcher of the seven, after noticing every
+other painter in the game was still performing to nobody. **A gingerbread-village neighbour now
+stands a few steps north of Candy Land's own painter, on the open grass toward the candy-cane ring,
+watching the canvas fill in** — the second of the seven, five still to go.
+
+No new class or mesh: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer` (55-npcs.js)
+gives him the same "stand and watch" behaviour every other watcher in this game already uses, with a
+short leash (0.5 m) and `angle` pointed at the painter's own fixed spot (60, 48) rather than a
+constant. Built with no `cries` of its own, same fix the Neighborhood's own watcher needed, so two
+`cries`-bearing `Wanderer`s never land in the same build-and-test window.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.travel(1, 'from-next')`, 300 simulated frames to settle every wandering gingerbread man, then a
+0.25 m grid 2.5-7 m out from the painter's own spot checked against all 1891 of Candy Land's physics
+boxes and its 451 `game.zones` rectangles) swept the whole ring: (58.25, 54.75) came back clearest —
+7.53 m from the nearest box, 9.1 m clear of the nearest zone rectangle's own edge and 6.97 m from the
+nearest other soul (the painter herself), open grass with nothing else built nearby. Shirt colour
+(0x6a8a5a, an olive green) was picked to stand apart from every other shirt already worn nearby.
+
+Found the repo's own local `main` branch pointer sitting detached and three commits behind the real
+tip of history at the start of this round (the same stale-bookkeeping issue round 1184 found and
+fixed once already) — fixed again with a plain fast-forward merge before starting; the actual
+commits had already reached `origin/main` in a prior container, so nothing was lost.
+
+`node dimension-cat/test/run.mjs` ran clean three times running: exit 0, every check `ok`, 0 console
+warnings, box count unchanged at 334, and Candy Land's own friend total went up by one (128 → 129 to
+meet). No visual check was possible in this environment (no browser, no Playwright), so whether the
+watcher's stance actually reads as one scene with the easel is unverified. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

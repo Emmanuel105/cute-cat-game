@@ -14861,6 +14861,26 @@ function buildCandyLand(game, entry) {
     W.add(painter.group);
     game.npcs.push(new Painter(game, painter, makeEasel(), { x: px, z: pz, ry: pry,
       cries: ["That cupcake's bigger than the castle, sugar for sugar.", "Careful, puss — the paint's not icing.", "I keep giving the icing too much shine. It never looks quite real."] })); }
+  // the Neighborhood's own painter picked up a watcher last round, the first of the seven — this one
+  // is the second. A gingerbread-village neighbour now stands a few steps north of Candy Land's own
+  // painter, on the open grass toward the candy-cane ring, watching the canvas fill in.
+  //
+  // No new class or mesh: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer`
+  // (55-npcs.js) gives him the same "stand and watch" behaviour every other watcher in this game
+  // already uses, with a short leash (0.5 m) and `angle` pointed at the painter's own fixed spot
+  // rather than a constant. Built with no `cries` of its own, same as the Neighborhood's own
+  // watcher, so a second `cries`-bearing `Wanderer` never lands in the same build-and-test window.
+  //
+  // A headless probe (`game.travel(1, ...)`, 300 simulated frames to settle every wandering
+  // gingerbread man, then a 0.25 m grid 2.5-7 m out from the painter's own spot (60, 48) checked
+  // against all 1891 of this world's physics boxes and its 451 `game.zones` rectangles) swept the
+  // ring: (58.25, 54.75) came back clearest — 7.53 m from the nearest box, 9.1 m clear of the
+  // nearest zone rectangle's own edge and 6.97 m from the nearest other soul (the painter herself),
+  // open grass north of the easel with nothing else built nearby.
+  { const cwvx = 58.25, cwvz = 54.75, cpx = 60, cpz = 48;
+    const candyWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x6a8a5a, hat: null, scarf: null, jacket: null, bag: null, backpack: null }); W.add(candyWatcher.group);
+    game.npcs.push(new Wanderer(game, candyWatcher, { x: cwvx, z: cwvz, angle: atan2(cpx - cwvx, cpz - cwvz), speed: 0.2, leash: 0.5, idle: [3, 6] })); }
   // the Neighborhood, Sunny Shore and Victorian all have someone actually playing an instrument
   // (a ukulele player twice over, a fiddler at the clock tower) — Candy Land never did, for all its
   // dancing and juggling. A woman strums a candy-striped ukulele on the open grass south-east of the
