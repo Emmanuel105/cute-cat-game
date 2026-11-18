@@ -13461,6 +13461,39 @@ function buildNeighborhood(game, entry) {
     game.npcs.push(new Lamplighter(game, lamplighter, gondolaLanterns, { speed: 0.8,
       cries: ['One more lit, one more to go.', 'Careful, puss — mind the pole.', 'Last stop before the mountain.'] })); }
 
+  // `Painter` (55-npcs.js) has had an easel in every world since round 1 — Candy Land, Robot City,
+  // Victorian, Sunny Shore, Frosty Peak and Whisper Woods' own artists among them — and not one of
+  // them had ever picked up a watcher, unlike the juggler, the fiddler, the frisbee thrower and a
+  // dozen other performers across this village. This street's own painter, working her easel by the
+  // park pond since the street went in, is the first. **A neighbour now stands a few steps
+  // north-west of her, on the grass above the pond, watching the painting come together.**
+  //
+  // No new class or mesh: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer`
+  // (55-npcs.js) gives him the same "stand and watch" behaviour every other watcher on this street
+  // already uses, with a short leash (0.5 m) and `angle` pointed at the painter's own fixed spot
+  // rather than a constant. Built with no `cries` at all, the same fix every watcher on this street
+  // has needed since the magician's own watcher broke three unrelated checks the one time a second
+  // `cries`-bearing `Wanderer` ran in the same build-and-test window.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, 300 simulated frames to settle every stroller and dog, then a 0.25 m grid
+  // 2.5-7 m out from the painter's own spot (-17.5, 43) checked against all 334 of this street's
+  // physics boxes, its 69 `game.zones` rectangles and every other NPC already standing in it) swept
+  // the whole ring: (-24, 45.5) came back clearest — 5.31 m from the nearest box, 5.10 m clear of
+  // the nearest zone rectangle's own edge and 6.96 m from the nearest other soul (the painter
+  // herself), on open grass west of the pond. `angle` points him at her own fixed spot, so he reads
+  // as watching the easel and not just standing nearby.
+  //
+  // Built dead last, right after the lamplighter above and right before `makeDayNight`, same reason
+  // as every other addition on this street: `makeHuman()` and `randomPerson()` both draw off this
+  // street's own shared `r()` sequence unconditionally, and this is the first world the test suite
+  // builds, so anything built earlier here would have had its own timing-sensitive pick shifted by
+  // it.
+  { const paintWvx = -24, paintWvz = 45.5, paintX = -17.5, paintZ = 43;
+    const paintWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x8a6a4a, hat: null, scarf: null, jacket: null, bag: null, backpack: null }); W.add(paintWatcher.group);
+    game.npcs.push(new Wanderer(game, paintWatcher, { x: paintWvx, z: paintWvz, angle: atan2(paintX - paintWvx, paintZ - paintWvz), speed: 0.2, leash: 0.5, idle: [3, 6] })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

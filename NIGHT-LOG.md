@@ -33866,3 +33866,41 @@ warnings, box count unchanged at 334, and Frosty Peak's own friend total went up
 to meet). No visual check was possible in this environment (no browser, no Playwright), so whether
 the lamplighter's walk and flare actually read well against the landing's own low light is
 unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1185 — the Neighborhood's painter gets a watcher, the first of the seven
+
+`Painter` (55-npcs.js) has had an easel in every world since the earliest rounds — Candy Land, Robot
+City, Victorian, Sunny Shore, Frosty Peak and Whisper Woods' own artists among them — but a grep
+across the whole source turned up something the juggler, the fiddler, the frisbee thrower and a
+dozen other performers all got ages ago and no painter ever had: a watcher. **A neighbour now stands
+a few steps north-west of this street's own painter, on the grass above the park pond, watching the
+painting come together.** No dialogue of his own — he just stands and looks, same as every other
+silent watcher in this game.
+
+No new class or mesh: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer` (55-npcs.js)
+gives him the same "stand and watch" behaviour every other watcher on this street already uses, with
+a short leash (0.5 m) and `angle` pointed at the painter's own fixed spot (-17.5, 43) rather than a
+constant. Built with no `cries`, the same fix every watcher on this street has needed since the
+magician's own watcher broke three unrelated checks the one time a second `cries`-bearing `Wanderer`
+ran in the same build-and-test window.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, 300 simulated frames to settle every stroller and dog, then a 0.25 m grid
+2.5-7 m out from the painter's own spot checked against all 334 of this street's physics boxes, its
+69 `game.zones` rectangles and every other NPC already standing in it) swept the whole ring:
+(-24, 45.5) came back clearest — 5.31 m from the nearest box, 5.10 m clear of the nearest zone
+rectangle's own edge and 6.96 m from the nearest other soul (the painter herself). The explicit shirt
+colour (0x8a6a4a) was checked against every other shirt already on this street first, the same
+"no two neighbours wear the same shirt" clash the test catches either way.
+
+Built dead last, right after the lamplighter and right before `makeDayNight`, same reason as every
+other addition on this street: `makeHuman()` and `randomPerson()` both draw off this street's own
+shared `r()` sequence unconditionally, and this is the first world the test suite builds, so
+anything built earlier would have had its own timing-sensitive pick shifted by it.
+
+`node dimension-cat/test/run.mjs` ran clean three times running: exit 0, every check `ok`, 0 console
+warnings, box count unchanged at 334, and the Neighborhood's own friend total went up by one (119 →
+120 to meet). Six more painters in the other six worlds are still performing to nobody — left for
+future rounds. No visual check was possible in this environment (no browser, no Playwright), so
+whether the watcher's stance actually reads as one scene with the easel is unverified. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
