@@ -21219,6 +21219,27 @@ function buildVictorian(game, entry) {
       hat: 'flatcap', hatColor: 0x3a3327, coat: true, scarf: null, jacket: null, buttons: null, cane: false, glasses: r.chance(0.25) }); W.add(angler.group);
     game.npcs.push(new IceFisher(game, angler, makeIceStool(), { x: 15, z: 24.4, ry: 0, holeX: 15, holeZ: 28.6, holeY: -0.3,
       cries: ['Not a bite in this canal all week.', 'Caught a boot once. Best catch all month.', 'Mind the towpath, puss.'] })); }
+  // third of the angler-watcher set, after Candy Land's river and Robot City's drain last round. The
+  // canal's own old-timer has fished this bank alone since round 862 — a local now stands two metres
+  // north of his stool, on the open grass between the two nearest lamps, watching the line dip into the
+  // water instead of wandering off.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses, `game.travel(3,
+  // 'from-prev')` then 1200 simulated frames sampling every NPC's own position every 10th frame) swept
+  // a 0.25 m grid north of the angler's own stool at (15, 24.4), away from the water on the south side:
+  // (15, 22.4) came back clear — 3.0 m from the nearest physics box (the lamp at (8, 25.3)), outside
+  // every `game.zones` rectangle (the canal's own z 24-36 span included), and 2.0 m from the angler
+  // himself, the nearest other soul sampled over the whole run.
+  //
+  // No new class: the same `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js) every other
+  // watcher in this series already uses, short leash (0.5 m), no `cries` of its own, `angle` pointing
+  // at the angler's own fixed seat. `Wanderer`'s own constructor calls `greetable()` itself, so no
+  // extra wiring was needed.
+  { const canalWatcherX = 15, canalWatcherZ = 22.4, canalAnglerX = 15, canalAnglerZ = 24.4;
+    const canalWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
+      shirt: 0x6a5a8a, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false }); W.add(canalWatcher.group);
+    game.npcs.push(new Wanderer(game, canalWatcher, { x: canalWatcherX, z: canalWatcherZ,
+      angle: atan2(canalAnglerX - canalWatcherX, canalAnglerZ - canalWatcherZ), speed: 0.3, leash: 0.5, idle: [3, 6] })); }
   // the angler's own line has dipped into this canal all week without a single bite — the same gap
   // round 862 closed for Frosty Peak's ice-fishing hole with a trout. A small canal fish now keeps
   // station just under the water's surface at the exact spot his own line targets, nose into the

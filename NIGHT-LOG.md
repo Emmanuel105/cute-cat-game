@@ -34369,3 +34369,30 @@ watcher's stance actually reads as watching the line is unverified. Five anglers
 alone — Victorian, Sunny Shore, Frosty Peak, Whisper Woods and, last as usual given its own rnd()-shift
 hazard (round 1197), the Neighborhood. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 1200 — Victorian's canal angler gets a watcher too
+
+Third of the angler-watcher set, after Candy Land's river and Robot City's drain last round. The
+canal's own old-timer has fished this bank alone since round 862 — now he has company. **A local
+stands two metres north of his stool, on the open grass between the two nearest lamps, watching the
+line dip into the water instead of wandering off.**
+
+A headless probe (`game.travel(3, 'from-prev')`, the same stub-three harness `test/run.mjs` itself
+uses, with 1200 simulated frames sampling every NPC's own position every 10th frame) swept a 0.25 m
+grid north of the angler's own stool at (15, 24.4), staying on the grass side away from the canal:
+(15, 22.4) came back clear — 3.0 m from the nearest physics box (the lamp at (8, 25.3)), outside every
+`game.zones` rectangle including the canal's own z 24-36 span, and 2.0 m from the angler himself, the
+nearest other soul sampled over the whole run.
+
+No new class: the same `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js) every other
+watcher in this series already uses, short leash (0.5 m), no `cries` of its own, `angle` pointing at
+the angler's own fixed seat. `Wanderer`'s own constructor calls `greetable()` itself, so no extra
+wiring was needed.
+
+`node dimension-cat/test/run.mjs` ran clean three times running: exit 0, all checks `ok`, 0 console
+warnings, box count unchanged (334), and Victorian's own friend total went up by one (174 → 175) to
+meet. No visual check was possible in this environment (no browser, no Playwright), so whether the
+watcher's stance actually reads as watching the line is unverified. Four anglers are still working
+alone — Sunny Shore, Frosty Peak, Whisper Woods and, last as usual given its own rnd()-shift hazard
+(round 1197), the Neighborhood. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.
