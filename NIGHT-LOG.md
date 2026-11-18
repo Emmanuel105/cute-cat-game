@@ -34309,3 +34309,35 @@ console warnings, box count unchanged (334). No visual check was possible in thi
 browser, no Playwright), so whether the watcher's stance actually reads as watching the coil sweep is
 unverified. All seven detectorists have a watcher now. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1198 — Candy Land's river angler gets a watcher, starting a new set
+
+Every world has had its own angler dipping a line in the water for a long while now — the
+Neighborhood's lake jetty, Robot City's drain-tech, Victorian's canal, Sunny Shore's pier, Frosty
+Peak's ice hole, Whisper Woods' pond and Candy Land's own chocolate river — but none of the seven has
+ever had a companion standing by, the way every other solo street act (detectorists, painters,
+jugglers, skippers) eventually got one. **A local now stands two metres south of the river angler's
+own stool, on the dry bank, watching the line dip into the chocolate water instead of wandering off.**
+
+The river's own water is a `game.zones` keep-out strip that runs the full width of the world
+(`minZ:-22, maxZ:-14`), and the angler's stool at (26, -13) sits barely a metre clear of its near edge
+— tight enough that the usual quick eyeballing wasn't safe here. A headless probe (the same stub-three
+harness `test/run.mjs` itself uses, with `game.travel(1, 'from-prev')` waited out against the real
+portal-fade timer, then 1200 simulated frames sampling every NPC's own position every 10th frame)
+swept a 0.25 m grid 2-7 m out from the angler's own spot, discarding anything north of z=-13 so nothing
+landed in the water, against all 1884 of this world's own knee-to-head physics boxes and its 451 zone
+rectangles: (26, -11) came back clear — 3.6 m from the nearest box, 3 m clear of the river zone's own
+edge, and 2 m from the angler himself, the nearest other soul over the whole run.
+
+No new class: the usual `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js) for the same
+"stand and watch" behaviour every other watcher in this series already uses, short leash (0.5 m), no
+`cries` of its own, `angle` pointing at the angler's own fixed seat. `Wanderer`'s own constructor calls
+`greetable()` itself, so no extra wiring was needed.
+
+`node dimension-cat/test/run.mjs` ran clean three times running: exit 0, all 277 checks `ok`, 0
+console warnings, box count unchanged (334), and Candy Land's own friend total went up by one (130 →
+131) to meet. No visual check was possible in this environment (no browser, no Playwright), so whether
+the watcher's stance actually reads as watching the line is unverified. Six anglers are still working
+alone — Robot City, Victorian, Sunny Shore, Frosty Peak, Whisper Woods and, last as usual given its own
+rnd()-shift hazard (round 1197), the Neighborhood. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

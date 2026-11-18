@@ -4676,6 +4676,23 @@ function buildCandyLand(game, entry) {
     W.add(angler.group);
     game.npcs.push(new IceFisher(game, angler, makeIceStool(), { x: 26, z: -13, ry: PI, holeX: 26, holeZ: -18, holeY: 0.04,
       cries: ['Nothing bites in a chocolate river, but it never stops me trying.', "Careful, puss — one splash and that's a bath, not a paw-wash.", 'Best fudge-brown water in the land, this.'] })); }
+  // every world's own angler by now (the Neighborhood's lake jetty, Robot City's drain-tech, Victorian's
+  // canal, Sunny Shore's pier, Frosty Peak's ice hole, Whisper Woods' pond) still fishes alone — none of
+  // the seven has ever had a watcher stood beside them, the way every other solo act on this street
+  // (detectorists, painters, jugglers, skippers) eventually did. Starting the set here on the river's
+  // own south bank, two metres due south of the angler's stool, land side of the water's own keep-out
+  // band (`game.zones` carries it as a world-wide strip, `minZ:-22, maxZ:-14` — the stool itself sits
+  // only a metre clear of its own near edge). A headless probe swept a 0.25 m grid 2-7 m out from the
+  // angler's own spot (26, -13), staying south of z=-13 to keep off the water, against all 1884 of this
+  // world's own knee-to-head physics boxes, its 451 `game.zones` rectangles and 112 other NPCs sampled
+  // every 10th frame over 1200 frames of travel: (26, -11) came back with 3.6 m clear of the nearest box,
+  // 3 m clear of the river zone's own edge, and 2 m from the angler himself — the nearest other soul over
+  // the whole run, which is the point. `ry` points him at the angler's own fixed seat.
+  { const riverWatcherX = 26, riverWatcherZ = -11, riverAnglerX = 26, riverAnglerZ = -13;
+    const riverWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
+      shirt: 0x4a8a6a, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false }); W.add(riverWatcher.group);
+    game.npcs.push(new Wanderer(game, riverWatcher, { x: riverWatcherX, z: riverWatcherZ,
+      angle: atan2(riverAnglerX - riverWatcherX, riverAnglerZ - riverWatcherZ), speed: 0.3, leash: 0.5, idle: [3, 6] })); }
   // the Neighborhood's pond and the Victorian canal both got a duck pair that actually lives on the
   // water rather than beside it; the chocolate river, the one other body of water with nobody on it,
   // never did. A drake and a hen now paddle a 18 m stretch east of the last bridge — read straight off
