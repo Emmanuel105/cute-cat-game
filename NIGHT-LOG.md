@@ -33665,3 +33665,35 @@ friend total went up by one (169 → 170 to meet, confirmed against the previous
 whether the two locals' stance actually reads as one scene together is unverified. All seven
 worlds' paper-plane kids now have a watcher. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 1179 — Victorian's frisbee thrower gets a watcher too
+
+The Neighborhood, Candy Land, Robot City and Whisper Woods' own frisbee throwers have all picked up
+a watcher over the last several rounds; this street's own errand boy, lobbing his disc above the
+green just south of the terraces, was still throwing to nobody. **An errand girl now stands a few
+steps west of him, watching the disc rise and fall instead of walking on.** *"Same five minutes,
+every lunch. One of these days that roof stops him."* *"Careful, puss — mind your tail, that one's
+coming down fast."* Saying hello makes her the usual kind of friend. Sunny Shore and Frosty Peak are
+the only two worlds left whose own thrower still performs for nobody.
+
+No new class or mesh: the usual `makeHuman()`/`randomPerson()` rig, reusing this street's own
+`vicWard` palette (same as the thrower and the birdwatcher), and `Wanderer` (55-npcs.js) for the
+same "stand and watch" behaviour every other watcher in this game already uses, with a short leash
+(0.5 m) and `angle` pointed at the thrower's own fixed spot rather than a constant.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: the
+start screen's own click, then `game.travel(3, 'from-prev')` waited out for real against its own
+transition flag, then 300 simulated seconds so every wanderer, dancer and duck had already settled)
+swept a 0.25 m grid 2.5-6 m out from the thrower's own spot (-26, -76) against all 663 of this
+town's physics boxes, its 251 `game.zones` rectangles and all 149 other NPCs already standing in
+it: (-28.5, -76.25) came back clearest in that close-in band — 12.55 m from the nearest box, 12.47 m
+clear of the nearest zone rectangle and 2.51 m from the thrower himself (the nearest other soul, and
+exactly the leash distance), due west of him on the same open green well south of the market square
+and well short of the radius (88) where `victorianRegion()`'s own procedural fill takes over.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (no new collider, just the usual 0.5 m greet circle), and Victorian's own friend
+total went up by one (171 → 172 to meet, confirmed against the previous commit with `git stash`).
+No visual check was possible in this environment (no browser, no Playwright), so whether the two
+locals' stance actually reads as one scene together is unverified. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
