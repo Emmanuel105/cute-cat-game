@@ -34101,3 +34101,37 @@ friend total went up by one (129 → 130 to meet). No visual check was possible 
 sweep is unverified. Six of the seven detectorists — the Neighborhood, Robot City, Victorian, Sunny
 Shore, Frosty Peak and Whisper Woods — are still working alone. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1192 — Robot City's detectorist gets a watcher, the second of the seven
+
+Candy Land's own scanner picked up its watcher last round (1191); this city's own searcher, sweeping
+the open concrete east of the second conveyor line since round 10093, was still working to nobody.
+**An off-shift factory worker now stands a few steps south-west of Robot City's own scanner,
+watching the coil sweep the concrete instead of walking on past.**
+
+No new class or mesh: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer` (55-npcs.js)
+gives her the same "stand and watch" behaviour every other watcher in this city already uses, with a
+short leash (0.5 m) and `angle` pointed at the scanner's own fixed spot (32, -56) rather than a
+constant. Built with no `cries` of its own, same as the pogo-kid watcher built earlier in this same
+city, so a second `cries`-bearing `Wanderer` never lands in the same build-and-test window. Placed
+dead last of everything this city adds, right after the plane-kid watcher, for the usual reason:
+`makeHuman()`/`randomPerson()` both draw off this city's own shared `r()` sequence unconditionally,
+and anything built earlier would have had its own timing-sensitive pick shifted by it.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.travel(2, 'from-prev')`, 3600 simulated frames to settle every wanderer, patroller and
+ball-tossing robot pack, then a 0.25 m grid 2.5-7 m out from the scanner's own spot checked against
+all 1206 of this city's physics boxes, its 296 `game.zones` rectangles and all 125 other NPCs already
+standing in it) swept the whole ring: (27.5, -61.5) came back clearest — 8.32 m from the nearest box,
+well clear of the nearest zone rectangle and 7.11 m from the nearest other soul, open concrete
+south-west of the scanner's own patch.
+
+`node dimension-cat/test/run.mjs` ran clean three times running: exit 0, all 277 checks `ok`, 0
+console warnings, box count unchanged (334), and Robot City's own friend total went up by one to
+meet. (One run elsewhere in this session threw a single flaky `FAIL` on Sunny Shore's kite line —
+reproduced it on the pre-change code too across several more runs and it never recurred, so it's an
+existing timing flake in that one check, not anything this round touched.) No visual check was
+possible in this environment (no browser, no Playwright), so whether the watcher's stance actually
+reads as watching the coil sweep is unverified. Five of the seven detectorists — the Neighborhood,
+Victorian, Sunny Shore, Frosty Peak and Whisper Woods — are still working alone. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -20165,6 +20165,38 @@ function buildRobotCity(game, entry) {
     game.npcs.push(new Wanderer(game, planeWatcher, { x: wx, z: wz, angle: atan2(pkx - wx, pkz - wz), leash: 0.5, speed: 0.4, idle: [3, 6], walk: [1, 1.6],
       cries: ["Same fold every throw — bet he could do it with his eyes shut by now.", 'Careful, puss — swat that one and he just folds another.', "Furthest one yet. Shift's almost worth it for this."] })); }
 
+  // `Detectorist` (55-npcs.js) sweeps a metal detector in every one of the seven worlds — this
+  // city's own scanner above (round 10093's comment), plus the Neighborhood, Victorian, Sunny Shore,
+  // Frosty Peak and Whisper Woods' own searchers, and Candy Land's own (round 1191, the first to get
+  // one) — and until now only Candy Land's had ever picked up a watcher. **An off-shift factory
+  // worker now stands a few steps south-west of this city's own scanner, watching the coil sweep the
+  // concrete instead of walking on past.**
+  //
+  // No new class or mesh: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer`
+  // (55-npcs.js) gives her the same "stand and watch" behaviour every other watcher in this city
+  // already uses, with a short leash (0.5 m) and `angle` pointed at the scanner's own fixed spot (32,
+  // -56) rather than a constant. Built with no `cries` of its own, same as the pogo-kid watcher above,
+  // so a second `cries`-bearing `Wanderer` never lands in the same build-and-test window.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.travel(2, 'from-prev')`, 3600 simulated frames to settle every wanderer, patroller and
+  // ball-tossing robot pack, then a 0.25 m grid 2.5-7 m out from the scanner's own spot checked
+  // against all 1206 of this city's physics boxes, its 296 `game.zones` rectangles and all 125 other
+  // NPCs already standing in it) swept the whole ring: (27.5, -61.5) came back clearest — 8.32 m from
+  // the nearest box, well clear of the nearest zone rectangle and 7.11 m from the nearest other soul,
+  // open concrete south-west of the scanner's own patch.
+  //
+  // Built dead last of everything this city adds, right after the plane-kid watcher above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this city's own shared `r()` sequence
+  // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted
+  // by it.
+  { const dwx = 27.5, dwz = -61.5, dsx = 32, dsz = -56;
+    const scanWatchWard = makeWardrobe(r, { shirts: [0x4a5a6a, 0x5a4a6a, 0x3a4a5a], pants: [0x232c34, 0x2a2a30] });
+    const scanWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: scanWatchWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.3) });
+    W.add(scanWatcher.group);
+    game.npcs.push(new Wanderer(game, scanWatcher, { x: dwx, z: dwz, angle: atan2(dsx - dwx, dsz - dwz), leash: 0.5, speed: 0.4, idle: [3, 6] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
