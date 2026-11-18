@@ -27690,7 +27690,19 @@ function buildSnowVillage(game, entry) {
       hat: 'beanie', hatColor: 0x4a6a3a, coat: true, scarf: 0xf7f3ec, cuffs: 0x3a3a3a }); W.add(catcher.group);
     game.npcs.push(new Charger(game, catcher, { x: lx, z: lz, ry: atan2(ZIP_LANDING[0] - lx, ZIP_LANDING[1] - lz), cryIcon: '🤗',
       cries: ['Feet down, nice and steady - there we go.', "Best seat on the mountain, that cable.", 'One at a time off the line, please!'] })); }
-  makeLanternPath(game, ZIP_LANDING[0] + 2, ZIP_LANDING[1] + 2, -10, -8, 5);
+  const zipLanterns = makeLanternPath(game, ZIP_LANDING[0] + 2, ZIP_LANDING[1] + 2, -10, -8, 5);
+  // this mountain's own welcome-arch lanterns got a lamplighter in round 1182, but the note at the end
+  // of that same round flagged a second, identical gap left standing: this row of five by the zipline
+  // landing, strung along the catcher's own patch of snowfield, has stood unattended the whole time too.
+  // Same reuse as the arch row and the Neighborhood's gondola lanterns (round 1183) — `makeLanternPath`
+  // already hands back its lamp meshes and `Lamplighter` (55-npcs.js) already knows how to patrol one,
+  // so no new ground to clear beyond the lamps' own existing physics boxes.
+  { const zipLampWard = makeWardrobe(r, { shirts: [0x6a4a5a, 0x4a6a6a, 0x8a6a3a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const zipLamplighter = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: zipLampWard }),
+      hat: 'beanie', hatColor: 0x4a3a2a, coat: true, scarf: 0x6a8a9a, cuffs: 0x3a3a3a, pole: true });
+    W.add(zipLamplighter.group);
+    game.npcs.push(new Lamplighter(game, zipLamplighter, zipLanterns, { speed: 0.75,
+      cries: ['Last light before the cable goes quiet.', 'Careful, puss — mind the pole.', 'One more lit, one more to go.'] })); }
   // pines along the zipline, kept to its north-east side so the sled run on the other side stays clear
   for (let i = 0; i < 7; i++) { const k = i / 6, x = lerp(ZIP_TOP[0], ZIP_LANDING[0], k) + r.range(0, 9), z = lerp(ZIP_TOP[1], ZIP_LANDING[1], k) + r.range(-9, 0); const pn = makeSnowPine(r); placeT(game, U, pn, x, z, 0); boxT(game, x, z, 1.2 * pn.scale.x, 5, 1.2 * pn.scale.x, { cam: false }); }
   // the sled run: a child sleds down the flank of the west peak, then trudges back up dragging the sled

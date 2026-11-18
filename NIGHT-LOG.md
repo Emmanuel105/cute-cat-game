@@ -33837,3 +33837,32 @@ warnings, box count unchanged at 334, and the Neighborhood's own friend total we
 landing — left for another round. No visual check was possible in this environment (no browser, no
 Playwright), so whether the lamplighter's walk and flare actually read well next to the gondola
 station is unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1184 — Frosty Peak's zipline-landing lanterns get their own lamplighter
+
+Round 1182's own closing note flagged the gap it didn't have time to close: Frosty Peak has two
+lantern paths, and giving the welcome-arch row a lamplighter left the second row — five lanterns
+strung along the zipline landing, right by the catcher's own patch of snowfield — still dark and
+untended. **A second local now works that row with a pole, same as the first.** *"Last light before
+the cable goes quiet."* *"Careful, puss — mind the pole."* *"One more lit, one more to go."* Saying
+hello makes him the usual kind of friend too.
+
+Same reuse as the last two rounds, no new mesh or controller: `makeLanternPath` (62-props-nature.js)
+already hands back its lamp array, and `Lamplighter` (55-npcs.js) already knows how to patrol one —
+walking points come straight from each lamp's own position, 1.1 m in from it, so there was no new
+ground to clear beyond the lamps' own existing physics boxes. The only change to `73-world-snow.js`
+was capturing `makeLanternPath`'s return value (it had been discarded) and adding the lamplighter
+right after it, with a wardrobe and scarf colour distinct from the arch lamplighter's so the two
+don't read as the same person if the cat happens to meet both.
+
+Before touching anything, this round also found the repo's own `main` branch pointer sitting three
+commits behind the tip of the actual history (rounds 1180–1183 were committed but `main` itself,
+and consequently the push, had silently stopped moving with them in a prior container) — fixed with
+a plain fast-forward merge before starting; `git push origin main` then reported already up to date,
+confirming the commits had in fact reached the remote and only the local bookkeeping was stale.
+
+`node dimension-cat/test/run.mjs` ran clean three times running: exit 0, every check `ok`, 0 console
+warnings, box count unchanged at 334, and Frosty Peak's own friend total went up by one (143 → 144
+to meet). No visual check was possible in this environment (no browser, no Playwright), so whether
+the lamplighter's walk and flare actually read well against the landing's own low light is
+unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
