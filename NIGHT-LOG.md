@@ -34238,3 +34238,39 @@ seven detectorists — the Neighborhood and Whisper Woods — are still working 
 Neighborhood's own attempt at round 1191 hit a timing collision with a wandering neighbour and was
 reverted; it would need its own careful probe, not a repeat of this round's approach). Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1196 — Whisper Woods' detectorist gets a watcher, the sixth of the seven
+
+Candy Land, Robot City, Victorian, Sunny Shore and Frosty Peak's own scanners have all picked up a
+watcher over the last five rounds (1191-1195); this wood's own searcher, sweeping the leaf litter
+just off the stepping stones for somebody's lost ring since round 525, was still working to nobody.
+**A walker now stands a few steps north-east of him on the open forest floor, watching the coil sweep
+instead of wandering on.** Reused the searcher's own three lines rather than inventing new ones, same
+choice every other world's own watcher in this series has made — *"Someone's ring is out here
+somewhere."* *"Careful, puss - mind the leaf litter, it's slippery."* *"Every beep's a bottle cap so
+far."*
+
+No new class or mesh: the usual `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js) for the
+same "stand and watch" behaviour every other watcher in this game already uses, with a short leash
+(0.5 m) and `angle` pointed at the searcher's own fixed spot (-4, 18) rather than a constant.
+`Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was needed.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.travel(6, 'from-hub')` waited out for real against its own portal-fade and load timers, then
+3600 simulated frames sampling every NPC's own position every 10th frame) swept a 0.25 m grid 2.5-7 m
+out from the searcher's own spot against all 715 of this wood's own physics boxes (knee-to-head
+height only), its 223 `game.zones` rectangles and every one of those position samples: (-2.87, 20.23)
+came back clearest, right at the close-in edge of that band — 6.99 m from the nearest box, clear of
+every `game.zones` rectangle (the glade's own keep-out circle at the origin is the nearest, its edge
+2.4 m further out still) and 2.5 m from the searcher himself (the nearest other soul over the whole
+run, which is the point), open forest floor at radius 20.4 from the origin, well short of the radius
+(58) where `forestRegion()`'s own procedural fill takes over.
+
+`node dimension-cat/test/run.mjs` ran clean three times running: exit 0, all 277 checks `ok`, 0
+console warnings, box count unchanged (334), and Whisper Woods' own friend total went up by one (171
+→ 172) to meet. No visual check was possible in this environment (no browser, no Playwright), so
+whether the watcher's stance actually reads as watching the coil sweep is unverified. Only one of the
+seven detectorists — the Neighborhood — is still working alone (the one attempt there, round 1191,
+hit a timing collision with a wandering neighbour and was reverted; it would need its own careful
+probe, not a repeat of this round's approach). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.

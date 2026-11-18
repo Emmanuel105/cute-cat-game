@@ -33829,6 +33829,45 @@ function buildForest(game, entry) {
     game.npcs.push(new Wanderer(game, dartWatcher, { x: dartWx, z: dartWz, angle: atan2(dartKidX3 - dartWx, dartKidZ3 - dartWz), speed: 0.3, leash: 0.5, idle: [3, 6],
       cries: ["Folds this one from a curl of birch bark too — says there's no other way, up here.", 'Careful, puss — swat that one and he just folds another.', 'Longest glide yet, or so he tells it every time.'] })); }
 
+  // `Detectorist` (55-npcs.js) sweeps a metal detector in every one of the seven worlds; Candy Land,
+  // Robot City, Victorian, Sunny Shore and Frosty Peak's own scanners have all picked up a watcher by
+  // now (rounds 1191-1195), but this wood's own searcher, sweeping the leaf litter just off the
+  // stepping stones for somebody's lost ring since round 525, was still working to nobody. **A walker
+  // now stands a few steps north-east of him on the open forest floor, watching the coil sweep instead
+  // of wandering on.** Reused the searcher's own three lines rather than inventing new ones, same
+  // choice every other world's own watcher in this series has made:
+  // *"Someone's ring is out here somewhere."* *"Careful, puss - mind the leaf litter, it's slippery."*
+  // *"Every beep's a bottle cap so far."*
+  //
+  // No new class or mesh: the usual `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js) for
+  // the same "stand and watch" behaviour every other watcher in this game already uses, with a short
+  // leash (0.5 m) and `angle` pointed at the searcher's own fixed spot (-4, 18) rather than a constant.
+  // `Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was needed.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.travel(6, 'from-hub')` waited out for real against its own portal-fade and load timers, then
+  // 3600 simulated frames sampling every NPC's own position every 10th frame) swept a 0.25 m grid
+  // 2.5-7 m out from the searcher's own spot against all 715 of this wood's own physics boxes (knee-
+  // to-head height only), its 223 `game.zones` rectangles and every one of those position samples:
+  // (-2.87, 20.23) came back clearest, right at the close-in edge of that band — 6.99 m from the
+  // nearest box, clear of every `game.zones` rectangle (the glade's own keep-out circle at the origin
+  // is the nearest, its edge 2.4 m further out still) and 2.5 m from the searcher himself (the nearest
+  // other soul over the whole run, which is the point), open forest floor at radius 20.4 from the
+  // origin, well short of the radius (58) where `forestRegion()`'s own procedural fill takes over.
+  //
+  // Built dead last of everything this wood adds, for the usual reason: `makeHuman()`/`randomPerson()`
+  // both draw off this wood's own shared `r()` sequence unconditionally, and anything built earlier
+  // would have had its own timing-sensitive pick shifted by it. Six of the seven worlds' own
+  // detectorists now have a watcher; only the Neighborhood's own hunter still works alone (the one
+  // attempt there, round 1191, hit a timing collision with a wandering neighbour and was reverted).
+  { const woodsDetWx = -2.87, woodsDetWz = 20.23, woodsDetSx = -4, woodsDetSz = 18;
+    const woodsDetWard = makeWardrobe(r, { shirts: [0x5a7a6a, 0x7a5a6a, 0x6a6a5a], pants: [0x3a3a2a, 0x2e3a28] });
+    const woodsDetWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: woodsDetWard }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: r.chance(0.2) });
+    W.add(woodsDetWatcher.group);
+    game.npcs.push(new Wanderer(game, woodsDetWatcher, { x: woodsDetWx, z: woodsDetWz, angle: atan2(woodsDetSx - woodsDetWx, woodsDetSz - woodsDetWz), speed: 0.3, leash: 0.5, idle: [3, 6],
+      cries: ["Someone's ring is out here somewhere.", "Careful, puss - mind the leaf litter, it's slippery.", "Every beep's a bottle cap so far."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
