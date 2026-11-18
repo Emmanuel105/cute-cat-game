@@ -480,16 +480,18 @@ function makeWelcomeArch(game, x, z, ry, text = 'WELCOME TO FROSTY PEAK') {
   for (let i = 0; i < 9; i++) mesh(G.cone(0.05, 0.15 + (i % 3) * 0.12, 5), ice, { x: -2 + i * 0.5, y: 3.35 - (0.075 + (i % 3) * 0.06), rx: PI, shadow: 'none', parent: g });
   return g;
 }
-/** A row of lantern posts between two points (every other post carries a real light). */
+/** A row of lantern posts between two points (every other post carries a real light). Returns the lamp meshes, each lit one carrying its own `userData.light`, for anyone who wants to patrol the row (e.g. `Lamplighter`). */
 function makeLanternPath(game, ax, az, bx, bz, n = 6) {
-  const wood = mat(0x5a3a1f, { roughness: 1 });
+  const wood = mat(0x5a3a1f, { roughness: 1 }), lamps = [];
   for (let i = 0; i < n; i++) { const k = (i + 0.5) / n, x = lerp(ax, bx, k), z = lerp(az, bz, k), y = game.physics.ground0(x, z), side = i % 2 ? 1 : -1, dx = -(bz - az), dz = bx - ax, L = Math.hypot(dx, dz) || 1;
     const px = x + dx / L * side * 1.6, pz = z + dz / L * side * 1.6, py = game.physics.ground0(px, pz);
     mesh(G.cyl(0.05, 0.06, 1.3, 6), wood, { x: px, y: py + 0.65, z: pz, parent: game.world });
     const lamp = mesh(G.box(0.22, 0.28, 0.22), mat(0xffe6a8, { emissive: 0xffc46a, emissiveIntensity: 1.5 }), { x: px, y: py + 1.4, z: pz, shadow: 'none', parent: game.world }); glowSprite(0xffb85a, 1.2, 0.4, lamp);
-    if (i % 2 === 0) pointLight(0xffb060, 6, 6, px, py + 1.5, pz, game.world);
+    if (i % 2 === 0) lamp.userData.light = pointLight(0xffb060, 6, 6, px, py + 1.5, pz, game.world);
     game.physics.addBox(px, py + 0.65, pz, 0.2, 1.3, 0.2, { cam: false });
+    lamps.push(lamp);
   }
+  return lamps;
 }
 /**
  * A long cave running north (−z) from (x,z0) for `len` metres into the hillside: rock walls, arched ribs, a stone floor,

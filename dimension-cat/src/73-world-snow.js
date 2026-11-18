@@ -1538,7 +1538,20 @@ function buildSnowVillage(game, entry) {
       '🧤 Underneath, in smaller writing: "If found, the other one probably isn\'t worth much either." The cat has to agree.',
       '🧤 Someone has pinned a single loose strand of red wool to the corner, as if that proves anything. The cat sniffs it anyway.'];
     game.addInteractable({ obj: notice, radius: 2.2, label: () => 'Read the notice', onUse: () => { SFX.click(); game.toast(rnd.pick(mittenLines), 3000); } }); }
-  makeLanternPath(game, -29, 0, -8, 0, 6);
+  const archLanterns = makeLanternPath(game, -29, 0, -8, 0, 6);
+  // this row of lanterns between the welcome arch and the village had glowed, untended, since it went
+  // in. `Lamplighter` (55-npcs.js) already works the Victorian gas lamps and a second set of the
+  // Neighborhood's own street lamps — `makeLanternPath` now hands back its lamp meshes (round-and-reset
+  // fix to the class's own flare, which used to leave a lamp pinned at gas-lamp brightness forever
+  // after its first visit; these lanterns run dimmer to start with, so that would have shown) for
+  // exactly this reuse. Walking points come straight from each lamp's own position, 1.1 m in from it,
+  // so no new ground to clear beyond the lamps already standing there.
+  { const lampWard = makeWardrobe(r, { shirts: [0x5a6a4a, 0x4a5a6a, 0x6a4a3a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const lamplighter = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: lampWard }),
+      hat: 'beanie', hatColor: 0x3a3a3a, coat: true, scarf: 0xb85c38, cuffs: 0x3a3a3a, pole: true });
+    W.add(lamplighter.group);
+    game.npcs.push(new Lamplighter(game, lamplighter, archLanterns, { speed: 0.75,
+      cries: ['One more lit, one more to go.', 'Careful, puss — mind the pole.', 'Dark early, up this high.'] })); }
   for (const [x, z] of [[-28, 4.5], [-20, -4.5], [-14, 4.5]]) { const c = makeIceCrystal(r, r.pick([0x9fe8ff, 0xbfa8ff])); placeT(game, U, c, x, z, 0); boxT(game, x, z, 0.6, 1.6, 0.6, { cam: false }); }
   for (const [x, z] of [[-26, -6], [-18, 6]]) { const p = makeSnowPine(r); placeT(game, U, p, x, z, 0); boxT(game, x, z, 1.2 * p.scale.x, 5, 1.2 * p.scale.x, { cam: false }); }
   for (let i = 0; i < 6; i++) { const x = -30 + i * 4, z = (i % 2 ? 1 : -1) * 3.2; mesh(G.sphere(1, 8, 6), mat(0xf6f9fc, { roughness: 1 }), { x, y: P.ground0(x, z), z, sx: r.range(0.8, 1.4), sy: r.range(0.4, 0.7), sz: r.range(0.8, 1.4), shadow: 'none', parent: W }); }   // snow banks

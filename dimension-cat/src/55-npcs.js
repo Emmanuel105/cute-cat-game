@@ -1126,16 +1126,17 @@ class Lamplighter extends Patroller {
     // stand a step in from each lamp, on the pavement side of it
     const pts = lamps.map((l) => [l.position.x + (l.position.z > 0 ? 0 : 0), l.position.z + (l.position.z > 0 ? -1.1 : 1.1)]);
     super(game, rig, { points: pts, speed: o.speed ?? 0.8, pause: [1.8, 2.4], pauseAll: true, loop: false, cries: o.cries ?? null, cryIcon: '\ud83d\udd6f\ufe0f',
-      onArrive: (i) => { this.lit++; this.rig.gesture = 'reach'; this.rig.gT = 0; this.flare = lamps[i]; this.flareT = 1.6; } });
-    this.lamps = lamps; this.lit = 0; this.flare = null; this.flareT = 0;
+      onArrive: (i) => { this.lit++; this.rig.gesture = 'reach'; this.rig.gT = 0; this.flare = lamps[i]; this.flareT = 1.6;
+        this.flareBase = (this.flare.userData.light && this.flare.userData.light.intensity) || 42; } });
+    this.lamps = lamps; this.lit = 0; this.flare = null; this.flareT = 0; this.flareBase = 42;
   }
   update(dt) {
     super.update(dt);
     if (this.flare) {
       this.flareT -= dt; const k = sin(clamp(1 - this.flareT / 1.6, 0, 1) * PI);   // up and back down over the pause
-      const light = this.flare.userData.light; if (light) light.intensity = 42 + k * 60;
+      const light = this.flare.userData.light; if (light) light.intensity = this.flareBase + k * 60;
       this.flare.traverse((o) => { if (o.material && o.material.emissiveIntensity !== undefined && o.material.emissive && o.material.emissive.getHex && o.material.emissive.getHex() === 0xffc46a) o.material.emissiveIntensity = 1.6 + k * 2.2; });
-      if (this.flareT <= 0) { if (light) light.intensity = 42; this.flare = null; }
+      if (this.flareT <= 0) { if (light) light.intensity = this.flareBase; this.flare = null; }
     }
   }
 }

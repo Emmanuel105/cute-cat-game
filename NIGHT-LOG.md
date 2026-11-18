@@ -33763,3 +33763,46 @@ Frosty Peak's own friend total went up by one (141 → 142 to meet). No visual c
 this environment (no browser, no Playwright), so whether the two locals' stance actually reads as
 one scene together is unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 1182 — Frosty Peak's lantern path gets its own lamplighter
+
+Every world's own "watcher" set has been full for a round now, so this one went looking for
+something a world was missing outright rather than a lone performer. The row of six lanterns
+between the gondola's own welcome arch and the village (`makeLanternPath`, laid down back around
+round 219) has glowed, untended, since it went in — unlike the Victorian gas lamps and a second
+set of the Neighborhood's own street lamps, which have each had a `Lamplighter` working them for
+a while now. **A bundled-up local now works the row with a pole, giving each lantern a flare as he
+reaches it, there and back along the path from the arch to the village.** *"One more lit, one more
+to go."* *"Careful, puss — mind the pole."* *"Dark early, up this high."* Saying hello makes him
+the usual kind of friend.
+
+No new mesh or controller: a plain `makeHuman()`/`randomPerson()` rig in this mountain's own
+beanie-and-coat wardrobe with `pole: true` (the same lit-tip pole prop every other lamplighter
+already carries), and the existing `Lamplighter` class (55-npcs.js) walking the row Patroller-style,
+there and back, pausing at each lamp for the usual flare. The only code change needed was to
+`makeLanternPath` itself (62-props-nature.js), which built its lamps as throwaway local meshes and
+handed nothing back — it now returns the lamp array (and wires each lit one's `pointLight()` handle
+onto its own `userData.light`, which it had been building but never attaching) so a `Lamplighter`
+has something to patrol.
+
+That turned up a real bug in `Lamplighter` itself: its flare reset hard-coded the "back to normal"
+brightness to 42 — the Victorian gas lamps' own steady intensity — rather than remembering what the
+lamp was actually lit at before the flare. That never showed on a gas lamp (already 42), but these
+lanterns run at 6, so the first lamp visited would have jumped to 7× its normal brightness and
+stayed there forever after. Fixed by capturing each lamp's own intensity when the flare starts and
+restoring that instead of the constant. A headless probe (the same stub-three harness `test/run.mjs`
+itself uses, with the same `travel()` + real-timer wait every other round's probe has used) confirmed
+it: before any visit the lit lanterns read intensity 6, and after 3000 simulated frames — long enough
+for the lamplighter to reach every lamp on the row several times over (`lit` counted 7) — they read
+exactly 6 again, not 42.
+
+Walking points come straight from each lamp's own existing position (1.1 m in from it, the same
+offset every other `Lamplighter` uses), so there was no new ground to clear: the lamps already had
+their own physics boxes from when the path was built. `node dimension-cat/test/run.mjs` ran clean:
+exit 0, every check `ok`, 0 console warnings, box count unchanged at 334, and Frosty Peak's own
+friend total went up by one (142 → 143 to meet). (This harness does occasionally print `exit 1`ish
+on an unrelated flake even on the unmodified codebase — confirmed by stashing this round's changes
+and re-running — so three clean back-to-back runs were taken as the real signal rather than one.)
+No visual check was possible in this environment (no browser, no Playwright), so whether the
+lamplighter's walk and flare actually read well against the lanterns' own low light is unverified.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
