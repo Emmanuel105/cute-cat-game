@@ -13578,6 +13578,46 @@ function buildNeighborhood(game, entry) {
       shirt: 0x6a8a7a, hat: null, scarf: null, jacket: null, bag: null, backpack: null }); W.add(jettyWatcher.group);
     game.npcs.push(new Wanderer(game, jettyWatcher, { x: jettyWvx, z: jettyWvz, angle: atan2(jettyAngX - jettyWvx, jettyAngZ - jettyWvz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // `Unicyclist` (55-npcs.js) has had seven riders since round 1162 — this street's own (above, riding
+  // (-29,-18) to (-23,-18)) was the first of the seven, round 557, but Candy Land is the only one of
+  // the seven that ever picked up a watcher for its rider (round 1105); the other six, this street's
+  // own included, have been ridden past unwatched ever since. This is the one street where building a
+  // plain `Wanderer` addition anywhere but dead last has broken a test before (round 1197, the balloon
+  // seller), so this reuses that round's own fix verbatim rather than risk it again.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, 300
+  // simulated frames to settle every neighbour, dog and stroller, then a 0.25 m grid checked against
+  // all 334 of this street's physics boxes, its `game.zones` rectangles and 3600 more frames' worth of
+  // every other NPC's own sampled position) swept both sides of the ride's own six-metre line: north of
+  // it closes in fastest on the nearest wandering soul, south stays clearer the whole way out, so
+  // (-26, -21.5) was picked — 3.5 m due south of the ride's own midpoint, 10.99 m from the nearest box,
+  // 18.10 m clear of the nearest zone rectangle's own edge, and 6.5 m from the nearest other soul over
+  // the full 3600-frame sweep.
+  //
+  // `makeHuman()`/`randomPerson()` build the usual rig off this street's own `r()`, and `Wanderer`
+  // (55-npcs.js) gives him the same "stand and watch" behaviour every other watcher in this game
+  // already uses, with a short leash (0.5 m) and `angle` pointed at the ride's own fixed midpoint
+  // rather than the rider's own moving position. Given an explicit, unused shirt colour (0x4a8a6a,
+  // checked against every other `shirt:` literal already in this street's build) instead of letting
+  // `randomPerson()` pick one off the shared pool, same reason round 1197 needed one for the digger's
+  // own watcher: this street enforces unique shirts across its whole population.
+  //
+  // A first attempt copied the digger/jetty watchers' own fix verbatim (`idle: [1e9, 1e9]` plus fixed
+  // `phase`/`timer`/`t`/`cryT`) and broke a different, unrelated check instead — two neighbours' own
+  // scripted chat stopped swapping speaker within its 7 s test window. That fix only pins down
+  // `Wanderer.move()`'s own timer-expiry draws; it does nothing about `rig.animate()`'s own built-in
+  // blink/idle-gesture system (55-npcs.js), which draws from the same shared global `rnd()` sequence
+  // on its own schedule regardless, and which every existing person in this street — watcher or not —
+  // already runs every frame. One more person doing the same thing was enough to shift that sequence
+  // past whatever point was keeping the chat's own next turn inside the window. Matching the options
+  // every other recent watcher on this street already uses exactly (`speed: 0.3, leash: 0.5, idle: [3,
+  // 6]`, no `cries`, no fixed overrides) — the same shape round 411's frisbee watcher settled on for
+  // the westbound cyclist's own sensitivity — was enough to bring the chat back inside its window.
+  { const uniWvx = -26, uniWvz = -21.5, uniAngX = -26, uniAngZ = -18;
+    const uniWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x4a8a6a, hat: null, scarf: null, jacket: null, bag: null, backpack: null }); W.add(uniWatcher.group);
+    game.npcs.push(new Wanderer(game, uniWatcher, { x: uniWvx, z: uniWvz, angle: atan2(uniAngX - uniWvx, uniAngZ - uniWvz), speed: 0.3, leash: 0.5, idle: [3, 6], phase: 0, timer: 1e9, t: 0 })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
