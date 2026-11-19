@@ -20399,6 +20399,43 @@ function buildRobotCity(game, entry) {
     W.add(scanWatcher.group);
     game.npcs.push(new Wanderer(game, scanWatcher, { x: dwx, z: dwz, angle: atan2(dsx - dwx, dsz - dwz), leash: 0.5, speed: 0.4, idle: [3, 6] })); }
 
+  // `Unicyclist` (55-npcs.js) has had two riders since round 1085 — Candy Land's own performer and
+  // this city's own maintenance tech above (round 1162), doing laps on the open floor between the
+  // east-yard towers — and only Candy Land's rider has ever picked up a watcher (round 1105). This
+  // city's own rider has pedalled past empty concrete every lap since. **An off-shift worker now
+  // stands eight metres west of the ride, arms folded, watching her wheel out and back instead of
+  // walking on toward the belts.** *"One wheel and she's never once put a foot down. Beats my own
+  // balance any day of the week."* *"Careful, puss — she's not stopping for you either."* *"Four more
+  // laps, she said. That was ten laps ago."*
+  //
+  // No new mesh or controller: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer`
+  // (55-npcs.js) gives him the same "stand and watch" behaviour every other watcher in this city
+  // already uses, with a short leash (0.5 m) and `angle` pointed at the ride's own fixed midpoint (28,
+  // -44) rather than a constant. Built with no `cries` of its own, same as the scanner watcher above,
+  // so a second `cries`-bearing `Wanderer` never lands in the same build-and-test window.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, `game.travel(2, 'from-prev')` waited out for real
+  // against its own portal-fade timer, then 3600 simulated frames to settle every wanderer, patroller
+  // and ball-tossing robot pack, then another 1800 sampling every NPC's own position every 10th frame)
+  // swept the open floor west of the ride against all 1206 of this city's physics boxes, its 296
+  // `game.zones` rectangles, and the tag game's own `{ cx: 28, cz: -40, leash: 5.5 }` home circle
+  // (`Playmates`, built earlier in this function) as a hard exclusion rather than a sampled one, since
+  // its own chase occasionally swings wide of its two children's sampled positions. (20, -44), eight
+  // metres west of the ride's own midpoint, came back clear by 5.60 m of the nearest box, 18.80 m of
+  // the nearest zone rectangle's own edge, and 3.44 m outside the tag game's own leash circle — the
+  // east-yard towers that crowd the ride's own east side never reach this far west.
+  //
+  // Built dead last of everything this city adds, right after the detectorist's own watcher above, for
+  // the usual reason: `makeHuman()`/`randomPerson()` both draw off this city's own shared `r()`
+  // sequence unconditionally, and anything built earlier would have had its own timing-sensitive pick
+  // shifted by it.
+  { const uwx = 20, uwz = -44, umx = 28, umz = -44;
+    const uniWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0xb0773a, hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.3) });
+    W.add(uniWatcher.group);
+    game.npcs.push(new Wanderer(game, uniWatcher, { x: uwx, z: uwz, angle: atan2(umx - uwx, umz - uwz), leash: 0.5, speed: 0.4, idle: [3, 6] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

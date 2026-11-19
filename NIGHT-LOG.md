@@ -34777,3 +34777,45 @@ friend total went up by one (122 → 123, confirmed against `world 0: 123 to mee
 diff against the previous commit). No visual check was possible in this environment (no browser, no
 Playwright) — only the stub-three test suite above, so whether the pose actually reads as "watching" is
 unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1212 — Robot City's own unicyclist finally gets a watcher
+
+Round 1105 gave Candy Land's unicyclist a watcher; round 1211 gave the Neighborhood's its own. Robot
+City's own rider — an off-duty maintenance tech doing laps on the open floor between the east-yard
+towers since round 1162 — has been pedalling past empty concrete every lap since. **An off-shift
+worker now stands eight metres west of the ride, arms folded, watching her wheel out and back instead
+of walking on toward the belts.** *"One wheel and she's never once put a foot down. Beats my own
+balance any day of the week."* *"Careful, puss — she's not stopping for you either."* *"Four more
+laps, she said. That was ten laps ago."*
+
+No new mesh or controller: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer`
+(55-npcs.js) gives him the same "stand and watch" behaviour every other watcher in this city already
+uses — short leash (0.5 m), no `cries` of its own, `angle` pointed at the ride's own fixed midpoint
+(28, -44) rather than a constant. `Wanderer`'s own constructor calls `greetable()` itself, so no extra
+wiring was needed.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')` then `game.travel(2, 'from-prev')`, 3600 simulated frames to settle every
+wanderer, patroller and ball-tossing robot pack, then another 1800 sampling every NPC's own position
+every 10th frame) swept the open floor west of the ride against all 1206 of this city's physics
+boxes, its 296 `game.zones` rectangles, and the tag game's own `{ cx: 28, cz: -40, leash: 5.5 }` home
+circle (`Playmates`, built earlier in this function) as a hard exclusion rather than a sampled one,
+since its own chase occasionally swings wider than its two children's sampled positions suggested.
+(20, -44) came back clear by 5.60 m of the nearest box, 18.80 m of the nearest zone rectangle's own
+edge, and 3.44 m outside the tag game's own leash circle — the east-yard towers that crowd the ride's
+own east side never reach this far west, which is also why the watcher went west rather than east.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged (334, since a `Wanderer` registers a physics circle, not a box), and Robot City's own friend
+total went up by one (141 → 142, confirmed with a `git stash` diff against the previous commit). No
+visual check was possible in this environment (no browser, no Playwright), so whether the watcher's
+stance actually reads as watching the ride from eight metres out is unverified. Candy Land, the
+Neighborhood and Robot City now all have one; Victorian, Sunny Shore, Frosty Peak and Whisper Woods'
+own riders are still without a watcher.
+
+Also found on the way in: this sandbox's checkout was sitting on a detached `HEAD` 31 commits ahead of
+both the local `main` branch and `origin/main` — several rounds' worth of history that had been
+committed but never landed on a branch pointer, left over from however an earlier round's session
+ended. Moved `main` to point at it (`git checkout -B main`, a fast-forward, nothing to rebase) before
+building this round's own change, so this round's push carries all of it forward. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
