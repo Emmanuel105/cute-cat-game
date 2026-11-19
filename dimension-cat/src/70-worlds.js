@@ -10165,6 +10165,30 @@ function buildRobotCity(game, entry) {
     game.npcs.push(new PinataSwinger(game, swinger, 0xc9a86a, { x: sx, z: sz, ry: sry,
       cries: ["One of these days I'm actually going to connect.", 'Careful, puss — swing room needed here.', 'Foreman filled it with spare bolts. Typical.'] })); }
 
+  // Candy Land's own piñata picked up a watcher a round back (`Wanderer`, 55-npcs.js) — the one
+  // held-prop act left without one now that every other performer in the game already has company.
+  // Robot City's piñata, built just above, is next: **an off-shift contractor now leans against
+  // nothing in particular a few steps off to the side, watching the swing without once stepping into
+  // the swinger's own room.**
+  //
+  // No new class: the same `Wanderer` every other watcher in this series uses, short leash (0.5 m),
+  // no `cries` of its own, `angle` pointed at the swinger's own fixed spot rather than a constant so
+  // it draws from the very tail of this world's own local `r()` sequence and disturbs no earlier pick.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')` then `game.travel(2, 'from-hub')`, 3600 simulated frames to let every
+  // wandering, patrolling, marching robot and every tetherball, tug-of-war, badminton, sack-race and
+  // pogo-stick pair actually move, then another 1200 sampling every NPC's and the squirrel's own
+  // position every 10th frame) swept a 0.25 m grid north of the post against those samples, this
+  // city's 334 physics boxes and its `game.zones` rectangles, restricted to 1.3-3.3 m out from the
+  // swinger's own spot (2, -68.7): (0.25, -66) came back clearest — 11.8 m from the nearest box,
+  // 27.6 m clear of the nearest zone rectangle's own edge, and 3.22 m from the swinger herself, the
+  // nearest other soul over the whole sample.
+  { const pwvx = 0.25, pwvz = -66, pwx = 2, pwz = -68.7;
+    const pinWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x7a9a5a, hat: null, scarf: null, jacket: null, bag: null, backpack: null }); W.add(pinWatcher.group);
+    game.npcs.push(new Wanderer(game, pinWatcher, { x: pwvx, z: pwvz, angle: atan2(pwx - pwvx, pwz - pwvz), speed: 0.2, leash: 0.5, idle: [3, 6] })); }
+
   // archery had reached six of the seven worlds (Neighborhood, Frosty Peak, Whisper Woods, Victorian,
   // Sunny Shore, Candy Land) but never Robot City, the one remaining world with no archery range of its
   // own. **A maintenance-crew archer now shoots at a straw target on a quiet stretch of open floor north

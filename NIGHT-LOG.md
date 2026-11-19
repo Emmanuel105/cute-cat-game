@@ -34572,3 +34572,37 @@ rail rather than standing mid-deck is unverified — but the physics boxes read 
 confirm it's on the deck and clear of both rails, not floating over the sea or clipped into a post.
 That closes out the angler-watcher set: all seven worlds' anglers now have company. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1206 — Robot City's piñata swinger gets a watcher too
+
+Round 1205 gave Candy Land's piñata post a watcher, closing out the one held-prop act in the whole
+game that had never had one and starting a new set for the other six worlds' own posts. **An off-shift
+contractor now leans a few steps off to the side of Robot City's own piñata, watching the swing without
+once stepping into the swinger's own room.**
+
+No new class: the same `Wanderer` (`55-npcs.js`) every other watcher in this series already uses — a
+short 0.5 m leash, no `cries` of its own, `angle` pointed at the swinger's own fixed spot (2, -68.7)
+rather than a constant, so it draws from the very tail of this world's own local `r()` sequence and
+disturbs no earlier pick. An unused shirt colour (0x7a9a5a, checked against every other shirt literal
+already drawn in this world's build) was given rather than leaving `randomPerson()` to pick one off the
+shared pool.
+
+Placement was checked with a headless probe (a scratch script on the same stub-three harness
+`test/run.mjs` itself uses: `game.start('new')` then `game.travel(2, 'from-hub')`, 3600 simulated frames
+to let every wandering, patrolling, marching robot and every tetherball, tug-of-war, badminton, sack-race
+and pogo-stick pair actually move, then another 1200 sampling every NPC's and the squirrel's own
+position every 10th frame) swept a 0.25 m grid 1.3-3.3 m out from the swinger's own spot against this
+city's 334 physics boxes and its `game.zones` rectangles. (0.25, -66) came back clearest: 11.8 m from the
+nearest box, 27.6 m clear of the nearest zone rectangle's own edge, and 3.22 m from the swinger herself —
+the nearest other soul over the whole sample, close enough to read as watching the swing rather than
+standing off on his own.
+
+`node dimension-cat/test/run.mjs` ran clean twice running: exit 0, all checks `ok`, 0 console warnings,
+box count unchanged (334, since a `Wanderer` registers a physics circle, not a box), and Robot City's own
+friend total went up by one (140 → 141) to meet. The usual numeric noise elsewhere (the Sunny Shore
+kite's height, the Frosty Peak snowball count, a few worlds' resting foot height and walkable
+percentage) was already present before this change and unrelated to it. No visual check was possible in
+this environment (no browser, no Playwright), so whether the watcher's stance actually reads as watching
+the swing from that distance is unverified. The other five worlds' piñata posts (the Neighborhood,
+Victorian, Sunny Shore, Frosty Peak, Whisper Woods) are still without one — next in line for this set.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
