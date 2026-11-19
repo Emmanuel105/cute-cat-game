@@ -34459,3 +34459,44 @@ total went up by one (172 → 173) to meet. No visual check was possible in this
 no Playwright), so whether the watcher's stance actually reads as watching the line is unverified. One
 angler is still working alone — the Neighborhood's, last as usual given its own rnd()-shift hazard
 (round 1197). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1203 — the Neighborhood's own jetty angler gets a watcher too, almost the last of the set
+
+Candy Land's river, Robot City's drain, Victorian's canal, Frosty Peak's ice hole and Whisper Woods'
+pond all picked up a watcher over rounds 1198-1202. The Neighborhood's own jetty angler, working the
+lake's edge since round one, was the one holdout left reachable — the same rnd()-shift hazard that
+took a whole round to pin down back at round 1197 (any `Wanderer` whose idle timer expires during the
+test draws extra numbers off the single shared global `rnd()` sequence, nudging some unrelated
+neighbour onto the balloon seller's own interaction point by the time that check runs) had kept this
+street off the list. **A local now stands well back on the bank, watching the angler's line dip into
+the lake from the near end of his jetty.**
+
+The jetty itself (its physics box runs x -32..-27 at z -48, over a pond whose own water disc reaches
+radius 7.5 from its centre at (-34,-48)) is a single-plank walkway with no room to stand beside the
+angler, the same geometry that still leaves Sunny Shore's own pier angler without a watcher. A headless
+probe (the same stub-three harness `test/run.mjs` itself uses, 300 simulated frames to settle every
+neighbour, dog and stroller) found (-23, -47) clearest on the bank east of the jetty's own landward
+post: 3.84 m from the nearest physics box, 2.60 m clear of the nearest `game.zones` rectangle's own
+edge, well outside the lake's own radius-8.4 keep-out circle, and 8.06 m from the angler himself — the
+nearest other soul over the whole run. Farther than this series' usual "two steps away," but the pond
+leaves nothing closer that isn't on the plank itself or over open water.
+
+Round 1197's own fix for the rnd()-shift hazard is reused verbatim: built dead last in this street's own
+build (right after the digger's own watcher, the previous holder of that spot), an explicit unused
+shirt colour (0x6a8a7a, checked against every other shirt literal in the file) instead of the shared
+`ward` bag, no `cries`, and `Wanderer`'s own construction-time draws (`phase`, `timer`, `t`, `cryT`)
+fixed instead of pulled from `rnd()`, with the idle/walk timer itself set to 1e9 so `move()` never
+crosses into the timer-expiry branch that round 1197 traced the real leak to.
+
+`node dimension-cat/test/run.mjs` ran clean three times running: exit 0, all checks `ok`, 0 console
+warnings, box count unchanged (334, since a `Wanderer` registers a physics circle, not a box), the
+street's own "no two neighbours wear the same shirt" check still holding (92 colours for 92 people),
+and the game's own total friend count went up by one (121 → 122). Two runs showed the usual harmless
+numeric noise elsewhere (the Victorian carriage's distance travelled, the Sunny Shore kite's height,
+a few worlds' resting foot height) already present before this change, and the balloon seller's own
+check held `ok` in both. No visual check was possible in this environment (no browser, no Playwright),
+so whether the watcher's stance actually reads as watching the line from that distance is unverified.
+Sunny Shore's own pier angler is the only one left without a watcher, still skipped for the reason
+round 1201 gave: his stool sits at the far end of a narrow deck raised above open water with no ground
+nearby at all, needing a deck-height override this series hasn't built yet. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

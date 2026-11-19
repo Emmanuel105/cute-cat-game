@@ -4539,6 +4539,40 @@ function buildNeighborhood(game, entry) {
       shirt: 0x6a5a8a, hat: null, scarf: null, jacket: null, bag: null, backpack: null }); W.add(digWatcher.group);
     game.npcs.push(new Wanderer(game, digWatcher, { x: digWvx, z: digWvz, angle: atan2(digX - digWvx, digZ - digWvz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // Every other world's own angler has had a watcher since rounds 1198-1202 (Candy Land's river, Robot
+  // City's drain, Victorian's canal, Frosty Peak's ice hole, Whisper Woods' pond) — the Neighborhood's
+  // own jetty angler, working the lake's edge since round one, was the one left out, for two separate
+  // reasons: his jetty is a narrow single-plank walkway with no room to stand beside him (same geometry
+  // that still leaves Sunny Shore's pier angler without one), and this is the one world where a plain
+  // `Wanderer` addition already broke a test once (round 1197, the balloon seller).
+  //
+  // The jetty itself solves the first problem on its own: it runs from solid ground at its landward
+  // end (x=-27) out over the pond to the angler's own stool at the far end (x=-31, z=-48, the pond's
+  // own radius-7.5 water disc centred (-34,-48)), so a watcher can stand well back on the bank instead
+  // of trying to share the plank. A headless probe (the same stub-three harness `test/run.mjs` itself
+  // uses: `game.start('new')`, 300 simulated frames to settle every neighbour, dog and stroller, then a
+  // grid swept east of the jetty's own landward post) found (-23, -47) clearest: 3.84 m from the
+  // nearest physics box (the jetty's own deck box), 2.60 m clear of the nearest `game.zones` rectangle's
+  // own edge (the jetty's keep-out span), well outside the lake's own radius-8.4 keep-out circle
+  // (11.05 m from its centre), and 8.06 m from the angler himself — the nearest other soul over the
+  // whole run, the next nearest a ball-game player 8.9 m off. Farther than the usual "two steps away"
+  // this series otherwise manages, but the pond itself leaves no closer spot that isn't either on the
+  // single-width plank or over open water.
+  //
+  // The second problem is round 1197's own fix, reused verbatim: built dead last (right after the
+  // digger's own watcher above, the previous holder of that spot), with an explicit unused shirt colour
+  // (0x6a8a7a, checked against every other shirt literal in this file) rather than the shared `ward`
+  // bag, no `cries`, and every one of `Wanderer`'s own construction-time draws (`phase`, `timer`, `t`,
+  // `cryT`) fixed instead of pulled from the shared global `rnd()` sequence, with the idle/walk timer
+  // itself set to 1e9 so `move()` never once crosses into the timer-expiry branch — the branch round
+  // 1197 traced the real leak to — for the length of any plausible test run or play session. It still
+  // breathes in place through its own idle animation every frame; it just never takes the little
+  // shuffle-step the leash would otherwise allow.
+  { const jettyWvx = -23, jettyWvz = -47, jettyAngX = -31, jettyAngZ = -48;
+    const jettyWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x6a8a7a, hat: null, scarf: null, jacket: null, bag: null, backpack: null }); W.add(jettyWatcher.group);
+    game.npcs.push(new Wanderer(game, jettyWatcher, { x: jettyWvx, z: jettyWvz, angle: atan2(jettyAngX - jettyWvx, jettyAngZ - jettyWvz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
