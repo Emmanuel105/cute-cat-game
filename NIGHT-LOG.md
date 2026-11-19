@@ -35141,3 +35141,23 @@ greeting one pond's fish never marks the other pond's met.
 unchanged (334 — nothing new in the physics world, just two interactables on meshes that already swim
 their own fixed, non-random path). Whisper Woods' glow-pond koi are still pure ambient, left for a
 future round. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1223 — Whisper Woods' glow-pond koi finally get a "say hello"
+
+Round 1221 gave the park pond's koi a "say hello" and round 1222 did the same for the lake's koi,
+and both rounds' own closing comments pointed at the one pair still left: the glowing pond's koi in
+Whisper Woods' fairy glade, swimming beneath the glow next to the duck pair that already answers the
+cat. This round closes that gap, the last of the three koi pairs in the game.
+
+**Both glow-pond koi now answer "Say hello to the koi."** One circles once through the glow before
+settling back into its lap; the other flicks a fin and dims to a shadow near the bottom of the pond.
+No new mesh or physics box: `game.namedFriend('glow-koi')` / `game.namedFriend('glow-koi-2')` plus a
+`game.addInteractable` keyed straight to each koi's own `group`, the exact trick both other koi pairs
+already proved — reusing the pair's existing 3.2 m swim ring and the same 2.4 m greet radius the park
+pond and lake koi already showed is clear of their own pond's edges. Distinct ids from `'koi'`/
+`'koi-2'` and `'lake-koi'`/`'lake-koi-2'`, so greeting one pond's fish never marks another's met.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged (334 — nothing new in the physics world, just two interactables on meshes that
+already swim their own fixed, non-random path). A `git stash`/pop against the working tree confirmed
+no other file was touched. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

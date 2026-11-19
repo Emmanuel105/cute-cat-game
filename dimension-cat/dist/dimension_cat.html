@@ -30891,7 +30891,22 @@ function buildForest(game, entry) {
       k.group.position.set(kcx + cos(a) * krad, kY0, kcz + sin(a) * krad);
       k.group.rotation.y = atan2(dx, dz);
       k.group.rotation.z = sin(t * 2.6 + phase) * 0.1;
-    } }); }
+    } });
+    // the park pond's koi and the lake's koi both got a "say hello" two rounds ago, each leaving this
+    // glade's own pair named in its closing comment as the one still left — this round closes it, the
+    // last of the three. Same trick again: `game.namedFriend` plus `game.addInteractable` keyed straight
+    // to each koi's own `group`, reusing the 3.2 m ring just above and the same 2.4 m greet radius both
+    // other koi pairs already proved reachable from their own pond's bank. `'glow-koi'`/`'glow-koi-2'`
+    // are distinct from both other ponds' own `'koi'`/`'koi-2'` and `'lake-koi'`/`'lake-koi-2'` keys, so
+    // greeting this pair never marks either Neighborhood pond's fish met.
+    const gkoiId = game.namedFriend('glow-koi');
+    game.addInteractable({ obj: koiA.group, radius: 2.4, label: () => 'Say hello to the koi', onUse: () => {
+      game.befriend(gkoiId); SFX.click(); game.hearts(koiA.group.position.x, koiA.group.position.y + 0.3, koiA.group.position.z, 3);
+      game.toast('🐟 *circles once through the glow, then settles back into its lap*'); } });
+    const gkoi2Id = game.namedFriend('glow-koi-2');
+    game.addInteractable({ obj: koiB.group, radius: 2.4, label: () => 'Say hello to the koi', onUse: () => {
+      game.befriend(gkoi2Id); SFX.click(); game.hearts(koiB.group.position.x, koiB.group.position.y + 0.3, koiB.group.position.z, 3);
+      game.toast('🐟 *flicks a fin, dims to a shadow near the bottom of the glow*'); } }); }
   // the pond had ducks paddling on it, frogs hopping its rim and an angler working its edge, but nothing
   // ever skimmed low over the water itself. Three dragonflies now dart over the glowing pond, each its
   // own radius between the duck ring (2.3 m) and the reeds that only start past 5.0 m out, its own height,
