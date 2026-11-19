@@ -34951,3 +34951,34 @@ commits ahead of both the local `main` branch and `origin/main` — the same rec
 and 1215 both hit. Moved `main` to point at it (`git checkout -B main`, a fast-forward) and pushed that
 catch-up before starting this round's own work, so nothing from rounds 1181-1215 was at risk of being
 lost this time either. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1217 — Candy Land's organ grinder gets a watcher, starting a new set
+
+Every single-performer held-prop act in the game — the yo-yo kid, the juggler, the magician, the
+frisbee thrower, the painter, the piñata swinger, the unicyclist and the rest — has picked up a
+watcher of its own over the last couple hundred rounds; the organ grinder, cranking his barrel organ
+on the open sweet-lands since round 1012, was the one left out, in all seven worlds. **A
+gingerbread-village neighbour now stands a few steps off to the side of Candy Land's own organ
+grinder, listening to the barrel organ without once stepping into his swing room.** No cries of her
+own — built last, right after the grinder, to disturb nothing earlier in this land's own `r()`
+sequence.
+
+No new class or mesh: the usual `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js), the
+same "stand and watch" behaviour every other watcher in this game already uses, short leash (0.5 m),
+`angle` pointed at the grinder's own fixed spot (70, -5) rather than a constant. A headless probe (a
+scratch script on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+`game.load(1, 'from-prev')`, 300 simulated frames to settle every wandering gingerbread man, then 6000
+more simulated frames sampling every NPC's own `x`/`z` every 50th frame) swept a 0.25 m grid 3-4.5 m
+out from the grinder's own spot against all 1798 of this land's own physics boxes, its 452
+`game.zones` rectangles and all 13,680 of those position snapshots: (66, -7) came back clearest —
+4.16 m from the nearest box, 7.00 m clear of the nearest zone rectangle's own edge and 4.47 m from the
+nearest other soul over the whole run, open sweet-lands well inside the radius (92) where
+`candyRegion()`'s own procedural fill takes over, and clear of the lollipop trunk near (62, -4).
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box count
+unchanged (334, a `Wanderer` registers a physics circle, not a box), and Candy Land's own friend total
+went up by one (132 → 133, confirmed with a `git stash` diff against the previous commit). No visual
+check was possible in this environment (no browser, no Playwright), so whether the watcher's stance
+actually reads as watching the organ from 4.47 m out is unverified. Robot City, Victorian, Sunny
+Shore, Frosty Peak, Whisper Woods and the Neighborhood's own organ grinders are still without one.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
