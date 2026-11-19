@@ -596,14 +596,21 @@ class Wanderer {
     // same as always; passing them explicitly (as a world-0 watcher now does, to dodge rnd()-shift collisions
     // elsewhere on that street) draws nothing extra from it, so every pre-existing call site is untouched.
     this.angle = o.angle ?? rnd() * TAU; this.phase = o.phase ?? rnd() * TAU; this.state = 'idle'; this.timer = o.timer ?? rnd.range(0, 2); this.t = o.t ?? rnd() * 10;
+    // fixed deck/stand height for a wanderer parked on a raised surface (a pier, say) rather than
+    // terrain — ground0() samples the terrain under the deck, not the deck itself, so a watcher there
+    // would otherwise sink to beach/sea-floor level. Same optional-override shape as IceFisher's seatY;
+    // every existing call site leaves `o.y` unset and gets the old ground0() behaviour unchanged.
+    this.fixedY = o.y ?? null;
     this.circle = game.physics.addCircle(this, o.x, o.z, this.r);
-    rig.group.position.set(o.x, game.physics.ground0(o.x, o.z), o.z); rig.group.rotation.y = this.angle;
+    rig.group.position.set(o.x, this.groundY(o.x, o.z), o.z); rig.group.rotation.y = this.angle;
     this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false;
     greetable(game, this);
   }
+  /** The y a wanderer's feet rest at here: the fixed deck height it was given, or the terrain under it. */
+  groundY(x, z) { return this.fixedY ?? this.game.physics.ground0(x, z); }
   update(dt) {
     this.move(dt); this.lookAtCat(dt);
-    if (this.rig.joy > 0) { this.rig.joy -= dt; this.rig.group.position.y = this.game.physics.ground0(this.x, this.z) + sin(clamp(this.rig.joy / 0.8, 0, 1) * PI) * 0.35; }
+    if (this.rig.joy > 0) { this.rig.joy -= dt; this.rig.group.position.y = this.groundY(this.x, this.z) + sin(clamp(this.rig.joy / 0.8, 0, 1) * PI) * 0.35; }
     if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
   }
   /** Turn the head toward the cat when it is close and roughly in front. Applied after animate() so it wins. */
@@ -647,13 +654,13 @@ class Wanderer {
     const nx = this.x + sin(this.angle) * this.speed * dt, nz = this.z + cos(this.angle) * this.speed * dt;
     const outside = dist2(nx, nz, this.hx, this.hz) > this.leash * this.leash;
     const nearCat = dist2(nx, nz, cat.x, cat.z) < (this.r + CAT_RADIUS + 0.15) ** 2;
-    if (outside || nearCat || (this.avoid && this.avoid(nx, nz)) || this.game.physics.blocked(nx, nz, this.r, this, this.game.physics.ground0(nx, nz), this.step, this.height)) {
+    if (outside || nearCat || (this.avoid && this.avoid(nx, nz)) || this.game.physics.blocked(nx, nz, this.r, this, this.groundY(nx, nz), this.step, this.height)) {
       this.angle = outside ? wrapAngle(atan2(this.hx - this.x, this.hz - this.z) + rnd.range(-0.5, 0.5)) : wrapAngle(this.angle + rnd.range(PI * 0.5, PI * 1.5));
       this.state = 'idle'; this.timer = nearCat ? rnd.range(0.8, 2) : rnd.range(0.2, 0.6);
       this.rig.animate(this.phase, false, dt, this.t); return;
     }
     this.x = nx; this.z = nz; this.circle.x = nx; this.circle.z = nz; this.phase += dt * this.speed * 4.4;
-    this.rig.group.position.set(nx, this.game.physics.ground0(nx, nz), nz);
+    this.rig.group.position.set(nx, this.groundY(nx, nz), nz);
     this.rig.group.rotation.y = dampAngle(this.rig.group.rotation.y, this.angle, 7, dt);
     if (this.timer <= 0) { this.state = 'idle'; this.timer = rnd.range(...this.idleRange); }
     this.rig.animate(this.phase, true, dt, this.t);

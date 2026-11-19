@@ -2416,14 +2416,21 @@ class Wanderer {
     // same as always; passing them explicitly (as a world-0 watcher now does, to dodge rnd()-shift collisions
     // elsewhere on that street) draws nothing extra from it, so every pre-existing call site is untouched.
     this.angle = o.angle ?? rnd() * TAU; this.phase = o.phase ?? rnd() * TAU; this.state = 'idle'; this.timer = o.timer ?? rnd.range(0, 2); this.t = o.t ?? rnd() * 10;
+    // fixed deck/stand height for a wanderer parked on a raised surface (a pier, say) rather than
+    // terrain — ground0() samples the terrain under the deck, not the deck itself, so a watcher there
+    // would otherwise sink to beach/sea-floor level. Same optional-override shape as IceFisher's seatY;
+    // every existing call site leaves `o.y` unset and gets the old ground0() behaviour unchanged.
+    this.fixedY = o.y ?? null;
     this.circle = game.physics.addCircle(this, o.x, o.z, this.r);
-    rig.group.position.set(o.x, game.physics.ground0(o.x, o.z), o.z); rig.group.rotation.y = this.angle;
+    rig.group.position.set(o.x, this.groundY(o.x, o.z), o.z); rig.group.rotation.y = this.angle;
     this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false;
     greetable(game, this);
   }
+  /** The y a wanderer's feet rest at here: the fixed deck height it was given, or the terrain under it. */
+  groundY(x, z) { return this.fixedY ?? this.game.physics.ground0(x, z); }
   update(dt) {
     this.move(dt); this.lookAtCat(dt);
-    if (this.rig.joy > 0) { this.rig.joy -= dt; this.rig.group.position.y = this.game.physics.ground0(this.x, this.z) + sin(clamp(this.rig.joy / 0.8, 0, 1) * PI) * 0.35; }
+    if (this.rig.joy > 0) { this.rig.joy -= dt; this.rig.group.position.y = this.groundY(this.x, this.z) + sin(clamp(this.rig.joy / 0.8, 0, 1) * PI) * 0.35; }
     if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
   }
   /** Turn the head toward the cat when it is close and roughly in front. Applied after animate() so it wins. */
@@ -2467,13 +2474,13 @@ class Wanderer {
     const nx = this.x + sin(this.angle) * this.speed * dt, nz = this.z + cos(this.angle) * this.speed * dt;
     const outside = dist2(nx, nz, this.hx, this.hz) > this.leash * this.leash;
     const nearCat = dist2(nx, nz, cat.x, cat.z) < (this.r + CAT_RADIUS + 0.15) ** 2;
-    if (outside || nearCat || (this.avoid && this.avoid(nx, nz)) || this.game.physics.blocked(nx, nz, this.r, this, this.game.physics.ground0(nx, nz), this.step, this.height)) {
+    if (outside || nearCat || (this.avoid && this.avoid(nx, nz)) || this.game.physics.blocked(nx, nz, this.r, this, this.groundY(nx, nz), this.step, this.height)) {
       this.angle = outside ? wrapAngle(atan2(this.hx - this.x, this.hz - this.z) + rnd.range(-0.5, 0.5)) : wrapAngle(this.angle + rnd.range(PI * 0.5, PI * 1.5));
       this.state = 'idle'; this.timer = nearCat ? rnd.range(0.8, 2) : rnd.range(0.2, 0.6);
       this.rig.animate(this.phase, false, dt, this.t); return;
     }
     this.x = nx; this.z = nz; this.circle.x = nx; this.circle.z = nz; this.phase += dt * this.speed * 4.4;
-    this.rig.group.position.set(nx, this.game.physics.ground0(nx, nz), nz);
+    this.rig.group.position.set(nx, this.groundY(nx, nz), nz);
     this.rig.group.rotation.y = dampAngle(this.rig.group.rotation.y, this.angle, 7, dt);
     if (this.timer <= 0) { this.state = 'idle'; this.timer = rnd.range(...this.idleRange); }
     this.rig.animate(this.phase, true, dt, this.t);
@@ -24297,6 +24304,31 @@ function buildBeach(game, entry) {
     W.add(angler.group);
     game.npcs.push(new IceFisher(game, angler, makeIceStool(), { x: 30, z: -10, ry: PI / 2, seatY: 0.6, holeX: 34, holeZ: -10, holeY: 0.05,
       cries: ['Not a nibble all morning.', "Careful, puss, you'll spook them.", 'Best spot on the whole pier, this.'] })); }
+  // every other angler in the game has picked up a watcher over recent rounds — Candy Land's river,
+  // Robot City's drain, Victorian's canal, Frosty Peak's ice hole, Whisper Woods' pond and the
+  // Neighborhood's own jetty — but this one, out at the end of a pier raised over open water, was
+  // skipped every time: `Wanderer` always reads its own height off `game.physics.ground0()`, which
+  // samples the sea floor under the pier rather than the deck itself, so a watcher built the usual way
+  // would sink straight through the boards. **A local now stands a few steps landward of the angler,
+  // leaning on the rail, watching his line dip into the water instead of wandering off.**
+  //
+  // Fixed with a small, generic addition to `Wanderer` itself (55-npcs.js): an optional `y` override,
+  // the same shape as `IceFisher`'s own `seatY`, that pins a wanderer's feet to a given height instead
+  // of sampling the terrain. Every other `Wanderer` call site in the game leaves `y` unset and keeps
+  // its old ground0()-sampled behaviour exactly as before; here it's set to 0.6, the same deck height
+  // the angler's own `seatY` already uses.
+  //
+  // Checked against the pier's real physics boxes (a headless probe on this build, reading
+  // `game.physics.boxes` back after `game.travel(4, 'from-hub')`): the deck itself is one box, x
+  // 17..32, z -11.6..-8.4; its two handrails are thin boxes at z -11.65..-11.45 and -8.55..-8.35, from
+  // y 0.6 up to 1.6. The watcher stands at (28, -9.4): 2.1 m from the angler's own stool at (30, -10)
+  // and 0.85 m clear of the nearer handrail — comfortably inside the deck and clear of both rails, and
+  // with only a 0.5 m leash it never wanders close enough to either for `blocked()` to matter.
+  { const wwx = 28, wwz = -9.4, apx = 30, apz = -10;
+    const pierWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
+      shirt: 0x7a5a4a, pants: 0x3a3a3a, shoes: 0x2a2018, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(pierWatcher.group);
+    game.npcs.push(new Wanderer(game, pierWatcher, { x: wwx, z: wwz, y: 0.6, angle: atan2(apx - wwx, apz - wwz), leash: 0.5, speed: 0.4, idle: [3, 6], walk: [1, 1.6] })); }
   // a lifeguard up on a raised chair north of the swimming crowd, watching the water
   { game.zones.addCircle(13, 24, 2);
     const guard = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),

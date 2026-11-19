@@ -34500,3 +34500,42 @@ Sunny Shore's own pier angler is the only one left without a watcher, still skip
 round 1201 gave: his stool sits at the far end of a narrow deck raised above open water with no ground
 nearby at all, needing a deck-height override this series hasn't built yet. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1204 — the Sunny Shore pier angler finally gets a watcher, the last of the seven
+
+Every other angler in the game picked up a watcher over rounds 1198-1203 — Candy Land's river, Robot
+City's drain, Victorian's canal, Frosty Peak's ice hole, Whisper Woods' pond and the Neighborhood's
+own jetty. The pier angler was the one holdout, skipped each time for the reason round 1201 gave:
+`Wanderer` always reads its own standing height off `game.physics.ground0()`, which samples the sea
+floor under a raised pier, not the deck itself, so a watcher built the usual way would sink straight
+through the boards. **A local now stands a few steps landward of the angler, leaning on the rail,
+watching his line dip into the water instead of wandering off.**
+
+Built the missing piece instead of skipping it again: a small, generic addition to `Wanderer` itself
+(`55-npcs.js`) — an optional `y` override, the same shape `IceFisher`'s own `seatY` already uses, that
+pins a wanderer's feet to a fixed height instead of sampling the terrain under it. Every other
+`Wanderer` call site in the game leaves `y` unset and keeps its old ground0()-sampled behaviour
+unchanged; this is the first to pass it, set to 0.6, the same deck height the angler's own `seatY`
+already uses.
+
+Placement was checked against the pier's real physics boxes rather than guessed: a headless probe (a
+scratch script on the same stub-three harness `test/run.mjs` itself uses, `game.travel(4, 'from-hub')`
+then read `game.physics.boxes` straight back) found the deck itself is one box, x 17..32, z
+-11.6..-8.4, and its two handrails are thin boxes at z -11.65..-11.45 and -8.55..-8.35, both from y 0.6
+up to 1.6. The watcher stands at (28, -9.4): 2.1 m from the angler's own stool at (30, -10) and 0.85 m
+clear of the nearer handrail — comfortably inside the deck and clear of both rails, and with only a
+0.5 m leash it never wanders close enough to either for `blocked()` to matter.
+
+No new class beyond the one-line `Wanderer` change: same `makeHuman()`/`randomPerson()` rig every
+other watcher in this series uses, short leash (0.5 m), no `cries` of its own, `angle` pointing at the
+angler's own fixed seat. `Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring
+was needed.
+
+`node dimension-cat/test/run.mjs` ran clean three times running: exit 0, all checks `ok`, 0 console
+warnings, box count unchanged (334, since a `Wanderer` registers a physics circle, not a box), and
+Sunny Shore's own friend total went up by one (149 → 150) to meet. No visual check was possible in
+this environment (no browser, no Playwright), so whether the watcher actually reads as leaning on the
+rail rather than standing mid-deck is unverified — but the physics boxes read back from the real build
+confirm it's on the deck and clear of both rails, not floating over the sea or clipped into a post.
+That closes out the angler-watcher set: all seven worlds' anglers now have company. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

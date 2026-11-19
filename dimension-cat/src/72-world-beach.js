@@ -112,6 +112,31 @@ function buildBeach(game, entry) {
     W.add(angler.group);
     game.npcs.push(new IceFisher(game, angler, makeIceStool(), { x: 30, z: -10, ry: PI / 2, seatY: 0.6, holeX: 34, holeZ: -10, holeY: 0.05,
       cries: ['Not a nibble all morning.', "Careful, puss, you'll spook them.", 'Best spot on the whole pier, this.'] })); }
+  // every other angler in the game has picked up a watcher over recent rounds — Candy Land's river,
+  // Robot City's drain, Victorian's canal, Frosty Peak's ice hole, Whisper Woods' pond and the
+  // Neighborhood's own jetty — but this one, out at the end of a pier raised over open water, was
+  // skipped every time: `Wanderer` always reads its own height off `game.physics.ground0()`, which
+  // samples the sea floor under the pier rather than the deck itself, so a watcher built the usual way
+  // would sink straight through the boards. **A local now stands a few steps landward of the angler,
+  // leaning on the rail, watching his line dip into the water instead of wandering off.**
+  //
+  // Fixed with a small, generic addition to `Wanderer` itself (55-npcs.js): an optional `y` override,
+  // the same shape as `IceFisher`'s own `seatY`, that pins a wanderer's feet to a given height instead
+  // of sampling the terrain. Every other `Wanderer` call site in the game leaves `y` unset and keeps
+  // its old ground0()-sampled behaviour exactly as before; here it's set to 0.6, the same deck height
+  // the angler's own `seatY` already uses.
+  //
+  // Checked against the pier's real physics boxes (a headless probe on this build, reading
+  // `game.physics.boxes` back after `game.travel(4, 'from-hub')`): the deck itself is one box, x
+  // 17..32, z -11.6..-8.4; its two handrails are thin boxes at z -11.65..-11.45 and -8.55..-8.35, from
+  // y 0.6 up to 1.6. The watcher stands at (28, -9.4): 2.1 m from the angler's own stool at (30, -10)
+  // and 0.85 m clear of the nearer handrail — comfortably inside the deck and clear of both rails, and
+  // with only a 0.5 m leash it never wanders close enough to either for `blocked()` to matter.
+  { const wwx = 28, wwz = -9.4, apx = 30, apz = -10;
+    const pierWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
+      shirt: 0x7a5a4a, pants: 0x3a3a3a, shoes: 0x2a2018, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(pierWatcher.group);
+    game.npcs.push(new Wanderer(game, pierWatcher, { x: wwx, z: wwz, y: 0.6, angle: atan2(apx - wwx, apz - wwz), leash: 0.5, speed: 0.4, idle: [3, 6], walk: [1, 1.6] })); }
   // a lifeguard up on a raised chair north of the swimming crowd, watching the water
   { game.zones.addCircle(13, 24, 2);
     const guard = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
