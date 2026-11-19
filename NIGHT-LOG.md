@@ -34819,3 +34819,30 @@ committed but never landed on a branch pointer, left over from however an earlie
 ended. Moved `main` to point at it (`git checkout -B main`, a fast-forward, nothing to rebase) before
 building this round's own change, so this round's push carries all of it forward. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1213 — Victorian's own unicyclist finally gets a watcher
+
+Candy Land's and Robot City's own unicyclists picked up watchers in rounds 1105 and 1212; Victorian's
+own street performer, doing laps on the open green north-east of the market square since round ~1189,
+was still pedalling for nobody. **A passer-by now stands north-east of the green, watching the wheel
+go out and back instead of carrying on toward the square.** *"Hasn't come off that wheel once since I
+got here — bad luck to look away now."* *"Mind your tail, puss — she's not stopping on your
+account."* *"Tuppence for the show and not a farthing for standing here free, but here I am anyway."*
+Sunny Shore, Frosty Peak and Whisper Woods' own riders are still without one.
+
+No new class or mesh: the usual `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js), the
+same "stand and watch" behaviour every other watcher in this game already uses, short leash (0.5 m),
+`angle` pointed at the ride's own fixed midpoint (14.1, 60.9) rather than a constant. A headless probe
+(the stub-three harness `test/run.mjs` itself uses, travelled to world 3 and run for 3600 simulated
+frames to settle every wanderer already on the green, sampling every NPC's position every 10th frame)
+swept a 0.5 m grid 4-7 m out from the ride's midpoint against all 697 of this town's physics boxes,
+its 247 `game.zones` rectangles and every sampled position: (20.1, 57.9) came back clearest — 11.75 m
+from the nearest box, 10.79 m clear of the nearest zone rectangle and 9.57 m from the nearest other
+soul, 6.7 m from the ride itself.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged (334, a `Wanderer` registers a physics circle, not a box), and Victorian's own friend total
+went up by one (176 → 177, confirmed with a `git stash` diff against the previous commit). No visual
+check was possible in this environment (no browser, no Playwright), so whether the watcher's stance
+actually reads as watching the ride from 6.7 m out is unverified. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

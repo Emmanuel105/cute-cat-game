@@ -15323,6 +15323,42 @@ function buildVictorian(game, entry) {
     W.add(relicWatcher.group);
     game.npcs.push(new Wanderer(game, relicWatcher, { x: rwx, z: rwz, angle: atan2(rhx - rwx, rhz - rwz), speed: 0.2, leash: 0.5, idle: [3, 6] })); }
 
+  // `Unicyclist` (55-npcs.js) has had a rider in Candy Land (round 1085), Robot City (round 1162) and
+  // this town itself (round ~1189, the burgundy-trimmed street performer on the open green north-east
+  // of the market square) — Candy Land's and Robot City's own riders each picked up a watcher (rounds
+  // 1105 and 1212), and this town's own performer was still doing her laps for nobody. **A passer-by
+  // now stands north-east of the green, watching the wheel go out and back instead of carrying on
+  // toward the square.** *"Hasn't come off that wheel once since I got here — bad luck to look away
+  // now."* *"Mind your tail, puss — she's not stopping on your account."* *"Tuppence for the show and
+  // not a farthing for standing here free, but here I am anyway."*
+  //
+  // No new class or mesh: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer`
+  // (55-npcs.js) gives him the same "stand and watch" behaviour every other watcher in this town
+  // already uses, with a short leash (0.5 m) and `angle` pointed at the ride's own fixed midpoint
+  // (14.1, 60.9) rather than a constant.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.travel(3, 'from-prev')` waited out for real against its own portal-fade timer, then 3600
+  // simulated frames to settle every urchin, stilt walker and watcher already in this town, sampling
+  // every NPC's own position every 10th frame) swept a 0.5 m grid 4-7 m out from the ride's own
+  // midpoint against all 697 of this town's physics boxes, its 247 `game.zones` rectangles and every
+  // one of those samples: (20.1, 57.9) came back clearest — 11.75 m from the nearest box, 10.79 m
+  // clear of the nearest zone rectangle and 9.57 m from the nearest other soul over the whole run,
+  // 6.7 m north-east of the ride's own midpoint and well short of the radius (88) where
+  // `victorianRegion()`'s own procedural fill takes over.
+  //
+  // Built dead last of everything this town adds, right after the relic hunter's own watcher above and
+  // right before the squirrel below, for the usual reason: `makeHuman()` and `randomPerson()` both
+  // draw off this town's own shared `r()` sequence unconditionally, and anything built earlier here
+  // would have had its own timing-sensitive pick shifted by it.
+  { const unwx = 20.1, unwz = 57.9, unmx = 14.1, unmz = 60.9;
+    const uniWatchWard = makeWardrobe(r, { shirts: [0x5a4a3a, 0x3a4a4a], pants: [0x1e1e24, 0x2a2a30] });
+    const uniTownWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: uniWatchWard }),
+      pants: 0x1e1e24, hat: r.chance(0.3) ? 'flatcap' : null, hatColor: 0x2a2a24, coat: true, buttons: null, scarf: null, beard: false, glasses: false });
+    W.add(uniTownWatcher.group);
+    game.npcs.push(new Wanderer(game, uniTownWatcher, { x: unwx, z: unwz, angle: atan2(unmx - unwx, unmz - unwz), speed: 0.2, leash: 0.5, idle: [3, 6],
+      cries: ['Hasn\'t come off that wheel once since I got here — bad luck to look away now.', 'Mind your tail, puss — she\'s not stopping on your account.', 'Tuppence for the show and not a farthing for standing here free, but here I am anyway.'] })); }
+
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
