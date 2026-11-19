@@ -30480,6 +30480,40 @@ function buildSnowVillage(game, entry) {
     game.npcs.push(new Unicyclist(game, rider, makeUnicycle(0x1565c0), { a: [-19, 29], b: [-13, 29], cryIcon: '🎪',
       cries: ["Harder than it looks on packed snow — ask me how many times I've gone over.", "Mind yourself, puss — one wheel's got no room to swerve out here.", 'Lost count somewhere past thirty laps. Keeps the cold off, if nothing else.'] })); }
 
+  // Candy Land's, the Neighborhood's, Robot City's, Victorian's and Sunny Shore's own unicyclists
+  // picked up a watcher in rounds 1105 and 1211-1214; this mountain's own hiker, doing laps on a single
+  // wheel just above, was still pedalling for nobody. **A bundled-up local now stands north of the
+  // ride, watching the wheel go out and back instead of carrying on toward the village.** *"Hasn't gone
+  // over once since I got here — must be a trick to it on packed snow."* *"Mind your tail, puss — she's
+  // not stopping for you any more than she would for me."* *"Thirty-odd laps and still upright — more
+  // than I'd manage in this cold."*
+  //
+  // No new class or mesh: the usual `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js),
+  // the same "stand and watch" behaviour every other watcher in this game already uses, short leash
+  // (0.5 m), `angle` pointed at the ride's own fixed midpoint (-16, 29) rather than a constant.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(5, 'from-prev')`, 600 simulated frames so every reindeer, hare,
+  // arctic fox, penguin and the hiker above had already settled, then 6000 more simulated frames
+  // sampling every NPC's own `x`/`z` every 50th frame — 120 snapshots) swept a 0.5 m grid 3-7 m out
+  // from the ride's own midpoint against all 371 of this mountain's physics boxes (knee-to-head
+  // height), its 147 `game.zones` rectangles and all 120 of those snapshots: (-15.5, 34) came back
+  // clearest — 4.64 m from the nearest box, 8 m clear of the nearest zone rectangle and 5.0 m from the
+  // nearest other soul over the whole run, at radius 37.4 from the origin, well inside the radius (58)
+  // where `snowRegion()`'s own procedural fill takes over.
+  //
+  // Built dead last of everything this mountain adds, right after the unicyclist above, same reason
+  // as always: `makeHuman()`/`randomPerson()` draw off this mountain's own shared `r()` sequence
+  // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted
+  // by it.
+  { const wx = -15.5, wz = 34, rideX = -16, rideZ = 29;
+    const uniWatcherWard = makeWardrobe(r, { shirts: [0x7a8a9a, 0x9a7a8a, 0x5a7a6a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const uniWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: uniWatcherWard }),
+      hat: 'beanie', hatColor: 0x6a4a3a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a, bag: null, backpack: null, glasses: false });
+    W.add(uniWatcher.group);
+    game.npcs.push(new Wanderer(game, uniWatcher, { x: wx, z: wz, angle: atan2(rideX - wx, rideZ - wz), speed: 0.3, leash: 0.5, idle: [3, 6],
+      cries: ['Hasn’t gone over once since I got here — must be a trick to it on packed snow.', 'Mind your tail, puss — she’s not stopping for you any more than she would for me.', 'Thirty-odd laps and still upright — more than I’d manage in this cold.'] })); }
+
   // Candy Land, Robot City, Victorian, Sunny Shore and Whisper Woods' own stone/pond skimmers have
   // all picked up a watcher over the last few rounds; this mountain's own stone kid, flinging flat
   // stones across the ice's south-west corner, was still throwing to nobody. **A local now stands a

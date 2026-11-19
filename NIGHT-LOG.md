@@ -34884,3 +34884,33 @@ already, recurring from whatever leaves a session's final checkout detached. Mov
 it (`git checkout -B main`, a fast-forward) and pushed that catch-up before starting this round's own
 work, so nothing from rounds 1181-1213 was at risk of being lost this time either. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1215 — Frosty Peak's own unicyclist gets a watcher too
+
+Candy Land's rider picked up a watcher in round 1105, the Neighborhood's in round 1211, Robot City's
+and Victorian's in rounds 1212-1213 and Sunny Shore's in round 1214; Frosty Peak's own hiker, doing
+laps on a single wheel on a quiet stretch of snowfield north of the village since round 1159, was
+still pedalling for nobody. **A bundled-up local now stands north of the ride, watching the wheel go
+out and back instead of carrying on toward the village.** *"Hasn't gone over once since I got here —
+must be a trick to it on packed snow."* *"Mind your tail, puss — she's not stopping for you any more
+than she would for me."* *"Thirty-odd laps and still upright — more than I'd manage in this cold."*
+Whisper Woods' own rider is now the only one left without one.
+
+No new class or mesh: the usual `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js), the
+same "stand and watch" behaviour every other watcher in this game already uses, short leash (0.5 m),
+`angle` pointed at the ride's own fixed midpoint (-16, 29) rather than a constant. A headless probe (a
+scratch script on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+`game.load(5, 'from-prev')`, 600 simulated frames so every reindeer, hare, arctic fox, penguin and the
+hiker had already settled, then 6000 more simulated frames sampling every NPC's own `x`/`z` every
+50th frame) swept a 0.5 m grid 3-7 m out from the ride's own midpoint against all 371 of this
+mountain's physics boxes, its 147 `game.zones` rectangles and all 120 of those snapshots: (-15.5, 34)
+came back clearest — 4.64 m from the nearest box, 8 m clear of the nearest zone rectangle and 5.0 m
+from the nearest other soul over the whole run, at radius 37.4 from the origin, well inside the
+radius (58) where `snowRegion()`'s own procedural fill takes over.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box count
+unchanged (334, a `Wanderer` registers a physics circle, not a box), and Frosty Peak's own friend total
+went up by one (147 → 148, confirmed with a `git stash` diff against the previous commit). No visual
+check was possible in this environment (no browser, no Playwright), so whether the watcher's stance
+actually reads as watching the ride from 5.1 m out is unverified. Whisper Woods' own rider is still
+without one. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
