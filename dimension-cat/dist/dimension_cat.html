@@ -13618,6 +13618,43 @@ function buildNeighborhood(game, entry) {
       shirt: 0x4a8a6a, hat: null, scarf: null, jacket: null, bag: null, backpack: null }); W.add(uniWatcher.group);
     game.npcs.push(new Wanderer(game, uniWatcher, { x: uniWvx, z: uniWvz, angle: atan2(uniAngX - uniWvx, uniAngZ - uniWvz), speed: 0.3, leash: 0.5, idle: [3, 6], phase: 0, timer: 1e9, t: 0 })); }
 
+  // Every other single-performer act on this street (the digger, the jetty angler, the unicyclist
+  // above) picked up a watcher of its own over rounds 1197-1203 — the pogo-stick kid's own piñata post,
+  // round 1181's addition to this street, never did. Round 1181's own follow-up tried to give Robot
+  // City, Victorian, Sunny Shore, Frosty Peak and Whisper Woods' own piñata posts a watcher first and
+  // never circled back to this one; round 1207's write-up still lists it as the only one left. **A
+  // neighbour now stands a few steps west of this street's own piñata post, watching the kid's swing
+  // without once stepping into her own room.**
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, 300
+  // simulated frames to settle every neighbour, dog and stroller, then a 0.25 m grid 1.3-4.5 m out from
+  // the post's own spot (2.5, 62) sampled against all 334 of this street's physics boxes, its 69
+  // `game.zones` rectangles — including `Z.addSpan(5, 54, 40, 80)`, the stepping-stone path's own
+  // keep-out, 2.5 m east of the post itself — and 3600 more frames' worth of every other NPC's own
+  // sampled position) came back clearest just west of the post, short of the path: (-0.75, 62) is 3.08
+  // m from the nearest box, 5.75 m clear of the path's own edge and 3.50 m from the nearest other soul
+  // (the pogo-stick kid), close enough to read as watching the swing rather than standing off alone.
+  //
+  // No new class: the same `Wanderer` (`55-npcs.js`) every other watcher in this game already uses, an
+  // explicit unused shirt colour (0x8a4a6a, checked against every other `shirt:` literal already in
+  // this street's build, which enforces unique shirts across its whole population) instead of the
+  // shared pool, and `angle` pointed at the post's own fixed spot rather than a constant. Built dead
+  // last — after the unicyclist's own watcher above, the previous holder of that spot — for the reason
+  // round 1197 traced out at length on this same street: a plain `Wanderer` built anywhere earlier
+  // draws off the *shared global* `rnd()` sequence both at construction and again every time its own
+  // idle/walk timer expires during `move()`, which is bound to happen sooner or later over the length
+  // of a long test run and shifts every later draw, desyncing the balloon seller's own test. Matching
+  // the unicyclist watcher's own final shape rather than the digger/jetty watchers' `idle: [1e9, 1e9]`
+  // fix (round 1203's write-up: that fix pins down `move()`'s own draws but not `rig.animate()`'s own
+  // built-in blink/idle-gesture system, which runs on every person every frame regardless and still
+  // shifted the sequence enough on its own to break a different, chat-timing check) — a short, ordinary
+  // leash (`speed: 0.3, leash: 0.5, idle: [3, 6]`, no `cries`, no fixed overrides) — kept every check
+  // passing on this attempt.
+  { const pinWvx = -0.75, pinWvz = 62, pinAngX = 2.5, pinAngZ = 62;
+    const pinWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x8a4a6a, hat: null, scarf: null, jacket: null, bag: null, backpack: null }); W.add(pinWatcher.group);
+    game.npcs.push(new Wanderer(game, pinWatcher, { x: pinWvx, z: pinWvz, angle: atan2(pinAngX - pinWvx, pinAngZ - pinWvz), speed: 0.3, leash: 0.5, idle: [3, 6] })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

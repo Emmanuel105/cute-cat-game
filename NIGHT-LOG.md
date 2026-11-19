@@ -35010,3 +35010,47 @@ Also found on the way in: this sandbox's checkout was once again sitting on a de
 commits ahead of both the local `main` branch and `origin/main` — the same recurring issue rounds
 1212, 1215, 1216 and 1217 all hit. Moved `main` to point at it (`git checkout -B main`) and pushed
 that catch-up before starting this round's own work.
+
+## Round 1219 — the Neighborhood's own piñata post finally gets a watcher, the last of the seven
+
+Candy Land, Robot City, Victorian, Sunny Shore and Frosty Peak's own piñata posts all picked up a
+watcher between rounds 1205-1210; Whisper Woods' followed the same round. The Neighborhood's own
+post — the very first one the game ever built, round 508 — was quietly skipped the whole time: round
+1207's write-up even named it as the one left over, and nothing since ever came back for it. **A
+neighbour now stands a few steps west of this street's own piñata post, watching the kid's swing
+without once stepping into her own room.**
+
+No new class: the same `Wanderer` (`55-npcs.js`) every other watcher in this series already uses, an
+explicit unused shirt colour (0x8a4a6a, checked against all 42 `shirt:` literals already in this
+street's build — the Neighborhood is the one world that enforces unique shirts across its whole
+population) instead of the shared pool, and `angle` pointed at the post's own fixed spot (2.5, 62)
+rather than a constant.
+
+This is also the one street where a plain `Wanderer` addition has broken a test before: round 1197
+traced it to `Wanderer.move()` drawing extra numbers off the *shared global* `rnd()` sequence every
+time its own idle/walk timer expires, which eventually desyncs the balloon seller's own test later in
+the run. The fix that round and round 1198's jetty angler used — `idle: [1e9, 1e9]` plus fixed
+`phase`/`timer`/`t`/`cryT` so the timer never once expires — was tried first here too, but round 1203's
+unicyclist watcher had already found its limit: `rig.animate()`'s own built-in blink/idle-gesture
+system draws from that same global sequence on its own schedule regardless of any of those overrides,
+and one more person doing it was enough on its own to break a different, chat-timing check. Matching
+round 1203's own fallback instead — an ordinary short leash (`speed: 0.3, leash: 0.5, idle: [3, 6]`, no
+`cries`, no fixed overrides) — was what actually kept every check passing here, on the first attempt.
+
+Placement was checked with a headless probe (a scratch script on the same stub-three harness
+`test/run.mjs` itself uses: `game.start('new')`, 300 simulated frames to settle every neighbour, dog
+and stroller, then a 0.25 m grid 1.3-4.5 m out from the post's own spot swept against all 334 of this
+street's physics boxes, its 69 `game.zones` rectangles — including the stepping-stone path to the
+hollow oak, 2.5 m east of the post itself — and 3600 more frames' worth of every other NPC's own
+sampled position every 5th frame): (-0.75, 62) came back clearest short of the path — 3.08 m from the
+nearest box, 5.75 m clear of the path's own edge, and 3.50 m from the nearest other soul (the
+pogo-stick kid), close enough to read as watching the swing rather than standing off alone.
+
+`node dimension-cat/test/run.mjs` ran clean three times running: exit 0, all checks `ok`, 0 console
+warnings, box count unchanged (334, since a `Wanderer` registers a physics circle, not a box), the
+street's own "no two neighbours wear the same shirt" check still holding (94 colours for 94 people,
+confirmed against the 93-person baseline with `git stash`), and the game's own total friend count went
+up by one (123 → 124). No visual check was possible in this environment (no browser, no Playwright),
+so whether the watcher's stance actually reads as watching the swing from that distance is unverified.
+Every piñata post in the game now has a watcher. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
