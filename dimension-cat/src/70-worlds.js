@@ -12637,7 +12637,16 @@ function buildVictorian(game, entry) {
   // no physics box: it sits entirely inside the canal's own existing wall box (z 25.4-26.0) and the
   // water's own walk:false span (z 26-34), both already blocking the cat from ever reaching it, the
   // same reasoning the duck pair's own comment above already spells out for that whole stretch of bank.
-  place(game, U, makeWaterWheel(), -80, 25.9, 0);
+  const canalWheel = place(game, U, makeWaterWheel(), -80, 25.9, 0);
+  // the chocolate river's own second water wheel got a "look" prompt a few rounds back, but this one —
+  // the game's first water wheel, placed here before that one even existed — never did, even though
+  // the comment above already measured this exact spot as 12.6 m clear of the west bridge and 28 m
+  // clear of the nearest lamp. No new mesh, no new physics box: `canalWheel`, captured straight off the
+  // `place()` call above, goes to `game.addInteractable` the same way the chocolate river's wheel does,
+  // same 2.0 m radius, reaching the towpath lamps already stand on without touching the west bridge's
+  // own 6.6 m "look over the railing" circle or the duck pair's swim lane out past x=46.
+  { const canalWheelLines = ['🌊 "Oldest wheel in the whole town. Nobody remembers it ever stopping."', '🌫️ "Grinds nothing, pulls nothing — just turns, same as the fog rolling over it."', '⚙️ "The chocolate river got a second one of these. This one was first."'];
+    game.addInteractable({ obj: canalWheel, radius: 2.0, label: () => 'Look at the water wheel', onUse: () => { SFX.click(); game.toast(rnd.pick(canalWheelLines), 3000); } }); }
   for (const [x, z, k2] of [[-30, 20, 'oak'], [36, 22, 'oak'], [-12, -50, 'birch'], [18, -52, 'birch'], [-66, -14, 'oak'], [66, 18, 'oak']]) addTree(game, k2, x, z, r);
   // clock tower plaza (east), time door (west)
   const tower = makeClockTower(game, 42, 0, U);

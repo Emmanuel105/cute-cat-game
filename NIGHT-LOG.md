@@ -35190,3 +35190,24 @@ wheel is still bare, left for a future round.
 `node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box count
 unchanged (334 — nothing new in the physics world, just one interactable keyed to a mesh that was
 already turning on its own). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1225 — the Victorian canal's own water wheel finally gets a "look"
+
+Round 1224's own closing line named the one gap it left behind: the Victorian canal's water wheel —
+the game's first, placed against the north bank wall back in round 1077 — was still bare, even after
+the chocolate river's second wheel got its "look" prompt. This round closes it, the last of the two.
+
+**The canal wheel now answers "Look at the water wheel."** *"Oldest wheel in the whole town. Nobody
+remembers it ever stopping."* *"Grinds nothing, pulls nothing — just turns, same as the fog rolling
+over it."* *"The chocolate river got a second one of these. This one was first."*
+
+No new mesh, no new physics box: `place()`'s own return value, discarded since round 1077, is now kept
+as `canalWheel` and handed straight to `game.addInteractable`, the exact trick round 1224 used for the
+chocolate river's wheel. Same 2.0 m radius, reusing round 1077's own placement comment, which already
+measured this spot as 12.6 m clear of the west bridge's "look over the railing" circle and 28 m clear
+of the nearest lamp — plenty of room for a new prompt without the two ever overlapping.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box count
+unchanged (334 — nothing new in the physics world, just one interactable keyed to a mesh that was
+already turning on its own). Both of the game's water wheels now answer a "look" prompt. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
