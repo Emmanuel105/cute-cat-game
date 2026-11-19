@@ -34501,6 +34501,39 @@ round 1201 gave: his stool sits at the far end of a narrow deck raised above ope
 nearby at all, needing a deck-height override this series hasn't built yet. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
 
+## Round 1205 — Candy Land's piñata swinger gets a watcher, starting a new set
+
+Every single-performer held-prop act in the game — the yo-yo kid, the juggler, the organ grinder, the
+frisbee thrower and the rest — has had a watcher added to it over one round or another by now. The
+piñata swinger, built back at round 418 (`PinataSwinger`/`makePinata`, both in `55-npcs.js`/`60-props.js`)
+and reskinned into all seven worlds by round 569, was the one performer with a held prop that this whole
+long chain had missed. **A gingerbread-village neighbour now stands a few steps off to the side of Candy
+Land's own piñata post, watching the stick come down without once stepping into the swing room.**
+
+No new class: the same `Wanderer` (`55-npcs.js`) every other watcher in this game already uses, built
+right after the swinger in `buildCandyLand` (`70-worlds.js`) with a short 0.5 m leash, no `cries` of its
+own, and `angle` pointed at the swinger's own fixed spot (14, 69.3) rather than a constant, so it draws
+from the very tail of this world's own local `r()` sequence and disturbs no earlier pick.
+
+Placement was checked with a headless probe (a scratch script on the same stub-three harness
+`test/run.mjs` itself uses: `game.load(1, 'from-hub')`, since `Game.load()` — unlike `travel()` — rebuilds
+the world and resets `game.zones` synchronously with no fade timer to wait out, then 300 simulated frames
+to settle every wandering gingerbread man) swept a 0.25 m grid 1.3-3.2 m out from the swinger's own spot
+against this world's 1880-odd physics boxes and its 452 `game.zones` rectangles. (11.5, 71.3) came back
+clearest: 3.87 m from the nearest box, 7.48 m clear of the nearest zone rectangle's own edge, and 3.20 m
+from the swinger herself — the nearest other soul over the whole sample, close enough to read as watching
+the swing rather than standing off on his own. An explicit, unused shirt colour (0x5a8a9a, checked against
+every other shirt literal already drawn in this world's build) was given rather than leaving
+`randomPerson()` to pick one off the shared pool, matching the style every other watcher in this game uses.
+
+`node dimension-cat/test/run.mjs` ran clean three times running: exit 0, all checks `ok`, 0 console
+warnings, box count unchanged (334, since a `Wanderer` registers a physics circle, not a box), and Candy
+Land's own friend total went up by one (131 → 132) to meet. No visual check was possible in this
+environment (no browser, no Playwright), so whether the watcher's stance actually reads as watching the
+swing from that distance is unverified. The other six worlds' piñata posts (the Neighborhood, Whisper
+Woods, Robot City, Victorian, Sunny Shore, Frosty Peak) are still without one — next in line for this new
+set. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
 ## Round 1204 — the Sunny Shore pier angler finally gets a watcher, the last of the seven
 
 Every other angler in the game picked up a watcher over rounds 1198-1203 — Candy Land's river, Robot

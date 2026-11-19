@@ -15532,6 +15532,29 @@ function buildCandyLand(game, entry) {
     W.add(guest.group);
     game.npcs.push(new PinataSwinger(game, guest, 0xc9a86a, { x: sx, z: sz, ry: sry,
       cries: ["One of these days I'm actually going to hit it.", 'Careful, puss — swing room needed here.', 'Nearly! ...no. Still not yet.'] })); }
+  // every held-prop performer in the game — the yo-yo kid, the juggler, the organ grinder, the
+  // frisbee thrower and the rest — has picked up a watcher of its own by now; the piñata swinger,
+  // for all her kids'-party crowd of a post and a stick, never did. A gingerbread-village neighbour
+  // now stands a few steps off to the side, watching the stick come down without once stepping into
+  // her swing room.
+  //
+  // No new class: `Wanderer` (55-npcs.js) gives him the same "stand and watch" behaviour every other
+  // watcher in this game already uses, with a short leash (0.5 m) and `angle` pointed at the
+  // swinger's own fixed spot rather than a constant. Built with no `cries` of its own, right after
+  // the swinger above, so it draws from the very tail of this world's own local `r()` sequence and
+  // disturbs no earlier pick.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.load(1, 'from-hub')`, 300 simulated frames to settle every wandering gingerbread man, then a
+  // 0.25 m grid 1.3-3.2 m out from the swinger's own spot (14, 69.3) checked against this world's
+  // physics boxes and its `game.zones` rectangles) found (11.5, 71.3) clearest: 3.87 m from the
+  // nearest box, 7.48 m clear of the nearest zone rectangle's own edge, and 3.20 m from the swinger
+  // herself — the nearest other soul over the whole sample, close enough to read as watching the
+  // swing rather than standing off on his own.
+  { const pwvx = 11.5, pwvz = 71.3, pwx = 14, pwz = 69.3;
+    const pinWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x5a8a9a, hat: null, scarf: null, jacket: null, bag: null, backpack: null }); W.add(pinWatcher.group);
+    game.npcs.push(new Wanderer(game, pinWatcher, { x: pwvx, z: pwvz, angle: atan2(pwx - pwvx, pwz - pwvz), speed: 0.2, leash: 0.5, idle: [3, 6] })); }
 
   // the Neighborhood (round 395), Robot City (425, a magnetic coupling ring) and Victorian (426, a brass
   // quoit) have all had their own turn at the same back-garden toss game, but the one world actually
