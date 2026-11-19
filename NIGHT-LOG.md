@@ -34672,3 +34672,29 @@ this environment (no browser, no Playwright), so whether the watcher actually re
 swing from that distance rather than just standing nearby is unverified. Frosty Peak and Whisper Woods
 are the two worlds left without one. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 1209 — Frosty Peak's piñata swinger gets a watcher too
+
+Continuing the set Candy Land, Robot City, Victorian and Sunny Shore started: **an adult now stands a
+few steps north of the bundled-up kid swinging at Frosty Peak's own piñata, watching the stick come
+down without once stepping into his own swing room.** No new class: the same `Wanderer` (`55-npcs.js`)
+every other watcher in this series already uses, short leash (0.5 m), no `cries` of its own, `angle`
+pointed at the swinger's own fixed spot (41, 35.3) rather than a constant, dressed in this mountain's
+usual beanie-and-coat wardrobe like every other adult watcher already standing around this village.
+
+Placement was checked with a headless probe (a scratch script on the same stub-three harness
+`test/run.mjs` itself uses: `game.start('new')` then `game.load(5, 'from-hub')`, 2400 simulated frames
+sampling every NPC's own position every 10th frame to let every reindeer, hare, arctic fox, penguin,
+yeti and wandering villager actually settle) swept a 0.25 m grid 1.3-3.3 m out from the swinger's own
+spot against this mountain's 727 physics boxes and its 147 `game.zones` rectangles, excluding samples
+within 1 m of the swinger's own rooted spot so the search measured clearance from other wandering
+souls, not him. (41, 37.25) came back clear: 3.08 m from the nearest box, 8.59 m clear of the nearest
+zone rectangle's own edge, 8.40 m from the nearest other soul, and 1.95 m from the swinger himself —
+close enough to read as watching the swing rather than standing off on his own.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged (a `Wanderer` registers a physics circle, not a box), and Frosty Peak's own friend total went
+up by one (146 → 147) to meet. No visual check was possible in this environment (no browser, no
+Playwright), so whether the watcher's stance actually reads as watching the swing from that distance is
+unverified. Whisper Woods is the one world left without one. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

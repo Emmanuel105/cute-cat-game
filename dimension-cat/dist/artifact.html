@@ -30484,6 +30484,40 @@ function buildSnowVillage(game, entry) {
     game.npcs.push(new Wanderer(game, detWatcher, { x: detWx, z: detWz, angle: atan2(detSx - detWx, detSz - detWz), speed: 0.3, leash: 0.5, idle: [3, 6],
       cries: ["One of Copper's bells came loose out here somewhere.", "Careful, puss, don't step on it first.", "This thing beeps at every buckle-sized rock."] })); }
 
+  // Candy Land, Robot City, Victorian and Sunny Shore's own piñata swingers have all picked up a
+  // watcher by now (rounds 1205-1208) — this mountain's own bundled-up kid, taking a two-handed swing
+  // at the piñata since round 568, was still swinging to nobody. **An adult now stands a few steps
+  // north of him on the open snowfield, watching the stick come down without once stepping into his
+  // own swing room.** Frosty Peak and Whisper Woods are the two worlds left in this set.
+  //
+  // No new class or mesh: a plain adult `makeHuman()`/`randomPerson()` rig in this mountain's own
+  // beanie-and-coat wardrobe, and `Wanderer` (55-npcs.js) for the same "stand and watch" behaviour
+  // every other watcher on this mountain already uses, with a short leash (0.5 m) and `angle` pointed
+  // at the swinger's own fixed spot (41, 35.3) rather than a constant, so it draws from the very tail
+  // of this mountain's own local `r()` sequence and disturbs no earlier pick. No `cries` of its own,
+  // same as every other world's piñata watcher in this series.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(5, 'from-hub')`, then 2400 simulated frames sampling every NPC's
+  // own position every 10th frame to let every reindeer, hare, arctic fox, penguin, yeti and
+  // wandering villager actually settle) swept a 0.25 m grid 1.3-3.3 m out from the swinger's own spot
+  // against this mountain's 727 physics boxes and its 147 `game.zones` rectangles, excluding samples
+  // within 1 m of the swinger's own rooted spot so the search measured clearance from other wandering
+  // souls, not him: (41, 37.25) came back clear — 3.08 m from the nearest box, 8.59 m clear of the
+  // nearest zone rectangle's own edge, 8.40 m from the nearest other soul, and 1.95 m from the
+  // swinger himself, close enough to read as watching the swing rather than standing off on his own.
+  //
+  // Built dead last of everything this mountain adds, right after the searcher's own watcher above,
+  // for the usual reason: `makeHuman()`/`randomPerson()` both draw off this mountain's own shared
+  // `r()` sequence unconditionally, and anything built earlier would have had its own timing-sensitive
+  // pick shifted by it.
+  { const pinWx = 41, pinWz = 37.25, pinSx = 41, pinSz = 35.3;
+    const pinWatcherWard = makeWardrobe(r, { shirts: [0x3a8a6a, 0x8a6a3a, 0x5a3a8a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const pinWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: pinWatcherWard }),
+      hat: 'beanie', hatColor: 0x3a8a6a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a, glasses: false });
+    W.add(pinWatcher.group);
+    game.npcs.push(new Wanderer(game, pinWatcher, { x: pinWx, z: pinWz, angle: atan2(pinSx - pinWx, pinSz - pinWz), speed: 0.2, leash: 0.5, idle: [3, 6] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
