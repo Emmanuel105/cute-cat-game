@@ -16514,31 +16514,6 @@ function buildCandyLand(game, entry) {
       cries: ['Tuppence a tune, same price in every land, puss or no puss.', "Careful, puss — the pipes don't take kindly to climbing, same as every other organ's ever told you.", "Three dozen tunes in this barrel. The gumdrop wagon's never once kept up with the beat."] }));
     U.push(organ.userData.update); }
 
-  // every held-prop performer in the game — the yo-yo kid, the juggler, the frisbee thrower, the
-  // piñata swinger, the unicyclist and the rest — has picked up a watcher of its own by now; the
-  // organ grinder, cranking away on the open sweet-lands above, never did. A gingerbread-village
-  // neighbour now stands a few steps off to the side, listening to the barrel organ without once
-  // stepping into the grinder's own 0.4 m circle.
-  //
-  // No new class: `Wanderer` (55-npcs.js) gives her the same "stand and watch" behaviour every other
-  // watcher in this game already uses, with a short leash (0.5 m) and `angle` pointed at the
-  // grinder's own fixed spot rather than a constant. Built with no `cries` of its own, right after
-  // the grinder above, so it draws from the very tail of this world's own local `r()` sequence and
-  // disturbs no earlier pick.
-  //
-  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
-  // `game.load(1, 'from-prev')`, 300 simulated frames to settle every wandering gingerbread man, then
-  // a 0.25 m grid 3-4.5 m out from the grinder's own spot (70, -5) checked against this world's 1798
-  // physics boxes, its 452 `game.zones` rectangles and 13,680 sampled NPC positions from 6000 more
-  // simulated frames) found (66, -7) clearest: 4.16 m from the nearest box, 7.00 m clear of the
-  // nearest zone rectangle's own edge, and 4.47 m from the nearest other soul over the whole sample —
-  // close enough to read as watching the organ rather than standing off on her own, and clear of the
-  // lollipop trunk near (62, -4).
-  { const gwvx = 66, gwvz = -7, gwx = 70, gwz = -5;
-    const grindWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
-      hat: null, scarf: null, jacket: null, bag: null, backpack: null }); W.add(grindWatcher.group);
-    game.npcs.push(new Wanderer(game, grindWatcher, { x: gwvx, z: gwvz, angle: atan2(gwx - gwvx, gwz - gwvz), speed: 0.2, leash: 0.5, idle: [3, 6] })); }
-
   // Victorian has a fortune teller reading a crystal ball and Robot City a coin-operated fortune
   // machine (round 1019) — but a chrome Zoltar cabinet is a strange fit for a land built entirely out
   // of sugar, and nobody here has ever told a fortune at all. **A giant fortune cookie, already

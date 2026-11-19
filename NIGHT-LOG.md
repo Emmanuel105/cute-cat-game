@@ -34982,3 +34982,31 @@ check was possible in this environment (no browser, no Playwright), so whether t
 actually reads as watching the organ from 4.47 m out is unverified. Robot City, Victorian, Sunny
 Shore, Frosty Peak, Whisper Woods and the Neighborhood's own organ grinders are still without one.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1218 — correcting last round: Candy Land's organ grinder already had a listener
+
+Last round's own premise was wrong. It claimed the organ grinder was "the one left out, in all seven
+worlds" and added a new watcher to Candy Land's barrel organ at (66, -7) — but Candy Land's organ
+grinder (at 70, -5) has had a listener standing at (70, -10) since round 1091, and every other world's
+own organ grinder picked one up by round 1108 (the Neighborhood's log entry for that round even says
+outright: "Every organ grinder in every flat-floor world now has somebody stopped to listen"). The
+watcher set last round thought it was starting was already seven-for-seven over a hundred rounds ago;
+it just duplicated Candy Land's. **Removed the redundant watcher** added in round 1217 — the
+gingerbread-village neighbour at (66, -7) with no cries of her own — leaving the original round-1091
+listener in place.
+
+No src change beyond deleting that one block (`70-worlds.js`, `buildCandyLand`); nothing else in this
+land's own `r()` sequence depended on it, since it was built dead last with no further draws after it.
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box count
+unchanged (334), and Candy Land's own friend total is back down to 132, where it sat before round
+1217. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+Worth a note for whichever round reads this next: before claiming a feature is missing everywhere,
+grep the actual `src/` files for it first — the comment trail in `70-worlds.js`,
+`72-world-beach.js`, `73-world-snow.js` and `74-world-forest.js` is usually more reliable than
+assuming a "the last of the seven" headline from a hundred-plus rounds back no longer holds.
+
+Also found on the way in: this sandbox's checkout was once again sitting on a detached `HEAD`, 37
+commits ahead of both the local `main` branch and `origin/main` — the same recurring issue rounds
+1212, 1215, 1216 and 1217 all hit. Moved `main` to point at it (`git checkout -B main`) and pushed
+that catch-up before starting this round's own work.
