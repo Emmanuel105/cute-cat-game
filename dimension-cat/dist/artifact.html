@@ -10513,7 +10513,25 @@ function buildNeighborhood(game, entry) {
       k.group.position.set(kcx + cos(a) * krad, kY, kcz + sin(a) * krad);
       k.group.rotation.y = atan2(dx, dz);
       k.group.rotation.z = sin(t * 2.6 + phase) * 0.1;
-    } }); }
+    } });
+    // this pair has circled the pond as pure background since the round that placed them — the exact
+    // gap the comment above already names ("no greeting yet, no effect on the friend count"). No new
+    // mesh, no new physics box: `game.namedFriend` plus `game.addInteractable` keyed straight to each
+    // koi's own `group`, the same trick every other ambient pond/sea creature in this game eventually
+    // gets (the drake and hen just above, the dolphins' own pod never did since they swim past the
+    // wade-blocking box — these two never left the bank's reach). `getWorldPosition` in the main loop
+    // follows each fish round its own lap, so the prompt tracks it exactly like the duck pair's.
+    // `'koi'` and `'koi-2'` are free in this world's own namedFriend keys. The lake's own koi pair and
+    // Whisper Woods' glow-pond pair are still pure ambient — left for a future round, same as the hen
+    // was left after the drake's own round.
+    const koiId = game.namedFriend('koi');
+    game.addInteractable({ obj: koiA.group, radius: 2.4, label: () => 'Say hello to the koi', onUse: () => {
+      game.befriend(koiId); SFX.click(); game.hearts(koiA.group.position.x, koiA.group.position.y + 0.3, koiA.group.position.z, 3);
+      game.toast('🐟 *pokes its nose above the surface, blows one bubble, and dips back under*'); } });
+    const koi2Id = game.namedFriend('koi-2');
+    game.addInteractable({ obj: koiB.group, radius: 2.4, label: () => 'Say hello to the koi', onUse: () => {
+      game.befriend(koi2Id); SFX.click(); game.hearts(koiB.group.position.x, koiB.group.position.y + 0.3, koiB.group.position.z, 3);
+      game.toast('🐟 *circles once, closer to the surface than usual, then sinks back to its lap*'); } }); }
   const bench = makeBench(); place(game, U, bench, 6, 40, PI); P.addBox(6, 0.4, 40, 1.9, 0.8, 0.6, { cam: false });
   const parkLamp = makeLamp('modern'); place(game, U, parkLamp, -4, 38, PI / 2); P.addBox(-4, 2, 38, 0.3, 4, 0.3, { cam: false });
   // the street's own lamp posts have gone bare since the Neighborhood was first built; this one, the

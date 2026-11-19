@@ -35096,3 +35096,28 @@ NPC count and friend total each went up by exactly one (155 → 156 NPCs, 117 �
 and the new watcher's position matched the probed spot exactly. No visual check was possible in this
 environment (no browser, no Playwright), so whether her stance actually reads as watching the pan from
 3 m out is unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1221 — the Neighborhood's park-pond koi finally get a "say hello"
+
+A grep through the game's own comments turned up a clean, confirmed gap rather than another watcher:
+the koi pair gliding under the park pond's surface (added a while back, right after the duck pair got
+their own greeting) were built explicitly as "ambient wildlife... no greeting yet, no effect on the
+friend count" — and so were both other koi pairs in the game, the lake's and Whisper Woods' glow-pond
+one. None of the three had ever actually been followed up. This round closes the gap for the first of
+them, the park pond.
+
+**Both park-pond koi now answer "Say hello to the koi."** One surfaces for a bubble and dips back
+under; the other circles once closer to the surface than usual, then sinks back to its own lap. No new
+mesh, no new physics box, no new placement to probe at all: `game.namedFriend('koi')` and
+`game.namedFriend('koi-2')` plus a `game.addInteractable` keyed straight to each koi's own `group` (the
+exact trick the ladybug, the frogs and dozens of other ambient critters already got), reusing the same
+2.0 m swim ring and 2.4 m greet radius the park pond's own drake and hen already proved reachable from
+the bank. No sound effect exists for a fish, so it reuses `SFX.click()`, the same quiet neutral blip
+every "look at" prop interaction already uses.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box count
+unchanged (334, as expected — nothing new was added to the physics world, just two interactables on
+meshes that were already there and already moving on their own fixed, non-random animation path). The
+lake's koi pair and Whisper Woods' glow-pond koi pair are still pure ambient, left for a future round
+the same way the duck pair's hen was once left after the drake's own round. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
