@@ -35121,3 +35121,23 @@ meshes that were already there and already moving on their own fixed, non-random
 lake's koi pair and Whisper Woods' glow-pond koi pair are still pure ambient, left for a future round
 the same way the duck pair's hen was once left after the drake's own round. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1222 — the Neighborhood lake's koi pair finally get a "say hello"
+
+Last round closed the gap on the park pond's koi, but left its own comment pointing at the one that
+was still open: the lake's koi pair, circling below the water on the far side of the Neighborhood from
+the park pond, right next to the lake duck pair that got the same treatment a few rounds back. This
+round closes that gap too.
+
+**Both lake koi now answer "Say hello to the koi."** One flicks its tail and vanishes toward the deep
+end; the other hangs still just under the surface for a moment, watching back. No new mesh or physics
+box: `game.namedFriend('lake-koi')` / `game.namedFriend('lake-koi-2')` plus a `game.addInteractable`
+keyed straight to each koi's own `group`, the exact trick the park pond's koi and the lake's own ducks
+already proved — reusing the same 2.2 m swim ring and 2.4 m greet radius the lake duck pair already
+showed is clear of the jetty and fishing hole. Distinct ids from the park pond's `'koi'`/`'koi-2'` so
+greeting one pond's fish never marks the other pond's met.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box count
+unchanged (334 — nothing new in the physics world, just two interactables on meshes that already swim
+their own fixed, non-random path). Whisper Woods' glow-pond koi are still pure ambient, left for a
+future round. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

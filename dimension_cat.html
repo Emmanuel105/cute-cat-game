@@ -10451,7 +10451,21 @@ function buildNeighborhood(game, entry) {
       k.group.position.set(kcx + cos(a) * krad, kY, kcz + sin(a) * krad);
       k.group.rotation.y = atan2(dx, dz);
       k.group.rotation.z = sin(t * 2.6 + phase) * 0.1;
-    } }); }
+    } });
+    // the park pond's koi pair got their own "say hello" a round ago; this is the lake pair's turn, the
+    // one the park pond's own comment named as still left. Same trick again: `game.namedFriend` plus
+    // `game.addInteractable` keyed straight to each koi's own `group`, so `getWorldPosition` in the main
+    // loop follows it round this ring exactly like the lake duck pair's just above. `'lake-koi'`/
+    // `'lake-koi-2'` are distinct from the park pond's own `'koi'`/`'koi-2'` keys, so greeting one pond's
+    // fish never marks the other pond's met. Whisper Woods' glow-pond koi are still pure ambient.
+    const lkoiId = game.namedFriend('lake-koi');
+    game.addInteractable({ obj: koiA.group, radius: 2.4, label: () => 'Say hello to the koi', onUse: () => {
+      game.befriend(lkoiId); SFX.click(); game.hearts(koiA.group.position.x, koiA.group.position.y + 0.3, koiA.group.position.z, 3);
+      game.toast('🐟 *flicks its tail and vanishes toward the deep end*'); } });
+    const lkoi2Id = game.namedFriend('lake-koi-2');
+    game.addInteractable({ obj: koiB.group, radius: 2.4, label: () => 'Say hello to the koi', onUse: () => {
+      game.befriend(lkoi2Id); SFX.click(); game.hearts(koiB.group.position.x, koiB.group.position.y + 0.3, koiB.group.position.z, 3);
+      game.toast('🐟 *hangs still just under the surface for a moment, watching back*'); } }); }
   makeFlowers(game, [[60, -40, 14, 260], [72, -58, 10, 160], [-70, 60, 12, 200], [-56, -60, 9, 120]], r);
   // park (south) with pond, bench, lamp, flowers and the portal arch
   flatPlane(game, 26, 1.4, walk, 0, 36, 0, 0.02); flatPlane(game, 1.4, 14, walk, 0, 42, 0, 0.02);
