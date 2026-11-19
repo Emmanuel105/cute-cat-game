@@ -3073,6 +3073,33 @@ function buildBeach(game, entry) {
     game.npcs.push(new Wanderer(game, beachPerson(r.chance(0.5), false), { x: dwx, z: dwz, angle: atan2(dhx - dwx, dhz - dwz), speed: 0.1, leash: 0.5, idle: [3, 6],
       cries: ['Found a bottle cap last week. Figures.', 'Careful, puss, you\'ll set it off.', "One day it'll be real treasure."] })); }
 
+  // Candy Land, Robot City and Victorian's own piñata swingers have all picked up a watcher by now
+  // (rounds 1205-1207) — this beach's own kid, taking a two-handed swing at the beach-ball-striped
+  // piñata since round 567, was still swinging to nobody. **A beachgoer now stands a few steps north
+  // of him on the dry dune sand, watching the swing without once stepping into his own room.**
+  //
+  // No new class: the same `Wanderer` every other watcher in this series uses, short leash (0.5 m),
+  // no `cries` of its own, `angle` pointed at the swinger's own fixed spot (-14, -30.2) rather than a
+  // constant, so it draws from the very tail of this beach's own local `r()` sequence and disturbs no
+  // earlier pick.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(4, 'from-hub')` waited out for real against `game.worldIndex`
+  // and `game.transitioning`, then 3600 simulated frames sampling every NPC's and the squirrel's own
+  // position every 10th frame) swept a 0.25 m grid 1.3-3.3 m out from the swinger's own spot against
+  // this beach's 257 physics boxes and its 89 `game.zones` rectangles, excluding samples within 1 m of
+  // the swinger's own rooted spot so the search measured clearance from other wandering souls, not
+  // him: (-14.72, -27.5) came back clearest — 3.87 m from the nearest box, 16.79 m clear of the
+  // nearest zone rectangle's own edge, 4.12 m from the nearest other soul, and 2.80 m from the swinger
+  // himself, close enough to read as watching the swing rather than standing off on his own.
+  //
+  // Built dead last of everything this beach adds, after the detectorist's own watcher above, for the
+  // usual reason: `beachPerson()`/`randomPerson()` both draw off this beach's own shared `r()`
+  // sequence unconditionally, and anything built earlier would have had its own timing-sensitive pick
+  // shifted by it.
+  { const pwx = -14.72, pwz = -27.5, psx = -14, psz = -30.2;
+    game.npcs.push(new Wanderer(game, beachPerson(r.chance(0.5), false), { x: pwx, z: pwz, angle: atan2(psx - pwx, psz - pwz), speed: 0.15, leash: 0.5, idle: [3, 6] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

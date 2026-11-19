@@ -34644,3 +34644,31 @@ unmodified baseline as well, so it's environment noise, not anything this change
 check was possible here (no browser, no Playwright), so whether the watcher's stance actually reads as
 watching the swing from that distance is unverified. Sunny Shore, Frosty Peak and Whisper Woods are the
 three worlds left without one. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1208 — Sunny Shore's piñata swinger gets a watcher too
+
+Continuing the set Candy Land, Robot City and Victorian started: **a beachgoer now stands a few steps
+north of the kid swinging at Sunny Shore's own beach-ball-striped piñata, watching the swing without
+once stepping into his own room.** No new class — the same `Wanderer` (`55-npcs.js`) every other
+watcher in this series already uses, short leash (0.5 m), no `cries` of its own, `angle` pointed at
+the swinger's own fixed spot (-14, -30.2) rather than a constant, so it draws from the very tail of
+this beach's own local `r()` sequence and disturbs no earlier pick.
+
+Placement was checked with a headless probe (a scratch script on the same stub-three harness
+`test/run.mjs` itself uses: `game.start('new')`, `game.travel(4, 'from-hub')` waited out for real
+against `game.worldIndex` and `game.transitioning`, then 3600 simulated frames to let every
+beachgoer, dog, kite and ball game on this coast actually settle, then sampling every NPC's and the
+squirrel's own position every 10th frame) swept a 0.25 m grid 1.3-3.3 m out from the swinger's own
+spot against this beach's 257 physics boxes and its 89 `game.zones` rectangles, excluding samples
+within 1 m of the swinger's own rooted spot so the search measured clearance from other wandering
+souls rather than him. (-14.72, -27.5) came back clearest: 3.87 m from the nearest box, 16.79 m clear
+of the nearest zone rectangle's own edge, 4.12 m from the nearest other soul, and 2.80 m from the
+swinger himself — close enough to read as watching the swing rather than standing off on his own.
+
+`node dimension-cat/test/run.mjs` ran clean three times running: exit 0, all checks `ok`, 0 console
+warnings, box count unchanged (334, since a `Wanderer` registers a physics circle, not a box), and
+Sunny Shore's own friend total went up by one (150 → 151) to meet. No visual check was possible in
+this environment (no browser, no Playwright), so whether the watcher actually reads as watching the
+swing from that distance rather than just standing nearby is unverified. Frosty Peak and Whisper Woods
+are the two worlds left without one. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.
