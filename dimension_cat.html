@@ -21500,6 +21500,36 @@ function buildVictorian(game, entry) {
     W.add(mudlark.group);
     game.npcs.push(new Forager(game, mudlark, { x: mx, z: mz, ry, cryIcon: '🪙',
       cries: ['Found a farthing! Mudlarking never quite lets you down.', 'Careful, puss — mind the mud, it never comes out of white fur.', 'A thimble, would you believe. Third one this month — someone up there keeps losing them.'] })); }
+  // the mudlark above has knelt over her pan alone since round 365 — every performer on this street
+  // (the juggler, the magician, the organ grinder, the fiddler, the painter, the detectorist) long ago
+  // picked up someone who stops to watch, but nobody had ever come down to the far bank for her. A
+  // passer-by now stands a few steps south of her on the grass, arms folded, watching the pan for the
+  // next find.
+  //
+  // No new mesh or controller: a plain adult `makeHuman()`/`randomPerson()` rig and `Wanderer`
+  // (55-npcs.js), the same "stand and watch" behaviour every other watcher in this game already uses,
+  // with a short leash (0.5 m) and `angle` pointed back at the mudlark's own fixed spot rather than a
+  // constant. `Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was needed.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.travel(3, 'from-prev')` waited out for real against its own portal-fade timer, then 1800
+  // simulated frames sampling every NPC's own position every 10th frame) swept a 0.25 m grid 1.3-3.2 m
+  // out from the mudlark's own spot (-10, 37.3) against every one of this town's 697 physics boxes and
+  // all 155 NPCs already standing in it: (-10, 40.3) came back clearest — 5.7 m from the nearest box
+  // (the far wall) and over 3 m from both the mudlark herself and the nearest other soul, still inside
+  // the radius (88) where victorianRegion's own fill stays off, and `game.zones.blocked()` leaves it
+  // untouched.
+  //
+  // Built dead last, right after the mudlark above, for the usual reason: `makeHuman()` and
+  // `randomPerson()` both draw off this town's own shared `r()` sequence unconditionally, and anything
+  // built earlier would have had its own timing-sensitive pick shifted by it.
+  { const wx = -10, wz = 40.3, mx2 = -10, mz2 = 37.3;
+    const mudWatchWard = makeWardrobe(r, { shirts: [0x4a6a7a, 0x8a5a4a, 0x5a5a3a], pants: [0x2a2a2e, 0x3a3327] });
+    const mudWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: mudWatchWard }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(mudWatcher.group);
+    game.npcs.push(new Wanderer(game, mudWatcher, { x: wx, z: wz, angle: atan2(mx2 - wx, mz2 - wz), leash: 0.5, speed: 0.3, idle: [3, 6],
+      cries: ["Found a farthing, she says. Looked like a button to me.", "Careful, puss — mind the mud, it never comes out of white fur either.", "She's out here every low tide. Never once come up empty, or so she tells it."] })); }
   // the canal has had boats, ducks, an angler and a mudlark for rounds now, but nothing ever skimmed low
   // over the water itself — Whisper Woods' glowing pond got its own trio of dragonflies back in round
   // 773, and the canal, the only other real stretch of open water in the game with nothing flying over

@@ -35054,3 +35054,45 @@ up by one (123 → 124). No visual check was possible in this environment (no br
 so whether the watcher's stance actually reads as watching the swing from that distance is unverified.
 Every piñata post in the game now has a watcher. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 1220 — Victorian's mudlark finally gets a watcher of her own
+
+This checkout was once again a detached `HEAD` sitting 39 commits ahead of the local `main` branch —
+`origin/main` itself turned out to already have every one of them (a stale fetch was the only thing
+missing), so no work was lost, just `git fetch` then `git checkout main && git merge --ff-only`
+to catch the branch up before starting this round's own.
+
+Every long-running "give the performer a watcher" series this game has run — the juggler, the
+magician, the organ grinder, the fiddler, the painter, the detectorist, both sets of anglers, the
+piñata swinger and the piñata post itself — is now closed across all seven worlds, confirmed by
+grepping the actual round history rather than trusting a stray code comment (round 1218's own lesson).
+But one long-standing Victorian local had never been folded into any of those sets at all: the
+mudlark, kneeling over her pan of canal mud on the far bank since round 365, sieving coins and
+thimbles out of what the boats drop, with nobody ever coming down to watch her do it. **A passer-by
+now stands a few steps south of her on the grass, arms folded, watching the pan for the next find.**
+*"Found a farthing, she says. Looked like a button to me."* *"She's out here every low tide. Never
+once come up empty, or so she tells it."*
+
+No new mesh or controller: a plain adult `makeHuman()`/`randomPerson()` rig and `Wanderer`
+(55-npcs.js), the same "stand and watch" behaviour every other watcher in this game already uses,
+with a short leash (0.5 m) and `angle` pointed back at the mudlark's own fixed spot (-10, 37.3) rather
+than a constant. `Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was
+needed — same trick every other watcher in this series relies on.
+
+Placement was checked with a headless probe (a scratch script on the same stub-three harness
+`test/run.mjs` itself uses: `game.travel(3, 'from-prev')` waited out for real against its own
+portal-fade timer, then 1800 simulated frames sampling every NPC's own position every 10th frame,
+swept as a 0.25 m grid 1.3-3.2 m out from the mudlark's own spot against all 697 of this town's
+physics boxes and all 155 NPCs already standing in it, and checked against `game.zones.blocked()`
+directly rather than inferred): (-10, 40.3) came back clearest — 5.7 m from the nearest box (the far
+wall) and just over 3 m from both the mudlark herself and the nearest other soul, comfortably inside
+the radius (88) where `victorianRegion`'s own procedural fill stays off.
+
+`node dimension-cat/test/run.mjs` ran clean twice running: exit 0, all 277 checks `ok`, 0 console
+warnings, box count unchanged (334, a `Wanderer` registers a physics circle, not a box — this is all
+happening in Victorian, which isn't even the world that count is taken from). A direct before/after
+comparison (`git stash` against the built game itself, not just the diff) confirmed Victorian's own
+NPC count and friend total each went up by exactly one (155 → 156 NPCs, 117 → 118 possible friends),
+and the new watcher's position matched the probed spot exactly. No visual check was possible in this
+environment (no browser, no Playwright), so whether her stance actually reads as watching the pan from
+3 m out is unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
