@@ -34217,6 +34217,40 @@ function buildForest(game, entry) {
     game.npcs.push(new Wanderer(game, woodsDetWatcher, { x: woodsDetWx, z: woodsDetWz, angle: atan2(woodsDetSx - woodsDetWx, woodsDetSz - woodsDetWz), speed: 0.3, leash: 0.5, idle: [3, 6],
       cries: ["Someone's ring is out here somewhere.", "Careful, puss - mind the leaf litter, it's slippery.", "Every beep's a bottle cap so far."] })); }
 
+  // Candy Land, Robot City, Victorian, Sunny Shore and Frosty Peak's own piñata swingers have all
+  // picked up a watcher by now (rounds 1205-1209) — this wood's own forest kid, swinging at a
+  // toadstool-red piñata since the glade got one a few rounds back, was still swinging to nobody.
+  // **A walker now stands a few steps west of him on the open woodland floor, watching the swing
+  // without once stepping into his own swing room.** Whisper Woods is the last world in this set.
+  //
+  // No new class or mesh: the usual plain `makeHuman()`/`randomPerson()` walker and `Wanderer`
+  // (55-npcs.js) for the same "stand and watch" behaviour every other watcher in this wood already
+  // uses, with a short leash (0.5 m) and `angle` pointed at the swinger's own fixed spot (-28, -20.7)
+  // rather than a constant, so it draws from the tail of this wood's own local `r()` sequence and
+  // disturbs no earlier pick. No `cries` of its own, same as every other world's piñata watcher in
+  // this series.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.load(6, 'from-hub')` then 3600 simulated frames sampling every NPC's own position every
+  // 10th frame to let every wandering deer, fox and hare range fully) swept a 0.25 m grid 1.3-3.3 m
+  // out from the swinger's own spot against this wood's 783 physics boxes and its 222 `game.zones`
+  // rectangles, excluding samples within 1 m of the swinger's own rooted spot so the search measured
+  // clearance from other wandering souls, not him: (-30.76, -20.21) came back clear — 3.04 m from the
+  // nearest box, 13.15 m clear of the nearest zone rectangle's own edge, 2.77 m from the nearest other
+  // soul, and 2.80 m from the swinger himself, close enough to read as watching the swing rather than
+  // standing off on his own.
+  //
+  // Built dead last of everything this wood adds, right after the detectorist's own watcher above,
+  // for the usual reason: `makeHuman()`/`randomPerson()` both draw off this wood's own shared `r()`
+  // sequence unconditionally, and anything built earlier would have had its own timing-sensitive pick
+  // shifted by it. Every world in this piñata-watcher set now has one.
+  { const pinWx = -30.76, pinWz = -20.21, pinSx = -28, pinSz = -20.7;
+    const pinWatcherWard = makeWardrobe(r, { shirts: [0x6a7a5a, 0x5a6a7a, 0x7a6a5a], pants: [0x3a3a2a, 0x2e3a28] });
+    const pinWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: pinWatcherWard }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: r.chance(0.2) });
+    W.add(pinWatcher.group);
+    game.npcs.push(new Wanderer(game, pinWatcher, { x: pinWx, z: pinWz, angle: atan2(pinSx - pinWx, pinSz - pinWz), speed: 0.3, leash: 0.5, idle: [3, 6] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

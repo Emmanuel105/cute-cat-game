@@ -34698,3 +34698,31 @@ up by one (146 → 147) to meet. No visual check was possible in this environmen
 Playwright), so whether the watcher's stance actually reads as watching the swing from that distance is
 unverified. Whisper Woods is the one world left without one. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1210 — Whisper Woods' piñata swinger gets a watcher too, the last of the seven
+
+Closing out the set Candy Land, Robot City, Victorian, Sunny Shore and Frosty Peak have been building
+for the last five rounds: **a plain forest walker now stands a few steps west of the kid swinging at
+Whisper Woods' own toadstool-red piñata, watching the stick come down without once stepping into his
+own swing room.** No `cries` of its own, matching every other world's piñata watcher in this series.
+No new class or mesh: the usual plain `makeHuman()`/`randomPerson()` walker and `Wanderer` (55-npcs.js)
+for the same "stand and watch" behaviour this wood's own other watchers (the pond angler, the stone
+skipper, the detectorist) already use, short leash (0.5 m), `angle` pointed at the swinger's own fixed
+spot (-28, -20.7) rather than a constant.
+
+Placement was checked with a headless probe (a scratch script on the same stub-three harness
+`test/run.mjs` itself uses: `game.load(6, 'from-hub')`, then 3600 simulated frames sampling every
+NPC's own position every 10th frame to let every wandering deer, fox and hare range fully) that swept
+a 0.25 m grid 1.3-3.3 m out from the swinger's own spot against this wood's 783 physics boxes and its
+222 `game.zones` rectangles, excluding samples within 1 m of the swinger's own rooted spot so the
+search measured clearance from other wandering souls, not him. (-30.76, -20.21) came back clear: 3.04 m
+from the nearest box, 13.15 m clear of the nearest zone rectangle's own edge, 2.77 m from the nearest
+other soul, and 2.80 m from the swinger himself — close enough to read as watching the swing rather
+than standing off on his own.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged (a `Wanderer` registers a physics circle, not a box), and Whisper Woods' own friend total
+went up by one (173 → 174) to meet. No visual check was possible in this environment (no browser, no
+Playwright), so whether the watcher's stance actually reads as watching the swing from that distance is
+unverified. Every world in this piñata-watcher set now has one. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
