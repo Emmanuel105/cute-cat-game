@@ -34846,3 +34846,41 @@ went up by one (176 → 177, confirmed with a `git stash` diff against the previ
 check was possible in this environment (no browser, no Playwright), so whether the watcher's stance
 actually reads as watching the ride from 6.7 m out is unverified. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1214 — Sunny Shore's own unicyclist gets a watcher too
+
+Candy Land's rider picked up a watcher in round 1105, the Neighborhood's in round 1211 and Robot
+City's and Victorian's in rounds 1212-1213; Sunny Shore's own beachgoer, doing laps on a coral-trimmed
+wheel south-east of the pogo stick kid, was still pedalling for nobody. **A beachgoer now stands a few
+steps south-east of the ride, watching the wheel go out and back instead of walking on down the
+beach.** *"Not once put a foot down since low tide — bad luck to look away now."* *"Careful, puss —
+she's not stopping for a cat any more than she would for me."* *"Lost count of the laps myself, same
+as she says she has."*
+
+No new class or mesh: the usual `beachPerson()`/`randomPerson()` rig and `Wanderer` (55-npcs.js), the
+same "stand and watch" behaviour every other watcher on this beach already uses, short leash (0.5 m),
+`angle` pointed at the ride's own fixed midpoint (-19.9, -19.1) rather than a constant.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: the
+start screen's own `enter` button clicked, `game.travel(4, 'from-hub')` waited out for real against
+`game.worldIndex` and `game.transitioning`, then 6000 simulated frames sampling every NPC's own
+position every 50th frame) swept a 0.25 m grid 1.5-6 m out from the ride's own midpoint against all
+257 of this beach's own physics boxes (within knee-to-head height), its 89 `game.zones` rectangles and
+all 120 of those position snapshots: (-15.65, -20.1) came back clearest — 4.93 m from the nearest box,
+14.98 m clear of the nearest zone rectangle's own edge and 4.92 m from the nearest other soul over the
+whole run, dry sand at radius 4.37 m south-east of the ride's own midpoint, well inside the radius (58)
+where `beachRegion()`'s own procedural fill takes over.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box count
+unchanged (334, a `Wanderer` registers a physics circle, not a box), and Sunny Shore's own friend total
+went up by one (151 → 152, confirmed with a `git stash` diff against the previous commit). No visual
+check was possible in this environment (no browser, no Playwright), so whether the watcher's stance
+actually reads as watching the ride from 4.37 m out is unverified. Frosty Peak and Whisper Woods' own
+riders are still without one.
+
+Also found on the way in: this sandbox's checkout was again sitting on a detached `HEAD`, 33 commits
+ahead of both the local `main` branch and `origin/main` — the same situation round 1212 fixed once
+already, recurring from whatever leaves a session's final checkout detached. Moved `main` to point at
+it (`git checkout -B main`, a fast-forward) and pushed that catch-up before starting this round's own
+work, so nothing from rounds 1181-1213 was at risk of being lost this time either. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

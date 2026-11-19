@@ -3100,6 +3100,39 @@ function buildBeach(game, entry) {
   { const pwx = -14.72, pwz = -27.5, psx = -14, psz = -30.2;
     game.npcs.push(new Wanderer(game, beachPerson(r.chance(0.5), false), { x: pwx, z: pwz, angle: atan2(psx - pwx, psz - pwz), speed: 0.15, leash: 0.5, idle: [3, 6] })); }
 
+  // Candy Land's rider picked up a watcher in round 1105, the Neighborhood's in round 1211 and Robot
+  // City's and Victorian's in rounds 1212-1213 — this beach's own unicyclist, doing laps on coral-
+  // trimmed wheel south-east of the pogo stick kid, was still pedalling for nobody. **A beachgoer now
+  // stands south-east of the ride, watching the wheel go out and back instead of walking on.** *"Not
+  // once put a foot down since low tide — bad luck to look away now."* *"Careful, puss — she's not
+  // stopping for a cat any more than she would for me."* *"Lost count of the laps myself, same as she
+  // says she has."*
+  //
+  // No new class or mesh: the usual `beachPerson()`/`randomPerson()` rig and `Wanderer` (55-npcs.js),
+  // the same "stand and watch" behaviour every other watcher on this beach already uses, short leash
+  // (0.5 m), `angle` pointed at the ride's own fixed midpoint (-19.9, -19.1) — the average of its two
+  // endpoints (-22, -17) and (-17.8, -21.2) above — rather than a constant.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // clicking the start screen's own `enter` button, `game.travel(4, 'from-hub')` waited out for real
+  // against `game.worldIndex` and `game.transitioning`, then 6000 simulated frames sampling every
+  // NPC's own position every 50th frame) swept a 0.25 m grid 1.5-6 m out from the ride's own midpoint
+  // against all 257 of this beach's own physics boxes (within knee-to-head height), its 89
+  // `game.zones` rectangles and all 120 of those position snapshots: (-15.65, -20.1) came back
+  // clearest — 4.93 m from the nearest box, 14.98 m clear of the nearest zone rectangle's own edge and
+  // 4.92 m from the nearest other soul over the whole run, dry sand at radius 4.37 m south-east of the
+  // ride's own midpoint, well inside the radius (58) where `beachRegion()`'s own procedural fill takes
+  // over so no clash with it either.
+  //
+  // Built dead last of everything this beach adds, right after the piñata swinger's own watcher
+  // above, for the usual reason: `beachPerson()`/`randomPerson()` both draw off this beach's own
+  // shared `r()` sequence unconditionally, and anything built earlier would have had its own
+  // timing-sensitive pick shifted by it. `Unicyclist`'s own draws come off the shared global `rnd()`,
+  // not this beach's `r()`, so where it sits in this list costs nothing either way.
+  { const uwx = -15.65, uwz = -20.1, umx = -19.9, umz = -19.1;
+    game.npcs.push(new Wanderer(game, beachPerson(r.chance(0.5), false), { x: uwx, z: uwz, angle: atan2(umx - uwx, umz - uwz), speed: 0.15, leash: 0.5, idle: [3, 6],
+      cries: ['Not once put a foot down since low tide — bad luck to look away now.', "Careful, puss — she's not stopping for a cat any more than she would for me.", 'Lost count of the laps myself, same as she says she has.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
