@@ -35161,3 +35161,32 @@ pond and lake koi already showed is clear of their own pond's edges. Distinct id
 count unchanged (334 — nothing new in the physics world, just two interactables on meshes that
 already swim their own fixed, non-random path). A `git stash`/pop against the working tree confirmed
 no other file was touched. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1224 — Candy Land's chocolate-river water wheel finally gets a "look"
+
+A long search through the log's own trail of "left for a future round" comments turned up mostly
+dead ends — the koi ponds, the organ-grinder listeners, the dune palms, the glade's mushrooms, the
+glade's deer and foxes, Robot City's drone-fly swarm: every one of those threads had already been
+tied off in a round this log hadn't credited by name. The one genuine gap still standing was simpler
+than any of them: the game has two water wheels — the Victorian canal's and this chocolate river's
+second one, out on the river's own lonely north bank — and neither one had ever gotten a "look"
+prompt of its own, even though every other turning prop in the game (the weathervane, the garden
+pinwheel, the barrel) picked one up long ago.
+
+**The chocolate-river wheel now answers "Look at the water wheel."** *"Turns the same slow turn, day
+and night, river or no river."* *"Nobody's ever asked what it's actually grinding. Just chocolate,
+probably."*
+
+No new mesh, no new physics box: the wheel was already being built and placed by name (`makeWaterWheel()`
+via `place()`), just with its return value discarded — this round only keeps that return value
+(`chocoWheel`) and hands it straight to `game.addInteractable`, the same trick the weathervane and the
+barrel already use. A fresh headless probe (`game.start('new')`, `game.travel(1, 'from-prev')` waited
+out for real against its own portal-fade timer, then 3600 simulated frames sampling every physics box,
+every NPC and every other interactable every 10th frame) confirmed the spot is as isolated as the round
+that placed it there claimed: the nearest physics box sits 65.3 m off, and the nearest soul or other
+interactable 73.0 m off — so a 2.0 m "look" radius here risks nothing at all. The Victorian canal's own
+wheel is still bare, left for a future round.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box count
+unchanged (334 — nothing new in the physics world, just one interactable keyed to a mesh that was
+already turning on its own). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

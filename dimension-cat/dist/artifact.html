@@ -16776,7 +16776,19 @@ function buildCandyLand(game, entry) {
   // (-150, 0, -14.7) facing south, that its pivot — a `Group` with the hub, four spokes and eight rim
   // boards (13 children, same as round 1077's) — keeps turning and stays finite over hundreds of
   // simulated frames, and that the world's own `U` list is still the only thing driving it.
-  place(game, U, makeWaterWheel(), -150, -14.7, PI);
+  const chocoWheel = place(game, U, makeWaterWheel(), -150, -14.7, PI);
+  // the Victorian canal got the game's first water wheel and this chocolate river the second, but
+  // neither one ever got a "look" prompt of its own — every other turning prop in the game (the
+  // weathervane, the garden pinwheel, the barrel) has one by now. This one gets it first, since its
+  // own placement comment above already measured the spot as the loneliest corner of the land. A
+  // fresh headless probe (`game.start('new')`, `game.travel(1, 'from-prev')` waited out for real
+  // against its own portal-fade timer, then 3600 simulated frames sampling every physics box, every
+  // NPC and every other interactable every 10th frame) found it still is: nearest box 65.3 m off,
+  // nearest soul and nearest other interactable both 73.0 m off. No new mesh, no new physics box:
+  // `chocoWheel`, captured straight off the `place()` call above, goes to `game.addInteractable` the
+  // same way the weathervane and the barrel did.
+  { const wheelLines = ['🍫 "Turns the same slow turn, day and night, river or no river."', '🍫 "Nobody\'s ever asked what it\'s actually grinding. Just chocolate, probably."', '🍫 "Furthest thing from anything else in this whole land. Keeps to itself out here."'];
+    game.addInteractable({ obj: chocoWheel, radius: 2.0, label: () => 'Look at the water wheel', onUse: () => { SFX.click(); game.toast(rnd.pick(wheelLines), 3000); } }); }
 
   // this land has a juggler, a stilt walker and a chalker, every street act keeping both feet down or a
   // ball in the air — never anyone balanced on a single wheel. A performer now rides a short stretch of
