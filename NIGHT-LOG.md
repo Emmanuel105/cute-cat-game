@@ -35211,3 +35211,25 @@ of the nearest lamp — plenty of room for a new prompt without the two ever ove
 unchanged (334 — nothing new in the physics world, just one interactable keyed to a mesh that was
 already turning on its own). Both of the game's water wheels now answer a "look" prompt. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1226 — the Neighborhood's own swing kid finally gets a "say hello"
+
+Checked every one of the seven worlds' `new Swinger(...)` call sites against each other, since
+`Swinger` itself (unlike `Seesaw` and `Bouncer`, both of which call `greetable()` straight from their
+own constructor) leaves it up to whoever builds the swing to register the kid as a friend. Six of the
+seven — Candy Land, Robot City, Victorian, Sunny Shore, Frosty Peak, Whisper Woods — do.
+The Neighborhood's own swing, the very first one built back when `Swinger` was new, never got the
+follow-up `greetable(game, sw)` line the other six picked up later. The kid could be pushed
+("Higher! Higher!") and would call out "Wheee!" on her own, but saying hello to her did nothing at
+all — the one swing-set kid in the game who couldn't be made a friend.
+
+**The Neighborhood's swing kid now answers "Say hi" like every other world's does.** One line added
+right after she's pushed onto the NPC list, exactly the pattern the other six sites already use —
+no new mesh, no new physics box, no `rnd()` draw (`greetable()` itself never touches the shared
+random sequence, so this couldn't repeat round 1160's own mistake of nudging the Neighborhood's
+speaker-swap chat test out of its 7-second window).
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334. The Neighborhood's own friend total ticked up from 128 to 129 (the `>=` checks in
+the test suite don't care which exact number it lands on, only that it doesn't drop). Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
