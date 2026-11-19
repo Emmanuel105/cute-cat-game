@@ -34914,3 +34914,40 @@ went up by one (147 → 148, confirmed with a `git stash` diff against the previ
 check was possible in this environment (no browser, no Playwright), so whether the watcher's stance
 actually reads as watching the ride from 5.1 m out is unverified. Whisper Woods' own rider is still
 without one. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1216 — Whisper Woods' own unicyclist gets a watcher too, the last of the seven
+
+Candy Land's rider picked up a watcher in round 1105 and the Neighborhood's, Robot City's,
+Victorian's, Sunny Shore's and Frosty Peak's own riders followed over rounds 1211-1215; this wood's
+own performer, doing laps on a moss-green wheel on a quiet stretch of forest floor south of the fairy
+ring since round 1216's own predecessor built her here, was the last one left pedalling to nobody.
+**A local now stands a few steps east of the ride, watching the wheel go out and back instead of
+wandering on.** *"Roots everywhere out here — you'd think she'd have learned by now."* *"Mind your
+tail, puss — she's no better at dodging than she is at staying upright."* *"Still counting laps. Lost
+count twice already."* Saying hello makes her the usual kind of friend. Every unicyclist in this game
+now has a watcher — the set that started with Candy Land in round 1105 is complete.
+
+No new class or mesh: the usual `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js), the
+same "stand and watch" behaviour every other watcher in this game already uses, short leash (0.5 m),
+`angle` pointed at the ride's own fixed midpoint (14, -48) rather than a constant. A headless probe (a
+scratch script on the same stub-three harness `test/run.mjs` itself uses: the start screen's own
+`enter` button clicked, `game.travel(6, 'from-hub')` waited out for real against `game.worldIndex`,
+then 6000 simulated frames sampling every NPC's own position every 50th frame) swept a 0.25 m grid
+1.3-4 m out from the ride's own midpoint against all 783 of this wood's own physics boxes (knee-to-
+head height), its 222 `game.zones` rectangles and all 18120 of those position snapshots, excluding the
+ride's own line itself: (15, -45) came back clearest — 5.87 m from the nearest box, 9.42 m clear of
+the nearest zone rectangle's own edge and 7.62 m from the nearest other soul over the whole run, open
+forest floor at radius 47.4 from the origin, flat (under 2 cm of slope) and well inside the radius
+(58) where `forestRegion()`'s own procedural fill takes over.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged (334, a `Wanderer` registers a physics circle, not a box), and Whisper Woods' own
+friend total went up by one (174 → 175, confirmed with a `git stash` diff against the previous
+commit). No visual check was possible in this environment (no browser, no Playwright), so whether the
+watcher's stance actually reads as watching the ride from 3.2 m out is unverified.
+
+Also found on the way in: this sandbox's checkout was once again sitting on a detached `HEAD`, 35
+commits ahead of both the local `main` branch and `origin/main` — the same recurring issue rounds 1212
+and 1215 both hit. Moved `main` to point at it (`git checkout -B main`, a fast-forward) and pushed that
+catch-up before starting this round's own work, so nothing from rounds 1181-1215 was at risk of being
+lost this time either. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
