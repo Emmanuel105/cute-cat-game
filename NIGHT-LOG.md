@@ -34606,3 +34606,41 @@ this environment (no browser, no Playwright), so whether the watcher's stance ac
 the swing from that distance is unverified. The other five worlds' piñata posts (the Neighborhood,
 Victorian, Sunny Shore, Frosty Peak, Whisper Woods) are still without one — next in line for this set.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1207 — Victorian's piñata swinger gets a watcher too
+
+Continuing the set Candy Land and Robot City started: **a neighbour now leans a few steps off to the
+side of Victorian's own piñata post**, east of the sack race's own lane, watching the urchin's stick
+come down without once stepping into the swing's own room. No new class — the same `Wanderer`
+(`55-npcs.js`) every other watcher in this series already uses, short leash (0.5 m), no `cries` of its
+own, `angle` pointed at the swinger's own fixed spot (16, -58.3) rather than a constant.
+
+The first attempt actually targeted the Neighborhood instead, since its own piñata (the very first one
+the game ever built, round 508) is the one other world in this set still missing a watcher. That one had
+to be abandoned: adding the new `makeHuman()` rig anywhere in `buildNeighborhood()` draws three values
+off the *shared global* `rnd()` sequence (the Neighborhood's own `README`-documented "no two neighbours
+wear the same shirt" check caught the first placement; moving the block to the very end of the function,
+the usual fix for a *local* per-world `r()` collision, didn't help, because `Talkers`' own chat-timer
+redraw during the simulated test frames pulls from that same *global* `rnd()`, not the local one — round
+1197's own warning about this street, "a plain `Wanderer` addition already broke a test once," still
+holds). Rather than fight it further, the watcher went to Victorian instead, where neither constraint
+applies.
+
+Placement was checked with a headless probe (a scratch script on the same stub-three harness
+`test/run.mjs` itself uses: `game.start('new')` then `game.travel(3, 'from-hub')`, 3600 simulated frames
+to let every urchin, dancer, duck and ball game in this town actually settle, then another 3600 sampling
+every NPC's and the squirrel's own position every 5th frame) swept a 0.25 m grid 1.3-3.2 m out from the
+swinger's own spot against this town's physics boxes and its `game.zones` rectangles. (14.8, -61.25)
+came back clearest: 5.00 m from the nearest box, 26.7 m clear of the nearest zone rectangle's own edge,
+and 5.39 m from the swinger herself — the nearest other soul over the whole sample, well clear of both
+the sack race lane and the market square.
+
+`node dimension-cat/test/run.mjs` ran clean several times running: exit 0, all checks `ok`, 0 console
+warnings, box count unchanged (334, since a `Wanderer` registers a physics circle, not a box), and
+Victorian's own friend total went up by one (175 → 176) to meet. This sandbox's own test run is slower
+and noisier than usual — render counts drift by a few dozen between runs and a `Sunny Shore: kite flies`
+height check failed intermittently on unrelated code too — but that drift was confirmed present on the
+unmodified baseline as well, so it's environment noise, not anything this change introduced. No visual
+check was possible here (no browser, no Playwright), so whether the watcher's stance actually reads as
+watching the swing from that distance is unverified. Sunny Shore, Frosty Peak and Whisper Woods are the
+three worlds left without one. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -13776,6 +13776,30 @@ function buildVictorian(game, entry) {
     W.add(urchin.group);
     game.npcs.push(new PinataSwinger(game, urchin, 0x8a6a44, { x: sx, z: sz, ry: sry,
       cries: ["One more go, and mind, I'll not miss this time!", 'Steady now, puss — plenty of swing room needed here.', 'If it\'s just toffees again, I shall be very put out.'] })); }
+
+  // Every other world's piñata swinger has picked up a watcher of its own by now (Candy Land and
+  // Robot City, rounds 1205-1206) — Victorian's own urchin, swinging away on the grass east of the
+  // sack race's own lane, was the only one left without one. **A neighbour now leans a few steps off
+  // to the side, watching the stick come down without once stepping into the swing's own room.**
+  //
+  // No new class: the same `Wanderer` (`55-npcs.js`) every other watcher in this series already uses —
+  // short leash (0.5 m), no `cries` of its own, `angle` pointing at the swinger's own fixed spot rather
+  // than a constant. Built right after the swinger above, so it draws from the very tail of this
+  // town's own local `r()` sequence and disturbs no earlier pick.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')` then `game.travel(3, 'from-hub')`, 3600 simulated frames to let every urchin,
+  // dancer, duck and ball game in this town actually settle, then another 3600 sampling every NPC's
+  // and the squirrel's own position every 5th frame) swept a 0.25 m grid 1.3-3.2 m out from the
+  // swinger's own spot (16, -58.3) against this town's physics boxes and its `game.zones` rectangles.
+  // (14.8, -61.25) came back clearest: 5.00 m from the nearest box, 26.7 m clear of the nearest zone
+  // rectangle's own edge, and 5.39 m from the swinger herself — the nearest other soul over the whole
+  // sample, well clear of both the sack race lane and the market square.
+  { const pwvx = 14.8, pwvz = -61.25, pwx = 16, pwz = -58.3;
+    const pinWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x6a9a7a, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false }); W.add(pinWatcher.group);
+    game.npcs.push(new Wanderer(game, pinWatcher, { x: pwvx, z: pwvz, angle: atan2(pwx - pwvx, pwz - pwvz), speed: 0.2, leash: 0.5, idle: [3, 6] })); }
+
   // every Detectorist in the game has only ever turned up a bottle cap or a button — the running joke
   // of the whole series — and two of the seven worlds have now let somebody digging nearby beat him to
   // real treasure: Sunny Shore (round 591), the Neighborhood (round 592). Victorian's own relic hunter,
