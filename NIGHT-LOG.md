@@ -35436,3 +35436,46 @@ unchanged at 334 (no new collider, just an interactable on an existing mesh). No
 it's a "look" prompt, not a greeting. No visual check was possible in this environment (no browser, no
 Playwright), so whether the prompt reads well against the snow is unverified. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1235 — Robot City's factory floor gets its first worker on a break
+
+Before touching anything, this round wrote a small headless probe (not one of the `qa/` scripts,
+just a scratch script on the same stub-three harness `test/run.mjs` itself uses) that travels to
+every one of the seven worlds and lists every NPC whose own rig carries none of `.look`/`.robot`/
+`.cookie` — the exact root cause behind every "pure ambient critter" fix this log has made for over a
+thousand rounds now — and checks whether `game.addInteractable` has ever been wired to it anyway. The
+first pass flagged dozens of false positives in every world (the stub `Object3D` here never sets
+`isObject3D`, so the probe's own coverage check was silently empty); fixed, the real list came back
+essentially bare: every deer, fox, hare, column of birds and glowing mushroom this log has ever found
+already has its fix in place, and the handful of true survivors (background `Cyclist`/`Vehicle`/
+`HorseCarriage` traffic in the Neighborhood and Victorian) are moving obstacles by design, not
+characters anyone stops to greet — round 723's own comment already says as much. A thousand rounds of
+this exact bug-hunt have genuinely run the well dry.
+
+So this round adds something new instead. Robot City's factory floor keeps dozens of workers in
+motion — patrolling, wrenching, drumming checkers, sweeping a metal detector, pedalling a unicycle —
+and not one of them has ever just stood still. **A worker now leans against open concrete between
+shifts, arms folded, in no hurry to get back to the line.** *"Five minutes. Maybe ten, if the
+foreman's gone for his own lunch too."* *"Careful, puss — that concrete's colder than it looks, even
+through a boot."* *"Back on the line the second that whistle goes. Not a second before."*
+
+No new mesh or controller: a plain adult `makeHuman()`/`randomPerson()` rig and `Wanderer`
+(55-npcs.js), the same "stand and watch" behaviour every other watcher in this city already uses, with
+a short leash (0.4 m) and a fixed `angle` rather than one tracking another NPC, since this one isn't
+watching anybody else's act — `Wanderer`'s own constructor calls `greetable()` itself, so no extra
+wiring was needed. A headless probe (`game.travel(2, 'from-prev')` waited out for real against its own
+portal-fade timer, then 3600 simulated frames to settle every wanderer, patroller and ball-tossing
+robot pack, then a 4 m grid swept across the open floor against all 1206 of this city's physics boxes
+and every NPC's own position sampled over a further 600 frames) found (-10, 22) clear by 9.26 m of the
+nearest box and 10.2 m of the nearest other soul — open concrete well shy of the mechanic's own
+patient robot (2, 18) and the spotter's own camera post (7.1, 32.9), with no `game.zones` rectangle
+anywhere near it. Built dead last of everything this city adds, right after the unicyclist's own
+watcher, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this city's own shared
+`r()` sequence unconditionally, and anything built earlier would have had its own timing-sensitive
+pick shifted by it.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (no new collider). Robot City's own friend total ticked up by one, confirmed by the
+test's own "to meet" count. No visual check was possible in this environment (no browser, no
+Playwright), so whether the pose reads as a believable break rather than just standing around is
+unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
