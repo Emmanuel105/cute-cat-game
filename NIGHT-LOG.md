@@ -35479,3 +35479,32 @@ unchanged at 334 (no new collider). Robot City's own friend total ticked up by o
 test's own "to meet" count. No visual check was possible in this environment (no browser, no
 Playwright), so whether the pose reads as a believable break rather than just standing around is
 unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1236 — Candy Land gets its own break-taker, the second of the seven
+
+Every watcher this land has ever built was doing exactly that — watching some other act: the organ
+grinder, the carousel, the river angler, the paper-plane kid. Not one of them was ever just *standing
+there for its own sake*, the way Robot City's own factory worker (round 1235) finally was for that
+city. **A sweet-shop local now sits sprawled in the middle of the eastern gumdrop patch, sugar-dazed,
+in no hurry to get up.** *"One gumdrop too many. Just a minute here, puss."* *"Careful — don't go
+rolling into me."* *"Up again in a minute. Maybe two."*
+
+No new class or mesh: a plain adult `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js),
+the same "stand and watch" behaviour every other watcher in this land already uses, with a short
+leash (0.4 m) and a fixed `angle` rather than one tracking another NPC, since this one isn't watching
+anybody else's act — `Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was
+needed. A headless probe (`game.start('new')`, `game.travel(1, 'from-prev')` waited out for real
+against its own portal-fade timer, then 3600 simulated frames to settle every wanderer, gingerbread
+man and carousel rider, then a 2 m grid swept across this land's hand-built core, radius ≤ 35, against
+all 1806 of its physics boxes, every `game.zones` rectangle and every NPC's own sampled position)
+found (21.5, 4) clearest in the whole sweep: 7.9 m from the nearest box and 7.8 m from the nearest
+other soul, inside the gumdrop patch centred at (22, 6) and clear of the ring lollipop at (14, 10).
+Built dead last of everything this land adds, right after the paper-plane kid's own watcher, for the
+usual reason: `makeHuman()`/`randomPerson()` both draw off this land's own shared `r()` sequence
+unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted by it.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, no new
+physics box. Candy Land's own friend total ticked up from 132 to 133, confirmed by the test's own "to
+meet" count. No visual check was possible in this environment (no browser, no Playwright), so whether
+the pose reads as "sugar-dazed on the grass" rather than just sitting in a gumdrop patch is unverified.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -17248,6 +17248,38 @@ function buildCandyLand(game, entry) {
     W.add(planeKidWatcher.group);
     game.npcs.push(new Wanderer(game, planeKidWatcher, { x: planeWvx, z: planeWvz, angle: atan2(planeKidX - planeWvx, planeKidZ - planeWvz), leash: 0.5, speed: 0.3, idle: [3, 6], walk: [1, 1.6] })); }
 
+  // every watcher this land has ever built is doing exactly that — watching some other act: the organ
+  // grinder, the carousel, the river angler, the paper-plane kid just above. Not one of them was ever
+  // just *here*, the way Robot City's own factory worker (round 1235) finally was for that city. A
+  // sweet-shop local now sits sprawled on the sugar grass in the middle of the eastern gumdrop patch,
+  // sugar-dazed, not ready to get up yet.
+  //
+  // No new class or mesh: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer`
+  // (55-npcs.js) gives her the same "stand and watch" behaviour every other watcher in this land
+  // already uses, with a short leash (0.4 m) and a fixed `angle` rather than one tracking another NPC,
+  // since this one isn't watching anybody else's act.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(1, 'from-prev')` waited out for real against its own portal-fade
+  // timer, then 3600 simulated frames sampling every NPC's and the squirrel's own position every 10th
+  // frame) swept a 2 m grid of this land's hand-built core (radius ≤ 35, short of where this land's own
+  // region fill takes over) against every one of its 1806 physics boxes, every `game.zones` rectangle
+  // and all those samples: (21.5, 4) came back clearest in the whole sweep, 7.9 m from the nearest box
+  // and 7.8 m from the nearest other soul — inside the gumdrop patch centred at (22, 6) (`makeGumdrops`,
+  // just above), clear of the ring lollipop at (14, 10).
+  //
+  // Built dead last of everything this land adds, right after the paper-plane kid's own watcher above,
+  // for the usual reason: `makeHuman()`/`randomPerson()` both draw off this land's own shared `r()`
+  // sequence unconditionally, and anything built earlier would have had its own timing-sensitive pick
+  // shifted by it.
+  { const gdx = 21.5, gdz = 4;
+    const breakWard = makeWardrobe(r, { shirts: [0xff6fb5, 0x7fd7ff, 0xffd54a], pants: [0xffffff, 0xf5f2ea], shoes: [0xffffff, 0x8d6e63] });
+    const breakLocal = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: breakWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.3) });
+    W.add(breakLocal.group);
+    game.npcs.push(new Wanderer(game, breakLocal, { x: gdx, z: gdz, angle: PI / 2, leash: 0.4, speed: 0.3, idle: [4, 8],
+      cries: ['One gumdrop too many. Just a minute here, puss.', "Careful — don't go rolling into me.", "Up again in a minute. Maybe two."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
