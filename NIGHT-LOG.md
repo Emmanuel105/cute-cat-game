@@ -35410,3 +35410,29 @@ own friend total ticked up from 129 to 130, confirmed by the test's own `>=` che
 visual check was possible in this environment (no browser, no Playwright), so whether the prompt
 actually tracks the lead bird's own short march cleanly is unverified. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1234 — Frosty Peak's third snowman finally gets a "look"
+
+Round 230's own closing comment only ever credited two of the four snowmen scattered round the
+village pond with getting any attention (one kid packs on fresh snow, another presses in a carrot)
+and sent the fourth, out at (22, -4), off with a "look" prompt of its own a few rounds back. The
+third one in that same loop, out at (-20, -2), slipped through both passes: no kid, no prompt, no
+reason to ever stop there.
+
+**It gets the same "look" treatment now, the last of the four.** *"Round the back, same three coal
+buttons — nobody skimps out here."* *"No carrot on this one. No scarf either. Just snow."* *"Built,
+then left. The other two got all the fuss."*
+
+No new mesh, no new physics box: `thirdSnowman` is the same loop's own `placeT()` return value for
+index 2, kept instead of discarded and handed straight to `game.addInteractable`, the exact trick the
+fourth snowman's own round already used. A headless probe (`game.start('new')`, `game.travel(5,
+'from-hub')` waited out against its own portal-fade timer, then every physics box and interactable in
+the world checked against this spot) found the nearest other box — one of the lone ice crystals at
+(-20, -4.5) — 2.08 m clear and the nearest other interactable 4.69 m clear, so the new 1.4 m radius
+never reaches either.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (no new collider, just an interactable on an existing mesh). No new friend either —
+it's a "look" prompt, not a greeting. No visual check was possible in this environment (no browser, no
+Playwright), so whether the prompt reads well against the snow is unverified. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
