@@ -25303,6 +25303,22 @@ function buildBeach(game, entry) {
   // a third sunbather on the spare towel, a paperback going nowhere fast
   { const [tx, tz, ry] = towels[1]; game.npcs.push(new Sunbather(game, beachPerson(r.chance(0.5), false), { x: tx, z: tz + 0.55, ry,
     cries: ["Sunbathing is a science, apparently.", 'Same page as an hour ago.', "Wake me if the tide comes in."] })); }
+  // that "paperback going nowhere fast" line has described a book that was never actually there — a
+  // plain `Sunbather` rests both hands behind the head every frame (55-npcs.js), so nothing was ever
+  // modelled for her to hold. A paperback now lies splayed face-down in the sand just past the edge of
+  // her towel instead, exactly where it would have slipped from a dozing hand, pages ruffling in the
+  // sea breeze. Not attached to her rig at all — a free-standing prop in world space, offset 0.6 m to
+  // one side of her own lying spot along the towel's own perpendicular (the same `cos(ry)`/`sin(ry)`
+  // pair every other offset in this file already uses, just rotated 90°), clear of both the towel's
+  // own 0.5 m half-width and the umbrella's own slim 0.2 m pole nearly 2 m further off. No new physics
+  // box: at 0.03 m tall, it clears the same way every other flat beach prop in this file already does.
+  { const [tx, tz, ry] = towels[1], sbx = tx, sbz = tz + 0.55, bx = sbx + cos(ry) * 0.6, bz = sbz - sin(ry) * 0.6;
+    const by = P.ground0(bx, bz) + 0.016;
+    const book = group(bx, by, bz, W); book.rotation.y = ry + 0.4;
+    mesh(G.box(0.17, 0.012, 0.12), mat(0xd9c9a0, { roughness: 1 }), { parent: book });
+    const page = group(0.075, 0.007, 0, book);
+    mesh(G.box(0.08, 0.004, 0.11), mat(0xf2ead6, { roughness: 1 }), { x: 0.04, shadow: 'none', parent: page });
+    U.push((dt, t) => { page.rotation.y = sin(t * 1.1) * 0.1; }); }
   // a juggler works the open sand between the towels and the lifeguard chair, three balls in a steady loop over their own head
   { const jx = 3, jz = 16, jugWard = makeWardrobe(r, { shirts: [0xffd54a, 0x2e9e6e, 0xf7f3ec], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0xefe7d8, 0x8d6e63] });
     const juggler = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false, wardrobe: jugWard }),

@@ -35356,3 +35356,28 @@ count unchanged at 334. Whisper Woods' own friend total is unchanged too. No vis
 possible in this environment (no browser, no Playwright), so whether the kite actually reads well
 tucked up in the branches is unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 1232 — Sunny Shore's third sunbather finally gets her paperback
+
+The third sunbather on the spare beach towel has had a line about a book since the round that gave
+her one — *"Same page as an hour ago,"* *"Sunbathing is a science, apparently,"* *"Wake me if the
+tide comes in"* — but no book was ever actually built for her to hold: `Sunbather` (55-npcs.js) rests
+both hands behind the head every single frame, so there was never anywhere on the rig for one to go.
+**A paperback now lies splayed face-down in the sand just past the edge of her towel**, exactly where
+it would have slipped from a dozing hand, its pages ruffling gently in the sea breeze.
+
+Not attached to her rig at all: a small free-standing prop (two thin boxes — a tan cover, a cream
+page-flap) parented straight into the world, positioned 0.6 m to one side of her own lying spot along
+the towel's own perpendicular — the same `cos(ry)`/`sin(ry)` offset trick this file already uses
+everywhere, just rotated 90° — which clears both the towel's own 0.5 m half-width and the umbrella's
+slim pole nearly 2 m further off. No new physics box: at 0.03 m tall it needs none, the same free pass
+every other flat beach prop in this file already gets. The page-flap rocks on a slow sine tied to the
+world clock, not `r()` or the shared `rnd()`, so it costs no later wardrobe or colour pick on this
+beach. A headless probe (the same stub-three harness `test/run.mjs` uses, travelled to world 4 and run
+200 frames) confirmed the book lands at a finite position 1.84 m clear of the nearest physics box.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 334 (no new collider). No new friend either — it's a prop, not a creature. No
+visual check was possible in this environment (no browser, no Playwright), so whether the book actually
+reads well against the sand is unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.
