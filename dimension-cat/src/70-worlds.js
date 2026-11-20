@@ -5512,7 +5512,19 @@ function buildCandyLand(game, entry) {
       rider5.group.position.set(-0.65, 0.76, -1.1258330249197703);
       rider5.group.rotation.y = -5 * PI / 6;
       carousel.pivot.add(rider5.group); }
-    const carouselLines = ['🎠 "Round and round — and five riders along for the ride now."', '🎠 "One empty seat left. Only the purple one\'s still waiting for a rider."', '🎠 "Spins on its own, mostly. Five gingerbread men never seem to mind the company."'];
+    // the sixth and last rider, on the purple seat (seat index 5: `a = TAU*5/6 = 5*PI/3`, so local
+    // (sx, sz) = (cos(5*PI/3) * 1.3, sin(5*PI/3) * 1.3) = (0.65, -1.12583302491977) — the mirror image
+    // of the pink seat's own rider across the centre pole, since cos(5*PI/3) = cos(PI/3)). Same
+    // seat-top math as the other five riders — y = 0.76 regardless of which seat — and the same
+    // outward-facing formula (`rotation.y = PI/2 - a`), which at a = 5*PI/3 comes out to -7*PI/6.
+    // Parented to the same `carousel.pivot`, so it orbits for free alongside the first five — pure set
+    // dressing again, no greeting, no physics box, no draw from this world's own seeded `r` or the
+    // shared `rnd()` sequence. With this one seated, every seat the carousel has is finally taken.
+    { const rider6 = makeGingerbread();
+      rider6.group.position.set(0.65, 0.76, -1.12583302491977);
+      rider6.group.rotation.y = -7 * PI / 6;
+      carousel.pivot.add(rider6.group); }
+    const carouselLines = ['🎠 "Round and round — six riders now, and not an empty seat left."', '🎠 "Every seat taken. Pink, cyan, yellow, orange, purple, green — the whole ring of them."', '🎠 "Spins on its own, mostly. Six gingerbread men never seem to mind the company."'];
     game.addInteractable({ obj: carousel.group, radius: 3.4, label: () => 'Look at the carousel', onUse: () => { SFX.click(); game.toast(rnd.pick(carouselLines), 3000); } }); }
   // the Candy Queen's castle, up the lane to the north — houmoungous, and you can walk right in — with a little candy village on the approach
   game.zones.addCircle(0, 150, 27);

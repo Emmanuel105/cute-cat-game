@@ -35308,3 +35308,26 @@ out, just evaluated at `a = 4*PI/3` instead of `0`, `PI`, `PI/3` or `2*PI/3`.
 unchanged at 334 (a carousel rider costs no physics box, same as the first four). Candy Land's own
 friend total is unchanged too, since none of the five riders are greetable. One empty seat — purple —
 remains for a future round. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1230 — Candy Land's carousel fills its last seat
+
+Round 1229's own closing line named exactly what was left: one empty seat on the carousel — purple.
+This round fills it, the same one-seat-at-a-time way the pink, cyan, yellow, green and orange seats
+got filled before it. With this one taken, all six of the carousel's seats finally have a rider.
+
+**A sixth gingerbread rider now rides the carousel's purple seat — the mirror image of the first rider
+across the centre pole.** *"Round and round — six riders now, and not an empty seat left."* *"Every
+seat taken. Pink, cyan, yellow, orange, purple, green — the whole ring of them."*
+
+No new mesh or class: another `makeGingerbread()` rig, parented straight to `carousel.pivot` so it
+orbits for free, at local `(sx, sz) = (cos(5*PI/3) * 1.3, sin(5*PI/3) * 1.3) = (0.65, -1.12583302491977)`
+— seat index 5 in `makeCarousel()`'s own `seatHues` array — using the same `y = 0.76` seat-top height
+and `rotation.y = PI/2 - a` outward-facing formula the first five riders' own comments already worked
+out, just evaluated at `a = 5*PI/3` instead of the five angles before it. The ride's own "look" toast
+now reports all six colours taken instead of counting down an empty-seat total.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (a sixth rider costs no physics box, same as the first five). Candy Land's own friend
+total is unchanged too, since none of the six riders are greetable — they're set dressing, same as a
+napping cat. The carousel arc that started at round 1227 is done; the next round picks something new.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
