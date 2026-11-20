@@ -35233,3 +35233,28 @@ speaker-swap chat test out of its 7-second window).
 unchanged at 334. The Neighborhood's own friend total ticked up from 128 to 129 (the `>=` checks in
 the test suite don't care which exact number it lands on, only that it doesn't drop). Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1227 — Candy Land's carousel picks up a third rider
+
+The carousel (`makeCarousel()`, 60-props.js) has had six seats since the round that built it, and only
+two were ever filled — a gingerbread man on the green seat and another on the pink one, with the
+ride's own "look" toast counting "four empty seats left." This round fills a third, the same
+one-seat-at-a-time way this log has filled gem trails, deer picks and butterfly picks before.
+
+**A third gingerbread rider now rides the carousel's cyan seat.** *"Round and round — and three riders
+along for the ride now."* *"Three empty seats left. The green, pink and cyan ones are taken."*
+
+No new mesh or class: another `makeGingerbread()` rig, parented straight to `carousel.pivot` so it
+orbits for free, at local `(sx, sz) = (cos(PI/3) * 1.3, sin(PI/3) * 1.3)` — seat index 1 in
+`makeCarousel()`'s own `seatHues` array — using the exact `y = 0.76` seat-top height and
+`rotation.y = PI/2 - a` outward-facing formula the first two riders' own comments already worked out,
+just evaluated at `a = PI/3` instead of `0` or `PI`. Pure set dressing, same as the first two riders:
+no greeting, no physics box, and no draw from Candy Land's own seeded `r()` or the shared `rnd()`
+sequence, since it's placed after every other draw this world's build makes and parented to a group
+that already spins on the world clock `t` alone.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 334 (a carousel rider costs no physics box, same as the first two). Candy Land's
+own friend total is unchanged too, since none of the three riders are greetable. Three empty seats —
+yellow, orange and purple — remain for future rounds. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
