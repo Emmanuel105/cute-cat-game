@@ -35508,3 +35508,43 @@ physics box. Candy Land's own friend total ticked up from 132 to 133, confirmed 
 meet" count. No visual check was possible in this environment (no browser, no Playwright), so whether
 the pose reads as "sugar-dazed on the grass" rather than just sitting in a gumdrop patch is unverified.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1237 — Victorian gets its own break-taker, the third of the seven
+
+Robot City (round 1235) and Candy Land (round 1236) each picked up a standalone break-taker — someone
+just existing for their own sake, not watching anyone else's act. This round tried the Neighborhood
+next, since the log's own round-robin keeps hitting that street first, and it broke the build outright:
+with a third plain `Wanderer` added dead last (after the piñata post's own watcher), `node test/run.mjs`
+failed two unrelated, pre-existing timing-sensitive checks — "two neighbours chat, facing each other,
+taking turns" and "a cyclist rides the westbound lane, pedalling" — both driven by the same shared
+global `rnd()` sequence this street's own comments have flagged as fragile for over a thousand rounds
+now. The usual tricks (burning extra `rnd()` draws, pinning `idle`/`timer`/`phase` the way the digger
+and jetty watchers do) weren't tried at length; the change was reverted outright rather than risk
+leaving a red build, and the Neighborhood's third break-taker is left for a future round with more room
+to experiment.
+
+Victorian took the slot instead — its own build function has never needed one of the Neighborhood's
+`idle: [1e9, 1e9]` fixed-timer workarounds, so a plain dead-last `Wanderer` was tried there first this
+time. **A third townsfolk now sits on the open green north of the terraces, hat off, boots stretched
+out, in no hurry to be anywhere else.** *"Five minutes with my own two feet up. The square can wait."*
+*"Mind where you tread, puss — I only just got comfortable."* *"Back on my rounds the second this grass
+stops feeling so good."*
+
+No new class or mesh: a plain adult `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js), the
+same "stand and watch" behaviour every other watcher in this town already uses, with a short leash
+(0.5 m) and a fixed `angle` rather than one tracking another NPC. A headless probe (`game.travel(3,
+'from-prev')` waited out for real against its own portal-fade timer, then 3600 simulated frames to
+settle every urchin, stilt walker and watcher already in this town, sampling every NPC's own position
+every 10th frame for a further 600 frames) swept a 1 m grid of this town's hand-built core (radius ≤ 65,
+short of the radius (88) where `victorianRegion()`'s own procedural fill takes over) against every
+physics box and `game.zones` rectangle widened by 2 m: (39, 48) came back clearest — 12.6 m from the
+nearest box and 13.0 m from the nearest other soul, on the open green between the kite kid (50, 55) and
+the tag-and-catch pairs to the south-west. Built dead last of everything this town adds, right after the
+unicyclist's own watcher, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this town's
+own shared `r()` sequence unconditionally.
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt at this spot: exit 0, 277 checks `ok`,
+0 console warnings, no new physics box (334 total, unchanged). Victorian's own friend total ticked up by
+one. No visual check was possible in this environment (no browser, no Playwright), so whether the pose
+reads as a believable rest rather than just standing on the green is unverified. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
