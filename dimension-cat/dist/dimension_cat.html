@@ -12268,8 +12268,14 @@ function buildNeighborhood(game, entry) {
   // column itself (nothing here stands over 0.1 m), the same footing the birdwatcher's own hopping
   // sparrows already have.
   //
-  // Pure ambient wildlife with no controller and no `greetable()` call at all — no new friend, no
-  // effect on this street's friend count or collectible count.
+  // Pure ambient wildlife with no controller and no `greetable()` call at all since round 578 built
+  // it — the one flock in the game nobody could ever actually meet. This round closes that gap the
+  // same way the park pond's koi and the lake's swan got theirs: `game.namedFriend` and
+  // `game.addInteractable` draw nothing from either `rnd()` or this world's own local `r()`, so adding
+  // one here is exactly as safe as this block's own postmortem (two comments up) already worked out
+  // for everything else built in the Neighborhood before the test's first simulated frame runs. One
+  // friend id for the whole column, tracked on the lead bird (`birds[0]`) rather than all three, since
+  // they march as a single unit and were never three separate characters to begin with.
   { const baseX = 5, zA = -74, zB = -76, speed = 0.8, gap = 0.3, legRate = 4.6;
     const dur = Math.abs(zB - zA) / speed, cyc = dur * 2;
     const marchAt = (tt) => {
@@ -12290,7 +12296,11 @@ function buildNeighborhood(game, entry) {
         cryT = 12; const c = game.cat.group.position;
         if (dist2(baseX, zA, c.x, c.z) < 400) { game.toast('🐦 "' + ['Column of three, wings in!', 'Hup-two, hup-two — mind the worm, Baxter.', "Marching's trickier when you're mostly feathers, puss."][floor(t / 12) % 3] + '"', 2400); SFX.chitter(); }
       }
-    }); }
+    });
+    const marchId = game.namedFriend('march-sparrows');
+    game.addInteractable({ obj: birds[0].group, radius: 2.1, label: () => 'Say hello to the sparrows', onUse: () => {
+      game.befriend(marchId); SFX.chitter(); game.hearts(birds[0].group.position.x, birds[0].group.position.y + 0.3, birds[0].group.position.z, 3);
+      game.toast('🐦 "Column, halt! ...Oh. Carry on, lads."'); } }); }
 
   // the Neighborhood is the one world with a real day/night cycle (`makeDayNight` below), but nothing
   // in it ever actually reacted to night falling beyond the lamps, porches and windows lighting up —

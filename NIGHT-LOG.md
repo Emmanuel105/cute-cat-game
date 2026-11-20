@@ -35381,3 +35381,32 @@ count unchanged at 334 (no new collider). No new friend either — it's a prop, 
 visual check was possible in this environment (no browser, no Playwright), so whether the book actually
 reads well against the sand is unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 1233 — the Neighborhood's marching sparrow column finally gets a "say hello"
+
+A grep through this game's own comments for "no new friend" and "pure ambient wildlife" turned up a
+lot of dead ends already closed in rounds this log credited to other names, but one was still
+genuinely open: the column of three sparrows that have marched back and forth along a 2 m stretch of
+grass south of the street since round 578, calling out *"Column of three, wings in!"* and *"Hup-two,
+hup-two — mind the worm, Baxter"* on a cue timer — the one flock in the whole game that was never
+wired up to `greetable()` at all, because round 578's own build order meant it couldn't risk a single
+extra draw from the shared `rnd()` sequence.
+
+**The column now answers "Say hello to the sparrows."** *"Column, halt! ...Oh. Carry on, lads."*
+Standing within 2.1 m of the lead bird while it drills now befriends the whole column as one friend,
+since the three never were three separate characters to begin with, just one formation.
+
+No new mesh, no new physics box, and — the actual point of this round — no new draw from `rnd()` or
+this world's own local `r()` either: `game.namedFriend()` and `game.addInteractable()` are both plain
+bookkeeping calls that never touch the shared random sequence, so adding them here is exactly as safe
+as round 578's own postmortem (quoted two comments up in the source) already worked out for everything
+else built in the Neighborhood before the test's first simulated frame runs. The interactable is keyed
+to `birds[0].group`, the lead bird, so the prompt follows the whole column up and down its short march
+without needing a second tracked position.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (a `game.addInteractable` on an existing group costs no new box). The Neighborhood's
+own friend total ticked up from 129 to 130, confirmed by the test's own `>=` check for world 0. No
+visual check was possible in this environment (no browser, no Playwright), so whether the prompt
+actually tracks the lead bird's own short march cleanly is unverified. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
