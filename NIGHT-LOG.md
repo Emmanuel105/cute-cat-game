@@ -35729,3 +35729,39 @@ console warnings, box count unchanged at 334 (no new collider, as expected for a
 footprint). No visual check was possible in this environment (no browser, no Playwright), so whether
 the pinecone actually reads as fallen and tipped, rather than just an odd brown shape in the leaves,
 is unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1243 — a stray tennis ball in the Neighborhood's own back field
+
+Robot City got a dropped wrench (round 1241) and Whisper Woods a fallen pinecone (round 1242) — pure
+walk-past scenery, nothing to greet or look at, on worlds with room to spare. The Neighborhood itself
+never got one. Round 1241's own write-up had already found the reason the hard way: every
+`makeHuman()`/`randomPerson()`-based addition to this street burns one-time draws off the *shared
+global* `rnd()` sequence at birth, and this street's own chat-pair and cyclist checks sit close enough
+to their own thresholds that even one more such addition, however inert its controller, tips one of
+them over. This round sidesteps the problem outright by adding something that was never a person at
+all.
+
+**A stray tennis ball now lies in the grass south of the main street**, the one that rolled under a
+hedge mid-fetch and nobody went back for. A press of E gets a line: *"Someone's dog is missing that."*
+*"Flat on one side — chewed, by the look of it."* *"Nobody's come back for it yet."*
+
+`makeTennisBall()` (60-props.js, new) is a plain felt-green sphere banded by two thin pale seam
+stripes — the same flattened-sphere-overlay trick the nearby catch-game ball already uses for its own
+two coloured panels — sat a little low as if settled into the lawn. It takes no random generator at
+all, the same trick the pinecone used: no draw from the shared global `rnd()` sequence or this
+street's own seeded `r()`, so it can be dropped in anywhere without nudging a single later
+timing-sensitive pick. Unlike the wrench and the pinecone it does get one small hook: `game.addInteractable`
+for a look-and-toast line, the same shape the wrench itself actually used despite its own "pure set
+dressing" framing — no physics box, no `userData.update`, just a prompt.
+
+A headless probe (`game.start('new')`, 3600 simulated frames to let every wanderer and patroller
+settle, then a half-metre grid of the open field south of the street checked against every live NPC
+position and every physics box in the knee-to-head band) found (27, -17) clear: 10.7 m from the
+nearest box, 12.0 m from the nearest soul (the catch-game kids at (25, -35) are the closest), and
+outside every `game.zones` rectangle.
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt: exit 0, all 277 checks `ok`, 0
+console warnings, box count unchanged at 334 (no new collider, as expected). No visual check was
+possible in this environment (no browser, no Playwright), so whether the ball actually reads as a
+dropped tennis ball rather than an odd green-and-white sphere in the grass is unverified. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

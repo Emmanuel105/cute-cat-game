@@ -745,6 +745,21 @@ function makeSkateboard(color = 0xff6fb5) {
   }
   return g;
 }
+/** A stray tennis ball, dropped in the grass and left — the one that rolled under a hedge mid-fetch
+ *  and nobody went back for. A felt-green sphere banded by two thin pale seam stripes (the same
+ *  flattened-sphere-overlay trick the catch-game ball already uses for its own two panels), sat a
+ *  little low as if settled into the lawn. Pure static scenery: no physics box, no `userData.update`,
+ *  nothing to greet or look at — the same footing as a dropped wrench or a fallen pinecone, just
+ *  something the cat walks past. Takes no random generator at all, so it costs no draw off either
+ *  the shared global `rnd()` sequence or a world's own seeded `r()`. */
+function makeTennisBall(color = 0xd6e94a) {
+  const g = new THREE.Group(), rad = 0.1;
+  mesh(G.sphere(rad, 14, 10), mat(color, { roughness: 1 }), { y: rad * 0.82, shadow: 'cast', parent: g });
+  const seam = mat(0xf4f7ea, { roughness: 0.85 });
+  mesh(G.sphere(rad * 1.01, 14, 8), seam, { y: rad * 0.82, sx: 0.22, shadow: 'none', parent: g });
+  mesh(G.sphere(rad * 1.01, 14, 8), seam, { y: rad * 0.82, sz: 0.22, shadow: 'none', parent: g });
+  return g;
+}
 /** A chimney sweep's besom: a long handle with a flared dark bristle head at one end, lying on the ground beside a small tied soot sack. Faces +z, bristle head at +z. */
 function makeSweepBrush(color = 0x6b4a2e) {
   const g = new THREE.Group(), handleM = mat(color, { roughness: 0.75 }), bristleM = mat(0x241f1a, { roughness: 0.9 }), sackM = mat(0x3a3a3a, { roughness: 0.85 });

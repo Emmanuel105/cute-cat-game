@@ -4692,6 +4692,31 @@ function buildNeighborhood(game, entry) {
       shirt: 0x8a4a6a, hat: null, scarf: null, jacket: null, bag: null, backpack: null }); W.add(pinWatcher.group);
     game.npcs.push(new Wanderer(game, pinWatcher, { x: pinWvx, z: pinWvz, angle: atan2(pinAngX - pinWvx, pinAngZ - pinWvz), speed: 0.3, leash: 0.5, idle: [3, 6] })); }
 
+  // Robot City got a dropped wrench (round 1241) and Whisper Woods a fallen pinecone (round 1242) —
+  // pure walk-past scenery, nothing to greet or look at, on worlds with plenty of margin left. The
+  // Neighborhood itself never got one: every round that tried to add anything new to this street has
+  // had to reckon with `makeHuman()`/`randomPerson()` burning one-time draws off the *shared global*
+  // `rnd()` sequence at birth, which has sunk at least one attempt outright (round 1243's own write-up
+  // trail). A dropped prop with no `makeHuman()` and no random generator at all sidesteps that whole
+  // problem: **a stray tennis ball now lies in the grass south of the main street**, the one that
+  // rolled under a hedge mid-fetch and nobody went back for.
+  //
+  // `makeTennisBall()` (60-props.js, new) is a plain felt-green sphere with two thin pale seam
+  // stripes — the same flattened-sphere-overlay trick the catch-game ball a little further south
+  // already uses for its own two coloured panels — sat a little low as if settled into the lawn. No
+  // physics box, no `userData.update`, no `cries`: the cat just walks past it, same footing as Robot
+  // City's wrench or Whisper Woods' pinecone.
+  //
+  // A headless probe (`game.start('new')`, 3600 simulated frames to let every wanderer and patroller
+  // settle, then every live NPC position and every physics box in the knee-to-head band checked
+  // against a half-metre grid of the open field south of the street) found (27, -17) clear: 10.7 m
+  // from the nearest box, 12.0 m from the nearest soul (the catch-game kids at (25, -35) are the
+  // closest), and outside every `game.zones` rectangle — well short of the catch pair's own throw
+  // gap, in a stretch of plain lawn with nothing else hand-placed nearby.
+  { const tbx = 27, tbz = -17;
+    const tennisBall = place(game, U, makeTennisBall(), tbx, tbz, 0);
+    game.addInteractable({ obj: tennisBall, radius: 1.5, label: () => 'Look at the tennis ball', onUse: () => { SFX.click(); game.toast(rnd.pick(['🎾 "Someone\'s dog is missing that."', '🎾 "Flat on one side — chewed, by the look of it."', '🎾 "Nobody\'s come back for it yet."']), 3000); } }); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
