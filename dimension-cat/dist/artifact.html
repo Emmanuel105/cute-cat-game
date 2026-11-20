@@ -34880,6 +34880,42 @@ function buildForest(game, entry) {
     game.npcs.push(new Wanderer(game, ucWatcher, { x: ucWx, z: ucWz, angle: atan2(ucRideX - ucWx, ucRideZ - ucWz), leash: 0.5, speed: 0.3, idle: [3, 6],
       cries: ["Roots everywhere out here — you'd think she'd have learned by now.", "Mind your tail, puss — she's no better at dodging than she is at staying upright.", "Still counting laps. Lost count twice already."] })); }
 
+  // Robot City (1235), Candy Land (1236), Victorian (1237), Sunny Shore (1238) and Frosty Peak (1239)
+  // have each picked up a standalone break-taker — someone just existing for their own sake, not
+  // watching anyone else's act. Whisper Woods was the last of the seven still without one. **A sixth
+  // wood-dweller now stands alone on the forest floor east of the unicycle track, hands in pockets,
+  // nothing to watch and nowhere to be.** *"Not here to watch the ride, puss. Just needed the trees for
+  // a minute."* *"Mind the roots — this wood doesn't clear them for anybody."* *"Back when I'm back.
+  // No sooner."* Saying hello makes her the usual kind of friend. All seven worlds now have one.
+  //
+  // No new class or mesh: a plain adult `makeHuman()`/`randomPerson()` rig in this wood's own earthy
+  // wardrobe palette, and `Wanderer` (55-npcs.js) for the same "stand and watch" behaviour every other
+  // watcher here already uses, with a short leash (0.4 m) and a fixed `angle` rather than one tracking
+  // another NPC, since this one isn't watching anybody else's act. `Wanderer`'s own constructor calls
+  // `greetable()` itself, so no extra wiring was needed.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.load(6, 'from-hub')`, then 6000 simulated frames sampling every NPC's own position every
+  // 50th frame to let every frog, firefly, butterfly, fox and wandering villager actually settle) swept
+  // a 1 m grid of the hand-built core (radius <= 55, short of the radius (58) where `forestRegion()`'s
+  // own procedural fill takes over) against all 783 of this wood's own physics boxes (knee-to-head
+  // band only), its 222 `game.zones` rectangles and every sampled NPC position: (34, -43) came back
+  // clearest — 9.00 m from the nearest box, 10.6 m clear of the nearest zone rectangle's own edge and
+  // 8.96 m from the nearest other soul, open forest floor east of the unicycle loop (14, -48)/(15,
+  // -45), flat (under 3 cm of slope across her own footprint) and well inside the radius-58 fill line.
+  //
+  // Built dead last of everything this wood adds, right after the unicyclist's own watcher above, for
+  // the usual reason: `makeHuman()`/`randomPerson()` both draw off this wood's own shared `r()`
+  // sequence unconditionally, and anything built earlier would have had its own timing-sensitive pick
+  // shifted by it.
+  { const breakWx = 34, breakWz = -43;
+    const breakWard = makeWardrobe(r, { shirts: [0x5a6a4a, 0x6a5a4a, 0x4a5a6a], pants: [0x3a3a2a, 0x2e3a28], shoes: [0x3a2a1e, 0x2a2018] });
+    const breakTaker = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: breakWard }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: r.chance(0.2) });
+    W.add(breakTaker.group);
+    game.npcs.push(new Wanderer(game, breakTaker, { x: breakWx, z: breakWz, angle: -2.2, speed: 0.2, leash: 0.4, idle: [4, 8],
+      cries: ["Not here to watch the ride, puss. Just needed the trees for a minute.", "Mind the roots — this wood doesn't clear them for anybody.", 'Back when I\'m back. No sooner.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

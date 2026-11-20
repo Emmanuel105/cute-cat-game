@@ -35614,3 +35614,35 @@ from 148 to 149. Only Whisper Woods is left without its own standalone break-tak
 was possible in this environment (no browser, no Playwright), so whether the pose reads as a believable
 rest rather than just standing in the snow is unverified. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1240 — Whisper Woods gets its own break-taker, the last of the seven
+
+Robot City, Candy Land, Victorian, Sunny Shore and Frosty Peak (rounds 1235-1239) have each picked up
+a standalone break-taker — someone just existing for their own sake, not watching anyone else's act.
+Whisper Woods was the last of the seven still without one. **A sixth wood-dweller now stands alone on
+the forest floor east of the unicycle track, hands in pockets, nothing to watch and nowhere to be.**
+*"Not here to watch the ride, puss. Just needed the trees for a minute."* *"Mind the roots — this wood
+doesn't clear them for anybody."* *"Back when I'm back. No sooner."* Saying hello makes her the usual
+kind of friend. All seven worlds now have one.
+
+No new class or mesh: a plain adult `makeHuman()`/`randomPerson()` rig in this wood's own earthy
+wardrobe palette, and `Wanderer` (55-npcs.js) for the same "stand and watch" behaviour every other
+watcher here already uses, with a short leash (0.4 m) and a fixed `angle` rather than one tracking
+another NPC, since this one isn't watching anybody else's act. A headless probe (a scratch script on
+the same stub-three harness `test/run.mjs` itself uses: `game.load(6, 'from-hub')`, then 6000 simulated
+frames sampling every NPC's own position every 50th frame to let every frog, firefly, butterfly, fox
+and wandering villager actually settle) swept a 1 m grid of the hand-built core (radius ≤ 55, short of
+the radius (58) where `forestRegion()`'s own procedural fill takes over) against all 783 of this wood's
+own physics boxes (knee-to-head band only), its 222 `game.zones` rectangles and every sampled NPC
+position: (34, -43) came back clearest — 9.00 m from the nearest box, 10.6 m clear of the nearest zone
+rectangle's own edge and 8.96 m from the nearest other soul, open forest floor east of the unicycle
+loop, flat (under 3 cm of slope across her own footprint). Built dead last of everything this wood
+adds, right after the unicyclist's own watcher, for the usual reason: `makeHuman()`/`randomPerson()`
+both draw off this wood's own shared `r()` sequence unconditionally.
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt at this spot: exit 0, 290 checks `ok`,
+0 console warnings, no new physics box (334 total, unchanged). Whisper Woods' own friend total ticked
+up to 178. All seven worlds now have their own standalone break-taker. No visual check was possible in
+this environment (no browser, no Playwright), so whether the pose reads as a believable rest rather
+than just standing in the woods is unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
