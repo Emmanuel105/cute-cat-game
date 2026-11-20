@@ -168,6 +168,29 @@ function makeShovel() {
   mesh(G.box(0.22, 0.3, 0.015), steel, { y: 0.07, rx: 0.12, shadow: 'both', parent: g });                // blade, buried to its shoulder
   return g;
 }
+/** A dropped bucket and spade, lying together in the dry sand — bright red with a yellow rim, the
+ *  same pair the swim-flag notice ("LOST: one bucket and spade, bright red...") has been describing
+ *  since round ~462 with nothing to show for it. The bucket lies on its side, tipped most of the way
+ *  over with a small mound of sand slumped out its open mouth; a toy-scaled spade (a bright handle and
+ *  a pale little trowel blade, nothing like `makeShovel()`'s full-sized digging tool) lies flat beside
+ *  it, half-buried. Pure static mesh, no physics box and no `userData.update` — a walk-past find, not
+ *  a greet. Takes no random generator at all, so dropping it in draws from neither the shared global
+ *  `rnd()` sequence nor a world's own seeded `r()` — it can go anywhere, in any build order, without
+ *  nudging a single later draw. */
+function makeDroppedBucketAndSpade() {
+  const g = new THREE.Group();
+  const bucketM = mat(0xd62839, { roughness: 0.6 }), rimM = mat(0xffd54a, { roughness: 0.6 }), sandM = mat(0xdcbf85, { roughness: 1 });
+  const bucket = group(0, 0.13, 0, g); bucket.rotation.z = PI / 2 - 0.12; bucket.rotation.x = 0.08;
+  mesh(G.cyl(0.16, 0.13, 0.26, 10), bucketM, { shadow: 'cast', parent: bucket });
+  mesh(G.torus(0.16, 0.012, 5, 12), rimM, { y: 0.13, rx: PI / 2, shadow: 'none', parent: bucket });
+  mesh(G.sphere(0.13, 10, 6), sandM, { x: -0.22, y: 0.02, sy: 0.4, shadow: 'none', parent: g });    // sand slumped out the open mouth
+  mesh(G.sphere(0.08, 8, 6), sandM, { x: -0.33, y: 0.012, z: 0.05, sy: 0.3, shadow: 'none', parent: g });
+  const spadeM = mat(0xffd54a, { roughness: 0.7 }), bladeM = mat(0xf7f3ec, { roughness: 0.6 });
+  const spade = group(0.28, 0.015, -0.2, g); spade.rotation.y = 0.5;
+  mesh(G.cyl(0.015, 0.015, 0.38, 6), spadeM, { rz: PI / 2, shadow: 'none', parent: spade });
+  mesh(G.box(0.1, 0.012, 0.14), bladeM, { x: -0.25, shadow: 'none', parent: spade });                 // flat trowel blade, half-buried
+  return g;
+}
 /** A life-size sand sculpture of a turtle: a domed shell with raised scutes, a head poking out the front, four flipper nubs and a stub of a tail — a quieter, more patient cousin of the sandcastle. */
 function makeSandTurtle() {
   const g = new THREE.Group(), sand = mat(0xdcbf85, { roughness: 1, map: TEX.sand().clone() }); sand.map.needsUpdate = true; sand.map.repeat.set(1, 1); worldBag.track(sand.map);

@@ -35846,3 +35846,44 @@ history no longer contains — it had already added Frosty Peak's own frisbee wa
 different round number). The stale local commit attempting that same change again was discarded with
 `git reset --hard origin/main` before this round's actual work began; nothing from that stale branch
 was pushed.
+
+## Round 1246 — Sunny Shore's own lost bucket and spade, found
+
+Robot City's wrench, Whisper Woods' pinecone, the Neighborhood's tennis ball, Frosty Peak's mitten
+and Victorian's pocket watch have each answered their own world's lost-and-found notice by now
+(rounds 1241-1245). Sunny Shore's own south swim-flag notice — "LOST: one bucket and spade, bright
+red. Last seen somewhere under all this sand." — had been sitting unanswered since round ~462, the
+last one of the seven still owed its match.
+
+**A red bucket and its little spade now lie together on a quiet stretch of dry sand well inland of
+the dunes, the bucket tipped on its side with a small mound of sand slumped out the open mouth and
+the spade lying flat beside it, blade half-buried.** *"There's the bucket and spade from the notice
+back at the flags — still bright red under all that sand."* *"Tipped right over. Whoever built with
+it clearly wasn't finished."* *"Spade's still got sand on the blade. Can't have been down long."*
+
+`makeDroppedBucketAndSpade()` (62-props-nature.js, new, right after `makeShovel()`) reuses the same
+red-and-yellow palette as the standing bucket already parked by the sandcastle corner further north,
+just knocked onto its side with a sand-coloured mound spilling from the mouth, plus a toy-scaled
+spade — nothing like `makeShovel()`'s own full-sized dig tool — lying alongside. Like the mitten and
+the watch before it, it draws from no random generator at all, not the shared global `rnd()` sequence
+and not this beach's own seeded `r()`, so dropping it in nudges no later timing-sensitive pick
+anywhere in the build. It gets the same small hook the watch and the wrench already used: a
+`game.addInteractable` look-and-toast prompt, no physics box and no `userData.update`.
+
+A headless probe (`game.start('new')`, `game.travel(4, 'from-hub')` waited out against its own
+portal-fade timer, then 400 simulated frames to settle every sunbather, angler and watcher already on
+this beach) swept a 0.1 m grid of the hand-built core west of the sandcastle cluster (x from -48 to
+10, staying clear of the wet-sand/sea line at x=12, radius ≤ 50, short of the radius (58) where
+`beachRegion()`'s own procedural fill takes over) against all 334 of this beach's own physics boxes,
+every `game.zones` rectangle and every sampled NPC position: (-37, -21.5) came back clearest — 10.9 m
+from the nearest box and 10.89 m from the nearest other soul, open dry sand at radius 42.7 from the
+origin, well clear of the treasure chest and its own digger further north and the portal-approach
+keep-out span further west.
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt: exit 0, all checks `ok`, 0 console
+warnings, box count unchanged at 334 (no new collider, as expected for a prop with no footprint). No
+visual check was possible in this environment (no browser, no Playwright), so whether the bucket
+actually reads as tipped-over rather than an odd red lump in the sand is unverified — and whether
+anyone ever connects it back to the notice up at the flags is left entirely to the player. All seven
+worlds now have their own lost-and-found notice answered. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
