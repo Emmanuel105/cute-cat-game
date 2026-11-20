@@ -35887,3 +35887,41 @@ actually reads as tipped-over rather than an odd red lump in the sand is unverif
 anyone ever connects it back to the notice up at the flags is left entirely to the player. All seven
 worlds now have their own lost-and-found notice answered. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1247 — Frosty Peak's frisbee thrower gets its own watcher, the last of the seven
+
+Sunny Shore's own frisbee thrower picked up a watcher back in round 1180, closing out five of the
+seven worlds. Robot City, the Neighborhood, Victorian, Candy Land and Whisper Woods had each gone the
+same way earlier still. Frosty Peak — a solo kid tossing a disc straight up off the palm on the open
+snowfield south of the village — was the one world left where the throw still played to nobody.
+
+**A bundled-up local now stands a few steps north of the kid, watching the disc go up and come down
+instead of wandering on.** No new class or dialogue: the same `Wanderer` (55-npcs.js) every other
+watcher in this set already uses, with a short leash (0.5 m) and `angle` pointed at the thrower's own
+fixed spot — its built-in `greet()` supplies the "say hello" line from this world's `GREETINGS`, same
+as every other watcher. A fresh wardrobe (beanie, coat, scarf) keeps it independent of the kid's own
+shared `snowWard` bag.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.travel(5, 'from-hub')`, then 300 simulated seconds so every reindeer, hare, arctic fox, penguin,
+yeti and wandering kid had already settled) sampled every NPC's own position, then swept the open
+snowfield south of the village against those samples and all 727 of this mountain's own physics
+boxes: (-11, -35.5) came back clear by 4.94 m of the nearest box and 4.90 m of the nearest other soul
+(the thrower himself), on the open snow between the village and the catch-ball game further
+south-west, at radius 37.1 from the origin and well short of the radius (58) where `snowRegion()`'s
+own fill takes over.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 334, and Frosty Peak's own friend total went up by one (149 → 150 to meet,
+confirmed against the previous commit with `git stash`). No visual check was possible in this
+environment (no browser, no Playwright), so whether the two locals' stance actually reads as one
+scene together is unverified. All seven worlds now have a watcher for their own frisbee thrower.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+Housekeeping note: this sandbox's local `main` briefly fell behind `origin/main` mid-round (a shallow
+clone's merge-base check made an older, already-superseded local ref at round 1180 look like a
+divergent, unrelated branch next to the real tip at round 1246 — not an actual force-push conflict,
+just the shallow history's horizon shifting as another concurrent round landed). A `git fetch` and
+`git reset --hard origin/main` onto the refreshed tip, followed by re-applying this round's own diff
+and re-probing the snowfield for a clear spot (the first candidate had since been built over), put
+things right before this entry was written.

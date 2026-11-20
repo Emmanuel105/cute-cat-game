@@ -1378,6 +1378,28 @@ function buildSnowVillage(game, entry) {
     const frisbeeLines = ['Highest one yet, nearly over the pines!', "Careful, puss — mind your tail, this one's coming down fast.", 'Forty throws and not one lost in a drift.'];
     let frisbeeCryT = r.range(3, 7);
     U.push((dt) => { frisbeeCryT -= dt; if (frisbeeCryT <= 0) { frisbeeCryT = r.range(8, 14); const c = game.cat.group.position; if (dist2(fx, fz, c.x, c.z) < 400) { game.toast('🥏 "' + r.pick(frisbeeLines) + '"', 2400); SFX.talk(); } } }); }
+  // Sunny Shore's own thrower picked up a watcher back in round 1180, closing out five of the seven —
+  // Frosty Peak is now the only one left whose own thrower still tosses for nobody. A bundled-up local
+  // now stands a few steps north of the kid's own spot, watching the disc go up and come down instead
+  // of wandering on.
+  // No new class: the same `Wanderer` (55-npcs.js) every other watcher in this set already uses, with
+  // a short leash (0.5 m) and `angle` pointed at the thrower's own fixed spot rather than a constant.
+  // A fresh wardrobe keeps it independent of the kid's own shared `snowWard` bag, same reason every
+  // other world's own watcher rolls its own rather than reusing the thrower's.
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.travel(5,
+  // 'from-hub')`, then 300 simulated seconds so every reindeer, hare, arctic fox, penguin, yeti and
+  // wandering kid had already settled) sampled every NPC's own position, then swept the open snowfield
+  // south of the village against those samples and all 727 of this mountain's own physics boxes:
+  // (-11, -35.5) came back clear by 4.94 m of the nearest box and 4.90 m of the nearest other soul (the
+  // thrower himself) — just north of him, on the open snow between the village and the catch-ball game
+  // further south-west at (-24, -42), at radius 37.1 from the origin and well short of the radius (58)
+  // where snowRegion's own fill takes over.
+  { const fwx = -11, fwz = -35.5, frisbeeWatcherFx = -9, frisbeeWatcherFz = -40;
+    const frisbeeWatcherWard = makeWardrobe(r, { shirts: [0x4a6a8a, 0x8a5a3f, 0x3f8a6a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const frisbeeWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: frisbeeWatcherWard }),
+      hat: 'beanie', hatColor: 0x3a5a8a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a });
+    W.add(frisbeeWatcher.group);
+    game.npcs.push(new Wanderer(game, frisbeeWatcher, { x: fwx, z: fwz, angle: atan2(frisbeeWatcherFx - fwx, frisbeeWatcherFz - fwz), leash: 0.5, speed: 0.3, idle: [3, 6] })); }
   // the Neighborhood, Robot City, Victorian, Candy Land and Sunny Shore have all had a go at the same
   // back-garden toss game by now — a horseshoe, a magnetic coupling, a brass quoit, a gummy ring, a
   // coil of rope — but the one world with sled dogs and reindeer harnesses to hand never got the most
