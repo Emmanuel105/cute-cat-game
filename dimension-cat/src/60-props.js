@@ -1382,6 +1382,19 @@ function makeChocolateFountain() {
 }
 
 // ---------------------------------------------------------------- robot city
+/** A dropped wrench, lying flat on open concrete where someone left it mid-shift: a flat handle, a
+ * squared-off head and two stub jaws at the working end. Pure static scenery — no physics box, no
+ * `userData.update` — small enough that the cat just walks over it, same footing as a scatter pebble. */
+function makeWrench(color = 0x9aa0a8) {
+  const g = new THREE.Group();
+  const steel = mat(color, { metalness: 0.75, roughness: 0.35 });
+  mesh(G.box(0.72, 0.05, 0.1), steel, { x: -0.1, y: 0.025, parent: g });
+  mesh(G.box(0.22, 0.05, 0.3), steel, { x: 0.32, y: 0.025, parent: g });
+  mesh(G.box(0.1, 0.05, 0.08), steel, { x: 0.38, y: 0.025, z: 0.09, parent: g });
+  mesh(G.box(0.1, 0.05, 0.08), steel, { x: 0.38, y: 0.025, z: -0.09, parent: g });
+  mesh(G.torus(0.05, 0.015, 6, 12), steel, { x: -0.44, y: 0.025, rx: PI / 2, shadow: 'none', parent: g });
+  return g;
+}
 function makeSkyscraper(w, h, d, seed) {
   const g = new THREE.Group(), f = TEX.facade(seed % 6);
   const side = mat(0x161a24, { roughness: 0.6, metalness: 0.3, map: f.map, emissiveMap: f.emissive, emissive: 0xffffff, emissiveIntensity: 1.1 });

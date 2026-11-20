@@ -35646,3 +35646,53 @@ up to 178. All seven worlds now have their own standalone break-taker. No visual
 this environment (no browser, no Playwright), so whether the pose reads as a believable rest rather
 than just standing in the woods is unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 1241 — a dropped wrench on Robot City's factory floor (and why the Neighborhood still can't get a third break-taker)
+
+Most of this round went into a failed experiment, written up honestly rather than quietly dropped.
+Round 1237's own closing line named the Neighborhood as the only one of the seven worlds still
+without a standalone break-taker, left for "a future round with more room to experiment" after a
+plain `Wanderer` broke two of this street's own timing-sensitive checks outright. This round took
+that up: instead of `Wanderer`, it tried `Charger` (55-npcs.js, a controller that holds a fixed pose
+and greets, with none of `Wanderer`'s own move-timer draws), with `rig.blinkT = 1e6; rig.idleT = 1e6`
+set the instant the rig existed — the same override `Baller`'s own constructor already bakes in for
+every basketball shooter in the game — and no `cries` at all, to strip every possible source of a
+live, per-frame draw off the shared global `rnd()` sequence down to nothing.
+
+It still failed the same two checks round 1237 hit: "two neighbours chat, facing each other, taking
+turns" and "a cyclist rides the westbound lane, pedalling," both for the same underlying reason in
+the end. `makeHuman()` itself burns a handful of one-time draws off that *global* `rnd()` sequence at
+birth — `rig.blinkT`, `rig.idleT`, `rig.sway` — before any override can touch them, and those draws
+land before the simulated clock starts, no matter how late in the build the new person is placed or
+how inert its own controller is afterward. On every other world, that one-time shift is well inside
+whatever margin those worlds' own tests carry. On this one, the chat pair's own turn-timer redraw and
+the cyclist's own check both come out just different enough, at the exact frame the test samples, to
+land the wrong side of an exact threshold (the talker's arm hadn't finished rising: `-0.03` against a
+needed `< -0.7`). The fix was reverted outright the moment the test came back red — `git checkout --
+dimension-cat/src/70-worlds.js` — and this is now written up explicitly so the next round doesn't
+re-attempt the same trick expecting a different result: the Neighborhood cannot take a seventh
+makeHuman()-based addition of any kind, full stop, not without changing `makeHuman()` itself or the
+two tests' own margins, both bigger jobs than one round should take on blind.
+
+So the round's own actual improvement went to Robot City instead, where plenty of margin remains.
+**A second wrench now lies dropped on the open factory concrete, mid-shift** — the mechanic's own
+never leaves her hand, and nothing else on this floor was ever just scenery to look at the way a
+beach shell or an ice crystal is elsewhere. *"Someone's missing that. Foreman's going to hear about
+it."* *"Still warm from the last bolt it turned, probably."* *"Not a tool you leave lying around
+twice on this floor."*
+
+`makeWrench()` (60-props.js) is new: a flat handle, a squared head and two stub jaws built from five
+boxes and a torus, no physics box and no `userData.update`, placed with the same `place()` every
+other static prop in this file already uses — pure set dressing the cat just walks over. A headless
+probe (`game.start('new')`, `game.travel(2, 'from-prev')` waited out for real against its own
+portal-fade timer, then 3600 simulated frames sampling every NPC's own position every 10th frame)
+swept this city's factory floor against all 1206 of its physics boxes, its `game.zones` rectangles
+and every sampled NPC position: (-36, 45.2) came back clearest — 8.5 m from the nearest box, 14.7 m
+clear of the nearest zone rectangle's own edge, and 8.44 m from the nearest other soul, open concrete
+north of the break-taker and the ring-dance robots.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 334 (no new collider, as expected for a prop with no footprint). No visual check
+was possible in this environment (no browser, no Playwright), so whether the wrench actually reads as
+"dropped" lying flat rather than floating or sunk into the concrete is unverified. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

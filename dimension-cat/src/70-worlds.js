@@ -11638,6 +11638,28 @@ function buildRobotCity(game, entry) {
     game.npcs.push(new Wanderer(game, breakWorker, { x: bwx, z: bwz, angle: PI / 2, leash: 0.4, speed: 0.3, idle: [4, 8],
       cries: ["Five minutes. Maybe ten, if the foreman's gone for his own lunch too.", "Careful, puss — that concrete's colder than it looks, even through a boot.", "Back on the line the second that whistle goes. Not a second before."] })); }
 
+  // The mechanic's own wrench never leaves her hand (55-npcs.js), and nothing else on this floor was
+  // ever just lying there to look at — every other prop in this city either does something or belongs
+  // to somebody. **A second wrench sits dropped on the open concrete, mid-shift, going nowhere until
+  // someone comes back for it.**
+  //
+  // No new class, no physics box: `makeWrench()` (60-props.js) is a handful of flat boxes and a torus
+  // for the hanging hole, placed with `place()` the same way every other static prop in this file
+  // already is, and no `userData.update` means no `U.push` either. Pure set dressing, the same footing
+  // as a scatter pebble — the cat just walks over it.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(2, 'from-prev')` waited out for real against its own portal-fade
+  // timer, then 3600 simulated frames sampling every NPC's own position every 10th frame) swept this
+  // city's own factory floor against all 1206 of its physics boxes, its `game.zones` rectangles and
+  // every sampled NPC position: (-36, 45.2) came back clearest — 8.5 m from the nearest box, 14.7 m
+  // clear of the nearest zone rectangle's own edge, and 8.44 m from the nearest other soul, open
+  // concrete well north of the break-taker (-10, 22) and the ring-dance robots.
+  { const wrx = -36, wrz = 45.2;
+    const wrench = place(game, U, makeWrench(), wrx, wrz, 0.6);
+    const wrenchLines = ['🔧 "Someone\'s missing that. Foreman\'s going to hear about it."', '🔧 "Still warm from the last bolt it turned, probably."', '🔧 "Not a tool you leave lying around twice on this floor."'];
+    game.addInteractable({ obj: wrench, radius: 1.6, label: () => 'Look at the wrench', onUse: () => { SFX.clang(); game.toast(rnd.pick(wrenchLines), 3000); } }); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
