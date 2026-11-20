@@ -5490,7 +5490,18 @@ function buildCandyLand(game, entry) {
       rider3.group.position.set(0.65, 0.76, 1.1258330249197702);
       rider3.group.rotation.y = PI / 6;
       carousel.pivot.add(rider3.group); }
-    const carouselLines = ['🎠 "Round and round — and three riders along for the ride now."', '🎠 "Three empty seats left. The green, pink and cyan ones are taken."', '🎠 "Spins on its own, mostly. Three gingerbread men never seem to mind the company."'];
+    // a fourth rider, on the yellow seat (seat index 2: `a = TAU/3 = 2*PI/3`, so local (sx, sz) =
+    // (cos(2*PI/3) * 1.3, sin(2*PI/3) * 1.3) = (-0.65, 1.1258330249197702) — the same sz as the cyan
+    // seat's own rider, since sin(2*PI/3) = sin(PI/3)). Same seat-top math as the other three riders —
+    // y = 0.76 regardless of which seat — and the same outward-facing formula (`rotation.y = PI/2 - a`),
+    // which at a = 2*PI/3 comes out to -PI/6. Parented to the same `carousel.pivot`, so it orbits for
+    // free alongside the first three — pure set dressing again, no greeting, no physics box, no draw
+    // from this world's own seeded `r` or the shared `rnd()` sequence.
+    { const rider4 = makeGingerbread();
+      rider4.group.position.set(-0.65, 0.76, 1.1258330249197702);
+      rider4.group.rotation.y = -PI / 6;
+      carousel.pivot.add(rider4.group); }
+    const carouselLines = ['🎠 "Round and round — and four riders along for the ride now."', '🎠 "Two empty seats left. The green, pink, cyan and yellow ones are taken."', '🎠 "Spins on its own, mostly. Four gingerbread men never seem to mind the company."'];
     game.addInteractable({ obj: carousel.group, radius: 3.4, label: () => 'Look at the carousel', onUse: () => { SFX.click(); game.toast(rnd.pick(carouselLines), 3000); } }); }
   // the Candy Queen's castle, up the lane to the north — houmoungous, and you can walk right in — with a little candy village on the approach
   game.zones.addCircle(0, 150, 27);

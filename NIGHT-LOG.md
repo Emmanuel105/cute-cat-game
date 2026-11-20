@@ -1533,6 +1533,28 @@ On arrival, the repo's local `main` was a detached `HEAD` sitting at the same co
 stale branch ref underneath it, 45 ahead / 50 behind); `git checkout -B main origin/main` reset it cleanly,
 no other cleanup needed.
 
+## Round 1228 — Candy Land's carousel picks up a fourth rider
+
+Round 1227's own closing line named exactly what was left: three empty seats on the carousel — yellow,
+orange and purple. This round fills the yellow one, the same one-seat-at-a-time way the green, pink
+and cyan seats got filled before it.
+
+**A fourth gingerbread rider now rides the carousel's yellow seat.** *"Round and round — and four
+riders along for the ride now."* *"Two empty seats left. The green, pink, cyan and yellow ones are
+taken."*
+
+No new mesh or class: another `makeGingerbread()` rig, parented straight to `carousel.pivot` so it
+orbits for free, at local `(sx, sz) = (cos(2*PI/3) * 1.3, sin(2*PI/3) * 1.3) = (-0.65, 1.1258...)` —
+seat index 2 in `makeCarousel()`'s own `seatHues` array — using the same `y = 0.76` seat-top height
+and `rotation.y = PI/2 - a` outward-facing formula the first three riders' own comments already worked
+out, just evaluated at `a = 2*PI/3` instead of `0`, `PI` or `PI/3`.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (a carousel rider costs no physics box, same as the first three). Candy Land's own
+friend total is unchanged too, since none of the four riders are greetable. Two empty seats — orange
+and purple — remain for a future round. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.
+
 ## Round 89 — a carrot nose for the far snowman
 
 A headless tally (`game.load(i, 'from-prev'/'from-hub')` per world, reading `game.friendTotal`) found
