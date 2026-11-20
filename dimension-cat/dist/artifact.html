@@ -27790,6 +27790,37 @@ function buildBeach(game, entry) {
     game.npcs.push(new Wanderer(game, beachPerson(r.chance(0.5), false), { x: uwx, z: uwz, angle: atan2(umx - uwx, umz - uwz), speed: 0.15, leash: 0.5, idle: [3, 6],
       cries: ['Not once put a foot down since low tide — bad luck to look away now.', "Careful, puss — she's not stopping for a cat any more than she would for me.", 'Lost count of the laps myself, same as she says she has.'] })); }
 
+  // Robot City (round 1235), Candy Land (round 1236) and Victorian (round 1237) have each picked up a
+  // standalone break-taker by now — someone just existing for their own sake, not watching anyone
+  // else's act the way every sunbather, angler and unicyclist-watcher on this beach already is. **A
+  // fourth beachgoer now stands alone on the open sand west of the water, arms folded, just looking
+  // out at the sea.** *"Didn't come down here to watch anything. Just the water's enough."* *"Mind
+  // your own business, puss — that's what I'm doing."* *"Back to the towel when the tide says so, not
+  // before."*
+  //
+  // No new class or mesh: `beachPerson()`/`randomPerson()` build the usual rig and `Wanderer`
+  // (55-npcs.js) gives it the same "stand and watch" behaviour every other watcher on this beach
+  // already uses, with a short leash (0.4 m) and a fixed `angle` (facing east, out to sea) rather than
+  // one tracking another NPC, since this one isn't watching anybody else's act.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(4, 'from-hub')` waited out for real against its own portal-fade
+  // timer, then 3600 simulated frames to settle every sunbather, angler and watcher already on this
+  // beach) swept a 1 m grid of this beach's hand-built core (x from -40 to 10, z from -40 to 40, radius
+  // ≤ 50, short of the radius (58) where `beachRegion()`'s own procedural fill takes over, and clear of
+  // the dune ridge further west and the sea to the east) against all 148 of its knee-to-head physics
+  // boxes, every `game.zones` rectangle (padded 1.5 m) and all 136 sampled NPC positions: (-1, 2) came
+  // back clearest in that band — 7.16 m from the nearest box and 7.86 m from the nearest other soul, on
+  // open dry sand roughly midway between the squirrel's own spot (-22, 8) and the wet-sand line at x=12.
+  //
+  // Built dead last of everything this beach adds, right after the unicyclist's own watcher above, for
+  // the usual reason: `beachPerson()`/`randomPerson()` both draw off this beach's own shared `r()`
+  // sequence unconditionally, and anything built earlier would have had its own timing-sensitive pick
+  // shifted by it.
+  { const btx = -1, btz = 2;
+    game.npcs.push(new Wanderer(game, beachPerson(r.chance(0.5), false), { x: btx, z: btz, angle: PI / 2, speed: 0.2, leash: 0.4, idle: [4, 8],
+      cries: ["Didn't come down here to watch anything. Just the water's enough.", "Mind your own business, puss — that's what I'm doing.", 'Back to the towel when the tide says so, not before.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

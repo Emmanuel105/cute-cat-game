@@ -35548,3 +35548,37 @@ own shared `r()` sequence unconditionally.
 one. No visual check was possible in this environment (no browser, no Playwright), so whether the pose
 reads as a believable rest rather than just standing on the green is unverified. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1238 — Sunny Shore gets its own break-taker, the fourth of the seven
+
+Robot City (round 1235), Candy Land (round 1236) and Victorian (round 1237) have each picked up a
+standalone break-taker — someone just existing for their own sake, not watching anyone else's act.
+Sunny Shore was the obvious next target: every townsperson it already has is either sunbathing on a
+towel in a fixed spot or watching some other act (the angler, the unicyclist, the piñata swinger).
+**A fourth beachgoer now stands alone on the open sand west of the water, arms folded, just looking out
+at the sea, nothing to watch and nowhere particular to be.** *"Didn't come down here to watch anything.
+Just the water's enough."* *"Mind your own business, puss — that's what I'm doing."* *"Back to the towel
+when the tide says so, not before."*
+
+No new class or mesh: the beach's own `beachPerson()`/`randomPerson()` rig and `Wanderer` (55-npcs.js),
+the same "stand and watch" behaviour every other watcher here already uses, with a short leash (0.4 m)
+and a fixed `angle` (facing east, out to sea) rather than one tracking another NPC, since this one isn't
+watching anybody else's act. A headless probe (a scratch script on the same stub-three harness
+`test/run.mjs` itself uses: `game.start('new')`, `game.travel(4, 'from-hub')` waited out for real against
+its own portal-fade timer, then 3600 simulated frames to settle every sunbather, angler and watcher
+already on this beach) swept a 1 m grid of the hand-built core (x from -40 to 10, z from -40 to 40,
+radius ≤ 50, short of the radius (58) where `beachRegion()`'s own procedural fill takes over, clear of
+the dune ridge further west and the sea to the east) against all 148 of its knee-to-head physics boxes,
+every `game.zones` rectangle (padded 1.5 m) and all 136 sampled NPC positions: (-1, 2) came back
+clearest — 7.16 m from the nearest box and 7.86 m from the nearest other soul, open dry sand roughly
+midway between the squirrel's own spot (-22, 8) and the wet-sand line at x=12. Built dead last of
+everything this beach adds, right after the unicyclist's own watcher, for the usual reason:
+`beachPerson()`/`randomPerson()` both draw off this beach's own shared `r()` sequence unconditionally.
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt at this spot: exit 0, 277 checks `ok`,
+0 console warnings, no new physics box (334 total, unchanged). Sunny Shore's own friend total ticked up
+by one. The Neighborhood's third break-taker (reverted in round 1237 over a shared-`rnd()` timing clash)
+and Frosty Peak's and Whisper Woods' are still left for future rounds. No visual check was possible in
+this environment (no browser, no Playwright), so whether the stance reads as "just watching the sea"
+rather than standing idle on the sand is unverified. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
