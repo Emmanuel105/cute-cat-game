@@ -36005,3 +36005,40 @@ the real tip (round 1248's own commit) before any work started here — the same
 issue round 1247 already wrote up, not an actual push conflict. A `git fetch` brought the ref current
 and `git branch -f main origin/main` + `git checkout main` put the working tree's uncommitted edit onto
 the right branch before committing.
+
+## Round 1250 — Robot City's own woodcutter gets a watcher, the third of the seven
+
+Candy Land's own cutter picked up the set's first watcher at round 1248, the Neighborhood's own the
+round after. This city's own `Chopper`, breaking down old shipping pallets into kindling on a stump
+out in the open concrete of the east yard, is the third: **a worker now stands a couple of steps
+west of him, watching each board part on the stump.** *"Same two swings, every pallet."* *"Careful,
+puss — mind the chips."* *"East yard's the only quiet corner left in this whole city."* Saying hello
+makes him the usual kind of friend.
+
+No new class: the same `Wanderer` (55-npcs.js) every other watcher in this game already uses, a plain
+`makeHuman()`/`randomPerson()` rig off this city's own shared `splitWard` palette (same shirts and
+pants as the cutter himself), a short leash (0.5 m) and `angle` pointed at the cutter's own fixed spot
+rather than a constant. Unlike the Neighborhood's own watcher two rounds back, this city's `Talkers`,
+`Playmates` and `Cyclist` checks all live on a different world index, and the one Robot-City-specific
+check that filters `Wanderer`s (`idx === 2`, hunting for a robot to say hello to) only ever matches a
+rig with `rig.robot` set — this is a plain human rig, so it never matches and nothing needed freezing:
+a normal short idle range (`[3, 6]`) and `cries`, same as Candy Land's own watcher.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, then `game.travel(2, 'from-prev')` driven straight through `game.step(dt)`
+instead of waited out on the real clock, then 300 simulated seconds so every wandering, patrolling,
+dancing and ball-tossing robot pack had already settled) swept a 0.25 m grid 1.8-5 m out from the
+cutter's own stand (58, -41.6) against all 1206 of this city's physics boxes, its 296 `game.zones`
+rectangles and every other NPC's own position sampled across that whole run: (56, -41.6) came back
+closest of the clearly-clear spots — 2.09 m from the nearest box, well clear of every zone rectangle
+and exactly 2 m from the cutter himself (the nearest other soul), due west of him on the open concrete
+floor, at radius 69.8 from the origin and well short of the radius (98) where `robotRegion()`'s own
+fill takes over.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 334 (pure bystander, no collider of its own), and Robot City's own friend total
+went up by exactly one (143 → 144, confirmed against the previous commit with `git stash`). No visual
+check was possible in this environment (no browser, no Playwright), so whether the watcher's stance
+actually reads as watching the stump rather than just standing nearby is unverified. Four worlds'
+own woodcutters — Victorian, Sunny Shore, Frosty Peak and Whisper Woods — are still chopping alone.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

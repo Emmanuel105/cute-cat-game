@@ -10132,6 +10132,44 @@ function buildRobotCity(game, entry) {
     }
     game.npcs.push(new Chopper(game, cutter, { x: cx, z: cz, ry: atan2(sx - cx, sz - cz),
       cries: ['Pallets off the belt, split for the break room stove.', 'Careful, puss — mind the chips.', "East yard's the only place with room to swing this thing."] })); }
+  // Candy Land's own woodcutter picked up a watcher at round 1248, the Neighborhood's own the round
+  // after (1249) — this city's own `Chopper`, breaking down pallets on a stump out in the east yard
+  // just above, is the third of the seven. **A worker now stands a couple of steps west of him,
+  // watching each board part on the stump.** *"Same two swings, every pallet."* *"Careful, puss —
+  // mind the chips."* *"East yard's the only quiet corner left in this whole city."* Saying hello
+  // makes him the usual kind of friend.
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) every other watcher in this game already uses, a
+  // plain `makeHuman()`/`randomPerson()` rig off this city's own shared `splitWard` palette (same
+  // shirts and pants as the cutter himself, no new colour pool), a short leash (0.5 m) and `angle`
+  // pointed at the cutter's own fixed spot rather than a constant, so he reads as watching the stump
+  // and not just standing nearby. `Wanderer`'s own constructor calls `greetable()` itself, so no extra
+  // wiring was needed, and no physics box either — pure bystander, same as every other watcher in
+  // this set. Unlike the Neighborhood's own watcher, this city's `Talkers`, `Playmates` and `Cyclist`
+  // checks all run on a different world index, so no freeze was needed here — a normal short idle
+  // range (`[3, 6]`) and `cries` draw off this world's own local `r()` sequence exactly like every
+  // other non-frozen watcher in this game.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, then `game.travel(2, 'from-prev')` driven straight through `game.step(dt)`
+  // rather than waited out on the real clock, then 300 simulated seconds so every wandering,
+  // patrolling, dancing and ball-tossing robot pack had already settled) swept a 0.25 m grid 1.8-5 m
+  // out from the cutter's own stand (58, -41.6) against all 1206 of this city's physics boxes, its
+  // 296 `game.zones` rectangles and every other NPC's own position sampled across that whole run:
+  // (56, -41.6) came back closest of the clearly-clear spots — 2.09 m from the nearest box, well
+  // clear of every zone rectangle and exactly 2 m from the cutter himself (the nearest other soul),
+  // due west of him on the same open concrete floor, at radius 69.8 from the origin and well short
+  // of the radius (98) where `robotRegion()`'s own procedural fill takes over.
+  //
+  // Built dead last of everything this city adds, right after the woodcutter, so it draws from the
+  // very tail of this city's own shared `r()` sequence and disturbs no earlier wardrobe or layout pick.
+  { const wx = 56, wz = -41.6, chopWatcherCx = 58, chopWatcherCz = -41.6;
+    const chopWatcherWard = makeWardrobe(r, { shirts: [0x4a5a6a, 0x5a4a6a, 0x3a4a5a], pants: [0x232c34, 0x2a2a30] });
+    const chopWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.25), wardrobe: chopWatcherWard }),
+      hat: r.chance(0.5) ? 'cap' : null, hatColor: 0x3a4a5a, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.3) });
+    W.add(chopWatcher.group);
+    game.npcs.push(new Wanderer(game, chopWatcher, { x: wx, z: wz, angle: atan2(chopWatcherCx - wx, chopWatcherCz - wz), leash: 0.5, speed: 0.3, idle: [3, 6],
+      cries: ['Same two swings, every pallet.', 'Careful, puss — mind the chips.', "East yard's the only quiet corner left in this whole city."] })); }
   // every world's sky has had shooting stars since round 406, and Victorian's own hot air balloon
   // has circled its rooftops since round 438 — Robot City's sky, for all its skyline of beacon-
   // topped towers, never had anything actually fly over it. **A riveted grey airship — a glowing
