@@ -35800,3 +35800,49 @@ footprint). No visual check was possible in this environment (no browser, no Pla
 the mitten actually reads as dropped and knocked over, rather than an odd red lump in the snow, is
 unverified — and whether anyone ever connects it back to the notice is left entirely to the player.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1245 — Victorian's own lost pocket watch, found
+
+The welcome lamp at `vicLamps[8]` has carried a "LOST: pocket watch" notice since round ~650 — the
+same convention Frosty Peak's own lost-mitten notice used until round 1244 finally gave it a matching
+dropped mitten. Victorian's own watch had never actually turned up anywhere in the town.
+
+**The watch itself now lies open on the cobbles a few steps south-west of that lamp post, lid flipped
+back and its fob chain spilled out loose beside it.** *"There's the lost watch from the notice back
+at the lamp — someone's going to want that back."* *"Stopped dead. Whoever dropped it stopped
+checking the time right then too."* *"Chain's still looped through a buttonhole that isn't there
+anymore."*
+
+`makeDroppedWatch()` (60-props.js, new, right after `makeCarriage()`) reuses the same brass-and-cream
+palette as `makeLostWatchNotice()`'s own watch icon, just full-sized: a disc case, an open lid lying
+flat alongside it on a short hinge block, two flat ink hands, a stub winding crown and a short
+trailing run of small torus links standing in for the chain. Like the mitten and the pinecone before
+it, it draws from no random generator at all — not the shared global `rnd()` sequence, not this
+town's own seeded `r()` — so it cost no later timing-sensitive draw and could have gone anywhere in
+the build; it sits right after the rest-taker near the end purely for readability next to the notice
+it answers. It does get one small hook, the same shape `makeWrench()` and the tennis ball already
+used despite their own "pure set dressing" framing: a `game.addInteractable` look-and-toast prompt,
+no physics box and no `userData.update`.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(3, 'from-hub')` waited out for real against its own `transitioning`
+flag rather than simulated frames, then 1200 simulated frames sampling every NPC's own position every
+15th frame so every carriage horse, chimney sweep and wanderer had already settled) swept a 0.1 m
+grid 0.8-3.5 m out from the lamp post's own spot (34.5, 6.4) against all 599 of this town's own
+physics boxes and every sampled NPC position: (31.7, 4.4) came back clearest — 3.1 m from the nearest
+box and 3.02 m from the nearest other soul, open cobbles clear of the "star" collectible floating
+nearby at (37, 6) and well inside the town's own built core.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (no new collider, as expected for a prop with no footprint). No visual check was
+possible in this environment (no browser, no Playwright), so whether the watch actually reads as
+dropped and open rather than an odd brass lump on the cobbles is unverified — and whether anyone ever
+connects it back to the notice up the street is left entirely to the player. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+Housekeeping note: this round's session found `origin/main`'s history had been force-pushed past the
+commit this sandbox started from (a divergent 50-commit run of frisbee-watcher rounds the canonical
+history no longer contains — it had already added Frosty Peak's own frisbee watcher under a
+different round number). The stale local commit attempting that same change again was discarded with
+`git reset --hard origin/main` before this round's actual work began; nothing from that stale branch
+was pushed.

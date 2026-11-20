@@ -1639,3 +1639,20 @@ function makeCarriage(game, x, z, ry) {
   const c = cos(ry), s = sin(ry); game.physics.addBox(x, 1.2, z, abs(c) * 2.2 + abs(s) * 5, 2.4, abs(s) * 2.2 + abs(c) * 5, { cam: false });
   return g;
 }
+/** A dropped pocket watch, lying open on the cobbles with its lid flipped back and the fob chain
+ * spilled out beside it: the same brass case and chain loop as `makeLostWatchNotice()`'s own watch
+ * icon, just full-sized, open and knocked over rather than framed on a wall. Pure static scenery —
+ * no physics box, no `userData.update` — small enough that the cat just walks over it. */
+function makeDroppedWatch() {
+  const g = new THREE.Group();
+  const brass = mat(0xc9a227, { roughness: 0.4, metalness: 0.6 }), face = mat(0xf4ecd8, { roughness: 0.5 }), ink = mat(0x2a1f14, { roughness: 0.7 });
+  mesh(G.cyl(0.16, 0.16, 0.035, 20), brass, { parent: g });
+  mesh(G.cyl(0.135, 0.135, 0.012, 20), face, { y: 0.023, parent: g });
+  mesh(G.box(0.012, 0.01, 0.1), ink, { y: 0.03, ry: 0.3, parent: g });
+  mesh(G.box(0.012, 0.01, 0.06), ink, { y: 0.03, ry: -1.1, parent: g });
+  mesh(G.cyl(0.16, 0.16, 0.025, 20), brass, { x: 0.33, y: -0.005, parent: g });   // the lid, flipped open and lying flat alongside
+  mesh(G.box(0.1, 0.02, 0.03), brass, { x: 0.165, y: 0.0, parent: g });            // the hinge between case and lid
+  mesh(G.cyl(0.015, 0.015, 0.05, 8), brass, { x: -0.19, y: 0.01, rz: PI / 2, parent: g });   // the winding crown
+  for (let i = 0; i < 6; i++) mesh(G.torus(0.022, 0.006, 5, 8), brass, { x: -0.25 - i * 0.032, y: 0.005, z: (i % 2 ? 0.022 : -0.022), rx: PI / 2, ry: i * 0.5, parent: g });   // the chain, trailing loose
+  return g;
+}

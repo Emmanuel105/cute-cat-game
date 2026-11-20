@@ -15678,6 +15678,36 @@ function buildVictorian(game, entry) {
     game.npcs.push(new Wanderer(game, restTownsfolk, { x: restTx, z: restTz, angle: PI / 2, speed: 0.2, leash: 0.5, idle: [3, 6],
       cries: ["Five minutes with my own two feet up. The square can wait.", 'Mind where you tread, puss — I only just got comfortable.', "Back on my rounds the second this grass stops feeling so good."] })); }
 
+  // `vicLamps[8]`'s own lost-watch notice has been stapled to its post since round ~650, describing a
+  // pocket watch nobody ever actually dropped anywhere in this town — the same gap Frosty Peak's own
+  // lost-mitten notice had until its own matching mitten turned up a few rounds back. **The watch
+  // itself now lies open on the cobbles a few steps from that lamp post, lid flipped back and its fob
+  // chain spilled out loose beside it.**
+  //
+  // `makeDroppedWatch()` (60-props.js, new, right after `makeCarriage()`) reuses the same brass and
+  // cream palette as `makeLostWatchNotice()`'s own watch icon, just full-sized: a disc case, an open
+  // lid lying flat alongside it on a short hinge block, two flat ink hands, a stub crown and a short
+  // trailing run of small torus links standing in for the chain. It draws from no random generator at
+  // all — not the shared global `rnd()` sequence, not this town's own seeded `r()` — so it costs no
+  // later timing-sensitive draw and could have gone in anywhere in this build; placed here anyway,
+  // right after the rest-taker above, purely for readability next to the notice it answers. It does
+  // get one small hook, the same shape `makeWrench()` and the tennis ball itself already used despite
+  // their own "pure set dressing" framing: `game.addInteractable` for a look-and-toast line, no
+  // physics box and no `userData.update`.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(3, 'from-hub')` waited out for real against its own
+  // `transitioning` flag, then 1200 simulated frames sampling every NPC's own position every 15th
+  // frame so every carriage horse, chimney sweep and wanderer had already settled) swept a 0.1 m grid
+  // 0.8-3.5 m out from the lamp post's own spot (34.5, 6.4) against all 599 of this town's own physics
+  // boxes and every sampled NPC position: (31.7, 4.4) came back clearest — 3.1 m from the nearest box
+  // and 3.02 m from the nearest other soul, on the open cobbles just south-west of the lamp, clear of
+  // the "star" collectible floating nearby at (37, 6) and well inside the town's own built core.
+  { const watchX = 31.7, watchZ = 4.4;
+    const droppedWatch = place(game, U, makeDroppedWatch(), watchX, watchZ, 0.4);
+    const watchLines = ['⏱️ "There\'s the lost watch from the notice back at the lamp — someone\'s going to want that back."', '⏱️ "Stopped dead. Whoever dropped it stopped checking the time right then too."', '⏱️ "Chain\'s still looped through a buttonhole that isn\'t there anymore."'];
+    game.addInteractable({ obj: droppedWatch, radius: 1.6, label: () => 'Look at the pocket watch', onUse: () => { SFX.click(); game.toast(rnd.pick(watchLines), 3000); } }); }
+
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
