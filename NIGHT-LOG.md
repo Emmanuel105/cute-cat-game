@@ -35582,3 +35582,35 @@ and Frosty Peak's and Whisper Woods' are still left for future rounds. No visual
 this environment (no browser, no Playwright), so whether the stance reads as "just watching the sea"
 rather than standing idle on the sand is unverified. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1239 — Frosty Peak gets its own break-taker, the fifth of the seven
+
+Robot City (round 1235), Candy Land (round 1236), Victorian (round 1237) and Sunny Shore (round 1238)
+have each picked up a standalone break-taker — someone just existing for their own sake, not watching
+anyone else's act. Frosty Peak was next, leaving only Whisper Woods still without one. **A fifth
+mountain regular now stands alone on the open snow south-west of the village, hands stuffed in coat
+pockets, nothing to watch and nowhere to be.** *"Not out here to look at anything, puss. Just the
+quiet."* *"Mind the drift, puss — it's deeper than it looks out this far."* *"Back down when the cold
+finally wins. Not yet."*
+
+No new class or mesh: a plain adult `makeHuman()`/`randomPerson()` rig in this mountain's own
+beanie-and-coat wardrobe, and `Wanderer` (55-npcs.js) for the same "stand and watch" behaviour every
+other watcher on this mountain already uses, with a short leash (0.4 m) and a fixed `angle` rather than
+one tracking another NPC. A headless probe (a scratch script on the same stub-three harness
+`test/run.mjs` itself uses: `game.start('new')`, `game.load(5, 'from-hub')`, then 3600 simulated frames
+sampling every NPC's own position every 10th frame to let every reindeer, hare, arctic fox, penguin,
+yeti and wandering villager actually settle) swept a 0.5 m grid of the hand-built core (radius ≤ 55,
+short of the radius (58) where `snowRegion()`'s own procedural fill takes over) against all 727 of this
+mountain's own physics boxes (knee-to-head band only) and every sampled NPC position: (-27, 36.5) came
+back clearest — 6.87 m from the nearest box, 10.5 m clear of the village's own 26 m keep-out square and
+6.99 m from the nearest other soul (a wandering penguin), open snow with only a mild slope out past the
+third ice crystal's own cluster. Built dead last of everything this mountain adds, right after the
+piñata swinger's own watcher, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this
+mountain's own shared `r()` sequence unconditionally.
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt at this spot: exit 0, 277 checks `ok`,
+0 console warnings, no new physics box (334 total, unchanged). Frosty Peak's own friend total ticked up
+from 148 to 149. Only Whisper Woods is left without its own standalone break-taker now. No visual check
+was possible in this environment (no browser, no Playwright), so whether the pose reads as a believable
+rest rather than just standing in the snow is unverified. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
