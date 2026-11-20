@@ -35765,3 +35765,38 @@ console warnings, box count unchanged at 334 (no new collider, as expected). No 
 possible in this environment (no browser, no Playwright), so whether the ball actually reads as a
 dropped tennis ball rather than an odd green-and-white sphere in the grass is unverified. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1244 — Frosty Peak's own lost mitten, found
+
+Robot City's wrench, Whisper Woods' pinecone and the Neighborhood's tennis ball (rounds 1241-1243)
+each gave a world one piece of pure walk-past scenery. Frosty Peak had a better hook sitting unused:
+a notice pinned to the welcome arch, several hundred metres back toward the village, reading "LOST:
+one mitten, hand-knit, red with white snowflakes. Left hand only — the right one's long gone." Nobody
+had ever actually dropped the thing.
+
+**A single red mitten now lies flattened in the snow out past this mountain's break-taker, knocked
+onto its back with its thumb splayed to one side** — same red-with-cream-cuff colouring the notice
+itself describes, though nothing on site says it's the one. No prompt, no greeting, no physics box:
+the cat just walks past it, the same footing as the wrench or the pinecone.
+
+`makeDroppedMitten()` (62-props-nature.js, new) reuses `makeMittenPair()`'s own flattened-box palm,
+cuff stripe and stitched-on thumb — the pair already hanging from a market vendor's dowel elsewhere on
+this mountain — just knocked over instead of hung up. Like the pinecone, it draws from no random
+generator at all, not the shared global `rnd()` sequence and not this mountain's own seeded `r()`, so
+dropping it in nudges no later timing-sensitive pick anywhere in the build.
+
+A headless probe (`game.travel(5, 'from-hub')` waited out against its own portal-fade timer, then
+3600 simulated frames sampling every NPC's own position every 10th frame to let every reindeer, hare,
+fox, penguin, yeti and wandering villager settle) swept a 1 m grid of the hand-built core (radius <=
+55, short of the radius (58) where `snowRegion()`'s own procedural fill takes over) against all 727
+of this mountain's own physics boxes, every one of `game.zones`'s own 147 rectangles and every sampled
+NPC position: (26, 42) came back clearest — 7.1 m from the nearest box, 16.0 m clear of the nearest
+zone rectangle's own edge and 8.1 m from the nearest other soul, flat snow (under 7 cm of slope across
+its own footprint) comfortably inside the hand-built core.
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt: exit 0, all 277 checks `ok`, 0
+console warnings, box count unchanged at 334 (no new collider, as expected for a prop with no
+footprint). No visual check was possible in this environment (no browser, no Playwright), so whether
+the mitten actually reads as dropped and knocked over, rather than an odd red lump in the snow, is
+unverified — and whether anyone ever connects it back to the notice is left entirely to the player.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

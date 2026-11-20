@@ -1053,3 +1053,20 @@ function makePinecone(scale = 1) {
   if (scale !== 1) g.scale.setScalar(scale);
   return g;
 }
+/** A single dropped mitten, lying flattened and half-splayed in the snow — red with a cream cuff
+ *  stripe, same colours as the "LOST: one mitten... left hand only" notice pinned to the welcome
+ *  arch post, built from the same flattened-box palm, cuff stripe and stitched-on thumb as
+ *  `makeMittenPair()`'s hung pair, just knocked over onto its back instead of hanging from a dowel.
+ *  Pure static mesh, no physics box and no `userData.update` — a walk-past find, not a greet or a
+ *  "look" prompt. Takes no random generator at all, so dropping it in draws from neither the shared
+ *  global `rnd()` sequence nor a world's own seeded `r()` — it can go anywhere, in any build order,
+ *  without nudging a single later draw. */
+function makeDroppedMitten(bodyHue = 0xd62839, cuffHue = 0xf7f3ec) {
+  const g = new THREE.Group();
+  const body = mat(bodyHue, { roughness: 0.85 }), cuff = mat(cuffHue, { roughness: 0.85 });
+  mesh(G.box(0.13, 0.035, 0.19), body, { y: 0.018, z: 0.02, shadow: 'cast', parent: g });
+  mesh(G.box(0.06, 0.03, 0.085), body, { x: 0.09, y: 0.016, z: -0.01, ry: 0.5, shadow: 'none', parent: g });   // thumb, splayed to one side
+  mesh(G.box(0.135, 0.038, 0.055), cuff, { y: 0.019, z: -0.085, shadow: 'none', parent: g });   // cuff stripe at the wrist end
+  g.rotation.x = -0.14; g.rotation.z = 0.1; // knocked over onto its back, not lying dead flat
+  return g;
+}

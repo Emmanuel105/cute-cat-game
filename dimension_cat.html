@@ -8083,6 +8083,23 @@ function makePinecone(scale = 1) {
   if (scale !== 1) g.scale.setScalar(scale);
   return g;
 }
+/** A single dropped mitten, lying flattened and half-splayed in the snow — red with a cream cuff
+ *  stripe, same colours as the "LOST: one mitten... left hand only" notice pinned to the welcome
+ *  arch post, built from the same flattened-box palm, cuff stripe and stitched-on thumb as
+ *  `makeMittenPair()`'s hung pair, just knocked over onto its back instead of hanging from a dowel.
+ *  Pure static mesh, no physics box and no `userData.update` — a walk-past find, not a greet or a
+ *  "look" prompt. Takes no random generator at all, so dropping it in draws from neither the shared
+ *  global `rnd()` sequence nor a world's own seeded `r()` — it can go anywhere, in any build order,
+ *  without nudging a single later draw. */
+function makeDroppedMitten(bodyHue = 0xd62839, cuffHue = 0xf7f3ec) {
+  const g = new THREE.Group();
+  const body = mat(bodyHue, { roughness: 0.85 }), cuff = mat(cuffHue, { roughness: 0.85 });
+  mesh(G.box(0.13, 0.035, 0.19), body, { y: 0.018, z: 0.02, shadow: 'cast', parent: g });
+  mesh(G.box(0.06, 0.03, 0.085), body, { x: 0.09, y: 0.016, z: -0.01, ry: 0.5, shadow: 'none', parent: g });   // thumb, splayed to one side
+  mesh(G.box(0.135, 0.038, 0.055), cuff, { y: 0.019, z: -0.085, shadow: 'none', parent: g });   // cuff stripe at the wrist end
+  g.rotation.x = -0.14; g.rotation.z = 0.1; // knocked over onto its back, not lying dead flat
+  return g;
+}
 
 
 // ============================================================================
@@ -31176,6 +31193,33 @@ function buildSnowVillage(game, entry) {
     W.add(breakTaker.group);
     game.npcs.push(new Wanderer(game, breakTaker, { x: breakWx, z: breakWz, angle: 0.6, speed: 0.2, leash: 0.4, idle: [4, 8],
       cries: ['Not out here to look at anything, puss. Just the quiet.', "Mind the drift, puss — it's deeper than it looks out this far.", "Back down when the cold finally wins. Not yet."] })); }
+
+  // Robot City's wrench (round 1241), Whisper Woods' pinecone (round 1242) and the Neighborhood's
+  // tennis ball (round 1243) each gave their own world a piece of pure walk-past scenery — nothing to
+  // greet, nothing to look at. This mountain already has a running joke sitting unpaid: the "LOST: one
+  // mitten... Left hand only" notice pinned to the welcome arch post, several hundred metres back
+  // toward the village. **A single red mitten now lies flattened in the snow out past the break-taker,
+  // half on its back with its thumb splayed out to one side** — close enough in colour and cut to be
+  // the very mitten the notice is missing, though nothing here says so out loud. No prompt, no
+  // greeting, no physics box: the cat just walks past it, same footing as the wrench or the pinecone.
+  //
+  // `makeDroppedMitten()` (62-props-nature.js, new) reuses `makeMittenPair()`'s own flattened-box palm,
+  // cuff stripe and stitched-on thumb, just knocked onto its back instead of hung from a dowel, and
+  // tinted the same red-with-cream-cuff as the notice's own described colours. It takes no random
+  // generator at all — not the shared global `rnd()` sequence, not this mountain's own seeded `r()` —
+  // so it can be dropped in anywhere without nudging a single later timing-sensitive pick.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` uses: `game.travel(5, 'from-hub')`
+  // waited out against its own portal-fade timer, then 3600 simulated frames sampling every NPC's own
+  // position every 10th frame to let every reindeer, hare, fox, penguin, yeti and wandering villager
+  // settle) swept a 1 m grid of the hand-built core (radius <= 55, short of the radius (58) where
+  // `snowRegion()`'s own procedural fill takes over, and clear of the welcome-arch notice's own 8 m
+  // keep-out) against all 727 of this mountain's own physics boxes (knee-to-head band only), every one
+  // of `game.zones`'s own 147 rectangles and every sampled NPC position: (26, 42) came back clearest —
+  // 7.1 m from the nearest box, 16.0 m clear of the nearest zone rectangle's own edge and 8.1 m from
+  // the nearest other soul, flat snow (under 7 cm of slope across its own footprint) well inside the
+  // hand-built core, with the break-taker above the nearest hand-placed neighbour at 14.5 m off.
+  placeT(game, U, makeDroppedMitten(), 26, 42, 0.8, -0.01);
 
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
