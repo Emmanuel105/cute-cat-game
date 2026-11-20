@@ -31139,8 +31139,8 @@ function buildForest(game, entry) {
   // trees: a ring at the edge and scattered giants
   for (let i = 0; i < 40; i++) { const a = i / 40 * TAU + r.range(-0.06, 0.06), d = r.range(40, 54); treeAt(cos(a) * d, sin(a) * d, { simple: true }); }
   const inner = [[-30, -10], [-28, 12], [-12, 30], [12, 32], [30, 22], [34, -12], [22, -30], [-6, -34], [-34, -30], [26, 4], [-16, -26], [0, 34]];
-  let noticeTree = null, doorTree = null;
-  for (const [x, z] of inner) { const t = treeAt(x, z, { lanterns: r.chance(0.5) }); if (x === 26 && z === 4) noticeTree = t; if (x === -6 && z === -34) doorTree = t; }
+  let noticeTree = null, doorTree = null, kiteTree = null;
+  for (const [x, z] of inner) { const t = treeAt(x, z, { lanterns: r.chance(0.5) }); if (x === 26 && z === 4) noticeTree = t; if (x === -6 && z === -34) doorTree = t; if (x === 34 && z === -12) kiteTree = t; }
   // the Neighborhood's park lamp (round 462), one of Robot City's towers (round 463) and a Victorian
   // lamp post (round 464) have all carried a stapled notice by now, but nobody had ever nailed anything
   // to one of these woods' own trees. The inner-ring tree at (26, 4) now carries one: a weathered
@@ -31191,6 +31191,44 @@ function buildForest(game, entry) {
       '🚪 Barely big enough for a mouse, let alone a fairy. The cat sniffs the sill and finds nothing.',
       '✨ "Somebody\'s polished that brass knob more than once." No one around to say who.'];
     game.addInteractable({ obj: doorTree, radius: 2.6, label: () => 'Peek at the tiny door', onUse: () => { SFX.click(); game.toast(rnd.pick(fairyDoorLines), 3000); } }); }
+  // the notice and the fairy door above claimed two of the twelve inner-ring trees; the one at (34, -12)
+  // was the last of the twelve still entirely bare. **A kite is stuck in its canopy now**, snagged years
+  // ago and never fetched down: the diamond sail hangs crooked up among the leaves, with a length of
+  // frayed string trailing down past the bark and giving out well short of the ground.
+  //
+  // No new class: `makeKite()` (60-props.js, the same rig every `KiteFlyer` in the game already holds)
+  // is reused verbatim, just tucked into the canopy instead of carried. `kiteTree` is the exact group the
+  // `inner` loop above already built, the same capture trick the notice and the fairy door both use; its
+  // own `userData.col` gives this tree's actual rolled radius `R` (`col[0] / 2.2`) and height `h`
+  // (`col[1]`) at placement time, so the kite sits relative to whatever this one tree's own random size
+  // actually came out as, not a guess. The kite's own local origin is its nose (the tail already hangs
+  // from there in `makeKite` itself), so the frayed string below is just a thin cylinder from that same
+  // point down to a fixed break point, its small sideways tilt worked out from the plain dx/dz-over-dy
+  // ratio rather than a world-space `lookAt` (the kite and the string are both children of `kiteTree`,
+  // which already carries its own random `rotation.y`, so a `lookAt` call would have measured against
+  // the wrong frame) — the same small-angle shortcut the root-flare branches elsewhere in `makeBigTree`
+  // itself already take. `noInk()` keeps it from drawing as a solid line, same as every other thin
+  // string, lead or cable in this game. No new physics box: both sit well inside the trunk's own
+  // existing box (`treeAt`'s `w * 0.7` half-extent, up to its own fixed 9 m height) and above the leaf
+  // canopy, which nothing on the ground has ever been able to reach.
+  //
+  // A probe script on the same stub-three harness `test/run.mjs` itself uses (`game.start('new')`,
+  // `game.travel(6, 'from-hub')` waited out through its own portal-fade timer, then 3600 simulated
+  // frames sampling every NPC's own position every frame) swept this tree's own ground position against
+  // every one of these woods' physics boxes and every one of those samples: the nearest other box stayed
+  // 2.13 m clear (a low scatter prop, well under the kite's own height) and the nearest wandering soul
+  // (an otter at its washing spot) never closer than 3.61 m — which is also exactly where the otter's
+  // own "Say hello" prompt (radius 2.1) sits, so a tight 1.3 m radius here leaves a clean 0.21 m gap
+  // between the two circles.
+  { const kiteR = kiteTree.userData.col[0] / 2.2, kiteH = kiteTree.userData.col[1];
+    const kx = kiteR * 0.9, ky = kiteH + 0.5, kz = kiteR * 0.6;
+    const kite = makeKite(0x2f6fd6, 0xeaeaea); kite.position.set(kx, ky, kz); kite.rotation.set(0.55, 0.9, 1.3); kiteTree.add(kite);
+    const fx = kiteR * 0.3, fy = 1.6, fz = kiteR * 0.2;
+    const dx = fx - kx, dy = fy - ky, dz = fz - kz, len = sqrt(dx * dx + dy * dy + dz * dz);
+    const stringM = mat(0xd8d2bf, { roughness: 0.9 });
+    noInk(mesh(G.cyl(0.006, 0.006, len, 4), stringM, { x: (kx + fx) / 2, y: (ky + fy) / 2, z: (kz + fz) / 2, rx: atan2(dz, -dy), rz: -atan2(dx, -dy), shadow: 'none', parent: kiteTree }));
+    const kiteLines = ['🪁 "Someone\'s still missing that kite, probably. Nobody\'s climbed up after it yet."', '🪁 "The string gave out before the kid did, by the look of the fray."', '🪁 "Higher than any ladder in these woods reaches. It\'s not coming down."'];
+    game.addInteractable({ obj: kiteTree, radius: 1.3, label: () => 'Look up at the kite', onUse: () => { SFX.click(); game.toast(rnd.pick(kiteLines), 3000); } }); }
   const treehouse = makeTreehouse(game, -18, 14, r);
   // the Neighborhood's porch, Victorian's terrace, Candy Land's cottage, Frosty Peak's cabin and Sunny
   // Shore's third beach hut all have a napping stray cat tucked somewhere by now — the treehouse never

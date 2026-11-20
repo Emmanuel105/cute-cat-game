@@ -35331,3 +35331,28 @@ unchanged at 334 (a sixth rider costs no physics box, same as the first five). C
 total is unchanged too, since none of the six riders are greetable — they're set dressing, same as a
 napping cat. The carousel arc that started at round 1227 is done; the next round picks something new.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1231 — a kite stuck in one of Whisper Woods' own inner-ring trees
+
+Two of the twelve inner-ring trees already carried something of their own — a stapled notice, a
+tiny fairy door — but the one at (34, -12) had stood entirely bare since these woods were first
+built. **A kite is snagged in its canopy now**, years overdue for fetching down: the diamond sail
+hangs crooked up among the leaves, a length of frayed string trailing down past the bark and giving
+out well short of the ground. *"Someone's still missing that kite, probably. Nobody's climbed up
+after it yet."* *"The string gave out before the kid did, by the look of the fray."* *"Higher than
+any ladder in these woods reaches. It's not coming down."*
+
+No new mesh or class: `makeKite()` (60-props.js) is the same rig every `KiteFlyer` in the game
+already carries, just tucked into the tree instead of held. It's a child of the tree's own group
+(captured from the same `inner`-ring build loop the notice tree and the fairy-door tree already use),
+sized off that one tree's own rolled trunk radius and height rather than a guess, with the trailing
+string kept out of the ink pass (`noInk()`) the same way every other thin cable in this game is. No
+new physics box — both sit inside the trunk's existing collider and above the leaf canopy, which
+nothing on the ground could ever reach anyway. It's a "look" prompt only, not a friend: nobody lives
+in a kite.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 334. Whisper Woods' own friend total is unchanged too. No visual check was
+possible in this environment (no browser, no Playwright), so whether the kite actually reads well
+tucked up in the branches is unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.
