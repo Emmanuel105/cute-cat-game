@@ -13837,6 +13837,40 @@ function buildNeighborhood(game, entry) {
     const tennisBall = place(game, U, makeTennisBall(), tbx, tbz, 0);
     game.addInteractable({ obj: tennisBall, radius: 1.5, label: () => 'Look at the tennis ball', onUse: () => { SFX.click(); game.toast(rnd.pick(['🎾 "Someone\'s dog is missing that."', '🎾 "Flat on one side — chewed, by the look of it."', '🎾 "Nobody\'s come back for it yet."']), 3000); } }); }
 
+  // every world's own woodcutter — `Chopper` (55-npcs.js) — stood unwatched until round 1248 gave
+  // Candy Land's cutter the first bystander of the set. This street's own cutter, splitting logs on
+  // the stump behind the house at x=-36 (added round 1240-ish, see above), is the second.
+  // **A neighbour now stands a few steps west of the fence line, watching the stump.**
+  //
+  // Same `Wanderer` every other watcher in this game already uses, a plain `makeHuman()`/
+  // `randomPerson()` rig with its own explicit shirt colour rather than this street's own shared
+  // `ward` bag (sized exactly to its 18 `person()` users already) and `angle` pointed at the cutter's
+  // own fixed stand (-36, -8.3) rather than a constant. A first attempt gave it `cries` and a short
+  // `idle: [3, 6]` leash, the same shape Candy Land's own version used — but this street already runs
+  // a `Talkers` pair whose own turn-taking test (`two neighbours chat ... in 7 s`) checks an exact
+  // number of swaps within a fixed simulated window, and any `Wanderer` that ever crosses `move()`'s
+  // own timer-expiry branch draws more of the shared global `rnd()` sequence than before and throws
+  // that count off. Round 1197 traced the same leak on this exact street and fixed it by freezing the
+  // watcher in its idle pose for good: `idle: [1e9, 1e9]` plus every one of `Wanderer`'s own
+  // construction-time draws (`phase`, `timer`, `t`, `cryT`) fixed rather than pulled from `rnd()`, so
+  // `move()` never once crosses into that branch. Reused verbatim here — no `cries` either, same as
+  // the digger and jetty watchers that fix was built for. It still breathes through its own idle
+  // animation every frame; it just never takes the little shuffle-step the leash would otherwise
+  // allow. Built dead last of everything this street adds, after the tennis ball above, right before
+  // `makeDayNight()`.
+  //
+  // A headless probe (`game.start('new')`, 3600 simulated frames sampling every NPC's own position
+  // every 10th frame against every physics box in the knee-to-head band) swept a 0.25 m grid 1.8-3.5 m
+  // out from the stump at (-36, -9.6): (-39.5, -9.6) came back clearest — 3.25 m from the nearest
+  // physics box (the house's own back wall) and 3.73 m from the nearest other soul (the cutter
+  // himself) over the full 60 s run, due west of the stump and clear of both pavements (z=17.6/10.4)
+  // and every other road this world's test walks end to end.
+  { const chopWx = -39.5, chopWz = -9.6, chopCutX = -36, chopCutZ = -9.6;
+    const chopWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x5a7a5a, hat: null, jacket: null, scarf: null, bag: null, backpack: null });
+    W.add(chopWatcher.group);
+    game.npcs.push(new Wanderer(game, chopWatcher, { x: chopWx, z: chopWz, angle: atan2(chopCutX - chopWx, chopCutZ - chopWz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

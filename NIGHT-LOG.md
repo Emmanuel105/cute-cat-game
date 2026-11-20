@@ -35963,3 +35963,45 @@ this game's other watchers manage 2-3 m) is a judgment call the next round touch
 feel free to revisit. The other six worlds' own woodcutters — the Neighborhood, Robot City, Victorian,
 Sunny Shore, Frosty Peak and Whisper Woods — are still chopping alone. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1249 — the Neighborhood's own woodcutter gets a watcher, the second of the seven
+
+Candy Land's cutter picked up the set's first watcher last round. This street's own `Chopper`
+(55-npcs.js), splitting logs on a stump behind the house at x=-36, is the second: **a neighbour now
+stands a few steps west of the fence line, watching the stump.**
+
+A first attempt gave it `cries` and a short `idle: [3, 6]` leash, the same shape Candy Land's own
+watcher used — and broke a test that's specific to this street: `Talkers`' own two gossiping
+neighbours are checked for an exact number of turn-swaps inside a fixed simulated window, and any
+`Wanderer` that ever crosses `move()`'s own timer-expiry branch draws more of the shared global
+`rnd()` sequence than before, throwing that count off. Round 1197 traced the identical leak on this
+exact street and fixed it by freezing the watcher in its idle pose for good — `idle: [1e9, 1e9]` plus
+every one of `Wanderer`'s own construction-time draws (`phase`, `timer`, `t`, `cryT`) fixed instead of
+pulled from `rnd()`, so `move()` never once crosses into that branch. Reused verbatim here: no `cries`
+either, same as the digger and jetty watchers that fix was built for. It still breathes through its
+own idle animation every frame; it just never takes the little shuffle-step the leash would otherwise
+allow, and it never says anything.
+
+A headless probe (`game.start('new')`, 3600 simulated frames sampling every NPC's own position every
+10th frame against every physics box in the knee-to-head band) swept a 0.25 m grid 1.8-3.5 m out from
+the stump at (-36, -9.6): (-39.5, -9.6) came back clearest — 3.25 m from the nearest physics box (the
+house's own back wall) and 3.73 m from the nearest other soul (the cutter himself) over the full 60 s
+run, due west of the stump and clear of both pavements and every other road this world's test walks
+end to end.
+
+`node dimension-cat/test/run.mjs` ran clean once the freeze was in place: exit 0, all 277 checks `ok`,
+0 console warnings, box count unchanged at 334 (pure bystander, no collider of its own), and the
+Neighborhood's own friend total went up by exactly one (130 → 131, confirmed against the previous
+commit with `git stash`). No visual check was possible in this environment (no browser, no
+Playwright), so whether the watcher's stance actually reads as watching the stump rather than just
+standing by the fence is unverified, and because it's frozen in place it never turns to face the
+cutter's own swings the way a free-roaming watcher would — a plainer bystander than Candy Land's, by
+design, for the sake of this street's own timing-sensitive tests. Five worlds' own woodcutters — Robot
+City, Victorian, Sunny Shore, Frosty Peak and Whisper Woods — are still chopping alone. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+Housekeeping note: this sandbox's shallow clone again showed a stale local `origin/main` ref short of
+the real tip (round 1248's own commit) before any work started here — the same shallow-history horizon
+issue round 1247 already wrote up, not an actual push conflict. A `git fetch` brought the ref current
+and `git branch -f main origin/main` + `git checkout main` put the working tree's uncommitted edit onto
+the right branch before committing.
