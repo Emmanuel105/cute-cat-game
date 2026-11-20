@@ -35925,3 +35925,41 @@ just the shallow history's horizon shifting as another concurrent round landed).
 `git reset --hard origin/main` onto the refreshed tip, followed by re-applying this round's own diff
 and re-probing the snowfield for a clear spot (the first candidate had since been built over), put
 things right before this entry was written.
+
+## Round 1248 — the woodcutter finally gets a watcher, starting a new set
+
+Every solo performer in this game — the juggler, the magician, the organ grinder, the unicyclist, the
+frisbee thrower, the paper-plane kid, the carousel's own five riders — has picked up a watcher of its
+own across one or another of the seven worlds by now. One act never has, anywhere: `Chopper`
+(55-npcs.js) has split logs alone on a stump in every single world since round 207, and not one of
+its seven stumps ever drew a bystander. Candy Land's own cutter, working a stump deep in the northern
+sweet-lands past the cane forest, is the first to get one.
+
+**A local now stands a few steps north-west of him, arms folded, watching each log part on the
+stump.** *"Same two swings, every time — left, then right, then it's done."* *"Careful, puss — a chip
+went wide of me once."* *"He never once misses the grain."*
+
+No new class: the same `Wanderer` (55-npcs.js) every other watcher in this game already uses, a plain
+`makeHuman()`/`randomPerson()` rig off Candy Land's own shared colour pool (this land has never
+enforced unique shirts the way the Neighborhood does, so no explicit wardrobe was needed), a short
+leash (0.5 m) and `angle` pointed at the cutter's own fixed spot rather than a constant, so he reads
+as watching the stump and not just standing nearby. `Wanderer`'s own constructor calls `greetable()`
+itself, so no extra wiring was needed, and no physics box either — pure bystander, same as every other
+watcher in this set.
+
+A headless probe (`game.start('new')`, `game.travel(1, 'from-hub')` waited out against its own
+portal-fade timer, then 3600 simulated frames sampling every NPC's own position every 10th frame)
+swept a 0.25 m grid 1.8-5 m out from the cutter's own stand (29, 80.4), short of the radius (92) where
+`candyRegion()`'s own procedural fill takes over: (25, 83.4) came back clearest — 5.59 m from the
+nearest physics box and 5.00 m from the nearest other soul (the cutter himself) over the full 60 s
+run, at radius 87.1 from the origin, well inside this land's hand-built core.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 334, and Candy Land's own friend total went up by exactly one (133 → 134, confirmed
+against the previous commit with `git stash`). No visual check was possible in this environment (no
+browser, no Playwright), so whether the watcher's stance actually reads as "watching a woodcutter"
+rather than just standing nearby is unverified, and whether this spot is a touch far at 5 m (most of
+this game's other watchers manage 2-3 m) is a judgment call the next round touching this corner should
+feel free to revisit. The other six worlds' own woodcutters — the Neighborhood, Robot City, Victorian,
+Sunny Shore, Frosty Peak and Whisper Woods — are still chopping alone. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

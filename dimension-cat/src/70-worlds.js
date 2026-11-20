@@ -8307,6 +8307,44 @@ function buildCandyLand(game, entry) {
     game.npcs.push(new Wanderer(game, breakLocal, { x: gdx, z: gdz, angle: PI / 2, leash: 0.4, speed: 0.3, idle: [4, 8],
       cries: ['One gumdrop too many. Just a minute here, puss.', "Careful — don't go rolling into me.", "Up again in a minute. Maybe two."] })); }
 
+  // every solo performer this game has ever built — the juggler, the magician, the organ grinder, the
+  // unicyclist, the frisbee thrower, the paper-plane kid, the carousel's own five riders — has picked
+  // up a watcher of its own by now, somewhere across the seven worlds. The one act that never has,
+  // anywhere, is the woodcutter: `Chopper` (55-npcs.js) has swung an axe alone on a stump in every
+  // single world since round 207, and not one of its seven stumps has ever had anybody standing by.
+  // This land's own cutter, splitting logs deep in the northern sweet-lands past the cane forest, is
+  // the first to get one — starting a new set. **A local now stands a few steps north-west of him,
+  // arms folded, watching each log part on the stump.** *"Same two swings, every time — left, then
+  // right, then it's done."* *"Careful, puss — a chip went wide of me once."* *"He never once misses
+  // the grain."*
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) every other watcher in this game already uses, a
+  // plain `makeHuman()`/`randomPerson()` rig off this land's own shared colour pool (no explicit
+  // wardrobe needed — this land has never enforced unique shirts the way the Neighborhood does), a
+  // short leash (0.5 m) and `angle` pointed at the cutter's own fixed spot (29, 80.4) rather than a
+  // constant, so he reads as watching the stump and not just standing nearby. `Wanderer`'s own
+  // constructor calls `greetable()` itself, so no extra wiring was needed.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(1, 'from-hub')` waited out against its own portal-fade timer,
+  // then 3600 simulated frames sampling every NPC's own position every 10th frame, since nothing out
+  // here moves far from its own spot) swept a 0.25 m grid 1.8-5 m out from the cutter's own stand,
+  // short of the radius (92) where candyRegion's own procedural fill takes over: (25, 83.4) came back
+  // clearest — 5.59 m from the nearest physics box and 5.00 m from the nearest other soul (the cutter
+  // himself) over the full 60 s run, at radius 87.1 from the origin, well inside this land's
+  // hand-built core.
+  //
+  // Built dead last of everything this land adds, right after the sugar-dazed local above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this land's own shared `r()` sequence
+  // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted
+  // by it.
+  { const chopWx = 25, chopWz = 83.4, chopCutX = 29, chopCutZ = 80.4;
+    const chopWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.2) });
+    W.add(chopWatcher.group);
+    game.npcs.push(new Wanderer(game, chopWatcher, { x: chopWx, z: chopWz, angle: atan2(chopCutX - chopWx, chopCutZ - chopWz), leash: 0.5, speed: 0.3, idle: [3, 6],
+      cries: ['Same two swings, every time — left, then right, then it\'s done.', 'Careful, puss — a chip went wide of me once.', 'He never once misses the grain.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
