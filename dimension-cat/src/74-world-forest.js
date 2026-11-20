@@ -2833,6 +2833,21 @@ function buildForest(game, entry) {
     game.npcs.push(new Patroller(game, courier, { points, speed: 0.9, pause: [1.3, 1.9], pauseAll: true, loop: true, r: 0.35, height: 1.8,
       cries: courierLines, cryIcon: '🧺' })); }
 
+  // A fallen pinecone now lies tipped on its side in the leaf litter south-west of the fairy ring,
+  // as if it rolled off a branch overhead and stopped there. `makePinecone()` (62-props-nature.js,
+  // new) is pure static mesh — no physics box, no greeting, no `userData.update` — the same kind of
+  // walk-past scenery as a beach shell or an ice crystal, and the only prop in the whole game that
+  // takes no random generator at all: no draw from the shared global `rnd()` sequence or this wood's
+  // own seeded `r()`, so it can be placed anywhere in the build without nudging a single later draw.
+  // A headless probe (`game.travel(6, 'from-hub')` waited out for real against its own portal-fade
+  // timer, then 3600 simulated frames sampling every NPC's own position every 10th frame) swept a 1 m
+  // grid of the forest floor's south-west quadrant against all 783 of this wood's own physics boxes
+  // (knee-to-head band only) and every sampled NPC position: (-22, -36) came back clearest — 5.83 m
+  // from the nearest box, 6.00 m from the nearest soul and 17.3 m clear of the nearest `game.zones`
+  // rectangle's own edge, flat ground (under 4 cm of slope across its own footprint), well short of
+  // the radius (58) where `forestRegion()`'s own procedural fill takes over.
+  placeT(game, U, makePinecone(), -22, -36, 0.9);
+
   forestRegion(game, U, r, 58, WOODS_LIMIT - 8);
   makeHorizon(game, r, { clear: WOODS_LIMIT + 8, hills: true, hill: 0x2f4a30, rock: 0x3a4a3a, rock2: 0x44505a, snow: 0xdfe8f0, snowLine: 52, peaks: 28, woodCount: 460, woodBand: 44, woodHue: [0.26, 0.36], woodLight: [0.1, 0.2], trunk: 0x3a2a1c });
   // hollow oak home (north end of the stepping-stone path)

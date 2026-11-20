@@ -35696,3 +35696,36 @@ count unchanged at 334 (no new collider, as expected for a prop with no footprin
 was possible in this environment (no browser, no Playwright), so whether the wrench actually reads as
 "dropped" lying flat rather than floating or sunk into the concrete is unverified. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1242 — a fallen pinecone in Whisper Woods
+
+Round 1241's own wrench gave Robot City's factory floor its first piece of pure, no-"look" scenery —
+something the cat just walks past, the way a beach shell or an ice crystal already is elsewhere. This
+round gives Whisper Woods one of its own: the forest floor has mushrooms, stumps, hollow logs and
+rocks in plenty, all either greetable or at least standing as a deliberate "look" subject, but nothing
+that was ever just dropped there for its own sake.
+
+**A fallen pinecone now lies tipped on its side in the leaf litter south-west of the fairy ring**, as
+if it rolled off a branch overhead and stopped there. No prompt, no greeting — pure set dressing.
+
+`makePinecone()` (62-props-nature.js) is new: a tapered woody core built from two stacked cones,
+wrapped in six spiralling rows of small flat scale-boxes that darken row by row toward the tip, with a
+short snapped stem at the wide end. It takes no random generator at all — not the shared global
+`rnd()`, not a world's own seeded `r()` — making it the one prop in the whole game that can be dropped
+into any build, in any order, without shifting a single later timing-sensitive draw anywhere.
+
+A headless probe (the same stub-three harness `test/run.mjs` uses: `game.travel(6, 'from-hub')`
+waited out for real against its own portal-fade timer, then 3600 simulated frames sampling every
+NPC's own position every 10th frame) swept a 1 m grid across the forest floor's south-west quadrant
+against all 783 of this wood's own physics boxes (knee-to-head band only) and every sampled NPC
+position: (-22, -36) came back clearest — 5.83 m from the nearest box, 6.00 m from the nearest soul
+and 17.3 m clear of the nearest `game.zones` rectangle's own edge, flat ground (under 4 cm of slope
+across its own footprint), comfortably short of the radius (58) where `forestRegion()`'s own
+procedural fill takes over. Placed with the plain `placeT()` every other static prop in this file
+already uses — no `boxT()`, since it has no footprint to protect.
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt: exit 0, all 277 checks `ok`, 0
+console warnings, box count unchanged at 334 (no new collider, as expected for a prop with no
+footprint). No visual check was possible in this environment (no browser, no Playwright), so whether
+the pinecone actually reads as fallen and tipped, rather than just an odd brown shape in the leaves,
+is unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

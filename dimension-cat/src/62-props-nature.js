@@ -1023,3 +1023,33 @@ function makeLanternString(game, ax, az, bx, bz, n = 7, y = 3.2) {
     glowSprite(c, 1.0, 0.4, l); l.userData.m = body.material; l.userData.ph = rnd() * TAU; lanterns.push(l); }
   return { update: (dt, t) => { lanterns.forEach((l, i) => { l.rotation.z = sin(t * 1.1 + l.userData.ph) * 0.08; l.rotation.x = cos(t * 0.9 + l.userData.ph) * 0.06; l.userData.m.emissiveIntensity = 1.3 + sin(t * 2 + i) * 0.35; }); } };
 }
+/** A fallen pinecone, tipped on its side in the leaf litter as if it rolled off the branch overhead
+ *  and stopped there: a tapered woody core (two stacked cones) wrapped in six spiralling rows of
+ *  small flat scales, each row darker than the last toward the tip, with a short snapped stem at the
+ *  wide end. Pure static mesh, no physics box and no `userData.update` — the forest floor's own
+ *  answer to the beach's loose shell or the mountain's ice crystal: something to just walk past
+ *  rather than interact with. Takes no random generator at all, so placing it draws from neither the
+ *  shared global `rnd()` sequence nor a world's own seeded `r()` — it can go anywhere, in any build
+ *  order, without nudging a single later draw. */
+function makePinecone(scale = 1) {
+  const g = new THREE.Group();
+  const core = mat(0x6b4a2e, { roughness: 1, flatShading: true });
+  const h = 0.55, baseR = 0.17;
+  mesh(G.cone(baseR, h * 0.8, 10), core, { y: h * 0.4, shadow: 'cast', parent: g });
+  mesh(G.cone(baseR * 0.3, h * 0.25, 8), core, { y: h * 0.8 + h * 0.12, shadow: 'none', parent: g }); // tapered tip
+  const rowColors = [0x6b4a2e, 0x61422a, 0x573a25, 0x4d3220, 0x432b1b, 0x392416];
+  const rows = rowColors.length;
+  for (let row = 0; row < rows; row++) {
+    const t = row / (rows - 1), y = t * h * 0.95, ringR = baseR * (1 - t * 0.82) + 0.02;
+    const n = Math.max(4, 8 - row);
+    const shade = mat(rowColors[row], { roughness: 1, flatShading: true });
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * TAU + (row % 2 ? PI / n : 0);
+      mesh(G.box(0.1, 0.07, 0.02), shade, { x: cos(a) * ringR, y, z: sin(a) * ringR, ry: -a, rx: 0.5, shadow: 'none', parent: g });
+    }
+  }
+  mesh(G.cyl(0.03, 0.045, 0.1, 6), mat(0x4a3220, { roughness: 1 }), { y: -0.04, shadow: 'none', parent: g }); // snapped stem
+  g.rotation.z = PI / 2.15; // tipped on its side, as dropped
+  if (scale !== 1) g.scale.setScalar(scale);
+  return g;
+}
