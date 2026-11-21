@@ -36575,3 +36575,35 @@ this environment (no browser, no Playwright), so whether the watcher's stance ac
 watching the shot rather than just standing nearby is unverified. Five worlds' own archers are still
 without a watcher, left for future rounds to close out the set. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1266 — Victorian's archer gets a watcher too, the third of the seven
+
+Continuing the set rounds 1264 and 1265 started: Victorian's own Toxophilite lady (`Archer`,
+55-npcs.js), drawing and loosing at her straw boss on the quiet south-east meadow since round 1030,
+picks up a watcher too. **A lady of the parish now stands a few steps west of her, watching the next
+arrow find the gold.**
+
+Same shape as the first two: `makeHuman()`/`randomPerson()` build the rig (Victorian's own coat/hat/
+glasses options this time, no shirt override needed since this town has never enforced the
+Neighborhood's "no two residents share a shirt" rule), `Wanderer` gives it the frozen "stand and
+watch" behaviour with `idle: [1e9, 1e9]` plus every one of `Wanderer`'s own construction-time draws
+fixed rather than pulled from `rnd()`, and `rig.idleT`/`rig.blinkT` frozen too as cheap insurance
+against the shared `rnd()` sequence, even though nothing in Victorian's own checks actually counts
+Wanderers the way the Talkers test two rounds back did. `angle` points at the archer's own fixed spot
+(52, -68) rather than a constant.
+
+A headless probe (`game.start('new')`, `game.travel(3, 'from-prev')` waited out against its own
+transitioning flag, 2400 simulated frames sampling every NPC's own position every 10th frame) swept a
+0.25 m grid 2-12 m west of the archer's own spot against all 611 of this town's own physics boxes, its
+236 `game.zones` rectangles and every sampled NPC position: (47.5, -68) came back clearest at the same
+4.5 m the first two watchers in this set stood off at — 10.64 m from the nearest box, 25.27 m clear of
+the nearest zone rectangle's own edge and 4.5 m from the nearest other soul (the archer herself), due
+west of her on open meadow and clear of the firing line (which runs due north to the target) the
+whole way.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, and
+Victorian's own friend total went up by one (181 → 182 to meet). No visual check was possible in this
+environment (no browser, no Playwright), so whether the watcher's stance actually reads as watching
+the shot rather than just standing nearby is unverified. Four worlds' own archers — Robot City, Sunny
+Shore, Frosty Peak, Whisper Woods — are still without a watcher, left for future rounds to close out
+the set. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

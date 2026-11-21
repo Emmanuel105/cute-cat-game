@@ -25210,6 +25210,42 @@ function buildVictorian(game, entry) {
     game.npcs.push(new Wanderer(game, chopWatcher, { x: chopWatchX, z: chopWatchZ, angle: atan2(chopCutX - chopWatchX, chopCutZ - chopWatchZ), leash: 0.5, speed: 0.3, idle: [3, 6],
       cries: ['Same two swings, every time.', 'Mind the chips, puss.', 'Dry wood, that — splits clean.'] })); }
 
+  // No world's own `Archer` (55-npcs.js) had a watcher until round 1264 gave the Neighborhood's own
+  // one, and round 1265 gave Candy Land its own, the second. This closes the gap here, the third of
+  // the seven — Victorian's Toxophilite lady has drawn and loosed at her straw boss since round 1030
+  // with nobody of the parish ever stopping to watch. **A lady of the parish now stands a few steps
+  // west of her, watching the next arrow find the gold.**
+  //
+  // Same `Wanderer` (55-npcs.js) shape those first two watchers already use: frozen idle (`idle: [1e9,
+  // 1e9]` plus every one of `Wanderer`'s own construction-time draws — `phase`, `timer`, `t`, `cryT` —
+  // fixed rather than pulled from `rnd()`), `angle` pointed at the archer's own fixed spot (52, -68)
+  // rather than a constant, and `rig.idleT`/`rig.blinkT` both frozen too (the same `Baller` fix those
+  // two needed, since `rig.animate()` keeps drawing from the shared `rnd()` sequence every frame
+  // regardless of controller state). No `cries`, no physics box, pure bystander, same as those two —
+  // unlike the stump-watcher just above, nothing in this town's own idx===3 checks counts Wanderers or
+  // timer crossings, but the freeze is cheap insurance against the shared `rnd()` sequence anyway.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(3, 'from-prev')` waited out against its own transitioning flag,
+  // then 2400 simulated frames sampling every NPC's own position every 10th frame) swept a 0.25 m grid
+  // 2-12 m west of the archer's own spot (52, -68) against all 611 of this town's own physics boxes,
+  // its 236 `game.zones` rectangles and every sampled NPC position: (47.5, -68) came back clearest at
+  // the same 4.5 m the first two watchers in this set stood off at — 10.64 m from the nearest box,
+  // 25.27 m clear of the nearest zone rectangle's own edge and 4.5 m from the nearest other soul (the
+  // archer herself), due west of her on open meadow and clear of the firing line (which runs due north
+  // to the target) the whole way.
+  //
+  // Built dead last of everything this town adds, right after the woodcutter's own watcher above and
+  // right before the squirrel below, for the usual reason: `makeHuman()`/`randomPerson()` both draw
+  // off this town's own shared `r()` sequence unconditionally, and anything built earlier here would
+  // have had its own timing-sensitive pick shifted by it.
+  { const awx = 47.5, awz = -68, aax = 52, aaz = -68;
+    const archerWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, coat: r.chance(0.5), scarf: null, bag: null, backpack: null, glasses: r.chance(0.2) });
+    archerWatcher.idleT = 1e6; archerWatcher.blinkT = 1e6;   // keeps rig.animate()'s own idle-gesture pick and blink-reset (both shared rnd() draws) from firing every frame and shifting checks in worlds built later in the same run
+    W.add(archerWatcher.group);
+    game.npcs.push(new Wanderer(game, archerWatcher, { x: awx, z: awz, angle: atan2(aax - awx, aaz - awz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
