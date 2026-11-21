@@ -36642,3 +36642,33 @@ environment (no browser, no Playwright), so whether the watcher's stance actuall
 the shot rather than just standing nearby is unverified. Three worlds' own archers — Sunny Shore,
 Frosty Peak, Whisper Woods — are still without a watcher, left for future rounds to close out the
 set. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1268 — Sunny Shore's archer gets a watcher too, the fifth of the seven
+
+Continuing the set rounds 1264-1267 started: Sunny Shore's own tank-top-and-shorts `Archer`
+(55-npcs.js), drawing and loosing at her straw boss on the dry sand since round 1030, picks up a
+watcher too. **A local now stands a few steps south-west of her, watching the next arrow find the
+straw boss.**
+
+Same shape as the other four: `makeHuman()`/`randomPerson()` build the rig (a plain shirt, no hat or
+coat — nothing this beach's own everyday wardrobe wouldn't already have), `Wanderer` gives it the
+frozen "stand and watch" behaviour with `idle: [1e9, 1e9]` plus every one of `Wanderer`'s own
+construction-time draws fixed rather than pulled from `rnd()`, and `rig.idleT`/`rig.blinkT` frozen too
+(the same `Baller` fix the other three watchers needed). `angle` points at the archer's own fixed spot
+(-8, -46) rather than a constant.
+
+A headless probe (`game.start('new')`, `game.travel(4, 'from-hub')` waited out against its own
+transitioning flag, then 2400 simulated frames sampling every NPC's own position every 10th frame)
+swept a 0.25 m grid 2-4.5 m out from the archer's own spot, restricted to her own side of the firing
+line rather than advanced toward the target, against all 233 of this beach's own physics boxes, its 85
+`game.zones` rectangles and every sampled NPC position: (-10, -50) came back clearest — 4.28 m from
+the nearest box, 11.48 m clear of the nearest zone rectangle's own edge and 4.47 m from the nearest
+other soul (the archer herself), on open dry sand well short of `beachRegion`'s own fill radius (58)
+and clear of the firing line the whole way.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, and Sunny
+Shore's own friend total went up by one (155 → 156 to meet). No visual check was possible in this
+environment (no browser, no Playwright), so whether the watcher's stance actually reads as watching
+the shot rather than just standing nearby is unverified. Two worlds' own archers — Frosty Peak and
+Whisper Woods — are still without a watcher, left for future rounds to close out the set. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
