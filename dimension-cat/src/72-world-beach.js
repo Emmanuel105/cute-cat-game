@@ -1662,6 +1662,39 @@ function buildBeach(game, entry) {
       hat: r.chance(0.5) ? 'cap' : null, hatColor: 0x2f4f4f, shorts: true, scarf: null, jacket: null, bag: null, backpack: null, axe: true, beard: r.chance(0.3) }); W.add(cutter.group);
     game.npcs.push(new Chopper(game, cutter, { x: cx, z: cz, ry: atan2(sx - cx, sz - cz),
       cries: ["Dry enough by sundown, with this sun.", 'Careful, puss — mind the chips.', "Tonight's fire won't build itself."] })); }
+  // `Chopper` has picked up a watcher in Candy Land, the Neighborhood, Robot City and Victorian over
+  // the last four rounds — this beach's own cutter, splitting driftwood on the sawn stump above, is
+  // the fifth of the seven. **A beachcomber now stands a few steps east of the stump, watching each
+  // log part.** *"Same two swings, every time."* *"Careful, puss — mind the chips."* *"Driest wood
+  // on the whole beach, that stump."* Saying hello makes her the usual kind of friend.
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) every other watcher in this set already uses, this
+  // world's own `beachPerson()` closure (sun-bleached wardrobe, shared with every other beach
+  // bystander) in place of a one-off wardrobe, a short leash (0.5 m) and `angle` pointed at the
+  // stump's own fixed spot (-44, -34) rather than a constant, so she reads as watching the stump and
+  // not just standing nearby. `Wanderer`'s own constructor calls `greetable()` itself, so no extra
+  // wiring was needed, and no physics box either — pure bystander, same as every other watcher in this
+  // set.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(4, 'from-hub')` waited out against its own transitioning flag —
+  // its real `setTimeout` fade-lock never clears inside a tight synchronous loop, so the wait has to
+  // yield with a real `setTimeout` of its own between `step()` calls — then 3600 simulated frames so
+  // every sandpiper, sunbather and ring-tosser had already settled, sampling every NPC's own position
+  // every frame for a further 600 frames) swept a 0.25 m grid 1.5-3.2 m out from the stump at
+  // (-44, -34) against all 257 of the beach's physics boxes and every sampled NPC position: (-41, -35)
+  // came back clearest — 2.55 m from the nearest box and 3.14 m from the nearest other soul (the
+  // cutter himself, 3.78 m off), east of the stump on ground flat to within 1.5 cm across a 0.6 m
+  // square, at radius 53.9 from the origin and clear of the radius (56-58) where `beachRegion`'s own
+  // fill is kept back, and outside every one of `game.zones`'s own rectangles.
+  //
+  // Built dead last of everything this beach adds, right after the woodcutter, so it draws from the
+  // very tail of this world's own shared `r()` sequence and disturbs no earlier wardrobe or layout
+  // pick — same placement Robot City's own watcher used two rounds back.
+  { const chopWatchX = -41, chopWatchZ = -35, chopCutX = -44, chopCutZ = -34;
+    const chopWatcher = beachPerson(true, false);
+    game.npcs.push(new Wanderer(game, chopWatcher, { x: chopWatchX, z: chopWatchZ, angle: atan2(chopCutX - chopWatchX, chopCutZ - chopWatchZ), leash: 0.5, speed: 0.3, idle: [3, 6],
+      cries: ['Same two swings, every time.', 'Careful, puss — mind the chips.', "Driest wood on the whole beach, that stump."] })); }
   // every ball game on this beach so far has been an open toss back and forth — the keep-it-up pair, the
   // frisbee, the catch down by the dunes — but no world in the whole game has ever had an actual net to
   // play over, the one piece of beach-volleyball kit the sand itself is crying out for. **A volleyball

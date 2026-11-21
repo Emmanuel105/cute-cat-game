@@ -36082,3 +36082,44 @@ status` reporting the two as having "50 and 50 different commits each" — a dis
 that's just the two branches' independent shallow horizons, not an actual divergence. A `git fetch`
 plus `git reset --hard origin/main` (tree was clean, nothing local to lose) put the working tree on
 the real tip before any work started here.
+
+## Round 1252 — Sunny Shore's own woodcutter gets a watcher, the fifth of the seven
+
+Candy Land, the Neighborhood, Robot City and Victorian have all picked up a watcher for their own
+`Chopper` over the last four rounds. This beach's own cutter, splitting driftwood on the sawn stump
+out in the western dunes, is the fifth: **a beachcomber now stands a few steps east of the stump,
+watching each log part.** *"Same two swings, every time."* *"Careful, puss — mind the chips."*
+*"Driest wood on the whole beach, that stump."* Saying hello makes her the usual kind of friend.
+
+No new class: the same `Wanderer` (55-npcs.js) every other watcher in this set already uses, this
+world's own `beachPerson()` closure (the shared sun-bleached wardrobe every other beach bystander
+wears) in place of a one-off wardrobe, a short leash (0.5 m) and `angle` pointed at the stump's own
+fixed spot (-44, -34) rather than a constant, so she reads as watching the stump and not just
+standing nearby. `Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was
+needed, and no physics box either — pure bystander.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(4, 'from-hub')`) swept a 0.25 m grid 1.5-3.2 m out from the stump
+against all 257 of the beach's physics boxes and every NPC's own sampled position over 3600+600
+simulated frames: (-41, -35) came back clearest — 2.55 m from the nearest box and 3.14 m from the
+nearest other soul (the cutter himself, 3.78 m off), ground flat to within 1.5 cm across a 0.6 m
+square, at radius 53.9 — short of the radius (58) where `beachRegion`'s own fill takes over — and
+outside every one of `game.zones`'s own rectangles. The probe's first draft hung for several minutes
+before it was caught: `game.transitioning` only clears on a real `setTimeout`, and a tight
+synchronous `while` loop around `game.step()` never lets Node's event loop fire it, so the wait has
+to yield with its own real `setTimeout` between steps (the fix used by `test/run.mjs` itself, missed
+on the first pass here).
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (pure bystander, no collider of its own), and Sunny Shore's own friend total went up
+by exactly one (153 → 154, confirmed against the previous commit with `git stash`). No visual check
+was possible in this environment (no browser, no Playwright), so whether the watcher's stance actually
+reads as watching the stump rather than just standing nearby is unverified. Two worlds' own
+woodcutters — Frosty Peak and Whisper Woods — are still chopping alone. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+Housekeeping note: this sandbox's local `main` ref had drifted to a stale commit (`0fa6791`) partway
+through this round — unrelated to this round's own edit, which lived only in the uncommitted working
+tree throughout and was unaffected. A `git fetch origin main` plus `git branch -f main origin/main` +
+`git checkout main` put the branch back on the real tip (`72e2a69`, confirmed matching
+`origin/main`) before committing.
