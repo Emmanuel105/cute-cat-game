@@ -8836,6 +8836,38 @@ function buildRobotCity(game, entry) {
       game.addInteractable({ obj: b, radius: 6.5, label: () => 'Look up at the window washer', onUse: () => { SFX.click(); game.toast(rnd.pick(washerLines), 3000); } });
     }
   });
+
+  // tower 4's own east face has carried the "MISSING: UNIT 47" poster since this was built (just
+  // above), describing a scout-bot "last seen chasing a loose bolt" and answering "to a diagnostic
+  // ping" and little else — but nothing on this floor ever actually turned up to match it, the same
+  // gap the wrench, the lollipop, the mitten, the pocket watch, the bucket and spade and the acorn
+  // stash each closed for their own world's own notice. **Unit 47 itself now lies tipped on its side
+  // on the open concrete east of that tower, both wheels in the air, antenna snapped flat — and a
+  // stray bolt a few centimetres out of its reach, the very one it was chasing.** No prompt wired to a
+  // friend, same shape every other lost-and-found item used: *"There's UNIT 47 — tipped clean over,
+  // wheels still in the air."* *"Antenna's bent flat. Hasn't answered a diagnostic ping in a while."*
+  // *"The bolt it was chasing is right there. Still hasn't caught it."*
+  //
+  // `makeUnit47()` (60-props.js, new, right after `makeWrench()`) reuses the same box-body-and-dome-
+  // head shape `makeScoutBot()` already builds its wandering drones from, minus the rig entirely —
+  // this one never moves — with its own LED gone dark (a dull red sphere, no `glowMat`) rather than lit.
+  // Like the wrench, the lollipop and the rest, it draws from no random generator at all, shared
+  // `rnd()` or this city's own seeded `r()`, so it costs no later timing-sensitive draw anywhere in the
+  // build and could have gone in anywhere; placed right after the forEach that builds its own notice,
+  // purely for readability.
+  //
+  // A headless probe (`game.start('new')`, `game.travel(2, 'from-prev')` waited out for real against
+  // its own portal-fade timer, then 3600 simulated frames sampling every NPC's own position every 10th
+  // frame) swept the open concrete east of tower 4 (-38, 0) against all 1206 of this city's own
+  // physics boxes (knee-to-head band only), every one of its 296 `game.zones` rectangles and every
+  // sampled NPC position: (-28.5, -2.75) came back clearest within 8 m of the poster's own wall spot
+  // (-34.98, 0) — 6.49 m from the nearest box, 6.65 m from the nearest other soul and 42.4 m clear of
+  // the nearest zone rectangle, 7.04 m from the poster itself.
+  { const u47x = -28.5, u47z = -2.75;
+    const unit47 = place(game, U, makeUnit47(), u47x, u47z, 0.4);
+    const unit47Lines = ['🤖 "There\'s UNIT 47 — tipped clean over, wheels still in the air."', '🤖 "Antenna\'s bent flat. Hasn\'t answered a diagnostic ping in a while."', '🤖 "The bolt it was chasing is right there. Still hasn\'t caught it."'];
+    game.addInteractable({ obj: unit47, radius: 1.5, label: () => 'Look at Unit 47', onUse: () => { SFX.crackle(); game.toast(rnd.pick(unit47Lines), 3000); } }); }
+
   // east yard: a second factory line, a plaza with a giant robot statue to the west, more lights and neon
   const conv2 = makeConveyor(game, 44, 12, 12, 1); U.push(conv2.userData.update); const arm2 = makeRobotArm(game, 50, 2); U.push(arm2.userData.update);
   // the statue, the furnace and the robot arm all got their own "walk up and look" toast by now, but

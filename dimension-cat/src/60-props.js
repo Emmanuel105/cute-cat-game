@@ -1422,6 +1422,27 @@ function makeWrench(color = 0x9aa0a8) {
   mesh(G.torus(0.05, 0.015, 6, 12), steel, { x: -0.44, y: 0.025, rx: PI / 2, shadow: 'none', parent: g });
   return g;
 }
+/** Unit 47, the palm-sized scout-bot named on this yard's own "MISSING" poster: tipped clean over on
+ * its side, both wheels in the air, antenna snapped flat and its one LED gone dark. Built from the
+ * same box-body-dome-head shape `makeScoutBot()` uses, minus the rig — this one's dead, not wandering
+ * — plus a stray bolt a few centimetres out of reach, since the poster says that's what it was chasing
+ * when it went missing. Pure static scenery, same footing as the dropped wrench above: no physics box,
+ * no `userData.update`. */
+function makeUnit47() {
+  const g = new THREE.Group();
+  const steel = mat(0x7a8a9a, { metalness: 0.65, roughness: 0.4 }), dark = mat(0x2e3238, { metalness: 0.5, roughness: 0.55 }), dead = mat(0x5a2020, { roughness: 0.65 });
+  const bot = group(0, 0.11, 0, g);
+  mesh(G.box(0.22, 0.17, 0.27), steel, { y: 0.1, parent: bot });
+  for (const sx of [1, -1]) mesh(G.cyl(0.065, 0.065, 0.035, 12), dark, { x: sx * 0.13, y: 0.1, rz: PI / 2, parent: bot });
+  const dome = group(0, 0.195, 0.05, bot);
+  mesh(G.sphere(0.085, 14, 10), steel, { sy: 0.65, parent: dome });
+  mesh(G.sphere(0.024, 8, 6), dead, { y: 0.01, z: 0.08, shadow: 'none', parent: dome });
+  mesh(G.cyl(0.005, 0.005, 0.09, 6), dark, { y: 0.09, rz: 0.9, parent: dome });
+  mesh(G.sphere(0.016, 8, 6), dead, { x: 0.065, y: 0.14, shadow: 'none', parent: dome });
+  bot.rotation.z = PI / 2 * 0.98;
+  mesh(G.cyl(0.018, 0.009, 0.02, 6), dark, { x: 0.22, y: 0.01, z: 0.05, parent: g });
+  return g;
+}
 function makeSkyscraper(w, h, d, seed) {
   const g = new THREE.Group(), f = TEX.facade(seed % 6);
   const side = mat(0x161a24, { roughness: 0.6, metalness: 0.3, map: f.map, emissiveMap: f.emissive, emissive: 0xffffff, emissiveIntensity: 1.1 });

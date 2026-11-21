@@ -36843,3 +36843,46 @@ no Playwright) — only the test suite and the headless probe above confirmed th
 meant to and answers its own greeting; the organ grinder's set stays the one with four worlds, not
 seven, so this is a one-off flourish rather than the start of a new cross-world set. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1274 — Robot City's own missing Unit 47, found
+
+One of the six hand-placed towers in Robot City's factory yard has carried a "MISSING: UNIT 47" poster
+on its east face since that tower was built — a scout-bot "last seen chasing a loose bolt," answering
+"to a diagnostic ping" and "doesn't answer to much else" — but nothing on that floor had ever actually
+turned up to match it, unlike the five other worlds, each of which already closed out its own
+lost-and-found notice (the mitten, the pocket watch, the bucket and spade, the lollipop, the acorn
+stash, rounds 1244-1255). This round paid Robot City's own notice off. **Unit 47 itself now lies
+tipped on its side on the open concrete east of that tower, both wheels in the air, antenna snapped
+flat — and a stray bolt a few centimetres out of its reach, the very one it was chasing.** No prompt
+wired to a friend, same look-and-toast shape every other lost item used: *"There's UNIT 47 — tipped
+clean over, wheels still in the air."* *"Antenna's bent flat. Hasn't answered a diagnostic ping in a
+while."* *"The bolt it was chasing is right there. Still hasn't caught it."*
+
+`makeUnit47()` (60-props.js, new, right after `makeWrench()`) reuses the same box-body-and-dome-head
+shape `makeScoutBot()` already builds its wandering drones from, minus the rig entirely — this one
+never moves, and its own LED is a dull dead-red sphere with no `glowMat`, rather than lit. Like the
+wrench and every lost item before it, it draws from no random generator at all, not the shared global
+`rnd()`, not this city's own seeded `r()`, so it costs no later timing-sensitive draw anywhere in the
+build and could have gone in anywhere; placed right after the forEach loop that builds its own poster,
+purely for readability. No new physics box, no `userData.update`.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(2, 'from-prev')` waited out for real against its own portal-fade
+timer, then 3600 simulated frames sampling every NPC's own position every 10th frame) swept the open
+concrete east of the poster's own tower (-38, 0) against all 1206 of this city's own physics boxes
+(knee-to-head band only), every one of its 296 `game.zones` rectangles and every sampled NPC position:
+(-28.5, -2.75) came back clearest within 8 m of the poster's own wall spot (-34.98, 0) — 6.49 m from
+the nearest box, 6.65 m from the nearest other soul and 42.4 m clear of the nearest zone rectangle,
+7.04 m from the poster itself.
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt: exit 0, all 277 checks `ok`, 0
+console warnings, box count unchanged at 334 (no new collider, as expected for a prop with no
+footprint), and Robot City's own friend total unchanged (set dressing, not a friend). No visual check
+was possible in this environment (no browser, no Playwright), so whether the tipped-over robot actually
+reads as fallen rather than just an odd grey lump on the concrete is unverified — and whether anyone
+ever connects it back to the poster on the tower wall is left entirely to the player. Six of the seven
+worlds now have a lost-and-found notice answered by something that genuinely matches what it
+describes — the Neighborhood's own "LOST CAT — Mittens" notice on the park lamp (round 462) is the one
+holdout, and deliberately so: it was never a found-object joke to begin with, just an unrelated cat
+the player's own cat has no way to produce. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.
