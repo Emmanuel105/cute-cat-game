@@ -22768,6 +22768,29 @@ function buildVictorian(game, entry) {
     W.add(kiteKid.group);
     game.npcs.push(new KiteFlyer(game, kiteKid, makeKite(0x8a3a3a, 0xd9c9a8), { x: 50, z: 55, wind: [0.85, 0.3],
       cries: ['Caught the wind off the clock tower, this one did!', "Mind you don't trip the string, puss.", 'Highest it\'s flown all week.'] })); }
+  // Robot City, the Neighborhood and Candy Land have all picked up a kite-flyer watcher since round 1256
+  // started the set — no kite flyer in any of the seven worlds had ever had one, every other
+  // single-performer act (the detectorist, the juggler, the unicyclist and the rest) long since getting
+  // one. This is the fourth, Victorian's own.
+  // **A passer-by now stands west of the kite kid, watching him fly it.** No cries of her own — same
+  // `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js) every other watcher in this set
+  // uses, the same "stand and watch" behaviour, a short leash (0.4 m) and `angle` pointed at the kite
+  // kid's own fixed spot (50, 55) rather than a constant, so she reads as watching him fly it rather
+  // than just standing nearby. `Wanderer`'s own constructor calls `greetable()` itself, so no extra
+  // wiring was needed, and no physics box either — pure bystander.
+  // A headless probe (`game.travel(3, 'from-prev')`, then 1800 simulated frames sampling every NPC's
+  // own position every 10th frame so the tag pair, the ring dancers, the swing, seesaw and catch games
+  // had all been seen moving) swept a 0.25 m grid 2-4.5 m out from the kite kid's own spot against all
+  // 599 of this town's own physics boxes (knee-to-head band only), its 236 `game.zones` rectangles and
+  // every sampled NPC position: (45.5, 55) came back clearest — 8.8 m from the nearest box, 11.3 m
+  // clear of the nearest zone rectangle's own edge and 4.5 m from the nearest other soul (the kite kid
+  // himself), due west of him on open grass, still well inside the radius (80) kept clear of
+  // victorianRegion's procedural fill.
+  { const vw2x = 45.5, vw2z = 55, vk2x = 50, vk2z = 55;
+    const kiteWatcher4 = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: r.chance(0.3) });
+    W.add(kiteWatcher4.group);
+    game.npcs.push(new Wanderer(game, kiteWatcher4, { x: vw2x, z: vw2z, angle: atan2(vk2x - vw2x, vk2z - vw2z), leash: 0.4, speed: 0.3, idle: [3, 6] })); }
   // the Neighborhood, Candy Land, Robot City, Sunny Shore, Frosty Peak and Whisper Woods all have a
   // Detectorist sweeping for buried treasure by now — Victorian was the last of the seven left without
   // one, past the mudlark's own pan of canal mud. One works the quiet grass west of the games cluster,

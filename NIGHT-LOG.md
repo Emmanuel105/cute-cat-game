@@ -36346,3 +36346,35 @@ browser, no Playwright), so whether the watcher's stance actually reads as watch
 than just standing nearby is unverified, same caveat as the previous two. Four worlds' own kite flyers
 — Victorian, Sunny Shore, Frosty Peak and Whisper Woods — are still without a watcher, left for future
 rounds. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1259 — Victorian's own kite flyer gets a watcher, the fourth of the seven
+
+Continuing the set round 1256 started: no kite flyer in any of the seven worlds had ever had a
+watcher, and Robot City, the Neighborhood and Candy Land picked up theirs in rounds 1256-1258. This
+one does Victorian, the kite kid flying from the north bank's grass verge east of the town's other
+games (tag, the ring dance, catch, the swing and seesaw) since the kite itself was added giving the
+town its fifth game on that verge.
+
+**A passer-by now stands west of him, watching him fly it.** No new class or mesh — the usual
+`makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js), the same "stand and watch" behaviour
+every other watcher in this set uses, with `angle` pointed at the kite kid's own fixed spot (50, 55)
+rather than a constant. Saying hello makes her the usual kind of friend; `Wanderer`'s own constructor
+calls `greetable()` itself, so no extra wiring was needed, and no physics box either — pure bystander.
+
+A headless probe (`game.travel(3, 'from-prev')`, then 1800 simulated frames sampling every NPC's own
+position every 10th frame so the tag pair, the ring dancers, the swing, seesaw and catch games had all
+been seen moving) swept a 0.25 m grid 2-4.5 m out from the kite kid's own spot against all 599 of this
+town's own physics boxes (knee-to-head band only), its 236 `game.zones` rectangles and every sampled
+NPC position: (45.5, 55) came back clearest — 8.8 m from the nearest box, 11.3 m clear of the nearest
+zone rectangle's own edge and 4.5 m from the nearest other soul (the kite kid himself), due west of him
+on open grass, well inside the radius (80) the town's own builder keeps clear of victorianRegion's
+procedural fill.
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt at this spot: exit 0, all 277 checks
+`ok`, 0 console warnings, box count unchanged at 334 (pure bystander, no collider of its own). A
+`git stash`/pop against the working tree confirmed Victorian's own friend total went up by exactly one
+(180 → 181) and no other file was touched. No visual check was possible in this environment (no
+browser, no Playwright), so whether the watcher's stance actually reads as watching the kite rather
+than just standing nearby is unverified, same caveat as the previous three. Three worlds' own kite
+flyers — Sunny Shore, Frosty Peak and Whisper Woods — are still without a watcher, left for future
+rounds. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
