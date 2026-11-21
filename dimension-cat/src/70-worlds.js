@@ -8522,6 +8522,37 @@ function buildCandyLand(game, entry) {
     game.npcs.push(new Wanderer(game, chopWatcher, { x: chopWx, z: chopWz, angle: atan2(chopCutX - chopWx, chopCutZ - chopWz), leash: 0.5, speed: 0.3, idle: [3, 6],
       cries: ['Same two swings, every time — left, then right, then it\'s done.', 'Careful, puss — a chip went wide of me once.', 'He never once misses the grain.'] })); }
 
+  // No world's own `Archer` (55-npcs.js) had a watcher until round 1264 gave the Neighborhood's own one,
+  // the first of the seven. This gives Candy Land its own, the second. **A local now stands a few steps
+  // west of her, watching the next arrow find the straw boss.**
+  //
+  // Same `Wanderer` (55-npcs.js) shape the woodcutter's own watcher just above already uses: frozen idle
+  // (`idle: [1e9, 1e9]` plus every one of `Wanderer`'s own construction-time draws — `phase`, `timer`,
+  // `t`, `cryT` — fixed rather than pulled from `rnd()`), `angle` pointed at the archer's own fixed spot
+  // (17, -46) rather than a constant, and `rig.idleT`/`rig.blinkT` both frozen too (the same `Baller`
+  // fix the Neighborhood's own watcher needed, since `rig.animate()` keeps drawing from the shared
+  // `rnd()` sequence every frame regardless of controller state). No `cries`, no physics box, pure
+  // bystander, same as that one.
+  //
+  // A headless probe (`game.start('new')`, `game.travel(1, 'from-prev')` waited out against its own
+  // portal-fade timer, then 3600 simulated frames sampling every NPC's own position every 10th frame)
+  // swept a 0.25 m grid 2-4.5 m out from the archer's own spot (17, -46) against all of this land's
+  // own physics boxes, its 452 `game.zones` rectangles and every sampled NPC position: (12.5, -46) came
+  // back clearest — 5.7 m from the nearest box, 23.7 m clear of the nearest zone rectangle's own edge
+  // and 4.5 m from the nearest other soul (the archer herself), due west of her on open ground and 4.2
+  // m clear of her own firing line the whole way.
+  //
+  // Built dead last of everything this land adds, right after the woodcutter's own watcher above, for
+  // the usual reason: `makeHuman()`/`randomPerson()` both draw off this land's own shared `r()` sequence
+  // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted by
+  // it.
+  { const awx = 12.5, awz = -46, aax = 17, aaz = -46;
+    const archerWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x6a7a9a, hat: null, jacket: null, scarf: null, bag: null, backpack: null });
+    archerWatcher.idleT = 1e6; archerWatcher.blinkT = 1e6;   // keeps rig.animate()'s own idle-gesture pick and blink-reset (both shared rnd() draws) from firing every frame and shifting the Talkers checks downstream
+    W.add(archerWatcher.group);
+    game.npcs.push(new Wanderer(game, archerWatcher, { x: awx, z: awz, angle: atan2(aax - awx, aaz - awz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

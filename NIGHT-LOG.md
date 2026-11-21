@@ -36545,3 +36545,33 @@ Playwright), so whether the watcher's stance actually reads as watching the shot
 standing nearby is unverified. Six worlds' own archers are still without a watcher, left for future
 rounds to close out the set. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 1265 — Candy Land's archer gets a watcher too, the second of the seven
+
+Continuing the set round 1264 started: Candy Land's own `Archer` (55-npcs.js), who has loosed arrow
+after arrow at her straw boss on the open field by the pogo kid since round ~1030, picks up a watcher
+too. **A local now stands a few steps west of her, watching the next arrow find the boss.**
+
+Same shape as the Neighborhood's own watcher: `makeHuman()`/`randomPerson()` build the rig, `Wanderer`
+gives it the "stand and watch" behaviour with `idle: [1e9, 1e9]` plus every one of `Wanderer`'s own
+construction-time draws (`phase`, `timer`, `t`, `cryT`) fixed rather than pulled from `rnd()`, and
+`rig.idleT`/`rig.blinkT` frozen too (the `Baller` fix) so `rig.animate()`'s own idle-gesture and blink
+draws off the shared `rnd()` sequence don't shift the Talkers pair's turn-taking test. `angle` points
+at the archer's own fixed spot (17, -46) rather than a constant. No `cries`, no physics box, pure
+bystander — Candy Land has never enforced unique shirt colours the way the Neighborhood does, so the
+shirt (0x6a7a9a) needed no check against the rest of the land's wardrobe.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(1, 'from-prev')` waited out, 3600 simulated frames sampling every
+NPC's own position every 10th frame) swept a 0.25 m grid 2-4.5 m out from the archer's own spot
+(17, -46) against all of this land's own physics boxes, its 452 `game.zones` rectangles and every
+sampled NPC position: (12.5, -46) came back clearest — 5.7 m from the nearest box, 23.7 m clear of
+the nearest zone rectangle's own edge and 4.5 m from the nearest other soul (the archer herself), due
+west of her on open ground and 4.2 m clear of her own firing line the whole way.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, and
+Candy Land's own friend total went up by one (135 → 136 to meet). No visual check was possible in
+this environment (no browser, no Playwright), so whether the watcher's stance actually reads as
+watching the shot rather than just standing nearby is unverified. Five worlds' own archers are still
+without a watcher, left for future rounds to close out the set. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
