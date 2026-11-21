@@ -36473,3 +36473,35 @@ was possible in this environment (no browser, no Playwright), so whether the wat
 actually reads as watching the kite rather than just standing nearby is unverified, same caveat as
 the previous six. All seven worlds now have a kite-flyer watcher; the set started in round 1256 is
 closed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1263 — the Neighborhood's own magician finally gets a watcher too
+
+Candy Land, Robot City and Victorian's magicians each work to a little crowd of onlookers by now;
+the Neighborhood's own magician — reused verbatim from `Magician` (55-npcs.js) back when it first
+came to this street — never got one.
+
+**A neighbour now stands a few steps east of him on the lawn, watching the coin trick and never
+catching how it's done either.** No new class or mesh — the same `makeHuman()`/`randomPerson()` rig
+and `Wanderer` (55-npcs.js) this street's other watchers (the chopper's and the kite kid's) already
+use, with `angle` pointed at the magician's own fixed spot (60, -49) rather than a constant, and the
+same frozen-idle shape (`idle: [1e9, 1e9]`, `phase`/`timer`/`t`/`cryT` all fixed) round 1197 settled
+on for this exact street so a new `Wanderer` here never draws an extra tick of the shared global
+`rnd()` sequence out from under the `Talkers` pair's own turn-taking test. Saying hello makes her the
+usual kind of friend; `Wanderer`'s own constructor calls `greetable()` itself. No physics box, pure
+bystander.
+
+A headless probe (1800 simulated frames sampling every NPC's own position every 10th frame so the
+stilt-walker, the hula-hooper and everyone else had all been seen moving) swept a 0.25 m grid 2-4.5 m
+out from the magician's own spot against all 334 of this street's own physics boxes (knee-to-head
+band only), its `game.zones` rectangles and every sampled NPC position (the magician's own excluded):
+(64.5, -49) came back clearest — 10.1 m from the nearest box, 18 m clear of the nearest zone
+rectangle's own edge and 9 m from the nearest other soul, due east of him on open lawn.
+
+First attempt at her shirt colour (`0x8a6a4a`) tripped the "no two neighbours wear the same shirt"
+check — it turned out to match an existing one exactly among this street's 96 other colours — so she
+got `0x9a6a8a` instead. With that fix, `node dimension-cat/test/run.mjs` ran clean: exit 0, all 277
+checks `ok`, 0 console warnings, box count unchanged at 334, and the Neighborhood's own friend total
+went up by exactly one (132 → 133, "133 to meet"). No visual check was possible in this environment
+(no browser, no Playwright), so whether her stance actually reads as watching the trick rather than
+just standing nearby is unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.
