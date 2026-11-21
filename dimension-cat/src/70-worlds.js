@@ -4751,6 +4751,32 @@ function buildNeighborhood(game, entry) {
     W.add(chopWatcher.group);
     game.npcs.push(new Wanderer(game, chopWatcher, { x: chopWx, z: chopWz, angle: atan2(chopCutX - chopWx, chopCutZ - chopWz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // round 1256 noticed the gap: no kite flyer in any of the seven worlds has ever had a watcher, and
+  // started closing it, Robot City first. This closes it here, the second of the seven. **A neighbour
+  // now stands on the lawn south of the kite kid, head tipped back, watching it climb.**
+  //
+  // Same `Wanderer` (55-npcs.js) every other watcher on this street already uses, built with the
+  // frozen-idle shape round 1197 settled on for this exact street (`idle: [1e9, 1e9]` plus every one
+  // of `Wanderer`'s own construction-time draws — `phase`, `timer`, `t`, `cryT` — fixed rather than
+  // pulled from `rnd()`), so it never once crosses `move()`'s own timer-expiry branch and never draws
+  // an extra tick of the shared global `rnd()` sequence out from under this street's own `Talkers`
+  // pair. `angle` points at the kite kid's own fixed spot (22, 52) rather than a constant, so she
+  // reads as watching him fly it and not just standing nearby. No `cries`, same as the digger and
+  // chopper watchers that fix was built for; no physics box either, pure bystander.
+  //
+  // A headless probe (`game.start('new')`, 3600 simulated frames sampling every NPC's own position
+  // every 10th frame against every physics box in the knee-to-head band) swept a 0.25 m grid 2-4.5 m
+  // out from the kite kid's own spot against all 310 of this street's own physics boxes, its 69
+  // `game.zones` rectangles and every sampled NPC position: (22, 47.5) came back clearest — 5.89 m
+  // from the nearest box, 6.5 m clear of the nearest zone rectangle's own edge and 4.5 m from the
+  // nearest other soul, due south of the kite kid on open lawn, well short of the tetherball pair at
+  // (18, 40). Built dead last of everything this street adds, right before `makeDayNight()`.
+  { const kwx = 22, kwz = 47.5, kkx = 22, kkz = 52;
+    const kiteWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x5a7a9a, hat: null, jacket: null, scarf: null, bag: null, backpack: null });
+    W.add(kiteWatcher.group);
+    game.npcs.push(new Wanderer(game, kiteWatcher, { x: kwx, z: kwz, angle: atan2(kkx - kwx, kkz - kwz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

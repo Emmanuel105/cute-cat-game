@@ -36279,3 +36279,36 @@ browser, no Playwright), so whether the watcher's stance actually reads as watch
 than just standing nearby is unverified. The other six worlds' own kite flyers are still without a
 watcher, left for future rounds, same one-at-a-time pattern as everywhere else in this log. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1257 — the Neighborhood's own kite flyer gets a watcher, the second of the seven
+
+Continuing the set round 1256 started in Robot City: no kite flyer in any of the seven worlds had
+ever had a watcher until that round, and the plan was always one world at a time. This one does the
+Neighborhood, the kite kid flying from the open lawn in the park's north-east corner since round 266.
+
+**A neighbour now stands on the lawn south of him, head tipped back, watching it climb.** No new
+class or mesh — the usual `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js), the same
+"stand and watch" behaviour every other watcher here uses, with `angle` pointed at the kite kid's own
+fixed spot (22, 52) rather than a constant. Unlike Robot City's version, this one is built with the
+frozen-idle shape round 1197 settled on for this exact street (`idle: [1e9, 1e9]` plus `phase`,
+`timer`, `t` and `cryT` all fixed rather than drawn from `rnd()`), because this street already runs a
+`Talkers` pair whose own turn-taking test depends on the shared global `rnd()` sequence not shifting
+under it, and any ordinary `Wanderer` that ever idles out and re-rolls a new wander target draws from
+that same sequence. Saying hello makes her the usual kind of friend; `Wanderer`'s own constructor
+calls `greetable()` itself, so no extra wiring was needed, and no physics box either — pure bystander.
+
+A headless probe (`game.start('new')`, 3600 simulated frames sampling every NPC's own position every
+10th frame against every physics box in the knee-to-head band) swept a 0.25 m grid 2-4.5 m out from
+the kite kid's own spot against all 310 of this street's own physics boxes, its 69 `game.zones`
+rectangles and every sampled NPC position: (22, 47.5) came back clearest — 5.89 m from the nearest
+box, 6.5 m clear of the nearest zone rectangle's own edge and 4.5 m from the nearest other soul, due
+south of the kite kid on open lawn, well short of the tetherball pair at (18, 40).
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt: exit 0, all 277 checks `ok`, 0
+console warnings, box count unchanged at 334 (pure bystander, no collider of its own), and the
+Neighborhood's own friend total went up by exactly one (131 → 132, confirmed with a `git stash`/pop
+against the working tree). No visual check was possible in this environment (no browser, no
+Playwright), so whether the watcher's stance actually reads as watching the kite rather than just
+standing nearby is unverified, same caveat as Robot City's version. Five worlds' own kite flyers —
+Candy Land, Victorian, Sunny Shore, Frosty Peak and Whisper Woods — are still without a watcher, left
+for future rounds. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
