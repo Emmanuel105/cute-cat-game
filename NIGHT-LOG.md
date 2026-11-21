@@ -36777,3 +36777,33 @@ environment (no browser, no Playwright), so whether the watcher's stance actuall
 the bounce rather than just standing nearby is unverified. `PogoHopper` now has a watcher in every
 world — this set, open since round 1147, is finally closed. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1272 — Whisper Woods' own lost acorn stash, found
+
+Frosty Peak's mitten, Victorian's pocket watch, Sunny Shore's bucket and spade and Candy Land's
+lollipop have all had their matching "lost" notice paid off by now (rounds 1244-1255) — Whisper
+Woods' own notice, nailed to an inner-ring tree since round 465 ("LOST: one entire winter's stash of
+acorns... — A Squirrel"), was the one left with nothing to go with it. **A small pile of acorns now
+lies spilled in a quiet patch of leaf litter east of the clearing**, a couple tipped onto their sides,
+as if whoever was carrying them set them down and never came back. No prompt, no greeting — the same
+pure walk-past scenery as the pinecone a few rounds back.
+
+`makeAcornStash()` (62-props-nature.js, new) reuses the exact tapered-sphere-body-and-conical-cap
+acorn the draughts table's own playing pieces already use, just six of them loosely clustered instead
+of lined up on a board, with fixed (not random) offsets and tip angles. Like the pinecone and the
+mitten, it draws from no random generator at all — not the shared global `rnd()`, not this wood's own
+seeded `r()` — so dropping it in nudges no later timing-sensitive pick anywhere in the build.
+
+A headless probe (`game.start('new')` then `game.travel(6, 'from-hub')` waited out for real against
+its own portal-fade timer, then 3600 simulated frames sampling every NPC's own position every 10th
+frame) swept a 1 m grid of the hand-built core against all 322 of this wood's own physics boxes in the
+knee-to-head band and every sampled NPC position: (10, -4) came back clearest — 4.37 m from the
+nearest box, 9.92 m from the nearest soul, clear of every `game.zones` rectangle and on flat ground
+(no measurable slope across its own footprint).
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt: exit 0, all 277 checks `ok`, 0
+console warnings, box count unchanged at 334 (no new collider, as expected for a prop with no
+footprint). No visual check was possible in this environment (no browser, no Playwright), so whether
+the stash actually reads as spilled and forgotten, rather than just a brown lump in the leaves, is
+unverified — and whether anyone ever connects it back to the notice is left entirely to the player.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

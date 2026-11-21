@@ -2913,6 +2913,23 @@ function buildForest(game, entry) {
   // the radius (58) where `forestRegion()`'s own procedural fill takes over.
   placeT(game, U, makePinecone(), -22, -36, 0.9);
 
+  // The notice nailed to the inner-ring tree at (26, 4) (round 465) reads "LOST: one entire winter's
+  // stash of acorns... — A Squirrel", but nothing was ever actually dropped to go with it. **A small
+  // pile of acorns now lies spilled in a quiet patch of leaf litter east of the clearing**, a couple
+  // tipped onto their sides, as if whoever was carrying them set them down and never came back.
+  // `makeAcornStash()` (62-props-nature.js, new) reuses the exact tapered-sphere-body-and-conical-cap
+  // acorn the draughts table's own playing pieces already use, just six of them loosely clustered
+  // instead of lined up on a board. Pure static mesh, no physics box, no `userData.update` and no
+  // random generator at all — not the shared global `rnd()`, not this wood's own seeded `r()` — so it
+  // can be dropped in anywhere without nudging a single later timing-sensitive draw.
+  // A headless probe (`game.start('new')` then `game.travel(6, 'from-hub')` waited out for real
+  // against its own portal-fade timer, then 3600 simulated frames sampling every NPC's own position
+  // every 10th frame) swept a 1 m grid of the hand-built core against all 322 of this wood's own
+  // physics boxes in the knee-to-head band and every sampled NPC position: (10, -4) came back
+  // clearest — 4.37 m from the nearest box, 9.92 m from the nearest soul, clear of every `game.zones`
+  // rectangle and on flat ground (no measurable slope across its own footprint).
+  placeT(game, U, makeAcornStash(), 10, -4, -0.4);
+
   forestRegion(game, U, r, 58, WOODS_LIMIT - 8);
   makeHorizon(game, r, { clear: WOODS_LIMIT + 8, hills: true, hill: 0x2f4a30, rock: 0x3a4a3a, rock2: 0x44505a, snow: 0xdfe8f0, snowLine: 52, peaks: 28, woodCount: 460, woodBand: 44, woodHue: [0.26, 0.36], woodLight: [0.1, 0.2], trunk: 0x3a2a1c });
   // hollow oak home (north end of the stepping-stone path)

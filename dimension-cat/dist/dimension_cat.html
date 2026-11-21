@@ -8152,6 +8152,27 @@ function makeDroppedMitten(bodyHue = 0xd62839, cuffHue = 0xf7f3ec) {
   g.rotation.x = -0.14; g.rotation.z = 0.1; // knocked over onto its back, not lying dead flat
   return g;
 }
+/** A small forgotten stash of acorns, spilled into the leaf litter rather than tucked into a hollow —
+ *  the thing the "LOST: one entire winter's stash of acorns" notice nailed to the inner-ring tree is
+ *  presumably about, though nothing on site says so. Six acorns (the same tapered-sphere body and
+ *  short conical cap the draughts table's own playing pieces already use) in a loose cluster, a couple
+ *  tipped on their sides. Pure static mesh, no physics box and no `userData.update` — a walk-past find,
+ *  not a greet or a "look" prompt. Takes no random generator at all, so dropping it in draws from
+ *  neither the shared global `rnd()` sequence nor a world's own seeded `r()` — it can go anywhere, in
+ *  any build order, without nudging a single later draw. */
+function makeAcornStash() {
+  const g = new THREE.Group();
+  const bodyM = mat(0xcfa15a, { roughness: 0.6 }), capM = mat(0x5a3a20, { roughness: 0.8 });
+  const offsets = [[0, 0, 0, 0.3], [0.05, 0.1, 0.15, -0.5], [-0.07, 0.45, 0.04, 1.1], [0.08, 1.0, -0.08, 2.4], [-0.05, 1.55, -0.12, -1.6], [0.02, 2.0, 0.1, 0.8]];
+  for (const [dx, a, dz, tip] of offsets) {
+    const r = 0.12, x = cos(a) * r + dx, z = sin(a) * r + dz;
+    const acorn = group(x, 0, z, g);
+    acorn.rotation.z = tip; acorn.rotation.x = cos(a) * 0.25;
+    mesh(G.sphere(0.034, 8, 6), bodyM, { y: 0.03, sy: 0.9, shadow: 'cast', parent: acorn });
+    mesh(G.cyl(0.038, 0.03, 0.026, 8), capM, { y: 0.054, shadow: 'none', parent: acorn });
+  }
+  return g;
+}
 
 
 // ============================================================================
@@ -34942,6 +34963,23 @@ function buildForest(game, entry) {
   // rectangle's own edge, flat ground (under 4 cm of slope across its own footprint), well short of
   // the radius (58) where `forestRegion()`'s own procedural fill takes over.
   placeT(game, U, makePinecone(), -22, -36, 0.9);
+
+  // The notice nailed to the inner-ring tree at (26, 4) (round 465) reads "LOST: one entire winter's
+  // stash of acorns... — A Squirrel", but nothing was ever actually dropped to go with it. **A small
+  // pile of acorns now lies spilled in a quiet patch of leaf litter east of the clearing**, a couple
+  // tipped onto their sides, as if whoever was carrying them set them down and never came back.
+  // `makeAcornStash()` (62-props-nature.js, new) reuses the exact tapered-sphere-body-and-conical-cap
+  // acorn the draughts table's own playing pieces already use, just six of them loosely clustered
+  // instead of lined up on a board. Pure static mesh, no physics box, no `userData.update` and no
+  // random generator at all — not the shared global `rnd()`, not this wood's own seeded `r()` — so it
+  // can be dropped in anywhere without nudging a single later timing-sensitive draw.
+  // A headless probe (`game.start('new')` then `game.travel(6, 'from-hub')` waited out for real
+  // against its own portal-fade timer, then 3600 simulated frames sampling every NPC's own position
+  // every 10th frame) swept a 1 m grid of the hand-built core against all 322 of this wood's own
+  // physics boxes in the knee-to-head band and every sampled NPC position: (10, -4) came back
+  // clearest — 4.37 m from the nearest box, 9.92 m from the nearest soul, clear of every `game.zones`
+  // rectangle and on flat ground (no measurable slope across its own footprint).
+  placeT(game, U, makeAcornStash(), 10, -4, -0.4);
 
   forestRegion(game, U, r, 58, WOODS_LIMIT - 8);
   makeHorizon(game, r, { clear: WOODS_LIMIT + 8, hills: true, hill: 0x2f4a30, rock: 0x3a4a3a, rock2: 0x44505a, snow: 0xdfe8f0, snowLine: 52, peaks: 28, woodCount: 460, woodBand: 44, woodHue: [0.26, 0.36], woodLight: [0.1, 0.2], trunk: 0x3a2a1c });

@@ -1093,3 +1093,24 @@ function makeDroppedMitten(bodyHue = 0xd62839, cuffHue = 0xf7f3ec) {
   g.rotation.x = -0.14; g.rotation.z = 0.1; // knocked over onto its back, not lying dead flat
   return g;
 }
+/** A small forgotten stash of acorns, spilled into the leaf litter rather than tucked into a hollow —
+ *  the thing the "LOST: one entire winter's stash of acorns" notice nailed to the inner-ring tree is
+ *  presumably about, though nothing on site says so. Six acorns (the same tapered-sphere body and
+ *  short conical cap the draughts table's own playing pieces already use) in a loose cluster, a couple
+ *  tipped on their sides. Pure static mesh, no physics box and no `userData.update` — a walk-past find,
+ *  not a greet or a "look" prompt. Takes no random generator at all, so dropping it in draws from
+ *  neither the shared global `rnd()` sequence nor a world's own seeded `r()` — it can go anywhere, in
+ *  any build order, without nudging a single later draw. */
+function makeAcornStash() {
+  const g = new THREE.Group();
+  const bodyM = mat(0xcfa15a, { roughness: 0.6 }), capM = mat(0x5a3a20, { roughness: 0.8 });
+  const offsets = [[0, 0, 0, 0.3], [0.05, 0.1, 0.15, -0.5], [-0.07, 0.45, 0.04, 1.1], [0.08, 1.0, -0.08, 2.4], [-0.05, 1.55, -0.12, -1.6], [0.02, 2.0, 0.1, 0.8]];
+  for (const [dx, a, dz, tip] of offsets) {
+    const r = 0.12, x = cos(a) * r + dx, z = sin(a) * r + dz;
+    const acorn = group(x, 0, z, g);
+    acorn.rotation.z = tip; acorn.rotation.x = cos(a) * 0.25;
+    mesh(G.sphere(0.034, 8, 6), bodyM, { y: 0.03, sy: 0.9, shadow: 'cast', parent: acorn });
+    mesh(G.cyl(0.038, 0.03, 0.026, 8), capM, { y: 0.054, shadow: 'none', parent: acorn });
+  }
+  return g;
+}
