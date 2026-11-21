@@ -36042,3 +36042,43 @@ check was possible in this environment (no browser, no Playwright), so whether t
 actually reads as watching the stump rather than just standing nearby is unverified. Four worlds'
 own woodcutters — Victorian, Sunny Shore, Frosty Peak and Whisper Woods — are still chopping alone.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1251 — Victorian's own woodcutter gets a watcher, the fourth of the seven
+
+Candy Land, the Neighborhood and Robot City have all picked up a watcher for their own `Chopper`
+over the last three rounds. This town's own cutter, splitting logs behind the house at x=-28, two
+doors along from the laundress, is the fourth: **a neighbour now stands a few steps south of the
+stump, watching each log part.** *"Same two swings, every time."* *"Mind the chips, puss."* *"Dry
+wood, that — splits clean."* Saying hello makes her the usual kind of friend.
+
+No new class: the same `Wanderer` (55-npcs.js) every other watcher in this game already uses, a
+plain `makeHuman()`/`randomPerson()` rig with no particular wardrobe, a short leash (0.5 m) and
+`angle` pointed at the stump's own fixed spot (-28, -20.3) rather than a constant. Unlike the
+Neighborhood's own watcher, this town's `Talkers`, `HorseCarriage`, `Lamplighter`, `Photographer`
+and `Patroller` checks all match by `constructor.name`, not by counting `Wanderer`s or how many
+times one crosses `move()`'s own timer-expiry branch, so nothing here needed freezing: a normal
+idle range (`[3, 6]`) and `cries`, same as the Robot City and Candy Land watchers.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(3, 'from-prev')` waited out against its own transitioning flag,
+then 3600 simulated frames so every carriage horse, chimney sweep, urchin and wanderer had already
+settled, sampling every NPC's own position every 10th frame for a further 600 frames) swept a
+0.25 m grid 1.8-3 m out from the stump at (-28, -20.3) against all of this town's physics boxes:
+(-28, -23.3) came back clearest — 2.75 m from the nearest box (the house's own back wall) and
+4.40 m from the nearest other soul (the cutter himself), due south of the stump and well inside
+the radius (88) where victorianRegion's own procedural fill is kept off entirely.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, 277 checks `ok`, 0 console warnings, box count
+unchanged at 334 (pure bystander, no collider of its own), and Victorian's own friend total went up
+by exactly one (179 → 180, confirmed against the previous commit with `git stash`). No visual check
+was possible in this environment (no browser, no Playwright), so whether the watcher's stance
+actually reads as watching the stump rather than just standing nearby is unverified. Three worlds'
+own woodcutters — Sunny Shore, Frosty Peak and Whisper Woods — are still chopping alone. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+Housekeeping note: this sandbox's shallow clone started with a stale local `main` ref pointing well
+short of the real tip (round 1250's own commit, confirmed authoritative on GitHub), with `git
+status` reporting the two as having "50 and 50 different commits each" — a disjoint-looking diff
+that's just the two branches' independent shallow horizons, not an actual divergence. A `git fetch`
+plus `git reset --hard origin/main` (tree was clean, nothing local to lose) put the working tree on
+the real tip before any work started here.
