@@ -870,6 +870,26 @@ function buildBeach(game, entry) {
       lines: ["Best week of the summer, this.", 'You say that every year.', 'And I mean it every year.', "Tide's coming in - we'll want to move those towels."] })); }
   // a boy flying a kite on the dunes, the wind off the sea carrying it inland and up
   game.npcs.push(new KiteFlyer(game, beachPerson(false, true), makeKite(0xd62839, 0xf2c744), { x: -4, z: 40, wind: [-0.55, 0.85], cries: ['Look at it go!', "The wind's just right today.", 'Higher than the lighthouse!'] }));
+  // Robot City, the Neighborhood, Candy Land and Victorian have all picked up a kite-flyer watcher
+  // since round 1256 started the set — no kite flyer in any of the seven worlds had ever had one,
+  // every other single-performer act (the detectorist, the juggler, the unicyclist and the rest) long
+  // since getting one. This is the fifth, Sunny Shore's own.
+  // **A passer-by now stands west of the kite kid on the dunes, watching him fly it.** No cries of her
+  // own — the same `beachPerson()` rig this beach already builds every other plain passer-by from, and
+  // `Wanderer` (55-npcs.js) for the usual "stand and watch" behaviour every other watcher in this set
+  // uses, with a short leash (0.4 m) and `angle` pointed at the kite kid's own fixed spot (-4, 40)
+  // rather than a constant, so she reads as watching him fly it rather than just standing nearby.
+  // `Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was needed, and no
+  // physics box either — pure bystander.
+  // A headless probe (`game.travel(4, 'from-prev')`, then 1800 simulated frames sampling every NPC's
+  // own position every 10th frame so the sunbathers, crabs, gulls and every other wandering soul had
+  // all been seen moving) swept a 0.25 m grid 2-4.5 m out from the kite kid's own spot against all 147
+  // of this coast's own physics boxes (knee-to-head band only), its 89 `game.zones` rectangles and
+  // every sampled NPC position: (-8.5, 40) came back clearest at that distance — 6.5 m from the
+  // nearest box, 15.4 m clear of the nearest zone rectangle's own edge and the full 4.5 m from the
+  // kite kid himself, due west of him in the dune grass.
+  { const kwx = -8.5, kwz = 40, kkx = -4, kkz = 40;
+    game.npcs.push(new Wanderer(game, beachPerson(r.chance(0.5), false), { x: kwx, z: kwz, angle: atan2(kkx - kwx, kkz - kwz), leash: 0.4, speed: 0.3, idle: [3, 6] })); }
   // the Neighborhood, Robot City, Victorian and Candy Land all have their own `CrossingGuard`
   // (55-npcs.js — raise/lower lollipop-sign cycle, `Birder`'s binocular-raise with a sign on a pole
   // in place of the glasses) but Sunny Shore never got one; Frosty Peak and Whisper Woods still don't.

@@ -36378,3 +36378,34 @@ browser, no Playwright), so whether the watcher's stance actually reads as watch
 than just standing nearby is unverified, same caveat as the previous three. Three worlds' own kite
 flyers — Sunny Shore, Frosty Peak and Whisper Woods — are still without a watcher, left for future
 rounds. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1260 — Sunny Shore's kite flyer gets a watcher, the fifth of the seven
+
+Continuing the set round 1256 started: no kite flyer in any of the seven worlds had ever had a
+watcher, and Robot City, the Neighborhood, Candy Land and Victorian picked up theirs in rounds
+1256-1259. This one does Sunny Shore, the kite kid flying from his usual patch of dune sand west of
+the beach huts, wind carrying it inland off the sea.
+
+**A passer-by now stands west of him in the dune grass, watching him fly it.** No new class or mesh —
+the same `beachPerson()` rig this beach already builds every other plain passer-by from, and
+`Wanderer` (55-npcs.js) for the usual "stand and watch" behaviour every other watcher in this set
+uses, with `angle` pointed at the kite kid's own fixed spot (-4, 40) rather than a constant. Saying
+hello makes her the usual kind of friend; `Wanderer`'s own constructor calls `greetable()` itself, so
+no extra wiring was needed, and no physics box either — pure bystander.
+
+A headless probe (`game.travel(4, 'from-prev')`, then 1800 simulated frames sampling every NPC's own
+position every 10th frame so the sunbathers, crabs, gulls and every other wandering soul had all been
+seen moving) swept a 0.25 m grid 2-4.5 m out from the kite kid's own spot against all 147 of this
+coast's own physics boxes (knee-to-head band only), its 89 `game.zones` rectangles and every sampled
+NPC position: (-8.5, 40) came back clearest — 6.5 m from the nearest box, 15.4 m clear of the nearest
+zone rectangle's own edge and the full 4.5 m from the nearest other soul (the kite kid himself), due
+west of him in the dune grass.
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt at this spot: exit 0, all checks
+`ok`, 0 console warnings, box count unchanged at 334 (pure bystander, no collider of its own). A
+`git stash`/pop against the working tree confirmed Sunny Shore's own friend total went up by exactly
+one (154 → 155) and no other file was touched. No visual check was possible in this environment (no
+browser, no Playwright), so whether the watcher's stance actually reads as watching the kite rather
+than just standing nearby is unverified, same caveat as the previous four. Two worlds' own kite
+flyers — Frosty Peak and Whisper Woods — are still without a watcher, left for future rounds.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
