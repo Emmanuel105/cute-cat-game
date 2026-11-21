@@ -36672,3 +36672,36 @@ environment (no browser, no Playwright), so whether the watcher's stance actuall
 the shot rather than just standing nearby is unverified. Two worlds' own archers — Frosty Peak and
 Whisper Woods — are still without a watcher, left for future rounds to close out the set. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1269 — Frosty Peak's archer gets a watcher too, the sixth of the seven
+
+Continuing the set rounds 1264-1268 started: Frosty Peak's own coat-and-beanie `Archer` (55-npcs.js),
+drawing and loosing at her straw boss on the snowfield southwest of the village since round 570,
+picks up a watcher too. **A local now stands a few steps northwest of her, bundled up against the
+cold, watching the next arrow find the straw boss.**
+
+Same `Wanderer` shape every watcher in this set already uses: frozen idle (`idle: [1e9, 1e9]` plus
+every one of `Wanderer`'s own construction-time draws — `phase`, `timer`, `t`, `cryT` — fixed rather
+than pulled from `rnd()`), `angle` pointed at the archer's own fixed spot (-30, -15) rather than a
+constant, and `rig.idleT`/`rig.blinkT` both frozen too (the same `Baller` fix the other five watchers
+needed). One change from the beach's and the city's own plain-shirt watchers: this mountain already
+dresses its kite flyer's and frisbee thrower's own watchers in a coat and beanie rather than a bare
+shirt, so this one gets the same treatment instead of standing out there underdressed. No `cries`, no
+physics box, pure bystander, same as the rest.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(5, 'from-hub')` waited out with a real pause, then 2400 simulated
+frames sampling every NPC's own position every 10th frame) swept a 0.25 m grid 2-6 m out from the
+archer's own spot, restricted to her own side of the firing line, against all 749 of this mountain's
+own physics boxes, its 152 `game.zones` rectangles and every sampled NPC position. This one came back
+tighter than the rest of the set — the open snow around her draws more foot traffic than the other
+six worlds' own ranges — but (-34.5, -14.5) still cleared every check comfortably: 3.38 m from the
+nearest box, 3.5 m clear of the nearest zone rectangle's own edge and 3.82 m from the nearest other
+soul, clear of the firing line the whole way.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, and Frosty
+Peak's own friend total went up by one (152 → 153 to meet). No visual check was possible in this
+environment (no browser, no Playwright), so whether the watcher's stance actually reads as watching
+the shot rather than just standing nearby is unverified. One world's own archer — Whisper Woods — is
+still without a watcher, left for a future round to close out the set. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

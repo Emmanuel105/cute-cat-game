@@ -30514,7 +30514,46 @@ function buildSnowVillage(game, entry) {
     const fletchM = mat(0xd62839, { roughness: 0.9 });
     for (let fi = 0; fi < 3; fi++) mesh(G.box(0.1, 0.002, 0.05), fletchM, { z: 0.26, rz: fi / 3 * TAU, shadow: 'none', parent: arrow });   // tail fletching
     game.npcs.push(new Archer(game, archer, arrow, { x: ax, z: az, ry: ary, dist: adist,
-      cries: ['Steadiest hands on the mountain, mine.', 'Mind the arrows, puss — none of them are aimed at you.', 'Wind off the peak throws every shot wide, but I keep trying.'] })); }
+      cries: ['Steadiest hands on the mountain, mine.', 'Mind the arrows, puss — none of them are aimed at you.', 'Wind off the peak throws every shot wide, but I keep trying.'] }));
+
+    // No world's own `Archer` (55-npcs.js) had a watcher until round 1264 gave the Neighborhood's own
+    // one, the first of the seven; Candy Land, Victorian, Robot City and Sunny Shore followed. This
+    // gives Frosty Peak its own, the sixth. **A local now stands a few steps northwest of her, bundled
+    // up against the cold, watching the next arrow find the straw boss.**
+    //
+    // Same `Wanderer` (55-npcs.js) shape every watcher in this set already uses: frozen idle
+    // (`idle: [1e9, 1e9]` plus every one of `Wanderer`'s own construction-time draws — `phase`,
+    // `timer`, `t`, `cryT` — fixed rather than pulled from `rnd()`), `angle` pointed at the archer's
+    // own fixed spot (-30, -15) rather than a constant, and `rig.idleT`/`rig.blinkT` both frozen too
+    // (the same `Baller` fix the other five watchers in this set needed, since `rig.animate()` keeps
+    // drawing from the shared `rnd()` sequence every frame regardless of controller state). One change
+    // from the beach's and the city's own plain-shirt watchers: this mountain's own kite flyer and
+    // frisbee watcher both wear a coat and beanie against the cold rather than a bare shirt, so this
+    // one does too. No `cries`, no physics box, pure bystander, same as the rest.
+    //
+    // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+    // `game.start('new')`, `game.travel(5, 'from-hub')` waited out with a real pause rather than a
+    // frame-count guess, then 2400 simulated frames sampling every NPC's own position every 10th
+    // frame) swept a 0.25 m grid 2-6 m out from the archer's own spot, restricted to her own side of
+    // the firing line rather than advanced toward the target, against all 749 of this mountain's own
+    // physics boxes, its 152 `game.zones` rectangles and every sampled NPC position: (-34.5, -14.5)
+    // came back clearest among the balanced spots — 3.38 m from the nearest box, 3.5 m clear of the
+    // nearest zone rectangle's own edge and 3.82 m from the nearest other soul, northwest of the
+    // archer on open snow and well clear of the firing line, which runs due south from her to the
+    // target.
+    //
+    // Built dead last of everything this mountain adds, right after the archer herself, for the usual
+    // reason: `makeHuman()`/`randomPerson()` both draw off this mountain's own shared `r()` sequence
+    // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted
+    // by it.
+    { const awx = -34.5, awz = -14.5;
+      const watchWard = makeWardrobe(r, { shirts: [0x6a7a5a, 0x5a6a8a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+      const archerWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: watchWard }),
+        hat: 'beanie', hatColor: 0x5a6a8a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a, bag: null, backpack: null, glasses: false });
+      archerWatcher.idleT = 1e6; archerWatcher.blinkT = 1e6;   // keeps rig.animate()'s own idle-gesture pick and blink-reset (both shared rnd() draws) from firing every frame and shifting downstream checks
+      W.add(archerWatcher.group);
+      game.npcs.push(new Wanderer(game, archerWatcher, { x: awx, z: awz, angle: atan2(ax - awx, az - awz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+  }
   const C = game.collectibles;
   C.add('fish', 18, 8); C.add('star', 0, -30); C.add('yarn', -16, 4); C.add('mouse', 12, 20); C.add('star', 30, -20); C.add('fish', -30, 16); C.add('yarn', 22, -6); C.add('mouse', -6, 26);
   game.fx.setAmbient({ count: 480, radius: 22, colors: [0xffffff, 0xeaf4ff, 0xdfe8ff], rise: -1.0, drift: 0.5, life: 9, height: 12, yMin: 2 });
