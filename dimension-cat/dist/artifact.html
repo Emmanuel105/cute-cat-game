@@ -15414,6 +15414,30 @@ function buildCandyLand(game, entry) {
     W.add(kiteKid.group);
     game.npcs.push(new KiteFlyer(game, kiteKid, makeKite(0xff6fb5, 0x7fd7ff), { x: 51, z: -33, wind: [0.25, -0.95],
       cries: ['Best wind all week, this!', "Careful, puss — don't swat it.", "Nearly snagged a cupcake hill, that time."] })); }
+  // round 1256 started a set this log had never closed: no kite flyer in any of the seven worlds had
+  // ever had a watcher, every other single-performer act (the detectorist, the juggler, the
+  // unicyclist, the painter and the rest) long since getting one. Robot City and the Neighborhood have
+  // theirs now; this is the third, Candy Land's own.
+  // **A passer-by now stands south-east of the kite kid, head tipped back, watching it climb.** No
+  // cries of her own — same `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js) every other
+  // watcher in this game uses, the same "stand and watch" behaviour, a short leash (0.4 m) and `angle`
+  // pointed at the kite kid's own fixed spot (51, -33) rather than a constant, so she reads as watching
+  // him fly it rather than just standing nearby. Candy Land has no Talkers pair whose own test depends
+  // on the shared `rnd()` sequence (unlike the Neighborhood's street), so this one draws an ordinary
+  // idle range rather than the frozen-idle shape that street needed. `Wanderer`'s own constructor calls
+  // `greetable()` itself, so no extra wiring was needed, and no physics box either — pure bystander.
+  // A headless probe (`game.travel(1, 'from-prev')`, then 1800 simulated frames sampling every NPC's
+  // own position every 15th frame so the marching guards, the ring-dancing gingerbread men and the
+  // ukulele player had all been seen moving) swept a 0.25 m grid 2-4.5 m out from the kite kid's own
+  // spot against all 1799 of this land's own physics boxes (knee-to-head band only), its 452
+  // `game.zones` rectangles and every sampled NPC position: (53, -37) came back clearest — 6.8 m from
+  // the nearest box, 10.3 m clear of the nearest zone rectangle's own edge and 4.5 m from the nearest
+  // other soul (the ukulele player at (49, -39)), south-east of the kite kid on open grass.
+  { const kw2x = 53, kw2z = -37, kk2x = 51, kk2z = -33;
+    const kiteWatcher2 = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: r.chance(0.3) });
+    W.add(kiteWatcher2.group);
+    game.npcs.push(new Wanderer(game, kiteWatcher2, { x: kw2x, z: kw2z, angle: atan2(kk2x - kw2x, kk2z - kw2z), leash: 0.4, speed: 0.3, idle: [3, 6] })); }
   // the Neighborhood, Robot City, Sunny Shore, Frosty Peak and Whisper Woods all have a Detectorist
   // sweeping for buried treasure — Candy Land and Victorian were the only two of the seven left
   // without one. A headless probe swept a grid of candidates against every one of the 1775 physics

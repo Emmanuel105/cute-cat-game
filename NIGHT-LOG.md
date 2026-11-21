@@ -36312,3 +36312,37 @@ Playwright), so whether the watcher's stance actually reads as watching the kite
 standing nearby is unverified, same caveat as Robot City's version. Five worlds' own kite flyers —
 Candy Land, Victorian, Sunny Shore, Frosty Peak and Whisper Woods — are still without a watcher, left
 for future rounds. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1258 — Candy Land's own kite flyer gets a watcher, the third of the seven
+
+Continuing the set round 1256 started: no kite flyer in any of the seven worlds had ever had a
+watcher until that round, Robot City and the Neighborhood picked up theirs in rounds 1256 and 1257,
+and the plan was always one world at a time. This one does Candy Land, the kite kid flying from the
+quiet grass east of the chocolate river since round 6279's own commit added him alongside the
+ukulele player and the gossiping pair.
+
+**A passer-by now stands south-east of him, head tipped back, watching it climb.** No new class or
+mesh — the usual `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js), the same "stand and
+watch" behaviour every other watcher here uses, with `angle` pointed at the kite kid's own fixed spot
+(51, -33) rather than a constant. Candy Land has no Talkers pair whose own test depends on the shared
+`rnd()` sequence not shifting (unlike the Neighborhood's street), so this one draws an ordinary idle
+range rather than the frozen-idle shape that street needed. Saying hello makes her the usual kind of
+friend; `Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was needed, and no
+physics box either — pure bystander.
+
+A headless probe (`game.travel(1, 'from-prev')`, then 1800 simulated frames sampling every NPC's own
+position every 15th frame so the marching guards, the ring-dancing gingerbread men and the ukulele
+player had all been seen moving) swept a 0.25 m grid 2-4.5 m out from the kite kid's own spot against
+all 1799 of this land's own physics boxes (knee-to-head band only), its 452 `game.zones` rectangles
+and every sampled NPC position: (53, -37) came back clearest — 6.8 m from the nearest box, 10.3 m
+clear of the nearest zone rectangle's own edge and 4.5 m from the nearest other soul (the ukulele
+player at (49, -39)), south-east of the kite kid on open grass.
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt at this spot: exit 0, all 277 checks
+`ok`, 0 console warnings, box count unchanged at 334 (pure bystander, no collider of its own). A
+`git stash`/pop against the working tree confirmed Candy Land's own friend total went up by exactly
+one (134 → 135) and no other file was touched. No visual check was possible in this environment (no
+browser, no Playwright), so whether the watcher's stance actually reads as watching the kite rather
+than just standing nearby is unverified, same caveat as the previous two. Four worlds' own kite flyers
+— Victorian, Sunny Shore, Frosty Peak and Whisper Woods — are still without a watcher, left for future
+rounds. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
