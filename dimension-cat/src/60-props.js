@@ -1116,6 +1116,18 @@ function makeCandyNotice() {
   for (let i = 0; i < 5; i++) mesh(G.sphere(0.024, 7, 6), mat(gumHues[i], { roughness: 0.5 }), { x: -0.15 + i * 0.075, y: -0.26, z: 0.012, shadow: 'none', parent: g });
   return g;
 }
+/** The lollipop from Candy Land's own "lost lollipop" notice, found at last: fallen on its side in the
+ * grass, stick trailing flat along the ground and the swirl-faced disc tipped up onto its rim, half-
+ * sunk in the blades as if it rolled there and stopped. Reuses the same striped side colour and
+ * `TEX.lollipop()` swirl face every standing lollipop in this land already wears, just knocked over and
+ * scaled down to something a cat-sized visitor could actually have been licking. Pure static scenery —
+ * no physics box, no `userData.update` — small enough that the cat just walks over it. */
+function makeDroppedLollipop(hue = 345) {
+  const g = new THREE.Group(), stick = mat(0xfff8f0, { roughness: 0.6 }), side = mat(new THREE.Color().setHSL(hue / 360, 0.9, 0.55), { roughness: 0.3 }), face = mat(0xffffff, { roughness: 0.3, map: TEX.lollipop(hue) });
+  mesh(G.cyl(0.014, 0.014, 0.3, 8), stick, { x: -0.1, y: 0.014, rz: PI / 2, parent: g });
+  mesh(G.cyl(0.09, 0.09, 0.045, 24), [side, face, face], { x: 0.14, y: 0.05, rx: 1.35, ry: 0.4, parent: g });
+  return g;
+}
 /**
  * A wind chime hung from an eave: a wooden disc with a handful of metal tubes dangling at different
  * lengths, a wind-catcher on a thread below them. `userData.update` sways the whole thing and, now and

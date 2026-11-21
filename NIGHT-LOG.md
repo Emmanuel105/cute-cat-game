@@ -36194,3 +36194,49 @@ by exactly one (178 → 179, confirmed against the previous commit with `git sta
 possible in this environment (no browser, no Playwright), so whether the watcher's stance actually
 reads as watching the stump rather than just standing nearby is unverified. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1255 — Candy Land's own lost lollipop, found
+
+Robot City's wrench, Whisper Woods' pinecone, the Neighborhood's tennis ball, Frosty Peak's mitten,
+Victorian's pocket watch and Sunny Shore's bucket and spade have each turned up as a dropped answer to
+their own world's lost-and-found notice over rounds 1241-1246. Candy Land's own notice — pinned to the
+quietest candy cane in the inner belt, out past the west bridge at (-44, 4), describing "one strawberry
+lollipop, barely licked" — had been sitting there since round 469 with nothing ever actually dropped to
+match it, the one world of the seven still owed its payoff.
+
+**The lollipop itself now lies tipped on its side in the grass a few steps west of that cane**, stick
+trailing flat along the ground and the swirl-faced disc half-sunk in the blades, as if it rolled there
+and stopped. *"There's the lost lollipop from the notice back at the cane — barely licked, just like it
+said."* *"Stick's still got a shine to it. Can't have been down long."* *"No gumdrop anywhere nearby,
+reward or otherwise."* The cat checks twice. No prompt wired to a friend — this is a look-and-toast only,
+same shape the watch and the bucket and spade used.
+
+`makeDroppedLollipop()` (60-props.js, new, right after `makeCandyNotice()`) reuses the same striped side
+colour and `TEX.lollipop()` swirl face every standing lollipop in this land already wears, just knocked
+over and built at hand-held scale instead of the giant standing ones' metre-plus discs. Like the mitten,
+the watch and the bucket and spade before it, it draws from no random generator at all — not the shared
+global `rnd()` sequence, not this land's own seeded `r()` — so it costs no later timing-sensitive draw
+anywhere in the build and could have gone in anywhere; placed right after the notice it answers purely
+for readability. It gets the same small hook the watch, the wrench and the tennis ball already used:
+`game.addInteractable` for a look-and-toast line, no physics box and no `userData.update`.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(1, 'from-prev')` waited out for real against its own `transitioning`
+flag, then 3600 simulated frames sampling every NPC's own position every 10th frame) swept a 0.2 m grid
+1.5-3 m out from the notice cane's own spot (-44, 4) against all 1806 of this land's own physics boxes
+(knee-to-head band only), every one of `game.zones`'s own 452 rectangles and every sampled NPC position:
+(-47, 4) came back clearest — 2.75 m from the nearest box, 18 m clear of the nearest zone rectangle's
+own edge and 8.06 m from the nearest other soul, flat open grass past the west bridge where nothing else
+is hand-placed for many metres in any direction.
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt: exit 0, all 277 checks `ok`, 0 console
+warnings, box count unchanged at 334 (no new collider, as expected for a prop with no footprint), and
+Candy Land's own friend total unchanged too (134), since it's set dressing rather than a friend. No
+visual check was possible in this environment (no browser, no Playwright), so whether the lollipop
+actually reads as dropped and tipped over, rather than an odd pink-and-white lump in the grass, is
+unverified — and whether anyone ever connects it back to the notice up at the cane is left entirely to
+the player. All seven worlds now have their own lost-and-found notice genuinely answered by a matching
+item (round 1246's own closing line claimed this already, but three of its six — the wrench, the
+pinecone and the tennis ball — were unrelated scenery rather than the actual notice's own item; this one
+and the mitten, watch and bucket-and-spade actually match what their notices describe). Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

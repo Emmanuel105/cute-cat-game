@@ -5293,6 +5293,33 @@ function buildCandyLand(game, entry) {
       '🍭 "Finder keeps the stick either way." The cat has no plans to go looking.',
       '🍭 Someone has tied a scrap of licorice string to the corner, as if that proves anything. The cat sniffs it anyway.'];
     game.addInteractable({ obj: notice, radius: 2.2, label: () => 'Read the notice', onUse: () => { SFX.click(); game.toast(rnd.pick(lollipopLines), 3000); } }); }
+  // Robot City's wrench, Whisper Woods' pinecone, the Neighborhood's tennis ball, Frosty Peak's mitten,
+  // Victorian's pocket watch and Sunny Shore's bucket and spade have all turned up a dropped answer to
+  // their own world's lost-and-found notice by now — Candy Land's own lollipop, pinned to the notice
+  // cane a few lines up since round 469, was the one left still just a description on paper.
+  // **The lollipop itself now lies tipped on its side in the grass a few steps west of that cane**, stick
+  // trailing flat and the swirled disc half-sunk in the blades.
+  //
+  // `makeDroppedLollipop()` (60-props.js, new, right after `makeCandyNotice()`) reuses the same striped
+  // side colour and `TEX.lollipop()` swirl face every standing lollipop in this land already wears, just
+  // knocked over and scaled down to hand-held size. Like the mitten, the watch and the bucket and spade
+  // before it, it draws from no random generator at all — not the shared global `rnd()` sequence, not
+  // this land's own seeded `r()` — so it costs no later timing-sensitive draw and could have gone
+  // anywhere in the build; placed here anyway, right after the notice it answers, for readability. It
+  // gets the same small hook the watch, the wrench and the tennis ball already used: a
+  // `game.addInteractable` look-and-toast prompt, no physics box and no `userData.update`.
+  //
+  // A headless probe (`game.start('new')`, `game.travel(1, 'from-prev')` waited out for real against its
+  // own `transitioning` flag, then 3600 simulated frames sampling every NPC's own position every 10th
+  // frame) swept a 0.2 m grid 1.5-3 m out from the notice cane's own spot (-44, 4) against all 1806 of
+  // this land's own physics boxes (knee-to-head band only), every one of `game.zones`'s own 452
+  // rectangles and every sampled NPC position: (-47, 4) came back clearest — 2.75 m from the nearest box,
+  // 18 m clear of the nearest zone rectangle's own edge and 8.06 m from the nearest other soul, flat open
+  // grass past the west bridge where nothing else is hand-placed for many metres in any direction.
+  { const dropX = -47, dropZ = 4;
+    const droppedLollipop = place(game, U, makeDroppedLollipop(), dropX, dropZ, 0.5);
+    const foundLines = ['🍭 "There\'s the lost lollipop from the notice back at the cane — barely licked, just like it said."', '🍭 Stick\'s still got a shine to it. Can\'t have been down long.', '🍭 "No gumdrop anywhere nearby, reward or otherwise." The cat checks twice.'];
+    game.addInteractable({ obj: droppedLollipop, radius: 1.6, label: () => 'Look at the dropped lollipop', onUse: () => { SFX.click(); game.toast(rnd.pick(foundLines), 3000); } }); }
   let farLollipop = null, westLollipop = null, southLollipop = null, farSouthLollipop = null, southWestLollipop = null, northLollipop = null, midWestLollipop = null, southEastLollipop = null, eastLollipop = null, neLollipop = null, ringLollipop = null;
   for (const [x, z] of [[-12, 12], [14, 10], [-24, -8], [22, -26], [-34, 16], [36, 18], [-16, 32], [18, 34], [-40, -8], [40, -12], [-6, -34], [6, -48]]) { const s = r.range(1.1, 1.8), l = makeLollipop(s, r.pick([330, 0, 200, 50, 280, 120]), r.range(2.6, 4)); l.position.set(x, 0, z); l.rotation.y = r() * TAU; W.add(l); P.addBox(x, 1.5, z, 0.4, 3, 0.4, { cam: false }); if (x === 36 && z === 18) farLollipop = l; if (x === -34 && z === 16) westLollipop = l; if (x === -6 && z === -34) southLollipop = l; if (x === 6 && z === -48) farSouthLollipop = l; if (x === -40 && z === -8) southWestLollipop = l; if (x === -16 && z === 32) northLollipop = l; if (x === -24 && z === -8) midWestLollipop = l; if (x === 22 && z === -26) southEastLollipop = l; if (x === 40 && z === -12) eastLollipop = l; if (x === 18 && z === 34) neLollipop = l; if (x === 14 && z === 10) ringLollipop = l; }
   // this inner dozen of big lollipops has stood since round 1, never looked at once — the notice cane
