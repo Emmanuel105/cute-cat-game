@@ -3272,6 +3272,40 @@ function buildSnowVillage(game, entry) {
   // hand-built core, with the break-taker above the nearest hand-placed neighbour at 14.5 m off.
   placeT(game, U, makeDroppedMitten(), 26, 42, 0.8, -0.01);
 
+  // Candy Land, the Neighborhood, Robot City, Victorian and Sunny Shore have all picked up a watcher
+  // for their own `Chopper` over the last six rounds — this mountain's own cutter, splitting logs on
+  // the stump behind the northern cabin, is the sixth of the seven. **A neighbour now stands a few
+  // steps southwest of the stump, watching each log part.** *"Same two swings, every time."* *"Mind
+  // the chips, puss — stack's getting high."* *"Dry as anything, that wood — splits in one."* Saying
+  // hello makes her the usual kind of friend.
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) every other watcher in this set already uses, this
+  // mountain's own beanie-and-coat wardrobe in place of a one-off, a short leash (0.5 m) and `angle`
+  // pointed at the stump's own fixed spot (-4, 19.3) rather than a constant, so she reads as watching
+  // the cutter and not just standing nearby. `Wanderer`'s own constructor calls `greetable()` itself,
+  // so no extra wiring was needed, and no physics box either — pure bystander.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(5, 'from-hub')`, then 3600 simulated frames so every reindeer,
+  // hare, arctic fox, penguin, yeti and wandering villager had already settled, sampling every NPC's
+  // own position every 10th frame for a further 600 frames) swept a 0.25 m grid 1.5-3.3 m out from the
+  // cutter's own spot against all 692 of this mountain's physics boxes (knee-to-head band only) and
+  // every sampled NPC position: (-6.3, 20.5) came back clearest in that range — 2.69 m from the
+  // nearest box and 2.59 m from the nearest other soul (the cutter himself), southwest of the stump
+  // and well inside the radius (58) where `snowRegion()`'s own procedural fill takes over.
+  //
+  // Built dead last of everything this mountain adds, right after the dropped mitten above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this mountain's own shared `r()`
+  // sequence unconditionally, and anything built earlier here would have had its own timing-sensitive
+  // pick shifted by it.
+  { const chopWatchX = -6.3, chopWatchZ = 20.5, chopCutX = -4, chopCutZ = 19.3;
+    const chopWatchWard = makeWardrobe(r, { shirts: [0xb5485f, 0x5a6a4a, 0x6a5a4a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const chopWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: chopWatchWard }),
+      hat: 'beanie', hatColor: 0x6a5a4a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a, glasses: false });
+    W.add(chopWatcher.group);
+    game.npcs.push(new Wanderer(game, chopWatcher, { x: chopWatchX, z: chopWatchZ, angle: atan2(chopCutX - chopWatchX, chopCutZ - chopWatchZ), leash: 0.5, speed: 0.3, idle: [3, 6],
+      cries: ['Same two swings, every time.', "Mind the chips, puss — stack's getting high.", 'Dry as anything, that wood — splits in one.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
