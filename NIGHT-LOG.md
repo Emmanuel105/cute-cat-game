@@ -36705,3 +36705,32 @@ environment (no browser, no Playwright), so whether the watcher's stance actuall
 the shot rather than just standing nearby is unverified. One world's own archer — Whisper Woods — is
 still without a watcher, left for a future round to close out the set. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1270 — Whisper Woods' archer gets a watcher too, the seventh and last of the seven
+
+Closing out the set rounds 1264-1269 worked through: Whisper Woods' own `Archer` (55-npcs.js),
+drawing and loosing at her straw boss on the open ground north of the glade since round 520, picks up
+a watcher too — the last of the seven worlds to close this gap. **A fellow forest-dweller now stands
+a few steps east of the firing line, roughly level with the archer herself, watching the next arrow
+find the straw boss.**
+
+Same `Wanderer` shape every watcher in this set already uses: frozen idle (`idle: [1e9, 1e9]` plus
+every one of `Wanderer`'s own construction-time draws — `phase`, `timer`, `t`, `cryT` — fixed rather
+than pulled from `rnd()`), `angle` pointed at the archer's own fixed spot (-16, 24) rather than a
+constant, and `idleT`/`blinkT` both frozen too (the same `Baller` fix the other six watchers needed).
+Dressed in the same earthy wardrobe this wood's own kite-flyer watcher already wears (no hat, no
+coat — this wood doesn't need Frosty Peak's). No `cries`, no physics box, pure bystander.
+
+A headless probe (`game.start('new')`, `game.travel(6, 'from-hub')` waited out, 2400 simulated frames
+sampling every NPC's own position every 10th frame) swept a 0.25 m grid east and west of the archer's
+own spot, at least 1.5 m clear of the firing line itself and no more than 2 m past her toward the
+target, against all 736 of this wood's own physics boxes, its `game.zones` rectangles and every
+sampled NPC position: (-12.5, 25.5) came back clearest — 3.88 m from the nearest box, 7.5 m clear of
+the nearest zone rectangle's own edge and 3.81 m from the nearest other soul, clear of the firing line
+the whole way.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, and Whisper
+Woods' own friend total went up by one (180 → 181 to meet). No visual check was possible in this
+environment (no browser, no Playwright), so whether the watcher's stance actually reads as watching
+the shot rather than just standing nearby is unverified. All seven worlds' own archers now have a
+watcher — this set is done. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

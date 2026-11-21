@@ -34049,7 +34049,45 @@ function buildForest(game, entry) {
     mesh(G.cone(0.022, 0.08, 6), mat(0x9aa3ad, { metalness: 0.6, roughness: 0.35 }), { z: -0.35, rx: -PI / 2, parent: arrow });   // head, at local -Z so lookAt() faces it forward
     const fletchM = mat(0xd62839, { roughness: 0.9 });
     for (let fi = 0; fi < 3; fi++) mesh(G.box(0.1, 0.002, 0.05), fletchM, { z: 0.26, rz: fi / 3 * TAU, shadow: 'none', parent: arrow });   // tail fletching
-    game.npcs.push(new Archer(game, archer, arrow, { x: ax, z: az, ry: ary, dist: adist })); }
+    game.npcs.push(new Archer(game, archer, arrow, { x: ax, z: az, ry: ary, dist: adist }));
+
+    // No world's own `Archer` (55-npcs.js) had a watcher until round 1264 gave the Neighborhood's own
+    // one, the first of the seven; Candy Land, Victorian, Robot City, Sunny Shore and Frosty Peak
+    // followed. **This gives Whisper Woods its own, the seventh and last**: a fellow forest-dweller
+    // now stands a few steps east of the firing line, roughly level with the archer herself, watching
+    // the next arrow find the straw boss.
+    //
+    // Same `Wanderer` (55-npcs.js) shape every watcher in this set already uses: frozen idle
+    // (`idle: [1e9, 1e9]` plus every one of `Wanderer`'s own construction-time draws — `phase`,
+    // `timer`, `t`, `cryT` — fixed rather than pulled from `rnd()`), `angle` pointed at the archer's
+    // own fixed spot (-16, 24) rather than a constant, and `idleT`/`blinkT` both frozen too (the same
+    // `Baller` fix the other six watchers in this set needed, since `rig.animate()` keeps drawing from
+    // the shared `rnd()` sequence every frame regardless of controller state). No `cries`, no physics
+    // box, pure bystander, same earthy wardrobe this wood's own kite-flyer watcher wears rather than
+    // the coat Frosty Peak's needed or the bare shirt the beach's and the city's settled for.
+    //
+    // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+    // `game.start('new')`, `game.travel(6, 'from-hub')` waited out with a real pause, then 2400
+    // simulated frames sampling every NPC's own position every 10th frame) swept a 0.25 m grid east
+    // and west of the archer's own spot, at least 1.5 m clear of the firing line itself (which runs
+    // due north from her to the target) and no more than 2 m past her own position toward the target,
+    // against all 736 of this wood's own physics boxes, its `game.zones` rectangles and every sampled
+    // NPC position: (-12.5, 25.5) came back clearest — 3.88 m from the nearest box, 7.5 m clear of the
+    // nearest zone rectangle's own edge and 3.81 m from the nearest other soul, east of the archer and
+    // just 1.5 m toward the target, clear of the firing line the whole way.
+    //
+    // Built dead last of everything this wood adds to this archery range, right after the archer
+    // herself, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this wood's own
+    // shared `r()` sequence unconditionally, and anything built earlier would have had its own
+    // timing-sensitive pick shifted by it.
+    { const awx = -12.5, awz = 25.5;
+      const watchWard = makeWardrobe(r, { shirts: [0x6b4f3a, 0x5a6a4a, 0x8a6a44], pants: [0x3a3a2a, 0x2a2a2a], shoes: [0x3a2a1e, 0x2a2018] });
+      const archerWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: watchWard }),
+        hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+      archerWatcher.idleT = 1e6; archerWatcher.blinkT = 1e6;   // keeps rig.animate()'s own idle-gesture pick and blink-reset (both shared rnd() draws) from firing every frame and shifting downstream checks
+      W.add(archerWatcher.group);
+      game.npcs.push(new Wanderer(game, archerWatcher, { x: awx, z: awz, angle: atan2(ax - awx, az - awz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+  }
 
   // round 520's own round-up of five playground games this whole game had never tried (tetherball,
   // badminton, tug-of-war, archery, sack races) left Whisper Woods with the archery range just above;
