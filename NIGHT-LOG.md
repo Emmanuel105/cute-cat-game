@@ -36161,3 +36161,36 @@ Housekeeping note: this sandbox's shallow clone started with `HEAD` detached at 
 the same disjoint-shallow-horizon pattern noted in round 1251's own log, not an actual divergence. A
 `git branch -f main origin/main` plus `git checkout main` put the working tree on a proper branch at
 the real tip before any work started here.
+
+## Round 1254 — Whisper Woods' own woodcutter gets a watcher, the seventh and last of the seven
+
+Candy Land, the Neighborhood, Robot City, Victorian, Sunny Shore and Frosty Peak have all picked up a
+watcher for their own `Chopper` over the last six rounds. This wood's own cutter, splitting logs on
+the stump by the glade, was the last one still working alone: **a neighbour now stands a few steps
+southwest of the stump, watching each log part.** *"Same two swings, every time."* *"Mind the chips,
+puss — stack's getting high."* *"Dry as anything, that wood — splits in one."* Saying hello makes her
+the usual kind of friend. All seven worlds now have one, closing out this set.
+
+No new class: the same `Wanderer` (55-npcs.js) every other watcher in this set already uses, this
+wood's own earthy wardrobe palette in place of a one-off, a short leash (0.5 m) and `angle` pointed at
+the cutter's own fixed spot (-6, 3.6) rather than a constant, so she reads as watching him and not just
+standing nearby. `Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was
+needed, and no physics box either — pure bystander.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.load(6, 'from-hub')`, then 6000 simulated frames so every frog, firefly, butterfly, fox and
+wandering villager had already settled, sampling every NPC's own position every 50th frame) swept a
+0.25 m grid 1.4-4 m out from the cutter's own spot against all 451 of this wood's own physics boxes
+(knee-to-head band only) and every sampled NPC position: (-8.4, 4.8) came back clearest in that
+close-in range — 2.97 m from the nearest box and 2.65 m from the nearest other soul, southwest of the
+stump and well inside the radius (55) where `forestRegion()`'s own procedural fill takes over. The
+glowing pond's own scatter-exclusion circle (`zones.addCircle(0, 0, 18)`) covers this whole area
+already — the cutter and stump themselves sit inside it too, so it's the hand-built core keeping
+procedural trees off itself, not a road or path the test suite actually walks.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (pure bystander, no collider of its own), and Whisper Woods' own friend total went up
+by exactly one (178 → 179, confirmed against the previous commit with `git stash`). No visual check was
+possible in this environment (no browser, no Playwright), so whether the watcher's stance actually
+reads as watching the stump rather than just standing nearby is unverified. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
