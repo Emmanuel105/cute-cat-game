@@ -36607,3 +36607,38 @@ environment (no browser, no Playwright), so whether the watcher's stance actuall
 the shot rather than just standing nearby is unverified. Four worlds' own archers — Robot City, Sunny
 Shore, Frosty Peak, Whisper Woods — are still without a watcher, left for future rounds to close out
 the set. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1267 — Robot City's archer gets a watcher too, the fourth of the seven
+
+Continuing the set rounds 1264-1266 started: Robot City's own maintenance-crew `Archer`
+(55-npcs.js), shooting at her straw boss on the quiet floor north of the yard since round 1030,
+picks up a watcher too. **A fellow crew member now stands a few steps off to the side, watching
+the next arrow find the boss.**
+
+Same shape as the first three, with one twist: this city's archer fires east rather than the north
+the other three worlds' archers share, so the watcher sits off to the side in z instead of x — the
+same perpendicular offset from the firing line, just rotated with the range itself. Otherwise
+identical: `makeHuman()`/`randomPerson()` build the rig, `Wanderer` gives it the frozen "stand and
+watch" behaviour with `idle: [1e9, 1e9]` plus every one of `Wanderer`'s own construction-time draws
+fixed rather than pulled from `rnd()`, and `idleT`/`blinkT` frozen too (the `Baller` fix) so
+`rig.animate()`'s own idle-gesture and blink draws off the shared `rnd()` sequence don't shift
+anything downstream. `angle` points at the archer's own fixed spot (-6, 44) rather than a constant.
+No `cries`, no physics box, pure bystander — this city has never enforced the Neighborhood's "no
+two residents share a shirt" rule, so the shirt (0x8a5a6a) needed no check against the rest of the
+city's wardrobe.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(2, 'from-prev')` waited out, 1800 simulated frames to let every
+wandering, patrolling and dancing robot settle, then another 1800 sampling every NPC's own position
+every 15th frame) checked both sides 2-4.5 m off the archer's own spot along the line perpendicular
+to her east-firing shot: the north side had another wandering soul only 3.14 m off, but the south
+side (-6, 48.5) came back clean — 5.85 m from the nearest of this city's 1206 physics boxes, 4.5 m
+from the nearest other soul (the archer herself) and nothing else closer, 4.5 m clear of the firing
+line the whole way from stand to target.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, and Robot
+City's own friend total went up by one (145 → 146 to meet). No visual check was possible in this
+environment (no browser, no Playwright), so whether the watcher's stance actually reads as watching
+the shot rather than just standing nearby is unverified. Three worlds' own archers — Sunny Shore,
+Frosty Peak, Whisper Woods — are still without a watcher, left for future rounds to close out the
+set. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

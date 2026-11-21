@@ -12002,6 +12002,41 @@ function buildRobotCity(game, entry) {
     W.add(kiteWatcher.group);
     game.npcs.push(new Wanderer(game, kiteWatcher, { x: kwx, z: kwz, angle: atan2(kkx - kwx, kkz - kwz), leash: 0.4, speed: 0.3, idle: [3, 6] })); }
 
+  // the Neighborhood (round 1264), Candy Land (1265) and Victorian (1266) have each given their own
+  // `Archer` (55-npcs.js) a watcher; this city's maintenance-crew archer, built earlier in this very
+  // function, is the fourth of the seven. **A fellow crew member now stands a few steps off to the
+  // side, watching the next arrow find the boss.**
+  //
+  // Same `Wanderer` (55-npcs.js) shape the other three watchers in this set already use: frozen idle
+  // (`idle: [1e9, 1e9]` plus every one of `Wanderer`'s own construction-time draws — `phase`, `timer`,
+  // `t`, `cryT` — fixed rather than pulled from `rnd()`), `angle` pointed at the archer's own fixed spot
+  // (-6, 44) rather than a constant, and `idleT`/`blinkT` both frozen too (the `Baller` fix the first
+  // two watchers in this set needed, since `rig.animate()` keeps drawing from the shared `rnd()`
+  // sequence every frame regardless of controller state). No `cries`, no physics box, pure bystander.
+  // This city's archer fires east rather than the north the other three worlds' archers share, so the
+  // watcher sits off to the side in z rather than in x — the same perpendicular offset from the firing
+  // line, just rotated with the range itself.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(2, 'from-prev')` waited out, 1800 simulated frames to let every
+  // wandering, patrolling and dancing robot settle, then another 1800 sampling every NPC's own position
+  // every 15th frame) checked both sides 2-4.5 m off the archer's own spot along the line perpendicular
+  // to her east-firing shot: the north side (-6, 39.5) had another wandering soul only 3.14 m off, but
+  // the south side (-6, 48.5) came back clean — 5.85 m from the nearest of this city's 1206 physics
+  // boxes, 4.5 m from the nearest other soul (the archer herself) and nothing else closer, 4.5 m clear
+  // of the firing line the whole way from stand to target.
+  //
+  // Built dead last of everything this city adds, right after the kite flyer's own watcher above, for
+  // the usual reason: `makeHuman()`/`randomPerson()` both draw off this city's own shared `r()`
+  // sequence unconditionally, and anything built earlier would have had its own timing-sensitive pick
+  // shifted by it.
+  { const awx = -6, awz = 48.5, aax = -6, aaz = 44;
+    const archerWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x8a5a6a, hat: null, jacket: null, scarf: null, bag: null, backpack: null });
+    archerWatcher.idleT = 1e6; archerWatcher.blinkT = 1e6;   // keeps rig.animate()'s own idle-gesture pick and blink-reset (both shared rnd() draws) from firing every frame and shifting checks downstream
+    W.add(archerWatcher.group);
+    game.npcs.push(new Wanderer(game, archerWatcher, { x: awx, z: awz, angle: atan2(aax - awx, aaz - awz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
