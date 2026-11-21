@@ -11822,6 +11822,39 @@ function buildRobotCity(game, entry) {
     const wrenchLines = ['🔧 "Someone\'s missing that. Foreman\'s going to hear about it."', '🔧 "Still warm from the last bolt it turned, probably."', '🔧 "Not a tool you leave lying around twice on this floor."'];
     game.addInteractable({ obj: wrench, radius: 1.6, label: () => 'Look at the wrench', onUse: () => { SFX.clang(); game.toast(rnd.pick(wrenchLines), 3000); } }); }
 
+  // every single-performer act in this city has had a watcher of its own for a while now — the
+  // detectorist, the juggler, the unicyclist, the magician and the rest — but the kite flyer out past
+  // the catch pair's own gap never got one, and a grep of all four world-building files turns up the
+  // same gap in all seven worlds: no kite flyer anywhere in this game has ever had a watcher. This
+  // starts that set. **A worker now stands west of the kite kid, head tipped back, watching it climb.**
+  //
+  // No new class or mesh: a plain adult `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js),
+  // the same "stand and watch" behaviour every other watcher in this city already uses, with a short
+  // leash (0.4 m) and `angle` pointed at the kite kid's own fixed spot (-34, -54) rather than a
+  // constant, so she reads as watching him fly it and not just standing nearby. `Wanderer`'s own
+  // constructor calls `greetable()` itself, so no extra wiring was needed, and no physics box either —
+  // pure bystander, same as every other watcher in this set.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(2, 'from-hub')`, then 6000 simulated frames sampling every NPC's
+  // own position every 20th frame so every wandering robot pack and the sentry's own patrol had
+  // settled) swept a 0.25 m grid 2-4.5 m out from the kite kid's own spot against all 1203 of this
+  // city's own physics boxes (knee-to-head band only), its 296 `game.zones` rectangles and every
+  // sampled NPC position: (-38.5, -54) came back clearest — 7.01 m from the nearest box, 21.4 m clear
+  // of the nearest zone rectangle's own edge and 4.5 m from the nearest other soul, due west of the
+  // kite kid and well south of the catch pair's own gap. The kite itself swoops 6-8 m up, so a
+  // ground-level watcher's own footprint never actually crosses under its flight path.
+  //
+  // Built dead last of everything this city adds, right after the dropped wrench above, for the usual
+  // reason: `makeHuman()`/`randomPerson()` both draw off this city's own shared `r()` sequence
+  // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted
+  // by it.
+  { const kwx = -38.5, kwz = -54, kkx = -34, kkz = -54;
+    const kiteWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.3) });
+    W.add(kiteWatcher.group);
+    game.npcs.push(new Wanderer(game, kiteWatcher, { x: kwx, z: kwz, angle: atan2(kkx - kwx, kkz - kwz), leash: 0.4, speed: 0.3, idle: [3, 6] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

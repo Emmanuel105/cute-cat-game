@@ -36240,3 +36240,42 @@ item (round 1246's own closing line claimed this already, but three of its six �
 pinecone and the tennis ball — were unrelated scenery rather than the actual notice's own item; this one
 and the mitten, watch and bucket-and-spade actually match what their notices describe). Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1256 — Robot City's kite flyer finally gets a watcher, starting a new set
+
+Round 1218's own lesson stuck: before claiming an act is missing a watcher anywhere, grep the actual
+`src/` files rather than trust an old headline. Doing exactly that for every held-prop act turned up
+one genuine gap nothing in this log had ever closed — the kite flyer. All seven worlds have had one
+since round 266, and every other single-performer act (the detectorist, the juggler, the unicyclist,
+the magician, the painter and the rest) has long since had a watcher added in every world that has
+it. No kite flyer, in any of the seven worlds, has ever had one. This round starts that set in Robot
+City, out past the catch pair's own throw gap.
+
+**A worker now stands a few steps west of the kite kid, head tipped back, watching it climb.** No
+cries of her own — built dead last of everything this city adds, right after the dropped wrench, to
+disturb nothing earlier in this city's own `r()` sequence. Saying hello makes her the usual kind of
+friend.
+
+No new class or mesh: the usual `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js), the
+same "stand and watch" behaviour every other watcher in this game already uses, with a short leash
+(0.4 m) and `angle` pointed at the kite kid's own fixed spot (-34, -54) rather than a constant, so she
+reads as watching him fly it and not just standing nearby. `Wanderer`'s own constructor calls
+`greetable()` itself, so no extra wiring was needed, and no physics box either — pure bystander.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(2, 'from-hub')`, then 6000 simulated frames sampling every NPC's own
+position every 20th frame so every wandering robot pack and the sentry's own patrol had settled) swept
+a 0.25 m grid 2-4.5 m out from the kite kid's own spot against all 1203 of this city's own physics
+boxes (knee-to-head band only), its 296 `game.zones` rectangles and every sampled NPC position:
+(-38.5, -54) came back clearest — 7.01 m from the nearest box, 21.4 m clear of the nearest zone
+rectangle's own edge and 4.5 m from the nearest other soul, due west of the kite kid. The kite itself
+swoops 6-8 m up, well clear of a ground-level watcher's own footprint.
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt at this spot: exit 0, all 277 checks
+`ok`, 0 console warnings, box count unchanged at 334 (pure bystander, no collider of its own). A
+`git stash`/pop against the working tree confirmed Robot City's own friend total went up by exactly
+one (144 → 145) and no other file was touched. No visual check was possible in this environment (no
+browser, no Playwright), so whether the watcher's stance actually reads as watching the kite rather
+than just standing nearby is unverified. The other six worlds' own kite flyers are still without a
+watcher, left for future rounds, same one-at-a-time pattern as everywhere else in this log. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
