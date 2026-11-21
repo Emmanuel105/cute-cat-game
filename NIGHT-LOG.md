@@ -36442,3 +36442,34 @@ browser, no Playwright), so whether the watcher's stance actually reads as watch
 than just standing nearby is unverified, same caveat as the previous five. One world's own kite flyer
 — Whisper Woods — is still without a watcher, left for a future round to close out the set.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1262 — Whisper Woods' kite flyer gets a watcher, the seventh and last of the seven
+
+Closes the set round 1256 started: no kite flyer in any of the seven worlds had ever had a watcher,
+and Robot City, the Neighborhood, Candy Land, Victorian, Sunny Shore and Frosty Peak picked up
+theirs in rounds 1256-1261. This one does Whisper Woods, the kid flying from the glade south of the
+weaver's stump, wind carrying the kite out over the fern litter.
+
+**A passer-by now stands south-east of him in the fern litter, head tipped back, watching it
+climb.** No new class or mesh — the same `makeHuman()`/`randomPerson()` rig and `Wanderer`
+(55-npcs.js) every other watcher in this set uses, the same "stand and watch" behaviour, with
+`angle` pointed at the kite kid's own fixed spot (7, -24) rather than a constant, dressed in this
+forest's own earthy wardrobe (greens and browns, no hat or scarf), same as the dog walker a few
+steps off. Saying hello makes her the usual kind of friend; `Wanderer`'s own constructor calls
+`greetable()` itself, so no extra wiring was needed, and no physics box either — pure bystander.
+
+A headless probe (`game.travel(6, 'from-prev')`, then 1800 simulated frames sampling every NPC's own
+position every 10th frame so the fox, the yo-yoer, the dog walker and every other wandering soul had
+all been seen moving) swept a 0.25 m grid 2-4.5 m out from the kite kid's own spot against all 783
+of this wood's own physics boxes (knee-to-head band only, trunks included), its 222 `game.zones`
+rectangles and every sampled NPC position: (10.7, -26.6) came back clearest — 6.58 m from the
+nearest box, 8.6 m clear of the nearest zone rectangle's own edge and 4.52 m from the nearest other
+soul (the kite kid himself).
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt at this spot: exit 0, all checks
+`ok`, 0 console warnings, box count unchanged at 334 (pure bystander, no collider of its own), and
+Whisper Woods' own friend total went up by exactly one (179 → 180, "180 to meet"). No visual check
+was possible in this environment (no browser, no Playwright), so whether the watcher's stance
+actually reads as watching the kite rather than just standing nearby is unverified, same caveat as
+the previous six. All seven worlds now have a kite-flyer watcher; the set started in round 1256 is
+closed. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

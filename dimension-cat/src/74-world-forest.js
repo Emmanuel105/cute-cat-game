@@ -1241,6 +1241,33 @@ function buildForest(game, entry) {
     game.npcs.push(new KiteFlyer(game, kiteKid, makeKite(0x6b8a5a, 0xffd54a), { x: 7, z: -24, wind: [0.18, 0.98],
       cries: ['Caught a gap in the branches, finally!', 'Mind the string, puss.', "The trees eat more kites than the fairies ever will."] })); }
 
+  // round 1256 started a set this log had never closed: no kite flyer in any of the seven worlds had
+  // ever had a watcher, and Robot City, the Neighborhood, Candy Land, Victorian, Sunny Shore and Frosty
+  // Peak picked up theirs in rounds 1256-1261. This is Whisper Woods, the seventh and last — its own
+  // kid flies from the glade south of the weaver's stump, same as above.
+  //
+  // **A passer-by now stands south-east of the kite kid in the fern litter, head tipped back, watching
+  // it climb.** No new class or mesh — the same `makeHuman()`/`randomPerson()` rig and `Wanderer`
+  // (55-npcs.js) every other watcher in this set uses, the same "stand and watch" behaviour, with
+  // `angle` pointed at the kite kid's own fixed spot (7, -24) rather than a constant, so she reads as
+  // watching him and not just standing nearby. No `cries` of her own; `Wanderer`'s own constructor
+  // calls `greetable()` itself, so no extra wiring was needed, and no physics box either — pure
+  // bystander (a 0.35 m greet circle only). Dressed in this forest's own earthy wardrobe, same as the
+  // dog walker a few steps off.
+  //
+  // A headless probe (`game.travel(6, 'from-prev')`, then 1800 simulated frames sampling every NPC's
+  // own position every 10th frame so the fox, the yo-yoer, the dog walker and every other wandering
+  // soul had all been seen moving) swept a 0.25 m grid 2-4.5 m out from the kite kid's own spot against
+  // all 783 of this wood's own physics boxes (knee-to-head band only, trunks included), its 222
+  // `game.zones` rectangles and every sampled NPC position: (10.7, -26.6) came back clearest — 6.58 m
+  // from the nearest box, 8.6 m clear of the nearest zone rectangle's own edge and 4.52 m from the
+  // nearest other soul (the kite kid himself), south-east of him on open fern litter.
+  { const kwx = 10.7, kwz = -26.6, kkx = 7, kkz = -24;
+    const watchWard = makeWardrobe(r, { shirts: [0x6b4f3a, 0x5a6a4a, 0x8a6a44], pants: [0x3a3a2a, 0x2a2a2a], shoes: [0x3a2a1e, 0x2a2018] });
+    const kiteWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: watchWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(kiteWatcher.group);
+    game.npcs.push(new Wanderer(game, kiteWatcher, { x: kwx, z: kwz, angle: atan2(kkx - kwx, kkz - kwz), leash: 0.4, speed: 0.3, idle: [3, 6] })); }
+
   // the Neighborhood, Candy Land, Robot City and Victorian all have a kid working a yo-yo by now — the
   // one trick every other world's children picked up, and Whisper Woods, for all its tag, catch, swing
   // and seesaw, never got round to it either. A child works one on the open ground east of the glade,
