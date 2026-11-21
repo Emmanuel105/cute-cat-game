@@ -13936,6 +13936,45 @@ function buildNeighborhood(game, entry) {
     W.add(magWatcher.group);
     game.npcs.push(new Wanderer(game, magWatcher, { x: mwx, z: mwz, angle: atan2(mgx - mwx, mgz - mwz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // No world's own `Archer` (55-npcs.js) has ever had a watcher — unlike the magician, organ grinder,
+  // fiddler, basketball kid, stilt walker, kite kid and chopper above, who all picked one up over the
+  // last several rounds, the archer on the south field has loosed arrow after arrow at the straw boss
+  // since round ~1030 with nobody ever stopping to watch. This closes the gap here, the first of the
+  // seven. **A neighbour now stands a few steps west of her, watching the next arrow find the boss.**
+  //
+  // Same `Wanderer` (55-npcs.js) every other watcher on this street already uses, built with the same
+  // frozen-idle shape the chopper, kite-kid and magician watchers above use (`idle: [1e9, 1e9]` plus
+  // every one of `Wanderer`'s own construction-time draws — `phase`, `timer`, `t`, `cryT` — fixed
+  // rather than pulled from `rnd()`), so it never crosses `move()`'s own timer-expiry branch. `angle`
+  // points at the archer's own fixed spot (-30, -84) rather than a constant, so she reads as watching
+  // the shot and not just standing nearby. No `cries`, same as the other frozen watchers on this
+  // street; no physics box either, pure bystander.
+  //
+  // First attempt froze only the `Wanderer`'s own timers and still failed `test/run.mjs` on an
+  // unrelated check — "two neighbours chat ... (0 turns in 7 s)" — because `rig.animate()` (55-npcs.js)
+  // keeps drawing from the shared `rnd()` sequence every single frame regardless of controller state:
+  // an idle-gesture pick off `rig.idleT` and a blink reset off `rig.blinkT`, both independent of
+  // `Wanderer`'s own frozen timers. `Baller` (55-npcs.js) already carries the fix for exactly this —
+  // `rig.idleT = 1e6; rig.blinkT = 1e6` right after the rig is built — so this watcher now copies it,
+  // and the Talkers pair's own turn-taking test passed clean again. The shirt colour (0x5a9a7a) was
+  // checked against every other shirt already built on this street first — the "no two neighbours
+  // wear the same shirt" test catches a clash either way.
+  //
+  // A headless probe (`game.start('new')`, 3600 simulated frames sampling every NPC's own position
+  // every 10th frame against every physics box in the knee-to-head band) swept a 0.25 m grid 2-4.5 m
+  // out from the archer's own spot (-30, -84) against all 334 of this street's own physics boxes, its
+  // 69 `game.zones` rectangles and every sampled NPC position: (-34.5, -84) came back clearest — 10.6
+  // m from the nearest box, 27.6 m clear of the nearest zone rectangle's own edge and 4.5 m from the
+  // nearest other soul (the archer herself), due west of her on open field, well short of the target
+  // ten metres north and clear of the firing line the whole way. Built dead last of everything this
+  // street adds, right after the magician's own watcher above and right before `makeDayNight()`.
+  { const awx = -34.5, awz = -84, aax = -30, aaz = -84;
+    const archerWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x5a9a7a, hat: null, jacket: null, scarf: null, bag: null, backpack: null });
+    archerWatcher.idleT = 1e6; archerWatcher.blinkT = 1e6;   // keeps `rig.animate()`'s own idle-gesture pick and blink-reset (both shared `rnd()` draws) from firing every frame and shifting the painter/Talkers checks downstream — the same fix `Baller` (55-npcs.js) already uses
+    W.add(archerWatcher.group);
+    game.npcs.push(new Wanderer(game, archerWatcher, { x: awx, z: awz, angle: atan2(aax - awx, aaz - awz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

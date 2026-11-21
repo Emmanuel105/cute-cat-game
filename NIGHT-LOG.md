@@ -36505,3 +36505,43 @@ went up by exactly one (132 → 133, "133 to meet"). No visual check was possibl
 (no browser, no Playwright), so whether her stance actually reads as watching the trick rather than
 just standing nearby is unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 1264 — the Neighborhood's archer finally gets a watcher, starting a new set
+
+Every performer on this street who ever drew a crowd (the magician, organ grinder, fiddler,
+basketball kid, stilt walker, kite kid, chopper) picked one up over the last several rounds, but
+`Archer` (55-npcs.js) — present in all seven worlds — has never had a watcher anywhere in the game.
+This starts closing that gap, the Neighborhood first. **A neighbour now stands a few steps west of
+her, watching the next arrow find the straw boss.**
+
+No new class or mesh: `makeHuman()`/`randomPerson()` build the usual rig and `Wanderer` gives her
+the same "stand and watch" behaviour this street's other frozen watchers already use, with `idle:
+[1e9, 1e9]` plus every one of `Wanderer`'s own construction-time draws (`phase`, `timer`, `t`,
+`cryT`) fixed rather than pulled from `rnd()`, so it never crosses `move()`'s own timer-expiry
+branch. `angle` points at the archer's own fixed spot (-30, -84) rather than a constant. No `cries`,
+no physics box, pure bystander.
+
+First attempt froze only `Wanderer`'s own timers and still failed `test/run.mjs` on an unrelated
+check — "two neighbours chat ... (0 turns in 7 s)" — because `rig.animate()` (55-npcs.js) draws from
+the shared `rnd()` sequence every single frame regardless of controller state: an idle-gesture pick
+off `rig.idleT` and a blink reset off `rig.blinkT`, both independent of `Wanderer`'s own frozen
+timers. `Baller` (55-npcs.js) already carries the fix for exactly this — `rig.idleT = 1e6; rig.blinkT
+= 1e6` right after the rig is built — so this watcher copies it, and the Talkers pair's own
+turn-taking test passed clean again on the second attempt.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, 3600 simulated frames sampling every NPC's own position every 10th frame)
+swept a 0.25 m grid 2-4.5 m out from the archer's own spot (-30, -84) against all 334 of this
+street's own physics boxes, its 69 `game.zones` rectangles and every sampled NPC position: (-34.5,
+-84) came back clearest — 10.6 m from the nearest box, 27.6 m clear of the nearest zone rectangle's
+own edge and 4.5 m from the nearest other soul (the archer herself), due west of her on open field,
+clear of the firing line the whole way. The shirt colour (0x5a9a7a) was checked against every other
+shirt already built on this street first.
+
+`node dimension-cat/test/run.mjs` ran clean three times running: exit 0, all 277 checks `ok`, 0
+console warnings, box count unchanged at 334, and the Neighborhood's own friend total went up by
+one (133 → 134 to meet). No visual check was possible in this environment (no browser, no
+Playwright), so whether the watcher's stance actually reads as watching the shot rather than just
+standing nearby is unverified. Six worlds' own archers are still without a watcher, left for future
+rounds to close out the set. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.
