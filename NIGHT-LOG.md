@@ -36409,3 +36409,36 @@ browser, no Playwright), so whether the watcher's stance actually reads as watch
 than just standing nearby is unverified, same caveat as the previous four. Two worlds' own kite
 flyers — Frosty Peak and Whisper Woods — are still without a watcher, left for future rounds.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1261 — Frosty Peak's kite flyer gets a watcher, the sixth of the seven
+
+Continuing the set round 1256 started: no kite flyer in any of the seven worlds had ever had a
+watcher, and Robot City, the Neighborhood, Candy Land, Victorian and Sunny Shore picked up theirs in
+rounds 1256-1260. This one does Frosty Peak, the kite flyer working the open snowfield well east of
+the village, kite looping high over the peak on the mountain wind.
+
+**A bundled-up passer-by now stands south of him on the open snow, head tipped back, watching it
+climb.** No new class or mesh — the same `makeHuman()`/`randomPerson()` rig and `Wanderer`
+(55-npcs.js) every other watcher in this set uses, the same "stand and watch" behaviour, with
+`angle` pointed at the kite flyer's own fixed spot (46, 44) rather than a constant. Dressed in this
+mountain's own winter wardrobe (beanie, coat, scarf, cuffs) rather than bare clothes, since every
+other soul on this snowfield is wrapped up the same way. Saying hello makes her the usual kind of
+friend; `Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was needed, and
+no physics box either — pure bystander.
+
+A headless probe (`game.travel(5, 'from-prev')`, then 1800 simulated frames sampling every NPC's own
+position every 10th frame so the sledder, the snowball-fighting kids, the tag pair and every other
+wandering soul had all been seen moving) swept a 0.25 m grid 2-4.5 m out from the kite flyer's own
+spot against all 362 of this mountain's own physics boxes (knee-to-head band only), its 157
+`game.zones` rectangles and every sampled NPC position: (46, 39.5) came back clearest — 7.19 m from
+the nearest box, 6.07 m clear of the nearest zone rectangle's own edge and the full 4.5 m from the
+nearest other soul (the kite flyer himself), due south of him on open snow.
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt at this spot: exit 0, all checks
+`ok`, 0 console warnings, box count unchanged at 334 (pure bystander, no collider of its own). A
+`git stash`/pop against the working tree confirmed Frosty Peak's own friend total went up by exactly
+one (151 → 152) and no other file was touched. No visual check was possible in this environment (no
+browser, no Playwright), so whether the watcher's stance actually reads as watching the kite rather
+than just standing nearby is unverified, same caveat as the previous five. One world's own kite flyer
+— Whisper Woods — is still without a watcher, left for a future round to close out the set.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -28989,6 +28989,32 @@ function buildSnowVillage(game, entry) {
       hat: 'beanie', hatColor: 0x2f6fd6, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a }); W.add(flyer.group);
     game.npcs.push(new KiteFlyer(game, flyer, makeKite(0xff6f3c, 0x9fe8ff), { x: kx, z: kz, wind: [0.5, -0.75],
       cries: ["Mountain wind's the best kind for it.", 'Careful, puss — mind the line!', "Higher than the gondola, today."] })); }
+  // Robot City, the Neighborhood, Candy Land, Victorian and Sunny Shore have all picked up a kite-flyer
+  // watcher since round 1256 started the set — no kite flyer in any of the seven worlds had ever had
+  // one, every other playground fixture already does. This closes the sixth of the seven.
+  //
+  // **A bundled-up passer-by now stands south of the kite flyer, head tipped back, watching it
+  // climb.** Same `Wanderer` (55-npcs.js) every other watcher in this set already uses, the same
+  // "stand and watch" behaviour, a short leash (0.4 m) and `angle` pointed at the kite flyer's own
+  // fixed spot (46, 44) rather than a constant, so she reads as watching him and not just standing
+  // nearby. No `cries` of her own; `Wanderer`'s own constructor calls `greetable()` itself, so no
+  // extra wiring was needed, and no physics box either — pure bystander. Dressed in this mountain's
+  // own winter wardrobe (beanie, coat, scarf, cuffs) rather than bare clothes, since every other soul
+  // on this snowfield is wrapped up the same way.
+  //
+  // A headless probe (`game.travel(5, 'from-prev')`, then 1800 simulated frames sampling every NPC's
+  // own position every 10th frame so the sledder, the snowball-fighting kids, the tag pair and every
+  // other wandering soul had all been seen moving) swept a 0.25 m grid 2-4.5 m out from the kite
+  // flyer's own spot against all 362 of this mountain's own physics boxes (knee-to-head band only),
+  // its 157 `game.zones` rectangles and every sampled NPC position: (46, 39.5) came back clearest —
+  // 7.19 m from the nearest box, 6.07 m clear of the nearest zone rectangle's own edge and the full
+  // 4.5 m from the nearest other soul (the kite flyer himself), due south of him on open snow.
+  { const kwx = 46, kwz = 39.5, kkx = 46, kkz = 44;
+    const watchWard = makeWardrobe(r, { shirts: [0x8a5a4a, 0x5a6a8a, 0xd9c9a8], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const kiteWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: watchWard }),
+      hat: 'beanie', hatColor: 0x5a6a8a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a });
+    W.add(kiteWatcher.group);
+    game.npcs.push(new Wanderer(game, kiteWatcher, { x: kwx, z: kwz, angle: atan2(kkx - kwx, kkz - kwz), leash: 0.4, speed: 0.3, idle: [3, 6] })); }
   // kids in beanies: wrapped up in coats, scarves and mittens, no two the same colour
   const snowWard = makeWardrobe(r, { shirts: [0xd62839, 0x2f6fd6, 0x2e9e6e, 0xff8f00, 0x8a5acf, 0x00acc1], pants: [0x1e2a44, 0x3a3a3a, 0x4a3a2a], shoes: [0x2a2018, 0x1e1a18] });
   const beanieBag = bag(r, [0xd62839, 0x2f6fd6, 0xffd54a, 0x2e9e6e, 0xef7d2f]);
