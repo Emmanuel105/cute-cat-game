@@ -36807,3 +36807,39 @@ footprint). No visual check was possible in this environment (no browser, no Pla
 the stash actually reads as spilled and forgotten, rather than just a brown lump in the leaves, is
 unverified — and whether anyone ever connects it back to the notice is left entirely to the player.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1273 — the barrel organ finally gets its monkey
+
+Four worlds have had a hand-cranked barrel organ winding out a tune since round 1021, each one with a
+listener standing by now too — but no organ grinder anywhere in this whole game has ever had the one
+thing that goes with the barrel organ in every picture of one: the monkey with the tin cup. **A small
+monkey now sits on the grass just south of the Neighborhood's own organ, tin cup held in both paws,**
+giving it a rattle every so often as if begging a coin out of whoever walks by. Saying hello to it:
+*"🐒 *rattles the tin cup, chatters, and bares its teeth in what might be a grin*"*.
+
+Hand-built straight into `70-worlds.js`, the same footing as the molehill a few rounds back: no new
+`makeX()` in `55-npcs.js` or `56-npcs-wild.js`, no `Wanderer`, no physics box, and — the actual point of
+building it this way — no `rnd()` draw at all, shared or this street's own `r()`, so dropping it in
+cost nothing downstream and it could in principle have gone anywhere in this file. Every moving part
+(head turn, breathing, the tail's slow sway and the cup-rattle bursts themselves) rides the world
+clock `t` alone through a single `U.push`. `game.namedFriend('organ-monkey')` plus a
+`game.addInteractable` keyed straight to its own group gives it a greeting the same way the hare, the
+mole and the sweeper-bot all answer theirs without a `rig.look`/`.robot`/`.cookie` flag to make
+`greetable()` do it automatically.
+
+The organ's own box sits at (16.55, -56) with a 0.425 m half-extent (so its near edge is at z=-55.575)
+and the grinder himself is a 0.4 m circle at (16, -56); (16.55, -55.0) was picked by hand off those
+same figures and then checked with a headless probe (`game.start('new')`, reading `game.physics.boxes`
+and `game.zones.blocked()` directly): 0.58 m clear of the organ's own box, 24.95 m clear of the nearest
+`game.zones` rectangle (nowhere near a road), and 1.14 m from the grinder himself — inside his own
+2.1 m greet radius, which is fine, the same way the hare and the scarecrow already overlap (`game.loop`'s
+own nearest-interactable search always prefers whichever prompt is closer); the monkey's own radius
+was kept to a tighter 1.6 m so most of that overlap stays out of it regardless.
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt: exit 0, all 277 checks `ok`, 0
+console warnings, box count unchanged at 334 (no new collider, as expected), and the Neighborhood's
+own friend total rose from 135 to 136. No visual check was possible in this environment (no browser,
+no Playwright) — only the test suite and the headless probe above confirmed the monkey sits where it's
+meant to and answers its own greeting; the organ grinder's set stays the one with four worlds, not
+seven, so this is a one-off flourish rather than the start of a new cross-world set. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
