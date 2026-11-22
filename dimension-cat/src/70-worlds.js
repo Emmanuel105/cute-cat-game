@@ -12441,6 +12441,34 @@ function buildRobotCity(game, entry) {
     game.npcs.push(new Mime(game, mime, { x: mx, z: mz, ry: mry,
       cries: ['Found him leaning on that wall since the second shift came off, or so Maintenance keeps saying.', 'Not a word out of him, puss. Not one.', 'Best wall on this floor. Shame nobody else can see it.'] })); }
 
+  // Round 1290 gave Victorian's own mime (born round 1283) the game's first watcher, round 1291 did
+  // the same for Candy Land's (round 1284), and round 1292 for the Neighborhood's (round 1285). This
+  // floor's own mime above (round 1286, "the fourth of the seven") is the fourth of the seven worlds
+  // to get one. Same `Wanderer` (55-npcs.js), a plain `makeHuman()`/`randomPerson()` rig, `angle`
+  // pointed at the mime's own fixed spot (2, -56), and the same frozen-idle shape every watcher in
+  // this set uses (`idle: [1e9, 1e9]` plus `blinkT0`/`idleT0`/`sway0` fixed at construction instead of
+  // drawn off the shared `rnd()` — the spare-the-sequence trick round 1292 added to `makeHuman()`
+  // (55-npcs.js) once the Neighborhood's own painter check caught the cost of fixing those three only
+  // after `makeHuman()` returned). No `cries` of its own — this one just watches — no physics box,
+  // pure bystander. Reskinned in this floor's own pale steel-grey, not Candy Land's candy-pink or the
+  // Neighborhood's chalk-white, to match a maintenance crew colleague rather than either of those.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // `game.load(2, 'from-prev')`, 3600 simulated frames, then a further 600 sampling every NPC's own
+  // position every 10th frame) swept a ring 2-3 m out from the mime's own spot against all 1206 of
+  // this city's own physics boxes (knee-to-head band only) and all 296 `game.zones` rectangles, this
+  // time keeping only the points where the mime himself — not the catch pair's own robots, fixed at
+  // (2, -51.25) and (2, -56.75) and swinging ±1.2 m in x between them — came back as the nearest soul:
+  // (2.68, -54.12) came back clearest among those — 8.81 m from the nearest box, 8.65 m clear of the
+  // nearest zone rectangle, 2 m from the mime himself (north of him, by construction) and a good 2.5 m
+  // clear of the catch pair's own fixed z lines either side.
+  { const mwx = 2.68, mwz = -54.12, mimeX = 2, mimeZ = -56;
+    const mimeWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x5a8aa8, stripes: 0x2a2e34, pants: 0x1c1f24, shoes: 0x1c1f24, hat: null, jacket: null, scarf: null, bag: null, backpack: null, coat: null, glasses: false,
+      blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(mimeWatcher.group);
+    game.npcs.push(new Wanderer(game, mimeWatcher, { x: mwx, z: mwz, angle: atan2(mimeX - mwx, mimeZ - mwz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

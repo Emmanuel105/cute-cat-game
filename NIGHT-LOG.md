@@ -37594,3 +37594,37 @@ No visual check was possible in this environment (no browser, no Playwright), so
 stance actually reads as "watching a mime" is unverified, same caveat as the other two. Four worlds'
 own mimes — Robot City, Sunny Shore, Frosty Peak and Whisper Woods — are still performing alone.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1293 — Robot City picks up the mime's watcher too, the fourth of the seven
+
+Rounds 1290-1292 gave Victorian's, Candy Land's and the Neighborhood's own mimes a watcher. This
+city's own mime (round 1286, "the fourth of the seven") is the fourth of the seven worlds to get one.
+
+**A maintenance crew colleague now stands on the open concrete a few steps north of him, watching him
+lean on the invisible wall.** No new class: the same `Wanderer` (55-npcs.js) every watcher in this set
+uses, a plain `makeHuman()`/`randomPerson()` rig reskinned in this floor's own pale steel-grey rather
+than Candy Land's candy-pink or the Neighborhood's chalk-white, `angle` pointed at the mime's own
+fixed spot (2, -56), and the same frozen-idle shape (`idle: [1e9, 1e9]` plus `blinkT0`/`idleT0`/
+`sway0` fixed at construction, the spare-the-sequence trick round 1292 added to `makeHuman()` once the
+Neighborhood's own painter check caught the cost of fixing those three only after the fact). No
+`cries` of its own, no physics box, pure bystander.
+
+This city's own mime shares its stretch of open concrete with the catch pair born back at round 152
+— two robots lobbing a bearing back and forth on fixed z lines (2, -51.25) and (2, -56.75), swinging
+±1.2 m in x between them — so a ring 2-3 m out from the mime wasn't automatically clear of them. A
+headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+`game.load(2, 'from-prev')`, 3600 simulated frames, then a further 600 sampling every NPC's own
+position every 10th frame) swept that ring against all 1206 of this city's own physics boxes
+(knee-to-head band only) and all 296 `game.zones` rectangles, keeping only the points where the mime
+himself, not one of the catch pair's robots, came back as the nearest soul: (2.68, -54.12) came back
+clearest among those — 8.81 m from the nearest box, 8.65 m clear of the nearest zone rectangle, 2 m
+from the mime himself and a good 2.5 m clear of the catch pair's own fixed z lines either side.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (pure bystander, no collider of its own), and Robot City's own friend total rose from
+148 to 149 (confirmed against the previous commit with `git stash`, every other world's count
+unchanged). No visual check was possible in this environment (no browser, no Playwright), so whether
+the watcher's stance actually reads as "watching a mime" against concrete and skyscrapers is
+unverified, same caveat as the other three. Three worlds' own mimes — Sunny Shore, Frosty Peak and
+Whisper Woods — are still performing alone. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
