@@ -14135,6 +14135,37 @@ function buildNeighborhood(game, entry) {
     const monkeyId = game.namedFriend('organ-monkey');
     game.addInteractable({ obj: monkey, radius: 1.6, label: () => 'Say hello to the monkey', onUse: () => { game.befriend(monkeyId); SFX.chitter(); game.hearts(monkey.position.x, 0.3, monkey.position.z, 3); game.toast('🐒 *rattles the tin cup, chatters, and bares its teeth in what might be a grin*'); } }); }
 
+  // Candy Land (round 1276), Robot City (round 1277) and Victorian (round 1278) have all now given
+  // `Harmonica` (55-npcs.js) a home — the Neighborhood, for all its fiddlers-in-waiting and lemonade
+  // stands, had nobody actually playing anything held up to their own mouth either. **A busker now
+  // stands alone on the quiet grass far south of the side road**, well past the ring-dance field and
+  // clear of every other neighbour. *"Three chords, badly — the sheep haven't complained, but there
+  // aren't any here either."* *"Learned it off a postcard my brother sent home. Mostly."* *"Mind your
+  // whiskers, puss — this thing bites if you blow the wrong way."*
+  //
+  // No new controller: `Harmonica` reused exactly as all three earlier worlds built it, dressed from
+  // its own small wardrobe (denim and flannel) rather than the street's shared `ward` bag, which is
+  // sized exactly to its 18 users already.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, 3600 simulated frames sampling every NPC's own position every 10th frame)
+  // swept a 2 m grid of the whole village (|x|, |z| <= 85, short of the world's own 95 m movement
+  // limit) against all 310 of this street's own physics boxes (knee-to-head band only), all 69
+  // `game.zones` rectangles and every sampled NPC position: (8, -84) came back clearest — 13.9 m from
+  // the nearest box, 38.5 m clear of the nearest zone rectangle and 13.9 m from the nearest other
+  // soul, in the open field due south, well past the ring-dance kids at (-78, -35).
+  //
+  // Built dead last of everything this street adds, right after the organ monkey above and right
+  // before `makeDayNight()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw off the
+  // *shared* `rnd()` sequence unconditionally, and anything built earlier here would have had its own
+  // timing-sensitive pick shifted by it.
+  { const hx = 8, hz = -84, hry = atan2(-hx, -hz);
+    const hoodBuskWard = makeWardrobe(r, { shirts: [0x2a4a2a, 0x5a3a2a, 0x3a2a4a], pants: [0x2e3a4a, 0x3a3a3a] });
+    const busker = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.25), wardrobe: hoodBuskWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.2) }); W.add(busker.group);
+    game.npcs.push(new Harmonica(game, busker, { x: hx, z: hz, ry: hry,
+      cries: ["Three chords, badly — the sheep haven't complained, but there aren't any here either.", 'Learned it off a postcard my brother sent home. Mostly.', 'Mind your whiskers, puss — this thing bites if you blow the wrong way.'] })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

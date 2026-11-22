@@ -37033,3 +37033,36 @@ local `main` with the real remote tip before building on it. If a future round's
 rejected or `NIGHT-LOG.md`'s last round number doesn't match what a fresh `git log origin/main`
 shows, re-fetch and re-point `main` at `origin/main` rather than trusting a possibly stale local
 checkout.
+
+## Round 1279 — the Neighborhood picks up the harmonica, the fourth of the seven
+
+Candy Land (1276), Robot City (1277) and Victorian (1278) have all now given `Harmonica`
+(55-npcs.js) a home; the Neighborhood, for all its lemonade stands, buskers-in-waiting and street
+performers, had nobody actually playing anything held up to their own mouth either. **A busker now
+stands alone on the quiet grass far south of the side road**, well past the ring-dance kids. *"Three
+chords, badly — the sheep haven't complained, but there aren't any here either."* *"Learned it off a
+postcard my brother sent home. Mostly."* *"Mind your whiskers, puss — this thing bites if you blow
+the wrong way."*
+
+No new controller — `Harmonica` reused exactly as the first three worlds built it, dressed from its
+own small denim-and-flannel wardrobe rather than the street's shared `ward` bag (already sized to
+its 18 users).
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, 3600 simulated frames sampling every NPC's own position every 10th frame) swept
+a 2 m grid of the whole village (|x|, |z| <= 85, short of the world's own 95 m movement limit)
+against all 310 of this street's own physics boxes (knee-to-head band only), all 69 `game.zones`
+rectangles and every sampled NPC position: (8, -84) came back clearest — 13.9 m from the nearest
+box, 38.5 m clear of the nearest zone rectangle and 13.9 m from the nearest other soul.
+
+The first wardrobe colours tried (reused from elsewhere in the file without checking) collided with
+three existing shirts and tripped the "no two neighbours wear the same colour" check straight away —
+a reminder that this street alone now dresses 100 people from a widening pool of one-off colours, and
+a fresh addition needs genuinely fresh hex values, not just a plausible-sounding palette. Swapped in
+three unchecked colours and the suite passed clean: exit 0, all 277 checks `ok`, 0 console warnings,
+box count unchanged at 334 (a circle collider, not a box), and the Neighborhood's own friend total
+rose from 136 to 137 (confirmed against the previous commit with `git stash`, every other world's
+count unchanged). No visual check was possible in this environment (no browser, no Playwright), so
+whether the sway reads the same against suburban lawn as it did against the first three worlds is
+unverified. Three worlds — Sunny Shore, Frosty Peak, Whisper Woods — are still without a harmonica
+player. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
