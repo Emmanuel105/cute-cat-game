@@ -663,6 +663,15 @@ function makeIceCreamCone() {
   mesh(G.sphere(0.022, 6, 5), mat(0xd62839, { roughness: 0.5 }), { y: 0.525, shadow: 'none', parent: g });
   return g;
 }
+/** A squeeze bottle of sunscreen for someone to hold and dab onto their own arm: a tapered body, a printed label band and a flip-top cap. */
+function makeSunscreenBottle() {
+  const g = new THREE.Group(), body = mat(0xfff6e0, { roughness: 0.4 }), cap = mat(0xff7043, { roughness: 0.5 }), label = mat(0x2f9ccf, { roughness: 0.6 });
+  mesh(G.cyl(0.026, 0.032, 0.11, 10), body, { y: 0.055, parent: g });
+  mesh(G.cyl(0.029, 0.029, 0.03, 10), label, { y: 0.06, shadow: 'none', parent: g });
+  mesh(G.cyl(0.013, 0.017, 0.028, 8), cap, { y: 0.125, parent: g });
+  mesh(G.box(0.018, 0.01, 0.009), cap, { y: 0.13, z: 0.016, rx: -0.3, shadow: 'none', parent: g });
+  return g;
+}
 /** A paper cone of chips for a vendor to hold up: four chips poking out at staggered angles. */
 function makeChipsCone() {
   const g = new THREE.Group(), chip = mat(0xe8b649, { roughness: 0.85 });

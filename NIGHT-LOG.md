@@ -36886,3 +36886,36 @@ describes — the Neighborhood's own "LOST CAT — Mittens" notice on the park l
 holdout, and deliberately so: it was never a found-object joke to begin with, just an unrelated cat
 the player's own cat has no way to produce. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 1275 — Sunny Shore finally worries about sunburn
+
+Six worlds' worth of beachgoers, sunbathers and swimmers have had their patch of sand since this
+street was built, but in 1274 rounds nobody on Sunny Shore had ever once reached for the sunscreen.
+**A second beach towel now sits further up the dry sand, with its own sunbather kneeling on it,
+squeezing sunscreen from a bottle and working it into one shoulder.** *"Factor fifty, every inch.
+Learned that the hard way one summer."* *"Mind the bottle, puss — it's slicker than it looks."*
+*"Burnt red as a crab once. Once was plenty."*
+
+New prop `makeSunscreenBottle()` (62-props-nature.js, right after `makeIceCreamCone()`): a small
+tapered bottle with a printed label band and a flip-top cap, parented straight into the sunbather's
+own hand the same way the chalk girl holds her chalk. No new controller — `Kneeler` (55-npcs.js)
+reused verbatim, the same "working on something small" idiom this game already leans on for the
+acorn-feeder, the beekeeper and the hopscotch chalker, and its own constructor calls `greetable()` for
+free, so this is one more friend to meet, not just scenery.
+
+A headless probe (`game.start('new')`, `game.travel(4, 'from-hub')`, then 3600 simulated frames
+sampling every NPC's own position every 10th frame) swept the open dry sand north of the existing
+sunbathers' corner against all 228 of this beach's own physics boxes, all 95 `game.zones` rectangles
+and every sampled NPC position: (-1, 22) came back clearest — 6.26 m from the nearest box, 6.08 m from
+the nearest other soul and 8.05 m from the nearest zone rectangle. Built last of everything this
+world's hand-built core adds, since `beachPerson()`/`randomPerson()` draw off this beach's own shared
+`r()` sequence unconditionally and anything earlier would have had its own timing-sensitive pick
+shifted by it.
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt: exit 0, all 277 checks `ok`, 0
+console warnings, box count unchanged at 334 (no new collider, as expected for a prop with no
+footprint), and Sunny Shore's own friend total rose from 156 to 157 (confirmed against the previous
+commit with `git stash`). No visual check was possible in this environment (no browser, no
+Playwright), so whether the kneeling pose actually reads as "rubbing in sunscreen" rather than just
+another person patting the sand is unverified — the dialogue carries the joke either way. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
