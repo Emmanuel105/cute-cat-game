@@ -3404,6 +3404,41 @@ function buildSnowVillage(game, entry) {
     game.npcs.push(new Harmonica(game, busker2, { x: hx, z: hz, ry: hry,
       cries: ['Three chords, badly — the yetis haven\'t complained, but there aren\'t any out this far either.', 'Learned it off a trail marker. Mostly right.', "Mind your whiskers, puss — this thing bites if you blow the wrong way."] })); }
 
+  // Candy Land, Robot City, Victorian, the Neighborhood and Sunny Shore (rounds 1283-1287) have
+  // each now given `Mime` (55-npcs.js) a home — Frosty Peak is the sixth of the seven. Its own
+  // world-5 checks (the sledder's run count, a snowball-throw count >= 2 in 5 s) are both generous
+  // rather than exact-timed, same as the harmonica busker above, so no `t0`/`cryT0` override is
+  // needed here. **A mime stands alone on open snow well north of the frost-cracked lake, both
+  // palms pressed flat against a wall nobody else can see.** *"Standing there since the last thaw
+  // gave up and the frost won, or so the yetis tell it."* *"Not a word out of him, puss. Not one."*
+  // *"Best wall on the mountain. Out of the wind, if you squint."* Saying hello makes him the usual
+  // kind of friend, same as his counterparts in the other five worlds.
+  //
+  // Dressed from his own small wardrobe (chalk-white shirt, near-black stripes and trousers), same
+  // as all five earlier outings, rather than this mountain's own shared `snowWard` bag — no coat,
+  // no scarf, no beanie, same running joke as his sandy turn on Sunny Shore.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(5, 'from-hub')`, then 3600 simulated frames so every reindeer,
+  // hare, arctic fox, penguin, yeti and wandering villager had already settled, sampling every
+  // NPC's own position every 10th frame for a further 600 frames) swept a 1 m grid of the
+  // hand-built core (radius <= 50, short of the radius (58) where `snowRegion()`'s own procedural
+  // fill takes over) against all 749 of this mountain's own physics boxes (knee-to-head band
+  // only), every one of `game.zones`'s own 152 rectangles and every sampled NPC position: (9, 46)
+  // came back clearest — 6.60 m from the nearest box, 15.31 m clear of the nearest zone rectangle
+  // and 6.32 m from the nearest other soul, well clear of the dropped mitten at (26, 42).
+  //
+  // Built dead last of everything this mountain adds, right after the harmonica busker above, for
+  // the usual reason: `makeHuman()`/`randomPerson()` both draw off this mountain's own shared
+  // `r()` sequence unconditionally, and anything built earlier would have had its own
+  // timing-sensitive pick shifted by it.
+  { const mx = 9, mz = 46, mry = atan2(-mx, -mz);
+    const mime = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.2) }),
+      shirt: 0xf5f0e8, stripes: 0x26262a, pants: 0x1c1c20, shoes: 0x1c1c20, hat: null, shorts: false, jacket: null, coat: null, scarf: null, bag: null, backpack: null, glasses: false });
+    W.add(mime.group);
+    game.npcs.push(new Mime(game, mime, { x: mx, z: mz, ry: mry,
+      cries: ['Standing there since the last thaw gave up and the frost won, or so the yetis tell it.', 'Not a word out of him, puss. Not one.', 'Best wall on the mountain. Out of the wind, if you squint.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

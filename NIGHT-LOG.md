@@ -37398,3 +37398,41 @@ from some earlier container, not anything this round touched or needs to reconci
 committed from a detached `HEAD` on top of `origin/main` instead, and pushed straight to
 `origin/main` (`git push origin HEAD:main`) rather than via the stale local branch, to avoid dragging
 that old history back in.
+
+## Round 1288 — Frosty Peak picks up the mime too, the sixth of the seven
+
+Round 1287's own closing note named the two worlds still without a mime: Frosty Peak, Whisper
+Woods. Frosty Peak's own world-5 checks (the sledder's run count, a snowball-throw count >= 2 in
+5 s) both turned out generous rather than exact-timed, same as Robot City's and Sunny Shore's own
+checks, so `Mime` (55-npcs.js) needed no `t0`/`cryT0` override this time either.
+
+**A mime now stands alone on open snow well north of the frost-cracked lake, both palms pressed
+flat against a wall nobody else can see.** *"Standing there since the last thaw gave up and the
+frost won, or so the yetis tell it."* *"Not a word out of him, puss. Not one."* *"Best wall on
+the mountain. Out of the wind, if you squint."* Saying hello makes him the usual kind of friend,
+same as his counterparts in the other five worlds. Dressed from his own small wardrobe
+(chalk-white shirt, near-black stripes and trousers), same as all five earlier outings — no coat,
+no scarf, no beanie, despite the mountain air, same running joke as his sandy turn on Sunny Shore.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(5, 'from-hub')`, then 3600 simulated frames so every reindeer,
+hare, arctic fox, penguin, yeti and wandering villager had already settled, sampling every NPC's
+own position every 10th frame for a further 600 frames) swept a 1 m grid of the hand-built core
+(radius <= 50, short of the radius (58) where `snowRegion()`'s own procedural fill takes over)
+against all 749 of this mountain's own physics boxes (knee-to-head band only), every one of
+`game.zones`'s own 152 rectangles and every sampled NPC position: (9, 46) came back clearest —
+6.60 m from the nearest box, 15.31 m clear of the nearest zone rectangle and 6.32 m from the
+nearest other soul, well clear of the dropped mitten at (26, 42).
+
+Built dead last of everything this mountain adds, right after the harmonica busker (round 925ecda),
+for the usual reason: `makeHuman()`/`randomPerson()` both draw off this mountain's own shared
+`r()` sequence unconditionally.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box
+count unchanged at 334 (a circle collider, not a box), and Frosty Peak's own friend total rose
+from 154 to 155 (confirmed against the previous commit with `git stash`, world 5's own count
+only). No visual check was possible in this environment (no browser, no Playwright), so whether
+the arm routine actually reads as "invisible wall" over open snow is unverified, same caveat as
+his other five outings. One world is still without a mime (Whisper Woods); whichever round picks
+up the seventh and last should run the same timing-test check this round and the five before it
+all did first. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
