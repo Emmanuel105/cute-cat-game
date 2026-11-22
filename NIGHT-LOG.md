@@ -37436,3 +37436,42 @@ the arm routine actually reads as "invisible wall" over open snow is unverified,
 his other five outings. One world is still without a mime (Whisper Woods); whichever round picks
 up the seventh and last should run the same timing-test check this round and the five before it
 all did first. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1289 — Whisper Woods picks up the mime too, the seventh and last of the seven
+
+Round 1288's own closing note named the one world still without a mime: Whisper Woods. Its own
+world-6 check (`game.friendTotal >= [...][6]`, a lower bound against the wood's real total of 182)
+reads nothing off exact timing, same as the other six worlds' own checks, so `Mime` (55-npcs.js)
+needed no `t0`/`cryT0` override here either — the last of the seven to get away without one.
+
+**A mime now stands alone on open forest floor, well south-west of the glowing pond, both palms
+pressed flat against a wall nobody else can see.** *"Been there since before the fireflies
+started, or so the owls tell it."* *"Not a word out of him, puss. Not one."* *"Good wall, by the
+look of him — holding something back that the rest of us can't see."* Saying hello makes him the
+usual kind of friend, same as his counterparts in the other six worlds. Dressed from his own small
+wardrobe (chalk-white shirt, near-black stripes and trousers), same as all six earlier outings,
+rather than reaching into any of this wood's own shared wardrobe bags.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(6, 'from-hub')`, then 3600 simulated frames so every frog,
+firefly, butterfly, fox and wandering villager had already settled, sampling every NPC's own
+position every 10th frame for a further 600 frames) swept a 0.5 m grid of the open floor (radius
+15-54, short of the radius (58) where `forestRegion()`'s own procedural fill takes over) against
+all 438 of this wood's own physics boxes (knee-to-head band only), every one of `game.zones`'s own
+229 rectangles and every sampled NPC position: (-19, -50.5) came back clearest — 7.76 m from the
+nearest box, 13.44 m clear of the nearest zone rectangle and 11.05 m from the nearest other soul.
+The probe was re-run three times end to end and returned the same winner every time (the world's
+built from a fixed seed, so nothing here hinges on wall-clock timing the way a real-timer `travel()`
+wait would).
+
+Built dead last of everything this wood adds, right after the harmonica busker (round 27f5e39),
+for the usual reason: `makeHuman()`/`randomPerson()` both draw off this wood's own shared `r()`
+sequence unconditionally.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box
+count unchanged at 334 (a circle collider, not a box), and Whisper Woods' own friend total rose
+from 182 to 183 (confirmed against the previous commit with `git stash`, world 6's own count
+only). No visual check was possible in this environment (no browser, no Playwright), so whether
+the arm routine actually reads as "invisible wall" over open forest floor is unverified, same
+caveat as his other six outings. All seven worlds now have one. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

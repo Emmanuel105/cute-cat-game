@@ -4011,6 +4011,42 @@ function buildForest(game, entry) {
     game.npcs.push(new Harmonica(game, busker3, { x: hx, z: hz, ry: hry,
       cries: ['Three chords, badly — the owls haven\'t complained, but there aren\'t any out this far either.', 'Found it half buried under the leaf litter. Still plays, mostly.', "Mind your whiskers, puss — this thing bites if you blow the wrong way."] })); }
 
+  // Candy Land, Robot City, Victorian, the Neighborhood, Sunny Shore and Frosty Peak (rounds
+  // 1283-1288) have each now given `Mime` (55-npcs.js) a home; this wood is the seventh and last.
+  // Its own world-6 checks (`game.friendTotal >= [...][6]` is a lower bound, same as the other six
+  // worlds' own friend counts) don't read anything off exact timing, so no `t0`/`cryT0` override is
+  // needed here either. **A mime now stands alone on open forest floor, well south-west of the
+  // glowing pond.** *"Been there since before the fireflies started, or so the owls tell it."*
+  // *"Not a word out of him, puss. Not one."* *"Good wall, by the look of him — holding something
+  // back that the rest of us can't see."* Saying hello makes him the usual kind of friend, same as
+  // his counterparts in the other six worlds.
+  //
+  // Dressed from his own small wardrobe (chalk-white shirt, near-black stripes and trousers), same
+  // as all six earlier outings, rather than this wood's own shared wardrobe bags.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(6, 'from-hub')`, then 3600 simulated frames so every frog,
+  // firefly, butterfly, fox and wandering villager had already settled, sampling every NPC's own
+  // position every 10th frame for a further 600 frames) swept a 0.5 m grid of the open floor
+  // (radius 15-54, short of the radius (58) where `forestRegion()`'s own procedural fill takes
+  // over) against all 438 of this wood's own physics boxes (knee-to-head band only), every one of
+  // `game.zones`'s own 229 rectangles and every sampled NPC position: (-19, -50.5) came back
+  // clearest — 7.76 m from the nearest box, 13.44 m clear of the nearest zone rectangle and 11.05 m
+  // from the nearest other soul. The probe was re-run three times end to end and gave the same
+  // winner every time (the world is built from a fixed seed, so nothing here depends on wall-clock
+  // timing).
+  //
+  // Built dead last of everything this wood adds, right after the harmonica busker above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this wood's own shared `r()`
+  // sequence unconditionally, and anything built earlier would have had its own timing-sensitive
+  // pick shifted by it.
+  { const mx = -19, mz = -50.5, mry = atan2(-mx, -mz);
+    const mime = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.2) }),
+      shirt: 0xf5f0e8, stripes: 0x26262a, pants: 0x1c1c20, shoes: 0x1c1c20, hat: null, shorts: false, jacket: null, scarf: null, bag: null, backpack: null, coat: null, glasses: false });
+    W.add(mime.group);
+    game.npcs.push(new Mime(game, mime, { x: mx, z: mz, ry: mry,
+      cries: ['Been there since before the fireflies started, or so the owls tell it.', 'Not a word out of him, puss. Not one.', "Good wall, by the look of him — holding something back that the rest of us can't see."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
