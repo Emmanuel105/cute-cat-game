@@ -37551,3 +37551,46 @@ in this environment (no browser, no Playwright), so whether the watcher's stance
 "watching a mime" is unverified, same caveat as Victorian's own watcher. Five worlds' own mimes — the
 Neighborhood, Robot City, Sunny Shore, Frosty Peak and Whisper Woods — are still performing alone.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1292 — the Neighborhood picks up the mime's watcher too, the third of the seven
+
+Round 1290 gave Victorian's own mime (born round 1283) the game's first watcher, and round 1291 did
+the same for Candy Land's (round 1284). This street's own mime, born right here at round 1285 ("the
+third of the three"), is the third of the seven worlds to get one.
+
+**A neighbour now stands a couple of steps north-east of him, watching him lean into the wall nobody
+else can see.** No new class: the same `Wanderer` (55-npcs.js) every other watcher in this set uses,
+a plain `makeHuman()`/`randomPerson()` rig from its own small wardrobe (shirt `0x7a9ac8`, checked
+against every other shirt literal on this street first), `angle` pointed at the mime's own fixed spot
+(-52, -79), and the same frozen-idle shape (`idle: [1e9, 1e9]` plus every one of `Wanderer`'s own
+construction-time draws fixed rather than pulled from the shared `rnd()`). No `cries`, no physics box,
+pure bystander.
+
+The earlier two watchers (Victorian's, Candy Land's) fixed `rig.idleT`/`blinkT` only *after*
+`makeHuman()` returned — too late, it turns out, to actually spare anything: `makeHuman()` draws
+`blinkT`, `idleT` and `sway` off the shared `rnd()` sequence unconditionally during construction,
+before any caller gets a chance to overwrite them. This street's own test suite is dense enough to
+notice: adding this watcher the same way the other two were built shifted that sequence by three more
+draws and rolled the painter by the pond a `'shift'` idle gesture at the exact frame `test/run.mjs`
+checks her — which blocks her brush-arm pose code and failed "a painter at her easel by the pond, two
+daubs in". `makeHuman()` (55-npcs.js) now takes optional `blinkT0`/`idleT0`/`sway0` to fix those three
+directly instead, the same spare-the-sequence trick `Mime`'s own `t0`/`cryT0` already uses — so this
+watcher, unlike its two predecessors, costs the shared sequence nothing at all. (Victorian's and Candy
+Land's watchers still draw their three; they just haven't collided with anything yet.)
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, 3600
+simulated frames, then a further 600 sampling every NPC's own position every 10th frame) swept a ring
+2-3 m out from the mime's own spot against all 310 of this street's own physics boxes (knee-to-head
+band only) and all 69 `game.zones` rectangles: (-51.48, -76.05) came back clearest — 17.9 m from the
+nearest box, 21.6 m clear of the nearest zone rectangle and 3 m from the nearest other soul (the mime
+himself, by construction), 91.8 m from the village centre, inside `P.setLimit(95)`'s own walkable
+edge.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (pure bystander, no collider of its own beyond the `Wanderer`'s own circle), and the
+Neighborhood's own friend total rose from 138 to 139 (confirmed against the previous commit with
+`git stash`, every other world's count unchanged, and the previously-flaky painter check now passing).
+No visual check was possible in this environment (no browser, no Playwright), so whether the watcher's
+stance actually reads as "watching a mime" is unverified, same caveat as the other two. Four worlds'
+own mimes — Robot City, Sunny Shore, Frosty Peak and Whisper Woods — are still performing alone.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

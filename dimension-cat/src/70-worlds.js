@@ -4999,6 +4999,40 @@ function buildNeighborhood(game, entry) {
     game.npcs.push(new Mime(game, mime, { x: mx, z: mz, ry: mry, t0: 3.3, cryT0: 6.5,
       cries: ['Standing there since the spring fete, by the look of him.', 'Not a word out of him, puss. Not one.', 'Good wall, that one. Shame nobody else can see it.'] })); }
 
+  // Round 1290 gave Victorian's own mime (born round 1283) the game's first watcher and round 1291
+  // did the same for Candy Land's (round 1284). This street's own mime above (round 1285, "the third
+  // of the three") is the third of the seven worlds to get one. Same `Wanderer` (55-npcs.js), a plain
+  // `makeHuman()`/`randomPerson()` rig, `angle` pointed at the mime's own fixed spot (-52, -79), and
+  // the same frozen-idle `Wanderer` shape every watcher in this set uses (`idle: [1e9, 1e9]` plus
+  // every one of `Wanderer`'s own construction-time draws fixed rather than pulled from the shared
+  // `rnd()`). No `cries` of its own — this one just watches — no physics box, pure bystander.
+  //
+  // Earlier watchers on this street (the archer's, the magician's) fixed `rig.idleT`/`blinkT` *after*
+  // `makeHuman()` returned, which stops their own future idle-gesture rolls but is too late to spare
+  // the shared `rnd()` sequence: `makeHuman()` (55-npcs.js) draws `blinkT`, `idleT` and `sway` off it
+  // unconditionally during construction, before any caller gets a chance to overwrite them, and this
+  // street's own "painter, two daubs in" check reads the painter's own idle-gesture state at an exact
+  // frame — three more global draws by the time it runs was enough to roll her a `'shift'` gesture
+  // instead of none, which blocks her brush arm's own pose code and failed the check. `makeHuman()`
+  // now takes optional `blinkT0`/`idleT0`/`sway0` to fix those three directly instead, the same
+  // spare-the-sequence trick `Mime`'s own `t0`/`cryT0` already uses — so this watcher, unlike its
+  // predecessors, costs the shared sequence nothing at all.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // 3600 simulated frames, then a further 600 sampling every NPC's own position every 10th frame)
+  // swept a ring 2-3 m out from the mime's own spot against all 310 of this street's own physics
+  // boxes (knee-to-head band only) and all 69 `game.zones` rectangles: (-51.48, -76.05) came back
+  // clearest — 17.9 m from the nearest box, 21.6 m clear of the nearest zone rectangle and 3 m from
+  // the nearest other soul (the mime himself, by construction), north-east of him and 91.8 m from the
+  // village centre, inside `P.setLimit(95)`'s own walkable edge. Shirt colour 0x7a9ac8, checked against
+  // every other shirt literal already on this street, since the "no two neighbours wear the same
+  // shirt" test catches a clash either way.
+  { const mwx = -51.48, mwz = -76.05, mimeX = -52, mimeZ = -79;
+    const mimeWatchWard = makeWardrobe(r, { shirts: [0x7a9ac8] });
+    const mimeWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: mimeWatchWard }), blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(mimeWatcher.group);
+    game.npcs.push(new Wanderer(game, mimeWatcher, { x: mwx, z: mwz, angle: atan2(mimeX - mwx, mimeZ - mwz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

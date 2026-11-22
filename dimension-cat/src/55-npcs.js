@@ -231,9 +231,14 @@ function makeHuman(o = {}) {
   const legSwing = (o.dress ? 0.32 : 1) * (o.cane ? 0.7 : 1);
   const restArm = 0.34;      // elbows are never locked straight
   const stoop = o.elder ? 0.17 : 0, skip = o.child ? 1 : 0;   // elders stoop from the hips; children bounce when they walk
-  rig.blinkT = rnd.range(1, 5);
-  rig.idleT = rnd.range(3, 11);
-  rig.gesture = null; rig.gT = 0; rig.sway = rnd.range(0, TAU);
+  // `blinkT0`/`idleT0`/`sway0` let a caller fix these three directly instead of drawing them off the
+  // shared global `rnd()` sequence — the same spare-the-sequence trick `Mime`'s own `t0`/`cryT0` uses,
+  // needed by a frozen-idle watcher built in a world whose own tests read their timing off that same
+  // sequence (see the Neighborhood build in 70-worlds.js): setting `rig.idleT`/`blinkT` only *after*
+  // construction is too late, since these three draws already happened by then.
+  rig.blinkT = o.blinkT0 ?? rnd.range(1, 5);
+  rig.idleT = o.idleT0 ?? rnd.range(3, 11);
+  rig.gesture = null; rig.gT = 0; rig.sway = o.sway0 ?? rnd.range(0, TAU);
   rig.animate = (ph, moving, dt, t = 0) => {
     // pick something to do while standing around
     if (!moving) {
