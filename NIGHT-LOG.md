@@ -37096,3 +37096,34 @@ world's count unchanged). No visual check was possible in this environment (no b
 Playwright), so whether the sway reads the same against dune sand as it did against the first four
 worlds is unverified. Two worlds — Frosty Peak, Whisper Woods — are still without a harmonica player.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1281 — Frosty Peak picks up the harmonica, the sixth of the seven
+
+Candy Land (1276), Robot City (1277), Victorian (1278), the Neighborhood (1279) and Sunny Shore
+(1280) have all now given `Harmonica` (55-npcs.js) a home; this mountain, for all its carolers,
+buskers-in-waiting and aurora watchers, had nobody actually playing anything held up to their own
+mouth either. **A busker now sits alone in the open snow north-east of the hand-built core.**
+*"Three chords, badly — the yetis haven't complained, but there aren't any out this far either."*
+*"Learned it off a trail marker. Mostly right."* *"Mind your whiskers, puss — this thing bites if
+you blow the wrong way."*
+
+No new controller — `Harmonica` reused exactly as all five earlier worlds built it, dressed from its
+own small wardrobe rather than this mountain's own shared `snowWard` bag.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(5, 'from-hub')`, then 3600 simulated frames so every reindeer, hare,
+arctic fox, penguin, yeti and wandering villager had already settled, sampling every NPC's own
+position every 10th frame for a further 600 frames) swept a 1 m grid of the hand-built core
+(radius <= 50, short of the radius (58) where `snowRegion()`'s own procedural fill takes over)
+against all 379 of this mountain's own physics boxes (knee-to-head band only), every one of
+`game.zones`'s own 152 rectangles and every sampled NPC position: (25, 40) came back clearest —
+6.73 m from the nearest box, 8.25 m clear of the nearest zone rectangle and 9.85 m from the nearest
+other soul.
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt: exit 0, every check `ok`, 0 console
+warnings, box count unchanged at 334 (a circle collider, not a box), and Frosty Peak's own friend
+total rose from 153 to 154 (confirmed against the previous commit with `git stash`, every other
+world's count unchanged). No visual check was possible in this environment (no browser, no
+Playwright), so whether the sway reads the same against open snow as it did against the first five
+worlds is unverified. One world — Whisper Woods — is still without a harmonica player. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
