@@ -37351,3 +37351,50 @@ skyscrapers is unverified, same caveat as his other three outings. Three worlds 
 mime (Sunny Shore, Frosty Peak, Whisper Woods); whichever picks up the fifth should run the same
 timing-test check this round and round 1285 both did first. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1287 — Sunny Shore picks up the mime too, the fifth of the seven
+
+Round 1286's own closing note named the three worlds still without a mime: Sunny Shore, Frosty
+Peak, Whisper Woods. Sunny Shore's own world-4 checks (the kite's height/displacement thresholds,
+a sunbather/kneeler pose check, a beach-ball pass count >= 2 in 5 s) all turned out generous rather
+than exact-timed, same as Robot City's own loader/sentry checks, so `Mime` (55-npcs.js) needed no
+`t0`/`cryT0` override this time, unlike the Neighborhood.
+
+**A mime now stands alone on the dry dune sand well up the beach, both palms pressed flat against
+a wall nobody else can see.** *"Found him leaning there since the tide last turned, and it hasn't
+come back for him."* *"Not a word out of him, puss. Not one."* *"Good wall, that one. Keeps the
+wind off something, you'd think."* Saying hello makes him the usual kind of friend, same as his
+counterparts in the other four worlds. Dressed from his own small wardrobe (chalk-white shirt,
+near-black stripes and trousers), same as all four earlier outings, rather than this beach's own
+shared `beachWard` bag, which is sized to its own regular cast of sunbathers and swimmers.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(4, 'from-hub')` waited out for real against its own portal-fade
+timer, then 3600 simulated frames sampling every NPC's own position every 10th frame) swept a 1 m
+grid of the dry dune sand (x <= 8, clear of the wet sand/sea line at x=12, radius <= 50, short of
+the radius (58) where `beachRegion()`'s own fill takes over) against all 228 of this beach's own
+physics boxes (knee-to-head band only), all 95 `game.zones` rectangles and every sampled NPC
+position: (0, 36) came back clearest — 6.01 m from the nearest box, 6.94 m clear of the nearest
+zone rectangle and 5.66 m from the nearest other soul, well north of the fiddle case and the
+chestnut brazier. The probe was re-run four times end to end to make sure the real-timer wait for
+`travel()` to settle didn't shift the answer (it didn't — same grid winner every time).
+
+Built dead last of everything this beach adds, right after the harmonica busker (round 1280), for
+the usual reason: `makeHuman()`/`randomPerson()` both draw off this beach's own shared `r()`
+sequence unconditionally.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (a circle collider, not a box), and Sunny Shore's own friend total rose from 158 to
+159 (confirmed against the previous commit with `git stash`, world 4's own count only). No visual
+check was possible in this environment (no browser, no Playwright), so whether the arm routine
+actually reads as "invisible wall" over open sand is unverified, same caveat as his other four
+outings. Two worlds are still without a mime (Frosty Peak, Whisper Woods); whichever picks up the
+sixth should run the same timing-test check this round and round 1285 both did first. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+Housekeeping note: this run found the local `main` branch ref pointing at a stale, unrelated commit
+(`0fa6791`, dated Nov 18) nowhere near `origin/main`'s own tip (`57e4928`, this morning) — a leftover
+from some earlier container, not anything this round touched or needs to reconcile. Worked and
+committed from a detached `HEAD` on top of `origin/main` instead, and pushed straight to
+`origin/main` (`git push origin HEAD:main`) rather than via the stale local branch, to avoid dragging
+that old history back in.

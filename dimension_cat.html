@@ -29163,6 +29163,41 @@ function buildBeach(game, entry) {
     game.npcs.push(new Harmonica(game, busker, { x: hx, z: hz, ry: hry,
       cries: ['Three chords, badly — the gulls have heard worse off the trawlers.', 'Found it washed up past the tideline. Still plays, mostly.', "Mind your whiskers, puss — this thing bites if you blow the wrong way."] })); }
 
+  // Candy Land, Robot City, Victorian and the Neighborhood (rounds 1283-1286) have each now given
+  // `Mime` (55-npcs.js) a home — Sunny Shore is the fifth of the seven. Its own world-4 checks
+  // (kite height/displacement thresholds, a sunbather/kneeler pose check, a beach-ball pass count
+  // >= 2) are all generous rather than exact-timed, same as Robot City's own loader/sentry checks,
+  // so no `t0`/`cryT0` override is needed here. **A mime stands alone on the dry dune sand well up
+  // the beach, both palms pressed flat against a wall nobody else can see.** *"Found him leaning
+  // there since the tide last turned, and it hasn't come back for him."* *"Not a word out of him,
+  // puss. Not one."* *"Good wall, that one. Keeps the wind off something, you'd think."* Saying
+  // hello makes him the usual kind of friend.
+  //
+  // Dressed from his own small wardrobe (chalk-white shirt, near-black stripes and trousers), same
+  // as his three other outings, rather than this beach's own shared `beachWard` bag, which is sized
+  // to its own regular cast of sunbathers and swimmers.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(4, 'from-hub')` waited out for real against its own
+  // portal-fade timer, then 3600 simulated frames sampling every NPC's own position every 10th
+  // frame) swept a 1 m grid of the dry dune sand (x <= 8, clear of the wet sand/sea line at x=12,
+  // radius <= 50, short of the radius (58) where `beachRegion()`'s own fill takes over) against all
+  // 228 of this beach's own physics boxes (knee-to-head band only), all 95 `game.zones` rectangles
+  // and every sampled NPC position: (0, 36) came back clearest — 6.01 m from the nearest box,
+  // 6.94 m clear of the nearest zone rectangle and 5.66 m from the nearest other soul, well north
+  // of the fiddle case and the chestnut brazier.
+  //
+  // Built dead last of everything this beach adds, right after the harmonica busker above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this beach's own shared `r()`
+  // sequence unconditionally, and anything built earlier would have had its own timing-sensitive
+  // pick shifted by it.
+  { const mx = 0, mz = 36, mry = atan2(-mx, -mz);
+    const mime = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.2) }),
+      shirt: 0xf5f0e8, stripes: 0x26262a, pants: 0x1c1c20, shoes: 0x1c1c20, hat: null, shorts: false, jacket: null, scarf: null, bag: null, backpack: null, coat: null, glasses: false });
+    W.add(mime.group);
+    game.npcs.push(new Mime(game, mime, { x: mx, z: mz, ry: mry,
+      cries: ['Found him leaning there since the tide last turned, and it hasn\'t come back for him.', 'Not a word out of him, puss. Not one.', 'Good wall, that one. Keeps the wind off something, you\'d think.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
