@@ -16542,6 +16542,45 @@ function buildVictorian(game, entry) {
     game.npcs.push(new Mime(game, mime, { x: mx, z: mz, ry: mry,
       cries: ['Trapped in there since Tuesday, or so the hat by his feet claims.', 'Not a word out of him. Not one, puss — don\'t you try it either.', 'Best wall in the square. Shame nobody else can see it.'] })); }
 
+  // `Mime` (55-npcs.js) has never had anyone stop and watch him either, in any of the seven worlds —
+  // round 1283 gave this town's own market square its own mime and the other six worlds (1284-1289)
+  // each picked up their own since, but nobody anywhere has ever stood and stared at the invisible
+  // wall. This is the first of the set. **A passer-by now stands a couple of steps south-west of him,
+  // watching him lean into the wall nobody else can see.** *"Been at it a good while, by the look of
+  // him."* *"Not going to ask him about it, puss. Learned that much."* *"Best wall in the square, and
+  // he's the only one who can find it."* Saying hello makes her the usual kind of friend.
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) the stump-watcher and the archer's own watcher
+  // already use elsewhere in this town, a plain `makeHuman()`/`randomPerson()` rig with no particular
+  // wardrobe (this town has never enforced unique shirts), `angle` pointed at the mime's own fixed spot
+  // (-27.5, -46.5) rather than a constant, and the same freeze the archer's own watcher needed —
+  // `idle: [1e9, 1e9]` plus every one of `Wanderer`'s own construction-time draws (`phase`, `timer`,
+  // `t`, `cryT`) fixed rather than pulled from `rnd()`, and `rig.idleT`/`rig.blinkT` both frozen too,
+  // since `rig.animate()` keeps drawing from the shared `rnd()` sequence every frame regardless of
+  // controller state. No `cries`, no physics box, pure bystander.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(3, 'from-prev')` — a direct, synchronous build rather than
+  // `travel()`, per round 1283's own note on that trap — then 3600 simulated frames so every carriage
+  // horse, chimney sweep and wanderer had already settled, sampling every NPC's own position every
+  // 10th frame for a further 600 frames) swept a ring 2-3 m out from the mime's own spot (-27.5,
+  // -46.5) against all 611 of this town's own physics boxes (knee-to-head band only), its 236
+  // `game.zones` rectangles and every sampled NPC position: (-28.6, -48.8) came back clearest — 11.54 m
+  // from the nearest box, 11.6 m clear of the nearest zone rectangle and 2.55 m from the nearest other
+  // soul (the mime himself), south-west of him and well inside the town's own built core (radius 56.6
+  // from the origin, short of the 88 where `victorianRegion()`'s own procedural fill takes over).
+  //
+  // Built dead last of everything this town adds, right after the mime above and right before the
+  // squirrel below, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this town's own
+  // shared `r()` sequence unconditionally, and anything built earlier here would have had its own
+  // timing-sensitive pick shifted by it.
+  { const mwx = -28.6, mwz = -48.8, mimeX = -27.5, mimeZ = -46.5;
+    const mimeWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, coat: r.chance(0.5), scarf: null, bag: null, backpack: null, glasses: r.chance(0.2) });
+    mimeWatcher.idleT = 1e6; mimeWatcher.blinkT = 1e6;   // keeps rig.animate()'s own idle-gesture pick and blink-reset (both shared rnd() draws) from firing every frame and shifting checks in worlds built later in the same run
+    W.add(mimeWatcher.group);
+    game.npcs.push(new Wanderer(game, mimeWatcher, { x: mwx, z: mwz, angle: atan2(mimeX - mwx, mimeZ - mwz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);

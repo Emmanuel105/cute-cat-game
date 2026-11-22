@@ -37475,3 +37475,45 @@ only). No visual check was possible in this environment (no browser, no Playwrig
 the arm routine actually reads as "invisible wall" over open forest floor is unverified, same
 caveat as his other six outings. All seven worlds now have one. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1290 — the mime finally gets a watcher, starting a new set
+
+Round 1289 closed out all seven worlds' own mimes. Every other solo performer in this game — the
+juggler, the archer, the woodcutter, the kite flyer, the organ grinder, and a dozen more besides —
+has picked up a watcher of its own somewhere along the way. The mime never has, in any of the seven
+worlds. Victorian's own market square, where the character was born back at round 1283, is the first
+to get one.
+
+**A passer-by now stands a couple of steps south-west of him, watching him lean into the wall nobody
+else can see.** *"Been at it a good while, by the look of him."* *"Not going to ask him about it,
+puss. Learned that much."* *"Best wall in the square, and he's the only one who can find it."*
+Saying hello makes her the usual kind of friend.
+
+No new class: the same `Wanderer` (55-npcs.js) every other watcher in this game already uses, a plain
+`makeHuman()`/`randomPerson()` rig with no particular wardrobe (this town has never enforced unique
+shirts the way the Neighborhood does), `angle` pointed at the mime's own fixed spot (-27.5, -46.5)
+rather than a constant, and the same freeze the archer's own watcher in this same town needed —
+frozen idle (`idle: [1e9, 1e9]` plus every one of `Wanderer`'s own construction-time draws — `phase`,
+`timer`, `t`, `cryT` — fixed rather than pulled from `rnd()`) and `rig.idleT`/`rig.blinkT` both
+frozen too, since `rig.animate()` keeps drawing from the shared `rnd()` sequence every frame
+regardless of controller state. No `cries`, no physics box, pure bystander.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(3, 'from-prev')` — a direct, synchronous build rather than
+`travel()`, per round 1283's own note on that exact trap — then 3600 simulated frames so every
+carriage horse, chimney sweep and wanderer had already settled, sampling every NPC's own position
+every 10th frame for a further 600 frames) swept a ring 2-3 m out from the mime's own spot
+(-27.5, -46.5) against all 611 of this town's own physics boxes (knee-to-head band only), its 236
+`game.zones` rectangles and every sampled NPC position: (-28.6, -48.8) came back clearest — 11.54 m
+from the nearest box, 11.6 m clear of the nearest zone rectangle and 2.55 m from the nearest other
+soul (the mime himself), south-west of him and well inside the town's own built core (radius 56.6
+from the origin, short of the 88 where `victorianRegion()`'s own procedural fill takes over).
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (pure bystander, no collider of its own), and Victorian's own friend total went up
+by exactly one (184 → 185, confirmed against the previous commit with `git stash`, every other
+world's count unchanged). No visual check was possible in this environment (no browser, no
+Playwright), so whether the watcher's stance actually reads as "watching a mime" rather than just
+standing nearby is unverified. The other six worlds' own mimes — Candy Land, the Neighborhood,
+Robot City, Sunny Shore, Frosty Peak and Whisper Woods — are still performing alone. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
