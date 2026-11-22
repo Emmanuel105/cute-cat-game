@@ -37715,3 +37715,36 @@ unchanged). No visual check was possible in this environment (no browser, no Pla
 the watcher's stance actually reads as "watching a mime" on open forest floor is unverified, same
 caveat as the other six. All seven worlds' own mimes now have a watcher — this set is done. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1297 — the badminton court finally gets a watcher, starting a new set
+
+`Badminton` (55-npcs.js) has had a net game going in all seven worlds since round 508-ish — but of
+every held-prop act in this game that ever drew a crowd (the juggler, the mime, the archer, the kite
+flyer, the organ grinder, and a dozen more besides), the net games were the one kind that never did.
+This street's own court, on the open grass north of the park past the pond, is the first of the set.
+
+**A passer-by now stands a few steps west of the net, watching the shuttlecock go back and forth over
+it.** Same `Wanderer` (55-npcs.js) every other watcher in the game already uses, a plain
+`makeHuman()`/`randomPerson()` rig in a single shirt colour (0x6a8a3a, checked against all 102 other
+shirts already on this street), `angle` pointed at the net's own fixed centre (-18, 64) rather than a
+constant, and the same frozen-idle shape (`idle: [1e9, 1e9]` plus `blinkT0`/`idleT0`/`sway0` fixed
+straight in the `makeHuman()` call) every other watcher in the game has settled on. No `cries` of its
+own, no physics box, pure bystander.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')` — no
+`game.load()`/`game.travel()` needed, since the Neighborhood is the world every test run already
+starts on — then 3600 simulated frames, then a further 600 sampling every NPC's own position every
+10th frame) swept the open grass west of the net against all 334 of this street's own physics boxes
+(knee-to-head band only) and every sampled NPC position: (-22.5, 64) came back clear — 2.82 m from
+the nearest box (the net's own west post), 5.3 m from the nearest other soul (one of the two players,
+mid-rally) and clear of every `game.zones` rectangle, level with the net and facing east across the
+court.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (pure bystander, no collider of its own), and the Neighborhood's own friend total
+rose from 139 to 140 (confirmed against the previous commit with `git stash`, every other world's
+count unchanged). No visual check was possible in this environment (no browser, no Playwright), so
+whether the watcher's stance actually reads as "watching a badminton rally" rather than just standing
+on the grass is unverified. The other six worlds' own courts are still without a watcher, left for
+future rounds to close out the set. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.

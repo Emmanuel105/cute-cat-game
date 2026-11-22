@@ -5033,6 +5033,36 @@ function buildNeighborhood(game, entry) {
     W.add(mimeWatcher.group);
     game.npcs.push(new Wanderer(game, mimeWatcher, { x: mwx, z: mwz, angle: atan2(mimeX - mwx, mimeZ - mwz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // `Badminton` (55-npcs.js) has gone round all seven worlds since round 508-ish, but nobody anywhere
+  // has ever stood at the side of a court and actually watched a rally — every other held-prop act in
+  // this game (the juggler, the mime, the archer, the kite flyer, the organ grinder, and a dozen more
+  // besides) got its own spectator a long time ago; the net games never did. This street's own court
+  // above, on the open grass past the pond, is the first of the set. **A passer-by now stands a few
+  // steps west of the net, watching the shuttlecock go back and forth over it.** No `cries` of its
+  // own — this one just watches — no physics box, pure bystander. Saying hello to her makes her the
+  // usual kind of friend.
+  //
+  // Same `Wanderer` (55-npcs.js) every watcher in this set uses: a plain `makeHuman()`/`randomPerson()`
+  // rig, a single-shirt wardrobe bag (0x6a8a3a, checked against all 102 other shirt colours already
+  // on this street, since the "no two neighbours wear the same shirt" test catches a clash either
+  // way), `angle` pointed at the net's own fixed centre (-18, 64) rather than a constant, and
+  // `blinkT0`/`idleT0`/`sway0` fixed straight in the `makeHuman()` call (the spare-the-sequence trick
+  // the mime's own watcher above already uses) plus the frozen `idle: [1e9, 1e9]` every watcher in
+  // this set settles on, so dropping her in costs the shared `rnd()` sequence nothing at all.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // 3600 simulated frames, then a further 600 sampling every NPC's own position every 10th frame)
+  // swept a grid west of the net against all 334 of this street's own physics boxes (knee-to-head
+  // band only), this street's own `game.zones` rectangles and every sampled position: (-22.5, 64)
+  // came back clear — 2.82 m from the nearest box (the net's own west post), 5.3 m from the nearest
+  // other soul (player A, mid-rally) and clear of every zone rectangle, level with the net and facing
+  // east across the court.
+  { const bwx = -22.5, bwz = 64, netX = -18, netZ = 64;
+    const badWatchWard = makeWardrobe(r, { shirts: [0x6a8a3a] });
+    const badWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: badWatchWard }), blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(badWatcher.group);
+    game.npcs.push(new Wanderer(game, badWatcher, { x: bwx, z: bwz, angle: atan2(netX - bwx, netZ - bwz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
