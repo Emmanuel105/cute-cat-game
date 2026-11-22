@@ -36958,3 +36958,39 @@ one — a `harmonica` grep anywhere in the source came back empty before this ro
 hadn't been done, but whether it becomes another seven-round set like the kite flyers and archers is
 left for a future round to decide. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 1277 — Robot City picks up the harmonica, the second of the seven
+
+Candy Land's busker (round 1276) gave `Harmonica` (55-npcs.js) its only home in the game so far —
+nobody had checked yet whether it would read the same way on a human standing on bare concrete
+instead of candy-cane grass. **An off-duty maintenance crew member now leans against open ground west
+of downtown, cupping a small chrome harmonica in both hands and swaying it gently side to side across
+an unheard tune.** *"Three chords, badly — drowns out the compressors, at least."* *"Found it in a
+scrap bin. Still plays."* *"Mind your whiskers, puss — this thing bites if you blow the wrong way."*
+
+No new controller needed — `Harmonica` reused exactly as Candy Land built it, with its own wardrobe
+pulled from the muted industrial blues and greys this city's other maintenance crew already wear
+(`makeWardrobe` with the same `shirts`/`pants` palette as the archer's own crew and the factory
+break-taker) rather than the candy-bright colours its first outing used.
+
+A headless probe (`game.start('new')`, `game.travel(2, 'from-prev')` waited out against its own
+portal-fade timer, then 3600 simulated frames sampling every NPC's own position every 10th frame)
+swept a 1 m grid across this city's own hand-built heart (radius ≤ 80 from the origin, short of the
+radius (98) where `robotRegion()`'s own procedural fill takes over) against all of this city's own
+physics boxes (knee-to-head band only), all 296 `game.zones` rectangles and every sampled NPC
+position: (-67, 10) came back clearest — 10.3 m from the nearest box, 44.3 m clear of the nearest zone
+rectangle and 9.4 m from the nearest other soul.
+
+Built dead last of everything this city adds, right after the archer's own watcher (round 1272's
+lineage), since `makeHuman()`/`randomPerson()` both draw off this city's own shared `r()` sequence
+unconditionally and anything earlier would have had its own timing-sensitive pick shifted by it.
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt: exit 0, all checks `ok`, 0 console
+warnings, box count unchanged at 334 (a circle collider like the Candy Land busker's own, not a box),
+and Robot City's own friend total rose from 146 to 147 (confirmed against the previous commit with
+`git stash`, every other world's count unchanged). No visual check was possible in this environment
+(no browser, no Playwright), so whether the side-to-side sway reads the same against concrete and
+skyscrapers as it did against candy-cane grass is unverified — the dialogue carries the joke either
+way. Five worlds are still without a harmonica player; whether this becomes another seven-round set
+like the kite flyers and archers is left for a future round to decide. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

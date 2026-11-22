@@ -12177,6 +12177,33 @@ function buildRobotCity(game, entry) {
     W.add(archerWatcher.group);
     game.npcs.push(new Wanderer(game, archerWatcher, { x: awx, z: awz, angle: atan2(aax - awx, aaz - awz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // Candy Land's busker (round 1276) gave `Harmonica` (55-npcs.js) its only home so far; this city is
+  // the second of the seven. **An off-duty maintenance crew member leans against open ground west of
+  // downtown, cupping a small chrome harmonica in both hands and swaying it gently side to side across
+  // an unheard tune.** *"Three chords, badly — drowns out the compressors, at least."* *"Found it in a
+  // scrap bin. Still plays."* *"Mind your whiskers, puss — this thing bites if you blow the wrong
+  // way."*
+  //
+  // A headless probe (`game.start('new')`, `game.travel(2, 'from-prev')` waited out against its own
+  // portal-fade timer, then 3600 simulated frames sampling every NPC's own position every 10th frame)
+  // swept a 1 m grid across this city's own hand-built heart (radius <= 80 from the origin, short of
+  // the radius (98) where `robotRegion()`'s own procedural fill takes over) against all of this city's
+  // own physics boxes (knee-to-head band only), all 296 `game.zones` rectangles and every sampled NPC
+  // position: (-67, 10) came back clearest — 10.3 m from the nearest box, 44.3 m clear of the nearest
+  // zone rectangle and 9.4 m from the nearest other soul.
+  //
+  // Built dead last of everything this city adds, right after the archer's own watcher above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this city's own shared `r()` sequence
+  // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted by
+  // it.
+  { const hx = -67, hz = 10, hry = atan2(-hx, -hz);
+    const crewWard = makeWardrobe(r, { shirts: [0x4a5a6a, 0x5a4a3a, 0x3a4a5a], pants: [0x232c34, 0x2a2a30] });
+    const busker = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.25), wardrobe: crewWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.2) });
+    W.add(busker.group);
+    game.npcs.push(new Harmonica(game, busker, { x: hx, z: hz, ry: hry,
+      cries: ['Three chords, badly — drowns out the compressors, at least.', 'Found it in a scrap bin. Still plays.', "Mind your whiskers, puss — this thing bites if you blow the wrong way."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
