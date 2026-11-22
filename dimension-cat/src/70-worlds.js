@@ -12322,6 +12322,43 @@ function buildRobotCity(game, entry) {
     game.npcs.push(new Harmonica(game, busker, { x: hx, z: hz, ry: hry,
       cries: ['Three chords, badly — drowns out the compressors, at least.', 'Found it in a scrap bin. Still plays.', "Mind your whiskers, puss — this thing bites if you blow the wrong way."] })); }
 
+  // the Neighborhood, Candy Land and Victorian (rounds 1283-1285) each gave `Mime` (55-npcs.js) a
+  // home — this city is the fourth of the seven. `makeRobot()`'s own rig has no `spine` group, so a
+  // robot can't stand in for this one; the mime stays human, same as every one of his other three
+  // outings. **A maintenance crew member stands on the open concrete south of the sentry's own patrol
+  // square, both palms pressed flat against a wall nobody else can see.** *"Found him leaning on that
+  // wall since the second shift came off, or so Maintenance keeps saying."* *"Not a word out of him,
+  // puss. Not one."* *"Best wall on this floor. Shame nobody else can see it."* Saying hello makes
+  // him the usual kind of friend.
+  //
+  // Reskinned for this city's own concrete rather than Candy Land's candy-pink or the other two
+  // worlds' chalk-white: pale steel-grey shirt, charcoal stripes and trousers — the same Breton-stripe
+  // option every `Mime` already wears, just in this city's own palette instead of a wardrobe bag.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // `game.load(2, 'from-prev')` — a direct, synchronous build rather than `travel()`, whose own fade
+  // and `load()` call are both deferred behind a real `setTimeout` that never fires under simulated
+  // frames alone — then 3600 simulated frames to settle every wandering, patrolling and dancing robot,
+  // then a further 3600 sampling every NPC's own position every 5th frame so the sentry's own
+  // [-15,-35]..[15,-45] patrol rectangle got covered start to finish, not just a lucky slice) checked
+  // open ground south of that rectangle against all 1206 of this city's own physics boxes
+  // (knee-to-head band only) and all 296 `game.zones` rectangles: (2, -56) came back clearest — 9.23 m
+  // from the nearest box, 10.43 m clear of the nearest zone rectangle and 9.65 m from the nearest
+  // other soul, 11 m south of the sentry's own rectangle and well short of the kite kid at (-34, -54).
+  //
+  // Built dead last of everything this city adds, right after the harmonica busker above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this city's own shared `r()` sequence
+  // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted
+  // by it. No `t0`/`cryT0` override needed — unlike the Neighborhood (round 1285's own notes), nothing
+  // in this city's own tests reads timing off the *shared* global `rnd()` sequence, only generous
+  // frame-count thresholds (the loader robots' own lift count, the sentry's own displacement).
+  { const mx = 2, mz = -56, mry = atan2(-mx, -mz);
+    const mime = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.2) }),
+      shirt: 0xd0d4d8, stripes: 0x2a2e34, pants: 0x1c1f24, shoes: 0x1c1f24, hat: null, jacket: null, scarf: null, bag: null, backpack: null, coat: null, glasses: false });
+    W.add(mime.group);
+    game.npcs.push(new Mime(game, mime, { x: mx, z: mz, ry: mry,
+      cries: ['Found him leaning on that wall since the second shift came off, or so Maintenance keeps saying.', 'Not a word out of him, puss. Not one.', 'Best wall on this floor. Shame nobody else can see it.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

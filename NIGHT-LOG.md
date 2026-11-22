@@ -37309,3 +37309,45 @@ in all three of the worlds that had an opening for him; whichever world picks up
 check first whether it has any test of its own reading timing off the shared `rnd()` sequence before
 assuming the straightforward placement will do. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 1286 — Robot City picks up the mime too, the fourth of the seven
+
+Round 1285's own closing note set the test for whoever went next: check first whether the target
+world has any test of its own reading timing off the shared global `rnd()` sequence before assuming
+`Mime` (55-npcs.js) can just drop in. Robot City's own tests turned out generous rather than
+exact-timed — a loader's own lift count out of 900 frames, a sentry's own displacement over 240 — so
+no `t0`/`cryT0` override was needed this time, unlike the Neighborhood.
+
+**A maintenance crew member now stands on open concrete south of the sentry's own patrol square,
+both palms pressed flat against a wall nobody else can see.** *"Found him leaning on that wall since
+the second shift came off, or so Maintenance keeps saying."* *"Not a word out of him, puss. Not
+one."* *"Best wall on this floor. Shame nobody else can see it."* Saying hello makes him the usual
+kind of friend. `makeRobot()`'s own rig has no `spine` group (`Mime`'s update reads
+`rig.spine.rotation.x/z`), so this one stayed human like his other three outings rather than becoming
+an actual robot stuck against the wall — reskinned for this city's own concrete in pale steel-grey
+and charcoal instead of Candy Land's candy-pink or the chalk-white the other two wear.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+`game.load(2, 'from-prev')` — a direct, synchronous build, not `travel()`, whose own fade and `load()`
+call sit behind a real `setTimeout` that simulated frames alone never fire — then 3600 simulated
+frames to settle every wandering, patrolling and dancing robot, then a further 3600 sampling every
+NPC's own position every 5th frame so the sentry's own `[-15,-35]..[15,-45]` patrol rectangle got
+covered start to finish rather than a lucky slice) checked open ground south of that rectangle
+against all 1206 of this city's own physics boxes (knee-to-head band only) and all 296 `game.zones`
+rectangles: (2, -56) came back clearest — 9.23 m from the nearest box, 10.43 m clear of the nearest
+zone rectangle and 9.65 m from the nearest other soul, 11 m south of the sentry's own rectangle and
+well short of the kite kid at (-34, -54).
+
+Built dead last of everything this city adds, right after the harmonica busker (round 1277), for the
+usual reason: `makeHuman()`/`randomPerson()` both draw off this city's own shared `r()` sequence
+unconditionally.
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt: exit 0, all checks `ok`, 0 console
+warnings, box count unchanged at 334 (a circle collider, not a box), and Robot City's own friend
+total rose from 147 to 148 (confirmed against the previous commit with `git stash`, every other
+world's count unchanged). No visual check was possible in this environment (no browser, no
+Playwright), so whether the arm routine actually reads as "invisible wall" against concrete and
+skyscrapers is unverified, same caveat as his other three outings. Three worlds are still without a
+mime (Sunny Shore, Frosty Peak, Whisper Woods); whichever picks up the fifth should run the same
+timing-test check this round and round 1285 both did first. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
