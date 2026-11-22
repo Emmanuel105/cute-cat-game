@@ -17922,6 +17922,49 @@ function buildCandyLand(game, entry) {
     game.npcs.push(new Harmonica(game, busker, { x: hx, z: hz, ry: hry,
       cries: ['Three chords, badly. Still counts as a tune.', 'Learned it off a postcard. Mostly.', "Mind your whiskers, puss — this thing bites if you blow the wrong way."] })); }
 
+  // Victorian's market square (round 1283) is the only one of the seven worlds to have given `Mime`
+  // (55-npcs.js) a home so far. This land, for all its buskers, jugglers and fiddlers, never had a
+  // silent act either. **A mime now stands on the quiet open ground south-west of the archery range,
+  // past the harmonica busker above, both palms pressed flat against a wall nobody else can see.**
+  // *"Been standing there since the gumdrop frost, or so the gingerbread folk keep telling anyone
+  // who'll listen."* *"Not a word out of him, puss. Not one."* *"Good wall, that one. Shame nobody
+  // else can see it."* Saying hello makes him the usual kind of friend.
+  //
+  // No new controller: `Mime` reused exactly as Victorian built it, dressed from its own small
+  // wardrobe (candy-pink shirt, white stripes and dark trousers, distinct from Victorian's cream and
+  // black) rather than this land's shared wardrobe bags, which are all sized exactly to their own
+  // users already.
+  //
+  // This land has no shirt-uniqueness check (that test is specific to the Neighborhood), so no colour
+  // audit was needed — but the Neighborhood was tried first and set aside: that world's own "two
+  // neighbours chat, taking turns" and "a cyclist rides the westbound lane" checks both read their
+  // timing off the single shared global `rnd()` sequence `Mime`'s own constructor draws from
+  // unconditionally (`this.t`, `cryT`), and every combination tried (`cries` present or `null`) tipped
+  // one check or the other, the same brittle-coincidence trap round 1160's and 1162's own notes
+  // already warned about. Candy Land carries no such test, so the mime moved here instead.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // `game.load(1, 'from-prev')` — a direct, synchronous build rather than `travel()`, whose own fade
+  // and `load()` call are both deferred behind a real `setTimeout` that never fires under simulated
+  // frames alone — then 3600 simulated frames, then a further 600 sampling every NPC's own position
+  // every 10th frame) swept a 1 m grid of this land's own hand-built heart (|x|, |z| <= 55) against
+  // all 1798 of this land's own physics boxes (knee-to-head band only), all 452 `game.zones`
+  // rectangles and every sampled NPC position, excluding anywhere within 12 m of the harmonica busker
+  // above: (-50, -55) came back clearest — 12.3 m from the nearest box, 33 m clear of the nearest zone
+  // rectangle and 16.7 m from the nearest other soul, comfortably inside this land's own 480 m
+  // movement limit.
+  //
+  // Built dead last of everything this land adds, right after the harmonica busker above and right
+  // before `spawnBySquirrel()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw off
+  // this land's own shared `r()` sequence unconditionally, and anything built earlier here would have
+  // had its own timing-sensitive pick shifted by it.
+  { const mx = -50, mz = -55, mry = atan2(-mx, -mz);
+    const mime = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
+      shirt: 0xff9ecf, stripes: 0xf7f3ec, pants: 0x2a2420, shoes: 0x2a2420, hat: null, jacket: null, scarf: null, bag: null, backpack: null, coat: null, glasses: false });
+    W.add(mime.group);
+    game.npcs.push(new Mime(game, mime, { x: mx, z: mz, ry: mry,
+      cries: ["Been standing there since the gumdrop frost, or so the gingerbread folk keep telling anyone who'll listen.", 'Not a word out of him, puss. Not one.', "Good wall, that one. Shame nobody else can see it."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

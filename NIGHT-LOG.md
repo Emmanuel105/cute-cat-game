@@ -37205,3 +37205,58 @@ calls `travel()` rather than `load()` directly is checking world 0, not the worl
 `game.transition` isn't even a real property on this game object (`this.transitioning` is), so a guard
 like `while (game.transition && game.transition.active)` silently no-ops instead of failing loudly.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1284 — Candy Land picks up the mime too
+
+Round 1283 gave Victorian's market square the game's first `Mime` (55-npcs.js) — every other
+performer this game has makes some kind of sound, and he doesn't. Candy Land, for all its buskers,
+jugglers and fiddlers, never had a silent act either. **A mime now stands on open ground south-west
+of the archery range, past the harmonica busker, both palms pressed flat against a wall nobody else
+can see.** *"Been standing there since the gumdrop frost, or so the gingerbread folk keep telling
+anyone who'll listen."* *"Not a word out of him, puss. Not one."* *"Good wall, that one. Shame
+nobody else can see it."* Saying hello makes him the usual kind of friend.
+
+No new controller: `Mime` reused exactly as Victorian built it, dressed from its own small wardrobe
+(candy-pink shirt, white stripes, dark trousers — a different colour from Victorian's cream and
+black) rather than this land's own shared wardrobe bags.
+
+The first attempt put this mime in the Neighborhood instead, since that world still had no `Mime` of
+its own either. It cleared every physics box, zone and NPC the usual probe checks for, but broke
+`test/run.mjs` outright two different ways depending on `cries`: with cries, "two neighbours chat,
+facing each other, taking turns" failed (1 turn in 7 s, but the speaker's arm read -0.44 instead of
+below -0.7 at the sampled frame); without cries, "a cyclist rides the westbound lane" failed instead.
+The cause is the one round 1160's and 1162's own notes already named for `Unicyclist`: the
+Neighborhood is the one world whose build-and-test window shares a single run of simulated frames
+with its own behaviour checks, and `Mime`'s constructor draws from the single shared global `rnd()`
+sequence unconditionally (`this.t = rnd() * 10`, and `cryT = cries ? rnd.range(4, 9) : 0`), which
+permanently shifts every later draw anyone else makes off that same sequence for the rest of the run
+— including `Talkers`' own speaker-swap timing and the westbound cyclist's own pedal cadence. Unlike
+`Unicyclist`, `Mime` has no spare timing knob (no speed, no pause) to retune, and both of its only two
+possible rnd()-footprints (with or without `cries`) tipped one check or the other. Rather than chase
+that further, the mime moved to Candy Land instead, which has no such test.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+`game.load(1, 'from-prev')` — a direct, synchronous build rather than `travel()`, whose own fade and
+`load()` call are both deferred behind a real `setTimeout` that never fires under simulated frames
+alone — then 3600 simulated frames, then a further 600 sampling every NPC's own position every 10th
+frame) swept a 1 m grid of this land's own hand-built heart (|x|, |z| <= 55) against all 1798 of this
+land's own physics boxes (knee-to-head band only), all 452 `game.zones` rectangles and every sampled
+NPC position, excluding anywhere within 12 m of the harmonica busker: (-50, -55) came back clearest —
+12.3 m from the nearest box, 33 m clear of the nearest zone rectangle and 16.7 m from the nearest
+other soul, comfortably inside this land's own 480 m movement limit.
+
+Built dead last of everything this land adds, right after the harmonica busker and right before
+`spawnBySquirrel()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this land's
+own shared `r()` sequence unconditionally, and anything built earlier here would have had its own
+timing-sensitive pick shifted by it.
+
+`node dimension-cat/test/run.mjs` ran clean twice running: exit 0, all 277 checks `ok`, 0 console
+warnings, box count unchanged at 334 (a circle collider, not a box), and Candy Land's own friend
+total rose from 137 to 138 (confirmed against the previous commit with `git stash`, every other
+world's count unchanged). No visual check was possible in this environment (no browser, no
+Playwright), so whether the arm routine actually reads as "invisible wall" rather than odd flailing
+is unverified. `Mime` now has a home in two of the seven worlds (Victorian, Candy Land); the
+Neighborhood needs a position *and* an rnd()-footprint chosen with its chat and cyclist tests' own
+timing in mind, not just the usual zone/box/NPC clearance check — the same warning round 1162's own
+notes left for `Unicyclist`. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.
