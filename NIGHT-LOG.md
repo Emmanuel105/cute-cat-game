@@ -37748,3 +37748,34 @@ whether the watcher's stance actually reads as "watching a badminton rally" rath
 on the grass is unverified. The other six worlds' own courts are still without a watcher, left for
 future rounds to close out the set. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 1298 — Victorian picks up the badminton watcher too, the second of the six
+
+Round 1297 gave the Neighborhood's own badminton court the game's first spectator. Victorian's own
+net — the one the Victorians actually took up in their own back gardens (round 521-ish) — is the
+second of the six worlds still waiting.
+
+**A passer-by now stands a few steps south-east of the net, watching the shuttlecock go back and
+forth over it.** Same `Wanderer` (55-npcs.js) every other watcher in the game uses, a plain
+`makeHuman()`/`randomPerson()` rig in a single shirt colour (0x8a6a4a, this town's never enforced
+unique shirts), `angle` pointed at the net's own fixed centre (-10, -55) rather than a constant, and
+the same frozen-idle shape (`idle: [1e9, 1e9]` plus `blinkT0`/`idleT0`/`sway0` fixed straight in the
+`makeHuman()` call) every watcher in the game has settled on. No `cries` of its own, no physics box,
+pure bystander.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+`game.travel(3, 'from-prev')`, 3600 simulated frames, then a further 600 sampling every NPC's own
+position every 10th frame) swept a ring 2-4 m out from the net's own centre against all 611 of this
+town's own physics boxes (knee-to-head band only), all 236 `game.zones` rectangles and every sampled
+NPC position: (-7.17, -57.83) came back clearest — 2.98 m from the nearest box, 3.17 m clear of the
+nearest zone rectangle and 2.83 m from the nearest other soul (player A, mid-rally), facing the net
+across the court.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (pure bystander, no collider of its own), and Victorian's own friend total rose from
+185 to 186 (confirmed against the previous commit with `git stash`). No visual check was possible in
+this environment (no browser, no Playwright), so whether the watcher's stance actually reads as
+"watching a badminton rally" is unverified, same caveat as the Neighborhood's own. Five worlds' own
+courts — Candy Land, Robot City, Sunny Shore, Frosty Peak and Whisper Woods — are still without a
+watcher, left for future rounds. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.
