@@ -36932,6 +36932,39 @@ function buildForest(game, entry) {
     game.npcs.push(new Mime(game, mime, { x: mx, z: mz, ry: mry,
       cries: ['Been there since before the fireflies started, or so the owls tell it.', 'Not a word out of him, puss. Not one.', "Good wall, by the look of him — holding something back that the rest of us can't see."] })); }
 
+  // Round 1290 gave Victorian's own mime (born round 1283) the game's first watcher, round 1291 did
+  // the same for Candy Land's (round 1284), round 1292 for the Neighborhood's (round 1285), round
+  // 1293 for Robot City's (round 1286), round 1294 for Sunny Shore's (round 1287) and round 1295 for
+  // Frosty Peak's (round 1288). This wood's own mime above (round 1289, "the seventh and last of the
+  // seven") is the last of the seven to get one.
+  //
+  // Same `Wanderer` (55-npcs.js) every watcher in this set uses, a plain `makeHuman()`/`randomPerson()`
+  // rig in a single plum-coloured shirt drawn from its own small wardrobe bag (checked against this
+  // wood's own busker's wardrobe just above so the two don't repeat), `angle` pointed at the mime's
+  // own fixed spot (-19, -50.5), and the frozen-idle shape (`idle: [1e9, 1e9]` plus
+  // `blinkT0`/`idleT0`/`sway0` fixed straight in the `makeHuman()` call) every watcher in this set has
+  // settled on. No `cries` of its own, no physics box, pure bystander.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // `game.load(6, 'from-hub')`, 3600 simulated frames, then a further 600 sampling every NPC's own
+  // position every 10th frame) swept a ring 2-3 m out from the mime's own spot against all 438 of
+  // this wood's own physics boxes (knee-to-head band only), all 229 `game.zones` rectangles and every
+  // sampled NPC position: (-19, -53.5) came back clearest — 10.19 m from the nearest box, 10.65 m
+  // clear of the nearest zone rectangle and 3 m from the nearest other soul (the mime himself, by
+  // construction), a few steps due south of him on the open forest floor.
+  //
+  // Built dead last of everything this wood adds, right after the mime above, for the usual reason:
+  // `makeHuman()`/`randomPerson()` both draw off this wood's own shared `r()` sequence unconditionally,
+  // and anything built earlier would have had its own timing-sensitive pick shifted by it. All seven
+  // worlds' own mimes now have a watcher.
+  { const mwx = -19, mwz = -53.5, mimeX = -19, mimeZ = -50.5;
+    const mimeWatchWard = makeWardrobe(r, { shirts: [0x8a4a6a] });
+    const mimeWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: mimeWatchWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: false,
+      blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(mimeWatcher.group);
+    game.npcs.push(new Wanderer(game, mimeWatcher, { x: mwx, z: mwz, angle: atan2(mimeX - mwx, mimeZ - mwz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

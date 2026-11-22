@@ -37685,3 +37685,33 @@ unchanged). No visual check was possible in this environment (no browser, no Pla
 the watcher's stance actually reads as "watching a mime" on open snow is unverified, same caveat as
 the other five. One world's own mime — Whisper Woods — is still performing alone. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1296 — Whisper Woods picks up the mime's watcher too, the seventh and last of the seven
+
+Rounds 1290-1295 gave Victorian's, Candy Land's, the Neighborhood's, Robot City's, Sunny Shore's and
+Frosty Peak's own mimes a watcher. This wood's own mime (round 1289, "the seventh and last of the
+seven") was the only one still performing alone.
+
+**A visitor in a plum-coloured shirt now stands a few steps due south of him on the open forest
+floor, watching him lean into the wall nobody else can see.** Same `Wanderer` (55-npcs.js) every
+watcher in this set uses, a plain `makeHuman()`/`randomPerson()` rig in a single shirt colour drawn
+from its own small wardrobe bag, `angle` pointed at the mime's own fixed spot (-19, -50.5), and the
+frozen-idle shape (`idle: [1e9, 1e9]` plus `blinkT0`/`idleT0`/`sway0` fixed straight in the
+`makeHuman()` call) every watcher in this set has settled on. No `cries` of its own, no physics box,
+pure bystander.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+`game.load(6, 'from-hub')`, 3600 simulated frames, then a further 600 sampling every NPC's own
+position every 10th frame) swept a ring 2-3 m out from the mime's own spot against all 438 of this
+wood's own physics boxes (knee-to-head band only) and all 229 `game.zones` rectangles: (-19, -53.5)
+came back clearest — 10.19 m from the nearest box, 10.65 m clear of the nearest zone rectangle and
+3 m from the mime himself, due south of him and well clear of the unicycle track and the chopper's
+stump.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (pure bystander, no collider of its own), and Whisper Woods' own friend total rose
+from 183 to 184 (confirmed against the previous commit with `git stash`, every other world's count
+unchanged). No visual check was possible in this environment (no browser, no Playwright), so whether
+the watcher's stance actually reads as "watching a mime" on open forest floor is unverified, same
+caveat as the other six. All seven worlds' own mimes now have a watcher — this set is done. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
