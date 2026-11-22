@@ -37628,3 +37628,31 @@ the watcher's stance actually reads as "watching a mime" against concrete and sk
 unverified, same caveat as the other three. Three worlds' own mimes — Sunny Shore, Frosty Peak and
 Whisper Woods — are still performing alone. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 1294 — Sunny Shore picks up the mime's watcher too, the fifth of the seven
+
+Rounds 1290-1293 gave Victorian's, Candy Land's, the Neighborhood's and Robot City's own mimes a
+watcher. This beach's own mime (round 1287, "the fifth of the seven") is the fifth.
+
+**A sunbather in a sage-green shirt now stands a few steps west of him on the dry dune sand,
+watching him lean into the wall nobody else can see.** Same `Wanderer` (55-npcs.js) every watcher in
+this set uses, a plain `makeHuman()`/`randomPerson()` rig in a single shirt colour checked against
+both `beachWard`'s seven and the harmonica busker's three so nobody on this stretch of sand repeats,
+`angle` pointed at the mime's own fixed spot (0, 36), and the frozen-idle shape (`idle: [1e9, 1e9]`
+plus `blinkT0`/`idleT0`/`sway0` fixed straight in the `makeHuman()` call) the last three watchers
+settled on. No `cries`, no physics box, pure bystander.
+
+A headless probe (`game.start('new')`, `game.load(4, 'from-hub')` called directly to dodge
+`travel()`'s own real `setTimeout`, 3600 simulated frames, then 600 more sampling every NPC's own
+position every 10th frame) swept a ring 2-3 m out from the mime's own spot, clear of the wet
+sand/sea line at x=12, against all 112 of this beach's own physics boxes (knee-to-head band only)
+and all 95 `game.zones` rectangles: (-2.9, 36.78) came back clearest — 3.81 m from the nearest box,
+9.72 m clear of the nearest zone rectangle and 3 m from the mime himself, well up the dune and clear
+of the kite kid and the ball game.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334, and Sunny Shore's own friend total rose from 159 to 160 (every other world's count
+unchanged). No visual check was possible in this environment (no browser, no Playwright), so whether
+the watcher's stance actually reads as "watching a mime" on open sand is unverified, same caveat as
+the other four. Two worlds' own mimes — Frosty Peak and Whisper Woods — are still performing alone.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -29352,6 +29352,40 @@ function buildBeach(game, entry) {
     game.npcs.push(new Mime(game, mime, { x: mx, z: mz, ry: mry,
       cries: ['Found him leaning there since the tide last turned, and it hasn\'t come back for him.', 'Not a word out of him, puss. Not one.', 'Good wall, that one. Keeps the wind off something, you\'d think.'] })); }
 
+  // Round 1290 gave Victorian's own mime (born round 1283) the game's first watcher, round 1291 did
+  // the same for Candy Land's (round 1284), round 1292 for the Neighborhood's (round 1285), and round
+  // 1293 for Robot City's (round 1286). This beach's own mime above (round 1287, "the fifth of the
+  // seven") is the fifth of the seven worlds to get one. Same `Wanderer` (55-npcs.js), a plain
+  // `makeHuman()`/`randomPerson()` rig reskinned in a single sage-green shirt (checked against
+  // `beachWard`'s own seven shirts and the harmonica busker's three, both above, so nobody on this
+  // stretch of sand repeats), `angle` pointed at the mime's own fixed spot (0, 36), and the same
+  // frozen-idle shape every watcher in this set uses (`idle: [1e9, 1e9]` plus `blinkT0`/`idleT0`/
+  // `sway0` fixed straight in the `makeHuman()` call — the spare-the-sequence trick round 1292 added
+  // once the Neighborhood's own painter check caught the cost of fixing those three only after
+  // `makeHuman()` returned). No `cries` of its own, no physics box, pure bystander.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses, but `game.load(4,
+  // 'from-hub')` called directly rather than through `travel()`, whose own fade and `load()` call
+  // both sit behind a real `setTimeout` that never fires under simulated frames alone: 3600 simulated
+  // frames to settle every wanderer, sunbather and ball-passer, then a further 600 sampling every
+  // NPC's own position every 10th frame) swept a ring 2-3 m out from the mime's own spot, clear of
+  // the wet sand/sea line at x=12, against all 112 of this beach's own physics boxes (knee-to-head
+  // band only), all 95 `game.zones` rectangles and every sampled NPC position: (-2.9, 36.78) came
+  // back clearest — 3.81 m from the nearest box, 9.72 m clear of the nearest zone rectangle and 3 m
+  // from the nearest other soul (the mime himself, by construction), west of him and well up the dune
+  // away from the kite kid and the ball game.
+  //
+  // Built dead last of everything this beach adds, right after the mime above, for the usual reason:
+  // `makeHuman()`/`randomPerson()` both draw off this beach's own shared `r()` sequence
+  // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted
+  // by it. Two worlds' own mimes — Frosty Peak and Whisper Woods — are still performing alone.
+  { const mwx = -2.9, mwz = 36.78, mimeX = 0, mimeZ = 36;
+    const mimeWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x7aa87a, stripes: null, pants: 0x3a4a3a, shoes: 0x2a3a2a, hat: null, shorts: false, jacket: null, scarf: null, bag: null, backpack: null, coat: null, glasses: false,
+      blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(mimeWatcher.group);
+    game.npcs.push(new Wanderer(game, mimeWatcher, { x: mwx, z: mwz, angle: atan2(mimeX - mwx, mimeZ - mwz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
