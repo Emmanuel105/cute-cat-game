@@ -36919,3 +36919,42 @@ commit with `git stash`). No visual check was possible in this environment (no b
 Playwright), so whether the kneeling pose actually reads as "rubbing in sunscreen" rather than just
 another person patting the sand is unverified — the dialogue carries the joke either way. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1276 — Candy Land finally gets a harmonica
+
+Every world has had a `Fiddler` (strings) and an `OrganGrinder` (barrel organ) for a long time, but
+in 1275 rounds nobody anywhere had ever once played anything held up to their own mouth. **A busker
+now stands alone on open ground south-west of Candy Land's own archery range, cupping a small chrome
+harmonica in both hands and sweeping it gently side to side across an unheard tune.** *"Three chords,
+badly. Still counts as a tune."* *"Learned it off a postcard. Mostly."* *"Mind your whiskers, puss —
+this thing bites if you blow the wrong way."*
+
+New controller `Harmonica` (55-npcs.js, right after `Fiddler`): both arms lift to hold a small
+reed-plate (a plain box with seven dark comb slats, no bow, no strings) up near the chin, and the
+whole instrument sways left-right in time rather than the head doing the moving — the same "attach a
+small hand-built object to `rig.spine` and override the arm pose" trick `Fiddler` already uses, just
+simpler. Picked Candy Land for this one specifically because a controller-count sweep across all
+seven worlds' build functions (`new \w+\(` occurrences) came back lowest there (98, against 100-121
+everywhere else).
+
+A headless probe (`game.start('new')`, `game.travel(1, 'from-prev')` waited out against its own
+portal-fade timer, then 3600 simulated frames sampling every NPC's own position every 10th frame)
+swept a 1 m grid across this land's own hand-built heart (|x|, |z| ≤ 55) against all of this land's
+own physics boxes (knee-to-head band only), all 452 `game.zones` rectangles and every sampled NPC
+position: (-26, -48) came back clearest — 9.4 m from the nearest box, 26 m clear of the nearest zone
+rectangle and 9.4 m from the nearest other soul (well clear of both the archery range and the
+woodcutter's own watcher further north). Built dead last of everything this land adds, right after
+the archer's own watcher (round 1264's lineage), since `makeHuman()`/`randomPerson()` both draw off
+this land's own shared `r()` sequence unconditionally and anything earlier would have had its own
+timing-sensitive pick shifted by it.
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt: exit 0, all 277 checks `ok`, 0
+console warnings, box count unchanged at 334 (a circle collider like `Fiddler`'s own, not a box), and
+Candy Land's own friend total rose from 136 to 137 (confirmed against the previous commit with `git
+stash`, Neighborhood's own count unchanged at 136 either way). No visual check was possible in this
+environment (no browser, no Playwright), so whether the side-to-side sway actually reads as "playing
+harmonica" rather than just an odd little wobble is unverified. The other six worlds are still without
+one — a `harmonica` grep anywhere in the source came back empty before this round, so this genuinely
+hadn't been done, but whether it becomes another seven-round set like the kite flyers and archers is
+left for a future round to decide. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.

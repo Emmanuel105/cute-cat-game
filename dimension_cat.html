@@ -3094,6 +3094,34 @@ class Fiddler {
   }
 }
 
+// ---------------------------------------------------------------- harmonica player: a small reed box cupped in both hands at the mouth, swept gently side to side across an unheard tune
+class Harmonica {
+  constructor(game, rig, { x, z, ry = 0, color = 0xc9c9c9, cries = null, cryIcon = '🎵' }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    this.look = 0; this.lookW = 0;
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    const plateM = mat(color, { metalness: 0.5, roughness: 0.3 }), combM = mat(0x2a2420, { roughness: 0.85 });
+    this.harp = group(0, 0.74, 0.1, rig.spine);
+    mesh(G.box(0.1, 0.03, 0.032), plateM, { parent: this.harp });                                      // the reed-cover plate
+    for (let i = -3; i <= 3; i++) noInk(mesh(G.box(0.006, 0.032, 0.034), combM, { x: i * 0.013, parent: this.harp }));   // the comb slats, striped across its own face
+    this.circle = game.physics.addCircle(this, x, z, 0.35);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig, sway = sin(this.t * 2.6);
+    rig.animate(0, false, dt, this.t);
+    if (!rig.gesture) {
+      for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -2.15, 9, dt); A.el.rotation.x = damp(A.el.rotation.x, -1.7, 9, dt); A.sh.rotation.z = damp(A.sh.rotation.z, (A === rig.arms[0] ? 1 : -1) * 0.22, 9, dt); }
+      rig.spine.rotation.x = damp(rig.spine.rotation.x, 0.1, 6, dt);
+      rig.head.rotation.x = damp(rig.head.rotation.x, 0.08, 6, dt);
+    }
+    this.harp.rotation.y = sway * 0.16; this.harp.position.x = sway * 0.014;   // the whole harmonica sweeps a little across the lips, note to note
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- jump-roper: a thin rod pivots through the hips like a propeller, hands loosely gripping its ends, and the whole body hops clear each time it sweeps underfoot
 class JumpRoper {
   constructor(game, rig, color, { x, z, ry = 0, speed = 3.2, cries = null, cryIcon = '➰' }) {
@@ -17816,6 +17844,33 @@ function buildCandyLand(game, entry) {
     archerWatcher.idleT = 1e6; archerWatcher.blinkT = 1e6;   // keeps rig.animate()'s own idle-gesture pick and blink-reset (both shared rnd() draws) from firing every frame and shifting the Talkers checks downstream
     W.add(archerWatcher.group);
     game.npcs.push(new Wanderer(game, archerWatcher, { x: awx, z: awz, angle: atan2(aax - awx, aaz - awz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
+  // Fiddler and OrganGrinder (55-npcs.js) between them cover this land's own strings and its own
+  // barrel organ, but nobody here has ever once played anything held up to their own mouth — a gap
+  // `Harmonica` (55-npcs.js, new this round) now closes: a small chrome reed-plate cupped in both
+  // hands, swept gently side to side across an unheard tune. **A busker now stands alone on open
+  // ground south-west of the archery range**, well clear of both the range itself and every other
+  // landmark nearby. *"Three chords, badly. Still counts as a tune."* *"Learned it off a postcard.
+  // Mostly."* *"Mind your whiskers, puss — this thing bites if you blow the wrong way."*
+  //
+  // A headless probe (`game.start('new')`, `game.travel(1, 'from-prev')` waited out against its own
+  // portal-fade timer, then 3600 simulated frames sampling every NPC's own position every 10th frame)
+  // swept a 1 m grid across this land's own hand-built heart (|x|, |z| <= 55) against all of this
+  // land's own physics boxes (knee-to-head band only), all 452 `game.zones` rectangles and every
+  // sampled NPC position: (-26, -48) came back clearest — 9.4 m from the nearest box, 26 m clear of
+  // the nearest zone rectangle and 9.4 m from the nearest other soul.
+  //
+  // Built dead last of everything this land adds, right after the archer's own watcher above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this land's own shared `r()` sequence
+  // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted
+  // by it.
+  { const hx = -26, hz = -48, hry = atan2(-hx, -hz);
+    const buskWard = makeWardrobe(r, { shirts: [0xffe0ea, 0xbfe7ff, 0xfff3b0], pants: [0xff9ecf, 0x7fd7ff, 0x2a2420] });
+    const busker = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.25), wardrobe: buskWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.2) });
+    W.add(busker.group);
+    game.npcs.push(new Harmonica(game, busker, { x: hx, z: hz, ry: hry,
+      cries: ['Three chords, badly. Still counts as a tune.', 'Learned it off a postcard. Mostly.', "Mind your whiskers, puss — this thing bites if you blow the wrong way."] })); }
 
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };

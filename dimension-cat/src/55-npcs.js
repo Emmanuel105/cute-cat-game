@@ -1274,6 +1274,34 @@ class Fiddler {
   }
 }
 
+// ---------------------------------------------------------------- harmonica player: a small reed box cupped in both hands at the mouth, swept gently side to side across an unheard tune
+class Harmonica {
+  constructor(game, rig, { x, z, ry = 0, color = 0xc9c9c9, cries = null, cryIcon = '🎵' }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    this.look = 0; this.lookW = 0;
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    const plateM = mat(color, { metalness: 0.5, roughness: 0.3 }), combM = mat(0x2a2420, { roughness: 0.85 });
+    this.harp = group(0, 0.74, 0.1, rig.spine);
+    mesh(G.box(0.1, 0.03, 0.032), plateM, { parent: this.harp });                                      // the reed-cover plate
+    for (let i = -3; i <= 3; i++) noInk(mesh(G.box(0.006, 0.032, 0.034), combM, { x: i * 0.013, parent: this.harp }));   // the comb slats, striped across its own face
+    this.circle = game.physics.addCircle(this, x, z, 0.35);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig, sway = sin(this.t * 2.6);
+    rig.animate(0, false, dt, this.t);
+    if (!rig.gesture) {
+      for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -2.15, 9, dt); A.el.rotation.x = damp(A.el.rotation.x, -1.7, 9, dt); A.sh.rotation.z = damp(A.sh.rotation.z, (A === rig.arms[0] ? 1 : -1) * 0.22, 9, dt); }
+      rig.spine.rotation.x = damp(rig.spine.rotation.x, 0.1, 6, dt);
+      rig.head.rotation.x = damp(rig.head.rotation.x, 0.08, 6, dt);
+    }
+    this.harp.rotation.y = sway * 0.16; this.harp.position.x = sway * 0.014;   // the whole harmonica sweeps a little across the lips, note to note
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- jump-roper: a thin rod pivots through the hips like a propeller, hands loosely gripping its ends, and the whole body hops clear each time it sweeps underfoot
 class JumpRoper {
   constructor(game, rig, color, { x, z, ry = 0, speed = 3.2, cries = null, cryIcon = '➰' }) {
