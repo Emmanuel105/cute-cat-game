@@ -2250,9 +2250,12 @@ class Juggler {
 
 // ---------------------------------------------------------------- mime: stands on the spot, both palms pressed flat against a wall nobody else can see, pushing and leaning into it on a slow four-beat loop that never finds an edge. The only talker in the whole game whose "cries" land with no SFX.talk() under them at all — the joke is that it never actually makes a sound
 class Mime {
-  constructor(game, rig, { x, z, ry = 0, cries = null, cryIcon = '🤐' }) {
-    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10; this.look = 0; this.lookW = 0;
-    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+  // `t0`/`cryT0` let a caller fix the animation phase and first-cry countdown directly instead of
+  // drawing them off the shared global `rnd()` sequence — needed in a world whose own tests read their
+  // timing off that same sequence (see the Neighborhood build in 70-worlds.js).
+  constructor(game, rig, { x, z, ry = 0, cries = null, cryIcon = '🤐', t0 = null, cryT0 = null }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = t0 != null ? t0 : rnd() * 10; this.look = 0; this.lookW = 0;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? (cryT0 != null ? cryT0 : rnd.range(4, 9)) : 0;
     rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
     this.circle = game.physics.addCircle(this, x, z, 0.35);
     greetable(game, this);

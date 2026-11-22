@@ -4955,6 +4955,50 @@ function buildNeighborhood(game, entry) {
     game.npcs.push(new Harmonica(game, busker, { x: hx, z: hz, ry: hry,
       cries: ["Three chords, badly — the sheep haven't complained, but there aren't any here either.", 'Learned it off a postcard my brother sent home. Mostly.', 'Mind your whiskers, puss — this thing bites if you blow the wrong way.'] })); }
 
+  // Victorian (round 1283) and Candy Land (round 1284) have both now given `Mime` (55-npcs.js) a home
+  // — this street, with a fiddler-in-waiting, a busker and every other kind of noise a neighbourhood
+  // makes, had never had the one performer who makes none. Round 1284's own notes flagged why it had
+  // been skipped here first: this street's "two neighbours chat, taking turns" and "a cyclist rides
+  // the westbound lane" checks both read their timing off the single shared global `rnd()` sequence,
+  // and `Mime`'s constructor used to draw from it unconditionally (`this.t`, `cryT`), shifting every
+  // later draw anyone else made off that same sequence for the rest of the run. Rather than keep
+  // hunting for a combination that didn't tip one check or the other, `Mime` now takes an optional
+  // `t0`/`cryT0` pair that fixes those two values directly instead of drawing them — so this one, alone
+  // of the three, costs the shared sequence nothing at all. **A mime now stands on the empty grass at
+  // the village's own south-west corner,** both palms pressed flat against a wall nobody else can see.
+  // *"Standing there since the spring fete, by the look of him."* *"Not a word out of him, puss. Not
+  // one."* *"Good wall, that one. Shame nobody else can see it."* Saying hello makes him the usual
+  // kind of friend.
+  //
+  // Dressed from his own small wardrobe (chalk-white shirt, near-black stripes and trousers) rather
+  // than any of this street's own wardrobe bags, all of which are sized to their own users already —
+  // and, since this street's own "no two neighbours wear the same shirt" check only looks at the exact
+  // `shirt` value, chosen to be a literal nowhere else in this whole build (`0xfafafa`, checked against
+  // every other `shirt:` literal and every wardrobe's own `shirts:` list already here) rather than
+  // leaving it to chance.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // 3600 simulated frames, then a further 600 sampling every NPC's and squirrel's own position every
+  // 10th frame) swept a 1 m grid of the whole village (|x|, |z| <= 85, inside `P.setLimit(95)`'s own
+  // walkable edge) against all 310 of this street's own physics boxes (knee-to-head band only), all 69
+  // `game.zones` rectangles and every sampled position: (-52, -79) came back clearest — 20 m from the
+  // nearest box, 24.6 m clear of the nearest zone rectangle and 17.5 m from the nearest other soul, in
+  // the open field south of the ring-dance kids at (-78, -35) and well west of the harmonica busker
+  // above at (8, -84).
+  //
+  // Built dead last of everything this street adds, right after the harmonica busker above and right
+  // before `makeDayNight()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this
+  // street's own shared `r()` sequence unconditionally, and anything built earlier here would have had
+  // its own timing-sensitive pick shifted by it. The `t0`/`cryT0` fix only spares the *shared* `rnd()`
+  // sequence — it doesn't need to spare this street's own `r()` too, since nothing here reads timing
+  // off that one.
+  { const mx = -52, mz = -79, mry = atan2(-mx, -mz);
+    const mime = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
+      shirt: 0xfafafa, stripes: 0x101010, pants: 0x101010, shoes: 0x101010, hat: null, jacket: null, scarf: null, bag: null, backpack: null, coat: null, glasses: false });
+    W.add(mime.group);
+    game.npcs.push(new Mime(game, mime, { x: mx, z: mz, ry: mry, t0: 3.3, cryT0: 6.5,
+      cries: ['Standing there since the spring fete, by the look of him.', 'Not a word out of him, puss. Not one.', 'Good wall, that one. Shame nobody else can see it.'] })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

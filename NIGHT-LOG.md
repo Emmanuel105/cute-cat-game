@@ -37260,3 +37260,52 @@ Neighborhood needs a position *and* an rnd()-footprint chosen with its chat and 
 timing in mind, not just the usual zone/box/NPC clearance check — the same warning round 1162's own
 notes left for `Unicyclist`. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 1285 — the Neighborhood finally gets its own mime, the third of the three
+
+Round 1284's own notes left a specific warning for whoever picked this up next: the Neighborhood was
+tried first for `Mime` (55-npcs.js) and set aside, because this street's own "two neighbours chat,
+taking turns" and "a cyclist rides the westbound lane" tests both read their timing off the single
+shared global `rnd()` sequence, and `Mime`'s constructor drew from it unconditionally (`this.t`,
+`cryT`) — every combination of `cries` tried tipped one check or the other. Rather than keep hunting
+for a lucky combination, `Mime` now takes two new optional constructor fields, `t0` and `cryT0`, that
+fix those two values directly instead of drawing them from `rnd()` at all. Passed, they make the whole
+constructor cost the shared sequence nothing; left out (as Victorian's and Candy Land's own mimes
+still do), everything behaves exactly as before.
+
+**A mime now stands on the empty grass at the village's own south-west corner,** both palms pressed
+flat against a wall nobody else can see. *"Standing there since the spring fete, by the look of
+him."* *"Not a word out of him, puss. Not one."* *"Good wall, that one. Shame nobody else can see
+it."* Saying hello makes him the usual kind of friend, same as his counterparts in the other two
+worlds.
+
+Dressed from his own small wardrobe (chalk-white shirt, near-black stripes and trousers) rather than
+any of this street's own wardrobe bags, which are all sized to their own users already — and since
+this street's own shirt-uniqueness check only compares exact colour values, the shirt (`0xfafafa`) was
+picked by checking it against every other `shirt:` literal and every wardrobe's own `shirts:` list
+already in this street's build, not left to chance.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, 3600
+simulated frames, then a further 600 sampling every NPC's and squirrel's own position every 10th
+frame) swept a 1 m grid of the whole village (|x|, |z| <= 85, inside `P.setLimit(95)`'s own walkable
+edge) against all 310 of this street's own physics boxes (knee-to-head band only), all 69 `game.zones`
+rectangles and every sampled position: (-52, -79) came back clearest — 20 m from the nearest box,
+24.6 m clear of the nearest zone rectangle and 17.5 m from the nearest other soul, south of the
+ring-dance kids at (-78, -35) and well west of the harmonica busker at (8, -84).
+
+Built dead last of everything this street adds, right after the harmonica busker and right before
+`makeDayNight()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this street's own
+shared `r()` sequence unconditionally. The new `t0`/`cryT0` fix only spares the *shared* `rnd()`
+sequence, which is all that was ever at risk here — nothing in this street's own tests reads timing
+off its own local `r()`.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, box
+count unchanged at 334 (a circle collider, not a box), both the chat and cyclist checks still passing
+("2 turns in 7 s, arm -0.73" and "7.2 m in 2 s, pedalling"), the shirt-uniqueness check confirming 101
+distinct colours for 101 people, and the Neighborhood's own friend total rising from 137 to 138. No
+visual check was possible in this environment (no browser, no Playwright), so whether the arm routine
+actually reads as "invisible wall" is unverified, same caveat as the other two. `Mime` now has a home
+in all three of the worlds that had an opening for him; whichever world picks up the fourth should
+check first whether it has any test of its own reading timing off the shared `rnd()` sequence before
+assuming the straightforward placement will do. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
