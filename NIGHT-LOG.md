@@ -36994,3 +36994,42 @@ skyscrapers as it did against candy-cane grass is unverified — the dialogue ca
 way. Five worlds are still without a harmonica player; whether this becomes another seven-round set
 like the kite flyers and archers is left for a future round to decide. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1278 — Victorian picks up the harmonica, the third of the seven
+
+Candy Land (round 1276) and Robot City (round 1277) each gave `Harmonica` (55-npcs.js) a home;
+Victorian, for all its fiddler, lamplighter and archery society, had never had anyone play anything
+held to their own mouth. **A busker now sits alone in the quiet meadow south-west of town**, well
+clear of the fiddler's own pitch at the clock tower plaza. *"Three chords, badly — the sheep haven't
+complained yet."* *"Learned it off a postcard my brother sent home. Mostly."* *"Mind your whiskers,
+puss — this thing bites if you blow the wrong way."*
+
+No new controller — `Harmonica` reused exactly as the first two worlds built it, dressed from this
+town's own muted `vicWard` wardrobe (the same palette the fiddler and lamplighter already wear)
+instead of either earlier world's candy-bright or industrial colours.
+
+A headless probe (the stub-three harness: `game.start('new')`, `game.travel(3, 'from-prev')` waited
+out for real against its own portal-fade timer, then 3600 simulated frames sampling every NPC's own
+position every 10th frame) swept a 1 m grid of the town's hand-built core (radius ≤ 65, well short of
+the radius (88) where `victorianRegion()`'s own procedural fill takes over) against every physics box,
+every `game.zones` rectangle and every sampled NPC position: (-37, -50) came back clearest — 11.9 m
+from the nearest box, 20 m clear of the nearest zone rectangle and 11.9 m from the nearest other soul,
+south-west of the two birch trees at (-12, -50) and (18, -52).
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt: exit 0, every check `ok`, 0 console
+warnings, box count unchanged at 334 (a circle collider, not a box), and Victorian's own friend total
+rose from 182 to 183 (confirmed against the previous commit with `git stash`, every other world's
+count unchanged). No visual check was possible in this environment (no browser, no Playwright), so
+whether the sway reads the same against a cobbled meadow as it did against candy-cane grass and bare
+concrete is unverified. Four worlds are still without a harmonica player. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+Also worth a note for whoever runs the next round: this round found `origin/main` had been
+force-pushed between sessions — the local clone's cached `main` (tip `0fa6791`, NIGHT-LOG round 1179,
+a "frisbee thrower"/"paper-plane kid"/"unicyclist" lineage) shared no common ancestor at all with the
+actual current `origin/main` (tip `188ffc3`, round 1277, the "harmonica"/"watcher" lineage this round
+continues). The fix was `git fetch origin main` then `git checkout -B main origin/main` to realign
+local `main` with the real remote tip before building on it. If a future round's `git push` is
+rejected or `NIGHT-LOG.md`'s last round number doesn't match what a fresh `git log origin/main`
+shows, re-fetch and re-point `main` at `origin/main` rather than trusting a possibly stale local
+checkout.

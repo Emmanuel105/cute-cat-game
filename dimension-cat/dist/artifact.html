@@ -25527,6 +25527,39 @@ function buildVictorian(game, entry) {
     W.add(archerWatcher.group);
     game.npcs.push(new Wanderer(game, archerWatcher, { x: awx, z: awz, angle: atan2(aax - awx, aaz - awz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // Candy Land's busker (round 1276) gave `Harmonica` (55-npcs.js) its first home, and Robot City
+  // (round 1277) its second — this town, with a fiddler at the clock tower, a lamplighter's pole and
+  // the Toxophilite Society's own bow, had still never had anyone play anything held up to their own
+  // mouth. **A busker now sits alone in the quiet meadow south-west of town**, well clear of the
+  // fiddler's own pitch at the plaza. *"Three chords, badly — the sheep haven't complained yet."*
+  // *"Learned it off a postcard my brother sent home. Mostly."* *"Mind your whiskers, puss — this
+  // thing bites if you blow the wrong way."*
+  //
+  // No new controller: `Harmonica` reused exactly as both earlier worlds built it, just this town's
+  // own `vicWard` wardrobe (the same muted coat-and-flatcap palette the fiddler and lamplighter
+  // already wear) in place of either world's own candy-bright or industrial colours.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(3, 'from-prev')` waited out for real against its own
+  // portal-fade timer, then 3600 simulated frames sampling every NPC's own position every 10th frame)
+  // swept a 1 m grid of this town's hand-built core (radius <= 65, well short of the radius (88) where
+  // `victorianRegion()`'s own procedural fill takes over) against all of this town's own physics boxes
+  // (knee-to-head band only), every `game.zones` rectangle and every sampled NPC position: (-37, -50)
+  // came back clearest — 11.9 m from the nearest box, 20 m clear of the nearest zone rectangle and
+  // 11.9 m from the nearest other soul, south-west of the birch trees at (-12, -50) and (18, -52) and
+  // well outside the market square's own zone circle.
+  //
+  // Built dead last of everything this town adds, right after the archer's own watcher above and
+  // right before the squirrel below, for the usual reason: `makeHuman()`/`randomPerson()` both draw
+  // off this town's own shared `r()` sequence unconditionally, and anything built earlier here would
+  // have had its own timing-sensitive pick shifted by it.
+  { const hx = -37, hz = -50, hry = atan2(-hx, -hz);
+    const busker = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.25), wardrobe: vicWard }),
+      pants: 0x1e1e24, hat: null, jacket: null, scarf: null, bag: null, backpack: null, coat: r.chance(0.4), glasses: r.chance(0.2) });
+    W.add(busker.group);
+    game.npcs.push(new Harmonica(game, busker, { x: hx, z: hz, ry: hry,
+      cries: ['Three chords, badly — the sheep haven\'t complained yet.', 'Learned it off a postcard my brother sent home. Mostly.', 'Mind your whiskers, puss — this thing bites if you blow the wrong way.'] })); }
+
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
