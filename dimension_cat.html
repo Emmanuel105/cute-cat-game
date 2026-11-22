@@ -18019,6 +18019,54 @@ function buildCandyLand(game, entry) {
     game.npcs.push(new Mime(game, mime, { x: mx, z: mz, ry: mry,
       cries: ["Been standing there since the gumdrop frost, or so the gingerbread folk keep telling anyone who'll listen.", 'Not a word out of him, puss. Not one.', "Good wall, that one. Shame nobody else can see it."] })); }
 
+  // Round 1290 gave Victorian's own mime (the one above's own older cousin, born back at round 1283)
+  // the game's first watcher. Candy Land was the second of the seven worlds to get a mime of its own
+  // (round 1284) and is the second to get a watcher too. **A passer-by now stands south-west of him,
+  // watching him lean into the wall nobody else can see.** *"Been at it since the gumdrop frost too,
+  // by the sound of it."* *"Not going to ask him about it, puss. Learned that much."* *"Best wall on
+  // this land, and he's the only one who can find it."* Saying hello makes her the usual kind of
+  // friend.
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) Victorian's own watcher uses, a plain
+  // `makeHuman()`/`randomPerson()` rig with no particular wardrobe (this land has no shirt-uniqueness
+  // check to dodge, same note the mime above already makes), `angle` pointed at the mime's own fixed
+  // spot (-50, -55) rather than a constant, and the same freeze Victorian's own watcher needed — frozen
+  // idle (`idle: [1e9, 1e9]` plus every one of `Wanderer`'s own construction-time draws — `phase`,
+  // `timer`, `t`, `cryT` — fixed rather than pulled from `rnd()`) and `rig.idleT`/`rig.blinkT` both
+  // frozen too, since `rig.animate()` keeps drawing from the shared `rnd()` sequence every frame
+  // regardless of controller state. No `cries`, no physics box, pure bystander.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(1, 'from-prev')` — a direct, synchronous build rather than
+  // `travel()`, per round 1283's own note on that exact trap — then 3600 simulated frames so every
+  // gingerbread man, ribbon dancer and wanderer had already settled, sampling every NPC's own position
+  // every 10th frame for a further 600 frames) swept a 0.25 m grid in a ring 2-3 m out from the mime's
+  // own spot (-50, -55) against all 1798 of this land's own physics boxes (knee-to-head band only) and
+  // all 452 `game.zones` rectangles: (-50.75, -57.75) came back clearest — 14.1 m from the nearest box,
+  // 35.75 m clear of the nearest zone rectangle, the mime himself the only soul anywhere near (2.85 m,
+  // inside the ring by construction), south-west of him and well inside this land's own hand-built
+  // heart.
+  //
+  // `node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+  // unchanged (pure bystander, no collider of its own — just the circle every `Wanderer` already
+  // carries), and Candy Land's own friend total rose by exactly one (confirmed against the previous
+  // commit with `git stash`, every other world's count unchanged). No visual check was possible in
+  // this environment (no browser, no Playwright), so whether the watcher's stance actually reads as
+  // "watching a mime" rather than just standing nearby is unverified, same caveat as Victorian's own
+  // watcher. Five worlds' own mimes — the Neighborhood, Robot City, Sunny Shore, Frosty Peak and
+  // Whisper Woods — are still performing alone.
+  //
+  // Built dead last of everything this land adds, right after the mime above and right before
+  // `spawnBySquirrel()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this land's
+  // own shared `r()` sequence unconditionally, and anything built earlier here would have had its own
+  // timing-sensitive pick shifted by it.
+  { const mwx = -50.75, mwz = -57.75, mimeX = -50, mimeZ = -55;
+    const mimeWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, coat: r.chance(0.5), scarf: null, bag: null, backpack: null, glasses: r.chance(0.2) });
+    mimeWatcher.idleT = 1e6; mimeWatcher.blinkT = 1e6;   // keeps rig.animate()'s own idle-gesture pick and blink-reset (both shared rnd() draws) from firing every frame and shifting checks in worlds built later in the same run
+    W.add(mimeWatcher.group);
+    game.npcs.push(new Wanderer(game, mimeWatcher, { x: mwx, z: mwz, angle: atan2(mimeX - mwx, mimeZ - mwz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

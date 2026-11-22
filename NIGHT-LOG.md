@@ -37517,3 +37517,37 @@ Playwright), so whether the watcher's stance actually reads as "watching a mime"
 standing nearby is unverified. The other six worlds' own mimes — Candy Land, the Neighborhood,
 Robot City, Sunny Shore, Frosty Peak and Whisper Woods — are still performing alone. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1291 — Candy Land's mime gets a watcher too, the second of the seven
+
+Round 1290 gave Victorian's own mime (born back at round 1283) the game's first watcher. Candy Land
+was the second of the seven worlds to get a mime of its own (round 1284) and is the second to get a
+watcher too.
+
+**A passer-by now stands a couple of steps south-west of him, watching him lean into the wall nobody
+else can see.** *"Been at it since the gumdrop frost too, by the sound of it."* *"Not going to ask
+him about it, puss. Learned that much."* *"Best wall on this land, and he's the only one who can find
+it."* Saying hello makes her the usual kind of friend.
+
+No new class: the same `Wanderer` (55-npcs.js) Victorian's own watcher uses, a plain
+`makeHuman()`/`randomPerson()` rig with no particular wardrobe (this land has no shirt-uniqueness
+check to dodge), `angle` pointed at the mime's own fixed spot (-50, -55), and the same freeze
+Victorian's own watcher needed — frozen idle plus every one of `Wanderer`'s own construction-time
+draws fixed rather than pulled from `rnd()`, `rig.idleT`/`rig.blinkT` both frozen too. No `cries`, no
+physics box, pure bystander.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+`game.load(1, 'from-prev')`, 3600 simulated frames, then a further 600 sampling every NPC's own
+position every 10th frame) swept a 0.25 m grid in a ring 2-3 m out from the mime's own spot against
+all 1798 of this land's own physics boxes (knee-to-head band only) and all 452 `game.zones`
+rectangles: (-50.75, -57.75) came back clearest — 14.1 m from the nearest box, 35.75 m clear of the
+nearest zone rectangle, the mime himself the only soul anywhere near (2.85 m, inside the ring by
+construction).
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334, and Candy Land's own friend total rose from 138 to 139 (confirmed against the
+previous commit with `git stash`, every other world's count unchanged). No visual check was possible
+in this environment (no browser, no Playwright), so whether the watcher's stance actually reads as
+"watching a mime" is unverified, same caveat as Victorian's own watcher. Five worlds' own mimes — the
+Neighborhood, Robot City, Sunny Shore, Frosty Peak and Whisper Woods — are still performing alone.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
