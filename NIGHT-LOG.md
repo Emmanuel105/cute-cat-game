@@ -37656,3 +37656,32 @@ unchanged). No visual check was possible in this environment (no browser, no Pla
 the watcher's stance actually reads as "watching a mime" on open sand is unverified, same caveat as
 the other four. Two worlds' own mimes — Frosty Peak and Whisper Woods — are still performing alone.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1295 — Frosty Peak picks up the mime's watcher too, the sixth of the seven
+
+Rounds 1290-1294 gave Victorian's, Candy Land's, the Neighborhood's, Robot City's and Sunny Shore's
+own mimes a watcher. This mountain's own mime (round 1288, "the sixth of the seven") is the sixth.
+
+**A visitor in a mustard-yellow beanie and coat now stands a few steps south-west of him on the open
+snow, watching him lean into the wall nobody else can see.** Same `Wanderer` (55-npcs.js) every
+watcher in this set uses, a one-shirt wardrobe bag checked against this mountain's own shared
+`snowWard` six and the two buskers' own wardrobes so nobody on this slope repeats, `angle` pointed at
+the mime's own fixed spot (9, 46), and the frozen-idle shape (`idle: [1e9, 1e9]` plus
+`blinkT0`/`idleT0`/`sway0` fixed straight in the `makeHuman()` call) the last five watchers settled
+on. No `cries`, no physics box, pure bystander — unlike the mime himself, this one gets a coat, since
+nothing about *him* is a running joke about weather.
+
+A headless probe (`game.start('new')`, `game.load(5, 'from-hub')`, 3600 simulated frames, then 600
+more sampling every NPC's own position every 10th frame) swept a ring 2-3 m out from the mime's own
+spot against all 379 of this mountain's own physics boxes (knee-to-head band only) and all 152
+`game.zones` rectangles: (6.70, 44.07) came back clearest — 5.96 m from the nearest box, 17.83 m
+clear of the nearest zone rectangle and 3 m from the mime himself, confirmed as the nearest other
+soul in the 600-frame sample.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (pure bystander, no collider of its own), and Frosty Peak's own friend total rose
+from 155 to 156 (confirmed against the previous commit with `git stash`, every other world's count
+unchanged). No visual check was possible in this environment (no browser, no Playwright), so whether
+the watcher's stance actually reads as "watching a mime" on open snow is unverified, same caveat as
+the other five. One world's own mime — Whisper Woods — is still performing alone. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

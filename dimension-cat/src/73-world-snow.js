@@ -3439,6 +3439,38 @@ function buildSnowVillage(game, entry) {
     game.npcs.push(new Mime(game, mime, { x: mx, z: mz, ry: mry,
       cries: ['Standing there since the last thaw gave up and the frost won, or so the yetis tell it.', 'Not a word out of him, puss. Not one.', 'Best wall on the mountain. Out of the wind, if you squint.'] })); }
 
+  // Round 1290 gave Victorian's own mime (born round 1283) the game's first watcher, round 1291 did
+  // the same for Candy Land's (round 1284), round 1292 for the Neighborhood's (round 1285), round
+  // 1293 for Robot City's (round 1286) and round 1294 for Sunny Shore's (round 1287). This mountain's
+  // own mime above (round 1288, "the sixth of the seven") is the sixth of the seven worlds to get one.
+  // Same `Wanderer` (55-npcs.js), a plain `makeHuman()`/`randomPerson()` rig dressed warm this time
+  // (snow, unlike the mime's own bare shirt-and-stripes joke) in a single mustard-yellow beanie and
+  // coat, drawn from a one-shirt wardrobe bag checked against this mountain's own shared `snowWard`
+  // six and the two buskers' own wardrobes above so nobody on this slope repeats, `angle` pointed at
+  // the mime's own fixed spot (9, 46), and the same frozen-idle shape every watcher in this set uses
+  // (`idle: [1e9, 1e9]` plus `blinkT0`/`idleT0`/`sway0` fixed straight in the `makeHuman()` call). No
+  // `cries` of its own, no physics box, pure bystander.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // `game.load(5, 'from-hub')`, 3600 simulated frames, then a further 600 sampling every NPC's own
+  // position every 10th frame) swept a ring 2-3 m out from the mime's own spot against all 379 of
+  // this mountain's own physics boxes (knee-to-head band only), all 152 `game.zones` rectangles and
+  // every sampled NPC position: (6.70, 44.07) came back clearest — 5.96 m from the nearest box,
+  // 17.83 m clear of the nearest zone rectangle and 3 m from the nearest other soul (the mime
+  // himself, by construction), south-west of him and well clear of the dropped mitten.
+  //
+  // Built dead last of everything this mountain adds, right after the mime above, for the usual
+  // reason: `makeHuman()`/`randomPerson()` both draw off this mountain's own shared `r()` sequence
+  // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted
+  // by it. One world's own mime — Whisper Woods — is still performing alone.
+  { const mwx = 6.70, mwz = 44.07, mimeX = 9, mimeZ = 46;
+    const mimeWatchWard = makeWardrobe(r, { shirts: [0xd6a419] });
+    const mimeWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: mimeWatchWard }),
+      hat: 'beanie', hatColor: 0xd6a419, coat: true, scarf: 0x2a2a2a, cuffs: 0x3a3a3a, glasses: false,
+      blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(mimeWatcher.group);
+    game.npcs.push(new Wanderer(game, mimeWatcher, { x: mwx, z: mwz, angle: atan2(mimeX - mwx, mimeZ - mwz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
