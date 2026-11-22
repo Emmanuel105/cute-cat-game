@@ -37066,3 +37066,33 @@ count unchanged). No visual check was possible in this environment (no browser, 
 whether the sway reads the same against suburban lawn as it did against the first three worlds is
 unverified. Three worlds — Sunny Shore, Frosty Peak, Whisper Woods — are still without a harmonica
 player. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1280 — Sunny Shore picks up the harmonica, the fifth of the seven
+
+Candy Land (1276), Robot City (1277), Victorian (1278) and the Neighborhood (1279) have all now
+given `Harmonica` (55-npcs.js) a home; Sunny Shore, for all its kite flyers, buskers-in-waiting and
+boardwalk performers, had nobody actually playing anything held up to their own mouth either. **A
+busker now sits alone on the dry dune sand west of the jacks game**, well clear of every other
+hand-placed beachgoer. *"Three chords, badly — the gulls have heard worse off the trawlers."*
+*"Found it washed up past the tideline. Still plays, mostly."* *"Mind your whiskers, puss — this
+thing bites if you blow the wrong way."*
+
+No new controller — `Harmonica` reused exactly as all four earlier worlds built it, dressed from its
+own small sun-faded wardrobe rather than this beach's own shared `beachWard` bag.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(4, 'from-hub')` waited out for real against its own portal-fade
+timer, then 3600 simulated frames sampling every NPC's own position every 10th frame) swept a 1 m
+grid of the dry dune sand (x ≤ 8, clear of the wet sand/sea line at x=12, radius ≤ 50, short of the
+radius (58) where `beachRegion()`'s own fill takes over) against all 228 of this beach's own physics
+boxes, all 95 `game.zones` rectangles and every sampled NPC position: (-18, 14) came back clearest —
+5.98 m from the nearest box, 19.4 m clear of the nearest zone rectangle and 6.08 m from the nearest
+other soul, west of the jacks game at (-16, 8).
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt: exit 0, every check `ok`, 0 console
+warnings, box count unchanged at 334 (a circle collider, not a box), and Sunny Shore's own friend
+total rose from 157 to 158 (confirmed against the previous commit with `git stash`, every other
+world's count unchanged). No visual check was possible in this environment (no browser, no
+Playwright), so whether the sway reads the same against dune sand as it did against the first four
+worlds is unverified. Two worlds — Frosty Peak, Whisper Woods — are still without a harmonica player.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

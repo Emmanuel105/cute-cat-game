@@ -3335,6 +3335,40 @@ function buildBeach(game, entry) {
     const sunscreenLines = ['Factor fifty, every inch. Learned that the hard way one summer.', "Mind the bottle, puss — it's slicker than it looks.", 'Burnt red as a crab once. Once was plenty.'];
     game.npcs.push(new Kneeler(game, sunner, { x: sx, z: sz, ry: sry, cries: sunscreenLines })); }
 
+  // Candy Land (1276), Robot City (1277), Victorian (1278) and the Neighborhood (1279) have all now
+  // given `Harmonica` (55-npcs.js) a home; Sunny Shore, for all its kite flyers, buskers-in-waiting and
+  // boardwalk performers, had nobody actually playing anything held up to their own mouth either. **A
+  // busker now sits alone on the dry dune sand west of the jacks game**, well clear of every other
+  // hand-placed beachgoer. *"Three chords, badly — the gulls have heard worse off the trawlers."*
+  // *"Found it washed up past the tideline. Still plays, mostly."* *"Mind your whiskers, puss — this
+  // thing bites if you blow the wrong way."*
+  //
+  // No new controller: `Harmonica` reused exactly as all four earlier worlds built it, dressed from its
+  // own small sun-faded wardrobe rather than this beach's own shared `beachWard` bag, which is sized
+  // exactly to its own regular cast of sunbathers and swimmers.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(4, 'from-hub')` waited out for real against its own portal-fade
+  // timer, then 3600 simulated frames sampling every NPC's own position every 10th frame) swept a 1 m
+  // grid of the dry dune sand (x <= 8, clear of the wet sand/sea line at x=12, radius <= 50, short of
+  // the radius (58) where `beachRegion()`'s own fill takes over) against all 228 of this beach's own
+  // physics boxes, all 95 `game.zones` rectangles and every sampled NPC position: (-18, 14) came back
+  // clearest — 5.98 m from the nearest box, 19.4 m clear of the nearest zone rectangle and 6.08 m from
+  // the nearest other soul, west of the jacks game at (-16, 8) and well short of the treasure dig and
+  // the boardwalk stilt walker's own line further south and west.
+  //
+  // Built dead last of everything this beach adds, right after the sunscreen kneeler above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this beach's own shared `r()` sequence
+  // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted by
+  // it.
+  { const hx = -18, hz = 14, hry = atan2(-hx, -hz);
+    const buskWard = makeWardrobe(r, { shirts: [0x7a9a8a, 0xc9a66b, 0x6a8ab0], pants: [0x3a4a5a, 0x5a4034] });
+    const busker = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.25), wardrobe: buskWard }),
+      hat: null, shorts: true, stripes: null, jacket: null, coat: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.2) });
+    W.add(busker.group);
+    game.npcs.push(new Harmonica(game, busker, { x: hx, z: hz, ry: hry,
+      cries: ['Three chords, badly — the gulls have heard worse off the trawlers.', 'Found it washed up past the tideline. Still plays, mostly.', "Mind your whiskers, puss — this thing bites if you blow the wrong way."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
