@@ -16387,6 +16387,37 @@ function buildVictorian(game, entry) {
     game.npcs.push(new Harmonica(game, busker, { x: hx, z: hz, ry: hry,
       cries: ['Three chords, badly — the sheep haven\'t complained yet.', 'Learned it off a postcard my brother sent home. Mostly.', 'Mind your whiskers, puss — this thing bites if you blow the wrong way.'] })); }
 
+  // the market square has a juggler, a fiddler, a fortune teller, an organ grinder and a harmonica
+  // busker by now — every one of them making some kind of sound. Nobody here had ever gone the other
+  // way. **A mime now stands on the quiet grass south-west of the square, both palms pressed flat
+  // against a wall nobody else can see, leaning his whole weight into it and never quite finding an
+  // edge.** *"Trapped in there since Tuesday, or so the hat by his feet claims."* *"Not a word out of
+  // him. Not one, puss — don't you try it either."* *"Best wall in the square. Shame nobody else can
+  // see it."* Saying hello makes him the usual kind of friend — the only one in the whole game whose
+  // own lines never make a sound: `Mime` (55-npcs.js) prints its "cries" straight to the toast with no
+  // `SFX.talk()` underneath them at all, the one deliberate difference from every other talker here.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(3, 'from-prev')` — a direct, synchronous build rather than
+  // `travel()`, whose own fade and `load()` call are both deferred behind a real `setTimeout` that
+  // never fires under simulated frames alone) swept a 0.5 m grid within 30 m of the square's own centre
+  // (0, -35) against all 611 of this town's own physics boxes (knee-to-head band only), all 236
+  // `game.zones` rectangles and every sampled NPC position: (-27.5, -46.5) came back clearest — 10.14 m
+  // from the nearest box, 10.5 m clear of the nearest zone rectangle and 10.12 m from the nearest other
+  // soul (the harmonica busker above, at (-37, -50)), south-west of the square and short of the birch
+  // trees at (-12, -50) and (18, -52).
+  //
+  // Built dead last of everything this town adds, right after the harmonica busker above and right
+  // before the squirrel below, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this
+  // town's own shared `r()` sequence unconditionally, and anything built earlier here would have had
+  // its own timing-sensitive pick shifted by it.
+  { const mx = -27.5, mz = -46.5, mry = atan2(0 - mx, -35 - mz);
+    const mime = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
+      shirt: 0xf7f3ec, stripes: 0x1a1a22, pants: 0x1a1a22, shoes: 0x1a1a22, hat: null, jacket: null, scarf: null, bag: null, backpack: null, coat: null, glasses: false });
+    W.add(mime.group);
+    game.npcs.push(new Mime(game, mime, { x: mx, z: mz, ry: mry,
+      cries: ['Trapped in there since Tuesday, or so the hat by his feet claims.', 'Not a word out of him. Not one, puss — don\'t you try it either.', 'Best wall in the square. Shame nobody else can see it.'] })); }
+
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);

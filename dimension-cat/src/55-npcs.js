@@ -2248,6 +2248,32 @@ class Juggler {
   }
 }
 
+// ---------------------------------------------------------------- mime: stands on the spot, both palms pressed flat against a wall nobody else can see, pushing and leaning into it on a slow four-beat loop that never finds an edge. The only talker in the whole game whose "cries" land with no SFX.talk() under them at all — the joke is that it never actually makes a sound
+class Mime {
+  constructor(game, rig, { x, z, ry = 0, cries = null, cryIcon = '🤐' }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10; this.look = 0; this.lookW = 0;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
+    this.circle = game.physics.addCircle(this, x, z, 0.35);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig;
+    rig.animate(0, false, dt, this.t);
+    // push, hold, recoil, reset — eased both ways so the "wall" never gets hit on a snap
+    const cyc = 5.0, ph = (this.t % cyc) / cyc;
+    let push; if (ph < 0.3) push = ph / 0.3; else if (ph < 0.55) push = 1; else if (ph < 0.75) push = 1 - (ph - 0.55) / 0.2; else push = 0;
+    push = push * push * (3 - 2 * push);
+    if (!rig.gesture) {
+      for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -1.3 - push * 0.35, 9, dt); A.el.rotation.x = damp(A.el.rotation.x, -1.5 + push * 0.2, 9, dt); A.sh.rotation.z = damp(A.sh.rotation.z, (A === rig.arms[0] ? 1 : -1) * 0.5, 9, dt); }
+      rig.spine.rotation.x = damp(rig.spine.rotation.x, push * 0.1, 7, dt); rig.spine.rotation.z = damp(rig.spine.rotation.z, sin(this.t * 0.6) * 0.05, 7, dt);
+      rig.head.rotation.z = damp(rig.head.rotation.z, sin(this.t * 0.6) * 0.08, 6, dt);
+    }
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) this.game.toast(this.cryIcon + ' *' + rnd.pick(this.cries) + '*', 2400); } }
+  }
+}
+
 // ---------------------------------------------------------------- solo basketball shooter: dribbles in place by a hoop (ball bouncing free of the hand, same cheat `Juggler`'s balls use), then lofts a shot in a quick up-and-back arc that peaks at the rim before dropping back into the waiting hand to resume dribbling
 class Baller {
   constructor(game, rig, ball, { x, z, ry = 0, hoopX, hoopY, hoopZ, cries = null, cryIcon = '🏀' }) {

@@ -37160,3 +37160,48 @@ world's count unchanged). No visual check was possible in this environment (no b
 Playwright), so whether the sway reads the same against forest floor as it did against the first six
 worlds is unverified. All seven worlds now have a harmonica player. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1283 — the market square gets its own mime
+
+Every performer the Victorian market square has picked up over the last hundred-odd rounds — the
+juggler, the fiddler, the fortune teller, the organ grinder, the harmonica busker — makes some kind of
+sound. Nobody in this whole game had ever gone the other way. **A mime now stands on the quiet grass
+south-west of the square, both palms pressed flat against a wall nobody else can see, leaning his
+whole weight into it and never quite finding an edge.** *"Trapped in there since Tuesday, or so the
+hat by his feet claims."* *"Not a word out of him. Not one, puss — don't you try it either."* *"Best
+wall in the square. Shame nobody else can see it."* Saying hello makes him the usual kind of friend.
+
+A new controller, `Mime` (55-npcs.js), built off the same `YoYoer`/`Harmonica`-style shape every small
+stand-in-place act in this game already uses: a plain `makeHuman()`/`randomPerson()` rig (white shirt,
+black `stripes` — the Breton-stripe option `makeHuman()` already had, never used for this before — and
+black trousers, no hat), `greetable()` for the usual friend credit, and an eased four-beat arm routine
+(push, hold, recoil, reset) standing in for the invisible wall. The one deliberate difference from
+every other talker in this game: `Mime`'s own "cries" print straight to the toast with no `SFX.talk()`
+underneath them at all, so the joke is that he never actually makes a sound — every other busker,
+vendor and watcher in the game calls that on every line.
+
+The clearance probe for this one needed a second attempt. The first pass reused last round's own
+pattern verbatim — `game.start('new')`, `game.travel(3, 'from-prev')`, then simulated frames — and
+came back with a spot that turned out to sit inside the market square's own zone rectangle (`minZone`
+0) once the mime was actually placed and the real test suite's own road-walk checks were run against
+it. The cause: `travel()` defers its real `load()` call behind a genuine `setTimeout(…, 520)`, which
+simulated `game.loop()` frames alone never fire — so the probe had silently stayed in world 0
+(Neighborhood) the whole time, sweeping Neighborhood's own ground and reporting it as Victorian's. The
+fix was to call `game.load(3, 'from-prev')` directly, the same synchronous build `travel()` itself
+calls once its own fade timer fires, with no simulated-frame wait needed at all. Re-run against the
+real Victorian build (611 physics boxes, 236 `game.zones` rectangles once actually loaded, not the
+stale 334/69 the broken probe had reported), a 0.5 m grid within 30 m of the square's own centre
+(0, -35) came back clearest at (-27.5, -46.5) — 10.14 m from the nearest box, 10.5 m clear of the
+nearest zone rectangle and 10.12 m from the nearest other soul (the harmonica busker at (-37, -50)),
+south-west of the square and short of the birch trees at (-12, -50) and (18, -52).
+
+`node dimension-cat/test/run.mjs` ran clean once the corrected spot was in: exit 0, every check `ok`,
+0 console warnings, box count unchanged at 334 (a circle collider, not a box), and Victorian's own
+friend total rose from 183 to 184 (confirmed against the previous commit with `git stash`, every
+other world's count unchanged). No visual check was possible in this environment (no browser, no
+Playwright), so whether the arm routine actually reads as "invisible wall" rather than just odd
+flailing is unverified. Worth a note for whichever round reads this next: a clearance probe that
+calls `travel()` rather than `load()` directly is checking world 0, not the world it thinks it's in —
+`game.transition` isn't even a real property on this game object (`this.transitioning` is), so a guard
+like `while (game.transition && game.transition.active)` silently no-ops instead of failing loudly.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
