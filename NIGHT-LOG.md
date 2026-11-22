@@ -37127,3 +37127,36 @@ world's count unchanged). No visual check was possible in this environment (no b
 Playwright), so whether the sway reads the same against open snow as it did against the first five
 worlds is unverified. One world — Whisper Woods — is still without a harmonica player. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1282 — Whisper Woods picks up the harmonica, the seventh and last of the seven
+
+Candy Land (1276), Robot City (1277), Victorian (1278), the Neighborhood (1279), Sunny Shore (1280)
+and Frosty Peak (1281) have all now given `Harmonica` (55-npcs.js) a home; this wood, for all its
+fiddlers, foragers and fairy-ring dancers, had nobody actually playing anything held up to their own
+mouth either — the last of the seven worlds still without one. **A busker now sits alone on open
+forest floor north-west of the glowing pond's own hand-built core.** *"Three chords, badly — the owls
+haven't complained, but there aren't any out this far either."* *"Found it half buried under the leaf
+litter. Still plays, mostly."* *"Mind your whiskers, puss — this thing bites if you blow the wrong
+way."*
+
+No new controller — `Harmonica` reused exactly as all six earlier worlds built it, dressed from its
+own small wardrobe (three fresh, unused hex colours — this wood's file already has dozens of its own
+one-off wardrobes, so it was worth double-checking none collided) rather than reaching into any of
+this wood's existing shared bags.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(6, 'from-hub')`, then 3600 simulated frames so every frog, firefly,
+butterfly, fox and wandering villager had already settled, sampling every NPC's own position every
+10th frame for a further 600 frames) swept a 1 m grid of the hand-built core (radius 15-54, short of
+the radius (58) where `forestRegion()`'s own procedural fill takes over) against all 438 of this
+wood's own physics boxes (knee-to-head band only), every one of `game.zones`'s own 229 rectangles and
+every sampled NPC position: (-20, 31) came back clearest — 7.37 m from the nearest box, 13.2 m clear
+of the nearest zone rectangle and 8.06 m from the nearest other soul.
+
+`node dimension-cat/test/run.mjs` ran clean on the first attempt: exit 0, every check `ok`, 0 console
+warnings, box count unchanged at 334 (a circle collider, not a box), and Whisper Woods' own friend
+total rose from 181 to 182 (confirmed against the previous commit with `git stash`, every other
+world's count unchanged). No visual check was possible in this environment (no browser, no
+Playwright), so whether the sway reads the same against forest floor as it did against the first six
+worlds is unverified. All seven worlds now have a harmonica player. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

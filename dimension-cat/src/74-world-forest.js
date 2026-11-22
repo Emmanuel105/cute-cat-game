@@ -3977,6 +3977,40 @@ function buildForest(game, entry) {
     game.npcs.push(new Wanderer(game, chopWatcher, { x: chopWatchX, z: chopWatchZ, angle: atan2(chopCutX - chopWatchX, chopCutZ - chopWatchZ), leash: 0.5, speed: 0.3, idle: [3, 6],
       cries: ['Same two swings, every time.', "Mind the chips, puss — stack's getting high.", 'Dry as anything, that wood — splits in one.'] })); }
 
+  // Candy Land (1276), Robot City (1277), Victorian (1278), the Neighborhood (1279), Sunny Shore
+  // (1280) and Frosty Peak (1281) have all now given `Harmonica` (55-npcs.js) a home; this wood, for
+  // all its fiddlers, foragers and fairy-ring dancers, had nobody actually playing anything held up to
+  // their own mouth either, the last of the seven worlds still without one. **A busker now sits alone
+  // on open forest floor north-west of the glowing pond's own hand-built core.** *"Three chords,
+  // badly — the owls haven't complained, but there aren't any out this far either."* *"Found it half
+  // buried under the leaf litter. Still plays, mostly."* *"Mind your whiskers, puss — this thing bites
+  // if you blow the wrong way."*
+  //
+  // No new controller: `Harmonica` reused exactly as all six earlier worlds built it, dressed from its
+  // own small wardrobe rather than reaching into any of this wood's existing shared bags.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(6, 'from-hub')`, then 3600 simulated frames so every frog,
+  // firefly, butterfly, fox and wandering villager had already settled, sampling every NPC's own
+  // position every 10th frame for a further 600 frames) swept a 1 m grid of the hand-built core
+  // (radius 15-54, short of the radius (58) where `forestRegion()`'s own procedural fill takes over)
+  // against all 438 of this wood's own physics boxes (knee-to-head band only), every one of
+  // `game.zones`'s own 229 rectangles and every sampled NPC position: (-20, 31) came back clearest —
+  // 7.37 m from the nearest box, 13.2 m clear of the nearest zone rectangle and 8.06 m from the
+  // nearest other soul.
+  //
+  // Built dead last of everything this wood adds, right after the chop-watcher above, for the usual
+  // reason: `makeHuman()`/`randomPerson()` both draw off this wood's own shared `r()` sequence
+  // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted
+  // by it.
+  { const hx = -20, hz = 31, hry = atan2(-hx, -hz);
+    const buskWard3 = makeWardrobe(r, { shirts: [0x9a6a5a, 0x5a8a9a, 0x6a9a5a], pants: [0x2a3a2a, 0x3a2a2e], shoes: [0x3a2a1e, 0x2a2018] });
+    const busker3 = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.25), wardrobe: buskWard3 }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.2) });
+    W.add(busker3.group);
+    game.npcs.push(new Harmonica(game, busker3, { x: hx, z: hz, ry: hry,
+      cries: ['Three chords, badly — the owls haven\'t complained, but there aren\'t any out this far either.', 'Found it half buried under the leaf litter. Still plays, mostly.', "Mind your whiskers, puss — this thing bites if you blow the wrong way."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
