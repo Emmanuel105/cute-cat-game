@@ -38077,3 +38077,43 @@ her stance actually reads as "watching a sack race" is unverified, same caveat e
 these sets has carried. That closes out round 1304's own list — the tetherball pole, the horseshoe
 pit, the tug-of-war and now the sack race all have a spectator. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1308 — Robot City finally gets an ice-cream vendor, of all things
+
+Round 1307 closed out the held-prop watcher set the project had been working through. This round
+breaks from that run entirely: Robot City's own factory floor already had an oil seller, a
+synth-coffee cart, a pretzel stand and a chestnut roaster — four vendors, all serving something hot
+or industrial — but nothing cold. The Neighborhood and Sunny Shore have each had an ice-cream cart
+since round 411, and nobody had ever tried the joke of putting one here too.
+
+**An off-shift worker now stands on the open floor south-west of the pretzel cart, holding up a
+two-scoop cone for anyone on a break.** *"Fell off a supply run bound for the surface. Nobody's
+asked where from twice."* *"Careful, puss — it's real cream, somehow. Nobody's worked that part out
+either."* *"Melts fast under these lights. Eat quick or don't bother."* Saying hello makes her the
+usual kind of friend.
+
+No new controller or prop: the exact same `Vendor` (55-npcs.js) every other cart's own seller in
+this city already uses, holding `makeIceCreamCone()` (62-props-nature.js) completely unchanged —
+the same waffle cone, two scoops and cherry the Neighborhood's and Sunny Shore's own carts already
+hold, deliberately not recoloured, since the joke is that it doesn't belong here at all. No cart
+built either, the same bare-minimum footprint the coffee vendor already settles for — just the rig,
+the held prop and `Vendor`'s own circle collider, no physics box.
+
+A headless probe (`game.start('new')`, `game.load(2, 'from-prev')`, 3600 simulated frames so every
+wandering, patrolling, charging and ball-tossing robot and every other vendor had settled, then 600
+more sampling every NPC's own position every 10th frame) swept a 2 m grid of the open floor (radius
+15-90 from the origin, short of the radius where `robotRegion()`'s own procedural fill takes over)
+against all 1203 of this city's own physics boxes (knee-to-head band only), all 296 `game.zones`
+rectangles and every sampled NPC position, at least 12 m clear of every other vendor and the second
+badminton watcher: (-15.5, -35.25) came back clearest — 11.05 m from the nearest box, 16.98 m clear
+of the nearest zone rectangle and 14.04 m from the nearest other soul, south-west of the pretzel
+cart (-20, -20).
+
+Built dead last of everything this city adds, right before `spawnBySquirrel()`, for the usual
+reason: `makeHuman()`/`randomPerson()` both draw off this city's own shared `r()` sequence
+unconditionally. `node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console
+warnings, box count unchanged at 334 (a circle collider, not a box — confirmed against the previous
+commit with `git stash`), and Robot City's own friend total rose from 150 to 151. No visual check
+was possible in this environment (no browser, no Playwright), so whether a waffle cone in a factory
+reads as a joke rather than a mistake is unverified — the dialogue carries it either way. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

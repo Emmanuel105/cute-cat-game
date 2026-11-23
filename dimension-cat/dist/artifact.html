@@ -21954,6 +21954,44 @@ function buildRobotCity(game, entry) {
     W.add(badWatcher2.group);
     game.npcs.push(new Wanderer(game, badWatcher2, { x: bwx, z: bwz, angle: atan2(netX2 - bwx, netZ2 - bwz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // This floor already has an oil vendor, a synth-coffee cart, a pretzel stand and a chestnut roaster —
+  // every snack on offer here runs hot. Nobody had tried the other direction. An off-shift worker now
+  // stands on the open floor south-west of the pretzel cart, holding up a two-scoop cone for anyone on
+  // a break. *"Fell off a supply run bound for the surface. Nobody's asked where from twice."* *"Careful,
+  // puss — it's real cream, somehow. Nobody's worked that part out either."* *"Melts fast under these
+  // lights. Eat quick or don't bother."*
+  //
+  // No new controller or prop: the exact same `Vendor` (55-npcs.js) every other cart's own seller in
+  // this city already uses, holding `makeIceCreamCone()` (62-props-nature.js) completely unchanged —
+  // the same waffle cone, two scoops and cherry the Neighborhood's and Sunny Shore's own ice-cream carts
+  // already hold, no recolour this time, since the joke is that it doesn't belong here at all. No cart
+  // built either, the same minimal footprint the coffee vendor above settles for: just the rig and the
+  // held prop, `Vendor`'s own circle collider and no physics box.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(2, 'from-prev')`, then 3600 simulated frames so every wandering,
+  // patrolling, charging and ball-tossing robot and every other vendor had settled, sampling every
+  // NPC's own position every 10th frame over 600 more) swept a 2 m grid of the open floor (radius
+  // 15-90 from the origin, short of the radius (98) where `robotRegion()`'s own procedural fill takes
+  // over) against all 1203 of this city's own physics boxes (knee-to-head band only), all 296
+  // `game.zones` rectangles and every sampled NPC position, at least 12 m clear of every other vendor
+  // and the badminton watcher's own spot: (-15.5, -35.25) came back clearest — 11.05 m from the nearest
+  // box, 16.98 m clear of the nearest zone rectangle and 14.04 m from the nearest other soul, south-west
+  // of the pretzel cart (-20, -20) and well short of the scavenger's own bucket at (-9, -67).
+  //
+  // Built dead last of everything this city adds, right after the second badminton watcher above and
+  // right before `spawnBySquirrel()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw
+  // off this city's own shared `r()` sequence unconditionally, and anything built earlier here would
+  // have had its own timing-sensitive pick shifted by it.
+  { const cx = -15.5, cz = -35.25, ry = atan2(-cx, -cz);
+    const popWard = makeWardrobe(r, { shirts: [0x3a8a9a, 0xdfeef0], pants: [0x232c34, 0x2a2a30] });
+    const popSeller = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.2), wardrobe: popWard }),
+      apron: 0xdfeef0, hat: 'cap', hatColor: 0x3a8a9a, jacket: null, scarf: null, bag: null, glasses: r.chance(0.3) });
+    W.add(popSeller.group);
+    const v = new Vendor(game, popSeller, makeIceCreamCone(), { x: cx, z: cz, ry, cryIcon: '🍦',
+      cries: ["Fell off a supply run bound for the surface. Nobody's asked where from twice.", "Careful, puss — it's real cream, somehow. Nobody's worked that part out either.", "Melts fast under these lights. Eat quick or don't bother."] });
+    game.npcs.push(v); greetable(game, v); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
