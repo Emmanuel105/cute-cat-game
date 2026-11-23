@@ -38425,3 +38425,37 @@ line). No visual check was possible in this environment (no browser, no Playwrig
 standing a step away actually reads as "getting a reading" is unverified, same caveat every watcher
 in this game's set has carried. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 1318 — Robot City's fortune teller picks up a customer too
+
+Rounds 1316 and 1317 gave the Neighborhood's and Candy Land's fortune tellers a customer apiece;
+Robot City's own fortune teller (round 1315) has been holding her crystal ball out on the open
+floor north-west of the oil vendor ever since, reading the orb to nobody. **A customer now stands
+a step in front of her, facing her straight on, listening as she tells a fortune.** No `cries` of
+her own, no physics box, pure bystander, built the exact same way as the last two rounds' customers.
+Saying hello to her makes her the usual kind of friend.
+
+Same `Wanderer` (55-npcs.js) every watcher in this project already uses — it calls `greetable()`
+itself, so no extra wiring was needed. A single-shirt wardrobe bag (0x9a4a8a, a plum not already
+spoken for anywhere on this floor) keeps the dupe-shirt check happy, and the frozen `idle: [1e9,
+1e9]` plus `blinkT0`/`idleT0`/`sway0` fixed straight in the `makeHuman()` call keeps her statue-
+still, hanging on every word rather than fidgeting, the same trick the last two customers used.
+
+A headless probe (a scratch script against the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(2, 'from-prev')`, 3600 simulated frames so every wandering,
+patrolling and ball-tossing robot and every vendor had settled, then 600 more sampling every NPC's
+own position every 10th frame) swept the ground 1-2.4 m out from the fortune teller (-52, 42) along
+her own facing direction (towards the origin) against all 1203 of this city's own physics boxes
+(knee-to-head band only) and all 296 `game.zones` rectangles: every distance tried came back clear
+by 7+ m of the nearest box and 48+ m of the nearest zone rectangle, so 1.5 m out — close enough to
+read as a face-to-face reading — was used.
+
+Built dead last of everything this city adds, right after the fortune teller above and right
+before `spawnBySquirrel()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this
+city's own shared `r()` sequence unconditionally. `node dimension-cat/test/run.mjs` ran clean: exit
+0, all checks `ok`, 0 console warnings, box count unchanged at 334 (a circle collider, not a box),
+and Robot City's own friend total rose from 152 to 153 (confirmed by the test's own "153 to meet"
+line). No visual check was possible in this environment (no browser, no Playwright), so whether
+standing a step away actually reads as "getting a reading" is unverified, same caveat every watcher
+in this game's set has carried. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.

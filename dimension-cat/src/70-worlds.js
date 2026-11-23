@@ -13004,6 +13004,37 @@ function buildRobotCity(game, entry) {
       cries: ["The orb says you'll trip a sensor before the hour's out. It's never wrong about that one.", "Careful, puss — glass this clean short-circuits worse than any readout in this city.", 'Everybody here trusts a display. I just trust mine rather less.'] });
     game.npcs.push(ft); greetable(game, ft); }
 
+  // Round 1316 gave the Neighborhood's fortune teller a customer and round 1317 gave Candy Land's
+  // one too; this city's own fortune teller, standing out on the open floor since round 1315, has
+  // still only ever read the orb to nobody. **A customer now stands a step in front of her, facing
+  // her straight on, listening as she tells a fortune.** No `cries` of her own, no physics box, pure
+  // bystander, the exact same shape as the last two rounds' customers. Saying hello to her makes her
+  // the usual kind of friend.
+  //
+  // Same `Wanderer` (55-npcs.js) every watcher in this project already uses — it calls `greetable()`
+  // itself, so no extra wiring was needed. A single-shirt wardrobe bag (0x9a4a8a, a plum not already
+  // spoken for anywhere on this floor) keeps the dupe-shirt check happy, and the frozen
+  // `idle: [1e9, 1e9]` plus `blinkT0`/`idleT0`/`sway0` fixed straight in the `makeHuman()` call keeps
+  // her statue-still, hanging on every word rather than fidgeting, same as the last two rounds.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(2, 'from-prev')`, 3600 simulated frames so every robot and
+  // vendor had settled, then 600 more sampling every NPC's own position every 10th frame) swept the
+  // ground 1-2.4 m out from the fortune teller (-52, 42) along her own facing direction (towards the
+  // origin) against all 1203 of this city's own physics boxes (knee-to-head band only) and all 296
+  // `game.zones` rectangles: every distance tried came back clear by 7+ m of the nearest box and
+  // 48+ m of the nearest zone rectangle, so 1.5 m out — close enough to read as a face-to-face
+  // reading — was used.
+  //
+  // Built dead last of everything this city adds, right after the fortune teller above and right
+  // before `spawnBySquirrel()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw off
+  // this city's own shared `r()` sequence unconditionally.
+  { const ftX = -52, ftZ = 42, cux = -50.83, cuz = 41.06;
+    const customerWard = makeWardrobe(r, { shirts: [0x9a4a8a] });
+    const customer = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: customerWard }), blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(customer.group);
+    game.npcs.push(new Wanderer(game, customer, { x: cux, z: cuz, angle: atan2(ftX - cux, ftZ - cuz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
