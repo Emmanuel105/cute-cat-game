@@ -4117,6 +4117,42 @@ function buildForest(game, entry) {
     W.add(mimeWatcher.group);
     game.npcs.push(new Wanderer(game, mimeWatcher, { x: mwx, z: mwz, angle: atan2(mimeX - mwx, mimeZ - mwz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // Rounds 1316-1321 gave the Neighborhood's, Candy Land's, Robot City's, Victorian's, Sunny
+  // Shore's and Frosty Peak's own fortune tellers a customer apiece; this wood's own teller (the
+  // hermit built earlier in this file, crouched on the forest floor with her crystal ball) was the
+  // last of the seven still reading to nobody. **A customer now sits a step in front of her, facing
+  // her straight on, listening as she tells a fortune.** No `cries` of her own, no physics box, pure
+  // bystander, the exact same shape as the last six rounds' customers. Saying hello to her makes her
+  // the usual kind of friend.
+  //
+  // Same `Wanderer` (55-npcs.js) every watcher in this project already uses — it calls
+  // `greetable()` itself, so no extra wiring was needed. A single-shirt wardrobe bag (0x3a7a9a, a
+  // teal not spoken for anywhere in this wood, checked against every `makeWardrobe` call above and
+  // the hermit's own dress/sash/scarf) keeps the palette from repeating, and the frozen
+  // `idle: [1e9, 1e9]` plus `blinkT0`/`idleT0`/`sway0` fixed straight in the `makeHuman()` call keeps
+  // her statue-still, hanging on every word rather than fidgeting, same as the last six rounds.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, `game.travel(6, 'from-hub')` waited out for real
+  // against `game.transitioning`, then 3600 simulated frames so every wandering soul in the wood had
+  // settled, then 600 more sampling every NPC's own position every 10th frame) swept the ground
+  // 1-2.4 m out from the fortune teller (-18, -20) along her own facing direction (towards the
+  // origin) against all 748 of this wood's own physics boxes (knee-to-head band only) and every
+  // sampled NPC: every distance tried came back 3.9+ m clear of the nearest box and clear of every
+  // other soul but the teller herself, so 1.5 m out — close enough to read as a face-to-face
+  // reading — was used. The spot sits 0.89 m outside the wood's own central clearing rectangle, not
+  // on any road or path the test walks.
+  //
+  // Built dead last of everything this wood adds, right after the mime watcher above and right
+  // before `spawnBySquirrel()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw off
+  // this wood's own shared `r()` sequence unconditionally. All seven worlds' fortune tellers now
+  // have a customer.
+  { const ftX = -18, ftZ = -20, cux = -17.00, cuz = -18.89;
+    const customerWard = makeWardrobe(r, { shirts: [0x3a7a9a] });
+    const customer = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: customerWard }), blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(customer.group);
+    game.npcs.push(new Wanderer(game, customer, { x: cux, z: cuz, angle: atan2(ftX - cux, ftZ - cuz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

@@ -38529,3 +38529,27 @@ from 158 to 159 (confirmed by the test's own "159 to meet" line). No visual chec
 this environment (no browser, no Playwright), same caveat every watcher in this set has carried.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Whisper Woods is now the
 only world whose fortune teller is still reading to nobody.
+
+## Round 1322 — Whisper Woods' fortune teller gets a customer too
+
+Rounds 1316-1321 gave the Neighborhood's, Candy Land's, Robot City's, Victorian's, Sunny Shore's
+and Frosty Peak's own fortune tellers a customer apiece, leaving Whisper Woods' own hermit — crouched
+on a quiet patch of forest floor with her crystal ball since round 1163 — as the last of the seven
+still reading fortunes to nobody. **A customer now sits a step in front of her, facing her straight
+on, listening as she tells a fortune.** No lines of her own, no physics box, pure bystander — the
+same `Wanderer`-with-frozen-idle trick the last six rounds' customers used, so no new wiring was
+needed and `greetable()` makes her a friend the usual way.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(6, 'from-hub')` waited out for real
+against `game.transitioning`, then 3600 simulated frames so every wandering soul in the wood had
+settled, then 600 more sampling positions every 10th frame) swept 1-2.4 m out from the hermit
+(-18, -20) along her own facing direction and came back clear the whole way — 3.9+ m from the
+nearest of this wood's 748 physics boxes and clear of every other sampled soul but the hermit
+herself — so 1.5 m out was used, same as the other six. A single teal shirt (0x3a7a9a, not already
+spoken for anywhere in this wood) keeps the dupe-shirt check happy. `node dimension-cat/test/run.mjs`
+ran clean: exit 0, every check `ok`, 0 console warnings, box count unchanged at 334, and Whisper
+Woods' own friend total rose from 185 to 186 (confirmed by the test's own "186 to meet" line). No
+visual check was possible in this environment (no browser, no Playwright), same caveat every
+watcher in this set has carried. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy. All seven worlds' fortune tellers now have a customer, closing out this set.
