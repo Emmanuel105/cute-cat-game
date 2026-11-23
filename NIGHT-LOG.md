@@ -37941,3 +37941,39 @@ visual check was possible in this environment (no browser, no Playwright), so wh
 watcher's stance actually reads as watching a badminton rally is unverified, same caveat every
 watcher in this set has carried. Every one of the seven worlds' own badminton courts now has a
 spectator. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1304 — the Neighborhood's tetherball pole gets its first watcher, starting a new set
+
+Round 1303 finished the seven-world badminton-watcher set, after sets for the mime and the
+harmonica player before it. The tetherball pole on the park's own open grass (round 521) has never
+had anyone watching it, and neither have the horseshoes pit, the tug-of-war cable or the sack race
+lane — four held-prop acts the "give it a spectator" treatment never reached. This round starts on
+the pole.
+
+**A passer-by now stands a few steps east of the pole (22.5, 40), watching the two kids bat the
+ball round it.** Same bare-shirted `makeHuman()`/`randomPerson()` rig the badminton and mime
+watchers on this street already use (`angle` pointed at the pole's own fixed centre, `blinkT0`/
+`idleT0`/`sway0` frozen straight in the `makeHuman()` call, `idle: [1e9, 1e9]` so she never
+wanders), `Wanderer` (55-npcs.js) for the "stand and watch" behaviour, no `cries` of her own, no
+physics box, pure bystander. Saying hello to her makes her the usual kind of friend.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+2400 simulated frames so the tetherball pair and every other NPC had already settled, then a
+further 600 sampling every NPC's own position every 6th frame) swept a 0.25 m grid in a ring
+2-4.5 m out from the pole's own centre against all 310 of the street's own physics boxes
+(knee-to-head band only) and all 69 `game.zones` rectangles: (22.5, 40) came back clearest —
+4.41 m from the nearest box, 8.62 m clear of the nearest zone and 4.5 m from the nearest other
+soul, due east of the pole.
+
+The first attempt built her right after the tetherball pole itself and failed the test suite: the
+Neighborhood's own `makeHuman()` calls are timing-sensitive (a "no two neighbours wear the same
+shirt" check and a two-neighbours-chat timing test both key off the shared `rnd()` sequence), and
+the extra draw mid-function shifted everything built after it. Moved dead last instead, right after
+the badminton watcher and right before `makeDayNight()` — the pattern every other late addition to
+this street already follows — and `node dimension-cat/test/run.mjs` ran clean: exit 0, all checks
+`ok`, 0 console warnings, box count unchanged at 334 (pure bystander), and the Neighborhood's own
+friend total rose from 140 to 141 (confirmed against the previous commit with `git stash`, every
+other world's count unchanged). No visual check was possible in this environment (no browser, no
+Playwright), so whether her stance actually reads as "watching a tetherball rally" is unverified.
+Three more courts — horseshoes, tug-of-war and the sack race — are left for future rounds of their
+own. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
