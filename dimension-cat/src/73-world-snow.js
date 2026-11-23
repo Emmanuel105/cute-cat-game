@@ -3500,6 +3500,35 @@ function buildSnowVillage(game, entry) {
     W.add(mimeWatcher.group);
     game.npcs.push(new Wanderer(game, mimeWatcher, { x: mwx, z: mwz, angle: atan2(mimeX - mwx, mimeZ - mwz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // The curling lane (round 417) has had a thrower kneeling at the hack and a sweeper working the
+  // ice ahead of the stone ever since — but like every other game or activity this project has
+  // slowly given a spectator over the last couple-dozen rounds (badminton, the mime, the
+  // harmonica, tetherball, horseshoes, tug-of-war, the sack race, Candy Land's own fudge pot),
+  // nobody had ever stopped to watch a curling match. A passer-by now stands partway down the
+  // lane, bundled up against the cold, taking in the throw and the sweeping both at once.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(5, 'from-hub')`, 3600 simulated frames so every reindeer,
+  // hare, arctic fox, penguin, yeti and wandering villager had already settled, then 600 more
+  // sampling every NPC's own position every 10th frame) swept a 0.25 m grid in a ring 2-3.5 m out
+  // from the curling rings' own centre (-29, 48.3) against all of this mountain's own physics
+  // boxes (knee-to-head band only), every `game.zones` rectangle and every sampled NPC position:
+  // (-30.34, 45.07) came back clearest — 6.53 m from the nearest box, 11.35 m clear of the nearest
+  // zone rectangle and 6.48 m from the nearest other soul, roughly midway down the lane and just
+  // west of it, with a clear line on both the hack and the sweeper beyond.
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) every other watcher in this set already uses —
+  // it calls `greetable()` itself, so no extra wiring was needed. No `cries` of her own, no
+  // physics box, pure bystander. Built dead last of everything this mountain adds, right after the
+  // mime watcher above and right before `spawnBySquirrel()`, for the usual reason:
+  // `makeHuman()`/`randomPerson()` both draw off this mountain's own shared `r()` sequence
+  // unconditionally.
+  { const cwx = -30.34, cwz = 45.07, sweepX = -27.5, sweepZ = 47.3;
+    const curlWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: 'beanie', hatColor: 0x4a5a6a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a, glasses: false });
+    W.add(curlWatcher.group);
+    game.npcs.push(new Wanderer(game, curlWatcher, { x: cwx, z: cwz, angle: atan2(sweepX - cwx, sweepZ - cwz), speed: 0.25, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

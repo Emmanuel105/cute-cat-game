@@ -38256,3 +38256,36 @@ line). No visual check was possible in this environment (no browser, no Playwrig
 stance actually reads as "watching fudge get stirred" is unverified, same caveat every watcher in
 this game's set has carried. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 1313 — Frosty Peak's curling lane finally gets a watcher
+
+The curling lane (round 417) has had a thrower kneeling at the hack and a sweeper working the ice
+ahead of the stone for a long time now — but like every other game or activity this project has
+slowly given a spectator over the last couple-dozen rounds (badminton, the mime, the harmonica,
+tetherball, horseshoes, tug-of-war, the sack race, Candy Land's own fudge pot), nobody had ever
+stopped to watch a curling match. **A passer-by now stands partway down the lane, bundled up in a
+beanie and coat, taking in both the throw and the sweeping at once.** No `cries` of her own, no
+physics box, pure bystander. Saying hello to her makes her the usual kind of friend.
+
+Same bystander `Wanderer` (55-npcs.js) this whole set of watchers already uses — it calls
+`greetable()` itself, so no extra wiring was needed.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(5, 'from-hub')`, 3600 simulated frames so every reindeer, hare,
+arctic fox, penguin, yeti and wandering villager had already settled, then 600 more sampling every
+NPC's own position every 10th frame) swept a 0.25 m grid in a ring 2-3.5 m out from the curling
+rings' own centre (-29, 48.3) against all of this mountain's own physics boxes (knee-to-head band
+only), every `game.zones` rectangle and every sampled NPC position: (-30.34, 45.07) came back
+clearest — 6.53 m from the nearest box, 11.35 m clear of the nearest zone rectangle and 6.48 m from
+the nearest other soul, roughly midway down the lane and just west of it, with a clear line on both
+the hack and the sweeper beyond.
+
+Built dead last of everything this mountain adds, right after the mime's own watcher and right
+before `spawnBySquirrel()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this
+mountain's own shared `r()` sequence unconditionally. `node dimension-cat/test/run.mjs` ran clean:
+exit 0, all checks `ok`, 0 console warnings, box count unchanged at 334 (a circle collider, not a
+box), and Frosty Peak's own friend total rose from 157 to 158 (confirmed by the test's own "158 to
+meet" line). No visual check was possible in this environment (no browser, no Playwright), so
+whether her stance actually reads as "watching a curling match" is unverified, same caveat every
+watcher in this game's set has carried. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.
