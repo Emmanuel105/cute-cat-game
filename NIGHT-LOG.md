@@ -38041,3 +38041,39 @@ environment (no browser, no Playwright), so whether her stance actually reads as
 tug-of-war" is unverified, same caveat every watcher in these sets has carried. The sack race is
 left for a future round of its own. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 1307 — the sack race finally gets its own watcher, closing out round 1304's list
+
+Round 1304 left three courts unwatched: the tetherball pole, the horseshoe pit and the tug-of-war.
+All three picked up a spectator over the last three rounds — this one takes the fourth and last,
+the Neighborhood's own sack race (round 508's pavement-game list, finally built here at (-10, -40),
+a 5 m lane running east-west since `ry = PI/2` sends the two racers hopping along x instead of z).
+
+**A passer-by now stands a few steps north of the lane, watching the two hop back and forth in
+their sacks.** Same bystander `Wanderer` (55-npcs.js) every watcher in this set already uses — a
+single-shirt wardrobe bag (0x6a9a8a, checked against every other shirt literal on this street so
+the "no two neighbours wear the same shirt" test stays clean), no `cries` of her own, no physics
+box. Saying hello to her makes her the usual kind of friend.
+
+One wrinkle: unlike the tetherball pole or horseshoe stake's own single point, the sack lane is an
+extended strip with the two racers hopping side by side, so standing east or west of it would put
+her at one end staring down their backs rather than watching them pass. North or south of the
+lane's own midpoint is the angle that actually shows both racers at once — and a headless probe
+(the same stub-three harness `test/run.mjs` uses: `game.start('new')`, 2400 simulated frames so
+both racers had settled into their hop, then 600 more sampling positions every 6th frame) swept a
+0.25 m grid in a ring 2-4.5 m out from the lane's midpoint (-7.5, -40) against all 334 of the
+street's own physics boxes, all 69 `game.zones` rectangles and every sampled position: (-7.5,
+-35.5) came back clearest — 9.73 m from the nearest box, 18.6 m clear of the nearest zone and
+3.95 m from the nearest other soul (one of the racers themselves), on the side clear of both the
+tug-of-war just south of it and the lake further west.
+
+Built dead last, right after the tug-of-war watcher from round 1306 and right before
+`makeDayNight()`, the usual spot for a late addition to this street since `makeHuman()` draws off
+the shared `rnd()` sequence unconditionally. `node dimension-cat/test/run.mjs` ran clean: exit 0,
+all checks `ok`, 0 console warnings, box count unchanged at 334 (pure bystander), and the
+Neighborhood's own friend total rose from 143 to 144 (confirmed by the test's own "144 to meet"
+line). No visual check was possible in this environment (no browser, no Playwright), so whether
+her stance actually reads as "watching a sack race" is unverified, same caveat every watcher in
+these sets has carried. That closes out round 1304's own list — the tetherball pole, the horseshoe
+pit, the tug-of-war and now the sack race all have a spectator. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

@@ -14406,6 +14406,44 @@ function buildNeighborhood(game, entry) {
     W.add(tugWatcher.group);
     game.npcs.push(new Wanderer(game, tugWatcher, { x: twx, z: twz, angle: atan2(tugX - twx, tugZ - twz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // The sack race above (round 508's own list, pulled in here at (-10, -40), lane running east-west
+  // since ry = PI/2 means the two racers hop along x rather than z) is the last court round 1304's
+  // own note left unwatched. Tetherball, the horseshoe pit and the tug-of-war have all picked up a
+  // spectator in the rounds since; this one closes out the set. **A passer-by now stands a few steps
+  // north of the lane, watching the two hop back and forth in their sacks.** No `cries` of her own,
+  // no physics box, pure bystander. Saying hello to her makes her the usual kind of friend.
+  //
+  // Same `Wanderer` (55-npcs.js) every watcher in this set uses: a plain `makeHuman()`/`randomPerson()`
+  // rig, a single-shirt wardrobe bag (0x6a9a8a, checked against every other shirt literal already on
+  // this street, since the "no two neighbours wear the same shirt" test catches a clash either way),
+  // `angle` pointed at the lane's own midpoint (-7.5, -40) rather than a constant, and
+  // `blinkT0`/`idleT0`/`sway0` fixed straight in the `makeHuman()` call plus the frozen
+  // `idle: [1e9, 1e9]` every watcher in this set settles on, so dropping her in costs the shared
+  // `rnd()` sequence nothing at all.
+  //
+  // Unlike the tetherball pole or horseshoe stake's own single point, the lane is a 5 m strip (the
+  // two racers hop along x, side by side, 1.1 m apart in z) — standing east or west of it would put
+  // her at one end looking down the racers' backs, so north or south of its own midpoint is the one
+  // angle that shows both of them hopping past at once. A headless probe (the same stub-three harness
+  // `test/run.mjs` itself uses: `game.start('new')`, 2400 simulated frames so both racers had already
+  // settled into their own hop, then a further 600 sampling every NPC's own position every 6th frame)
+  // swept a 0.25 m grid in a ring 2-4.5 m out from the lane's own midpoint (-7.5, -40) against all 334
+  // of the street's own physics boxes (knee-to-head band only), all 69 `game.zones` rectangles and
+  // every sampled position: (-7.5, -35.5) came back clearest — 9.73 m from the nearest box, 18.6 m
+  // clear of the nearest zone rectangle and 3.95 m from the nearest other soul (one of the racers
+  // themselves, mid-hop), on the side away from both the tug-of-war just south of it and the lake
+  // further west.
+  //
+  // Built dead last, right after the tug-of-war watcher above and right before `makeDayNight()`, for
+  // the usual reason: `makeHuman()` draws three values off the *shared* `rnd()` sequence
+  // unconditionally, and dropping a fresh rig in any earlier would shift every timing-sensitive pick
+  // made above it, including the two-neighbours-chat timing test a few thousand lines up.
+  { const swx = -7.5, swz = -35.5, laneX = -7.5, laneZ = -40;
+    const sackWatchWard = makeWardrobe(r, { shirts: [0x6a9a8a] });
+    const sackWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: sackWatchWard }), blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(sackWatcher.group);
+    game.npcs.push(new Wanderer(game, sackWatcher, { x: swx, z: swz, angle: atan2(laneX - swx, laneZ - swz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
