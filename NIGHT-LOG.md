@@ -38504,3 +38504,28 @@ visual check was possible in this environment (no browser, no Playwright), same 
 watcher in this set has carried. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy. Frosty Peak and Whisper Woods are the only two worlds whose fortune teller is still
 reading to nobody.
+
+## Round 1321 — Frosty Peak's fortune teller gets a customer too
+
+Rounds 1316-1320 gave the Neighborhood's, Candy Land's, Robot City's, Victorian's and Sunny
+Shore's own fortune tellers a customer apiece; Frosty Peak's own teller, sitting cross-legged on
+her fur blanket out past the village since round 1062, had still only ever read her crystal ball
+to the empty snow. **A customer now sits a step in front of her, facing her straight on, listening
+as she tells a fortune.** No lines of her own, no physics box, pure bystander — the exact same
+`Wanderer`-with-frozen-idle trick the last five rounds' customers used, so no new wiring was needed
+and `greetable()` makes her a friend the usual way.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(5, 'from-hub')` waited out for real
+against `game.transitioning`, then 3600 simulated frames so every reindeer, hare, fox, penguin,
+yeti and wandering villager had settled, then 600 more sampling positions every 10th frame) swept
+1-2.4 m out from the teller (-37, 33) along her own facing direction and came back clear the whole
+way — 3.8+ m from the nearest of this mountain's 749 physics boxes and 7.4+ m from the nearest of
+its 152 zone rectangles — so 1.5 m out was used, same as the other five. A single plum shirt
+(0x7a3a6a, not already spoken for anywhere on this mountain) keeps the palette from repeating.
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box
+count unchanged at 334 (a circle collider, not a box), and Frosty Peak's own friend total rose
+from 158 to 159 (confirmed by the test's own "159 to meet" line). No visual check was possible in
+this environment (no browser, no Playwright), same caveat every watcher in this set has carried.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Whisper Woods is now the
+only world whose fortune teller is still reading to nobody.
