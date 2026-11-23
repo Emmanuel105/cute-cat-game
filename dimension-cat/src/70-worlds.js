@@ -9193,6 +9193,34 @@ function buildCandyLand(game, entry) {
     W.add(fudgeWatcher.group);
     game.npcs.push(new Wanderer(game, fudgeWatcher, { x: wvx, z: wvz, angle: atan2(54 - wvx, -66 - wvz), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
 
+  // The gummy ring toss above (round 427's two villagers, gcx=51, gcz=-1, ggap=8, stakes at z=-5
+  // and z=3) is one more game or activity this project has slowly given a spectator over the last
+  // couple-dozen rounds — badminton, the mime, the harmonica, tetherball, horseshoes, tug-of-war,
+  // the sack race, Candy Land's own fudge pot — and nobody out here had ever stopped to watch a
+  // gummy ring lob back and forth either. **A villager now stands a few steps east of the pitch,
+  // watching the ring sail from hand to hand.** No `cries` of her own, no physics box, pure
+  // bystander. Saying hello to her makes her the usual kind of friend.
+  //
+  // Same `Wanderer` (55-npcs.js) every watcher in this set already uses — it calls `greetable()`
+  // itself, so no extra wiring was needed.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(1, 'from-prev')`, 3600 simulated frames so both tossers and
+  // every other NPC had settled, then 600 more sampling every NPC's own position every 6th frame)
+  // swept a 0.25 m grid in a ring 2.5-4.5 m out from the pitch's own centre (51, -1) against all of
+  // this land's own physics boxes (knee-to-head band only) and every `game.zones` rectangle: (55.5,
+  // -1) came back clearest — 5.94 m from the nearest box, 13 m clear of the nearest zone rectangle
+  // and 6.02 m from the nearest other soul, due east of the pitch and level with both tossers.
+  //
+  // Built dead last, right after the fudge watcher above and right before `spawnBySquirrel()`, for
+  // the usual reason: `makeHuman()`/`randomPerson()` both draw off this land's own shared `r()`
+  // sequence unconditionally.
+  { const rwx = 55.5, rwz = -1;
+    const ringWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x8a5a9a, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(ringWatcher.group);
+    game.npcs.push(new Wanderer(game, ringWatcher, { x: rwx, z: rwz, angle: atan2(51 - rwx, -1 - rwz), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

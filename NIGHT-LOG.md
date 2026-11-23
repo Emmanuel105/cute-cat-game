@@ -38328,3 +38328,32 @@ line). No visual check was possible in this environment (no browser, no Playwrig
 crystal ball reads as a joke rather than a mistake in a city this metal is unverified — the dialogue
 carries it either way, same bet the ice-cream cone two rounds back already made. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1315 — Candy Land's gummy ring toss finally gets a watcher
+
+Round 427's two villagers have been lobbing a fat gummy ring back and forth over a pair of
+candy-cane stakes out in the sweet-lands for a long time now — but like badminton, the mime, the
+harmonica, tetherball, horseshoes, tug-of-war, the sack race and Candy Land's own fudge pot, nobody
+had ever stopped to watch this one either. **A villager now stands a few steps east of the pitch,
+watching the ring sail from hand to hand.** No `cries` of her own, no physics box, pure bystander.
+Saying hello to her makes her the usual kind of friend.
+
+Same `Wanderer` (55-npcs.js) every watcher in this set already uses — it calls `greetable()` itself,
+so no extra wiring was needed.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(1, 'from-prev')`, 3600 simulated frames so both tossers and every
+other NPC had settled, then 600 more sampling every NPC's own position every 6th frame) swept a
+0.25 m grid in a ring 2.5-4.5 m out from the pitch's own centre (51, -1) against all of this land's
+own physics boxes (knee-to-head band only) and every `game.zones` rectangle: (55.5, -1) came back
+clearest — 5.94 m from the nearest box, 13 m clear of the nearest zone rectangle and 6.02 m from the
+nearest other soul, due east of the pitch and level with both tossers.
+
+Built dead last of everything this land adds, right after the fudge watcher above and right before
+`spawnBySquirrel()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this land's
+own shared `r()` sequence unconditionally. `node dimension-cat/test/run.mjs` ran clean: exit 0, all
+checks `ok`, 0 console warnings, box count unchanged at 334 (a circle collider, not a box), and
+Candy Land's own friend total rose from 143 to 144 (confirmed by the test's own "144 to meet" line).
+No visual check was possible in this environment (no browser, no Playwright), so whether her stance
+actually reads as "watching a ring toss" is unverified, same caveat every watcher in this game's set
+has carried. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
