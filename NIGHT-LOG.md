@@ -38227,3 +38227,32 @@ check was possible in this environment (no browser, no Playwright), so whether t
 as a cauldron rather than a lopsided lantern is unverified — the fire, the steam and the stirring
 paddle carry the joke either way. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 1312 — the fudge pot gets its own watcher
+
+Round 1311's fudge pot gave Candy Land something actually cooked at last. But like every other
+game or activity this project has slowly worked through a spectator for — badminton, the mime, the
+harmonica, tetherball, the horseshoe pit, tug-of-war, the sack race — nobody had ever stopped to
+watch the fudge get made. **A passer-by now stands a few steps east of the pot, watching the
+fudge-maker work the paddle.** Same bystander `Wanderer` (55-npcs.js) this whole set of watchers
+already uses — it calls `greetable()` itself, so no extra wiring was needed. No `cries` of her own,
+no physics box, pure bystander. Saying hello to her makes her the usual kind of friend.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(1, 'from-prev')`, 3600 simulated frames so the fudge-maker and every
+other NPC had settled, then 600 more sampling every NPC's own position every 6th frame) swept a
+0.25 m grid in a ring 2-4.5 m out from the pot's own centre (54, -66) against all of this land's own
+physics boxes (knee-to-head band only) and every `game.zones` rectangle: (58.5, -66) came back
+clearest — 3.8 m from the nearest box (the pot's own), 19.1 m clear of the nearest zone rectangle
+and 6.53 m from the nearest other soul, due east of the pot and in line with the fudge-maker beyond
+it, so the one angle that shows both the pot and the stirring at once.
+
+Built dead last of everything this land adds, right after the fudge-maker above and right before
+`spawnBySquirrel()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this land's
+own shared `r()` sequence unconditionally. `node dimension-cat/test/run.mjs` ran clean: exit 0, all
+checks `ok`, 0 console warnings, box count unchanged at 334 (a circle collider, not a box), and
+Candy Land's own friend total rose from 142 to 143 (confirmed by the test's own "143 to meet"
+line). No visual check was possible in this environment (no browser, no Playwright), so whether her
+stance actually reads as "watching fudge get stirred" is unverified, same caveat every watcher in
+this game's set has carried. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.

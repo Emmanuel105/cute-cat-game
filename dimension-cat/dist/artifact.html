@@ -18413,6 +18413,31 @@ function buildCandyLand(game, entry) {
     W.add(maker.group);
     game.npcs.push(new Charger(game, maker, { x: mkx, z: mkz, ry: atan2(mx - mkx, mz - mkz), cryIcon: '🍫',
       cries: ["Fudge doesn't stir itself, worse luck.", "Careful, puss — that pot's hotter than it looks.", "Same recipe since the castle was built. Still haven't written it down."] })); }
+  // Round 1311's fudge pot gave Candy Land something cooked at last, but like every other
+  // game or activity this project has slowly given a spectator over the last dozen-odd rounds —
+  // badminton, the mime, the harmonica, tetherball, horseshoes, tug-of-war, the sack race — nobody
+  // has ever actually stopped to watch the fudge get made. A passer-by now stands a few steps east
+  // of the pot, watching the fudge-maker work the paddle.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(1, 'from-prev')`, 3600 simulated frames so the fudge-maker and
+  // every other NPC had settled, then 600 more sampling every NPC's own position every 6th frame)
+  // swept a 0.25 m grid in a ring 2-4.5 m out from the pot's own centre (54, -66) against all of
+  // this land's own physics boxes (knee-to-head band only) and every `game.zones` rectangle: (58.5,
+  // -66) came back clearest — 3.8 m from the nearest box (the pot's own), 19.1 m clear of the
+  // nearest zone rectangle and 6.53 m from the nearest other soul, due east of the pot and in line
+  // with the fudge-maker beyond it.
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) every other watcher in this set already uses —
+  // it calls `greetable()` itself, so no extra wiring is needed. No `cries` of her own, no physics
+  // box, pure bystander. Built dead last, right after the fudge-maker above and right before
+  // `spawnBySquirrel()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this
+  // land's own shared `r()` sequence unconditionally.
+  { const wvx = 58.5, wvz = -66;
+    const fudgeWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x7a9a5a, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(fudgeWatcher.group);
+    game.npcs.push(new Wanderer(game, fudgeWatcher, { x: wvx, z: wvz, angle: atan2(54 - wvx, -66 - wvz), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
 
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
