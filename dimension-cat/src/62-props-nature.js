@@ -714,6 +714,14 @@ function makeCoconutDrink() {
   mesh(G.cyl(0.004, 0.004, 0.09, 4), mat(0xf7f3ec, { roughness: 0.7 }), { y: -0.05, shadow: 'none', parent: um });   // the umbrella's stick
   return g;
 }
+/** A hot dog in a split bun with a zigzag of mustard across the top, for a vendor to hold up. */
+function makeHotDog() {
+  const g = new THREE.Group(), bun = mat(0xe8b870, { roughness: 0.85 }), sausage = mat(0xa8452f, { roughness: 0.55 }), mustard = mat(0xf0c419, { roughness: 0.5 });
+  mesh(G.capsule(0.055, 0.14, 8), bun, { y: 0.08, rz: PI / 2, parent: g });
+  mesh(G.capsule(0.035, 0.16, 8), sausage, { y: 0.135, rz: PI / 2, parent: g });
+  for (const [zx, zy] of [[-0.08, 0.17], [-0.04, 0.15], [0, 0.17], [0.04, 0.15], [0.08, 0.17]]) mesh(G.box(0.014, 0.012, 0.03), mustard, { x: zx, y: zy, shadow: 'none', parent: g });
+  return g;
+}
 function makeIceCrystal(r = rnd, color = 0x9fe8ff) {
   const g = new THREE.Group(), m = glowMat(color, 0.8, { transparent: true, opacity: 0.85, roughness: 0.1 });
   const n = r.int(3, 5); for (let i = 0; i < n; i++) { const a = r() * TAU; mesh(G.cone(0.18, r.range(0.8, 1.8), 6), m, { x: cos(a) * 0.25, y: 0.4, z: sin(a) * 0.25, rx: r.range(-0.3, 0.3), rz: r.range(-0.3, 0.3), ry: a, shadow: 'none', parent: g }); }

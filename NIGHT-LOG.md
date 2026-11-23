@@ -38117,3 +38117,37 @@ commit with `git stash`), and Robot City's own friend total rose from 150 to 151
 was possible in this environment (no browser, no Playwright), so whether a waffle cone in a factory
 reads as a joke rather than a mistake is unverified — the dialogue carries it either way. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1309 — Sunny Shore finally gets a hot dog cart
+
+Sunny Shore already sold fish and chips, ice cream, a fresh coconut and a fortune teller's reading
+between them, but the one food every real seaside boardwalk is known for had never shown up here.
+**A vendor now stands in the dune grass south-west of the huts, holding up a hot dog with a zigzag
+of mustard across the top.** *"Hot dogs! Straight off the grill!"* *"Careful, puss — mustard stains
+worse than sand."* *"Best bun on this whole stretch of coast."* Saying hello makes her the usual
+kind of friend.
+
+New held prop, `makeHotDog()` (62-props-nature.js): a bun and a sausage, both `G.capsule()` rather
+than anything built from boxes, with five dabs of mustard zigzagged across the top — plain geometry
+in the same vein as the chips cone and the chestnut twist already in that file. No new controller:
+the same `Vendor` (55-npcs.js) every other cart in this game already uses, no physics box, just a
+1.4 m keep-out circle like its neighbours.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.travel(4, 'from-hub')`, 2400 simulated frames to settle every wandering crab, gull and
+sunbather, then 600 more sampling every NPC's own position every 6th frame) swept the hand-built
+heart (radius ≤ 50 from the origin, short of the radius (58) where `beachRegion()`'s own fill takes
+over) against those samples, all of this beach's own physics boxes and every `game.zones` rectangle:
+(-36, -12) came back clearest — 7.9 m clear of the nearest box (one of the dune palms), the same
+clear of the nearest zone rectangle and the nearest other soul, tucked between two palm clusters
+with nothing else nearby.
+
+Built right after the coconut vendor, since `makeHuman()`/`randomPerson()` both draw off this
+world's own seeded `r()` sequence unconditionally and this was the natural place to add one more
+food stall to that run. `node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0
+console warnings, box count unchanged at 334 (confirmed against the previous commit with `git
+stash` — a circle collider, not a box), and Sunny Shore's own friend total rose from 161 to 162
+(confirmed by the test's own "162 to meet" line). No visual check was possible in this environment
+(no browser, no Playwright), so whether the geometry actually reads as a hot dog rather than two
+pink blobs is unverified — the cries and the cart's placement carry the joke either way. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

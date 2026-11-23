@@ -309,6 +309,23 @@ function buildBeach(game, entry) {
     const v = new Vendor(game, cocoSeller, makeCoconutDrink(), { x: cx, z: cz, ry: atan2(7 - cx, 10 - cz), cryIcon: '🥥',
       cries: ["Fresh coconut! Straw's included.", "Careful, puss — the shell's sharper than it looks.", "Cracked that one myself. Mind the splinters."] });
     game.npcs.push(v); greetable(game, v); }
+  // chips, ice cream, a coconut and a fortune teller's crystal ball between them, but the one thing
+  // every real boardwalk sells never showed up here — a hot dog cart in the dune grass south-west of
+  // the huts. A headless probe (`game.travel(4, 'from-hub')`, 2400 simulated frames to settle every
+  // wandering crab, gull and sunbather, then 600 more sampling every NPC's own position every 6th
+  // frame) swept the hand-built heart (radius <= 50 from the origin, short of the radius (58) where
+  // `beachRegion()`'s own fill takes over) against those samples, all of this beach's own physics
+  // boxes and every `game.zones` rectangle: (-36, -12) came back clearest — 7.9 m from the nearest box
+  // (one of the dune palms) and the same clear of the nearest zone and the nearest other soul, between
+  // two palm clusters with nothing else nearby.
+  { const cx = -36, cz = -12; game.zones.addCircle(cx, cz, 1.4);
+    const dogWard = makeWardrobe(r, { shirts: [0xd62839, 0xf7f3ec], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0xefe7d8, 0x8d6e63] });
+    const dogSeller = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.2), wardrobe: dogWard }),
+      apron: 0xf7f3ec, hat: 'cap', hatColor: 0xd62839, jacket: null, scarf: null });
+    W.add(dogSeller.group);
+    const v2 = new Vendor(game, dogSeller, makeHotDog(), { x: cx, z: cz, ry: atan2(0 - cx, 0 - cz), cryIcon: '🌭',
+      cries: ['Hot dogs! Straight off the grill!', 'Careful, puss — mustard stains worse than sand.', 'Best bun on this whole stretch of coast.'] });
+    game.npcs.push(v2); greetable(game, v2); }
   // dunes: palms, grass tufts, driftwood
   const palmSpots = [[-20, 6], [-24, 16], [-18, 28], [-30, 30], [-34, -4], [-28, -14], [-38, 12], [-22, -32], [-36, -28], [-44, 2], [-42, 22], [-16, 40], [-30, 44], [-46, -18], [-12, 48], [-6, 34], [-4, -34], [-40, 40]];
   let farPalm = null, duneyPalm = null, northPalm = null, grovePalm = null, eastPalm = null, stormPalm = null, westPalm = null, midDunePalm = null, swPalm = null, innerPalm = null, backPalm = null, hillPalm = null, cornerPalm = null, farSwPalm = null, lastPalm = null;
