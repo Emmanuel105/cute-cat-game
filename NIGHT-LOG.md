@@ -37977,3 +37977,35 @@ other world's count unchanged). No visual check was possible in this environment
 Playwright), so whether her stance actually reads as "watching a tetherball rally" is unverified.
 Three more courts — horseshoes, tug-of-war and the sack race — are left for future rounds of their
 own. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1305 — the horseshoe pit picks up its own watcher
+
+Round 1304 left three courts without a spectator: horseshoes, tug-of-war and the sack race. This
+round takes the first of them — the two dads' horseshoe pit from round 299 (`hcx=-48, hcz=52`).
+
+**A passer-by now stands a few steps east of the pit, watching the two dads lob horseshoes at each
+other's stake.** No `cries` of her own, no physics box, pure bystander — same `Wanderer`
+(55-npcs.js) every watcher in the mime/harmonica/badminton/tetherball sets already uses, with its
+own single-shirt wardrobe bag (0x5a8a6a, checked against every other shirt literal on this street
+so the "no two neighbours wear the same shirt" test stays clean). Saying hello to her makes her the
+usual kind of friend.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+2400 simulated frames so both pitchers had settled into their throw-and-catch rhythm, then 600
+more sampling every NPC's own position every 6th frame) swept a 0.25 m grid in a ring 2-4.5 m out
+from the pit's own centre against all 310 of the street's own physics boxes (knee-to-head band
+only) and all 69 `game.zones` rectangles: (-43.5, 52) came back clearest — 5.63 m from the nearest
+box, 20.6 m clear of the nearest zone and 6.02 m from the nearest other soul, due east of the pit.
+
+Built dead last, right after the tetherball watcher from round 1304 and right before
+`makeDayNight()`, the same spot every late addition to this street uses, since `makeHuman()` draws
+off the shared `rnd()` sequence unconditionally and an earlier slot would shift every
+timing-sensitive pick above it.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box
+count unchanged at 334 (pure bystander), and the Neighborhood's own friend total rose from 141 to
+142 (confirmed by the test's own "142 to meet" line). No visual check was possible in this
+environment (no browser, no Playwright), so whether her stance actually reads as "watching a
+horseshoe toss" is unverified, same caveat every watcher in these sets has carried. Tug-of-war and
+the sack race are left for future rounds of their own. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

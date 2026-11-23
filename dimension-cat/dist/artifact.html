@@ -14336,6 +14336,36 @@ function buildNeighborhood(game, entry) {
     W.add(tetherWatcher.group);
     game.npcs.push(new Wanderer(game, tetherWatcher, { x: twx, z: twz, angle: atan2(poleX - twx, poleZ - twz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // The horseshoe pit above (round 299's two dads, hcx=-48, hcz=52) is the last of the three courts
+  // round 1304's own note left over — tug-of-war and the sack race still have nobody watching them,
+  // but this one closes the horseshoe pit's own gap. Same `Wanderer` (55-npcs.js) every watcher in
+  // this set uses: a plain `makeHuman()`/`randomPerson()` rig, a single-shirt wardrobe bag
+  // (0x5a8a6a, checked against every other shirt literal already on this street, since the "no two
+  // neighbours wear the same shirt" test catches a clash either way), `angle` pointed at the pit's
+  // own fixed centre (-48, 52) rather than a constant, and `blinkT0`/`idleT0`/`sway0` fixed straight
+  // in the `makeHuman()` call plus the frozen `idle: [1e9, 1e9]` every watcher in this set settles
+  // on, so dropping her in costs the shared `rnd()` sequence nothing at all. No `cries` of her own,
+  // no physics box, pure bystander. Saying hello to her makes her the usual kind of friend.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // 2400 simulated frames so both pitchers had already settled into their own throw-and-catch
+  // rhythm, then a further 600 sampling every NPC's own position every 6th frame) swept a 0.25 m
+  // grid in a ring 2-4.5 m out from the pit's own centre against all 310 of the street's own
+  // physics boxes (knee-to-head band only), all 69 `game.zones` rectangles and every sampled
+  // position: (-43.5, 52) came back clearest — 5.63 m from the nearest box, 20.6 m clear of the
+  // nearest zone rectangle and 6.02 m from the nearest other soul, due east of the pit, past the
+  // horseshoe pitchers' own throwing line.
+  //
+  // Built dead last, right after the tetherball watcher above and right before `makeDayNight()`,
+  // for the usual reason: `makeHuman()` draws three values off the *shared* `rnd()` sequence
+  // unconditionally, and dropping a fresh rig in any earlier would shift every timing-sensitive
+  // pick made above it, including the two-neighbours-chat timing test a few thousand lines up.
+  { const hwx = -43.5, hwz = 52, pitX = -48, pitZ = 52;
+    const horseWatchWard = makeWardrobe(r, { shirts: [0x5a8a6a] });
+    const horseWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: horseWatchWard }), blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(horseWatcher.group);
+    game.npcs.push(new Wanderer(game, horseWatcher, { x: hwx, z: hwz, angle: atan2(pitX - hwx, pitZ - hwz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
