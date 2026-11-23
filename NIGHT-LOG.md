@@ -38151,3 +38151,41 @@ stash` — a circle collider, not a box), and Sunny Shore's own friend total ros
 (no browser, no Playwright), so whether the geometry actually reads as a hot dog rather than two
 pink blobs is unverified — the cries and the cart's placement carry the joke either way. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1310 — Candy Land finally gets a fortune teller
+
+The Neighborhood, Victorian, Sunny Shore, Frosty Peak and Whisper Woods have each had a fortune
+teller holding up a glowing crystal ball for a good while now; Candy Land, for all its sweet-shop
+sellers, lollipop spinner and buskers, never had anyone claim to see the future, and its own friend
+total (140) was the lowest of the seven worlds going into this round.
+
+**A fortune teller now stands on a quiet stretch of open sweet-lands north-east of the gingerbread
+cottage, a crystal ball lit up in one hand.** *"The sugar dust never lies. Well — hardly ever."*
+*"I see gumdrops in your future, puss. I see gumdrops in everyone's future, if I'm honest."*
+*"Cross my palm with a lollipop and I'll tell you anything you like."* Saying hello makes her the
+usual kind of friend.
+
+No new mechanism: the same `Vendor` (55-npcs.js) every other fortune teller already uses, holding
+`makeCrystalBall()` (60-props.js) completely unchanged. `Vendor` doesn't call `greetable()` itself,
+so `game.npcs.push(ft); greetable(game, ft);` right after wires her up the same way every other
+world's fortune teller already is. Dress is a deep candy purple with a hot-pink scarf, distinct
+from the teal, violet and lilac the other four already wear.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(1, 'from-prev')`, 3600 simulated frames so every gingerbread man,
+ribbon dancer and badminton pair had settled, then 600 more sampling every NPC's own position
+every 10th frame) swept a 2 m grid of this land's own hand-built heart (radius < 92, short of where
+`candyRegion`'s own procedural fill takes over) against all 1806 of this land's own physics boxes
+(knee-to-head band only), all 452 `game.zones` rectangles and every sampled NPC position: (48,
+55.5) came back clearest — 9.4 m from the nearest box, 22.1 m clear of the nearest zone rectangle
+and 9.8 m from the nearest other soul, well past the badminton court's own new watcher.
+
+Built dead last of everything this land adds, right after the badminton watcher above and right
+before `spawnBySquirrel()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this
+land's own shared `r()` sequence unconditionally. `node dimension-cat/test/run.mjs` ran clean:
+exit 0, all checks `ok`, 0 console warnings, box count unchanged at 334 (a circle collider, not a
+box), and Candy Land's own friend total rose from 140 to 141. No visual check was possible in this
+environment (no browser, no Playwright), so whether the stance and dress actually read as a fortune
+teller rather than just another sweet-shop seller is unverified — the crystal ball and the dialogue
+carry it either way. Robot City is now the only world of the seven still without one. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

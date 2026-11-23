@@ -9072,6 +9072,44 @@ function buildCandyLand(game, entry) {
     W.add(badWatcher2.group);
     game.npcs.push(new Wanderer(game, badWatcher2, { x: bwx, z: bwz, angle: atan2(netX2 - bwx, netZ2 - bwz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // The Neighborhood, Victorian, Sunny Shore, Frosty Peak and Whisper Woods have all had a fortune
+  // teller holding up a glowing crystal ball for a while now; this land, for all its sweet-shop
+  // sellers, spinners and buskers, never had anyone claim to see the future. **A fortune teller now
+  // stands on a quiet stretch of open sweet-lands north-east of the gingerbread cottage, a crystal
+  // ball lit up in one hand.** *"The sugar dust never lies. Well — hardly ever."* *"I see gumdrops in
+  // your future, puss. I see gumdrops in everyone's future, if I'm honest."* *"Cross my palm with a
+  // lollipop and I'll tell you anything you like."* Saying hello makes her the usual kind of friend.
+  //
+  // No new mechanism: `Vendor` (55-npcs.js) holding `makeCrystalBall()` (60-props.js), exactly as the
+  // other five worlds already use it. `Vendor` doesn't call `greetable()` itself, so
+  // `game.npcs.push(ft); greetable(game, ft);` right after makes her a proper friend rather than
+  // scenery, same wiring every vendor in every other world uses. Dress is a deep candy purple with a
+  // hot-pink scarf, distinct from the teal, violet and lilac the other four fortune tellers already
+  // wear.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(1, 'from-prev')`, 3600 simulated frames so every gingerbread man,
+  // ribbon dancer and badminton pair had settled, then 600 more sampling every NPC's own position
+  // every 10th frame) swept a 2 m grid of this land's own hand-built heart (radius < 92, short of
+  // where `candyRegion`'s own procedural fill takes over) against all of this land's own physics boxes
+  // (knee-to-head band only), every `game.zones` rectangle and every sampled NPC position: (48, 55.5)
+  // came back clearest — 9.4 m from the nearest box, 22.1 m clear of the nearest zone rectangle and
+  // 9.8 m from the nearest other soul, north-east of the cottage and well past the badminton court's
+  // own new watcher above.
+  //
+  // Built dead last of everything this land adds, right after the badminton watcher above and right
+  // before `spawnBySquirrel()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw off
+  // this land's own shared `r()` sequence unconditionally, and anything built earlier here would have
+  // had its own timing-sensitive pick shifted by it.
+  { const fx = 48, fz = 55.5, fry = atan2(-fx, -fz);
+    const ftWard = makeWardrobe(r, { shirts: [0x8a3a9a], pants: [0x3a1a4a], shoes: [0x2a2018] });
+    const fortuneTeller = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: r.chance(0.5), wardrobe: ftWard }),
+      sleeves: true, dress: 0x8a3a9a, sash: 0xd4af37, scarf: 0xff6fb5, glasses: false });
+    W.add(fortuneTeller.group);
+    const ft = new Vendor(game, fortuneTeller, makeCrystalBall(), { x: fx, z: fz, ry: fry, cryIcon: '🔮',
+      cries: ['The sugar dust never lies. Well — hardly ever.', "I see gumdrops in your future, puss. I see gumdrops in everyone's future, if I'm honest.", "Cross my palm with a lollipop and I'll tell you anything you like."] });
+    game.npcs.push(ft); greetable(game, ft); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
