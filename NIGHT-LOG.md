@@ -38289,3 +38289,42 @@ meet" line). No visual check was possible in this environment (no browser, no Pl
 whether her stance actually reads as "watching a curling match" is unverified, same caveat every
 watcher in this game's set has carried. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 1314 — Robot City finally gets a fortune teller
+
+The Neighborhood, Candy Land, Victorian, Sunny Shore, Frosty Peak and Whisper Woods have all had a
+fortune teller holding up a glowing crystal ball for a good long while now; this city, for all its
+oil sellers, coffee carts and off-shift workers, was the last of the seven without one.
+
+**A fortune teller now stands on the open floor north-west of the oil vendor, a crystal ball lit up
+in one hand, having apparently set up shop between the skyscrapers same as everyone else here.**
+*"The orb says you'll trip a sensor before the hour's out. It's never wrong about that one."*
+*"Careful, puss — glass this clean short-circuits worse than any readout in this city."*
+*"Everybody here trusts a display. I just trust mine rather less."* Saying hello makes her the usual
+kind of friend.
+
+No new mechanism: the same `Vendor` (55-npcs.js) holding `makeCrystalBall()` (60-props.js) every
+other fortune teller in the game already uses. Dress is a hazard-amber with a steel-grey sash — the
+one warm colour on a floor that otherwise runs entirely cool, and distinct from the purples, teals
+and lilacs the other six already wear.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(2, 'from-prev')`, 3600 simulated frames so every wandering,
+patrolling, charging and ball-tossing robot and every other vendor had settled, then 600 more
+sampling every NPC's own position every 10th frame) swept a 2 m grid of the open floor (radius
+15-90 from the origin, short of where `robotRegion()`'s own procedural fill takes over) against all
+1203 of this city's own physics boxes (knee-to-head band only), all 296 `game.zones` rectangles,
+every sampled NPC position and the other vendors' own named spots: (-52, 42) came back clearest —
+9.3 m from the nearest box, 47.2 m clear of the nearest zone rectangle, 10.2 m from the nearest
+other soul and 69.8 m from the oil vendor's own pitch (2, 18), well north-west of everything else
+this floor has built so far.
+
+Built dead last of everything this city adds, right after the ice-cream vendor above and right
+before `spawnBySquirrel()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this
+city's own shared `r()` sequence unconditionally. `node dimension-cat/test/run.mjs` ran clean: exit
+0, all checks `ok`, 0 console warnings, box count unchanged at 334 (a circle collider, not a box),
+and Robot City's own friend total rose from 151 to 152 (confirmed by the test's own "152 to meet"
+line). No visual check was possible in this environment (no browser, no Playwright), so whether a
+crystal ball reads as a joke rather than a mistake in a city this metal is unverified — the dialogue
+carries it either way, same bet the ice-cream cone two rounds back already made. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -12875,6 +12875,46 @@ function buildRobotCity(game, entry) {
       cries: ["Fell off a supply run bound for the surface. Nobody's asked where from twice.", "Careful, puss — it's real cream, somehow. Nobody's worked that part out either.", "Melts fast under these lights. Eat quick or don't bother."] });
     game.npcs.push(v); greetable(game, v); }
 
+  // The Neighborhood, Candy Land, Victorian, Sunny Shore, Frosty Peak and Whisper Woods all have a
+  // fortune teller holding up a glowing crystal ball by now; this city, for all its vendors and
+  // off-shift workers, was the last of the seven without one. **A fortune teller now stands on the
+  // open floor north-west of the oil vendor, a crystal ball lit up in one hand, having apparently
+  // set up shop between the skyscrapers same as everyone else here.** *"The orb says you'll trip a
+  // sensor before the hour's out. It's never wrong about that one."* *"Careful, puss — glass this
+  // clean short-circuits worse than any readout in this city."* *"Everybody here trusts a display.
+  // I just trust mine rather less."* Saying hello makes her the usual kind of friend.
+  //
+  // No new mechanism: `Vendor` (55-npcs.js) holding `makeCrystalBall()` (60-props.js), exactly as
+  // the other six worlds already use it. `Vendor` doesn't call `greetable()` itself, so
+  // `game.npcs.push(ft); greetable(game, ft);` right after makes her a proper friend rather than
+  // scenery, same wiring every vendor in every other world uses. Dress is a dull hazard-amber with a
+  // steel-grey sash, distinct from the purples, teals and lilacs the other six fortune tellers wear —
+  // the one splash of warm colour on a floor that otherwise runs entirely cool.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(2, 'from-prev')`, then 3600 simulated frames so every wandering,
+  // patrolling, charging and ball-tossing robot and every other vendor had settled, sampling every
+  // NPC's own position every 10th frame over 600 more) swept a 2 m grid of the open floor (radius
+  // 15-90 from the origin, short of the radius (98) where `robotRegion()`'s own procedural fill takes
+  // over) against all 1203 of this city's own physics boxes (knee-to-head band only), all 296
+  // `game.zones` rectangles, every sampled NPC position and the other vendors' own named spots:
+  // (-52, 42) came back clearest — 9.3 m from the nearest box, 47.2 m clear of the nearest zone
+  // rectangle, 10.2 m from the nearest other soul and 69.8 m from the oil vendor's own pitch (2, 18),
+  // well north-west of everything else this floor has built so far.
+  //
+  // Built dead last of everything this city adds, right after the ice-cream vendor above and right
+  // before `spawnBySquirrel()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw off
+  // this city's own shared `r()` sequence unconditionally, and anything built earlier here would have
+  // had its own timing-sensitive pick shifted by it.
+  { const fx = -52, fz = 42, fry = atan2(-fx, -fz);
+    const ftWard = makeWardrobe(r, { shirts: [0xcf8a2a], pants: [0x4a4a52], shoes: [0x2a2018] });
+    const fortuneTeller = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: r.chance(0.5), wardrobe: ftWard }),
+      sleeves: true, dress: 0xcf8a2a, sash: 0x8a909a, scarf: null, glasses: false });
+    W.add(fortuneTeller.group);
+    const ft = new Vendor(game, fortuneTeller, makeCrystalBall(), { x: fx, z: fz, ry: fry, cryIcon: '🔮',
+      cries: ["The orb says you'll trip a sensor before the hour's out. It's never wrong about that one.", "Careful, puss — glass this clean short-circuits worse than any readout in this city.", 'Everybody here trusts a display. I just trust mine rather less.'] });
+    game.npcs.push(ft); greetable(game, ft); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
