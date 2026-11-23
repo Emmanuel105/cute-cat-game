@@ -37779,3 +37779,38 @@ this environment (no browser, no Playwright), so whether the watcher's stance ac
 courts — Candy Land, Robot City, Sunny Shore, Frosty Peak and Whisper Woods — are still without a
 watcher, left for future rounds. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 1299 — Candy Land picks up the badminton watcher too, the third of the six
+
+Round 1297 gave the Neighborhood's own badminton court the game's first spectator and round 1298
+gave Victorian its own. This land's own two sweet-shop kids, keeping a shuttlecock going north of
+the carousel since round 547, are the third of the six worlds still waiting.
+
+**A passer-by now stands a few steps north of the net, watching the shuttlecock go back and forth
+over it.** Same `Wanderer` (55-npcs.js) every other watcher in the game uses, a plain
+`makeHuman()`/`randomPerson()` rig (this land has no shirt-uniqueness check to dodge, the same
+note the mime's own watcher a little further up already makes), `angle` pointed at the net's own
+fixed centre (22, 72) rather than a constant, and `idleT`/`blinkT` frozen straight after
+construction (the same trick the mime's own watcher uses) plus the frozen `idle: [1e9, 1e9]` every
+watcher in this set has settled on. No `cries` of its own, no physics box, pure bystander.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(1, 'from-prev')` — a direct, synchronous build rather than
+`travel()`, per round 1283's own note on that exact trap — then 2400 simulated frames so every
+gingerbread man, ribbon dancer and badminton pair had already settled, sampling every NPC's own
+position every 6th frame) swept a 0.25 m grid in a ring 2-5 m out from the net's own centre (22,
+72) against all 1798 of this land's own physics boxes (knee-to-head band only) and all 452
+`game.zones` rectangles: (22, 77) came back clearest — 5.15 m from the nearest box, 8.97 m clear of
+the nearest zone rectangle and 6.57 m from the nearest other soul (one of the two players,
+mid-rally), due north of the net and well clear of the carousel (35, 60), the butterflies' own
+flight box (x ≤ 32) and the gumdrop patch (26, 52).
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box
+count unchanged (pure bystander, no collider of its own beyond the usual `Wanderer` circle), and
+Candy Land's own friend total rose from 139 to 140 (confirmed against the previous commit with
+`git stash`, every other world's count unchanged). No visual check was possible in this
+environment (no browser, no Playwright), so whether the watcher's stance actually reads as
+"watching a badminton rally" is unverified, same caveat as the Neighborhood's and Victorian's own.
+Robot City, Sunny Shore and Frosty Peak are now the only three worlds left whose own badminton
+court still plays to nobody. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.

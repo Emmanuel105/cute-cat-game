@@ -18129,6 +18129,44 @@ function buildCandyLand(game, entry) {
     W.add(mimeWatcher.group);
     game.npcs.push(new Wanderer(game, mimeWatcher, { x: mwx, z: mwz, angle: atan2(mimeX - mwx, mimeZ - mwz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // Round 1297 gave the Neighborhood's own badminton court the game's first spectator and round 1298
+  // gave Victorian its own; this land's own two sweet-shop kids, keeping a shuttlecock going north of
+  // the carousel since round 547, are the third of the six still waiting. **A passer-by now stands a
+  // few steps north of the net, watching the shuttlecock go back and forth over it.** No `cries` of
+  // its own — this one just watches — no physics box, pure bystander. Saying hello to her makes her
+  // the usual kind of friend.
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) the Neighborhood's and Victorian's own watchers
+  // use, a plain `makeHuman()`/`randomPerson()` rig (this land has no shirt-uniqueness check to dodge,
+  // same note the mime's own watcher above already makes), `angle` pointed at the net's own fixed
+  // centre (22, 72) rather than a constant, and `idleT`/`blinkT` frozen straight after construction
+  // (the same trick the mime's own watcher above uses) plus the frozen `idle: [1e9, 1e9]` every
+  // watcher in this set settles on, so dropping her in costs the shared `r()` sequence nothing beyond
+  // her own `makeHuman()`/`randomPerson()` draw.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(1, 'from-prev')` — a direct, synchronous build rather than
+  // `travel()`, per round 1283's own note on that exact trap — then 2400 simulated frames so every
+  // gingerbread man, ribbon dancer and badminton pair had already settled, sampling every NPC's own
+  // position every 6th frame) swept a 0.25 m grid in a ring 2-5 m out from the net's own centre (22,
+  // 72) against all 1798 of this land's own physics boxes (knee-to-head band only) and all 452
+  // `game.zones` rectangles: (22, 77) came back clearest — 5.15 m from the nearest box, 8.97 m clear
+  // of the nearest zone rectangle and 6.57 m from the nearest other soul (one of the two players,
+  // mid-rally), due north of the net and well clear of the carousel (35, 60), the butterflies' own
+  // flight box (x ≤ 32) and the gumdrop patch (26, 52).
+  //
+  // Built dead last of everything this land adds, right after the mime's own watcher above and right
+  // before `spawnBySquirrel()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw off
+  // this land's own shared `r()` sequence unconditionally, and anything built earlier here would have
+  // had its own timing-sensitive pick shifted by it. Robot City, Sunny Shore and Frosty Peak are now
+  // the only three worlds left whose own badminton court still plays to nobody.
+  { const bwx = 22, bwz = 77, netX2 = 22, netZ2 = 72;
+    const badWatcher2 = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, coat: r.chance(0.5), scarf: null, bag: null, backpack: null, glasses: r.chance(0.2) });
+    badWatcher2.idleT = 1e6; badWatcher2.blinkT = 1e6;   // keeps rig.animate()'s own idle-gesture pick and blink-reset (both shared rnd() draws) from firing every frame and shifting checks in worlds built later in the same run
+    W.add(badWatcher2.group);
+    game.npcs.push(new Wanderer(game, badWatcher2, { x: bwx, z: bwz, angle: atan2(netX2 - bwx, netZ2 - bwz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
