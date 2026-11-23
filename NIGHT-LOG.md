@@ -38391,3 +38391,37 @@ not a box), and the Neighborhood's own friend total rose from 144 to 145 (confir
 whether standing a step away actually reads as "getting a reading" rather than just another passer-by
 is unverified, same caveat every watcher in this game's set has carried. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1317 — Candy Land's fortune teller picks up a customer too
+
+Round 1316 gave the Neighborhood's fortune teller a customer at last, starting a new set; Candy
+Land's own fortune teller (round 1310) has been holding up her crystal ball north-east of the
+gingerbread cottage ever since, telling fortunes to nobody. **A customer now stands a step in
+front of her, facing her straight on, listening as she reads the crystal.** No `cries` of her own,
+no physics box, pure bystander, built the exact same way as the ring-toss watcher just above her
+in the code. Saying hello to her makes her the usual kind of friend.
+
+Same `Wanderer` (55-npcs.js) every watcher in this project already uses — it calls `greetable()`
+itself, so no extra wiring was needed. A single-shirt wardrobe bag (0x5a8a3a, a mossy green not
+already spoken for on this land) keeps the dupe-shirt check happy, and the frozen `idle: [1e9, 1e9]`
+plus `blinkT0`/`idleT0`/`sway0` fixed straight in the `makeHuman()` call keeps her statue-still,
+hanging on every word rather than fidgeting, the same trick round 1316's customer used.
+
+A headless probe (a scratch script against the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(1, 'from-prev')`, 3600 simulated frames so the fudge-maker, the
+ring tossers and every other NPC had settled, then 600 more sampling every NPC's own position every
+10th frame) swept the ground 1-2.4 m out from the fortune teller (48, 55.5) along her own facing
+direction (towards the origin) against all of this land's own physics boxes (knee-to-head band
+only) and every `game.zones` rectangle: every distance tried came back clear by 7.8+ m of the
+nearest box and 20+ m of the nearest zone rectangle, so 1.5 m out — close enough to read as a
+face-to-face reading — was used.
+
+Built dead last of everything this land adds, right after the ring-toss watcher above and right
+before `spawnBySquirrel()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this
+land's own shared `r()` sequence unconditionally. `node dimension-cat/test/run.mjs` ran clean: exit
+0, all checks `ok`, 0 console warnings, box count unchanged at 334 (a circle collider, not a box),
+and Candy Land's own friend total rose from 144 to 145 (confirmed by the test's own "145 to meet"
+line). No visual check was possible in this environment (no browser, no Playwright), so whether
+standing a step away actually reads as "getting a reading" is unverified, same caveat every watcher
+in this game's set has carried. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.

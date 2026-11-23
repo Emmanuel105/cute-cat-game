@@ -9252,6 +9252,36 @@ function buildCandyLand(game, entry) {
     W.add(ringWatcher.group);
     game.npcs.push(new Wanderer(game, ringWatcher, { x: rwx, z: rwz, angle: atan2(51 - rwx, -1 - rwz), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
 
+  // The fortune teller above (round 1310) has had her crystal ball lit up north-east of the
+  // gingerbread cottage for a while now, same as the Neighborhood's own sister since round 1064 —
+  // but round 1316 gave the Neighborhood's a customer and this one has still only ever told fortunes
+  // to the empty air. **A customer now stands a step in front of her, facing her straight on,
+  // listening as she reads the crystal.** No `cries` of her own, no physics box, pure bystander,
+  // the exact same shape as the ring-toss watcher just above. Saying hello to her makes her the
+  // usual kind of friend.
+  //
+  // Same `Wanderer` (55-npcs.js) every watcher in this project already uses — it calls `greetable()`
+  // itself, so no extra wiring was needed. A single-shirt wardrobe bag (0x5a8a3a, a mossy green not
+  // already spoken for on this land) keeps the dupe-shirt check happy.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(1, 'from-prev')`, 3600 simulated frames so the fudge-maker,
+  // the ring tossers and every other NPC had settled, then 600 more sampling every NPC's own
+  // position every 10th frame) swept the ground 1-2.4 m out from the fortune teller (48, 55.5)
+  // along her own facing direction (towards the origin) against all of this land's own physics
+  // boxes (knee-to-head band only) and every `game.zones` rectangle: every distance tried came back
+  // clear by 7.8+ m of the nearest box and 20+ m of the nearest zone rectangle, so 1.5 m out — close
+  // enough to read as a face-to-face reading — was used.
+  //
+  // Built dead last of everything this land adds, right after the ring watcher above and right
+  // before `spawnBySquirrel()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw off
+  // this land's own shared `r()` sequence unconditionally.
+  { const ftX = 48, ftZ = 55.5, cux = 47.02, cuz = 54.37;
+    const customerWard = makeWardrobe(r, { shirts: [0x5a8a3a] });
+    const customer = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: customerWard }), blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(customer.group);
+    game.npcs.push(new Wanderer(game, customer, { x: cux, z: cuz, angle: atan2(ftX - cux, ftZ - cuz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
