@@ -2028,6 +2028,35 @@ function buildSnowVillage(game, entry) {
     W.add(bA.group); W.add(bB.group);
     const badmintonLines = ['🏸 "Mittens are terrible for grip, wonderful for not losing feeling in your fingers."', '🏸 "Mind the net, puss — it\'s the only thing out here taller than a snowman."', '🏸 "Thirty-eight. No, thirty-nine — I keep losing count in the cold."'];
     game.npcs.push(new Badminton(game, bA, bB, shuttle, { cx, cz, gap, cries: badmintonLines })); }
+  // Rounds 1297-1301 gave the Neighborhood's, Victorian's, Candy Land's, Robot City's and Sunny
+  // Shore's own badminton courts their first spectators. This mountain's own net above, just built,
+  // is the sixth and last of the six — every world's own net game now has someone watching it.
+  // **A passer-by now stands a few steps north of the net, bundled up against the cold, watching the
+  // shuttlecock go back and forth over it.** Same `Wanderer` (55-npcs.js) every other watcher in the
+  // game uses, a plain `makeHuman()`/`randomPerson()` rig in this mountain's own winter wardrobe
+  // (beanie, coat, scarf — the same look the two players themselves wear, in a third hat colour so
+  // all three stand apart at a glance), `angle` pointed at the net's own fixed centre (-38, -35), and
+  // the `blinkT0`/`idleT0`/`sway0` options fixed straight in the `makeHuman()` call plus the frozen
+  // `idle: [1e9, 1e9]` every watcher in this set has settled on. No `cries` of its own, no physics
+  // box, pure bystander — and no `placeT`/`boxT` either, since `Wanderer` already asks
+  // `game.physics.ground0()` for its own feet every frame, the same note round 1301's own beach
+  // watcher already made.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(5, 'from-hub')`, 2400 simulated frames so the shuttlecock, the
+  // tug-of-war, the tetherball and every other act had already settled, then a further 600 sampling
+  // every NPC's own position every 6th frame) swept a 0.25 m grid in a ring 2-3.5 m out from the
+  // net's own centre against all 749 of this mountain's own physics boxes (knee-to-head band only)
+  // and every sampled NPC position: (-38, -31.5) came back clearest — 7.89 m from the nearest box
+  // and 6.3 m from the nearest other soul, due north of the net and well inside the clearing
+  // `snowRegion`'s own fill already leaves around it, same clearing the net itself sits in.
+  { const bwNetX = -38, bwNetZ = -35, bwWatchX = -38, bwWatchZ = -31.5;
+    const bwWatchWard = makeWardrobe(r, { shirts: [0x4a5a7a, 0x7a5a4a, 0x5a7a5a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const bwWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: bwWatchWard }),
+      hat: 'beanie', hatColor: 0x4a5a7a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a, bag: null, backpack: null, glasses: r.chance(0.3),
+      blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(bwWatcher.group);
+    game.npcs.push(new Wanderer(game, bwWatcher, { x: bwWatchX, z: bwWatchZ, angle: atan2(bwNetX - bwWatchX, bwNetZ - bwWatchZ), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
   // `SackRace`'s own tour of the seven worlds is down to one now — the Neighborhood, Candy Land,
   // Robot City, Victorian and Sunny Shore all have one of their own; only Whisper Woods is left after
   // this. Frosty Peak, for all its sledder, snowball fight, tug-of-war, tetherball, archery range and

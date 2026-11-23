@@ -37877,3 +37877,40 @@ whether the watcher's stance actually reads as "watching a badminton rally" is u
 caveat as the four worlds before it. Frosty Peak is now the only world left whose own badminton
 court still plays to nobody. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 1302 — Frosty Peak picks up the badminton watcher too, the sixth and last of the six
+
+Rounds 1297-1301 gave the Neighborhood, Victorian, Candy Land, Robot City and Sunny Shore's own
+badminton courts their first spectators. Frosty Peak's own net, going since round 508-ish on the
+quiet snowfield south-west of the village, was the last of the six still playing to nobody.
+
+**A passer-by now stands a few steps north of the net, bundled up in a beanie, coat and scarf,
+watching the shuttlecock go back and forth over it.** Same `Wanderer` (55-npcs.js) every other
+watcher in this set uses, a plain `makeHuman()`/`randomPerson()` rig in this mountain's own winter
+wardrobe (the same look the two players themselves wear, in a third hat colour so all three stand
+apart at a glance), `angle` pointed at the net's own fixed centre (-38, -35), and the
+`blinkT0`/`idleT0`/`sway0` options fixed straight in the `makeHuman()` call plus the frozen
+`idle: [1e9, 1e9]` every watcher in this set has settled on. No `cries` of its own, no physics box,
+pure bystander, and no `placeT`/`boxT` either — `Wanderer` already asks `game.physics.ground0()`
+for its own feet every frame, same note round 1301's beach watcher already made.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+`game.load(5, 'from-hub')`, 2400 simulated frames so every tug-of-war, tetherball and badminton
+pair had already settled, then a further 600 sampling every NPC's own position every 6th frame)
+swept a 0.25 m grid in a ring 2-3.5 m out from the net's own centre against all 749 of this
+mountain's own physics boxes (knee-to-head band only) and every sampled NPC position: (-38, -31.5)
+came back clearest — 7.89 m from the nearest box and 6.3 m from the nearest other soul, due north
+of the net. (The net's own clearing is itself one big `game.zones` rectangle, so zone distance
+wasn't a useful filter here — the whole footprint is already the keep-out area `snowRegion`'s own
+fill leaves alone, same as every other hand-placed prop on this mountain.)
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (pure bystander, no collider of its own), and Frosty Peak's own friend total rose
+from 156 to 157 (confirmed against the previous commit with `git stash`, every other world's count
+unchanged). No visual check was possible in this environment (no browser, no Playwright), so
+whether the watcher's stance actually reads as "watching a badminton rally" is unverified, same
+caveat as the five worlds before it. This closes out the set of six that round 1297 started —
+Whisper Woods' own net, added to that world only after this set was already under way (its own
+build comment still says "the other six worlds already use"), was never one of the six and is
+left for a future round of its own. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.
