@@ -37914,3 +37914,30 @@ Whisper Woods' own net, added to that world only after this set was already unde
 build comment still says "the other six worlds already use"), was never one of the six and is
 left for a future round of its own. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 1303 — Whisper Woods' own badminton net finally gets its watcher
+
+Round 1302 closed out the set of six it started, and noted Whisper Woods' own net — built after
+that set was already under way — was left over for a round of its own. This one gives it that
+watcher.
+
+**A passer-by now stands a few steps north of the net (9, 47), watching the shuttlecock go back
+and forth over it**, same bare look (no hat, scarf, jacket, bag or backpack) the two players
+there already wear. No `cries` of its own, no physics box, pure bystander — same `Wanderer`
+(55-npcs.js) every other watcher in the set uses, so saying hello to her just makes her the usual
+kind of friend.
+
+A headless probe (`game.start('new')`, `game.load(6, 'from-hub')`, 2400 simulated frames so every
+NPC had settled, then 600 more sampling every live position every 6th frame) swept a 0.25 m grid
+in a ring 2-4.5 m out from the net's own centre against all 438 of this wood's own physics boxes
+and all 229 `game.zones` rectangles: (9, 51.5) came back clearest — 3.67 m from the nearest box,
+3.97 m clear of the nearest zone and 4.27 m from the nearest other soul, due north of the net and
+short of this wood's own 58 m fill radius.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box
+count unchanged (pure bystander), and Whisper Woods' own friend total rose from 184 to 185
+(confirmed against the previous commit with `git stash`, every other world's count unchanged). No
+visual check was possible in this environment (no browser, no Playwright), so whether the
+watcher's stance actually reads as watching a badminton rally is unverified, same caveat every
+watcher in this set has carried. Every one of the seven worlds' own badminton courts now has a
+spectator. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
