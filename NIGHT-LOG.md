@@ -37843,3 +37843,37 @@ browser, no Playwright), so whether the watcher's stance actually reads as "watc
 rally" is unverified, same caveat as the three worlds before it. Sunny Shore and Frosty Peak are
 now the only two worlds left whose own badminton court still plays to nobody. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1301 — Sunny Shore picks up the badminton watcher too, the fifth of the six
+
+Rounds 1297-1300 gave the Neighborhood, Victorian, Candy Land and Robot City's own badminton
+courts their first spectators. Sunny Shore's own beach-wear rally, going since round 525, is the
+fifth of the six still waiting.
+
+**A passer-by now stands a few steps south-west of the net, watching the shuttlecock go back and
+forth over it.** Same `Wanderer` (55-npcs.js) every other watcher in the game uses, a plain
+`makeHuman()`/`randomPerson()` rig in beach wear (shorts, no hat), `angle` pointed at the net's own
+fixed centre (-18, -38), and the `blinkT0`/`idleT0`/`sway0` options fixed straight in the
+`makeHuman()` call, the same trick every watcher in this set uses. No `cries` of its own, no
+physics box, pure bystander, and no `placeT`/`boxT` either — `Wanderer` already asks
+`game.physics.ground0()` for its own feet every frame, so open sand costs nothing extra.
+
+The probe script hit the exact trap round 1283 already flagged once: `game.travel()` only fires
+its real work after a `setTimeout` the headless harness never ticks, so a first pass with it left
+every count looking unchanged. Switching to `game.load(4, 'from-hub')` (direct, synchronous, same
+as the harness itself uses) fixed that. The redone probe (`game.start('new')`, `game.load(4,
+'from-hub')`, 2400 simulated frames so every crab, turtle, sunbather and badminton pair had already
+settled, then a further 600 sampling every NPC's own position every 6th frame) swept a 0.25 m grid
+in a ring 2-5 m out from the net's own centre (-18, -38) against all 206 of this shore's own
+physics boxes (knee-to-head band only) and all 89 `game.zones` rectangles: (-21.80, -41.25) came
+back clearest — 3.71 m from the nearest box, 5.05 m clear of the nearest zone rectangle and 3.82 m
+from the nearest other soul, south-west of the net.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged (pure bystander, no collider of its own), and Sunny Shore's own friend total rose from
+160 to 161 (confirmed against the previous commit with `git stash`, every other world's count
+unchanged). No visual check was possible in this environment (no browser, no Playwright), so
+whether the watcher's stance actually reads as "watching a badminton rally" is unverified, same
+caveat as the four worlds before it. Frosty Peak is now the only world left whose own badminton
+court still plays to nobody. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.

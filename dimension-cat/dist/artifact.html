@@ -27947,6 +27947,36 @@ function buildBeach(game, entry) {
     const beachBadmintonLines = ['🏸 "Careful, the wind off the water adds a wobble."', '🏸 "Sand\'s terrible for footwork, wonderful for falling."', '🏸 "That one nearly went in the sea."'];
     game.npcs.push(new Badminton(game, bA, bB, shuttle, { cx, cz, gap, cries: beachBadmintonLines })); }
 
+  // Rounds 1297-1300 gave the Neighborhood's, Victorian's, Candy Land's and Robot City's own
+  // badminton courts their first spectators — this shore's own rally above, going since round 525,
+  // is the fifth of the six still waiting. **A passer-by now stands a few steps south-west of the net,
+  // watching the shuttlecock go back and forth over it.** Same `Wanderer` (55-npcs.js) every other
+  // watcher in the game uses, a plain `makeHuman()`/`randomPerson()` rig in beach wear (shorts, no
+  // hat, since this shore's own beachgoers go bare-headed as often as not), `angle` pointed at the
+  // net's own fixed centre (-18, -38), and the `blinkT0`/`idleT0`/`sway0` options to fix those three
+  // straight in the `makeHuman()` call, the same trick every watcher in this set uses. No `cries` of
+  // its own, no physics box, pure bystander — and no `placeT`/`boxT` either, since `Wanderer` already
+  // asks `game.physics.ground0()` for its own feet every frame (round 1283's own fixed-deck-height
+  // override, `o.y`, is for a watcher parked on a pier or stand; this one stands on open sand, so it
+  // is left unset).
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // `game.load()` rather than `game.travel()` since the latter only fires after a real `setTimeout`
+  // the headless harness never ticks — round 1283's own note on that exact trap: `game.start('new')`,
+  // `game.load(4, 'from-hub')`, 2400 simulated frames so every crab, turtle, sunbather and badminton
+  // pair had already settled, then a further 600 sampling every NPC's own position every 6th frame)
+  // swept a 0.25 m grid in a ring 2-5 m out from the net's own centre (-18, -38) against all 206 of
+  // this shore's own physics boxes (knee-to-head band only) and all 89 `game.zones` rectangles:
+  // (-21.80, -41.25) came back clearest — 3.71 m from the nearest box, 5.05 m clear of the nearest
+  // zone rectangle and 3.82 m from the nearest other soul, south-west of the net and well short of
+  // the radius (58) where `beachRegion`'s own fill takes over.
+  { const bwx = -21.80, bwz = -41.25, netX = -18, netZ = -38;
+    const beachBadmintonWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shorts: true, hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.3), glassColor: 0x203040,
+      blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(beachBadmintonWatcher.group);
+    game.npcs.push(new Wanderer(game, beachBadmintonWatcher, { x: bwx, z: bwz, angle: atan2(netX - bwx, netZ - bwz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   // Frosty Peak, Robot City and Whisper Woods have all had two haulers dig in and heave on a rope by
   // now (`TugOfWar`, 55-npcs.js) — Sunny Shore, for all its net games and open-toss ball games, never
   // had one. **Two beachgoers now heel into the dry sand on the quiet dune north-west of the huts and
