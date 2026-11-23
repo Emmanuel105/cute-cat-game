@@ -5128,6 +5128,46 @@ function buildNeighborhood(game, entry) {
     W.add(horseWatcher.group);
     game.npcs.push(new Wanderer(game, horseWatcher, { x: hwx, z: hwz, angle: atan2(pitX - hwx, pitZ - hwz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // The tug-of-war above (round 1301's hauler pair, x=-8, z=-42, ry=0 so the rope runs north-south
+  // and the two haulers plant themselves at z=-40.7 and z=-43.3) is the one court round 1304's own
+  // note left unwatched alongside the horseshoe pit and the sack race — the horseshoe pit picked up
+  // its spectator two rounds back, the sack race is left for a future round of its own. **A passer-by
+  // now stands a few steps east of the rope, watching the two haul against each other.** No `cries`
+  // of her own, no physics box, pure bystander. Saying hello to her makes her the usual kind of
+  // friend.
+  //
+  // Same `Wanderer` (55-npcs.js) every watcher in this set uses: a plain `makeHuman()`/`randomPerson()`
+  // rig, a single-shirt wardrobe bag (0x4a8a3a, checked against every other shirt literal already on
+  // this street, since the "no two neighbours wear the same shirt" test catches a clash either way),
+  // `angle` pointed at the rope's own fixed centre (-8, -42) rather than a constant, and
+  // `blinkT0`/`idleT0`/`sway0` fixed straight in the `makeHuman()` call plus the frozen
+  // `idle: [1e9, 1e9]` every watcher in this set settles on, so dropping her in costs the shared
+  // `rnd()` sequence nothing at all. Stood to the east rather than north or south of the rope, unlike
+  // the tetherball and horseshoe watchers' own straight-line approach: the two haulers plant
+  // themselves along the z axis facing each other down the rope's length, so a spot level with the
+  // rope's own centre, off to one side, is the one angle that actually shows both of them heaving at
+  // once rather than looking past one hauler's back at the other.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // 2400 simulated frames so both haulers had already settled into their own heave-together rhythm,
+  // then a further 600 sampling every NPC's own position every 6th frame) checked the rope's own east
+  // and west sides at 2.5-4.5 m out against all 334 of the street's own physics boxes (knee-to-head
+  // band only), all 69 `game.zones` rectangles and every sampled position: the east side came back
+  // clearer at every distance tried (the lake and the lantern path to the gondola both sit west of
+  // the rope), and (-4, -42), 4 m east of the rope's own centre, came back clearest there — 12.9 m
+  // from the nearest box, 21.6 m clear of the nearest zone rectangle and 4.2 m from the nearest other
+  // soul (one of the haulers themselves, by construction).
+  //
+  // Built dead last, right after the horseshoe watcher above and right before `makeDayNight()`, for
+  // the usual reason: `makeHuman()` draws three values off the *shared* `rnd()` sequence
+  // unconditionally, and dropping a fresh rig in any earlier would shift every timing-sensitive pick
+  // made above it, including the two-neighbours-chat timing test a few thousand lines up.
+  { const twx = -4, twz = -42, tugX = -8, tugZ = -42;
+    const tugWatchWard = makeWardrobe(r, { shirts: [0x4a8a3a] });
+    const tugWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: tugWatchWard }), blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(tugWatcher.group);
+    game.npcs.push(new Wanderer(game, tugWatcher, { x: twx, z: twz, angle: atan2(tugX - twx, tugZ - twz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

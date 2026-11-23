@@ -38009,3 +38009,35 @@ environment (no browser, no Playwright), so whether her stance actually reads as
 horseshoe toss" is unverified, same caveat every watcher in these sets has carried. Tug-of-war and
 the sack race are left for future rounds of their own. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1306 — the tug-of-war rope gets its own watcher
+
+Round 1304 left three courts unwatched: the tetherball pole, the horseshoe pit and the tug-of-war.
+The first two picked up spectators in rounds 1304 and 1305; this round takes the tug-of-war, the
+hauler pair from round 1301 heaving against each other on the rope at (-8, -42). The sack race is
+still left for a future round.
+
+**A passer-by now stands a few steps east of the rope, watching the two haul against each other.**
+Same bystander `Wanderer` (55-npcs.js) every watcher in this set already uses — a single-shirt
+wardrobe bag (0x4a8a3a), `blinkT0`/`idleT0`/`sway0` frozen straight in the `makeHuman()` call, and
+`idle: [1e9, 1e9]` so she never wanders off — no `cries` of her own, no physics box. Saying hello
+to her makes her the usual kind of friend.
+
+One wrinkle this time: the rope runs north-south (the haulers plant themselves at z=-40.7 and
+z=-43.3, facing each other down its length), unlike the tetherball pole or the horseshoe stakes,
+so standing due north or south of it would just put her behind one hauler's back looking past the
+other. East-west, level with the rope's own centre, is the one angle that actually shows both of
+them heaving at once — and a headless probe (the same stub-three harness `test/run.mjs` uses:
+`game.start('new')`, 2400 simulated frames so both haulers had settled into their rhythm, then 600
+more sampling positions) confirmed east is also the clearer side of the two: the lake and the
+lantern path to the gondola both sit west of the rope. (-4, -42), 4 m east of centre, came back
+clearest — 12.9 m from the nearest box, 21.6 m clear of the nearest zone and 4.2 m from the nearest
+other soul.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box
+count unchanged at 334 (pure bystander), and the Neighborhood's own friend total rose from 142 to
+143 (confirmed by the test's own "143 to meet" line). No visual check was possible in this
+environment (no browser, no Playwright), so whether her stance actually reads as "watching a
+tug-of-war" is unverified, same caveat every watcher in these sets has carried. The sack race is
+left for a future round of its own. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.
