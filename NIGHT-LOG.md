@@ -38459,3 +38459,24 @@ line). No visual check was possible in this environment (no browser, no Playwrig
 standing a step away actually reads as "getting a reading" is unverified, same caveat every watcher
 in this game's set has carried. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 1319 — the original fortune teller finally gets a customer too
+
+Round 903 gave Victorian its fortune teller — the very first one of the seven, the one every
+other world's own teller was later copied from. Rounds 1316-1318 then gave the Neighborhood's,
+Candy Land's and Robot City's own tellers a customer apiece, but the original herself, standing
+on the market square's south-east corner since the start, had still only ever read her crystal
+ball to the empty cobbles. **A customer now stands a step in front of her, facing her straight
+on, listening as she tells a fortune.** No lines of her own, no physics box, pure bystander —
+the exact same `Wanderer`-with-frozen-idle trick the last three rounds' customers used, so no new
+wiring was needed and `greetable()` makes her a friend the usual way.
+
+A headless probe (`game.start('new')`, `game.travel(3, 'from-prev')`, 3600 frames to settle every
+wandering soul, then 600 more sampling positions) swept 1-2.4 m out from the teller (25, -42)
+along her own facing direction and came back clear the whole way — 12.6+ m from the nearest of
+this town's 334 physics boxes and 17.4+ m from the nearest of its 69 zone rectangles — so 1.5 m
+out was used, same as the other three. `node dimension-cat/test/run.mjs` ran clean: exit 0, every
+check `ok`, 0 console warnings, box count unchanged at 334, and Victorian's own friend total rose
+from 186 to 187 (confirmed by the test's own "187 to meet" line). No visual check was possible in
+this environment (no browser, no Playwright), same caveat every watcher in this set has carried.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
