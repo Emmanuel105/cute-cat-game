@@ -38480,3 +38480,27 @@ check `ok`, 0 console warnings, box count unchanged at 334, and Victorian's own 
 from 186 to 187 (confirmed by the test's own "187 to meet" line). No visual check was possible in
 this environment (no browser, no Playwright), same caveat every watcher in this set has carried.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1320 — Sunny Shore's fortune teller gets a customer too
+
+Rounds 1316-1319 gave the Neighborhood's, Candy Land's, Robot City's and Victorian's own fortune
+tellers a customer apiece; Sunny Shore's own teller, sitting cross-legged on her straw mat up past
+the dune grass since round 1062, had still only ever read the crystal ball to the empty sand.
+**A customer now sits a step in front of her, facing her straight on, listening as she tells a
+fortune.** No lines of her own, no physics box, pure bystander — the exact same `Wanderer`-with-
+frozen-idle trick the last four rounds' customers used, so no new wiring was needed and
+`greetable()` makes her a friend the usual way.
+
+A headless probe (`elements.get('enter').listeners.click[0]()`, `game.travel(4, 'from-hub')`
+waited out for real against `game.transitioning`, then 3600 simulated frames so every sunbather,
+ball-tosser and runner had settled, then 600 more sampling positions every 10th frame) swept 1-2.4
+m out from the teller (-6, 46) along her own facing direction and came back clear the whole way —
+6.4+ m from the nearest of this beach's 193 physics boxes and 9+ m from the nearest of its 88 zone
+rectangles — so 1.5 m out was used, same as the other four. A single sea-blue shirt (0x3a6a9a, not
+already spoken for on this sand) keeps the dupe-shirt check happy. `node dimension-cat/test/run.mjs`
+ran clean: exit 0, every check `ok`, 0 console warnings, box count unchanged at 334, and Sunny
+Shore's own friend total rose from 162 to 163 (confirmed by the test's own "163 to meet" line). No
+visual check was possible in this environment (no browser, no Playwright), same caveat every
+watcher in this set has carried. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy. Frosty Peak and Whisper Woods are the only two worlds whose fortune teller is still
+reading to nobody.
