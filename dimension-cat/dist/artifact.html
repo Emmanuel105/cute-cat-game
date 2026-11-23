@@ -18355,6 +18355,64 @@ function buildCandyLand(game, entry) {
     const ft = new Vendor(game, fortuneTeller, makeCrystalBall(), { x: fx, z: fz, ry: fry, cryIcon: '🔮',
       cries: ['The sugar dust never lies. Well — hardly ever.', "I see gumdrops in your future, puss. I see gumdrops in everyone's future, if I'm honest.", "Cross my palm with a lollipop and I'll tell you anything you like."] });
     game.npcs.push(ft); greetable(game, ft); }
+  // Candy Land grows its sweets out of the ground everywhere else, and the taffy machine above only
+  // stretches candy that already exists — nothing in this whole land has ever actually been cooked.
+  // A fudge pot now simmers over its own small fire on a quiet stretch of sweet-lands east of the
+  // badminton court: a copper cauldron slung from an iron tripod, a wooden paddle sweeping a slow
+  // circle inside it, two curls of steam drifting off the top. A fudge-maker stands beside it, minding
+  // the fire. *"Fudge doesn't stir itself, worse luck."* *"Careful, puss — that pot's hotter than it
+  // looks."* *"Same recipe since the castle was built. Still haven't written it down."* Saying hello
+  // makes her the usual kind of friend.
+  //
+  // New prop, built inline the same way the taffy-pulling machine above is: an iron tripod (three
+  // angled legs), a small fire at its foot (the exact flame-cone-plus-point-light trick
+  // `makeCampfire()` (62-props-nature.js) already uses, just two cones and one light rather than that
+  // fire's full ring of stones and logs — no need to duplicate a whole campfire for something this
+  // size), `G.dome()` flipped (`rx: PI`) for the pot's own rounded underside — the same hemisphere
+  // geometry every roof cupola on this street already uses, just upside down — and a paddle on its
+  // own pivot sweeping a slow circle, off the shared world clock `t` alone. The two steam wisps reuse
+  // `makeCocoaMug()`'s own drifting trick, just a touch larger. `Charger` (55-npcs.js) for the
+  // fudge-maker herself — the same "stand and work" pairing the taffy puller above already uses — her
+  // own constructor calls `greetable()`, so no extra wiring is needed. No draw from this land's own
+  // seeded `r` for any of the prop's own geometry or animation, only for the fudge-maker's own
+  // wardrobe and face, so nothing above or below this block shifts.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(1, 'from-prev')`, 3600 simulated frames so every gingerbread man,
+  // ribbon dancer and badminton pair had settled, then 600 more sampling every NPC's own position
+  // every 6th frame) swept a 2 m grid of this land's own hand-built heart (radius 6-86, short of where
+  // `candyRegion`'s own procedural fill takes over at 92) against all of this land's own physics
+  // boxes, every `game.zones` rectangle and every sampled NPC position: (54, -66) came back clearest —
+  // 15.5 m from the nearest box, 19.9 m clear of the nearest zone rectangle and 18.6 m from the
+  // nearest other soul, well east of the badminton court and south of the river.
+  { const mx = 54, mz = -66;
+    const g = group(mx, 0, mz, W);
+    const ironM = mat(0x2a2a28, { metalness: 0.5, roughness: 0.55 }), potM = mat(0xb5712f, { metalness: 0.55, roughness: 0.35 }), paddleM = mat(0x6b4a2a, { roughness: 0.9 });
+    const legH = 1.3, rimY = 1.05, potR = 0.55;
+    for (let i = 0; i < 3; i++) { const a = i / 3 * TAU; mesh(G.cyl(0.035, 0.05, legH, 6), ironM, { x: cos(a) * 0.5, y: legH / 2, z: sin(a) * 0.5, rx: sin(a) * 0.3, rz: -cos(a) * 0.3, parent: g }); }
+    mesh(G.dome(potR, 14, 10), potM, { y: rimY, rx: PI, shadow: 'both', parent: g });
+    mesh(G.torus(potR, 0.035, 8, 20), potM, { y: rimY, parent: g });
+    const flame = mesh(G.cone(0.2, 0.55, 8), glowMat(0xff8a2a, 2.3, { transparent: true, opacity: 0.85 }), { y: 0.28, shadow: 'none', parent: g });
+    const flame2 = mesh(G.cone(0.12, 0.38, 8), glowMat(0xfff176, 2.3, { transparent: true, opacity: 0.9 }), { y: 0.26, shadow: 'none', parent: g });
+    const light = pointLight(0xff9a3a, 14, 7, 0, 0.4, 0, g);
+    const pivot = group(0, rimY, 0, g);
+    mesh(G.box(0.045, 0.045, 0.85), paddleM, { z: 0.42, rx: -0.14, parent: pivot });
+    const wisps = [[0.1, 0, 0], [-0.08, 0.06, 2.1]].map(([ox, oz, ph]) => ({ s: glowSprite(0xeef4fa, 0.22, 0.4, g), ox, oz, ph }));
+    for (const w of wisps) w.s.position.set(w.ox, rimY + 0.12, w.oz);
+    U.push((dt, t) => {
+      pivot.rotation.y = t * 0.8;
+      flame.scale.set(1 + sin(t * 12) * 0.12, 1 + sin(t * 9) * 0.2, 1 + cos(t * 11) * 0.12); flame2.scale.y = 1 + sin(t * 15) * 0.25; flame.rotation.y = t * 2;
+      light.intensity = 12 + sin(t * 13) * 3;
+      for (const w of wisps) { const k = (sin(t * 0.6 + w.ph) + 1) / 2; w.s.position.set(w.ox + sin(t * 0.9 + w.ph) * 0.03, rimY + 0.12 + k * 0.5, w.oz); w.s.material.opacity = 0.3 * (1 - k); }
+    });
+    game.physics.addBox(mx, 0.65, mz, 1.4, 1.3, 1.4, { cam: false });
+    const makerWard = makeWardrobe(r, { shirts: [0xffe0ea, 0xff9fc9, 0xfff3b0] });
+    const mkx = mx - 2.0, mkz = mz + 0.6;
+    const maker = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: r.chance(0.3), wardrobe: makerWard }),
+      apron: 0xfff3e6, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(maker.group);
+    game.npcs.push(new Charger(game, maker, { x: mkx, z: mkz, ry: atan2(mx - mkx, mz - mkz), cryIcon: '🍫',
+      cries: ["Fudge doesn't stir itself, worse luck.", "Careful, puss — that pot's hotter than it looks.", "Same recipe since the castle was built. Still haven't written it down."] })); }
 
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };

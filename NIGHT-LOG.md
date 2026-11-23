@@ -38189,3 +38189,41 @@ environment (no browser, no Playwright), so whether the stance and dress actuall
 teller rather than just another sweet-shop seller is unverified — the crystal ball and the dialogue
 carry it either way. Robot City is now the only world of the seven still without one. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1311 — Candy Land finally gets something cooked
+
+Candy Land is named for the stuff, and the taffy-pulling machine (round 1039ish, sweet-lands south)
+already stretches candy that exists — but nothing in this whole land had ever actually been cooked.
+**A fudge pot now simmers over its own small fire east of the badminton court: a copper cauldron
+slung from an iron tripod, a wooden paddle sweeping a slow circle inside it, two curls of steam
+drifting off the top.** A fudge-maker stands beside it, minding the fire. *"Fudge doesn't stir
+itself, worse luck."* *"Careful, puss — that pot's hotter than it looks."* *"Same recipe since the
+castle was built. Still haven't written it down."* Saying hello makes her the usual kind of friend.
+
+New prop, built inline the same way the taffy-pulling machine is: an iron tripod, a small fire at its
+foot (the flame-cone-plus-point-light trick `makeCampfire()` already uses, just two cones and one
+light), `G.dome()` flipped upside down for the pot's own rounded underside — the same hemisphere
+geometry every roof cupola on this street already uses — and a paddle on its own pivot sweeping a
+slow circle off the shared world clock `t` alone, no draw from this land's own seeded `r`. The two
+steam wisps reuse `makeCocoaMug()`'s own drifting trick, just a touch larger. `Charger` (55-npcs.js)
+for the fudge-maker herself, the same "stand and work" pairing the taffy puller already uses — her
+own constructor calls `greetable()`, so no extra wiring was needed.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(1, 'from-prev')`, 3600 simulated frames so every gingerbread man,
+ribbon dancer and badminton pair had settled, then 600 more sampling every NPC's own position every
+6th frame) swept a 2 m grid of this land's own hand-built heart (radius 6-86, short of where
+`candyRegion`'s own procedural fill takes over at 92) against all of this land's own physics boxes,
+every `game.zones` rectangle and every sampled NPC position: (54, -66) came back clearest — 15.5 m
+from the nearest box, 19.9 m clear of the nearest zone rectangle and 18.6 m from the nearest other
+soul, well east of the badminton court and south of the river.
+
+Built right after the fortune teller, dead last of everything this land adds, for the usual reason:
+`makeHuman()`/`randomPerson()` both draw off this land's own shared `r()` sequence unconditionally.
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, the
+Neighborhood's own box count unchanged at 334 (the new box is Candy Land's own), and Candy Land's
+own friend total rose from 141 to 142 (confirmed by the test's own "142 to meet" line). No visual
+check was possible in this environment (no browser, no Playwright), so whether the pot actually reads
+as a cauldron rather than a lopsided lantern is unverified — the fire, the steam and the stirring
+paddle carry the joke either way. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.
