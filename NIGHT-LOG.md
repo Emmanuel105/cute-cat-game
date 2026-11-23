@@ -37814,3 +37814,32 @@ environment (no browser, no Playwright), so whether the watcher's stance actuall
 Robot City, Sunny Shore and Frosty Peak are now the only three worlds left whose own badminton
 court still plays to nobody. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 1300 — Robot City picks up the badminton watcher too, the fourth of the six
+
+Rounds 1297-1299 gave the Neighborhood, Victorian and Candy Land's own badminton courts their
+first spectators. Robot City's own two off-shift contractors, keeping a shuttlecock going on the
+bare concrete past the last skyscraper, are the fourth of the six still waiting.
+
+**A passer-by now stands a few steps north of the net, watching the shuttlecock go back and forth
+over it.** Same `Wanderer` (55-npcs.js) every other watcher in the game uses, a plain
+`makeHuman()`/`randomPerson()` rig, `angle` pointed at the net's own fixed centre (-28, -86), and
+the `blinkT0`/`idleT0`/`sway0` options to fix those three straight in the `makeHuman()` call rather
+than overwriting them a line later. No `cries` of its own, no physics box, pure bystander.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+`game.load(2, 'from-prev')`, 2400 simulated frames so every tetherball, sack-race and badminton
+pair had already settled, sampling every NPC's own position every 6th frame) swept a 0.25 m grid
+in a ring 2-5 m out from the net's own centre against all 1206 of this city's own physics boxes
+(knee-to-head band only) and all 296 `game.zones` rectangles: (-29.25, -81.25) came back clearest —
+4.68 m from the nearest box, 26.2 m clear of the nearest zone rectangle and 7.65 m from the
+nearest other soul, due north of the net and well clear of the tetherball pole and the sack-race
+lane.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, and Robot
+City's own friend total rose from 149 to 150 (confirmed against the previous commit with `git
+stash`, every other world's count unchanged). No visual check was possible in this environment (no
+browser, no Playwright), so whether the watcher's stance actually reads as "watching a badminton
+rally" is unverified, same caveat as the three worlds before it. Sunny Shore and Frosty Peak are
+now the only two worlds left whose own badminton court still plays to nobody. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -21782,6 +21782,42 @@ function buildRobotCity(game, entry) {
     W.add(mimeWatcher.group);
     game.npcs.push(new Wanderer(game, mimeWatcher, { x: mwx, z: mwz, angle: atan2(mimeX - mwx, mimeZ - mwz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // Round 1297 gave the Neighborhood's own badminton court the game's first spectator, round 1298
+  // gave Victorian its own and round 1299 gave Candy Land its own; this city's own two off-shift
+  // contractors, keeping a shuttlecock going on the bare concrete past the last skyscraper since
+  // round 508's own playground list finally reached this city, are the fourth of the six still
+  // waiting. **A passer-by now stands a few steps north of the net, watching the shuttlecock go back
+  // and forth over it.** No `cries` of its own — this one just watches — no physics box, pure
+  // bystander. Saying hello to her makes her the usual kind of friend.
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) every watcher in this set uses, a plain
+  // `makeHuman()`/`randomPerson()` rig, `angle` pointed at the net's own fixed centre (-28, -86)
+  // rather than a constant, and the `blinkT0`/`idleT0`/`sway0` options Victorian's and Candy Land's
+  // own watchers already use to fix those three straight in the `makeHuman()` call instead of
+  // drawing them off the shared `rnd()` only to overwrite them a line later, plus the frozen
+  // `idle: [1e9, 1e9]` every watcher in this set settles on.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(2, 'from-prev')`, then 2400 simulated frames so every tetherball,
+  // sack-race and badminton pair had already settled, sampling every NPC's own position every 6th
+  // frame) swept a 0.25 m grid in a ring 2-5 m out from the net's own centre (-28, -86) against all
+  // 1206 of this city's own physics boxes (knee-to-head band only) and all 296 `game.zones`
+  // rectangles: (-29.25, -81.25) came back clearest — 4.68 m from the nearest box, 26.2 m clear of
+  // the nearest zone rectangle and 7.65 m from the nearest other soul, due north of the net and well
+  // clear of the tetherball pole (29, -16) and the sack-race lane (-42, 46).
+  //
+  // Built dead last of everything this city adds, right after the mime's own watcher above and right
+  // before `spawnBySquirrel()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw off
+  // this city's own shared `r()` sequence unconditionally, and anything built earlier here would have
+  // had its own timing-sensitive pick shifted by it. Sunny Shore and Frosty Peak are now the only two
+  // worlds left whose own badminton court still plays to nobody.
+  { const bwx = -29.25, bwz = -81.25, netX2 = -28, netZ2 = -86;
+    const badWatcher2 = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, coat: r.chance(0.5), scarf: null, bag: null, backpack: null, glasses: r.chance(0.2),
+      blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(badWatcher2.group);
+    game.npcs.push(new Wanderer(game, badWatcher2, { x: bwx, z: bwz, angle: atan2(netX2 - bwx, netZ2 - bwz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
