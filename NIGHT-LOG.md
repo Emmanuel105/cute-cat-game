@@ -38357,3 +38357,37 @@ Candy Land's own friend total rose from 143 to 144 (confirmed by the test's own 
 No visual check was possible in this environment (no browser, no Playwright), so whether her stance
 actually reads as "watching a ring toss" is unverified, same caveat every watcher in this game's set
 has carried. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1316 — the Neighborhood's fortune teller finally gets a customer
+
+All seven worlds have had a fortune teller holding up a glowing crystal ball since round 1314 closed
+out that set — but in every one of them, including the Neighborhood's own out on the south field since
+round 1064, she has only ever told fortunes to the empty air. **A customer now stands a step in front
+of her, facing her straight on, listening as she reads the crystal.** No `cries` of her own, no physics
+box, pure bystander, built the exact same way as the tug-of-war and sack race watchers just above her
+in the code. Saying hello to her makes her the usual kind of friend.
+
+Same `Wanderer` (55-npcs.js) every watcher in this project already uses — it calls `greetable()`
+itself, so no extra wiring was needed. A single-shirt wardrobe bag (a steel blue, 0x3a6a9a, not already
+spoken for on this street) keeps the "no two neighbours wear the same shirt" test happy, and
+`blinkT0`/`idleT0`/`sway0` fixed straight in the `makeHuman()` call plus the frozen `idle: [1e9, 1e9]`
+the whole watcher set settles on keeps her statue-still, hanging on every word rather than fidgeting.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, 2400 simulated frames so every other watcher on the street had already settled,
+then 600 more sampling every NPC's own position every 10th frame) swept the ground directly in front
+of the fortune teller, 1-2.4 m out along her own facing direction, against all 334 of the street's own
+physics boxes (knee-to-head band only) and all 69 `game.zones` rectangles: every distance tried came
+back clear by 10.9+ m of the nearest box and 16+ m of the nearest zone rectangle, so 1.5 m out — close
+enough to read as a face-to-face reading rather than a bystander off to one side — was used.
+
+Built dead last, right after the sack race watcher above and right before `makeDayNight()`, for the
+usual reason: `makeHuman()` draws three values off the *shared* `rnd()` sequence unconditionally, and
+dropping a fresh rig in any earlier would shift every timing-sensitive pick made above it, including
+the two-neighbours-chat timing test a few thousand lines up. `node dimension-cat/test/run.mjs` ran
+clean: exit 0, all 277 checks `ok`, 0 console warnings, box count unchanged at 334 (a circle collider,
+not a box), and the Neighborhood's own friend total rose from 144 to 145 (confirmed by the test's own
+"145 to meet" line). No visual check was possible in this environment (no browser, no Playwright), so
+whether standing a step away actually reads as "getting a reading" rather than just another passer-by
+is unverified, same caveat every watcher in this game's set has carried. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

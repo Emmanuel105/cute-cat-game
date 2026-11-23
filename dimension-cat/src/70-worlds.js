@@ -5206,6 +5206,37 @@ function buildNeighborhood(game, entry) {
     W.add(sackWatcher.group);
     game.npcs.push(new Wanderer(game, sackWatcher, { x: swx, z: swz, angle: atan2(laneX - swx, laneZ - swz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // The fortune teller above has had her crystal ball glowing out on the south field since round 1064,
+  // the same as her five sisters in every other world by now — but nobody has ever actually come for a
+  // reading. **A customer now stands facing her, a step away, listening as she tells a fortune.** No
+  // `cries` of her own, no physics box, pure bystander, the exact same shape as the tug-of-war and sack
+  // race watchers just above. Saying hello to her makes her the usual kind of friend.
+  //
+  // Same `Wanderer` (55-npcs.js) every watcher in this project already uses — it calls `greetable()`
+  // itself, so no extra wiring was needed. A single-shirt wardrobe bag (0x3a6a9a, a steel blue not
+  // already spoken for anywhere on this street) keeps the "no two neighbours wear the same shirt" test
+  // happy, and `blinkT0`/`idleT0`/`sway0` fixed straight in the `makeHuman()` call plus the frozen
+  // `idle: [1e9, 1e9]` the whole watcher set settles on keeps her statue-still, hanging on every word.
+  //
+  // A headless probe (a scratch script against the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, 2400 simulated frames so every watcher above had already settled, then a
+  // further 600 sampling every NPC's own position every 10th frame) swept the ground directly in front
+  // of the fortune teller, 1-2.4 m out along her own facing direction, against all 334 of the street's
+  // own physics boxes (knee-to-head band only) and all 69 `game.zones` rectangles: every distance tried
+  // came back clear by 10.9+ m of the nearest box and 16+ m of the nearest zone rectangle, so 1.5 m out
+  // — close enough to read as a face-to-face reading rather than a bystander lurking off to one side —
+  // was used.
+  //
+  // Built dead last, right after the sack race watcher above and right before `makeDayNight()`, for the
+  // usual reason: `makeHuman()` draws three values off the *shared* `rnd()` sequence unconditionally,
+  // and dropping a fresh rig in any earlier would shift every timing-sensitive pick made above it,
+  // including the two-neighbours-chat timing test a few thousand lines up.
+  { const ftX = -10, ftZ = -58, cux = -9.27, cuz = -56.69;
+    const customerWard = makeWardrobe(r, { shirts: [0x3a6a9a] });
+    const customer = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: customerWard }), blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(customer.group);
+    game.npcs.push(new Wanderer(game, customer, { x: cux, z: cuz, angle: atan2(ftX - cux, ftZ - cuz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
