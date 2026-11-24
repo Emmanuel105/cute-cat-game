@@ -39238,3 +39238,38 @@ blacksmith" rather than just standing nearby is unverified, same caveat every wa
 carried. The other six worlds' blacksmiths — there are none; the forge is Victorian-only so far, the
 first of its kind, so this starts no cross-world set the way the woodcutter and hopscotch watchers did.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1343 — Victorian's cobbler gets a watcher too
+
+The cobbler (round 1333, stitching boots on his stool on the south terrace between the houses at x=52
+and x=62) has sat there alone ever since — last round gave the blacksmith two doors down his own first
+watcher, but nobody had ever stopped to watch the cobbler's needle go in and out. **An old woman now
+stands a couple of steps north-east of his stool, leaning in slightly to watch the stitching.** *"In and
+out, in and out — he's not dropped a stitch yet."* *"Mind your claws, puss — he'll sole yours too, if
+you ask nicely."* *"My own boots came through that door, years back. Still holding."* Saying hello makes
+her the usual kind of friend.
+
+No new mechanism: the same `Wanderer` (55-npcs.js) every watcher in this game already uses, with every
+shared-`rnd()` draw in its own constructor pinned (angle, phase, timer, `t`, `cryT`) rather than left to
+its own defaults, the same defensive habit the blacksmith's own watcher just above settled on —
+`test/run.mjs` runs every world through one unbroken process, and a stray draw here would otherwise
+nudge some later world's own timing-sensitive numbers. `Wanderer`'s own constructor calls `greetable()`
+itself, so no extra wiring was needed, and she carries no physics box of her own, pure bystander like
+every other watcher in this set.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(3, 'from-prev')` for a direct synchronous build, then 3600 simulated
+frames so every carriage horse and wanderer had already settled) swept the narrow gap in the south
+terrace's own iron fences — the same gap the cobbler's own stool sits in — against all 618 of this
+town's own physics boxes (knee-to-head band only): (58.3, -5.1) came back clearest within 1-1.8 m of the
+stool, 1.11 m from the nearest box (the cobbler's own workbench) and 1.77 m from the cobbler himself,
+still on the same pavement strip his stool sits on and well short of the fence corner at x=58.5.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged at 336 (she adds none), and Victorian's own friend total rose from 192 to 193 (confirmed
+against the previous commit with `git stash`). No visual check was possible in this environment (no
+browser, no Playwright), so whether she actually reads as watching the cobbler rather than just standing
+near his stool is unverified, same caveat every watcher in this game has carried. The watchmaker at the
+clock tower — this town's third seated craftsman, after the cobbler and the blacksmith — is now the
+only one of the three still working alone. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.
