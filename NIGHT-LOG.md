@@ -39058,3 +39058,34 @@ Playwright), so whether she actually reads as watching the chalk squares from th
 the same caveat every watcher in this set has carried so far. All seven hopscotch chalkers now have a
 watcher of their own — the set started in round 1331 is complete. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1337 — Sunny Shore's organ grinder gets a monkey too
+
+Rounds 1273, 1323 and 1324 gave the Neighborhood's, Candy Land's and Robot City's own organ grinders a
+monkey with a tin cup; round 1325 gave Victorian's the same, leaving the three terrain worlds without
+one — their organ grinders came later, once the barrel organ's own physics box was fixed to read the
+ground height underneath it instead of a flat constant. **Sunny Shore, the first of the three terrain
+worlds to get an organ grinder, is now the first to get its monkey too — tucked in the sand beside the
+barrel organ in the dunes' south-west corner, tin cup held in both paws, rattling it now and then.**
+
+No new mechanism: the monkey is the same hand-built mesh and animation (head turn, breathing, tail sway,
+the cup-rattle bursts, all riding the world clock `t` through a single `U.push`, no physics box, no
+`rnd()` draw) the four earlier monkeys already use, copied into `72-world-beach.js` with only the
+position swapped to use `game.physics.ground0()` for the dune's own slope instead of a flat y=0.
+`game.namedFriend('organ-monkey')` plus a `game.addInteractable` gives it the usual "Say hello to the
+monkey" greeting.
+
+A headless probe (`game.start('new')`, `game.travel(4, 'from-hub')` waited out for real against its own
+portal-fade timer, then 1800 simulated frames so every sunbather and dog walker had settled) checked the
+same local offset the other four monkeys use (0.55 m along the organ's own side offset, 1.0 m further
+out, rotated by the grinder's own facing): the computed spot (-36.41, -38.66) came back 0.40 m from the
+organ's own physics box (the same deliberate overlap every earlier monkey sits at), 4.34 m from the next
+nearest box, 1.46 m clear of the nearest `game.zones` rectangle and 1.14 m from the grinder himself — the
+same close proximity every earlier monkey keeps. Ground there settles at 0.59 m, a gentle dune slope that
+doesn't matter over the monkey's own small footprint.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged at 336 (it adds none), and Sunny Shore's own friend total rose from 164 to 165 (confirmed
+against the previous commit with `git stash`). No visual check was possible in this environment (no
+browser, no Playwright). Frosty Peak and Whisper Woods' own organ grinders are still without a monkey.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
