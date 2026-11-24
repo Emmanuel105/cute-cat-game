@@ -39273,3 +39273,38 @@ near his stool is unverified, same caveat every watcher in this game has carried
 clock tower — this town's third seated craftsman, after the cobbler and the blacksmith — is now the
 only one of the three still working alone. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 1344 — Victorian's watchmaker gets a watcher too
+
+The watchmaker (round from a few nights back, peering through his loupe at a pocket watch on the clock
+tower plaza's quiet south side) is this town's third seated craftsman, after the blacksmith and the
+cobbler — and, as last round's own entry pointed out, the only one of the three still working alone.
+**A young man now stands a couple of steps south-east of the bench, watching the loupe hand instead of
+the tower above it.** *"He hasn't blinked once since I got here — not past that loupe, anyway."*
+*"Those cogs would roll right under your paws, puss. Mind where you tread."* *"Three more watches
+waiting on that cloth. He's in no hurry at all."* Saying hello makes him the usual kind of friend.
+
+No new mechanism: the same `Wanderer` (55-npcs.js) every watcher in this game already uses, with every
+shared-`rnd()` draw in its own constructor pinned (angle, phase, timer, `t`, `cryT`) rather than left
+to its own defaults, the same defensive habit the blacksmith's and cobbler's own watchers settled on
+two rounds back — `test/run.mjs` runs every world through one unbroken process, and a stray draw here
+would otherwise nudge some later world's own timing-sensitive numbers. `Wanderer`'s own constructor
+calls `greetable()` itself, so no extra wiring was needed, and he carries no physics box of his own,
+pure bystander like every other watcher in this set.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(3, 'from-prev')` for a direct synchronous build, then 3600 simulated
+frames so every carriage horse and wanderer had already settled) swept the plaza's own south side out
+to 2.2 m from the watchmaker's own stool (42, -6) against all 618 of this town's own physics boxes
+(knee-to-head band only) and every sampled NPC position: (43.2, -7.8) came back clearest — 1.96 m from
+the nearest box (the watchmaker's own stool) and 2.16 m from the nearest other soul, still inside the
+plaza's own 16x16 paving and the zone circle (radius 11, centred (42, 0)) that keeps `victorianRegion`'s
+own fill off the plaza entirely.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged at 336 (he adds none), and Victorian's own friend total rose from 193 to 194 (confirmed
+by the test's own count). No visual check was possible in this environment (no browser, no Playwright),
+so whether he actually reads as watching the watchmaker rather than just standing near the bench is
+unverified, same caveat every watcher in this game has carried. All three of Victorian's seated
+craftsmen — the blacksmith, the cobbler, the watchmaker — now have company. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
