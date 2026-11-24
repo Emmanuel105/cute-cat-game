@@ -38553,3 +38553,39 @@ Woods' own friend total rose from 185 to 186 (confirmed by the test's own "186 t
 visual check was possible in this environment (no browser, no Playwright), same caveat every
 watcher in this set has carried. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy. All seven worlds' fortune tellers now have a customer, closing out this set.
+
+## Round 1323 — Candy Land's organ grinder gets a monkey too
+
+Round 1273 gave the Neighborhood's own barrel organ the one thing missing from every picture of one —
+a monkey with a tin cup, rattling it hopefully at whoever walked by — but called it "a one-off
+flourish rather than the start of a new cross-world set," since only four of the seven worlds
+(Neighborhood, Candy Land, Robot City, Victorian) have a barrel organ at all. Nobody had come back to
+check on the other three since. **Candy Land's own organ grinder now has a monkey of his own too,**
+tucked right beside the barrel organ, same tin cup, same rattle. *"🐒 *rattles the tin cup, chatters,
+and shakes it hopefully at a passing gumdrop cart*"*
+
+No new mesh and no new controller: the monkey is the exact same hand-built group `70-worlds.js`
+already carries for the Neighborhood's one, copied verbatim (fur, belly patch, haunches, head, paw-held
+cup, a nine-segment Catmull-Rom tail) — only the position and a line of dialogue changed. It draws no
+`rnd()` at all, shared or this land's own seeded `r()`, so dropping it in cost nothing downstream and
+it could go anywhere in this land's build without disturbing a single later pick. Placement uses
+`localXZ()` (62-props-nature.js) to rotate the same local offset (0.55 m along the organ's own `side`
+offset, 1.0 m further out) by this organ's own facing angle instead of assuming `ry = 0` the way the
+original round could, since Candy Land's grinder faces the land's own centre rather than north.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(1, 'from-hub')` waited out for real against its own portal-fade
+timer, then 3600 simulated frames, reading `game.physics.boxes` and `game.zones.blocked()` directly)
+confirmed the computed spot (69.0, -4.4) sits 0.57 m from the organ's own box — the same deliberate
+overlap round 1273's own placement used (0.575 m there) — and 1.14 m from the grinder himself, an
+near-exact match to the original's own numbers, confirming the rotated offset lands in the same
+relative spot regardless of facing angle. Clear of every `game.zones` rectangle.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (no new collider — a pure "look and greet" prop like the first monkey), and Candy
+Land's own friend total rose from 145 to 146 (confirmed against the previous commit with `git stash`).
+No visual check was possible in this environment (no browser, no Playwright), so whether the monkey
+actually reads as begging for a coin from this angle is unverified, same caveat the original carried.
+Robot City's and Victorian's own organ grinders are still without a monkey — whether this becomes a
+four-world set like the harmonica or stays a pair is left for a future round to decide. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
