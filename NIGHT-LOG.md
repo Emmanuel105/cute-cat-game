@@ -38626,3 +38626,29 @@ possible in this environment (no browser, no Playwright), so whether the monkey 
 from this angle is unverified, same caveat the first two carried. Victorian's own organ grinder is
 now the only one of the four still without a monkey. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1325 — Victorian's organ grinder gets a monkey too, closing out the set
+
+Rounds 1273, 1323 and 1324 gave the Neighborhood's, Candy Land's and Robot City's own organ grinders
+a monkey with a tin cup, each round's log noting Victorian's was the only one of the four still bare.
+**Victorian's own organ grinder, winding his barrel organ on the north green since round 1020, now
+has a monkey of his own too,** tucked right beside the organ, same tin cup, same rattle. *"🐒 *rattles
+the tin cup, chatters, and gives a passing top hat a hopeful look*"* — closing out the set all four
+flat-floor organ grinders now share.
+
+No new mesh and no new controller: the monkey is the exact same hand-built group the previous three
+rounds used, copied verbatim (fur, belly patch, haunches, head, paw-held cup, a nine-segment
+Catmull-Rom tail) — only the position and the one line of dialogue changed. It draws no `rnd()` at
+all, so dropping it in cost nothing downstream for any later pick in this town's build. The
+grinder's own facing (`gry = 0`, same as the Neighborhood's) meant `localXZ()` (62-props-nature.js)
+landed the monkey at a plain (41.55, 64.5) — 0.55 m along the organ's own side offset and 1.0 m
+further out, the same offset every earlier monkey used.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (no new collider, confirmed against the previous commit with `git stash`), and
+Victorian's own friend total rose from 187 to 188. Walkability (94%) and the walked-around distance
+limit (420) came back bit-for-bit identical to the pre-change run, so nothing about the new monkey
+blocks a path. No visual check was possible in this environment (no browser, no Playwright), same
+caveat every one of these four monkeys has carried. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy. All four of the game's organ grinders now have their own
+monkey with a tin cup.
