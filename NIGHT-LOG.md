@@ -39028,3 +39028,33 @@ previous commit with `git stash`). No visual check was possible in this environm
 Playwright), so whether she actually reads as watching the chalk squares from this angle is unverified,
 the same caveat every watcher in this set has carried so far. Only Whisper Woods' own chalker is still
 solo. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1336 — Whisper Woods' hopscotch chalker gets a watcher, sixth and last of the set
+
+Sixth and last of the hopscotch-watcher set started in round 1331, after the Neighborhood, Candy Land,
+Robot City, Victorian and Sunny Shore. **Whisper Woods' own girl — kneeling deep in the south of these
+woods, chalking six squares straight onto the packed earth since she was first built — now has a
+passer-by standing a few steps south-east of her six squares, watching the chalk go down.**
+
+Plain `Wanderer` (55-npcs.js), same as the other five watchers in this set — it calls `greetable()`
+itself, so no extra wiring, and carries no physics box of its own. Built with plain `makeHuman()` (this
+wood's own chalker uses the same, rather than a local wardrobe helper) and every one of `Wanderer`'s
+shared-`rnd()` draws (`phase`/`timer`/`t`/`cryT`) pinned explicitly, the same defensive habit the other
+watchers in this set settled on, since `test/run.mjs` runs every world through one unbroken process.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, since
+there's no browser here to look at it) built the real Whisper Woods, ran 3600 frames to settle every
+wandering deer, fox, fairy and child, then 600 more sampling every NPC's own position every 5th frame,
+and swept the open forest floor south-east of the six squares against all 748 of this wood's own physics
+boxes (knee-to-head band only) and every sampled NPC position: (29.1, -44.3) came back clear by 7.83 m
+of the nearest box and 4.61 m of the nearest other soul (the chalker herself), 2.31 m south-east of the
+nearest square, at radius 53.0 from the origin — well short of the radius (58) where forestRegion's own
+procedural fill takes over.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged at 336, and Whisper Woods' own friend total rose from 186 to 187 (confirmed against the
+previous commit with `git stash`). No visual check was possible in this environment (no browser, no
+Playwright), so whether she actually reads as watching the chalk squares from this angle is unverified,
+the same caveat every watcher in this set has carried so far. All seven hopscotch chalkers now have a
+watcher of their own — the set started in round 1331 is complete. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

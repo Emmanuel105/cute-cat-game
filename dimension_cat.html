@@ -35727,6 +35727,37 @@ function buildForest(game, entry) {
     game.npcs.push(new Kneeler(game, chalker, { x: kx, z: kz, ry: atan2(squares[0][0] - kx, squares[0][1] - kz),
       cries: ['Six squares, dry before the dew comes back.', 'Careful, puss — mind the chalk lines!', "Quietest spot in the whole wood for it."] })); }
 
+  // Rounds 1331-1335 gave the Neighborhood's, Candy Land's, Robot City's, Victorian's and Sunny Shore's
+  // own hopscotch chalkers a first watcher, sixth and last of the hopscotch-watcher set started in
+  // round 1331 — Whisper Woods' own girl (kneeling deep in the south of these woods, built a little
+  // further up) was the only one of the seven still solo. **A passer-by now stands a few steps
+  // south-east of her six squares, watching the chalk go down.**
+  //
+  // Plain `Wanderer` (55-npcs.js), the same class every watcher in this set already uses — it calls
+  // `greetable()` on its own, so no extra wiring was needed, and it carries no physics box of its own.
+  // Built with plain `makeHuman()` (this wood's own chalker uses the same, rather than a local wardrobe
+  // helper) and every one of `Wanderer`'s own shared-`rnd()` draws (`phase`/`timer`/`t`/`cryT`) pinned
+  // explicitly, the same defensive habit the other five watchers in this set already settled on, since
+  // `test/run.mjs` runs every world through one unbroken process and a shift to that shared sequence
+  // here could otherwise nudge a later world's own timing-sensitive numbers.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, since
+  // there's no browser here to look at it) built the real Whisper Woods (`game.load(6, 'from-prev')`,
+  // 3600 simulated frames so every wandering deer, fox, fairy and child had settled, then 600 more
+  // sampling every NPC's own position every 5th frame) swept the open forest floor south-east of the six
+  // squares against all 748 of this wood's own physics boxes (knee-to-head band only) and every sampled
+  // NPC position: (29.1, -44.3) came back clear by 7.83 m of the nearest box and 4.61 m of the nearest
+  // other soul (the chalker herself), 2.31 m south-east of the nearest square, at radius 53.0 from the
+  // origin — well short of the radius (58) where forestRegion's own procedural fill takes over.
+  //
+  // Built right after the chalker herself, before the marbles ring further down, so this one extra
+  // gender-and-age draw lands right where the chalker's own draw just left the wood's shared `r`
+  // sequence, disturbing nothing built earlier.
+  { const wwx = 29.1, wwz = -44.3;
+    const watcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(watcher.group);
+    game.npcs.push(new Wanderer(game, watcher, { x: wwx, z: wwz, angle: atan2(25.1 - wwx, -42 - wwz), speed: 0.3, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   // Robot City, the Neighborhood, Victorian, Candy Land, Sunny Shore and Frosty Peak all have a marbles
   // ring by now — the oldest pavement game of all — and Whisper Woods was the last of the seven left
   // without one. A child now kneels on the forest floor east of the stepping-stone path, flicking
