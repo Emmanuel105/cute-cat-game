@@ -39181,3 +39181,21 @@ procedural fill takes over.
 `node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, and Whisper
 Woods' own friend total rose from 188 to 189. No visual check was possible in this environment (no
 browser, no Playwright). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1341 — fixing last round's fiddler-listener duplicate
+
+Correction, not addition. Round 1340's own claim was wrong on both halves: Whisper Woods' fiddler
+already had a listener, added back in round 1171 (*"the last of the seven"*, that entry said, and it
+was right) — and Candy Land's fiddler had had one since round 1113, not never. Round 1340 misread an
+out-of-date comment nearby, decided Whisper Woods was the one still missing a listener, and built a
+second one a few metres from the first. **That duplicate — a second passer-by standing south-west of
+the fiddler, listening to the same tune the round-1171 listener already stands north-west of him
+listening to — is now gone.** The original round-1171 listener stays exactly as she was.
+
+No new mechanism, just a deletion: the whole round-1340 block in `74-world-forest.js` (the
+`fiddleListener` rig, its `Wanderer`, and the comment explaining a chain of events that hadn't happened)
+removed outright. Nothing else in the file referenced its block-scoped locals, so there was nothing
+else to touch. `node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings,
+and Whisper Woods' own friend total is back down to 188 (confirmed against the previous commit with
+`git stash`) — one real friend fewer than round 1340 claimed, because that one was never real in the
+first place. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
