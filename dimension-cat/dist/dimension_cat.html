@@ -38687,6 +38687,51 @@ function buildForest(game, entry) {
     W.add(customer.group);
     game.npcs.push(new Wanderer(game, customer, { x: cux, z: cuz, angle: atan2(ftX - cux, ftZ - cuz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // The Neighborhood, Robot City, Sunny Shore, Frosty Peak and Victorian have each picked up a
+  // listener for their own fiddler by now (rounds 1109-1113 and later) — this wood's own, sawing away
+  // on the mossy log east of the glade since earlier in this build, was still playing to nobody.
+  // **A passer-by now stands a few steps south-west of the fiddler, listening instead of wandering on
+  // through the trees.** *"Out past the mushrooms, and still every note carries clean as a bell."*
+  // *"Careful, puss — four strings, and not one of them yarn."* *"The fireflies seem to like it too,
+  // the way they keep drifting closer."* Saying hello makes her the usual kind of friend. Candy Land
+  // remains the only world whose own fiddler still plays to nobody.
+  //
+  // No new mechanism: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual human rig, and
+  // `Wanderer` (55-npcs.js) gives her the same "stand and watch" behaviour every other listener in this
+  // game already uses, with a short leash (0.5 m) keeping her parked by the fiddler rather than
+  // wandering off across the forest floor. `Wanderer`'s own constructor already reads its rig's height
+  // off `game.physics.ground0()`, the same terrain-aware convention the fiddler itself relies on, and
+  // calls `greetable()` itself, so this was a drop-in addition with no extra wiring. A single-shirt
+  // wardrobe bag (0x6a9a7a, a sage not already spoken for anywhere in this wood) keeps the palette from
+  // repeating. `idle: [3, 6]` is the same gentle fidget every other fiddler listener in the set already
+  // uses, not the frozen stare a fortune teller's customer gets — she sways and blinks like anyone else
+  // standing still, just never wanders off.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, `game.travel(6, 'from-hub')` waited out for real
+  // against `game.transitioning`, then 1200 simulated frames so every frog, firefly, butterfly, fox and
+  // wandering villager had settled) swept a 0.5 m grid 2-4 m out from the fiddler's own spot (51, -20)
+  // against all of this wood's own physics boxes (knee-to-head band only) and its `game.zones`
+  // rectangles: (48.5, -23) came back clearest — 4.36 m from the nearest box, 15.93 m clear of the
+  // nearest zone rectangle and 3.9 m clear of the nearest wandering soul sampled at that moment, at
+  // radius 53.7 from the origin — well short of the radius (58) where `forestRegion()`'s own
+  // procedural fill takes over, and clear of the fiddler's own case (51.7, -19.6) and the herbalist's
+  // stall (51, 17) further north. Ground there settles at 1.16 m, with under 1.3 cm of slope across the
+  // listener's own small footprint. `angle` points her at the fiddler rather than a fixed constant, so
+  // she reads as listening to the tune and not just standing nearby.
+  //
+  // Built dead last of everything this wood adds, right after the fortune teller's customer above and
+  // right before `spawnBySquirrel()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw
+  // off this wood's own shared `r()` sequence unconditionally, and anything built earlier would have
+  // had its own timing-sensitive pick shifted by it.
+  { const flx = 48.5, flz = -23, ffx = 51, ffz = -20;
+    const fiddleListenWard = makeWardrobe(r, { shirts: [0x6a9a7a] });
+    const fiddleListener = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: fiddleListenWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: r.chance(0.2) });
+    W.add(fiddleListener.group);
+    game.npcs.push(new Wanderer(game, fiddleListener, { x: flx, z: flz, angle: atan2(ffx - flx, ffz - flz), leash: 0.5, speed: 0.3, idle: [3, 6],
+      cries: ['Out past the mushrooms, and still every note carries clean as a bell.', 'Careful, puss — four strings, and not one of them yarn.', 'The fireflies seem to like it too, the way they keep drifting closer.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

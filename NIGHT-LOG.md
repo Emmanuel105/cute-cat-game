@@ -39157,3 +39157,27 @@ environment (no browser, no Playwright), so whether it actually reads as sitting
 this angle is unverified, the same caveat every monkey in this set has carried so far. All seven worlds'
 organ grinders now have their monkey. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 1340 — Whisper Woods' fiddler finally gets a listener
+
+Five other worlds (the Neighborhood, Robot City, Sunny Shore, Frosty Peak and Victorian) picked up a
+listener for their own busking fiddler over earlier rounds; Whisper Woods' own, sawing away on a mossy
+log east of the glade, was still playing to nobody. **A passer-by now stands a few steps south-west of
+him, listening instead of wandering on through the trees.** *"Out past the mushrooms, and still every
+note carries clean as a bell."* *"Careful, puss — four strings, and not one of them yarn."* *"The
+fireflies seem to like it too, the way they keep drifting closer."* Saying hello makes her the usual
+kind of friend. Candy Land is now the only world whose own fiddler still plays to nobody.
+
+No new mechanism: a plain `makeHuman()`/`randomPerson()` rig and the same `Wanderer` (55-npcs.js) every
+other fiddler listener already uses, with a short leash (0.5 m) and the ordinary `idle: [3, 6]` fidget
+rather than the frozen stare a fortune teller's customer gets — she sways and blinks like anyone else,
+she just never wanders off. A headless probe (the stub-three test harness, `game.travel(6, 'from-hub')`
+waited out for real, then 1200 simulated frames so every frog, firefly and wandering villager had
+settled) swept the ground near the fiddler's own spot (51, -20) against every physics box and
+`game.zones` rectangle: (48.5, -23) came back clearest — 4.36 m from the nearest box, nearly 16 m clear
+of the nearest zone, on almost flat ground, and well short of the radius where the forest's own
+procedural fill takes over.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, and Whisper
+Woods' own friend total rose from 188 to 189. No visual check was possible in this environment (no
+browser, no Playwright). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
