@@ -39089,3 +39089,34 @@ count unchanged at 336 (it adds none), and Sunny Shore's own friend total rose f
 against the previous commit with `git stash`). No visual check was possible in this environment (no
 browser, no Playwright). Frosty Peak and Whisper Woods' own organ grinders are still without a monkey.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1338 — Frosty Peak's organ grinder gets a monkey too
+
+Rounds 1273, 1323 and 1324 gave the Neighborhood's, Candy Land's and Robot City's own organ grinders a
+monkey with a tin cup; round 1325 gave Victorian's the same, and round 1337 gave Sunny Shore's the same
+once its organ's own physics box learned to read the dune slope. **Frosty Peak, the second of the three
+terrain worlds to get an organ grinder, is now the second to get its monkey too — tucked in the snow
+beside the barrel organ out on the open snowfield, tin cup held in both paws, rattling it now and then.**
+
+No new mechanism: the monkey is the same hand-built mesh and animation (head turn, breathing, tail sway,
+the cup-rattle bursts, all riding the world clock `t` through a single `U.push`, no physics box, no
+`rnd()` draw) every earlier monkey already uses, copied into `73-world-snow.js` right after the organ
+grinder's own block, with only the position swapped to use `game.physics.ground0()` for the snowfield's
+own gentle slope instead of a flat y=0. `game.namedFriend('organ-monkey')` plus a `game.addInteractable`
+gives it the usual "Say hello to the monkey" greeting — though the toast line swapped Sunny Shore's gull
+for a penguin, since there are no gulls this far up the mountain.
+
+A headless probe (`game.start('new')`, `game.travel(5, 'from-hub')` waited out for real against its own
+portal-fade timer, then 1800 simulated frames so every penguin and passer-by had settled, then 1800 more
+sampling every NPC's own position every 10th frame) checked the same local offset every earlier monkey
+uses (0.55 m along the organ's own side offset, 1.0 m further out, rotated by the grinder's own facing):
+the computed spot (27.72, -28.89) came back 0.40 m from the organ's own physics box (the same deliberate
+overlap every earlier monkey sits at), 3.37 m clear of the nearest `game.zones` rectangle, and 1.14 m
+from the grinder himself — the same close proximity every earlier monkey keeps. Ground there settles at
+0.29 m, with under 7 cm of slope across the monkey's own small footprint.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged at 336 (it adds none), and Frosty Peak's own friend total rose from 159 to 160 (confirmed
+against the previous commit with `git stash`). No visual check was possible in this environment (no
+browser, no Playwright). Whisper Woods remains the only world with neither an organ grinder nor a monkey.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
