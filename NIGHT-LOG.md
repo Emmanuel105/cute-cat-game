@@ -38652,3 +38652,52 @@ blocks a path. No visual check was possible in this environment (no browser, no 
 caveat every one of these four monkeys has carried. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy. All four of the game's organ grinders now have their own
 monkey with a tin cup.
+
+## Round 1326 — the Neighborhood finally gets a telescope
+
+The Neighborhood is the one world with a real day/night cycle (`makeDayNight`, `70-worlds.js`) and
+stars that actually come out at dusk, but nothing out here has ever stood and looked up at them — the
+painter in Frosty Peak and the archive-bot's tripod camera in Robot City both look outward, never up.
+**A stargazer now stands behind a brass-trimmed tripod telescope on the quiet lawn east of the
+street, bent to the eyepiece.** *"Can't see a blessed thing in daylight, but I like to keep it
+pointed at something anyway."* *"There — right between the two bright ones. Steadier than it looks
+through that eyepiece."*
+
+`makeTelescope()` is a new prop (`60-props.js`), built the same way `makeOldCamera()`'s own tripod
+already is: three wooden legs, a hub, and here a tilted gunmetal tube with a brass objective ring and
+eyepiece in place of the camera's box and bellows. Static geometry, no `userData.update`, so it bakes
+into one draw call like every other street fixture. The stargazer is the usual `makeHuman()` rig and
+a `Wanderer` (`55-npcs.js`), which calls `greetable()` itself — `blinkT0`/`idleT0`/`sway0` fixed
+straight in the `makeHuman()` call plus the frozen `idle: [1e9, 1e9]` and no `cries` at all keeps her
+statue-still and draws nothing extra from the shared `rnd()` sequence beyond construction, the same
+caution every watcher built this late in this file already takes (the Neighborhood is the one world
+every test travel starts from, so any stray draw here would shift every timing-sensitive pick made in
+every world built after it). The telescope's own "Look through the telescope" prompt checks
+`game.dayPhase` the same way this file's own bats already do, so it answers differently by day and by
+night instead of repeating one line regardless of the sky.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, 600 simulated frames to settle every wandering neighbour, then a further 1800
+sampling every NPC's own position every 5th frame) swept a 1.5 m grid across the open lawn east of the
+street against all 334 of this street's own physics boxes, its 69 `game.zones` rectangles and all
+39,240 of those position samples: (74, -26.5) came back clearest in the whole sweep — 12.76 m from the
+nearest box, 23.1 m clear of the nearest zone rectangle's own edge and 13.0 m from the nearest
+wandering soul, on flat ground well short of the 95 m world limit and clear of the archer's, the
+magician's and the lake's own corners. The stargazer stands 1 m south of it, facing north at the
+eyepiece.
+
+Built dead last, right after the fortune teller's customer and right before `makeDayNight()`, for the
+usual reason: `makeHuman()` draws off the shared `rnd()` sequence unconditionally, and dropping a
+fresh rig in any earlier would shift every timing-sensitive pick made above it, including the
+two-neighbours-chat timing test a few thousand lines up. A single-shirt wardrobe (0x3a9a7a, a teal
+checked against every shirt colour already used on this street) keeps the "no two neighbours wear the
+same shirt" test happy.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count up
+by one (334 → 335, the telescope's own physics box), and the Neighborhood's own friend total rose from
+145 to 146. Every road, pavement and path still walked clear end to end, and ground-walkability held
+at 95-96% across repeated rebuilds in the same run (the pre-existing spread from wandering neighbours
+mid-stride, not a regression — confirmed against the unmodified build). No visual check was possible
+in this environment (no browser, no Playwright), so whether the tilt angle and eyepiece height actually
+read as "looking through it" from the stargazer's own stance is unverified. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

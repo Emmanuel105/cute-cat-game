@@ -5237,6 +5237,60 @@ function buildNeighborhood(game, entry) {
     W.add(customer.group);
     game.npcs.push(new Wanderer(game, customer, { x: cux, z: cuz, angle: atan2(ftX - cux, ftZ - cuz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // The Neighborhood is the one world with a real day/night cycle (`makeDayNight` below) and stars that
+  // actually come out, but nothing has ever stood out here with so much as a telescope — the painter at
+  // her easel in Frosty Peak and the archive-bot's tripod camera in Robot City both look outward, never
+  // up. **A stargazer now stands behind a brass-trimmed tripod telescope on the quiet lawn east of the
+  // street, bent to the eyepiece.** *"Can't see a blessed thing in daylight, but I like to keep it
+  // pointed at something anyway."* *"There — right between the two bright ones. Steadier than it looks
+  // through that eyepiece."*
+  //
+  // `makeTelescope()` (60-props.js) is new: a three-legged wooden tripod, the same build as
+  // `makeOldCamera()`'s own, carrying a tilted brass-and-gunmetal tube with an objective ring at the far
+  // end and an eyepiece at the near one — static geometry, no `userData.update`, so `bakeDeep()` folds it
+  // into one draw call like every other static prop on this street. The stargazer herself is the usual
+  // `makeHuman()`/`randomPerson()` rig and a `Wanderer` (55-npcs.js), which calls `greetable()` itself, so
+  // no extra wiring was needed; `blinkT0`/`idleT0`/`sway0` fixed straight in the `makeHuman()` call plus
+  // the frozen `idle: [1e9, 1e9]` (and no `cries` at all) keeps her statue-still and draws nothing extra
+  // from the shared `rnd()` sequence beyond construction — the same caution every watcher built this late
+  // in this file already takes, since the Neighborhood is the one world every test travel starts from and
+  // any further draw here would shift every timing-sensitive pick made in every world built after it. A
+  // single-shirt wardrobe (0x3a9a7a, a teal not already spoken for anywhere on this street) keeps the "no
+  // two neighbours wear the same shirt" test happy.
+  //
+  // The telescope's own "Look through the telescope" prompt checks `game.dayPhase` the same way the bats'
+  // own comment above already explains (`night = smoothstep(0.05, -0.2, sin(sa))`), so it answers
+  // differently by day and by night rather than always giving the same line.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, 600 simulated frames to settle every wandering neighbour, then a further 1800
+  // sampling every NPC's own position every 5th frame) swept a 1.5 m grid across the open lawn east of
+  // the street (25-82 m out, clear of the 95 m world limit) against all 334 of this street's own physics
+  // boxes, its 69 `game.zones` rectangles and all 39,240 of those position samples: (74, -26.5) came back
+  // clearest in that whole sweep — 12.76 m from the nearest box, 23.1 m clear of the nearest zone
+  // rectangle's own edge and 13.0 m from the nearest wandering soul over the whole run, well past the
+  // archer's and magician's own corners and nowhere near the lake, with flat ground (`ground0` returns 0
+  // there, same as everywhere else on this street). The stargazer stands 1 m south of it, facing north at
+  // the eyepiece.
+  //
+  // Built dead last, right after the fortune teller's customer above and right before `makeDayNight()`,
+  // for the usual reason: `makeHuman()` draws off the *shared* `rnd()` sequence unconditionally, and
+  // dropping a fresh rig in any earlier would shift every timing-sensitive pick made above it, including
+  // the two-neighbours-chat timing test a few thousand lines up.
+  { const tx = 74, tz = -26.5, sgx = 74, sgz = -27.5;
+    const telescope = makeTelescope(); telescope.position.set(tx, 0, tz); W.add(telescope);
+    P.addBox(tx, 0.65, tz, 0.7, 1.3, 0.7, { cam: false });
+    const scopeLinesDay = ['🔭 "Can\'t see a blessed thing in daylight, but I like to keep it pointed at something anyway."', '🔭 "Patience. The stars are still up there — they just need the sun to clock off first."'];
+    const scopeLinesNight = ['🌌 "There — right between the two bright ones. Steadier than it looks through that eyepiece."', '🔭 "Best view of the whole night, and nobody else ever comes to look."', '😼 "Puss, I know you can see in the dark — that\'s not quite what this is for."'];
+    game.addInteractable({ obj: telescope, radius: 2.0, label: () => 'Look through the telescope', onUse: () => {
+      SFX.click();
+      const sa = (game.dayPhase ?? 0) * TAU - PI / 2, night = smoothstep(0.05, -0.2, sin(sa));
+      game.toast(rnd.pick(night > 0.2 ? scopeLinesNight : scopeLinesDay), 3000); } });
+    const scopeWard = makeWardrobe(r, { shirts: [0x3a9a7a] });
+    const stargazer = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: scopeWard }), blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(stargazer.group);
+    game.npcs.push(new Wanderer(game, stargazer, { x: sgx, z: sgz, angle: atan2(tx - sgx, tz - sgz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
