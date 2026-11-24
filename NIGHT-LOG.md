@@ -38999,3 +38999,32 @@ browser, no Playwright), so whether he actually reads as watching the chalk squa
 unverified, the same caveat every watcher in this set has carried so far. Two chalkers (Sunny Shore,
 Whisper Woods) still have no watcher of their own. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
 and the root copy.
+
+## Round 1335 — Sunny Shore's hopscotch chalker gets a watcher, fifth of the set
+
+Fifth of the hopscotch-watcher set started in round 1331, after the Neighborhood, Candy Land, Robot City
+and Victorian. **Sunny Shore's own girl — kneeling in the dry dune sand since she was first built,
+drawing six squares straight onto the sand — now has a beachgoer standing a few steps south of her,
+watching the chalk go down.**
+
+Plain `Wanderer` (55-npcs.js), same as the other four watchers in this set — it calls `greetable()`
+itself, so no extra wiring, and carries no physics box of its own. Built with `beachPerson()`, this
+world's own shared wardrobe helper, and every one of `Wanderer`'s shared-`rnd()` draws (`phase`/`timer`/
+`t`/`cryT`) pinned explicitly, the same defensive habit the other watchers in this set settled on, since
+`test/run.mjs` runs every world through one unbroken process.
+
+This is the first of the six chalkers on a terrain world rather than a flat-floor one — Sunny Shore's sand
+slopes gently underfoot — but `Wanderer` already asks the terrain for its own ground height regardless of
+world, so no change was needed there. A headless probe (a scratch script on the same stub-three harness
+`test/run.mjs` itself uses) built the real Sunny Shore, ran 3600 frames to settle every sunbather,
+badminton pair and dog walker, then swept the open dune sand south of the six squares against all 115 of
+this coast's own physics boxes, all 88 `game.zones` rectangles and every sampled NPC position: (-23, -46)
+came back clear by 8.51 m of the nearest box, 14.92 m of the nearest zone rectangle and 3.37 m of the
+nearest wandering soul, well clear of the badminton net and its own fixed watcher nearby.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged at 336, and Sunny Shore's own friend total rose from 163 to 164 (confirmed against the
+previous commit with `git stash`). No visual check was possible in this environment (no browser, no
+Playwright), so whether she actually reads as watching the chalk squares from this angle is unverified,
+the same caveat every watcher in this set has carried so far. Only Whisper Woods' own chalker is still
+solo. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

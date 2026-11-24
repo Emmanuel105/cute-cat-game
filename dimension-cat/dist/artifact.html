@@ -30702,6 +30702,37 @@ function buildBeach(game, entry) {
     W.add(customer.group);
     game.npcs.push(new Wanderer(game, customer, { x: cux, z: cuz, angle: atan2(ftX - cux, ftZ - cuz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // Rounds 1331-1334 gave the Neighborhood's, Candy Land's, Robot City's and Victorian's own hopscotch
+  // chalkers a first watcher, fifth of the hopscotch-watcher set started in round 1331 — Sunny Shore's
+  // own girl (kneeling in the dry dune sand south-west of the dog walker's own route, built a couple
+  // thousand lines up) is next, leaving only Whisper Woods still solo. **A beachgoer now stands a few
+  // steps south of her six squares, watching the chalk go down.**
+  //
+  // Plain `Wanderer` (55-npcs.js), the same class every watcher in this set already uses — it calls
+  // `greetable()` on its own, so no extra wiring was needed, and it carries no physics box of its own.
+  // Built with `beachPerson()` (this file's own wardrobe helper, already used for every other plain
+  // passer-by on this coast) and every one of `Wanderer`'s own shared-`rnd()` draws (`phase`/`timer`/
+  // `t`/`cryT`) pinned explicitly, the same defensive habit the other four watchers in this set already
+  // settled on, since `test/run.mjs` runs every world through one unbroken process and a shift to that
+  // shared sequence here could otherwise nudge a later world's own timing-sensitive numbers.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // since there's no browser here to look at it) built the real Sunny Shore (`game.travel(4,
+  // 'from-hub')` waited out for real against its own transition flag, then 3600 simulated frames so
+  // every sunbather, badminton pair and dog walker had settled, then 600 more sampling every NPC's own
+  // position every 5th frame) swept the open dune sand south of the six squares against all 115 of
+  // this coast's own physics boxes (knee-to-head band only), all 88 `game.zones` rectangles and every
+  // sampled NPC position: (-23, -46) came back clear by 8.51 m of the nearest box, 14.92 m of the
+  // nearest zone rectangle and 3.37 m of the nearest wandering soul, at radius 51.4 from the origin —
+  // short of the radius (58) where beachRegion's own procedural fill takes over, and well clear of the
+  // badminton net and its own fixed watcher a few metres north-east.
+  //
+  // Built dead last of everything this beach adds, right before `spawnBySquirrel()`, for the usual
+  // reason: `beachPerson()`/`randomPerson()` both draw off this beach's own shared `r()` sequence
+  // unconditionally.
+  { const chwx = -23, chwz = -46, chkx = -25.9, chkz = -43;
+    game.npcs.push(new Wanderer(game, beachPerson(r.chance(0.5), false), { x: chwx, z: chwz, angle: atan2(chkx - chwx, chkz - chwz), speed: 0.3, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
