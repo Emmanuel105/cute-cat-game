@@ -27141,6 +27141,37 @@ function buildVictorian(game, entry) {
       sfx: () => SFX.clang(), colors: [0xffe066, 0xffffff, 0x9fe8ff], cryIcon: '🔨',
       cries: ['Every fence post and gas lamp on this street started right here.', "Mind your tail, puss — sparks don't care whose whiskers they singe.", "That cobbler still owes me for his iron last. Tell him, if you're headed that way."] })); }
 
+  // Rounds 1331-1333 gave the Neighborhood's, Candy Land's and Robot City's own hopscotch chalkers a
+  // first watcher, fourth of the hopscotch-watcher set started in round 1331 — Victorian's own boy
+  // (built a few thousand lines up, kneeling on the quiet cobblestones south-west of the market square)
+  // is next, leaving Sunny Shore and Whisper Woods still solo. **A passer-by now stands a few steps
+  // east of his six squares, watching the chalk go down.**
+  //
+  // Plain `Wanderer` (55-npcs.js), the same class every watcher in this set already uses — it calls
+  // `greetable()` on its own, so no extra wiring was needed, and it carries no physics box of its own.
+  // Built with no `cries` of its own and every shared-`rnd()` draw in `Wanderer`'s own constructor
+  // (`phase`/`timer`/`t`/`cryT`, each pinned here instead of left to its own default) fixed, the same
+  // defensive habit the other three watchers in this set already settled on, since `test/run.mjs` runs
+  // every world through one unbroken process and a shift to the shared sequence here could otherwise
+  // nudge a later world's own timing-sensitive numbers.
+  //
+  // A headless probe (`game.start('new')`, `game.load(3, 'from-prev')` for a direct synchronous build,
+  // 3600 simulated frames to let every wandering urchin and dancer settle, then 600 more sampling every
+  // NPC's own position every 6th frame) swept the open cobblestones east of the six squares against all
+  // 607 of this town's own physics boxes (knee-to-head band only) and every sampled NPC position:
+  // (-41, -58) came back clear by 12.96 m of the nearest box and 4.90 m of the nearest wandering soul
+  // (the chalker himself), at radius 71.0 from the origin — comfortably short of the radius (88) where
+  // victorianRegion's own procedural fill takes over.
+  //
+  // Built dead last of every person this build adds, right after the blacksmith above and right before
+  // the squirrel below, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this town's
+  // own shared `r()` sequence unconditionally.
+  { const chwx = -41, chwz = -58, chkx = -45.9, chkz = -57.85;
+    const chalkWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x4a7a6a, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(chalkWatcher.group);
+    game.npcs.push(new Wanderer(game, chalkWatcher, { x: chwx, z: chwz, angle: atan2(chkx - chwx, chkz - chwz), speed: 0.3, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);

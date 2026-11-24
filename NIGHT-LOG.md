@@ -38969,3 +38969,33 @@ so whether she actually reads as watching the chalk squares from this angle is u
 caveat every watcher in this set has carried so far. Three chalkers (Victorian, Sunny Shore, Whisper
 Woods) still have no watcher of their own. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 1334 — Victorian's hopscotch chalker gets a watcher, fourth of the set
+
+Fourth of the hopscotch-watcher set started in round 1331, after the Neighborhood, Candy Land and Robot
+City. **Victorian's own chalker — a boy kneeling on the quiet cobblestones south-west of the market
+square since round 1333's predecessor rounds first gave the town the game — now has a passer-by standing
+a few steps east of his six squares, watching the chalk go down.**
+
+Plain `Wanderer` (55-npcs.js), the same class every watcher in this set already uses — it calls
+`greetable()` itself, so he counts as a friend to meet with no extra wiring, and carries no physics box
+of his own. Built with no cries and every one of `Wanderer`'s own shared-`rnd()` draws
+(`phase`/`timer`/`t`/`cryT`) pinned explicitly instead of left to their defaults, the same defensive
+habit the other three watchers in this set already settled on, since `test/run.mjs` runs every world
+through one unbroken process and a shift to that shared sequence here could otherwise nudge some later
+world's own timing-sensitive number.
+
+A headless probe (`game.start('new')`, `game.load(3, 'from-prev')` for a direct synchronous build, 3600
+simulated frames to settle every wandering urchin and dancer, then 600 more sampling every NPC's own
+position every 6th frame) swept the open cobblestones east of the six squares against all 607 of this
+town's own physics boxes (knee-to-head band only) and every sampled NPC position: (-41, -58) came back
+clear by 12.96 m of the nearest box and 4.90 m of the nearest wandering soul, 4.9 m east of the chalker
+himself, well short of the radius (88) where victorianRegion's own procedural fill takes over.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged at 336 (he adds none), and Victorian's own friend total rose from 190 to 191 (confirmed
+against the previous commit with `git stash`). No visual check was possible in this environment (no
+browser, no Playwright), so whether he actually reads as watching the chalk squares from this angle is
+unverified, the same caveat every watcher in this set has carried so far. Two chalkers (Sunny Shore,
+Whisper Woods) still have no watcher of their own. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
