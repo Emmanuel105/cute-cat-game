@@ -182,6 +182,7 @@ function makeHuman(o = {}) {
     rig.hands.push(hand);
     if (o.cane && side === -1) mesh(G.cyl(0.013, 0.013, 0.86, 6), mat(0x3a2718), { y: -0.3, z: 0.08, parent: hand });
     if (o.axe && side === 1) { mesh(G.cyl(0.018, 0.022, 0.8, 6), mat(0x6a4a2a, { roughness: 0.9 }), { y: 0.3, z: 0.02, parent: hand }); mesh(G.box(0.05, 0.22, 0.14), mat(0x9aa3ad, { metalness: 0.7, roughness: 0.35 }), { y: 0.66, z: 0.06, parent: hand }); }   // a woodcutter's axe
+    if (o.hammer && side === 1) { mesh(G.cyl(0.018, 0.022, 0.4, 6), mat(0x4a3523, { roughness: 0.88 }), { y: 0.22, z: 0.02, parent: hand }); mesh(G.box(0.1, 0.08, 0.17), mat(0x5a5a5e, { metalness: 0.65, roughness: 0.4 }), { y: 0.42, z: 0.04, parent: hand }); }   // a blacksmith's hammer
     if (o.pole && side === 1) { mesh(G.cyl(0.012, 0.014, 1.7, 6), mat(0x4a3a2a), { y: 0.55, z: 0.03, parent: hand }); mesh(G.sphere(0.035, 8, 6), glowMat(0xffb060, 1.4), { y: 1.42, z: 0.03, shadow: 'none', parent: hand }); }   // a lamplighter's pole, lit at the tip
     if (o.brush && side === 1) {   // a chimney sweep's rod, bristles splayed at the top
       mesh(G.cyl(0.013, 0.016, 1.6, 6), mat(0x3a2a1a, { roughness: 0.85 }), { y: 0.5, z: 0.04, parent: hand });
@@ -1639,9 +1640,10 @@ class Sledder {
 
 // ---------------------------------------------------------------- chopper: stands over a log with an axe and splits it, again and again
 class Chopper {
-  constructor(game, rig, { x, z, ry = 0, cries = null }) {
+  constructor(game, rig, { x, z, ry = 0, cries = null, sfx = () => SFX.thunk(), colors = [0xd9b27a, 0x8a5a32], cryIcon = '\ud83e\ude93' }) {
     this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10; this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false;
-    this.state = 'idle'; this.timer = 0; this.cries = cries; this.cryIcon = '\ud83e\ude93'; this.cryT = rnd.range(4, 9); this.chopT = rnd.range(1, 2); this.chops = 0; this.struck = false;
+    this.state = 'idle'; this.timer = 0; this.cries = cries; this.cryIcon = cryIcon; this.cryT = rnd.range(4, 9); this.chopT = rnd.range(1, 2); this.chops = 0; this.struck = false;
+    this.sfx = sfx; this.colors = colors;
     rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
     this.circle = game.physics.addCircle(this, x, z, 0.35);
     greetable(game, this);
@@ -1650,9 +1652,9 @@ class Chopper {
     this.t += dt; const rig = this.rig;
     if (!rig.gesture) { this.chopT -= dt; if (this.chopT <= 0) { rig.gesture = 'chop'; rig.gT = 0; this.struck = false; this.chopT = rnd.range(2.2, 3.6); } }
     if (rig.gesture === 'chop' && !this.struck && rig.gT / 1.1 >= 0.55) {   // the blade lands
-      this.struck = true; this.chops++; SFX.thunk();
+      this.struck = true; this.chops++; this.sfx();
       const a = rig.group.rotation.y, p = rig.group.position;
-      this.game.fx.emit(p.x + sin(a) * 0.7, p.y + 0.5, p.z + cos(a) * 0.7, { count: 7, colors: [0xd9b27a, 0x8a5a32], speed: 1.6, up: 1.8, life: 0.7, gravity: 4 });
+      this.game.fx.emit(p.x + sin(a) * 0.7, p.y + 0.5, p.z + cos(a) * 0.7, { count: 7, colors: this.colors, speed: 1.6, up: 1.8, life: 0.7, gravity: 4 });
     }
     rig.animate(0, false, dt, this.t);
     Wanderer.prototype.lookAtCat.call(this, dt);

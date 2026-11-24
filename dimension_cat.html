@@ -2002,6 +2002,7 @@ function makeHuman(o = {}) {
     rig.hands.push(hand);
     if (o.cane && side === -1) mesh(G.cyl(0.013, 0.013, 0.86, 6), mat(0x3a2718), { y: -0.3, z: 0.08, parent: hand });
     if (o.axe && side === 1) { mesh(G.cyl(0.018, 0.022, 0.8, 6), mat(0x6a4a2a, { roughness: 0.9 }), { y: 0.3, z: 0.02, parent: hand }); mesh(G.box(0.05, 0.22, 0.14), mat(0x9aa3ad, { metalness: 0.7, roughness: 0.35 }), { y: 0.66, z: 0.06, parent: hand }); }   // a woodcutter's axe
+    if (o.hammer && side === 1) { mesh(G.cyl(0.018, 0.022, 0.4, 6), mat(0x4a3523, { roughness: 0.88 }), { y: 0.22, z: 0.02, parent: hand }); mesh(G.box(0.1, 0.08, 0.17), mat(0x5a5a5e, { metalness: 0.65, roughness: 0.4 }), { y: 0.42, z: 0.04, parent: hand }); }   // a blacksmith's hammer
     if (o.pole && side === 1) { mesh(G.cyl(0.012, 0.014, 1.7, 6), mat(0x4a3a2a), { y: 0.55, z: 0.03, parent: hand }); mesh(G.sphere(0.035, 8, 6), glowMat(0xffb060, 1.4), { y: 1.42, z: 0.03, shadow: 'none', parent: hand }); }   // a lamplighter's pole, lit at the tip
     if (o.brush && side === 1) {   // a chimney sweep's rod, bristles splayed at the top
       mesh(G.cyl(0.013, 0.016, 1.6, 6), mat(0x3a2a1a, { roughness: 0.85 }), { y: 0.5, z: 0.04, parent: hand });
@@ -3459,9 +3460,10 @@ class Sledder {
 
 // ---------------------------------------------------------------- chopper: stands over a log with an axe and splits it, again and again
 class Chopper {
-  constructor(game, rig, { x, z, ry = 0, cries = null }) {
+  constructor(game, rig, { x, z, ry = 0, cries = null, sfx = () => SFX.thunk(), colors = [0xd9b27a, 0x8a5a32], cryIcon = '\ud83e\ude93' }) {
     this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10; this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false;
-    this.state = 'idle'; this.timer = 0; this.cries = cries; this.cryIcon = '\ud83e\ude93'; this.cryT = rnd.range(4, 9); this.chopT = rnd.range(1, 2); this.chops = 0; this.struck = false;
+    this.state = 'idle'; this.timer = 0; this.cries = cries; this.cryIcon = cryIcon; this.cryT = rnd.range(4, 9); this.chopT = rnd.range(1, 2); this.chops = 0; this.struck = false;
+    this.sfx = sfx; this.colors = colors;
     rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
     this.circle = game.physics.addCircle(this, x, z, 0.35);
     greetable(game, this);
@@ -3470,9 +3472,9 @@ class Chopper {
     this.t += dt; const rig = this.rig;
     if (!rig.gesture) { this.chopT -= dt; if (this.chopT <= 0) { rig.gesture = 'chop'; rig.gT = 0; this.struck = false; this.chopT = rnd.range(2.2, 3.6); } }
     if (rig.gesture === 'chop' && !this.struck && rig.gT / 1.1 >= 0.55) {   // the blade lands
-      this.struck = true; this.chops++; SFX.thunk();
+      this.struck = true; this.chops++; this.sfx();
       const a = rig.group.rotation.y, p = rig.group.position;
-      this.game.fx.emit(p.x + sin(a) * 0.7, p.y + 0.5, p.z + cos(a) * 0.7, { count: 7, colors: [0xd9b27a, 0x8a5a32], speed: 1.6, up: 1.8, life: 0.7, gravity: 4 });
+      this.game.fx.emit(p.x + sin(a) * 0.7, p.y + 0.5, p.z + cos(a) * 0.7, { count: 7, colors: this.colors, speed: 1.6, up: 1.8, life: 0.7, gravity: 4 });
     }
     rig.animate(0, false, dt, this.t);
     Wanderer.prototype.lookAtCat.call(this, dt);
@@ -26960,6 +26962,97 @@ function buildVictorian(game, entry) {
     game.npcs.push(new Sitter(game, cobbler, { x: cx, z: cz, ry, seat: 0.42,
       cries: ['🥾 "Every sole in this town comes through here twice over — once new, once patched."', '🥾 "Mind your claws, puss — that leather\'s dearer than it looks."', '🥾 "A boot\'s only as good as the stitching nobody sees."'] }));
     U.push(() => { if (!cobbler.gesture) { const Ah = cobbler.arms[0], Aa = cobbler.arms[1]; Ah.sh.rotation.x = -1.3; Ah.sh.rotation.z = 0.1; Ah.el.rotation.x = -1.7; Aa.sh.rotation.x = -1.6; Aa.sh.rotation.z = -0.2; Aa.el.rotation.x = -1.2; } }); }
+
+  // Victorian's ironwork — the fence round every terrace garden, the gas lamps the whole length of the
+  // street, even the cobbler's own iron last two doors from the clock tower — has never had anywhere it
+  // actually came from. **A blacksmith now works a forge on the open grass past the last house on the
+  // south terrace, hammering a glowing horseshoe flat against his anvil,** coals banked red behind him,
+  // smoke rising off a short stone stack, and three finished shoes already hung up to cool on a rack
+  // behind. *"Every fence post and gas lamp on this street started right here."* *"Mind your tail, puss
+  // — sparks don't care whose whiskers they singe."* *"That cobbler still owes me for his iron last.
+  // Tell him, if you're headed that way."*
+  //
+  // One new optional hand-prop on `makeHuman()` (55-npcs.js): `hammer`, built the same way `axe`
+  // already is — a short handle and a blocky iron head parented straight to the right hand. `Chopper`
+  // (55-npcs.js), already splitting logs in four other worlds with the one downward strike its own
+  // `'chop'` gesture gives it, picks up three new optional constructor fields — `sfx`, `colors` and
+  // `cryIcon` — each defaulting to the exact values it already had hardcoded, so every one of its seven
+  // existing callers is unchanged. This is the first caller to actually pass something different:
+  // `SFX.clang()` and a shower of spark colours (the same three `Mechanic`'s own wrench already throws)
+  // in place of the woodcutter's `SFX.thunk()` and wood-chip browns, and a hammer emoji in place of the
+  // axe.
+  //
+  // No new prop function: the forge, anvil and rack are built inline with plain primitives, same as the
+  // watchmaker's bench and the cobbler's own stall above. The forge reuses the chestnut brazier's own
+  // glow-and-flicker trick (a `glowMat` coal bed and a `pointLight`, both riding `sin(t*10)+sin(t*27)`)
+  // and `addChimneySmoke()` (this file, already lighting every terrace house's own chimney) for the
+  // stack behind it.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // `game.load(3, 'from-prev')` — a direct, synchronous build, since `travel()`'s own fade is deferred
+  // behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated
+  // frames so every carriage horse and wanderer had already settled) swept the open grass past the last
+  // house on the south terrace (x=62) against all 614 of this town's own physics boxes (knee-to-head
+  // band only), all 236 `game.zones` rectangles and every sampled NPC position: the whole small cluster,
+  // (77.5, -17.9) for the smith through (77.5, -21.5) for the rack, came back clear by 9.1-13.7 m of the
+  // nearest box and 9.1-11.5 m of the nearest wandering soul, at radius 79.5-80.4 from the origin —
+  // comfortably short of the radius (88) where `victorianRegion`'s own procedural fill takes over.
+  //
+  // Built dead last of everything this town adds, right after the cobbler above and right before the
+  // squirrel below, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this town's own
+  // shared `r()` sequence unconditionally, and anything built earlier here would have had its own
+  // timing-sensitive pick shifted by it.
+  { const sx = 77.5, sz = -17.9, ax = 77.5, az = -19.3, fx = 77.5, fz = -20.6, rax = 77.5, raz = -21.5;
+    const ry = atan2(ax - sx, az - sz);
+    const iron = mat(0x4a4a4e, { metalness: 0.6, roughness: 0.4 }), darkIron = mat(0x2a2420, { roughness: 0.6, metalness: 0.5 }), woodM = mat(0x4a3523, { roughness: 0.85 }), stoneM = mat(0x6b6058, { roughness: 0.95 }), darkStone = mat(0x4a443e, { roughness: 0.95 });
+
+    // the forge: a stone hearth block, a sunk coal bed glowing and flickering, a stack rising behind it, smoke overhead
+    const hearth = new THREE.Group();
+    mesh(G.box(0.85, 0.6, 0.7), stoneM, { y: 0.3, shadow: 'both', parent: hearth });
+    mesh(G.box(0.46, 0.05, 0.38), darkStone, { y: 0.62, parent: hearth });
+    const coalGlow = glowMat(0xff5a1a, 1.7, { transparent: true, opacity: 0.95 });
+    mesh(G.box(0.4, 0.05, 0.32), coalGlow, { y: 0.645, shadow: 'none', parent: hearth });
+    for (const [ex, ez] of [[-0.12, 0.07], [0.1, -0.05], [0.02, 0.1]]) mesh(G.sphere(0.025, 6, 5), coalGlow, { x: ex, y: 0.66, z: ez, shadow: 'none', parent: hearth });
+    mesh(G.box(0.3, 1.0, 0.26), darkStone, { y: 1.1, z: -0.22, shadow: 'both', parent: hearth });
+    const forgeLight = pointLight(0xff6a2a, 8, 5, 0, 0.66, 0, hearth);
+    hearth.userData.update = (dt, t) => { coalGlow.emissiveIntensity = 1.6 + sin(t * 10) * 0.35 + sin(t * 27) * 0.18; forgeLight.intensity = 6.5 + sin(t * 10) * 1.4 + sin(t * 27) * 0.7; };
+    place(game, U, hearth, fx, fz, 0);
+    addChimneySmoke(game, U, fx, 1.65, fz - 0.22);
+    P.addBox(fx, 0.8, fz, 0.9, 1.6, 0.75, { cam: false });
+
+    // the anvil: base, waist, table and horn, a half-forged horseshoe glowing on its face
+    const anvil = new THREE.Group();
+    mesh(G.box(0.3, 0.08, 0.22), darkIron, { y: 0.04, shadow: 'both', parent: anvil });
+    mesh(G.cyl(0.07, 0.09, 0.22, 10), iron, { y: 0.19, shadow: 'both', parent: anvil });
+    mesh(G.box(0.36, 0.13, 0.18), iron, { y: 0.335, shadow: 'both', parent: anvil });
+    mesh(G.cone(0.08, 0.24, 10), iron, { x: 0.3, y: 0.335, rz: -PI / 2, shadow: 'both', parent: anvil });
+    const workGlow = glowMat(0xff7a2a, 1.3, { transparent: true, opacity: 0.9 });
+    mesh(G.torus(0.08, 0.02, 6, 14, PI * 1.5), workGlow, { y: 0.41, rx: PI / 2, ry: 0.4, shadow: 'none', parent: anvil });
+    place(game, U, anvil, ax, az, 0);
+    P.addBox(ax, 0.2, az, 0.46, 0.46, 0.22, { cam: false });
+
+    // a short rack behind the forge, three finished (cooled) horseshoes already hung up
+    const rack = new THREE.Group();
+    mesh(G.box(0.6, 0.04, 0.05), woodM, { y: 0.9, shadow: 'both', parent: rack });
+    for (const px2 of [-0.2, 0, 0.2]) mesh(G.torus(0.09, 0.018, 6, 14, PI * 1.5), iron, { x: px2, y: 0.78, z: 0.04, shadow: 'none', parent: rack });
+    for (const px2 of [-0.25, 0.25]) mesh(G.cyl(0.03, 0.03, 0.9, 8), woodM, { x: px2, y: 0.45, shadow: 'both', parent: rack });
+    place(game, U, rack, rax, raz, 0);
+    P.addBox(rax, 0.45, raz, 0.6, 0.9, 0.2, { cam: false });
+
+    // a water bucket beside the anvil, for the quench
+    const bucket = new THREE.Group();
+    mesh(G.cyl(0.11, 0.095, 0.22, 12), woodM, { y: 0.11, shadow: 'both', parent: bucket });
+    mesh(G.cyl(0.097, 0.097, 0.01, 12), mat(0x3a6a8a, { roughness: 0.3, metalness: 0.1 }), { y: 0.2, shadow: 'none', parent: bucket });
+    place(game, U, bucket, ax + 0.35, az + 0.1, 0);
+    P.addBox(ax + 0.35, 0.11, az + 0.1, 0.22, 0.22, 0.22, { cam: false });
+
+    const smithWard = makeWardrobe(r, { shirts: [0x7a3a2a] });
+    const smith = makeHuman({ ...randomPerson(r, { female: r.chance(0.25), child: false, elder: r.chance(0.3), wardrobe: smithWard }),
+      pants: 0x2a2a2a, apron: 0x3a2a1a, sleeves: true, hat: null, coat: null, scarf: null, bag: null, backpack: null, glasses: false, moustache: r.chance(0.4), beard: r.chance(0.3), build: 'stout', hammer: true });
+    W.add(smith.group);
+    game.npcs.push(new Chopper(game, smith, { x: sx, z: sz, ry,
+      sfx: () => SFX.clang(), colors: [0xffe066, 0xffffff, 0x9fe8ff], cryIcon: '🔨',
+      cries: ['Every fence post and gas lamp on this street started right here.', "Mind your tail, puss — sparks don't care whose whiskers they singe.", "That cobbler still owes me for his iron last. Tell him, if you're headed that way."] })); }
 
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;

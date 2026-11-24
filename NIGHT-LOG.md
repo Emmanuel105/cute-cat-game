@@ -38824,3 +38824,45 @@ a regression.) No visual check was possible in this environment (no browser, no 
 the held cone and the glowing brazier actually read as a chestnut stand from this angle is unverified,
 the same caveat every roaster in this game has carried. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1330 — Victorian finally gets a blacksmith
+
+Victorian's own ironwork has been standing around unexplained for over a thousand rounds now: the fence
+round every terrace garden, the gas lamps the whole length of the street, even the cobbler's own iron
+last (round 1327) — none of it ever had anywhere it actually came from. **A blacksmith now works a
+forge on the open grass past the last house on the south terrace, hammering a glowing horseshoe flat
+against his anvil**, coals banked red behind him, smoke rising off a short stone stack, three finished
+shoes already hung up to cool on a rack and a water bucket standing by for the quench. *"Every fence
+post and gas lamp on this street started right here."* *"Mind your tail, puss — sparks don't care whose
+whiskers they singe."* *"That cobbler still owes me for his iron last. Tell him, if you're headed that
+way."*
+
+One new optional hand-prop on `makeHuman()` (55-npcs.js): `hammer`, built the same way the woodcutter's
+`axe` already is — a short handle and a blocky iron head parented straight to the right hand. `Chopper`
+(55-npcs.js), already splitting logs in four other worlds off the one downward strike its own `'chop'`
+gesture gives it, picked up three new optional constructor fields — `sfx`, `colors` and `cryIcon` — each
+defaulting to the exact values it already had hardcoded, so all seven of its existing callers are
+unchanged; this is the first to actually pass something different, swapping the woodcutter's
+`SFX.thunk()` and wood-chip browns for `SFX.clang()` and a shower of spark colours (the same three
+`Mechanic`'s own wrench already throws), and the axe emoji for a hammer. No new prop function: the
+forge, anvil and rack are plain primitives built inline, the way the watchmaker's bench and the
+cobbler's own stall were — the forge reuses the chestnut brazier's own glow-and-flicker trick (a
+`glowMat` coal bed and a `pointLight`, both riding `sin(t*10)+sin(t*27)`) and `addChimneySmoke()`
+(already lighting every terrace house's own chimney) for the stack behind it.
+
+A headless probe (`game.start('new')`, `game.load(3, 'from-prev')` for a direct synchronous build, then
+3600 simulated frames so every carriage horse and wanderer had settled) swept the open grass past the
+last house on the south terrace (x=62) against all 614 of this town's own physics boxes, all 236
+`game.zones` rectangles and every sampled NPC position: the whole small cluster, (77.5, -17.9) for the
+smith through (77.5, -21.5) for the rack, came back clear by 9.1-13.7 m of the nearest box and 9.1-11.5 m
+of the nearest wandering soul, at radius 79.5-80.4 from the origin — comfortably short of the radius
+(88) where `victorianRegion`'s own procedural fill takes over. Built dead last of everything this town
+adds, right after the cobbler and right before the squirrel, for the usual reason: `makeHuman()`/
+`randomPerson()` both draw off this town's own shared `r()` sequence unconditionally.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, and Victorian's
+own friend total rose from 189 to 190. Ground-walkability held at 94%, unchanged by the new props. No
+visual check was possible in this environment (no browser, no Playwright), so whether the forge's glow,
+the anvil's proportions and the hammer-and-horseshoe angle actually read as blacksmithing from this
+angle is unverified — the same caveat every craftsman vignette in this game has carried. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
