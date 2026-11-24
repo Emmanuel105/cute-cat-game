@@ -38701,3 +38701,38 @@ mid-stride, not a regression — confirmed against the unmodified build). No vis
 in this environment (no browser, no Playwright), so whether the tilt angle and eyepiece height actually
 read as "looking through it" from the stargazer's own stance is unverified. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1327 — Victorian finally gets its cobbler
+
+Two separate jokes in this town have been leaning on a cobbler who never actually showed up: the
+basketball urchin warns "tear it twice and the cobbler charges for thread," and nobody ever paid off
+either line. The watchmaker has had his own bench at the clock tower since round 1312, but the town's
+other classic story-book tradesman was nowhere to be found. **A cobbler now sits on a stool outside his
+own shop on the south terrace, between the houses at x=52 and x=62, a half-finished boot clamped over
+an iron last in one hand and an awl raised in the other, with a small workbench of tools and a shelf of
+three mended pairs behind him.** *"Every sole in this town comes through here twice over — once new,
+once patched."* *"Mind your claws, puss — that leather's dearer than it looks."* *"A boot's only as
+good as the stitching nobody sees."*
+
+No new controller: `Sitter` (55-npcs.js), the exact seated-craftsman shape the watchmaker already uses
+— the boot-and-last held low in one hand, the awl raised in the other, both fixed once in this build's
+own `U.push` guarded by `!cobbler.gesture`, so a greeting wave still wins over the held pose. Everything
+else is plain primitives: a plank workbench on four turned legs with an upright last, scattered tacks
+and a hammer, and a short shelf behind him carrying three finished boots in a row.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.load(3, 'from-prev')`
+— a direct, synchronous build, since `travel()`'s own fade is deferred behind a real `setTimeout` that
+never fires under simulated frames alone — then 3600 simulated frames so every carriage horse and
+wanderer had already settled) swept the gap in the south terrace's own iron fences between the houses
+at x=52 and x=62, the widest unfenced stretch of pavement on that row: (57, -6.3) came back clear by
+1.94 m of the nearest fence post and 2.58 m of the nearest house on either side, 7.97 m from the
+nearest wandering soul, still on the south pavement strip itself and well clear of the houses' own
+front walls.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count up
+by three (611 → 614, the stool, bench and shelf, confirmed against the previous commit with
+`git stash`), and Victorian's own friend total rose from 188 to 189. Ground-walkability held at 94%
+across both runs, unchanged by the new props. No visual check was possible in this environment (no
+browser, no Playwright), so whether the held boot-and-awl pose actually reads as cobbling from this
+angle is unverified, the same caveat every seated-craftsman vignette in this game has carried. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
