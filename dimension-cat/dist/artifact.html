@@ -14647,6 +14647,39 @@ function buildNeighborhood(game, entry) {
     const brazierLines = ['The vents glow a deep, steady orange against the grass.', 'Warm enough to feel from here, even on a mild evening.', 'A faint crack and hiss — one more chestnut giving in.'];
     game.addInteractable({ obj: brazier, radius: 1.2, label: () => 'Look at the brazier', onUse: () => { SFX.click(); game.toast(rnd.pick(brazierLines), 3000); } }); }
 
+  // Round 141's hopscotch chalker has knelt over her own six squares on the north pavement ever
+  // since, with nobody ever stopping to watch — the same spectator this project has slowly given
+  // every other quiet street activity over the last few hundred rounds (the woodcutter, the
+  // telescope, the chestnut roaster above). A passer-by now stands a few steps east of the squares,
+  // watching her chalk.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, 3600 simulated frames to settle every neighbour, then 600 more sampling
+  // every NPC's own position every 6th frame) swept the open pavement east of the hopscotch squares
+  // against all 336 of this street's own physics boxes (knee-to-head band only) and every sampled
+  // NPC position: (63, 17.75) came back clear by 1.15 m of the nearest box and 4.25 m of the nearest
+  // wandering soul, 4.4 m east of the chalker herself, on the same stretch of pavement the squares
+  // sit on.
+  //
+  // This is the one street whose build shares a single unbroken run of simulated frames with
+  // `test/run.mjs`'s own behaviour checks (the chestnut-roaster entry above explains why), so this
+  // watcher is built the same careful way the telescope's own queue kid was: `Wanderer` (55-npcs.js)
+  // draws three ticks off the *shared* `rnd()` sequence in its own constructor whenever
+  // `phase`/`timer`/`t` aren't given, so all three are fixed here instead, alongside a `cryT` of
+  // `1e9` since she has no cries of her own — zero draws from the shared generator, nothing
+  // downstream shifted. No new class: `Wanderer` calls `greetable()` itself, so she counts as a
+  // friend to meet with no extra wiring. No physics box, pure bystander.
+  //
+  // Built dead last of everything this street adds, right after the chestnut roaster above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this street's own local `r()`
+  // sequence unconditionally, and anything built earlier here would have had its own timing-sensitive
+  // pick shifted by it.
+  { const hwx = 63, hwz = 17.75, chx = 58.6, chz = 17.75;
+    const hopWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x5a9a9a, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(hopWatcher.group);
+    game.npcs.push(new Wanderer(game, hopWatcher, { x: hwx, z: hwz, angle: atan2(chx - hwx, chz - hwz), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

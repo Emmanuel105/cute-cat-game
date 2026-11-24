@@ -38866,3 +38866,43 @@ visual check was possible in this environment (no browser, no Playwright), so wh
 the anvil's proportions and the hammer-and-horseshoe angle actually read as blacksmithing from this
 angle is unverified — the same caveat every craftsman vignette in this game has carried. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1331 — the hopscotch chalker finally gets a watcher, starting a new set
+
+The Neighborhood's hopscotch girl has knelt over her own six squares on the north pavement since round
+141, and in all that time nobody had ever stopped to watch her — the one street activity in this game
+this project's long-running "give it a spectator" habit (badminton, the mime, tetherball, horseshoes,
+tug-of-war, the sack race, the fudge pot, curling, the gummy ring toss) had never reached. Six other
+worlds have their own hopscotch chalker too (Candy Land, Robot City, Victorian, Sunny Shore, Whisper
+Woods), each still solo — Frosty Peak is the one world without hopscotch at all. **A passer-by now
+stands a few steps east of the squares, on the same stretch of pavement, watching her chalk** — the
+first watcher of a new set, the other five chalkers still to come.
+
+Plain `Wanderer` (55-npcs.js), the same class every watcher in this set already uses — it calls
+`greetable()` on its own, so no extra wiring was needed, and it carries no physics box of its own. The
+Neighborhood turned out to be the one street where this needed extra care: it's the one world whose
+build shares a single unbroken run of simulated frames with `test/run.mjs`'s own behaviour checks (the
+same reason round 1329's chestnut roaster needed its own fix), and `Wanderer` draws three ticks off that
+*shared* `rnd()` sequence in its own constructor whenever `phase`/`timer`/`t` aren't given. All three are
+fixed here instead, with `cryT` pinned to `1e9` since she has no cries of her own — zero draws from the
+shared generator, so nothing built afterwards (there is nothing afterwards; she's dead last before
+`makeDayNight()`) and nothing the test itself checks later gets shifted.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, 3600 simulated frames to settle every neighbour, then 600 more sampling every NPC's
+own position every 6th frame) swept the open pavement east of the hopscotch squares against all 336 of
+this street's own physics boxes (knee-to-head band only) and every sampled NPC position: (63, 17.75) came
+back clear by 1.15 m of the nearest box and 4.25 m of the nearest wandering soul, 4.4 m east of the
+chalker herself. First attempt at a shirt colour (a blue-grey already spoken for by the tetherball
+watcher's own wardrobe bag) tripped the "no two neighbours wear the same shirt" check; a teal
+(`0x5a9a9a`), checked against every shirt literal and wardrobe array already in this street's own build
+function, fixed it.
+
+`node dimension-cat/test/run.mjs` ran clean twice over: exit 0, all 277 checks `ok`, 0 console warnings,
+physics box count unchanged at 336 (she adds none), and the Neighborhood's own friend total rose from 148
+to 149. (The horse-and-carriage distance, the kite height, both snow-world cat-rest heights, the Frosty
+Peak snowball count and world 0's own ground-walkability percentage all drifted a little between the two
+runs — the same pre-existing frame-timing wobble earlier rounds already found and reconfirmed here, not a
+regression.) No visual check was possible in this environment (no browser, no Playwright), so whether she
+actually reads as watching the chalk squares from this angle, rather than just standing nearby, is
+unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
