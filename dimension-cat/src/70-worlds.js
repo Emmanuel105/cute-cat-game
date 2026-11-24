@@ -5330,6 +5330,62 @@ function buildNeighborhood(game, entry) {
     W.add(waitingKid.group);
     game.npcs.push(new Wanderer(game, waitingKid, { x: kx, z: kz, angle: atan2(qsgx - kx, qsgz - kz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // Victorian's canal bank, Frosty Peak's snowfield, Whisper Woods' clearing, Sunny Shore's dunes,
+  // Robot City's factory floor and Candy Land's sweet-lands floor all have a chestnut roaster at her
+  // own glowing brazier by now (round 1074 closed out "five of the seven" with Candy Land) — this
+  // street is the one world still without, and not for lack of trying: round 1072's own postmortem
+  // records a first attempt aimed squarely here, caught dead by a headless probe before it ever got
+  // this far. `Vendor` (55-npcs.js) draws one `rnd()` tick in its own constructor unconditionally
+  // (`this.t = rnd() * 10`) whether or not it's given `cries`, and this street is the one world whose
+  // build shares a single unbroken run of simulated frames with `test/run.mjs`'s own behaviour checks
+  // — any extra draw from that *shared* generator (not this world's own local `r()`, which every other
+  // caution in this file already guards) nudges every timing-sensitive pick made anywhere else in that
+  // same run, roaster built early or late. That is why the other six roasters could each just reuse
+  // `Vendor` verbatim and this one could not.
+  //
+  // The fix is in `Vendor` itself (55-npcs.js), not around it: two new optional constructor fields,
+  // `t0` and `cryT0`, which stand in for the unconditional `rnd()` draws when given and change nothing
+  // for any of the thirty-odd other callers that don't pass them. **A roaster now works the open grass
+  // south of the terrace gardens, her brazier glowing beside her, a paper cone of chestnuts held out to
+  // whoever wanders past** — this street's own last stop on the chestnut roaster's own tour of the
+  // seven. *"Hot chestnuts, fresh off the coals — same as every other street in the seven worlds, just
+  // took this one a bit longer."* *"Careful, puss — that griddle's hotter than the sun ever gets round
+  // here."* *"Quietest corner of the whole street. Good a spot as any for a brazier."*
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, 600 simulated frames to settle every wandering neighbour, then a further 1800
+  // sampling every NPC's own position every 5th frame) swept the open grass south of the terrace row
+  // against all 335 of this street's own physics boxes (knee-to-head band only) and every one of those
+  // position samples: (27, -17) came back clear by 10.73 m of the nearest box and 11.73 m of the
+  // nearest wandering soul, with flat ground (`ground0` returns 0 here, same as the rest of this
+  // street) and well clear of every one of this street's own 69 `game.zones` rectangles. The brazier
+  // sits 1.3 m south of her, same spacing every other roaster in the game already uses.
+  //
+  // No new mesh and no new controller: `makeChestnutBrazier()` (60-props.js) and `makeChestnutCone()`
+  // (62-props-nature.js) are reused verbatim a seventh time. `place()` (this file, used instead of
+  // `placeT()` since this street has no terrain to sample) sits the brazier on the flat grass and rides
+  // its own `userData.update` (vent glow, light flicker) into this street's `U` list. A single-shirt
+  // wardrobe bag (0x9a4a2a, a rust not already spoken for on this street) keeps the dupe-shirt check
+  // happy, and `t0`/`cryT0` (fixed, not drawn from anything) keep her from touching the shared `rnd()`
+  // sequence at all.
+  //
+  // Built dead last of everything this street adds, right after the queue kid above and right before
+  // `makeDayNight()` — `makeHuman()`/`randomPerson()` both draw off this street's own local `r()`
+  // sequence unconditionally, and anything built earlier here would have had its own timing-sensitive
+  // pick shifted by it.
+  { const vx = 27, vz = -17, bx = 27, bz = -18.3, vry = atan2(bx - vx, bz - vz);
+    const roastWard = makeWardrobe(r, { shirts: [0x9a4a2a] });
+    const roaster = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: roastWard }),
+      hat: r.chance(0.5) ? 'flatcap' : 'beanie', hatColor: 0x3a3327, coat: true, scarf: 0x8a6a4a, cuffs: 0x3a3a3a, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(roaster.group);
+    const brazier = place(game, U, makeChestnutBrazier(), bx, bz, 0);
+    P.addBox(bx, 0.325, bz, 0.3, 0.65, 0.3, { cam: false });
+    const v = new Vendor(game, roaster, makeChestnutCone(), { x: vx, z: vz, ry: vry, cryIcon: '🌰', t0: 4.2, cryT0: 5,
+      cries: ["Hot chestnuts, fresh off the coals — same as every other street in the seven worlds, just took this one a bit longer.", "Careful, puss — that griddle's hotter than the sun ever gets round here.", "Quietest corner of the whole street. Good a spot as any for a brazier."] });
+    game.npcs.push(v); greetable(game, v);
+    const brazierLines = ['The vents glow a deep, steady orange against the grass.', 'Warm enough to feel from here, even on a mild evening.', 'A faint crack and hiss — one more chestnut giving in.'];
+    game.addInteractable({ obj: brazier, radius: 1.2, label: () => 'Look at the brazier', onUse: () => { SFX.click(); game.toast(rnd.pick(brazierLines), 3000); } }); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

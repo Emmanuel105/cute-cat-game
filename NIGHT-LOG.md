@@ -38774,3 +38774,53 @@ console warnings, box count unchanged (335, a `Wanderer` registers a physics cir
 Neighborhood's own friend total rose from 146 to 147. No visual check was possible in this environment
 (no browser, no Playwright), so whether the stance actually reads as "waiting a turn" rather than just
 standing nearby is unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1329 — the Neighborhood finally gets its chestnut roaster, closing out the set
+
+Six of the seven worlds have had a chestnut roaster at her own glowing brazier since round 1074 — the
+Neighborhood was the one holdout, and round 1072's own log entry explains why: an earlier attempt aimed
+here got caught dead by a headless probe before it ever shipped. `Vendor` (55-npcs.js), the controller
+every roaster uses, draws one `rnd()` tick in its own constructor unconditionally (`this.t = rnd() * 10`)
+whether or not it's given `cries` — and the Neighborhood is the one world whose build shares a single
+unbroken run of simulated frames with `test/run.mjs`'s own behaviour checks, so that one stray draw from
+the *shared* generator (not this world's own local `r()`, which every other roaster already knew to
+dodge) was enough to nudge the "two neighbours chat, taking turns" check's own sampled arm angle past its
+threshold. That one failure stood for 255 rounds.
+
+**A roaster now works the open grass south of the terrace gardens, her brazier glowing beside her, a
+paper cone of chestnuts held out to whoever wanders past** — the last stop on the chestnut roaster's own
+tour of the seven worlds. *"Hot chestnuts, fresh off the coals — same as every other street in the seven
+worlds, just took this one a bit longer."* *"Careful, puss — that griddle's hotter than the sun ever
+gets round here."* *"Quietest corner of the whole street. Good a spot as any for a brazier."*
+
+The actual fix went into `Vendor` itself rather than around it: two new optional constructor fields,
+`t0` and `cryT0`, stand in for the unconditional `rnd()` draws when given, and change nothing for any of
+the thirty-odd other callers across the game that don't pass them — a quick audit of every existing
+`new Vendor(...)` call confirmed none do. The Neighborhood's own roaster passes fixed values for both
+(`t0: 4.2`, `cryT0: 5`), so her construction never touches the shared sequence at all, however early or
+late she's built. `makeChestnutBrazier()` and `makeChestnutCone()` are reused verbatim a seventh time,
+and `place()` (this world's own flat-ground equivalent of `placeT()`) rides the brazier's `userData.update`
+(vent glow, light flicker) into this street's own `U` list.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, 600 simulated frames to settle every wandering neighbour, then a further 1800
+sampling every NPC's own position every 5th frame) swept the open grass south of the terrace row against
+all 335 of this street's own physics boxes (knee-to-head band only) and every one of those position
+samples: (27, -17) came back clear by 10.73 m of the nearest box and 11.73 m of the nearest wandering
+soul, on flat ground, well clear of every one of this street's own 69 `game.zones` rectangles. The
+brazier sits 1.3 m south of her, the same spacing every other roaster in the game already uses. A
+single-shirt wardrobe bag (0x9a4a2a, a rust not already spoken for on this street) keeps the "no two
+neighbours wear the same shirt" check happy.
+
+Built dead last of everything this street adds, right after last round's queue kid and right before
+`makeDayNight()`, for the usual reason — `makeHuman()`/`randomPerson()` both draw off this street's own
+local `r()` sequence unconditionally. `node dimension-cat/test/run.mjs` ran clean, twice over: exit 0,
+all 277 checks `ok`, 0 console warnings, box count up by one (335 → 336, the brazier's own physics box),
+and the Neighborhood's own friend total rose from 147 to 148. (The horse-and-carriage distance, the
+street photographer's photo count, both worlds' ground-walkability percentages, the beach kite's height
+and both snow-world cat-rest heights all drifted a little between the two runs — the same pre-existing
+frame-timing wobble earlier rounds already found and reconfirmed here against the unmodified build, not
+a regression.) No visual check was possible in this environment (no browser, no Playwright), so whether
+the held cone and the glowing brazier actually read as a chestnut stand from this angle is unverified,
+the same caveat every roaster in this game has carried. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
