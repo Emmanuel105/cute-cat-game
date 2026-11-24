@@ -20909,6 +20909,37 @@ function buildRobotCity(game, entry) {
   { const pogoKid = makeHuman({ ...randomPerson(r, { child: true, female: r.chance(0.5) }), shirt: 0x00e5ff, hat: null, jacket: null, coat: null, scarf: null, bag: null, backpack: null }); W.add(pogoKid.group);
     game.npcs.push(new PogoHopper(game, pogoKid, r.pick([0xff6f3c, 0x3fae9a, 0xf2c744]), { x: 22, z: 71, ry: r.range(0, TAU),
       cries: ['Boing! Watch me clear the vents, puss!', "Dad says I'll wear a groove in the floor at this rate.", "Ninety-six. Don't you dare make me lose count."] })); }
+  // Rounds 1331 and 1332 gave the Neighborhood's and Candy Land's own hopscotch chalkers a first
+  // watcher, third of the hopscotch-watcher set started in round 1331 — Robot City's own girl (built a
+  // few hundred lines up, kneeling on the factory floor north of the scooter kid) is next, leaving
+  // Victorian, Sunny Shore and Whisper Woods still solo. **A line worker now stands a few steps east of
+  // her six squares, watching the chalk go down.**
+  //
+  // Plain `Wanderer` (55-npcs.js), the same class every watcher in this set already uses — it calls
+  // `greetable()` on its own, so no extra wiring was needed, and it carries no physics box of its own.
+  // Built with no `cries` of its own and every shared-`rnd()` draw in `Wanderer`'s own constructor
+  // (`phase`/`timer`/`t`/`cryT`, each pinned here instead of left to its own default) fixed, the same
+  // defensive habit the other two watchers in this set already settled on, since `test/run.mjs` runs
+  // every world through one unbroken process and a shift to the shared sequence here could otherwise
+  // nudge a later world's own timing-sensitive numbers.
+  //
+  // A headless probe (`game.start('new')`, `game.load(2, 'from-prev')` for a direct synchronous build,
+  // 3600 simulated frames to let every wandering, patrolling and marching robot range fully, then 600
+  // more sampling every NPC's own position every 5th frame) swept the open factory floor east of the
+  // six squares against all 1206 of this city's own physics boxes (knee-to-head band only) and every
+  // sampled NPC position: (-46, 52) came back clear by 10.67 m of the nearest box and 4.90 m of the
+  // nearest wandering soul (the chalker herself), at radius 69.4 from the origin — comfortably short of
+  // the radius (98) where robotRegion's own procedural fill takes over.
+  //
+  // Built dead last of every person this build adds, right after the pogo-stick kid above and right
+  // before the squirrel below, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this
+  // city's own shared `r()` sequence unconditionally.
+  { const chwx = -46, chwz = 52, chkx = -50.9, chkz = 52.15;
+    const chalkWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x6a9a8a, hat: 'cap', hatColor: 0x3a4a5a, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(chalkWatcher.group);
+    game.npcs.push(new Wanderer(game, chalkWatcher, { x: chwx, z: chwz, angle: atan2(chkx - chwx, chkz - chwz), speed: 0.3, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   const sq = new Squirrel(game, -14, -9, 'sq-robot'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('mouse', -8, 7); C.add('star', 12, -22); C.add('fish', -18, 2); C.add('yarn', 21, 9); C.add('star', 0, -27); C.add('fish', 4, 14); C.add('mouse', 26, -18); C.add('yarn', -26, -6);

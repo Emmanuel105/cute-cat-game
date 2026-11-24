@@ -38938,3 +38938,34 @@ browser, no Playwright), so whether she actually reads as watching the chalk squ
 unverified, the same caveat every watcher in this set has carried so far. Four chalkers (Robot City,
 Victorian, Sunny Shore, Whisper Woods) still have no watcher of their own. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1333 — Robot City's hopscotch chalker gets a watcher, third of the set
+
+Third of the hopscotch-watcher set started in round 1331, after the Neighborhood and Candy Land.
+**Robot City's own chalker — kneeling on the factory floor north of the scooter kid since she was
+first built — now has a line worker standing a few steps east of her six squares, watching the chalk
+go down.**
+
+Plain `Wanderer` (55-npcs.js), the same class every watcher in this set already uses — it calls
+`greetable()` itself, so she counts as a friend to meet with no extra wiring, and carries no physics
+box of her own. Built with no cries and every one of `Wanderer`'s own shared-`rnd()` draws
+(`phase`/`timer`/`t`/`cryT`) pinned explicitly, the same defensive habit the other two watchers in this
+set already settled on, since `test/run.mjs` runs every world through one unbroken process.
+
+A headless probe (`game.start('new')`, `game.load(2, 'from-prev')` for a direct synchronous build,
+3600 simulated frames to let every wandering, patrolling and marching robot range fully, then 600 more
+sampling every NPC's own position every 5th frame) swept the open factory floor east of the six
+squares against all 1206 of this city's own physics boxes (knee-to-head band only) and every sampled
+NPC position: (-46, 52) came back clear by 10.67 m of the nearest box and 4.90 m of the nearest
+wandering soul (the chalker herself), at radius 69.4 from the origin — well short of the radius (98)
+where robotRegion's own procedural fill takes over. Built dead last of every person this world's build
+adds, right after the pogo-stick kid and right before the squirrel, for the usual reason: `makeHuman()`
+/`randomPerson()` both draw off this city's own shared `r()` sequence unconditionally.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged, and Robot City's own friend total rose from 154 to 155 (confirmed against the previous
+commit with `git stash`). No visual check was possible in this environment (no browser, no Playwright),
+so whether she actually reads as watching the chalk squares from this angle is unverified, the same
+caveat every watcher in this set has carried so far. Three chalkers (Victorian, Sunny Shore, Whisper
+Woods) still have no watcher of their own. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.
