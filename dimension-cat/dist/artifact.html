@@ -14550,6 +14550,45 @@ function buildNeighborhood(game, entry) {
     W.add(stargazer.group);
     game.npcs.push(new Wanderer(game, stargazer, { x: sgx, z: sgz, angle: atan2(tx - sgx, tz - sgz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // The stargazer above has had the telescope to herself since last round — nobody in the whole game
+  // has ever waited a turn at anything. A kid now stands a couple of steps south-west of her, hopping
+  // between feet, next in line for a look through the eyepiece.
+  //
+  // No new class or mesh: the usual `makeHuman()`/`randomPerson()` rig and a `Wanderer` (55-npcs.js),
+  // the same frozen-still trick the stargazer herself uses two lines up (`blinkT0`/`idleT0`/`sway0` fixed
+  // in the `makeHuman()` call, `idle: [1e9, 1e9]` and `phase`/`timer`/`t`/`cryT` all fixed instead of drawn
+  // from `rnd()`, no `cries` at all). That alone was not enough here, though: this street's own per-house
+  // chimney-smoke puffs (`U.push(() => { if (r.chance(...)) ... }` a few dozen lines up, one per terrace
+  // house) keep calling this world's own *local* seeded `r()` every single frame for the rest of the run,
+  // not just at construction — so *any* extra draw from `r()` anywhere in this build, even dead last and
+  // even in a `Wanderer` whose own four timing fields are fixed, leaves `r()` at a different starting
+  // point for every one of those chimneys the moment the simulated frames begin, and the headless suite's
+  // own cyclist check (which shares this exact run) came back with a different, slower westbound ride as
+  // a result — caught by running the full suite after the first attempt, not by inspection. The fix: a
+  // throwaway generator with `r`'s own shape (`chance`/`pick`/`range`/`int`) that answers every call
+  // without ever touching the real one, and single-item colour lists so `makeWardrobe`'s own shuffle-bag
+  // never has anything to shuffle — `randomPerson`/`makeWardrobe` draw nothing at all from this world's
+  // own `r()`, so nothing downstream shifts. A single unused shirt colour (0xc0392b, checked against every
+  // shirt literal already in this file) keeps the "no two neighbours wear the same shirt" check happy.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, 600 simulated frames to settle every wandering neighbour, then a further 1800
+  // sampling every NPC's own position every 5th frame) checked a handful of spots a couple of metres off
+  // the stargazer's own fixed spot (74, -27.5): (73, -29.5) came back clear by 2.73 m of the nearest
+  // physics box and sits 2.24 m from the stargazer herself — the nearest other soul over the whole run —
+  // close enough to read as waiting in line without crowding her elbow, and clear of every one of this
+  // street's own 69 `game.zones` rectangles.
+  //
+  // Built dead last, right after the stargazer above and right before `makeDayNight()`, for the usual
+  // reason, and with the no-draw generator above on top of it, since dead last alone turned out not to
+  // be enough on this particular street.
+  { const kx = 73, kz = -29.5, qsgx = 74, qsgz = -27.5;
+    const noR = { chance: () => false, pick: (arr) => arr[0], range: (a, b) => a, int: (a, b) => a };   // answers like `r` but never touches it
+    const queueWard = makeWardrobe(noR, { shirts: [0xc0392b], pants: [0x2a2a2a], shoes: [0x2a2018] });
+    const waitingKid = makeHuman({ ...randomPerson(noR, { female: false, child: true, wardrobe: queueWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false, blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(waitingKid.group);
+    game.npcs.push(new Wanderer(game, waitingKid, { x: kx, z: kz, angle: atan2(qsgx - kx, qsgz - kz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };

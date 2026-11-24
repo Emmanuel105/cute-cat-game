@@ -38736,3 +38736,41 @@ across both runs, unchanged by the new props. No visual check was possible in th
 browser, no Playwright), so whether the held boot-and-awl pose actually reads as cobbling from this
 angle is unverified, the same caveat every seated-craftsman vignette in this game has carried. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1328 — the telescope gets its first queue
+
+Round 1326 gave the Neighborhood a stargazer and her own telescope, alone on the east lawn, and nobody
+in the whole game has ever had to wait their turn at anything. **A kid now stands a couple of steps
+south-west of her, hopping between feet, next in line for a look through the eyepiece.**
+
+No new class or mesh: the usual `makeHuman()`/`randomPerson()` rig and a `Wanderer` (55-npcs.js), the
+same frozen-still trick the stargazer herself already uses (`blinkT0`/`idleT0`/`sway0` fixed, `idle:
+[1e9, 1e9]`, `phase`/`timer`/`t`/`cryT` all fixed instead of drawn from `rnd()`, no `cries`). That alone
+was not enough: the first attempt passed its own placement probe clean but failed an unrelated check
+nowhere near it — `node test/run.mjs`'s own cyclist test, which rides the same street — because this
+street's own per-house chimney-smoke puffs keep calling this world's *local* seeded `r()` every frame
+for the rest of the run, not just at construction. Any extra draw from `r()` anywhere in this build,
+even dead last, leaves it at a different starting point for every one of those chimneys the instant the
+simulated frames begin, and that was enough to give the cyclist a different, slower ride on the very
+same run. Caught by running the full suite, not by inspection. The fix: a throwaway generator shaped
+like `r` (`chance`/`pick`/`range`/`int`) that answers every call without ever touching the real one, and
+single-item colour lists so `makeWardrobe`'s own shuffle-bag never has anything to shuffle — this kid's
+`randomPerson`/`makeWardrobe` draw nothing at all from this world's own `r()`, so nothing downstream
+shifts. A single unused shirt colour (0xc0392b, checked against every shirt literal already in this
+file) keeps the "no two neighbours wear the same shirt" check happy.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, 600 simulated frames to settle every wandering neighbour, then a further 1800
+sampling every NPC's own position every 5th frame) checked a handful of spots a couple of metres off the
+stargazer's own fixed spot (74, -27.5): (73, -29.5) came back clear by 2.73 m of the nearest physics box
+and sits 2.24 m from the stargazer herself — the nearest other soul over the whole run — close enough to
+read as waiting in line without crowding her elbow, and clear of every one of this street's own 69
+`game.zones` rectangles.
+
+Built dead last, right after the stargazer and right before `makeDayNight()`, with the no-draw generator
+on top of the usual caution, since dead last alone turned out not to be enough on this particular
+street. `node dimension-cat/test/run.mjs` ran clean three times running: exit 0, all 277 checks `ok`, 0
+console warnings, box count unchanged (335, a `Wanderer` registers a physics circle, not a box), and the
+Neighborhood's own friend total rose from 146 to 147. No visual check was possible in this environment
+(no browser, no Playwright), so whether the stance actually reads as "waiting a turn" rather than just
+standing nearby is unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
