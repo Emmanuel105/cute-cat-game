@@ -21405,7 +21405,60 @@ function buildRobotCity(game, entry) {
     const organ = makeBarrelOrgan();
     game.npcs.push(new OrganGrinder(game, grinder, organ, { x: gx, z: gz, ry: gry, side: 1,
       cries: ["Tuppence a tune — cheaper than anything else running on batteries in this town.", "Careful, puss — the pipes don't bite, but the gears underneath still might.", "Thirty tunes in the barrel. Not one robot in this city has ever learned to hum along."] }));
-    U.push(organ.userData.update); }
+    U.push(organ.userData.update);
+
+    // Round 1273 gave the Neighborhood's own organ grinder a monkey with a tin cup; round 1323 gave
+    // Candy Land's one the same, closing its own log entry by noting Robot City's and Victorian's
+    // organ grinders were still without one. This city's monkey sits tucked beside the organ, same
+    // tin cup, same rattle.
+    //
+    // Hand-built straight into this file exactly as the previous two rounds built theirs: no new
+    // `makeX()` in 55-npcs.js or 56-npcs-wild.js, no `Wanderer`, no physics box, and no `rnd()` draw
+    // at all — every moving part (head turn, breathing, tail sway, the cup-rattle bursts) rides the
+    // world clock `t` alone through a single `U.push`, so dropping it in here costs nothing
+    // downstream. `game.namedFriend('organ-monkey')` plus a `game.addInteractable` keyed straight to
+    // its own group gives it the same greeting every other bystander monkey answers.
+    //
+    // Position uses the same local offset as both earlier monkeys (`localXZ`, 62-props-nature.js):
+    // 0.55 m along the organ's own `side` offset and 1.0 m further out, rotated by this grinder's own
+    // `gry` rather than assuming the Neighborhood's `ry = 0`.
+    //
+    // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+    // `elements.get('enter').listeners.click[0]()`, `game.travel(2, 'from-hub')` waited out for real
+    // against its own portal-fade timer, then 3600 simulated frames so every wandering soul had
+    // settled, reading `game.physics.boxes` and `game.zones.blocked()` directly) confirmed the
+    // computed spot (11.2, 43.2) sits 6.3 m clear of the nearest physics box besides the organ's own
+    // (1.07 m away, the same deliberate overlap the earlier two monkeys sat at against their own
+    // organs) and clear of every `game.zones` rectangle.
+    { const [mkx, mkz] = localXZ(gx, gz, 0.55, 1.0, gry);
+      const fur = mat(0x6b4a2e, { roughness: 0.9 }), light = mat(0xd9b27a, { roughness: 0.85 }), dark = mat(0x1a1410);
+      const monkey = group(mkx, game.physics.ground0(mkx, mkz), mkz, W); monkey.rotation.y = gry + PI;
+      const body = group(0, 0.1, 0, monkey);
+      mesh(G.bodySphere(14, 10), fur, { y: 0.14, sx: 0.1, sy: 0.13, sz: 0.09, parent: body });               // torso, sitting upright
+      mesh(G.bodySphere(14, 10), light, { y: 0.1, z: 0.03, sx: 0.075, sy: 0.09, sz: 0.04, shadow: 'none', parent: body });   // pale belly patch
+      for (const side2 of [1, -1]) mesh(G.sphere(0.05, 10, 8), fur, { x: side2 * 0.08, y: 0.02, z: -0.02, sy: 0.8, sz: 1.2, parent: body });   // haunches, tucked under
+      const head = group(0, 0.26, 0.03, body);
+      mesh(G.sphere(0.075, 14, 10), fur, { parent: head });
+      mesh(G.sphere(0.045, 10, 8), light, { y: -0.015, z: 0.05, sx: 1.1, sy: 0.85, parent: head });          // pale face patch
+      for (const side2 of [1, -1]) { mesh(G.sphere(0.028, 10, 8), light, { x: side2 * 0.075, y: 0.01, parent: head }); mesh(G.sphere(0.012, 8, 6), dark, { x: side2 * 0.032, y: 0.015, z: 0.058, shadow: 'none', parent: head }); }
+      mesh(G.sphere(0.018, 8, 6), dark, { y: -0.03, z: 0.068, shadow: 'none', parent: head });                // snout tip
+      const armL = group(-0.09, 0.2, 0.04, body), armR = group(0.09, 0.2, 0.04, body);
+      mesh(G.capsule(0.018, 0.1, 6), fur, { y: -0.05, rx: 0.3, parent: armL });
+      mesh(G.capsule(0.018, 0.1, 6), fur, { y: -0.05, rx: 0.3, parent: armR });
+      const cup = group(0, 0.11, 0.09, body);
+      mesh(G.cyl(0.035, 0.03, 0.045, 10), mat(0xb8b8b8, { metalness: 0.4, roughness: 0.5 }), { parent: cup });   // the tin cup, held between the paws
+      const tail = group(0, 0.06, -0.08, body);
+      const tailCurve = new THREE.CatmullRomCurve3([V3(0, 0, 0), V3(0.02, -0.04, -0.08), V3(0.08, -0.02, -0.14), V3(0.14, 0.02, -0.1), V3(0.16, 0.05, -0.02)]);
+      for (let i = 0; i <= 9; i++) { const p = tailCurve.getPoint(i / 9), rr = 0.018 - i * 0.001; mesh(G.sphere(1, 8, 6), fur, { x: p.x, y: p.y, z: p.z, sx: rr, sy: rr, sz: rr, shadow: 'none', parent: tail }); }
+      U.push((dt, t) => {
+        head.rotation.y = sin(t * 0.5) * 0.4; head.rotation.x = 0.05 + sin(t * 1.3) * 0.04;
+        body.scale.y = 1 + sin(t * 3) * 0.012;
+        const rattle = sin(t * 0.4 + 2) > 0.85 ? 1 : 0;
+        cup.rotation.z = rattle ? sin(t * 22) * 0.2 : 0; armL.rotation.z = rattle ? sin(t * 22) * 0.15 : 0; armR.rotation.z = rattle ? -sin(t * 22) * 0.15 : 0;
+        tail.rotation.y = sin(t * 0.9) * 0.08;
+      });
+      const monkeyId = game.namedFriend('organ-monkey');
+      game.addInteractable({ obj: monkey, radius: 1.6, label: () => 'Say hello to the monkey', onUse: () => { game.befriend(monkeyId); SFX.chitter(); game.hearts(monkey.position.x, 0.3, monkey.position.z, 3); game.toast('🐒 *rattles the tin cup, chatters, and gives the passing maintenance drones a hopeful look*'); } }); } }
 
   // Candy Land got the first magician (round 1027) — every other world still only has a juggler
   // tossing balls in a loop. A magician now works a quiet corner of open factory floor between the

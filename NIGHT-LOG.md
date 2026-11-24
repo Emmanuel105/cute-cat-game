@@ -38589,3 +38589,40 @@ actually reads as begging for a coin from this angle is unverified, same caveat 
 Robot City's and Victorian's own organ grinders are still without a monkey — whether this becomes a
 four-world set like the harmonica or stays a pair is left for a future round to decide. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1324 — Robot City's organ grinder gets a monkey too
+
+Round 1323 gave Candy Land's own organ grinder the monkey-with-a-tin-cup the Neighborhood's one
+picked up back in round 1273, and left Robot City's and Victorian's still bare. **Robot City's own
+organ grinder, cranking his barrel organ on the open factory floor since round 1021, now has a
+monkey of his own too,** tucked right beside the organ, same tin cup, same rattle — only the
+closing line changed, since this city's own crowd is robots, not gumdrop carts. *"🐒 *rattles the
+tin cup, chatters, and gives the passing maintenance drones a hopeful look*"*
+
+No new mesh and no new controller: the monkey is the exact same hand-built group the previous two
+rounds used, copied verbatim (fur, belly patch, haunches, head, paw-held cup, a nine-segment
+Catmull-Rom tail) — only the position and the one line of dialogue changed. It draws no `rnd()` at
+all, so dropping it in cost nothing downstream for any later pick in this city's build.
+`localXZ()` (62-props-nature.js) rotates the same local offset (0.55 m along the organ's own side
+offset, 1.0 m further out) by this grinder's own facing angle (`ry = atan2(0 - gx, 0 - gz)`,
+pointing at downtown), landing the monkey at (11.2, 43.2).
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(2, 'from-hub')` waited out for real
+against its own portal-fade timer via `setTimeout`-yielding `sleep()` calls between frame batches —
+a first naive version that spun `game.loop()` in a tight synchronous `while` loop starved the event
+loop and never let that timer fire, so it had to be killed and rewritten — then 3600 simulated
+frames so every wandering soul had settled, reading `game.physics.boxes` and `game.zones.blocked()`
+directly) found the computed spot (11.206, 43.180) sits 0.54 m from the organ's own box (the same
+deliberate overlap the previous two monkeys sat at against their own organs, confirmed by its exact
+dimensions: 0.85×1.36×0.85 centred at the organ's offset position) and nothing closer among this
+city's 1206 physics boxes, clear of every `game.zones` rectangle, and 1.14 m from the organ grinder
+himself — both numbers an almost exact match to Candy Land's own round, confirming the rotated
+offset lands in the same relative spot regardless of facing angle.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, and Robot
+City's own friend total rose from 153 to 154 (confirmed with `git stash`). No visual check was
+possible in this environment (no browser, no Playwright), so whether the monkey reads convincingly
+from this angle is unverified, same caveat the first two carried. Victorian's own organ grinder is
+now the only one of the four still without a monkey. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
