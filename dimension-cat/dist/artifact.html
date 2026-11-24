@@ -27274,6 +27274,43 @@ function buildVictorian(game, entry) {
     game.npcs.push(new Wanderer(game, watchmakerWatcher, { x: wwx, z: wwz, angle: atan2(wmx - wwx, wmz - wwz), speed: 0.3, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 5,
       cries: ["He hasn't blinked once since I got here — not past that loupe, anyway.", 'Those cogs would roll right under your paws, puss. Mind where you tread.', "Three more watches waiting on that cloth. He's in no hurry at all."] })); }
 
+  // `makeOldCamera()` (60-props.js) has built its lens facing "the subject" since the round it was
+  // written, and the photographer's own lines here ("Hold very still now", "Splendid! Right in
+  // profile, if you please") have always talked to somebody — but every world's photographer, this
+  // town's included, has only ever faced empty ground. **A lady now stands a step past his camera,
+  // back straight and hands folded, holding the very pose he keeps asking for.** Saying hello to her
+  // makes her the usual kind of friend.
+  //
+  // No new class: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual Victorian rig and
+  // `Wanderer` (55-npcs.js) gives her the same "stand and watch" shape every watcher and customer in
+  // this town already uses — frozen `idle: [1e9, 1e9]` plus every one of `Wanderer`'s own
+  // construction-time draws (`phase`, `timer`, `t`, `cryT`) fixed rather than pulled from `rnd()`, and
+  // `blinkT0`/`idleT0`/`sway0` fixed straight in the `makeHuman()` call so she actually holds still for
+  // the plate rather than fidgeting, the same touch the fortune teller's own customer used. `angle`
+  // points her back at the photographer rather than a constant, so she reads as posing for him and not
+  // just loitering nearby. A plum dress (0x5a3a7a, not already worn anywhere in this town) keeps the
+  // dupe-shirt check happy even though nothing here requires it.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(3, 'from-prev')` for a direct synchronous build, then 3600
+  // simulated frames so every wandering soul had settled) placed her 2.4 m out from the photographer
+  // along the exact line his own camera already faces — 1.6 m past the camera's own tripod box, which
+  // came back 1.28 m clear at that distance — against all 618 of this town's own physics boxes
+  // (knee-to-head band only): nothing closer, and the only other soul anywhere near is the
+  // photographer himself, 2.4 m back down the same line, well outside the market square's own zone.
+  //
+  // Built dead last of everything this town adds, right after the watchmaker's own watcher above and
+  // right before the squirrel below, for the usual reason: `makeHuman()`/`randomPerson()` both draw
+  // off this town's own shared `r()` sequence unconditionally.
+  { const subPX = 35, subPZ = -53, subPRY = atan2(0 - subPX, 0 - subPZ);
+    const subX = subPX + 2.4 * sin(subPRY), subZ = subPZ + 2.4 * cos(subPRY);
+    const subject = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: r.chance(0.3) }),
+      sleeves: true, dress: 0x5a3a7a, sash: 0x8a909a, hat: null, scarf: null, bag: null, backpack: null, glasses: false,
+      blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(subject.group);
+    game.npcs.push(new Wanderer(game, subject, { x: subX, z: subZ, angle: atan2(subPX - subX, subPZ - subZ), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 8,
+      cries: ["Hold still, they said. I have held still for ten whole minutes now.", "Careful, puss — don't spoil the shot, he has only the one plate left.", 'Best side forward. Every single time, without fail.'] })); }
+
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);

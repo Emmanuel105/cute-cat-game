@@ -39341,3 +39341,47 @@ only three numbers in existing `Wanderer` calls). No visual check was possible i
 browser, no Playwright), but this one didn't need a screenshot to catch — just reading what the
 constructor actually does with the field it was given. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1346 — Victorian's photographer finally gets somebody to photograph
+
+`makeOldCamera()` (60-props.js) has built its tripod with the lens facing "the subject" since the
+round it was written, and every world's photographer has always talked to somebody — Victorian's own
+lines are "Hold very still now — the plate takes a few seconds!" and "Splendid! Right in profile, if
+you please." — but across all seven worlds, not one photographer has ever actually had anyone standing
+in front of the camera. **A lady now stands a step past Victorian's own camera, back straight and
+hands folded, holding the exact pose he keeps asking for.** *"Hold still, they said. I have held still
+for ten whole minutes now."* *"Best side forward. Every single time, without fail."* Saying hello to
+her makes her the usual kind of friend, Victorian's friend count rising from 194 to 195.
+
+This closes a gap the "give the existing performer a watcher" project had genuinely run out of after
+1345 rounds — every stationary performer this log could find (archers, mimes, organ grinders, hula
+hoopers, fortune tellers, every craftsman, even the ice-fishing hole) already has a companion in every
+world that has one, confirmed by grepping for every `*Watcher` variable name in the whole source tree.
+The photographer was the one genuine hold-out: his camera has always had a design-level "subject" spot
+(local +z from the lens, opposite the dark cloth) that nothing ever occupied.
+
+No new class: the same `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js) every watcher in
+this town already uses, with the usual frozen shape (`idle: [1e9, 1e9]`, `phase`/`timer`/`t`/`cryT`
+fixed rather than pulled from `rnd()`) plus `blinkT0`/`idleT0`/`sway0` fixed straight in the
+`makeHuman()` call, the same "statue-still" touch the fortune teller's own customer used, which reads
+even better here given she is supposedly holding a long exposure. `angle` points her back at the
+photographer rather than a constant, so she reads as posing for him, not loitering. Learning from last
+round's own bug, `cryT` is a small fixed number (8), not `1e9`, since she does carry `cries`.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(3, 'from-prev')` for a direct synchronous build, then 3600 simulated
+frames so every wandering soul had settled) placed her 2.4 m out from the photographer along the exact
+line his own camera already faces — 1.6 m past the camera's own tripod box, which came back 1.28 m
+clear at that distance — against all 618 of this town's own physics boxes (knee-to-head band only):
+nothing closer, and the only other soul anywhere near is the photographer himself, 2.4 m back down the
+same line, well outside the market square's own zone. A second scratch probe parked the cat on her own
+spot and ran 1800 simulated frames to confirm both lines actually toast this time, not just get written
+into this log.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged at 336 (a `Wanderer` only ever adds a soft circle collider, never a box), and
+Victorian's own "to meet" count rose from 194 to 195 as expected. No visual check was possible in this
+environment (no browser, no Playwright), so whether she actually reads as posing rather than just
+standing there is unverified, the same caveat every watcher in this game has carried — but the other
+six worlds' photographers are still waiting on the same treatment. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
