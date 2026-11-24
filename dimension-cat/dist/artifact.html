@@ -27203,7 +27203,7 @@ function buildVictorian(game, entry) {
     const smithWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.4), child: true }),
       hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
     W.add(smithWatcher.group);
-    game.npcs.push(new Wanderer(game, smithWatcher, { x: bwx, z: bwz, angle: atan2(bsx - bwx, bsz - bwz), speed: 0.3, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9,
+    game.npcs.push(new Wanderer(game, smithWatcher, { x: bwx, z: bwz, angle: atan2(bsx - bwx, bsz - bwz), speed: 0.3, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 6,
       cries: ['Same two swings, every time — raise, then down.', 'Careful, puss — a spark went wide of me once.', 'He never once misses the shoe.'] })); }
 
   // The cobbler (round 1333, stitching boots on his stool on the south terrace) has sat alone between
@@ -27235,7 +27235,7 @@ function buildVictorian(game, entry) {
     const cobblerWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.6), child: false, elder: r.chance(0.6) }),
       hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
     W.add(cobblerWatcher.group);
-    game.npcs.push(new Wanderer(game, cobblerWatcher, { x: cwx, z: cwz, angle: atan2(ccx - cwx, ccz - cwz), speed: 0.3, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9,
+    game.npcs.push(new Wanderer(game, cobblerWatcher, { x: cwx, z: cwz, angle: atan2(ccx - cwx, ccz - cwz), speed: 0.3, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 7,
       cries: ["In and out, in and out — he's not dropped a stitch yet.", "Mind your claws, puss — he'll sole yours too, if you ask nicely.", 'My own boots came through that door, years back. Still holding.'] })); }
 
   // The watchmaker (above, peering through his loupe at the clock tower plaza's quiet south side) is
@@ -27271,7 +27271,7 @@ function buildVictorian(game, entry) {
     const watchmakerWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: r.chance(0.2), elder: r.chance(0.4) }),
       hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
     W.add(watchmakerWatcher.group);
-    game.npcs.push(new Wanderer(game, watchmakerWatcher, { x: wwx, z: wwz, angle: atan2(wmx - wwx, wmz - wwz), speed: 0.3, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9,
+    game.npcs.push(new Wanderer(game, watchmakerWatcher, { x: wwx, z: wwz, angle: atan2(wmx - wwx, wmz - wwz), speed: 0.3, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 5,
       cries: ["He hasn't blinked once since I got here — not past that loupe, anyway.", 'Those cogs would roll right under your paws, puss. Mind where you tread.', "Three more watches waiting on that cloth. He's in no hurry at all."] })); }
 
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);

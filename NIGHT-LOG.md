@@ -39308,3 +39308,36 @@ so whether he actually reads as watching the watchmaker rather than just standin
 unverified, same caveat every watcher in this game has carried. All three of Victorian's seated
 craftsmen — the blacksmith, the cobbler, the watchmaker — now have company. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1345 — the last three watchers were never actually saying anything
+
+**Fixed a bug: the blacksmith's, cobbler's and watchmaker's own watchers (rounds 1342-1344) had each
+been built with `cryT: 1e9` wherever they also carried `cries` — meant to pin every `rnd()`-dependent
+field on the `Wanderer` constructor (`angle`, `phase`, `timer`, `t`, `cryT`) so nothing shifted the
+town's own shared `r()` sequence, the defensive habit that set's own log entries describe. But `cryT`
+isn't a construction-time draw to dodge — it's the live countdown `Wanderer.update()` ticks down every
+frame before it lets a cry through, and `1e9` game-seconds (at `dt ≈ 1/60`, about 31,700 years of real
+play) meant none of the three would ever actually say their own quoted line: `*"Same two swings, every
+time — raise, then down."*`, `*"In and out, in and out — he's not dropped a stitch yet."*` and `*"He
+hasn't blinked once since I got here — not past that loupe, anyway."*` were all written into this very
+log as if heard, but none of the three could have fired in any session before this round. The
+hopscotch chalker's own watcher (round 1341), built with the same five pinned fields but no `cries` at
+all, was never affected — the bug only bit once a watcher actually carried lines to say.
+
+Fixed by giving each of the three its own small fixed `cryT` (6, 7 and 5 respectively) instead of
+`1e9` — still pinned, so still no `rnd()` draw at construction, just a number small enough to actually
+count down to zero in a normal session rather than one picked to never arrive. `angle`, `phase`,
+`timer` and `t` are untouched; the frozen `idle: [1e9, 1e9]` / `timer: 1e9` pairing that keeps each
+watcher standing stock-still rather than wandering off is a different mechanism entirely (it blocks the
+idle→walk state transition in `Wanderer.move()`, nothing to do with `cryT`) and still does its job.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(3, 'from-hub')` to build Victorian, then for each of the three watchers
+in turn, parking the cat 1 m off its own spot and running 900 simulated frames, 15 seconds of game
+time) confirmed all three now toast their own quoted line well inside that window, where a same-length
+run against the unpatched build never produced one. `node dimension-cat/test/run.mjs` ran clean: exit
+0, all checks `ok`, 0 console warnings, physics box count unchanged at 336 (no mesh or box touched,
+only three numbers in existing `Wanderer` calls). No visual check was possible in this environment (no
+browser, no Playwright), but this one didn't need a screenshot to catch — just reading what the
+constructor actually does with the field it was given. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
