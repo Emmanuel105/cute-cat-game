@@ -39199,3 +39199,42 @@ else to touch. `node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `
 and Whisper Woods' own friend total is back down to 188 (confirmed against the previous commit with
 `git stash`) — one real friend fewer than round 1340 claimed, because that one was never real in the
 first place. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1342 — Victorian's blacksmith gets a watcher
+
+The blacksmith (round 1330, hammering a forge on the open grass past the last house on the south
+terrace) has worked that anvil alone ever since. Every other solo performer in this game picked up a
+watcher of its own long ago — the woodcutter's own set across all seven worlds finished at round
+1254, the hopscotch chalker's own set finished just two rounds back — but nobody had ever stood and
+watched the blacksmith work. **A boy now stands a couple of steps east of the anvil, watching every
+strike land.** *"Same two swings, every time — raise, then down."* *"Careful, puss — a spark went wide
+of me once."* *"He never once misses the shoe."*
+
+No new mechanism: the same `Wanderer` (55-npcs.js) every watcher in this game already uses, built with
+every shared-`rnd()` draw in its own constructor pinned (angle, phase, timer, `t`, `cryT`) rather than
+left to Wanderer's own defaults, the same defensive habit the hopscotch watchers two rounds back
+settled on — `test/run.mjs` runs every world through one unbroken process, and a stray draw here would
+otherwise nudge some later world's own timing-sensitive numbers. `Wanderer`'s own constructor calls
+`greetable()` itself, so no extra wiring was needed, and it carries no physics box of its own, pure
+bystander like every other watcher in this set.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(3, 'from-prev')` for a direct synchronous build — `travel()`'s own
+fade is deferred behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+simulated frames so every carriage horse and wanderer had already settled) swept a 0.3 m grid 1.3-3.2 m
+out from the smith's own stand (77.5, -17.9) against all 605 of this town's own physics boxes
+(knee-to-head band only), every `game.zones` rectangle and every sampled NPC position: (79.3, -18.8)
+came back clearest — 1.62 m from the nearest box (the quench bucket beside the anvil), 2.80 m from the
+nearest zone rectangle and 2.01 m from the smith himself, at radius 81.5 from the origin, comfortably
+short of the radius (88) where `victorianRegion`'s own procedural fill takes over. Built dead last of
+every person this build adds, right after the hopscotch watcher and right before the squirrel, so
+nothing already drawing off this town's own shared `r()` sequence had its pick shifted.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged at 336 (the watcher adds none), and Victorian's own friend total rose from 191 to 192
+(confirmed against the previous commit with `git stash`). No visual check was possible in this
+environment (no browser, no Playwright), so whether the watcher's stance actually reads as "watching a
+blacksmith" rather than just standing nearby is unverified, same caveat every watcher in this game has
+carried. The other six worlds' blacksmiths — there are none; the forge is Victorian-only so far, the
+first of its kind, so this starts no cross-world set the way the woodcutter and hopscotch watchers did.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

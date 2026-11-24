@@ -17911,6 +17911,40 @@ function buildVictorian(game, entry) {
     W.add(chalkWatcher.group);
     game.npcs.push(new Wanderer(game, chalkWatcher, { x: chwx, z: chwz, angle: atan2(chkx - chwx, chkz - chwz), speed: 0.3, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // The blacksmith (round 1330, hammering a forge on the open grass past the last house on the south
+  // terrace) has worked that anvil alone ever since — every other solo performer in this game picked up
+  // a watcher of its own long ago (the woodcutter's own set finished at round 1254, the hopscotch
+  // chalker's own set finished just above in this very build), but nobody has ever stood and watched him
+  // work. **A boy now stands a couple of steps east of the anvil, watching every strike land.** *"Same
+  // two swings, every time — raise, then down."* *"Careful, puss — a spark went wide of me once."* *"He
+  // never once misses the shoe."*
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) every watcher in this game already uses, with the
+  // same fully-fixed constructor the hopscotch watcher above already settled on — angle, phase, timer,
+  // t and cryT all pinned instead of left to `Wanderer`'s own rnd() defaults, so nothing built here
+  // shifts this town's own shared r() sequence for anything built after it. `Wanderer`'s own constructor
+  // calls `greetable()` itself, so no extra wiring was needed, and it carries no physics box of its own
+  // — pure bystander, same as every other watcher in this set.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(3, 'from-prev')` for a direct synchronous build, then 3600 simulated
+  // frames so every carriage horse and wanderer had already settled) swept a 0.3 m grid 1.3-3.2 m out
+  // from the smith's own stand (77.5, -17.9) against all 605 of this town's own physics boxes
+  // (knee-to-head band only), every `game.zones` rectangle and every sampled NPC position: (79.3, -18.8)
+  // came back clearest — 1.62 m from the nearest box (the quench bucket), 2.80 m from the nearest zone
+  // rectangle and 2.01 m from the smith himself, at radius 81.5 from the origin — comfortably short of
+  // the radius (88) where `victorianRegion`'s own procedural fill takes over.
+  //
+  // Built dead last of every person this build adds, right after the hopscotch watcher above and right
+  // before the squirrel below, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this
+  // town's own shared `r()` sequence unconditionally.
+  { const bwx = 79.3, bwz = -18.8, bsx = 77.5, bsz = -17.9;
+    const smithWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.4), child: true }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(smithWatcher.group);
+    game.npcs.push(new Wanderer(game, smithWatcher, { x: bwx, z: bwz, angle: atan2(bsx - bwx, bsz - bwz), speed: 0.3, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9,
+      cries: ['Same two swings, every time — raise, then down.', 'Careful, puss — a spark went wide of me once.', 'He never once misses the shoe.'] })); }
+
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
