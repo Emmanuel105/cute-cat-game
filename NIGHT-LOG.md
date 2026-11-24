@@ -38906,3 +38906,35 @@ runs — the same pre-existing frame-timing wobble earlier rounds already found 
 regression.) No visual check was possible in this environment (no browser, no Playwright), so whether she
 actually reads as watching the chalk squares from this angle, rather than just standing nearby, is
 unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1332 — Candy Land's hopscotch chalker gets a watcher, second of the set
+
+Round 1331 started a new round of spectators for every world's own hopscotch chalker, beginning with
+the Neighborhood and leaving five more solo chalkers on the list. **Candy Land's own chalker — kneeling
+on the sweet-lands west of the cane ring since she was first built — now has a gingerbread-village local
+standing a few steps east of her six squares, watching the chalk go down.**
+
+Plain `Wanderer` (55-npcs.js), the same class every watcher in this set already uses — it calls
+`greetable()` itself, so she counts as a friend to meet with no extra wiring, and carries no physics box
+of her own. Built with no cries and every one of `Wanderer`'s own shared-`rnd()` draws
+(`phase`/`timer`/`t`/`cryT`) pinned explicitly instead of left to their defaults, the defensive habit the
+last few rounds' fortune-teller customers and the badminton/mime watchers already settled on, since
+`test/run.mjs` runs every world through one unbroken process and a shift to that *shared* sequence here
+could otherwise nudge some later world's own timing-sensitive number.
+
+A headless probe (`game.start('new')`, `game.load(1, 'from-prev')` for a direct synchronous build, then
+120 simulated frames sampled every 15th frame so every marching, dancing and wandering gingerbread man
+got a turn) swept the open sweet-lands east of the six squares against all 1799 of this land's own
+physics boxes (knee-to-head band only) and every sampled NPC position: (-81, 29) came back clear by
+8.21 m of the nearest box and 5.10 m of the nearest wandering soul, 1.3 m east of the chalker's own last
+square. Built dead last of every person this world's build adds, right after the metal-detector's own
+watcher and right before the squirrel, for the usual reason: `makeHuman()`/`randomPerson()` both draw off
+this land's own shared `r()` sequence unconditionally.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, physics box
+count unchanged (she adds none), and Candy Land's own friend total rose from 146 to 147 (confirmed
+against the previous commit with `git stash`). No visual check was possible in this environment (no
+browser, no Playwright), so whether she actually reads as watching the chalk squares from this angle is
+unverified, the same caveat every watcher in this set has carried so far. Four chalkers (Robot City,
+Victorian, Sunny Shore, Whisper Woods) still have no watcher of their own. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

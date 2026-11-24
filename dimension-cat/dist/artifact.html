@@ -17253,6 +17253,36 @@ function buildCandyLand(game, entry) {
     W.add(digWatcher.group);
     game.npcs.push(new Wanderer(game, digWatcher, { x: dwx, z: dwz, angle: atan2(dsx - dwx, dsz - dwz), speed: 0.2, leash: 0.5, idle: [3, 6] })); }
 
+  // Round 1331 gave the Neighborhood's own hopscotch chalker a first watcher, the one street
+  // activity in this project's long-running "give it a spectator" habit that had never been reached
+  // before, and left five more solo chalkers on the list — Candy Land's own girl (built a few hundred
+  // lines up, kneeling west of the cane ring) is next. **A gingerbread-village local now stands a few
+  // steps east of her six squares, watching the chalk go down.**
+  //
+  // Plain `Wanderer` (55-npcs.js), the same class every watcher in this set already uses — it calls
+  // `greetable()` on its own, so no extra wiring was needed, and it carries no physics box of its own.
+  // Built with no `cries` of its own and every shared-`rnd()` draw in `Wanderer`'s own constructor
+  // (`phase`/`timer`/`t`/`cryT`, each pinned here instead of left to its own default) fixed, the same
+  // defensive habit the fortune-tellers' own customers and the badminton/mime watchers already settled
+  // on, since `test/run.mjs` runs every world through one unbroken process and a shift to the shared
+  // sequence here could otherwise nudge a later world's own timing-sensitive numbers.
+  //
+  // A headless probe (`game.start('new')`, `game.load(1, 'from-prev')` for a direct synchronous build,
+  // then 120 simulated frames sampled every 15th frame so every marching, dancing and wandering
+  // gingerbread man had a turn) swept the open sweet-lands east of the six squares against all 1799 of
+  // this land's own physics boxes (knee-to-head band only) and every sampled NPC position: (-81, 29)
+  // came back clear by 8.21 m of the nearest box and 5.10 m of the nearest wandering soul, 1.3 m east
+  // of the chalker's own last square.
+  //
+  // Built dead last of every person this build adds, right after the metal-detector watcher above and
+  // right before the squirrel below, for the usual reason: `makeHuman()`/`randomPerson()` both draw
+  // off this land's own shared `r()` sequence unconditionally.
+  { const chwx = -81, chwz = 29, chkx = -86.1, chkz = 29.15;
+    const chalkWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0xffb4a2, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(chalkWatcher.group);
+    game.npcs.push(new Wanderer(game, chalkWatcher, { x: chwx, z: chwz, angle: atan2(chkx - chwx, chkz - chwz), speed: 0.3, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('star', 7, -6); C.add('yarn', -9, 9); C.add('fish', -16, -13); C.add('mouse', 16, -9); C.add('star', -10, -27); C.add('yarn', 22, 4); C.add('mouse', -28, 26); C.add('fish', 14, -44); C.add('star', 0, -56); C.add('mouse', -58, 30); C.add('yarn', 60, 36);
