@@ -18281,6 +18281,43 @@ function buildVictorian(game, entry) {
       if (!potter.gesture) { const A = potter.arms[0], B = potter.arms[1]; A.sh.rotation.x = -1.0; A.sh.rotation.z = 0.3; A.el.rotation.x = -1.3; B.sh.rotation.x = -1.0; B.sh.rotation.z = -0.3; B.el.rotation.x = -1.3; }
     }); }
 
+  // Frosty Peak and Robot City both run a travelling grindstone (rounds 1353 and 1355) — the one
+  // sharpening vignette in this whole game that actually grinds an edge rather than just striking one.
+  // Victorian London had its own real version of that trade walking its streets: the knife-and-scissor
+  // grinder, a foot-treadle wheel wheeled door to door. This town has never had one. **An old
+  // knife-grinder has set up his barrow wheel on a quiet stretch of cobbles south-west of the market
+  // square, blade pressed to the stone in short, sparking bursts between pauses to check the edge
+  // against the light.** *"Knives to grind! Scissors to grind! Bring 'em out, I'll not charge you
+  // twice."* *"Mind your tail, puss — a stray spark bites harder than it looks."* *"This old wheel's
+  // turned since before the Queen took the throne."* Saying hello to him is the usual kind of friend.
+  //
+  // No new controller: `Grinder` (55-npcs.js), used exactly as Frosty Peak's round 1353 and Robot
+  // City's round 1355 already built it — a kneeling human rig, arms pressed to the wheel with a small
+  // tremble while it spins fast and sparks fly, easing into a slower idle spin between bursts.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(3, 'from-prev')`, 3600 simulated frames so every carriage horse
+  // and wanderer had settled) swept a 1-2 m grid of the cobbled square (radius 18-85 from the origin,
+  // short of the radius (88) where `victorianRegion`'s own procedural fill takes over) against all of
+  // this town's own physics boxes, every `game.zones` rectangle (read straight from `game.zones.list`,
+  // not guessed) and every sampled NPC position, then refined the best stretch on a quarter-metre grid:
+  // (-37, -23.25) came back clear by 11.1 m of the nearest box and 11.1 m of the nearest other soul, at
+  // radius 43.7 from the origin — comfortably past the 0.45 m circle this kneeling rig and its own
+  // grindstone need, and clear of the market square, the side lane and every hand-placed prop on this
+  // street.
+  //
+  // Built dead last of everything this town adds, right after the potter above and right before the
+  // squirrel below, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this town's own
+  // shared `r()` sequence unconditionally, and anything built earlier here would have had its own
+  // timing-sensitive pick shifted by it.
+  { const gx = -37, gz = -23.25, gry = atan2(-gx, -gz);
+    const grindWard = makeWardrobe(r, { shirts: [0x5a4a3a, 0x3a3a4a], pants: [0x2a2a2a, 0x383838], shoes: [0x201a14] });
+    const grinder = makeHuman({ ...randomPerson(r, { female: r.chance(0.3), child: false, elder: true, wardrobe: grindWard }),
+      hat: 'flatcap', hatColor: 0x3a3a3a, coat: true, scarf: 0x6a5a48, apron: 0x4a3a2a, glasses: false });
+    W.add(grinder.group);
+    game.npcs.push(new Grinder(game, grinder, { x: gx, z: gz, ry: gry,
+      cries: ['Knives to grind! Scissors to grind! Bring \'em out, I\'ll not charge you twice.', "Mind your tail, puss — a stray spark bites harder than it looks.", "This old wheel's turned since before the Queen took the throne."] })); }
+
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
