@@ -3685,6 +3685,88 @@ function buildBeach(game, entry) {
     game.npcs.push(new Grinder(game, cleaner, { x: gx, z: gz, ry: gry,
       cries: ["Can't clean a catch with a dull blade.", "Mind your tail, puss — these sparks don't care whose fur they land on.", 'Every fish off that pier passes this wheel first.'] })); }
 
+  // Victorian picked up a potter at her kick wheel in round 1354 — the one craft in this whole game
+  // whose entire point is a turntable spinning under two cupped hands, the lump of clay rising and
+  // resetting on the world clock rather than this beach's own seeded `r`. Sunny Shore already sells an
+  // ice-cream, a hot dog and fortunes read off a straw mat, but nothing on this whole coast is actually
+  // made to sell. **A potter now sits cross-legged at her own kick wheel in the dry sand north of the
+  // tideline, a lump of wet clay rising taller between her palms before it's lifted away and a fresh
+  // one dropped to begin again**, a small shelf of three already-glazed pots — sand-pale glaze, the
+  // kind sold to tourists up and down this coast — propped beside her. *"Dig it straight out of the
+  // dune bank, if you know where to look — this sand's got clay under it, same as anywhere else."*
+  // *"Mind your tail, puss — that wheel doesn't know the difference between clay and a cat."* *"Every
+  // pot on that shelf was once this exact same lump, give or take an afternoon."* Saying hello to her
+  // is the usual kind of friend.
+  //
+  // No new controller: `Sitter` (55-npcs.js), the exact shape Victorian's own potter already uses —
+  // both hands fixed low and forward as if pressed to the clay, set once in this build's own `U.push`
+  // guarded by `!potter.gesture` so a greeting wave still wins over the held pose. The wheel (a
+  // waist-high post, a splash tray and the wheel-head disc) and the rising lump on top of it are both
+  // driven only by the world clock `t`, never this beach's own seeded `r`: the disc spins at a constant
+  // rate throughout and the clay's own height eases up over about four and a half seconds then back
+  // down over a shorter beat, no `rnd()` draw and no per-frame state of its own to carry — the same
+  // trick Victorian's own potter already settled on. `ry` is pinned to 0 rather than computed with
+  // `atan2`, so the wheel and the shelf both sit on a simple axis-aligned offset, the same shortcut
+  // every seated craftsman in this game already takes for the same reason: an axis-aligned `P.addBox`
+  // only lines up with a rotated rig's own facing when that rotation is itself a multiple of a right
+  // angle.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.load(4, 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a
+  // real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so
+  // every sunbather, ball-passer and dog walker had settled, then 600 more sampling every NPC's own
+  // position every 10th frame) swept the dry sand north of the tideline (ground height 0.1-2.6 m,
+  // radius 5-54, short of the radius (58) where `beachRegion`'s own procedural fill takes over, away
+  // from the fortune teller (-6, 46), the grindstone (-14.5, -54) and the hopscotch squares (-23, -46))
+  // against all 124 of this coast's own physics boxes (knee-to-head band only), all 91 `game.zones`
+  // rectangles and every sampled NPC position, then refined the best stretch on a finer half-metre
+  // grid: (-13, 31) came back clear by 5.5 m of the nearest box, 19.4 m of the nearest zone rectangle
+  // and 5.4 m of the nearest other soul, radius 33.6 from the origin.
+  //
+  // Built dead last of everything this beach adds, right before `spawnBySquirrel()`, for the usual
+  // reason: `makeHuman()`/`randomPerson()` both draw off this beach's own shared `r()` sequence
+  // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted
+  // by it.
+  { const potX = -13, potZ = 31, potRy = 0;
+    const potWard = makeWardrobe(r, { shirts: [0x8a6a4a, 0xc9a66b], pants: [0x3a3a3a], shoes: [0x5a4a3a] });
+    const potter = makeHuman({ ...randomPerson(r, { female: r.chance(0.6), child: false, elder: r.chance(0.3), wardrobe: potWard }),
+      shorts: true, apron: 0xd8c7a0, hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: false, build: 'stout' });
+    W.add(potter.group);
+    const woodM = mat(0x8a6a4a, { roughness: 0.85 }), darkM = mat(0x4a3a2a, { roughness: 0.6 }), trayM = mat(0xb0a08a, { roughness: 0.75, metalness: 0.15 }), clayM = mat(0xb08a5e, { roughness: 0.95 }), potM = mat(0xc9a06a, { roughness: 0.6 });
+    const stool = group(potX, 0, potZ, W);
+    mesh(G.cyl(0.18, 0.18, 0.03, 14), woodM, { y: 0.405, shadow: 'both', parent: stool });
+    mesh(G.cyl(0.1, 0.07, 0.39, 10), darkM, { y: 0.195, shadow: 'both', parent: stool });
+    P.addBox(potX, 0.21, potZ, 0.3, 0.42, 0.3, { cam: false });
+    const wx = potX, wz = potZ + 0.55;
+    const wheel = group(wx, 0, wz, W); wheel.rotation.y = potRy;
+    mesh(G.cyl(0.06, 0.08, 0.34, 10), woodM, { y: 0.17, shadow: 'both', parent: wheel });   // the post
+    mesh(G.cyl(0.26, 0.28, 0.05, 20), trayM, { y: 0.36, shadow: 'both', parent: wheel });   // the splash tray
+    const head = group(0, 0.4, 0, wheel);
+    mesh(G.cyl(0.22, 0.22, 0.03, 20), darkM, { parent: head });   // the wheel-head
+    const clay = mesh(G.cone(0.09, 0.2, 10), clayM, { y: 0.1, parent: head });
+    P.addBox(wx, 0.2, wz, 0.56, 0.4, 0.56, { cam: false });
+    const shelfX = potX + 0.75, shelfZ = potZ;
+    const shelf = group(shelfX, 0, shelfZ, W); shelf.rotation.y = potRy;
+    mesh(G.box(0.6, 0.04, 0.22), woodM, { y: 0.5, shadow: 'both', parent: shelf });
+    for (const [dx3, potH, potR2] of [[-0.18, 0.16, 0.07], [0, 0.2, 0.08], [0.18, 0.14, 0.065]]) {
+      const pot = group(dx3, 0.52, 0, shelf);
+      mesh(G.cyl(potR2, potR2 * 0.75, potH, 12), potM, { y: potH / 2, shadow: 'both', parent: pot });
+      mesh(G.cyl(potR2 * 0.4, potR2 * 0.5, potH * 0.25, 10), potM, { y: potH + potH * 0.1, parent: pot });   // the neck
+    }
+    P.addBox(shelfX, 0.26, shelfZ, 0.6, 0.52, 0.22, { cam: false });
+    game.npcs.push(new Sitter(game, potter, { x: potX, z: potZ, ry: potRy, seat: 0.42,
+      cries: ["Dig it straight out of the dune bank, if you know where to look — this sand's got clay under it, same as anywhere else.", "Mind your tail, puss — that wheel doesn't know the difference between clay and a cat.", 'Every pot on that shelf was once this exact same lump, give or take an afternoon.'] }));
+    U.push((dt, t) => {
+      head.rotation.y = t * 4.2;
+      const cyc = 5.0, growT = 4.6, ph = t % cyc;
+      let k;
+      if (ph < growT) { const p = ph / growT; k = p * p * (3 - 2 * p); }
+      else { const p = (ph - growT) / (cyc - growT); k = 1 - p * p * (3 - 2 * p); }
+      const s = 0.4 + 0.75 * k;
+      clay.scale.y = s; clay.position.y = 0.015 + 0.1 * s;
+      if (!potter.gesture) { const A = potter.arms[0], B = potter.arms[1]; A.sh.rotation.x = -1.0; A.sh.rotation.z = 0.3; A.el.rotation.x = -1.3; B.sh.rotation.x = -1.0; B.sh.rotation.z = -0.3; B.el.rotation.x = -1.3; }
+    }); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
