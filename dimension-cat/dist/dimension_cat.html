@@ -16650,6 +16650,41 @@ function buildCandyLand(game, entry) {
     const camera = makeOldCamera();
     game.npcs.push(new Photographer(game, snapper, camera, { x: px, z: pz, ry: pry, cryIcon: '📷',
       cries: ['Best view of the cupcake hills from right here.', "Careful, puss — it's only flash powder, not fire.", 'The candy-cane forest never quite fits in one shot.'] })); }
+  // `makeOldCamera()` (60-props.js) has built its lens facing "the subject" since the round it was
+  // written, and Victorian's and the Neighborhood's own photographers (rounds 1346, 1347) have already
+  // had somebody standing where their lens points — Candy Land's own tourist above, set up on the open
+  // sweet-lands north-west of the cane ring, was still framing empty ground like every other world not
+  // yet touched. A resident now stands a step past her camera, back straight and holding the pose. *"Hold
+  // still, they said. I have held still for ten whole minutes now."* *"Careful, puss — don't spoil the
+  // shot, she has only the one plate left."* *"Best side forward. Every single time, without fail."*
+  // Saying hello to her is the usual kind of friend.
+  //
+  // No new class: `makeHuman()`/`randomPerson()` (55-npcs.js) build the rig and `Wanderer` (55-npcs.js)
+  // gives her the same frozen "stand and watch" shape every subject in this set uses — `idle: [1e9, 1e9]`
+  // plus every one of `Wanderer`'s own construction-time draws (`phase`, `timer`, `t`, `cryT`) fixed
+  // rather than pulled from `rnd()`, and `blinkT0`/`idleT0`/`sway0` fixed straight in the `makeHuman()`
+  // call so she holds still instead of fidgeting. `angle` points her back at the photographer rather than
+  // a constant, so she reads as posing for her and not loitering. A mint-green dress (0x6fcf9e, not
+  // spoken for by the birdwatcher or the tourist already standing nearby) keeps her visually distinct.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(1, 'from-prev')` for a direct synchronous build, then 1800 simulated
+  // frames so every marching, dancing, wandering and ball-tossing gingerbread man and the
+  // gingerbread-coloured dog had settled) placed her 2.4 m out from the photographer along the exact line
+  // her own camera already faces, against all of this world's own physics boxes in the knee-to-head band:
+  // nothing closer than 11 m, and the only other soul anywhere near is the photographer herself, 2.4 m
+  // back down the same line, well clear of the candy-cane ring and the castle approach.
+  //
+  // Built right after the photographer herself, before the dominoes table below, for the usual reason:
+  // `makeHuman()`/`randomPerson()` both draw off this world's own shared `r()` sequence unconditionally.
+  { const subPX = -74, subPZ = 34, subPRY = atan2(-58 - subPX, 30 - subPZ);
+    const subX = subPX + 2.4 * sin(subPRY), subZ = subPZ + 2.4 * cos(subPRY);
+    const subject = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x6fcf9e, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false,
+      blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(subject.group);
+    game.npcs.push(new Wanderer(game, subject, { x: subX, z: subZ, angle: atan2(subPX - subX, subPZ - subZ), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 6,
+      cries: ["Hold still, they said. I have held still for ten whole minutes now.", "Careful, puss — don't spoil the shot, she has only the one plate left.", 'Best side forward. Every single time, without fail.'] })); }
   // Victorian (draughts, round 354), Robot City (checkers, round 384), Frosty Peak (cards, round 397),
   // Whisper Woods (draughts, round 407), the Neighborhood (chess, round 408) and Sunny Shore (mancala,
   // round 409) have all had a table game by now — Candy Land, named for the stuff and stuffed with more

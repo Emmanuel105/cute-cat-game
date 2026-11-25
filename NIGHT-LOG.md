@@ -39422,3 +39422,41 @@ posing rather than just standing there is unverified, the same caveat every watc
 carried — but five more worlds' photographers (Candy Land, Robot City, Sunny Shore, Frosty Peak,
 Whisper Woods) are still waiting on the same treatment. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1348 — Candy Land's photographer finally gets somebody to photograph
+
+Rounds 1346 and 1347 gave Victorian's and the Neighborhood's street photographers a subject after
+noticing `makeOldCamera()` has always built its lens facing "the subject" while nobody ever stood
+there, in any of the seven worlds. Candy Land's own tourist, set up on the open sweet-lands north-west
+of the candy-cane ring with lines about "the best view of the cupcake hills", was still pointed at
+empty ground like the four worlds left untouched. **A resident now stands a step past her camera, back
+straight and holding the pose she keeps asking for.** *"Hold still, they said. I have held still for
+ten whole minutes now."* *"Careful, puss — don't spoil the shot, she has only the one plate left."*
+*"Best side forward. Every single time, without fail."* Saying hello to her is the usual kind of
+friend, Candy Land's own count rising to 148.
+
+Same recipe as the first two rounds: no new class, just `makeHuman()`/`randomPerson()` (55-npcs.js) for
+the rig and `Wanderer` (55-npcs.js) for the frozen "stand and watch" shape — `idle: [1e9, 1e9]` plus
+every one of `Wanderer`'s own construction-time draws (`phase`, `timer`, `t`, `cryT`) fixed rather than
+pulled from `rnd()`, `blinkT0`/`idleT0`/`sway0` fixed straight in the `makeHuman()` call so she actually
+holds still, and `angle` pointed back at the photographer so she reads as posing rather than loitering.
+A mint-green shirt (0x6fcf9e) keeps her visually distinct from the birdwatcher and the tourist already
+standing nearby, though Candy Land runs no shared-shirt check the way the Neighborhood does. Placed
+right after the photographer herself, before the dominoes table, since `makeHuman()`/`randomPerson()`
+both draw off Candy Land's own shared `r()` sequence unconditionally.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(1, 'from-prev')` for a direct synchronous build, then 1800 simulated
+frames so every marching, dancing, wandering and ball-tossing gingerbread man had settled) placed her
+2.4 m out from the photographer along the exact line her own camera already faces, against every one of
+this world's own physics boxes in the knee-to-head band: 1.60 m clear of the nearest one (the camera's
+own tripod box) and 2.40 m from the nearest other soul, which is the photographer herself, back down the
+same line — nobody else wanders anywhere near that corner of the sweet-lands.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged at 336 (a `Wanderer` only ever adds a soft circle collider, never a box). No visual
+check was possible in this environment (no browser, no Playwright), so whether she actually reads as
+posing rather than just standing there is unverified, the same caveat every watcher in this game has
+carried — but four more worlds' photographers (Robot City, Sunny Shore, Frosty Peak, Whisper Woods) are
+still waiting on the same treatment. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.
