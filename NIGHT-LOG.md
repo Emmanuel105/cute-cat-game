@@ -39898,3 +39898,48 @@ No new controller: the same `Charger` (`55-npcs.js`) the other four barbers alre
 A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, `game.load(5, 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so every penguin, reindeer, kid and skater had settled, then 600 more sampling every NPC's own position every 10th frame) swept a 2 m grid of the open snow (radius 12-54 from the origin, short of the radius (58) where `snowRegion()`'s own procedural fill takes over) against all 373 of this mountain's own physics boxes (knee-to-head band only), all 151 `game.zones` rectangles and every sampled NPC position, then refined the best stretch on a quarter-metre grid: (34, -35.5) came back clear by 7.5 m of the nearest box, 9.4 m of the nearest zone rectangle and 7.5 m of the nearest other soul, radius 49.2 from the origin. Ground across his own footprint runs 0.05-0.20 m, under 15 cm of slope, so no terrain grading was needed.
 
 `node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, physics box count unchanged at 336, Frosty Peak's own friend total confirmed up by one to 164, "every NPC is in the scene graph" and the walkability checks (98%) unchanged. No visual check was possible in this environment (no browser, no Playwright), so whether the chair, the pole and the snipping pose read well against this mountain's own snow is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Whisper Woods and the Neighborhood are the worlds still without a barber of their own — and, per round 1359, the Neighborhood's own case isn't a quick follow-up.
+
+## Round 1370 — Whisper Woods picks up a barber too
+
+Victorian (1361), Candy Land (1366), Robot City (1367), Sunny Shore (1368) and Frosty Peak (1369)
+have all picked up a barber beside his own empty chair, his pole striped with the same
+`TEX.candyCane()` map. This wood already runs a trapper sharpening blades at his grindstone and a
+potter at her wheel, but nobody here had ever actually cut hair. **A barber now stands beside his
+own empty chair on a quiet stretch of forest floor south-east of the fairy ring, snipping his shears
+in the air to test an edge no customer is ever coming to try, his candy-striped pole propped in the
+moss beside him.** *"Not much call for a trim out here, but whiskers need evening same as anywhere
+else."* *"Mind your tail, puss — these shears don't know a tabby from a trim."* *"Five more of me
+now, same striped pole and all. Must be a popular joke."* Saying hello to him is the usual kind of
+friend, Whisper Woods' own count rising from 191 to 192.
+
+No new controller: the same `Charger` (55-npcs.js) the other five barbers already use — a standing
+rig that idles on its own, its arms pinned into a held snipping pose each frame, guarded by
+`!barber.gesture` so a greeting wave still wins. Own small wardrobe (`barberWard`), a moss-green
+shirt and dark trousers rather than any other barber's own palette — no hat, coat or scarf needed,
+this wood runs milder than the mountain. Like this wood's own trapper and potter, the floor rolls
+here, so the chair and pole groups and their physics boxes are both built on a single `gy0 =
+P.ground0(bx, bz)` looked up once and reused for both. The shears and the pole stripe are both driven
+only by the world clock `t` alone — no `rnd()` or local `r()` draw, so nothing later in this wood's
+own build had a pick shifted by it.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(6, 'from-hub')` directly rather than `game.travel()` — the travel
+fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+simulated frames so every deer, fox, fairy and wanderer had settled, then 600 more sampling every
+NPC's own position every 10th frame) swept a 2 m grid south-east of the fairy ring (radius 10-54,
+short of the radius (58) where `forestRegion()`'s own fill takes over, clear of the trapper
+(-15.5, 36.5) and the potter (32.5, 45.5)) against all 420 of this wood's own physics boxes
+(knee-to-head band only), all 223 `game.zones` rectangles and every sampled NPC position, then
+refined the best stretch on a finer half-metre grid: (26.5, 29.5) came back clear by 7.3 m of the
+nearest box, 14.3 m of the nearest zone rectangle and 8.9 m of the nearest other soul, radius 39.6
+from the origin. Ground across his own footprint runs 0.81-0.86 m, under 5 cm of slope, so no terrain
+grading was needed.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, Whisper
+Woods' own friend total confirmed up by one (191 → 192), "every NPC is in the scene graph" and the
+walkability check (98%) unchanged, across two consecutive runs. No visual check was possible in this
+environment (no browser, no Playwright), so whether the chair, the pole and the snipping pose read
+well against this wood's own forest floor is unverified, the usual caveat every round like this
+carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. The Neighborhood
+is the only world left without a barber of its own — and, per round 1359, its own case isn't a quick
+follow-up.
