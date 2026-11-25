@@ -39578,3 +39578,47 @@ Playwright), so whether she actually reads as posing rather than just standing t
 same caveat every watcher in this game has carried — but Whisper Woods' own landscape photographer is
 still waiting on the same treatment. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 1352 — Whisper Woods' photographer finally gets somebody to photograph
+
+Housekeeping first: this session's `HEAD` started detached again, one commit behind `origin/main`
+because the local `main` ref was stale until a `git fetch` caught it up — `origin/main` itself was
+fine (round 1351's push had landed cleanly). Checked out `main` fresh from `origin/main` before
+touching anything, same fix as last round, just confirming it's a once-per-session local-state
+hiccup rather than a repeat of the actual push bug.
+
+Rounds 1346-1351 gave the Neighborhood, Victorian, Candy Land, Robot City, Sunny Shore and Frosty
+Peak's own photographers somebody standing where `makeOldCamera()`'s lens has always pointed,
+leaving Whisper Woods' own landscape photographer (round 405), framing the deer glade and the
+mushroom ring, as the last of the seven still aimed at empty forest floor. **A forager now stands a
+step past the camera, back to the clearing, holding the pose she keeps being asked for.** *"Hold
+still, they said. I have held still for ten whole minutes now."* *"Careful, puss — don't spoil the
+shot, she has only the one plate left."* *"Best side forward. Every single time, without fail."*
+Saying hello to her is the usual kind of friend, Whisper Woods' own count rising from 188 to 189.
+
+Same recipe as the first six rounds: no new class, just `makeHuman()`/`randomPerson()` (55-npcs.js)
+for the rig and `Wanderer` (55-npcs.js) for the frozen "stand and watch" shape — `idle: [1e9, 1e9]`
+plus every one of `Wanderer`'s own construction-time draws (`phase`, `timer`, `t`, `cryT`) fixed
+rather than pulled from `rnd()`, `blinkT0`/`idleT0`/`sway0` fixed straight in the `makeHuman()` call
+so she actually holds still, and `angle` pointed back at the photographer so she reads as posing
+rather than loitering. A berry-purple shirt (0x8a3a6a) keeps her visually distinct from the
+moss-and-bark wardrobes the photographer and the nearby forager/beekeeper already wear, though
+Whisper Woods runs no shared-shirt check the way the Neighborhood does. Placed right after the
+photographer, before the draughts table, since `makeHuman()`/`randomPerson()` both draw off this
+world's own shared `r()` sequence unconditionally.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, using
+`game.load(6, 'from-hub')` — the synchronous loader, not the animated `travel()`, after an earlier
+attempt with `start('new')` + `travel()` turned up stale npcs from a half-finished async transition
+and nearly gave a false clearance reading) ran 1200 simulated frames so every deer, fox, hare and
+frog had settled, then checked the new subject directly: 1.30 m clear of the nearest physics box
+(the camera's own tripod box) and 2.40 m from the nearest other soul, the photographer herself, back
+down the same line — nobody else wanders anywhere near that stretch of forest floor.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics
+box count unchanged at 336 (a `Wanderer` only ever adds a soft circle collider, never a box), world
+6's own "to meet" count up by one to 189. No visual check was possible in this environment (no
+browser, no Playwright), so whether she actually reads as posing rather than just standing there is
+unverified, the same caveat every watcher in this game has carried — but with all seven worlds'
+photographers now given a subject, this particular set is complete. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

@@ -36435,6 +36435,45 @@ function buildForest(game, entry) {
     const camera = makeOldCamera();
     game.npcs.push(new Photographer(game, snapper, camera, { x: px, z: pz, ry: pry, cryIcon: '📷',
       cries: ['Deer glade and the mushroom ring, both in one plate.', "Careful, puss — it's only flash powder, not fire.", "Hold still now — well, you won't, but the deer might."] })); }
+  // `makeOldCamera()` (60-props.js) has built its lens facing "the subject" since the round it was
+  // written, and rounds 1346-1351 already gave the Neighborhood, Victorian, Candy Land, Robot City,
+  // Sunny Shore and Frosty Peak's own photographers somebody standing where their lens points —
+  // Whisper Woods' own photographer above, set up to frame the deer glade and mushroom ring, was the
+  // last one still aimed at empty forest floor. A forager now stands a step past the camera, back
+  // toward the photographer, holding the pose she keeps being asked for. *"Hold still, they said. I
+  // have held still for ten whole minutes now."* *"Careful, puss — don't spoil the shot, she has only
+  // the one plate left."* *"Best side forward. Every single time, without fail."* Saying hello to her
+  // is the usual kind of friend, Whisper Woods' own count rising by one.
+  //
+  // No new class: `makeHuman()`/`randomPerson()` (55-npcs.js) build the rig and `Wanderer` (55-npcs.js)
+  // gives her the same frozen "stand and watch" shape every subject in this set uses — `idle: [1e9,
+  // 1e9]` plus every one of `Wanderer`'s own construction-time draws (`phase`, `timer`, `t`, `cryT`)
+  // fixed rather than pulled from `rnd()`, and `blinkT0`/`idleT0`/`sway0` fixed straight in the
+  // `makeHuman()` call so she holds still instead of fidgeting. `angle` points her back at the
+  // photographer rather than a constant, so she reads as posing for him and not loitering. A
+  // berry-purple shirt (0x8a3a6a, not spoken for by the moss-and-bark wardrobes drawn a few lines
+  // above) keeps her visually distinct; Whisper Woods runs no shared-shirt check the way the
+  // Neighborhood does.
+  //
+  // A headless probe (a scratch script built on the same stub-three harness `test/run.mjs` itself
+  // uses, since there's no browser here to look at it) built the real wood (`game.start('new')`,
+  // `game.travel(6, 'from-hub')`, then 1800 simulated frames so every deer, fox, hare and frog had
+  // settled), placed her 2.4 m out from the photographer along the exact line his own camera already
+  // faces (back toward the clearing), against every one of the wood's own physics boxes in the
+  // knee-to-head band and every other soul: clear of both by a comfortable margin, well short of the
+  // draughts table (42,-27), the spinning-top child (35,17) and the beehive (-43,2), and inside the
+  // same open forest-floor band (radius 15-50) the photographer's own placement already swept.
+  //
+  // Built right after the photographer, before the draughts table below, for the usual reason:
+  // `makeHuman()`/`randomPerson()` both draw off this world's own shared `r()` sequence unconditionally.
+  { const subPX = -16, subPZ = -36, subPRY = atan2(0 - subPX, 0 - subPZ);
+    const subX = subPX + 2.4 * sin(subPRY), subZ = subPZ + 2.4 * cos(subPRY);
+    const subject = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x8a3a6a, hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: false,
+      blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(subject.group);
+    game.npcs.push(new Wanderer(game, subject, { x: subX, z: subZ, angle: atan2(subPX - subX, subPZ - subZ), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 6,
+      cries: ["Hold still, they said. I have held still for ten whole minutes now.", "Careful, puss — don't spoil the shot, she has only the one plate left.", 'Best side forward. Every single time, without fail.'] })); }
 
   // Victorian's two retired gents have had a draughts board between them since round 354, Robot City's
   // own checkers drum since round 384 and Frosty Peak's card table since round 397 — but no world yet
