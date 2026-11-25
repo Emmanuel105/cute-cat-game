@@ -22882,6 +22882,80 @@ function buildRobotCity(game, entry) {
     game.npcs.push(new Grinder(game, toolsmith, { x: gx, z: gz, ry: gry,
       cries: ['Every blade in this city dulls the same, steel or not.', "Mind your tail, puss — these sparks don't care whose fur they land on.", "Back home a grindstone turned by hand. This one still does — the treadle, not a motor."] })); }
 
+  // Victorian (round 1354), Sunny Shore (1360) and Whisper Woods (1362) have all picked up a potter at
+  // her kick wheel — the one craft in this whole game whose entire point is a turntable spinning under
+  // two cupped hands. This floor already runs a mechanic fixing robots and, since round 1355, a
+  // toolsmith sharpening blades, but nothing here makes anything from scratch. **A potter now sits
+  // cross-legged at her own kick wheel on a quiet stretch of open concrete north-west of downtown, a
+  // lump of wet clay rising taller between her palms before it's lifted away and a fresh one dropped to
+  // begin again**, a small shelf of three already-glazed pots — dull steel-grey glaze, to match
+  // everything else on this floor — propped beside her. *"Everyone on this floor fixes something that's
+  // already built. I like starting from nothing."* *"Mind your tail, puss — that wheel doesn't know the
+  // difference between clay and a cat."* *"Every pot on that shelf was once this exact same lump, give
+  // or take an afternoon."* Saying hello to her is the usual kind of friend.
+  //
+  // No new controller: the same `Sitter` (55-npcs.js) the other three potters already use — both hands
+  // fixed low and forward as if pressed to the clay, held each frame guarded by `!potter.gesture` so a
+  // greeting wave still wins. The wheel and the rising lump of clay are both driven only by the world
+  // clock `t`, never this city's own seeded `r`, so nothing later in this build's own wardrobe picks
+  // shift — no `rnd()` draw and no per-frame state of its own to carry, the same trick the other three
+  // potters already settled on. `ry` is pinned to a cardinal `PI` rather than computed with `atan2`, the
+  // same shortcut the Victorian potter's own bench already takes, so the wheel and the shelf both sit on
+  // simple axis-aligned offsets that line up with an axis-aligned `P.addBox`.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(2, 'from-prev')`, 3600 simulated frames so every wandering,
+  // patrolling, charging and ball-tossing robot and every vendor had settled, then 600 more sampling
+  // every NPC's own position every 10th frame) swept a 2 m grid of the open floor (radius 15-85 from the
+  // origin, short of the radius (98) where `robotRegion()`'s own procedural fill takes over) against all
+  // 1203 of this city's own physics boxes (knee-to-head band only), all 296 `game.zones` rectangles and
+  // every sampled NPC position, then refined the best stretch on a quarter-metre grid: (-47.61, 61.53)
+  // came back clear by 8.9 m of the nearest box, 32.5 m of the nearest zone rectangle and 9.7 m of the
+  // nearest other soul, at radius 77.8 from the origin.
+  //
+  // Built right after the toolsmith above and right before `spawnBySquirrel()`, for the usual reason:
+  // `makeHuman()`/`randomPerson()` both draw off this city's own shared `r()` sequence unconditionally,
+  // and anything built earlier here would have had its own timing-sensitive pick shifted by it.
+  { const potX = -47.61, potZ = 61.53, potRy = PI;
+    const potWard = makeWardrobe(r, { shirts: [0x5a6068, 0x6a7078], pants: [0x2a2a30] });
+    const potter = makeHuman({ ...randomPerson(r, { female: r.chance(0.6), child: false, elder: r.chance(0.3), wardrobe: potWard }),
+      pants: 0x1e1e24, apron: 0x4a4a52, sleeves: true, hat: null, coat: null, scarf: null, bag: null, backpack: null, glasses: false, build: 'stout' });
+    W.add(potter.group);
+    const woodM = mat(0x454a50, { roughness: 0.75, metalness: 0.15 }), darkM = mat(0x24262a, { roughness: 0.6, metalness: 0.2 }), trayM = mat(0x8a8d92, { roughness: 0.6, metalness: 0.3 }), clayM = mat(0x8a7262, { roughness: 0.92 }), potM = mat(0x8c9298, { roughness: 0.55, metalness: 0.2 });
+    const stool = group(potX, 0, potZ, W);
+    mesh(G.cyl(0.18, 0.18, 0.03, 14), woodM, { y: 0.405, shadow: 'both', parent: stool });
+    mesh(G.cyl(0.1, 0.07, 0.39, 10), darkM, { y: 0.195, shadow: 'both', parent: stool });
+    P.addBox(potX, 0.21, potZ, 0.3, 0.42, 0.3, { cam: false });
+    const wx = potX, wz = potZ - 0.55;
+    const wheel = group(wx, 0, wz, W); wheel.rotation.y = potRy;
+    mesh(G.cyl(0.06, 0.08, 0.34, 10), woodM, { y: 0.17, shadow: 'both', parent: wheel });   // the post
+    mesh(G.cyl(0.26, 0.28, 0.05, 20), trayM, { y: 0.36, shadow: 'both', parent: wheel });   // the splash tray
+    const head = group(0, 0.4, 0, wheel);
+    mesh(G.cyl(0.22, 0.22, 0.03, 20), darkM, { parent: head });   // the wheel-head
+    const clay = mesh(G.cone(0.09, 0.2, 10), clayM, { y: 0.1, parent: head });
+    P.addBox(wx, 0.2, wz, 0.56, 0.4, 0.56, { cam: false });
+    const shelfX = potX - 0.75, shelfZ = potZ;
+    const shelf = group(shelfX, 0, shelfZ, W); shelf.rotation.y = potRy;
+    mesh(G.box(0.6, 0.04, 0.22), woodM, { y: 0.5, shadow: 'both', parent: shelf });
+    for (const [dx3, potH, potR2] of [[-0.18, 0.16, 0.07], [0, 0.2, 0.08], [0.18, 0.14, 0.065]]) {
+      const pot = group(dx3, 0.52, 0, shelf);
+      mesh(G.cyl(potR2, potR2 * 0.75, potH, 12), potM, { y: potH / 2, shadow: 'both', parent: pot });
+      mesh(G.cyl(potR2 * 0.4, potR2 * 0.5, potH * 0.25, 10), potM, { y: potH + potH * 0.1, parent: pot });   // the neck
+    }
+    P.addBox(shelfX, 0.26, shelfZ, 0.6, 0.52, 0.22, { cam: false });
+    game.npcs.push(new Sitter(game, potter, { x: potX, z: potZ, ry: potRy, seat: 0.42,
+      cries: ['🏺 "Everyone on this floor fixes something that\'s already built. I like starting from nothing."', '🏺 "Mind your tail, puss — that wheel doesn\'t know the difference between clay and a cat."', '🏺 "Every pot on that shelf was once this exact same lump, give or take an afternoon."'] }));
+    U.push((dt, t) => {
+      head.rotation.y = t * 4.2;
+      const cyc = 5.0, growT = 4.6, ph = t % cyc;
+      let k;
+      if (ph < growT) { const p = ph / growT; k = p * p * (3 - 2 * p); }
+      else { const p = (ph - growT) / (cyc - growT); k = 1 - p * p * (3 - 2 * p); }
+      const s = 0.4 + 0.75 * k;
+      clay.scale.y = s; clay.position.y = 0.015 + 0.1 * s;
+      if (!potter.gesture) { const A = potter.arms[0], B = potter.arms[1]; A.sh.rotation.x = -1.0; A.sh.rotation.z = 0.3; A.el.rotation.x = -1.3; B.sh.rotation.x = -1.0; B.sh.rotation.z = -0.3; B.el.rotation.x = -1.3; }
+    }); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
