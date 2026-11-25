@@ -39385,3 +39385,40 @@ environment (no browser, no Playwright), so whether she actually reads as posing
 standing there is unverified, the same caveat every watcher in this game has carried — but the other
 six worlds' photographers are still waiting on the same treatment. Rebuilt `dist/dimension_cat.html`,
 `dist/artifact.html` and the root copy.
+
+## Round 1347 — the Neighborhood's photographer finally gets somebody to photograph
+
+Round 1346 gave Victorian's street photographer a subject after noticing `makeOldCamera()` has always
+built its lens facing "the subject" while nobody ever stood there, in any of the seven worlds. That
+round only fixed Victorian; the other six, the Neighborhood included, were left exactly as before. **A
+neighbour now stands a step past the Neighborhood's own back-field photographer, holding the pose he
+keeps asking for.** *"Hold still, they said. I have held still for ten whole minutes now."* *"Careful,
+puss — don't spoil the shot, he has only the one plate left."* *"Best side forward. Every single time,
+without fail."* Saying hello to her is the usual kind of friend, the Neighborhood's own count rising by
+one.
+
+Same recipe as Victorian's round: no new class, just `makeHuman()`/`randomPerson()` (55-npcs.js) for
+the rig and `Wanderer` (55-npcs.js) for the "stand and watch" shape — frozen `idle: [1e9, 1e9]` plus
+every one of `Wanderer`'s own construction-time draws (`phase`, `timer`, `t`, `cryT`) fixed rather than
+pulled from `rnd()`, `blinkT0`/`idleT0`/`sway0` fixed straight in the `makeHuman()` call so she actually
+holds still, and `angle` pointed back at the photographer so she reads as posing rather than loitering.
+A fixed shirt (0xe6b8c2, a dusty pink not spoken for anywhere else on this street) keeps the "no two
+neighbours share a shirt" check happy. Placed dead last of everything this street's build adds — right
+after the hopscotch chalker's own watcher and right before `makeDayNight` — since `makeHuman()` and
+`randomPerson()` both draw off the street's own shared `r()` sequence unconditionally.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: click
+"enter", 300 simulated seconds to let every stroller, the postie and the cyclist settle, then every
+NPC's and the squirrel's own position sampled every quarter second over another 300 simulated seconds)
+placed her 2.4 m out from the photographer along the exact line his own camera already faces, against
+all 312 of this street's own physics boxes in the knee-to-head band: 1.37 m clear of the nearest one
+(the camera's own tripod box), and 2.40 m from the nearest other soul, which is the photographer
+himself, back down the same line — nobody else wanders anywhere near that corner of the back field.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged at 336 (a `Wanderer` only ever adds a soft circle collider, never a box). No visual
+check was possible in this environment (no browser, no Playwright), so whether she actually reads as
+posing rather than just standing there is unverified, the same caveat every watcher in this game has
+carried — but five more worlds' photographers (Candy Land, Robot City, Sunny Shore, Frosty Peak,
+Whisper Woods) are still waiting on the same treatment. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.

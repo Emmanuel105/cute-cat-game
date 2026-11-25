@@ -5419,6 +5419,45 @@ function buildNeighborhood(game, entry) {
     W.add(hopWatcher.group);
     game.npcs.push(new Wanderer(game, hopWatcher, { x: hwx, z: hwz, angle: atan2(chx - hwx, chz - hwz), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // `makeOldCamera()` (60-props.js) has built its lens facing "the subject" since the round it was
+  // written, and the Neighborhood's own photographer above talks about framing both roofs and the
+  // street ("Both roofs and the street, if I angle it right.") — but like every other world's
+  // photographer before round 1346, he had only ever faced empty field. **A neighbour now stands a
+  // step past his camera, holding still for the shot.** *"Hold still, they said. I have held still
+  // for ten whole minutes now."* *"Careful, puss — don't spoil the shot, he has only the one plate
+  // left."* Saying hello to her is the usual kind of friend.
+  //
+  // No new class: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual rig and `Wanderer`
+  // (55-npcs.js) gives her the same "stand and watch" shape every watcher in this file already uses —
+  // frozen `idle: [1e9, 1e9]` plus every one of `Wanderer`'s own construction-time draws (`phase`,
+  // `timer`, `t`, `cryT`) fixed rather than pulled from `rnd()`, and `blinkT0`/`idleT0`/`sway0` fixed
+  // straight in the `makeHuman()` call so she actually holds a pose instead of fidgeting, the same
+  // touch Victorian's own subject (round 1346) used. `angle` points her back at the photographer
+  // rather than a constant, so she reads as posing for him, not loitering. A fixed shirt (0xe6b8c2, a
+  // dusty pink not spoken for anywhere else on this street) keeps the "no two neighbours share a
+  // shirt" check happy.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // click "enter", 300 simulated seconds to let every wanderer, the postie and the cyclist settle,
+  // then every NPC's and the squirrel's own position sampled every quarter second over another 300
+  // simulated seconds) placed her 2.4 m out from the photographer along the exact line his own camera
+  // already faces — against all 312 of this street's own physics boxes in the knee-to-head band:
+  // 1.37 m clear of the nearest one (the camera's own tripod box), and 2.40 m from the nearest other
+  // soul, which is the photographer himself, back down the same line — nobody else wanders anywhere
+  // near this quiet corner of the back field.
+  //
+  // Built dead last of everything this street adds, right after the hopscotch chalker's own watcher
+  // above and right before `makeDayNight`, for the usual reason: `makeHuman()`/`randomPerson()` both
+  // draw off this street's own shared `r()` sequence unconditionally.
+  { const subPX = 61, subPZ = -26, subPRY = atan2(63 - subPX, 5 - subPZ);
+    const subX = subPX + 2.4 * sin(subPRY), subZ = subPZ + 2.4 * cos(subPRY);
+    const subject = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0xe6b8c2, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false,
+      blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(subject.group);
+    game.npcs.push(new Wanderer(game, subject, { x: subX, z: subZ, angle: atan2(subPX - subX, subPZ - subZ), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 7,
+      cries: ["Hold still, they said. I have held still for ten whole minutes now.", "Careful, puss — don't spoil the shot, he has only the one plate left.", 'Best side forward. Every single time, without fail.'] })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
