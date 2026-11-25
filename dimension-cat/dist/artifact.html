@@ -39347,6 +39347,50 @@ function buildForest(game, entry) {
     W.add(customer.group);
     game.npcs.push(new Wanderer(game, customer, { x: cux, z: cuz, angle: atan2(ftX - cux, ftZ - cuz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // Frosty Peak (1353), Robot City (1355), Victorian (1356), Candy Land (1357) and Sunny Shore
+  // (1358) have all picked up the same foot-treadle grindstone over the last several rounds — the
+  // one sharpening vignette in this game that actually grinds an edge rather than just striking one.
+  // This wood already runs a woodcutter splitting logs on the eastern stump (`Chopper`), but nothing
+  // in the whole glade actually sharpens the axe he swings. **A trapper now kneels at his own wheel
+  // on a quiet stretch of the forest floor north of the fairy ring, a hunting knife pressed to the
+  // spinning stone in short, sparking bursts between pauses to check the edge against the light.**
+  // *"A blade this dull wouldn't fell a sapling, let alone a tree."* *"Mind your tail, puss — these
+  // sparks don't care whose fur they land on."* *"Every axe in this wood passes this wheel sooner or
+  // later."* Saying hello to him is the usual kind of friend.
+  //
+  // No new controller: the same `Grinder` (`55-npcs.js`) the other five worlds already use — a
+  // kneeling human rig (it reaches into `rig.spine`, a field only `makeHuman()` rigs carry), plain
+  // apron, no hat or coat to catch a spark. The Neighborhood is the only world left without one of
+  // these, and deliberately so: it is the one world `test/run.mjs` builds and checks in the same
+  // breath, and a handful of its own checks (the painter's daubs, the two gossiping neighbours) key
+  // off the shared global `rnd()` sequence's exact position down to the frame, something even a
+  // careful construction-time-only fix couldn't fully tame once the grindstone's own sparks start
+  // drawing from it every few tenths of a second once the world is running — a trap this wood, like
+  // every other world travelled to rather than started from, never falls into.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.load(6, 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a
+  // real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so
+  // every deer, fox, fairy and wanderer had settled, then 600 more sampling every NPC's own position
+  // every 10th frame) swept a 2 m grid north of the fairy ring (radius under 50, well inside
+  // `forestRegion`'s own inner radius of 58) against all 666 of this wood's own physics boxes
+  // (knee-to-head band only), all 223 `game.zones` rectangles and every sampled NPC position, then
+  // refined the best stretch on a finer half-metre grid: (-15.5, 36.5) came back clear by 6.6 m of
+  // the nearest box, 12.5 m of the nearest zone rectangle and 7.1 m of the nearest other soul, radius
+  // 39.7 from the origin.
+  //
+  // Built dead last of everything this wood adds, right after the fortune teller's own customer
+  // above and right before `spawnBySquirrel()`, for the usual reason: `makeHuman()`/`randomPerson()`
+  // both draw off this wood's own shared `r()` sequence unconditionally. Every world but the
+  // Neighborhood now has its own grindstone.
+  { const gx = -15.5, gz = 36.5, gry = atan2(-gx, -gz);
+    const trapperWard = makeWardrobe(r, { shirts: [0x5a4a3a, 0x3a4a3a, 0x6a5a4a] });
+    const trapper = makeHuman({ ...randomPerson(r, { female: r.chance(0.3), child: false, elder: r.chance(0.4), wardrobe: trapperWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: false, apron: 0x3a2a1e });
+    W.add(trapper.group);
+    game.npcs.push(new Grinder(game, trapper, { x: gx, z: gz, ry: gry,
+      cries: ["A blade this dull wouldn't fell a sapling, let alone a tree.", "Mind your tail, puss — these sparks don't care whose fur they land on.", 'Every axe in this wood passes this wheel sooner or later.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
