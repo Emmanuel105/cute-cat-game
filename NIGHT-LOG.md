@@ -39534,3 +39534,47 @@ check was possible in this environment (no browser, no Playwright), so whether s
 posing rather than just standing there is unverified, the same caveat every watcher in this game has
 carried — but two more worlds' photographers (Frosty Peak, Whisper Woods) are still waiting on the same
 treatment. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1351 — Frosty Peak's photographer finally gets somebody to photograph
+
+Housekeeping first: this round started with `HEAD` detached 31 commits ahead of `main`, and `main`
+itself 31 commits behind `origin/main`'s expectations — every round from the hopscotch-chalker set
+through round 1350 had been committing correctly but landing on a detached `HEAD` rather than the
+`main` branch, so each round's own `git push origin main` was quietly pushing the stale local `main`
+ref (a no-op) instead of carrying the new work to GitHub. Confirmed `main` was a clean fast-forward
+ancestor of the detached tip, moved `main` up to it (`git checkout -B main <tip>`), and pushed — all 31
+rounds are now actually on `origin/main`, not just sitting in a local, branch-less limbo one git-gc away
+from vanishing when this sandbox is thrown away. Worth a glance from whoever reads this next: confirm
+`git status` doesn't say "detached" before trusting a push did anything.
+
+Rounds 1346-1350 gave the Neighborhood, Victorian, Candy Land, Robot City and Sunny Shore's own street
+photographers somebody standing where `makeOldCamera()`'s lens has always pointed. Frosty Peak's own
+photographer (round 397) was built differently from the start — framing the whole mountainside rather
+than a portrait subject — but the lens still points at empty snow, and a tourist posing with the
+gondola station and peaks behind her reads just as naturally as a portrait would. **A villager now
+stands a step past the camera, back to the mountain, holding the pose she keeps being asked for.**
+*"Hold still, they said. I have held still for ten whole minutes now."* *"Careful, puss — don't spoil
+the shot, she has only the one plate left."* *"Best side forward. Every single time, without fail."*
+Saying hello to her is the usual kind of friend, Frosty Peak's own count rising to 161.
+
+Same recipe as the first five rounds: no new class, `makeHuman()`/`randomPerson()` (55-npcs.js) for the
+rig and `Wanderer` (55-npcs.js) for the frozen "stand and watch" shape — `idle: [1e9, 1e9]` plus every
+one of `Wanderer`'s own construction-time draws (`phase`, `timer`, `t`, `cryT`) fixed rather than pulled
+from `rnd()`, `blinkT0`/`idleT0`/`sway0` fixed straight in the `makeHuman()` call so she actually holds
+still, and `angle` pointed back at the photographer so she reads as posing rather than loitering. A
+cranberry-red coat (0xa33a4a) keeps her visually distinct from the card players' and the photographer's
+own cold-weather wardrobes just drawn a few lines above, though Frosty Peak runs no shared-shirt check
+the way the Neighborhood does. Placed right after the photographer, before the curling rink, since
+`makeHuman()`/`randomPerson()` both draw off this world's own shared `r()` sequence unconditionally.
+One snag the first draft hit: the subject's placement expression originally reused the photographer's
+own block-scoped `px`/`pz`/`pry` consts, which don't exist once that block closes — `node test/run.mjs`
+caught it immediately with a `ReferenceError` on world 5's own build, fixed by recomputing the same
+three values (`subPX`/`subPZ`/`subPRY`) from the literal coordinates instead.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged at 336 (a `Wanderer` only ever adds a soft circle collider, never a box), world 5's own
+"to meet" count up by one to 161. No visual check was possible in this environment (no browser, no
+Playwright), so whether she actually reads as posing rather than just standing there is unverified, the
+same caveat every watcher in this game has carried — but Whisper Woods' own landscape photographer is
+still waiting on the same treatment. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.
