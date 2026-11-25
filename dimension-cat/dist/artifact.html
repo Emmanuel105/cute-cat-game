@@ -31315,6 +31315,45 @@ function buildBeach(game, entry) {
   { const chwx = -23, chwz = -46, chkx = -25.9, chkz = -43;
     game.npcs.push(new Wanderer(game, beachPerson(r.chance(0.5), false), { x: chwx, z: chwz, angle: atan2(chkx - chwx, chkz - chwz), speed: 0.3, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // Frosty Peak (1353), Robot City (1355), Victorian (1356) and Candy Land (1357) have all picked up
+  // the same foot-treadle grindstone over the last several rounds — the one sharpening vignette in
+  // this game that actually grinds an edge, rather than just striking one. This coast already runs an
+  // angler out on the pier, a net-mender coiling rope and a clam digger working the tideline, but
+  // nobody on the whole shore sharpens a blade. **A fish-cleaner now kneels at her own grindstone on
+  // the dry sand south-west of the hopscotch squares, a filleting knife pressed to the spinning wheel
+  // in short, sparking bursts between pauses to check the edge against the light, facing east toward
+  // the water while she works.** *"Can't clean a catch with a dull blade."* *"Mind your tail, puss —
+  // these sparks don't care whose fur they land on."* *"Every fish off that pier passes this wheel
+  // first."* Saying hello to her is the usual kind of friend.
+  //
+  // No new controller: the same `Grinder` (`55-npcs.js`) the other four worlds already use — a
+  // kneeling human rig (it reaches into `rig.spine`, a field only `makeHuman()` rigs carry, unlike the
+  // robots elsewhere in this game), plain apron, no hat, jacket or bag to catch a spark.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(4, 'from-hub')` directly rather than `travel()` — the travel fade
+  // sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so every sunbather, ball-passer and dog walker had settled, then 600 more
+  // sampling every NPC's own position every 10th frame) swept the dry sand south-west of the hopscotch
+  // squares (radius under 56) against all 122 of this coast's own physics boxes (knee-to-head band
+  // only), all 91 `game.zones` rectangles and every sampled NPC position, then refined the best
+  // stretch on a finer half-metre grid: (-14.5, -54) came back clear by 8.5 m of the nearest box,
+  // 12.3 m of the nearest zone rectangle and 6 m of the nearest other soul, radius 55.9 from the
+  // origin — short of the radius (58) where `beachRegion`'s own procedural fill takes over.
+  //
+  // Built dead last of everything this beach adds, right before `spawnBySquirrel()`, for the usual
+  // reason: `makeHuman()`/`randomPerson()` both draw off this beach's own shared `r()` sequence
+  // unconditionally, and anything built earlier would have had its own timing-sensitive pick shifted
+  // by it. The Neighborhood and Whisper Woods are the only worlds left without a grindstone of their
+  // own.
+  { const gx = -14.5, gz = -54, gry = PI / 2;
+    const grindWard = makeWardrobe(r, { shirts: [0x3a6a5a, 0x9a7a4a, 0x5a4a6a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018, 0x1e2020] });
+    const cleaner = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: grindWard }),
+      hat: null, jacket: null, scarf: null, bag: null, glasses: false, apron: 0x4a5a5a });
+    W.add(cleaner.group);
+    game.npcs.push(new Grinder(game, cleaner, { x: gx, z: gz, ry: gry,
+      cries: ["Can't clean a catch with a dull blade.", "Mind your tail, puss — these sparks don't care whose fur they land on.", 'Every fish off that pier passes this wheel first.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
