@@ -18353,6 +18353,83 @@ function buildVictorian(game, entry) {
     game.npcs.push(new Grinder(game, grinder, { x: gx, z: gz, ry: gry,
       cries: ['Knives to grind! Scissors to grind! Bring \'em out, I\'ll not charge you twice.', "Mind your tail, puss — a stray spark bites harder than it looks.", "This old wheel's turned since before the Queen took the throne."] })); }
 
+  // Every tradesman this town has picked up — the cobbler, the watchmaker, the blacksmith, the
+  // knife-grinder above — mends or sharpens something. Nobody in the whole town cuts hair, and this
+  // game has never had a barber anywhere, in any of the seven worlds (checked: no "barber", "haircut"
+  // or "barber pole" anywhere in src/ or this log before tonight). **A barber now stands beside his own
+  // empty chair on a quiet stretch of grass north of the terraces, snipping his shears in the air to
+  // test the edge while he waits for a customer who isn't coming — a red-and-white pole, striped with
+  // the same `TEX.candyCane()` map the sweets two worlds over already wear, spins slowly beside him.**
+  // *"Chair's been empty since noon. Can't blame the cat for not sitting in it."* *"Mind your whiskers,
+  // puss — these shears don't know a tabby from a trim."* *"Striped same as the sweets two towns over.
+  // Nobody's ever asked why."* Saying hello to him is the usual kind of friend.
+  //
+  // `Charger` (55-npcs.js) — the fiddler's and the ukulele player's own controller, a standing figure
+  // whose rig does all the idling and whose arms this build then pins into a held pose each frame,
+  // guarded by `!rig.gesture` so a greeting wave still wins. Own small wardrobe (`barberWard`), not
+  // `vicWard` shared by a dozen others already, so the dupe-shirt check stays happy. The shears
+  // themselves are a tiny pivot of two blade meshes hinged apart, oscillating open and shut on the
+  // world clock `t` alone — no `rnd()` or local `r()` draw, the same zero-cost trick the campfire's
+  // flicker and the wishing-well's bucket already use.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(3, 'from-prev')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so every carriage horse and wanderer had settled, then 600 more sampling every
+  // NPC's own position every 10th frame) swept a 2 m grid of the green country between the market
+  // square and the radius (88) where `victorianRegion`'s own procedural fill takes over (15-85 from the
+  // origin) against all 615 of this town's own physics boxes (knee-to-head band only), all 236
+  // `game.zones` rectangles and every sampled NPC position, then refined the best stretch on a
+  // half-metre grid: (6.5, 77.5) came back clear by 18.5 m of the nearest box, 15.5 m of the nearest
+  // zone rectangle and 15.3 m of the nearest other soul, radius 77.8 from the origin — well short of
+  // the region-fill radius and far past every other hand-placed prop on this side of town.
+  //
+  // Built dead last of everything this town adds, right after the knife-grinder above and right before
+  // the squirrel below, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this town's
+  // own shared `r()` sequence unconditionally, and anything built earlier here would have had its own
+  // timing-sensitive pick shifted by it.
+  { const bx = 6.5, bz = 77.5, bry = atan2(-bx, -bz);
+    const barberWard = makeWardrobe(r, { shirts: [0xece3d4], pants: [0x2a2a2a], shoes: [0x201a14] });
+    const barber = makeHuman({ ...randomPerson(r, { female: r.chance(0.3), child: false, elder: r.chance(0.4), wardrobe: barberWard }),
+      pants: 0x2a2a2a, apron: 0x3a3a42, sleeves: true, hat: null, coat: null, scarf: null, bag: null, backpack: null, glasses: false, moustache: r.chance(0.5), build: 'average' });
+    W.add(barber.group);
+    const leatherM = mat(0x7a2020, { roughness: 0.55 }), chairWoodM = mat(0x3a2a1a, { roughness: 0.8 }), chromeM = mat(0xcfd4d8, { metalness: 0.7, roughness: 0.25 });
+    // the empty chair: a pedestal base, a seat, a tall back and two armrests, a step in front
+    const chairX = bx + sin(bry) * 0.75, chairZ = bz + cos(bry) * 0.75;
+    const chair = group(chairX, 0, chairZ, W); chair.rotation.y = bry + PI;   // facing the barber
+    mesh(G.cyl(0.22, 0.26, 0.5, 14), chromeM, { y: 0.25, shadow: 'both', parent: chair });
+    mesh(G.box(0.46, 0.08, 0.46), leatherM, { y: 0.54, shadow: 'both', parent: chair });
+    mesh(G.box(0.46, 0.6, 0.08), leatherM, { y: 0.88, z: -0.22, shadow: 'both', parent: chair });
+    for (const sideA of [-1, 1]) mesh(G.box(0.07, 0.22, 0.4), leatherM, { x: sideA * 0.24, y: 0.68, shadow: 'both', parent: chair });
+    mesh(G.box(0.5, 0.04, 0.2), chairWoodM, { y: 0.08, z: 0.3, shadow: 'both', parent: chair });   // footrest step
+    P.addBox(chairX, 0.45, chairZ, 0.5, 0.9, 0.56, { cam: false });
+    // the pole: a slim post, the candy-cane stripe spinning round its own middle section, a small
+    // chrome ball to cap it
+    const poleX = bx - sin(bry) * 0.7 + cos(bry) * 0.55, poleZ = bz - cos(bry) * 0.7 - sin(bry) * 0.55;
+    const pole = group(poleX, 0, poleZ, W);
+    noInk(mesh(G.cyl(0.03, 0.035, 1.5, 10), chairWoodM, { y: 0.75, parent: pole }));
+    const stripeM = mat(0xffffff, { roughness: 0.4, map: TEX.candyCane() });
+    const poleSpin = group(0, 1.1, 0, pole);
+    noInk(mesh(G.cyl(0.07, 0.07, 0.6, 12), stripeM, { parent: poleSpin }));
+    mesh(G.sphere(0.08, 10, 8), chromeM, { y: 0.44, parent: pole });
+    P.addBox(poleX, 0.7, poleZ, 0.14, 1.5, 0.14, { cam: false });
+    // the shears, held raised and snipping — two thin blades on a hinge, pinned to the near hand
+    const scissors = group(0, 0.1, 0.1, barber.hands[0]); scissors.rotation.x = -1.3;
+    const bladeM = mat(0xb8bcc0, { metalness: 0.75, roughness: 0.2 }), handleM = mat(0x8a1a1a, { roughness: 0.5 });
+    noInk(mesh(G.sphere(0.018, 8, 6), handleM, { parent: scissors }));
+    const bladeA = group(0, 0, 0, scissors), bladeB = group(0, 0, 0, scissors);
+    mesh(G.box(0.014, 0.1, 0.01), bladeM, { y: 0.06, parent: bladeA }); mesh(G.box(0.03, 0.025, 0.01), handleM, { y: -0.03, parent: bladeA });
+    mesh(G.box(0.014, 0.1, 0.01), bladeM, { y: 0.06, parent: bladeB }); mesh(G.box(0.03, 0.025, 0.01), handleM, { y: -0.03, parent: bladeB });
+    const comb = group(0, 0.08, 0.06, barber.hands[1]); comb.rotation.x = -0.6;
+    mesh(G.box(0.02, 0.12, 0.012), mat(0x1a1a1e, { roughness: 0.6 }), { parent: comb });
+    game.npcs.push(new Charger(game, barber, { x: bx, z: bz, ry: bry, cryIcon: '💈',
+      cries: ['Chair\'s been empty since noon. Can\'t blame the cat for not sitting in it.', 'Mind your whiskers, puss — these shears don\'t know a tabby from a trim.', 'Striped same as the sweets two towns over. Nobody\'s ever asked why.'] }));
+    U.push((dt, t) => {
+      poleSpin.rotation.y = t * 2.2;
+      bladeA.rotation.z = 0.12 + sin(t * 7) * 0.12; bladeB.rotation.z = -0.12 - sin(t * 7) * 0.12;
+      if (!barber.gesture) { const A = barber.arms[0], B = barber.arms[1]; A.sh.rotation.x = -1.4; A.sh.rotation.z = 0.25; A.el.rotation.x = -1.6; B.sh.rotation.x = -0.9; B.sh.rotation.z = -0.2; B.el.rotation.x = -1.1; }
+    }); }
+
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
