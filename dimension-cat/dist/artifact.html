@@ -18924,6 +18924,41 @@ function buildCandyLand(game, entry) {
     W.add(customer.group);
     game.npcs.push(new Wanderer(game, customer, { x: cux, z: cuz, angle: atan2(ftX - cux, ftZ - cuz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // Frosty Peak, Robot City and Victorian have all picked up the same foot-treadle grindstone
+  // (`Grinder`, 55-npcs.js) over the last few rounds; Candy Land, Neighborhood, Sunny Shore and
+  // Whisper Woods still have nothing that actually sharpens a blade. **A grinder now kneels at her
+  // wheel on the open ground south of the chocolate river, a cane-cutting shears pressed to the
+  // stone in short, sparking bursts between pauses to check the edge.** *"Blunt shears make ragged
+  // canes — nobody wants a jagged candy cane."* *"Mind your tail, puss — sparks fly here same as
+  // anywhere else."* *"Every cane trimmed in this land passes over this very wheel first."* Saying
+  // hello to her is the usual kind of friend.
+  //
+  // No new controller: the same `Grinder` the other three worlds already use, built exactly the
+  // same way — a kneeling human rig (she reaches into `rig.spine`, a field only `makeHuman()` rigs
+  // carry) in a plain apron, no hat or coat to get in the sparks' way.
+  //
+  // A headless probe (`game.start('new')`, `game.load(1, 'from-prev')` — travel()'s own fade runs on
+  // a real timer that a synchronous frame loop never lets fire, so `load()` was called directly —
+  // then 3600 simulated frames so every tosser, fudge-maker and wanderer had settled, then 600 more
+  // sampling every NPC's own position every 10th frame) swept a 2 m grid south of the river
+  // (radius 12-50 from the origin, skipping the river's own `z` band) against all 1807 of this
+  // land's own physics boxes (knee-to-head band only), all 452 `game.zones` rectangles and every
+  // sampled NPC position, then refined the best stretch on a finer half-metre grid: (-4.5, -49) came
+  // back clear by 9.3 m of the nearest box, 20.8 m of the nearest zone rectangle and 9.4 m of the
+  // nearest other soul — comfortably past the 0.45 m circle this kneeling rig and its own grindstone
+  // need, and well short of the radius (56) where the cane-forest ring takes over.
+  //
+  // Built dead last of everything this land adds, right after the fortune teller's customer above
+  // and right before `spawnBySquirrel()`, for the usual reason: `makeHuman()`/`randomPerson()` both
+  // draw off this land's own shared `r()` sequence unconditionally.
+  { const gx = -4.5, gz = -49, gry = atan2(-gx, -gz);
+    const grindWard = makeWardrobe(r, { shirts: [0x6a7a8a], pants: [0x2a2a30], shoes: [0x1a1a1e] });
+    const grinder = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: grindWard }),
+      hat: null, coat: null, scarf: null, bag: null, apron: 0x4a4a52 });
+    W.add(grinder.group);
+    game.npcs.push(new Grinder(game, grinder, { x: gx, z: gz, ry: gry,
+      cries: ['Blunt shears make ragged canes — nobody wants a jagged candy cane.', "Mind your tail, puss — sparks fly here same as anywhere else.", 'Every cane trimmed in this land passes over this very wheel first.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
