@@ -22806,6 +22806,47 @@ function buildRobotCity(game, entry) {
     W.add(customer.group);
     game.npcs.push(new Wanderer(game, customer, { x: cux, z: cuz, angle: atan2(ftX - cux, ftZ - cuz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // Frosty Peak got a foot-treadle grindstone back in round 1353 — the one sharpening vignette in this
+  // whole game that actually grinds an edge, rather than just striking one (the woodcutter's axe, the
+  // mechanic's wrench). This floor's own mechanic already fixes robots at his bench, but nothing here
+  // sharpens a blade. **A toolsmith now kneels at her own grindstone on the open floor south of the
+  // oil vendor's pitch, a blade pressed to the spinning wheel in short, sparking bursts between pauses
+  // to check the edge against the light — the same traveling grindstone Frosty Peak's own edge-chaser
+  // uses, set up here between two towers instead of out on the snow.** *"Every blade in this city dulls
+  // the same, steel or not."* *"Mind your tail, puss — these sparks don't care whose fur they land on."*
+  // *"Back home a grindstone turned by hand. This one still does — the treadle, not a motor."*  Saying
+  // hello to her is the usual kind of friend.
+  //
+  // No new controller: `Grinder` (55-npcs.js), used exactly as Frosty Peak's round 1353 already built
+  // it — a kneeling rig, arms pressed to the wheel with a small tremble while it spins fast and sparks
+  // fly, easing into a slower idle spin between bursts. A human rig rather than a robot one: `Grinder`
+  // reaches into `rig.spine`, a field only `makeHuman()` rigs carry (`makeRobot()`'s own rig has no
+  // spine to bend), and this floor already keeps at least one human visitor of its own — the bird
+  // spotter watching the high ledges, the fortune teller's own customer above, now a toolsmith too.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(2, 'from-prev')`, 3600 simulated frames so every wandering,
+  // patrolling, charging and ball-tossing robot and every vendor had settled, then 600 more sampling
+  // every NPC's own position every 10th frame) swept a 2 m grid of the open floor (radius 15-90 from
+  // the origin, short of the radius (98) where `robotRegion()`'s own procedural fill takes over)
+  // against all 1206 of this city's own physics boxes (knee-to-head band only), all 296 `game.zones`
+  // rectangles and every sampled NPC position, then refined the best stretch on a finer half-metre
+  // grid: (1, -22.5) came back clear by 7.2 m of the nearest box, 21.9 m of the nearest `game.zones`
+  // rectangle and 7.0 m of the nearest other soul, comfortably past the 0.45 m circle this kneeling rig
+  // and its own grindstone need.
+  //
+  // Built dead last of everything this city adds, right after the fortune teller's customer above and
+  // right before `spawnBySquirrel()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw
+  // off this city's own shared `r()` sequence unconditionally, and anything built earlier here would
+  // have had its own timing-sensitive pick shifted by it.
+  { const gx = 1, gz = -22.5, gry = atan2(-gx, -gz);
+    const grindWard = makeWardrobe(r, { shirts: [0x6a7a8a], pants: [0x2a2a30], shoes: [0x1a1a1e] });
+    const toolsmith = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: grindWard }),
+      hat: null, coat: null, scarf: null, bag: null, apron: 0x4a4a52 });
+    W.add(toolsmith.group);
+    game.npcs.push(new Grinder(game, toolsmith, { x: gx, z: gz, ry: gry,
+      cries: ['Every blade in this city dulls the same, steel or not.', "Mind your tail, puss — these sparks don't care whose fur they land on.", "Back home a grindstone turned by hand. This one still does — the treadle, not a motor."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

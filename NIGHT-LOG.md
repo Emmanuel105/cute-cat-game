@@ -39721,3 +39721,38 @@ possible in this environment (no browser, no Playwright), so whether the clay's 
 actually reads as a pot taking shape, rather than just a cone pulsing in place, is unverified — the
 same caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
 the root copy.
+
+## Round 1355 — Robot City gets a grindstone too
+
+Frosty Peak picked up a foot-treadle grindstone back in round 1353 — the one sharpening vignette in
+this whole game that actually grinds an edge rather than just striking one (the woodcutter's axe, the
+mechanic's wrench). Robot City already runs a mechanic fixing robots at his bench, but nothing on that
+floor sharpens a blade. **A toolsmith now kneels at her own grindstone on the open floor south of the
+oil vendor's pitch, blade pressed to the spinning wheel in short, sparking bursts between pauses to
+check the edge against the light** — the very same `Grinder` controller (`55-npcs.js`) Frosty Peak
+already built, just set up here between two towers instead of out on the snow. *"Every blade in this
+city dulls the same, steel or not."* *"Mind your tail, puss — these sparks don't care whose fur they
+land on."* *"Back home a grindstone turned by hand. This one still does — the treadle, not a motor."*
+Saying hello to her is the usual kind of friend, Robot City's own count rising from 156 to 157.
+
+No new code beyond the one block that builds her: a human rig (`makeHuman`) rather than a robot one,
+since `Grinder` reaches into `rig.spine` to bend the back while kneeling, a field only a human rig
+carries — `makeRobot()`'s own rig has no spine. Robot City already keeps at least one human visitor
+of its own (the bird spotter on the ledges, the fortune teller's customer), so one more toolsmith
+fits without explanation.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(2, 'from-prev')`, 3600 simulated frames so every wandering,
+patrolling, charging and ball-tossing robot and every vendor had settled, then 600 more sampling every
+NPC's own position every 10th frame) swept a 2 m grid of the open floor (radius 15-90, short of the
+radius where `robotRegion()`'s own procedural fill takes over) against all 1206 of this city's own
+physics boxes, all 296 `game.zones` rectangles and every sampled NPC position, then refined the best
+stretch on a finer half-metre grid: (1, -22.5) came back clear by 7.2 m of the nearest box, 21.9 m of
+the nearest zone rectangle and 7.0 m of the nearest other soul — comfortably past the 0.45 m circle
+this kneeling rig and its own grindstone need.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged at 336, world 2's own "to meet" count up by one to 157. No visual check was possible
+in this environment (no browser, no Playwright), so whether the sparks and tremble actually read well
+against this floor's cooler lighting is unverified — the usual caveat every round like this carries.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
