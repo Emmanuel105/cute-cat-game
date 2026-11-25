@@ -39497,3 +39497,40 @@ posing rather than just standing there is unverified, the same caveat every watc
 carried — but three more worlds' photographers (Sunny Shore, Frosty Peak, Whisper Woods) are still
 waiting on the same treatment. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
 copy.
+
+## Round 1350 — Sunny Shore's photographer finally gets somebody to photograph
+
+Rounds 1346-1349 gave the Neighborhood, Victorian, Candy Land and Robot City's own street photographers
+a subject after noticing `makeOldCamera()` has always built its lens facing "the subject" while nobody
+ever stood there. Sunny Shore's own holidaymaker, set up on the open sand between the palms and the
+dune facing out over the water, was still aimed at empty sea like the two worlds not yet touched. **A
+resident now stands a step past her camera, back straight and holding the pose she keeps asking for.**
+*"Hold still, they said. I have held still for ten whole minutes now."* *"Careful, puss — don't spoil
+the shot, she has only the one plate left."* *"Best side forward. Every single time, without fail."*
+Saying hello to her is the usual kind of friend, Sunny Shore's own count rising to 166.
+
+Same recipe as the first four rounds: no new class, just `makeHuman()`/`randomPerson()` (55-npcs.js) for
+the rig and `Wanderer` (55-npcs.js) for the frozen "stand and watch" shape — `idle: [1e9, 1e9]` plus
+every one of `Wanderer`'s own construction-time draws (`phase`, `timer`, `t`, `cryT`) fixed rather than
+pulled from `rnd()`, `blinkT0`/`idleT0`/`sway0` fixed straight in the `makeHuman()` call so she actually
+holds still, and `angle` pointed back at the photographer so she reads as posing rather than loitering.
+A turquoise sarong (0x2f9e8f) keeps her visually distinct from the cream/pink/pale-blue beachwear the
+photographer herself already wears, though Sunny Shore runs no shared-shirt check the way the
+Neighborhood does. Placed right after the photographer, before the mancala board, since
+`makeHuman()`/`randomPerson()` both draw off this world's own shared `r()` sequence unconditionally.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(4, 'from-hub')`, then 1800 simulated frames so every crab, turtle,
+sunbather, dolphin and dog had settled) placed her 2.4 m out from the photographer along the exact line
+her own camera already faces, against every one of this coast's own physics boxes in the knee-to-head
+band: 1.37 m clear of the nearest one (the camera's own tripod box) and 2.40 m from the nearest other
+soul, which is the photographer herself, back down the same line — nobody else wanders anywhere near
+that stretch of open sand, and the spot falls outside every one of `game.zones`'s 88 keep-out
+rectangles.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged at 336 (a `Wanderer` only ever adds a soft circle collider, never a box). No visual
+check was possible in this environment (no browser, no Playwright), so whether she actually reads as
+posing rather than just standing there is unverified, the same caveat every watcher in this game has
+carried — but two more worlds' photographers (Frosty Peak, Whisper Woods) are still waiting on the same
+treatment. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

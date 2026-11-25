@@ -28785,6 +28785,45 @@ function buildBeach(game, entry) {
     const camera = makeOldCamera();
     game.npcs.push(new Photographer(game, snapper, camera, { x: phx, z: phz, ry: phry, cryIcon: '📷',
       cries: ['Hold still — the plate takes a few seconds!', 'Best light on the coast, this time of day.', "Careful, puss — it's only flash powder, not fire."] })); }
+  // `makeOldCamera()` (60-props.js) has built its lens facing "the subject" since the round it was
+  // written, and rounds 1346-1349 already gave the Neighborhood, Victorian, Candy Land and Robot City's
+  // own photographers somebody standing where their lens points — Sunny Shore's own tourist above, set
+  // up on the open sand facing out over the water, was still aimed at empty sea like the two worlds not
+  // yet touched. A resident now stands a step past her camera, back straight and holding the pose she
+  // keeps asking for. *"Hold still, they said. I have held still for ten whole minutes now."* *"Careful,
+  // puss — don't spoil the shot, she has only the one plate left."* *"Best side forward. Every single
+  // time, without fail."* Saying hello to her is the usual kind of friend, Sunny Shore's own count
+  // rising by one.
+  //
+  // No new class: `makeHuman()`/`randomPerson()` (55-npcs.js) build the rig and `Wanderer` (55-npcs.js)
+  // gives her the same frozen "stand and watch" shape every subject in this set uses — `idle: [1e9,
+  // 1e9]` plus every one of `Wanderer`'s own construction-time draws (`phase`, `timer`, `t`, `cryT`)
+  // fixed rather than pulled from `rnd()`, and `blinkT0`/`idleT0`/`sway0` fixed straight in the
+  // `makeHuman()` call so she holds still instead of fidgeting. `angle` points her back at the
+  // photographer rather than a constant, so she reads as posing for her and not loitering. A turquoise
+  // sarong (0x2f9e8f, not spoken for by the cream/pink/pale-blue beachwear the photographer herself
+  // already wears) keeps her visually distinct; Sunny Shore runs no shared-shirt check the way the
+  // Neighborhood does.
+  //
+  // A headless probe (a scratch script built on the same stub-three harness `test/run.mjs` itself uses)
+  // built the real Sunny Shore (`game.start('new')`, `game.load(4, 'from-hub')`, then 1800 simulated
+  // frames so every crab, turtle, sunbather, dolphin and dog had settled), placed her 2.4 m out from the
+  // photographer along the exact line her own camera already faces, against every one of this coast's
+  // own physics boxes in the knee-to-head band: 1.37 m clear of the nearest one (the camera's own
+  // tripod box) and 2.40 m from the nearest other soul, which is the photographer herself, back down the
+  // same line — nobody else wanders anywhere near that stretch of open sand, and the spot falls outside
+  // every one of `game.zones`'s 88 keep-out rectangles.
+  //
+  // Built right after the photographer, before the mancala board below, for the usual reason:
+  // `makeHuman()`/`randomPerson()` both draw off this world's own shared `r()` sequence unconditionally.
+  { const subPX = -17, subPZ = 20, subPRY = PI / 2;
+    const subX = subPX + 2.4 * sin(subPRY), subZ = subPZ + 2.4 * cos(subPRY);
+    const subject = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x2f9e8f, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false,
+      blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(subject.group);
+    game.npcs.push(new Wanderer(game, subject, { x: subX, z: subZ, angle: atan2(subPX - subX, subPZ - subZ), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 6,
+      cries: ["Hold still, they said. I have held still for ten whole minutes now.", "Careful, puss — don't spoil the shot, she has only the one plate left.", 'Best side forward. Every single time, without fail.'] })); }
   // Victorian has had a draughts table since round 354, Robot City a checkers drum since round 384,
   // Frosty Peak a card table since round 397, Whisper Woods its own draughts board since round 407 and
   // the Neighborhood a chess set since round 408 — but Sunny Shore, for all its sand, never had the one
