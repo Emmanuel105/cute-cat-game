@@ -9655,6 +9655,83 @@ function buildCandyLand(game, entry) {
     game.npcs.push(new Grinder(game, grinder, { x: gx, z: gz, ry: gry,
       cries: ['Blunt shears make ragged canes — nobody wants a jagged candy cane.', "Mind your tail, puss — sparks fly here same as anywhere else.", 'Every cane trimmed in this land passes over this very wheel first.'] })); }
 
+  // Victorian (1354), Sunny Shore (1360), Whisper Woods (1362) and Robot City (1363) have all picked
+  // up a potter at her kick wheel — the one craft in this whole game whose entire point is a turntable
+  // spinning under two cupped hands. This land already sells fudge, toffee and peppermints from every
+  // stall, but nothing here is actually thrown and fired. **A potter now sits cross-legged at her own
+  // kick wheel on the open grass north of the cane-forest ring, a lump of wet clay rising taller
+  // between her palms before it's lifted away and a fresh one dropped to begin again**, a small shelf
+  // of three already-glazed pots — bright candy-pink glaze, same as everything else in this land —
+  // propped beside her. *"Sugar's not the only thing you can shape with your own two hands."* *"Mind
+  // your tail, puss — that wheel doesn't know the difference between clay and a cat."* *"Every pot on
+  // that shelf was once this exact same lump, give or take an afternoon."* Saying hello to her is the
+  // usual kind of friend.
+  //
+  // No new controller: the same `Sitter` (55-npcs.js) the other four potters already use — both hands
+  // fixed low and forward as if pressed to the clay, held each frame guarded by `!potter.gesture` so a
+  // greeting wave still wins. The wheel and the rising lump of clay are both driven only by the world
+  // clock `t`, never this land's own seeded `r`, so nothing later in this build's own wardrobe picks
+  // shift — no `rnd()` draw and no per-frame state of its own to carry, the same trick the other four
+  // potters already settled on. `ry` is pinned to a cardinal `PI` rather than computed with `atan2`,
+  // the same shortcut the other reskins already take, so the wheel and the shelf both sit on simple
+  // axis-aligned offsets that line up with an axis-aligned `P.addBox`.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(1, 'from-prev')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so every tosser, fudge-maker, grinder and wanderer had settled, then 600 more
+  // sampling every NPC's own position every 10th frame) swept a 2 m grid of the open grass (radius
+  // 15-85 from the origin, past the candy-cane ring's own 56-76 m band and short of the radius (92)
+  // where `candyRegion`'s own procedural fill takes over) against all 1799 of this land's own physics
+  // boxes (knee-to-head band only), all 452 `game.zones` rectangles (including the chocolate river's
+  // own span) and every sampled NPC position, then refined the best stretch on a half-metre grid:
+  // (-24.5, 77) came back clear by 12.4 m of the nearest box, 13.5 m of the nearest zone rectangle and
+  // 12.5 m of the nearest other soul, at radius 80.8 from the origin.
+  //
+  // Built dead last of everything this land adds, right after the grinder above and right before
+  // `spawnBySquirrel()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this land's
+  // own shared `r()` sequence unconditionally, and anything built earlier here would have had its own
+  // timing-sensitive pick shifted by it.
+  { const potX = -24.5, potZ = 77, potRy = PI;
+    const potWard = makeWardrobe(r, { shirts: [0xd9a066, 0xc98a52], pants: [0x5a4a3a] });
+    const potter = makeHuman({ ...randomPerson(r, { female: r.chance(0.6), child: false, elder: r.chance(0.3), wardrobe: potWard }),
+      pants: 0x1e1e24, apron: 0xff8fc2, sleeves: true, hat: null, coat: null, scarf: null, bag: null, backpack: null, glasses: false, build: 'stout' });
+    W.add(potter.group);
+    const woodM = mat(0x5a3a1f, { roughness: 0.88 }), darkM = mat(0x2a2420, { roughness: 0.6 }), trayM = mat(0x8a8782, { roughness: 0.75, metalness: 0.2 }), clayM = mat(0x9c6a42, { roughness: 0.95 }), potM = mat(0xff6fb5, { roughness: 0.5, metalness: 0.1 });
+    const stool = group(potX, 0, potZ, W);
+    mesh(G.cyl(0.18, 0.18, 0.03, 14), woodM, { y: 0.405, shadow: 'both', parent: stool });
+    mesh(G.cyl(0.1, 0.07, 0.39, 10), darkM, { y: 0.195, shadow: 'both', parent: stool });
+    P.addBox(potX, 0.21, potZ, 0.3, 0.42, 0.3, { cam: false });
+    const wx = potX, wz = potZ - 0.55;
+    const wheel = group(wx, 0, wz, W); wheel.rotation.y = potRy;
+    mesh(G.cyl(0.06, 0.08, 0.34, 10), woodM, { y: 0.17, shadow: 'both', parent: wheel });   // the post
+    mesh(G.cyl(0.26, 0.28, 0.05, 20), trayM, { y: 0.36, shadow: 'both', parent: wheel });   // the splash tray
+    const head = group(0, 0.4, 0, wheel);
+    mesh(G.cyl(0.22, 0.22, 0.03, 20), darkM, { parent: head });   // the wheel-head
+    const clay = mesh(G.cone(0.09, 0.2, 10), clayM, { y: 0.1, parent: head });
+    P.addBox(wx, 0.2, wz, 0.56, 0.4, 0.56, { cam: false });
+    const shelfX = potX - 0.75, shelfZ = potZ;
+    const shelf = group(shelfX, 0, shelfZ, W); shelf.rotation.y = potRy;
+    mesh(G.box(0.6, 0.04, 0.22), woodM, { y: 0.5, shadow: 'both', parent: shelf });
+    for (const [dx3, potH, potR2] of [[-0.18, 0.16, 0.07], [0, 0.2, 0.08], [0.18, 0.14, 0.065]]) {
+      const pot = group(dx3, 0.52, 0, shelf);
+      mesh(G.cyl(potR2, potR2 * 0.75, potH, 12), potM, { y: potH / 2, shadow: 'both', parent: pot });
+      mesh(G.cyl(potR2 * 0.4, potR2 * 0.5, potH * 0.25, 10), potM, { y: potH + potH * 0.1, parent: pot });   // the neck
+    }
+    P.addBox(shelfX, 0.26, shelfZ, 0.6, 0.52, 0.22, { cam: false });
+    game.npcs.push(new Sitter(game, potter, { x: potX, z: potZ, ry: potRy, seat: 0.42,
+      cries: ['🏺 "Sugar\'s not the only thing you can shape with your own two hands."', '🏺 "Mind your tail, puss — that wheel doesn\'t know the difference between clay and a cat."', '🏺 "Every pot on that shelf was once this exact same lump, give or take an afternoon."'] }));
+    U.push((dt, t) => {
+      head.rotation.y = t * 4.2;
+      const cyc = 5.0, growT = 4.6, ph = t % cyc;
+      let k;
+      if (ph < growT) { const p = ph / growT; k = p * p * (3 - 2 * p); }
+      else { const p = (ph - growT) / (cyc - growT); k = 1 - p * p * (3 - 2 * p); }
+      const s = 0.4 + 0.75 * k;
+      clay.scale.y = s; clay.position.y = 0.015 + 0.1 * s;
+      if (!potter.gesture) { const A = potter.arms[0], B = potter.arms[1]; A.sh.rotation.x = -1.0; A.sh.rotation.z = 0.3; A.el.rotation.x = -1.3; B.sh.rotation.x = -1.0; B.sh.rotation.z = -0.3; B.el.rotation.x = -1.3; }
+    }); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
