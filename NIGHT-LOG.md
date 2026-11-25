@@ -39668,3 +39668,56 @@ count unchanged at 336, world 5's own "to meet" count up by one to 162. No visua
 in this environment (no browser, no Playwright), so whether the sparks and the tremble actually read
 well together is unverified — the usual caveat every round like this carries. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1354 — Victorian finally gets a potter
+
+Housekeeping first: `origin/main` had not yet caught up with this round (it was still sitting on
+round 1319, 34 commits behind) by the time this round started, most likely a concurrent session's
+own push still in flight. Mid-round it caught up on its own and this round's own `git push` landed
+clean, fast-forward, no rebase needed — but on the way there this round's own first push attempt,
+made while still a commit behind, got rejected and briefly mistook the gap for a real fork, pushing
+this branch to a now-redundant safety branch (`unpushed-sandbox-rounds-1320-1353`) before the real
+picture came in. That branch is harmless clutter, not a correction of anything — the repo already
+carries a long trail of these from past rounds' own git troubles, and one more costs nothing.
+
+A research pass first: with the blacksmith, the cobbler and the watchmaker already on Victorian's own
+crafts row, and every single-performer act in this game (the juggler, the magician, the organ grinder,
+the photographer, the mime, the basketball kid, the detectorist and now the grindstone from last round)
+already running in all seven worlds with a watcher of its own, there was no obvious "give world X the
+thing world Y already has" move left to make. A search for a wholly new craft instead turned up one no
+world has ever had: a potter at a wheel — the one trade whose entire point is a turntable spinning
+under two cupped hands, something nothing in this game does yet. **A potter now sits at her kick wheel
+on the open grass north of Victorian's own terraces, a lump of clay rising taller between her palms
+before it's lifted away and a fresh one dropped to begin again.** A small shelf beside her carries
+three already-glazed pots — the same "already got the credit" joke the cobbler's own shelf of mended
+boots made a few rounds back. *"Forty years at this wheel and it still comes out crooked half the
+time."* *"Mind your tail, puss — that wheel doesn't know the difference between clay and a cat."*
+*"Every pot on that shelf was once this exact same lump, give or take an afternoon."* Saying hello to
+her is the usual kind of friend, Victorian's own count rising from 195 to 196.
+
+No new controller: `Sitter` (55-npcs.js), the same seated-craftsman shape the cobbler and the
+watchmaker both already use, with both hands fixed low and forward onto the clay in this build's own
+`U.push`, guarded by `!potter.gesture` so a greeting wave still wins over the held pose. The wheel
+itself (a waist-high post, a splash tray and the spinning wheel-head disc) and the rising lump of clay
+on top of it are both driven only by the world clock `t`, never Victorian's own seeded `r` — the disc
+spins at a constant rate throughout, and the clay's own height is a plain eased, periodic function of
+`t`, growing for about four and a half seconds then easing back down over a shorter beat, the same
+trick the picnic blanket's own ripple and every toy pinwheel in this game already settle for. `ry` is
+pinned to a cardinal `PI` rather than computed with `atan2`, the same shortcut the watchmaker's own
+bench already takes, so the wheel and the shelf both sit on simple axis-aligned offsets that line up
+cleanly with their own `P.addBox` colliders.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.load(3, 'from-prev')`, 3600 simulated frames so every carriage horse and wanderer had settled)
+swept the open grass north of the terraces against all 618 of the town's own physics boxes and every
+sampled NPC position: (7.5, 43.5) came back clear by 8.9 m of the nearest box and 17.6 m of the nearest
+other soul, at radius 44.3 from the world origin — comfortably inside the radius (88) where
+`victorianRegion`'s own procedural fill takes over, and clear of the market square, the plaza and every
+other hand-placed prop on this street.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, physics
+box count unchanged at 336, world 3's own "to meet" count up by one to 196. No visual check was
+possible in this environment (no browser, no Playwright), so whether the clay's own rise-and-reset
+actually reads as a pot taking shape, rather than just a cone pulsing in place, is unverified — the
+same caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.
