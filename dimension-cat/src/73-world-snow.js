@@ -131,6 +131,31 @@ function buildSnowVillage(game, entry) {
     mesh(G.sphere(0.035, 8, 6), hubMat, { parent: pivot });
     U.push((dt, t) => { pivot.rotation.z = t * 3.6; });
     P.addBox(px, y0p + 0.3, pz, 0.14, 0.6, 0.14, { cam: false }); }
+  // every tool-sharpening vignette on this mountain so far has been a chop or a wrench strike — the
+  // woodcutter's axe, the mechanic's spanner — never an edge actually ground smooth. **A travelling
+  // grinder sets up his foot-treadle grindstone on the open snow past the second cabin, blade pressed
+  // to the spinning wheel in short, sparking bursts between pauses to check the edge against the
+  // light.** *"Dull edge is a dangerous edge, out on that ice."* *"Careful, puss — sparks bite harder
+  // than they look."* *"One more pass and this blade could shave a whisker."* New `Grinder` controller
+  // (`55-npcs.js`): a `Kneeler`/`Mechanic`-style kneeling rig, arms held against the wheel with a
+  // small tremble while it spins fast, alternating with a slower idle spin and a held pose during the
+  // pauses — plus a new `SFX.grind()` (`30-audio.js`), a short metal-on-stone scrape, one per spark
+  // burst rather than the sustained screech a real stone would make, the same stand-in every other
+  // repeating-strike vignette in this game already settles for with its own single-hit sound.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // `game.start('new')` then `game.load(5, 'from-hub')`, 1800 simulated frames so every penguin, kid
+  // and skater had settled) swept a 1 m grid of the open snow between the second cabin and the pond
+  // against every one of the mountain's 700 physics boxes and all 143 sampled NPC positions: (18, -2)
+  // came back clearest in that whole stretch, 3.81 m from the nearest box (one of the ring pines) and
+  // 4.56 m from the nearest other soul, comfortably past the 0.45 m circle this kneeling rig and its
+  // own grindstone need and well clear of the pinwheel just placed above.
+  { const gx = 18, gz = -2, gry = 0.5;
+    const grindWard = makeWardrobe(r, { shirts: [0x5a4a3a, 0x3a4a5a, 0x4a5a3a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const grinder = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: true, wardrobe: grindWard }),
+      hat: 'beanie', hatColor: 0x5a4a3a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a, apron: 0x6a5a48 }); W.add(grinder.group);
+    game.npcs.push(new Grinder(game, grinder, { x: gx, z: gz, ry: gry,
+      cries: ['Dull edge is a dangerous edge, out on that ice.', 'Careful, puss — sparks bite harder than they look.', 'One more pass and this blade could shave a whisker.'] })); }
   let iglooA, iglooB;
   for (const [i, [x, z, ry]] of [[-16, 10, 0.6], [15, -14, -2.2]].entries()) { const ig = makeIgloo(); if (i === 0) iglooA = ig; else iglooB = ig; placeT(game, U, ig, x, z, ry); boxT(game, x, z, 3.4, 1.8, 3.4); }
   // the near igloo's own blue gem lamp has glowed in its tunnel mouth since this world was built, but like the fire

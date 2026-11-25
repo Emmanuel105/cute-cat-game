@@ -991,6 +991,8 @@ class SoundKit {
   tag() { [880, 1175, 1480].forEach((f, i) => this.tone({ freq: f, type: 'triangle', dur: 0.07, vol: 0.05, delay: i * 0.055, slide: f * 1.2 })); }
   /** A wrench striking metal. */
   clang() { this.noise({ dur: 0.05, vol: 0.16, filter: 2200, type: 'bandpass' }); this.tone({ freq: 880, slide: 600, type: 'square', dur: 0.06, vol: 0.08, filter: 3000 }); }
+  /** Metal dragged across a spinning stone: a short high scrape, pitch sliding down as it skids off. */
+  grind() { this.noise({ dur: 0.11, vol: 0.12, filter: 3400, type: 'bandpass', slide: 2200 }); this.tone({ freq: 1900, slide: 1300, type: 'sawtooth', dur: 0.1, vol: 0.05, filter: 3200, q: 4 }); }
   /** The clock tower, tolling three times. */
   chime() { for (let i = 0; i < 3; i++) { const d = i * 0.85; this.tone({ freq: 220, slide: 195, type: 'sine', dur: 1.1, vol: 0.16, attack: 0.01, release: 0.7, delay: d, filter: 900, q: 1 }); this.tone({ freq: 440, slide: 385, type: 'triangle', dur: 0.9, vol: 0.05, delay: d, release: 0.6 }); this.noise({ dur: 0.12, vol: 0.07, filter: 1400, delay: d }); } }
   /** A factory shift whistle: a long steam blast, pitch easing off as it dies. */
@@ -3521,6 +3523,47 @@ class Mechanic {
       robot.body.rotation.z = damp(robot.body.rotation.z, 0, 9, dt); robot.head.rotation.x = damp(robot.head.rotation.x, -0.12, 8, dt);
       if (wasFresh && this.perk <= 0.9) { SFX.beep(); const c = this.game.cat.group.position; if (dist2(robot.group.position.x, robot.group.position.z, c.x, c.z) < 100) this.game.toast('🤖 "SYSTEMS... NOMINAL?"', 1800); }
     } else { robot.body.rotation.z = damp(robot.body.rotation.z, 0.55, 2.2, dt); robot.head.rotation.x = damp(robot.head.rotation.x, 0.4, 3.5, dt); }
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
+// ---------------------------------------------------------------- grinder: kneels at a foot-treadle grindstone, a blade pressed to the spinning wheel through short bursts of sparks, pausing now and then to check the edge
+class Grinder {
+  constructor(game, rig, { x, z, ry = 0, colors = [0xffd166, 0xffffff, 0x9fe8ff], cries = null, cryIcon = '🔥' }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10; this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false;
+    this.state = 'idle'; this.timer = 0; this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    this.colors = colors; this.phase = 'grind'; this.phaseT = rnd.range(1.2, 2.0); this.sparkT = rnd.range(0.15, 0.3);
+    rig.group.rotation.y = ry;
+    rig.group.position.set(x, game.physics.ground0(x, z) - 0.4 * rig.k + 0.05, z);   // kneeling: hips a shin's length lower than standing
+    const wx = x + sin(ry) * 0.55, wz = z + cos(ry) * 0.55, wy0 = game.physics.ground0(wx, wz);
+    const stand = group(wx, wy0, wz, game.world); stand.rotation.y = ry;
+    const woodM = mat(0x5a3f28, { roughness: 0.85 }), ironM = mat(0x2a2a2a, { metalness: 0.6, roughness: 0.4 }), stoneM = mat(0x8a8782, { roughness: 0.9 });
+    for (const sx of [-0.18, 0.18]) mesh(G.box(0.05, 0.42, 0.05), woodM, { x: sx, y: 0.21, rz: sx > 0 ? -0.1 : 0.1, parent: stand });
+    mesh(G.cyl(0.015, 0.015, 0.4, 8), ironM, { y: 0.42, rz: PI / 2, parent: stand });
+    mesh(G.box(0.32, 0.05, 0.42), woodM, { y: -0.28, z: 0.06, parent: stand });   // treadle board, underfoot
+    const pivot = group(0, 0.42, 0, stand);
+    mesh(G.cyl(0.19, 0.19, 0.06, 20), stoneM, { rx: PI / 2, parent: pivot });
+    mesh(G.torus(0.19, 0.012, 6, 20), ironM, { rx: PI / 2, parent: pivot });   // iron rim band
+    this.pivot = pivot; this.wx = wx; this.wy = wy0 + 0.42; this.wz = wz;
+    this.circle = game.physics.addCircle(this, x, z, 0.45);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig, grinding = this.phase === 'grind';
+    rig.animate(0, false, dt, this.t);
+    for (const L of rig.legs) { L.hip.rotation.x = damp(L.hip.rotation.x, -0.05, 6, dt); L.knee.rotation.x = PI / 2 + 0.05; L.ankle.rotation.x = 0.9; }
+    rig.spine.rotation.x = damp(rig.spine.rotation.x, 0.35, 6, dt); rig.body.position.y = 0;
+    rig.head.rotation.x = damp(rig.head.rotation.x, 0.15, 6, dt);
+    this.pivot.rotation.z += dt * (grinding ? 16 : 2);
+    const tremble = grinding ? sin(this.t * 45) * 0.03 : 0;
+    if (!rig.gesture) { for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -0.95 + tremble, 12, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.55, 12, dt); A.sh.rotation.z = (A === rig.arms[0] ? 1 : -1) * 0.18; } }
+    this.phaseT -= dt;
+    if (grinding) {
+      this.sparkT -= dt;
+      if (this.sparkT <= 0) { this.sparkT = rnd.range(0.15, 0.3); SFX.grind(); this.game.fx.emit(this.wx, this.wy, this.wz, { count: 5, colors: this.colors, speed: 1.4, up: 1.2, life: 0.3, gravity: 7 }); }
+    }
+    if (this.phaseT <= 0) { this.phase = grinding ? 'inspect' : 'grind'; this.phaseT = grinding ? rnd.range(0.6, 1.0) : rnd.range(1.2, 2.0); }
     Wanderer.prototype.lookAtCat.call(this, dt);
     if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
   }
@@ -31240,6 +31283,31 @@ function buildSnowVillage(game, entry) {
     mesh(G.sphere(0.035, 8, 6), hubMat, { parent: pivot });
     U.push((dt, t) => { pivot.rotation.z = t * 3.6; });
     P.addBox(px, y0p + 0.3, pz, 0.14, 0.6, 0.14, { cam: false }); }
+  // every tool-sharpening vignette on this mountain so far has been a chop or a wrench strike — the
+  // woodcutter's axe, the mechanic's spanner — never an edge actually ground smooth. **A travelling
+  // grinder sets up his foot-treadle grindstone on the open snow past the second cabin, blade pressed
+  // to the spinning wheel in short, sparking bursts between pauses to check the edge against the
+  // light.** *"Dull edge is a dangerous edge, out on that ice."* *"Careful, puss — sparks bite harder
+  // than they look."* *"One more pass and this blade could shave a whisker."* New `Grinder` controller
+  // (`55-npcs.js`): a `Kneeler`/`Mechanic`-style kneeling rig, arms held against the wheel with a
+  // small tremble while it spins fast, alternating with a slower idle spin and a held pose during the
+  // pauses — plus a new `SFX.grind()` (`30-audio.js`), a short metal-on-stone scrape, one per spark
+  // burst rather than the sustained screech a real stone would make, the same stand-in every other
+  // repeating-strike vignette in this game already settles for with its own single-hit sound.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // `game.start('new')` then `game.load(5, 'from-hub')`, 1800 simulated frames so every penguin, kid
+  // and skater had settled) swept a 1 m grid of the open snow between the second cabin and the pond
+  // against every one of the mountain's 700 physics boxes and all 143 sampled NPC positions: (18, -2)
+  // came back clearest in that whole stretch, 3.81 m from the nearest box (one of the ring pines) and
+  // 4.56 m from the nearest other soul, comfortably past the 0.45 m circle this kneeling rig and its
+  // own grindstone need and well clear of the pinwheel just placed above.
+  { const gx = 18, gz = -2, gry = 0.5;
+    const grindWard = makeWardrobe(r, { shirts: [0x5a4a3a, 0x3a4a5a, 0x4a5a3a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const grinder = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: true, wardrobe: grindWard }),
+      hat: 'beanie', hatColor: 0x5a4a3a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a, apron: 0x6a5a48 }); W.add(grinder.group);
+    game.npcs.push(new Grinder(game, grinder, { x: gx, z: gz, ry: gry,
+      cries: ['Dull edge is a dangerous edge, out on that ice.', 'Careful, puss — sparks bite harder than they look.', 'One more pass and this blade could shave a whisker.'] })); }
   let iglooA, iglooB;
   for (const [i, [x, z, ry]] of [[-16, 10, 0.6], [15, -14, -2.2]].entries()) { const ig = makeIgloo(); if (i === 0) iglooA = ig; else iglooB = ig; placeT(game, U, ig, x, z, ry); boxT(game, x, z, 3.4, 1.8, 3.4); }
   // the near igloo's own blue gem lamp has glowed in its tunnel mouth since this world was built, but like the fire

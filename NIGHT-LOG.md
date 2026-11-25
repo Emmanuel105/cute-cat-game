@@ -39622,3 +39622,49 @@ browser, no Playwright), so whether she actually reads as posing rather than jus
 unverified, the same caveat every watcher in this game has carried — but with all seven worlds'
 photographers now given a subject, this particular set is complete. Rebuilt
 `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1353 — Frosty Peak gets a grindstone
+
+Housekeeping first: this session's `HEAD` started detached, sitting exactly on `origin/main`'s own
+tip, so nothing had actually been lost — just reset the local `main` branch ref to that same commit
+(`git checkout -B main origin/main`) before touching anything, the same once-per-session hiccup the
+last couple of rounds have already flagged.
+
+A research pass across all seven worlds (README, every controller class in `55-npcs.js`, and a
+rough census of named vignettes per world) found the game is roughly 1350 rounds deep and
+extraordinarily thorough — virtually every obvious profession already exists somewhere, and the
+last thirty-odd rounds have mostly been giving existing set-pieces (photographers, organ grinders,
+hopscotch chalkers) a watcher rather than adding anything new. But one mechanic turned up nowhere
+in the whole codebase: every tool-sharpening vignette so far has been a chop or a wrench strike —
+the woodcutter's axe, the mechanic's spanner — never an edge actually ground smooth against a
+spinning stone. **A travelling grinder now kneels at his own foot-treadle grindstone on the open
+snow past Frosty Peak's second cabin, a blade pressed to the wheel in short, sparking bursts between
+pauses to check the edge against the light.** *"Dull edge is a dangerous edge, out on that ice."*
+*"Careful, puss — sparks bite harder than they look."* *"One more pass and this blade could shave a
+whisker."* Saying hello to him is the usual kind of friend, Frosty Peak's own count rising from 161
+to 162.
+
+New `Grinder` controller (`55-npcs.js`), modelled on `Kneeler`/`Mechanic`: the rig kneels, arms held
+against the wheel with a small tremble while it spins fast and sparks fly every 0.15-0.3 s, then
+eases into a slower idle spin for a second or so while he "checks the edge" before grinding again.
+The grindstone itself — a wooden trestle, an iron axle, a stone disc with an iron rim band — is built
+straight into the controller rather than a separate prop-maker function, since nothing else in the
+game needs one yet. New `SFX.grind()` (`30-audio.js`): a short metal-on-stone scrape, one per spark
+burst rather than a sustained screech, the same single-hit stand-in every other repeating-strike
+vignette in this game already settles for (the woodcutter's axe and the mechanic's wrench don't loop
+a continuous sound either). No new physics box: like `Chopper` and `Kneeler`, only the rig's own
+0.45 m circle collider, the grindstone sitting well inside it.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+`game.start('new')` then `game.load(5, 'from-hub')`, 1800 simulated frames so every penguin, kid and
+skater had settled) swept a 1 m grid of the open snow between the second cabin and the pond against
+all 700 of the mountain's physics boxes and 143 sampled NPC positions: (18, -2) came back clearest in
+that stretch, 3.81 m from the nearest box (one of the ring pines) and 4.56 m from the nearest other
+soul — comfortably past the 0.45 m this kneeling rig and its grindstone need, and well clear of the
+pinwheel placed a few lines above it.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged at 336, world 5's own "to meet" count up by one to 162. No visual check was possible
+in this environment (no browser, no Playwright), so whether the sparks and the tremble actually read
+well together is unverified — the usual caveat every round like this carries. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.

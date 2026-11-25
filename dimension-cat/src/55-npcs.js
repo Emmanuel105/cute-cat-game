@@ -1706,6 +1706,47 @@ class Mechanic {
   }
 }
 
+// ---------------------------------------------------------------- grinder: kneels at a foot-treadle grindstone, a blade pressed to the spinning wheel through short bursts of sparks, pausing now and then to check the edge
+class Grinder {
+  constructor(game, rig, { x, z, ry = 0, colors = [0xffd166, 0xffffff, 0x9fe8ff], cries = null, cryIcon = '🔥' }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10; this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false;
+    this.state = 'idle'; this.timer = 0; this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    this.colors = colors; this.phase = 'grind'; this.phaseT = rnd.range(1.2, 2.0); this.sparkT = rnd.range(0.15, 0.3);
+    rig.group.rotation.y = ry;
+    rig.group.position.set(x, game.physics.ground0(x, z) - 0.4 * rig.k + 0.05, z);   // kneeling: hips a shin's length lower than standing
+    const wx = x + sin(ry) * 0.55, wz = z + cos(ry) * 0.55, wy0 = game.physics.ground0(wx, wz);
+    const stand = group(wx, wy0, wz, game.world); stand.rotation.y = ry;
+    const woodM = mat(0x5a3f28, { roughness: 0.85 }), ironM = mat(0x2a2a2a, { metalness: 0.6, roughness: 0.4 }), stoneM = mat(0x8a8782, { roughness: 0.9 });
+    for (const sx of [-0.18, 0.18]) mesh(G.box(0.05, 0.42, 0.05), woodM, { x: sx, y: 0.21, rz: sx > 0 ? -0.1 : 0.1, parent: stand });
+    mesh(G.cyl(0.015, 0.015, 0.4, 8), ironM, { y: 0.42, rz: PI / 2, parent: stand });
+    mesh(G.box(0.32, 0.05, 0.42), woodM, { y: -0.28, z: 0.06, parent: stand });   // treadle board, underfoot
+    const pivot = group(0, 0.42, 0, stand);
+    mesh(G.cyl(0.19, 0.19, 0.06, 20), stoneM, { rx: PI / 2, parent: pivot });
+    mesh(G.torus(0.19, 0.012, 6, 20), ironM, { rx: PI / 2, parent: pivot });   // iron rim band
+    this.pivot = pivot; this.wx = wx; this.wy = wy0 + 0.42; this.wz = wz;
+    this.circle = game.physics.addCircle(this, x, z, 0.45);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig, grinding = this.phase === 'grind';
+    rig.animate(0, false, dt, this.t);
+    for (const L of rig.legs) { L.hip.rotation.x = damp(L.hip.rotation.x, -0.05, 6, dt); L.knee.rotation.x = PI / 2 + 0.05; L.ankle.rotation.x = 0.9; }
+    rig.spine.rotation.x = damp(rig.spine.rotation.x, 0.35, 6, dt); rig.body.position.y = 0;
+    rig.head.rotation.x = damp(rig.head.rotation.x, 0.15, 6, dt);
+    this.pivot.rotation.z += dt * (grinding ? 16 : 2);
+    const tremble = grinding ? sin(this.t * 45) * 0.03 : 0;
+    if (!rig.gesture) { for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -0.95 + tremble, 12, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.55, 12, dt); A.sh.rotation.z = (A === rig.arms[0] ? 1 : -1) * 0.18; } }
+    this.phaseT -= dt;
+    if (grinding) {
+      this.sparkT -= dt;
+      if (this.sparkT <= 0) { this.sparkT = rnd.range(0.15, 0.3); SFX.grind(); this.game.fx.emit(this.wx, this.wy, this.wz, { count: 5, colors: this.colors, speed: 1.4, up: 1.2, life: 0.3, gravity: 7 }); }
+    }
+    if (this.phaseT <= 0) { this.phase = grinding ? 'inspect' : 'grind'; this.phaseT = grinding ? rnd.range(0.6, 1.0) : rnd.range(1.2, 2.0); }
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
 // ---------------------------------------------------------------- organ grinder: a barrel organ on its own leg stands beside the player, one arm turning a crank in a steady circle while the other steadies the cabinet
 class OrganGrinder {
   constructor(game, rig, organ, { x, z, ry = 0, side = 1, cries = null, cryIcon = '🎶' }) {
