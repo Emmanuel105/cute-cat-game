@@ -39460,3 +39460,40 @@ posing rather than just standing there is unverified, the same caveat every watc
 carried — but four more worlds' photographers (Robot City, Sunny Shore, Frosty Peak, Whisper Woods) are
 still waiting on the same treatment. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
 root copy.
+
+## Round 1349 — Robot City's photographer finally gets somebody to photograph
+
+Rounds 1346-1348 gave the Neighborhood, Victorian and Candy Land's own street photographers a subject
+after noticing `makeOldCamera()` has always built its lens facing "the subject" while nobody ever stood
+there. Robot City's own visitor, set up past the magnet-toss posts to frame the ring of towers behind
+the statue plaza, was still aimed at empty concrete like the three worlds not yet touched. **A resident
+now stands a step past her camera, back straight and holding the pose she keeps asking for.** *"Hold
+still, they said. I have held still for ten whole minutes now."* *"Careful, puss — don't spoil the
+shot, she has only the one plate left."* *"Best side forward. Every single time, without fail."*
+Saying hello to him is the usual kind of friend, Robot City's own count rising to 156.
+
+Same recipe as the first three rounds: no new class, just `makeHuman()`/`randomPerson()` (55-npcs.js)
+for the rig and `Wanderer` (55-npcs.js) for the frozen "stand and watch" shape — `idle: [1e9, 1e9]`
+plus every one of `Wanderer`'s own construction-time draws (`phase`, `timer`, `t`, `cryT`) fixed rather
+than pulled from `rnd()`, `blinkT0`/`idleT0`/`sway0` fixed straight in the `makeHuman()` call so he
+actually holds still, and `angle` pointed back at the photographer so he reads as posing rather than
+loitering. A rust-orange shirt (0xb5651d) keeps him visually distinct from the steel-and-slate palette
+the magnet tossers and the pallet cutter already share, though Robot City runs no shared-shirt check
+the way the Neighborhood does. Placed right after the photographer, before the pallet cutter, since
+`makeHuman()`/`randomPerson()` both draw off this world's own shared `r()` sequence unconditionally.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(2, 'from-prev')` for a direct synchronous build, then 1800 simulated
+frames so every wandering, patrolling, dancing and ball-tossing robot pack had settled) placed him 2.4 m
+out from the photographer along the exact line her own camera already faces, against every one of this
+city's own physics boxes in the knee-to-head band: 1.29 m clear of the nearest one (the camera's own
+tripod box) and 2.40 m from the nearest other soul, which is the photographer herself, back down the
+same line — nobody else wanders anywhere near that corner past the magnet-toss posts.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged at 336 (a `Wanderer` only ever adds a soft circle collider, never a box). No visual
+check was possible in this environment (no browser, no Playwright), so whether he actually reads as
+posing rather than just standing there is unverified, the same caveat every watcher in this game has
+carried — but three more worlds' photographers (Sunny Shore, Frosty Peak, Whisper Woods) are still
+waiting on the same treatment. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.

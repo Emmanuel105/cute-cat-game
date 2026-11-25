@@ -20636,6 +20636,44 @@ function buildRobotCity(game, entry) {
     const camLines = ['Everyone said bring a drone. I brought this instead.', "Careful, puss — it's only flash powder, not fire.", 'The whole skyline in one plate, if I hold it just right.'];
     let camCryT = r.range(3, 7);
     U.push((dt) => { camCryT -= dt; if (camCryT <= 0) { camCryT = r.range(8, 14); const c = game.cat.group.position; if (dist2(px, pz, c.x, c.z) < 400) { game.toast('📷 "' + r.pick(camLines) + '"', 2400); SFX.talk(); } } }); }
+  // `makeOldCamera()` (60-props.js) has built its lens facing "the subject" since the round it was
+  // written, and rounds 1346-1348 already gave the Neighborhood, Victorian and Candy Land's own
+  // photographers somebody standing where their lens points — Robot City's own visitor above, set up
+  // past the magnet-toss posts to frame the skyline, was still aimed at empty concrete like the three
+  // worlds not yet touched. A resident now stands a step past her camera, back straight and holding the
+  // pose she keeps asking for. *"Hold still, they said. I have held still for ten whole minutes now."*
+  // *"Careful, puss — don't spoil the shot, she has only the one plate left."* *"Best side forward.
+  // Every single time, without fail."* Saying hello to him is the usual kind of friend, Robot City's own
+  // count rising by one.
+  //
+  // No new class: `makeHuman()`/`randomPerson()` (55-npcs.js) build the rig and `Wanderer` (55-npcs.js)
+  // gives him the same frozen "stand and watch" shape every subject in this set uses — `idle: [1e9,
+  // 1e9]` plus every one of `Wanderer`'s own construction-time draws (`phase`, `timer`, `t`, `cryT`)
+  // fixed rather than pulled from `rnd()`, and `blinkT0`/`idleT0`/`sway0` fixed straight in the
+  // `makeHuman()` call so he holds still instead of fidgeting. `angle` points him back at the
+  // photographer rather than a constant, so he reads as posing for her and not loitering. A rust-orange
+  // shirt (0xb5651d, not spoken for by the steel-and-slate wardrobe the magnet tossers and the pallet
+  // cutter already share) keeps him visually distinct; Robot City runs no shared-shirt check the way
+  // the Neighborhood does.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // `game.load(2, 'from-prev')` for a direct synchronous build, then 1800 simulated frames so every
+  // wandering, patrolling, dancing and ball-tossing robot pack had settled) placed him 2.4 m out from
+  // the photographer along the exact line her own camera already faces, against every one of this
+  // city's own physics boxes in the knee-to-head band: clear of the nearest one by well over a metre,
+  // and 2.4 m from the nearest other soul, which is the photographer herself, back down the same line —
+  // nobody else wanders anywhere near that corner past the magnet-toss posts.
+  //
+  // Built right after the photographer, before the pallet cutter below, for the usual reason:
+  // `makeHuman()`/`randomPerson()` both draw off this world's own shared `r()` sequence unconditionally.
+  { const subPX = 31.5, subPZ = 58, subPRY = atan2(0 - subPX, 0 - subPZ);
+    const subX = subPX + 2.4 * sin(subPRY), subZ = subPZ + 2.4 * cos(subPRY);
+    const subject = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0xb5651d, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false,
+      blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(subject.group);
+    game.npcs.push(new Wanderer(game, subject, { x: subX, z: subZ, angle: atan2(subPX - subX, subPZ - subZ), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 6,
+      cries: ["Hold still, they said. I have held still for ten whole minutes now.", "Careful, puss — don't spoil the shot, she has only the one plate left.", 'Best side forward. Every single time, without fail.'] })); }
   // the Neighborhood, Candy Land, Victorian, Sunny Shore, Frosty Peak and Whisper Woods all have a
   // woodcutter splitting logs on a stump since round 207 (Sunny Shore round 435, Candy Land round 436)
   // — Robot City was the last world left without one. The exact same `Chopper` class and `makeStump()`
