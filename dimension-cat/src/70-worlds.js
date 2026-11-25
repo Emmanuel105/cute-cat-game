@@ -13798,6 +13798,79 @@ function buildRobotCity(game, entry) {
       if (!potter.gesture) { const A = potter.arms[0], B = potter.arms[1]; A.sh.rotation.x = -1.0; A.sh.rotation.z = 0.3; A.el.rotation.x = -1.3; B.sh.rotation.x = -1.0; B.sh.rotation.z = -0.3; B.el.rotation.x = -1.3; }
     }); }
 
+  // Victorian (1361) and Candy Land (1366) have both picked up a barber beside his own empty chair.
+  // Robots don't grow hair, which is exactly the joke: nobody on this whole floor has ever needed a
+  // trim, and he knows it. **A barber now stands beside his own empty chair on a quiet stretch of open
+  // concrete south-west of downtown, snipping his shears in the air to test an edge no customer — human
+  // or otherwise — is ever coming to try, a candy-striped pole spinning beside him anyway.** *"Robots
+  // don't grow hair. I don't know why I set up shop here either."* *"Mind your whiskers, puss — these
+  // shears don't know a tabby from a trim."* *"Heard there's two of me in towns I've never even seen.
+  // Small world."* Saying hello to him is the usual kind of friend.
+  //
+  // No new controller: the same `Charger` (55-npcs.js) the other two barbers already use — a standing
+  // rig that idles on its own, its arms pinned into a held snipping pose each frame, guarded by
+  // `!barber.gesture` so a greeting wave still wins. Own small wardrobe (`barberWard`), steel-and-slate
+  // toned to match the potter above rather than either other barber's own palette. The shears and the
+  // pole stripe are both driven only by the world clock `t` alone — no `rnd()` or local `r()` draw, so
+  // nothing later in this build's own picks shift.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // `game.load(2, 'from-prev')` directly rather than `game.travel()` — the travel fade sits behind a
+  // real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so
+  // every wandering, patrolling, charging and ball-tossing robot and every vendor had settled, then 600
+  // more sampling every NPC's own position every 10th frame) swept a 2 m grid of the open floor (radius
+  // 15-85 from the origin, short of the radius (98) where `robotRegion()`'s own procedural fill takes
+  // over) against all 1205 of this city's own physics boxes (knee-to-head band only), all 296
+  // `game.zones` rectangles and every sampled NPC position, then refined the best stretch on a
+  // quarter-metre grid: (-25, -62) came back clear by 9.0 m of the nearest box, 28.9 m of the nearest
+  // zone rectangle and 9.9 m of the nearest other soul, at radius 66.9 from the origin.
+  //
+  // Built dead last of everything this city adds, right after the potter above and right before
+  // `spawnBySquirrel()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this city's
+  // own shared `r()` sequence unconditionally, and anything built earlier here would have had its own
+  // timing-sensitive pick shifted by it.
+  { const bx = -25, bz = -62, bry = atan2(-bx, -bz);
+    const barberWard = makeWardrobe(r, { shirts: [0x6a7078], pants: [0x24262a] });
+    const barber = makeHuman({ ...randomPerson(r, { female: r.chance(0.3), child: false, elder: r.chance(0.4), wardrobe: barberWard }),
+      pants: 0x201e24, apron: 0x8a8d92, sleeves: true, hat: null, coat: null, scarf: null, bag: null, backpack: null, glasses: false, moustache: r.chance(0.5), build: 'average' });
+    W.add(barber.group);
+    const leatherM = mat(0x5a6068, { roughness: 0.55 }), chairWoodM = mat(0x2e3034, { roughness: 0.8, metalness: 0.15 }), chromeM = mat(0xcfd4d8, { metalness: 0.7, roughness: 0.25 });
+    // the empty chair: a pedestal base, a seat, a tall back and two armrests, a step in front
+    const chairX = bx + sin(bry) * 0.75, chairZ = bz + cos(bry) * 0.75;
+    const chair = group(chairX, 0, chairZ, W); chair.rotation.y = bry + PI;   // facing the barber
+    mesh(G.cyl(0.22, 0.26, 0.5, 14), chromeM, { y: 0.25, shadow: 'both', parent: chair });
+    mesh(G.box(0.46, 0.08, 0.46), leatherM, { y: 0.54, shadow: 'both', parent: chair });
+    mesh(G.box(0.46, 0.6, 0.08), leatherM, { y: 0.88, z: -0.22, shadow: 'both', parent: chair });
+    for (const sideA of [-1, 1]) mesh(G.box(0.07, 0.22, 0.4), leatherM, { x: sideA * 0.24, y: 0.68, shadow: 'both', parent: chair });
+    mesh(G.box(0.5, 0.04, 0.2), chairWoodM, { y: 0.08, z: 0.3, shadow: 'both', parent: chair });   // footrest step
+    P.addBox(chairX, 0.45, chairZ, 0.5, 0.9, 0.56, { cam: false });
+    // the pole: a slim post, the candy-cane stripe spinning round its own middle section, a small
+    // chrome ball to cap it
+    const poleX = bx - sin(bry) * 0.7 + cos(bry) * 0.55, poleZ = bz - cos(bry) * 0.7 - sin(bry) * 0.55;
+    const pole = group(poleX, 0, poleZ, W);
+    noInk(mesh(G.cyl(0.03, 0.035, 1.5, 10), chairWoodM, { y: 0.75, parent: pole }));
+    const stripeM = mat(0xffffff, { roughness: 0.4, map: TEX.candyCane() });
+    const poleSpin = group(0, 1.1, 0, pole);
+    noInk(mesh(G.cyl(0.07, 0.07, 0.6, 12), stripeM, { parent: poleSpin }));
+    mesh(G.sphere(0.08, 10, 8), chromeM, { y: 0.44, parent: pole });
+    P.addBox(poleX, 0.7, poleZ, 0.14, 1.5, 0.14, { cam: false });
+    // the shears, held raised and snipping — two thin blades on a hinge, pinned to the near hand
+    const scissors = group(0, 0.1, 0.1, barber.hands[0]); scissors.rotation.x = -1.3;
+    const bladeM = mat(0xb8bcc0, { metalness: 0.75, roughness: 0.2 }), handleM = mat(0x3a3e42, { roughness: 0.5 });
+    noInk(mesh(G.sphere(0.018, 8, 6), handleM, { parent: scissors }));
+    const bladeA = group(0, 0, 0, scissors), bladeB = group(0, 0, 0, scissors);
+    mesh(G.box(0.014, 0.1, 0.01), bladeM, { y: 0.06, parent: bladeA }); mesh(G.box(0.03, 0.025, 0.01), handleM, { y: -0.03, parent: bladeA });
+    mesh(G.box(0.014, 0.1, 0.01), bladeM, { y: 0.06, parent: bladeB }); mesh(G.box(0.03, 0.025, 0.01), handleM, { y: -0.03, parent: bladeB });
+    const comb = group(0, 0.08, 0.06, barber.hands[1]); comb.rotation.x = -0.6;
+    mesh(G.box(0.02, 0.12, 0.012), mat(0x1a1a1e, { roughness: 0.6 }), { parent: comb });
+    game.npcs.push(new Charger(game, barber, { x: bx, z: bz, ry: bry, cryIcon: '💈',
+      cries: ['Robots don\'t grow hair. I don\'t know why I set up shop here either.', 'Mind your whiskers, puss — these shears don\'t know a tabby from a trim.', 'Heard there\'s two of me in towns I\'ve never even seen. Small world.'] }));
+    U.push((dt, t) => {
+      poleSpin.rotation.y = t * 2.2;
+      bladeA.rotation.z = 0.12 + sin(t * 7) * 0.12; bladeB.rotation.z = -0.12 - sin(t * 7) * 0.12;
+      if (!barber.gesture) { const A = barber.arms[0], B = barber.arms[1]; A.sh.rotation.x = -1.4; A.sh.rotation.z = 0.25; A.el.rotation.x = -1.6; B.sh.rotation.x = -0.9; B.sh.rotation.z = -0.2; B.el.rotation.x = -1.1; }
+    }); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
