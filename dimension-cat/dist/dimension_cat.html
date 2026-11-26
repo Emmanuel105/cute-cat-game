@@ -36490,6 +36490,47 @@ function buildSnowVillage(game, entry) {
       bladeA.rotation.z = 0.12 + sin(t * 7) * 0.12; bladeB.rotation.z = -0.12 - sin(t * 7) * 0.12;
       if (!barber.gesture) { const A = barber.arms[0], B = barber.arms[1]; A.sh.rotation.x = -1.4; A.sh.rotation.z = 0.25; A.el.rotation.x = -1.6; B.sh.rotation.x = -0.9; B.sh.rotation.z = -0.2; B.el.rotation.x = -1.1; }
     }); }
+  // Rounds 1390-1393 gave Candy Land's, Robot City's, Victorian's and Sunny Shore's own sack race a
+  // first watcher, leaving Frosty Peak and Whisper Woods still owing theirs one. This round gives
+  // Frosty Peak its own, the fifth of the six. **A bundled-up villager now stands due north of this
+  // mountain's own sack race lane, watching the two kids hop back and forth.** No lines of her own —
+  // this one just watches — but saying hello to her makes her the usual kind of friend.
+  //
+  // No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses — a
+  // plain `makeHuman()`/`randomPerson()` rig in the same winter wardrobe shape (beanie, coat, scarf,
+  // cuffs) this mountain's own tug-of-war and badminton watchers already wear, `angle` pointed at the
+  // lane's own fixed midpoint (41.4, -34.7), and the relaxed `idle: [3, 6]`/`walk: [1, 1.6]` the
+  // series' own Robot City and Victorian watchers settled on, rather than the frozen `idle: [1e9,
+  // 1e9]` this mountain's own badminton spectator uses. This mountain's own sack race (above, two
+  // kids at `ry: PI/2`) runs its racers along world X, side by side in z — the same orientation as
+  // the Neighborhood's, Robot City's and Victorian's own (rounds 1307, 1391, 1392), not Candy Land's
+  // or Sunny Shore's own (rounds 1390 and 1393, lane along z, side by side in x) — so round 1307's
+  // own finding applies directly: standing north or south of the lane, offset along the same axis as
+  // the racers' own side-by-side gap, is the angle that shows both hopping past at once rather than
+  // looking down their backs.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(5, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so both kids and every other villager, reindeer and yeti had settled, then 600
+  // more sampling every NPC's own position every 10th frame) swept a 0.25 m grid north and south of
+  // the lane's own midpoint, 2.5-16 m out, against all 463 of this mountain's own body-height physics
+  // boxes and all 160 `game.zones` rectangles, staying short of the radius (58) where `snowRegion`'s
+  // own fill takes over, then refined the best stretch on a 0.05 m grid: (41.4, -30.1) came back
+  // clearest — due north of the lane at radius 4.6, 51.2 m from the world's own origin — 4.03 m from
+  // the nearest box, 15.9 m from the nearest zone rectangle and 4.05 m from the nearest other soul
+  // (one of the racers themselves), ground flat to within 6 cm across a 0.6 m square.
+  //
+  // Built dead last of everything this mountain adds, right after the barber above, for the usual
+  // reason: `makeHuman()`/`randomPerson()` both draw off this mountain's own local `r()` sequence
+  // unconditionally, and a fresh rig built any earlier would have shifted every random pick already
+  // placed above it. Whisper Woods is the only world left whose own sack race still plays to nobody.
+  { const srWatchX = 41.4, srWatchZ = -30.1, srLaneX = 41.4, srLaneZ = -34.7;
+    const srWard = makeWardrobe(r, { shirts: [0x6a4a4a, 0x4a4a6a, 0x5a6a4a], pants: [0x2a2a2a, 0x332a24], shoes: [0x2a2018, 0x1e1a16] });
+    const srWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: srWard }),
+      hat: 'beanie', hatColor: 0x6a3a4a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a, bag: null, backpack: null, glasses: r.chance(0.3) });
+    W.add(srWatcher.group);
+    game.npcs.push(new Wanderer(game, srWatcher, { x: srWatchX, z: srWatchZ, angle: atan2(srLaneX - srWatchX, srLaneZ - srWatchZ), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
 
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
