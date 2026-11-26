@@ -23517,6 +23517,46 @@ function buildRobotCity(game, entry) {
     W.add(tugWatcher2.group);
     game.npcs.push(new Wanderer(game, tugWatcher2, { x: twx2, z: twz2, angle: atan2(tugX2 - twx2, tugZ2 - twz2), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
 
+  // Rounds 1384-1390 gave every one of the seven worlds' own tug-of-war a watcher and then opened the
+  // sack-race series with Candy Land, leaving Robot City, Victorian, Sunny Shore, Frosty Peak and
+  // Whisper Woods still owing theirs one. This city's own sack race (above, two off-shift contractors
+  // bound ankle-to-waist in a borrowed packing sack apiece, at x=-42, z=46, `ry=PI/2`) has had nobody
+  // stopping to watch since. **A contractor now stands north of the lane, watching the pair hop back
+  // and forth.** No `cries` of her own — this one just watches — but saying hello to her makes her
+  // the usual kind of friend.
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) every watcher in this series already uses — a
+  // plain `makeHuman()`/`randomPerson()` rig, no fixed wardrobe of its own, `angle` pointed at the
+  // lane's own fixed midpoint (-42, 46) rather than a constant, and the relaxed `idle: [3, 6]`/
+  // `walk: [1, 1.6]` every watcher elsewhere in this game already settles on. `SackRace` runs this
+  // lane along world X here (`ry=PI/2`, racers side by side in z) — the same orientation as the
+  // Neighborhood's own sack race (round 1307), not Candy Land's own (round 1390, lane along z, side
+  // by side in x) — so round 1307's own finding applies directly: standing north or south of the
+  // lane, offset in z (the same axis as the racers' own side-by-side gap), is the angle that shows
+  // both hopping past at once instead of looking down their backs.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(2, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so both racers, the marching patrol and every other NPC had settled, then 600
+  // more sampling every NPC's own position every 10th frame) swept a 0.25 m grid north and south of
+  // the lane's own midpoint, 2.5-16 m out, against all 1211 of this city's own physics boxes
+  // (knee-to-head band only) and all 296 `game.zones` rectangles, then refined the best stretch on a
+  // 0.05 m grid: (-42, 55.5) came back clearest — due north of the lane at radius 9.5, 69.6 from the
+  // world's own origin, well short of the radius (98) where `robotRegion`'s own procedural fill takes
+  // over — 5.39 m from the nearest box, 38.5 m from the nearest zone rectangle and 5.32 m from the
+  // nearest other soul.
+  //
+  // Built dead last of everything this city adds, right after the cable tug-of-war watcher above,
+  // for the usual reason: `makeHuman()`/`randomPerson()` both draw off this city's own local `r()`
+  // sequence unconditionally, and dropping a fresh rig in any earlier would have shifted every
+  // random pick made above it.
+  { const swx3 = -42, swz3 = 55.5, laneX4 = -42, laneZ4 = 46;
+    const sackWatcher3 = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(sackWatcher3.group);
+    game.npcs.push(new Wanderer(game, sackWatcher3, { x: swx3, z: swz3, angle: atan2(laneX4 - swx3, laneZ4 - swz3), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
