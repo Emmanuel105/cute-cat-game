@@ -13987,6 +13987,38 @@ function buildRobotCity(game, entry) {
       if (!barber.gesture) { const A = barber.arms[0], B = barber.arms[1]; A.sh.rotation.x = -1.4; A.sh.rotation.z = 0.25; A.el.rotation.x = -1.6; B.sh.rotation.x = -0.9; B.sh.rotation.z = -0.2; B.el.rotation.x = -1.1; }
     }); }
 
+  // The tetherball pole above has had its two off-shift workers batting the ball round it since
+  // earlier this round, but of the four worlds round 508's own playground-games list first touched
+  // (the Neighborhood, Victorian, Robot City, Frosty Peak) only the Neighborhood's own pole (round
+  // 521) and, since round 1372, Candy Land's ever picked up anyone standing by to watch. A third
+  // off-shift worker now stands a few steps east of the pole, watching the ball swing round on its
+  // rope. No `cries` of her own — this one just watches — no physics box, pure bystander. Saying
+  // hello to her makes her the usual kind of friend.
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) every watcher in this game already uses — a plain
+  // `makeHuman()`/`randomPerson()` rig, no fixed wardrobe of its own (this city's own `r()` picks her
+  // clothes), `angle` pointed at the pole's own fixed centre (29, -16) rather than a constant, and the
+  // relaxed `idle: [3, 6]`/`walk: [1, 1.6]` every watcher elsewhere in this game already settles on.
+  // Robot City builds and runs on its own local seeded `r()`, not the shared global `rnd()` the real
+  // timing-sensitive checks key off, so nothing here needs a draw pinned.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(2, 'from-hub')`, 3600 simulated frames so both workers, the
+  // haulers and every other NPC had already settled, then every NPC's own position sampled every 5th
+  // frame over 600 more) swept a ring 2-7 m out from the pole's own centre (29, -16) against all 1207
+  // of this city's own physics boxes (knee-to-head band only) and every sampled position: (36, -16)
+  // came back clearest — due east, in line past worker A at (31, -16) — 6.5 m from the nearest box and
+  // 6.06 m from the nearest other soul, well short of the tug-of-war haulers at (46, -8).
+  //
+  // Built right after the tetherball pole, for the usual reason: `makeHuman()`/`randomPerson()` both
+  // draw off this city's own local `r()` sequence unconditionally, and dropping a fresh rig in any
+  // earlier would have shifted every random pick made above it.
+  { const twx = 36, twz = -16, poleX2 = 29, poleZ2 = -16;
+    const tetherWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(tetherWatcher.group);
+    game.npcs.push(new Wanderer(game, tetherWatcher, { x: twx, z: twz, angle: atan2(poleX2 - twx, poleZ2 - twz), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
