@@ -9891,6 +9891,39 @@ function buildCandyLand(game, entry) {
       if (!barber.gesture) { const A = barber.arms[0], B = barber.arms[1]; A.sh.rotation.x = -1.4; A.sh.rotation.z = 0.25; A.el.rotation.x = -1.6; B.sh.rotation.x = -0.9; B.sh.rotation.z = -0.2; B.el.rotation.x = -1.1; }
     }); }
 
+  // The tetherball pole has had its two gingerbread-sweet kids batting the ball round it since round
+  // 547, but of the four worlds round 508's own playground-games list first touched (the Neighborhood,
+  // Victorian, Robot City, Frosty Peak) only the Neighborhood's own pole (round 521) ever picked up
+  // someone standing by to watch — that watcher series never made it past its first stop. **A
+  // gingerbread-village local now stands a few steps south-west of the pole, watching the ball swing
+  // round on its rope.** No `cries` of her own — this one just watches — no physics box, pure
+  // bystander. Saying hello to her makes her the usual kind of friend.
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) every watcher in this game already uses — a plain
+  // `makeHuman()`/`randomPerson()` rig, no fixed wardrobe of its own (this land's own `r()` picks her
+  // clothes, same as the ring-toss watcher above), `angle` pointed at the pole's own fixed centre
+  // (50, -30) rather than a constant, and the relaxed `idle: [3, 6]` every watcher in this land's own
+  // set already settles on — this is Candy Land, not the Neighborhood, so nothing here needs its own
+  // `rnd()` draws pinned.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(1, 'from-hub')`, 2400 simulated frames so the tetherball pair,
+  // the kite-flying kid and every other NPC had already settled, then every NPC's own position sampled
+  // every 6th frame) swept a 1 m grid in a ring 2-7 m out from the pole's own centre (50, -30) against
+  // all 1803 of this land's own physics boxes (knee-to-head band only) and every sampled position:
+  // (45, -33) came back clearest — 5.71 m from the nearest box, 5.00 m from the nearest other soul and
+  // 5.83 m from the pole itself, south-west of it, well clear of the kite-flying kid at (51, -33) and
+  // south of the chocolate river's own band (z -22..-14 here).
+  //
+  // Built dead last of everything this land adds, right after the barber above, for the usual reason:
+  // `makeHuman()`/`randomPerson()` both draw off this land's own shared `r()` sequence unconditionally,
+  // and dropping a fresh rig in any earlier would have shifted every random pick made above it.
+  { const twx = 45, twz = -33, poleX2 = 50, poleZ2 = -30;
+    const tetherWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(tetherWatcher.group);
+    game.npcs.push(new Wanderer(game, tetherWatcher, { x: twx, z: twz, angle: atan2(poleX2 - twx, poleZ2 - twz), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
