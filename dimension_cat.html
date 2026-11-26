@@ -32503,6 +32503,40 @@ function buildBeach(game, entry) {
     const tetherWatcher = beachPerson(r.chance(0.5), false);
     game.npcs.push(new Wanderer(game, tetherWatcher, { x: twx, z: twz, angle: atan2(poleX2 - twx, poleZ2 - twz), speed: 0.3, leash: 0.5, idle: [3, 6] })); }
 
+  // Rounds 1390-1392 gave Candy Land's, Robot City's and Victorian's own sack race a first watcher,
+  // leaving Sunny Shore, Frosty Peak and Whisper Woods still owing theirs one. This round gives Sunny
+  // Shore its own, the fourth of the six. **A beachgoer now stands well east of the sack race's own
+  // lane, watching the two kids hop back and forth.** No lines of her own — this one just watches —
+  // but saying hello to her makes her the usual kind of friend.
+  //
+  // No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses, built
+  // from this beach's own `beachPerson()` wardrobe helper rather than a fresh `makeHuman` call, `angle`
+  // pointed at the lane's own fixed midpoint (-37, -13). This coast's own sack race (round 554,
+  // sackA/sackB at `ry: 0`) runs its racers along z, side by side in x — the same orientation as Candy
+  // Land's own (round 1390), so round 1390's own finding applies directly: standing east or west of the
+  // lane, offset along the same axis as the racers' own side-by-side gap, is the angle that shows both
+  // hopping past at once rather than looking down their backs.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(4, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so both racers and every other beachgoer, dog, kite and ball game had settled,
+  // then 900 more sampling every NPC's own position every 5th frame) swept a 0.25 m grid east and west
+  // of the lane's own midpoint, 2.5-18 m out, against all 125 of this coast's own body-height physics
+  // boxes and all 88 `game.zones` rectangles, staying short of the radius (58) where `beachRegion()`'s
+  // own fill takes over: (-23.25, -13) came back clearest — due east of the lane at radius 13.75, 26.6
+  // m from the world's own origin — 4.46 m from the nearest box, 5.61 m from the nearest zone rectangle
+  // and 4.46 m from the nearest other soul. West of the lane runs straight into the tetherball watcher's
+  // own ground, topping out around 3.2 m of clearance within the same reach, so east, further out, is
+  // the side that actually has room.
+  //
+  // Built dead last of everything this beach adds, right after the tetherball watcher above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this beach's own shared `r()` sequence
+  // unconditionally, and anything built earlier here would have had its own timing-sensitive pick
+  // shifted by it. Frosty Peak and Whisper Woods still owe their own sack race a watcher.
+  { const srWatchX = -23.25, srWatchZ = -13, srCx = -37, srCz = -13, sackWatcher = beachPerson(r.chance(0.5), false);
+    game.npcs.push(new Wanderer(game, sackWatcher, { x: srWatchX, z: srWatchZ, angle: atan2(srCx - srWatchX, srCz - srWatchZ), leash: 0.5, speed: 0.3, idle: [3, 6] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
