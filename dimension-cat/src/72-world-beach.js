@@ -1716,6 +1716,30 @@ function buildBeach(game, entry) {
     const ringLines = ['Right over the post — that\'s a landing!', "Careful, puss — you'll have that rope round your own tail.", "Best of nine, loser buries the loser's feet."];
     game.npcs.push(new Horseshoes(game, ringA, ringB, ring, { cx: rcx, cz: rcz, gap: rgap, cries: ringLines, cryIcon: '🪢' }));
     greetable(game, { rig: ringA }); greetable(game, { rig: ringB }); }
+  // the Neighborhood's horseshoe pit, Robot City's magnet coupling and Victorian's quoit beds have all
+  // picked up a watcher over the last two rounds (1378-1380) — this beach's own rope-coupling toss,
+  // built just above, is the fourth of the seven. **A beachgoer now stands a few steps northwest of the
+  // rope posts, watching the two players lob the coiled rope back and forth.** No lines of her own —
+  // this one just watches — but saying hello makes her the usual kind of friend.
+  //
+  // No new class: the same `Wanderer` (`55-npcs.js`) every other watcher in this set already uses, this
+  // world's own `beachPerson()` closure (sun-bleached wardrobe, shared with every other beach bystander)
+  // in place of a one-off wardrobe, `angle` pointed at the rope posts' own fixed centre (8, 52).
+  // `Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was needed, and no
+  // physics box either — pure bystander, same as every other watcher in this set.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(4, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so both ring-tossers and every other beachgoer, dog, kite and ball game had
+  // settled, then 600 more sampling every NPC's own position every 10th frame) swept a 0.5 m grid in a
+  // ring 2-9 m out from the rope posts' own centre against all 127 of this coast's own body-height
+  // physics boxes and all 91 `game.zones` rectangles, then refined the best stretch on a tenth-of-a-metre
+  // grid: (2.5, 50.6) came back clearest — 5.62 m from the nearest box, 5.66 m from the nearest zone
+  // rectangle and 5.62 m from the nearest other soul, northwest of the posts and clear of the chopping
+  // stump far off in the western dunes.
+  { const ringWatchX = 2.5, ringWatchZ = 50.6, ringCx = 8, ringCz = 52, ringWatcher = beachPerson(true, false);
+    game.npcs.push(new Wanderer(game, ringWatcher, { x: ringWatchX, z: ringWatchZ, angle: atan2(ringCx - ringWatchX, ringCz - ringWatchZ), leash: 0.5, speed: 0.3, idle: [3, 6] })); }
 
   // the Neighborhood, Victorian, Frosty Peak and Whisper Woods all have a woodcutter splitting logs on
   // a stump by now (`makeStump()` + `Chopper`, round 207 on) — Sunny Shore, Robot City and Candy Land
