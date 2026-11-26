@@ -9952,6 +9952,48 @@ function buildCandyLand(game, entry) {
     W.add(tetherWatcher.group);
     game.npcs.push(new Wanderer(game, tetherWatcher, { x: twx, z: twz, angle: atan2(poleX2 - twx, poleZ2 - twz), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
 
+  // The Neighborhood's own tug-of-war (round 1306) and sack race (round 1307) both picked up a
+  // watcher of their own back when the tetherball pole, horseshoe pit, tug-of-war and sack race all
+  // got one there — but that pair of spectators never left the Neighborhood, same as the
+  // tetherball/toss-game watcher series above both did before round 1372 sent them round every
+  // other world too. The liquorice-rope tug-of-war here (round 508's own playground-games list,
+  // handA/handB at x=77, z=-41) has had its two stall hands heaving away since, with nobody
+  // stopping to watch. **A villager now stands west of them, watching the pair strain against the
+  // rope.** No `cries` of her own — this one just watches — no physics box, pure bystander. Saying
+  // hello to her makes her the usual kind of friend.
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) every watcher in this game already uses — a
+  // plain `makeHuman()`/`randomPerson()` rig, no fixed wardrobe of its own, `angle` pointed at the
+  // rope's own fixed centre (77, -41) rather than a constant, and the relaxed `idle: [3, 6]`/
+  // `walk: [1, 1.6]` every watcher elsewhere in this game already settles on. The rope itself runs
+  // north-south here (both hands sit at x=77, offset in z by the usual ±1.3 m `gap`), same as the
+  // Neighborhood's own — so, same as round 1306 found there, standing east or west of it, level
+  // with its own centre, is the one angle that actually shows both hands heaving at once rather than
+  // looking past one at the other's back. Candy Land builds and runs on its own local seeded `r()`,
+  // not the shared global `rnd()` the Neighborhood's own timing-sensitive checks key off, so nothing
+  // here needs a draw pinned.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(1, 'from-hub')` directly rather than `game.travel()` — the
+  // travel fade sits behind a real `setTimeout` that never fires under simulated frames alone —
+  // then 3600 simulated frames so both hands and every other NPC had settled, then 600 more
+  // sampling every NPC's own position every 10th frame) swept a 0.25 m grid in a ring 2.5-7 m out
+  // from the rope's own centre (77, -41) against all 1805 of this land's own physics boxes
+  // (knee-to-head band only) and all 452 `game.zones` rectangles: (70, -41) came back clearest —
+  // due west of the rope at radius 7 — 9.70 m from the nearest box, 18.6 m from the nearest zone
+  // rectangle and 7.12 m from the nearest other soul (one of the hands themselves), well clear of
+  // the sack race at (-83, 7) and the ring toss at (51, -1).
+  //
+  // Built dead last of everything this land adds, right after the tetherball watcher above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this land's own shared `r()`
+  // sequence unconditionally, and dropping a fresh rig in any earlier would have shifted every
+  // random pick made above it.
+  { const uwx = 70, uwz = -41, tugX = 77, tugZ = -41;
+    const tugWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x9a5a7a, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(tugWatcher.group);
+    game.npcs.push(new Wanderer(game, tugWatcher, { x: uwx, z: uwz, angle: atan2(tugX - uwx, tugZ - uwz), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
