@@ -1200,9 +1200,9 @@ class Kneeler {
 
 // ---------------------------------------------------------------- charger: stands put, plugged into something, its rig's own idle pose doing all the work
 class Charger {
-  constructor(game, rig, { x, z, ry = 0, cries = null, cryIcon = '🔌' }) {
-    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10;
-    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+  constructor(game, rig, { x, z, ry = 0, cries = null, cryIcon = '🔌', t0 = null, cryT0 = null }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = t0 != null ? t0 : rnd() * 10;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? (cryT0 != null ? cryT0 : rnd.range(4, 9)) : 0;
     rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
     this.circle = game.physics.addCircle(this, x, z, 0.35);
     greetable(game, this);

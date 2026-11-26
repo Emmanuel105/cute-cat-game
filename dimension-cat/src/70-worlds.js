@@ -5458,6 +5458,89 @@ function buildNeighborhood(game, entry) {
     game.npcs.push(new Wanderer(game, subject, { x: subX, z: subZ, angle: atan2(subPX - subX, subPZ - subZ), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 7,
       cries: ["Hold still, they said. I have held still for ten whole minutes now.", "Careful, puss — don't spoil the shot, he has only the one plate left.", 'Best side forward. Every single time, without fail.'] })); }
 
+  // Victorian, Candy Land, Robot City, Sunny Shore, Frosty Peak and Whisper Woods have all picked up
+  // the same barber beside his own empty chair over the last ten rounds (1361, 1366-1370) — this
+  // street is the one world still without, and the reason is on record (round 1359's own grindstone,
+  // round 1072's own first chestnut-roaster attempt): this is the one world whose build shares a
+  // single unbroken run of simulated frames with `test/run.mjs`'s own behaviour checks, so any extra
+  // draw from the *shared* `rnd()` generator (not this street's own local `r()`) nudges every
+  // timing-sensitive pick made anywhere else in that same run. **A barber now stands beside his own
+  // empty chair on the quiet field south-west of the street, snipping his shears in the air to test
+  // an edge no customer is ever coming to try, his candy-striped pole propped in the grass beside
+  // him.** *"Every other street in the seven worlds has one of me by now. Took this one long
+  // enough."* *"Mind your whiskers, puss — these shears don't know a tabby from a trim."* *"Quiet
+  // corner, this. Suits a trade nobody actually needs."* Saying hello to him is the usual kind of
+  // friend.
+  //
+  // No new controller: the same `Charger` (55-npcs.js) every other barber already uses — a standing
+  // rig that idles on its own, its arms pinned into a held snipping pose each frame, guarded by
+  // `!barber.gesture` so a greeting wave still wins. The fix is in `Charger` itself, mirroring the
+  // `t0`/`cryT0` fields the chestnut-roaster round (1329) already added to `Vendor`: two new optional
+  // constructor fields standing in for its two unconditional `rnd()` draws (`this.t = rnd() * 10` and,
+  // when `cries` is set, `this.cryT = rnd.range(4, 9)`) when given, changing nothing for any of the
+  // dozen-odd other callers that don't pass them. Both are fixed here (`t0: 2.6`, `cryT0: 11`), so
+  // construction draws nothing from the shared sequence at all — the same zero-shift trick the
+  // photographer's own subject just above (round 1346) already leans on for `Wanderer`'s matching
+  // fields. His own small wardrobe (`barberWard`), a single fixed shirt (0xf5ece0, not spoken for by
+  // any other neighbour's own wardrobe above) under a dusty-rose apron, keeps the "no two neighbours
+  // wear the same shirt" check happy. The shears and the pole stripe are both driven only by the world
+  // clock `t` alone — no further `rnd()` or local `r()` draw once built.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, 3600 simulated frames to settle every neighbour, then 600 more sampling every
+  // NPC's own position every 10th frame) swept the open field south-west of the street (radius 10-65,
+  // clear of the picnic blanket at (-40, -30)) against all 312 of this street's own physics boxes
+  // (knee-to-head band only), all 69 `game.zones` rectangles and every sampled NPC position: (-37,
+  // -20.5) came back clear by 10.7 m of the nearest box, 12.0 m of the nearest zone rectangle and
+  // 10.8 m of the nearest other soul, radius 42.3 from the origin — a quiet stretch with nothing else
+  // on it.
+  //
+  // Built dead last of everything this street adds, right after the photographer's subject above and
+  // right before `makeDayNight`, for the usual reason: `makeHuman()`/`randomPerson()` both draw off
+  // this street's own local `r()` sequence unconditionally, and anything built earlier here would have
+  // had its own timing-sensitive pick shifted by it.
+  { const bx = -37, bz = -20.5, bry = atan2(-bx, -bz);
+    const barberWard = makeWardrobe(r, { shirts: [0xf5ece0], pants: [0x2a2430] });
+    const barber = makeHuman({ ...randomPerson(r, { female: r.chance(0.3), child: false, elder: r.chance(0.4), wardrobe: barberWard }),
+      pants: 0x241a28, apron: 0xc77b93, sleeves: true, hat: null, coat: null, scarf: null, bag: null, backpack: null, glasses: false, moustache: r.chance(0.5), build: 'average' });
+    W.add(barber.group);
+    const leatherM = mat(0xd62246, { roughness: 0.55 }), chairWoodM = mat(0x5a3a1f, { roughness: 0.8 }), chromeM = mat(0xcfd4d8, { metalness: 0.7, roughness: 0.25 });
+    // the empty chair: a pedestal base, a seat, a tall back and two armrests, a step in front
+    const chairX = bx + sin(bry) * 0.75, chairZ = bz + cos(bry) * 0.75;
+    const chair = group(chairX, 0, chairZ, W); chair.rotation.y = bry + PI;   // facing the barber
+    mesh(G.cyl(0.22, 0.26, 0.5, 14), chromeM, { y: 0.25, shadow: 'both', parent: chair });
+    mesh(G.box(0.46, 0.08, 0.46), leatherM, { y: 0.54, shadow: 'both', parent: chair });
+    mesh(G.box(0.46, 0.6, 0.08), leatherM, { y: 0.88, z: -0.22, shadow: 'both', parent: chair });
+    for (const sideA of [-1, 1]) mesh(G.box(0.07, 0.22, 0.4), leatherM, { x: sideA * 0.24, y: 0.68, shadow: 'both', parent: chair });
+    mesh(G.box(0.5, 0.04, 0.2), chairWoodM, { y: 0.08, z: 0.3, shadow: 'both', parent: chair });   // footrest step
+    P.addBox(chairX, 0.45, chairZ, 0.5, 0.9, 0.56, { cam: false });
+    // the pole: a slim post, the candy-cane stripe spinning round its own middle section, a small
+    // chrome ball to cap it
+    const poleX = bx - sin(bry) * 0.7 + cos(bry) * 0.55, poleZ = bz - cos(bry) * 0.7 - sin(bry) * 0.55;
+    const pole = group(poleX, 0, poleZ, W);
+    noInk(mesh(G.cyl(0.03, 0.035, 1.5, 10), chairWoodM, { y: 0.75, parent: pole }));
+    const stripeM = mat(0xffffff, { roughness: 0.4, map: TEX.candyCane() });
+    const poleSpin = group(0, 1.1, 0, pole);
+    noInk(mesh(G.cyl(0.07, 0.07, 0.6, 12), stripeM, { parent: poleSpin }));
+    mesh(G.sphere(0.08, 10, 8), chromeM, { y: 0.44, parent: pole });
+    P.addBox(poleX, 0.7, poleZ, 0.14, 1.5, 0.14, { cam: false });
+    // the shears, held raised and snipping — two thin blades on a hinge, pinned to the near hand
+    const scissors = group(0, 0.1, 0.1, barber.hands[0]); scissors.rotation.x = -1.3;
+    const bladeM = mat(0xb8bcc0, { metalness: 0.75, roughness: 0.2 }), handleM = mat(0x8a1a1a, { roughness: 0.5 });
+    noInk(mesh(G.sphere(0.018, 8, 6), handleM, { parent: scissors }));
+    const bladeA = group(0, 0, 0, scissors), bladeB = group(0, 0, 0, scissors);
+    mesh(G.box(0.014, 0.1, 0.01), bladeM, { y: 0.06, parent: bladeA }); mesh(G.box(0.03, 0.025, 0.01), handleM, { y: -0.03, parent: bladeA });
+    mesh(G.box(0.014, 0.1, 0.01), bladeM, { y: 0.06, parent: bladeB }); mesh(G.box(0.03, 0.025, 0.01), handleM, { y: -0.03, parent: bladeB });
+    const comb = group(0, 0.08, 0.06, barber.hands[1]); comb.rotation.x = -0.6;
+    mesh(G.box(0.02, 0.12, 0.012), mat(0x1a1a1e, { roughness: 0.6 }), { parent: comb });
+    game.npcs.push(new Charger(game, barber, { x: bx, z: bz, ry: bry, cryIcon: '💈', t0: 2.6, cryT0: 11,
+      cries: ['Every other street in the seven worlds has one of me by now. Took this one long enough.', 'Mind your whiskers, puss — these shears don\'t know a tabby from a trim.', 'Quiet corner, this. Suits a trade nobody actually needs.'] }));
+    U.push((dt, t) => {
+      poleSpin.rotation.y = t * 2.2;
+      bladeA.rotation.z = 0.12 + sin(t * 7) * 0.12; bladeB.rotation.z = -0.12 - sin(t * 7) * 0.12;
+      if (!barber.gesture) { const A = barber.arms[0], B = barber.arms[1]; A.sh.rotation.x = -1.4; A.sh.rotation.z = 0.25; A.el.rotation.x = -1.6; B.sh.rotation.x = -0.9; B.sh.rotation.z = -0.2; B.el.rotation.x = -1.1; }
+    }); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
