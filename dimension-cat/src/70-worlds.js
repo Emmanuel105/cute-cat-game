@@ -14493,6 +14493,40 @@ function buildVictorian(game, entry) {
     const quoitLines = ["Right on the hob — that's a game, that is.", 'Mind your tail, puss — brass doesn\'t bend for anyone.', "Best of eleven, same as every Sunday."];
     game.npcs.push(new Horseshoes(game, quoitA, quoitB, quoit, { cx: qcx, cz: qcz, gap: qgap, cries: quoitLines, cryIcon: '🎯' }));
     greetable(game, { rig: quoitA }); greetable(game, { rig: quoitB }); }
+  // Candy Land's and Robot City's own back-garden toss games (rounds 1378-1379) each picked up a
+  // watcher standing by, opening a series that started right after this game's own tetherball-pole
+  // watchers wrapped up — but the two gentlemen pitching brass quoits at the hob just above have had
+  // nobody of their own to watch since the game itself arrived. A third local now stands a few steps
+  // southwest of the clay beds, hands in pockets, following the ring as it sails back and forth. No
+  // `cries` of her own — this one just watches — but saying hello to her makes her the usual kind of
+  // friend.
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) every watcher in both series already uses — a
+  // plain `makeHuman()`/`randomPerson()` rig, no fixed wardrobe of its own (this town's own `r()`
+  // picks her clothes), `angle` pointed at the quoit beds' own fixed centre (22, 78) rather than a
+  // constant, and the relaxed `idle: [3, 6]`/`walk: [1, 1.6]` every watcher elsewhere in this game
+  // already settles on. Victorian builds and runs on its own local seeded `r()` (`seeded(404)`), not
+  // the shared global `rnd()` the Neighborhood's real timing-sensitive checks key off, so nothing here
+  // needs a draw pinned.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(3, 'from-hub')`, 3600 simulated frames so both quoit pitchers
+  // and every other NPC had already settled, then every NPC's own position sampled every 10th frame
+  // over 600 more) swept a 0.25 m grid in a ring 2-9 m out from the quoit beds' own centre (22, 78)
+  // against all 633 of this town's own body-height physics boxes, all 238 `game.zones` rectangles and
+  // every sampled position, staying short of the radius (88) where `victorianRegion`'s own procedural
+  // fill takes over: (15.6, 84.4) came back clearest — southwest of the beds at radius 9 from their
+  // centre, 85.8 from the world's own origin — 11.3 m from the nearest box, 16.0 m from the nearest
+  // zone rectangle and 11.3 m from the nearest other soul.
+  //
+  // Built right after the quoit beds, for the usual reason: `makeHuman()`/`randomPerson()` both draw
+  // off this town's own local `r()` sequence unconditionally, and dropping a fresh rig in any earlier
+  // would have shifted every random pick made above it.
+  { const qwx = 15.6, qwz = 84.4, quoitCx = 22, quoitCz = 78;
+    const quoitWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(quoitWatcher.group);
+    game.npcs.push(new Wanderer(game, quoitWatcher, { x: qwx, z: qwz, angle: atan2(quoitCx - qwx, quoitCz - qwz), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
   // the mudlark on the canal's far bank (round 365) noted the one trade "as Victorian as the chimney
   // sweep" was still missing from the whole town — it still was, past the smoke itself drifting off
   // every terrace roof since round 1. One now stands in the yard behind the house at x=-18, between
