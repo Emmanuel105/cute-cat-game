@@ -2018,6 +2018,33 @@ function buildBeach(game, entry) {
     const flag = group(0, 0, 0, W); noInk(mesh(G.box(0.03, 0.14, 0.4), mat(0xd62839, { roughness: 0.7 }), { parent: flag }));
     U.push(() => { const frac = 0.5 + clamp(tug.tension, -1, 1) * 0.12;
       flag.position.set(lerp(A.x, B.x, frac), lerp(ay, by, frac) + 0.03, lerp(A.z, B.z, frac)); flag.rotation.y = ropeGroup.rotation.y; }); }
+  // Candy Land, Robot City and Victorian (rounds 1384-1386) have all given their own tug-of-war a
+  // watcher, leaving Sunny Shore, built just above, and Frosty Peak and Whisper Woods still owing
+  // theirs one. **A beachgoer now stands north of the rope, watching the pair heave against each
+  // other.** No lines of her own — this one just watches — but saying hello to her makes her the usual
+  // kind of friend.
+  //
+  // No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses, this
+  // world's own `beachPerson()` closure (sun-bleached wardrobe, shared with every other beach bystander)
+  // in place of a one-off wardrobe, `angle` pointed at the rope's own fixed centre (-50, 20). Unlike the
+  // other worlds' tug-of-war, this one runs along world X rather than north-south, so standing to the
+  // north or south of it, level with its own centre, is the angle that shows both haulers heaving at
+  // once rather than looking past one at the other's back. `Wanderer`'s own constructor calls
+  // `greetable()` itself, so no extra wiring was needed, and no physics box either.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(4, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so both haulers and every other beachgoer, dog, kite and ball game had settled,
+  // then 900 more sampling every NPC's own position every 5th frame) swept a grid north and south of the
+  // rope's own centre, 2.5-9 m out, against all 155 of this coast's own body-height physics boxes and
+  // all 96 `game.zones` rectangles, rejecting anywhere past radius 58 from the world's own origin (short
+  // of where `beachRegion()`'s own procedural fill takes over, with a 2 m margin to spare): (-47.98,
+  // 28.77) came back clearest within that margin — due north of the rope at radius 9 — 8.68 m from the
+  // nearest box, 7.62 m from the nearest zone rectangle and 4.78 m from the nearest other soul, ground
+  // flat to within 2 cm across a 0.6 m square.
+  { const tugWatchX = -47.98, tugWatchZ = 28.77, tugCx = -50, tugCz = 20, tugWatcher = beachPerson(r.chance(0.5), false);
+    game.npcs.push(new Wanderer(game, tugWatcher, { x: tugWatchX, z: tugWatchZ, angle: atan2(tugCx - tugWatchX, tugCz - tugWatchZ), leash: 0.5, speed: 0.3, idle: [3, 6] })); }
 
   // the Neighborhood, Candy Land, Robot City and Victorian have all had a tetherball pole since round
   // 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack races) went
