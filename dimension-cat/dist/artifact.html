@@ -23351,6 +23351,41 @@ function buildRobotCity(game, entry) {
     W.add(tetherWatcher.group);
     game.npcs.push(new Wanderer(game, tetherWatcher, { x: twx, z: twz, angle: atan2(poleX2 - twx, poleZ2 - twz), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
 
+  // Round 1378 gave Candy Land's own back-garden toss game (there, a gummy-ring toss) its first
+  // watcher, opening a series this city's own magnet-coupling reskin (round 425) still owed one. A
+  // worker now stands northwest of the charging posts, watching the pair lob the coupling ring back
+  // and forth between them. No `cries` of her own — this one just watches — no physics box, pure
+  // bystander. Saying hello to her makes her the usual kind of friend.
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) every watcher in this game already uses — a plain
+  // `makeHuman()`/`randomPerson()` rig, no fixed wardrobe of its own, `angle` pointed at the posts'
+  // own fixed centre (24, 86) rather than a constant, and the relaxed `idle: [3, 6]`/`walk: [1, 1.6]`
+  // every watcher elsewhere in this game already settles on. Robot City builds and runs on its own
+  // local seeded `r()`, not the shared global `rnd()` the real timing-sensitive checks key off, so
+  // nothing here needs a draw pinned.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(2, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so both tossers and every other NPC had already settled, then 600 more sampling
+  // every NPC's own position every 10th frame) swept a 0.1 m grid in a ring 2-9 m out from the posts'
+  // own centre (24, 86) against all 1208 of this city's own physics boxes (knee-to-head band only)
+  // and all 296 `game.zones` rectangles: (18, 93) came back clearest within that range — 4.68 m from
+  // the nearest box (a skyscraper footprint east of the posts crowds this corner tighter than most of
+  // this series' other spots), 9.11 m from the nearest zone rectangle and 12.5 m from the nearest
+  // other soul, at radius 94.7 from the origin, short of the radius (98) where `robotRegion()`'s own
+  // procedural fill takes over.
+  //
+  // Built dead last of everything this city adds, right after the tetherball watcher above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this city's own local `r()` sequence
+  // unconditionally, and dropping a fresh rig in any earlier would have shifted every random pick
+  // made above it.
+  { const rwx = 18, rwz = 93, ringX = 24, ringZ = 86;
+    const ringWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(ringWatcher.group);
+    game.npcs.push(new Wanderer(game, ringWatcher, { x: rwx, z: rwz, angle: atan2(ringX - rwx, ringZ - rwz), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
