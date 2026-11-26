@@ -34256,6 +34256,33 @@ function buildSnowVillage(game, entry) {
     const flag = group(0, 0, 0, W); noInk(mesh(G.box(0.03, 0.14, 0.4), mat(0xd62839, { roughness: 0.7 }), { parent: flag }));
     U.push(() => { const frac = 0.5 + clamp(tug.tension, -1, 1) * 0.12;
       flag.position.set(lerp(A.x, B.x, frac), lerp(ay, by, frac) + 0.03, lerp(A.z, B.z, frac)); flag.rotation.y = ropeGroup.rotation.y; }); }
+  // Rounds 1384-1387 gave Candy Land's, Robot City's, Victorian's and Sunny Shore's own tug-of-war a
+  // first watcher, leaving Frosty Peak and Whisper Woods still owing theirs one. **A bundled-up
+  // villager now stands north of the rope above**, watching the pair heave against each other. No
+  // lines of her own — this one just watches — but saying hello to her makes her the usual kind of
+  // friend.
+  // No new controller: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses,
+  // built from the same winter wardrobe shape (beanie, coat, scarf, cuffs) the harness-toss watcher
+  // above already wears, `angle` pointed at the rope's own fixed centre (50, 20). The rope runs
+  // east-west here (`ry: PI/2`, both haulers offset in x, level in z), same as Sunny Shore's own, so
+  // standing north or south of it, level with its own centre, is the angle that shows both haulers
+  // heaving at once rather than looking past one at the other's back — the same wrinkle rounds
+  // 1384-1387 worked out for the other worlds' own ropes.
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // `game.load(5, 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a
+  // real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so
+  // both haulers and every other villager, reindeer and yeti had settled, then 600 more sampling
+  // every NPC's own position every 10th frame) swept a 0.5 m grid north and south of the rope's own
+  // centre, 2.5-12 m out, against all 833 of this mountain's own body-height physics boxes and all
+  // 160 `game.zones` rectangles, staying short of the radius (58) where `snowRegion`'s own fill takes
+  // over: (50, 25) came back clearest — due north at radius 5, 55.9 from the world's own origin — 10.6
+  // m from the nearest box, 9.1 m from the nearest zone rectangle and 5.17 m from the nearest other
+  // soul (one of the haulers themselves).
+  { const tugWatcherWard = makeWardrobe(r, { shirts: [0x4a6a3a, 0x3a4a8a, 0x8a4a6a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const tugWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: tugWatcherWard }),
+      hat: 'beanie', hatColor: 0x6a4a3a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a });
+    W.add(tugWatcher.group);
+    game.npcs.push(new Wanderer(game, tugWatcher, { x: 50, z: 25, angle: atan2(50 - 50, 20 - 25), leash: 0.5, speed: 0.3, idle: [3, 6] })); }
   // Candy Land's gingerbread guard, Victorian's drill line and Robot City's own security detail have
   // all used `Marchers` (55-npcs.js) for a lockstep patrol by now — Frosty Peak's own colony, 50-odd
   // lines up, only ever wanders loose by the pond. Real penguins actually do the opposite: they file
