@@ -23435,6 +23435,45 @@ function buildRobotCity(game, entry) {
     W.add(ringWatcher.group);
     game.npcs.push(new Wanderer(game, ringWatcher, { x: rwx, z: rwz, angle: atan2(ringX - rwx, ringZ - rwz), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
 
+  // Round 1384 started a new series on the tug-of-war itself (never spread past the Neighborhood,
+  // same as the sack race), giving Candy Land's own liquorice-rope pull a first watcher. Robot City's
+  // own reskin — two factory units straining against a power cable (round 526-ish, haulerA/haulerB
+  // at x=46, z=-8) — has had nobody stopping to watch either. A worker now stands due east of them,
+  // watching the pair strain against the cable. No `cries` of her own — this one just watches — no
+  // physics box, pure bystander. Saying hello to her makes her the usual kind of friend.
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) every watcher in this game already uses — a plain
+  // `makeHuman()`/`randomPerson()` rig, no fixed wardrobe of its own, `angle` pointed at the cable's
+  // own fixed centre (46, -8) rather than a constant, and the relaxed `idle: [3, 6]`/`walk: [1, 1.6]`
+  // every watcher elsewhere in this game already settles on. The cable runs north-south here (both
+  // units sit at x=46, offset in z by `TugOfWar`'s own ±1.3 m `gap`, `ry=0`), same as Candy Land's
+  // own rope — so, same as round 1384 found there, standing east or west of it, level with its own
+  // centre, is the one angle that actually shows both units straining at once rather than looking
+  // past one at the other's back. Robot City builds and runs on its own local seeded `r()`, not the
+  // shared global `rnd()` the real timing-sensitive checks key off, so nothing here needs a draw
+  // pinned.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(2, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so both units, the marching patrol and every other NPC had already settled,
+  // then 600 more sampling every NPC's own position every 10th frame) swept a 0.25 m grid in a ring
+  // 2-9 m out from the cable's own centre (46, -8), restricted to due east/west of it, against all
+  // 1207 of this city's own physics boxes (knee-to-head band only) and all 296 `game.zones`
+  // rectangles: (51, -8) came back clearest on that line — due east at radius 5 — 5.38 m from the
+  // nearest box, 52.5 m from the nearest zone rectangle and 5.17 m from the nearest other soul, clear
+  // of the marching patrol's own beat (46, -18)-(46, -26) south of here.
+  //
+  // Built dead last of everything this city adds, right after the ring-toss watcher above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this city's own local `r()` sequence
+  // unconditionally, and dropping a fresh rig in any earlier would have shifted every random pick
+  // made above it.
+  { const twx2 = 51, twz2 = -8, tugX2 = 46, tugZ2 = -8;
+    const tugWatcher2 = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(tugWatcher2.group);
+    game.npcs.push(new Wanderer(game, tugWatcher2, { x: twx2, z: twz2, angle: atan2(tugX2 - twx2, tugZ2 - twz2), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
