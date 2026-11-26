@@ -33778,6 +33778,30 @@ function buildSnowVillage(game, entry) {
     const harnessLines = ['Right over the post — that\'s a landing!', "Careful, puss — that's good reindeer leather, not a toy.", "Best of nine, loser mucks out the sled dogs."];
     game.npcs.push(new Horseshoes(game, tossA, tossB, ring, { cx: hcx, cz: hcz, gap: hgap, cries: harnessLines, cryIcon: '🛷' }));
     greetable(game, { rig: tossA }); greetable(game, { rig: tossB }); }
+  // Rounds 1378-1381 gave Candy Land's, Robot City's, Victorian's and Sunny Shore's own back-garden
+  // toss games their first watchers, leaving Frosty Peak and Whisper Woods still owing theirs one. **A
+  // bundled-up villager now stands southwest of the harness ring toss**, watching the pair lob their
+  // spare harness ring back and forth over the hitching posts. No lines of her own — this one just
+  // watches — but saying hello to her makes her the usual kind of friend.
+  // No new controller: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses,
+  // built from the same winter wardrobe shape (beanie, coat, scarf, cuffs) the frisbee watcher above
+  // already wears, `angle` pointed at the ring toss' own fixed centre (-11, 51).
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.load(5,
+  // 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a real
+  // `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so both
+  // toss players and every other villager, reindeer and yeti had settled, then 600 more sampling every
+  // NPC's own position every 10th frame) swept a 0.25 m grid in a ring 2.5-7 m out from the ring
+  // toss' own centre against all 705 of this mountain's own body-height physics boxes and all 151
+  // `game.zones` rectangles, staying short of the radius (58) where `snowRegion`'s own fill takes
+  // over: (-15.75, 47.75) came back clearest — southwest of the posts, at radius 50.3 from the origin
+  // — 4.68 m from the nearest box, 7.03 m from the nearest zone rectangle and 4.72 m from the nearest
+  // other soul.
+  { const hwx = -15.75, hwz = 47.75;
+    const hWatcherWard = makeWardrobe(r, { shirts: [0x6a4a8a, 0x8a6a3f, 0x3a7a5a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const hWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: hWatcherWard }),
+      hat: 'beanie', hatColor: 0x3a5a8a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a });
+    W.add(hWatcher.group);
+    game.npcs.push(new Wanderer(game, hWatcher, { x: hwx, z: hwz, angle: atan2(-11 - hwx, 51 - hwz), leash: 0.5, speed: 0.3, idle: [3, 6] })); }
   // Victorian, Robot City, Sunny Shore, Candy Land and the Neighborhood have all had something cross
   // their own sky the last five rounds running (a hot air balloon, an airship, a biplane, a tumbling
   // gumball, a second biplane) — Frosty Peak's own sky, past the snow buntings and the gondola cable,
