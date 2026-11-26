@@ -32079,6 +32079,38 @@ function buildBeach(game, entry) {
       if (!barber.gesture) { const A = barber.arms[0], B = barber.arms[1]; A.sh.rotation.x = -1.4; A.sh.rotation.z = 0.25; A.el.rotation.x = -1.6; B.sh.rotation.x = -0.9; B.sh.rotation.z = -0.2; B.el.rotation.x = -1.1; }
     }); }
 
+  // Rounds 1372-1374 gave Candy Land's, Robot City's and Victorian's own tetherball poles the game's
+  // first watchers since the Neighborhood's own (round 521) — this coast's own pair, batting the ball
+  // round since round 508's own playground-games list first reached a beach, is the fourth of the six
+  // still waiting. **A beachgoer now stands a few steps west of the pole, watching the ball swing round
+  // on its rope.** No `cries` of her own — this one just watches — no physics box, pure bystander.
+  // Saying hello to her makes her the usual kind of friend.
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) every watcher in this set uses — this time built
+  // from this beach's own `beachPerson()` wardrobe helper rather than a fresh `makeHuman` call, the
+  // same shortcut the hoop, jump-rope and chopping-block watchers above already take, since every
+  // other adult on this coast already comes from that one closure (which adds the rig to the scene
+  // itself, so no separate `W.add()` here). `angle` points at the pole's own fixed centre (-26, 2)
+  // rather than a constant, and the relaxed `idle: [3, 6]` every watcher in this set settles on.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(4, 'from-hub')`, 3600 simulated frames so the tetherball pair and
+  // every other beachgoer, dog, kite and ball game had settled, then 600 more sampling every NPC's
+  // own position every 10th frame) swept a ring 2-7 m out from the pole against all of this coast's
+  // own physics boxes (knee-to-head band only), all `game.zones` rectangles and every sampled
+  // position, then refined the best stretch on a quarter-metre grid: (-30.68, 3.03) came back clear by
+  // 4.63 m of the nearest box, 8.75 m of the nearest zone rectangle and 4.49 m of the nearest other
+  // soul, west of the pole and clear of the sack-race lane (-37, -13) and the piñata post.
+  //
+  // Built dead last of everything this beach adds, right after the barber above, for the usual reason:
+  // `makeHuman()`/`randomPerson()` both draw off this beach's own shared `r()` sequence unconditionally,
+  // and anything built earlier here would have had its own timing-sensitive pick shifted by it. Frosty
+  // Peak and Whisper Woods are now the only two worlds left whose own tetherball pole still plays to
+  // nobody.
+  { const twx = -30.68, twz = 3.03, poleX2 = -26, poleZ2 = 2;
+    const tetherWatcher = beachPerson(r.chance(0.5), false);
+    game.npcs.push(new Wanderer(game, tetherWatcher, { x: twx, z: twz, angle: atan2(poleX2 - twx, poleZ2 - twz), speed: 0.3, leash: 0.5, idle: [3, 6] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
