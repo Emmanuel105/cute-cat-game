@@ -19214,6 +19214,45 @@ function buildVictorian(game, entry) {
     W.add(tugWatcher.group);
     game.npcs.push(new Wanderer(game, tugWatcher, { x: twx, z: twz, angle: atan2(tugX - twx, tugZ - twz), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
 
+  // Rounds 1384-1391 gave every one of the seven worlds' own tug-of-war a watcher and then opened the
+  // sack-race series with Candy Land and Robot City, leaving Victorian, Sunny Shore, Frosty Peak and
+  // Whisper Woods still owing theirs one. This town's own sack race (above, two errand boys in borrowed
+  // flour sacks, at x=4..9, z=-66, `ry=PI/2`) has had nobody stopping to watch since. **A washerwoman
+  // now stands south of the lane, basket set down, watching the pair hop back and forth.** No `cries`
+  // of her own — this one just watches — but saying hello to her makes her the usual kind of friend,
+  // Victorian's own count rising from 201 to 202.
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) every watcher in this series already uses — a plain
+  // `makeHuman()`/`randomPerson()` rig, no fixed wardrobe of its own, `angle` pointed at the lane's own
+  // fixed midpoint (6.5, -66) rather than a constant, and the relaxed `idle: [3, 6]`/`walk: [1, 1.6]`
+  // every watcher elsewhere in this game already settles on. `SackRace` runs this lane along world X
+  // here too (`ry=PI/2`, racers side by side in z) — the same orientation as the Neighborhood's and
+  // Robot City's own (rounds 1307 and 1391), not Candy Land's own (round 1390, lane along z, side by
+  // side in x) — so round 1307's own finding applies directly: standing north or south of the lane,
+  // offset in z (the same axis as the racers' own side-by-side gap), is the angle that shows both
+  // hopping past at once instead of looking down their backs.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(3, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so both errand boys, the maypole dancers and every other NPC had settled, then 600
+  // more sampling every NPC's own position every 10th frame) swept a 0.25 m grid north and south of the
+  // lane's own midpoint, 2-16 m out, against all 602 of this town's own physics boxes and all 230
+  // `game.zones` rectangles: (6.5, -75) came back clearest — due south of the lane at radius 9, 75.3 m
+  // from the world's own origin, a good 12.7 m short of the radius (88) where `victorianRegion`'s own
+  // procedural fill takes over — 10.9 m from the nearest box, 13.8 m from the nearest zone rectangle
+  // and 9.1 m from the nearest other soul, clear of the maypole's own field and the archery range.
+  //
+  // Built dead last of everything this town adds, right after the tug-of-war watcher above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this town's own local `r()` sequence
+  // unconditionally, and dropping a fresh rig in any earlier would have shifted every random pick made
+  // above it.
+  { const swx4 = 6.5, swz4 = -75, laneX5 = 6.5, laneZ5 = -66;
+    const sackWatcher4 = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(sackWatcher4.group);
+    game.npcs.push(new Wanderer(game, sackWatcher4, { x: swx4, z: swz4, angle: atan2(laneX5 - swx4, laneZ5 - swz4), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
+
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
