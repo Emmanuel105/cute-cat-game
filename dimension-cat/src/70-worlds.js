@@ -9994,6 +9994,49 @@ function buildCandyLand(game, entry) {
     W.add(tugWatcher.group);
     game.npcs.push(new Wanderer(game, tugWatcher, { x: uwx, z: uwz, angle: atan2(tugX - uwx, tugZ - uwz), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
 
+  // Rounds 1384-1389 gave every one of the seven worlds' own tug-of-war a first watcher, closing
+  // that series out and leaving "all seven worlds still owe their own sack race one" as the one
+  // open item. This round starts that series too, same as round 1384 started the tug-of-war one:
+  // with Candy Land. The sack race here (round 524's own two burlap-bound kids, sackA/sackB at
+  // x=-83, hopping the lane along z from z=7 to z=12) has had nobody stopping to watch since. **A
+  // villager now stands east of the lane, watching the two hop back and forth in their sacks.** No
+  // `cries` of her own — this one just watches — but saying hello to her makes her the usual kind of
+  // friend, Candy Land's own count rising from 154 to 155.
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) every watcher in this game already uses — a
+  // plain `makeHuman()`/`randomPerson()` rig, no fixed wardrobe of its own, `angle` pointed at the
+  // lane's own midpoint (-83, 9.5) rather than a constant, and the relaxed `idle: [3, 6]`/
+  // `walk: [1, 1.6]` every watcher elsewhere in this land already settles on. `SackRace` (55-npcs.js)
+  // runs its racers along z here (`ry=0`), side by side in x — the opposite of the Neighborhood's
+  // own sack race (`ry=PI/2`, racers side by side in z, round 1307's own watcher standing north of
+  // it). Round 1307 worked out that standing off to the side of the racers' own side-by-side gap,
+  // rather than down the lane they travel, is the angle that shows both hopping past at once instead
+  // of looking down their backs — so here, with the gap running along x and the lane along z,
+  // standing east or west (offset in x, same as the gap) is that angle, not north or south.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(1, 'from-hub')` directly rather than `game.travel()` — the
+  // travel fade sits behind a real `setTimeout` that never fires under simulated frames alone —
+  // then 3600 simulated frames so both racers and every other NPC had settled, then 600 more
+  // sampling every NPC's own position every 10th frame) swept a 0.25 m grid east and west of the
+  // lane's own midpoint (-83, 9.5), 2-9 m out, against all 1805 of this land's own physics boxes
+  // (knee-to-head band only) and all 452 `game.zones` rectangles, staying inside the radius (92)
+  // where `candyRegion`'s own procedural fill takes over (this point sits at 74.6 from the world's
+  // own origin): (-74, 9.5) came back clearest — due east of the lane at radius 9 — 10.0 m from the
+  // nearest box, 23.5 m from the nearest zone rectangle and 8.45 m from the nearest other soul, ground
+  // flat to within rounding across a 0.6 m square, well clear of the tug-of-war and ring toss
+  // elsewhere on this land.
+  //
+  // Built dead last of everything this land adds, right after the tug-of-war watcher above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this land's own shared `r()`
+  // sequence unconditionally, and dropping a fresh rig in any earlier would have shifted every
+  // random pick made above it.
+  { const rwx = -74, rwz = 9.5, laneX3 = -83, laneZ3 = 9.5;
+    const raceWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(raceWatcher.group);
+    game.npcs.push(new Wanderer(game, raceWatcher, { x: rwx, z: rwz, angle: atan2(laneX3 - rwx, laneZ3 - rwz), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
