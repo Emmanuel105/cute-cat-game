@@ -38250,6 +38250,35 @@ function buildForest(game, entry) {
     game.npcs.push(new Tetherball(game, tA, tB, { x: 41, z: -27,
       cries: ['Round and round — same as every other game in these woods, just leafier.', "Mind the rope, puss — it doesn't care whose tail is in the way.", "I'm up to twenty wraps. No, I lost count again."] })); }
 
+  // Candy Land, Robot City, Victorian, Sunny Shore and Frosty Peak have all picked up a watcher for
+  // their own tetherball pole since rounds 1372-1376, leaving Whisper Woods as the only one of the
+  // seven worlds whose pole still played to nobody. **A forest-dweller now stands a few steps east of
+  // this wood's own pole, watching the ball swing round on its rope.** No lines of her own — this one
+  // just watches — but saying hello to her makes her the usual kind of friend, Whisper Woods' own
+  // count rising by one.
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) every other watcher in this series already uses —
+  // a plain `makeHuman()`/`randomPerson()` rig in the same earthy, hat-and-bag-free wardrobe shape
+  // this wood's own tetherball kids above already wear, `angle` pointed at the pole's own fixed
+  // centre (41, -27). Whisper Woods builds and runs on its own local seeded `r()` (`seeded(707)`), not
+  // the shared global `rnd()` the Neighborhood's timing-sensitive checks key off, so nothing here
+  // needed a draw pinned.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // `game.start('new')` then `game.load(6, 'from-hub')` directly rather than `game.travel()` — the
+  // travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then
+  // 3600 simulated frames so both tetherball kids and every other NPC, deer, fox and hare had
+  // settled, then 600 more sampling every NPC's own position every 10th frame) swept a 0.25 m grid in
+  // a ring 2-9 m out from the pole against all 422 of this wood's own body-height physics boxes, all
+  // 223 `game.zones` rectangles and every sampled NPC position, staying short of the radius (58) where
+  // `forestRegion`'s own fill takes over: (48.3, -25.4) came back clearest — 5.8 m from the nearest
+  // box, 7.8 m from the nearest zone rectangle and 5.8 m from the nearest other soul, east of the pole
+  // at radius 54.6 from the origin, short of that fill-radius line.
+  { const wx = 48.3, wz = -25.4;
+    const watcher = makeHuman({ ...randomPerson(r, { female: true, child: false }), shirt: 0x9a7a52, pants: 0x3a4a3a, shoes: 0x3a2a1e, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false }); W.add(watcher.group);
+    game.npcs.push(new Wanderer(game, watcher, { x: wx, z: wz,
+      angle: atan2(41 - wx, -27 - wz), speed: 0.3, leash: 0.5, idle: [3, 6] })); }
+
   // The Neighborhood, Candy Land, Robot City, Victorian, Sunny Shore and Frosty Peak have all had a
   // badminton net since round 508's own list of playground games (tetherball, badminton, tug-of-war,
   // archery, sack races) went round every world in turn — Whisper Woods picked up an archery range, a
