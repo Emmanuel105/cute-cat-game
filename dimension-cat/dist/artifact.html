@@ -38096,6 +38096,36 @@ function buildForest(game, entry) {
     game.npcs.push(new Horseshoes(game, tossA, tossB, ring, { cx: vcx, cz: vcz, gap: vgap, cries: vineLines, cryIcon: '🌿' }));
     greetable(game, { rig: tossA }); greetable(game, { rig: tossB }); }
 
+  // Rounds 1378-1382 gave Candy Land's, Robot City's, Victorian's, Sunny Shore's and Frosty Peak's
+  // own back-garden toss games their first watchers, leaving Whisper Woods as the last of the seven
+  // worlds whose toss game still played to an empty clearing. **A forest-dweller now stands a few
+  // steps north of this wood's own vine ring toss, watching the two foresters lob their woven ring
+  // back and forth over the stumps.** No lines of her own — this one just watches — but saying hello
+  // to her makes her the usual kind of friend, closing out the series rounds 1378-1382 started.
+  //
+  // No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses — a
+  // plain `makeHuman()`/`randomPerson()` rig in the same earthy, hat-and-bag-free wardrobe shape this
+  // wood's own tetherball watcher above already wears, `angle` pointed at the ring toss' own fixed
+  // centre (-46, -30). Whisper Woods builds and runs on its own local seeded `r()` (`seeded(707)`),
+  // not the shared global `rnd()` the Neighborhood's own timing-sensitive checks key off, so nothing
+  // here needed a draw pinned.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(6, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so both ring tossers and every other NPC, deer, fox and hare had settled, then
+  // 600 more sampling every NPC's own position every 10th frame) swept a 0.25 m grid in a ring 2.5-9 m
+  // out from the ring toss' own centre against all 478 of this wood's own body-height physics boxes,
+  // all 229 `game.zones` rectangles and every sampled NPC position, staying short of the radius (58)
+  // where `forestRegion`'s own fill takes over, then refined the best stretch on a 0.05 m grid:
+  // (-47.55, -21.35) came back clearest — north of the ring toss at radius 52.1 from the origin — 5.77
+  // m from the nearest box, 5.78 m from the nearest zone rectangle and 7.81 m from the nearest other
+  // soul.
+  { const vwx = -47.55, vwz = -21.35;
+    const vineWatcher = makeHuman({ ...randomPerson(r, { female: true, child: false }), shirt: 0x6a8a52, pants: 0x3a4a3a, shoes: 0x3a2a1e, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false }); W.add(vineWatcher.group);
+    game.npcs.push(new Wanderer(game, vineWatcher, { x: vwx, z: vwz,
+      angle: atan2(-46 - vwx, -30 - vwz), speed: 0.3, leash: 0.5, idle: [3, 6] })); }
+
   // Round 432 closed out Candy Land's own frisbee thrower and left Whisper Woods as the only world of
   // the seven without one — the Neighborhood, Robot City, Victorian, Candy Land, Sunny Shore and Frosty
   // Peak all have somebody tossing a disc straight up for the fun of it, and these woods, for all their
