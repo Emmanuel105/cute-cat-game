@@ -34053,6 +34053,34 @@ function buildSnowVillage(game, entry) {
   { const tA = kid(false), tB = kid(true);
     game.npcs.push(new Tetherball(game, tA, tB, { x: 21, z: -52,
       cries: ['Round and round — same as every other game on the mountain, just colder.', 'Mind the rope, puss — mittens or not, it still stings.', "Forty wraps. No, forty-one. I keep losing count in the cold."] })); }
+  // Candy Land, Robot City, Victorian and Sunny Shore have all picked up a watcher for their own
+  // tetherball pole since rounds 1372-1375, leaving only Frosty Peak and Whisper Woods without one.
+  // **A bundled-up villager now stands a few steps northeast of this mountain's own pole, watching
+  // the ball swing round on its rope.** No lines of her own — this one just watches — but saying
+  // hello to her makes her the usual kind of friend, Frosty Peak's own count rising by one.
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) every other watcher in this series already uses —
+  // a plain `makeHuman()`/`randomPerson()` rig in this mountain's own winter wardrobe (coat, beanie,
+  // scarf, same as the ice-hole watcher above), `angle` pointed at the pole's own fixed centre (21,
+  // -52). Frosty Peak builds and runs on its own local seeded `r()`, not the shared global `rnd()`
+  // the Neighborhood's timing-sensitive checks key off, so nothing here needed a draw pinned.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(5, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so the tetherball pair, the sledder, the snowball fight and every other NPC had
+  // settled, then 600 more sampling every NPC's own position every 10th frame) swept a 0.5 m grid in a
+  // ring 2-7 m out from the pole against all 384 of this mountain's own body-height physics boxes, all
+  // 151 `game.zones` rectangles and every sampled NPC position, keeping clear of the radius (58) where
+  // snowRegion's own fill takes over the same way the pole itself did: (26.7, -48.0) came back
+  // clearest — 5.6 m from the nearest box, 7.8 m from the nearest zone rectangle and 5.5 m from the
+  // nearest other soul, northeast of the pole at radius 54.9 from the origin, short of that radius-58
+  // line.
+  { const wx = 26.7, wz = -48.0;
+    const watcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
+      hat: 'beanie', hatColor: 0x3a4a5a, coat: true, scarf: 0xc9b8d9, bag: null, backpack: null, glasses: false }); W.add(watcher.group);
+    game.npcs.push(new Wanderer(game, watcher, { x: wx, z: wz,
+      angle: atan2(21 - wx, -52 - wz), speed: 0.3, leash: 0.5, idle: [3, 6] })); }
   // Whisper Woods got the first archery range (round 525, `Archer`, 55-npcs.js) and nobody else's had
   // one since — Frosty Peak's own hunting lodge feel (the trapper by the fire, the ice fisher on the
   // pond) never got a firing line of its own. **A lone archer now draws and looses at a straw target
