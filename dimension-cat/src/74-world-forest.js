@@ -2229,6 +2229,37 @@ function buildForest(game, entry) {
       glow.position.set(lerp(A.x, B.x, frac), lerp(ay, by, frac) + 0.08, lerp(A.z, B.z, frac));
       glow.material.emissiveIntensity = 1.0 + abs(tug.tension) * 1.5; }); }
 
+  // Rounds 1384-1388 gave Candy Land's, Robot City's, Victorian's, Sunny Shore's and Frosty Peak's own
+  // tug-of-war a first watcher, leaving Whisper Woods as the last of the seven worlds whose own
+  // tug-of-war still played to nobody. **A forest-dweller now stands due west of the vine, watching
+  // the two kids heave against each other.** No lines of her own — this one just watches — but saying
+  // hello to her makes her the usual kind of friend, Whisper Woods' own count rising by one.
+  //
+  // No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses — a
+  // plain `makeHuman()`/`randomPerson()` rig in the same earthy, hat-and-bag-free wardrobe shape this
+  // wood's own tetherball and ring-toss watchers already wear, `angle` pointed at the vine's own fixed
+  // centre (-10, -40). The vine runs north-south here (both kids sit at x=-10, offset in z by
+  // `TugOfWar`'s own ±1.3 m gap, `ry=0`), same as Candy Land's, Robot City's and Victorian's own
+  // ropes, so standing due west of it, level with its own centre, is the angle rounds 1384-1386 already
+  // worked out shows both kids straining at once rather than looking past one at the other's back.
+  // Whisper Woods builds and runs on its own local seeded `r()` (`seeded(707)`), not the shared global
+  // `rnd()` the Neighborhood's own timing-sensitive checks key off, so nothing here needed a draw pinned.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(6, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so both kids and every other NPC, deer, fox and hare had settled, then 600 more
+  // sampling every NPC's own position every 10th frame) swept a 0.25 m grid in a ring 2-9 m out from
+  // the vine's own centre against all 402 of this wood's own body-height physics boxes and all 213
+  // `game.zones` rectangles, staying short of the radius (58) where `forestRegion`'s own fill takes
+  // over, then refined the best stretch on a 0.05 m grid: (-19.49, -40.63) came back clearest — due
+  // west of the vine at radius 9, 45.1 from the world's own origin — 5.77 m from the nearest box, 19.6
+  // m from the nearest zone rectangle and 5.79 m from the nearest other soul.
+  { const wwx = -19.49, wwz = -40.63;
+    const woodsTugWatcher = makeHuman({ ...randomPerson(r, { female: true, child: false }), shirt: 0x7a9a5a, pants: 0x3a4a3a, shoes: 0x3a2a1e, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false }); W.add(woodsTugWatcher.group);
+    game.npcs.push(new Wanderer(game, woodsTugWatcher, { x: wwx, z: wwz,
+      angle: atan2(-10 - wwx, -40 - wwz), speed: 0.3, leash: 0.5, idle: [3, 6] })); }
+
   // The Neighborhood, Candy Land, Robot City, Victorian, Sunny Shore and Frosty Peak have all had a
   // tetherball pole since round 508's own list of playground games (tetherball, badminton, tug-of-war,
   // archery, sack races) went round every world in turn — Whisper Woods got its own archery range and
