@@ -24720,6 +24720,40 @@ function buildVictorian(game, entry) {
     W.add(workerA.group); W.add(workerB.group);
     game.npcs.push(new Tetherball(game, workerA, workerB, { x: -70, z: -30,
       cries: ['Forty-one, and she\'s still mine!', "Mind your tail, puss — that ball's got more swing in it than it looks.", "Groom'll want us back inside in a minute. One more go."] })); }
+  // The tetherball pole above has had its two stable hands batting the ball round it since earlier
+  // this round, but of the four worlds round 508's own playground-games list first touched (the
+  // Neighborhood, Victorian, Robot City, Frosty Peak) only the Neighborhood's own pole (round 521)
+  // and, since round 1372-1373, Candy Land's and Robot City's have ever picked up anyone standing by
+  // to watch. A third stable hand now stands a few steps east of the pole, watching the ball swing
+  // round on its rope. No `cries` of her own — this one just watches — no physics box, pure
+  // bystander. Saying hello to her makes her the usual kind of friend.
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) every watcher in this game already uses — a plain
+  // `makeHuman()`/`randomPerson()` rig, no fixed wardrobe of its own (this town's own `r()` picks her
+  // clothes), `angle` pointed at the pole's own fixed centre (-70, -30) rather than a constant, and the
+  // relaxed `idle: [3, 6]`/`walk: [1, 1.6]` every watcher elsewhere in this game already settles on.
+  // Victorian builds and runs on its own local seeded `r()` (`seeded(404)`), not the shared global
+  // `rnd()` the Neighborhood's real timing-sensitive checks key off, so nothing here needs a draw
+  // pinned.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(3, 'from-hub')`, 3600 simulated frames so both stable hands, the
+  // pinwheel, the bootblack, the juggler and every other NPC had already settled, then every NPC's own
+  // position sampled every 10th frame over 600 more) swept a ring 2-7 m out from the pole's own centre
+  // (-70, -30) against all 609 of this town's own physics boxes (knee-to-head band only), all 236
+  // `game.zones` rectangles and every sampled position: (-63, -30) came back clearest — due east, in
+  // line past stable hand A — 6.9 m from the nearest box, 14.0 m from the nearest zone rectangle and
+  // 7.3 m from the nearest other soul, well short of the pinwheel (-60.5, -7.5), the bootblack (-48,
+  // -20) and the juggler (-28, -20.3).
+  //
+  // Built right after the tetherball pole, for the usual reason: `makeHuman()`/`randomPerson()` both
+  // draw off this town's own local `r()` sequence unconditionally, and dropping a fresh rig in any
+  // earlier would have shifted every random pick made above it.
+  { const twx = -63, twz = -30, poleX2 = -70, poleZ2 = -30;
+    const tetherWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(tetherWatcher.group);
+    game.npcs.push(new Wanderer(game, tetherWatcher, { x: twx, z: twz, angle: atan2(poleX2 - twx, poleZ2 - twz), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
   // round 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack races)
   // is down to its last three worlds now the Neighborhood, Candy Land and Robot City have all had a
   // `SackRace` of their own — Victorian, for all its badminton net, tug-of-war and tetherball pole,
