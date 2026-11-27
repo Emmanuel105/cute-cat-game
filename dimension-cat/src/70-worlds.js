@@ -10150,6 +10150,47 @@ function buildCandyLand(game, entry) {
     W.add(raceWatcher.group);
     game.npcs.push(new Wanderer(game, raceWatcher, { x: rwx, z: rwz, angle: atan2(laneX3 - rwx, laneZ3 - rwz), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
 
+  // Round 1403 opened a swing-watcher series right after the seesaw-watcher series (1396-1402)
+  // closed out across all seven worlds, giving the Neighborhood's own swing set its first spectator.
+  // Candy Land's own swing set (built earlier in this function at (-18, 46), `ry` PI) is next — the
+  // swing kid has had the seat to herself since round 9's own `Swinger`, unwatched this whole time,
+  // same as every other world's swing before round 1403. **A gingerbread-village local now stands
+  // due west of the swing, watching the child go forward and back.** No lines of her own — this one
+  // just watches — but saying hello to her makes her the usual kind of friend.
+  //
+  // `makeSwingSet`'s frame runs its top bar along local x, the child swinging forward and back along
+  // local z, and this swing's `ry` is PI — which only flips the sign of each local axis, not their
+  // world alignment, so local x still lines up with world x regardless, the same geometry round
+  // 1403 worked out for the Neighborhood's own swing (also `ry` PI). Standing east or west of it,
+  // offset along the frame's own axis rather than the one the child swings through, is the angle
+  // that shows the full pendulum arc in profile instead of watching the seat grow and shrink
+  // head-on. Candy Land has no dupe-shirt check of its own (the Neighborhood's test is the only one
+  // of the seven that enforces one), so the shirt below was picked for the cookie-village palette,
+  // not to dodge a collision.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(1, 'from-hub')` directly rather than `game.travel()` — the
+  // travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then
+  // 3600 simulated frames so every gingerbread man, the swing kid and everyone else in this land had
+  // settled) swept a 0.25 m grid east and west of the swing (-18, 46), 2.5-16 m out, against all 1803
+  // of this land's own physics boxes (knee-to-head band only), all 452 `game.zones` rectangles and
+  // every other NPC already standing in it: east ran straight into one of the swing's own decorative
+  // gumdrop clusters past radius 7 (clearance dropping to 0 m), so west is the side with the real
+  // room; a finer 0.05 m grid there found (-27.5, 46) clearest among the candidates close enough to
+  // still read as watching — due west at radius 9.5, about 53.9 m from the world's own origin, well
+  // short of the radius (92) where `candyRegion`'s own procedural fill takes over — 8.0 m from the
+  // nearest box, 7.8 m from the nearest zone rectangle and 5.96 m from the nearest other soul.
+  //
+  // Built dead last of everything this land adds, right after the sack-race watcher above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this land's own shared `r()` sequence
+  // unconditionally, and dropping a fresh rig in any earlier would have shifted every random pick
+  // made above it.
+  { const swX = -18, swZ = 46, wx = -27.5, wz = 46;
+    const swingWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0xff8fab, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(swingWatcher.group);
+    game.npcs.push(new Wanderer(game, swingWatcher, { x: wx, z: wz, angle: atan2(swX - wx, swZ - wz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
