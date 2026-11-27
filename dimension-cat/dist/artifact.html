@@ -41366,6 +41366,46 @@ function buildForest(game, entry) {
     game.npcs.push(new Wanderer(game, sackWatcher, { x: swx, z: swz,
       angle: atan2(swLaneX - swx, swLaneZ - swz), speed: 0.3, leash: 0.5, idle: [3, 6] })); }
 
+  // Rounds 1396-1401 gave the Neighborhood, Candy Land, Robot City, Victorian, Sunny Shore and Frosty
+  // Peak's own seesaw a first watcher, leaving Whisper Woods as the last of the seven still playing to
+  // nobody. **A forest-dweller now stands due south of Whisper Woods' own seesaw, taking in both ends
+  // tip up and down.** No lines of her own — this one just watches — but saying hello to her makes her
+  // the usual kind of friend.
+  //
+  // No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses, which
+  // calls `greetable()` itself, so no extra wiring was needed. This wood's own seesaw (above, `x=-31.5,
+  // z=20`, `ry` 0) sits its two riders side by side along world X, the same orientation as all six
+  // other worlds' own (rounds 1396-1401), so round 1396's own finding applies directly: standing north
+  // or south of it, offset along the same axis the riders are spread across, is the angle that shows
+  // both ends rising and falling at once rather than looking down the plank's own length. Whisper Woods
+  // carries no dupe-shirt rule of its own (the Neighborhood's test is the only one of the seven that
+  // enforces one), so the shirt colour just went with this wood's own earthy palette.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(6, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so both seesaw kids, the tag and catch pairs, the scooter kid and every other
+  // wandering soul had settled, then 600 more sampling every NPC's own position every 10th frame) swept
+  // a 0.25 m grid north and south of the seesaw, 2.5-16 m out, against all 430 of this wood's own
+  // body-height physics boxes and all 229 `game.zones` rectangles, staying short of the radius (58)
+  // where `forestRegion()`'s own fill takes over: north ran straight into the treehouse cluster past
+  // radius 7 (clearance dropping to 0.5 m), so south is the side with the real room. Refined on a finer
+  // 0.05 m grid: (-31.5, 15.35) came back clearest — due south at radius 4.65, about 35 m from the
+  // world's own origin — 4.0 m from the nearest box, 4.05 m from the nearest zone rectangle and 7.23 m
+  // from the nearest other soul, ground flat to within 3.6 cm across a 0.6 m square.
+  //
+  // Built dead last of everything this wood adds, right after the sack-race watcher above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this wood's own local `r()` sequence
+  // unconditionally, and a fresh rig built any earlier would have shifted every random pick already
+  // placed above it. All seven worlds now have a watcher for their own seesaw, closing out the series
+  // rounds 1396-1401 started.
+  { const seWatchX = -31.5, seWatchZ = 15.35, seLaneX = -31.5, seLaneZ = 20;
+    const seWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x6b5a3a, pants: 0x3a3a2a, shoes: 0x3a2a1e, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(seWatcher.group);
+    game.npcs.push(new Wanderer(game, seWatcher, { x: seWatchX, z: seWatchZ,
+      angle: atan2(seLaneX - seWatchX, seLaneZ - seWatchZ), speed: 0.3, leash: 0.5, idle: [3, 6] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
