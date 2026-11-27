@@ -1128,6 +1128,26 @@ function buildForest(game, entry) {
     game.npcs.push(sw); greetable(game, sw);
     game.addInteractable({ obj: swingSet, radius: 2.8, label: () => 'Push the swing', onUse: () => { sw.boost = 1; SFX.talk(); game.toast('🎠 "Higher! Higher!"', 1800); } }); }
 
+  // rounds 1403-1408 gave every other world's own swing a spectator — the Neighborhood, Candy Land,
+  // Robot City, Victorian, Sunny Shore and Frosty Peak — leaving Whisper Woods' own rope swing at
+  // (-23.5, 14) the last one in the set still playing to nobody. `makeSwingSet` here takes no `ry`
+  // (defaulting to 0, same as Robot City's own), so its top bar runs along local x with no rotation
+  // needed to line that up with world x — standing west of it, offset along that same axis rather
+  // than the one the swing kid actually swings through (local z), is the angle every prior round in
+  // this set found shows the full pendulum arc in profile instead of watching the seat grow and
+  // shrink head-on. Due west on the swing's own z = 14 only clears 3.07 m at best (the seesaw's own
+  // fence posts close in further out); a 0.25 m grid search around that line found (-33.75, 11.75)
+  // clearer still — west and a touch south, 10.49 m from the swing itself and inside the radius-40
+  // tree ring, well short of where `forestRegion`'s own procedural fill takes over at 58 — 4.35 m from
+  // the nearest physics box, 7.72 m from the nearest `game.zones` rectangle and 3.78 m from the
+  // nearest other soul (the deer and fox pair, sampled every 10th frame over 3600 simulated frames so
+  // neither could slip past unnoticed mid-leash).
+  { const wwx = -33.75, wwz = 11.75, wsx = -23.5, wsz = 14;
+    const swingWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x4a8a7a, pants: 0x3a3a4a, shoes: 0x3a2a1e, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(swingWatcher.group);
+    game.npcs.push(new Wanderer(game, swingWatcher, { x: wwx, z: wwz, angle: atan2(wsx - wwx, wsz - wwz), leash: 0.5, speed: 0.4, idle: [3, 6], walk: [1, 1.6] })); }
+
   // every other world had already paired its swing set with a seesaw; Whisper Woods was the last one
   // left with a swing and no seesaw. A headless probe built the real world, swept a grid of candidates
   // against every physics box (the trees, the treehouse, the campers' gear), then re-checked the best
