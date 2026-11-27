@@ -14891,6 +14891,41 @@ function buildNeighborhood(game, entry) {
     W.add(seesawWatcher.group);
     game.npcs.push(new Wanderer(game, seesawWatcher, { x: wx, z: wz, angle: atan2(seeX - wx, seeZ - wz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // Rounds 1396-1402 gave every world's own seesaw a first watcher; with that series closed, the
+  // swing set (round 9, the very first one built) is the next long-standing play structure in this
+  // project nobody had ever stopped to watch. **A passer-by now stands east of this park's own swing
+  // set, watching the child swing forward and back.** No `cries` of her own, no physics box, pure
+  // bystander — the same `Wanderer` (55-npcs.js) every watcher in this project already uses, which
+  // calls `greetable()` itself, so no extra wiring was needed.
+  //
+  // The swing's own frame runs its top bar along local x (`makeSwingSet`'s two posts sit at
+  // `sx = ±1.3`), so the child swings forward and back along local z — and this swing's `ry` is PI,
+  // which only flips the sign of each local axis, not their world alignment, so local x still lines
+  // up with world x. Standing east or west of it, offset along the axis the frame itself is built
+  // along rather than the one the child swings through, is the angle that shows the full pendulum
+  // arc in profile rather than watching the seat grow and shrink head-on.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(0, 'from-hub')` directly rather than `game.travel()` — the
+  // travel fade sits behind a real `setTimeout` that never fires under simulated frames alone —
+  // then 3600 simulated frames so the swing kid, the postie and every other wanderer had settled)
+  // swept the ground east and west of the swing (-7, 42.5), 2.5-14 m out, against all of this
+  // street's own physics boxes, `game.zones` rectangles and every other soul already standing in
+  // it, then refined on a finer grid: west topped out at only 2.0 m of clearance even at 14 m out,
+  // boxed in by the painter's own pitch; (4.2, 43.5) came back clearest to the east — 11.2 m out
+  // from the swing itself — 3.31 m from the nearest physics box, 3.3 m from the nearest `game.zones`
+  // rectangle and 3.66 m from the nearest other soul.
+  //
+  // Built dead last of everything this street adds, right after the seesaw's own watcher above,
+  // for the usual reason: `makeHuman()`/`randomPerson()` both draw off this street's own shared
+  // `r()` sequence unconditionally, and anything built earlier would have had its own timing-
+  // sensitive pick shifted by it.
+  { const swX = -7, swZ = 42.5, wx = 4.2, wz = 43.5;
+    const swingWatcherWard = makeWardrobe(r, { shirts: [0x2a6a7a] });
+    const swingWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: swingWatcherWard }), blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(swingWatcher.group);
+    game.npcs.push(new Wanderer(game, swingWatcher, { x: wx, z: wz, angle: atan2(swX - wx, swZ - wz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
