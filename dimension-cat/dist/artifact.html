@@ -38788,6 +38788,39 @@ function buildForest(game, entry) {
     const bounceLines = ["Higher than the treehouse roof, nearly!", "Careful, puss — mind the springs, they're damp with dew.", "The fairies won't try it. Too much bounce for their wings."];
     let bounceCryT = r.range(3, 7);
     U.push((dt) => { bounceCryT -= dt; if (bounceCryT <= 0) { bounceCryT = r.range(8, 14); const c = game.cat.group.position; if (dist2(tx, tz, c.x, c.z) < 400) { game.toast('🤸 "' + r.pick(bounceLines) + '"', 2400); SFX.talk(); } } }); }
+  // The Neighborhood, Candy Land, Robot City, Victorian, Sunny Shore and Frosty Peak have all given
+  // their own trampoline a watcher by now (rounds 1410-1415, the last four with a line or two of
+  // her own) — Whisper Woods' own, bouncing its kid since this series opened, was the only one left
+  // without one. **A forest-dweller now stands south of it, taking in the bounce — and, following
+  // rounds 1412-1415's lead, she has a line or two of her own**, called out now and then whenever
+  // the cat is close enough to hear.
+  //
+  // No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses,
+  // which calls `greetable()` itself, so no extra wiring was needed. Same finding every round in
+  // this series has made: `makeTrampoline` (`60-props.js`) is a round steel rim with no long axis
+  // of its own, so the bounce kid reads the same from any angle around it. Whisper Woods carries no
+  // dupe-shirt rule of its own (the Neighborhood's test is the only one of the seven that enforces
+  // one), so the shirt colour just went with this wood's own earthy palette, same as every other
+  // adult wardrobe this file builds.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(6, 'from-hub')` directly rather than `game.travel()` — the
+  // travel fade sits behind a real `setTimeout` that never fires under simulated frames alone —
+  // then 3600 simulated frames so the deer, foxes, hares, fairies and bounce kid had all settled,
+  // then 600 more sampling every NPC's own rig position every 10th frame) swept a 0.5 m 2D grid
+  // 3-14 m out from the trampoline (54, 7) against all 716 of this wood's own body-height physics
+  // boxes, all 227 `game.zones` rectangles and every other soul sampled over that stretch, staying
+  // short of the radius (58) where `forestRegion()`'s own procedural fill takes over: (53.5, -3.5)
+  // came back clearest — south of the trampoline, about 10.5 m out and 53.6 m from the world's own
+  // origin — 7.3 m from the nearest box, 7.7 m from the nearest zone rectangle and 8.5 m from the
+  // nearest other soul.
+  { const trX = 54, trZ = 7, twx = 53.5, twz = -3.5;
+    const trWard = makeWardrobe(r, { shirts: [0x7a5a2a, 0x3a6a4a, 0x8a4a3a], pants: [0x3a3a2a, 0x2a2a2a], shoes: [0x3a2818] });
+    const trWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: trWard }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: r.chance(0.3) });
+    W.add(trWatcher.group);
+    const trWatcherCries = ["Higher than the treehouse roof, she keeps saying — and she means it.", "Mind she doesn't bounce clean into the ferns.", "Wish I had the knees for that, out here."];
+    game.npcs.push(new Wanderer(game, trWatcher, { x: twx, z: twz, angle: atan2(trX - twx, trZ - twz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cries: trWatcherCries, cryT: r.range(4, 9) })); }
 
   // Sunny Shore, Victorian, Frosty Peak and Robot City all blow or brush at something that drifts and
   // fades by now — these woods, the one world actually built around fairies and wishes (the fairy ring
