@@ -23862,6 +23862,46 @@ function buildRobotCity(game, entry) {
     W.add(swingWatcher6.group);
     game.npcs.push(new Wanderer(game, swingWatcher6, { x: wx6, z: wz6, angle: atan2(swX6 - wx6, swZ6 - wz6), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // Rounds 1410-1411 opened a "trampoline watcher" series on the Neighborhood and then Candy Land,
+  // leaving Robot City, Victorian, Sunny Shore, Frosty Peak and Whisper Woods still owing theirs
+  // one. This city's own trampoline (built earlier in this function at (70, 5), the cyan-padded one
+  // a visiting kid has bounced on alone since round ~11xx) is next. **An off-duty worker now stands
+  // due east of it, taking in the bounce — and unlike every watcher before her in this series, she
+  // has a line or two of her own**, called out now and then whenever the cat is close enough to
+  // hear. Saying hello to her still makes her the usual kind of friend on top of that.
+  //
+  // Same reasoning rounds 1410-1411 worked out: `makeTrampoline` (60-props.js) is a round steel rim
+  // with no long axis of its own — the bounce kid goes straight up and down, equally readable from
+  // any angle around it — so there's no "which side shows the motion in profile" question to work
+  // out here, just a clear spot. `Wanderer` (55-npcs.js) already supports an optional `cries` list
+  // for exactly this (the bounce kid at this same trampoline, and plenty of others across the
+  // project, already use it) — passing one to a watcher costs nothing new, it was just never done
+  // for one before. Robot City carries no dupe-shirt rule of its own (the Neighborhood's test is
+  // the only one of the seven that enforces one), so no wardrobe bag was needed.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(2, 'from-hub')` directly rather than `game.travel()` — the
+  // travel fade sits behind a real `setTimeout` that never fires under simulated frames alone —
+  // then 3600 simulated frames so the marching patrol, both seesaw pairs, the marble kid and every
+  // other soul had settled, then 600 more sampling every NPC's own position every 10th frame) swept
+  // all eight cardinal/diagonal directions around the trampoline (70, 5), 2.5-20 m out, against all
+  // 1209 of this city's own body-height physics boxes, all 296 `game.zones` rectangles and every
+  // other soul already standing in it: due east came back clear and simple, (76.5, 5) at radius 6.5
+  // — about 76.7 m from the world's own origin, well short of the radius (98) where `robotRegion`'s
+  // own procedural fill takes over — 5.95 m from the nearest box, 24.06 m from the nearest zone
+  // rectangle and 6.5 m from the nearest other soul (the bounce kid herself).
+  //
+  // Built dead last of everything this city adds, right after the swing watcher above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this city's own local `r()` sequence
+  // unconditionally, and dropping a fresh rig in any earlier would have shifted every random pick
+  // made above it.
+  { const trX7 = 70, trZ7 = 5, wx7 = 76.5, wz7 = 5;
+    const trampWatcher7 = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(trampWatcher7.group);
+    const trampWatcherCries = ["Beats watching the conveyor all shift.", "Go on then, one more bounce.", "My knees ache just looking at that."];
+    game.npcs.push(new Wanderer(game, trampWatcher7, { x: wx7, z: wz7, angle: atan2(trX7 - wx7, trZ7 - wz7), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cries: trampWatcherCries, cryT: r.range(4, 9) })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
