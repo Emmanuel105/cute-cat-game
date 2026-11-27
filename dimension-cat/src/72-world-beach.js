@@ -1058,6 +1058,37 @@ function buildBeach(game, entry) {
     const bounceLines = ["Higher than the lifeguard's chair, nearly!", "Careful, puss — mind the springs, they're full of sand.", "Bet I could land clean in the sea from up here!"];
     let bounceCryT = r.range(3, 7);
     U.push((dt) => { bounceCryT -= dt; if (bounceCryT <= 0) { bounceCryT = r.range(8, 14); const c = game.cat.group.position; if (dist2(tx, tz, c.x, c.z) < 400) { game.toast('🤸 "' + r.pick(bounceLines) + '"', 2400); SFX.talk(); } } }); }
+  // the Neighborhood, Candy Land, Robot City and Victorian have all given their own trampoline a
+  // watcher by now (rounds 1410-1413, the last two with a line or two of her own) — Sunny Shore, for
+  // all its swing set, seesaw and trampoline just above, still had nobody standing by to watch the
+  // bounce. **A beachgoer now stands south-east of it, taking in the kid going up and down — and,
+  // following rounds 1412-1413's lead, she has a line or two of her own**, called out now and then
+  // whenever the cat is close enough to hear.
+  //
+  // No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses, which
+  // calls `greetable()` itself, so no extra wiring was needed. Same finding every round in this series
+  // has made: `makeTrampoline` (`60-props.js`) is a round steel rim with no long axis of its own, so
+  // the bounce kid reads the same from any angle around it — no "which side shows the motion in
+  // profile" question here, just a clear spot to find. This world's own `beachPerson()` closure
+  // (sun-bleached wardrobe, shared with every other beach bystander, and which already calls
+  // `W.add()` on the rig itself) stands in for a fresh wardrobe bag.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(4, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so the swing kid, both seesaw kids, the bounce kid and every other soul had
+  // settled, then 600 more sampling every NPC's own rig position every 10th frame) swept a 1 m grid of
+  // the dry sand (ground height above 0.1 m, to stay off the wet shore) 2.5-16 m out from the
+  // trampoline (-8, -40), then refined on a quarter-metre grid, against all 125 of this coast's own
+  // body-height physics boxes, every `game.zones` rectangle and every other soul already sampled over
+  // that stretch: (-3.25, -47.5) came back clearest within that range — south-east of the trampoline,
+  // 8.9 m out and about 47.6 m from the world's own origin, well short of the radius (58) where
+  // `beachRegion()`'s own fill takes over — 4.96 m from the nearest box, 4.96 m from the nearest zone
+  // rectangle and 4.98 m from the nearest other soul, ground flat to within 4 cm across a 0.6 m square.
+  { const trX = -8, trZ = -40, twx = -3.25, twz = -47.5;
+    const trampWatcherS = beachPerson(r.chance(0.5), false);
+    const trampWatcherSCries = ["Mind the sand doesn't swallow those springs.", "Go on then, one more bounce before tea.", "Wish I had the knees for that."];
+    game.npcs.push(new Wanderer(game, trampWatcherS, { x: twx, z: twz, angle: atan2(trX - twx, trZ - twz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cries: trampWatcherSCries, cryT: r.range(4, 9) })); }
   // a sand sculptor works alone in the quiet far south-west dune — the sandcastle up north already has
   // its own patter of a kid, but nobody on this whole beach had ever built something properly ambitious.
   // A headless probe built the real game, travelled to Sunny Shore, sampled every NPC's own position
