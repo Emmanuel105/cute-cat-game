@@ -3996,6 +3996,46 @@ function buildBeach(game, entry) {
   { const seeWatchX = 8, seeWatchZ = 42.75, seeCx = 8, seeCz = 38, seesawWatcher2 = beachPerson(r.chance(0.5), false);
     game.npcs.push(new Wanderer(game, seesawWatcher2, { x: seeWatchX, z: seeWatchZ, angle: atan2(seeCx - seeWatchX, seeCz - seeWatchZ), leash: 0.5, speed: 0.3, idle: [3, 6] })); }
 
+  // Rounds 1403-1406 opened a "swing watcher" series on the Neighborhood, Candy Land, Robot City
+  // and Victorian, leaving Sunny Shore, Frosty Peak and Whisper Woods still owing theirs one. This
+  // round gives this coast's own swing set (above, at (8, 27), `ry` PI) its first spectator.
+  // **A beachgoer now stands due west of the swing, watching the child go forward and back.** No
+  // lines of her own — this one just watches — but saying hello to her makes her the usual kind
+  // of friend.
+  //
+  // No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses,
+  // built from this beach's own `beachPerson()` wardrobe helper rather than a fresh `makeHuman`
+  // call, `angle` pointed at the swing's own fixed spot (8, 27). `makeSwingSet`'s frame runs its
+  // top bar along local x, the child swinging forward and back along local z — this swing's `ry`
+  // is PI, which only flips the sign of each local axis, not their world alignment, so local x
+  // still lines up with world x. Rounds 1403-1406's own finding applies directly: standing east
+  // or west of it, offset along the frame's own axis rather than the one the child swings
+  // through, is the angle that shows the full pendulum arc in profile instead of watching the
+  // seat grow and shrink head-on.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(4, 'from-hub')` directly rather than `game.travel()` — the
+  // travel fade sits behind a real `setTimeout` that never fires under simulated frames alone —
+  // then 3600 simulated frames so the swing kid, both seesaw kids, the sack racers and every
+  // other beachgoer had settled, then 600 more sampling every NPC's own position every 10th
+  // frame) swept the ground east and west of the swing (8, 27), 2.5-30 m out, against all 125 of
+  // this coast's own body-height physics boxes, all 88 `game.zones` rectangles and every other
+  // soul already standing in it: east ran straight into the lifeguard chair's own cluster,
+  // clearance never topping much past 1 m within reach; west came back clearer at every radius
+  // tried, and a finer 0.05 m grid there found (-11, 27) clearest — due west at radius 19, about
+  // 29.15 m from the world's own origin, well short of the radius (58) where `beachRegion()`'s
+  // own fill takes over — 4.0 m from the nearest box, 17.3 m from the nearest zone rectangle and
+  // 4.1 m from the nearest other soul. The dune ground there is flat to within 2.1 cm across a
+  // 0.6 m square.
+  //
+  // Built dead last of everything this beach adds, right after the seesaw watcher above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this beach's own shared `r()`
+  // sequence unconditionally, and anything built earlier here would have had its own timing-
+  // sensitive pick shifted by it. Frosty Peak and Whisper Woods still owe their own swing a
+  // watcher.
+  { const swWatchX = -11, swWatchZ = 27, swCx = 8, swCz = 27, swingWatcher2 = beachPerson(r.chance(0.5), false);
+    game.npcs.push(new Wanderer(game, swingWatcher2, { x: swWatchX, z: swWatchZ, angle: atan2(swCx - swWatchX, swCz - swWatchZ), leash: 0.5, speed: 0.3, idle: [3, 6] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
