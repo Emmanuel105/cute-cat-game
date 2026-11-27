@@ -28679,6 +28679,39 @@ function buildVictorian(game, entry) {
     W.add(sackWatcher4.group);
     game.npcs.push(new Wanderer(game, sackWatcher4, { x: swx4, z: swz4, angle: atan2(laneX5 - swx4, laneZ5 - swz4), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
 
+  // Rounds 1396-1398 opened a "seesaw watcher" series on the Neighborhood, Candy Land and Robot
+  // City, leaving Victorian, Sunny Shore, Frosty Peak and Whisper Woods still owing theirs one.
+  // This town's own seesaw (round 16145's own two children, `ry` 0) sits on the north bank's own
+  // grass verge, same orientation as the Neighborhood's and Candy Land's own, so round 1396's own
+  // finding applies directly here too: the riders sit side by side along world X, so standing
+  // north or south of it, offset along the same axis the riders are spread across, is the angle
+  // that shows both ends rising and falling at once rather than looking down the plank's own
+  // length. Victorian carries no dupe-shirt rule of its own (the Neighborhood's test is the only
+  // one of the seven that enforces one), so no wardrobe bag was needed.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(3, 'from-hub')` directly rather than `game.travel()` — the
+  // travel fade sits behind a real `setTimeout` that never fires under simulated frames alone —
+  // then 3600 simulated frames so both seesaw kids, the errand boys, the maypole dancers and
+  // every other NPC had settled) swept a 0.25 m grid north and south of the seesaw (25, 70),
+  // 2.5-16 m out, against all 588 of this town's own body-height physics boxes, all 230
+  // `game.zones` rectangles and all 185 other humanoid positions already standing in it, then
+  // refined the best stretch on a finer 0.05 m grid: (25, 62.7) came back clearest — due north at
+  // radius 7.3, about 67.5 m from the world's own origin, well short of the radius (88) where
+  // `victorianRegion`'s own procedural fill takes over — 7.0 m from the nearest box, 6.68 m from
+  // the nearest zone rectangle and 6.75 m from the nearest other soul. South topped out at only
+  // 3.9 m of clearance at its own best radius, so north is the side with real room.
+  //
+  // Built dead last of everything this town adds, right after the sack-race watcher above, for
+  // the usual reason: `makeHuman()`/`randomPerson()` both draw off this town's own local `r()`
+  // sequence unconditionally, and dropping a fresh rig in any earlier would have shifted every
+  // random pick made above it.
+  { const vSeeX = 25, vSeeZ = 70, vwx = 25, vwz = 62.7;
+    const victorianSeesawWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(victorianSeesawWatcher.group);
+    game.npcs.push(new Wanderer(game, victorianSeesawWatcher, { x: vwx, z: vwz, angle: atan2(vSeeX - vwx, vSeeZ - vwz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
