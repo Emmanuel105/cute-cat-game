@@ -14437,6 +14437,46 @@ function buildRobotCity(game, entry) {
     W.add(seesawWatcher5.group);
     game.npcs.push(new Wanderer(game, seesawWatcher5, { x: swx5, z: swz5, angle: atan2(seeX5 - swx5, seeZ5 - swz5), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // Rounds 1403-1404 opened a "swing watcher" series on the Neighborhood and then Candy Land,
+  // leaving Robot City, Victorian, Sunny Shore, Frosty Peak and Whisper Woods still owing theirs
+  // one. This city's own swing set (above, a kid in a hard hat at (-56, -38), south-west of the
+  // statue plaza, never watched since it went in) is next. **An off-duty worker now stands due
+  // west of it, taking in the kid swing forward and back.** No `cries` of her own — this one just
+  // watches — but saying hello to her makes her the usual kind of friend.
+  //
+  // The swing's own frame (`makeSwingSet`) runs its top bar along local x, the kid swinging
+  // forward and back along local z, and this swing's `ry` is 0 (plain, unlike the Neighborhood's
+  // and Candy Land's own PI), so local x lines up with world x directly. Rounds 1403-1404's own
+  // finding still applies: standing east or west of it, offset along the frame's own axis rather
+  // than the one the kid swings through, is the angle that shows the full pendulum arc in profile
+  // rather than watching the seat grow and shrink head-on. Robot City carries no dupe-shirt rule of
+  // its own (the Neighborhood's test is the only one of the seven that enforces one), so no
+  // wardrobe bag was needed.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(2, 'from-hub')` directly rather than `game.travel()` — the
+  // travel fade sits behind a real `setTimeout` that never fires under simulated frames alone —
+  // then 3600 simulated frames so the swing kid, both seesaw kids, the marching patrol and every
+  // other NPC had settled, then 600 more sampling every dynamic physics circle's own position every
+  // 10th frame) swept a 0.25 m grid east and west of the swing (-56, -38), 2.5-16 m out, against all
+  // 1207 of this city's own body-height physics boxes, all 296 `game.zones` rectangles and every
+  // other soul's own circle already standing in it, staying inside the radius (98) where
+  // `robotRegion`'s own procedural fill takes over: west came back clearer than east at every radius
+  // tried, and a finer 0.05 m grid there found (-66.85, -38) clearest — due west at radius 10.85,
+  // about 76.8 m from the world's own origin — 6.97 m from the nearest box, 9.15 m from the nearest
+  // zone rectangle and 7.0 m from the nearest other soul, clear of the dog walker's own stretch and
+  // the yo-yo kid eight metres south of the swing itself.
+  //
+  // Built dead last of everything this city adds, right after the seesaw watcher above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this city's own local `r()` sequence
+  // unconditionally, and dropping a fresh rig in any earlier would have shifted every random pick
+  // made above it.
+  { const swX6 = -56, swZ6 = -38, wx6 = -66.85, wz6 = -38;
+    const swingWatcher6 = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(swingWatcher6.group);
+    game.npcs.push(new Wanderer(game, swingWatcher6, { x: wx6, z: wz6, angle: atan2(swX6 - wx6, swZ6 - wz6), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
