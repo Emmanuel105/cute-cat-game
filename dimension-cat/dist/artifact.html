@@ -28970,6 +28970,46 @@ function buildVictorian(game, entry) {
     W.add(victorianSwingWatcher.group);
     game.npcs.push(new Wanderer(game, victorianSwingWatcher, { x: wx, z: wz, angle: atan2(swX - wx, swZ - wz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // Rounds 1410-1412 opened a "trampoline watcher" series on the Neighborhood, Candy Land and Robot
+  // City, leaving Victorian, Sunny Shore, Frosty Peak and Whisper Woods still owing theirs one. This
+  // town's own trampoline (built earlier in this function at (40, 70), the postbox-red one a visiting
+  // child has bounced on alone since round ~1xxx) is next. **An onlooker now stands north and a touch
+  // west of it, taking in the bounce — and, following round 1412's lead, she has a line or two of her
+  // own**, called out now and then whenever the cat is close enough to hear. Saying hello to her still
+  // makes her the usual kind of friend on top of that.
+  //
+  // Same reasoning every round in this series has worked out: `makeTrampoline` (60-props.js) is a
+  // round steel rim with no long axis of its own — the bounce kid goes straight up and down, equally
+  // readable from any angle around it — so there's no "which side shows the motion in profile"
+  // question here, just a clear spot. Victorian carries no dupe-shirt rule of its own (the
+  // Neighborhood's test is the only one of the seven that enforces one), so no wardrobe bag was
+  // needed.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(3, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so the swing kid, both seesaw kids, the bounce kid and every other soul had
+  // settled, then 600 more sampling every NPC's own rig position every 10th frame) swept all eight
+  // cardinal/diagonal directions around the trampoline (40, 70), 2.5-20 m out, then a 0.5 m 2D grid
+  // over the open ground north of it, against all 596 of this town's own body-height physics boxes,
+  // all 230 `game.zones` rectangles and every other soul already standing in it, discarding anything
+  // past the radius (88) where `victorianRegion`'s own procedural fill takes over: due north ran
+  // clearest of the eight rays tried, and the finer grid sharpened that to (32.5, 79.5) — north and a
+  // touch west, 12.1 m from the trampoline itself and about 85.9 m from the world's own origin, just
+  // inside that radius-88 boundary — 11.0 m from the nearest box, 10.7 m from the nearest zone
+  // rectangle and 11.4 m from the nearest other soul.
+  //
+  // Built dead last of everything this town adds, right after the swing watcher above, for the usual
+  // reason: `makeHuman()`/`randomPerson()` both draw off this town's own shared `r()` sequence
+  // unconditionally, and dropping a fresh rig in any earlier would have shifted every random pick
+  // made above it.
+  { const trX = 40, trZ = 70, wx2 = 32.5, wz2 = 79.5;
+    const trampWatcherV = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(trampWatcherV.group);
+    const trampWatcherVCries = ["Never seen the like of it in this town before.", "Mind she doesn't bounce clean over the wall.", "Her mother will have words about those cobbles."];
+    game.npcs.push(new Wanderer(game, trampWatcherV, { x: wx2, z: wz2, angle: atan2(trX - wx2, trZ - wz2), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cries: trampWatcherVCries, cryT: r.range(4, 9) })); }
+
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
