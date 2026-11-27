@@ -10225,6 +10225,46 @@ function buildCandyLand(game, entry) {
     W.add(swingWatcher.group);
     game.npcs.push(new Wanderer(game, swingWatcher, { x: wx, z: wz, angle: atan2(swX - wx, swZ - wz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // Round 1410 opened a "trampoline watcher" series right after the seesaw and swing series closed
+  // out across all seven worlds, giving the Neighborhood's own backyard trampoline its first
+  // spectator. Candy Land's own trampoline (built earlier in this function at (38, 60), the
+  // gumdrop-pink one a village child has bounced on alone since round ~1xxx) is next. **A passer-by
+  // now stands due north of it, taking in the bounce.** No lines of her own — this one just
+  // watches — but saying hello to her makes her the usual kind of friend.
+  //
+  // Same reasoning round 1410 worked out for the Neighborhood's own trampoline: unlike the seesaw
+  // and swing, `makeTrampoline` (60-props.js) is a round steel rim with no long axis of its own —
+  // the bounce kid goes straight up and down, equally readable from any angle around it — so the
+  // "which side shows the motion in profile" question the seesaw/swing series had to answer each
+  // round doesn't apply; any clear spot works. Candy Land has no dupe-shirt check of its own (the
+  // Neighborhood's test is the only one of the seven that enforces one), so the shirt below was
+  // picked for the sweet-lands' own palette, not to dodge a collision.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(1, 'from-hub')` directly rather than `game.travel()` — the
+  // travel fade sits behind a real `setTimeout` that never fires under simulated frames alone —
+  // then 3600 simulated frames so every gingerbread man, the bounce kid and everyone else in this
+  // land had settled, then 600 more sampling every NPC's own position every 10th frame) swept all
+  // eight cardinal/diagonal directions around the trampoline (38, 60), 3-12 m out, against all of
+  // this land's own physics boxes (knee-to-head band only), all `game.zones` rectangles and every
+  // other soul already standing in it (the bounce kid himself excluded from that last check, since
+  // he never leaves the trampoline's own x/z): every direction but north ran into either the
+  // seesaw's own fence or the sack-race lane within a few metres, while north kept gaining
+  // clearance out to radius 10 before the candy-cane ring started closing back in — (38, 70) came
+  // back clearest there, due north at radius 10, about 79.6 m from the world's own origin, well
+  // short of the radius (92) where `candyRegion`'s own procedural fill takes over — 8.06 m from the
+  // nearest box, 8.06 m from the nearest zone rectangle and 13.75 m from the nearest other soul.
+  //
+  // Built dead last of everything this land adds, right after the swing watcher above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this land's own shared `r()`
+  // sequence unconditionally, and dropping a fresh rig in any earlier would have shifted every
+  // random pick made above it.
+  { const trX = 38, trZ = 60, twx = 38, twz = 70;
+    const trampWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x80dfff, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(trampWatcher.group);
+    game.npcs.push(new Wanderer(game, trampWatcher, { x: twx, z: twz, angle: atan2(trX - twx, trZ - twz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
