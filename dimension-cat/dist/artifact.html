@@ -41105,6 +41105,44 @@ function buildForest(game, entry) {
       if (!barber.gesture) { const A = barber.arms[0], B = barber.arms[1]; A.sh.rotation.x = -1.4; A.sh.rotation.z = 0.25; A.el.rotation.x = -1.6; B.sh.rotation.x = -0.9; B.sh.rotation.z = -0.2; B.el.rotation.x = -1.1; }
     }); }
 
+  // Rounds 1390-1394 gave Candy Land's, Robot City's, Victorian's, Sunny Shore's and Frosty Peak's
+  // own sack race a first watcher, leaving Whisper Woods as the last of the seven worlds whose own
+  // sack race still played to nobody. **A forest-dweller now stands due north of the sack race's own
+  // lane, watching the two kids hop past.** No lines of her own — this one just watches — but saying
+  // hello to her makes her the usual kind of friend.
+  //
+  // No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses — a
+  // plain `makeHuman()`/`randomPerson()` rig in the same earthy, hat-and-bag-free wardrobe shape this
+  // wood's own tetherball, ring-toss and tug-of-war watchers already wear, `angle` pointed at the
+  // lane's own fixed midpoint (-5.5, -50). The sack race (above, `rx = -8, rz = -50, ry = PI/2`,
+  // default `gap = 1.1`) runs its racers along world X, side by side in z — the same orientation as
+  // the Neighborhood's, Robot City's, Victorian's and Frosty Peak's own (rounds 1307, 1391, 1392,
+  // 1394), not Candy Land's or Sunny Shore's own (rounds 1390 and 1393, lane along z, side by side in
+  // x) — so round 1307's own finding applies directly here: standing north or south of the lane,
+  // offset along the same axis as the racers' own side-by-side gap, is the angle that shows both
+  // hopping past at once rather than looking down their backs. Whisper Woods builds and runs on its
+  // own local seeded `r()` (`seeded(707)`), not the shared global `rnd()` the Neighborhood's own
+  // timing-sensitive checks key off, so nothing here needed a draw pinned.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(6, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so both racers and every other NPC, deer, fox and hare had settled, then 600
+  // more sampling every NPC's own position every 10th frame) swept a 0.25 m grid north and south of
+  // the lane's own midpoint, 2-16 m out, against all 430 of this wood's own body-height physics boxes
+  // and all 229 `game.zones` rectangles, staying short of the radius (58) where `forestRegion()`'s
+  // own fill takes over, then refined the best stretch on a finer 0.1 m grid: (-6.5, -45.4) came back
+  // clearest — due north of the lane's own midpoint at radius 4.6, 45.9 m from the world's own origin
+  // — 4.03 m from the nearest box, 11.1 m from the nearest zone rectangle and 4.05 m from the nearest
+  // other soul (one of the two racers), clear of the tug-of-war's own clearing (-10, -40) and the
+  // jump-roper's own spot (8, -48).
+  { const swx = -6.5, swz = -45.4, swLaneX = -5.5, swLaneZ = -50;
+    const sackWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x8a6a3a, pants: 0x3a3327, shoes: 0x3a2a1e, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(sackWatcher.group);
+    game.npcs.push(new Wanderer(game, sackWatcher, { x: swx, z: swz,
+      angle: atan2(swLaneX - swx, swLaneZ - swz), speed: 0.3, leash: 0.5, idle: [3, 6] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
