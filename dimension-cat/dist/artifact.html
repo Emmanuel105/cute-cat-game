@@ -14845,6 +14845,45 @@ function buildNeighborhood(game, entry) {
       if (!barber.gesture) { const A = barber.arms[0], B = barber.arms[1]; A.sh.rotation.x = -1.4; A.sh.rotation.z = 0.25; A.el.rotation.x = -1.6; B.sh.rotation.x = -0.9; B.sh.rotation.z = -0.2; B.el.rotation.x = -1.1; }
     }); }
 
+  // The seesaw (round 183) has had two kids tipping it up and down on the open grass east of the
+  // park path since the very start of this project — the first one built, and the template every
+  // other world's own seesaw later copied. Every other game and activity this project has slowly
+  // given a spectator over the last few hundred rounds (badminton, tetherball, ring toss,
+  // tug-of-war, the sack race, hopscotch...), but nobody had ever stopped to watch the seesaw
+  // itself. **A passer-by now stands a few steps north of it, taking in both ends tipping at
+  // once.** No `cries` of her own, no physics box, pure bystander — the same `Wanderer` (55-
+  // npcs.js) every watcher in this project already uses, which calls `greetable()` itself, so no
+  // extra wiring was needed.
+  //
+  // The seesaw's own two riders sit side by side along world X (`makeSeesaw`'s arm runs along the
+  // pivot's local x, and this seesaw's `ry` is 0), not spread along z, so standing due north or
+  // south — offset along the same axis the riders are spread across — is the angle that shows both
+  // ends rising and falling at once rather than looking down the plank's own length. A single-shirt
+  // wardrobe bag (0x7a5a9a, a plum not already spoken for by anyone else on this street — this
+  // world's own yo-yo watcher a few hundred lines up already claims the similar-looking 0x6a4a8a,
+  // which the first attempt at this round picked straight into a collision with) keeps the dupe-
+  // shirt check happy — the one hard requirement this world's own test enforces that no other
+  // world's build function has to answer to.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(0, 'from-hub')` directly rather than `game.travel()` — the
+  // travel fade sits behind a real `setTimeout` that never fires under simulated frames alone —
+  // then 3600 simulated frames so every wanderer, the postie and both seesaw kids had settled, then
+  // 600 more sampling every NPC's own position every 10th frame) swept the ground due north and
+  // south of the seesaw (11, 45), 2.5-9 m out, then refined on a finer grid: (11, 50.4) came back
+  // clearest — due north at radius 5.4 — 5.1 m from the nearest of this street's own physics boxes,
+  // 3.6 m clear of the nearest `game.zones` rectangle and 3.69 m from the nearest other soul.
+  //
+  // Built dead last of everything this street adds, right after the barber above and right before
+  // `makeDayNight()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this
+  // street's own shared `r()` sequence unconditionally, and anything built earlier would have had
+  // its own timing-sensitive pick shifted by it.
+  { const seeX = 11, seeZ = 45, wx = 11, wz = 50.4;
+    const watcherWard = makeWardrobe(r, { shirts: [0x7a5a9a] });
+    const seesawWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: watcherWard }), blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(seesawWatcher.group);
+    game.npcs.push(new Wanderer(game, seesawWatcher, { x: wx, z: wz, angle: atan2(seeX - wx, seeZ - wz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
