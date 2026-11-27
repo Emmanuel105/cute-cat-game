@@ -28828,6 +28828,41 @@ function buildVictorian(game, entry) {
     W.add(victorianSeesawWatcher.group);
     game.npcs.push(new Wanderer(game, victorianSeesawWatcher, { x: vwx, z: vwz, angle: atan2(vSeeX - vwx, vSeeZ - vwz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // Rounds 1403-1405 opened a "swing watcher" series on the Neighborhood, Candy Land and Robot
+  // City, leaving Victorian, Sunny Shore, Frosty Peak and Whisper Woods still owing their own
+  // swing a spectator. This town's own swing set (built earlier in this function, `ry` PI, same
+  // as the Neighborhood's and Candy Land's own) runs its top bar along local x, the child
+  // swinging forward and back along local z — `ry` PI only flips the sign of each local axis, not
+  // their world alignment, so local x still lines up with world x regardless. Rounds 1403-1404's
+  // own finding applies directly: standing east or west of it, offset along the frame's own axis
+  // rather than the one the child swings through, is the angle that shows the full pendulum arc
+  // in profile instead of watching the seat grow and shrink head-on. Victorian carries no
+  // dupe-shirt rule of its own (the Neighborhood's test is the only one of the seven that
+  // enforces one), so no wardrobe bag was needed.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(3, 'from-hub')` directly rather than `game.travel()` — the
+  // travel fade sits behind a real `setTimeout` that never fires under simulated frames alone —
+  // then 3600 simulated frames so the swing kid, both seesaw kids, the errand boys, the maypole
+  // dancers and every other soul had settled) swept a 0.25 m grid east and west of the swing
+  // (25, 46), 2.5-16 m out, against all 588 of this town's own body-height physics boxes, all 230
+  // `game.zones` rectangles and every other humanoid position already standing in it: east ran
+  // into the catch/ring games cluster, clearance never topping 6.05 m; west came back clearer at
+  // every radius tried, and a finer 0.05 m grid there found (15.3, 46) clearest — due west at
+  // radius 9.7, about 48.5 m from the world's own origin, well short of the radius (88) where
+  // `victorianRegion`'s own procedural fill takes over — 8.0 m from the nearest box, 8.0 m from
+  // the nearest zone rectangle and 8.19 m from the nearest other soul.
+  //
+  // Built dead last of everything this town adds, right after the seesaw's own watcher, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this town's own shared `r()`
+  // sequence unconditionally, and dropping a fresh rig in any earlier would have shifted every
+  // random pick made above it.
+  { const swX = 25, swZ = 46, wx = 15.3, wz = 46;
+    const victorianSwingWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(victorianSwingWatcher.group);
+    game.npcs.push(new Wanderer(game, victorianSwingWatcher, { x: wx, z: wz, angle: atan2(swX - wx, swZ - wz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
