@@ -38480,3 +38480,1746 @@ check `ok`, 0 console warnings, box count unchanged at 334, and Victorian's own 
 from 186 to 187 (confirmed by the test's own "187 to meet" line). No visual check was possible in
 this environment (no browser, no Playwright), same caveat every watcher in this set has carried.
 Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1320 — Sunny Shore's fortune teller gets a customer too
+
+Rounds 1316-1319 gave the Neighborhood's, Candy Land's, Robot City's and Victorian's own fortune
+tellers a customer apiece; Sunny Shore's own teller, sitting cross-legged on her straw mat up past
+the dune grass since round 1062, had still only ever read the crystal ball to the empty sand.
+**A customer now sits a step in front of her, facing her straight on, listening as she tells a
+fortune.** No lines of her own, no physics box, pure bystander — the exact same `Wanderer`-with-
+frozen-idle trick the last four rounds' customers used, so no new wiring was needed and
+`greetable()` makes her a friend the usual way.
+
+A headless probe (`elements.get('enter').listeners.click[0]()`, `game.travel(4, 'from-hub')`
+waited out for real against `game.transitioning`, then 3600 simulated frames so every sunbather,
+ball-tosser and runner had settled, then 600 more sampling positions every 10th frame) swept 1-2.4
+m out from the teller (-6, 46) along her own facing direction and came back clear the whole way —
+6.4+ m from the nearest of this beach's 193 physics boxes and 9+ m from the nearest of its 88 zone
+rectangles — so 1.5 m out was used, same as the other four. A single sea-blue shirt (0x3a6a9a, not
+already spoken for on this sand) keeps the dupe-shirt check happy. `node dimension-cat/test/run.mjs`
+ran clean: exit 0, every check `ok`, 0 console warnings, box count unchanged at 334, and Sunny
+Shore's own friend total rose from 162 to 163 (confirmed by the test's own "163 to meet" line). No
+visual check was possible in this environment (no browser, no Playwright), same caveat every
+watcher in this set has carried. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy. Frosty Peak and Whisper Woods are the only two worlds whose fortune teller is still
+reading to nobody.
+
+## Round 1321 — Frosty Peak's fortune teller gets a customer too
+
+Rounds 1316-1320 gave the Neighborhood's, Candy Land's, Robot City's, Victorian's and Sunny
+Shore's own fortune tellers a customer apiece; Frosty Peak's own teller, sitting cross-legged on
+her fur blanket out past the village since round 1062, had still only ever read her crystal ball
+to the empty snow. **A customer now sits a step in front of her, facing her straight on, listening
+as she tells a fortune.** No lines of her own, no physics box, pure bystander — the exact same
+`Wanderer`-with-frozen-idle trick the last five rounds' customers used, so no new wiring was needed
+and `greetable()` makes her a friend the usual way.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(5, 'from-hub')` waited out for real
+against `game.transitioning`, then 3600 simulated frames so every reindeer, hare, fox, penguin,
+yeti and wandering villager had settled, then 600 more sampling positions every 10th frame) swept
+1-2.4 m out from the teller (-37, 33) along her own facing direction and came back clear the whole
+way — 3.8+ m from the nearest of this mountain's 749 physics boxes and 7.4+ m from the nearest of
+its 152 zone rectangles — so 1.5 m out was used, same as the other five. A single plum shirt
+(0x7a3a6a, not already spoken for anywhere on this mountain) keeps the palette from repeating.
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, box
+count unchanged at 334 (a circle collider, not a box), and Frosty Peak's own friend total rose
+from 158 to 159 (confirmed by the test's own "159 to meet" line). No visual check was possible in
+this environment (no browser, no Playwright), same caveat every watcher in this set has carried.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Whisper Woods is now the
+only world whose fortune teller is still reading to nobody.
+
+## Round 1322 — Whisper Woods' fortune teller gets a customer too
+
+Rounds 1316-1321 gave the Neighborhood's, Candy Land's, Robot City's, Victorian's, Sunny Shore's
+and Frosty Peak's own fortune tellers a customer apiece, leaving Whisper Woods' own hermit — crouched
+on a quiet patch of forest floor with her crystal ball since round 1163 — as the last of the seven
+still reading fortunes to nobody. **A customer now sits a step in front of her, facing her straight
+on, listening as she tells a fortune.** No lines of her own, no physics box, pure bystander — the
+same `Wanderer`-with-frozen-idle trick the last six rounds' customers used, so no new wiring was
+needed and `greetable()` makes her a friend the usual way.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(6, 'from-hub')` waited out for real
+against `game.transitioning`, then 3600 simulated frames so every wandering soul in the wood had
+settled, then 600 more sampling positions every 10th frame) swept 1-2.4 m out from the hermit
+(-18, -20) along her own facing direction and came back clear the whole way — 3.9+ m from the
+nearest of this wood's 748 physics boxes and clear of every other sampled soul but the hermit
+herself — so 1.5 m out was used, same as the other six. A single teal shirt (0x3a7a9a, not already
+spoken for anywhere in this wood) keeps the dupe-shirt check happy. `node dimension-cat/test/run.mjs`
+ran clean: exit 0, every check `ok`, 0 console warnings, box count unchanged at 334, and Whisper
+Woods' own friend total rose from 185 to 186 (confirmed by the test's own "186 to meet" line). No
+visual check was possible in this environment (no browser, no Playwright), same caveat every
+watcher in this set has carried. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy. All seven worlds' fortune tellers now have a customer, closing out this set.
+
+## Round 1323 — Candy Land's organ grinder gets a monkey too
+
+Round 1273 gave the Neighborhood's own barrel organ the one thing missing from every picture of one —
+a monkey with a tin cup, rattling it hopefully at whoever walked by — but called it "a one-off
+flourish rather than the start of a new cross-world set," since only four of the seven worlds
+(Neighborhood, Candy Land, Robot City, Victorian) have a barrel organ at all. Nobody had come back to
+check on the other three since. **Candy Land's own organ grinder now has a monkey of his own too,**
+tucked right beside the barrel organ, same tin cup, same rattle. *"🐒 *rattles the tin cup, chatters,
+and shakes it hopefully at a passing gumdrop cart*"*
+
+No new mesh and no new controller: the monkey is the exact same hand-built group `70-worlds.js`
+already carries for the Neighborhood's one, copied verbatim (fur, belly patch, haunches, head, paw-held
+cup, a nine-segment Catmull-Rom tail) — only the position and a line of dialogue changed. It draws no
+`rnd()` at all, shared or this land's own seeded `r()`, so dropping it in cost nothing downstream and
+it could go anywhere in this land's build without disturbing a single later pick. Placement uses
+`localXZ()` (62-props-nature.js) to rotate the same local offset (0.55 m along the organ's own `side`
+offset, 1.0 m further out) by this organ's own facing angle instead of assuming `ry = 0` the way the
+original round could, since Candy Land's grinder faces the land's own centre rather than north.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.travel(1, 'from-hub')` waited out for real against its own portal-fade
+timer, then 3600 simulated frames, reading `game.physics.boxes` and `game.zones.blocked()` directly)
+confirmed the computed spot (69.0, -4.4) sits 0.57 m from the organ's own box — the same deliberate
+overlap round 1273's own placement used (0.575 m there) — and 1.14 m from the grinder himself, an
+near-exact match to the original's own numbers, confirming the rotated offset lands in the same
+relative spot regardless of facing angle. Clear of every `game.zones` rectangle.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (no new collider — a pure "look and greet" prop like the first monkey), and Candy
+Land's own friend total rose from 145 to 146 (confirmed against the previous commit with `git stash`).
+No visual check was possible in this environment (no browser, no Playwright), so whether the monkey
+actually reads as begging for a coin from this angle is unverified, same caveat the original carried.
+Robot City's and Victorian's own organ grinders are still without a monkey — whether this becomes a
+four-world set like the harmonica or stays a pair is left for a future round to decide. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1324 — Robot City's organ grinder gets a monkey too
+
+Round 1323 gave Candy Land's own organ grinder the monkey-with-a-tin-cup the Neighborhood's one
+picked up back in round 1273, and left Robot City's and Victorian's still bare. **Robot City's own
+organ grinder, cranking his barrel organ on the open factory floor since round 1021, now has a
+monkey of his own too,** tucked right beside the organ, same tin cup, same rattle — only the
+closing line changed, since this city's own crowd is robots, not gumdrop carts. *"🐒 *rattles the
+tin cup, chatters, and gives the passing maintenance drones a hopeful look*"*
+
+No new mesh and no new controller: the monkey is the exact same hand-built group the previous two
+rounds used, copied verbatim (fur, belly patch, haunches, head, paw-held cup, a nine-segment
+Catmull-Rom tail) — only the position and the one line of dialogue changed. It draws no `rnd()` at
+all, so dropping it in cost nothing downstream for any later pick in this city's build.
+`localXZ()` (62-props-nature.js) rotates the same local offset (0.55 m along the organ's own side
+offset, 1.0 m further out) by this grinder's own facing angle (`ry = atan2(0 - gx, 0 - gz)`,
+pointing at downtown), landing the monkey at (11.2, 43.2).
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.travel(2, 'from-hub')` waited out for real
+against its own portal-fade timer via `setTimeout`-yielding `sleep()` calls between frame batches —
+a first naive version that spun `game.loop()` in a tight synchronous `while` loop starved the event
+loop and never let that timer fire, so it had to be killed and rewritten — then 3600 simulated
+frames so every wandering soul had settled, reading `game.physics.boxes` and `game.zones.blocked()`
+directly) found the computed spot (11.206, 43.180) sits 0.54 m from the organ's own box (the same
+deliberate overlap the previous two monkeys sat at against their own organs, confirmed by its exact
+dimensions: 0.85×1.36×0.85 centred at the organ's offset position) and nothing closer among this
+city's 1206 physics boxes, clear of every `game.zones` rectangle, and 1.14 m from the organ grinder
+himself — both numbers an almost exact match to Candy Land's own round, confirming the rotated
+offset lands in the same relative spot regardless of facing angle.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, and Robot
+City's own friend total rose from 153 to 154 (confirmed with `git stash`). No visual check was
+possible in this environment (no browser, no Playwright), so whether the monkey reads convincingly
+from this angle is unverified, same caveat the first two carried. Victorian's own organ grinder is
+now the only one of the four still without a monkey. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
+
+## Round 1325 — Victorian's organ grinder gets a monkey too, closing out the set
+
+Rounds 1273, 1323 and 1324 gave the Neighborhood's, Candy Land's and Robot City's own organ grinders
+a monkey with a tin cup, each round's log noting Victorian's was the only one of the four still bare.
+**Victorian's own organ grinder, winding his barrel organ on the north green since round 1020, now
+has a monkey of his own too,** tucked right beside the organ, same tin cup, same rattle. *"🐒 *rattles
+the tin cup, chatters, and gives a passing top hat a hopeful look*"* — closing out the set all four
+flat-floor organ grinders now share.
+
+No new mesh and no new controller: the monkey is the exact same hand-built group the previous three
+rounds used, copied verbatim (fur, belly patch, haunches, head, paw-held cup, a nine-segment
+Catmull-Rom tail) — only the position and the one line of dialogue changed. It draws no `rnd()` at
+all, so dropping it in cost nothing downstream for any later pick in this town's build. The
+grinder's own facing (`gry = 0`, same as the Neighborhood's) meant `localXZ()` (62-props-nature.js)
+landed the monkey at a plain (41.55, 64.5) — 0.55 m along the organ's own side offset and 1.0 m
+further out, the same offset every earlier monkey used.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count
+unchanged at 334 (no new collider, confirmed against the previous commit with `git stash`), and
+Victorian's own friend total rose from 187 to 188. Walkability (94%) and the walked-around distance
+limit (420) came back bit-for-bit identical to the pre-change run, so nothing about the new monkey
+blocks a path. No visual check was possible in this environment (no browser, no Playwright), same
+caveat every one of these four monkeys has carried. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy. All four of the game's organ grinders now have their own
+monkey with a tin cup.
+
+## Round 1326 — the Neighborhood finally gets a telescope
+
+The Neighborhood is the one world with a real day/night cycle (`makeDayNight`, `70-worlds.js`) and
+stars that actually come out at dusk, but nothing out here has ever stood and looked up at them — the
+painter in Frosty Peak and the archive-bot's tripod camera in Robot City both look outward, never up.
+**A stargazer now stands behind a brass-trimmed tripod telescope on the quiet lawn east of the
+street, bent to the eyepiece.** *"Can't see a blessed thing in daylight, but I like to keep it
+pointed at something anyway."* *"There — right between the two bright ones. Steadier than it looks
+through that eyepiece."*
+
+`makeTelescope()` is a new prop (`60-props.js`), built the same way `makeOldCamera()`'s own tripod
+already is: three wooden legs, a hub, and here a tilted gunmetal tube with a brass objective ring and
+eyepiece in place of the camera's box and bellows. Static geometry, no `userData.update`, so it bakes
+into one draw call like every other street fixture. The stargazer is the usual `makeHuman()` rig and
+a `Wanderer` (`55-npcs.js`), which calls `greetable()` itself — `blinkT0`/`idleT0`/`sway0` fixed
+straight in the `makeHuman()` call plus the frozen `idle: [1e9, 1e9]` and no `cries` at all keeps her
+statue-still and draws nothing extra from the shared `rnd()` sequence beyond construction, the same
+caution every watcher built this late in this file already takes (the Neighborhood is the one world
+every test travel starts from, so any stray draw here would shift every timing-sensitive pick made in
+every world built after it). The telescope's own "Look through the telescope" prompt checks
+`game.dayPhase` the same way this file's own bats already do, so it answers differently by day and by
+night instead of repeating one line regardless of the sky.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, 600 simulated frames to settle every wandering neighbour, then a further 1800
+sampling every NPC's own position every 5th frame) swept a 1.5 m grid across the open lawn east of the
+street against all 334 of this street's own physics boxes, its 69 `game.zones` rectangles and all
+39,240 of those position samples: (74, -26.5) came back clearest in the whole sweep — 12.76 m from the
+nearest box, 23.1 m clear of the nearest zone rectangle's own edge and 13.0 m from the nearest
+wandering soul, on flat ground well short of the 95 m world limit and clear of the archer's, the
+magician's and the lake's own corners. The stargazer stands 1 m south of it, facing north at the
+eyepiece.
+
+Built dead last, right after the fortune teller's customer and right before `makeDayNight()`, for the
+usual reason: `makeHuman()` draws off the shared `rnd()` sequence unconditionally, and dropping a
+fresh rig in any earlier would shift every timing-sensitive pick made above it, including the
+two-neighbours-chat timing test a few thousand lines up. A single-shirt wardrobe (0x3a9a7a, a teal
+checked against every shirt colour already used on this street) keeps the "no two neighbours wear the
+same shirt" test happy.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count up
+by one (334 → 335, the telescope's own physics box), and the Neighborhood's own friend total rose from
+145 to 146. Every road, pavement and path still walked clear end to end, and ground-walkability held
+at 95-96% across repeated rebuilds in the same run (the pre-existing spread from wandering neighbours
+mid-stride, not a regression — confirmed against the unmodified build). No visual check was possible
+in this environment (no browser, no Playwright), so whether the tilt angle and eyepiece height actually
+read as "looking through it" from the stargazer's own stance is unverified. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1327 — Victorian finally gets its cobbler
+
+Two separate jokes in this town have been leaning on a cobbler who never actually showed up: the
+basketball urchin warns "tear it twice and the cobbler charges for thread," and nobody ever paid off
+either line. The watchmaker has had his own bench at the clock tower since round 1312, but the town's
+other classic story-book tradesman was nowhere to be found. **A cobbler now sits on a stool outside his
+own shop on the south terrace, between the houses at x=52 and x=62, a half-finished boot clamped over
+an iron last in one hand and an awl raised in the other, with a small workbench of tools and a shelf of
+three mended pairs behind him.** *"Every sole in this town comes through here twice over — once new,
+once patched."* *"Mind your claws, puss — that leather's dearer than it looks."* *"A boot's only as
+good as the stitching nobody sees."*
+
+No new controller: `Sitter` (55-npcs.js), the exact seated-craftsman shape the watchmaker already uses
+— the boot-and-last held low in one hand, the awl raised in the other, both fixed once in this build's
+own `U.push` guarded by `!cobbler.gesture`, so a greeting wave still wins over the held pose. Everything
+else is plain primitives: a plank workbench on four turned legs with an upright last, scattered tacks
+and a hammer, and a short shelf behind him carrying three finished boots in a row.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.load(3, 'from-prev')`
+— a direct, synchronous build, since `travel()`'s own fade is deferred behind a real `setTimeout` that
+never fires under simulated frames alone — then 3600 simulated frames so every carriage horse and
+wanderer had already settled) swept the gap in the south terrace's own iron fences between the houses
+at x=52 and x=62, the widest unfenced stretch of pavement on that row: (57, -6.3) came back clear by
+1.94 m of the nearest fence post and 2.58 m of the nearest house on either side, 7.97 m from the
+nearest wandering soul, still on the south pavement strip itself and well clear of the houses' own
+front walls.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, box count up
+by three (611 → 614, the stool, bench and shelf, confirmed against the previous commit with
+`git stash`), and Victorian's own friend total rose from 188 to 189. Ground-walkability held at 94%
+across both runs, unchanged by the new props. No visual check was possible in this environment (no
+browser, no Playwright), so whether the held boot-and-awl pose actually reads as cobbling from this
+angle is unverified, the same caveat every seated-craftsman vignette in this game has carried. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1328 — the telescope gets its first queue
+
+Round 1326 gave the Neighborhood a stargazer and her own telescope, alone on the east lawn, and nobody
+in the whole game has ever had to wait their turn at anything. **A kid now stands a couple of steps
+south-west of her, hopping between feet, next in line for a look through the eyepiece.**
+
+No new class or mesh: the usual `makeHuman()`/`randomPerson()` rig and a `Wanderer` (55-npcs.js), the
+same frozen-still trick the stargazer herself already uses (`blinkT0`/`idleT0`/`sway0` fixed, `idle:
+[1e9, 1e9]`, `phase`/`timer`/`t`/`cryT` all fixed instead of drawn from `rnd()`, no `cries`). That alone
+was not enough: the first attempt passed its own placement probe clean but failed an unrelated check
+nowhere near it — `node test/run.mjs`'s own cyclist test, which rides the same street — because this
+street's own per-house chimney-smoke puffs keep calling this world's *local* seeded `r()` every frame
+for the rest of the run, not just at construction. Any extra draw from `r()` anywhere in this build,
+even dead last, leaves it at a different starting point for every one of those chimneys the instant the
+simulated frames begin, and that was enough to give the cyclist a different, slower ride on the very
+same run. Caught by running the full suite, not by inspection. The fix: a throwaway generator shaped
+like `r` (`chance`/`pick`/`range`/`int`) that answers every call without ever touching the real one, and
+single-item colour lists so `makeWardrobe`'s own shuffle-bag never has anything to shuffle — this kid's
+`randomPerson`/`makeWardrobe` draw nothing at all from this world's own `r()`, so nothing downstream
+shifts. A single unused shirt colour (0xc0392b, checked against every shirt literal already in this
+file) keeps the "no two neighbours wear the same shirt" check happy.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, 600 simulated frames to settle every wandering neighbour, then a further 1800
+sampling every NPC's own position every 5th frame) checked a handful of spots a couple of metres off the
+stargazer's own fixed spot (74, -27.5): (73, -29.5) came back clear by 2.73 m of the nearest physics box
+and sits 2.24 m from the stargazer herself — the nearest other soul over the whole run — close enough to
+read as waiting in line without crowding her elbow, and clear of every one of this street's own 69
+`game.zones` rectangles.
+
+Built dead last, right after the stargazer and right before `makeDayNight()`, with the no-draw generator
+on top of the usual caution, since dead last alone turned out not to be enough on this particular
+street. `node dimension-cat/test/run.mjs` ran clean three times running: exit 0, all 277 checks `ok`, 0
+console warnings, box count unchanged (335, a `Wanderer` registers a physics circle, not a box), and the
+Neighborhood's own friend total rose from 146 to 147. No visual check was possible in this environment
+(no browser, no Playwright), so whether the stance actually reads as "waiting a turn" rather than just
+standing nearby is unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1329 — the Neighborhood finally gets its chestnut roaster, closing out the set
+
+Six of the seven worlds have had a chestnut roaster at her own glowing brazier since round 1074 — the
+Neighborhood was the one holdout, and round 1072's own log entry explains why: an earlier attempt aimed
+here got caught dead by a headless probe before it ever shipped. `Vendor` (55-npcs.js), the controller
+every roaster uses, draws one `rnd()` tick in its own constructor unconditionally (`this.t = rnd() * 10`)
+whether or not it's given `cries` — and the Neighborhood is the one world whose build shares a single
+unbroken run of simulated frames with `test/run.mjs`'s own behaviour checks, so that one stray draw from
+the *shared* generator (not this world's own local `r()`, which every other roaster already knew to
+dodge) was enough to nudge the "two neighbours chat, taking turns" check's own sampled arm angle past its
+threshold. That one failure stood for 255 rounds.
+
+**A roaster now works the open grass south of the terrace gardens, her brazier glowing beside her, a
+paper cone of chestnuts held out to whoever wanders past** — the last stop on the chestnut roaster's own
+tour of the seven worlds. *"Hot chestnuts, fresh off the coals — same as every other street in the seven
+worlds, just took this one a bit longer."* *"Careful, puss — that griddle's hotter than the sun ever
+gets round here."* *"Quietest corner of the whole street. Good a spot as any for a brazier."*
+
+The actual fix went into `Vendor` itself rather than around it: two new optional constructor fields,
+`t0` and `cryT0`, stand in for the unconditional `rnd()` draws when given, and change nothing for any of
+the thirty-odd other callers across the game that don't pass them — a quick audit of every existing
+`new Vendor(...)` call confirmed none do. The Neighborhood's own roaster passes fixed values for both
+(`t0: 4.2`, `cryT0: 5`), so her construction never touches the shared sequence at all, however early or
+late she's built. `makeChestnutBrazier()` and `makeChestnutCone()` are reused verbatim a seventh time,
+and `place()` (this world's own flat-ground equivalent of `placeT()`) rides the brazier's `userData.update`
+(vent glow, light flicker) into this street's own `U` list.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, 600 simulated frames to settle every wandering neighbour, then a further 1800
+sampling every NPC's own position every 5th frame) swept the open grass south of the terrace row against
+all 335 of this street's own physics boxes (knee-to-head band only) and every one of those position
+samples: (27, -17) came back clear by 10.73 m of the nearest box and 11.73 m of the nearest wandering
+soul, on flat ground, well clear of every one of this street's own 69 `game.zones` rectangles. The
+brazier sits 1.3 m south of her, the same spacing every other roaster in the game already uses. A
+single-shirt wardrobe bag (0x9a4a2a, a rust not already spoken for on this street) keeps the "no two
+neighbours wear the same shirt" check happy.
+
+Built dead last of everything this street adds, right after last round's queue kid and right before
+`makeDayNight()`, for the usual reason — `makeHuman()`/`randomPerson()` both draw off this street's own
+local `r()` sequence unconditionally. `node dimension-cat/test/run.mjs` ran clean, twice over: exit 0,
+all 277 checks `ok`, 0 console warnings, box count up by one (335 → 336, the brazier's own physics box),
+and the Neighborhood's own friend total rose from 147 to 148. (The horse-and-carriage distance, the
+street photographer's photo count, both worlds' ground-walkability percentages, the beach kite's height
+and both snow-world cat-rest heights all drifted a little between the two runs — the same pre-existing
+frame-timing wobble earlier rounds already found and reconfirmed here against the unmodified build, not
+a regression.) No visual check was possible in this environment (no browser, no Playwright), so whether
+the held cone and the glowing brazier actually read as a chestnut stand from this angle is unverified,
+the same caveat every roaster in this game has carried. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
+
+## Round 1330 — Victorian finally gets a blacksmith
+
+Victorian's own ironwork has been standing around unexplained for over a thousand rounds now: the fence
+round every terrace garden, the gas lamps the whole length of the street, even the cobbler's own iron
+last (round 1327) — none of it ever had anywhere it actually came from. **A blacksmith now works a
+forge on the open grass past the last house on the south terrace, hammering a glowing horseshoe flat
+against his anvil**, coals banked red behind him, smoke rising off a short stone stack, three finished
+shoes already hung up to cool on a rack and a water bucket standing by for the quench. *"Every fence
+post and gas lamp on this street started right here."* *"Mind your tail, puss — sparks don't care whose
+whiskers they singe."* *"That cobbler still owes me for his iron last. Tell him, if you're headed that
+way."*
+
+One new optional hand-prop on `makeHuman()` (55-npcs.js): `hammer`, built the same way the woodcutter's
+`axe` already is — a short handle and a blocky iron head parented straight to the right hand. `Chopper`
+(55-npcs.js), already splitting logs in four other worlds off the one downward strike its own `'chop'`
+gesture gives it, picked up three new optional constructor fields — `sfx`, `colors` and `cryIcon` — each
+defaulting to the exact values it already had hardcoded, so all seven of its existing callers are
+unchanged; this is the first to actually pass something different, swapping the woodcutter's
+`SFX.thunk()` and wood-chip browns for `SFX.clang()` and a shower of spark colours (the same three
+`Mechanic`'s own wrench already throws), and the axe emoji for a hammer. No new prop function: the
+forge, anvil and rack are plain primitives built inline, the way the watchmaker's bench and the
+cobbler's own stall were — the forge reuses the chestnut brazier's own glow-and-flicker trick (a
+`glowMat` coal bed and a `pointLight`, both riding `sin(t*10)+sin(t*27)`) and `addChimneySmoke()`
+(already lighting every terrace house's own chimney) for the stack behind it.
+
+A headless probe (`game.start('new')`, `game.load(3, 'from-prev')` for a direct synchronous build, then
+3600 simulated frames so every carriage horse and wanderer had settled) swept the open grass past the
+last house on the south terrace (x=62) against all 614 of this town's own physics boxes, all 236
+`game.zones` rectangles and every sampled NPC position: the whole small cluster, (77.5, -17.9) for the
+smith through (77.5, -21.5) for the rack, came back clear by 9.1-13.7 m of the nearest box and 9.1-11.5 m
+of the nearest wandering soul, at radius 79.5-80.4 from the origin — comfortably short of the radius
+(88) where `victorianRegion`'s own procedural fill takes over. Built dead last of everything this town
+adds, right after the cobbler and right before the squirrel, for the usual reason: `makeHuman()`/
+`randomPerson()` both draw off this town's own shared `r()` sequence unconditionally.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, and Victorian's
+own friend total rose from 189 to 190. Ground-walkability held at 94%, unchanged by the new props. No
+visual check was possible in this environment (no browser, no Playwright), so whether the forge's glow,
+the anvil's proportions and the hammer-and-horseshoe angle actually read as blacksmithing from this
+angle is unverified — the same caveat every craftsman vignette in this game has carried. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1331 — the hopscotch chalker finally gets a watcher, starting a new set
+
+The Neighborhood's hopscotch girl has knelt over her own six squares on the north pavement since round
+141, and in all that time nobody had ever stopped to watch her — the one street activity in this game
+this project's long-running "give it a spectator" habit (badminton, the mime, tetherball, horseshoes,
+tug-of-war, the sack race, the fudge pot, curling, the gummy ring toss) had never reached. Six other
+worlds have their own hopscotch chalker too (Candy Land, Robot City, Victorian, Sunny Shore, Whisper
+Woods), each still solo — Frosty Peak is the one world without hopscotch at all. **A passer-by now
+stands a few steps east of the squares, on the same stretch of pavement, watching her chalk** — the
+first watcher of a new set, the other five chalkers still to come.
+
+Plain `Wanderer` (55-npcs.js), the same class every watcher in this set already uses — it calls
+`greetable()` on its own, so no extra wiring was needed, and it carries no physics box of its own. The
+Neighborhood turned out to be the one street where this needed extra care: it's the one world whose
+build shares a single unbroken run of simulated frames with `test/run.mjs`'s own behaviour checks (the
+same reason round 1329's chestnut roaster needed its own fix), and `Wanderer` draws three ticks off that
+*shared* `rnd()` sequence in its own constructor whenever `phase`/`timer`/`t` aren't given. All three are
+fixed here instead, with `cryT` pinned to `1e9` since she has no cries of her own — zero draws from the
+shared generator, so nothing built afterwards (there is nothing afterwards; she's dead last before
+`makeDayNight()`) and nothing the test itself checks later gets shifted.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, 3600 simulated frames to settle every neighbour, then 600 more sampling every NPC's
+own position every 6th frame) swept the open pavement east of the hopscotch squares against all 336 of
+this street's own physics boxes (knee-to-head band only) and every sampled NPC position: (63, 17.75) came
+back clear by 1.15 m of the nearest box and 4.25 m of the nearest wandering soul, 4.4 m east of the
+chalker herself. First attempt at a shirt colour (a blue-grey already spoken for by the tetherball
+watcher's own wardrobe bag) tripped the "no two neighbours wear the same shirt" check; a teal
+(`0x5a9a9a`), checked against every shirt literal and wardrobe array already in this street's own build
+function, fixed it.
+
+`node dimension-cat/test/run.mjs` ran clean twice over: exit 0, all 277 checks `ok`, 0 console warnings,
+physics box count unchanged at 336 (she adds none), and the Neighborhood's own friend total rose from 148
+to 149. (The horse-and-carriage distance, the kite height, both snow-world cat-rest heights, the Frosty
+Peak snowball count and world 0's own ground-walkability percentage all drifted a little between the two
+runs — the same pre-existing frame-timing wobble earlier rounds already found and reconfirmed here, not a
+regression.) No visual check was possible in this environment (no browser, no Playwright), so whether she
+actually reads as watching the chalk squares from this angle, rather than just standing nearby, is
+unverified. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1332 — Candy Land's hopscotch chalker gets a watcher, second of the set
+
+Round 1331 started a new round of spectators for every world's own hopscotch chalker, beginning with
+the Neighborhood and leaving five more solo chalkers on the list. **Candy Land's own chalker — kneeling
+on the sweet-lands west of the cane ring since she was first built — now has a gingerbread-village local
+standing a few steps east of her six squares, watching the chalk go down.**
+
+Plain `Wanderer` (55-npcs.js), the same class every watcher in this set already uses — it calls
+`greetable()` itself, so she counts as a friend to meet with no extra wiring, and carries no physics box
+of her own. Built with no cries and every one of `Wanderer`'s own shared-`rnd()` draws
+(`phase`/`timer`/`t`/`cryT`) pinned explicitly instead of left to their defaults, the defensive habit the
+last few rounds' fortune-teller customers and the badminton/mime watchers already settled on, since
+`test/run.mjs` runs every world through one unbroken process and a shift to that *shared* sequence here
+could otherwise nudge some later world's own timing-sensitive number.
+
+A headless probe (`game.start('new')`, `game.load(1, 'from-prev')` for a direct synchronous build, then
+120 simulated frames sampled every 15th frame so every marching, dancing and wandering gingerbread man
+got a turn) swept the open sweet-lands east of the six squares against all 1799 of this land's own
+physics boxes (knee-to-head band only) and every sampled NPC position: (-81, 29) came back clear by
+8.21 m of the nearest box and 5.10 m of the nearest wandering soul, 1.3 m east of the chalker's own last
+square. Built dead last of every person this world's build adds, right after the metal-detector's own
+watcher and right before the squirrel, for the usual reason: `makeHuman()`/`randomPerson()` both draw off
+this land's own shared `r()` sequence unconditionally.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, physics box
+count unchanged (she adds none), and Candy Land's own friend total rose from 146 to 147 (confirmed
+against the previous commit with `git stash`). No visual check was possible in this environment (no
+browser, no Playwright), so whether she actually reads as watching the chalk squares from this angle is
+unverified, the same caveat every watcher in this set has carried so far. Four chalkers (Robot City,
+Victorian, Sunny Shore, Whisper Woods) still have no watcher of their own. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
+
+## Round 1333 — Robot City's hopscotch chalker gets a watcher, third of the set
+
+Third of the hopscotch-watcher set started in round 1331, after the Neighborhood and Candy Land.
+**Robot City's own chalker — kneeling on the factory floor north of the scooter kid since she was
+first built — now has a line worker standing a few steps east of her six squares, watching the chalk
+go down.**
+
+Plain `Wanderer` (55-npcs.js), the same class every watcher in this set already uses — it calls
+`greetable()` itself, so she counts as a friend to meet with no extra wiring, and carries no physics
+box of her own. Built with no cries and every one of `Wanderer`'s own shared-`rnd()` draws
+(`phase`/`timer`/`t`/`cryT`) pinned explicitly, the same defensive habit the other two watchers in this
+set already settled on, since `test/run.mjs` runs every world through one unbroken process.
+
+A headless probe (`game.start('new')`, `game.load(2, 'from-prev')` for a direct synchronous build,
+3600 simulated frames to let every wandering, patrolling and marching robot range fully, then 600 more
+sampling every NPC's own position every 5th frame) swept the open factory floor east of the six
+squares against all 1206 of this city's own physics boxes (knee-to-head band only) and every sampled
+NPC position: (-46, 52) came back clear by 10.67 m of the nearest box and 4.90 m of the nearest
+wandering soul (the chalker herself), at radius 69.4 from the origin — well short of the radius (98)
+where robotRegion's own procedural fill takes over. Built dead last of every person this world's build
+adds, right after the pogo-stick kid and right before the squirrel, for the usual reason: `makeHuman()`
+/`randomPerson()` both draw off this city's own shared `r()` sequence unconditionally.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged, and Robot City's own friend total rose from 154 to 155 (confirmed against the previous
+commit with `git stash`). No visual check was possible in this environment (no browser, no Playwright),
+so whether she actually reads as watching the chalk squares from this angle is unverified, the same
+caveat every watcher in this set has carried so far. Three chalkers (Victorian, Sunny Shore, Whisper
+Woods) still have no watcher of their own. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.
+
+## Round 1334 — Victorian's hopscotch chalker gets a watcher, fourth of the set
+
+Fourth of the hopscotch-watcher set started in round 1331, after the Neighborhood, Candy Land and Robot
+City. **Victorian's own chalker — a boy kneeling on the quiet cobblestones south-west of the market
+square since round 1333's predecessor rounds first gave the town the game — now has a passer-by standing
+a few steps east of his six squares, watching the chalk go down.**
+
+Plain `Wanderer` (55-npcs.js), the same class every watcher in this set already uses — it calls
+`greetable()` itself, so he counts as a friend to meet with no extra wiring, and carries no physics box
+of his own. Built with no cries and every one of `Wanderer`'s own shared-`rnd()` draws
+(`phase`/`timer`/`t`/`cryT`) pinned explicitly instead of left to their defaults, the same defensive
+habit the other three watchers in this set already settled on, since `test/run.mjs` runs every world
+through one unbroken process and a shift to that shared sequence here could otherwise nudge some later
+world's own timing-sensitive number.
+
+A headless probe (`game.start('new')`, `game.load(3, 'from-prev')` for a direct synchronous build, 3600
+simulated frames to settle every wandering urchin and dancer, then 600 more sampling every NPC's own
+position every 6th frame) swept the open cobblestones east of the six squares against all 607 of this
+town's own physics boxes (knee-to-head band only) and every sampled NPC position: (-41, -58) came back
+clear by 12.96 m of the nearest box and 4.90 m of the nearest wandering soul, 4.9 m east of the chalker
+himself, well short of the radius (88) where victorianRegion's own procedural fill takes over.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged at 336 (he adds none), and Victorian's own friend total rose from 190 to 191 (confirmed
+against the previous commit with `git stash`). No visual check was possible in this environment (no
+browser, no Playwright), so whether he actually reads as watching the chalk squares from this angle is
+unverified, the same caveat every watcher in this set has carried so far. Two chalkers (Sunny Shore,
+Whisper Woods) still have no watcher of their own. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html`
+and the root copy.
+
+## Round 1335 — Sunny Shore's hopscotch chalker gets a watcher, fifth of the set
+
+Fifth of the hopscotch-watcher set started in round 1331, after the Neighborhood, Candy Land, Robot City
+and Victorian. **Sunny Shore's own girl — kneeling in the dry dune sand since she was first built,
+drawing six squares straight onto the sand — now has a beachgoer standing a few steps south of her,
+watching the chalk go down.**
+
+Plain `Wanderer` (55-npcs.js), same as the other four watchers in this set — it calls `greetable()`
+itself, so no extra wiring, and carries no physics box of its own. Built with `beachPerson()`, this
+world's own shared wardrobe helper, and every one of `Wanderer`'s shared-`rnd()` draws (`phase`/`timer`/
+`t`/`cryT`) pinned explicitly, the same defensive habit the other watchers in this set settled on, since
+`test/run.mjs` runs every world through one unbroken process.
+
+This is the first of the six chalkers on a terrain world rather than a flat-floor one — Sunny Shore's sand
+slopes gently underfoot — but `Wanderer` already asks the terrain for its own ground height regardless of
+world, so no change was needed there. A headless probe (a scratch script on the same stub-three harness
+`test/run.mjs` itself uses) built the real Sunny Shore, ran 3600 frames to settle every sunbather,
+badminton pair and dog walker, then swept the open dune sand south of the six squares against all 115 of
+this coast's own physics boxes, all 88 `game.zones` rectangles and every sampled NPC position: (-23, -46)
+came back clear by 8.51 m of the nearest box, 14.92 m of the nearest zone rectangle and 3.37 m of the
+nearest wandering soul, well clear of the badminton net and its own fixed watcher nearby.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged at 336, and Sunny Shore's own friend total rose from 163 to 164 (confirmed against the
+previous commit with `git stash`). No visual check was possible in this environment (no browser, no
+Playwright), so whether she actually reads as watching the chalk squares from this angle is unverified,
+the same caveat every watcher in this set has carried so far. Only Whisper Woods' own chalker is still
+solo. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1336 — Whisper Woods' hopscotch chalker gets a watcher, sixth and last of the set
+
+Sixth and last of the hopscotch-watcher set started in round 1331, after the Neighborhood, Candy Land,
+Robot City, Victorian and Sunny Shore. **Whisper Woods' own girl — kneeling deep in the south of these
+woods, chalking six squares straight onto the packed earth since she was first built — now has a
+passer-by standing a few steps south-east of her six squares, watching the chalk go down.**
+
+Plain `Wanderer` (55-npcs.js), same as the other five watchers in this set — it calls `greetable()`
+itself, so no extra wiring, and carries no physics box of its own. Built with plain `makeHuman()` (this
+wood's own chalker uses the same, rather than a local wardrobe helper) and every one of `Wanderer`'s
+shared-`rnd()` draws (`phase`/`timer`/`t`/`cryT`) pinned explicitly, the same defensive habit the other
+watchers in this set settled on, since `test/run.mjs` runs every world through one unbroken process.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, since
+there's no browser here to look at it) built the real Whisper Woods, ran 3600 frames to settle every
+wandering deer, fox, fairy and child, then 600 more sampling every NPC's own position every 5th frame,
+and swept the open forest floor south-east of the six squares against all 748 of this wood's own physics
+boxes (knee-to-head band only) and every sampled NPC position: (29.1, -44.3) came back clear by 7.83 m
+of the nearest box and 4.61 m of the nearest other soul (the chalker herself), 2.31 m south-east of the
+nearest square, at radius 53.0 from the origin — well short of the radius (58) where forestRegion's own
+procedural fill takes over.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged at 336, and Whisper Woods' own friend total rose from 186 to 187 (confirmed against the
+previous commit with `git stash`). No visual check was possible in this environment (no browser, no
+Playwright), so whether she actually reads as watching the chalk squares from this angle is unverified,
+the same caveat every watcher in this set has carried so far. All seven hopscotch chalkers now have a
+watcher of their own — the set started in round 1331 is complete. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
+
+## Round 1337 — Sunny Shore's organ grinder gets a monkey too
+
+Rounds 1273, 1323 and 1324 gave the Neighborhood's, Candy Land's and Robot City's own organ grinders a
+monkey with a tin cup; round 1325 gave Victorian's the same, leaving the three terrain worlds without
+one — their organ grinders came later, once the barrel organ's own physics box was fixed to read the
+ground height underneath it instead of a flat constant. **Sunny Shore, the first of the three terrain
+worlds to get an organ grinder, is now the first to get its monkey too — tucked in the sand beside the
+barrel organ in the dunes' south-west corner, tin cup held in both paws, rattling it now and then.**
+
+No new mechanism: the monkey is the same hand-built mesh and animation (head turn, breathing, tail sway,
+the cup-rattle bursts, all riding the world clock `t` through a single `U.push`, no physics box, no
+`rnd()` draw) the four earlier monkeys already use, copied into `72-world-beach.js` with only the
+position swapped to use `game.physics.ground0()` for the dune's own slope instead of a flat y=0.
+`game.namedFriend('organ-monkey')` plus a `game.addInteractable` gives it the usual "Say hello to the
+monkey" greeting.
+
+A headless probe (`game.start('new')`, `game.travel(4, 'from-hub')` waited out for real against its own
+portal-fade timer, then 1800 simulated frames so every sunbather and dog walker had settled) checked the
+same local offset the other four monkeys use (0.55 m along the organ's own side offset, 1.0 m further
+out, rotated by the grinder's own facing): the computed spot (-36.41, -38.66) came back 0.40 m from the
+organ's own physics box (the same deliberate overlap every earlier monkey sits at), 4.34 m from the next
+nearest box, 1.46 m clear of the nearest `game.zones` rectangle and 1.14 m from the grinder himself — the
+same close proximity every earlier monkey keeps. Ground there settles at 0.59 m, a gentle dune slope that
+doesn't matter over the monkey's own small footprint.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged at 336 (it adds none), and Sunny Shore's own friend total rose from 164 to 165 (confirmed
+against the previous commit with `git stash`). No visual check was possible in this environment (no
+browser, no Playwright). Frosty Peak and Whisper Woods' own organ grinders are still without a monkey.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1338 — Frosty Peak's organ grinder gets a monkey too
+
+Rounds 1273, 1323 and 1324 gave the Neighborhood's, Candy Land's and Robot City's own organ grinders a
+monkey with a tin cup; round 1325 gave Victorian's the same, and round 1337 gave Sunny Shore's the same
+once its organ's own physics box learned to read the dune slope. **Frosty Peak, the second of the three
+terrain worlds to get an organ grinder, is now the second to get its monkey too — tucked in the snow
+beside the barrel organ out on the open snowfield, tin cup held in both paws, rattling it now and then.**
+
+No new mechanism: the monkey is the same hand-built mesh and animation (head turn, breathing, tail sway,
+the cup-rattle bursts, all riding the world clock `t` through a single `U.push`, no physics box, no
+`rnd()` draw) every earlier monkey already uses, copied into `73-world-snow.js` right after the organ
+grinder's own block, with only the position swapped to use `game.physics.ground0()` for the snowfield's
+own gentle slope instead of a flat y=0. `game.namedFriend('organ-monkey')` plus a `game.addInteractable`
+gives it the usual "Say hello to the monkey" greeting — though the toast line swapped Sunny Shore's gull
+for a penguin, since there are no gulls this far up the mountain.
+
+A headless probe (`game.start('new')`, `game.travel(5, 'from-hub')` waited out for real against its own
+portal-fade timer, then 1800 simulated frames so every penguin and passer-by had settled, then 1800 more
+sampling every NPC's own position every 10th frame) checked the same local offset every earlier monkey
+uses (0.55 m along the organ's own side offset, 1.0 m further out, rotated by the grinder's own facing):
+the computed spot (27.72, -28.89) came back 0.40 m from the organ's own physics box (the same deliberate
+overlap every earlier monkey sits at), 3.37 m clear of the nearest `game.zones` rectangle, and 1.14 m
+from the grinder himself — the same close proximity every earlier monkey keeps. Ground there settles at
+0.29 m, with under 7 cm of slope across the monkey's own small footprint.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged at 336 (it adds none), and Frosty Peak's own friend total rose from 159 to 160 (confirmed
+against the previous commit with `git stash`). No visual check was possible in this environment (no
+browser, no Playwright). Whisper Woods remains the only world with neither an organ grinder nor a monkey.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1339 — Whisper Woods' organ grinder gets a monkey too, the seventh and last of the set
+
+Correction first: Whisper Woods has had its own street organ grinder since round 1026, the seventh
+world to get one — the last two rounds' own wording ("Whisper Woods remains the only world with neither
+an organ grinder nor a monkey") was wrong on the grinder half; only the monkey was ever missing, same as
+Sunny Shore and Frosty Peak before rounds 1337 and 1338 closed that gap. **This wood's own organ grinder,
+busking on the forest floor east of the fiddler since round 1026, now has its monkey too — tucked beside
+the barrel organ, tin cup held in both paws, rattling it now and then.** All seven worlds' organ grinders
+now have one.
+
+No new mechanism: the monkey is the same hand-built mesh and animation (head turn, breathing, tail sway,
+the cup-rattle bursts, all riding the world clock `t` through a single `U.push`, no physics box, no
+`rnd()` draw) every earlier monkey already uses, appended into `74-world-forest.js` right after the organ
+grinder's own block (reusing its `gx`/`gz`/`gry` directly, the same way Frosty Peak's round 1338 did),
+with `game.physics.ground0()` for this wood's own gentle slope instead of a flat y=0.
+`game.namedFriend('organ-monkey')` plus a `game.addInteractable` gives it the usual "Say hello to the
+monkey" greeting — the toast line swaps Frosty Peak's penguin for a passing firefly, since there aren't
+any penguins this deep in the trees.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`elements.get('enter').listeners.click[0]()`, `game.load(6, 'from-hub')`, then 3600 simulated frames so
+every frog, firefly, butterfly, fox and wandering villager had settled) checked the same local offset
+every earlier monkey uses (0.55 m along the organ's own side offset, 1.0 m further out, rotated by the
+grinder's own facing): the computed spot (49.65, -10.74) came back 0.55 m from the organ's own physics
+box (the same deliberate overlap every earlier monkey sits at), 11.03 m clear of the nearest
+`game.zones` rectangle, and 1.14 m from the grinder himself — the same close proximity every earlier
+monkey keeps. Ground there settles at 0.76 m, with under 2 mm of slope across the monkey's own small
+footprint.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged at 336 (it adds none), and Whisper Woods' own friend total rose from 187 to 188
+(confirmed against the previous commit with `git stash`). No visual check was possible in this
+environment (no browser, no Playwright), so whether it actually reads as sitting beside the organ from
+this angle is unverified, the same caveat every monkey in this set has carried so far. All seven worlds'
+organ grinders now have their monkey. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.
+
+## Round 1340 — Whisper Woods' fiddler finally gets a listener
+
+Five other worlds (the Neighborhood, Robot City, Sunny Shore, Frosty Peak and Victorian) picked up a
+listener for their own busking fiddler over earlier rounds; Whisper Woods' own, sawing away on a mossy
+log east of the glade, was still playing to nobody. **A passer-by now stands a few steps south-west of
+him, listening instead of wandering on through the trees.** *"Out past the mushrooms, and still every
+note carries clean as a bell."* *"Careful, puss — four strings, and not one of them yarn."* *"The
+fireflies seem to like it too, the way they keep drifting closer."* Saying hello makes her the usual
+kind of friend. Candy Land is now the only world whose own fiddler still plays to nobody.
+
+No new mechanism: a plain `makeHuman()`/`randomPerson()` rig and the same `Wanderer` (55-npcs.js) every
+other fiddler listener already uses, with a short leash (0.5 m) and the ordinary `idle: [3, 6]` fidget
+rather than the frozen stare a fortune teller's customer gets — she sways and blinks like anyone else,
+she just never wanders off. A headless probe (the stub-three test harness, `game.travel(6, 'from-hub')`
+waited out for real, then 1200 simulated frames so every frog, firefly and wandering villager had
+settled) swept the ground near the fiddler's own spot (51, -20) against every physics box and
+`game.zones` rectangle: (48.5, -23) came back clearest — 4.36 m from the nearest box, nearly 16 m clear
+of the nearest zone, on almost flat ground, and well short of the radius where the forest's own
+procedural fill takes over.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, and Whisper
+Woods' own friend total rose from 188 to 189. No visual check was possible in this environment (no
+browser, no Playwright). Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1341 — fixing last round's fiddler-listener duplicate
+
+Correction, not addition. Round 1340's own claim was wrong on both halves: Whisper Woods' fiddler
+already had a listener, added back in round 1171 (*"the last of the seven"*, that entry said, and it
+was right) — and Candy Land's fiddler had had one since round 1113, not never. Round 1340 misread an
+out-of-date comment nearby, decided Whisper Woods was the one still missing a listener, and built a
+second one a few metres from the first. **That duplicate — a second passer-by standing south-west of
+the fiddler, listening to the same tune the round-1171 listener already stands north-west of him
+listening to — is now gone.** The original round-1171 listener stays exactly as she was.
+
+No new mechanism, just a deletion: the whole round-1340 block in `74-world-forest.js` (the
+`fiddleListener` rig, its `Wanderer`, and the comment explaining a chain of events that hadn't happened)
+removed outright. Nothing else in the file referenced its block-scoped locals, so there was nothing
+else to touch. `node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings,
+and Whisper Woods' own friend total is back down to 188 (confirmed against the previous commit with
+`git stash`) — one real friend fewer than round 1340 claimed, because that one was never real in the
+first place. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1342 — Victorian's blacksmith gets a watcher
+
+The blacksmith (round 1330, hammering a forge on the open grass past the last house on the south
+terrace) has worked that anvil alone ever since. Every other solo performer in this game picked up a
+watcher of its own long ago — the woodcutter's own set across all seven worlds finished at round
+1254, the hopscotch chalker's own set finished just two rounds back — but nobody had ever stood and
+watched the blacksmith work. **A boy now stands a couple of steps east of the anvil, watching every
+strike land.** *"Same two swings, every time — raise, then down."* *"Careful, puss — a spark went wide
+of me once."* *"He never once misses the shoe."*
+
+No new mechanism: the same `Wanderer` (55-npcs.js) every watcher in this game already uses, built with
+every shared-`rnd()` draw in its own constructor pinned (angle, phase, timer, `t`, `cryT`) rather than
+left to Wanderer's own defaults, the same defensive habit the hopscotch watchers two rounds back
+settled on — `test/run.mjs` runs every world through one unbroken process, and a stray draw here would
+otherwise nudge some later world's own timing-sensitive numbers. `Wanderer`'s own constructor calls
+`greetable()` itself, so no extra wiring was needed, and it carries no physics box of its own, pure
+bystander like every other watcher in this set.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(3, 'from-prev')` for a direct synchronous build — `travel()`'s own
+fade is deferred behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+simulated frames so every carriage horse and wanderer had already settled) swept a 0.3 m grid 1.3-3.2 m
+out from the smith's own stand (77.5, -17.9) against all 605 of this town's own physics boxes
+(knee-to-head band only), every `game.zones` rectangle and every sampled NPC position: (79.3, -18.8)
+came back clearest — 1.62 m from the nearest box (the quench bucket beside the anvil), 2.80 m from the
+nearest zone rectangle and 2.01 m from the smith himself, at radius 81.5 from the origin, comfortably
+short of the radius (88) where `victorianRegion`'s own procedural fill takes over. Built dead last of
+every person this build adds, right after the hopscotch watcher and right before the squirrel, so
+nothing already drawing off this town's own shared `r()` sequence had its pick shifted.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged at 336 (the watcher adds none), and Victorian's own friend total rose from 191 to 192
+(confirmed against the previous commit with `git stash`). No visual check was possible in this
+environment (no browser, no Playwright), so whether the watcher's stance actually reads as "watching a
+blacksmith" rather than just standing nearby is unverified, same caveat every watcher in this game has
+carried. The other six worlds' blacksmiths — there are none; the forge is Victorian-only so far, the
+first of its kind, so this starts no cross-world set the way the woodcutter and hopscotch watchers did.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1343 — Victorian's cobbler gets a watcher too
+
+The cobbler (round 1333, stitching boots on his stool on the south terrace between the houses at x=52
+and x=62) has sat there alone ever since — last round gave the blacksmith two doors down his own first
+watcher, but nobody had ever stopped to watch the cobbler's needle go in and out. **An old woman now
+stands a couple of steps north-east of his stool, leaning in slightly to watch the stitching.** *"In and
+out, in and out — he's not dropped a stitch yet."* *"Mind your claws, puss — he'll sole yours too, if
+you ask nicely."* *"My own boots came through that door, years back. Still holding."* Saying hello makes
+her the usual kind of friend.
+
+No new mechanism: the same `Wanderer` (55-npcs.js) every watcher in this game already uses, with every
+shared-`rnd()` draw in its own constructor pinned (angle, phase, timer, `t`, `cryT`) rather than left to
+its own defaults, the same defensive habit the blacksmith's own watcher just above settled on —
+`test/run.mjs` runs every world through one unbroken process, and a stray draw here would otherwise
+nudge some later world's own timing-sensitive numbers. `Wanderer`'s own constructor calls `greetable()`
+itself, so no extra wiring was needed, and she carries no physics box of her own, pure bystander like
+every other watcher in this set.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(3, 'from-prev')` for a direct synchronous build, then 3600 simulated
+frames so every carriage horse and wanderer had already settled) swept the narrow gap in the south
+terrace's own iron fences — the same gap the cobbler's own stool sits in — against all 618 of this
+town's own physics boxes (knee-to-head band only): (58.3, -5.1) came back clearest within 1-1.8 m of the
+stool, 1.11 m from the nearest box (the cobbler's own workbench) and 1.77 m from the cobbler himself,
+still on the same pavement strip his stool sits on and well short of the fence corner at x=58.5.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged at 336 (she adds none), and Victorian's own friend total rose from 192 to 193 (confirmed
+against the previous commit with `git stash`). No visual check was possible in this environment (no
+browser, no Playwright), so whether she actually reads as watching the cobbler rather than just standing
+near his stool is unverified, same caveat every watcher in this game has carried. The watchmaker at the
+clock tower — this town's third seated craftsman, after the cobbler and the blacksmith — is now the
+only one of the three still working alone. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.
+
+## Round 1344 — Victorian's watchmaker gets a watcher too
+
+The watchmaker (round from a few nights back, peering through his loupe at a pocket watch on the clock
+tower plaza's quiet south side) is this town's third seated craftsman, after the blacksmith and the
+cobbler — and, as last round's own entry pointed out, the only one of the three still working alone.
+**A young man now stands a couple of steps south-east of the bench, watching the loupe hand instead of
+the tower above it.** *"He hasn't blinked once since I got here — not past that loupe, anyway."*
+*"Those cogs would roll right under your paws, puss. Mind where you tread."* *"Three more watches
+waiting on that cloth. He's in no hurry at all."* Saying hello makes him the usual kind of friend.
+
+No new mechanism: the same `Wanderer` (55-npcs.js) every watcher in this game already uses, with every
+shared-`rnd()` draw in its own constructor pinned (angle, phase, timer, `t`, `cryT`) rather than left
+to its own defaults, the same defensive habit the blacksmith's and cobbler's own watchers settled on
+two rounds back — `test/run.mjs` runs every world through one unbroken process, and a stray draw here
+would otherwise nudge some later world's own timing-sensitive numbers. `Wanderer`'s own constructor
+calls `greetable()` itself, so no extra wiring was needed, and he carries no physics box of his own,
+pure bystander like every other watcher in this set.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(3, 'from-prev')` for a direct synchronous build, then 3600 simulated
+frames so every carriage horse and wanderer had already settled) swept the plaza's own south side out
+to 2.2 m from the watchmaker's own stool (42, -6) against all 618 of this town's own physics boxes
+(knee-to-head band only) and every sampled NPC position: (43.2, -7.8) came back clearest — 1.96 m from
+the nearest box (the watchmaker's own stool) and 2.16 m from the nearest other soul, still inside the
+plaza's own 16x16 paving and the zone circle (radius 11, centred (42, 0)) that keeps `victorianRegion`'s
+own fill off the plaza entirely.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged at 336 (he adds none), and Victorian's own friend total rose from 193 to 194 (confirmed
+by the test's own count). No visual check was possible in this environment (no browser, no Playwright),
+so whether he actually reads as watching the watchmaker rather than just standing near the bench is
+unverified, same caveat every watcher in this game has carried. All three of Victorian's seated
+craftsmen — the blacksmith, the cobbler, the watchmaker — now have company. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1345 — the last three watchers were never actually saying anything
+
+**Fixed a bug: the blacksmith's, cobbler's and watchmaker's own watchers (rounds 1342-1344) had each
+been built with `cryT: 1e9` wherever they also carried `cries` — meant to pin every `rnd()`-dependent
+field on the `Wanderer` constructor (`angle`, `phase`, `timer`, `t`, `cryT`) so nothing shifted the
+town's own shared `r()` sequence, the defensive habit that set's own log entries describe. But `cryT`
+isn't a construction-time draw to dodge — it's the live countdown `Wanderer.update()` ticks down every
+frame before it lets a cry through, and `1e9` game-seconds (at `dt ≈ 1/60`, about 31,700 years of real
+play) meant none of the three would ever actually say their own quoted line: `*"Same two swings, every
+time — raise, then down."*`, `*"In and out, in and out — he's not dropped a stitch yet."*` and `*"He
+hasn't blinked once since I got here — not past that loupe, anyway."*` were all written into this very
+log as if heard, but none of the three could have fired in any session before this round. The
+hopscotch chalker's own watcher (round 1341), built with the same five pinned fields but no `cries` at
+all, was never affected — the bug only bit once a watcher actually carried lines to say.
+
+Fixed by giving each of the three its own small fixed `cryT` (6, 7 and 5 respectively) instead of
+`1e9` — still pinned, so still no `rnd()` draw at construction, just a number small enough to actually
+count down to zero in a normal session rather than one picked to never arrive. `angle`, `phase`,
+`timer` and `t` are untouched; the frozen `idle: [1e9, 1e9]` / `timer: 1e9` pairing that keeps each
+watcher standing stock-still rather than wandering off is a different mechanism entirely (it blocks the
+idle→walk state transition in `Wanderer.move()`, nothing to do with `cryT`) and still does its job.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(3, 'from-hub')` to build Victorian, then for each of the three watchers
+in turn, parking the cat 1 m off its own spot and running 900 simulated frames, 15 seconds of game
+time) confirmed all three now toast their own quoted line well inside that window, where a same-length
+run against the unpatched build never produced one. `node dimension-cat/test/run.mjs` ran clean: exit
+0, all checks `ok`, 0 console warnings, physics box count unchanged at 336 (no mesh or box touched,
+only three numbers in existing `Wanderer` calls). No visual check was possible in this environment (no
+browser, no Playwright), but this one didn't need a screenshot to catch — just reading what the
+constructor actually does with the field it was given. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
+
+## Round 1346 — Victorian's photographer finally gets somebody to photograph
+
+`makeOldCamera()` (60-props.js) has built its tripod with the lens facing "the subject" since the
+round it was written, and every world's photographer has always talked to somebody — Victorian's own
+lines are "Hold very still now — the plate takes a few seconds!" and "Splendid! Right in profile, if
+you please." — but across all seven worlds, not one photographer has ever actually had anyone standing
+in front of the camera. **A lady now stands a step past Victorian's own camera, back straight and
+hands folded, holding the exact pose he keeps asking for.** *"Hold still, they said. I have held still
+for ten whole minutes now."* *"Best side forward. Every single time, without fail."* Saying hello to
+her makes her the usual kind of friend, Victorian's friend count rising from 194 to 195.
+
+This closes a gap the "give the existing performer a watcher" project had genuinely run out of after
+1345 rounds — every stationary performer this log could find (archers, mimes, organ grinders, hula
+hoopers, fortune tellers, every craftsman, even the ice-fishing hole) already has a companion in every
+world that has one, confirmed by grepping for every `*Watcher` variable name in the whole source tree.
+The photographer was the one genuine hold-out: his camera has always had a design-level "subject" spot
+(local +z from the lens, opposite the dark cloth) that nothing ever occupied.
+
+No new class: the same `makeHuman()`/`randomPerson()` rig and `Wanderer` (55-npcs.js) every watcher in
+this town already uses, with the usual frozen shape (`idle: [1e9, 1e9]`, `phase`/`timer`/`t`/`cryT`
+fixed rather than pulled from `rnd()`) plus `blinkT0`/`idleT0`/`sway0` fixed straight in the
+`makeHuman()` call, the same "statue-still" touch the fortune teller's own customer used, which reads
+even better here given she is supposedly holding a long exposure. `angle` points her back at the
+photographer rather than a constant, so she reads as posing for him, not loitering. Learning from last
+round's own bug, `cryT` is a small fixed number (8), not `1e9`, since she does carry `cries`.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(3, 'from-prev')` for a direct synchronous build, then 3600 simulated
+frames so every wandering soul had settled) placed her 2.4 m out from the photographer along the exact
+line his own camera already faces — 1.6 m past the camera's own tripod box, which came back 1.28 m
+clear at that distance — against all 618 of this town's own physics boxes (knee-to-head band only):
+nothing closer, and the only other soul anywhere near is the photographer himself, 2.4 m back down the
+same line, well outside the market square's own zone. A second scratch probe parked the cat on her own
+spot and ran 1800 simulated frames to confirm both lines actually toast this time, not just get written
+into this log.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged at 336 (a `Wanderer` only ever adds a soft circle collider, never a box), and
+Victorian's own "to meet" count rose from 194 to 195 as expected. No visual check was possible in this
+environment (no browser, no Playwright), so whether she actually reads as posing rather than just
+standing there is unverified, the same caveat every watcher in this game has carried — but the other
+six worlds' photographers are still waiting on the same treatment. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
+
+## Round 1347 — the Neighborhood's photographer finally gets somebody to photograph
+
+Round 1346 gave Victorian's street photographer a subject after noticing `makeOldCamera()` has always
+built its lens facing "the subject" while nobody ever stood there, in any of the seven worlds. That
+round only fixed Victorian; the other six, the Neighborhood included, were left exactly as before. **A
+neighbour now stands a step past the Neighborhood's own back-field photographer, holding the pose he
+keeps asking for.** *"Hold still, they said. I have held still for ten whole minutes now."* *"Careful,
+puss — don't spoil the shot, he has only the one plate left."* *"Best side forward. Every single time,
+without fail."* Saying hello to her is the usual kind of friend, the Neighborhood's own count rising by
+one.
+
+Same recipe as Victorian's round: no new class, just `makeHuman()`/`randomPerson()` (55-npcs.js) for
+the rig and `Wanderer` (55-npcs.js) for the "stand and watch" shape — frozen `idle: [1e9, 1e9]` plus
+every one of `Wanderer`'s own construction-time draws (`phase`, `timer`, `t`, `cryT`) fixed rather than
+pulled from `rnd()`, `blinkT0`/`idleT0`/`sway0` fixed straight in the `makeHuman()` call so she actually
+holds still, and `angle` pointed back at the photographer so she reads as posing rather than loitering.
+A fixed shirt (0xe6b8c2, a dusty pink not spoken for anywhere else on this street) keeps the "no two
+neighbours share a shirt" check happy. Placed dead last of everything this street's build adds — right
+after the hopscotch chalker's own watcher and right before `makeDayNight` — since `makeHuman()` and
+`randomPerson()` both draw off the street's own shared `r()` sequence unconditionally.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: click
+"enter", 300 simulated seconds to let every stroller, the postie and the cyclist settle, then every
+NPC's and the squirrel's own position sampled every quarter second over another 300 simulated seconds)
+placed her 2.4 m out from the photographer along the exact line his own camera already faces, against
+all 312 of this street's own physics boxes in the knee-to-head band: 1.37 m clear of the nearest one
+(the camera's own tripod box), and 2.40 m from the nearest other soul, which is the photographer
+himself, back down the same line — nobody else wanders anywhere near that corner of the back field.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged at 336 (a `Wanderer` only ever adds a soft circle collider, never a box). No visual
+check was possible in this environment (no browser, no Playwright), so whether she actually reads as
+posing rather than just standing there is unverified, the same caveat every watcher in this game has
+carried — but five more worlds' photographers (Candy Land, Robot City, Sunny Shore, Frosty Peak,
+Whisper Woods) are still waiting on the same treatment. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy.
+
+## Round 1348 — Candy Land's photographer finally gets somebody to photograph
+
+Rounds 1346 and 1347 gave Victorian's and the Neighborhood's street photographers a subject after
+noticing `makeOldCamera()` has always built its lens facing "the subject" while nobody ever stood
+there, in any of the seven worlds. Candy Land's own tourist, set up on the open sweet-lands north-west
+of the candy-cane ring with lines about "the best view of the cupcake hills", was still pointed at
+empty ground like the four worlds left untouched. **A resident now stands a step past her camera, back
+straight and holding the pose she keeps asking for.** *"Hold still, they said. I have held still for
+ten whole minutes now."* *"Careful, puss — don't spoil the shot, she has only the one plate left."*
+*"Best side forward. Every single time, without fail."* Saying hello to her is the usual kind of
+friend, Candy Land's own count rising to 148.
+
+Same recipe as the first two rounds: no new class, just `makeHuman()`/`randomPerson()` (55-npcs.js) for
+the rig and `Wanderer` (55-npcs.js) for the frozen "stand and watch" shape — `idle: [1e9, 1e9]` plus
+every one of `Wanderer`'s own construction-time draws (`phase`, `timer`, `t`, `cryT`) fixed rather than
+pulled from `rnd()`, `blinkT0`/`idleT0`/`sway0` fixed straight in the `makeHuman()` call so she actually
+holds still, and `angle` pointed back at the photographer so she reads as posing rather than loitering.
+A mint-green shirt (0x6fcf9e) keeps her visually distinct from the birdwatcher and the tourist already
+standing nearby, though Candy Land runs no shared-shirt check the way the Neighborhood does. Placed
+right after the photographer herself, before the dominoes table, since `makeHuman()`/`randomPerson()`
+both draw off Candy Land's own shared `r()` sequence unconditionally.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(1, 'from-prev')` for a direct synchronous build, then 1800 simulated
+frames so every marching, dancing, wandering and ball-tossing gingerbread man had settled) placed her
+2.4 m out from the photographer along the exact line her own camera already faces, against every one of
+this world's own physics boxes in the knee-to-head band: 1.60 m clear of the nearest one (the camera's
+own tripod box) and 2.40 m from the nearest other soul, which is the photographer herself, back down the
+same line — nobody else wanders anywhere near that corner of the sweet-lands.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged at 336 (a `Wanderer` only ever adds a soft circle collider, never a box). No visual
+check was possible in this environment (no browser, no Playwright), so whether she actually reads as
+posing rather than just standing there is unverified, the same caveat every watcher in this game has
+carried — but four more worlds' photographers (Robot City, Sunny Shore, Frosty Peak, Whisper Woods) are
+still waiting on the same treatment. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.
+
+## Round 1349 — Robot City's photographer finally gets somebody to photograph
+
+Rounds 1346-1348 gave the Neighborhood, Victorian and Candy Land's own street photographers a subject
+after noticing `makeOldCamera()` has always built its lens facing "the subject" while nobody ever stood
+there. Robot City's own visitor, set up past the magnet-toss posts to frame the ring of towers behind
+the statue plaza, was still aimed at empty concrete like the three worlds not yet touched. **A resident
+now stands a step past her camera, back straight and holding the pose she keeps asking for.** *"Hold
+still, they said. I have held still for ten whole minutes now."* *"Careful, puss — don't spoil the
+shot, she has only the one plate left."* *"Best side forward. Every single time, without fail."*
+Saying hello to him is the usual kind of friend, Robot City's own count rising to 156.
+
+Same recipe as the first three rounds: no new class, just `makeHuman()`/`randomPerson()` (55-npcs.js)
+for the rig and `Wanderer` (55-npcs.js) for the frozen "stand and watch" shape — `idle: [1e9, 1e9]`
+plus every one of `Wanderer`'s own construction-time draws (`phase`, `timer`, `t`, `cryT`) fixed rather
+than pulled from `rnd()`, `blinkT0`/`idleT0`/`sway0` fixed straight in the `makeHuman()` call so he
+actually holds still, and `angle` pointed back at the photographer so he reads as posing rather than
+loitering. A rust-orange shirt (0xb5651d) keeps him visually distinct from the steel-and-slate palette
+the magnet tossers and the pallet cutter already share, though Robot City runs no shared-shirt check
+the way the Neighborhood does. Placed right after the photographer, before the pallet cutter, since
+`makeHuman()`/`randomPerson()` both draw off this world's own shared `r()` sequence unconditionally.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(2, 'from-prev')` for a direct synchronous build, then 1800 simulated
+frames so every wandering, patrolling, dancing and ball-tossing robot pack had settled) placed him 2.4 m
+out from the photographer along the exact line her own camera already faces, against every one of this
+city's own physics boxes in the knee-to-head band: 1.29 m clear of the nearest one (the camera's own
+tripod box) and 2.40 m from the nearest other soul, which is the photographer herself, back down the
+same line — nobody else wanders anywhere near that corner past the magnet-toss posts.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged at 336 (a `Wanderer` only ever adds a soft circle collider, never a box). No visual
+check was possible in this environment (no browser, no Playwright), so whether he actually reads as
+posing rather than just standing there is unverified, the same caveat every watcher in this game has
+carried — but three more worlds' photographers (Sunny Shore, Frosty Peak, Whisper Woods) are still
+waiting on the same treatment. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root
+copy.
+
+## Round 1350 — Sunny Shore's photographer finally gets somebody to photograph
+
+Rounds 1346-1349 gave the Neighborhood, Victorian, Candy Land and Robot City's own street photographers
+a subject after noticing `makeOldCamera()` has always built its lens facing "the subject" while nobody
+ever stood there. Sunny Shore's own holidaymaker, set up on the open sand between the palms and the
+dune facing out over the water, was still aimed at empty sea like the two worlds not yet touched. **A
+resident now stands a step past her camera, back straight and holding the pose she keeps asking for.**
+*"Hold still, they said. I have held still for ten whole minutes now."* *"Careful, puss — don't spoil
+the shot, she has only the one plate left."* *"Best side forward. Every single time, without fail."*
+Saying hello to her is the usual kind of friend, Sunny Shore's own count rising to 166.
+
+Same recipe as the first four rounds: no new class, just `makeHuman()`/`randomPerson()` (55-npcs.js) for
+the rig and `Wanderer` (55-npcs.js) for the frozen "stand and watch" shape — `idle: [1e9, 1e9]` plus
+every one of `Wanderer`'s own construction-time draws (`phase`, `timer`, `t`, `cryT`) fixed rather than
+pulled from `rnd()`, `blinkT0`/`idleT0`/`sway0` fixed straight in the `makeHuman()` call so she actually
+holds still, and `angle` pointed back at the photographer so she reads as posing rather than loitering.
+A turquoise sarong (0x2f9e8f) keeps her visually distinct from the cream/pink/pale-blue beachwear the
+photographer herself already wears, though Sunny Shore runs no shared-shirt check the way the
+Neighborhood does. Placed right after the photographer, before the mancala board, since
+`makeHuman()`/`randomPerson()` both draw off this world's own shared `r()` sequence unconditionally.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(4, 'from-hub')`, then 1800 simulated frames so every crab, turtle,
+sunbather, dolphin and dog had settled) placed her 2.4 m out from the photographer along the exact line
+her own camera already faces, against every one of this coast's own physics boxes in the knee-to-head
+band: 1.37 m clear of the nearest one (the camera's own tripod box) and 2.40 m from the nearest other
+soul, which is the photographer herself, back down the same line — nobody else wanders anywhere near
+that stretch of open sand, and the spot falls outside every one of `game.zones`'s 88 keep-out
+rectangles.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged at 336 (a `Wanderer` only ever adds a soft circle collider, never a box). No visual
+check was possible in this environment (no browser, no Playwright), so whether she actually reads as
+posing rather than just standing there is unverified, the same caveat every watcher in this game has
+carried — but two more worlds' photographers (Frosty Peak, Whisper Woods) are still waiting on the same
+treatment. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1351 — Frosty Peak's photographer finally gets somebody to photograph
+
+Housekeeping first: this round started with `HEAD` detached 31 commits ahead of `main`, and `main`
+itself 31 commits behind `origin/main`'s expectations — every round from the hopscotch-chalker set
+through round 1350 had been committing correctly but landing on a detached `HEAD` rather than the
+`main` branch, so each round's own `git push origin main` was quietly pushing the stale local `main`
+ref (a no-op) instead of carrying the new work to GitHub. Confirmed `main` was a clean fast-forward
+ancestor of the detached tip, moved `main` up to it (`git checkout -B main <tip>`), and pushed — all 31
+rounds are now actually on `origin/main`, not just sitting in a local, branch-less limbo one git-gc away
+from vanishing when this sandbox is thrown away. Worth a glance from whoever reads this next: confirm
+`git status` doesn't say "detached" before trusting a push did anything.
+
+Rounds 1346-1350 gave the Neighborhood, Victorian, Candy Land, Robot City and Sunny Shore's own street
+photographers somebody standing where `makeOldCamera()`'s lens has always pointed. Frosty Peak's own
+photographer (round 397) was built differently from the start — framing the whole mountainside rather
+than a portrait subject — but the lens still points at empty snow, and a tourist posing with the
+gondola station and peaks behind her reads just as naturally as a portrait would. **A villager now
+stands a step past the camera, back to the mountain, holding the pose she keeps being asked for.**
+*"Hold still, they said. I have held still for ten whole minutes now."* *"Careful, puss — don't spoil
+the shot, she has only the one plate left."* *"Best side forward. Every single time, without fail."*
+Saying hello to her is the usual kind of friend, Frosty Peak's own count rising to 161.
+
+Same recipe as the first five rounds: no new class, `makeHuman()`/`randomPerson()` (55-npcs.js) for the
+rig and `Wanderer` (55-npcs.js) for the frozen "stand and watch" shape — `idle: [1e9, 1e9]` plus every
+one of `Wanderer`'s own construction-time draws (`phase`, `timer`, `t`, `cryT`) fixed rather than pulled
+from `rnd()`, `blinkT0`/`idleT0`/`sway0` fixed straight in the `makeHuman()` call so she actually holds
+still, and `angle` pointed back at the photographer so she reads as posing rather than loitering. A
+cranberry-red coat (0xa33a4a) keeps her visually distinct from the card players' and the photographer's
+own cold-weather wardrobes just drawn a few lines above, though Frosty Peak runs no shared-shirt check
+the way the Neighborhood does. Placed right after the photographer, before the curling rink, since
+`makeHuman()`/`randomPerson()` both draw off this world's own shared `r()` sequence unconditionally.
+One snag the first draft hit: the subject's placement expression originally reused the photographer's
+own block-scoped `px`/`pz`/`pry` consts, which don't exist once that block closes — `node test/run.mjs`
+caught it immediately with a `ReferenceError` on world 5's own build, fixed by recomputing the same
+three values (`subPX`/`subPZ`/`subPRY`) from the literal coordinates instead.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged at 336 (a `Wanderer` only ever adds a soft circle collider, never a box), world 5's own
+"to meet" count up by one to 161. No visual check was possible in this environment (no browser, no
+Playwright), so whether she actually reads as posing rather than just standing there is unverified, the
+same caveat every watcher in this game has carried — but Whisper Woods' own landscape photographer is
+still waiting on the same treatment. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the
+root copy.
+
+## Round 1352 — Whisper Woods' photographer finally gets somebody to photograph
+
+Housekeeping first: this session's `HEAD` started detached again, one commit behind `origin/main`
+because the local `main` ref was stale until a `git fetch` caught it up — `origin/main` itself was
+fine (round 1351's push had landed cleanly). Checked out `main` fresh from `origin/main` before
+touching anything, same fix as last round, just confirming it's a once-per-session local-state
+hiccup rather than a repeat of the actual push bug.
+
+Rounds 1346-1351 gave the Neighborhood, Victorian, Candy Land, Robot City, Sunny Shore and Frosty
+Peak's own photographers somebody standing where `makeOldCamera()`'s lens has always pointed,
+leaving Whisper Woods' own landscape photographer (round 405), framing the deer glade and the
+mushroom ring, as the last of the seven still aimed at empty forest floor. **A forager now stands a
+step past the camera, back to the clearing, holding the pose she keeps being asked for.** *"Hold
+still, they said. I have held still for ten whole minutes now."* *"Careful, puss — don't spoil the
+shot, she has only the one plate left."* *"Best side forward. Every single time, without fail."*
+Saying hello to her is the usual kind of friend, Whisper Woods' own count rising from 188 to 189.
+
+Same recipe as the first six rounds: no new class, just `makeHuman()`/`randomPerson()` (55-npcs.js)
+for the rig and `Wanderer` (55-npcs.js) for the frozen "stand and watch" shape — `idle: [1e9, 1e9]`
+plus every one of `Wanderer`'s own construction-time draws (`phase`, `timer`, `t`, `cryT`) fixed
+rather than pulled from `rnd()`, `blinkT0`/`idleT0`/`sway0` fixed straight in the `makeHuman()` call
+so she actually holds still, and `angle` pointed back at the photographer so she reads as posing
+rather than loitering. A berry-purple shirt (0x8a3a6a) keeps her visually distinct from the
+moss-and-bark wardrobes the photographer and the nearby forager/beekeeper already wear, though
+Whisper Woods runs no shared-shirt check the way the Neighborhood does. Placed right after the
+photographer, before the draughts table, since `makeHuman()`/`randomPerson()` both draw off this
+world's own shared `r()` sequence unconditionally.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses, using
+`game.load(6, 'from-hub')` — the synchronous loader, not the animated `travel()`, after an earlier
+attempt with `start('new')` + `travel()` turned up stale npcs from a half-finished async transition
+and nearly gave a false clearance reading) ran 1200 simulated frames so every deer, fox, hare and
+frog had settled, then checked the new subject directly: 1.30 m clear of the nearest physics box
+(the camera's own tripod box) and 2.40 m from the nearest other soul, the photographer herself, back
+down the same line — nobody else wanders anywhere near that stretch of forest floor.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics
+box count unchanged at 336 (a `Wanderer` only ever adds a soft circle collider, never a box), world
+6's own "to meet" count up by one to 189. No visual check was possible in this environment (no
+browser, no Playwright), so whether she actually reads as posing rather than just standing there is
+unverified, the same caveat every watcher in this game has carried — but with all seven worlds'
+photographers now given a subject, this particular set is complete. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1353 — Frosty Peak gets a grindstone
+
+Housekeeping first: this session's `HEAD` started detached, sitting exactly on `origin/main`'s own
+tip, so nothing had actually been lost — just reset the local `main` branch ref to that same commit
+(`git checkout -B main origin/main`) before touching anything, the same once-per-session hiccup the
+last couple of rounds have already flagged.
+
+A research pass across all seven worlds (README, every controller class in `55-npcs.js`, and a
+rough census of named vignettes per world) found the game is roughly 1350 rounds deep and
+extraordinarily thorough — virtually every obvious profession already exists somewhere, and the
+last thirty-odd rounds have mostly been giving existing set-pieces (photographers, organ grinders,
+hopscotch chalkers) a watcher rather than adding anything new. But one mechanic turned up nowhere
+in the whole codebase: every tool-sharpening vignette so far has been a chop or a wrench strike —
+the woodcutter's axe, the mechanic's spanner — never an edge actually ground smooth against a
+spinning stone. **A travelling grinder now kneels at his own foot-treadle grindstone on the open
+snow past Frosty Peak's second cabin, a blade pressed to the wheel in short, sparking bursts between
+pauses to check the edge against the light.** *"Dull edge is a dangerous edge, out on that ice."*
+*"Careful, puss — sparks bite harder than they look."* *"One more pass and this blade could shave a
+whisker."* Saying hello to him is the usual kind of friend, Frosty Peak's own count rising from 161
+to 162.
+
+New `Grinder` controller (`55-npcs.js`), modelled on `Kneeler`/`Mechanic`: the rig kneels, arms held
+against the wheel with a small tremble while it spins fast and sparks fly every 0.15-0.3 s, then
+eases into a slower idle spin for a second or so while he "checks the edge" before grinding again.
+The grindstone itself — a wooden trestle, an iron axle, a stone disc with an iron rim band — is built
+straight into the controller rather than a separate prop-maker function, since nothing else in the
+game needs one yet. New `SFX.grind()` (`30-audio.js`): a short metal-on-stone scrape, one per spark
+burst rather than a sustained screech, the same single-hit stand-in every other repeating-strike
+vignette in this game already settles for (the woodcutter's axe and the mechanic's wrench don't loop
+a continuous sound either). No new physics box: like `Chopper` and `Kneeler`, only the rig's own
+0.45 m circle collider, the grindstone sitting well inside it.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+`game.start('new')` then `game.load(5, 'from-hub')`, 1800 simulated frames so every penguin, kid and
+skater had settled) swept a 1 m grid of the open snow between the second cabin and the pond against
+all 700 of the mountain's physics boxes and 143 sampled NPC positions: (18, -2) came back clearest in
+that stretch, 3.81 m from the nearest box (one of the ring pines) and 4.56 m from the nearest other
+soul — comfortably past the 0.45 m this kneeling rig and its grindstone need, and well clear of the
+pinwheel placed a few lines above it.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged at 336, world 5's own "to meet" count up by one to 162. No visual check was possible
+in this environment (no browser, no Playwright), so whether the sparks and the tremble actually read
+well together is unverified — the usual caveat every round like this carries. Rebuilt
+`dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1354 — Victorian finally gets a potter
+
+Housekeeping first: `origin/main` had not yet caught up with this round (it was still sitting on
+round 1319, 34 commits behind) by the time this round started, most likely a concurrent session's
+own push still in flight. Mid-round it caught up on its own and this round's own `git push` landed
+clean, fast-forward, no rebase needed — but on the way there this round's own first push attempt,
+made while still a commit behind, got rejected and briefly mistook the gap for a real fork, pushing
+this branch to a now-redundant safety branch (`unpushed-sandbox-rounds-1320-1353`) before the real
+picture came in. That branch is harmless clutter, not a correction of anything — the repo already
+carries a long trail of these from past rounds' own git troubles, and one more costs nothing.
+
+A research pass first: with the blacksmith, the cobbler and the watchmaker already on Victorian's own
+crafts row, and every single-performer act in this game (the juggler, the magician, the organ grinder,
+the photographer, the mime, the basketball kid, the detectorist and now the grindstone from last round)
+already running in all seven worlds with a watcher of its own, there was no obvious "give world X the
+thing world Y already has" move left to make. A search for a wholly new craft instead turned up one no
+world has ever had: a potter at a wheel — the one trade whose entire point is a turntable spinning
+under two cupped hands, something nothing in this game does yet. **A potter now sits at her kick wheel
+on the open grass north of Victorian's own terraces, a lump of clay rising taller between her palms
+before it's lifted away and a fresh one dropped to begin again.** A small shelf beside her carries
+three already-glazed pots — the same "already got the credit" joke the cobbler's own shelf of mended
+boots made a few rounds back. *"Forty years at this wheel and it still comes out crooked half the
+time."* *"Mind your tail, puss — that wheel doesn't know the difference between clay and a cat."*
+*"Every pot on that shelf was once this exact same lump, give or take an afternoon."* Saying hello to
+her is the usual kind of friend, Victorian's own count rising from 195 to 196.
+
+No new controller: `Sitter` (55-npcs.js), the same seated-craftsman shape the cobbler and the
+watchmaker both already use, with both hands fixed low and forward onto the clay in this build's own
+`U.push`, guarded by `!potter.gesture` so a greeting wave still wins over the held pose. The wheel
+itself (a waist-high post, a splash tray and the spinning wheel-head disc) and the rising lump of clay
+on top of it are both driven only by the world clock `t`, never Victorian's own seeded `r` — the disc
+spins at a constant rate throughout, and the clay's own height is a plain eased, periodic function of
+`t`, growing for about four and a half seconds then easing back down over a shorter beat, the same
+trick the picnic blanket's own ripple and every toy pinwheel in this game already settle for. `ry` is
+pinned to a cardinal `PI` rather than computed with `atan2`, the same shortcut the watchmaker's own
+bench already takes, so the wheel and the shelf both sit on simple axis-aligned offsets that line up
+cleanly with their own `P.addBox` colliders.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.load(3, 'from-prev')`, 3600 simulated frames so every carriage horse and wanderer had settled)
+swept the open grass north of the terraces against all 618 of the town's own physics boxes and every
+sampled NPC position: (7.5, 43.5) came back clear by 8.9 m of the nearest box and 17.6 m of the nearest
+other soul, at radius 44.3 from the world origin — comfortably inside the radius (88) where
+`victorianRegion`'s own procedural fill takes over, and clear of the market square, the plaza and every
+other hand-placed prop on this street.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, physics
+box count unchanged at 336, world 3's own "to meet" count up by one to 196. No visual check was
+possible in this environment (no browser, no Playwright), so whether the clay's own rise-and-reset
+actually reads as a pot taking shape, rather than just a cone pulsing in place, is unverified — the
+same caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and
+the root copy.
+
+## Round 1355 — Robot City gets a grindstone too
+
+Frosty Peak picked up a foot-treadle grindstone back in round 1353 — the one sharpening vignette in
+this whole game that actually grinds an edge rather than just striking one (the woodcutter's axe, the
+mechanic's wrench). Robot City already runs a mechanic fixing robots at his bench, but nothing on that
+floor sharpens a blade. **A toolsmith now kneels at her own grindstone on the open floor south of the
+oil vendor's pitch, blade pressed to the spinning wheel in short, sparking bursts between pauses to
+check the edge against the light** — the very same `Grinder` controller (`55-npcs.js`) Frosty Peak
+already built, just set up here between two towers instead of out on the snow. *"Every blade in this
+city dulls the same, steel or not."* *"Mind your tail, puss — these sparks don't care whose fur they
+land on."* *"Back home a grindstone turned by hand. This one still does — the treadle, not a motor."*
+Saying hello to her is the usual kind of friend, Robot City's own count rising from 156 to 157.
+
+No new code beyond the one block that builds her: a human rig (`makeHuman`) rather than a robot one,
+since `Grinder` reaches into `rig.spine` to bend the back while kneeling, a field only a human rig
+carries — `makeRobot()`'s own rig has no spine. Robot City already keeps at least one human visitor
+of its own (the bird spotter on the ledges, the fortune teller's customer), so one more toolsmith
+fits without explanation.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(2, 'from-prev')`, 3600 simulated frames so every wandering,
+patrolling, charging and ball-tossing robot and every vendor had settled, then 600 more sampling every
+NPC's own position every 10th frame) swept a 2 m grid of the open floor (radius 15-90, short of the
+radius where `robotRegion()`'s own procedural fill takes over) against all 1206 of this city's own
+physics boxes, all 296 `game.zones` rectangles and every sampled NPC position, then refined the best
+stretch on a finer half-metre grid: (1, -22.5) came back clear by 7.2 m of the nearest box, 21.9 m of
+the nearest zone rectangle and 7.0 m of the nearest other soul — comfortably past the 0.45 m circle
+this kneeling rig and its own grindstone need.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all checks `ok`, 0 console warnings, physics box
+count unchanged at 336, world 2's own "to meet" count up by one to 157. No visual check was possible
+in this environment (no browser, no Playwright), so whether the sparks and tremble actually read well
+against this floor's cooler lighting is unverified — the usual caveat every round like this carries.
+Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1356 — Victorian gets its own knife-grinder
+
+Frosty Peak (1353) and Robot City (1355) both run a travelling foot-treadle grindstone — the one sharpening vignette in this game that actually grinds an edge rather than just striking one. Victorian London had a real street trade that was exactly this: the knife-and-scissor grinder, wheeling his barrow wheel door to door. **An old knife-grinder now kneels at his wheel on a quiet stretch of cobbles south-west of the market square**, blade pressed to the stone in short, sparking bursts between pauses to check the edge against the light. *"Knives to grind! Scissors to grind! Bring 'em out, I'll not charge you twice."* *"Mind your tail, puss — a stray spark bites harder than it looks."* *"This old wheel's turned since before the Queen took the throne."* Saying hello to him is the usual kind of friend, Victorian's own count rising from 196 to 197.
+
+No new controller: the same `Grinder` (`55-npcs.js`) the other two mountains of sparks already use, just a human rig in a flatcap and apron instead of a parka or overalls. A headless probe (`game.start('new')`, `game.travel(3, 'from-prev')`, 3600 simulated frames) swept the cobbled square against every physics box, every `game.zones` rectangle (read straight from `game.zones.list`) and every sampled NPC position: (-37, -23.25) came back clear by 11.1 m of the nearest box and 11.1 m of the nearest other soul, radius 43.7 from the origin — well short of the radius (88) where `victorianRegion`'s own procedural fill takes over.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, physics box count unchanged at 336 (the `Grinder` controller only adds a circle, not a box). No visual check was possible in this environment (no browser, no Playwright), so whether the sparks and kneeling pose read well against this square's cobblestones is unverified, same caveat as every round like this. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1357 — Candy Land gets a grindstone too
+
+Frosty Peak (1353), Robot City (1355) and Victorian (1356) have all picked up the same foot-treadle grindstone over the last few rounds — the one sharpening vignette in this game that actually grinds an edge rather than just striking one. Candy Land never got one. **A grinder now kneels at her wheel on the open ground south of the chocolate river, a cane-cutting shears pressed to the stone in short, sparking bursts between pauses to check the edge against the light.** *"Blunt shears make ragged canes — nobody wants a jagged candy cane."* *"Mind your tail, puss — sparks fly here same as anywhere else."* *"Every cane trimmed in this land passes over this very wheel first."* Saying hello to her is the usual kind of friend, Candy Land's own count rising from 148 to 149.
+
+No new controller: the same `Grinder` (`55-npcs.js`) the other three worlds already use, same as every round in this set — a kneeling human rig (it reaches into `rig.spine`, a field only `makeHuman()` rigs carry), plain apron, no hat or coat to catch a spark.
+
+A headless probe (`game.start('new')`, then `game.load(1, 'from-prev')` directly rather than `game.travel()` — the travel fade runs on a real `setTimeout`, which a synchronous frame loop never lets fire, so the first attempt at this probe sat on world 0 the whole time without erroring; `load()` skips the fade and lands straight on the target world — then 3600 simulated frames so every tosser, fudge-maker and wanderer had settled, then 600 more sampling every NPC's own position every 10th frame) swept a 2 m grid south of the river (radius 12-50 from the origin, skipping the river's own keep-out band) against all 1807 of this land's own physics boxes (knee-to-head band only), all 452 `game.zones` rectangles and every sampled NPC position, then refined the best stretch on a finer half-metre grid: (-4.5, -49) came back clear by 9.3 m of the nearest box, 20.8 m of the nearest zone rectangle and 9.4 m of the nearest other soul — comfortably past the 0.45 m circle this kneeling rig and its own grindstone need, and well short of the radius (56) where the cane-forest ring takes over.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, Candy Land's own friend total up by one to 149. No visual check was possible in this environment (no browser, no Playwright), so whether the sparks read well against this land's pastel ground is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Remaining worlds still without a grindstone of their own: the Neighborhood, Sunny Shore and Whisper Woods.
+
+## Round 1358 — Sunny Shore gets a grindstone too
+
+Frosty Peak (1353), Robot City (1355), Victorian (1356) and Candy Land (1357) have all picked up the same foot-treadle grindstone over the last several rounds — the one sharpening vignette in this game that actually grinds an edge rather than just striking one. Sunny Shore already runs an angler out on the pier, a net-mender coiling rope and a clam digger working the tideline, but nobody on the whole coast sharpens a blade. **A fish-cleaner now kneels at her own grindstone on the dry sand south-west of the hopscotch squares, a filleting knife pressed to the spinning wheel in short, sparking bursts between pauses to check the edge against the light, facing east toward the water while she works.** *"Can't clean a catch with a dull blade."* *"Mind your tail, puss — these sparks don't care whose fur they land on."* *"Every fish off that pier passes this wheel first."* Saying hello to her is the usual kind of friend, Sunny Shore's own count rising from 166 to 167.
+
+No new controller: the same `Grinder` (`55-npcs.js`) the other four worlds already use — a kneeling human rig (it reaches into `rig.spine`, a field only `makeHuman()` rigs carry, unlike the robots elsewhere in this game), plain apron, no hat, jacket or bag to catch a spark.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, `game.load(4, 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so every sunbather, ball-passer and dog walker had settled, then 600 more sampling every NPC's own position every 10th frame) swept the dry sand south-west of the hopscotch squares (radius under 56) against all 122 of this coast's own physics boxes (knee-to-head band only), all 91 `game.zones` rectangles and every sampled NPC position, then refined the best stretch on a finer half-metre grid: (-14.5, -54) came back clear by 8.5 m of the nearest box, 12.3 m of the nearest zone rectangle and 6 m of the nearest other soul, radius 55.9 from the origin — short of the radius (58) where `beachRegion`'s own procedural fill takes over.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, all 277 checks `ok`, 0 console warnings, physics box count unchanged at 336 (the `Grinder` controller only adds a circle, not a box). No visual check was possible in this environment (no browser, no Playwright), so whether the sparks and kneeling pose read well against this sand is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. The Neighborhood and Whisper Woods are the only worlds left without a grindstone of their own.
+
+## Round 1359 — Whisper Woods gets a grindstone too
+
+Frosty Peak, Robot City, Victorian, Candy Land and Sunny Shore have all picked up the same foot-treadle grindstone over the last several rounds. Whisper Woods already runs a woodcutter splitting logs on the eastern stump, but nothing in the whole glade actually sharpens the axe he swings. **A trapper now kneels at his own wheel on a quiet stretch of the forest floor north of the fairy ring, a hunting knife pressed to the spinning stone in short, sparking bursts between pauses to check the edge against the light.** *"A blade this dull wouldn't fell a sapling, let alone a tree."* *"Mind your tail, puss — these sparks don't care whose fur they land on."* *"Every axe in this wood passes this wheel sooner or later."* Saying hello to him is the usual kind of friend, Whisper Woods' own count rising to 190.
+
+No new controller: the same `Grinder` (`55-npcs.js`) the other five worlds already use — a kneeling human rig, plain apron, no hat or coat to catch a spark. This round also started out aimed at the *last* remaining world, the Neighborhood — and ran straight into why it was the one left for last. The Neighborhood is the one world `test/run.mjs` builds and checks in the same breath, and two of its own checks (the painter's two daubs, the pose on the two gossiping neighbours) key off the shared global `rnd()` sequence's exact position down to the frame. Giving `Grinder` optional overrides for its own construction-time `rnd()` draws (`t`/`cryT`/`phaseT`/`sparkT`, mirroring the pattern `Wanderer` already uses) fixed the first failure, but the grindstone's own sparks keep drawing from that same shared sequence every few tenths of a second once the world is *running*, not just at construction — and that ongoing draw shifted a second, different check a few frames later. Rather than chase a third moving target, this round backed out of the Neighborhood entirely (the `Grinder` constructor still carries the harmless override parameters) and put the trapper in Whisper Woods instead, a world travelled to rather than started from, where this whole class of problem doesn't arise.
+
+A headless probe (`game.load(6, 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so every deer, fox, fairy and wanderer had settled, then 600 more sampling every NPC's own position every 10th frame) swept a 2 m grid north of the fairy ring (radius under 50, well inside `forestRegion`'s own inner radius of 58) against all 666 of this wood's own physics boxes, all 223 `game.zones` rectangles and every sampled NPC position, then refined the best stretch on a finer half-metre grid: (-15.5, 36.5) came back clear by 6.6 m of the nearest box, 12.5 m of the nearest zone rectangle and 7.1 m of the nearest other soul, radius 39.7 from the origin.
+
+`node dimension-cat/test/run.mjs` ran clean three times in a row: exit 0, every check `ok`, 0 console warnings, physics box count unchanged at 336. No visual check was possible in this environment (no browser, no Playwright), so whether the sparks read well against the forest floor is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. The Neighborhood is now the only world left without a grindstone of its own — and, per the above, getting it one isn't a quick follow-up.
+
+## Round 1360 — Sunny Shore picks up the potter too
+
+Round 1354 gave Victorian a potter at her kick wheel — the one craft in this whole game whose entire point is a turntable spinning under two cupped hands. Sunny Shore already sells an ice-cream, a hot dog and fortunes read off a straw mat, but nothing on this whole coast is actually made to sell. **A potter now sits cross-legged at her own wheel in the dry sand north of the tideline, a lump of wet clay rising taller between her palms before it's lifted away and a fresh one dropped to begin again**, a small shelf of three already-glazed pots propped beside her. *"Dig it straight out of the dune bank, if you know where to look — this sand's got clay under it, same as anywhere else."* *"Mind your tail, puss — that wheel doesn't know the difference between clay and a cat."* *"Every pot on that shelf was once this exact same lump, give or take an afternoon."* Saying hello to her is the usual kind of friend, Sunny Shore's own count rising from 167 to 168.
+
+No new controller: the same `Sitter` (`55-npcs.js`) Victorian's own potter already uses, same wheel-and-clay rig (disc spinning at a constant rate, the clay's own height a plain periodic function of the world clock `t`, no `rnd()` draw), just a beach-toned reskin — apron and shorts instead of a petticoat, sand-pale glaze on the pots.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.load(4, 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so every sunbather, ball-passer and dog walker had settled, then 600 more sampling every NPC's own position every 10th frame) swept the dry sand north of the tideline against all 124 of this coast's own physics boxes, all 91 `game.zones` rectangles and every sampled NPC position, then refined the best stretch on a finer half-metre grid: (-13, 31) came back clear by 5.5 m of the nearest box, 19.4 m of the nearest zone rectangle and 5.4 m of the nearest other soul, radius 33.6 from the origin — comfortably inside the radius (58) where `beachRegion`'s own procedural fill takes over.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, Sunny Shore's own friend total and "every NPC is in the scene graph" / "98% of the ground is walkable" checks all passed unchanged. No visual check was possible in this environment (no browser, no Playwright), so whether the pose and the rising clay read well against this sand is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+Housekeeping: this run's container turned up on a detached `HEAD` 41 commits ahead of `origin/main` (rounds 1319-1359 had been built and committed locally across many previous firings but never actually reached the remote — each one's own `git push origin main` was a silent no-op against a local `main` branch ref that had stopped moving). Before starting this round's own work, that backlog was force-pointed onto `main` and pushed — confirmed present on `origin/main` by a fresh `git fetch` — so none of those forty rounds were at risk of being lost when this container is reclaimed.
+
+## Round 1361 — Victorian finally gets a barber
+
+Every tradesman this town has picked up so far mends or sharpens something — the cobbler, the watchmaker, the blacksmith, the knife-grinder. Nobody in the whole game, across all seven worlds, has ever cut hair; a grep for "barber", "haircut" and "barber pole" across every source file and this entire log came back empty before tonight. **A barber now stands beside his own empty chair on a quiet stretch of grass north of the terraces, snipping his shears in the air to test the edge while he waits for a customer who isn't coming — a red-and-white pole spins slowly beside him, striped with the same `TEX.candyCane()` map the sweets two worlds over already wear.** *"Chair's been empty since noon. Can't blame the cat for not sitting in it."* *"Mind your whiskers, puss — these shears don't know a tabby from a trim."* *"Striped same as the sweets two towns over. Nobody's ever asked why."* Saying hello to him is the usual kind of friend, Victorian's own count rising from 197 to 198.
+
+No new controller: `Charger` (`55-npcs.js`), the same standing-and-idling shape the fiddler and the ukulele player already use — the rig does its own idle animation, and this build pins the arms into a held pose each frame (guarded by `!rig.gesture`, so a greeting wave still wins). His own small wardrobe (`barberWard`) keeps him out of `vicWard`'s shared bag, already sized for a dozen other townsfolk. The shears are a tiny pivot of two blade meshes hinged open and shut on the world clock `t` alone — no `rnd()` or local `r()` draw, same zero-cost trick the wishing-well's bucket sway already uses — and the pole's stripe section spins the same way.
+
+A headless probe (`game.start('new')`, `game.load(3, 'from-prev')` directly rather than `game.travel()` — the travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so every carriage horse and wanderer had settled, then 600 more sampling every NPC's own position every 10th frame) swept the green country between the market square and the radius (88) where `victorianRegion`'s own procedural fill takes over (15-85 from the origin) against all 615 of this town's own physics boxes (knee-to-head band only), all 236 `game.zones` rectangles and every sampled NPC position, then refined the best stretch on a half-metre grid: (6.5, 77.5) came back clear by 18.5 m of the nearest box, 15.5 m of the nearest zone rectangle and 15.3 m of the nearest other soul, radius 77.8 from the origin — comfortably inside the region-fill radius and far past every other hand-placed prop on this side of town.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, Victorian's own friend total up by one to 198, "every NPC is in the scene graph" and the walkability checks unchanged. No visual check was possible in this environment (no browser, no Playwright), so whether the chair, the pole and the snipping pose read well against that quiet field is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy.
+
+## Round 1362 — Whisper Woods picks up the potter too
+
+Victorian (1354) and Sunny Shore (1360) have both picked up a potter at her kick wheel — the one craft in this whole game whose entire point is a turntable spinning under two cupped hands. This wood already has a woodcutter splitting logs and a trapper sharpening his blade, but nobody in the whole glade actually makes something to keep. **A potter now sits cross-legged at her own kick wheel on a quiet stretch of forest floor east of the fairy ring, a lump of wet clay rising taller between her palms before it's lifted away and a fresh one dropped to begin again**, a small shelf of three already-glazed pots — forest-green glaze, dug and fired right here — propped beside her. *"Dug it straight out of the streambank myself — this wood's clay throws better than any you'd buy."* *"Mind your tail, puss — that wheel doesn't know the difference between clay and a cat."* *"Every pot on that shelf was once this exact same lump, give or take an afternoon."* Saying hello to her is the usual kind of friend, Whisper Woods' own count rising from 190 to 191.
+
+No new controller: the same `Sitter` (`55-npcs.js`) Victorian's and Sunny Shore's own potters already use — both hands fixed low and forward as if pressed to the clay, held each frame guarded by `!potter.gesture` so a greeting wave still wins. The wheel and the rising lump are both driven only by the world clock `t`, never this wood's own seeded `r` — no `rnd()` draw and no per-frame state to carry, same trick the other two potters settled on. Unlike those two flat-ground worlds, this wood's floor rolls, so every mesh group and physics box here is built on `P.ground0(potX, potZ)` instead of a bare `0`, the same terrain-aware lookup `Sitter` already asks for internally to seat the rig itself.
+
+A headless probe (`game.load(6, 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so every deer, fox, fairy and wanderer had settled, then 600 more sampling every NPC's own position every 10th frame) swept a 2 m grid east of the fairy ring (radius 10-56, short of the radius (58) where `forestRegion()`'s own fill takes over, clear of the trapper (-15.5, 36.5) and the fortune teller's own corner) against all 407 of this wood's own physics boxes (knee-to-head band only), all 223 `game.zones` rectangles and every sampled NPC position, then refined the best stretch on a finer half-metre grid: (32.5, 45.5) came back clear by 8.4 m of the nearest box, 9.1 m of the nearest zone rectangle and 10.6 m of the nearest other soul, radius 55.9 from the origin.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, Whisper Woods' own friend total up by one to 191. No visual check was possible in this environment (no browser, no Playwright), so whether the pose and the rising clay read well against this forest floor is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Candy Land, Robot City, Frosty Peak and the Neighborhood are the worlds still without a potter of their own.
+
+## Round 1363 — Robot City picks up the potter too
+
+Victorian (1354), Sunny Shore (1360) and Whisper Woods (1362) have all picked up a potter at her kick wheel — the one craft in this whole game whose entire point is a turntable spinning under two cupped hands. Robot City already runs a mechanic fixing robots at his bench and, since round 1355, a toolsmith sharpening blades, but nothing on this floor makes anything from scratch. **A potter now sits cross-legged at her own kick wheel on a quiet stretch of open concrete north-west of downtown, a lump of wet clay rising taller between her palms before it's lifted away and a fresh one dropped to begin again**, a small shelf of three already-glazed pots — dull steel-grey glaze, to match everything else on this floor — propped beside her. *"Everyone on this floor fixes something that's already built. I like starting from nothing."* *"Mind your tail, puss — that wheel doesn't know the difference between clay and a cat."* *"Every pot on that shelf was once this exact same lump, give or take an afternoon."* Saying hello to her is the usual kind of friend, Robot City's own count rising from 157 to 158.
+
+No new controller: the same `Sitter` (`55-npcs.js`) Victorian's, Sunny Shore's and Whisper Woods' own potters already use — a human rig (it reaches into `rig.arms`, the same shape every other potter's held pose already uses) with both hands fixed low and forward as if pressed to the clay, held each frame guarded by `!potter.gesture` so a greeting wave still wins. The wheel and the rising lump of clay are both driven only by the world clock `t`, never this city's own seeded `r` — no `rnd()` draw and no per-frame state of its own to carry, the same trick the other three potters already settled on, which also sidesteps the whole class of shared-sequence timing trouble the Neighborhood's own grindstone attempt ran into back in round 1359. `ry` is pinned to a cardinal `PI` rather than computed with `atan2`, the same shortcut the Victorian potter's own bench already takes, so the wheel and the shelf both sit on simple axis-aligned offsets that line up with an axis-aligned `P.addBox`.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, `game.load(2, 'from-prev')`, 3600 simulated frames so every wandering, patrolling, charging and ball-tossing robot and every vendor had settled, then 600 more sampling every NPC's own position every 10th frame) swept a 2 m grid of the open floor (radius 15-85 from the origin, short of the radius (98) where `robotRegion()`'s own procedural fill takes over) against all 1203 of this city's own physics boxes (knee-to-head band only), all 296 `game.zones` rectangles and every sampled NPC position, then refined the best stretch on a quarter-metre grid: (-47.61, 61.53) came back clear by 8.9 m of the nearest box, 32.5 m of the nearest zone rectangle and 9.7 m of the nearest other soul, at radius 77.8 from the origin.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, physics box count unchanged at 336, Robot City's own "to meet" count up by one to 158. No visual check was possible in this environment (no browser, no Playwright), so whether the pose and the rising clay read well against this floor's cooler concrete is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Candy Land, Frosty Peak and the Neighborhood are the worlds still without a potter of their own — and, per round 1359, the Neighborhood's own case isn't a quick follow-up.
+
+## Round 1364 — Candy Land picks up the potter too
+
+Victorian (1354), Sunny Shore (1360), Whisper Woods (1362) and Robot City (1363) have all picked up a potter at her kick wheel — the one craft in this whole game whose entire point is a turntable spinning under two cupped hands. This land already sells fudge, toffee and peppermints from every stall, but nothing here is actually thrown and fired. **A potter now sits cross-legged at her own kick wheel on the open grass north of the cane-forest ring, a lump of wet clay rising taller between her palms before it's lifted away and a fresh one dropped to begin again**, a small shelf of three already-glazed pots — bright candy-pink glaze, same as everything else in this land — propped beside her. *"Sugar's not the only thing you can shape with your own two hands."* *"Mind your tail, puss — that wheel doesn't know the difference between clay and a cat."* *"Every pot on that shelf was once this exact same lump, give or take an afternoon."* Saying hello to her is the usual kind of friend, Candy Land's own count rising from 149 to 150.
+
+No new controller: the same `Sitter` (`55-npcs.js`) the other four potters already use — both hands fixed low and forward as if pressed to the clay, held each frame guarded by `!potter.gesture` so a greeting wave still wins. The wheel and the rising lump of clay are both driven only by the world clock `t`, never this land's own seeded `r` — no `rnd()` draw and no per-frame state of its own to carry, the same trick the other four potters already settled on. `ry` is pinned to a cardinal `PI` rather than computed with `atan2`, the same shortcut the other reskins already take, so the wheel and the shelf both sit on simple axis-aligned offsets that line up with an axis-aligned `P.addBox`.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, `game.load(1, 'from-prev')` directly rather than `game.travel()` — the travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so every tosser, fudge-maker, grinder and wanderer had settled, then 600 more sampling every NPC's own position every 10th frame) swept a 2 m grid of the open grass (radius 15-85 from the origin, past the candy-cane ring's own 56-76 m band and short of the radius (92) where `candyRegion`'s own procedural fill takes over) against all 1799 of this land's own physics boxes (knee-to-head band only), all 452 `game.zones` rectangles (including the chocolate river's own span) and every sampled NPC position, then refined the best stretch on a half-metre grid: (-24.5, 77) came back clear by 12.4 m of the nearest box, 13.5 m of the nearest zone rectangle and 12.5 m of the nearest other soul, at radius 80.8 from the origin.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok` (277 of them), 0 console warnings, Candy Land's own "to meet" count confirmed up by one (149 → 150 verified by stashing the change and rerunning). No visual check was possible in this environment (no browser, no Playwright), so whether the pose, the pink glaze and the rising clay read well against the grass north of the cane-forest ring is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Frosty Peak and the Neighborhood are the only worlds left without a potter of their own — and, per round 1359, the Neighborhood's own case isn't a quick follow-up.
+
+## Round 1365 — Frosty Peak picks up the potter too
+
+Victorian (1354), Sunny Shore (1360), Whisper Woods (1362), Robot City (1363) and Candy Land (1364) have all picked up a potter at her kick wheel — the one craft in this whole game whose entire point is a turntable spinning under two cupped hands. This mountain already runs a knife-grinder sharpening blades, but nothing on it is actually made from scratch. **A potter now sits cross-legged at her own kick wheel on a quiet stretch of open snow north-west of the village, a lump of wet clay rising taller between her palms before it's lifted away and a fresh one dropped to begin again**, a small shelf of three already-glazed pots — a frosty blue-white glaze, fired before the first snow fell — propped beside her. *"Clay doesn't care how cold it is, only that your hands don't shake."* *"Mind your tail, puss — that wheel doesn't know the difference between clay and a cat."* *"Every pot on that shelf was once this exact same lump, give or take an afternoon."* Saying hello to her is the usual kind of friend, Frosty Peak's own count rising from 162 to 163.
+
+No new controller: the same `Sitter` (`55-npcs.js`) the other five potters already use — both hands fixed low and forward as if pressed to the clay, held each frame guarded by `!potter.gesture` so a greeting wave still wins. The wheel and the rising lump of clay are both driven only by the world clock `t`, never this mountain's own seeded `r` — no `rnd()` draw and no per-frame state of its own to carry, the same trick the other five potters already settled on. Like Whisper Woods and Victorian, this mountain's floor rolls, so every mesh group and physics box is built on `P.ground0(potX, potZ)` instead of a bare `0`. Unlike the other five potters, who work bare-armed in an apron alone, she's dressed warm — `hat: 'beanie'`, `coat: true`, `scarf`, `cuffs` plus the usual apron over the top — the exact combination this mountain's own knife-grinder already wears, so no new wardrobe trick was needed to keep her from freezing.
+
+A headless probe (`game.start('new')`, `game.load(5, 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so every penguin, reindeer, kid and skater had settled, then 600 more sampling every NPC's own position every 10th frame) swept a 2 m grid of the open snow (radius 12-54, short of the radius (58) where `snowRegion()`'s own procedural fill takes over) against all 373 of this mountain's own physics boxes (knee-to-head band only), all 151 `game.zones` rectangles and every sampled NPC position, then refined the best stretch on a quarter-metre grid: (-18.25, 43.75) came back clear by 7.7 m of the nearest box, 11.0 m of the nearest zone rectangle and 7.8 m of the nearest other soul, radius 47.4 from the origin — well clear of the curling watcher (-30.34, 45.07) and the wagon hauler, despite the hauler sharing roughly the same z. Ground across her own footprint runs 1.76-1.89 m, under 13 cm of slope, so no terrain grading was needed.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, Frosty Peak's own friend total confirmed up by one to 163. No visual check was possible in this environment (no browser, no Playwright), so whether the pose, the icy glaze and the rising clay read well against the snow is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. The Neighborhood is now the only world left without a potter of its own — and, per round 1359, its own case isn't a quick follow-up.
+
+Housekeeping: this run's container also turned up on a detached `HEAD` 45 commits ahead of `origin/main` — the same silent-push-no-op problem noted in round 1360's own housekeeping note. Before starting this round's own work, local `main` was fast-forwarded onto that `HEAD` and pushed; a fresh `git fetch` confirmed `origin/main` now matches, so none of those forty-five rounds were at risk of being lost when this container is reclaimed.
+
+## Round 1366 — Candy Land gets its own barber
+
+Victorian's barber (1361) spins a pole striped with `TEX.candyCane()` because that texture was already lying around — his own dialogue even wonders aloud why his pole is "striped same as the sweets two towns over." Tonight answers that joke: this land *is* the sweets. **A barber now stands beside his own empty chair on the open grass past the candy-cane ring, snipping his shears in the air to test an edge no customer is coming to try — his pole striped with that exact same candy-cane map, only here it isn't a borrowed joke.** *"Folks keep asking if my pole's good enough to lick. It is not."* *"Mind your whiskers, puss — these shears don't know a tabby from a trim."* *"Heard there's a barber in some old town who stripes his pole just like mine. Tell him he's welcome to it."* Saying hello to him is the usual kind of friend, Candy Land's own count rising from 150 to 151.
+
+No new controller: the same `Charger` (`55-npcs.js`) Victorian's own barber already uses — a standing rig that idles on its own, its arms pinned into a held snipping pose each frame (guarded by `!barber.gesture`, so a greeting wave still wins). His own small wardrobe (`barberWard`) keeps him out of this build's other wardrobe bags. The shears are the same two-blade hinge, oscillating open and shut on the world clock `t` alone — no `rnd()` or local `r()` draw, so nothing later in this land's own build had its own `r()` pick shifted.
+
+A headless probe (`game.start('new')`, `game.load(1, 'from-prev')` directly rather than `game.travel()` — the travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so every tosser, fudge-maker, grinder and wanderer had settled, then 600 more sampling every NPC's own position every 10th frame) swept a 2 m grid of the open grass (radius 15-85 from the origin, past the candy-cane ring's own 54-78 m band and clear of the potter's own spot) against all 1803 of this land's own physics boxes (knee-to-head band only), all 452 `game.zones` rectangles and every sampled NPC position, then refined the best stretch on a half-metre grid: (-43.5, 70.5) came back clear by 11.3 m of the nearest box, 11.3 m of the nearest zone rectangle and 11.5 m of the nearest other soul, at radius 82.8 from the origin — comfortably short of the radius (92) where `candyRegion`'s own procedural fill takes over.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, Candy Land's own friend total up by one to 151, "every NPC is in the scene graph" and the walkability checks (92%) unchanged. No visual check was possible in this environment (no browser, no Playwright), so whether the chair, the pole and the snipping pose read well against this land's own grass is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Robot City, Sunny Shore, Frosty Peak, Whisper Woods and the Neighborhood are the worlds still without a barber of their own.
+
+## Round 1367 — Robot City picks up a barber too
+
+Victorian (1361) and Candy Land (1366) have both picked up a barber beside his own empty chair. Robot City seemed like the one place this joke writes itself: robots don't grow hair, and this city's own barber knows it better than anyone. **A barber now stands beside his own empty chair on a quiet stretch of open concrete south-west of downtown, snipping his shears in the air to test an edge no customer — human or otherwise — is ever coming to try, a candy-striped pole spinning beside him anyway.** *"Robots don't grow hair. I don't know why I set up shop here either."* *"Mind your whiskers, puss — these shears don't know a tabby from a trim."* *"Heard there's two of me in towns I've never even seen. Small world."* Saying hello to him is the usual kind of friend, Robot City's own count rising from 158 to 159.
+
+No new controller: the same `Charger` (`55-npcs.js`) the other two barbers already use — a standing rig that idles on its own, its arms pinned into a held snipping pose each frame, guarded by `!barber.gesture` so a greeting wave still wins. His own small wardrobe (`barberWard`) is steel-and-slate toned to match this floor's potter rather than either other barber's own palette, keeping him out of this build's other wardrobe bags. The shears and the pole stripe are both driven only by the world clock `t` alone — no `rnd()` or local `r()` draw, so nothing later in this city's own build had a pick shifted by it.
+
+A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, `game.load(2, 'from-prev')` directly rather than `game.travel()` — the travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so every wandering, patrolling, charging and ball-tossing robot and every vendor had settled, then 600 more sampling every NPC's own position every 10th frame) swept a 2 m grid of the open floor (radius 15-85 from the origin, short of the radius (98) where `robotRegion()`'s own procedural fill takes over) against all 1205 of this city's own physics boxes (knee-to-head band only), all 296 `game.zones` rectangles and every sampled NPC position, then refined the best stretch on a quarter-metre grid: (-25, -62) came back clear by 9.0 m of the nearest box, 28.9 m of the nearest zone rectangle and 9.9 m of the nearest other soul, at radius 66.9 from the origin — well clear of the mechanic's bench, the toolsmith's grindstone and the potter two blocks over.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, Robot City's own friend total confirmed up by one (158 → 159 verified by stashing the change and rerunning), "every NPC is in the scene graph" and the walkability checks (88%) unchanged. No visual check was possible in this environment (no browser, no Playwright), so whether the chair, the pole and the snipping pose read well against this floor's cooler concrete is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Sunny Shore, Frosty Peak, Whisper Woods and the Neighborhood are the worlds still without a barber of their own.
+
+## Round 1368 — Sunny Shore picks up a barber too
+
+Victorian (1361), Candy Land (1366) and Robot City (1367) have all picked up a barber beside his own empty chair, his pole striped with the same `TEX.candyCane()` map. This coast already sells sunscreen, busks a harmonica and runs a mime act, but nobody on the whole beach has ever cut hair. **A barber now stands beside his own empty chair on the open sand south of the potter, snipping his shears in the air to test an edge no customer is ever coming to try, his candy-striped pole spinning beside him in the heat.** *"Pole gets hot enough to fry an egg on, come noon."* *"Mind your whiskers, puss — these shears don't know a tabby from a trim."* *"Heard there's three more of me now, same striped pole and all. Must be a popular joke."* Saying hello to him is the usual kind of friend, Sunny Shore's own count rising from 168 to 169.
+
+No new controller: the same `Charger` (`55-npcs.js`) the other three barbers already use — a standing rig that idles on its own, its arms pinned into a held snipping pose each frame, guarded by `!barber.gesture` so a greeting wave still wins. Own small wardrobe (`barberWard`), a cream shirt and teal shorts under a coral apron, distinct from all three other barbers' own palettes. Unlike those three flat-ground worlds, this coast's floor rolls, so the chair, the pole and their physics boxes are all built on a single `gy0 = P.ground0(bx, bz)` looked up once and reused for both — the same trick this beach's own potter (round 1360) and Frosty Peak's own potter (round 1365) already settled on. The shears and the pole stripe are both driven only by the world clock `t` alone — no `rnd()` or local `r()` draw, so nothing later in this beach's own build had a pick shifted by it.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, `game.load(4, 'from-prev')` directly rather than `game.travel()` — the travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so every sunbather, ball-passer and dog walker had settled, then 600 more sampling every NPC's own position every 10th frame) swept a 2 m grid of the open sand (radius 15-58, short of the radius (58) where `beachRegion()`'s own procedural fill takes over) against all of this coast's own physics boxes (knee-to-head band only), all 91 `game.zones` rectangles and every sampled NPC position, then refined the best stretch on a half-metre grid: (-20, 52) came back clear by 8.6 m of the nearest box, 6.1 m of the nearest zone rectangle and 6.4 m of the nearest other soul, radius 55.8 from the origin — comfortably south of the potter at (-13, 31).
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok` (277 of them), 0 console warnings, Sunny Shore's own friend total confirmed up by one (168 → 169 verified by stashing the change and rerunning), "every NPC is in the scene graph" and the walkability checks (98%) unchanged. No visual check was possible in this environment (no browser, no Playwright), so whether the chair, the pole and the snipping pose read well against this coast's own sand is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Frosty Peak, Whisper Woods and the Neighborhood are the worlds still without a barber of their own.
+
+## Round 1369 — Frosty Peak picks up a barber too
+
+Victorian (1361), Candy Land (1366), Robot City (1367) and Sunny Shore (1368) have all picked up a barber beside his own empty chair, his pole striped with the same `TEX.candyCane()` map. This mountain already runs a knife-grinder sharpening blades and, since last round, a potter at her wheel, but nobody up here has ever actually cut hair. **A barber now stands beside his own empty chair on a quiet stretch of open snow east of the village, snipping his shears in the air to test an edge no customer is ever coming to try, his candy-striped pole spinning beside him in the cold.** *"Wind up here's sharper than any trim I could give you."* *"Mind your whiskers, puss — these shears don't know a tabby from a trim."* *"Heard there's four more of me now, same striped pole and all. Must be a popular joke."* Saying hello to him is the usual kind of friend, Frosty Peak's own count rising from 163 to 164.
+
+No new controller: the same `Charger` (`55-npcs.js`) the other four barbers already use — a standing rig that idles on its own, its arms pinned into a held snipping pose each frame, guarded by `!barber.gesture` so a greeting wave still wins. Own small wardrobe (`barberWard`), a grey coat and dark trousers rather than any other barber's own palette. Dressed warm like this mountain's own potter and knife-grinder — `hat: 'beanie'`, `coat: true`, `scarf`, `cuffs` — so no new wardrobe trick was needed to keep him from freezing. Like Sunny Shore's own barber, this mountain's floor rolls, so the chair and pole groups and their physics boxes are both built on a single `gy0 = P.ground0(bx, bz)` looked up once and reused for both. The shears and the pole stripe are both driven only by the world clock `t` alone — no `rnd()` or local `r()` draw, so nothing later in this mountain's own build had a pick shifted by it.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, `game.load(5, 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so every penguin, reindeer, kid and skater had settled, then 600 more sampling every NPC's own position every 10th frame) swept a 2 m grid of the open snow (radius 12-54 from the origin, short of the radius (58) where `snowRegion()`'s own procedural fill takes over) against all 373 of this mountain's own physics boxes (knee-to-head band only), all 151 `game.zones` rectangles and every sampled NPC position, then refined the best stretch on a quarter-metre grid: (34, -35.5) came back clear by 7.5 m of the nearest box, 9.4 m of the nearest zone rectangle and 7.5 m of the nearest other soul, radius 49.2 from the origin. Ground across his own footprint runs 0.05-0.20 m, under 15 cm of slope, so no terrain grading was needed.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, physics box count unchanged at 336, Frosty Peak's own friend total confirmed up by one to 164, "every NPC is in the scene graph" and the walkability checks (98%) unchanged. No visual check was possible in this environment (no browser, no Playwright), so whether the chair, the pole and the snipping pose read well against this mountain's own snow is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Whisper Woods and the Neighborhood are the worlds still without a barber of their own — and, per round 1359, the Neighborhood's own case isn't a quick follow-up.
+
+## Round 1370 — Whisper Woods picks up a barber too
+
+Victorian (1361), Candy Land (1366), Robot City (1367), Sunny Shore (1368) and Frosty Peak (1369)
+have all picked up a barber beside his own empty chair, his pole striped with the same
+`TEX.candyCane()` map. This wood already runs a trapper sharpening blades at his grindstone and a
+potter at her wheel, but nobody here had ever actually cut hair. **A barber now stands beside his
+own empty chair on a quiet stretch of forest floor south-east of the fairy ring, snipping his shears
+in the air to test an edge no customer is ever coming to try, his candy-striped pole propped in the
+moss beside him.** *"Not much call for a trim out here, but whiskers need evening same as anywhere
+else."* *"Mind your tail, puss — these shears don't know a tabby from a trim."* *"Five more of me
+now, same striped pole and all. Must be a popular joke."* Saying hello to him is the usual kind of
+friend, Whisper Woods' own count rising from 191 to 192.
+
+No new controller: the same `Charger` (55-npcs.js) the other five barbers already use — a standing
+rig that idles on its own, its arms pinned into a held snipping pose each frame, guarded by
+`!barber.gesture` so a greeting wave still wins. Own small wardrobe (`barberWard`), a moss-green
+shirt and dark trousers rather than any other barber's own palette — no hat, coat or scarf needed,
+this wood runs milder than the mountain. Like this wood's own trapper and potter, the floor rolls
+here, so the chair and pole groups and their physics boxes are both built on a single `gy0 =
+P.ground0(bx, bz)` looked up once and reused for both. The shears and the pole stripe are both driven
+only by the world clock `t` alone — no `rnd()` or local `r()` draw, so nothing later in this wood's
+own build had a pick shifted by it.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(6, 'from-hub')` directly rather than `game.travel()` — the travel
+fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+simulated frames so every deer, fox, fairy and wanderer had settled, then 600 more sampling every
+NPC's own position every 10th frame) swept a 2 m grid south-east of the fairy ring (radius 10-54,
+short of the radius (58) where `forestRegion()`'s own fill takes over, clear of the trapper
+(-15.5, 36.5) and the potter (32.5, 45.5)) against all 420 of this wood's own physics boxes
+(knee-to-head band only), all 223 `game.zones` rectangles and every sampled NPC position, then
+refined the best stretch on a finer half-metre grid: (26.5, 29.5) came back clear by 7.3 m of the
+nearest box, 14.3 m of the nearest zone rectangle and 8.9 m of the nearest other soul, radius 39.6
+from the origin. Ground across his own footprint runs 0.81-0.86 m, under 5 cm of slope, so no terrain
+grading was needed.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, Whisper
+Woods' own friend total confirmed up by one (191 → 192), "every NPC is in the scene graph" and the
+walkability check (98%) unchanged, across two consecutive runs. No visual check was possible in this
+environment (no browser, no Playwright), so whether the chair, the pole and the snipping pose read
+well against this wood's own forest floor is unverified, the usual caveat every round like this
+carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. The Neighborhood
+is the only world left without a barber of its own — and, per round 1359, its own case isn't a quick
+follow-up.
+
+## Round 1371 — the Neighborhood finally gets its barber too, closing out the set
+
+Victorian, Candy Land, Robot City, Sunny Shore, Frosty Peak and Whisper Woods have all picked up the same barber beside his own empty chair over rounds 1361 and 1366-1370. The Neighborhood was left out each time, and round 1359's own postmortem (aimed at a grindstone, not a barber) explained why: this is the one world whose build shares a single unbroken run of simulated frames with `test/run.mjs`'s own behaviour checks, so any extra draw from the *shared* `rnd()` generator — not this street's own local `r()` — nudges every timing-sensitive pick made anywhere else in that same run, the painter's own daub-pose check among them. **A barber now stands beside his own empty chair on the quiet field south-west of the street, snipping his shears in the air to test an edge no customer is ever coming to try, his candy-striped pole propped in the grass beside him.** *"Every other street in the seven worlds has one of me by now. Took this one long enough."* *"Mind your whiskers, puss — these shears don't know a tabby from a trim."* *"Quiet corner, this. Suits a trade nobody actually needs."* Saying hello to him is the usual kind of friend, the Neighborhood's own count rising from 150 to 151.
+
+No new controller: the same `Charger` (`55-npcs.js`) every other barber already uses. The fix that made this possible is in `Charger` itself, not around it — the same trick round 1329's own chestnut roaster used on `Vendor`: two new optional constructor fields, `t0` and `cryT0`, standing in for `Charger`'s two unconditional `rnd()` draws (`this.t = rnd() * 10`, and `this.cryT = rnd.range(4, 9)` whenever `cries` is set) when given, changing nothing for any of the dozen-odd other callers that don't pass them. Both are fixed here (`t0: 2.6`, `cryT0: 11`), so construction draws nothing from the shared sequence at all. Own small wardrobe (`barberWard`), a single fixed shirt (0xf5ece0, not spoken for by any other neighbour's own wardrobe) under a dusty-rose apron, keeps the "no two neighbours wear the same shirt" check happy. The shears and the pole stripe are both driven only by the world clock `t` alone, so nothing during the simulated run draws from the shared sequence either — unlike the grindstone's own sparks, which round 1359 found drew on it continuously and couldn't be fixed with a one-time override.
+
+A headless probe (`game.start('new')`, 3600 simulated frames to settle every neighbour, then 600 more sampling every NPC's own position every 10th frame) swept the open field south-west of the street (radius 10-65, clear of the picnic blanket at (-40, -30)) against all 312 of this street's own physics boxes (knee-to-head band only), all 69 `game.zones` rectangles and every sampled NPC position: (-37, -20.5) came back clear by 10.7 m of the nearest box, 12.0 m of the nearest zone rectangle and 10.8 m of the nearest other soul, radius 42.3 from the origin. Built dead last of everything this street adds, right after the photographer's own subject (round 1346) and right before `makeDayNight`, same as always.
+
+`node dimension-cat/test/run.mjs` ran clean five times in a row: exit 0, every check `ok`, 0 console warnings, physics box count up by two to 338 (the chair and the pole), the Neighborhood's own friend total confirmed up by one to 151 (via the test's own "151 to meet" line). One of those five runs hit the pre-existing Sunny Shore kite timing flake these logs have documented since round 219 — unrelated to this round's own change, and absent on every other run. No visual check was possible in this environment (no browser, no Playwright), so whether the chair, the pole and the snipping pose read well against this street's own grass is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. All seven worlds now have a barber.
+
+## Round 1372 — a watcher for Candy Land's tetherball pole
+
+Round 508's own list of playground games gave the Neighborhood, Victorian, Robot City and Frosty Peak a tetherball pole, and round 521 gave the Neighborhood's own pole the game's first spectator — but that watcher series never made it past its first stop, even though Candy Land's own pole (round 547) has had its two gingerbread-sweet kids batting the ball round it for a long while now. **A gingerbread-village local now stands a few steps south-west of the pole, watching the ball swing round on its rope.** No lines of her own — this one just watches — Saying hello to her makes her the usual kind of friend, Candy Land's own count rising from 151 to 152.
+
+No new class: the same `Wanderer` (`55-npcs.js`) every watcher elsewhere in the game already uses — a plain `makeHuman()`/`randomPerson()` rig with no fixed wardrobe, `angle` pointed at the pole's own fixed centre (50, -30), and the relaxed `idle: [3, 6]`/`walk: [1, 1.6]` this land's own watchers already settle on. Unlike the Neighborhood, Candy Land builds and runs on its own local seeded `r()`, not the shared global `rnd()` the real timing-sensitive checks key off, so none of the `t0`/`cryT0`-style overrides those Neighborhood watchers need were called for here.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, `game.travel(1, 'from-hub')`, 2400 simulated frames so the tetherball pair, the kite-flying kid and every other NPC had already settled, then every NPC's own position sampled every 6th frame) swept a 1 m grid in a ring 2-7 m out from the pole's own centre (50, -30) against all 1803 of this land's own physics boxes (knee-to-head band only) and every sampled position: (45, -33) came back clearest — 5.71 m from the nearest box, 5.00 m from the nearest other soul and 5.83 m from the pole itself, south-west of it, clear of the kite-flying kid at (51, -33) and south of the chocolate river's own band. The first attempt at this probe hung indefinitely — a tight `while (game.worldIndex !== 1) frames(2);` loop with no real wait never let the travel fade's own `setTimeout` fire, the same trap `test/run.mjs` itself dodges with `await sleep(40)` between polls — fixed by copying that exact pattern into the probe.
+
+Built dead last of everything Candy Land adds, right after the barber (round 1366) and right before `spawnBySquirrel()`. `node dimension-cat/test/run.mjs` ran clean three times in a row: exit 0, every check `ok`, 0 console warnings, physics box count unchanged at 338 (a `Wanderer` adds a dynamic circle, not a static box), Candy Land's own friend total confirmed up by one (151 → 152). No visual check was possible in this environment (no browser, no Playwright), so whether she reads as watching rather than just standing nearby is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. The horseshoe pit, tug-of-war and sack race in every world but the Neighborhood are still waiting on a watcher of their own, and five more worlds still owe their tetherball pole one too.
+
+## Round 1373 — a watcher for Robot City's tetherball pole
+
+Round 1372 gave Candy Land's tetherball pole its first watcher since the Neighborhood's own (round 521), leaving five more worlds' poles still unwatched. **A third off-shift worker now stands a few steps east of Robot City's tetherball pole, watching the ball swing round on its rope.** No lines of her own — this one just watches — but saying hello to her makes her the usual kind of friend, Robot City's own count rising from 159 to 160.
+
+No new class: the same `Wanderer` (`55-npcs.js`) every watcher elsewhere in the game already uses — a plain `makeHuman()`/`randomPerson()` rig with no fixed wardrobe, `angle` pointed at the pole's own fixed centre (29, -16). Robot City builds and runs on its own local seeded `r()`, not the shared global `rnd()` the Neighborhood's timing-sensitive checks key off, so nothing here needed a draw pinned.
+
+A headless probe (`game.start('new')`, `game.travel(2, 'from-hub')`, 3600 simulated frames so both tetherball workers and the tug-of-war haulers had settled, then 600 more sampling every NPC's own position every 5th frame) swept a ring 2-7 m out from the pole against all 1207 of this city's own physics boxes (knee-to-head band only) and every sampled position: (36, -16) came back clearest — due east, past worker A at (31, -16) — 6.5 m from the nearest box and 6.06 m from the nearest other soul, well short of the tug-of-war haulers at (46, -8).
+
+`node dimension-cat/test/run.mjs` ran clean three times in a row: exit 0, every check `ok` (277), 0 console warnings, physics box count unchanged at 338 (a `Wanderer` adds a dynamic circle, not a static box), Robot City's own friend total confirmed up by one (159 → 160, verified against the unmodified tree too), "every NPC is in the scene graph" and the walkability check (88%) unchanged. No visual check was possible in this environment (no browser, no Playwright), so whether she reads as watching rather than just standing nearby is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Victorian, Sunny Shore, Frosty Peak and Whisper Woods still owe their own tetherball pole a watcher.
+
+## Round 1374 — a watcher for Victorian's tetherball pole
+
+Rounds 1372 and 1373 gave Candy Land's and Robot City's tetherball poles their first watchers since the Neighborhood's own (round 521), leaving Victorian, Sunny Shore, Frosty Peak and Whisper Woods still unwatched. **A third stable hand now stands a few steps east of Victorian's tetherball pole, watching the ball swing round on its rope.** No lines of her own — this one just watches — but saying hello to her makes her the usual kind of friend, Victorian's own count rising from 198 to 199.
+
+No new class: the same `Wanderer` (`55-npcs.js`) every watcher elsewhere in the game already uses — a plain `makeHuman()`/`randomPerson()` rig with no fixed wardrobe, `angle` pointed at the pole's own fixed centre (-70, -30). Victorian builds and runs on its own local seeded `r()` (`seeded(404)`), not the shared global `rnd()` the Neighborhood's timing-sensitive checks key off, so nothing here needed a draw pinned.
+
+A headless probe (`game.start('new')`, `game.travel(3, 'from-hub')`, 3600 simulated frames so both stable hands and every other NPC had settled, then 600 more sampling every NPC's own position every 10th frame) swept a ring 2-7 m out from the pole against all 609 of this town's own physics boxes (knee-to-head band only), all 236 `game.zones` rectangles and every sampled position: (-63, -30) came back clearest — due east, past stable hand A — 6.9 m from the nearest box, 14.0 m from the nearest zone rectangle and 7.3 m from the nearest other soul, well short of the pinwheel (-60.5, -7.5), the bootblack (-48, -20) and the juggler (-28, -20.3).
+
+`node dimension-cat/test/run.mjs` ran clean three times in a row: exit 0, every check `ok`, 0 console warnings, physics box count unchanged at 338 (a `Wanderer` adds a dynamic circle, not a static box), Victorian's own friend total confirmed up by one (198 → 199, verified against the unmodified tree too), "every NPC is in the scene graph" and the walkability check (94%) unchanged. No visual check was possible in this environment (no browser, no Playwright), so whether she reads as watching rather than just standing nearby is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Sunny Shore, Frosty Peak and Whisper Woods still owe their own tetherball pole a watcher.
+
+## Round 1375 — a watcher for Sunny Shore's tetherball pole
+
+Rounds 1372-1374 gave Candy Land's, Robot City's and Victorian's tetherball poles their first watchers since the Neighborhood's own (round 521), leaving Sunny Shore, Frosty Peak and Whisper Woods still unwatched. **A beachgoer now stands a few steps west of Sunny Shore's tetherball pole, watching the ball swing round on its rope.** No lines of her own — this one just watches — but saying hello to her makes her the usual kind of friend, Sunny Shore's own count rising from 169 to 170.
+
+No new class: the same `Wanderer` (`55-npcs.js`) every watcher elsewhere in the game already uses, built this time from this beach's own `beachPerson()` wardrobe helper rather than a fresh `makeHuman` call — the same shortcut the hoop, jump-rope and chopping-block watchers already take on this coast, `angle` pointed at the pole's own fixed centre (-26, 2). Sunny Shore builds and runs on its own local seeded `r()` (`seeded(505)`), not the shared global `rnd()` the Neighborhood's timing-sensitive checks key off, so nothing here needed a draw pinned.
+
+A headless probe (`game.start('new')`, `game.load(4, 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so the tetherball pair and every other beachgoer, dog, kite and ball game had settled, then 600 more sampling every NPC's own position every 10th frame) swept a ring 2-7 m out from the pole against all of this coast's own physics boxes (knee-to-head band only) and all 91 `game.zones` rectangles, then refined the best stretch on a quarter-metre grid: (-30.68, 3.03) came back clear by 4.63 m of the nearest box, 8.75 m of the nearest zone rectangle and 4.49 m of the nearest other soul, west of the pole and clear of the sack-race lane and the piñata post.
+
+`node dimension-cat/test/run.mjs` ran clean three times in a row: exit 0, every check `ok`, 0 console warnings, physics box count unchanged at 338 (a `Wanderer` adds a dynamic circle, not a static box), Sunny Shore's own friend total confirmed up by one (169 → 170, verified against the unmodified tree too), "every NPC is in the scene graph" and the walkability check (98%) unchanged. No visual check was possible in this environment (no browser, no Playwright), so whether she reads as watching rather than just standing nearby is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Frosty Peak and Whisper Woods still owe their own tetherball pole a watcher.
+
+## Round 1376 — a watcher for Frosty Peak's tetherball pole
+
+Rounds 1372-1375 gave Candy Land's, Robot City's, Victorian's and Sunny Shore's tetherball poles their first watchers since the Neighborhood's own (round 521), leaving only Frosty Peak and Whisper Woods still unwatched. **A bundled-up villager now stands a few steps northeast of Frosty Peak's own tetherball pole, watching the ball swing round on its rope.** No lines of her own — this one just watches — but saying hello to her makes her the usual kind of friend, Frosty Peak's own count rising from 164 to 165.
+
+No new class: the same `Wanderer` (`55-npcs.js`) every watcher elsewhere in this series already uses — a plain `makeHuman()`/`randomPerson()` rig in this mountain's own winter wardrobe (coat, beanie, scarf, the same shape the ice-hole watcher earlier in this file already wears), `angle` pointed at the pole's own fixed centre (21, -52). Frosty Peak builds and runs on its own local seeded `r()`, not the shared global `rnd()` the Neighborhood's timing-sensitive checks key off, so nothing here needed a draw pinned.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, `game.load(5, 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so the tetherball pair, the sledder, the snowball fight and every other NPC had settled, then 600 more sampling every NPC's own position every 10th frame) swept a 0.5 m grid in a ring 2-7 m out from the pole against all 384 of this mountain's own body-height physics boxes, all 151 `game.zones` rectangles and every sampled NPC position, staying short of the radius (58) where snowRegion's own fill takes over, the same line the pole itself was built against: (26.7, -48.0) came back clearest — 5.6 m from the nearest box, 7.8 m from the nearest zone rectangle and 5.5 m from the nearest other soul, northeast of the pole at radius 54.9 from the origin.
+
+`node dimension-cat/test/run.mjs` ran clean twice in a row: exit 0, every check `ok` (277), 0 console warnings, physics box count unchanged at 338 (a `Wanderer` adds a dynamic circle, not a static box), Frosty Peak's own friend total confirmed up by one (164 → 165), "every NPC is in the scene graph" and the walkability check (98%) unchanged. No visual check was possible in this environment (no browser, no Playwright), so whether she reads as watching rather than just standing nearby, bundled warmly enough for this mountain's own cold, is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Whisper Woods is the only world left whose own tetherball pole still plays to nobody.
+
+## Round 1377 — a watcher for Whisper Woods' tetherball pole, closing out the set
+
+Rounds 1372-1376 gave Candy Land's, Robot City's, Victorian's, Sunny Shore's and Frosty Peak's tetherball poles the game's first watchers since the Neighborhood's own (round 521), leaving Whisper Woods as the only one of the seven worlds whose pole still played to an empty clearing. **A forest-dweller now stands a few steps east of Whisper Woods' own tetherball pole, watching the ball swing round on its rope.** No lines of her own — this one just watches — but saying hello to her makes her the usual kind of friend, Whisper Woods' own count rising from 192 to 193.
+
+No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses — a plain `makeHuman()`/`randomPerson()` rig in the same earthy, hat-and-bag-free wardrobe shape this wood's own tetherball kids already wear, `angle` pointed at the pole's own fixed centre (41, -27). Whisper Woods builds and runs on its own local seeded `r()` (`seeded(707)`), not the shared global `rnd()` the Neighborhood's timing-sensitive checks key off, so nothing here needed a draw pinned.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, `game.load(6, 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so both tetherball kids and every deer, fox and hare had settled, then 600 more sampling every NPC's own position every 10th frame) swept a 0.25 m grid in a ring 2-9 m out from the pole against all 422 of this wood's own body-height physics boxes, all 223 `game.zones` rectangles and every sampled NPC position, staying short of the radius (58) where `forestRegion`'s own fill takes over: (48.3, -25.4) came back clearest — 5.8 m from the nearest box, 7.8 m from the nearest zone rectangle and 5.8 m from the nearest other soul, east of the pole at radius 54.6 from the origin.
+
+`node dimension-cat/test/run.mjs` ran clean three times in a row: exit 0, every check `ok`, 0 console warnings, physics box count unchanged at 338 (a `Wanderer` adds a dynamic circle, not a static box), Whisper Woods' own friend total confirmed up by one (192 → 193), "every NPC is in the scene graph" and the walkability check (98%) unchanged. No visual check was possible in this environment (no browser, no Playwright), so whether she reads as watching rather than just standing nearby is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. All seven worlds now have a watcher for their own tetherball pole, closing out the series rounds 521 and 1372-1376 started.
+
+## Round 1378 — a watcher for Candy Land's ring toss, opening a new series
+
+Rounds 1305-1307 gave the Neighborhood's own horseshoe pit, tug-of-war rope and sack race a watcher each, and rounds 1372-1377 just did the same for every world's tetherball pole — but the back-garden toss game itself (a horseshoe in the Neighborhood, reskinned as a magnet coupling in Robot City, a brass quoit in Victorian, a rope coupling on Sunny Shore, a sled harness on Frosty Peak, a vine ring in Whisper Woods, and a gummy ring here in Candy Land) has never had anyone watching it anywhere but the Neighborhood. **A villager now stands west of Candy Land's own gummy-ring toss, watching the pair lob their fat ring back and forth.** No lines of her own — this one just watches — but saying hello to her makes her the usual kind of friend, Candy Land's own count rising from 152 to 153.
+
+No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this game already uses — a plain `makeHuman()`/`randomPerson()` rig with no fixed wardrobe, `angle` pointed at the ring toss' own fixed centre (51, -1). Candy Land builds and runs on its own local seeded `r()`, not the shared global `rnd()` the Neighborhood's own timing-sensitive checks key off, so nothing here needed a draw pinned.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, `game.load(1, 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so both tossers and every other gingerbread man had settled, then 600 more sampling every NPC's own position every 10th frame) swept a 0.25 m grid in a ring 3-7 m out from the ring toss' own centre against all 1803 of this world's own body-height physics boxes and all 452 `game.zones` rectangles: (46.75, -1) came back clearest — 5.75 m from the nearest box, 13.0 m from the nearest zone rectangle and 5.84 m from the nearest other soul, due west of the game and clear of the kite-flying kid and the tetherball pair, both well south of here.
+
+`node dimension-cat/test/run.mjs` ran clean three times in a row: exit 0, every check `ok` (277), 0 console warnings, physics box count unchanged at 338 (a `Wanderer` adds a dynamic circle, not a static box), Candy Land's own friend total confirmed up by one (152 → 153). No visual check was possible in this environment (no browser, no Playwright), so whether she reads as watching rather than just standing nearby is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Robot City, Victorian, Sunny Shore, Frosty Peak and Whisper Woods still owe their own back-garden toss game a watcher.
+
+## Round 1379 — a watcher for Robot City's magnet-coupling toss
+
+Round 1378 opened a new series by giving Candy Land's own back-garden toss game (there, a gummy-ring toss) its first watcher, leaving Robot City, Victorian, Sunny Shore, Frosty Peak and Whisper Woods still owing theirs one. **A worker now stands northwest of Robot City's magnet-coupling posts, watching the pair lob the coupling ring back and forth between them.** No lines of her own — this one just watches — but saying hello to her makes her the usual kind of friend, Robot City's own count rising from 160 to 161.
+
+No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses — a plain `makeHuman()`/`randomPerson()` rig with no fixed wardrobe, `angle` pointed at the charging posts' own fixed centre (24, 86). Robot City builds and runs on its own local seeded `r()`, not the shared global `rnd()` the Neighborhood's own timing-sensitive checks key off, so nothing here needed a draw pinned.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, `game.load(2, 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so both tossers and every other NPC had settled, then 600 more sampling every NPC's own position every 10th frame) swept a 0.1 m grid in a ring 2-9 m out from the posts' own centre against all 1208 of this city's own physics boxes (knee-to-head band only) and all 296 `game.zones` rectangles: (18, 93) came back clearest within that range, though tighter than most of this series' other spots — a skyscraper footprint crowds the northeast corner — at 4.68 m from the nearest box, 9.11 m from the nearest zone rectangle and 12.5 m from the nearest other soul, radius 94.7 from the origin, short of the radius (98) where `robotRegion()`'s own procedural fill takes over.
+
+`node dimension-cat/test/run.mjs` ran clean three times in a row: exit 0, every check `ok` (277), 0 console warnings, physics box count unchanged at 338 (a `Wanderer` adds a dynamic circle, not a static box), Robot City's own friend total confirmed up by one (160 → 161), "every NPC is in the scene graph" and the walkability check (88%) unchanged. No visual check was possible in this environment (no browser, no Playwright), so whether she reads as watching rather than just standing nearby is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Victorian, Sunny Shore, Frosty Peak and Whisper Woods still owe their own back-garden toss game a watcher.
+
+## Round 1380 — a watcher for Victorian's quoit toss
+
+Rounds 1378-1379 gave Candy Land's and Robot City's own back-garden toss games their first watchers, leaving Victorian, Sunny Shore, Frosty Peak and Whisper Woods still owing theirs one. **A third local now stands a few steps southwest of Victorian's own quoit beds, watching the two gentlemen lob their brass ring back and forth.** No lines of her own — this one just watches — but saying hello to her makes her the usual kind of friend, Victorian's own count rising from 199 to 200.
+
+No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses — a plain `makeHuman()`/`randomPerson()` rig with no fixed wardrobe of its own (this town's own `r()` picks her clothes), `angle` pointed at the quoit beds' own fixed centre (22, 78). Victorian builds and runs on its own local seeded `r()` (`seeded(404)`), not the shared global `rnd()` the Neighborhood's own timing-sensitive checks key off, so nothing here needed a draw pinned.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, `game.travel(3, 'from-hub')`, 3600 simulated frames so both quoit pitchers and every other NPC had already settled, then every NPC's own position sampled every 10th frame over 600 more) swept a 0.25 m grid in a ring 2-9 m out from the quoit beds' own centre (22, 78) against all 633 of this town's own body-height physics boxes, all 238 `game.zones` rectangles and every sampled position, staying short of the radius (88) where `victorianRegion`'s own procedural fill takes over: (15.6, 84.4) came back clearest — southwest of the beds at radius 9, 85.8 from the world's own origin — 11.3 m from the nearest box, 16.0 m from the nearest zone rectangle and 11.3 m from the nearest other soul.
+
+`node dimension-cat/test/run.mjs` ran clean three times in a row: exit 0, every check `ok` (277), 0 console warnings, physics box count unchanged at 338 (a `Wanderer` adds a dynamic circle, not a static box), Victorian's own friend total confirmed up by one (199 → 200), "every NPC is in the scene graph" and the walkability check (94%) unchanged. No visual check was possible in this environment (no browser, no Playwright), so whether she reads as watching rather than just standing nearby is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Sunny Shore, Frosty Peak and Whisper Woods still owe their own back-garden toss game a watcher.
+
+## Round 1381 — a watcher for Sunny Shore's rope-coupling toss
+
+Rounds 1378-1380 gave Candy Land's, Robot City's and Victorian's own back-garden toss games their first watchers, leaving Sunny Shore, Frosty Peak and Whisper Woods still owing theirs one. **A beachgoer now stands a few steps northwest of Sunny Shore's rope posts, watching the two players lob the coiled rope back and forth between them.** No lines of her own — this one just watches — but saying hello to her makes her the usual kind of friend, Sunny Shore's own count rising from 170 to 171.
+
+No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses, built this time from this beach's own `beachPerson()` wardrobe helper rather than a fresh `makeHuman` call — the same shortcut the hoop, jump-rope and chopping-block watchers already take on this coast, `angle` pointed at the rope posts' own fixed centre (8, 52). `Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was needed, and no physics box either.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, `game.load(4, 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so both ring-tossers and every other beachgoer, dog, kite and ball game had settled, then 600 more sampling every NPC's own position every 10th frame) swept a 0.5 m grid in a ring 2-9 m out from the rope posts' own centre against all 127 of this coast's own body-height physics boxes and all 91 `game.zones` rectangles, then refined the best stretch on a tenth-of-a-metre grid: (2.5, 50.6) came back clearest — northwest of the posts — 5.62 m from the nearest box, 5.66 m from the nearest zone rectangle and 5.62 m from the nearest other soul, with the ground flat to within 0.4 cm across a 0.6 m square.
+
+`node dimension-cat/test/run.mjs` ran clean three times in a row: exit 0, every check `ok` (277), 0 console warnings, physics box count unchanged at 338 (a `Wanderer` adds a dynamic circle, not a static box), Sunny Shore's own friend total confirmed up by one (170 → 171, verified against the unmodified tree too), "every NPC is in the scene graph" and the walkability check (99%, up from 98% on the unmodified tree — the new `Wanderer`'s own `rnd()` draws for phase/timer/t shift every later NPC's construction by one step, nudging which grid cells a dynamic circle happens to sit on; still comfortably above the 80% floor) unchanged in substance. No visual check was possible in this environment (no browser, no Playwright), so whether she reads as watching rather than just standing nearby is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Frosty Peak and Whisper Woods still owe their own back-garden toss game a watcher.
+
+## Round 1382 — a watcher for Frosty Peak's harness ring toss
+
+Rounds 1378-1381 gave Candy Land's, Robot City's, Victorian's and Sunny Shore's own back-garden toss games their first watchers, leaving only Frosty Peak and Whisper Woods still owing theirs one. **A bundled-up villager now stands southwest of Frosty Peak's own harness ring toss, watching the pair lob their spare reindeer-leather ring back and forth over the hitching posts.** No lines of her own — this one just watches — but saying hello to her makes her the usual kind of friend, Frosty Peak's own count rising from 165 to 166.
+
+No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses — built from the same winter wardrobe shape (beanie, coat, scarf, cuffs) the mountain's own frisbee watcher already wears a little further south, `angle` pointed at the ring toss' own fixed centre (-11, 51). `Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was needed, and no static physics box either — just a dynamic circle.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, `game.load(5, 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so both toss players, the frisbee thrower, the geese and every reindeer and yeti had settled, then 600 more sampling every NPC's own position every 10th frame) swept a 0.25 m grid in a ring 2.5-7 m out from the ring toss' own centre against all 705 of this mountain's own body-height physics boxes and all 151 `game.zones` rectangles, staying short of the radius (58) where `snowRegion`'s own fill takes over: (-15.75, 47.75) came back clearest — southwest of the posts, at radius 50.3 from the origin — 4.68 m from the nearest box, 7.03 m from the nearest zone rectangle and 4.72 m from the nearest other soul.
+
+`node dimension-cat/test/run.mjs` ran clean three times in a row: exit 0, every check `ok`, 0 console warnings, physics box count unchanged at 338 (a `Wanderer` adds a dynamic circle, not a static box), Frosty Peak's own friend total confirmed up by one (165 → 166), "every NPC is in the scene graph" and the walkability check (98%) unchanged. No visual check was possible in this environment (no browser, no Playwright), so whether she reads as watching rather than just standing nearby, bundled warmly enough for this mountain's own cold, is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Whisper Woods is the only world left whose own back-garden toss game still plays to nobody.
+
+## Round 1383 — a watcher for Whisper Woods' vine ring toss, closing out the set
+
+Rounds 1378-1382 gave Candy Land's, Robot City's, Victorian's, Sunny Shore's and Frosty Peak's own back-garden toss games their first watchers, leaving Whisper Woods as the last of the seven worlds whose toss game still played to an empty clearing. **A forest-dweller now stands a few steps north of Whisper Woods' own vine ring toss, watching the two foresters lob their woven ring back and forth over the stumps.** No lines of her own — this one just watches — but saying hello to her makes her the usual kind of friend, Whisper Woods' own count rising from 193 to 194.
+
+No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses — a plain `makeHuman()`/`randomPerson()` rig in the same earthy, hat-and-bag-free wardrobe shape this wood's own tetherball watcher already wears, `angle` pointed at the ring toss' own fixed centre (-46, -30). Whisper Woods builds and runs on its own local seeded `r()` (`seeded(707)`), not the shared global `rnd()` the Neighborhood's own timing-sensitive checks key off, so nothing here needed a draw pinned.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, `game.load(6, 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so both ring tossers and every other NPC, deer, fox and hare had settled, then 600 more sampling every NPC's own position every 10th frame) swept a 0.25 m grid in a ring 2.5-9 m out from the ring toss' own centre against all 478 of this wood's own body-height physics boxes, all 229 `game.zones` rectangles and every sampled NPC position, staying short of the radius (58) where `forestRegion`'s own fill takes over, then refined the best stretch on a 0.05 m grid: (-47.55, -21.35) came back clearest — north of the ring toss at radius 52.1 from the origin — 5.77 m from the nearest box, 5.78 m from the nearest zone rectangle and 7.81 m from the nearest other soul.
+
+`node dimension-cat/test/run.mjs` ran clean three times in a row: exit 0, every check `ok`, 0 console warnings, physics box count unchanged at 338 (a `Wanderer` adds a dynamic circle, not a static box), Whisper Woods' own friend total confirmed up by one (193 → 194), "every NPC is in the scene graph" and the walkability check (99%) unchanged. No visual check was possible in this environment (no browser, no Playwright), so whether she reads as watching rather than just standing nearby is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. All seven worlds now have a watcher for their own back-garden toss game, closing out the series rounds 1378-1382 started.
+
+## Round 1384 — a watcher for Candy Land's tug-of-war, opening a new series
+
+Rounds 1305-1307 gave the Neighborhood's own horseshoe pit, tug-of-war rope and sack race a watcher each, and the two series since (rounds 1372-1377 for every world's tetherball pole, 1378-1383 for every world's own back-garden toss game) spread that idea to all seven worlds — but the tug-of-war and the sack race themselves never left the Neighborhood. This round starts on the tug-of-war, beginning with Candy Land's own liquorice-rope pull (round 508's playground-games list, two stall hands heaving at x=77, z=-41). **A villager now stands west of the rope, watching the pair strain against each other.** No lines of her own — this one just watches — but saying hello to her makes her the usual kind of friend, Candy Land's own count rising from 153 to 154.
+
+No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this game already uses — a plain `makeHuman()`/`randomPerson()` rig with no fixed wardrobe of its own, `angle` pointed at the rope's own fixed centre (77, -41). The rope runs north-south here, same as the Neighborhood's own (both hands sit at x=77, offset in z by the usual ±1.3 m gap), so standing east or west of it, level with its own centre, is the angle that shows both hands heaving at once rather than looking past one at the other's back — the same wrinkle round 1306 worked out for the Neighborhood's rope. Candy Land builds and runs on its own local seeded `r()`, not the shared global `rnd()` the Neighborhood's own timing-sensitive checks key off, so nothing here needed a draw pinned.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, `game.load(1, 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so both hands and every other NPC had settled, then 600 more sampling every NPC's own position every 10th frame) swept a 0.25 m grid in a ring 2.5-7 m out from the rope's own centre against all 1805 of this land's own body-height physics boxes and all 452 `game.zones` rectangles: (70, -41) came back clearest — due west of the rope at radius 7 — 9.70 m from the nearest box, 18.6 m from the nearest zone rectangle and 7.12 m from the nearest other soul (one of the hands themselves), well clear of the sack race and the ring toss elsewhere on this land.
+
+`node dimension-cat/test/run.mjs` ran clean three times in a row: exit 0, every check `ok` (277), 0 console warnings, physics box count unchanged at 338 (a `Wanderer` adds a dynamic circle, not a static box), Candy Land's own friend total confirmed up by one (153 → 154). No visual check was possible in this environment (no browser, no Playwright), so whether she reads as watching rather than just standing nearby is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Robot City, Victorian, Sunny Shore, Frosty Peak and Whisper Woods still owe their own tug-of-war a watcher, and all seven still owe their own sack race one too.
+
+## Round 1385 — a watcher for Robot City's cable tug-of-war
+
+Round 1384 opened the tug-of-war series by giving Candy Land's own liquorice-rope pull its first watcher, leaving Robot City, Victorian, Sunny Shore, Frosty Peak and Whisper Woods still owing theirs one. **A worker now stands due east of Robot City's own power-cable tug-of-war, watching the two factory units strain against each other.** No lines of her own — this one just watches — but saying hello to her makes her the usual kind of friend, Robot City's own count rising from 161 to 162.
+
+No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses — a plain `makeHuman()`/`randomPerson()` rig with no fixed wardrobe of its own, `angle` pointed at the cable's own fixed centre (46, -8). The cable runs north-south here (both units sit at x=46, offset in z by `TugOfWar`'s own gap, `ry=0`), same as Candy Land's own rope, so standing due east of it, level with its own centre, is the angle round 1384 already worked out shows both units straining at once. Robot City builds and runs on its own local seeded `r()`, not the shared global `rnd()` the Neighborhood's own timing-sensitive checks key off, so nothing here needed a draw pinned.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, `game.load(2, 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so both cable units, the marching patrol and every other NPC had settled, then 600 more sampling every NPC's own position every 10th frame) swept a 0.25 m grid in a ring 2-9 m out from the cable's own centre, restricted to due east/west of it, against all 1207 of this city's own body-height physics boxes and all 296 `game.zones` rectangles: (51, -8) came back clearest on that line — due east at radius 5 — 5.38 m from the nearest box, 52.5 m from the nearest zone rectangle and 5.17 m from the nearest other soul, clear of the marching patrol's own beat south of here.
+
+`node dimension-cat/test/run.mjs` ran clean three times in a row: exit 0, every check `ok`, 0 console warnings, physics box count unchanged at 338 (a `Wanderer` adds a dynamic circle, not a static box), Robot City's own friend total confirmed up by one (161 → 162). No visual check was possible in this environment (no browser, no Playwright), so whether she reads as watching rather than just standing nearby is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Victorian, Sunny Shore, Frosty Peak and Whisper Woods still owe their own tug-of-war a watcher, and all seven still owe their own sack race one too.
+
+## Round 1386 — a watcher for Victorian's cart-rope tug-of-war
+
+Rounds 1384-1385 gave Candy Land's and Robot City's own tug-of-war a first watcher, leaving Victorian, Sunny Shore, Frosty Peak and Whisper Woods still owing theirs one. **A villager now stands due west of Victorian's own cart-rope tug-of-war, watching the two draymen strain against each other.** No lines of her own — this one just watches — but saying hello to her makes her the usual kind of friend, Victorian's own count rising from 200 to 201.
+
+No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses — a plain `makeHuman()`/`randomPerson()` rig with no fixed wardrobe of its own, `angle` pointed at the rope's own fixed centre (75, -29). The rope runs north-south here (both draymen sit at x=75, offset in z by `TugOfWar`'s own ±1.3 m gap, `ry=0`), same as Candy Land's and Robot City's own, so standing due west of it, level with its own centre, is the angle rounds 1384-1385 already worked out shows both draymen straining at once rather than looking past one at the other's back. Victorian builds and runs on its own local seeded `r()`, not the shared global `rnd()` the Neighborhood's own timing-sensitive checks key off, so nothing here needed a draw pinned.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, `game.load(3, 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so both draymen and every other NPC had settled, then 600 more sampling every NPC's own position every 10th frame) swept a 0.25 m grid in a ring 2-9 m out from the rope's own centre, restricted to due east/west of it, against all 602 of this town's own body-height physics boxes and all 230 `game.zones` rectangles: (67, -29) came back clearest on that line — due west at radius 8 — 12.6 m from the nearest box, 13.0 m from the nearest zone rectangle and 8.1 m from the nearest other soul, well clear of the coalman's own chute and the night watchman's bench.
+
+`node dimension-cat/test/run.mjs` ran clean three times in a row: exit 0, every check `ok`, 0 console warnings, physics box count unchanged at 338 (a `Wanderer` adds a dynamic circle, not a static box), Victorian's own friend total confirmed up by one (200 → 201), "every NPC is in the scene graph" and the walkability check (94%) unchanged. No visual check was possible in this environment (no browser, no Playwright), so whether she reads as watching rather than just standing nearby is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Sunny Shore, Frosty Peak and Whisper Woods still owe their own tug-of-war a watcher.
+
+## Round 1387 — a watcher for Sunny Shore's rope tug-of-war
+
+Rounds 1384-1386 gave Candy Land's, Robot City's and Victorian's own tug-of-war a first watcher, leaving Sunny Shore, Frosty Peak and Whisper Woods still owing theirs one. **A beachgoer now stands north of Sunny Shore's own rope tug-of-war, watching the pair heave against each other.** No lines of her own — this one just watches — but saying hello to her makes her the usual kind of friend, Sunny Shore's own count rising from 171 to 172.
+
+No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses, built this time from this beach's own `beachPerson()` wardrobe helper rather than a fresh `makeHuman` call, `angle` pointed at the rope's own fixed centre (-50, 20). Unlike the other six worlds' tug-of-war, Sunny Shore's own runs along world X rather than north-south (its `ry: PI/2`), so standing north or south of it, level with its own centre, is the angle that shows both haulers heaving at once rather than looking past one at the other's back — the same wrinkle rounds 1384-1386 worked out for the other worlds' own ropes, just rotated a quarter turn. `Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was needed, and no physics box either.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, `game.load(4, 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so both haulers and every other beachgoer, dog, kite and ball game had settled, then 900 more sampling every NPC's own position every 5th frame) swept a grid north and south of the rope's own centre, 2.5-9 m out, against all 155 of this coast's own body-height physics boxes and all 96 `game.zones` rectangles, rejecting anywhere past radius 58 from the world's own origin (short of where `beachRegion()`'s own procedural fill takes over): (-47.98, 28.77) came back clearest with a 2 m margin to spare on that boundary — due north of the rope at radius 9 — 8.68 m from the nearest box, 7.62 m from the nearest zone rectangle and 4.78 m from the nearest other soul, ground flat to within 2 cm across a 0.6 m square.
+
+`node dimension-cat/test/run.mjs` ran clean three times in a row: exit 0, every check `ok`, 0 console warnings, physics box count unchanged at 338 (a `Wanderer` adds a dynamic circle, not a static box), Sunny Shore's own friend total confirmed up by one (171 → 172). No visual check was possible in this environment (no browser, no Playwright), so whether she reads as watching rather than just standing nearby is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Frosty Peak and Whisper Woods still owe their own tug-of-war a watcher.
+
+## Round 1388 — a watcher for Frosty Peak's rope tug-of-war
+
+Rounds 1384-1387 gave Candy Land's, Robot City's, Victorian's and Sunny Shore's own tug-of-war a first watcher, leaving Frosty Peak and Whisper Woods still owing theirs one. **A bundled-up villager now stands north of Frosty Peak's own rope tug-of-war, watching the two haulers strain against each other.** No lines of her own — this one just watches — but saying hello to her makes her the usual kind of friend, Frosty Peak's own count rising from 166 to 167.
+
+No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses — a plain `makeHuman()`/`randomPerson()` rig built from the same winter wardrobe shape (beanie, coat, scarf, cuffs) this mountain's own harness-toss watcher already wears, `angle` pointed at the rope's own fixed centre (50, 20). Frosty Peak's own rope runs east-west (`ry: PI/2`, both haulers offset in x, level in z), same as Sunny Shore's own, so standing north or south of it, level with its own centre, is the angle rounds 1384-1387 already worked out shows both haulers straining at once rather than looking past one at the other's back.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, `game.load(5, 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so both haulers and every other villager, reindeer and yeti had settled, then 600 more sampling every NPC's own position every 10th frame) swept a 0.5 m grid north and south of the rope's own centre, 2.5-12 m out, against all 833 of this mountain's own body-height physics boxes and all 160 `game.zones` rectangles, staying short of the radius (58) where `snowRegion`'s own fill takes over: (50, 25) came back clearest — due north at radius 5, 55.9 from the world's own origin, a 2.1 m margin to that boundary — 10.6 m from the nearest box, 9.1 m from the nearest zone rectangle and 5.17 m from the nearest other soul (one of the haulers themselves).
+
+`node dimension-cat/test/run.mjs` ran clean three times in a row: exit 0, every check `ok`, 0 console warnings, physics box count unchanged at 338 (a `Wanderer` adds a dynamic circle, not a static box), Frosty Peak's own friend total confirmed up by one (166 → 167). No visual check was possible in this environment (no browser, no Playwright), so whether she reads as watching rather than just standing nearby, bundled warmly enough for this mountain's own cold, is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Whisper Woods is the only world left whose own tug-of-war still plays to nobody.
+
+## Round 1389 — a watcher for Whisper Woods' vine tug-of-war, closing out the set
+
+Rounds 1384-1388 gave Candy Land's, Robot City's, Victorian's, Sunny Shore's and Frosty Peak's own tug-of-war a first watcher, leaving Whisper Woods as the last of the seven worlds whose own tug-of-war still played to nobody. **A forest-dweller now stands due west of Whisper Woods' own vine, watching the two kids heave against each other.** No lines of her own — this one just watches — but saying hello to her makes her the usual kind of friend, Whisper Woods' own count rising from 194 to 195.
+
+No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses — a plain `makeHuman()`/`randomPerson()` rig in the same earthy, hat-and-bag-free wardrobe shape this wood's own tetherball and ring-toss watchers already wear, `angle` pointed at the vine's own fixed centre (-10, -40). The vine runs north-south here (both kids sit at x=-10, offset in z by `TugOfWar`'s own ±1.3 m gap, `ry=0`), same as Candy Land's, Robot City's and Victorian's own ropes, so standing due west of it, level with its own centre, is the angle rounds 1384-1386 already worked out shows both kids straining at once rather than looking past one at the other's back. Whisper Woods builds and runs on its own local seeded `r()` (`seeded(707)`), not the shared global `rnd()` the Neighborhood's own timing-sensitive checks key off, so nothing here needed a draw pinned.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, `game.load(6, 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so both kids and every other NPC, deer, fox and hare had settled, then 600 more sampling every NPC's own position every 10th frame) swept a 0.25 m grid in a ring 2-9 m out from the vine's own centre against all 402 of this wood's own body-height physics boxes and all 213 `game.zones` rectangles, staying short of the radius (58) where `forestRegion`'s own fill takes over, then refined the best stretch on a 0.05 m grid: (-19.49, -40.63) came back clearest — due west of the vine at radius 9, 45.1 from the world's own origin — 5.77 m from the nearest box, 19.6 m from the nearest zone rectangle and 5.79 m from the nearest other soul.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, physics box count unchanged at 338 (a `Wanderer` adds a dynamic circle, not a static box), Whisper Woods' own friend total confirmed up by one (194 → 195), "every NPC is in the scene graph" and the walkability check (97%) unchanged. No visual check was possible in this environment (no browser, no Playwright), so whether she reads as watching rather than just standing nearby is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. All seven worlds now have a watcher for their own tug-of-war, closing out the series rounds 1384-1388 started. All seven worlds still owe their own sack race a watcher.
+
+## Round 1390 — a watcher for Candy Land's sack race, opening the next series
+
+Rounds 1384-1389 gave every one of the seven worlds' own tug-of-war a first watcher, closing that series out and leaving "all seven worlds still owe their own sack race one" as the last open item on the board. This round opens that series the same way round 1384 opened the last one: with Candy Land. **A villager now stands east of the liquorice-lands' own sack race, watching the two burlap-bound kids hop back and forth.** No lines of her own — this one just watches — but saying hello to her makes her the usual kind of friend, Candy Land's own count rising from 154 to 155.
+
+No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses — a plain `makeHuman()`/`randomPerson()` rig with no fixed wardrobe of its own, `angle` pointed at the lane's own fixed midpoint (-83, 9.5). The one wrinkle this round worked out fresh: Candy Land's sack race (round 524, sackA/sackB at x=-83) runs its racers along z, side by side in x — the mirror image of the Neighborhood's own (round 1307), which runs along x, side by side in z. Round 1307 found that standing off to the side of the racers' own side-by-side gap, rather than down the lane they travel, is the angle that shows both hopping past at once instead of looking down their backs — so here, with the gap running along x, standing east or west of the lane (not north or south) is that angle.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, `game.load(1, 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so both racers and every other NPC had settled, then 600 more sampling every NPC's own position every 10th frame) swept a 0.25 m grid east and west of the lane's own midpoint, 2-9 m out, against all 1805 of this land's own body-height physics boxes and all 452 `game.zones` rectangles, staying inside the radius (92) where `candyRegion`'s own procedural fill takes over: (-74, 9.5) came back clearest — due east of the lane at radius 9, 74.6 m from the world's own origin — 10.0 m from the nearest box, 23.5 m from the nearest zone rectangle and 8.45 m from the nearest other soul, ground flat to within rounding across a 0.6 m square, well clear of the tug-of-war watcher and the ring toss elsewhere on this land.
+
+`node dimension-cat/test/run.mjs` ran clean three times in a row: exit 0, every check `ok`, 0 console warnings, physics box count unchanged at 338 (a `Wanderer` adds a dynamic circle, not a static box), Candy Land's own friend total confirmed up by one (154 → 155). No visual check was possible in this environment (no browser, no Playwright), so whether she reads as watching rather than just standing nearby is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Robot City, Victorian, Sunny Shore, Frosty Peak and Whisper Woods still owe their own sack race a watcher.
+
+## Round 1391 — a watcher for Robot City's sack race
+
+Round 1390 opened the sack-race series with Candy Land, leaving Robot City, Victorian, Sunny Shore, Frosty Peak and Whisper Woods still owing theirs one. **A contractor now stands north of Robot City's own sack race, watching the two off-shift workers hop back and forth in their packing sacks.** No lines of her own — this one just watches — but saying hello to her makes her the usual kind of friend, Robot City's own count rising from 162 to 163.
+
+No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses — a plain `makeHuman()`/`randomPerson()` rig with no fixed wardrobe of its own, `angle` pointed at the lane's own fixed midpoint (-42, 46). This city's own sack race runs along world X (`ry=PI/2`, racers side by side in z) — the same orientation as the Neighborhood's own (round 1307), not Candy Land's own (round 1390, lane along z, side by side in x) — so round 1307's own finding applies directly here: standing north or south of the lane, offset along the same axis as the racers' own side-by-side gap, is the angle that shows both hopping past at once instead of looking down their backs.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, `game.load(2, 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so both racers, the marching patrol and every other NPC had settled, then 600 more sampling every NPC's own position every 10th frame) swept a 0.25 m grid north and south of the lane's own midpoint, 2.5-16 m out, against all 1211 of this city's own body-height physics boxes and all 296 `game.zones` rectangles, then refined the best stretch on a 0.05 m grid: (-42, 55.5) came back clearest — due north of the lane at radius 9.5, 69.6 m from the world's own origin, well short of the radius (98) where `robotRegion`'s own procedural fill takes over — 5.39 m from the nearest box, 38.5 m from the nearest zone rectangle and 5.32 m from the nearest other soul.
+
+`node dimension-cat/test/run.mjs` ran clean three times in a row: exit 0, every check `ok` (277), 0 console warnings, physics box count unchanged at 338 (a `Wanderer` adds a dynamic circle, not a static box), Robot City's own friend total confirmed up by one (162 → 163). No visual check was possible in this environment (no browser, no Playwright), so whether she reads as watching rather than just standing nearby is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Victorian, Sunny Shore, Frosty Peak and Whisper Woods still owe their own sack race a watcher.
+
+## Round 1392 — a watcher for Victorian's sack race
+
+Rounds 1390-1391 opened the sack-race series with Candy Land and Robot City, leaving Victorian, Sunny Shore, Frosty Peak and Whisper Woods still owing theirs one. **A washerwoman now stands south of Victorian's own sack race, basket set down, watching the two errand boys hop back and forth in their borrowed flour sacks.** No lines of her own — this one just watches — but saying hello to her makes her the usual kind of friend, Victorian's own count rising from 201 to 202.
+
+No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses — a plain `makeHuman()`/`randomPerson()` rig with no fixed wardrobe of its own, `angle` pointed at the lane's own fixed midpoint (6.5, -66). This town's own sack race runs along world X (`ry=PI/2`, racers side by side in z), the same orientation as the Neighborhood's and Robot City's own (rounds 1307 and 1391) rather than Candy Land's (round 1390, lane along z, side by side in x), so round 1307's own finding applies directly: standing north or south of the lane, offset along the same axis as the racers' own side-by-side gap, is the angle that shows both hopping past at once rather than looking down their backs. Victorian builds and runs on its own local seeded `r()`, not the shared global `rnd()` the Neighborhood's own timing-sensitive checks key off, so nothing here needed a draw pinned.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, `game.load(3, 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so both errand boys, the maypole dancers and every other NPC had settled, then 600 more sampling every NPC's own position every 10th frame) swept a 0.25 m grid north and south of the lane's own midpoint, 2-16 m out, against all 602 of this town's own physics boxes and all 230 `game.zones` rectangles: (6.5, -75) came back clearest — due south of the lane at radius 9, 75.3 m from the world's own origin, a good 12.7 m short of the radius (88) where `victorianRegion`'s own procedural fill takes over — 10.9 m from the nearest box, 13.8 m from the nearest zone rectangle and 9.1 m from the nearest other soul, clear of the maypole's own field and the archery range.
+
+`node dimension-cat/test/run.mjs` ran clean three times in a row: exit 0, every check `ok`, 0 console warnings, physics box count unchanged at 338 (a `Wanderer` adds a dynamic circle, not a static box), Victorian's own friend total confirmed up by one (201 → 202), "every NPC is in the scene graph" and the walkability check (94%) unchanged. No visual check was possible in this environment (no browser, no Playwright), so whether she reads as watching rather than just standing nearby is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Sunny Shore, Frosty Peak and Whisper Woods still owe their own sack race a watcher.
+
+## Round 1393 — a watcher for Sunny Shore's sack race
+
+Rounds 1390-1392 gave Candy Land's, Robot City's and Victorian's own sack race a first watcher, leaving Sunny Shore, Frosty Peak and Whisper Woods still owing theirs one. **A beachgoer now stands well east of Sunny Shore's own sack race lane, watching the two kids hop back and forth.** No lines of her own — this one just watches — but saying hello to her makes her the usual kind of friend, Sunny Shore's own count rising from 172 to 173.
+
+No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses, built from this beach's own `beachPerson()` wardrobe helper rather than a fresh `makeHuman` call, `angle` pointed at the lane's own fixed midpoint (-37, -13). This coast's own sack race (round 554, `sackA`/`sackB` at `ry: 0`) runs its racers along z, side by side in x — the same orientation as Candy Land's own (round 1390) — so round 1390's own finding applies directly: standing east or west of the lane, offset along the same axis as the racers' own side-by-side gap, is the angle that shows both hopping past at once rather than looking down their backs.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, `game.load(4, 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so both racers and every other beachgoer, dog, kite and ball game had settled, then 900 more sampling every NPC's own position every 5th frame) swept a 0.25 m grid east and west of the lane's own midpoint, 2.5-18 m out, against all 125 of this coast's own body-height physics boxes and all 88 `game.zones` rectangles, staying short of the radius (58) where `beachRegion()`'s own fill takes over: (-23.25, -13) came back clearest — due east of the lane at radius 13.75, 26.6 m from the world's own origin — 4.46 m from the nearest box, 5.61 m from the nearest zone rectangle and 4.46 m from the nearest other soul. West of the lane topped out around 3.2 m of clearance within the same reach before running into the tetherball watcher's own ground, so east, further out, is the side that actually has room.
+
+`node dimension-cat/test/run.mjs` ran clean three times in a row: exit 0, every check `ok` (277), 0 console warnings, physics box count unchanged at 338 (a `Wanderer` adds a dynamic circle, not a static box), Sunny Shore's own friend total confirmed up by one (172 → 173). No visual check was possible in this environment (no browser, no Playwright), so whether she reads as watching rather than just standing nearby is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Frosty Peak and Whisper Woods still owe their own sack race a watcher.
+
+## Round 1394 — a watcher for Frosty Peak's sack race
+
+Rounds 1390-1393 gave Candy Land's, Robot City's, Victorian's and Sunny Shore's own sack race a first watcher, leaving Frosty Peak and Whisper Woods still owing theirs one. **A bundled-up villager now stands due north of Frosty Peak's own sack race lane, watching the two kids hop back and forth.** No lines of her own — this one just watches — but saying hello to her makes her the usual kind of friend, Frosty Peak's own count rising from 167 to 168.
+
+No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses — a plain `makeHuman()`/`randomPerson()` rig in the same winter wardrobe shape (beanie, coat, scarf, cuffs) this mountain's own tug-of-war and badminton watchers already wear, `angle` pointed at the lane's own fixed midpoint (41.4, -34.7), and the relaxed `idle: [3, 6]`/`walk: [1, 1.6]` the series' own Robot City and Victorian watchers settled on, rather than the frozen `idle: [1e9, 1e9]` this mountain's own badminton spectator uses. This mountain's own sack race (round 520's own two kids, `ry: PI/2`) runs its racers along world X, side by side in z — the same orientation as the Neighborhood's, Robot City's and Victorian's own (rounds 1307, 1391, 1392), not Candy Land's or Sunny Shore's own (rounds 1390 and 1393, lane along z, side by side in x) — so round 1307's own finding applies directly: standing north or south of the lane, offset along the same axis as the racers' own side-by-side gap, is the angle that shows both hopping past at once rather than looking down their backs.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, `game.load(5, 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so both kids and every other villager, reindeer and yeti had settled, then 600 more sampling every NPC's own position every 10th frame) swept a 0.25 m grid north and south of the lane's own midpoint, 2.5-16 m out, against all 463 of this mountain's own body-height physics boxes and all 160 `game.zones` rectangles, staying short of the radius (58) where `snowRegion`'s own fill takes over, then refined the best stretch on a 0.05 m grid: (41.4, -30.1) came back clearest — due north of the lane at radius 4.6, 51.2 m from the world's own origin — 4.03 m from the nearest box, 15.9 m from the nearest zone rectangle and 4.05 m from the nearest other soul (one of the racers themselves), ground flat to within 6 cm across a 0.6 m square.
+
+`node dimension-cat/test/run.mjs` ran clean three times in a row: exit 0, every check `ok`, 0 console warnings, physics box count unchanged at 338 (a `Wanderer` adds a dynamic circle, not a static box), Frosty Peak's own friend total confirmed up by one (167 → 168), "every NPC is in the scene graph" and the walkability check (98%) unchanged. No visual check was possible in this environment (no browser, no Playwright), so whether she reads as watching rather than just standing nearby is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Whisper Woods is the only world left whose own sack race still plays to nobody.
+
+## Round 1395 — a watcher for Whisper Woods' sack race, closing out the set
+
+Rounds 1390-1394 gave Candy Land's, Robot City's, Victorian's, Sunny Shore's and Frosty Peak's own sack race a first watcher, leaving Whisper Woods as the last of the seven worlds whose own sack race still played to nobody. **A forest-dweller now stands due north of Whisper Woods' own sack race lane, watching the two kids hop past.** No lines of her own — this one just watches — but saying hello to her makes her the usual kind of friend, Whisper Woods' own count rising from 195 to 196.
+
+No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses — a plain `makeHuman()`/`randomPerson()` rig in the same earthy, hat-and-bag-free wardrobe shape this wood's own tetherball, ring-toss and tug-of-war watchers already wear, `angle` pointed at the lane's own fixed midpoint (-5.5, -50). This wood's own sack race (round 556, `x=-8, z=-50, ry=PI/2`, default `gap=1.1`) runs its racers along world X, side by side in z — the same orientation as the Neighborhood's, Robot City's, Victorian's and Frosty Peak's own (rounds 1307, 1391, 1392, 1394), not Candy Land's or Sunny Shore's own (rounds 1390 and 1393, lane along z, side by side in x) — so round 1307's own finding applies directly: standing north or south of the lane, offset along the same axis as the racers' own side-by-side gap, is the angle that shows both hopping past at once rather than looking down their backs. Whisper Woods builds and runs on its own local seeded `r()` (`seeded(707)`), not the shared global `rnd()` the Neighborhood's own timing-sensitive checks key off, so nothing here needed a draw pinned.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, `game.load(6, 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so both racers and every other NPC, deer, fox and hare had settled, then 600 more sampling every NPC's own position every 10th frame) swept a 0.25 m grid north and south of the lane's own midpoint, 2-16 m out, against all 430 of this wood's own body-height physics boxes and all 229 `game.zones` rectangles, staying short of the radius (58) where `forestRegion()`'s own fill takes over, then refined the best stretch on a finer 0.1 m grid: (-6.5, -45.4) came back clearest — due north of the lane's own midpoint at radius 4.6, 45.9 m from the world's own origin — 4.03 m from the nearest box, 11.1 m from the nearest zone rectangle and 4.05 m from the nearest other soul (one of the two racers), clear of the tug-of-war's own clearing (-10, -40) and the jump-roper's own spot (8, -48).
+
+`node dimension-cat/test/run.mjs` ran clean three times in a row: exit 0, every check `ok`, 0 console warnings, physics box count unchanged at 338 (a `Wanderer` adds a dynamic circle, not a static box), Whisper Woods' own friend total confirmed up by one (195 → 196), "every NPC is in the scene graph" and the walkability check (97%) unchanged. No visual check was possible in this environment (no browser, no Playwright), so whether she reads as watching rather than just standing nearby is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. All seven worlds now have a watcher for their own sack race, closing out the series rounds 1390-1394 started.
+
+## Round 1396 — a watcher for the Neighborhood's seesaw, opening a new series
+
+The seesaw (round 183) has had two kids tipping it up and down on the open grass east of the park path since the very start of this project — the first one built, and the template every other world's own seesaw later copied. Over the last few hundred rounds nearly every other game and activity in this project has slowly picked up a spectator (badminton, tetherball, ring toss, tug-of-war, the sack race, hopscotch, the toss games...), but nobody had ever stopped to watch the seesaw itself. **A passer-by now stands a few steps north of it, taking in both ends tip up and down at once.** No lines of her own — this one just watches — but saying hello to her makes her the usual kind of friend, the Neighborhood's own count rising from 151 to 152.
+
+No new class: the same `Wanderer` (55-npcs.js) every watcher in this project already uses, which calls `greetable()` itself, so no extra wiring was needed. The seesaw's own two riders sit side by side along world X (`makeSeesaw`'s arm runs along the pivot's own local x, and this seesaw's `ry` is 0), so standing due north or south — offset along the same axis the riders are spread across — is the angle that shows both ends rising and falling at once rather than looking down the plank's own length. A single-shirt wardrobe bag keeps the dupe-shirt check happy, the one hard requirement this world's own test enforces that no other world's build function has to answer to — the first colour tried (0x6a4a8a) turned out to collide with this same street's own yo-yo watcher from a few hundred rounds back, caught by the test rather than missed; 0x7a5a9a (a plum) went in instead.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, `game.load(0, 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so every wanderer, the postie and both seesaw kids had settled, then 600 more sampling every NPC's own position every 10th frame) swept the ground due north and south of the seesaw (11, 45), 2.5-9 m out, then refined on a finer grid: (11, 50.4) came back clearest — due north at radius 5.4 — 5.1 m from the nearest of this street's own physics boxes, 3.6 m clear of the nearest `game.zones` rectangle and 3.69 m from the nearest other soul.
+
+`node dimension-cat/test/run.mjs` ran clean three times in a row: exit 0, every check `ok`, 0 console warnings, physics box count unchanged at 338 (a `Wanderer` adds a dynamic circle, not a static box), and the Neighborhood's own friend total confirmed up by one (151 → 152, verified by diffing against the test run on the previous commit). No visual check was possible in this environment (no browser, no Playwright), so whether she reads as watching rather than just standing nearby is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Candy Land, Robot City, Victorian, Sunny Shore, Frosty Peak and Whisper Woods all still owe their own seesaw a watcher.
+
+## Round 1397 — a watcher for Candy Land's seesaw
+
+Round 1396 gave the Neighborhood's own seesaw its first watcher after two kids had tipped it up and down, unwatched, since round 183 — opening a new series the same way the tug-of-war, ring toss, tetherball and sack-race series each opened one. This round continues it with Candy Land's own seesaw (round 7012's own two village children, since `Seesaw` reaches into a rider's `L.hip`/`L.knee`/`L.ankle` and `A.sh`/`A.el`, which the cookie-rig gingerbread men don't have). **A gingerbread-village local now stands due north of it, watching both ends tip.** No lines of her own — this one just watches — but saying hello to her makes her the usual kind of friend, Candy Land's own count rising from 155 to 156.
+
+No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this project already uses, which calls `greetable()` itself, so no extra wiring was needed. Candy Land's own seesaw sits at (25, 51) with `ry` 0, the same orientation as the Neighborhood's own, so round 1396's own finding applies directly here: the riders sit side by side along world X, so standing north or south of it — offset along the same axis the riders are spread across — is the angle that shows both ends rising and falling at once rather than looking down the plank's own length. Candy Land carries no dupe-shirt rule of its own (the Neighborhood's test is the only one of the seven that enforces one), so the shirt colour just went with the cookie-village palette.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, `game.load(1, 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so every gingerbread man and both seesaw kids had settled) swept a 0.25 m grid due north and south of the seesaw, 2.5-16 m out, against all 1812 of this land's own physics boxes, all 452 `game.zones` rectangles and every other NPC already standing in it: (25, 59.25) came back clearest — due north at radius 8.25, 64.3 m from the world's own origin, well short of the radius (92) where `candyRegion`'s own procedural fill takes over — 7.65 m from the nearest box, 7.65 m from the nearest zone rectangle and 10.4 m from the nearest other soul. South topped out at only 6.4 m of clearance at its own best radius, so north, a touch further out, is the side with more room.
+
+`node dimension-cat/test/run.mjs` ran clean three times in a row: exit 0, every check `ok`, 0 console warnings, physics box count unchanged at 338 (a `Wanderer` adds a dynamic circle, not a static box), Candy Land's own friend total confirmed up by one (155 → 156). A separate run of the unmodified suite hit one unrelated flake on Sunny Shore's own kite-height check (`game.loop()` reads a real wall-clock delta via `this.clock.getDelta()`, so that one check's own timing can wobble under load regardless of what else changed) — pre-existing and nothing to do with this round's own change. No visual check was possible in this environment (no browser, no Playwright), so whether she reads as watching rather than just standing nearby is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Robot City, Victorian, Sunny Shore, Frosty Peak and Whisper Woods still owe their own seesaw a watcher.
+
+## Round 1398 — a watcher for Robot City's seesaw
+
+Rounds 1396-1397 opened a "seesaw watcher" series on the Neighborhood and then Candy Land, leaving Robot City, Victorian, Sunny Shore, Frosty Peak and Whisper Woods still owing theirs one. **A contractor now stands due south of Robot City's own seesaw, taking in both ends tip up and down.** No lines of her own — this one just watches — but saying hello to her makes her the usual kind of friend, Robot City's own count rising from 163 to 164.
+
+No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses — a plain `makeHuman()`/`randomPerson()` rig with no fixed wardrobe of its own, `angle` pointed at the seesaw's own fixed spot (0, -45), and the frozen `idle: [1e9, 1e9]` the Neighborhood's and Candy Land's own seesaw watchers both settled on rather than the relaxed `idle: [3, 6]` this city's own tug-of-war and sack-race watchers use. Robot City's own seesaw (two hard-hatted kids, `ry` 0) sits south of its swing set, same orientation as the Neighborhood's and Candy Land's own, so round 1396's own finding applies directly: the riders sit side by side along world X, so standing north or south of it — offset along the same axis the riders are spread across — is the angle that shows both ends rising and falling at once rather than looking down the plank's own length. Robot City carries no dupe-shirt rule of its own (the Neighborhood's test is the only one of the seven that enforces one), so no wardrobe bag was needed.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, `game.load(2, 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so both seesaw kids, the marching patrol and every other NPC had settled, then 600 more sampling every NPC's own position every 10th frame) swept a 0.25 m grid north and south of the seesaw (0, -45), 2.5-20 m out, against all of this city's own body-height physics boxes and all `game.zones` rectangles, staying inside the radius (98) where `robotRegion`'s own procedural fill takes over: south came back clearer than north at every radius tried, and (0, -50.3) came back clearest overall — due south at radius 5.3, 50.3 m from the world's own origin — 5.0 m from the nearest box, 4.7 m from the nearest zone rectangle and 4.67 m from the nearest other soul, clear of the furnace, both conveyors and the swing set's own ground to the north.
+
+`node dimension-cat/test/run.mjs` ran clean three times in a row: exit 0, every check `ok`, 0 console warnings, physics box count unchanged at 338 (a `Wanderer` adds a dynamic circle, not a static box), Robot City's own friend total confirmed up by one (163 → 164). No visual check was possible in this environment (no browser, no Playwright), so whether she reads as watching rather than just standing nearby is unverified, the usual caveat every round like this carries. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Victorian, Sunny Shore, Frosty Peak and Whisper Woods still owe their own seesaw a watcher.

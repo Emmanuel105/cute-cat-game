@@ -5237,6 +5237,349 @@ function buildNeighborhood(game, entry) {
     W.add(customer.group);
     game.npcs.push(new Wanderer(game, customer, { x: cux, z: cuz, angle: atan2(ftX - cux, ftZ - cuz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // The Neighborhood is the one world with a real day/night cycle (`makeDayNight` below) and stars that
+  // actually come out, but nothing has ever stood out here with so much as a telescope — the painter at
+  // her easel in Frosty Peak and the archive-bot's tripod camera in Robot City both look outward, never
+  // up. **A stargazer now stands behind a brass-trimmed tripod telescope on the quiet lawn east of the
+  // street, bent to the eyepiece.** *"Can't see a blessed thing in daylight, but I like to keep it
+  // pointed at something anyway."* *"There — right between the two bright ones. Steadier than it looks
+  // through that eyepiece."*
+  //
+  // `makeTelescope()` (60-props.js) is new: a three-legged wooden tripod, the same build as
+  // `makeOldCamera()`'s own, carrying a tilted brass-and-gunmetal tube with an objective ring at the far
+  // end and an eyepiece at the near one — static geometry, no `userData.update`, so `bakeDeep()` folds it
+  // into one draw call like every other static prop on this street. The stargazer herself is the usual
+  // `makeHuman()`/`randomPerson()` rig and a `Wanderer` (55-npcs.js), which calls `greetable()` itself, so
+  // no extra wiring was needed; `blinkT0`/`idleT0`/`sway0` fixed straight in the `makeHuman()` call plus
+  // the frozen `idle: [1e9, 1e9]` (and no `cries` at all) keeps her statue-still and draws nothing extra
+  // from the shared `rnd()` sequence beyond construction — the same caution every watcher built this late
+  // in this file already takes, since the Neighborhood is the one world every test travel starts from and
+  // any further draw here would shift every timing-sensitive pick made in every world built after it. A
+  // single-shirt wardrobe (0x3a9a7a, a teal not already spoken for anywhere on this street) keeps the "no
+  // two neighbours wear the same shirt" test happy.
+  //
+  // The telescope's own "Look through the telescope" prompt checks `game.dayPhase` the same way the bats'
+  // own comment above already explains (`night = smoothstep(0.05, -0.2, sin(sa))`), so it answers
+  // differently by day and by night rather than always giving the same line.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, 600 simulated frames to settle every wandering neighbour, then a further 1800
+  // sampling every NPC's own position every 5th frame) swept a 1.5 m grid across the open lawn east of
+  // the street (25-82 m out, clear of the 95 m world limit) against all 334 of this street's own physics
+  // boxes, its 69 `game.zones` rectangles and all 39,240 of those position samples: (74, -26.5) came back
+  // clearest in that whole sweep — 12.76 m from the nearest box, 23.1 m clear of the nearest zone
+  // rectangle's own edge and 13.0 m from the nearest wandering soul over the whole run, well past the
+  // archer's and magician's own corners and nowhere near the lake, with flat ground (`ground0` returns 0
+  // there, same as everywhere else on this street). The stargazer stands 1 m south of it, facing north at
+  // the eyepiece.
+  //
+  // Built dead last, right after the fortune teller's customer above and right before `makeDayNight()`,
+  // for the usual reason: `makeHuman()` draws off the *shared* `rnd()` sequence unconditionally, and
+  // dropping a fresh rig in any earlier would shift every timing-sensitive pick made above it, including
+  // the two-neighbours-chat timing test a few thousand lines up.
+  { const tx = 74, tz = -26.5, sgx = 74, sgz = -27.5;
+    const telescope = makeTelescope(); telescope.position.set(tx, 0, tz); W.add(telescope);
+    P.addBox(tx, 0.65, tz, 0.7, 1.3, 0.7, { cam: false });
+    const scopeLinesDay = ['🔭 "Can\'t see a blessed thing in daylight, but I like to keep it pointed at something anyway."', '🔭 "Patience. The stars are still up there — they just need the sun to clock off first."'];
+    const scopeLinesNight = ['🌌 "There — right between the two bright ones. Steadier than it looks through that eyepiece."', '🔭 "Best view of the whole night, and nobody else ever comes to look."', '😼 "Puss, I know you can see in the dark — that\'s not quite what this is for."'];
+    game.addInteractable({ obj: telescope, radius: 2.0, label: () => 'Look through the telescope', onUse: () => {
+      SFX.click();
+      const sa = (game.dayPhase ?? 0) * TAU - PI / 2, night = smoothstep(0.05, -0.2, sin(sa));
+      game.toast(rnd.pick(night > 0.2 ? scopeLinesNight : scopeLinesDay), 3000); } });
+    const scopeWard = makeWardrobe(r, { shirts: [0x3a9a7a] });
+    const stargazer = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: scopeWard }), blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(stargazer.group);
+    game.npcs.push(new Wanderer(game, stargazer, { x: sgx, z: sgz, angle: atan2(tx - sgx, tz - sgz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
+  // The stargazer above has had the telescope to herself since last round — nobody in the whole game
+  // has ever waited a turn at anything. A kid now stands a couple of steps south-west of her, hopping
+  // between feet, next in line for a look through the eyepiece.
+  //
+  // No new class or mesh: the usual `makeHuman()`/`randomPerson()` rig and a `Wanderer` (55-npcs.js),
+  // the same frozen-still trick the stargazer herself uses two lines up (`blinkT0`/`idleT0`/`sway0` fixed
+  // in the `makeHuman()` call, `idle: [1e9, 1e9]` and `phase`/`timer`/`t`/`cryT` all fixed instead of drawn
+  // from `rnd()`, no `cries` at all). That alone was not enough here, though: this street's own per-house
+  // chimney-smoke puffs (`U.push(() => { if (r.chance(...)) ... }` a few dozen lines up, one per terrace
+  // house) keep calling this world's own *local* seeded `r()` every single frame for the rest of the run,
+  // not just at construction — so *any* extra draw from `r()` anywhere in this build, even dead last and
+  // even in a `Wanderer` whose own four timing fields are fixed, leaves `r()` at a different starting
+  // point for every one of those chimneys the moment the simulated frames begin, and the headless suite's
+  // own cyclist check (which shares this exact run) came back with a different, slower westbound ride as
+  // a result — caught by running the full suite after the first attempt, not by inspection. The fix: a
+  // throwaway generator with `r`'s own shape (`chance`/`pick`/`range`/`int`) that answers every call
+  // without ever touching the real one, and single-item colour lists so `makeWardrobe`'s own shuffle-bag
+  // never has anything to shuffle — `randomPerson`/`makeWardrobe` draw nothing at all from this world's
+  // own `r()`, so nothing downstream shifts. A single unused shirt colour (0xc0392b, checked against every
+  // shirt literal already in this file) keeps the "no two neighbours wear the same shirt" check happy.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, 600 simulated frames to settle every wandering neighbour, then a further 1800
+  // sampling every NPC's own position every 5th frame) checked a handful of spots a couple of metres off
+  // the stargazer's own fixed spot (74, -27.5): (73, -29.5) came back clear by 2.73 m of the nearest
+  // physics box and sits 2.24 m from the stargazer herself — the nearest other soul over the whole run —
+  // close enough to read as waiting in line without crowding her elbow, and clear of every one of this
+  // street's own 69 `game.zones` rectangles.
+  //
+  // Built dead last, right after the stargazer above and right before `makeDayNight()`, for the usual
+  // reason, and with the no-draw generator above on top of it, since dead last alone turned out not to
+  // be enough on this particular street.
+  { const kx = 73, kz = -29.5, qsgx = 74, qsgz = -27.5;
+    const noR = { chance: () => false, pick: (arr) => arr[0], range: (a, b) => a, int: (a, b) => a };   // answers like `r` but never touches it
+    const queueWard = makeWardrobe(noR, { shirts: [0xc0392b], pants: [0x2a2a2a], shoes: [0x2a2018] });
+    const waitingKid = makeHuman({ ...randomPerson(noR, { female: false, child: true, wardrobe: queueWard }), hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false, blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(waitingKid.group);
+    game.npcs.push(new Wanderer(game, waitingKid, { x: kx, z: kz, angle: atan2(qsgx - kx, qsgz - kz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
+  // Victorian's canal bank, Frosty Peak's snowfield, Whisper Woods' clearing, Sunny Shore's dunes,
+  // Robot City's factory floor and Candy Land's sweet-lands floor all have a chestnut roaster at her
+  // own glowing brazier by now (round 1074 closed out "five of the seven" with Candy Land) — this
+  // street is the one world still without, and not for lack of trying: round 1072's own postmortem
+  // records a first attempt aimed squarely here, caught dead by a headless probe before it ever got
+  // this far. `Vendor` (55-npcs.js) draws one `rnd()` tick in its own constructor unconditionally
+  // (`this.t = rnd() * 10`) whether or not it's given `cries`, and this street is the one world whose
+  // build shares a single unbroken run of simulated frames with `test/run.mjs`'s own behaviour checks
+  // — any extra draw from that *shared* generator (not this world's own local `r()`, which every other
+  // caution in this file already guards) nudges every timing-sensitive pick made anywhere else in that
+  // same run, roaster built early or late. That is why the other six roasters could each just reuse
+  // `Vendor` verbatim and this one could not.
+  //
+  // The fix is in `Vendor` itself (55-npcs.js), not around it: two new optional constructor fields,
+  // `t0` and `cryT0`, which stand in for the unconditional `rnd()` draws when given and change nothing
+  // for any of the thirty-odd other callers that don't pass them. **A roaster now works the open grass
+  // south of the terrace gardens, her brazier glowing beside her, a paper cone of chestnuts held out to
+  // whoever wanders past** — this street's own last stop on the chestnut roaster's own tour of the
+  // seven. *"Hot chestnuts, fresh off the coals — same as every other street in the seven worlds, just
+  // took this one a bit longer."* *"Careful, puss — that griddle's hotter than the sun ever gets round
+  // here."* *"Quietest corner of the whole street. Good a spot as any for a brazier."*
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, 600 simulated frames to settle every wandering neighbour, then a further 1800
+  // sampling every NPC's own position every 5th frame) swept the open grass south of the terrace row
+  // against all 335 of this street's own physics boxes (knee-to-head band only) and every one of those
+  // position samples: (27, -17) came back clear by 10.73 m of the nearest box and 11.73 m of the
+  // nearest wandering soul, with flat ground (`ground0` returns 0 here, same as the rest of this
+  // street) and well clear of every one of this street's own 69 `game.zones` rectangles. The brazier
+  // sits 1.3 m south of her, same spacing every other roaster in the game already uses.
+  //
+  // No new mesh and no new controller: `makeChestnutBrazier()` (60-props.js) and `makeChestnutCone()`
+  // (62-props-nature.js) are reused verbatim a seventh time. `place()` (this file, used instead of
+  // `placeT()` since this street has no terrain to sample) sits the brazier on the flat grass and rides
+  // its own `userData.update` (vent glow, light flicker) into this street's `U` list. A single-shirt
+  // wardrobe bag (0x9a4a2a, a rust not already spoken for on this street) keeps the dupe-shirt check
+  // happy, and `t0`/`cryT0` (fixed, not drawn from anything) keep her from touching the shared `rnd()`
+  // sequence at all.
+  //
+  // Built dead last of everything this street adds, right after the queue kid above and right before
+  // `makeDayNight()` — `makeHuman()`/`randomPerson()` both draw off this street's own local `r()`
+  // sequence unconditionally, and anything built earlier here would have had its own timing-sensitive
+  // pick shifted by it.
+  { const vx = 27, vz = -17, bx = 27, bz = -18.3, vry = atan2(bx - vx, bz - vz);
+    const roastWard = makeWardrobe(r, { shirts: [0x9a4a2a] });
+    const roaster = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: roastWard }),
+      hat: r.chance(0.5) ? 'flatcap' : 'beanie', hatColor: 0x3a3327, coat: true, scarf: 0x8a6a4a, cuffs: 0x3a3a3a, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(roaster.group);
+    const brazier = place(game, U, makeChestnutBrazier(), bx, bz, 0);
+    P.addBox(bx, 0.325, bz, 0.3, 0.65, 0.3, { cam: false });
+    const v = new Vendor(game, roaster, makeChestnutCone(), { x: vx, z: vz, ry: vry, cryIcon: '🌰', t0: 4.2, cryT0: 5,
+      cries: ["Hot chestnuts, fresh off the coals — same as every other street in the seven worlds, just took this one a bit longer.", "Careful, puss — that griddle's hotter than the sun ever gets round here.", "Quietest corner of the whole street. Good a spot as any for a brazier."] });
+    game.npcs.push(v); greetable(game, v);
+    const brazierLines = ['The vents glow a deep, steady orange against the grass.', 'Warm enough to feel from here, even on a mild evening.', 'A faint crack and hiss — one more chestnut giving in.'];
+    game.addInteractable({ obj: brazier, radius: 1.2, label: () => 'Look at the brazier', onUse: () => { SFX.click(); game.toast(rnd.pick(brazierLines), 3000); } }); }
+
+  // Round 141's hopscotch chalker has knelt over her own six squares on the north pavement ever
+  // since, with nobody ever stopping to watch — the same spectator this project has slowly given
+  // every other quiet street activity over the last few hundred rounds (the woodcutter, the
+  // telescope, the chestnut roaster above). A passer-by now stands a few steps east of the squares,
+  // watching her chalk.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, 3600 simulated frames to settle every neighbour, then 600 more sampling
+  // every NPC's own position every 6th frame) swept the open pavement east of the hopscotch squares
+  // against all 336 of this street's own physics boxes (knee-to-head band only) and every sampled
+  // NPC position: (63, 17.75) came back clear by 1.15 m of the nearest box and 4.25 m of the nearest
+  // wandering soul, 4.4 m east of the chalker herself, on the same stretch of pavement the squares
+  // sit on.
+  //
+  // This is the one street whose build shares a single unbroken run of simulated frames with
+  // `test/run.mjs`'s own behaviour checks (the chestnut-roaster entry above explains why), so this
+  // watcher is built the same careful way the telescope's own queue kid was: `Wanderer` (55-npcs.js)
+  // draws three ticks off the *shared* `rnd()` sequence in its own constructor whenever
+  // `phase`/`timer`/`t` aren't given, so all three are fixed here instead, alongside a `cryT` of
+  // `1e9` since she has no cries of her own — zero draws from the shared generator, nothing
+  // downstream shifted. No new class: `Wanderer` calls `greetable()` itself, so she counts as a
+  // friend to meet with no extra wiring. No physics box, pure bystander.
+  //
+  // Built dead last of everything this street adds, right after the chestnut roaster above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this street's own local `r()`
+  // sequence unconditionally, and anything built earlier here would have had its own timing-sensitive
+  // pick shifted by it.
+  { const hwx = 63, hwz = 17.75, chx = 58.6, chz = 17.75;
+    const hopWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x5a9a9a, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(hopWatcher.group);
+    game.npcs.push(new Wanderer(game, hopWatcher, { x: hwx, z: hwz, angle: atan2(chx - hwx, chz - hwz), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
+  // `makeOldCamera()` (60-props.js) has built its lens facing "the subject" since the round it was
+  // written, and the Neighborhood's own photographer above talks about framing both roofs and the
+  // street ("Both roofs and the street, if I angle it right.") — but like every other world's
+  // photographer before round 1346, he had only ever faced empty field. **A neighbour now stands a
+  // step past his camera, holding still for the shot.** *"Hold still, they said. I have held still
+  // for ten whole minutes now."* *"Careful, puss — don't spoil the shot, he has only the one plate
+  // left."* Saying hello to her is the usual kind of friend.
+  //
+  // No new class: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual rig and `Wanderer`
+  // (55-npcs.js) gives her the same "stand and watch" shape every watcher in this file already uses —
+  // frozen `idle: [1e9, 1e9]` plus every one of `Wanderer`'s own construction-time draws (`phase`,
+  // `timer`, `t`, `cryT`) fixed rather than pulled from `rnd()`, and `blinkT0`/`idleT0`/`sway0` fixed
+  // straight in the `makeHuman()` call so she actually holds a pose instead of fidgeting, the same
+  // touch Victorian's own subject (round 1346) used. `angle` points her back at the photographer
+  // rather than a constant, so she reads as posing for him, not loitering. A fixed shirt (0xe6b8c2, a
+  // dusty pink not spoken for anywhere else on this street) keeps the "no two neighbours share a
+  // shirt" check happy.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // click "enter", 300 simulated seconds to let every wanderer, the postie and the cyclist settle,
+  // then every NPC's and the squirrel's own position sampled every quarter second over another 300
+  // simulated seconds) placed her 2.4 m out from the photographer along the exact line his own camera
+  // already faces — against all 312 of this street's own physics boxes in the knee-to-head band:
+  // 1.37 m clear of the nearest one (the camera's own tripod box), and 2.40 m from the nearest other
+  // soul, which is the photographer himself, back down the same line — nobody else wanders anywhere
+  // near this quiet corner of the back field.
+  //
+  // Built dead last of everything this street adds, right after the hopscotch chalker's own watcher
+  // above and right before `makeDayNight`, for the usual reason: `makeHuman()`/`randomPerson()` both
+  // draw off this street's own shared `r()` sequence unconditionally.
+  { const subPX = 61, subPZ = -26, subPRY = atan2(63 - subPX, 5 - subPZ);
+    const subX = subPX + 2.4 * sin(subPRY), subZ = subPZ + 2.4 * cos(subPRY);
+    const subject = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0xe6b8c2, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false,
+      blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(subject.group);
+    game.npcs.push(new Wanderer(game, subject, { x: subX, z: subZ, angle: atan2(subPX - subX, subPZ - subZ), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 7,
+      cries: ["Hold still, they said. I have held still for ten whole minutes now.", "Careful, puss — don't spoil the shot, he has only the one plate left.", 'Best side forward. Every single time, without fail.'] })); }
+
+  // Victorian, Candy Land, Robot City, Sunny Shore, Frosty Peak and Whisper Woods have all picked up
+  // the same barber beside his own empty chair over the last ten rounds (1361, 1366-1370) — this
+  // street is the one world still without, and the reason is on record (round 1359's own grindstone,
+  // round 1072's own first chestnut-roaster attempt): this is the one world whose build shares a
+  // single unbroken run of simulated frames with `test/run.mjs`'s own behaviour checks, so any extra
+  // draw from the *shared* `rnd()` generator (not this street's own local `r()`) nudges every
+  // timing-sensitive pick made anywhere else in that same run. **A barber now stands beside his own
+  // empty chair on the quiet field south-west of the street, snipping his shears in the air to test
+  // an edge no customer is ever coming to try, his candy-striped pole propped in the grass beside
+  // him.** *"Every other street in the seven worlds has one of me by now. Took this one long
+  // enough."* *"Mind your whiskers, puss — these shears don't know a tabby from a trim."* *"Quiet
+  // corner, this. Suits a trade nobody actually needs."* Saying hello to him is the usual kind of
+  // friend.
+  //
+  // No new controller: the same `Charger` (55-npcs.js) every other barber already uses — a standing
+  // rig that idles on its own, its arms pinned into a held snipping pose each frame, guarded by
+  // `!barber.gesture` so a greeting wave still wins. The fix is in `Charger` itself, mirroring the
+  // `t0`/`cryT0` fields the chestnut-roaster round (1329) already added to `Vendor`: two new optional
+  // constructor fields standing in for its two unconditional `rnd()` draws (`this.t = rnd() * 10` and,
+  // when `cries` is set, `this.cryT = rnd.range(4, 9)`) when given, changing nothing for any of the
+  // dozen-odd other callers that don't pass them. Both are fixed here (`t0: 2.6`, `cryT0: 11`), so
+  // construction draws nothing from the shared sequence at all — the same zero-shift trick the
+  // photographer's own subject just above (round 1346) already leans on for `Wanderer`'s matching
+  // fields. His own small wardrobe (`barberWard`), a single fixed shirt (0xf5ece0, not spoken for by
+  // any other neighbour's own wardrobe above) under a dusty-rose apron, keeps the "no two neighbours
+  // wear the same shirt" check happy. The shears and the pole stripe are both driven only by the world
+  // clock `t` alone — no further `rnd()` or local `r()` draw once built.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, 3600 simulated frames to settle every neighbour, then 600 more sampling every
+  // NPC's own position every 10th frame) swept the open field south-west of the street (radius 10-65,
+  // clear of the picnic blanket at (-40, -30)) against all 312 of this street's own physics boxes
+  // (knee-to-head band only), all 69 `game.zones` rectangles and every sampled NPC position: (-37,
+  // -20.5) came back clear by 10.7 m of the nearest box, 12.0 m of the nearest zone rectangle and
+  // 10.8 m of the nearest other soul, radius 42.3 from the origin — a quiet stretch with nothing else
+  // on it.
+  //
+  // Built dead last of everything this street adds, right after the photographer's subject above and
+  // right before `makeDayNight`, for the usual reason: `makeHuman()`/`randomPerson()` both draw off
+  // this street's own local `r()` sequence unconditionally, and anything built earlier here would have
+  // had its own timing-sensitive pick shifted by it.
+  { const bx = -37, bz = -20.5, bry = atan2(-bx, -bz);
+    const barberWard = makeWardrobe(r, { shirts: [0xf5ece0], pants: [0x2a2430] });
+    const barber = makeHuman({ ...randomPerson(r, { female: r.chance(0.3), child: false, elder: r.chance(0.4), wardrobe: barberWard }),
+      pants: 0x241a28, apron: 0xc77b93, sleeves: true, hat: null, coat: null, scarf: null, bag: null, backpack: null, glasses: false, moustache: r.chance(0.5), build: 'average' });
+    W.add(barber.group);
+    const leatherM = mat(0xd62246, { roughness: 0.55 }), chairWoodM = mat(0x5a3a1f, { roughness: 0.8 }), chromeM = mat(0xcfd4d8, { metalness: 0.7, roughness: 0.25 });
+    // the empty chair: a pedestal base, a seat, a tall back and two armrests, a step in front
+    const chairX = bx + sin(bry) * 0.75, chairZ = bz + cos(bry) * 0.75;
+    const chair = group(chairX, 0, chairZ, W); chair.rotation.y = bry + PI;   // facing the barber
+    mesh(G.cyl(0.22, 0.26, 0.5, 14), chromeM, { y: 0.25, shadow: 'both', parent: chair });
+    mesh(G.box(0.46, 0.08, 0.46), leatherM, { y: 0.54, shadow: 'both', parent: chair });
+    mesh(G.box(0.46, 0.6, 0.08), leatherM, { y: 0.88, z: -0.22, shadow: 'both', parent: chair });
+    for (const sideA of [-1, 1]) mesh(G.box(0.07, 0.22, 0.4), leatherM, { x: sideA * 0.24, y: 0.68, shadow: 'both', parent: chair });
+    mesh(G.box(0.5, 0.04, 0.2), chairWoodM, { y: 0.08, z: 0.3, shadow: 'both', parent: chair });   // footrest step
+    P.addBox(chairX, 0.45, chairZ, 0.5, 0.9, 0.56, { cam: false });
+    // the pole: a slim post, the candy-cane stripe spinning round its own middle section, a small
+    // chrome ball to cap it
+    const poleX = bx - sin(bry) * 0.7 + cos(bry) * 0.55, poleZ = bz - cos(bry) * 0.7 - sin(bry) * 0.55;
+    const pole = group(poleX, 0, poleZ, W);
+    noInk(mesh(G.cyl(0.03, 0.035, 1.5, 10), chairWoodM, { y: 0.75, parent: pole }));
+    const stripeM = mat(0xffffff, { roughness: 0.4, map: TEX.candyCane() });
+    const poleSpin = group(0, 1.1, 0, pole);
+    noInk(mesh(G.cyl(0.07, 0.07, 0.6, 12), stripeM, { parent: poleSpin }));
+    mesh(G.sphere(0.08, 10, 8), chromeM, { y: 0.44, parent: pole });
+    P.addBox(poleX, 0.7, poleZ, 0.14, 1.5, 0.14, { cam: false });
+    // the shears, held raised and snipping — two thin blades on a hinge, pinned to the near hand
+    const scissors = group(0, 0.1, 0.1, barber.hands[0]); scissors.rotation.x = -1.3;
+    const bladeM = mat(0xb8bcc0, { metalness: 0.75, roughness: 0.2 }), handleM = mat(0x8a1a1a, { roughness: 0.5 });
+    noInk(mesh(G.sphere(0.018, 8, 6), handleM, { parent: scissors }));
+    const bladeA = group(0, 0, 0, scissors), bladeB = group(0, 0, 0, scissors);
+    mesh(G.box(0.014, 0.1, 0.01), bladeM, { y: 0.06, parent: bladeA }); mesh(G.box(0.03, 0.025, 0.01), handleM, { y: -0.03, parent: bladeA });
+    mesh(G.box(0.014, 0.1, 0.01), bladeM, { y: 0.06, parent: bladeB }); mesh(G.box(0.03, 0.025, 0.01), handleM, { y: -0.03, parent: bladeB });
+    const comb = group(0, 0.08, 0.06, barber.hands[1]); comb.rotation.x = -0.6;
+    mesh(G.box(0.02, 0.12, 0.012), mat(0x1a1a1e, { roughness: 0.6 }), { parent: comb });
+    game.npcs.push(new Charger(game, barber, { x: bx, z: bz, ry: bry, cryIcon: '💈', t0: 2.6, cryT0: 11,
+      cries: ['Every other street in the seven worlds has one of me by now. Took this one long enough.', 'Mind your whiskers, puss — these shears don\'t know a tabby from a trim.', 'Quiet corner, this. Suits a trade nobody actually needs.'] }));
+    U.push((dt, t) => {
+      poleSpin.rotation.y = t * 2.2;
+      bladeA.rotation.z = 0.12 + sin(t * 7) * 0.12; bladeB.rotation.z = -0.12 - sin(t * 7) * 0.12;
+      if (!barber.gesture) { const A = barber.arms[0], B = barber.arms[1]; A.sh.rotation.x = -1.4; A.sh.rotation.z = 0.25; A.el.rotation.x = -1.6; B.sh.rotation.x = -0.9; B.sh.rotation.z = -0.2; B.el.rotation.x = -1.1; }
+    }); }
+
+  // The seesaw (round 183) has had two kids tipping it up and down on the open grass east of the
+  // park path since the very start of this project — the first one built, and the template every
+  // other world's own seesaw later copied. Every other game and activity this project has slowly
+  // given a spectator over the last few hundred rounds (badminton, tetherball, ring toss,
+  // tug-of-war, the sack race, hopscotch...), but nobody had ever stopped to watch the seesaw
+  // itself. **A passer-by now stands a few steps north of it, taking in both ends tipping at
+  // once.** No `cries` of her own, no physics box, pure bystander — the same `Wanderer` (55-
+  // npcs.js) every watcher in this project already uses, which calls `greetable()` itself, so no
+  // extra wiring was needed.
+  //
+  // The seesaw's own two riders sit side by side along world X (`makeSeesaw`'s arm runs along the
+  // pivot's local x, and this seesaw's `ry` is 0), not spread along z, so standing due north or
+  // south — offset along the same axis the riders are spread across — is the angle that shows both
+  // ends rising and falling at once rather than looking down the plank's own length. A single-shirt
+  // wardrobe bag (0x7a5a9a, a plum not already spoken for by anyone else on this street — this
+  // world's own yo-yo watcher a few hundred lines up already claims the similar-looking 0x6a4a8a,
+  // which the first attempt at this round picked straight into a collision with) keeps the dupe-
+  // shirt check happy — the one hard requirement this world's own test enforces that no other
+  // world's build function has to answer to.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(0, 'from-hub')` directly rather than `game.travel()` — the
+  // travel fade sits behind a real `setTimeout` that never fires under simulated frames alone —
+  // then 3600 simulated frames so every wanderer, the postie and both seesaw kids had settled, then
+  // 600 more sampling every NPC's own position every 10th frame) swept the ground due north and
+  // south of the seesaw (11, 45), 2.5-9 m out, then refined on a finer grid: (11, 50.4) came back
+  // clearest — due north at radius 5.4 — 5.1 m from the nearest of this street's own physics boxes,
+  // 3.6 m clear of the nearest `game.zones` rectangle and 3.69 m from the nearest other soul.
+  //
+  // Built dead last of everything this street adds, right after the barber above and right before
+  // `makeDayNight()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this
+  // street's own shared `r()` sequence unconditionally, and anything built earlier would have had
+  // its own timing-sensitive pick shifted by it.
+  { const seeX = 11, seeZ = 45, wx = 11, wz = 50.4;
+    const watcherWard = makeWardrobe(r, { shirts: [0x7a5a9a] });
+    const seesawWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: watcherWard }), blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(seesawWatcher.group);
+    game.npcs.push(new Wanderer(game, seesawWatcher, { x: wx, z: wz, angle: atan2(seeX - wx, seeZ - wz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
@@ -7161,6 +7504,41 @@ function buildCandyLand(game, entry) {
     const camera = makeOldCamera();
     game.npcs.push(new Photographer(game, snapper, camera, { x: px, z: pz, ry: pry, cryIcon: '📷',
       cries: ['Best view of the cupcake hills from right here.', "Careful, puss — it's only flash powder, not fire.", 'The candy-cane forest never quite fits in one shot.'] })); }
+  // `makeOldCamera()` (60-props.js) has built its lens facing "the subject" since the round it was
+  // written, and Victorian's and the Neighborhood's own photographers (rounds 1346, 1347) have already
+  // had somebody standing where their lens points — Candy Land's own tourist above, set up on the open
+  // sweet-lands north-west of the cane ring, was still framing empty ground like every other world not
+  // yet touched. A resident now stands a step past her camera, back straight and holding the pose. *"Hold
+  // still, they said. I have held still for ten whole minutes now."* *"Careful, puss — don't spoil the
+  // shot, she has only the one plate left."* *"Best side forward. Every single time, without fail."*
+  // Saying hello to her is the usual kind of friend.
+  //
+  // No new class: `makeHuman()`/`randomPerson()` (55-npcs.js) build the rig and `Wanderer` (55-npcs.js)
+  // gives her the same frozen "stand and watch" shape every subject in this set uses — `idle: [1e9, 1e9]`
+  // plus every one of `Wanderer`'s own construction-time draws (`phase`, `timer`, `t`, `cryT`) fixed
+  // rather than pulled from `rnd()`, and `blinkT0`/`idleT0`/`sway0` fixed straight in the `makeHuman()`
+  // call so she holds still instead of fidgeting. `angle` points her back at the photographer rather than
+  // a constant, so she reads as posing for her and not loitering. A mint-green dress (0x6fcf9e, not
+  // spoken for by the birdwatcher or the tourist already standing nearby) keeps her visually distinct.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(1, 'from-prev')` for a direct synchronous build, then 1800 simulated
+  // frames so every marching, dancing, wandering and ball-tossing gingerbread man and the
+  // gingerbread-coloured dog had settled) placed her 2.4 m out from the photographer along the exact line
+  // her own camera already faces, against all of this world's own physics boxes in the knee-to-head band:
+  // nothing closer than 11 m, and the only other soul anywhere near is the photographer herself, 2.4 m
+  // back down the same line, well clear of the candy-cane ring and the castle approach.
+  //
+  // Built right after the photographer herself, before the dominoes table below, for the usual reason:
+  // `makeHuman()`/`randomPerson()` both draw off this world's own shared `r()` sequence unconditionally.
+  { const subPX = -74, subPZ = 34, subPRY = atan2(-58 - subPX, 30 - subPZ);
+    const subX = subPX + 2.4 * sin(subPRY), subZ = subPZ + 2.4 * cos(subPRY);
+    const subject = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x6fcf9e, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false,
+      blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(subject.group);
+    game.npcs.push(new Wanderer(game, subject, { x: subX, z: subZ, angle: atan2(subPX - subX, subPZ - subZ), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 6,
+      cries: ["Hold still, they said. I have held still for ten whole minutes now.", "Careful, puss — don't spoil the shot, she has only the one plate left.", 'Best side forward. Every single time, without fail.'] })); }
   // Victorian (draughts, round 354), Robot City (checkers, round 384), Frosty Peak (cards, round 397),
   // Whisper Woods (draughts, round 407), the Neighborhood (chess, round 408) and Sunny Shore (mancala,
   // round 409) have all had a table game by now — Candy Land, named for the stuff and stuffed with more
@@ -7354,6 +7732,34 @@ function buildCandyLand(game, entry) {
     const ringLines = ['Right over the stripe — that\'s a landing!', 'Careful, puss — sticky if it lands on you!', "Best of nine, loser licks the loser's ring."];
     game.npcs.push(new Horseshoes(game, tossA, tossB, ring, { cx: gcx, cz: gcz, gap: ggap, cries: ringLines, cryIcon: '🍬' }));
     greetable(game, { rig: tossA }); greetable(game, { rig: tossB }); }
+
+  // the Neighborhood's own horseshoe pit, tug-of-war rope and sack race lane all picked up a watcher
+  // over rounds 1305-1307, and the tetherball pole in every other world just did the same over rounds
+  // 1372-1377 — but the back-garden toss game itself, reskinned as this world's own gummy-ring toss
+  // above, has never had anyone watching it here or in any of the other five worlds that have a turn
+  // at it. **A villager now stands west of the ring toss, watching the pair lob their fat gummy ring
+  // back and forth.** No lines of her own — this one just watches — but saying hello to her makes her
+  // the usual kind of friend, Candy Land's own count rising from 152 to 153.
+  //
+  // No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this game already uses — a plain
+  // `makeHuman()`/`randomPerson()` rig with no fixed wardrobe, `angle` pointed at the ring toss' own
+  // fixed centre (51, -1). Candy Land builds and runs on its own local seeded `r()`, not the shared
+  // global `rnd()` the Neighborhood's own timing-sensitive checks key off, so nothing here needed a
+  // draw pinned.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(1, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so both tossers and every other gingerbread man had settled, then 600 more
+  // sampling every NPC's own position every 10th frame) swept a 0.25 m grid in a ring 3-7 m out from
+  // the ring toss' own centre against all 1803 of this world's own body-height physics boxes and all
+  // 452 `game.zones` rectangles: (46.75, -1) came back clearest — 5.75 m from the nearest box, 13.0 m
+  // from the nearest zone rectangle and 5.84 m from the nearest other soul, due west of the game and
+  // clear of the kite-flying kid and the tetherball pair, both well south of here.
+  { const rwx = 46.75, rwz = -1, rgx = 51, rgz = -1;
+    const ringWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }), hat: null, jacket: null, scarf: null, bag: null, backpack: null });
+    W.add(ringWatcher.group);
+    game.npcs.push(new Wanderer(game, ringWatcher, { x: rwx, z: rwz, angle: atan2(rgx - rwx, rgz - rwz), speed: 0.2, leash: 0.5, idle: [3, 6] })); }
 
   // the Neighborhood, Robot City and Victorian all have a solo thrower tossing a disc straight up off
   // the palm by now, and Sunny Shore and Frosty Peak had it first — Candy Land and Whisper Woods are
@@ -7810,6 +8216,75 @@ function buildCandyLand(game, entry) {
     W.add(digWatcher.group);
     game.npcs.push(new Wanderer(game, digWatcher, { x: dwx, z: dwz, angle: atan2(dsx - dwx, dsz - dwz), speed: 0.2, leash: 0.5, idle: [3, 6] })); }
 
+  // Round 1331 gave the Neighborhood's own hopscotch chalker a first watcher, the one street
+  // activity in this project's long-running "give it a spectator" habit that had never been reached
+  // before, and left five more solo chalkers on the list — Candy Land's own girl (built a few hundred
+  // lines up, kneeling west of the cane ring) is next. **A gingerbread-village local now stands a few
+  // steps east of her six squares, watching the chalk go down.**
+  //
+  // Plain `Wanderer` (55-npcs.js), the same class every watcher in this set already uses — it calls
+  // `greetable()` on its own, so no extra wiring was needed, and it carries no physics box of its own.
+  // Built with no `cries` of its own and every shared-`rnd()` draw in `Wanderer`'s own constructor
+  // (`phase`/`timer`/`t`/`cryT`, each pinned here instead of left to its own default) fixed, the same
+  // defensive habit the fortune-tellers' own customers and the badminton/mime watchers already settled
+  // on, since `test/run.mjs` runs every world through one unbroken process and a shift to the shared
+  // sequence here could otherwise nudge a later world's own timing-sensitive numbers.
+  //
+  // A headless probe (`game.start('new')`, `game.load(1, 'from-prev')` for a direct synchronous build,
+  // then 120 simulated frames sampled every 15th frame so every marching, dancing and wandering
+  // gingerbread man had a turn) swept the open sweet-lands east of the six squares against all 1799 of
+  // this land's own physics boxes (knee-to-head band only) and every sampled NPC position: (-81, 29)
+  // came back clear by 8.21 m of the nearest box and 5.10 m of the nearest wandering soul, 1.3 m east
+  // of the chalker's own last square.
+  //
+  // Built dead last of every person this build adds, right after the metal-detector watcher above and
+  // right before the squirrel below, for the usual reason: `makeHuman()`/`randomPerson()` both draw
+  // off this land's own shared `r()` sequence unconditionally.
+  { const chwx = -81, chwz = 29, chkx = -86.1, chkz = 29.15;
+    const chalkWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0xffb4a2, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(chalkWatcher.group);
+    game.npcs.push(new Wanderer(game, chalkWatcher, { x: chwx, z: chwz, angle: atan2(chkx - chwx, chkz - chwz), speed: 0.3, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
+  // Round 1396 gave the Neighborhood's own seesaw a first watcher after it had tipped two kids up
+  // and down, unwatched, since round 183 — opening a new series the same way the tug-of-war, ring
+  // toss, tetherball and sack-race series each opened one. Candy Land's own seesaw (built a few
+  // hundred lines up at (25, 51), two village children on it instead of gingerbread men, since
+  // `Seesaw` reaches into a rider's `L.hip`/`L.knee`/`L.ankle` and `A.sh`/`A.el`, which the cookie rig
+  // doesn't have) is next. **A gingerbread-village local now stands due north of it, watching both
+  // ends tip.** No lines of her own — this one just watches — but saying hello to her makes her the
+  // usual kind of friend.
+  //
+  // This seesaw's own two riders sit side by side along world X (`makeSeesaw`'s arm runs along the
+  // pivot's own local x, and this seesaw's `ry` is 0, same as the Neighborhood's own), so round
+  // 1396's own finding applies directly here: standing north or south of it, offset along the same
+  // axis the riders are spread across, is the angle that shows both ends rising and falling at once
+  // rather than looking down the plank's own length. Candy Land has no dupe-shirt check of its own
+  // (the Neighborhood's test is the only one of the seven that enforces one), so the shirt colour
+  // below was picked for the cookie-village palette, not to dodge a collision.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(1, 'from-hub')` directly rather than `game.travel()` — the
+  // travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then
+  // 3600 simulated frames so every gingerbread man, both seesaw kids and everyone else in this land
+  // had settled) swept a 0.25 m grid due north and south of the seesaw (25, 51), 2.5-16 m out,
+  // against all 1812 of this land's own physics boxes, all 452 `game.zones` rectangles and every
+  // other NPC already standing in it: (25, 59.25) came back clearest — due north at radius 8.25,
+  // 64.3 m from the world's own origin, well short of the radius (92) where `candyRegion`'s own
+  // procedural fill takes over — 7.65 m from the nearest box, 7.65 m from the nearest zone rectangle
+  // and 10.4 m from the nearest other soul. South of the seesaw topped out at 6.4 m of clearance at
+  // its own best radius (7), so north, a touch further out, is the side with more room.
+  //
+  // Built dead last of every person this build adds, right after the hopscotch watcher above and
+  // right before the squirrel below, for the usual reason: `makeHuman()`/`randomPerson()` both draw
+  // off this land's own shared `r()` sequence unconditionally, and anything built earlier would have
+  // had its own timing-sensitive pick shifted by it.
+  { const seeX = 25, seeZ = 51, swx = 25, swz = 59.25;
+    const seesawWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0xc9e4ca, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(seesawWatcher.group);
+    game.npcs.push(new Wanderer(game, seesawWatcher, { x: swx, z: swz, angle: atan2(seeX - swx, seeZ - swz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('star', 7, -6); C.add('yarn', -9, 9); C.add('fish', -16, -13); C.add('mouse', 16, -9); C.add('star', -10, -27); C.add('yarn', 22, 4); C.add('mouse', -28, 26); C.add('fish', 14, -44); C.add('star', 0, -56); C.add('mouse', -58, 30); C.add('yarn', 60, 36);
@@ -8227,7 +8702,59 @@ function buildCandyLand(game, entry) {
     const organ = makeBarrelOrgan();
     game.npcs.push(new OrganGrinder(game, grinder, organ, { x: gx, z: gz, ry: gry, side: 1,
       cries: ['Tuppence a tune, same price in every land, puss or no puss.', "Careful, puss — the pipes don't take kindly to climbing, same as every other organ's ever told you.", "Three dozen tunes in this barrel. The gumdrop wagon's never once kept up with the beat."] }));
-    U.push(organ.userData.update); }
+    U.push(organ.userData.update);
+
+    // The Neighborhood's own organ grinder picked up a monkey with a tin cup back in round 1273 — the
+    // one thing that goes with a barrel organ in every picture of one — but the other three worlds
+    // that have wound a crank since (Candy Land, Robot City, Victorian) never got their own. This
+    // land's monkey sits tucked beside the organ, same tin cup, same rattle.
+    //
+    // Hand-built straight into this file exactly as round 1273 built the first one: no new `makeX()`
+    // in 55-npcs.js or 56-npcs-wild.js, no `Wanderer`, no physics box, and no `rnd()` draw at all —
+    // every moving part (head turn, breathing, tail sway, the cup-rattle bursts) rides the world clock
+    // `t` alone through a single `U.push`, so dropping it in here costs nothing downstream regardless
+    // of where in this land's build it lands. `game.namedFriend('organ-monkey')` plus a
+    // `game.addInteractable` keyed straight to its own group gives it the same greeting the hare, the
+    // mole and the sweeper-bot all answer without a `rig.look`/`.robot`/`.cookie` flag.
+    //
+    // Position uses the same local offset as the original (`localXZ`, 62-props-nature.js): 0.55 m
+    // along the organ's own `side` offset and 1.0 m further out, rotated by this grinder's own `gry`
+    // instead of assuming the Neighborhood's `ry = 0`. That keeps the monkey tucked against the organ
+    // exactly the way the first one was, whichever way this organ itself happens to face. A headless
+    // probe (`game.start('new')`, `game.travel(1, 'from-hub')` waited out for real against its own
+    // portal-fade timer, then `game.physics.boxes` and `game.zones.blocked()` read directly) confirmed
+    // the computed spot is 6.9 m clear of the nearest physics box and outside every `game.zones`
+    // rectangle — comfortably inside the same clear patch round 1017's own probe already proved safe
+    // around this organ, since the offset is well under the margin that probe found.
+    { const [mkx, mkz] = localXZ(gx, gz, 0.55, 1.0, gry);
+      const fur = mat(0x6b4a2e, { roughness: 0.9 }), light = mat(0xd9b27a, { roughness: 0.85 }), dark = mat(0x1a1410);
+      const monkey = group(mkx, game.physics.ground0(mkx, mkz), mkz, W); monkey.rotation.y = gry + PI;
+      const body = group(0, 0.1, 0, monkey);
+      mesh(G.bodySphere(14, 10), fur, { y: 0.14, sx: 0.1, sy: 0.13, sz: 0.09, parent: body });               // torso, sitting upright
+      mesh(G.bodySphere(14, 10), light, { y: 0.1, z: 0.03, sx: 0.075, sy: 0.09, sz: 0.04, shadow: 'none', parent: body });   // pale belly patch
+      for (const side2 of [1, -1]) mesh(G.sphere(0.05, 10, 8), fur, { x: side2 * 0.08, y: 0.02, z: -0.02, sy: 0.8, sz: 1.2, parent: body });   // haunches, tucked under
+      const head = group(0, 0.26, 0.03, body);
+      mesh(G.sphere(0.075, 14, 10), fur, { parent: head });
+      mesh(G.sphere(0.045, 10, 8), light, { y: -0.015, z: 0.05, sx: 1.1, sy: 0.85, parent: head });          // pale face patch
+      for (const side2 of [1, -1]) { mesh(G.sphere(0.028, 10, 8), light, { x: side2 * 0.075, y: 0.01, parent: head }); mesh(G.sphere(0.012, 8, 6), dark, { x: side2 * 0.032, y: 0.015, z: 0.058, shadow: 'none', parent: head }); }
+      mesh(G.sphere(0.018, 8, 6), dark, { y: -0.03, z: 0.068, shadow: 'none', parent: head });                // snout tip
+      const armL = group(-0.09, 0.2, 0.04, body), armR = group(0.09, 0.2, 0.04, body);
+      mesh(G.capsule(0.018, 0.1, 6), fur, { y: -0.05, rx: 0.3, parent: armL });
+      mesh(G.capsule(0.018, 0.1, 6), fur, { y: -0.05, rx: 0.3, parent: armR });
+      const cup = group(0, 0.11, 0.09, body);
+      mesh(G.cyl(0.035, 0.03, 0.045, 10), mat(0xb8b8b8, { metalness: 0.4, roughness: 0.5 }), { parent: cup });   // the tin cup, held between the paws
+      const tail = group(0, 0.06, -0.08, body);
+      const tailCurve = new THREE.CatmullRomCurve3([V3(0, 0, 0), V3(0.02, -0.04, -0.08), V3(0.08, -0.02, -0.14), V3(0.14, 0.02, -0.1), V3(0.16, 0.05, -0.02)]);
+      for (let i = 0; i <= 9; i++) { const p = tailCurve.getPoint(i / 9), rr = 0.018 - i * 0.001; mesh(G.sphere(1, 8, 6), fur, { x: p.x, y: p.y, z: p.z, sx: rr, sy: rr, sz: rr, shadow: 'none', parent: tail }); }
+      U.push((dt, t) => {
+        head.rotation.y = sin(t * 0.5) * 0.4; head.rotation.x = 0.05 + sin(t * 1.3) * 0.04;
+        body.scale.y = 1 + sin(t * 3) * 0.012;
+        const rattle = sin(t * 0.4 + 2) > 0.85 ? 1 : 0;
+        cup.rotation.z = rattle ? sin(t * 22) * 0.2 : 0; armL.rotation.z = rattle ? sin(t * 22) * 0.15 : 0; armR.rotation.z = rattle ? -sin(t * 22) * 0.15 : 0;
+        tail.rotation.y = sin(t * 0.9) * 0.08;
+      });
+      const monkeyId = game.namedFriend('organ-monkey');
+      game.addInteractable({ obj: monkey, radius: 1.6, label: () => 'Say hello to the monkey', onUse: () => { game.befriend(monkeyId); SFX.chitter(); game.hearts(monkey.position.x, 0.3, monkey.position.z, 3); game.toast('🐒 *rattles the tin cup, chatters, and shakes it hopefully at a passing gumdrop cart*'); } }); } }
 
   // Victorian has a fortune teller reading a crystal ball and Robot City a coin-operated fortune
   // machine (round 1019) — but a chrome Zoltar cabinet is a strange fit for a land built entirely out
@@ -9281,6 +9808,312 @@ function buildCandyLand(game, entry) {
     const customer = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: customerWard }), blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
     W.add(customer.group);
     game.npcs.push(new Wanderer(game, customer, { x: cux, z: cuz, angle: atan2(ftX - cux, ftZ - cuz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
+  // Frosty Peak, Robot City and Victorian have all picked up the same foot-treadle grindstone
+  // (`Grinder`, 55-npcs.js) over the last few rounds; Candy Land, Neighborhood, Sunny Shore and
+  // Whisper Woods still have nothing that actually sharpens a blade. **A grinder now kneels at her
+  // wheel on the open ground south of the chocolate river, a cane-cutting shears pressed to the
+  // stone in short, sparking bursts between pauses to check the edge.** *"Blunt shears make ragged
+  // canes — nobody wants a jagged candy cane."* *"Mind your tail, puss — sparks fly here same as
+  // anywhere else."* *"Every cane trimmed in this land passes over this very wheel first."* Saying
+  // hello to her is the usual kind of friend.
+  //
+  // No new controller: the same `Grinder` the other three worlds already use, built exactly the
+  // same way — a kneeling human rig (she reaches into `rig.spine`, a field only `makeHuman()` rigs
+  // carry) in a plain apron, no hat or coat to get in the sparks' way.
+  //
+  // A headless probe (`game.start('new')`, `game.load(1, 'from-prev')` — travel()'s own fade runs on
+  // a real timer that a synchronous frame loop never lets fire, so `load()` was called directly —
+  // then 3600 simulated frames so every tosser, fudge-maker and wanderer had settled, then 600 more
+  // sampling every NPC's own position every 10th frame) swept a 2 m grid south of the river
+  // (radius 12-50 from the origin, skipping the river's own `z` band) against all 1807 of this
+  // land's own physics boxes (knee-to-head band only), all 452 `game.zones` rectangles and every
+  // sampled NPC position, then refined the best stretch on a finer half-metre grid: (-4.5, -49) came
+  // back clear by 9.3 m of the nearest box, 20.8 m of the nearest zone rectangle and 9.4 m of the
+  // nearest other soul — comfortably past the 0.45 m circle this kneeling rig and its own grindstone
+  // need, and well short of the radius (56) where the cane-forest ring takes over.
+  //
+  // Built dead last of everything this land adds, right after the fortune teller's customer above
+  // and right before `spawnBySquirrel()`, for the usual reason: `makeHuman()`/`randomPerson()` both
+  // draw off this land's own shared `r()` sequence unconditionally.
+  { const gx = -4.5, gz = -49, gry = atan2(-gx, -gz);
+    const grindWard = makeWardrobe(r, { shirts: [0x6a7a8a], pants: [0x2a2a30], shoes: [0x1a1a1e] });
+    const grinder = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: grindWard }),
+      hat: null, coat: null, scarf: null, bag: null, apron: 0x4a4a52 });
+    W.add(grinder.group);
+    game.npcs.push(new Grinder(game, grinder, { x: gx, z: gz, ry: gry,
+      cries: ['Blunt shears make ragged canes — nobody wants a jagged candy cane.', "Mind your tail, puss — sparks fly here same as anywhere else.", 'Every cane trimmed in this land passes over this very wheel first.'] })); }
+
+  // Victorian (1354), Sunny Shore (1360), Whisper Woods (1362) and Robot City (1363) have all picked
+  // up a potter at her kick wheel — the one craft in this whole game whose entire point is a turntable
+  // spinning under two cupped hands. This land already sells fudge, toffee and peppermints from every
+  // stall, but nothing here is actually thrown and fired. **A potter now sits cross-legged at her own
+  // kick wheel on the open grass north of the cane-forest ring, a lump of wet clay rising taller
+  // between her palms before it's lifted away and a fresh one dropped to begin again**, a small shelf
+  // of three already-glazed pots — bright candy-pink glaze, same as everything else in this land —
+  // propped beside her. *"Sugar's not the only thing you can shape with your own two hands."* *"Mind
+  // your tail, puss — that wheel doesn't know the difference between clay and a cat."* *"Every pot on
+  // that shelf was once this exact same lump, give or take an afternoon."* Saying hello to her is the
+  // usual kind of friend.
+  //
+  // No new controller: the same `Sitter` (55-npcs.js) the other four potters already use — both hands
+  // fixed low and forward as if pressed to the clay, held each frame guarded by `!potter.gesture` so a
+  // greeting wave still wins. The wheel and the rising lump of clay are both driven only by the world
+  // clock `t`, never this land's own seeded `r`, so nothing later in this build's own wardrobe picks
+  // shift — no `rnd()` draw and no per-frame state of its own to carry, the same trick the other four
+  // potters already settled on. `ry` is pinned to a cardinal `PI` rather than computed with `atan2`,
+  // the same shortcut the other reskins already take, so the wheel and the shelf both sit on simple
+  // axis-aligned offsets that line up with an axis-aligned `P.addBox`.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(1, 'from-prev')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so every tosser, fudge-maker, grinder and wanderer had settled, then 600 more
+  // sampling every NPC's own position every 10th frame) swept a 2 m grid of the open grass (radius
+  // 15-85 from the origin, past the candy-cane ring's own 56-76 m band and short of the radius (92)
+  // where `candyRegion`'s own procedural fill takes over) against all 1799 of this land's own physics
+  // boxes (knee-to-head band only), all 452 `game.zones` rectangles (including the chocolate river's
+  // own span) and every sampled NPC position, then refined the best stretch on a half-metre grid:
+  // (-24.5, 77) came back clear by 12.4 m of the nearest box, 13.5 m of the nearest zone rectangle and
+  // 12.5 m of the nearest other soul, at radius 80.8 from the origin.
+  //
+  // Built dead last of everything this land adds, right after the grinder above and right before
+  // `spawnBySquirrel()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this land's
+  // own shared `r()` sequence unconditionally, and anything built earlier here would have had its own
+  // timing-sensitive pick shifted by it.
+  { const potX = -24.5, potZ = 77, potRy = PI;
+    const potWard = makeWardrobe(r, { shirts: [0xd9a066, 0xc98a52], pants: [0x5a4a3a] });
+    const potter = makeHuman({ ...randomPerson(r, { female: r.chance(0.6), child: false, elder: r.chance(0.3), wardrobe: potWard }),
+      pants: 0x1e1e24, apron: 0xff8fc2, sleeves: true, hat: null, coat: null, scarf: null, bag: null, backpack: null, glasses: false, build: 'stout' });
+    W.add(potter.group);
+    const woodM = mat(0x5a3a1f, { roughness: 0.88 }), darkM = mat(0x2a2420, { roughness: 0.6 }), trayM = mat(0x8a8782, { roughness: 0.75, metalness: 0.2 }), clayM = mat(0x9c6a42, { roughness: 0.95 }), potM = mat(0xff6fb5, { roughness: 0.5, metalness: 0.1 });
+    const stool = group(potX, 0, potZ, W);
+    mesh(G.cyl(0.18, 0.18, 0.03, 14), woodM, { y: 0.405, shadow: 'both', parent: stool });
+    mesh(G.cyl(0.1, 0.07, 0.39, 10), darkM, { y: 0.195, shadow: 'both', parent: stool });
+    P.addBox(potX, 0.21, potZ, 0.3, 0.42, 0.3, { cam: false });
+    const wx = potX, wz = potZ - 0.55;
+    const wheel = group(wx, 0, wz, W); wheel.rotation.y = potRy;
+    mesh(G.cyl(0.06, 0.08, 0.34, 10), woodM, { y: 0.17, shadow: 'both', parent: wheel });   // the post
+    mesh(G.cyl(0.26, 0.28, 0.05, 20), trayM, { y: 0.36, shadow: 'both', parent: wheel });   // the splash tray
+    const head = group(0, 0.4, 0, wheel);
+    mesh(G.cyl(0.22, 0.22, 0.03, 20), darkM, { parent: head });   // the wheel-head
+    const clay = mesh(G.cone(0.09, 0.2, 10), clayM, { y: 0.1, parent: head });
+    P.addBox(wx, 0.2, wz, 0.56, 0.4, 0.56, { cam: false });
+    const shelfX = potX - 0.75, shelfZ = potZ;
+    const shelf = group(shelfX, 0, shelfZ, W); shelf.rotation.y = potRy;
+    mesh(G.box(0.6, 0.04, 0.22), woodM, { y: 0.5, shadow: 'both', parent: shelf });
+    for (const [dx3, potH, potR2] of [[-0.18, 0.16, 0.07], [0, 0.2, 0.08], [0.18, 0.14, 0.065]]) {
+      const pot = group(dx3, 0.52, 0, shelf);
+      mesh(G.cyl(potR2, potR2 * 0.75, potH, 12), potM, { y: potH / 2, shadow: 'both', parent: pot });
+      mesh(G.cyl(potR2 * 0.4, potR2 * 0.5, potH * 0.25, 10), potM, { y: potH + potH * 0.1, parent: pot });   // the neck
+    }
+    P.addBox(shelfX, 0.26, shelfZ, 0.6, 0.52, 0.22, { cam: false });
+    game.npcs.push(new Sitter(game, potter, { x: potX, z: potZ, ry: potRy, seat: 0.42,
+      cries: ['🏺 "Sugar\'s not the only thing you can shape with your own two hands."', '🏺 "Mind your tail, puss — that wheel doesn\'t know the difference between clay and a cat."', '🏺 "Every pot on that shelf was once this exact same lump, give or take an afternoon."'] }));
+    U.push((dt, t) => {
+      head.rotation.y = t * 4.2;
+      const cyc = 5.0, growT = 4.6, ph = t % cyc;
+      let k;
+      if (ph < growT) { const p = ph / growT; k = p * p * (3 - 2 * p); }
+      else { const p = (ph - growT) / (cyc - growT); k = 1 - p * p * (3 - 2 * p); }
+      const s = 0.4 + 0.75 * k;
+      clay.scale.y = s; clay.position.y = 0.015 + 0.1 * s;
+      if (!potter.gesture) { const A = potter.arms[0], B = potter.arms[1]; A.sh.rotation.x = -1.0; A.sh.rotation.z = 0.3; A.el.rotation.x = -1.3; B.sh.rotation.x = -1.0; B.sh.rotation.z = -0.3; B.el.rotation.x = -1.3; }
+    }); }
+
+  // Victorian (1361) picked up the first barber this game has ever had, his pole striped with
+  // `TEX.candyCane()` because that was the only candy-striped texture already lying around — his own
+  // dialogue even wonders aloud why his pole is "striped same as the sweets two towns over." This land
+  // is those sweets. **A barber now stands beside his own empty chair on the open grass past the
+  // candy-cane ring, snipping his shears in the air to test the edge while he waits for a customer who
+  // isn't coming — his pole striped with the exact same `TEX.candyCane()` map, only here it isn't a
+  // borrowed joke.** *"Folks keep asking if my pole's good enough to lick. It is not."* *"Mind your
+  // whiskers, puss — these shears don't know a tabby from a trim."* *"Heard there's a barber in some
+  // old town who stripes his pole just like mine. Tell him I said he's welcome to it."* Saying hello to
+  // him is the usual kind of friend.
+  //
+  // No new controller: the same `Charger` (55-npcs.js) Victorian's own barber already uses — a
+  // standing figure whose rig does its own idling and whose arms this build then pins into a held
+  // pose each frame, guarded by `!barber.gesture` so a greeting wave still wins. Own small wardrobe
+  // (`barberWard`), not `potWard` or any other bag already spoken for in this build. The shears are
+  // the same tiny two-blade hinge, oscillating open and shut on the world clock `t` alone — no `rnd()`
+  // or local `r()` draw.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(1, 'from-prev')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so every tosser, fudge-maker, grinder and wanderer had settled, then 600 more
+  // sampling every NPC's own position every 10th frame) swept a 2 m grid of the open grass (radius
+  // 15-85 from the origin, past the candy-cane ring's own 54-78 m band and clear of the potter above)
+  // against all 1803 of this land's own physics boxes (knee-to-head band only), all 452 `game.zones`
+  // rectangles and every sampled NPC position, then refined the best stretch on a half-metre grid:
+  // (-43.5, 70.5) came back clear by 11.3 m of the nearest box, 11.3 m of the nearest zone rectangle
+  // and 11.5 m of the nearest other soul, at radius 82.8 from the origin — short of the radius (92)
+  // where `candyRegion`'s own procedural fill takes over.
+  //
+  // Built dead last of everything this land adds, right after the potter above and right before
+  // `spawnBySquirrel()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this
+  // land's own shared `r()` sequence unconditionally, and anything built earlier here would have had
+  // its own timing-sensitive pick shifted by it.
+  { const bx = -43.5, bz = 70.5, bry = atan2(-bx, -bz);
+    const barberWard = makeWardrobe(r, { shirts: [0xfff3e0], pants: [0x3a2a3a] });
+    const barber = makeHuman({ ...randomPerson(r, { female: r.chance(0.3), child: false, elder: r.chance(0.4), wardrobe: barberWard }),
+      pants: 0x241a28, apron: 0x7fe8d4, sleeves: true, hat: null, coat: null, scarf: null, bag: null, backpack: null, glasses: false, moustache: r.chance(0.5), build: 'average' });
+    W.add(barber.group);
+    const leatherM = mat(0xd62246, { roughness: 0.55 }), chairWoodM = mat(0x5a3a1f, { roughness: 0.8 }), chromeM = mat(0xcfd4d8, { metalness: 0.7, roughness: 0.25 });
+    // the empty chair: a pedestal base, a seat, a tall back and two armrests, a step in front
+    const chairX = bx + sin(bry) * 0.75, chairZ = bz + cos(bry) * 0.75;
+    const chair = group(chairX, 0, chairZ, W); chair.rotation.y = bry + PI;   // facing the barber
+    mesh(G.cyl(0.22, 0.26, 0.5, 14), chromeM, { y: 0.25, shadow: 'both', parent: chair });
+    mesh(G.box(0.46, 0.08, 0.46), leatherM, { y: 0.54, shadow: 'both', parent: chair });
+    mesh(G.box(0.46, 0.6, 0.08), leatherM, { y: 0.88, z: -0.22, shadow: 'both', parent: chair });
+    for (const sideA of [-1, 1]) mesh(G.box(0.07, 0.22, 0.4), leatherM, { x: sideA * 0.24, y: 0.68, shadow: 'both', parent: chair });
+    mesh(G.box(0.5, 0.04, 0.2), chairWoodM, { y: 0.08, z: 0.3, shadow: 'both', parent: chair });   // footrest step
+    P.addBox(chairX, 0.45, chairZ, 0.5, 0.9, 0.56, { cam: false });
+    // the pole: a slim post, the candy-cane stripe spinning round its own middle section, a small
+    // chrome ball to cap it
+    const poleX = bx - sin(bry) * 0.7 + cos(bry) * 0.55, poleZ = bz - cos(bry) * 0.7 - sin(bry) * 0.55;
+    const pole = group(poleX, 0, poleZ, W);
+    noInk(mesh(G.cyl(0.03, 0.035, 1.5, 10), chairWoodM, { y: 0.75, parent: pole }));
+    const stripeM = mat(0xffffff, { roughness: 0.4, map: TEX.candyCane() });
+    const poleSpin = group(0, 1.1, 0, pole);
+    noInk(mesh(G.cyl(0.07, 0.07, 0.6, 12), stripeM, { parent: poleSpin }));
+    mesh(G.sphere(0.08, 10, 8), chromeM, { y: 0.44, parent: pole });
+    P.addBox(poleX, 0.7, poleZ, 0.14, 1.5, 0.14, { cam: false });
+    // the shears, held raised and snipping — two thin blades on a hinge, pinned to the near hand
+    const scissors = group(0, 0.1, 0.1, barber.hands[0]); scissors.rotation.x = -1.3;
+    const bladeM = mat(0xb8bcc0, { metalness: 0.75, roughness: 0.2 }), handleM = mat(0x8a1a1a, { roughness: 0.5 });
+    noInk(mesh(G.sphere(0.018, 8, 6), handleM, { parent: scissors }));
+    const bladeA = group(0, 0, 0, scissors), bladeB = group(0, 0, 0, scissors);
+    mesh(G.box(0.014, 0.1, 0.01), bladeM, { y: 0.06, parent: bladeA }); mesh(G.box(0.03, 0.025, 0.01), handleM, { y: -0.03, parent: bladeA });
+    mesh(G.box(0.014, 0.1, 0.01), bladeM, { y: 0.06, parent: bladeB }); mesh(G.box(0.03, 0.025, 0.01), handleM, { y: -0.03, parent: bladeB });
+    const comb = group(0, 0.08, 0.06, barber.hands[1]); comb.rotation.x = -0.6;
+    mesh(G.box(0.02, 0.12, 0.012), mat(0x1a1a1e, { roughness: 0.6 }), { parent: comb });
+    game.npcs.push(new Charger(game, barber, { x: bx, z: bz, ry: bry, cryIcon: '💈',
+      cries: ['Folks keep asking if my pole\'s good enough to lick. It is not.', 'Mind your whiskers, puss — these shears don\'t know a tabby from a trim.', 'Heard there\'s a barber in some old town who stripes his pole just like mine. Tell him he\'s welcome to it.'] }));
+    U.push((dt, t) => {
+      poleSpin.rotation.y = t * 2.2;
+      bladeA.rotation.z = 0.12 + sin(t * 7) * 0.12; bladeB.rotation.z = -0.12 - sin(t * 7) * 0.12;
+      if (!barber.gesture) { const A = barber.arms[0], B = barber.arms[1]; A.sh.rotation.x = -1.4; A.sh.rotation.z = 0.25; A.el.rotation.x = -1.6; B.sh.rotation.x = -0.9; B.sh.rotation.z = -0.2; B.el.rotation.x = -1.1; }
+    }); }
+
+  // The tetherball pole has had its two gingerbread-sweet kids batting the ball round it since round
+  // 547, but of the four worlds round 508's own playground-games list first touched (the Neighborhood,
+  // Victorian, Robot City, Frosty Peak) only the Neighborhood's own pole (round 521) ever picked up
+  // someone standing by to watch — that watcher series never made it past its first stop. **A
+  // gingerbread-village local now stands a few steps south-west of the pole, watching the ball swing
+  // round on its rope.** No `cries` of her own — this one just watches — no physics box, pure
+  // bystander. Saying hello to her makes her the usual kind of friend.
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) every watcher in this game already uses — a plain
+  // `makeHuman()`/`randomPerson()` rig, no fixed wardrobe of its own (this land's own `r()` picks her
+  // clothes, same as the ring-toss watcher above), `angle` pointed at the pole's own fixed centre
+  // (50, -30) rather than a constant, and the relaxed `idle: [3, 6]` every watcher in this land's own
+  // set already settles on — this is Candy Land, not the Neighborhood, so nothing here needs its own
+  // `rnd()` draws pinned.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(1, 'from-hub')`, 2400 simulated frames so the tetherball pair,
+  // the kite-flying kid and every other NPC had already settled, then every NPC's own position sampled
+  // every 6th frame) swept a 1 m grid in a ring 2-7 m out from the pole's own centre (50, -30) against
+  // all 1803 of this land's own physics boxes (knee-to-head band only) and every sampled position:
+  // (45, -33) came back clearest — 5.71 m from the nearest box, 5.00 m from the nearest other soul and
+  // 5.83 m from the pole itself, south-west of it, well clear of the kite-flying kid at (51, -33) and
+  // south of the chocolate river's own band (z -22..-14 here).
+  //
+  // Built dead last of everything this land adds, right after the barber above, for the usual reason:
+  // `makeHuman()`/`randomPerson()` both draw off this land's own shared `r()` sequence unconditionally,
+  // and dropping a fresh rig in any earlier would have shifted every random pick made above it.
+  { const twx = 45, twz = -33, poleX2 = 50, poleZ2 = -30;
+    const tetherWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(tetherWatcher.group);
+    game.npcs.push(new Wanderer(game, tetherWatcher, { x: twx, z: twz, angle: atan2(poleX2 - twx, poleZ2 - twz), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
+
+  // The Neighborhood's own tug-of-war (round 1306) and sack race (round 1307) both picked up a
+  // watcher of their own back when the tetherball pole, horseshoe pit, tug-of-war and sack race all
+  // got one there — but that pair of spectators never left the Neighborhood, same as the
+  // tetherball/toss-game watcher series above both did before round 1372 sent them round every
+  // other world too. The liquorice-rope tug-of-war here (round 508's own playground-games list,
+  // handA/handB at x=77, z=-41) has had its two stall hands heaving away since, with nobody
+  // stopping to watch. **A villager now stands west of them, watching the pair strain against the
+  // rope.** No `cries` of her own — this one just watches — no physics box, pure bystander. Saying
+  // hello to her makes her the usual kind of friend.
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) every watcher in this game already uses — a
+  // plain `makeHuman()`/`randomPerson()` rig, no fixed wardrobe of its own, `angle` pointed at the
+  // rope's own fixed centre (77, -41) rather than a constant, and the relaxed `idle: [3, 6]`/
+  // `walk: [1, 1.6]` every watcher elsewhere in this game already settles on. The rope itself runs
+  // north-south here (both hands sit at x=77, offset in z by the usual ±1.3 m `gap`), same as the
+  // Neighborhood's own — so, same as round 1306 found there, standing east or west of it, level
+  // with its own centre, is the one angle that actually shows both hands heaving at once rather than
+  // looking past one at the other's back. Candy Land builds and runs on its own local seeded `r()`,
+  // not the shared global `rnd()` the Neighborhood's own timing-sensitive checks key off, so nothing
+  // here needs a draw pinned.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(1, 'from-hub')` directly rather than `game.travel()` — the
+  // travel fade sits behind a real `setTimeout` that never fires under simulated frames alone —
+  // then 3600 simulated frames so both hands and every other NPC had settled, then 600 more
+  // sampling every NPC's own position every 10th frame) swept a 0.25 m grid in a ring 2.5-7 m out
+  // from the rope's own centre (77, -41) against all 1805 of this land's own physics boxes
+  // (knee-to-head band only) and all 452 `game.zones` rectangles: (70, -41) came back clearest —
+  // due west of the rope at radius 7 — 9.70 m from the nearest box, 18.6 m from the nearest zone
+  // rectangle and 7.12 m from the nearest other soul (one of the hands themselves), well clear of
+  // the sack race at (-83, 7) and the ring toss at (51, -1).
+  //
+  // Built dead last of everything this land adds, right after the tetherball watcher above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this land's own shared `r()`
+  // sequence unconditionally, and dropping a fresh rig in any earlier would have shifted every
+  // random pick made above it.
+  { const uwx = 70, uwz = -41, tugX = 77, tugZ = -41;
+    const tugWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x9a5a7a, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(tugWatcher.group);
+    game.npcs.push(new Wanderer(game, tugWatcher, { x: uwx, z: uwz, angle: atan2(tugX - uwx, tugZ - uwz), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
+
+  // Rounds 1384-1389 gave every one of the seven worlds' own tug-of-war a first watcher, closing
+  // that series out and leaving "all seven worlds still owe their own sack race one" as the one
+  // open item. This round starts that series too, same as round 1384 started the tug-of-war one:
+  // with Candy Land. The sack race here (round 524's own two burlap-bound kids, sackA/sackB at
+  // x=-83, hopping the lane along z from z=7 to z=12) has had nobody stopping to watch since. **A
+  // villager now stands east of the lane, watching the two hop back and forth in their sacks.** No
+  // `cries` of her own — this one just watches — but saying hello to her makes her the usual kind of
+  // friend, Candy Land's own count rising from 154 to 155.
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) every watcher in this game already uses — a
+  // plain `makeHuman()`/`randomPerson()` rig, no fixed wardrobe of its own, `angle` pointed at the
+  // lane's own midpoint (-83, 9.5) rather than a constant, and the relaxed `idle: [3, 6]`/
+  // `walk: [1, 1.6]` every watcher elsewhere in this land already settles on. `SackRace` (55-npcs.js)
+  // runs its racers along z here (`ry=0`), side by side in x — the opposite of the Neighborhood's
+  // own sack race (`ry=PI/2`, racers side by side in z, round 1307's own watcher standing north of
+  // it). Round 1307 worked out that standing off to the side of the racers' own side-by-side gap,
+  // rather than down the lane they travel, is the angle that shows both hopping past at once instead
+  // of looking down their backs — so here, with the gap running along x and the lane along z,
+  // standing east or west (offset in x, same as the gap) is that angle, not north or south.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(1, 'from-hub')` directly rather than `game.travel()` — the
+  // travel fade sits behind a real `setTimeout` that never fires under simulated frames alone —
+  // then 3600 simulated frames so both racers and every other NPC had settled, then 600 more
+  // sampling every NPC's own position every 10th frame) swept a 0.25 m grid east and west of the
+  // lane's own midpoint (-83, 9.5), 2-9 m out, against all 1805 of this land's own physics boxes
+  // (knee-to-head band only) and all 452 `game.zones` rectangles, staying inside the radius (92)
+  // where `candyRegion`'s own procedural fill takes over (this point sits at 74.6 from the world's
+  // own origin): (-74, 9.5) came back clearest — due east of the lane at radius 9 — 10.0 m from the
+  // nearest box, 23.5 m from the nearest zone rectangle and 8.45 m from the nearest other soul, ground
+  // flat to within rounding across a 0.6 m square, well clear of the tug-of-war and ring toss
+  // elsewhere on this land.
+  //
+  // Built dead last of everything this land adds, right after the tug-of-war watcher above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this land's own shared `r()`
+  // sequence unconditionally, and dropping a fresh rig in any earlier would have shifted every
+  // random pick made above it.
+  { const rwx = -74, rwz = 9.5, laneX3 = -83, laneZ3 = 9.5;
+    const raceWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(raceWatcher.group);
+    game.npcs.push(new Wanderer(game, raceWatcher, { x: rwx, z: rwz, angle: atan2(laneX3 - rwx, laneZ3 - rwz), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
 
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
@@ -11037,6 +11870,44 @@ function buildRobotCity(game, entry) {
     const camLines = ['Everyone said bring a drone. I brought this instead.', "Careful, puss — it's only flash powder, not fire.", 'The whole skyline in one plate, if I hold it just right.'];
     let camCryT = r.range(3, 7);
     U.push((dt) => { camCryT -= dt; if (camCryT <= 0) { camCryT = r.range(8, 14); const c = game.cat.group.position; if (dist2(px, pz, c.x, c.z) < 400) { game.toast('📷 "' + r.pick(camLines) + '"', 2400); SFX.talk(); } } }); }
+  // `makeOldCamera()` (60-props.js) has built its lens facing "the subject" since the round it was
+  // written, and rounds 1346-1348 already gave the Neighborhood, Victorian and Candy Land's own
+  // photographers somebody standing where their lens points — Robot City's own visitor above, set up
+  // past the magnet-toss posts to frame the skyline, was still aimed at empty concrete like the three
+  // worlds not yet touched. A resident now stands a step past her camera, back straight and holding the
+  // pose she keeps asking for. *"Hold still, they said. I have held still for ten whole minutes now."*
+  // *"Careful, puss — don't spoil the shot, she has only the one plate left."* *"Best side forward.
+  // Every single time, without fail."* Saying hello to him is the usual kind of friend, Robot City's own
+  // count rising by one.
+  //
+  // No new class: `makeHuman()`/`randomPerson()` (55-npcs.js) build the rig and `Wanderer` (55-npcs.js)
+  // gives him the same frozen "stand and watch" shape every subject in this set uses — `idle: [1e9,
+  // 1e9]` plus every one of `Wanderer`'s own construction-time draws (`phase`, `timer`, `t`, `cryT`)
+  // fixed rather than pulled from `rnd()`, and `blinkT0`/`idleT0`/`sway0` fixed straight in the
+  // `makeHuman()` call so he holds still instead of fidgeting. `angle` points him back at the
+  // photographer rather than a constant, so he reads as posing for her and not loitering. A rust-orange
+  // shirt (0xb5651d, not spoken for by the steel-and-slate wardrobe the magnet tossers and the pallet
+  // cutter already share) keeps him visually distinct; Robot City runs no shared-shirt check the way
+  // the Neighborhood does.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // `game.load(2, 'from-prev')` for a direct synchronous build, then 1800 simulated frames so every
+  // wandering, patrolling, dancing and ball-tossing robot pack had settled) placed him 2.4 m out from
+  // the photographer along the exact line her own camera already faces, against every one of this
+  // city's own physics boxes in the knee-to-head band: clear of the nearest one by well over a metre,
+  // and 2.4 m from the nearest other soul, which is the photographer herself, back down the same line —
+  // nobody else wanders anywhere near that corner past the magnet-toss posts.
+  //
+  // Built right after the photographer, before the pallet cutter below, for the usual reason:
+  // `makeHuman()`/`randomPerson()` both draw off this world's own shared `r()` sequence unconditionally.
+  { const subPX = 31.5, subPZ = 58, subPRY = atan2(0 - subPX, 0 - subPZ);
+    const subX = subPX + 2.4 * sin(subPRY), subZ = subPZ + 2.4 * cos(subPRY);
+    const subject = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0xb5651d, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false,
+      blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(subject.group);
+    game.npcs.push(new Wanderer(game, subject, { x: subX, z: subZ, angle: atan2(subPX - subX, subPZ - subZ), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 6,
+      cries: ["Hold still, they said. I have held still for ten whole minutes now.", "Careful, puss — don't spoil the shot, she has only the one plate left.", 'Best side forward. Every single time, without fail.'] })); }
   // the Neighborhood, Candy Land, Victorian, Sunny Shore, Frosty Peak and Whisper Woods all have a
   // woodcutter splitting logs on a stump since round 207 (Sunny Shore round 435, Candy Land round 436)
   // — Robot City was the last world left without one. The exact same `Chopper` class and `makeStump()`
@@ -11384,6 +12255,37 @@ function buildRobotCity(game, entry) {
   { const pogoKid = makeHuman({ ...randomPerson(r, { child: true, female: r.chance(0.5) }), shirt: 0x00e5ff, hat: null, jacket: null, coat: null, scarf: null, bag: null, backpack: null }); W.add(pogoKid.group);
     game.npcs.push(new PogoHopper(game, pogoKid, r.pick([0xff6f3c, 0x3fae9a, 0xf2c744]), { x: 22, z: 71, ry: r.range(0, TAU),
       cries: ['Boing! Watch me clear the vents, puss!', "Dad says I'll wear a groove in the floor at this rate.", "Ninety-six. Don't you dare make me lose count."] })); }
+  // Rounds 1331 and 1332 gave the Neighborhood's and Candy Land's own hopscotch chalkers a first
+  // watcher, third of the hopscotch-watcher set started in round 1331 — Robot City's own girl (built a
+  // few hundred lines up, kneeling on the factory floor north of the scooter kid) is next, leaving
+  // Victorian, Sunny Shore and Whisper Woods still solo. **A line worker now stands a few steps east of
+  // her six squares, watching the chalk go down.**
+  //
+  // Plain `Wanderer` (55-npcs.js), the same class every watcher in this set already uses — it calls
+  // `greetable()` on its own, so no extra wiring was needed, and it carries no physics box of its own.
+  // Built with no `cries` of its own and every shared-`rnd()` draw in `Wanderer`'s own constructor
+  // (`phase`/`timer`/`t`/`cryT`, each pinned here instead of left to its own default) fixed, the same
+  // defensive habit the other two watchers in this set already settled on, since `test/run.mjs` runs
+  // every world through one unbroken process and a shift to the shared sequence here could otherwise
+  // nudge a later world's own timing-sensitive numbers.
+  //
+  // A headless probe (`game.start('new')`, `game.load(2, 'from-prev')` for a direct synchronous build,
+  // 3600 simulated frames to let every wandering, patrolling and marching robot range fully, then 600
+  // more sampling every NPC's own position every 5th frame) swept the open factory floor east of the
+  // six squares against all 1206 of this city's own physics boxes (knee-to-head band only) and every
+  // sampled NPC position: (-46, 52) came back clear by 10.67 m of the nearest box and 4.90 m of the
+  // nearest wandering soul (the chalker herself), at radius 69.4 from the origin — comfortably short of
+  // the radius (98) where robotRegion's own procedural fill takes over.
+  //
+  // Built dead last of every person this build adds, right after the pogo-stick kid above and right
+  // before the squirrel below, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this
+  // city's own shared `r()` sequence unconditionally.
+  { const chwx = -46, chwz = 52, chkx = -50.9, chkz = 52.15;
+    const chalkWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x6a9a8a, hat: 'cap', hatColor: 0x3a4a5a, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(chalkWatcher.group);
+    game.npcs.push(new Wanderer(game, chalkWatcher, { x: chwx, z: chwz, angle: atan2(chkx - chwx, chkz - chwz), speed: 0.3, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   const sq = new Squirrel(game, -14, -9, 'sq-robot'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('mouse', -8, 7); C.add('star', 12, -22); C.add('fish', -18, 2); C.add('yarn', 21, 9); C.add('star', 0, -27); C.add('fish', 4, 14); C.add('mouse', 26, -18); C.add('yarn', -26, -6);
@@ -12100,7 +13002,60 @@ function buildRobotCity(game, entry) {
     const organ = makeBarrelOrgan();
     game.npcs.push(new OrganGrinder(game, grinder, organ, { x: gx, z: gz, ry: gry, side: 1,
       cries: ["Tuppence a tune — cheaper than anything else running on batteries in this town.", "Careful, puss — the pipes don't bite, but the gears underneath still might.", "Thirty tunes in the barrel. Not one robot in this city has ever learned to hum along."] }));
-    U.push(organ.userData.update); }
+    U.push(organ.userData.update);
+
+    // Round 1273 gave the Neighborhood's own organ grinder a monkey with a tin cup; round 1323 gave
+    // Candy Land's one the same, closing its own log entry by noting Robot City's and Victorian's
+    // organ grinders were still without one. This city's monkey sits tucked beside the organ, same
+    // tin cup, same rattle.
+    //
+    // Hand-built straight into this file exactly as the previous two rounds built theirs: no new
+    // `makeX()` in 55-npcs.js or 56-npcs-wild.js, no `Wanderer`, no physics box, and no `rnd()` draw
+    // at all — every moving part (head turn, breathing, tail sway, the cup-rattle bursts) rides the
+    // world clock `t` alone through a single `U.push`, so dropping it in here costs nothing
+    // downstream. `game.namedFriend('organ-monkey')` plus a `game.addInteractable` keyed straight to
+    // its own group gives it the same greeting every other bystander monkey answers.
+    //
+    // Position uses the same local offset as both earlier monkeys (`localXZ`, 62-props-nature.js):
+    // 0.55 m along the organ's own `side` offset and 1.0 m further out, rotated by this grinder's own
+    // `gry` rather than assuming the Neighborhood's `ry = 0`.
+    //
+    // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+    // `elements.get('enter').listeners.click[0]()`, `game.travel(2, 'from-hub')` waited out for real
+    // against its own portal-fade timer, then 3600 simulated frames so every wandering soul had
+    // settled, reading `game.physics.boxes` and `game.zones.blocked()` directly) confirmed the
+    // computed spot (11.2, 43.2) sits 6.3 m clear of the nearest physics box besides the organ's own
+    // (1.07 m away, the same deliberate overlap the earlier two monkeys sat at against their own
+    // organs) and clear of every `game.zones` rectangle.
+    { const [mkx, mkz] = localXZ(gx, gz, 0.55, 1.0, gry);
+      const fur = mat(0x6b4a2e, { roughness: 0.9 }), light = mat(0xd9b27a, { roughness: 0.85 }), dark = mat(0x1a1410);
+      const monkey = group(mkx, game.physics.ground0(mkx, mkz), mkz, W); monkey.rotation.y = gry + PI;
+      const body = group(0, 0.1, 0, monkey);
+      mesh(G.bodySphere(14, 10), fur, { y: 0.14, sx: 0.1, sy: 0.13, sz: 0.09, parent: body });               // torso, sitting upright
+      mesh(G.bodySphere(14, 10), light, { y: 0.1, z: 0.03, sx: 0.075, sy: 0.09, sz: 0.04, shadow: 'none', parent: body });   // pale belly patch
+      for (const side2 of [1, -1]) mesh(G.sphere(0.05, 10, 8), fur, { x: side2 * 0.08, y: 0.02, z: -0.02, sy: 0.8, sz: 1.2, parent: body });   // haunches, tucked under
+      const head = group(0, 0.26, 0.03, body);
+      mesh(G.sphere(0.075, 14, 10), fur, { parent: head });
+      mesh(G.sphere(0.045, 10, 8), light, { y: -0.015, z: 0.05, sx: 1.1, sy: 0.85, parent: head });          // pale face patch
+      for (const side2 of [1, -1]) { mesh(G.sphere(0.028, 10, 8), light, { x: side2 * 0.075, y: 0.01, parent: head }); mesh(G.sphere(0.012, 8, 6), dark, { x: side2 * 0.032, y: 0.015, z: 0.058, shadow: 'none', parent: head }); }
+      mesh(G.sphere(0.018, 8, 6), dark, { y: -0.03, z: 0.068, shadow: 'none', parent: head });                // snout tip
+      const armL = group(-0.09, 0.2, 0.04, body), armR = group(0.09, 0.2, 0.04, body);
+      mesh(G.capsule(0.018, 0.1, 6), fur, { y: -0.05, rx: 0.3, parent: armL });
+      mesh(G.capsule(0.018, 0.1, 6), fur, { y: -0.05, rx: 0.3, parent: armR });
+      const cup = group(0, 0.11, 0.09, body);
+      mesh(G.cyl(0.035, 0.03, 0.045, 10), mat(0xb8b8b8, { metalness: 0.4, roughness: 0.5 }), { parent: cup });   // the tin cup, held between the paws
+      const tail = group(0, 0.06, -0.08, body);
+      const tailCurve = new THREE.CatmullRomCurve3([V3(0, 0, 0), V3(0.02, -0.04, -0.08), V3(0.08, -0.02, -0.14), V3(0.14, 0.02, -0.1), V3(0.16, 0.05, -0.02)]);
+      for (let i = 0; i <= 9; i++) { const p = tailCurve.getPoint(i / 9), rr = 0.018 - i * 0.001; mesh(G.sphere(1, 8, 6), fur, { x: p.x, y: p.y, z: p.z, sx: rr, sy: rr, sz: rr, shadow: 'none', parent: tail }); }
+      U.push((dt, t) => {
+        head.rotation.y = sin(t * 0.5) * 0.4; head.rotation.x = 0.05 + sin(t * 1.3) * 0.04;
+        body.scale.y = 1 + sin(t * 3) * 0.012;
+        const rattle = sin(t * 0.4 + 2) > 0.85 ? 1 : 0;
+        cup.rotation.z = rattle ? sin(t * 22) * 0.2 : 0; armL.rotation.z = rattle ? sin(t * 22) * 0.15 : 0; armR.rotation.z = rattle ? -sin(t * 22) * 0.15 : 0;
+        tail.rotation.y = sin(t * 0.9) * 0.08;
+      });
+      const monkeyId = game.namedFriend('organ-monkey');
+      game.addInteractable({ obj: monkey, radius: 1.6, label: () => 'Say hello to the monkey', onUse: () => { game.befriend(monkeyId); SFX.chitter(); game.hearts(monkey.position.x, 0.3, monkey.position.z, 3); game.toast('🐒 *rattles the tin cup, chatters, and gives the passing maintenance drones a hopeful look*'); } }); } }
 
   // Candy Land got the first magician (round 1027) — every other world still only has a juggler
   // tossing balls in a loop. A magician now works a quiet corner of open factory floor between the
@@ -13035,6 +13990,377 @@ function buildRobotCity(game, entry) {
     W.add(customer.group);
     game.npcs.push(new Wanderer(game, customer, { x: cux, z: cuz, angle: atan2(ftX - cux, ftZ - cuz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // Frosty Peak got a foot-treadle grindstone back in round 1353 — the one sharpening vignette in this
+  // whole game that actually grinds an edge, rather than just striking one (the woodcutter's axe, the
+  // mechanic's wrench). This floor's own mechanic already fixes robots at his bench, but nothing here
+  // sharpens a blade. **A toolsmith now kneels at her own grindstone on the open floor south of the
+  // oil vendor's pitch, a blade pressed to the spinning wheel in short, sparking bursts between pauses
+  // to check the edge against the light — the same traveling grindstone Frosty Peak's own edge-chaser
+  // uses, set up here between two towers instead of out on the snow.** *"Every blade in this city dulls
+  // the same, steel or not."* *"Mind your tail, puss — these sparks don't care whose fur they land on."*
+  // *"Back home a grindstone turned by hand. This one still does — the treadle, not a motor."*  Saying
+  // hello to her is the usual kind of friend.
+  //
+  // No new controller: `Grinder` (55-npcs.js), used exactly as Frosty Peak's round 1353 already built
+  // it — a kneeling rig, arms pressed to the wheel with a small tremble while it spins fast and sparks
+  // fly, easing into a slower idle spin between bursts. A human rig rather than a robot one: `Grinder`
+  // reaches into `rig.spine`, a field only `makeHuman()` rigs carry (`makeRobot()`'s own rig has no
+  // spine to bend), and this floor already keeps at least one human visitor of its own — the bird
+  // spotter watching the high ledges, the fortune teller's own customer above, now a toolsmith too.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(2, 'from-prev')`, 3600 simulated frames so every wandering,
+  // patrolling, charging and ball-tossing robot and every vendor had settled, then 600 more sampling
+  // every NPC's own position every 10th frame) swept a 2 m grid of the open floor (radius 15-90 from
+  // the origin, short of the radius (98) where `robotRegion()`'s own procedural fill takes over)
+  // against all 1206 of this city's own physics boxes (knee-to-head band only), all 296 `game.zones`
+  // rectangles and every sampled NPC position, then refined the best stretch on a finer half-metre
+  // grid: (1, -22.5) came back clear by 7.2 m of the nearest box, 21.9 m of the nearest `game.zones`
+  // rectangle and 7.0 m of the nearest other soul, comfortably past the 0.45 m circle this kneeling rig
+  // and its own grindstone need.
+  //
+  // Built dead last of everything this city adds, right after the fortune teller's customer above and
+  // right before `spawnBySquirrel()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw
+  // off this city's own shared `r()` sequence unconditionally, and anything built earlier here would
+  // have had its own timing-sensitive pick shifted by it.
+  { const gx = 1, gz = -22.5, gry = atan2(-gx, -gz);
+    const grindWard = makeWardrobe(r, { shirts: [0x6a7a8a], pants: [0x2a2a30], shoes: [0x1a1a1e] });
+    const toolsmith = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: grindWard }),
+      hat: null, coat: null, scarf: null, bag: null, apron: 0x4a4a52 });
+    W.add(toolsmith.group);
+    game.npcs.push(new Grinder(game, toolsmith, { x: gx, z: gz, ry: gry,
+      cries: ['Every blade in this city dulls the same, steel or not.', "Mind your tail, puss — these sparks don't care whose fur they land on.", "Back home a grindstone turned by hand. This one still does — the treadle, not a motor."] })); }
+
+  // Victorian (round 1354), Sunny Shore (1360) and Whisper Woods (1362) have all picked up a potter at
+  // her kick wheel — the one craft in this whole game whose entire point is a turntable spinning under
+  // two cupped hands. This floor already runs a mechanic fixing robots and, since round 1355, a
+  // toolsmith sharpening blades, but nothing here makes anything from scratch. **A potter now sits
+  // cross-legged at her own kick wheel on a quiet stretch of open concrete north-west of downtown, a
+  // lump of wet clay rising taller between her palms before it's lifted away and a fresh one dropped to
+  // begin again**, a small shelf of three already-glazed pots — dull steel-grey glaze, to match
+  // everything else on this floor — propped beside her. *"Everyone on this floor fixes something that's
+  // already built. I like starting from nothing."* *"Mind your tail, puss — that wheel doesn't know the
+  // difference between clay and a cat."* *"Every pot on that shelf was once this exact same lump, give
+  // or take an afternoon."* Saying hello to her is the usual kind of friend.
+  //
+  // No new controller: the same `Sitter` (55-npcs.js) the other three potters already use — both hands
+  // fixed low and forward as if pressed to the clay, held each frame guarded by `!potter.gesture` so a
+  // greeting wave still wins. The wheel and the rising lump of clay are both driven only by the world
+  // clock `t`, never this city's own seeded `r`, so nothing later in this build's own wardrobe picks
+  // shift — no `rnd()` draw and no per-frame state of its own to carry, the same trick the other three
+  // potters already settled on. `ry` is pinned to a cardinal `PI` rather than computed with `atan2`, the
+  // same shortcut the Victorian potter's own bench already takes, so the wheel and the shelf both sit on
+  // simple axis-aligned offsets that line up with an axis-aligned `P.addBox`.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(2, 'from-prev')`, 3600 simulated frames so every wandering,
+  // patrolling, charging and ball-tossing robot and every vendor had settled, then 600 more sampling
+  // every NPC's own position every 10th frame) swept a 2 m grid of the open floor (radius 15-85 from the
+  // origin, short of the radius (98) where `robotRegion()`'s own procedural fill takes over) against all
+  // 1203 of this city's own physics boxes (knee-to-head band only), all 296 `game.zones` rectangles and
+  // every sampled NPC position, then refined the best stretch on a quarter-metre grid: (-47.61, 61.53)
+  // came back clear by 8.9 m of the nearest box, 32.5 m of the nearest zone rectangle and 9.7 m of the
+  // nearest other soul, at radius 77.8 from the origin.
+  //
+  // Built right after the toolsmith above and right before `spawnBySquirrel()`, for the usual reason:
+  // `makeHuman()`/`randomPerson()` both draw off this city's own shared `r()` sequence unconditionally,
+  // and anything built earlier here would have had its own timing-sensitive pick shifted by it.
+  { const potX = -47.61, potZ = 61.53, potRy = PI;
+    const potWard = makeWardrobe(r, { shirts: [0x5a6068, 0x6a7078], pants: [0x2a2a30] });
+    const potter = makeHuman({ ...randomPerson(r, { female: r.chance(0.6), child: false, elder: r.chance(0.3), wardrobe: potWard }),
+      pants: 0x1e1e24, apron: 0x4a4a52, sleeves: true, hat: null, coat: null, scarf: null, bag: null, backpack: null, glasses: false, build: 'stout' });
+    W.add(potter.group);
+    const woodM = mat(0x454a50, { roughness: 0.75, metalness: 0.15 }), darkM = mat(0x24262a, { roughness: 0.6, metalness: 0.2 }), trayM = mat(0x8a8d92, { roughness: 0.6, metalness: 0.3 }), clayM = mat(0x8a7262, { roughness: 0.92 }), potM = mat(0x8c9298, { roughness: 0.55, metalness: 0.2 });
+    const stool = group(potX, 0, potZ, W);
+    mesh(G.cyl(0.18, 0.18, 0.03, 14), woodM, { y: 0.405, shadow: 'both', parent: stool });
+    mesh(G.cyl(0.1, 0.07, 0.39, 10), darkM, { y: 0.195, shadow: 'both', parent: stool });
+    P.addBox(potX, 0.21, potZ, 0.3, 0.42, 0.3, { cam: false });
+    const wx = potX, wz = potZ - 0.55;
+    const wheel = group(wx, 0, wz, W); wheel.rotation.y = potRy;
+    mesh(G.cyl(0.06, 0.08, 0.34, 10), woodM, { y: 0.17, shadow: 'both', parent: wheel });   // the post
+    mesh(G.cyl(0.26, 0.28, 0.05, 20), trayM, { y: 0.36, shadow: 'both', parent: wheel });   // the splash tray
+    const head = group(0, 0.4, 0, wheel);
+    mesh(G.cyl(0.22, 0.22, 0.03, 20), darkM, { parent: head });   // the wheel-head
+    const clay = mesh(G.cone(0.09, 0.2, 10), clayM, { y: 0.1, parent: head });
+    P.addBox(wx, 0.2, wz, 0.56, 0.4, 0.56, { cam: false });
+    const shelfX = potX - 0.75, shelfZ = potZ;
+    const shelf = group(shelfX, 0, shelfZ, W); shelf.rotation.y = potRy;
+    mesh(G.box(0.6, 0.04, 0.22), woodM, { y: 0.5, shadow: 'both', parent: shelf });
+    for (const [dx3, potH, potR2] of [[-0.18, 0.16, 0.07], [0, 0.2, 0.08], [0.18, 0.14, 0.065]]) {
+      const pot = group(dx3, 0.52, 0, shelf);
+      mesh(G.cyl(potR2, potR2 * 0.75, potH, 12), potM, { y: potH / 2, shadow: 'both', parent: pot });
+      mesh(G.cyl(potR2 * 0.4, potR2 * 0.5, potH * 0.25, 10), potM, { y: potH + potH * 0.1, parent: pot });   // the neck
+    }
+    P.addBox(shelfX, 0.26, shelfZ, 0.6, 0.52, 0.22, { cam: false });
+    game.npcs.push(new Sitter(game, potter, { x: potX, z: potZ, ry: potRy, seat: 0.42,
+      cries: ['🏺 "Everyone on this floor fixes something that\'s already built. I like starting from nothing."', '🏺 "Mind your tail, puss — that wheel doesn\'t know the difference between clay and a cat."', '🏺 "Every pot on that shelf was once this exact same lump, give or take an afternoon."'] }));
+    U.push((dt, t) => {
+      head.rotation.y = t * 4.2;
+      const cyc = 5.0, growT = 4.6, ph = t % cyc;
+      let k;
+      if (ph < growT) { const p = ph / growT; k = p * p * (3 - 2 * p); }
+      else { const p = (ph - growT) / (cyc - growT); k = 1 - p * p * (3 - 2 * p); }
+      const s = 0.4 + 0.75 * k;
+      clay.scale.y = s; clay.position.y = 0.015 + 0.1 * s;
+      if (!potter.gesture) { const A = potter.arms[0], B = potter.arms[1]; A.sh.rotation.x = -1.0; A.sh.rotation.z = 0.3; A.el.rotation.x = -1.3; B.sh.rotation.x = -1.0; B.sh.rotation.z = -0.3; B.el.rotation.x = -1.3; }
+    }); }
+
+  // Victorian (1361) and Candy Land (1366) have both picked up a barber beside his own empty chair.
+  // Robots don't grow hair, which is exactly the joke: nobody on this whole floor has ever needed a
+  // trim, and he knows it. **A barber now stands beside his own empty chair on a quiet stretch of open
+  // concrete south-west of downtown, snipping his shears in the air to test an edge no customer — human
+  // or otherwise — is ever coming to try, a candy-striped pole spinning beside him anyway.** *"Robots
+  // don't grow hair. I don't know why I set up shop here either."* *"Mind your whiskers, puss — these
+  // shears don't know a tabby from a trim."* *"Heard there's two of me in towns I've never even seen.
+  // Small world."* Saying hello to him is the usual kind of friend.
+  //
+  // No new controller: the same `Charger` (55-npcs.js) the other two barbers already use — a standing
+  // rig that idles on its own, its arms pinned into a held snipping pose each frame, guarded by
+  // `!barber.gesture` so a greeting wave still wins. Own small wardrobe (`barberWard`), steel-and-slate
+  // toned to match the potter above rather than either other barber's own palette. The shears and the
+  // pole stripe are both driven only by the world clock `t` alone — no `rnd()` or local `r()` draw, so
+  // nothing later in this build's own picks shift.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // `game.load(2, 'from-prev')` directly rather than `game.travel()` — the travel fade sits behind a
+  // real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so
+  // every wandering, patrolling, charging and ball-tossing robot and every vendor had settled, then 600
+  // more sampling every NPC's own position every 10th frame) swept a 2 m grid of the open floor (radius
+  // 15-85 from the origin, short of the radius (98) where `robotRegion()`'s own procedural fill takes
+  // over) against all 1205 of this city's own physics boxes (knee-to-head band only), all 296
+  // `game.zones` rectangles and every sampled NPC position, then refined the best stretch on a
+  // quarter-metre grid: (-25, -62) came back clear by 9.0 m of the nearest box, 28.9 m of the nearest
+  // zone rectangle and 9.9 m of the nearest other soul, at radius 66.9 from the origin.
+  //
+  // Built dead last of everything this city adds, right after the potter above and right before
+  // `spawnBySquirrel()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this city's
+  // own shared `r()` sequence unconditionally, and anything built earlier here would have had its own
+  // timing-sensitive pick shifted by it.
+  { const bx = -25, bz = -62, bry = atan2(-bx, -bz);
+    const barberWard = makeWardrobe(r, { shirts: [0x6a7078], pants: [0x24262a] });
+    const barber = makeHuman({ ...randomPerson(r, { female: r.chance(0.3), child: false, elder: r.chance(0.4), wardrobe: barberWard }),
+      pants: 0x201e24, apron: 0x8a8d92, sleeves: true, hat: null, coat: null, scarf: null, bag: null, backpack: null, glasses: false, moustache: r.chance(0.5), build: 'average' });
+    W.add(barber.group);
+    const leatherM = mat(0x5a6068, { roughness: 0.55 }), chairWoodM = mat(0x2e3034, { roughness: 0.8, metalness: 0.15 }), chromeM = mat(0xcfd4d8, { metalness: 0.7, roughness: 0.25 });
+    // the empty chair: a pedestal base, a seat, a tall back and two armrests, a step in front
+    const chairX = bx + sin(bry) * 0.75, chairZ = bz + cos(bry) * 0.75;
+    const chair = group(chairX, 0, chairZ, W); chair.rotation.y = bry + PI;   // facing the barber
+    mesh(G.cyl(0.22, 0.26, 0.5, 14), chromeM, { y: 0.25, shadow: 'both', parent: chair });
+    mesh(G.box(0.46, 0.08, 0.46), leatherM, { y: 0.54, shadow: 'both', parent: chair });
+    mesh(G.box(0.46, 0.6, 0.08), leatherM, { y: 0.88, z: -0.22, shadow: 'both', parent: chair });
+    for (const sideA of [-1, 1]) mesh(G.box(0.07, 0.22, 0.4), leatherM, { x: sideA * 0.24, y: 0.68, shadow: 'both', parent: chair });
+    mesh(G.box(0.5, 0.04, 0.2), chairWoodM, { y: 0.08, z: 0.3, shadow: 'both', parent: chair });   // footrest step
+    P.addBox(chairX, 0.45, chairZ, 0.5, 0.9, 0.56, { cam: false });
+    // the pole: a slim post, the candy-cane stripe spinning round its own middle section, a small
+    // chrome ball to cap it
+    const poleX = bx - sin(bry) * 0.7 + cos(bry) * 0.55, poleZ = bz - cos(bry) * 0.7 - sin(bry) * 0.55;
+    const pole = group(poleX, 0, poleZ, W);
+    noInk(mesh(G.cyl(0.03, 0.035, 1.5, 10), chairWoodM, { y: 0.75, parent: pole }));
+    const stripeM = mat(0xffffff, { roughness: 0.4, map: TEX.candyCane() });
+    const poleSpin = group(0, 1.1, 0, pole);
+    noInk(mesh(G.cyl(0.07, 0.07, 0.6, 12), stripeM, { parent: poleSpin }));
+    mesh(G.sphere(0.08, 10, 8), chromeM, { y: 0.44, parent: pole });
+    P.addBox(poleX, 0.7, poleZ, 0.14, 1.5, 0.14, { cam: false });
+    // the shears, held raised and snipping — two thin blades on a hinge, pinned to the near hand
+    const scissors = group(0, 0.1, 0.1, barber.hands[0]); scissors.rotation.x = -1.3;
+    const bladeM = mat(0xb8bcc0, { metalness: 0.75, roughness: 0.2 }), handleM = mat(0x3a3e42, { roughness: 0.5 });
+    noInk(mesh(G.sphere(0.018, 8, 6), handleM, { parent: scissors }));
+    const bladeA = group(0, 0, 0, scissors), bladeB = group(0, 0, 0, scissors);
+    mesh(G.box(0.014, 0.1, 0.01), bladeM, { y: 0.06, parent: bladeA }); mesh(G.box(0.03, 0.025, 0.01), handleM, { y: -0.03, parent: bladeA });
+    mesh(G.box(0.014, 0.1, 0.01), bladeM, { y: 0.06, parent: bladeB }); mesh(G.box(0.03, 0.025, 0.01), handleM, { y: -0.03, parent: bladeB });
+    const comb = group(0, 0.08, 0.06, barber.hands[1]); comb.rotation.x = -0.6;
+    mesh(G.box(0.02, 0.12, 0.012), mat(0x1a1a1e, { roughness: 0.6 }), { parent: comb });
+    game.npcs.push(new Charger(game, barber, { x: bx, z: bz, ry: bry, cryIcon: '💈',
+      cries: ['Robots don\'t grow hair. I don\'t know why I set up shop here either.', 'Mind your whiskers, puss — these shears don\'t know a tabby from a trim.', 'Heard there\'s two of me in towns I\'ve never even seen. Small world.'] }));
+    U.push((dt, t) => {
+      poleSpin.rotation.y = t * 2.2;
+      bladeA.rotation.z = 0.12 + sin(t * 7) * 0.12; bladeB.rotation.z = -0.12 - sin(t * 7) * 0.12;
+      if (!barber.gesture) { const A = barber.arms[0], B = barber.arms[1]; A.sh.rotation.x = -1.4; A.sh.rotation.z = 0.25; A.el.rotation.x = -1.6; B.sh.rotation.x = -0.9; B.sh.rotation.z = -0.2; B.el.rotation.x = -1.1; }
+    }); }
+
+  // The tetherball pole above has had its two off-shift workers batting the ball round it since
+  // earlier this round, but of the four worlds round 508's own playground-games list first touched
+  // (the Neighborhood, Victorian, Robot City, Frosty Peak) only the Neighborhood's own pole (round
+  // 521) and, since round 1372, Candy Land's ever picked up anyone standing by to watch. A third
+  // off-shift worker now stands a few steps east of the pole, watching the ball swing round on its
+  // rope. No `cries` of her own — this one just watches — no physics box, pure bystander. Saying
+  // hello to her makes her the usual kind of friend.
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) every watcher in this game already uses — a plain
+  // `makeHuman()`/`randomPerson()` rig, no fixed wardrobe of its own (this city's own `r()` picks her
+  // clothes), `angle` pointed at the pole's own fixed centre (29, -16) rather than a constant, and the
+  // relaxed `idle: [3, 6]`/`walk: [1, 1.6]` every watcher elsewhere in this game already settles on.
+  // Robot City builds and runs on its own local seeded `r()`, not the shared global `rnd()` the real
+  // timing-sensitive checks key off, so nothing here needs a draw pinned.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(2, 'from-hub')`, 3600 simulated frames so both workers, the
+  // haulers and every other NPC had already settled, then every NPC's own position sampled every 5th
+  // frame over 600 more) swept a ring 2-7 m out from the pole's own centre (29, -16) against all 1207
+  // of this city's own physics boxes (knee-to-head band only) and every sampled position: (36, -16)
+  // came back clearest — due east, in line past worker A at (31, -16) — 6.5 m from the nearest box and
+  // 6.06 m from the nearest other soul, well short of the tug-of-war haulers at (46, -8).
+  //
+  // Built right after the tetherball pole, for the usual reason: `makeHuman()`/`randomPerson()` both
+  // draw off this city's own local `r()` sequence unconditionally, and dropping a fresh rig in any
+  // earlier would have shifted every random pick made above it.
+  { const twx = 36, twz = -16, poleX2 = 29, poleZ2 = -16;
+    const tetherWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(tetherWatcher.group);
+    game.npcs.push(new Wanderer(game, tetherWatcher, { x: twx, z: twz, angle: atan2(poleX2 - twx, poleZ2 - twz), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
+
+  // Round 1378 gave Candy Land's own back-garden toss game (there, a gummy-ring toss) its first
+  // watcher, opening a series this city's own magnet-coupling reskin (round 425) still owed one. A
+  // worker now stands northwest of the charging posts, watching the pair lob the coupling ring back
+  // and forth between them. No `cries` of her own — this one just watches — no physics box, pure
+  // bystander. Saying hello to her makes her the usual kind of friend.
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) every watcher in this game already uses — a plain
+  // `makeHuman()`/`randomPerson()` rig, no fixed wardrobe of its own, `angle` pointed at the posts'
+  // own fixed centre (24, 86) rather than a constant, and the relaxed `idle: [3, 6]`/`walk: [1, 1.6]`
+  // every watcher elsewhere in this game already settles on. Robot City builds and runs on its own
+  // local seeded `r()`, not the shared global `rnd()` the real timing-sensitive checks key off, so
+  // nothing here needs a draw pinned.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(2, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so both tossers and every other NPC had already settled, then 600 more sampling
+  // every NPC's own position every 10th frame) swept a 0.1 m grid in a ring 2-9 m out from the posts'
+  // own centre (24, 86) against all 1208 of this city's own physics boxes (knee-to-head band only)
+  // and all 296 `game.zones` rectangles: (18, 93) came back clearest within that range — 4.68 m from
+  // the nearest box (a skyscraper footprint east of the posts crowds this corner tighter than most of
+  // this series' other spots), 9.11 m from the nearest zone rectangle and 12.5 m from the nearest
+  // other soul, at radius 94.7 from the origin, short of the radius (98) where `robotRegion()`'s own
+  // procedural fill takes over.
+  //
+  // Built dead last of everything this city adds, right after the tetherball watcher above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this city's own local `r()` sequence
+  // unconditionally, and dropping a fresh rig in any earlier would have shifted every random pick
+  // made above it.
+  { const rwx = 18, rwz = 93, ringX = 24, ringZ = 86;
+    const ringWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(ringWatcher.group);
+    game.npcs.push(new Wanderer(game, ringWatcher, { x: rwx, z: rwz, angle: atan2(ringX - rwx, ringZ - rwz), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
+
+  // Round 1384 started a new series on the tug-of-war itself (never spread past the Neighborhood,
+  // same as the sack race), giving Candy Land's own liquorice-rope pull a first watcher. Robot City's
+  // own reskin — two factory units straining against a power cable (round 526-ish, haulerA/haulerB
+  // at x=46, z=-8) — has had nobody stopping to watch either. A worker now stands due east of them,
+  // watching the pair strain against the cable. No `cries` of her own — this one just watches — no
+  // physics box, pure bystander. Saying hello to her makes her the usual kind of friend.
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) every watcher in this game already uses — a plain
+  // `makeHuman()`/`randomPerson()` rig, no fixed wardrobe of its own, `angle` pointed at the cable's
+  // own fixed centre (46, -8) rather than a constant, and the relaxed `idle: [3, 6]`/`walk: [1, 1.6]`
+  // every watcher elsewhere in this game already settles on. The cable runs north-south here (both
+  // units sit at x=46, offset in z by `TugOfWar`'s own ±1.3 m `gap`, `ry=0`), same as Candy Land's
+  // own rope — so, same as round 1384 found there, standing east or west of it, level with its own
+  // centre, is the one angle that actually shows both units straining at once rather than looking
+  // past one at the other's back. Robot City builds and runs on its own local seeded `r()`, not the
+  // shared global `rnd()` the real timing-sensitive checks key off, so nothing here needs a draw
+  // pinned.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(2, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so both units, the marching patrol and every other NPC had already settled,
+  // then 600 more sampling every NPC's own position every 10th frame) swept a 0.25 m grid in a ring
+  // 2-9 m out from the cable's own centre (46, -8), restricted to due east/west of it, against all
+  // 1207 of this city's own physics boxes (knee-to-head band only) and all 296 `game.zones`
+  // rectangles: (51, -8) came back clearest on that line — due east at radius 5 — 5.38 m from the
+  // nearest box, 52.5 m from the nearest zone rectangle and 5.17 m from the nearest other soul, clear
+  // of the marching patrol's own beat (46, -18)-(46, -26) south of here.
+  //
+  // Built dead last of everything this city adds, right after the ring-toss watcher above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this city's own local `r()` sequence
+  // unconditionally, and dropping a fresh rig in any earlier would have shifted every random pick
+  // made above it.
+  { const twx2 = 51, twz2 = -8, tugX2 = 46, tugZ2 = -8;
+    const tugWatcher2 = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(tugWatcher2.group);
+    game.npcs.push(new Wanderer(game, tugWatcher2, { x: twx2, z: twz2, angle: atan2(tugX2 - twx2, tugZ2 - twz2), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
+
+  // Rounds 1384-1390 gave every one of the seven worlds' own tug-of-war a watcher and then opened the
+  // sack-race series with Candy Land, leaving Robot City, Victorian, Sunny Shore, Frosty Peak and
+  // Whisper Woods still owing theirs one. This city's own sack race (above, two off-shift contractors
+  // bound ankle-to-waist in a borrowed packing sack apiece, at x=-42, z=46, `ry=PI/2`) has had nobody
+  // stopping to watch since. **A contractor now stands north of the lane, watching the pair hop back
+  // and forth.** No `cries` of her own — this one just watches — but saying hello to her makes her
+  // the usual kind of friend.
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) every watcher in this series already uses — a
+  // plain `makeHuman()`/`randomPerson()` rig, no fixed wardrobe of its own, `angle` pointed at the
+  // lane's own fixed midpoint (-42, 46) rather than a constant, and the relaxed `idle: [3, 6]`/
+  // `walk: [1, 1.6]` every watcher elsewhere in this game already settles on. `SackRace` runs this
+  // lane along world X here (`ry=PI/2`, racers side by side in z) — the same orientation as the
+  // Neighborhood's own sack race (round 1307), not Candy Land's own (round 1390, lane along z, side
+  // by side in x) — so round 1307's own finding applies directly: standing north or south of the
+  // lane, offset in z (the same axis as the racers' own side-by-side gap), is the angle that shows
+  // both hopping past at once instead of looking down their backs.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(2, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so both racers, the marching patrol and every other NPC had settled, then 600
+  // more sampling every NPC's own position every 10th frame) swept a 0.25 m grid north and south of
+  // the lane's own midpoint, 2.5-16 m out, against all 1211 of this city's own physics boxes
+  // (knee-to-head band only) and all 296 `game.zones` rectangles, then refined the best stretch on a
+  // 0.05 m grid: (-42, 55.5) came back clearest — due north of the lane at radius 9.5, 69.6 from the
+  // world's own origin, well short of the radius (98) where `robotRegion`'s own procedural fill takes
+  // over — 5.39 m from the nearest box, 38.5 m from the nearest zone rectangle and 5.32 m from the
+  // nearest other soul.
+  //
+  // Built dead last of everything this city adds, right after the cable tug-of-war watcher above,
+  // for the usual reason: `makeHuman()`/`randomPerson()` both draw off this city's own local `r()`
+  // sequence unconditionally, and dropping a fresh rig in any earlier would have shifted every
+  // random pick made above it.
+  { const swx3 = -42, swz3 = 55.5, laneX4 = -42, laneZ4 = 46;
+    const sackWatcher3 = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(sackWatcher3.group);
+    game.npcs.push(new Wanderer(game, sackWatcher3, { x: swx3, z: swz3, angle: atan2(laneX4 - swx3, laneZ4 - swz3), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
+
+  // Rounds 1396-1397 opened a "seesaw watcher" series on the Neighborhood and then Candy Land,
+  // leaving Robot City, Victorian, Sunny Shore, Frosty Peak and Whisper Woods still owing theirs
+  // one. This city's own seesaw (above, two hard-hatted kids at (0, -45), south of the swing set,
+  // never watched since it went in) is next. **A contractor now stands south of it, taking in both
+  // ends tip up and down.** No `cries` of her own — this one just watches — but saying hello to her
+  // makes her the usual kind of friend.
+  //
+  // This seesaw's own two riders sit side by side along world X (`makeSeesaw`'s arm runs along the
+  // pivot's own local x, and this seesaw's `ry` is 0, same as the Neighborhood's and Candy Land's
+  // own), so round 1396's own finding applies directly here: standing north or south of it, offset
+  // along the same axis the riders are spread across, is the angle that shows both ends rising and
+  // falling at once rather than looking down the plank's own length. Robot City carries no
+  // dupe-shirt rule of its own (the Neighborhood's test is the only one of the seven that enforces
+  // one), so no wardrobe bag was needed.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(2, 'from-hub')` directly rather than `game.travel()` — the
+  // travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then
+  // 3600 simulated frames so both seesaw kids, the marching patrol and every other NPC had settled,
+  // then 600 more sampling every NPC's own position every 10th frame) swept a 0.25 m grid north and
+  // south of the seesaw (0, -45), 2.5-20 m out, against all of this city's own body-height physics
+  // boxes and all `game.zones` rectangles, staying inside the radius (98) where `robotRegion`'s own
+  // procedural fill takes over: south came back clearer than north at every radius tried, and (0,
+  // -50.3) came back clearest overall — due south at radius 5.3, 50.3 m from the world's own origin
+  // — 5.0 m from the nearest box, 4.7 m from the nearest zone rectangle and 4.67 m from the nearest
+  // other soul, clear of the furnace, both conveyors and the swing set's own ground to the north.
+  //
+  // Built dead last of everything this city adds, right after the sack-race watcher above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this city's own local `r()` sequence
+  // unconditionally, and dropping a fresh rig in any earlier would have shifted every random pick
+  // made above it.
+  { const seeX5 = 0, seeZ5 = -45, swx5 = 0, swz5 = -50.3;
+    const seesawWatcher5 = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(seesawWatcher5.group);
+    game.npcs.push(new Wanderer(game, seesawWatcher5, { x: swx5, z: swz5, angle: atan2(seeX5 - swx5, seeZ5 - swz5), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
@@ -13446,6 +14772,40 @@ function buildVictorian(game, entry) {
     const quoitLines = ["Right on the hob — that's a game, that is.", 'Mind your tail, puss — brass doesn\'t bend for anyone.', "Best of eleven, same as every Sunday."];
     game.npcs.push(new Horseshoes(game, quoitA, quoitB, quoit, { cx: qcx, cz: qcz, gap: qgap, cries: quoitLines, cryIcon: '🎯' }));
     greetable(game, { rig: quoitA }); greetable(game, { rig: quoitB }); }
+  // Candy Land's and Robot City's own back-garden toss games (rounds 1378-1379) each picked up a
+  // watcher standing by, opening a series that started right after this game's own tetherball-pole
+  // watchers wrapped up — but the two gentlemen pitching brass quoits at the hob just above have had
+  // nobody of their own to watch since the game itself arrived. A third local now stands a few steps
+  // southwest of the clay beds, hands in pockets, following the ring as it sails back and forth. No
+  // `cries` of her own — this one just watches — but saying hello to her makes her the usual kind of
+  // friend.
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) every watcher in both series already uses — a
+  // plain `makeHuman()`/`randomPerson()` rig, no fixed wardrobe of its own (this town's own `r()`
+  // picks her clothes), `angle` pointed at the quoit beds' own fixed centre (22, 78) rather than a
+  // constant, and the relaxed `idle: [3, 6]`/`walk: [1, 1.6]` every watcher elsewhere in this game
+  // already settles on. Victorian builds and runs on its own local seeded `r()` (`seeded(404)`), not
+  // the shared global `rnd()` the Neighborhood's real timing-sensitive checks key off, so nothing here
+  // needs a draw pinned.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(3, 'from-hub')`, 3600 simulated frames so both quoit pitchers
+  // and every other NPC had already settled, then every NPC's own position sampled every 10th frame
+  // over 600 more) swept a 0.25 m grid in a ring 2-9 m out from the quoit beds' own centre (22, 78)
+  // against all 633 of this town's own body-height physics boxes, all 238 `game.zones` rectangles and
+  // every sampled position, staying short of the radius (88) where `victorianRegion`'s own procedural
+  // fill takes over: (15.6, 84.4) came back clearest — southwest of the beds at radius 9 from their
+  // centre, 85.8 from the world's own origin — 11.3 m from the nearest box, 16.0 m from the nearest
+  // zone rectangle and 11.3 m from the nearest other soul.
+  //
+  // Built right after the quoit beds, for the usual reason: `makeHuman()`/`randomPerson()` both draw
+  // off this town's own local `r()` sequence unconditionally, and dropping a fresh rig in any earlier
+  // would have shifted every random pick made above it.
+  { const qwx = 15.6, qwz = 84.4, quoitCx = 22, quoitCz = 78;
+    const quoitWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(quoitWatcher.group);
+    game.npcs.push(new Wanderer(game, quoitWatcher, { x: qwx, z: qwz, angle: atan2(quoitCx - qwx, quoitCz - qwz), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
   // the mudlark on the canal's far bank (round 365) noted the one trade "as Victorian as the chimney
   // sweep" was still missing from the whole town — it still was, past the smoke itself drifting off
   // every terrace roof since round 1. One now stands in the yard behind the house at x=-18, between
@@ -14425,6 +15785,40 @@ function buildVictorian(game, entry) {
     W.add(workerA.group); W.add(workerB.group);
     game.npcs.push(new Tetherball(game, workerA, workerB, { x: -70, z: -30,
       cries: ['Forty-one, and she\'s still mine!', "Mind your tail, puss — that ball's got more swing in it than it looks.", "Groom'll want us back inside in a minute. One more go."] })); }
+  // The tetherball pole above has had its two stable hands batting the ball round it since earlier
+  // this round, but of the four worlds round 508's own playground-games list first touched (the
+  // Neighborhood, Victorian, Robot City, Frosty Peak) only the Neighborhood's own pole (round 521)
+  // and, since round 1372-1373, Candy Land's and Robot City's have ever picked up anyone standing by
+  // to watch. A third stable hand now stands a few steps east of the pole, watching the ball swing
+  // round on its rope. No `cries` of her own — this one just watches — no physics box, pure
+  // bystander. Saying hello to her makes her the usual kind of friend.
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) every watcher in this game already uses — a plain
+  // `makeHuman()`/`randomPerson()` rig, no fixed wardrobe of its own (this town's own `r()` picks her
+  // clothes), `angle` pointed at the pole's own fixed centre (-70, -30) rather than a constant, and the
+  // relaxed `idle: [3, 6]`/`walk: [1, 1.6]` every watcher elsewhere in this game already settles on.
+  // Victorian builds and runs on its own local seeded `r()` (`seeded(404)`), not the shared global
+  // `rnd()` the Neighborhood's real timing-sensitive checks key off, so nothing here needs a draw
+  // pinned.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(3, 'from-hub')`, 3600 simulated frames so both stable hands, the
+  // pinwheel, the bootblack, the juggler and every other NPC had already settled, then every NPC's own
+  // position sampled every 10th frame over 600 more) swept a ring 2-7 m out from the pole's own centre
+  // (-70, -30) against all 609 of this town's own physics boxes (knee-to-head band only), all 236
+  // `game.zones` rectangles and every sampled position: (-63, -30) came back clearest — due east, in
+  // line past stable hand A — 6.9 m from the nearest box, 14.0 m from the nearest zone rectangle and
+  // 7.3 m from the nearest other soul, well short of the pinwheel (-60.5, -7.5), the bootblack (-48,
+  // -20) and the juggler (-28, -20.3).
+  //
+  // Built right after the tetherball pole, for the usual reason: `makeHuman()`/`randomPerson()` both
+  // draw off this town's own local `r()` sequence unconditionally, and dropping a fresh rig in any
+  // earlier would have shifted every random pick made above it.
+  { const twx = -63, twz = -30, poleX2 = -70, poleZ2 = -30;
+    const tetherWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(tetherWatcher.group);
+    game.npcs.push(new Wanderer(game, tetherWatcher, { x: twx, z: twz, angle: atan2(poleX2 - twx, poleZ2 - twz), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
   // round 508's own list of playground games (tetherball, badminton, tug-of-war, archery, sack races)
   // is down to its last three worlds now the Neighborhood, Candy Land and Robot City have all had a
   // `SackRace` of their own — Victorian, for all its badminton net, tug-of-war and tetherball pole,
@@ -16387,7 +17781,60 @@ function buildVictorian(game, entry) {
     const organ = makeBarrelOrgan();
     game.npcs.push(new OrganGrinder(game, grinder, organ, { x: gx, z: gz, ry: gry, side: 1,
       cries: ['Tuppence a tune, if you please — and mind where those paws go.', "Careful, puss — mind the pipes, they don't take kindly to being climbed.", "Thirty tunes in the barrel. Nobody's ever once stood still for all thirty."] }));
-    U.push(organ.userData.update); }
+    U.push(organ.userData.update);
+
+    // Round 1273 gave the Neighborhood's own organ grinder a monkey with a tin cup; rounds 1323 and
+    // 1324 gave Candy Land's and Robot City's the same, each round's own log entry noting Victorian's
+    // was the only one of the four still bare. This town's monkey sits tucked beside the organ, same
+    // tin cup, same rattle.
+    //
+    // Hand-built straight into this file exactly as the previous three rounds built theirs: no new
+    // `makeX()` in 55-npcs.js or 56-npcs-wild.js, no `Wanderer`, no physics box, and no `rnd()` draw at
+    // all — every moving part (head turn, breathing, tail sway, the cup-rattle bursts) rides the world
+    // clock `t` alone through a single `U.push`, so dropping it in here costs nothing downstream.
+    // `game.namedFriend('organ-monkey')` plus a `game.addInteractable` keyed straight to its own group
+    // gives it the same greeting every other bystander monkey answers.
+    //
+    // Position uses the same local offset as the earlier three monkeys (`localXZ`, 62-props-nature.js):
+    // 0.55 m along the organ's own `side` offset and 1.0 m further out, rotated by this grinder's own
+    // `gry` (here 0, same as the Neighborhood's own) rather than hard-coding it.
+    //
+    // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+    // `elements.get('enter').listeners.click[0]()`, `game.travel(3, 'from-hub')` waited out for real
+    // against its own portal-fade timer, then 3600 simulated frames so every wandering soul had
+    // settled, reading `game.physics.boxes` and `game.zones.blocked()` directly) confirmed the computed
+    // spot (41.55, 64.5) sits clear of every physics box but the organ's own (the same deliberate
+    // overlap the earlier three monkeys sat at against their own organs) and clear of every
+    // `game.zones` rectangle.
+    { const [mkx, mkz] = localXZ(gx, gz, 0.55, 1.0, gry);
+      const fur = mat(0x6b4a2e, { roughness: 0.9 }), light = mat(0xd9b27a, { roughness: 0.85 }), dark = mat(0x1a1410);
+      const monkey = group(mkx, game.physics.ground0(mkx, mkz), mkz, W); monkey.rotation.y = gry + PI;
+      const body = group(0, 0.1, 0, monkey);
+      mesh(G.bodySphere(14, 10), fur, { y: 0.14, sx: 0.1, sy: 0.13, sz: 0.09, parent: body });               // torso, sitting upright
+      mesh(G.bodySphere(14, 10), light, { y: 0.1, z: 0.03, sx: 0.075, sy: 0.09, sz: 0.04, shadow: 'none', parent: body });   // pale belly patch
+      for (const side2 of [1, -1]) mesh(G.sphere(0.05, 10, 8), fur, { x: side2 * 0.08, y: 0.02, z: -0.02, sy: 0.8, sz: 1.2, parent: body });   // haunches, tucked under
+      const head = group(0, 0.26, 0.03, body);
+      mesh(G.sphere(0.075, 14, 10), fur, { parent: head });
+      mesh(G.sphere(0.045, 10, 8), light, { y: -0.015, z: 0.05, sx: 1.1, sy: 0.85, parent: head });          // pale face patch
+      for (const side2 of [1, -1]) { mesh(G.sphere(0.028, 10, 8), light, { x: side2 * 0.075, y: 0.01, parent: head }); mesh(G.sphere(0.012, 8, 6), dark, { x: side2 * 0.032, y: 0.015, z: 0.058, shadow: 'none', parent: head }); }
+      mesh(G.sphere(0.018, 8, 6), dark, { y: -0.03, z: 0.068, shadow: 'none', parent: head });                // snout tip
+      const armL = group(-0.09, 0.2, 0.04, body), armR = group(0.09, 0.2, 0.04, body);
+      mesh(G.capsule(0.018, 0.1, 6), fur, { y: -0.05, rx: 0.3, parent: armL });
+      mesh(G.capsule(0.018, 0.1, 6), fur, { y: -0.05, rx: 0.3, parent: armR });
+      const cup = group(0, 0.11, 0.09, body);
+      mesh(G.cyl(0.035, 0.03, 0.045, 10), mat(0xb8b8b8, { metalness: 0.4, roughness: 0.5 }), { parent: cup });   // the tin cup, held between the paws
+      const tail = group(0, 0.06, -0.08, body);
+      const tailCurve = new THREE.CatmullRomCurve3([V3(0, 0, 0), V3(0.02, -0.04, -0.08), V3(0.08, -0.02, -0.14), V3(0.14, 0.02, -0.1), V3(0.16, 0.05, -0.02)]);
+      for (let i = 0; i <= 9; i++) { const p = tailCurve.getPoint(i / 9), rr = 0.018 - i * 0.001; mesh(G.sphere(1, 8, 6), fur, { x: p.x, y: p.y, z: p.z, sx: rr, sy: rr, sz: rr, shadow: 'none', parent: tail }); }
+      U.push((dt, t) => {
+        head.rotation.y = sin(t * 0.5) * 0.4; head.rotation.x = 0.05 + sin(t * 1.3) * 0.04;
+        body.scale.y = 1 + sin(t * 3) * 0.012;
+        const rattle = sin(t * 0.4 + 2) > 0.85 ? 1 : 0;
+        cup.rotation.z = rattle ? sin(t * 22) * 0.2 : 0; armL.rotation.z = rattle ? sin(t * 22) * 0.15 : 0; armR.rotation.z = rattle ? -sin(t * 22) * 0.15 : 0;
+        tail.rotation.y = sin(t * 0.9) * 0.08;
+      });
+      const monkeyId = game.namedFriend('organ-monkey');
+      game.addInteractable({ obj: monkey, radius: 1.6, label: () => 'Say hello to the monkey', onUse: () => { game.befriend(monkeyId); SFX.chitter(); game.hearts(monkey.position.x, 0.3, monkey.position.z, 3); game.toast('🐒 *rattles the tin cup, chatters, and gives a passing top hat a hopeful look*'); } }); } }
 
   // Candy Land and Robot City each have their own `Magician` by now; Victorian's own street performers —
   // the fiddler by the fountain, the organ grinder on the north green — have never had one either. **A
@@ -17323,6 +18770,603 @@ function buildVictorian(game, entry) {
     const customer = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: customerWard }), blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
     W.add(customer.group);
     game.npcs.push(new Wanderer(game, customer, { x: cux, z: cuz, angle: atan2(ftX - cux, ftZ - cuz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
+  // This town's own jokes keep pointing at a cobbler who never turned up: the baller warns that "the
+  // cobbler charges for thread" if the net tears twice, and the hoop-dribbling urchin's own line about
+  // the basketball net makes the same joke — but nobody on this whole street has ever actually mended
+  // a shoe. The watchmaker (above) got his own bench at the clock tower; this town's other story-book
+  // tradesman had none. **A cobbler now sits on a stool outside his own shop on the south terrace,
+  // between the houses at x=52 and x=62, a half-finished boot clamped over an iron last in one hand
+  // and an awl raised in the other, a short shelf of three mended pairs behind him.** *"Every sole in
+  // this town comes through here twice over — once new, once patched."* *"Mind your claws, puss — that
+  // leather's dearer than it looks."* *"A boot's only as good as the stitching nobody sees."*
+  //
+  // No new controller: `Sitter` (55-npcs.js), the exact seated-craftsman shape the watchmaker above
+  // already uses — one hand holds the boot-and-last low, the other the awl raised, both fixed once in
+  // this build's own `U.push` guarded by `!cobbler.gesture`, the watchmaker's own trick, so a greeting
+  // wave still wins over the held pose. The workbench is plain primitives: a plank top on four turned
+  // legs, an iron last clamped upright, a scatter of tacks and a hammer laid down; a short shelf stands
+  // behind him carrying three finished boots in a row, playing the "already got the credit" joke the
+  // stray chimney-brush prop (round ~1100-something, two houses further along this same row) already
+  // made once for the sweep.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.load(3,
+  // 'from-prev')` — a direct, synchronous build, since `travel()`'s own fade is deferred behind a real
+  // `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so every
+  // carriage horse and wanderer had already settled) swept the gap in the south terrace's own iron
+  // fences between the houses at x=52 and x=62 (the widest unfenced stretch of pavement on that whole
+  // row, the fences themselves running 50.5-55.9 and 58.5-65.5): (57, -6.3) for the stool came back
+  // clear by 1.94 m of the nearest fence post and 2.58 m of the nearest house on either side, 7.97 m
+  // from the nearest wandering soul, still on the south pavement strip itself (centred z=-5.6,
+  // half-width 1.1) and well clear of the houses' own front walls (z=-8).
+  //
+  // Built dead last of everything this town adds, right after the fortune teller's own customer above
+  // and right before the squirrel below, for the usual reason: `makeHuman()`/`randomPerson()` both
+  // draw off this town's own shared `r()` sequence unconditionally, and anything built earlier here
+  // would have had its own timing-sensitive pick shifted by it.
+  { const cx = 57, cz = -6.3, ry = 0, tz = cz + 0.42, sz = cz - 0.55;
+    const cobbler = makeHuman({ ...randomPerson(r, { female: r.chance(0.3), child: false, elder: r.chance(0.5), wardrobe: vicWard }),
+      pants: 0x1e1e24, apron: 0x3a2a1a, sleeves: true, hat: null, coat: null, scarf: null, bag: null, backpack: null, glasses: false, moustache: r.chance(0.4), build: 'stout' });
+    W.add(cobbler.group);
+    const leather = mat(0x3a2418, { roughness: 0.75 }), iron = mat(0x4a4a4e, { metalness: 0.6, roughness: 0.4 }), wood = mat(0x5a3a1f, { roughness: 0.85 }), dark = mat(0x2a2420, { roughness: 0.6 });
+    const boot = group(0, 0, 0.08, cobbler.hands[0]); boot.rotation.x = -0.6;   // the half-mended boot, held low
+    mesh(G.box(0.05, 0.09, 0.16), leather, { parent: boot });
+    noInk(mesh(G.cyl(0.035, 0.02, 0.07, 8), leather, { y: -0.07, rz: PI / 2 - 0.2, parent: boot }));
+    const awl = group(0, 0.1, 0.1, cobbler.hands[1]); awl.rotation.x = -0.4;   // the awl, raised to stitch
+    noInk(mesh(G.cyl(0.012, 0.012, 0.07, 6), wood, { parent: awl }));
+    noInk(mesh(G.cone(0.006, 0.05, 6), iron, { y: 0.06, parent: awl }));
+    const bench = group(cx, 0, tz, W);
+    mesh(G.box(0.7, 0.04, 0.42), wood, { y: 0.46, shadow: 'both', parent: bench });
+    for (const [lx2, lz2] of [[-0.3, -0.16], [0.3, -0.16], [-0.3, 0.16], [0.3, 0.16]]) mesh(G.cyl(0.03, 0.03, 0.44, 8), wood, { x: lx2, y: 0.22, z: lz2, shadow: 'both', parent: bench });
+    mesh(G.cyl(0.05, 0.07, 0.22, 10), iron, { x: -0.18, y: 0.57, z: 0.05, rz: 0.15, parent: bench });   // the last, clamped upright
+    for (let i = 0; i < 4; i++) mesh(G.cyl(0.006, 0.004, 0.025, 6), iron, { x: 0.1 + i * 0.03, y: 0.485, z: 0.08 - i * 0.02, ry: r() * TAU, parent: bench });   // scattered tacks
+    mesh(G.cyl(0.015, 0.02, 0.2, 8), wood, { x: 0.2, y: 0.49, z: -0.1, rz: PI / 2, parent: bench });   // hammer handle
+    mesh(G.box(0.07, 0.04, 0.03), iron, { x: 0.3, y: 0.49, z: -0.1, parent: bench });   // hammer head
+    P.addBox(cx, 0.24, tz, 0.7, 0.48, 0.42, { cam: false });
+    const shelf = group(cx, 0, sz, W);
+    mesh(G.box(0.9, 0.04, 0.2), wood, { y: 0.7, shadow: 'both', parent: shelf });
+    for (const dx2 of [-0.3, 0, 0.3]) { mesh(G.box(0.05, 0.1, 0.16), leather, { x: dx2, y: 0.78, z: 0.02, parent: shelf }); mesh(G.cyl(0.035, 0.02, 0.07, 8), leather, { x: dx2, y: 0.71, z: -0.07, rz: PI / 2 - 0.2, parent: shelf }); }
+    P.addBox(cx, 0.4, sz, 0.9, 0.8, 0.2, { cam: false });
+    const stool = group(cx, 0, cz, W);
+    mesh(G.cyl(0.18, 0.18, 0.03, 14), mat(0x5a3a1f, { roughness: 0.85 }), { y: 0.405, shadow: 'both', parent: stool });
+    mesh(G.cyl(0.1, 0.07, 0.39, 10), dark, { y: 0.195, shadow: 'both', parent: stool });
+    P.addBox(cx, 0.21, cz, 0.3, 0.42, 0.3, { cam: false });
+    game.npcs.push(new Sitter(game, cobbler, { x: cx, z: cz, ry, seat: 0.42,
+      cries: ['🥾 "Every sole in this town comes through here twice over — once new, once patched."', '🥾 "Mind your claws, puss — that leather\'s dearer than it looks."', '🥾 "A boot\'s only as good as the stitching nobody sees."'] }));
+    U.push(() => { if (!cobbler.gesture) { const Ah = cobbler.arms[0], Aa = cobbler.arms[1]; Ah.sh.rotation.x = -1.3; Ah.sh.rotation.z = 0.1; Ah.el.rotation.x = -1.7; Aa.sh.rotation.x = -1.6; Aa.sh.rotation.z = -0.2; Aa.el.rotation.x = -1.2; } }); }
+
+  // Victorian's ironwork — the fence round every terrace garden, the gas lamps the whole length of the
+  // street, even the cobbler's own iron last two doors from the clock tower — has never had anywhere it
+  // actually came from. **A blacksmith now works a forge on the open grass past the last house on the
+  // south terrace, hammering a glowing horseshoe flat against his anvil,** coals banked red behind him,
+  // smoke rising off a short stone stack, and three finished shoes already hung up to cool on a rack
+  // behind. *"Every fence post and gas lamp on this street started right here."* *"Mind your tail, puss
+  // — sparks don't care whose whiskers they singe."* *"That cobbler still owes me for his iron last.
+  // Tell him, if you're headed that way."*
+  //
+  // One new optional hand-prop on `makeHuman()` (55-npcs.js): `hammer`, built the same way `axe`
+  // already is — a short handle and a blocky iron head parented straight to the right hand. `Chopper`
+  // (55-npcs.js), already splitting logs in four other worlds with the one downward strike its own
+  // `'chop'` gesture gives it, picks up three new optional constructor fields — `sfx`, `colors` and
+  // `cryIcon` — each defaulting to the exact values it already had hardcoded, so every one of its seven
+  // existing callers is unchanged. This is the first caller to actually pass something different:
+  // `SFX.clang()` and a shower of spark colours (the same three `Mechanic`'s own wrench already throws)
+  // in place of the woodcutter's `SFX.thunk()` and wood-chip browns, and a hammer emoji in place of the
+  // axe.
+  //
+  // No new prop function: the forge, anvil and rack are built inline with plain primitives, same as the
+  // watchmaker's bench and the cobbler's own stall above. The forge reuses the chestnut brazier's own
+  // glow-and-flicker trick (a `glowMat` coal bed and a `pointLight`, both riding `sin(t*10)+sin(t*27)`)
+  // and `addChimneySmoke()` (this file, already lighting every terrace house's own chimney) for the
+  // stack behind it.
+  //
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // `game.load(3, 'from-prev')` — a direct, synchronous build, since `travel()`'s own fade is deferred
+  // behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated
+  // frames so every carriage horse and wanderer had already settled) swept the open grass past the last
+  // house on the south terrace (x=62) against all 614 of this town's own physics boxes (knee-to-head
+  // band only), all 236 `game.zones` rectangles and every sampled NPC position: the whole small cluster,
+  // (77.5, -17.9) for the smith through (77.5, -21.5) for the rack, came back clear by 9.1-13.7 m of the
+  // nearest box and 9.1-11.5 m of the nearest wandering soul, at radius 79.5-80.4 from the origin —
+  // comfortably short of the radius (88) where `victorianRegion`'s own procedural fill takes over.
+  //
+  // Built dead last of everything this town adds, right after the cobbler above and right before the
+  // squirrel below, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this town's own
+  // shared `r()` sequence unconditionally, and anything built earlier here would have had its own
+  // timing-sensitive pick shifted by it.
+  { const sx = 77.5, sz = -17.9, ax = 77.5, az = -19.3, fx = 77.5, fz = -20.6, rax = 77.5, raz = -21.5;
+    const ry = atan2(ax - sx, az - sz);
+    const iron = mat(0x4a4a4e, { metalness: 0.6, roughness: 0.4 }), darkIron = mat(0x2a2420, { roughness: 0.6, metalness: 0.5 }), woodM = mat(0x4a3523, { roughness: 0.85 }), stoneM = mat(0x6b6058, { roughness: 0.95 }), darkStone = mat(0x4a443e, { roughness: 0.95 });
+
+    // the forge: a stone hearth block, a sunk coal bed glowing and flickering, a stack rising behind it, smoke overhead
+    const hearth = new THREE.Group();
+    mesh(G.box(0.85, 0.6, 0.7), stoneM, { y: 0.3, shadow: 'both', parent: hearth });
+    mesh(G.box(0.46, 0.05, 0.38), darkStone, { y: 0.62, parent: hearth });
+    const coalGlow = glowMat(0xff5a1a, 1.7, { transparent: true, opacity: 0.95 });
+    mesh(G.box(0.4, 0.05, 0.32), coalGlow, { y: 0.645, shadow: 'none', parent: hearth });
+    for (const [ex, ez] of [[-0.12, 0.07], [0.1, -0.05], [0.02, 0.1]]) mesh(G.sphere(0.025, 6, 5), coalGlow, { x: ex, y: 0.66, z: ez, shadow: 'none', parent: hearth });
+    mesh(G.box(0.3, 1.0, 0.26), darkStone, { y: 1.1, z: -0.22, shadow: 'both', parent: hearth });
+    const forgeLight = pointLight(0xff6a2a, 8, 5, 0, 0.66, 0, hearth);
+    hearth.userData.update = (dt, t) => { coalGlow.emissiveIntensity = 1.6 + sin(t * 10) * 0.35 + sin(t * 27) * 0.18; forgeLight.intensity = 6.5 + sin(t * 10) * 1.4 + sin(t * 27) * 0.7; };
+    place(game, U, hearth, fx, fz, 0);
+    addChimneySmoke(game, U, fx, 1.65, fz - 0.22);
+    P.addBox(fx, 0.8, fz, 0.9, 1.6, 0.75, { cam: false });
+
+    // the anvil: base, waist, table and horn, a half-forged horseshoe glowing on its face
+    const anvil = new THREE.Group();
+    mesh(G.box(0.3, 0.08, 0.22), darkIron, { y: 0.04, shadow: 'both', parent: anvil });
+    mesh(G.cyl(0.07, 0.09, 0.22, 10), iron, { y: 0.19, shadow: 'both', parent: anvil });
+    mesh(G.box(0.36, 0.13, 0.18), iron, { y: 0.335, shadow: 'both', parent: anvil });
+    mesh(G.cone(0.08, 0.24, 10), iron, { x: 0.3, y: 0.335, rz: -PI / 2, shadow: 'both', parent: anvil });
+    const workGlow = glowMat(0xff7a2a, 1.3, { transparent: true, opacity: 0.9 });
+    mesh(G.torus(0.08, 0.02, 6, 14, PI * 1.5), workGlow, { y: 0.41, rx: PI / 2, ry: 0.4, shadow: 'none', parent: anvil });
+    place(game, U, anvil, ax, az, 0);
+    P.addBox(ax, 0.2, az, 0.46, 0.46, 0.22, { cam: false });
+
+    // a short rack behind the forge, three finished (cooled) horseshoes already hung up
+    const rack = new THREE.Group();
+    mesh(G.box(0.6, 0.04, 0.05), woodM, { y: 0.9, shadow: 'both', parent: rack });
+    for (const px2 of [-0.2, 0, 0.2]) mesh(G.torus(0.09, 0.018, 6, 14, PI * 1.5), iron, { x: px2, y: 0.78, z: 0.04, shadow: 'none', parent: rack });
+    for (const px2 of [-0.25, 0.25]) mesh(G.cyl(0.03, 0.03, 0.9, 8), woodM, { x: px2, y: 0.45, shadow: 'both', parent: rack });
+    place(game, U, rack, rax, raz, 0);
+    P.addBox(rax, 0.45, raz, 0.6, 0.9, 0.2, { cam: false });
+
+    // a water bucket beside the anvil, for the quench
+    const bucket = new THREE.Group();
+    mesh(G.cyl(0.11, 0.095, 0.22, 12), woodM, { y: 0.11, shadow: 'both', parent: bucket });
+    mesh(G.cyl(0.097, 0.097, 0.01, 12), mat(0x3a6a8a, { roughness: 0.3, metalness: 0.1 }), { y: 0.2, shadow: 'none', parent: bucket });
+    place(game, U, bucket, ax + 0.35, az + 0.1, 0);
+    P.addBox(ax + 0.35, 0.11, az + 0.1, 0.22, 0.22, 0.22, { cam: false });
+
+    const smithWard = makeWardrobe(r, { shirts: [0x7a3a2a] });
+    const smith = makeHuman({ ...randomPerson(r, { female: r.chance(0.25), child: false, elder: r.chance(0.3), wardrobe: smithWard }),
+      pants: 0x2a2a2a, apron: 0x3a2a1a, sleeves: true, hat: null, coat: null, scarf: null, bag: null, backpack: null, glasses: false, moustache: r.chance(0.4), beard: r.chance(0.3), build: 'stout', hammer: true });
+    W.add(smith.group);
+    game.npcs.push(new Chopper(game, smith, { x: sx, z: sz, ry,
+      sfx: () => SFX.clang(), colors: [0xffe066, 0xffffff, 0x9fe8ff], cryIcon: '🔨',
+      cries: ['Every fence post and gas lamp on this street started right here.', "Mind your tail, puss — sparks don't care whose whiskers they singe.", "That cobbler still owes me for his iron last. Tell him, if you're headed that way."] })); }
+
+  // Rounds 1331-1333 gave the Neighborhood's, Candy Land's and Robot City's own hopscotch chalkers a
+  // first watcher, fourth of the hopscotch-watcher set started in round 1331 — Victorian's own boy
+  // (built a few thousand lines up, kneeling on the quiet cobblestones south-west of the market square)
+  // is next, leaving Sunny Shore and Whisper Woods still solo. **A passer-by now stands a few steps
+  // east of his six squares, watching the chalk go down.**
+  //
+  // Plain `Wanderer` (55-npcs.js), the same class every watcher in this set already uses — it calls
+  // `greetable()` on its own, so no extra wiring was needed, and it carries no physics box of its own.
+  // Built with no `cries` of its own and every shared-`rnd()` draw in `Wanderer`'s own constructor
+  // (`phase`/`timer`/`t`/`cryT`, each pinned here instead of left to its own default) fixed, the same
+  // defensive habit the other three watchers in this set already settled on, since `test/run.mjs` runs
+  // every world through one unbroken process and a shift to the shared sequence here could otherwise
+  // nudge a later world's own timing-sensitive numbers.
+  //
+  // A headless probe (`game.start('new')`, `game.load(3, 'from-prev')` for a direct synchronous build,
+  // 3600 simulated frames to let every wandering urchin and dancer settle, then 600 more sampling every
+  // NPC's own position every 6th frame) swept the open cobblestones east of the six squares against all
+  // 607 of this town's own physics boxes (knee-to-head band only) and every sampled NPC position:
+  // (-41, -58) came back clear by 12.96 m of the nearest box and 4.90 m of the nearest wandering soul
+  // (the chalker himself), at radius 71.0 from the origin — comfortably short of the radius (88) where
+  // victorianRegion's own procedural fill takes over.
+  //
+  // Built dead last of every person this build adds, right after the blacksmith above and right before
+  // the squirrel below, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this town's
+  // own shared `r()` sequence unconditionally.
+  { const chwx = -41, chwz = -58, chkx = -45.9, chkz = -57.85;
+    const chalkWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x4a7a6a, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(chalkWatcher.group);
+    game.npcs.push(new Wanderer(game, chalkWatcher, { x: chwx, z: chwz, angle: atan2(chkx - chwx, chkz - chwz), speed: 0.3, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
+  // The blacksmith (round 1330, hammering a forge on the open grass past the last house on the south
+  // terrace) has worked that anvil alone ever since — every other solo performer in this game picked up
+  // a watcher of its own long ago (the woodcutter's own set finished at round 1254, the hopscotch
+  // chalker's own set finished just above in this very build), but nobody has ever stood and watched him
+  // work. **A boy now stands a couple of steps east of the anvil, watching every strike land.** *"Same
+  // two swings, every time — raise, then down."* *"Careful, puss — a spark went wide of me once."* *"He
+  // never once misses the shoe."*
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) every watcher in this game already uses, with the
+  // same fully-fixed constructor the hopscotch watcher above already settled on — angle, phase, timer,
+  // t and cryT all pinned instead of left to `Wanderer`'s own rnd() defaults, so nothing built here
+  // shifts this town's own shared r() sequence for anything built after it. `Wanderer`'s own constructor
+  // calls `greetable()` itself, so no extra wiring was needed, and it carries no physics box of its own
+  // — pure bystander, same as every other watcher in this set.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(3, 'from-prev')` for a direct synchronous build, then 3600 simulated
+  // frames so every carriage horse and wanderer had already settled) swept a 0.3 m grid 1.3-3.2 m out
+  // from the smith's own stand (77.5, -17.9) against all 605 of this town's own physics boxes
+  // (knee-to-head band only), every `game.zones` rectangle and every sampled NPC position: (79.3, -18.8)
+  // came back clearest — 1.62 m from the nearest box (the quench bucket), 2.80 m from the nearest zone
+  // rectangle and 2.01 m from the smith himself, at radius 81.5 from the origin — comfortably short of
+  // the radius (88) where `victorianRegion`'s own procedural fill takes over.
+  //
+  // Built dead last of every person this build adds, right after the hopscotch watcher above and right
+  // before the squirrel below, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this
+  // town's own shared `r()` sequence unconditionally.
+  { const bwx = 79.3, bwz = -18.8, bsx = 77.5, bsz = -17.9;
+    const smithWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.4), child: true }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(smithWatcher.group);
+    game.npcs.push(new Wanderer(game, smithWatcher, { x: bwx, z: bwz, angle: atan2(bsx - bwx, bsz - bwz), speed: 0.3, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 6,
+      cries: ['Same two swings, every time — raise, then down.', 'Careful, puss — a spark went wide of me once.', 'He never once misses the shoe.'] })); }
+
+  // The cobbler (round 1333, stitching boots on his stool on the south terrace) has sat alone between
+  // the two houses ever since — the blacksmith just above picked up a watcher this same build, but
+  // nobody had ever stopped to watch the cobbler's own needle go in and out. **An old woman now stands
+  // a couple of steps north-east of his stool, leaning slightly to watch the stitching.** *"In and out,
+  // in and out — he's not dropped a stitch yet."* *"Mind your claws, puss — he'll sole yours too, if
+  // you ask nicely."* *"My own boots came through that door, years back. Still holding."*
+  //
+  // Same `Wanderer` (55-npcs.js) every watcher in this game already uses, every shared-`rnd()` draw in
+  // its own constructor pinned (angle, phase, timer, `t`, `cryT`) rather than left to its defaults, the
+  // same defensive habit the blacksmith's own watcher just above and the hopscotch set before it both
+  // settled on. `Wanderer`'s own constructor calls `greetable()` itself, so no extra wiring was needed,
+  // and it carries no physics box of its own, pure bystander like every other watcher in this set.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(3, 'from-prev')` for a direct synchronous build, then 3600 simulated
+  // frames so every carriage horse and wanderer had already settled) swept the narrow gap in the south
+  // terrace's own iron fences (the same gap the cobbler's stool itself sits in, between the houses at
+  // x=52 and x=62) against all 618 of this town's own physics boxes (knee-to-head band only): (58.3,
+  // -5.1) came back clearest within 1-1.8 m of the stool — 1.11 m from the nearest box (the cobbler's
+  // own workbench) and 1.77 m from the cobbler himself, still on the same pavement strip his own stool
+  // sits on and well short of the fence corner at x=58.5.
+  //
+  // Built dead last of every person this build adds, right after the blacksmith's own watcher above and
+  // right before the squirrel below, for the usual reason: `makeHuman()`/`randomPerson()` both draw off
+  // this town's own shared `r()` sequence unconditionally.
+  { const cwx = 58.3, cwz = -5.1, ccx = 57, ccz = -6.3;
+    const cobblerWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.6), child: false, elder: r.chance(0.6) }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(cobblerWatcher.group);
+    game.npcs.push(new Wanderer(game, cobblerWatcher, { x: cwx, z: cwz, angle: atan2(ccx - cwx, ccz - cwz), speed: 0.3, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 7,
+      cries: ["In and out, in and out — he's not dropped a stitch yet.", "Mind your claws, puss — he'll sole yours too, if you ask nicely.", 'My own boots came through that door, years back. Still holding.'] })); }
+
+  // The watchmaker (above, peering through his loupe at the clock tower plaza's quiet south side) is
+  // this town's third seated craftsman, after the blacksmith and the cobbler — and the only one of the
+  // three still working alone, same as last round's own log entry noted. **A young man now stands a
+  // couple of steps south-east of the bench, watching the loupe hand instead of the tower above it.**
+  // *"He hasn't blinked once since I got here — not past that loupe, anyway."* *"Those cogs would roll
+  // right under your paws, puss. Mind where you tread."* *"Three more watches waiting on that cloth.
+  // He's in no hurry at all."* Saying hello makes him the usual kind of friend.
+  //
+  // Same `Wanderer` (55-npcs.js) every watcher in this game already uses, every shared-`rnd()` draw in
+  // its own constructor pinned (angle, phase, timer, `t`, `cryT`) rather than left to its defaults, the
+  // same defensive habit the blacksmith's and cobbler's own watchers just above both settled on —
+  // `test/run.mjs` runs every world through one unbroken process, and a stray draw here would otherwise
+  // nudge some later world's own timing-sensitive numbers. `Wanderer`'s own constructor calls
+  // `greetable()` itself, so no extra wiring was needed, and he carries no physics box of his own, pure
+  // bystander like every other watcher in this set.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(3, 'from-prev')` for a direct synchronous build, then 3600
+  // simulated frames so every carriage horse and wanderer had already settled) swept the plaza's own
+  // south side out to 2.2 m from the watchmaker's own stool (42, -6) against all 618 of this town's own
+  // physics boxes (knee-to-head band only) and every sampled NPC position: (43.2, -7.8) came back
+  // clearest — 1.96 m from the nearest box (the watchmaker's own stool) and 2.16 m from the nearest
+  // other soul, still 1.96 m from the stool itself and well inside the plaza's own 16x16 paving and the
+  // zone circle (radius 11, centred (42, 0)) that keeps `victorianRegion`'s own fill off the plaza
+  // entirely — at radius 43.9 from the world origin, nowhere near that fill's own radius-88 start.
+  //
+  // Built dead last of every person this build adds, right after the cobbler's own watcher above and
+  // right before the squirrel below, for the usual reason: `makeHuman()`/`randomPerson()` both draw off
+  // this town's own shared `r()` sequence unconditionally.
+  { const wwx = 43.2, wwz = -7.8, wmx = 42, wmz = -6;
+    const watchmakerWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: r.chance(0.2), elder: r.chance(0.4) }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(watchmakerWatcher.group);
+    game.npcs.push(new Wanderer(game, watchmakerWatcher, { x: wwx, z: wwz, angle: atan2(wmx - wwx, wmz - wwz), speed: 0.3, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 5,
+      cries: ["He hasn't blinked once since I got here — not past that loupe, anyway.", 'Those cogs would roll right under your paws, puss. Mind where you tread.', "Three more watches waiting on that cloth. He's in no hurry at all."] })); }
+
+  // `makeOldCamera()` (60-props.js) has built its lens facing "the subject" since the round it was
+  // written, and the photographer's own lines here ("Hold very still now", "Splendid! Right in
+  // profile, if you please") have always talked to somebody — but every world's photographer, this
+  // town's included, has only ever faced empty ground. **A lady now stands a step past his camera,
+  // back straight and hands folded, holding the very pose he keeps asking for.** Saying hello to her
+  // makes her the usual kind of friend.
+  //
+  // No new class: `makeHuman()`/`randomPerson()` (55-npcs.js) build the usual Victorian rig and
+  // `Wanderer` (55-npcs.js) gives her the same "stand and watch" shape every watcher and customer in
+  // this town already uses — frozen `idle: [1e9, 1e9]` plus every one of `Wanderer`'s own
+  // construction-time draws (`phase`, `timer`, `t`, `cryT`) fixed rather than pulled from `rnd()`, and
+  // `blinkT0`/`idleT0`/`sway0` fixed straight in the `makeHuman()` call so she actually holds still for
+  // the plate rather than fidgeting, the same touch the fortune teller's own customer used. `angle`
+  // points her back at the photographer rather than a constant, so she reads as posing for him and not
+  // just loitering nearby. A plum dress (0x5a3a7a, not already worn anywhere in this town) keeps the
+  // dupe-shirt check happy even though nothing here requires it.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(3, 'from-prev')` for a direct synchronous build, then 3600
+  // simulated frames so every wandering soul had settled) placed her 2.4 m out from the photographer
+  // along the exact line his own camera already faces — 1.6 m past the camera's own tripod box, which
+  // came back 1.28 m clear at that distance — against all 618 of this town's own physics boxes
+  // (knee-to-head band only): nothing closer, and the only other soul anywhere near is the
+  // photographer himself, 2.4 m back down the same line, well outside the market square's own zone.
+  //
+  // Built dead last of everything this town adds, right after the watchmaker's own watcher above and
+  // right before the squirrel below, for the usual reason: `makeHuman()`/`randomPerson()` both draw
+  // off this town's own shared `r()` sequence unconditionally.
+  { const subPX = 35, subPZ = -53, subPRY = atan2(0 - subPX, 0 - subPZ);
+    const subX = subPX + 2.4 * sin(subPRY), subZ = subPZ + 2.4 * cos(subPRY);
+    const subject = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: r.chance(0.3) }),
+      sleeves: true, dress: 0x5a3a7a, sash: 0x8a909a, hat: null, scarf: null, bag: null, backpack: null, glasses: false,
+      blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(subject.group);
+    game.npcs.push(new Wanderer(game, subject, { x: subX, z: subZ, angle: atan2(subPX - subX, subPZ - subZ), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 8,
+      cries: ["Hold still, they said. I have held still for ten whole minutes now.", "Careful, puss — don't spoil the shot, he has only the one plate left.", 'Best side forward. Every single time, without fail.'] })); }
+
+  // Victorian's crafts row already runs a blacksmith, a cobbler and a watchmaker — three trades with
+  // nothing to show for turning anything round and round except the watchmaker's own loupe. No world in
+  // this whole game has ever had a potter at a wheel, the one craft whose entire point is a turntable
+  // spinning under two cupped hands. **A potter now sits at her kick wheel on the open grass north of
+  // the terraces, clear of the street and the market square both, a lump of clay rising taller between
+  // her palms before it's lifted away and a fresh one dropped to begin again.** A small shelf beside her
+  // carries three already-glazed pots — the same "already got the credit" joke the cobbler's own shelf
+  // of mended boots and the chimney sweep's own soot-blackened brush already made elsewhere on this
+  // street. *"Forty years at this wheel and it still comes out crooked half the time."* *"Mind your
+  // tail, puss — that wheel doesn't know the difference between clay and a cat."* *"Every pot on that
+  // shelf was once this exact same lump, give or take an afternoon."*
+  //
+  // No new controller: `Sitter` (55-npcs.js), the same seated-craftsman shape the cobbler and the
+  // watchmaker both already use — both hands fixed low and forward, pressed to where the clay sits, set
+  // once in this build's own `U.push` guarded by `!potter.gesture` so a greeting wave still wins over
+  // the held pose. The wheel itself (a waist-high post, a splash tray and the wheel-head disc) and the
+  // rising lump of clay on top of it are both driven only by the world clock `t`, never this town's own
+  // seeded `r`, so nothing later in this build's own wardrobe picks shifts: the disc spins at a constant
+  // rate throughout, and the clay's own height is a plain periodic function of `t` — easing up over
+  // about four and a half seconds, then easing back down over a shorter beat — with no `rnd()` draw and
+  // no per-frame state of its own to carry, the same trick the picnic blanket's own ripple and every toy
+  // pinwheel in this game already settle for. `ry` is pinned to a cardinal `PI` rather than computed
+  // with `atan2`, so the wheel and the shelf both sit on simple axis-aligned offsets, the same shortcut
+  // the watchmaker's own bench (`wry = 0`) already takes for exactly the same reason: an axis-aligned
+  // `P.addBox` only lines up with a rotated rig's own facing when that rotation is itself a multiple of
+  // a right angle.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.load(3, 'from-prev')` then 3600 simulated frames so every carriage horse and wanderer had
+  // already settled) swept the open grass north of the terraces — past the last hanging basket, well
+  // outside the `addSpan` that keeps the street's own pavement clear and short of the radius (88) where
+  // `victorianRegion`'s own procedural fill takes over — against all 618 of this town's own physics
+  // boxes and every sampled NPC position: (7.5, 43.5) came back clear by 8.9 m of the nearest box and
+  // 17.6 m of the nearest other soul, at radius 44.3 from the world origin.
+  //
+  // Built dead last of everything this town adds, right after the photographer's own subject above and
+  // right before the squirrel below, for the usual reason: `makeHuman()`/`randomPerson()` both draw off
+  // this town's own shared `r()` sequence unconditionally, and anything built earlier here would have
+  // had its own timing-sensitive pick shifted by it.
+  { const potX = 7.5, potZ = 43.5, potRy = PI;
+    const potter = makeHuman({ ...randomPerson(r, { female: r.chance(0.6), child: false, elder: r.chance(0.3), wardrobe: vicWard }),
+      pants: 0x1e1e24, apron: 0x6a4a2e, sleeves: true, hat: null, coat: null, scarf: null, bag: null, backpack: null, glasses: false, build: 'stout' });
+    W.add(potter.group);
+    const woodM = mat(0x5a3a1f, { roughness: 0.88 }), darkM = mat(0x2a2420, { roughness: 0.6 }), trayM = mat(0x8a8782, { roughness: 0.75, metalness: 0.2 }), clayM = mat(0x9c6a42, { roughness: 0.95 }), potM = mat(0xaa7248, { roughness: 0.65 });
+    const stool = group(potX, 0, potZ, W);
+    mesh(G.cyl(0.18, 0.18, 0.03, 14), woodM, { y: 0.405, shadow: 'both', parent: stool });
+    mesh(G.cyl(0.1, 0.07, 0.39, 10), darkM, { y: 0.195, shadow: 'both', parent: stool });
+    P.addBox(potX, 0.21, potZ, 0.3, 0.42, 0.3, { cam: false });
+    const wx = potX, wz = potZ - 0.55;
+    const wheel = group(wx, 0, wz, W); wheel.rotation.y = potRy;
+    mesh(G.cyl(0.06, 0.08, 0.34, 10), woodM, { y: 0.17, shadow: 'both', parent: wheel });   // the post
+    mesh(G.cyl(0.26, 0.28, 0.05, 20), trayM, { y: 0.36, shadow: 'both', parent: wheel });   // the splash tray
+    const head = group(0, 0.4, 0, wheel);
+    mesh(G.cyl(0.22, 0.22, 0.03, 20), darkM, { parent: head });   // the wheel-head
+    const clay = mesh(G.cone(0.09, 0.2, 10), clayM, { y: 0.1, parent: head });
+    P.addBox(wx, 0.2, wz, 0.56, 0.4, 0.56, { cam: false });
+    const shelfX = potX - 0.75, shelfZ = potZ;
+    const shelf = group(shelfX, 0, shelfZ, W); shelf.rotation.y = potRy;
+    mesh(G.box(0.6, 0.04, 0.22), woodM, { y: 0.5, shadow: 'both', parent: shelf });
+    for (const [dx3, potH, potR2] of [[-0.18, 0.16, 0.07], [0, 0.2, 0.08], [0.18, 0.14, 0.065]]) {
+      const pot = group(dx3, 0.52, 0, shelf);
+      mesh(G.cyl(potR2, potR2 * 0.75, potH, 12), potM, { y: potH / 2, shadow: 'both', parent: pot });
+      mesh(G.cyl(potR2 * 0.4, potR2 * 0.5, potH * 0.25, 10), potM, { y: potH + potH * 0.1, parent: pot });   // the neck
+    }
+    P.addBox(shelfX, 0.26, shelfZ, 0.6, 0.52, 0.22, { cam: false });
+    game.npcs.push(new Sitter(game, potter, { x: potX, z: potZ, ry: potRy, seat: 0.42,
+      cries: ['🏺 "Forty years at this wheel and it still comes out crooked half the time."', '🏺 "Mind your tail, puss — that wheel doesn\'t know the difference between clay and a cat."', '🏺 "Every pot on that shelf was once this exact same lump, give or take an afternoon."'] }));
+    U.push((dt, t) => {
+      head.rotation.y = t * 4.2;
+      const cyc = 5.0, growT = 4.6, ph = t % cyc;
+      let k;
+      if (ph < growT) { const p = ph / growT; k = p * p * (3 - 2 * p); }
+      else { const p = (ph - growT) / (cyc - growT); k = 1 - p * p * (3 - 2 * p); }
+      const s = 0.4 + 0.75 * k;
+      clay.scale.y = s; clay.position.y = 0.015 + 0.1 * s;
+      if (!potter.gesture) { const A = potter.arms[0], B = potter.arms[1]; A.sh.rotation.x = -1.0; A.sh.rotation.z = 0.3; A.el.rotation.x = -1.3; B.sh.rotation.x = -1.0; B.sh.rotation.z = -0.3; B.el.rotation.x = -1.3; }
+    }); }
+
+  // Frosty Peak and Robot City both run a travelling grindstone (rounds 1353 and 1355) — the one
+  // sharpening vignette in this whole game that actually grinds an edge rather than just striking one.
+  // Victorian London had its own real version of that trade walking its streets: the knife-and-scissor
+  // grinder, a foot-treadle wheel wheeled door to door. This town has never had one. **An old
+  // knife-grinder has set up his barrow wheel on a quiet stretch of cobbles south-west of the market
+  // square, blade pressed to the stone in short, sparking bursts between pauses to check the edge
+  // against the light.** *"Knives to grind! Scissors to grind! Bring 'em out, I'll not charge you
+  // twice."* *"Mind your tail, puss — a stray spark bites harder than it looks."* *"This old wheel's
+  // turned since before the Queen took the throne."* Saying hello to him is the usual kind of friend.
+  //
+  // No new controller: `Grinder` (55-npcs.js), used exactly as Frosty Peak's round 1353 and Robot
+  // City's round 1355 already built it — a kneeling human rig, arms pressed to the wheel with a small
+  // tremble while it spins fast and sparks fly, easing into a slower idle spin between bursts.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.travel(3, 'from-prev')`, 3600 simulated frames so every carriage horse
+  // and wanderer had settled) swept a 1-2 m grid of the cobbled square (radius 18-85 from the origin,
+  // short of the radius (88) where `victorianRegion`'s own procedural fill takes over) against all of
+  // this town's own physics boxes, every `game.zones` rectangle (read straight from `game.zones.list`,
+  // not guessed) and every sampled NPC position, then refined the best stretch on a quarter-metre grid:
+  // (-37, -23.25) came back clear by 11.1 m of the nearest box and 11.1 m of the nearest other soul, at
+  // radius 43.7 from the origin — comfortably past the 0.45 m circle this kneeling rig and its own
+  // grindstone need, and clear of the market square, the side lane and every hand-placed prop on this
+  // street.
+  //
+  // Built dead last of everything this town adds, right after the potter above and right before the
+  // squirrel below, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this town's own
+  // shared `r()` sequence unconditionally, and anything built earlier here would have had its own
+  // timing-sensitive pick shifted by it.
+  { const gx = -37, gz = -23.25, gry = atan2(-gx, -gz);
+    const grindWard = makeWardrobe(r, { shirts: [0x5a4a3a, 0x3a3a4a], pants: [0x2a2a2a, 0x383838], shoes: [0x201a14] });
+    const grinder = makeHuman({ ...randomPerson(r, { female: r.chance(0.3), child: false, elder: true, wardrobe: grindWard }),
+      hat: 'flatcap', hatColor: 0x3a3a3a, coat: true, scarf: 0x6a5a48, apron: 0x4a3a2a, glasses: false });
+    W.add(grinder.group);
+    game.npcs.push(new Grinder(game, grinder, { x: gx, z: gz, ry: gry,
+      cries: ['Knives to grind! Scissors to grind! Bring \'em out, I\'ll not charge you twice.', "Mind your tail, puss — a stray spark bites harder than it looks.", "This old wheel's turned since before the Queen took the throne."] })); }
+
+  // Every tradesman this town has picked up — the cobbler, the watchmaker, the blacksmith, the
+  // knife-grinder above — mends or sharpens something. Nobody in the whole town cuts hair, and this
+  // game has never had a barber anywhere, in any of the seven worlds (checked: no "barber", "haircut"
+  // or "barber pole" anywhere in src/ or this log before tonight). **A barber now stands beside his own
+  // empty chair on a quiet stretch of grass north of the terraces, snipping his shears in the air to
+  // test the edge while he waits for a customer who isn't coming — a red-and-white pole, striped with
+  // the same `TEX.candyCane()` map the sweets two worlds over already wear, spins slowly beside him.**
+  // *"Chair's been empty since noon. Can't blame the cat for not sitting in it."* *"Mind your whiskers,
+  // puss — these shears don't know a tabby from a trim."* *"Striped same as the sweets two towns over.
+  // Nobody's ever asked why."* Saying hello to him is the usual kind of friend.
+  //
+  // `Charger` (55-npcs.js) — the fiddler's and the ukulele player's own controller, a standing figure
+  // whose rig does all the idling and whose arms this build then pins into a held pose each frame,
+  // guarded by `!rig.gesture` so a greeting wave still wins. Own small wardrobe (`barberWard`), not
+  // `vicWard` shared by a dozen others already, so the dupe-shirt check stays happy. The shears
+  // themselves are a tiny pivot of two blade meshes hinged apart, oscillating open and shut on the
+  // world clock `t` alone — no `rnd()` or local `r()` draw, the same zero-cost trick the campfire's
+  // flicker and the wishing-well's bucket already use.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(3, 'from-prev')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so every carriage horse and wanderer had settled, then 600 more sampling every
+  // NPC's own position every 10th frame) swept a 2 m grid of the green country between the market
+  // square and the radius (88) where `victorianRegion`'s own procedural fill takes over (15-85 from the
+  // origin) against all 615 of this town's own physics boxes (knee-to-head band only), all 236
+  // `game.zones` rectangles and every sampled NPC position, then refined the best stretch on a
+  // half-metre grid: (6.5, 77.5) came back clear by 18.5 m of the nearest box, 15.5 m of the nearest
+  // zone rectangle and 15.3 m of the nearest other soul, radius 77.8 from the origin — well short of
+  // the region-fill radius and far past every other hand-placed prop on this side of town.
+  //
+  // Built dead last of everything this town adds, right after the knife-grinder above and right before
+  // the squirrel below, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this town's
+  // own shared `r()` sequence unconditionally, and anything built earlier here would have had its own
+  // timing-sensitive pick shifted by it.
+  { const bx = 6.5, bz = 77.5, bry = atan2(-bx, -bz);
+    const barberWard = makeWardrobe(r, { shirts: [0xece3d4], pants: [0x2a2a2a], shoes: [0x201a14] });
+    const barber = makeHuman({ ...randomPerson(r, { female: r.chance(0.3), child: false, elder: r.chance(0.4), wardrobe: barberWard }),
+      pants: 0x2a2a2a, apron: 0x3a3a42, sleeves: true, hat: null, coat: null, scarf: null, bag: null, backpack: null, glasses: false, moustache: r.chance(0.5), build: 'average' });
+    W.add(barber.group);
+    const leatherM = mat(0x7a2020, { roughness: 0.55 }), chairWoodM = mat(0x3a2a1a, { roughness: 0.8 }), chromeM = mat(0xcfd4d8, { metalness: 0.7, roughness: 0.25 });
+    // the empty chair: a pedestal base, a seat, a tall back and two armrests, a step in front
+    const chairX = bx + sin(bry) * 0.75, chairZ = bz + cos(bry) * 0.75;
+    const chair = group(chairX, 0, chairZ, W); chair.rotation.y = bry + PI;   // facing the barber
+    mesh(G.cyl(0.22, 0.26, 0.5, 14), chromeM, { y: 0.25, shadow: 'both', parent: chair });
+    mesh(G.box(0.46, 0.08, 0.46), leatherM, { y: 0.54, shadow: 'both', parent: chair });
+    mesh(G.box(0.46, 0.6, 0.08), leatherM, { y: 0.88, z: -0.22, shadow: 'both', parent: chair });
+    for (const sideA of [-1, 1]) mesh(G.box(0.07, 0.22, 0.4), leatherM, { x: sideA * 0.24, y: 0.68, shadow: 'both', parent: chair });
+    mesh(G.box(0.5, 0.04, 0.2), chairWoodM, { y: 0.08, z: 0.3, shadow: 'both', parent: chair });   // footrest step
+    P.addBox(chairX, 0.45, chairZ, 0.5, 0.9, 0.56, { cam: false });
+    // the pole: a slim post, the candy-cane stripe spinning round its own middle section, a small
+    // chrome ball to cap it
+    const poleX = bx - sin(bry) * 0.7 + cos(bry) * 0.55, poleZ = bz - cos(bry) * 0.7 - sin(bry) * 0.55;
+    const pole = group(poleX, 0, poleZ, W);
+    noInk(mesh(G.cyl(0.03, 0.035, 1.5, 10), chairWoodM, { y: 0.75, parent: pole }));
+    const stripeM = mat(0xffffff, { roughness: 0.4, map: TEX.candyCane() });
+    const poleSpin = group(0, 1.1, 0, pole);
+    noInk(mesh(G.cyl(0.07, 0.07, 0.6, 12), stripeM, { parent: poleSpin }));
+    mesh(G.sphere(0.08, 10, 8), chromeM, { y: 0.44, parent: pole });
+    P.addBox(poleX, 0.7, poleZ, 0.14, 1.5, 0.14, { cam: false });
+    // the shears, held raised and snipping — two thin blades on a hinge, pinned to the near hand
+    const scissors = group(0, 0.1, 0.1, barber.hands[0]); scissors.rotation.x = -1.3;
+    const bladeM = mat(0xb8bcc0, { metalness: 0.75, roughness: 0.2 }), handleM = mat(0x8a1a1a, { roughness: 0.5 });
+    noInk(mesh(G.sphere(0.018, 8, 6), handleM, { parent: scissors }));
+    const bladeA = group(0, 0, 0, scissors), bladeB = group(0, 0, 0, scissors);
+    mesh(G.box(0.014, 0.1, 0.01), bladeM, { y: 0.06, parent: bladeA }); mesh(G.box(0.03, 0.025, 0.01), handleM, { y: -0.03, parent: bladeA });
+    mesh(G.box(0.014, 0.1, 0.01), bladeM, { y: 0.06, parent: bladeB }); mesh(G.box(0.03, 0.025, 0.01), handleM, { y: -0.03, parent: bladeB });
+    const comb = group(0, 0.08, 0.06, barber.hands[1]); comb.rotation.x = -0.6;
+    mesh(G.box(0.02, 0.12, 0.012), mat(0x1a1a1e, { roughness: 0.6 }), { parent: comb });
+    game.npcs.push(new Charger(game, barber, { x: bx, z: bz, ry: bry, cryIcon: '💈',
+      cries: ['Chair\'s been empty since noon. Can\'t blame the cat for not sitting in it.', 'Mind your whiskers, puss — these shears don\'t know a tabby from a trim.', 'Striped same as the sweets two towns over. Nobody\'s ever asked why.'] }));
+    U.push((dt, t) => {
+      poleSpin.rotation.y = t * 2.2;
+      bladeA.rotation.z = 0.12 + sin(t * 7) * 0.12; bladeB.rotation.z = -0.12 - sin(t * 7) * 0.12;
+      if (!barber.gesture) { const A = barber.arms[0], B = barber.arms[1]; A.sh.rotation.x = -1.4; A.sh.rotation.z = 0.25; A.el.rotation.x = -1.6; B.sh.rotation.x = -0.9; B.sh.rotation.z = -0.2; B.el.rotation.x = -1.1; }
+    }); }
+
+  // Round 1384 started a new series on the tug-of-war itself (never spread past the Neighborhood,
+  // same as the sack race), giving Candy Land's own liquorice-rope pull a first watcher; round 1385
+  // gave Robot City's own power cable the same, leaving Victorian, Sunny Shore, Frosty Peak and
+  // Whisper Woods still owing theirs one. Victorian's own cart-rope tug-of-war (round 537, two
+  // draymen at x=75, z=-29) has had nobody stopping to watch either. A villager now stands due west
+  // of it, watching the two draymen strain against the rope. No `cries` of her own — this one just
+  // watches — no physics box, pure bystander. Saying hello to her makes her the usual kind of
+  // friend.
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) every watcher in this series already uses — a
+  // plain `makeHuman()`/`randomPerson()` rig, no fixed wardrobe of its own, `angle` pointed at the
+  // rope's own fixed centre (75, -29) rather than a constant, and the relaxed `idle: [3, 6]`/`walk:
+  // [1, 1.6]` every watcher elsewhere in this game already settles on. The rope runs north-south here
+  // (both draymen sit at x=75, offset in z by `TugOfWar`'s own ±1.3 m `gap`, `ry=0`), same as Candy
+  // Land's and Robot City's own — so, same as those two found, standing east or west of it, level
+  // with its own centre, is the one angle that actually shows both draymen straining at once rather
+  // than looking past one at the other's back. Victorian builds and runs on its own local seeded
+  // `r()`, not the shared global `rnd()` the real timing-sensitive checks key off, so nothing here
+  // needs a draw pinned.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(3, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so both draymen and every other NPC had already settled, then 600 more sampling
+  // every NPC's own position every 10th frame) swept a 0.25 m grid in a ring 2-9 m out from the
+  // rope's own centre (75, -29), restricted to due east/west of it, against all 602 of this town's
+  // own physics boxes and all 230 `game.zones` rectangles: (67, -29) came back clearest on that line
+  // — due west at radius 8 — 12.6 m from the nearest box, 13.0 m from the nearest zone rectangle and
+  // 8.1 m from the nearest other soul, well clear of the coalman's own chute and the night
+  // watchman's bench.
+  //
+  // Built dead last of everything this town adds, right after the barber above, for the usual
+  // reason: `makeHuman()`/`randomPerson()` both draw off this town's own local `r()` sequence
+  // unconditionally, and dropping a fresh rig in any earlier would have shifted every random pick
+  // made above it.
+  { const twx = 67, twz = -29, tugX = 75, tugZ = -29;
+    const tugWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(tugWatcher.group);
+    game.npcs.push(new Wanderer(game, tugWatcher, { x: twx, z: twz, angle: atan2(tugX - twx, tugZ - twz), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
+
+  // Rounds 1384-1391 gave every one of the seven worlds' own tug-of-war a watcher and then opened the
+  // sack-race series with Candy Land and Robot City, leaving Victorian, Sunny Shore, Frosty Peak and
+  // Whisper Woods still owing theirs one. This town's own sack race (above, two errand boys in borrowed
+  // flour sacks, at x=4..9, z=-66, `ry=PI/2`) has had nobody stopping to watch since. **A washerwoman
+  // now stands south of the lane, basket set down, watching the pair hop back and forth.** No `cries`
+  // of her own — this one just watches — but saying hello to her makes her the usual kind of friend,
+  // Victorian's own count rising from 201 to 202.
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) every watcher in this series already uses — a plain
+  // `makeHuman()`/`randomPerson()` rig, no fixed wardrobe of its own, `angle` pointed at the lane's own
+  // fixed midpoint (6.5, -66) rather than a constant, and the relaxed `idle: [3, 6]`/`walk: [1, 1.6]`
+  // every watcher elsewhere in this game already settles on. `SackRace` runs this lane along world X
+  // here too (`ry=PI/2`, racers side by side in z) — the same orientation as the Neighborhood's and
+  // Robot City's own (rounds 1307 and 1391), not Candy Land's own (round 1390, lane along z, side by
+  // side in x) — so round 1307's own finding applies directly: standing north or south of the lane,
+  // offset in z (the same axis as the racers' own side-by-side gap), is the angle that shows both
+  // hopping past at once instead of looking down their backs.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(3, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so both errand boys, the maypole dancers and every other NPC had settled, then 600
+  // more sampling every NPC's own position every 10th frame) swept a 0.25 m grid north and south of the
+  // lane's own midpoint, 2-16 m out, against all 602 of this town's own physics boxes and all 230
+  // `game.zones` rectangles: (6.5, -75) came back clearest — due south of the lane at radius 9, 75.3 m
+  // from the world's own origin, a good 12.7 m short of the radius (88) where `victorianRegion`'s own
+  // procedural fill takes over — 10.9 m from the nearest box, 13.8 m from the nearest zone rectangle
+  // and 9.1 m from the nearest other soul, clear of the maypole's own field and the archery range.
+  //
+  // Built dead last of everything this town adds, right after the tug-of-war watcher above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this town's own local `r()` sequence
+  // unconditionally, and dropping a fresh rig in any earlier would have shifted every random pick made
+  // above it.
+  { const swx4 = 6.5, swz4 = -75, laneX5 = 6.5, laneZ5 = -66;
+    const sackWatcher4 = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(sackWatcher4.group);
+    game.npcs.push(new Wanderer(game, sackWatcher4, { x: swx4, z: swz4, angle: atan2(laneX5 - swx4, laneZ5 - swz4), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
 
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;

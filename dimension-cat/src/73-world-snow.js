@@ -131,6 +131,31 @@ function buildSnowVillage(game, entry) {
     mesh(G.sphere(0.035, 8, 6), hubMat, { parent: pivot });
     U.push((dt, t) => { pivot.rotation.z = t * 3.6; });
     P.addBox(px, y0p + 0.3, pz, 0.14, 0.6, 0.14, { cam: false }); }
+  // every tool-sharpening vignette on this mountain so far has been a chop or a wrench strike — the
+  // woodcutter's axe, the mechanic's spanner — never an edge actually ground smooth. **A travelling
+  // grinder sets up his foot-treadle grindstone on the open snow past the second cabin, blade pressed
+  // to the spinning wheel in short, sparking bursts between pauses to check the edge against the
+  // light.** *"Dull edge is a dangerous edge, out on that ice."* *"Careful, puss — sparks bite harder
+  // than they look."* *"One more pass and this blade could shave a whisker."* New `Grinder` controller
+  // (`55-npcs.js`): a `Kneeler`/`Mechanic`-style kneeling rig, arms held against the wheel with a
+  // small tremble while it spins fast, alternating with a slower idle spin and a held pose during the
+  // pauses — plus a new `SFX.grind()` (`30-audio.js`), a short metal-on-stone scrape, one per spark
+  // burst rather than the sustained screech a real stone would make, the same stand-in every other
+  // repeating-strike vignette in this game already settles for with its own single-hit sound.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // `game.start('new')` then `game.load(5, 'from-hub')`, 1800 simulated frames so every penguin, kid
+  // and skater had settled) swept a 1 m grid of the open snow between the second cabin and the pond
+  // against every one of the mountain's 700 physics boxes and all 143 sampled NPC positions: (18, -2)
+  // came back clearest in that whole stretch, 3.81 m from the nearest box (one of the ring pines) and
+  // 4.56 m from the nearest other soul, comfortably past the 0.45 m circle this kneeling rig and its
+  // own grindstone need and well clear of the pinwheel just placed above.
+  { const gx = 18, gz = -2, gry = 0.5;
+    const grindWard = makeWardrobe(r, { shirts: [0x5a4a3a, 0x3a4a5a, 0x4a5a3a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const grinder = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: true, wardrobe: grindWard }),
+      hat: 'beanie', hatColor: 0x5a4a3a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a, apron: 0x6a5a48 }); W.add(grinder.group);
+    game.npcs.push(new Grinder(game, grinder, { x: gx, z: gz, ry: gry,
+      cries: ['Dull edge is a dangerous edge, out on that ice.', 'Careful, puss — sparks bite harder than they look.', 'One more pass and this blade could shave a whisker.'] })); }
   let iglooA, iglooB;
   for (const [i, [x, z, ry]] of [[-16, 10, 0.6], [15, -14, -2.2]].entries()) { const ig = makeIgloo(); if (i === 0) iglooA = ig; else iglooB = ig; placeT(game, U, ig, x, z, ry); boxT(game, x, z, 3.4, 1.8, 3.4); }
   // the near igloo's own blue gem lamp has glowed in its tunnel mouth since this world was built, but like the fire
@@ -1323,6 +1348,46 @@ function buildSnowVillage(game, entry) {
     const camera = makeOldCamera();
     game.npcs.push(new Photographer(game, snapper, camera, { x: px, z: pz, ry: pry, cryIcon: '📷',
       cries: ['Whole mountain in one shot, if the light holds.', "Careful, puss — it's only flash powder, not fire.", "The painter says a photograph has no soul. I say develop faster, then we'll talk."] })); }
+  // `makeOldCamera()` (60-props.js) has built its lens facing "the subject" since the round it was
+  // written, and rounds 1346-1350 already gave the Neighborhood, Victorian, Candy Land, Robot City and
+  // Sunny Shore's own photographers somebody standing where their lens points — Frosty Peak's own
+  // photographer above, set up to frame the whole mountainside, was still aimed at empty snow. A
+  // villager now stands a step past the camera, back to the gondola and peaks, holding the pose she
+  // keeps being asked for. *"Hold still, they said. I have held still for ten whole minutes now."*
+  // *"Careful, puss — don't spoil the shot, she has only the one plate left."* *"Best side forward.
+  // Every single time, without fail."* Saying hello to her is the usual kind of friend, Frosty Peak's
+  // own count rising by one.
+  //
+  // No new class: `makeHuman()`/`randomPerson()` (55-npcs.js) build the rig and `Wanderer` (55-npcs.js)
+  // gives her the same frozen "stand and watch" shape every subject in this set uses — `idle: [1e9,
+  // 1e9]` plus every one of `Wanderer`'s own construction-time draws (`phase`, `timer`, `t`, `cryT`)
+  // fixed rather than pulled from `rnd()`, and `blinkT0`/`idleT0`/`sway0` fixed straight in the
+  // `makeHuman()` call so she holds still instead of fidgeting. `angle` points her back at the
+  // photographer rather than a constant, so she reads as posing for him and not loitering. A
+  // cranberry-red coat (0xa33a4a, not spoken for by the card players' or the photographer's own
+  // cold-weather wardrobes just drawn above) keeps her visually distinct; Frosty Peak runs no
+  // shared-shirt check the way the Neighborhood does.
+  //
+  // A headless probe (a scratch script built on the same stub-three harness `test/run.mjs` itself uses)
+  // built the real mountain (`game.start('new')`, `game.travel(5, 'from-hub')`, then 1800 simulated
+  // frames so every reindeer, hare, arctic fox, penguin, yeti and wandering villager had settled),
+  // placed her 2.4 m out from the photographer along the exact line his own camera already faces (back
+  // toward the village), against every one of the mountain's own physics boxes in the knee-to-head
+  // band: 1.60 m clear of the nearest one (the camera's own tripod box) and 2.40 m from the nearest
+  // other soul, which is the photographer himself, back down the same line — the card table and curling
+  // rink both sit well clear on the far side of the village, and the spot falls inside the same open
+  // snowfield band (radius 10-56) the photographer's own placement already swept.
+  //
+  // Built right after the photographer, before the curling rink below, for the usual reason:
+  // `makeHuman()`/`randomPerson()` both draw off this world's own shared `r()` sequence unconditionally.
+  { const subPX = 25, subPZ = 50, subPRY = atan2(0 - subPX, 0 - subPZ);
+    const subX = subPX + 2.4 * sin(subPRY), subZ = subPZ + 2.4 * cos(subPRY);
+    const subject = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0xa33a4a, hat: 'beanie', hatColor: 0x3a3a3a, coat: true, scarf: 0xf7f3ec, cuffs: 0x3a3a3a,
+      blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(subject.group);
+    game.npcs.push(new Wanderer(game, subject, { x: subX, z: subZ, angle: atan2(subPX - subX, subPZ - subZ), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 6,
+      cries: ["Hold still, they said. I have held still for ten whole minutes now.", "Careful, puss — don't spoil the shot, she has only the one plate left.", 'Best side forward. Every single time, without fail.'] })); }
   // Victorian has a draughts table since round 354, Robot City a checkers drum since round 384, Frosty
   // Peak itself a deck of cards since round 397 and Whisper Woods a mancala board — but no world yet had
   // curling, the one game that is pure winter through and through. A granite stone now glides down a
@@ -1467,6 +1532,30 @@ function buildSnowVillage(game, entry) {
     const harnessLines = ['Right over the post — that\'s a landing!', "Careful, puss — that's good reindeer leather, not a toy.", "Best of nine, loser mucks out the sled dogs."];
     game.npcs.push(new Horseshoes(game, tossA, tossB, ring, { cx: hcx, cz: hcz, gap: hgap, cries: harnessLines, cryIcon: '🛷' }));
     greetable(game, { rig: tossA }); greetable(game, { rig: tossB }); }
+  // Rounds 1378-1381 gave Candy Land's, Robot City's, Victorian's and Sunny Shore's own back-garden
+  // toss games their first watchers, leaving Frosty Peak and Whisper Woods still owing theirs one. **A
+  // bundled-up villager now stands southwest of the harness ring toss**, watching the pair lob their
+  // spare harness ring back and forth over the hitching posts. No lines of her own — this one just
+  // watches — but saying hello to her makes her the usual kind of friend.
+  // No new controller: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses,
+  // built from the same winter wardrobe shape (beanie, coat, scarf, cuffs) the frisbee watcher above
+  // already wears, `angle` pointed at the ring toss' own fixed centre (-11, 51).
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.load(5,
+  // 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a real
+  // `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so both
+  // toss players and every other villager, reindeer and yeti had settled, then 600 more sampling every
+  // NPC's own position every 10th frame) swept a 0.25 m grid in a ring 2.5-7 m out from the ring
+  // toss' own centre against all 705 of this mountain's own body-height physics boxes and all 151
+  // `game.zones` rectangles, staying short of the radius (58) where `snowRegion`'s own fill takes
+  // over: (-15.75, 47.75) came back clearest — southwest of the posts, at radius 50.3 from the origin
+  // — 4.68 m from the nearest box, 7.03 m from the nearest zone rectangle and 4.72 m from the nearest
+  // other soul.
+  { const hwx = -15.75, hwz = 47.75;
+    const hWatcherWard = makeWardrobe(r, { shirts: [0x6a4a8a, 0x8a6a3f, 0x3a7a5a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const hWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: hWatcherWard }),
+      hat: 'beanie', hatColor: 0x3a5a8a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a });
+    W.add(hWatcher.group);
+    game.npcs.push(new Wanderer(game, hWatcher, { x: hwx, z: hwz, angle: atan2(-11 - hwx, 51 - hwz), leash: 0.5, speed: 0.3, idle: [3, 6] })); }
   // Victorian, Robot City, Sunny Shore, Candy Land and the Neighborhood have all had something cross
   // their own sky the last five rounds running (a hot air balloon, an airship, a biplane, a tumbling
   // gumball, a second biplane) — Frosty Peak's own sky, past the snow buntings and the gondola cable,
@@ -1772,6 +1861,33 @@ function buildSnowVillage(game, entry) {
     const flag = group(0, 0, 0, W); noInk(mesh(G.box(0.03, 0.14, 0.4), mat(0xd62839, { roughness: 0.7 }), { parent: flag }));
     U.push(() => { const frac = 0.5 + clamp(tug.tension, -1, 1) * 0.12;
       flag.position.set(lerp(A.x, B.x, frac), lerp(ay, by, frac) + 0.03, lerp(A.z, B.z, frac)); flag.rotation.y = ropeGroup.rotation.y; }); }
+  // Rounds 1384-1387 gave Candy Land's, Robot City's, Victorian's and Sunny Shore's own tug-of-war a
+  // first watcher, leaving Frosty Peak and Whisper Woods still owing theirs one. **A bundled-up
+  // villager now stands north of the rope above**, watching the pair heave against each other. No
+  // lines of her own — this one just watches — but saying hello to her makes her the usual kind of
+  // friend.
+  // No new controller: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses,
+  // built from the same winter wardrobe shape (beanie, coat, scarf, cuffs) the harness-toss watcher
+  // above already wears, `angle` pointed at the rope's own fixed centre (50, 20). The rope runs
+  // east-west here (`ry: PI/2`, both haulers offset in x, level in z), same as Sunny Shore's own, so
+  // standing north or south of it, level with its own centre, is the angle that shows both haulers
+  // heaving at once rather than looking past one at the other's back — the same wrinkle rounds
+  // 1384-1387 worked out for the other worlds' own ropes.
+  // A headless probe (the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`,
+  // `game.load(5, 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a
+  // real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so
+  // both haulers and every other villager, reindeer and yeti had settled, then 600 more sampling
+  // every NPC's own position every 10th frame) swept a 0.5 m grid north and south of the rope's own
+  // centre, 2.5-12 m out, against all 833 of this mountain's own body-height physics boxes and all
+  // 160 `game.zones` rectangles, staying short of the radius (58) where `snowRegion`'s own fill takes
+  // over: (50, 25) came back clearest — due north at radius 5, 55.9 from the world's own origin — 10.6
+  // m from the nearest box, 9.1 m from the nearest zone rectangle and 5.17 m from the nearest other
+  // soul (one of the haulers themselves).
+  { const tugWatcherWard = makeWardrobe(r, { shirts: [0x4a6a3a, 0x3a4a8a, 0x8a4a6a], pants: [0x2a2a2a, 0x3a3a3a], shoes: [0x2a2018] });
+    const tugWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: tugWatcherWard }),
+      hat: 'beanie', hatColor: 0x6a4a3a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a });
+    W.add(tugWatcher.group);
+    game.npcs.push(new Wanderer(game, tugWatcher, { x: 50, z: 25, angle: atan2(50 - 50, 20 - 25), leash: 0.5, speed: 0.3, idle: [3, 6] })); }
   // Candy Land's gingerbread guard, Victorian's drill line and Robot City's own security detail have
   // all used `Marchers` (55-npcs.js) for a lockstep patrol by now — Frosty Peak's own colony, 50-odd
   // lines up, only ever wanders loose by the pond. Real penguins actually do the opposite: they file
@@ -1856,6 +1972,34 @@ function buildSnowVillage(game, entry) {
   { const tA = kid(false), tB = kid(true);
     game.npcs.push(new Tetherball(game, tA, tB, { x: 21, z: -52,
       cries: ['Round and round — same as every other game on the mountain, just colder.', 'Mind the rope, puss — mittens or not, it still stings.', "Forty wraps. No, forty-one. I keep losing count in the cold."] })); }
+  // Candy Land, Robot City, Victorian and Sunny Shore have all picked up a watcher for their own
+  // tetherball pole since rounds 1372-1375, leaving only Frosty Peak and Whisper Woods without one.
+  // **A bundled-up villager now stands a few steps northeast of this mountain's own pole, watching
+  // the ball swing round on its rope.** No lines of her own — this one just watches — but saying
+  // hello to her makes her the usual kind of friend, Frosty Peak's own count rising by one.
+  //
+  // No new class: the same `Wanderer` (55-npcs.js) every other watcher in this series already uses —
+  // a plain `makeHuman()`/`randomPerson()` rig in this mountain's own winter wardrobe (coat, beanie,
+  // scarf, same as the ice-hole watcher above), `angle` pointed at the pole's own fixed centre (21,
+  // -52). Frosty Peak builds and runs on its own local seeded `r()`, not the shared global `rnd()`
+  // the Neighborhood's timing-sensitive checks key off, so nothing here needed a draw pinned.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(5, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so the tetherball pair, the sledder, the snowball fight and every other NPC had
+  // settled, then 600 more sampling every NPC's own position every 10th frame) swept a 0.5 m grid in a
+  // ring 2-7 m out from the pole against all 384 of this mountain's own body-height physics boxes, all
+  // 151 `game.zones` rectangles and every sampled NPC position, keeping clear of the radius (58) where
+  // snowRegion's own fill takes over the same way the pole itself did: (26.7, -48.0) came back
+  // clearest — 5.6 m from the nearest box, 7.8 m from the nearest zone rectangle and 5.5 m from the
+  // nearest other soul, northeast of the pole at radius 54.9 from the origin, short of that radius-58
+  // line.
+  { const wx = 26.7, wz = -48.0;
+    const watcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: false }),
+      hat: 'beanie', hatColor: 0x3a4a5a, coat: true, scarf: 0xc9b8d9, bag: null, backpack: null, glasses: false }); W.add(watcher.group);
+    game.npcs.push(new Wanderer(game, watcher, { x: wx, z: wz,
+      angle: atan2(21 - wx, -52 - wz), speed: 0.3, leash: 0.5, idle: [3, 6] })); }
   // Whisper Woods got the first archery range (round 525, `Archer`, 55-npcs.js) and nobody else's had
   // one since — Frosty Peak's own hunting lodge feel (the trapper by the fire, the ice fisher on the
   // pond) never got a firing line of its own. **A lone archer now draws and looses at a straw target
@@ -2529,7 +2673,63 @@ function buildSnowVillage(game, entry) {
     const organ = makeBarrelOrgan();
     game.npcs.push(new OrganGrinder(game, grinder, organ, { x: gx, z: gz, ry: gry, side: 1,
       cries: ['Tuppence a tune — the wind carries it further up here than it ever did in the village square.', 'Careful, puss — the cold seizes the gears same as everything else on this mountain.', "Thirty tunes in the barrel, and the snow's never once thrown off the beat."] }));
-    U.push(organ.userData.update); }
+    U.push(organ.userData.update);
+
+    // Rounds 1273, 1323-1325 gave the four flat-floor worlds' organ grinders a monkey with a tin cup;
+    // round 1338 gave Sunny Shore's the same once its own fixed-height organ box read the dune slope
+    // properly. **Frosty Peak's monkey now sits tucked in the snow beside its own organ, same tin cup,
+    // same rattle.** Whisper Woods remains the only world with neither an organ grinder nor a monkey.
+    //
+    // Hand-built straight into this file exactly as the five earlier monkeys: no new `makeX()` in
+    // 55-npcs.js or 56-npcs-wild.js, no `Wanderer`, no physics box of its own, and no `rnd()` draw at
+    // all — every moving part (head turn, breathing, tail sway, the cup-rattle bursts) rides the world
+    // clock `t` alone through a single `U.push`. `game.namedFriend('organ-monkey')` plus a
+    // `game.addInteractable` keyed straight to its own group gives it the same greeting every other
+    // bystander monkey answers.
+    //
+    // Position uses the same local offset as the five earlier monkeys (`localXZ`, 62-props-nature.js):
+    // 0.55 m along the organ's own `side` offset and 1.0 m further out, rotated by this grinder's own
+    // `gry` rather than hard-coding it, and dropped onto the snow with `game.physics.ground0` rather
+    // than a flat y=0 the way the flat-floor worlds could get away with.
+    //
+    // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+    // `elements.get('enter').listeners.click[0]()`, `game.travel(5, 'from-hub')` waited out for real,
+    // then 1800 simulated frames so every penguin and passer-by had settled, then 1800 more sampling
+    // every NPC's own position every 10th frame) found the computed spot (27.72, -28.89) sits 0.40 m
+    // from the nearest physics box (the organ's own — the same deliberate overlap every earlier monkey
+    // sat at against its own organ), 3.37 m clear of the nearest `game.zones` rectangle's own edge, and
+    // 1.14 m from the nearest other soul (the grinder himself, same close proximity every earlier
+    // monkey sat at). Ground there levels out at 0.29 m with under 7 cm of slope across the monkey's
+    // own small footprint.
+    { const [mkx, mkz] = localXZ(gx, gz, 0.55, 1.0, gry);
+      const fur = mat(0x6b4a2e, { roughness: 0.9 }), light = mat(0xd9b27a, { roughness: 0.85 }), dark = mat(0x1a1410);
+      const monkey = group(mkx, game.physics.ground0(mkx, mkz), mkz, W); monkey.rotation.y = gry + PI;
+      const body = group(0, 0.1, 0, monkey);
+      mesh(G.bodySphere(14, 10), fur, { y: 0.14, sx: 0.1, sy: 0.13, sz: 0.09, parent: body });               // torso, sitting upright
+      mesh(G.bodySphere(14, 10), light, { y: 0.1, z: 0.03, sx: 0.075, sy: 0.09, sz: 0.04, shadow: 'none', parent: body });   // pale belly patch
+      for (const side2 of [1, -1]) mesh(G.sphere(0.05, 10, 8), fur, { x: side2 * 0.08, y: 0.02, z: -0.02, sy: 0.8, sz: 1.2, parent: body });   // haunches, tucked under
+      const head = group(0, 0.26, 0.03, body);
+      mesh(G.sphere(0.075, 14, 10), fur, { parent: head });
+      mesh(G.sphere(0.045, 10, 8), light, { y: -0.015, z: 0.05, sx: 1.1, sy: 0.85, parent: head });          // pale face patch
+      for (const side2 of [1, -1]) { mesh(G.sphere(0.028, 10, 8), light, { x: side2 * 0.075, y: 0.01, parent: head }); mesh(G.sphere(0.012, 8, 6), dark, { x: side2 * 0.032, y: 0.015, z: 0.058, shadow: 'none', parent: head }); }
+      mesh(G.sphere(0.018, 8, 6), dark, { y: -0.03, z: 0.068, shadow: 'none', parent: head });                // snout tip
+      const armL = group(-0.09, 0.2, 0.04, body), armR = group(0.09, 0.2, 0.04, body);
+      mesh(G.capsule(0.018, 0.1, 6), fur, { y: -0.05, rx: 0.3, parent: armL });
+      mesh(G.capsule(0.018, 0.1, 6), fur, { y: -0.05, rx: 0.3, parent: armR });
+      const cup = group(0, 0.11, 0.09, body);
+      mesh(G.cyl(0.035, 0.03, 0.045, 10), mat(0xb8b8b8, { metalness: 0.4, roughness: 0.5 }), { parent: cup });   // the tin cup, held between the paws
+      const tail = group(0, 0.06, -0.08, body);
+      const tailCurve = new THREE.CatmullRomCurve3([V3(0, 0, 0), V3(0.02, -0.04, -0.08), V3(0.08, -0.02, -0.14), V3(0.14, 0.02, -0.1), V3(0.16, 0.05, -0.02)]);
+      for (let i = 0; i <= 9; i++) { const p = tailCurve.getPoint(i / 9), rr = 0.018 - i * 0.001; mesh(G.sphere(1, 8, 6), fur, { x: p.x, y: p.y, z: p.z, sx: rr, sy: rr, sz: rr, shadow: 'none', parent: tail }); }
+      U.push((dt, t) => {
+        head.rotation.y = sin(t * 0.5) * 0.4; head.rotation.x = 0.05 + sin(t * 1.3) * 0.04;
+        body.scale.y = 1 + sin(t * 3) * 0.012;
+        const rattle = sin(t * 0.4 + 2) > 0.85 ? 1 : 0;
+        cup.rotation.z = rattle ? sin(t * 22) * 0.2 : 0; armL.rotation.z = rattle ? sin(t * 22) * 0.15 : 0; armR.rotation.z = rattle ? -sin(t * 22) * 0.15 : 0;
+        tail.rotation.y = sin(t * 0.9) * 0.08;
+      });
+      const monkeyId = game.namedFriend('organ-monkey');
+      game.addInteractable({ obj: monkey, radius: 1.6, label: () => 'Say hello to the monkey', onUse: () => { game.befriend(monkeyId); SFX.chitter(); game.hearts(monkey.position.x, 0.3, monkey.position.z, 3); game.toast('🐒 *rattles the tin cup, chatters, and gives a passing penguin a hopeful look*'); } }); } }
   // Candy Land, Robot City, Victorian, the Neighborhood and Sunny Shore all have their own `Magician`
   // by now (55-npcs.js) — Frosty Peak is the next terrain world to get one: a coin-vanishing performer
   // out on the open snowfield, well past the village's own keep-out circle and clear of the grinder,
@@ -3528,6 +3728,251 @@ function buildSnowVillage(game, entry) {
       hat: 'beanie', hatColor: 0x4a5a6a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a, glasses: false });
     W.add(curlWatcher.group);
     game.npcs.push(new Wanderer(game, curlWatcher, { x: cwx, z: cwz, angle: atan2(sweepX - cwx, sweepZ - cwz), speed: 0.25, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
+
+  // Rounds 1316-1320 gave the Neighborhood's, Candy Land's, Robot City's, Victorian's and Sunny
+  // Shore's own fortune tellers a customer apiece; this mountain's own teller (round 1062's build,
+  // sitting cross-legged on her fur blanket out past the village) has still only ever read her
+  // crystal ball to the empty snow. **A customer now sits a step in front of her, facing her
+  // straight on, listening as she tells a fortune.** No `cries` of her own, no physics box, pure
+  // bystander, the exact same shape as the last five rounds' customers. Saying hello to her makes
+  // her the usual kind of friend.
+  //
+  // Same `Wanderer` (55-npcs.js) every watcher in this project already uses — it calls
+  // `greetable()` itself, so no extra wiring was needed. A single-shirt wardrobe bag (0x7a3a6a, a
+  // plum not already spoken for anywhere on this mountain, checked against every `makeWardrobe`
+  // call and the teller's own dress/sash/scarf above) keeps the palette from repeating, and the
+  // frozen `idle: [1e9, 1e9]` plus `blinkT0`/`idleT0`/`sway0` fixed straight in the `makeHuman()`
+  // call keeps her statue-still, hanging on every word rather than fidgeting, same as the last five
+  // rounds.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `elements.get('enter').listeners.click[0]()`, `game.travel(5, 'from-hub')` waited out for real
+  // against `game.transitioning`, then 3600 simulated frames so every reindeer, hare, fox, penguin,
+  // yeti and wandering villager had settled, then 600 more sampling every NPC's own position every
+  // 10th frame) swept the ground 1-2.4 m out from the fortune teller (-37, 33) along her own facing
+  // direction (towards the origin) against all 749 of this mountain's own physics boxes
+  // (knee-to-head band only) and all 152 `game.zones` rectangles: every distance tried came back
+  // clear by 3.8+ m of the nearest box and 7.4+ m of the nearest zone rectangle, so 1.5 m out —
+  // close enough to read as a face-to-face reading — was used. Ground there runs 1.53-1.58 m across
+  // the customer's own footprint, under 3 cm of slope, so no terrain grading was needed.
+  //
+  // Built dead last of everything this mountain adds, right after the curling watcher above and
+  // right before `spawnBySquirrel()`, for the usual reason: `makeHuman()`/`randomPerson()` both
+  // draw off this mountain's own shared `r()` sequence unconditionally. Whisper Woods is now the
+  // only world whose fortune teller is still reading to nobody.
+  { const ftX = -37, ftZ = 33, cux = -35.88, cuz = 32.00;
+    const customerWard = makeWardrobe(r, { shirts: [0x7a3a6a] });
+    const customer = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: customerWard }), blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(customer.group);
+    game.npcs.push(new Wanderer(game, customer, { x: cux, z: cuz, angle: atan2(ftX - cux, ftZ - cuz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
+  // Victorian (1354), Sunny Shore (1360), Whisper Woods (1362), Robot City (1363) and Candy Land
+  // (1364) have all picked up a potter at her kick wheel — the one craft in this whole game whose
+  // entire point is a turntable spinning under two cupped hands. This mountain already has a
+  // knife-grinder sharpening blades, but nothing on it is actually made from scratch. **A potter now
+  // sits cross-legged at her own kick wheel on a quiet stretch of open snow north-west of the
+  // village, a lump of wet clay rising taller between her palms before it's lifted away and a fresh
+  // one dropped to begin again**, a small shelf of three already-glazed pots — a frosty blue-white
+  // glaze, fired before the first snow fell — propped beside her. *"Clay doesn't care how cold it
+  // is, only that your hands don't shake."* *"Mind your tail, puss — that wheel doesn't know the
+  // difference between clay and a cat."* *"Every pot on that shelf was once this exact same lump,
+  // give or take an afternoon."* Saying hello to her is the usual kind of friend.
+  //
+  // No new controller: `Sitter` (55-npcs.js), the exact shape the other five potters already use —
+  // both hands fixed low and forward as if pressed to the clay, set once in this build's own
+  // `U.push` guarded by `!potter.gesture` so a greeting wave still wins over the held pose. The
+  // wheel and the lump of clay on top of it are both driven only by the world clock `t`, never this
+  // mountain's own shared `r`, so nothing later in this build's own wardrobe picks shift — no
+  // `rnd()` draw and no per-frame state of its own to carry, the same trick the other five potters
+  // already settled on. Unlike the two flat-ground worlds, this mountain's floor rolls like Whisper
+  // Woods' and Victorian's own do: every mesh group and physics box below is built on
+  // `P.ground0(potX, potZ)` instead of a bare `0`. `ry` is pinned to 0 rather than computed with
+  // `atan2`, the same shortcut every seated craftsman in this game already takes, so the wheel and
+  // the shelf both sit on a simple axis-aligned offset that lines up with an axis-aligned
+  // `P.addBox`. Dressed warm rather than bare-armed like the other five — `hat: 'beanie'`,
+  // `coat: true`, `scarf`, `cuffs` plus the usual `apron` over the top — the exact combination this
+  // mountain's own knife-grinder above already wears, so working outdoors in the snow doesn't need
+  // a new wardrobe trick.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(5, 'from-hub')` directly rather than `game.travel()` — the
+  // travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then
+  // 3600 simulated frames so every penguin, reindeer, kid and skater had settled, then 600 more
+  // sampling every NPC's own position every 10th frame) swept a 2 m grid of the open snow (radius
+  // 12-54 from the origin, short of the radius (58) where `snowRegion()`'s own procedural fill takes
+  // over) against all 373 of this mountain's own physics boxes (knee-to-head band only), all 151
+  // `game.zones` rectangles and every sampled NPC position, then refined the best stretch on a
+  // quarter-metre grid: (-18.25, 43.75) came back clear by 7.7 m of the nearest box, 11.0 m of the
+  // nearest zone rectangle and 7.8 m of the nearest other soul, at radius 47.4 from the origin — well
+  // clear of the curling watcher (-30.34, 45.07) and the wagon hauler (15, 44) despite sharing that
+  // hauler's own z. The ground across her own 1.2 m footprint runs 1.76-1.89 m, under 13 cm of
+  // slope, so no terrain grading was needed.
+  //
+  // Built dead last of everything this mountain adds, right after the fortune teller's customer
+  // above and right before `spawnBySquirrel()`, for the usual reason: `makeHuman()`/`randomPerson()`
+  // both draw off this mountain's own shared `r()` sequence unconditionally. The Neighborhood is now
+  // the only world left without a potter of its own — and, per round 1359, its own case isn't a
+  // quick follow-up.
+  { const potX = -18.25, potZ = 43.75, potRy = 0, gy0 = P.ground0(potX, potZ);
+    const potWard = makeWardrobe(r, { shirts: [0x5a5a6a], pants: [0x2a2a2a] });
+    const potter = makeHuman({ ...randomPerson(r, { female: r.chance(0.6), child: false, elder: r.chance(0.3), wardrobe: potWard }),
+      hat: 'beanie', hatColor: 0x7a5a6a, coat: true, scarf: 0xcfe0ff, cuffs: 0x3a3a3a, apron: 0x5a6a7a, build: 'stout' });
+    W.add(potter.group);
+    const woodM = mat(0x5a4a3a, { roughness: 0.8 }), darkM = mat(0x3a3028, { roughness: 0.6 }), trayM = mat(0x8a8d92, { roughness: 0.5, metalness: 0.3 }), clayM = mat(0x8a7262, { roughness: 0.92 }), potM = mat(0xbcd4e6, { roughness: 0.45, metalness: 0.1 });
+    const stool = group(potX, gy0, potZ, W);
+    mesh(G.cyl(0.18, 0.18, 0.03, 14), woodM, { y: 0.405, shadow: 'both', parent: stool });
+    mesh(G.cyl(0.1, 0.07, 0.39, 10), darkM, { y: 0.195, shadow: 'both', parent: stool });
+    P.addBox(potX, gy0 + 0.21, potZ, 0.3, 0.42, 0.3, { cam: false });
+    const wx = potX, wz = potZ + 0.55;
+    const wheel = group(wx, gy0, wz, W); wheel.rotation.y = potRy;
+    mesh(G.cyl(0.06, 0.08, 0.34, 10), woodM, { y: 0.17, shadow: 'both', parent: wheel });   // the post
+    mesh(G.cyl(0.26, 0.28, 0.05, 20), trayM, { y: 0.36, shadow: 'both', parent: wheel });   // the splash tray
+    const head = group(0, 0.4, 0, wheel);
+    mesh(G.cyl(0.22, 0.22, 0.03, 20), darkM, { parent: head });   // the wheel-head
+    const clay = mesh(G.cone(0.09, 0.2, 10), clayM, { y: 0.1, parent: head });
+    P.addBox(wx, gy0 + 0.2, wz, 0.56, 0.4, 0.56, { cam: false });
+    const shelfX = potX - 0.75, shelfZ = potZ;
+    const shelf = group(shelfX, gy0, shelfZ, W); shelf.rotation.y = potRy;
+    mesh(G.box(0.6, 0.04, 0.22), woodM, { y: 0.5, shadow: 'both', parent: shelf });
+    for (const [dx3, potH, potR2] of [[-0.18, 0.16, 0.07], [0, 0.2, 0.08], [0.18, 0.14, 0.065]]) {
+      const pot = group(dx3, 0.52, 0, shelf);
+      mesh(G.cyl(potR2, potR2 * 0.75, potH, 12), potM, { y: potH / 2, shadow: 'both', parent: pot });
+      mesh(G.cyl(potR2 * 0.4, potR2 * 0.5, potH * 0.25, 10), potM, { y: potH + potH * 0.1, parent: pot });   // the neck
+    }
+    P.addBox(shelfX, gy0 + 0.26, shelfZ, 0.6, 0.52, 0.22, { cam: false });
+    game.npcs.push(new Sitter(game, potter, { x: potX, z: potZ, ry: potRy, seat: 0.42,
+      cries: ["Clay doesn't care how cold it is, only that your hands don't shake.", "Mind your tail, puss — that wheel doesn't know the difference between clay and a cat.", 'Every pot on that shelf was once this exact same lump, give or take an afternoon.'] }));
+    U.push((dt, t) => {
+      head.rotation.y = t * 4.2;
+      const cyc = 5.0, growT = 4.6, ph = t % cyc;
+      let k;
+      if (ph < growT) { const p = ph / growT; k = p * p * (3 - 2 * p); }
+      else { const p = (ph - growT) / (cyc - growT); k = 1 - p * p * (3 - 2 * p); }
+      const s = 0.4 + 0.75 * k;
+      clay.scale.y = s; clay.position.y = 0.015 + 0.1 * s;
+      if (!potter.gesture) { const A = potter.arms[0], B = potter.arms[1]; A.sh.rotation.x = -1.0; A.sh.rotation.z = 0.3; A.el.rotation.x = -1.3; B.sh.rotation.x = -1.0; B.sh.rotation.z = -0.3; B.el.rotation.x = -1.3; }
+    }); }
+
+  // Victorian (1361), Candy Land (1366), Robot City (1367) and Sunny Shore (1368) have all picked up a
+  // barber beside his own empty chair, his pole striped with the same `TEX.candyCane()` map. This
+  // mountain already runs a knife-grinder sharpening blades and, since last round, a potter at her
+  // wheel, but nobody up here has ever actually cut hair. **A barber now stands beside his own empty
+  // chair on a quiet stretch of open snow east of the village, snipping his shears in the air to test
+  // an edge no customer is ever coming to try, his candy-striped pole spinning beside him in the
+  // cold.** *"Wind up here's sharper than any trim I could give you."* *"Mind your whiskers, puss —
+  // these shears don't know a tabby from a trim."* *"Heard there's four more of me now, same striped
+  // pole and all. Must be a popular joke."* Saying hello to him is the usual kind of friend.
+  //
+  // No new controller: the same `Charger` (55-npcs.js) the other four barbers already use — a standing
+  // rig that idles on its own, its arms pinned into a held snipping pose each frame, guarded by
+  // `!barber.gesture` so a greeting wave still wins. Own small wardrobe (`barberWard`), a grey coat and
+  // dark trousers rather than any other barber's own palette. Dressed warm like this mountain's own
+  // potter and knife-grinder above — `hat: 'beanie'`, `coat: true`, `scarf`, `cuffs` — so no new
+  // wardrobe trick was needed to keep him from freezing. Like Sunny Shore's own barber, this
+  // mountain's floor rolls, so the chair and pole groups and their physics boxes are both built on a
+  // single `gy0 = P.ground0(bx, bz)` looked up once and reused for both. The shears and the pole
+  // stripe are both driven only by the world clock `t` alone — no `rnd()` or local `r()` draw, so
+  // nothing later in this mountain's own build had a pick shifted by it.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(5, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so every penguin, reindeer, kid and skater had settled, then 600 more sampling
+  // every NPC's own position every 10th frame) swept a 2 m grid of the open snow (radius 12-54 from
+  // the origin, short of the radius (58) where `snowRegion()`'s own procedural fill takes over)
+  // against all 373 of this mountain's own physics boxes (knee-to-head band only), all 151
+  // `game.zones` rectangles and every sampled NPC position, then refined the best stretch on a
+  // quarter-metre grid: (34, -35.5) came back clear by 7.5 m of the nearest box, 9.4 m of the nearest
+  // zone rectangle and 7.5 m of the nearest other soul, radius 49.2 from the origin. Ground across his
+  // own 1.8 m footprint runs 0.05-0.20 m, under 15 cm of slope, so no terrain grading was needed.
+  //
+  // Built dead last of everything this mountain adds, right after the potter above and right before
+  // `spawnBySquirrel()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this
+  // mountain's own shared `r()` sequence unconditionally. Whisper Woods and the Neighborhood are the
+  // only worlds left without a barber of their own — and, per round 1359, the Neighborhood's own case
+  // isn't a quick follow-up.
+  { const bx = 34, bz = -35.5, bry = atan2(-bx, -bz), gy0 = P.ground0(bx, bz);
+    const barberWard = makeWardrobe(r, { shirts: [0x5a5a6a], pants: [0x2a2a2a] });
+    const barber = makeHuman({ ...randomPerson(r, { female: r.chance(0.3), child: false, elder: r.chance(0.4), wardrobe: barberWard }),
+      hat: 'beanie', hatColor: 0x3a3a44, coat: true, scarf: 0x8a1a1a, cuffs: 0x2a2a2a, apron: 0x5a5a5a, jacket: null, bag: null, backpack: null, glasses: false, moustache: r.chance(0.5), build: 'average' });
+    W.add(barber.group);
+    const leatherM = mat(0xd62246, { roughness: 0.55 }), chairWoodM = mat(0x5a3a1f, { roughness: 0.8 }), chromeM = mat(0xcfd4d8, { metalness: 0.7, roughness: 0.25 });
+    // the empty chair: a pedestal base, a seat, a tall back and two armrests, a step in front
+    const chairX = bx + sin(bry) * 0.75, chairZ = bz + cos(bry) * 0.75;
+    const chair = group(chairX, gy0, chairZ, W); chair.rotation.y = bry + PI;   // facing the barber
+    mesh(G.cyl(0.22, 0.26, 0.5, 14), chromeM, { y: 0.25, shadow: 'both', parent: chair });
+    mesh(G.box(0.46, 0.08, 0.46), leatherM, { y: 0.54, shadow: 'both', parent: chair });
+    mesh(G.box(0.46, 0.6, 0.08), leatherM, { y: 0.88, z: -0.22, shadow: 'both', parent: chair });
+    for (const sideA of [-1, 1]) mesh(G.box(0.07, 0.22, 0.4), leatherM, { x: sideA * 0.24, y: 0.68, shadow: 'both', parent: chair });
+    mesh(G.box(0.5, 0.04, 0.2), chairWoodM, { y: 0.08, z: 0.3, shadow: 'both', parent: chair });   // footrest step
+    P.addBox(chairX, gy0 + 0.45, chairZ, 0.5, 0.9, 0.56, { cam: false });
+    // the pole: a slim post, the candy-cane stripe spinning round its own middle section, a small
+    // chrome ball to cap it
+    const poleX = bx - sin(bry) * 0.7 + cos(bry) * 0.55, poleZ = bz - cos(bry) * 0.7 - sin(bry) * 0.55;
+    const pole = group(poleX, gy0, poleZ, W);
+    noInk(mesh(G.cyl(0.03, 0.035, 1.5, 10), chairWoodM, { y: 0.75, parent: pole }));
+    const stripeM = mat(0xffffff, { roughness: 0.4, map: TEX.candyCane() });
+    const poleSpin = group(0, 1.1, 0, pole);
+    noInk(mesh(G.cyl(0.07, 0.07, 0.6, 12), stripeM, { parent: poleSpin }));
+    mesh(G.sphere(0.08, 10, 8), chromeM, { y: 0.44, parent: pole });
+    P.addBox(poleX, gy0 + 0.7, poleZ, 0.14, 1.5, 0.14, { cam: false });
+    // the shears, held raised and snipping — two thin blades on a hinge, pinned to the near hand
+    const scissors = group(0, 0.1, 0.1, barber.hands[0]); scissors.rotation.x = -1.3;
+    const bladeM = mat(0xb8bcc0, { metalness: 0.75, roughness: 0.2 }), handleM = mat(0x8a1a1a, { roughness: 0.5 });
+    noInk(mesh(G.sphere(0.018, 8, 6), handleM, { parent: scissors }));
+    const bladeA = group(0, 0, 0, scissors), bladeB = group(0, 0, 0, scissors);
+    mesh(G.box(0.014, 0.1, 0.01), bladeM, { y: 0.06, parent: bladeA }); mesh(G.box(0.03, 0.025, 0.01), handleM, { y: -0.03, parent: bladeA });
+    mesh(G.box(0.014, 0.1, 0.01), bladeM, { y: 0.06, parent: bladeB }); mesh(G.box(0.03, 0.025, 0.01), handleM, { y: -0.03, parent: bladeB });
+    const comb = group(0, 0.08, 0.06, barber.hands[1]); comb.rotation.x = -0.6;
+    mesh(G.box(0.02, 0.12, 0.012), mat(0x1a1a1e, { roughness: 0.6 }), { parent: comb });
+    game.npcs.push(new Charger(game, barber, { x: bx, z: bz, ry: bry, cryIcon: '💈',
+      cries: ["Wind up here's sharper than any trim I could give you.", 'Mind your whiskers, puss — these shears don\'t know a tabby from a trim.', 'Heard there\'s four more of me now, same striped pole and all. Must be a popular joke.'] }));
+    U.push((dt, t) => {
+      poleSpin.rotation.y = t * 2.2;
+      bladeA.rotation.z = 0.12 + sin(t * 7) * 0.12; bladeB.rotation.z = -0.12 - sin(t * 7) * 0.12;
+      if (!barber.gesture) { const A = barber.arms[0], B = barber.arms[1]; A.sh.rotation.x = -1.4; A.sh.rotation.z = 0.25; A.el.rotation.x = -1.6; B.sh.rotation.x = -0.9; B.sh.rotation.z = -0.2; B.el.rotation.x = -1.1; }
+    }); }
+  // Rounds 1390-1393 gave Candy Land's, Robot City's, Victorian's and Sunny Shore's own sack race a
+  // first watcher, leaving Frosty Peak and Whisper Woods still owing theirs one. This round gives
+  // Frosty Peak its own, the fifth of the six. **A bundled-up villager now stands due north of this
+  // mountain's own sack race lane, watching the two kids hop back and forth.** No lines of her own —
+  // this one just watches — but saying hello to her makes her the usual kind of friend.
+  //
+  // No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses — a
+  // plain `makeHuman()`/`randomPerson()` rig in the same winter wardrobe shape (beanie, coat, scarf,
+  // cuffs) this mountain's own tug-of-war and badminton watchers already wear, `angle` pointed at the
+  // lane's own fixed midpoint (41.4, -34.7), and the relaxed `idle: [3, 6]`/`walk: [1, 1.6]` the
+  // series' own Robot City and Victorian watchers settled on, rather than the frozen `idle: [1e9,
+  // 1e9]` this mountain's own badminton spectator uses. This mountain's own sack race (above, two
+  // kids at `ry: PI/2`) runs its racers along world X, side by side in z — the same orientation as
+  // the Neighborhood's, Robot City's and Victorian's own (rounds 1307, 1391, 1392), not Candy Land's
+  // or Sunny Shore's own (rounds 1390 and 1393, lane along z, side by side in x) — so round 1307's
+  // own finding applies directly: standing north or south of the lane, offset along the same axis as
+  // the racers' own side-by-side gap, is the angle that shows both hopping past at once rather than
+  // looking down their backs.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(5, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so both kids and every other villager, reindeer and yeti had settled, then 600
+  // more sampling every NPC's own position every 10th frame) swept a 0.25 m grid north and south of
+  // the lane's own midpoint, 2.5-16 m out, against all 463 of this mountain's own body-height physics
+  // boxes and all 160 `game.zones` rectangles, staying short of the radius (58) where `snowRegion`'s
+  // own fill takes over, then refined the best stretch on a 0.05 m grid: (41.4, -30.1) came back
+  // clearest — due north of the lane at radius 4.6, 51.2 m from the world's own origin — 4.03 m from
+  // the nearest box, 15.9 m from the nearest zone rectangle and 4.05 m from the nearest other soul
+  // (one of the racers themselves), ground flat to within 6 cm across a 0.6 m square.
+  //
+  // Built dead last of everything this mountain adds, right after the barber above, for the usual
+  // reason: `makeHuman()`/`randomPerson()` both draw off this mountain's own local `r()` sequence
+  // unconditionally, and a fresh rig built any earlier would have shifted every random pick already
+  // placed above it. Whisper Woods is the only world left whose own sack race still plays to nobody.
+  { const srWatchX = 41.4, srWatchZ = -30.1, srLaneX = 41.4, srLaneZ = -34.7;
+    const srWard = makeWardrobe(r, { shirts: [0x6a4a4a, 0x4a4a6a, 0x5a6a4a], pants: [0x2a2a2a, 0x332a24], shoes: [0x2a2018, 0x1e1a16] });
+    const srWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: srWard }),
+      hat: 'beanie', hatColor: 0x6a3a4a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a, bag: null, backpack: null, glasses: r.chance(0.3) });
+    W.add(srWatcher.group);
+    game.npcs.push(new Wanderer(game, srWatcher, { x: srWatchX, z: srWatchZ, angle: atan2(srLaneX - srWatchX, srLaneZ - srWatchZ), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
 
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };

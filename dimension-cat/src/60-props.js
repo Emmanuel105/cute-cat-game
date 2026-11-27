@@ -940,6 +940,19 @@ function makeOldCamera() {
   g.userData.lensY = legH + 0.14;
   return g;
 }
+/** A tripod telescope, its brass-trimmed tube tilted up at the sky; the eyepiece sits low at the near end (-z), where a stargazer bends down to look in. */
+function makeTelescope() {
+  const g = new THREE.Group(), wood = mat(0x4a3324, { roughness: 0.8 }), brass = mat(0x8a6a3a, { metalness: 0.4, roughness: 0.35 }), dark = mat(0x26262c, { metalness: 0.5, roughness: 0.4 });
+  const legH = 0.95;
+  for (let i = 0; i < 3; i++) { const a = i / 3 * TAU; mesh(G.cyl(0.022, 0.03, legH, 6), wood, { x: cos(a) * 0.3, y: legH / 2, z: sin(a) * 0.3, rx: sin(a) * 0.24, rz: -cos(a) * 0.24, shadow: 'both', parent: g }); }
+  mesh(G.cyl(0.09, 0.09, 0.04, 10), wood, { y: legH, shadow: 'both', parent: g });   // tripod hub
+  const mount = group(0, legH + 0.04, 0, g); mount.rotation.x = -1.0;   // tilts the whole tube assembly up toward the sky
+  const tubeLen = 1.0;
+  mesh(G.cyl(0.055, 0.07, tubeLen, 14), dark, { z: tubeLen / 2, rx: PI / 2, shadow: 'both', parent: mount });            // main tube
+  mesh(G.cyl(0.072, 0.072, 0.03, 14), brass, { z: tubeLen, rx: PI / 2, shadow: 'none', parent: mount });                 // objective-end ring
+  mesh(G.cyl(0.02, 0.028, 0.16, 10), brass, { z: -0.08, rx: PI / 2, shadow: 'none', parent: mount });                    // eyepiece, past the near end
+  return g;
+}
 /**
  * `o.rattle` gives just one mailbox (the cat's own, by the front path) a flag that flutters in the
  * breeze on a hinge and knocks softly against the box every so often — `game` and `game.cat` are only

@@ -182,6 +182,7 @@ function makeHuman(o = {}) {
     rig.hands.push(hand);
     if (o.cane && side === -1) mesh(G.cyl(0.013, 0.013, 0.86, 6), mat(0x3a2718), { y: -0.3, z: 0.08, parent: hand });
     if (o.axe && side === 1) { mesh(G.cyl(0.018, 0.022, 0.8, 6), mat(0x6a4a2a, { roughness: 0.9 }), { y: 0.3, z: 0.02, parent: hand }); mesh(G.box(0.05, 0.22, 0.14), mat(0x9aa3ad, { metalness: 0.7, roughness: 0.35 }), { y: 0.66, z: 0.06, parent: hand }); }   // a woodcutter's axe
+    if (o.hammer && side === 1) { mesh(G.cyl(0.018, 0.022, 0.4, 6), mat(0x4a3523, { roughness: 0.88 }), { y: 0.22, z: 0.02, parent: hand }); mesh(G.box(0.1, 0.08, 0.17), mat(0x5a5a5e, { metalness: 0.65, roughness: 0.4 }), { y: 0.42, z: 0.04, parent: hand }); }   // a blacksmith's hammer
     if (o.pole && side === 1) { mesh(G.cyl(0.012, 0.014, 1.7, 6), mat(0x4a3a2a), { y: 0.55, z: 0.03, parent: hand }); mesh(G.sphere(0.035, 8, 6), glowMat(0xffb060, 1.4), { y: 1.42, z: 0.03, shadow: 'none', parent: hand }); }   // a lamplighter's pole, lit at the tip
     if (o.brush && side === 1) {   // a chimney sweep's rod, bristles splayed at the top
       mesh(G.cyl(0.013, 0.016, 1.6, 6), mat(0x3a2a1a, { roughness: 0.85 }), { y: 0.5, z: 0.04, parent: hand });
@@ -1199,9 +1200,9 @@ class Kneeler {
 
 // ---------------------------------------------------------------- charger: stands put, plugged into something, its rig's own idle pose doing all the work
 class Charger {
-  constructor(game, rig, { x, z, ry = 0, cries = null, cryIcon = '🔌' }) {
-    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10;
-    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+  constructor(game, rig, { x, z, ry = 0, cries = null, cryIcon = '🔌', t0 = null, cryT0 = null }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = t0 != null ? t0 : rnd() * 10;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? (cryT0 != null ? cryT0 : rnd.range(4, 9)) : 0;
     rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
     this.circle = game.physics.addCircle(this, x, z, 0.35);
     greetable(game, this);
@@ -1545,9 +1546,9 @@ class PinataSwinger {
 
 // ---------------------------------------------------------------- vendor: stands on their pitch holding something up in the left hand, and calls their wares
 class Vendor {
-  constructor(game, rig, held, { x, z, ry = 0, cries = null, cryIcon = '\ud83c\udf88' }) {
-    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10; this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false;
-    this.state = 'idle'; this.timer = 0; this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(3, 7) : 0; this.held = held;
+  constructor(game, rig, held, { x, z, ry = 0, cries = null, cryIcon = '\ud83c\udf88', t0 = null, cryT0 = null }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = t0 != null ? t0 : rnd() * 10; this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false;
+    this.state = 'idle'; this.timer = 0; this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? (cryT0 != null ? cryT0 : rnd.range(3, 7)) : 0; this.held = held;
     rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
     rig.hands[1].add(held);
     this.circle = game.physics.addCircle(this, x, z, 0.35);   // no greetable(): the world gives the vendor its own prompt
@@ -1639,9 +1640,10 @@ class Sledder {
 
 // ---------------------------------------------------------------- chopper: stands over a log with an axe and splits it, again and again
 class Chopper {
-  constructor(game, rig, { x, z, ry = 0, cries = null }) {
+  constructor(game, rig, { x, z, ry = 0, cries = null, sfx = () => SFX.thunk(), colors = [0xd9b27a, 0x8a5a32], cryIcon = '\ud83e\ude93' }) {
     this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10; this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false;
-    this.state = 'idle'; this.timer = 0; this.cries = cries; this.cryIcon = '\ud83e\ude93'; this.cryT = rnd.range(4, 9); this.chopT = rnd.range(1, 2); this.chops = 0; this.struck = false;
+    this.state = 'idle'; this.timer = 0; this.cries = cries; this.cryIcon = cryIcon; this.cryT = rnd.range(4, 9); this.chopT = rnd.range(1, 2); this.chops = 0; this.struck = false;
+    this.sfx = sfx; this.colors = colors;
     rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = ry;
     this.circle = game.physics.addCircle(this, x, z, 0.35);
     greetable(game, this);
@@ -1650,9 +1652,9 @@ class Chopper {
     this.t += dt; const rig = this.rig;
     if (!rig.gesture) { this.chopT -= dt; if (this.chopT <= 0) { rig.gesture = 'chop'; rig.gT = 0; this.struck = false; this.chopT = rnd.range(2.2, 3.6); } }
     if (rig.gesture === 'chop' && !this.struck && rig.gT / 1.1 >= 0.55) {   // the blade lands
-      this.struck = true; this.chops++; SFX.thunk();
+      this.struck = true; this.chops++; this.sfx();
       const a = rig.group.rotation.y, p = rig.group.position;
-      this.game.fx.emit(p.x + sin(a) * 0.7, p.y + 0.5, p.z + cos(a) * 0.7, { count: 7, colors: [0xd9b27a, 0x8a5a32], speed: 1.6, up: 1.8, life: 0.7, gravity: 4 });
+      this.game.fx.emit(p.x + sin(a) * 0.7, p.y + 0.5, p.z + cos(a) * 0.7, { count: 7, colors: this.colors, speed: 1.6, up: 1.8, life: 0.7, gravity: 4 });
     }
     rig.animate(0, false, dt, this.t);
     Wanderer.prototype.lookAtCat.call(this, dt);
@@ -1699,6 +1701,47 @@ class Mechanic {
       robot.body.rotation.z = damp(robot.body.rotation.z, 0, 9, dt); robot.head.rotation.x = damp(robot.head.rotation.x, -0.12, 8, dt);
       if (wasFresh && this.perk <= 0.9) { SFX.beep(); const c = this.game.cat.group.position; if (dist2(robot.group.position.x, robot.group.position.z, c.x, c.z) < 100) this.game.toast('🤖 "SYSTEMS... NOMINAL?"', 1800); }
     } else { robot.body.rotation.z = damp(robot.body.rotation.z, 0.55, 2.2, dt); robot.head.rotation.x = damp(robot.head.rotation.x, 0.4, 3.5, dt); }
+    Wanderer.prototype.lookAtCat.call(this, dt);
+    if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
+  }
+}
+
+// ---------------------------------------------------------------- grinder: kneels at a foot-treadle grindstone, a blade pressed to the spinning wheel through short bursts of sparks, pausing now and then to check the edge
+class Grinder {
+  constructor(game, rig, { x, z, ry = 0, colors = [0xffd166, 0xffffff, 0x9fe8ff], cries = null, cryIcon = '🔥' }) {
+    this.game = game; this.rig = rig; this.x = x; this.z = z; this.t = rnd() * 10; this.look = 0; this.lookW = 0; this.tipT = 0; this.tipped = false;
+    this.state = 'idle'; this.timer = 0; this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(4, 9) : 0;
+    this.colors = colors; this.phase = 'grind'; this.phaseT = rnd.range(1.2, 2.0); this.sparkT = rnd.range(0.15, 0.3);
+    rig.group.rotation.y = ry;
+    rig.group.position.set(x, game.physics.ground0(x, z) - 0.4 * rig.k + 0.05, z);   // kneeling: hips a shin's length lower than standing
+    const wx = x + sin(ry) * 0.55, wz = z + cos(ry) * 0.55, wy0 = game.physics.ground0(wx, wz);
+    const stand = group(wx, wy0, wz, game.world); stand.rotation.y = ry;
+    const woodM = mat(0x5a3f28, { roughness: 0.85 }), ironM = mat(0x2a2a2a, { metalness: 0.6, roughness: 0.4 }), stoneM = mat(0x8a8782, { roughness: 0.9 });
+    for (const sx of [-0.18, 0.18]) mesh(G.box(0.05, 0.42, 0.05), woodM, { x: sx, y: 0.21, rz: sx > 0 ? -0.1 : 0.1, parent: stand });
+    mesh(G.cyl(0.015, 0.015, 0.4, 8), ironM, { y: 0.42, rz: PI / 2, parent: stand });
+    mesh(G.box(0.32, 0.05, 0.42), woodM, { y: -0.28, z: 0.06, parent: stand });   // treadle board, underfoot
+    const pivot = group(0, 0.42, 0, stand);
+    mesh(G.cyl(0.19, 0.19, 0.06, 20), stoneM, { rx: PI / 2, parent: pivot });
+    mesh(G.torus(0.19, 0.012, 6, 20), ironM, { rx: PI / 2, parent: pivot });   // iron rim band
+    this.pivot = pivot; this.wx = wx; this.wy = wy0 + 0.42; this.wz = wz;
+    this.circle = game.physics.addCircle(this, x, z, 0.45);
+    greetable(game, this);
+  }
+  update(dt) {
+    this.t += dt; const rig = this.rig, grinding = this.phase === 'grind';
+    rig.animate(0, false, dt, this.t);
+    for (const L of rig.legs) { L.hip.rotation.x = damp(L.hip.rotation.x, -0.05, 6, dt); L.knee.rotation.x = PI / 2 + 0.05; L.ankle.rotation.x = 0.9; }
+    rig.spine.rotation.x = damp(rig.spine.rotation.x, 0.35, 6, dt); rig.body.position.y = 0;
+    rig.head.rotation.x = damp(rig.head.rotation.x, 0.15, 6, dt);
+    this.pivot.rotation.z += dt * (grinding ? 16 : 2);
+    const tremble = grinding ? sin(this.t * 45) * 0.03 : 0;
+    if (!rig.gesture) { for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -0.95 + tremble, 12, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.55, 12, dt); A.sh.rotation.z = (A === rig.arms[0] ? 1 : -1) * 0.18; } }
+    this.phaseT -= dt;
+    if (grinding) {
+      this.sparkT -= dt;
+      if (this.sparkT <= 0) { this.sparkT = rnd.range(0.15, 0.3); SFX.grind(); this.game.fx.emit(this.wx, this.wy, this.wz, { count: 5, colors: this.colors, speed: 1.4, up: 1.2, life: 0.3, gravity: 7 }); }
+    }
+    if (this.phaseT <= 0) { this.phase = grinding ? 'inspect' : 'grind'; this.phaseT = grinding ? rnd.range(0.6, 1.0) : rnd.range(1.2, 2.0); }
     Wanderer.prototype.lookAtCat.call(this, dt);
     if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
   }
