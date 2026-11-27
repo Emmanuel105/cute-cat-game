@@ -14953,6 +14953,46 @@ function buildNeighborhood(game, entry) {
     W.add(trampWatcher.group);
     game.npcs.push(new Wanderer(game, trampWatcher, { x: wx, z: wz, angle: atan2(trX - wx, trZ - wz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // `Grinder` (55-npcs.js) — a kneeling rig at a foot-treadle grindstone, sparks flying between
+  // pauses to check the edge — has gone round Candy Land, Robot City, Victorian, Sunny Shore, Frosty
+  // Peak and Whisper Woods over the rounds since 1353. This street, the one world the whole project
+  // started from, is the only one still without its own. **An old knife-grinder has set up his barrow
+  // wheel on the quiet backyard field north-west of the back row of houses, blade pressed to the
+  // stone in short, sparking bursts between pauses to check the edge against the light.** *"Knives
+  // and shears, sharpened while you wait — though nobody ever does."* *"Mind your tail, puss — these
+  // sparks don't care whose fur they land on."* *"Every other street in the seven worlds has one of
+  // me by now. Took this one long enough."* Saying hello to him is the usual kind of friend, this
+  // street's own count rising from 154 to 155.
+  //
+  // No new controller: the same `Grinder` every other world's own knife-grinder already uses. A
+  // single fixed shirt (0x5a4a4a, checked against every wardrobe bag and fixed shirt colour this
+  // street's own build hands out above — none of them claim it) keeps the "no two neighbours wear
+  // the same shirt" check happy, the one hard requirement this world's own test enforces that no
+  // other world's build function has to answer to.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(0, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so every wanderer, the postie and all three play-structure watchers had settled,
+  // then 600 more sampling every NPC's own position every 10th frame) swept a 1 m grid of the open
+  // field at radius 25-60 from the origin against all 318 of this street's own physics boxes
+  // (knee-to-head band only), all 69 `game.zones` rectangles and every sampled NPC position: (-37, 46)
+  // came back clearest in that whole band — 8.65 m from the nearest box, 15.16 m clear of the nearest
+  // zone rectangle and 8.85 m from the nearest other soul, comfortably past the 0.45 m circle this
+  // kneeling rig and its own grindstone need, behind the back row of houses and short of the park
+  // paths to the east.
+  //
+  // Built dead last of everything this street adds, right after the trampoline's own watcher above
+  // and right before `makeDayNight()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw
+  // off this street's own shared `r()` sequence unconditionally, and anything built earlier would have
+  // had its own timing-sensitive pick shifted by it.
+  { const gx = -37, gz = 46, gry = atan2(-gx, -gz);
+    const grinder = makeHuman({ ...randomPerson(r, { female: r.chance(0.3), child: false, elder: true }),
+      shirt: 0x5a4a4a, pants: 0x2a2a2a, shoes: 0x201a14, hat: null, coat: false, scarf: null, jacket: null, bag: null, backpack: null, glasses: false, apron: 0x4a4a52 });
+    W.add(grinder.group);
+    game.npcs.push(new Grinder(game, grinder, { x: gx, z: gz, ry: gry,
+      cries: ['Knives and shears, sharpened while you wait — though nobody ever does.', "Mind your tail, puss — these sparks don't care whose fur they land on.", 'Every other street in the seven worlds has one of me by now. Took this one long enough.'] })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
