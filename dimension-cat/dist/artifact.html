@@ -14919,6 +14919,40 @@ function buildNeighborhood(game, entry) {
     W.add(swingWatcher.group);
     game.npcs.push(new Wanderer(game, swingWatcher, { x: wx, z: wz, angle: atan2(swX - wx, swZ - wz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // Rounds 1396-1409 gave every world's own seesaw and swing set a first watcher; the trampoline in
+  // the backyard behind house 10 (round ~1xxx, `tx = -72, tz = -10`) is the next play structure in
+  // this project nobody had ever stopped to watch. **A passer-by now stands due west of it, taking
+  // in the bouncing kid.** No `cries` of her own, no physics box, pure bystander — the same
+  // `Wanderer` (55-npcs.js) every watcher in this project already uses, which calls `greetable()`
+  // itself, so no extra wiring was needed.
+  //
+  // Unlike the seesaw and swing, the trampoline (`makeTrampoline`, 60-props.js) is a round steel rim
+  // with no long axis of its own — the bouncing kid goes straight up and down, equally readable from
+  // any angle around it — so the usual "which side shows the motion in profile" question this
+  // series has had to answer each round doesn't apply here; any clear spot works.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(0, 'from-hub')` directly rather than `game.travel()` — the
+  // travel fade sits behind a real `setTimeout` that never fires under simulated frames alone —
+  // then 3600 simulated frames so the bounce kid and every other wanderer had settled) swept a grid
+  // around the trampoline (-72, -10), 1.8-6 m out, against all of this street's own physics boxes,
+  // `game.zones` rectangles and every other soul already standing in it: (-78, -10) came back
+  // clearest — due west at radius 6.0 — 5.45 m from the nearest physics box, 6.93 m from the
+  // nearest `game.zones` rectangle and 6.0 m from the bounce kid himself, clear of the house wall
+  // and shed to the north and south of the yard.
+  //
+  // A single-shirt wardrobe bag (0x5a8a3a, an olive not already spoken for by anyone else on this
+  // street — checked against all 116 shirts this build already hands out) keeps the dupe-shirt
+  // check happy. Built dead last of everything this street adds, right after the swing watcher
+  // above, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this street's own
+  // shared `r()` sequence unconditionally, and anything built earlier would have had its own
+  // timing-sensitive pick shifted by it.
+  { const trX = -72, trZ = -10, wx = -78, wz = -10;
+    const trampWatcherWard = makeWardrobe(r, { shirts: [0x5a8a3a] });
+    const trampWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: trampWatcherWard }), blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(trampWatcher.group);
+    game.npcs.push(new Wanderer(game, trampWatcher, { x: wx, z: wz, angle: atan2(trX - wx, trZ - wz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
