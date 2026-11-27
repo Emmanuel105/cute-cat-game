@@ -14993,6 +14993,51 @@ function buildNeighborhood(game, entry) {
     game.npcs.push(new Grinder(game, grinder, { x: gx, z: gz, ry: gry,
       cries: ['Knives and shears, sharpened while you wait — though nobody ever does.', "Mind your tail, puss — these sparks don't care whose fur they land on.", 'Every other street in the seven worlds has one of me by now. Took this one long enough.'] })); }
 
+  // Every yard game and play structure on this street has picked up a watcher of its own over the
+  // seesaw, swing, trampoline, ring-toss and tug-of-war series (rounds 1353-1416) — but the chess
+  // table (round 408) never got one, and neither has any other world's own table game: Victorian's
+  // draughts, Robot City's checkers, Frosty Peak's cards, Whisper Woods' draughts, Sunny Shore's
+  // mancala or Candy Land's dominoes. This round opens that series here, the one world the whole
+  // project started from. **A neighbour now stands a few steps north of the chess table, watching the
+  // two retirees play — with a line or two of her own**, called out now and then whenever the cat is
+  // close enough to hear: *"Been at that same game since March, those two."* *"Mind the board, puss —
+  // she'll have your tail if you knock that king over."* *"My money's on the ivory set, same as every
+  // year."* Saying hello to her makes her the usual kind of friend, this street's own count rising
+  // from 155 to 156.
+  //
+  // No new class: the same `Wanderer` (`55-npcs.js`) every watcher in every earlier series already
+  // uses, which calls `greetable()` itself, so no extra wiring was needed. The chess table's own two
+  // players sit side by side along world X (`seatAx = tx - 0.78`, `seatBx = tx + 0.78`, both at the
+  // same z), but unlike the seesaw and swing series there is no motion here to read in profile — a
+  // mid-game board and two seated retirees don't move — so standing square on to the board, offset
+  // along world Z, shows both of them equally well from either side. A single-shirt wardrobe bag
+  // (0x3a5a8a, a steel blue checked against all 118 shirts this street's own build already hands
+  // out — none of them claim it) keeps the "no two neighbours wear the same shirt" check happy, the
+  // one hard requirement this world's own test enforces that no other world's build function has to
+  // answer to.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(0, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so every wanderer, the postie and every other soul on this street had settled,
+  // then 600 more sampling every NPC's own position every 10th frame) swept a 0.5 m grid in a 2.5-6 m
+  // ring around the chess table (-60, 60) against all 338 of this street's own physics boxes
+  // (knee-to-head band only), all 69 `game.zones` rectangles and every sampled NPC position: (-60, 66)
+  // came back clearest — due north at radius 6.0, 5.60 m from the nearest box, 34.60 m from the
+  // nearest zone rectangle and 6.05 m from the nearest other soul, well clear of the back row of
+  // houses and the knife-grinder's own field to the south-west.
+  //
+  // Built dead last of everything this street adds, right after the knife-grinder above and right
+  // before `makeDayNight()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this
+  // street's own shared `r()` sequence unconditionally, and anything built earlier would have had its
+  // own timing-sensitive pick shifted by it.
+  { const cwx = -60, cwz = 66, ctx = -60, ctz = 60;
+    const chessWatcherWard = makeWardrobe(r, { shirts: [0x3a5a8a] });
+    const chessWatcher = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: r.chance(0.4), wardrobe: chessWatcherWard }) });
+    W.add(chessWatcher.group);
+    game.npcs.push(new Wanderer(game, chessWatcher, { x: cwx, z: cwz, angle: atan2(ctx - cwx, ctz - cwz), speed: 0.3, leash: 0.5, idle: [3, 6],
+      cries: ['Been at that same game since March, those two.', "Mind the board, puss — she'll have your tail if you knock that king over.", "My money's on the ivory set, same as every year."] })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
