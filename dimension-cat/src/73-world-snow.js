@@ -4014,6 +4014,52 @@ function buildSnowVillage(game, entry) {
     W.add(seWatcher.group);
     game.npcs.push(new Wanderer(game, seWatcher, { x: seWatchX, z: seWatchZ, angle: atan2(seLaneX - seWatchX, seLaneZ - seWatchZ), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
 
+  // Rounds 1403-1407 opened a "swing watcher" series on the Neighborhood, Candy Land, Robot City,
+  // Victorian and Sunny Shore, leaving Frosty Peak and Whisper Woods still owing theirs one. This
+  // round gives Frosty Peak's own swing set (above, at (-45, 30), `ry` PI) its first spectator.
+  // **A bundled-up villager now stands due east of the swing, watching the child go forward and
+  // back.** No lines of her own — this one just watches — but saying hello to her makes her the
+  // usual kind of friend.
+  //
+  // No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses,
+  // which calls `greetable()` itself, so no extra wiring was needed. `makeSwingSet`'s frame runs
+  // its top bar along local x, the child swinging forward and back along local z — this swing's
+  // `ry` is PI, which only flips the sign of each local axis, not their world alignment, so local
+  // x still lines up with world x regardless. Rounds 1403-1407's own finding applies directly:
+  // standing east or west of it, offset along the frame's own axis rather than the one the child
+  // swings through, is the angle that shows the full pendulum arc in profile instead of watching
+  // the seat grow and shrink head-on. Frosty Peak carries no dupe-shirt rule of its own (the
+  // Neighborhood's test is the only one of the seven that enforces one), so the shirt colour just
+  // went with this village's own winter palette.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(5, 'from-hub')` directly rather than `game.travel()` — the
+  // travel fade sits behind a real `setTimeout` that never fires under simulated frames alone —
+  // then 3600 simulated frames so both seesaw kids, the sack racers, the swing kid, the barber's
+  // queue and every other villager had settled, then 600 more sampling every NPC's own position
+  // every 10th frame) swept a 0.25 m grid east and west of the swing (-45, 30), 2.5-30 m out,
+  // against all 466 of this mountain's own body-height physics boxes, all 160 `game.zones`
+  // rectangles and every other humanoid position already standing in it: west ran out of room
+  // almost immediately — every west candidate past about 1 m out lands beyond the radius (58)
+  // where `snowRegion`'s own fill takes over, since the swing itself already sits 45 m out on that
+  // side — so east is the only side with any real room. A finer 0.05 m grid there found (-30.25,
+  // 30) clearest — due east at radius 14.75, about 42.6 m from the world's own origin, still well
+  // short of that radius-58 fill boundary — 5.82 m from the nearest box, 5.84 m from the nearest
+  // zone rectangle and 5.97 m from the nearest other soul, ground flat to within 7 cm across a
+  // 0.6 m square.
+  //
+  // Built dead last of everything this mountain adds, right after the seesaw watcher above, for
+  // the usual reason: `makeHuman()`/`randomPerson()` both draw off this mountain's own local `r()`
+  // sequence unconditionally, and a fresh rig built any earlier would have shifted every random
+  // pick already placed above it. Whisper Woods is the only world left whose own swing still
+  // plays to nobody.
+  { const swWatchX = -30.25, swWatchZ = 30, swCx = -45, swCz = 30;
+    const swWard = makeWardrobe(r, { shirts: [0x8a4a5a, 0x4a6a7a, 0x6a5a3a], pants: [0x2a2a2a, 0x332a24], shoes: [0x2a2018, 0x1e1a16] });
+    const swWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: swWard }),
+      hat: 'beanie', hatColor: 0x8a4a5a, coat: true, scarf: 0xf7f3ec, cuffs: 0x3a3a3a, bag: null, backpack: null, glasses: r.chance(0.3) });
+    W.add(swWatcher.group);
+    game.npcs.push(new Wanderer(game, swWatcher, { x: swWatchX, z: swWatchZ, angle: atan2(swCx - swWatchX, swCz - swWatchZ), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
