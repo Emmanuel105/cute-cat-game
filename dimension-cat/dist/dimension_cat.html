@@ -36714,6 +36714,46 @@ function buildSnowVillage(game, entry) {
       hat: 'beanie', hatColor: 0x6a3a4a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a, bag: null, backpack: null, glasses: r.chance(0.3) });
     W.add(srWatcher.group);
     game.npcs.push(new Wanderer(game, srWatcher, { x: srWatchX, z: srWatchZ, angle: atan2(srLaneX - srWatchX, srLaneZ - srWatchZ), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
+  // Rounds 1396-1400 opened a "seesaw watcher" series on the Neighborhood, Candy Land, Robot City,
+  // Victorian and Sunny Shore, leaving Frosty Peak and Whisper Woods still owing theirs one. This
+  // round gives Frosty Peak its own, the sixth of the seven. **A bundled-up villager now stands due
+  // south of this mountain's own seesaw, watching both ends tip up and down.** No lines of her own —
+  // this one just watches — but saying hello to her makes her the usual kind of friend.
+  //
+  // No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses, which
+  // calls `greetable()` itself, so no extra wiring was needed. This mountain's own seesaw (above, `ry`
+  // 0) sits its two riders side by side along world X, the same orientation as the Neighborhood's,
+  // Candy Land's, Robot City's, Victorian's and Sunny Shore's own (rounds 1396-1400), so round 1396's
+  // own finding applies directly: standing north or south of it, offset along the same axis the riders
+  // are spread across, is the angle that shows both ends rising and falling at once rather than looking
+  // down the plank's own length. Frosty Peak carries no dupe-shirt rule of its own (the Neighborhood's
+  // test is the only one of the seven that enforces one), so the shirt colours just went with this
+  // village's own winter palette.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(5, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so both seesaw kids, the sack racers, the swing kid, the barber's queue and every
+  // other villager had settled, then 600 more sampling every NPC's own position every 10th frame) swept
+  // a 0.25 m grid north and south of the seesaw (-50, 22), 2.5-16 m out, against all 460 of this
+  // mountain's own body-height physics boxes, all 160 `game.zones` rectangles and every other humanoid
+  // position already standing in it, staying short of the radius (58) where `snowRegion`'s own fill
+  // takes over, then refined the best stretch on a finer 0.05 m grid: north topped out at 3.83 m of
+  // clearance (at radius 4.45); south did slightly better, (-50, 17.45) coming back clearest — due
+  // south at radius 4.55, about 53 m from the world's own origin — 4.25 m from the nearest box, 3.95 m
+  // from the nearest zone rectangle and 3.99 m from the nearest other soul, ground flat to within 3.1 cm
+  // across a 0.6 m square.
+  //
+  // Built dead last of everything this mountain adds, right after the sack-race watcher above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this mountain's own local `r()` sequence
+  // unconditionally, and a fresh rig built any earlier would have shifted every random pick already
+  // placed above it. Whisper Woods is the only world left whose own seesaw still plays to nobody.
+  { const seWatchX = -50, seWatchZ = 17.45, seLaneX = -50, seLaneZ = 22;
+    const seWard = makeWardrobe(r, { shirts: [0x3a5a6a, 0x6a5a3a, 0x4a3a5a], pants: [0x2a2a2a, 0x332a24], shoes: [0x2a2018, 0x1e1a16] });
+    const seWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: seWard }),
+      hat: 'beanie', hatColor: 0x3a6a5a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a, bag: null, backpack: null, glasses: r.chance(0.3) });
+    W.add(seWatcher.group);
+    game.npcs.push(new Wanderer(game, seWatcher, { x: seWatchX, z: seWatchZ, angle: atan2(seLaneX - seWatchX, seLaneZ - seWatchZ), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
 
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
