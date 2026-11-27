@@ -8246,6 +8246,45 @@ function buildCandyLand(game, entry) {
     W.add(chalkWatcher.group);
     game.npcs.push(new Wanderer(game, chalkWatcher, { x: chwx, z: chwz, angle: atan2(chkx - chwx, chkz - chwz), speed: 0.3, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // Round 1396 gave the Neighborhood's own seesaw a first watcher after it had tipped two kids up
+  // and down, unwatched, since round 183 — opening a new series the same way the tug-of-war, ring
+  // toss, tetherball and sack-race series each opened one. Candy Land's own seesaw (built a few
+  // hundred lines up at (25, 51), two village children on it instead of gingerbread men, since
+  // `Seesaw` reaches into a rider's `L.hip`/`L.knee`/`L.ankle` and `A.sh`/`A.el`, which the cookie rig
+  // doesn't have) is next. **A gingerbread-village local now stands due north of it, watching both
+  // ends tip.** No lines of her own — this one just watches — but saying hello to her makes her the
+  // usual kind of friend.
+  //
+  // This seesaw's own two riders sit side by side along world X (`makeSeesaw`'s arm runs along the
+  // pivot's own local x, and this seesaw's `ry` is 0, same as the Neighborhood's own), so round
+  // 1396's own finding applies directly here: standing north or south of it, offset along the same
+  // axis the riders are spread across, is the angle that shows both ends rising and falling at once
+  // rather than looking down the plank's own length. Candy Land has no dupe-shirt check of its own
+  // (the Neighborhood's test is the only one of the seven that enforces one), so the shirt colour
+  // below was picked for the cookie-village palette, not to dodge a collision.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(1, 'from-hub')` directly rather than `game.travel()` — the
+  // travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then
+  // 3600 simulated frames so every gingerbread man, both seesaw kids and everyone else in this land
+  // had settled) swept a 0.25 m grid due north and south of the seesaw (25, 51), 2.5-16 m out,
+  // against all 1812 of this land's own physics boxes, all 452 `game.zones` rectangles and every
+  // other NPC already standing in it: (25, 59.25) came back clearest — due north at radius 8.25,
+  // 64.3 m from the world's own origin, well short of the radius (92) where `candyRegion`'s own
+  // procedural fill takes over — 7.65 m from the nearest box, 7.65 m from the nearest zone rectangle
+  // and 10.4 m from the nearest other soul. South of the seesaw topped out at 6.4 m of clearance at
+  // its own best radius (7), so north, a touch further out, is the side with more room.
+  //
+  // Built dead last of every person this build adds, right after the hopscotch watcher above and
+  // right before the squirrel below, for the usual reason: `makeHuman()`/`randomPerson()` both draw
+  // off this land's own shared `r()` sequence unconditionally, and anything built earlier would have
+  // had its own timing-sensitive pick shifted by it.
+  { const seeX = 25, seeZ = 51, swx = 25, swz = 59.25;
+    const seesawWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0xc9e4ca, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(seesawWatcher.group);
+    game.npcs.push(new Wanderer(game, seesawWatcher, { x: swx, z: swz, angle: atan2(seeX - swx, seeZ - swz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
+
   const sq = new Squirrel(game, -12, 3, 'sq-candy'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('star', 7, -6); C.add('yarn', -9, 9); C.add('fish', -16, -13); C.add('mouse', 16, -9); C.add('star', -10, -27); C.add('yarn', 22, 4); C.add('mouse', -28, 26); C.add('fish', 14, -44); C.add('star', 0, -56); C.add('mouse', -58, 30); C.add('yarn', 60, 36);
