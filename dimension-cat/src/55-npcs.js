@@ -873,10 +873,18 @@ class BallGame {
 }
 
 // ---------------------------------------------------------------- horseshoes: two players lob a horseshoe underhand past the other, same hand-to-flight-to-hand shape `BallGame` already uses, but the target is the dirt by the far stake rather than the other player's own hand, landing with a clang and a shower of sparks before it is lobbed back the other way
+// `sound`/`landColor`/`tumble` let a reskin (a cloth bean bag, say) land with its own thud and dust instead of a
+// metal clang and sparks, and `holdT0`/`cryT0` let a caller pin the opening hold/cry timers to a fixed number
+// instead of drawing them off the shared `rnd()` at construction, the same escape hatch round 1431's crossing-
+// guard watcher needed to stop a brand-new construction-time draw from tipping a fixed-frame timing check
+// elsewhere in the Neighborhood — without touching the shape every existing caller already relies on; every
+// default below matches the exact hardcoded values this class shipped with, so none of the four earlier callers
+// changes at all.
 class Horseshoes {
-  constructor(game, rigA, rigB, shoe, { cx, cz, gap = 8, cries = null, cryIcon = '🧲' }) {
-    this.game = game; this.shoe = shoe; this.t = 0; this.holder = 0; this.holdT = rnd.range(0.7, 1.3); this.flight = -1; this.dur = 1.25;
-    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(5, 10) : 0;
+  constructor(game, rigA, rigB, shoe, { cx, cz, gap = 8, cries = null, cryIcon = '🧲', sound = 'clang', landColor = 0xcfd6dc, tumble = 9, holdT0 = null, cryT0 = null }) {
+    this.game = game; this.shoe = shoe; this.t = 0; this.holder = 0; this.holdT = holdT0 ?? rnd.range(0.7, 1.3); this.flight = -1; this.dur = 1.25;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cryT0 ?? (cries ? rnd.range(5, 10) : 0);
+    this.sound = sound; this.landColor = landColor; this.tumble = tumble;
     this.players = [rigA, rigB].map((rig, i) => {
       const x = cx, z = cz + (i ? gap / 2 : -gap / 2);
       rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = i ? PI : 0;   // facing each other across the pit
@@ -900,10 +908,10 @@ class Horseshoes {
     }
     this.flight += dt; const u = min(1, this.flight / this.dur);
     this.shoe.position.copy(this.from).lerp(this.to, u); this.shoe.position.y += sin(u * PI) * 2.3;
-    this.shoe.rotation.x += dt * 9;   // tumbling end over end
+    this.shoe.rotation.x += dt * this.tumble;   // tumbling end over end
     if (u >= 1) {
       this.flight = -1; this.holder = 1 - this.holder; this.holdT = rnd.range(1.1, 1.9);
-      SFX.clang(); this.game.fx.emit(this.shoe.position.x, this.shoe.position.y + 0.04, this.shoe.position.z, { count: 5, color: 0xcfd6dc, speed: 0.4, up: 0.4, life: 0.5, gravity: 1.3, spread: 0.5 });
+      SFX[this.sound](); this.game.fx.emit(this.shoe.position.x, this.shoe.position.y + 0.04, this.shoe.position.z, { count: 5, color: this.landColor, speed: 0.4, up: 0.4, life: 0.5, gravity: 1.3, spread: 0.5 });
     }
     if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); if (dist2(this.cx, this.cz, cat.x, cat.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
   }

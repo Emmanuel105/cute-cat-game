@@ -2695,10 +2695,18 @@ class BallGame {
 }
 
 // ---------------------------------------------------------------- horseshoes: two players lob a horseshoe underhand past the other, same hand-to-flight-to-hand shape `BallGame` already uses, but the target is the dirt by the far stake rather than the other player's own hand, landing with a clang and a shower of sparks before it is lobbed back the other way
+// `sound`/`landColor`/`tumble` let a reskin (a cloth bean bag, say) land with its own thud and dust instead of a
+// metal clang and sparks, and `holdT0`/`cryT0` let a caller pin the opening hold/cry timers to a fixed number
+// instead of drawing them off the shared `rnd()` at construction, the same escape hatch round 1431's crossing-
+// guard watcher needed to stop a brand-new construction-time draw from tipping a fixed-frame timing check
+// elsewhere in the Neighborhood — without touching the shape every existing caller already relies on; every
+// default below matches the exact hardcoded values this class shipped with, so none of the four earlier callers
+// changes at all.
 class Horseshoes {
-  constructor(game, rigA, rigB, shoe, { cx, cz, gap = 8, cries = null, cryIcon = '🧲' }) {
-    this.game = game; this.shoe = shoe; this.t = 0; this.holder = 0; this.holdT = rnd.range(0.7, 1.3); this.flight = -1; this.dur = 1.25;
-    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(5, 10) : 0;
+  constructor(game, rigA, rigB, shoe, { cx, cz, gap = 8, cries = null, cryIcon = '🧲', sound = 'clang', landColor = 0xcfd6dc, tumble = 9, holdT0 = null, cryT0 = null }) {
+    this.game = game; this.shoe = shoe; this.t = 0; this.holder = 0; this.holdT = holdT0 ?? rnd.range(0.7, 1.3); this.flight = -1; this.dur = 1.25;
+    this.cries = cries; this.cryIcon = cryIcon; this.cryT = cryT0 ?? (cries ? rnd.range(5, 10) : 0);
+    this.sound = sound; this.landColor = landColor; this.tumble = tumble;
     this.players = [rigA, rigB].map((rig, i) => {
       const x = cx, z = cz + (i ? gap / 2 : -gap / 2);
       rig.group.position.set(x, game.physics.ground0(x, z), z); rig.group.rotation.y = i ? PI : 0;   // facing each other across the pit
@@ -2722,10 +2730,10 @@ class Horseshoes {
     }
     this.flight += dt; const u = min(1, this.flight / this.dur);
     this.shoe.position.copy(this.from).lerp(this.to, u); this.shoe.position.y += sin(u * PI) * 2.3;
-    this.shoe.rotation.x += dt * 9;   // tumbling end over end
+    this.shoe.rotation.x += dt * this.tumble;   // tumbling end over end
     if (u >= 1) {
       this.flight = -1; this.holder = 1 - this.holder; this.holdT = rnd.range(1.1, 1.9);
-      SFX.clang(); this.game.fx.emit(this.shoe.position.x, this.shoe.position.y + 0.04, this.shoe.position.z, { count: 5, color: 0xcfd6dc, speed: 0.4, up: 0.4, life: 0.5, gravity: 1.3, spread: 0.5 });
+      SFX[this.sound](); this.game.fx.emit(this.shoe.position.x, this.shoe.position.y + 0.04, this.shoe.position.z, { count: 5, color: this.landColor, speed: 0.4, up: 0.4, life: 0.5, gravity: 1.3, spread: 0.5 });
     }
     if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); if (dist2(this.cx, this.cz, cat.x, cat.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }
   }
@@ -15096,6 +15104,88 @@ function buildNeighborhood(game, entry) {
     W.add(guardWatcher.group);
     game.npcs.push(new Wanderer(game, guardWatcher, { x: gwx, z: gwz, angle: atan2(gx - gwx, gz - gwz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 6,
       cries: ["Thirty years and she's never missed a lollipop raise.", 'Mind the kerb, puss — she\'ll blow that whistle at you too.', 'Rain or shine, that sign goes up on the dot.'] })); }
+
+  // Rounds 1432-1436 gave every other world a brand-new fairground attraction, and round 1437 gave Victorian
+  // the one lawn game the actual Victorians invented (croquet) — both series skipped the Neighborhood on
+  // purpose, since it is neither a fairground nor Victorian England. This round finds its own genuinely new
+  // fit instead: cornhole, the bean-bag toss every real cul-de-sac eventually grows a pair of boards for.
+  // This street already has the classic backyard toss game twice over — horseshoes at a sandy pit (round
+  // 299) and, under other names, the generic ring toss `Horseshoes` reuses for quoits elsewhere — but
+  // nothing with an actual board and a hole to land a bag in. **Two angled wooden boards, each with a dark
+  // hole cut near its raised end, now face each other across a short lawn south-east of the horseshoe pit,
+  // while a neighbour at each one tosses a bean bag underhand toward the other's hole**, the same
+  // hand-to-flight-to-hand shape `Horseshoes` already gives the horseshoe pit and the quoits/ring-toss
+  // games in every other world, just reskinned: a soft `SFX.thunk()` and a puff of dust (`landColor:
+  // 0xd9c9a0`, the same dust tone the hopscotch chalker's own chalk and the scooter kid's own gravel already
+  // use) in place of the clang and metal sparks a horseshoe lands with, and a slower tumble (5 turns/second
+  // in flight rather than 9) since a cloth bag doesn't spin as fast end over end as an iron shoe. *"Three
+  // bags each, loser buys the lemonade."* *"Mind your tail, puss — that bag doesn't care whose yard it
+  // lands in."* *"Four in the hole already. Beginner's luck, apparently."* Saying hello to either of them
+  // makes them the usual kind of friend too.
+  //
+  // Checked first that this was genuinely new: no "cornhole" or "bean bag" anywhere in the source, and
+  // unlike horseshoes and quoits (both already covered, just under different skins of the same class), no
+  // world had a toss game that lands in a board's own hole rather than at a stake or peg. No new class:
+  // `Horseshoes` (`55-npcs.js`, just above) already gave this project the hold/lob/land/swap shape it
+  // needed; it picked up three small optional knobs (`sound`, `landColor`, `tumble`, all defaulting to the
+  // exact hardcoded values it already used, so the horseshoe pit here and the ring-toss, magnet-toss and
+  // quoits games in the other three worlds are all untouched) rather than a sibling class duplicating the
+  // same update loop for a cosmetic difference. The boards themselves are a plain hand-built group each: a
+  // tilted box panel (`rotation.x` on the group, not the panel, so the flat dark hole disc riding on top as
+  // a thin `G.cyl(...,rx:PI/2)` — the same flat-disc trick the axe target's own bullseye uses — tilts along
+  // with it for free) plus a short vertical leg built straight into `W` at its own world position, since a
+  // real leg stays plumb no matter how the panel above it leans. No `userData.update` needed anywhere in
+  // this group: once built, nothing about either board moves, so both bake into the rest of this world's
+  // static geometry exactly like the horseshoe pit's own sand squares and stakes.
+  //
+  // `Horseshoes` picked up a second pair of optional knobs too (`holdT0`, `cryT0`), both defaulting to the
+  // exact `rnd.range()` draws it already made on the *shared* `rnd()` sequence at construction, so none of
+  // the four existing callers changes — but passed here as fixed numbers instead. Round 1431's own crossing-
+  // guard watcher found that a brand-new construction-time draw on that shared sequence, however small, can
+  // tip a fixed-frame timing check elsewhere in this same world (the "two neighbours chat" test samples one
+  // specific frame and checks an arm angle against a threshold), and this scene sits every bit as late in
+  // the build as that watcher did. A first pass left both knobs at their defaults and failed that same chat
+  // check; pinning `holdT0: 0.9` and `cryT0: 7` — plausible numbers square in the middle of the ranges
+  // `rnd.range(0.7, 1.3)` and `rnd.range(5, 10)` would have drawn anyway — removed the two stray draws and
+  // the test passed clean again, the same fix the guard watcher's own round already worked out for
+  // `Wanderer`.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')` then 3600 simulated frames so every wanderer, the postie, the cyclist and both
+  // crossing-guard watchers had settled, then 600 more sampling every NPC's own position every 10th frame)
+  // swept a 1 m grid of the open field (radius up to 90, this world's own movement limit) against all 338 of
+  // this street's own physics boxes (y 0.4-1.8 band only), all 69 `game.zones` rectangles and every sampled
+  // NPC position, this time preferring a central candidate over the clearer-but-far-flung edge of the
+  // world's own 95 m limit: (54, -27) came back the best central fit — 60.4 m from the world's own origin —
+  // 7.0 m clear of the nearest box, zone rectangle and wandering soul alike at the court's own centre, and
+  // 6.5-7.0 m clear at both ends, (54, -30.5) and (54, -23.5), well south-east of the horseshoe pit (-48, 52)
+  // and clear of every hand-placed prop this street adds. Ground is flat (y=0) across the whole court, so no
+  // terrain grading was needed.
+  //
+  // Built dead last of everything this street adds, right after the crossing-guard watcher above and right
+  // before `makeDayNight()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this street's
+  // own shared `r()` sequence unconditionally, and a fresh rig built any earlier would have shifted every
+  // random pick already placed above it.
+  { const ccx = 54, ccz = -27, cgap = 7;
+    const woodM = mat(0x9a6a3a, { roughness: 0.85 }), legM = mat(0x6a4a2a, { roughness: 0.85 }), holeM = mat(0x1a1410, { roughness: 0.9 });
+    const buildCornholeBoard = (bx, bz, dir) => {   // dir: which way (along world Z) the board's raised/hole end leans, away from the lane
+      const gy = P.ground0(bx, bz);
+      const board = group(bx, gy, bz, W); board.rotation.x = dir * 0.3;
+      mesh(G.box(0.58, 0.035, 1.07), woodM, { y: 0.02, z: dir * 0.535, shadow: 'both', parent: board });
+      mesh(G.cyl(0.115, 0.115, 0.012, 16), holeM, { y: 0.039, z: dir * 0.8, rx: PI / 2, shadow: 'none', parent: board });
+      mesh(G.box(0.05, 0.3, 0.05), legM, { x: bx, y: gy + 0.15, z: bz + dir * 0.98, shadow: 'both', parent: W });
+      P.addBox(bx, gy + 0.15, bz + dir * 0.5, 0.32, 0.3, 0.75, { cam: false });
+    };
+    buildCornholeBoard(ccx, ccz - cgap / 2, -1);
+    buildCornholeBoard(ccx, ccz + cgap / 2, 1);
+    const bagM = mat(0xb5432e, { roughness: 0.95 });
+    const bag = mesh(G.box(0.17, 0.045, 0.2), bagM, { x: ccx, y: 1, z: ccz - cgap / 2, shadow: 'none', parent: W });
+    const throwerA = makeHuman({ ...randomPerson(r, { female: false, child: false, elder: r.chance(0.3) }), shirt: 0x3a8ac0, jacket: null, backpack: null });
+    const throwerB = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: r.chance(0.3) }), shirt: 0x9a5a2a, jacket: null, backpack: null });
+    W.add(throwerA.group); W.add(throwerB.group);
+    const cornholeLines = ["Three bags each, loser buys the lemonade.", "Mind your tail, puss — that bag doesn't care whose yard it lands in.", 'Four in the hole already. Beginner\'s luck, apparently.'];
+    game.npcs.push(new Horseshoes(game, throwerA, throwerB, bag, { cx: ccx, cz: ccz, gap: cgap, cries: cornholeLines, cryIcon: '🫘', sound: 'thunk', landColor: 0xd9c9a0, tumble: 5, holdT0: 0.9, cryT0: 7 }));
+    greetable(game, { rig: throwerA }); greetable(game, { rig: throwerB }); }
 
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
