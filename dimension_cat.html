@@ -33306,6 +33306,44 @@ function buildBeach(game, entry) {
   { const swWatchX = -11, swWatchZ = 27, swCx = 8, swCz = 27, swingWatcher2 = beachPerson(r.chance(0.5), false);
     game.npcs.push(new Wanderer(game, swingWatcher2, { x: swWatchX, z: swWatchZ, angle: atan2(swCx - swWatchX, swCz - swWatchZ), leash: 0.5, speed: 0.3, idle: [3, 6] })); }
 
+  // Rounds 1418-1423 carried the "table-game watcher" series through the Neighborhood's chess
+  // table, Candy Land's dominoes chain, Robot City's checkers drum, Victorian's draughts table,
+  // Frosty Peak's card table and Whisper Woods' draughts table, leaving this coast's own mancala
+  // board (two beachgoers mid-game since earlier in this function) as the only table game left
+  // owing one. This round closes the series out. **A beachgoer now stands a few steps north-west
+  // of the mancala board, watching the game, with a line or two of her own**, called out now and
+  // then whenever the cat is close enough to hear: *"Six shells, is it? She's not leaving him
+  // much to work with."* *"Mind your tail, puss — that board took them half the morning to set
+  // up."* *"Loser's fetching ice lollies. I know which one I'm betting on."* Saying hello to her
+  // still makes her the usual kind of friend on top of that.
+  //
+  // No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this whole series already
+  // uses, which calls `greetable()` itself, so no extra wiring was needed. Like every other table
+  // in the series, the mancala board has no motion worth reading in profile — a mid-game spread of
+  // pebbles and shells and two seated beachgoers don't move — so any clear spot facing it works
+  // equally well. Built with this beach's own shared `beachPerson()`, same as every other watcher
+  // in this file, so no new wardrobe or colour pick.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses,
+  // since there's no browser here to look at it) built the real Sunny Shore (`game.start('new')`,
+  // `game.load(4, 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a
+  // real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so
+  // every crab, turtle, sunbather, dolphin, dog and dancer had settled, then 600 more sampling every
+  // NPC's own position every 10th frame) swept a 0.25 m grid in a 2.5-8 m ring around the mancala
+  // board (-32, -21) against all 218 of this coast's own physics boxes (knee-to-head band only),
+  // all 89 `game.zones` rectangles and every sampled NPC position, staying short of the radius (58)
+  // where `beachRegion()`'s own procedural fill takes over: (-35.5, -17.75) came back clearest —
+  // north-west of the board, about 4.77 m out and 39.7 m from the world's own origin — 4.21 m from
+  // the nearest box, 4.35 m from the nearest zone rectangle and 4.45 m from the nearest other soul.
+  //
+  // Built dead last of everything this beach adds, right after the swing watcher above and right
+  // before `spawnBySquirrel()`, for the usual reason: `beachPerson()`/`randomPerson()` both draw off
+  // this beach's own shared `r()` sequence unconditionally, and anything built earlier here would
+  // have had its own timing-sensitive pick shifted by it.
+  { const mcWatchX = -35.5, mcWatchZ = -17.75, mcTx = -32, mcTz = -21, mancalaWatcher = beachPerson(r.chance(0.5), false);
+    game.npcs.push(new Wanderer(game, mancalaWatcher, { x: mcWatchX, z: mcWatchZ, angle: atan2(mcTx - mcWatchX, mcTz - mcWatchZ), leash: 0.5, speed: 0.3, idle: [3, 6],
+      cries: ["Six shells, is it? She's not leaving him much to work with.", "Mind your tail, puss — that board took them half the morning to set up.", "Loser's fetching ice lollies. I know which one I'm betting on."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
