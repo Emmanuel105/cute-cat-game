@@ -24159,6 +24159,50 @@ function buildRobotCity(game, entry) {
     const checkersWatcherCries = ["Thirty-second break and they're still at it.", "Mind the drum, puss — don't go knocking those washers off.", "Neither one's won since Tuesday. Neither one's quit either."];
     game.npcs.push(new Wanderer(game, checkersWatcher, { x: wx8, z: wz8, angle: atan2(ckX - wx8, ckZ - wz8), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cries: checkersWatcherCries, cryT: r.range(4, 9) })); }
 
+  // Round 1425 opened a "crossing-guard watcher" series after noticing `CrossingGuard` (round 446,
+  // spread to all seven worlds by round 1047) had never picked up the "watcher" treatment every other
+  // long-standing play structure or performer in this game already has, and round 1426 carried it to
+  // Candy Land. This round carries it to Robot City's own safety marshal, built earlier in this
+  // function at (0, -42), raising her stop-sign on a pole for the bot traffic. **An off-duty worker
+  // now stands a few steps north-west of her, watching the sign go up and down, with a line or two of
+  // her own**, called out now and then whenever the cat is close enough to hear: *"Not a single dented
+  // bot since she took the lane."* *"Mind the sign, puss — she swings that pole without looking."*
+  // *"Same stop, same start, every circuit round this floor."* Saying hello to her makes her the usual
+  // kind of friend too.
+  //
+  // No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this project already uses, which
+  // calls `greetable()` itself, so no extra wiring was needed. The marshal just raises and lowers a
+  // sign on the spot — no arc or lane to read in profile — so any clear spot facing her works equally
+  // well. Robot City carries no dupe-shirt rule of its own (the Neighborhood's test is the only one of
+  // the seven that enforces one), so no wardrobe bag was needed, and the frozen `idle: [1e9, 1e9]`
+  // shape the trampoline and checkers watchers above already use went on this one too, the usual cheap
+  // insurance against the shared `r()` sequence even though nothing in this city's own test happens to
+  // read a sampled frame against her.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(2, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so the marching patrol, every loader robot and every other soul had settled, then
+  // 600 more sampling every NPC's own position every 10th frame) swept a 0.25 m grid in a 2.5-20 m ring
+  // around the crossing guard (0, -42) against all 1207 of this city's own physics boxes (knee-to-head
+  // band only), all 296 `game.zones` rectangles and every sampled NPC position, staying short of the
+  // radius (98) where `robotRegion`'s own procedural fill takes over: (-7, -38) came back clearest in
+  // the comfortable 4.5-8 m band — north-west of the guard at about 8.06 m out and 38.6 m from the
+  // world's own origin — 7.99 m from the nearest box, 8.64 m from the nearest zone rectangle and
+  // 8.06 m from the nearest other soul (the guard herself, as expected for a spot standing this close
+  // to her and nobody else nearby).
+  //
+  // Built dead last of everything this city adds, right after the checkers watcher above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this city's own local `r()` sequence
+  // unconditionally, and dropping a fresh rig in any earlier would have shifted every random pick made
+  // above it.
+  { const gcX = 0, gcZ = -42, gwX = -7, gwZ = -38;
+    const guardWatcher2 = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(guardWatcher2.group);
+    const guardWatcher2Cries = ["Not a single dented bot since she took the lane.", 'Mind the sign, puss — she swings that pole without looking.', 'Same stop, same start, every circuit round this floor.'];
+    game.npcs.push(new Wanderer(game, guardWatcher2, { x: gwX, z: gwZ, angle: atan2(gcX - gwX, gcZ - gwZ), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cries: guardWatcher2Cries, cryT: r.range(4, 9) })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
