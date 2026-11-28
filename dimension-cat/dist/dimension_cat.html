@@ -33739,6 +33739,109 @@ function buildBeach(game, entry) {
     game.npcs.push(new Wanderer(game, mancalaWatcher, { x: mcWatchX, z: mcWatchZ, angle: atan2(mcTx - mcWatchX, mcTz - mcWatchZ), leash: 0.5, speed: 0.3, idle: [3, 6],
       cries: ["Six shells, is it? She's not leaving him much to work with.", "Mind your tail, puss — that board took them half the morning to set up.", "Loser's fetching ice lollies. I know which one I'm betting on."] })); }
 
+  // Rounds 1432-1434 broke the long "watcher" series by giving Candy Land a whack-a-mole stall, Frosty
+  // Peak a strongman's high striker and Robot City an arcade claw machine — each a brand-new carnival
+  // attraction rather than someone standing beside a game the cat already knew about. Sunny Shore's own
+  // blurb has promised "waves, crabs and coconuts" since round 1, and a coconut vendor sells whole
+  // coconuts off this same beach, but the one fairground game actually built around a coconut — the
+  // seaside coconut shy — never turned up here or anywhere else in the game. **A striped coconut-shy
+  // stall now stands on the dune grass south-west of the swing set, three coconuts balanced on wooden
+  // posts in front of a candy-striped backdrop, while a holidaymaker lobs a ball at them every few
+  // seconds**, the same `Chopper` (`55-npcs.js`) swing-and-strike timing the blacksmith, the mole-stall
+  // kid, the high-striker strongman and the claw-machine kid all already use, repurposed once more for
+  // an overhand throw rather than a downward blow. Like the mole's pop, the puck's climb and the claw's
+  // grab-haul-drop, the ball's own flight and the coconut's wobble on impact run off the world clock `t`
+  // on a steady loop, entirely decoupled from the thrower's own swing timer — cosmetic background
+  // motion, not a real hit-detection game, so whether a given throw actually looks like it lands square
+  // on the coconut is luck, not something the cat can affect, and the coconut always wobbles and
+  // resettles rather than ever actually falling (nothing here needs to reappear from off-stage).
+  // *"Three balls for sixpence, and sixpence for nothing yet."* *"Mind your tail, puss — that ball's
+  // wide more often than it's not."* *"Same three coconuts, every single day. Tougher than they look."*
+  // Saying hello to the thrower makes them the usual kind of friend too, Sunny Shore's own count rising
+  // by one.
+  //
+  // Checked first that this was genuinely new: no "coconut shy", "shy stall" or "skittle" anywhere in
+  // this file or any other world's own. No new rig option: the thrower wears no tool (`hammer` stays
+  // unset), since the ball leaves an open bare hand rather than swinging anything — `Chopper`'s "chop"
+  // gesture is a generic two-handed up-then-down motion that never actually depends on a held tool, the
+  // same reasoning the claw-machine kid's own bare-fisted swing already relied on. `Chopper` needed no
+  // changes: it already drives the axe, the hammer and two bare-handed swings with the same timing, and
+  // its own constructor calls `greetable()`, so no extra wiring was needed. The stall itself is a plain
+  // hand-built group (three posts, a striped backdrop reusing the Punch and Judy booth's own red/cream
+  // cloth colours, and a low counter) plus one free ball mesh, animated by a single `U.push` closure
+  // keyed off `t`, the same trick the mole, the claw and the high-striker's puck already use — the
+  // ball's own position during flight is a `from`/`to`/lerp-with-a-sine-arc`, the same idiom
+  // `Horseshoes` and `StoneSkipper` already use for a lobbed or skipped object, and the coconut's wobble
+  // on landing is a decaying sine keyed off a `cycleNo` guard, the same one-shot-per-cycle trick the
+  // puppet booth's own clash and the mechanic's spark already use.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(4, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so every crab, turtle, sunbather, dolphin, dog and dancer had settled, then 600
+  // more sampling every NPC's own position every 10th frame) swept a 1 m grid of the dune grass (radius
+  // 10-55, short of the radius (58) where `beachRegion()`'s own procedural fill takes over) against all
+  // 218 of this coast's own physics boxes (knee-to-head band only), all 89 `game.zones` rectangles and
+  // every sampled NPC position: (-24, 10) came back clearest among the central candidates for the stall
+  // itself — 4.92 m clear of the nearest box, 12.6 m clear of the nearest zone rectangle and 7.06 m
+  // clear of the nearest wandering soul, 26 m from the world's own origin, well past the swing set and
+  // the swing watcher above. (-24, 8), a couple of steps south for the thrower, came back 4.14 m clear
+  // of the nearest box and 7.1 m clear of the nearest wandering soul. Ground runs 0.42-0.43 m across
+  // both footprints, under 1 cm of slope either way — flat enough to need no terrain grading.
+  //
+  // Built dead last of everything this beach adds, right after the mancala watcher above and right
+  // before `spawnBySquirrel()`, for the usual reason: `beachPerson()`/`randomPerson()` both draw off
+  // this beach's own shared `r()` sequence unconditionally, and a fresh rig built any earlier would
+  // have shifted every random pick already placed above it.
+  { const sx = -24, sz = 10, tx = -24, tz = 8, tRy = atan2(sx - tx, sz - tz);
+    const gy0 = P.ground0(sx, sz);
+    const stall = group(sx, gy0, sz, W);
+    const postM = mat(0x5a4328, { roughness: 0.85 }), cupM = mat(0x8a5a32, { roughness: 0.8 }),
+      clothA = mat(0x8b1a1a, { roughness: 0.85 }), clothB = mat(0xf7f3ec, { roughness: 0.85 }), huskM = mat(0x5a3a22, { roughness: 0.95 }), counterM = mat(0x6b5233, { roughness: 0.8 });
+    // the striped backdrop, same cloth colours the Punch and Judy booth already uses — the thrower
+    // stands on the -z side (toward the hub portal), so the open counter faces -z and the backdrop
+    // and posts sit on the far +z side, away from them
+    for (let i = 0; i < 7; i++) mesh(G.box(0.16, 1.3, 0.03), i % 2 ? clothA : clothB, { x: -0.56 + i * 0.16, y: 1.05, z: 0.35, parent: stall });
+    mesh(G.box(1.2, 0.08, 0.1), postM, { y: 1.72, z: 0.35, parent: stall });   // top rail pinning the stripes
+    mesh(G.box(1.0, 0.5, 0.3), counterM, { y: 0.25, z: -0.3, parent: stall });   // the low front counter
+    const posts = [-0.42, 0, 0.42].map((px) => {
+      mesh(G.cyl(0.04, 0.05, 0.75, 8), postM, { x: px, y: 0.375, z: 0.1, parent: stall });
+      mesh(G.torus(0.09, 0.02, 6, 10), cupM, { x: px, y: 0.73, z: 0.1, shadow: 'none', parent: stall });
+      const coco = group(px, 0.78, 0.1, stall);
+      mesh(G.sphere(0.1, 10, 8), huskM, { parent: coco });
+      for (const a of [0, 2.1, 4.2]) mesh(G.cyl(0.012, 0.012, 0.03, 5), mat(0x3a2414, { roughness: 1 }), { x: cos(a) * 0.06, y: sin(a) * 0.06 + 0.02, parent: coco });   // the three dark "eyes"
+      return coco;
+    });
+    const ball = mesh(G.sphere(0.07, 10, 8), mat(0xe0503c, { roughness: 0.6 }), { parent: stall });
+    ball.visible = false;
+    const hand = V3(0, 0.85, -1.7), target = V3(0, 0.78, 0.1), shyCyc = 2.8, flightDur = 0.42, flightStart = 0.45;
+    let hitCycle = -1, lastHit = -10;
+    U.push((dt, t) => {
+      const k = (t % shyCyc) / shyCyc;
+      if (k >= flightStart && k < flightStart + flightDur / shyCyc) {
+        const u = (k - flightStart) / (flightDur / shyCyc);
+        ball.position.set(lerp(hand.x, target.x, u), lerp(hand.y, target.y, u) + sin(u * PI) * 0.55, lerp(hand.z, target.z, u));
+        ball.rotation.x += dt * 14;
+        ball.visible = true;
+        const cycleNo = floor(t / shyCyc);
+        if (u >= 0.97 && cycleNo !== hitCycle) {
+          hitCycle = cycleNo; lastHit = t; SFX.bounce();
+          const c = game.cat.group.position;
+          if (dist2(sx, sz, c.x, c.z) < 400) game.fx.emit(sx, gy0 + 0.78, sz + 0.1, { count: 6, colors: [0x5a3a22, 0xf7f3ec], speed: 1.0, up: 0.9, life: 0.5, gravity: 3.5 });
+        }
+      } else ball.visible = false;
+      const since = t - lastHit, wobble = since >= 0 && since < 1.2 ? sin(since * 11) * Math.exp(-since * 3.2) * 0.3 : 0;
+      posts[1].rotation.z = wobble;
+    });
+    P.addBox(sx, gy0 + 0.65, sz, 1.3, 1.3, 0.9, { cam: false });
+    const throwWard = makeWardrobe(r, { shirts: [0xff7043, 0x4fc3f7, 0xfff176, 0xf48fb1] });
+    const thrower = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.2), wardrobe: throwWard }),
+      shorts: true, hat: r.chance(0.5) ? 'cap' : null, glasses: r.chance(0.3) });
+    W.add(thrower.group);
+    const shyLines = ['Three balls for sixpence, and sixpence for nothing yet.', "Mind your tail, puss — that ball's wide more often than it's not.", 'Same three coconuts, every single day. Tougher than they look.'];
+    game.npcs.push(new Chopper(game, thrower, { x: tx, z: tz, ry: tRy,
+      colors: [0x5a3a22, 0xf7f3ec], cryIcon: '🥥', cries: shyLines })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
