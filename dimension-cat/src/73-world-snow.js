@@ -4184,6 +4184,87 @@ function buildSnowVillage(game, entry) {
     game.npcs.push(new Wanderer(game, cgWatcher, { x: cgWatchX, z: cgWatchZ, angle: atan2(cgX - cgWatchX, cgZ - cgWatchZ), speed: 0.3, leash: 0.5, idle: [1e9, 1e9],
       cries: ["Not a sled nor a soul's crossed that spot all winter, and she still raises it every time.", "Mind your tail, puss — she swings that sign without looking twice.", "Same patch, same watch, every day the mountain's open."] })); }
 
+  // Every "watcher" and "listener" series this game has run has been about someone standing beside a
+  // game the cat already knew about — round 1432 broke that pattern for the first time anywhere in the
+  // game, adding Candy Land's own fairground whack-a-mole stall as a brand-new attraction instead.
+  // Searched this log for anything still owing a watcher first and came up empty, so this round does
+  // the same thing for Frosty Peak: a strongman's high striker, the carnival test-your-strength tower
+  // with a bell at the top, something no world in the game has ever had. **A red-and-gold striker
+  // tower now stands on the open snowfield east of the magician, its puck rocketing up toward the bell
+  // every few seconds, while a bundled-up strongman swings a big mallet down onto its base,** the same
+  // `Chopper` (`55-npcs.js`) swing-and-strike timing the blacksmith and the whack-a-mole kid both
+  // already use. Like the mole's own pop cycle, the puck's climb and fall runs off the world clock `t`
+  // on its own steady loop rather than being tied to the mallet's own swing timer — cosmetic
+  // background motion, not a real hit-detection game, so whether a given swing sends the puck all the
+  // way to the bell is luck, not something the cat can affect. *"Rings it most days — the bell just
+  // doesn't always feel like answering."* *"Mind your tail, puss — that mallet comes down whether
+  // you're clear or not."* *"Same swing, same puck, every single day the mountain's open. Hasn't
+  // cracked the bell yet."* Saying hello to him makes him the usual kind of friend too.
+  //
+  // Checked first that this was genuinely new: no "high striker", "strongman" or "test your strength"
+  // anywhere in this file or any other world's own. No new rig option either — `hammer: true`
+  // (`55-npcs.js`) already builds the same short wooden-handled, blocky iron-headed tool the
+  // blacksmith and the mole-stall kid use for their own mallets, reused as-is rather than adding a new
+  // option, since the shape reads as a strongman's sledgehammer just as well at this game's scale.
+  // `Chopper` needed no changes: it already drives the hammer, the axe and the mole-stall mallet with
+  // the same swing-and-strike timing, and its own constructor calls `greetable()`, so no extra wiring
+  // was needed to make the strongman a friend. The tower itself is a plain hand-built group animated
+  // by a `U.push` closure keyed off the world clock, the same trick the whack-a-mole's own mole and the
+  // fortune cookie's glow and wobble already use — no `userData.update` marker needed, since nothing in
+  // this file's own hand-placed props (as opposed to `68-regions.js`'s procedural fill) ever gets run
+  // through `bakeDeep()`.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(5, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so every reindeer, hare, arctic fox, penguin, yeti and wandering villager had
+  // settled, then 600 more sampling every NPC's own position every 10th frame) swept a 2 m grid of the
+  // open snowfield (radius 10-56, short of the radius (58) where `snowRegion`'s own fill takes over)
+  // against all 718 of this mountain's own physics boxes (knee-to-head band only), all 152
+  // `game.zones` rectangles and every sampled NPC position: (32, 34) came back clearest for the tower
+  // itself — 7.36 m clear of the nearest box, zone rectangle and wandering soul alike, 46.7 m from the
+  // world's own origin, well past the magician at (-42, 8), the basketball hoop at (-19, 46-51.5) and
+  // the crossing-guard watcher at (10, 33.5) above. (32, 35.1), a step south for the strongman himself,
+  // came back 6.88 m clear of the same three. Ground runs 0.39-0.42 m across both footprints, under
+  // 2 cm of slope either way — flat enough to need no terrain grading.
+  //
+  // Built dead last of everything this mountain adds, right after the crossing-guard watcher above and
+  // right before `spawnBySquirrel()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw
+  // off this mountain's own shared `r()` sequence unconditionally, and a fresh rig built any earlier
+  // would have shifted every random pick already placed above it.
+  { const px = 32, pz = 34, scx = 32, scz = 35.1, sry = atan2(px - scx, pz - scz), poleH = 3.0;
+    const gy0 = P.ground0(px, pz);
+    const root = group(px, gy0, pz, W);
+    const padM = mat(0x3a3a3a, { roughness: 0.6, metalness: 0.3 }), poleM = mat(0xb02e2e, { roughness: 0.55, metalness: 0.2 }),
+      goldM = mat(0xd4af37, { roughness: 0.4, metalness: 0.6 }), puckM = mat(0xf2efe6, { roughness: 0.5 }), bellM = mat(0xe8c94a, { roughness: 0.3, metalness: 0.7 });
+    mesh(G.cyl(0.26, 0.3, 0.14, 14), padM, { y: 0.07, shadow: 'both', parent: root });   // the striking pad, where the mallet lands
+    mesh(G.cyl(0.05, 0.06, poleH, 10), poleM, { y: 0.14 + poleH / 2, shadow: 'both', parent: root });   // the tower itself
+    for (let i = 1; i <= 3; i++) mesh(G.torus(0.065, 0.012, 6, 14), goldM, { y: 0.14 + i * (poleH - 0.3) / 4, shadow: 'none', parent: root });   // gilt collars marking the climb
+    const bell = group(0, 0.14 + poleH, 0, root);
+    mesh(G.sphere(0.13, 12, 8), bellM, { sy: 0.75, parent: bell });
+    mesh(G.cyl(0.03, 0.03, 0.08, 8), goldM, { y: -0.12, shadow: 'none', parent: bell });   // the clapper, hanging below
+    const puck = group(0, 0.2, 0, root);
+    mesh(G.cyl(0.09, 0.09, 0.06, 12), puckM, { shadow: 'none', parent: puck });
+    mesh(G.torus(0.09, 0.015, 6, 12), goldM, { shadow: 'none', parent: puck });
+    const travel = poleH - 0.3, strikerPeriod = 3.2;
+    U.push((dt, t) => {
+      const ph = (t % strikerPeriod) / strikerPeriod;
+      let rise;
+      if (ph < 0.1) rise = ph / 0.1;   // rockets up the pole
+      else if (ph < 0.18) rise = 1;   // a brief hover up by the bell
+      else if (ph < 0.9) { const f = (ph - 0.18) / 0.72; rise = 1 - f * f; }   // falls back, easing in like gravity
+      else rise = 0;
+      puck.position.y = 0.2 + rise * travel;
+    });
+    P.addBox(px, gy0 + 0.6, pz, 0.35, 1.2, 0.35, { cam: false });
+    const strongWard = makeWardrobe(r, { shirts: [0x8a2a2a, 0x2a4a6a, 0x2a5a3a] });
+    const strongman = makeHuman({ ...randomPerson(r, { female: r.chance(0.3), child: false, elder: false, wardrobe: strongWard }),
+      hat: 'beanie', hatColor: 0x2a2a2a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a, bag: null, backpack: null, glasses: false, build: 'stout', hammer: true });
+    W.add(strongman.group);
+    const strikerLines = ["Rings it most days — the bell just doesn't always feel like answering.", "Mind your tail, puss — that mallet comes down whether you're clear or not.", "Same swing, same puck, every single day the mountain's open. Hasn't cracked the bell yet."];
+    game.npcs.push(new Chopper(game, strongman, { x: scx, z: scz, ry: sry,
+      colors: [0xf2efe6, 0xd4af37, 0xb02e2e], cryIcon: '🔨', cries: strikerLines })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
