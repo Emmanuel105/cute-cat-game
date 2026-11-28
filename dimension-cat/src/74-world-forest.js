@@ -4794,6 +4794,112 @@ function buildForest(game, entry) {
       angle: atan2(cwGx - cwWatchX, cwGz - cwWatchZ), speed: 0.3, leash: 0.5, idle: [3, 6],
       cries: ["Not one soul or cart's ever crossed that spot, and she still raises the sign every time.", 'Mind your tail, puss — she swings that stop sign without looking twice.', "Same spot, same watch, every day she's out here among the trees."] })); }
 
+  // Rounds 1432-1435 gave Candy Land a whack-a-mole stall, Frosty Peak a strongman's high striker,
+  // Robot City an arcade claw machine and Sunny Shore a coconut shy — four brand-new carnival
+  // attractions in a row, each reusing `Chopper`'s (`55-npcs.js`) swing-and-strike timing for the
+  // gesture while a free mesh animated the actual thrown object on its own loop. Whisper Woods was
+  // left as the only one of the seven still owing a brand-new attraction of its own. This wood
+  // already has a woodcutter splitting logs on the eastern stump and a trapper sharpening axes at
+  // his own wheel, so the obvious fit is the fairground game an actual lumberjack would run: axe
+  // throwing. **A round wooden target now stands in a clearing south of the draughts table, painted
+  // rings around a dark bullseye with one axe already sunk into it, while a lumberjack throws another
+  // one at it every few seconds**, the same `Chopper` swing-and-strike timing the blacksmith, the
+  // mole-stall kid, the high-striker strongman, the claw-machine kid and the coconut-shy thrower all
+  // already use, repurposed once more for an overhand throw. Like the ball and the coconut before it,
+  // the thrown axe's own flight and tumble run off the world clock `t` on a steady loop, entirely
+  // decoupled from the thrower's own swing timer — cosmetic background motion, not a real
+  // hit-detection game, so whether a given throw actually looks close to the bullseye is luck, not
+  // something the cat can affect; the axe already standing in the target never moves, so there's
+  // always one "stuck" there for flavour even mid-throw. *"Every throw's dead centre, to hear him
+  // tell it. The target disagrees."* *"Mind your tail, puss — that blade's spinning long before it
+  // lands."* *"Same target, same axe, every single day out here. Bark's taking a beating."* Saying
+  // hello to him makes him the usual kind of friend too.
+  //
+  // Checked first that this was genuinely new: no "axe throw", "axe-throwing" or "target" used as a
+  // fairground game anywhere in this file or any other world's own. No new rig option: `axe: true`
+  // (`55-npcs.js`) already builds the same short-handled, wide-bladed axe into a `makeHuman()` rig's
+  // hand for the woodcutter above and the trapper elsewhere in this file, reused as-is here too, since
+  // a lumberjack holding an axe reads the same whether he's chopping or about to throw one. `Chopper`
+  // needed no changes: it already drives the axe, the hammer and three bare-handed swings with the
+  // same timing, and its own constructor calls `greetable()`, so no extra wiring was needed. The
+  // target itself is a plain hand-built group (a post, a painted disc and one axe permanently sunk in
+  // the bullseye) plus one free axe mesh for the throw, animated by a single `U.push` closure keyed
+  // off `t` — the flying axe's own position during flight is a `from`/`to`/lerp-with-a-sine-arc`, the
+  // same idiom the coconut shy's own ball and `Horseshoes`/`StoneSkipper` already use for a lobbed or
+  // skipped object, tumbling on its way (`rotation.x += dt * 16`) rather than the ball's single-axis
+  // spin, and the whole target shudders on impact with the same decaying-sine-on-a-`cycleNo`-guard
+  // the coconut post and the mechanic's spark already use.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(6, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so every deer, fox, hare, frog and wandering forester had settled, then 600 more
+  // sampling every NPC's own position every 10th frame) swept a 2 m grid of the open forest floor
+  // (radius 10-55, short of the radius (58) where `forestRegion()`'s own fill takes over) against all
+  // 478 of this wood's own physics boxes (knee-to-head band only), all 216 `game.zones` rectangles and
+  // every sampled NPC position: (19.5, -38.5) came back clearest for the target — 6.57 m clear of the
+  // nearest box, 20.1 m clear of the nearest zone rectangle and 6.6 m clear of the nearest wandering
+  // soul, 43.2 m from the world's own origin, south of the draughts table and well clear of the
+  // crossing-guard watcher above. (19.5, -40.5), two steps south for the thrower, came back 6.51 m
+  // clear of the nearest box and 5.8 m clear of the nearest soul. Ground runs 0.57-0.65 m across the
+  // two footprints — more slope than most of this series has found (about 4 cm per metre between the
+  // two spots), but each prop sits on its own `P.ground0()` call, so the lean between them never
+  // throws either one off plumb on its own patch.
+  //
+  // Built dead last of everything this wood adds, right after the crossing-guard watcher above, for
+  // the usual reason: `makeHuman()`/`randomPerson()` both draw off this wood's own local `r()`
+  // sequence unconditionally, and a fresh rig built any earlier would have shifted every random pick
+  // already placed above it.
+  { const tgx = 19.5, tgz = -38.5, wmx = 19.5, wmz = -40.5, wmRy = atan2(tgx - wmx, tgz - wmz);
+    const gy0 = P.ground0(tgx, tgz);
+    const target = group(tgx, gy0, tgz, W);
+    const postM = mat(0x5a4328, { roughness: 0.85 }), woodM = mat(0xc9a06a, { roughness: 0.8 }),
+      ringM = mat(0xb5342a, { roughness: 0.7 }), bullM = mat(0x2a2016, { roughness: 0.7 }),
+      headM = mat(0x9aa3ad, { metalness: 0.7, roughness: 0.35 }), handleM = mat(0x6a4a2a, { roughness: 0.9 });
+    mesh(G.cyl(0.07, 0.09, 1.1, 10), postM, { y: 0.55, shadow: 'both', parent: target });   // the post the disc is mounted on
+    mesh(G.cyl(0.55, 0.55, 0.12, 20), woodM, { y: 1.15, rx: PI / 2, shadow: 'both', parent: target });   // the target disc itself, facing the thrower
+    mesh(G.torus(0.4, 0.045, 6, 20), ringM, { y: 1.15, z: -0.07, rx: PI / 2, shadow: 'none', parent: target });
+    mesh(G.torus(0.24, 0.045, 6, 18), ringM, { y: 1.15, z: -0.07, rx: PI / 2, shadow: 'none', parent: target });
+    mesh(G.cyl(0.1, 0.1, 0.02, 14), bullM, { y: 1.15, z: -0.07, rx: PI / 2, shadow: 'none', parent: target });   // the bullseye
+    // the axe already sunk into the bullseye, permanent, for flavour — so the target always has one
+    // "stuck" there even mid-throw: blade at the group's own origin (right at the disc face), handle
+    // (the longer reach along local Y) tipped back toward the thrower once the group itself is tilted
+    const stuckAxe = group(0.07, 1.2, -0.08, target);
+    stuckAxe.rotation.set(-1.4, 0.15, 0.2);
+    mesh(G.box(0.05, 0.08, 0.2), headM, { y: 0.02, parent: stuckAxe });
+    mesh(G.cyl(0.018, 0.022, 0.5, 6), handleM, { y: 0.32, parent: stuckAxe });
+    // the one that actually flies, a plain head-and-handle built the same way, invisible except mid-throw
+    const flyAxe = group(0, 0, 0, target);
+    mesh(G.cyl(0.018, 0.022, 0.5, 6), handleM, { parent: flyAxe });
+    mesh(G.box(0.05, 0.2, 0.12), headM, { y: 0.3, parent: flyAxe });
+    flyAxe.visible = false;
+    const hand = V3(0, 1.3, -1.9), landed = V3(0.07, 1.22, -0.08), axeCyc = 3.0, flightDur = 0.42, flightStart = 0.48;
+    let hitCycle = -1, lastHit = -10;
+    U.push((dt, t) => {
+      const k = (t % axeCyc) / axeCyc;
+      if (k >= flightStart && k < flightStart + flightDur / axeCyc) {
+        const u = (k - flightStart) / (flightDur / axeCyc);
+        flyAxe.position.set(lerp(hand.x, landed.x, u), lerp(hand.y, landed.y, u) + sin(u * PI) * 0.5, lerp(hand.z, landed.z, u));
+        flyAxe.rotation.x += dt * 16;   // tumbling head-over-handle on its way
+        flyAxe.visible = true;
+        const cycleNo = floor(t / axeCyc);
+        if (u >= 0.97 && cycleNo !== hitCycle) {
+          hitCycle = cycleNo; lastHit = t; SFX.thunk();
+          const c = game.cat.group.position;
+          if (dist2(tgx, tgz, c.x, c.z) < 400) game.fx.emit(tgx, gy0 + 1.2, tgz - 0.08, { count: 6, colors: [0xc9a06a, 0x9aa3ad], speed: 1.1, up: 0.8, life: 0.5, gravity: 3.5 });
+        }
+      } else flyAxe.visible = false;
+      const since = t - lastHit;
+      target.rotation.z = since >= 0 && since < 1.1 ? sin(since * 12) * Math.exp(-since * 3.4) * 0.05 : 0;
+    });
+    P.addBox(tgx, gy0 + 0.75, tgz, 1.2, 1.5, 0.4, { cam: false });
+    const thrower = makeHuman({ ...randomPerson(r, { female: r.chance(0.3), child: false, elder: r.chance(0.15) }),
+      shirt: 0x3a6b4a, pants: 0x3c3327, shoes: 0x3a2a1e, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false, beard: r.chance(0.5), build: 'stout', axe: true });
+    W.add(thrower.group);
+    const axeLines = ["Every throw's dead centre, to hear him tell it. The target disagrees.", "Mind your tail, puss — that blade's spinning long before it lands.", "Same target, same axe, every single day out here. Bark's taking a beating."];
+    game.npcs.push(new Chopper(game, thrower, { x: wmx, z: wmz, ry: wmRy,
+      colors: [0xc9a06a, 0x9aa3ad], cryIcon: '🪓', cries: axeLines })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
