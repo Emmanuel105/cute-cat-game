@@ -14970,6 +14970,111 @@ function buildRobotCity(game, entry) {
     const guardWatcher2Cries = ["Not a single dented bot since she took the lane.", 'Mind the sign, puss — she swings that pole without looking.', 'Same stop, same start, every circuit round this floor.'];
     game.npcs.push(new Wanderer(game, guardWatcher2, { x: gwX, z: gwZ, angle: atan2(gcX - gwX, gcZ - gwZ), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cries: guardWatcher2Cries, cryT: r.range(4, 9) })); }
 
+  // Rounds 1432-1433 broke the long run of "watcher" and "listener" series (every one of those had
+  // been about adding someone to stand beside a game the cat already knew about) by giving Candy Land
+  // a fairground whack-a-mole stall and Frosty Peak a strongman's high striker instead — both brand-
+  // new attractions, not reskinned ones. Robot City, Victorian, Sunny Shore and Whisper Woods never
+  // got one of their own. This round gives Robot City the obvious fit for its theme: an arcade claw
+  // machine. **A neon-trimmed claw-crane cabinet now stands on the open factory floor**, a little
+  // grabber riding a rail inside the glass front, dropping down onto a pile of toy bots, closing over
+  // one, hauling it up and sliding it across to the chute before opening and letting it fall — then
+  // sliding back to start the cycle over. A kid plants both fists on the cabinet's buttons every few
+  // seconds like leaning on them harder will help, the same `Chopper` (`55-npcs.js`) two-handed
+  // overhead-down swing timing the blacksmith, the mole-stall kid and the high-striker strongman all
+  // already use. Like the mole's own pop cycle and the striker's own puck, the claw's full grab-haul-
+  // drop cycle runs off the world clock `t` on its own steady loop, decoupled from the kid's own swing
+  // timer entirely — cosmetic background motion, not a real machine the cat can feed a coin into or
+  // influence from outside. *"Rigged, I tell you. Rigged."* *"Mind your tail, puss — that claw doesn't
+  // care what's underneath it."* *"Same claw, same six prizes, every single day. Never seen it miss
+  // the chute yet."* Saying hello to the kid makes them the usual kind of friend too.
+  //
+  // Checked first that this was genuinely new: no "claw machine", "claw crane" or "arcade" anywhere in
+  // the source. No new rig option: the kid wears no tool (`hammer` stays unset), since both fists come
+  // down bare on the cabinet's own buttons rather than swinging anything — `Chopper`'s "chop" gesture
+  // is a generic two-handed up-then-down motion (`55-npcs.js`'s `rig.animate`, the `chop !== null`
+  // branch) that never actually depends on a held tool, so it reads just as well empty-handed. The
+  // claw itself needed no new class either: a plain hand-built group (fingers on pivots, a short
+  // suspension cable scaled to length each frame, and a single "prize" toy mesh parented straight to
+  // the claw so it travels for free whenever the claw's own grip is closed) animated by one `U.push`
+  // closure keyed off `t`, the same trick the mole, the fortune cookie's glow and the high-striker's
+  // puck already use. The toy's own scale doubles as its grip state — 0 while the claw's open and empty,
+  // ramping to 1 exactly as the fingers close and back to 0 as they open over the chute — so no separate
+  // visibility flag was needed. A static handful of spare toy bots sits baked in the pile underneath for
+  // flavour; the one that travels is a extra mesh of the same shape, not one of them in particular.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(2, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so the marching patrol, every loader robot and every other soul had settled, then
+  // 600 more sampling every NPC's own position every 10th frame) swept a 2 m grid of the open factory
+  // floor (radius 10-92, short of the radius (98) where `robotRegion()`'s own fill takes over) against
+  // all 1211 of this city's own physics boxes (knee-to-head band only), all 296 `game.zones` rectangles
+  // and every sampled NPC position, preferring the more central band over the clearer-but-far-flung
+  // edge of range: (-26, 44) came back the best central candidate — 51.1 m from the world's own origin
+  // — 9.78 m from the nearest box, 51.2 m from the nearest zone rectangle and 8.99 m from the nearest
+  // other soul; the kid, a step south at (-26, 42.8) facing the cabinet, scores within a few cm of the
+  // same clearance.
+  //
+  // Built dead last of everything this city adds, right after the crossing-guard watcher above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this city's own local `r()` sequence
+  // unconditionally, and dropping a fresh rig in any earlier would have shifted every random pick made
+  // above it.
+  { const ccx = -26, ccz = 44, railY = 1.18, grabY = 0.28, pileX = -0.16, chuteX = 0.3;
+    const root = group(ccx, 0, ccz, W);
+    const bodyM = mat(0x3a1a4a, { roughness: 0.55 }), trimM = mat(0x00e5ff, { emissive: 0x00e5ff, emissiveIntensity: 1.3, roughness: 0.3 }),
+      steelM = mat(0x5a6470, { metalness: 0.8, roughness: 0.35 }), glassM = mat(0xbfe7ff, { roughness: 0.15, transparent: true, opacity: 0.32 }),
+      darkM = mat(0x16181e, { roughness: 0.6 });
+    mesh(G.box(0.9, 0.08, 0.7), bodyM, { y: 0.04, shadow: 'both', parent: root });   // base
+    mesh(G.box(0.9, 0.06, 0.7), bodyM, { y: 1.33, shadow: 'both', parent: root });   // top cap
+    for (const [px, pz] of [[-0.42, -0.32], [0.42, -0.32], [-0.42, 0.32], [0.42, 0.32]]) mesh(G.cyl(0.03, 0.03, 1.3, 8), steelM, { x: px, y: 0.68, z: pz, parent: root });   // corner posts
+    mesh(G.box(0.86, 0.1, 0.02), trimM, { y: 0.1, z: 0.345, shadow: 'none', parent: root });   // marquee strip, low
+    mesh(G.box(0.86, 0.1, 0.02), trimM, { y: 1.26, z: 0.345, shadow: 'none', parent: root });   // marquee strip, under the cap
+    mesh(G.box(0.86, 1.0, 0.02), glassM, { y: 0.7, z: 0.345, shadow: 'none', parent: root });   // glass front
+    mesh(G.box(0.86, 1.0, 0.02), bodyM, { y: 0.7, z: -0.345, shadow: 'both', parent: root });   // back panel
+    mesh(G.box((chuteX - pileX) + 0.24, 0.03, 0.05), steelM, { x: (pileX + chuteX) / 2, y: railY + 0.08, shadow: 'none', parent: root });   // the rail
+    const slotM = mat(0x0c0d10, { roughness: 0.4 });
+    mesh(G.box(0.2, 0.03, 0.04), slotM, { x: chuteX, y: grabY + 0.16, z: 0.34, shadow: 'none', parent: root });   // chute slot on the glass
+    mesh(G.box(0.26, 0.06, 0.16), bodyM, { x: chuteX, y: 0.03, z: 0.46, shadow: 'both', parent: root });   // the prize tray, outside the glass
+
+    const toyColors = [0xffd166, 0xff6fb5, 0x7fe8ff, 0x9affa0];
+    const makeToy = (col, s = 1) => { const g = group(0, 0, 0, root); mesh(G.box(0.05 * s, 0.05 * s, 0.05 * s), mat(col, { roughness: 0.6 }), { parent: g }); mesh(G.sphere(0.028 * s, 8, 6), mat(col, { roughness: 0.6 }), { y: 0.045 * s, parent: g }); for (const side of [1, -1]) mesh(G.sphere(0.006 * s, 6, 5), darkM, { x: side * 0.012 * s, y: 0.05 * s, z: 0.024 * s, shadow: 'none', parent: g }); return g; };
+    [[pileX + 0.08, 0.08, -0.14, 0], [pileX - 0.1, 0.08, 0.02, 1], [pileX + 0.14, 0.08, 0.12, 2], [pileX - 0.02, 0.08, 0.2, 3]].forEach(([tx, ty, tz, ci]) => { const t2 = makeToy(toyColors[ci]); t2.position.set(tx, ty, tz); });   // the static spares in the pile
+
+    const claw = group(pileX, railY, 0, root);
+    mesh(G.box(0.1, 0.05, 0.1), steelM, { y: 0.03, parent: claw });   // the trolley block riding the rail
+    const fingerPivots = [-1, 1].map((side) => { const p = group(0, 0, 0, claw); mesh(G.box(0.018, 0.1, 0.018), steelM, { y: -0.05, x: side * 0.015, parent: p }); return p; });
+    const cable = noInk(mesh(G.box(0.015, 1, 0.015), steelM, { shadow: 'none', parent: root }));
+    const prizeToy = makeToy(toyColors[0]); prizeToy.position.set(0, -0.11, 0); claw.add(prizeToy);
+
+    P.addBox(ccx, 0.65, ccz, 0.95, 1.3, 0.75, { cam: false });
+
+    const CT = 7;   // the full grab-haul-drop cycle, in seconds
+    U.push((dt, t) => {
+      const ph = (t % CT) / CT;
+      let x, y, grip;
+      if (ph < 0.12) { x = pileX; y = lerp(railY, grabY, ph / 0.12); grip = 0; }
+      else if (ph < 0.22) { x = pileX; y = grabY; grip = (ph - 0.12) / 0.10; }
+      else if (ph < 0.34) { x = pileX; y = lerp(grabY, railY, (ph - 0.22) / 0.12); grip = 1; }
+      else if (ph < 0.62) { x = lerp(pileX, chuteX, (ph - 0.34) / 0.28); y = railY; grip = 1; }
+      else if (ph < 0.72) { x = chuteX; y = railY; grip = 1 - (ph - 0.62) / 0.10; }
+      else if (ph < 0.86) { x = lerp(chuteX, pileX, (ph - 0.72) / 0.14); y = railY; grip = 0; }
+      else { x = pileX; y = railY; grip = 0; }
+      claw.position.set(x, y, 0);
+      const angle = lerp(0.5, 0.08, grip);
+      fingerPivots[0].rotation.z = angle; fingerPivots[1].rotation.z = -angle;
+      prizeToy.scale.setScalar(max(0.001, grip));
+      const cableLen = max(0.01, railY - (y + 0.05));
+      cable.position.set(x, (railY + y + 0.05) / 2, 0); cable.scale.y = cableLen;
+    });
+
+    const kidX = ccx, kidZ = ccz + 0.9, kidRy = atan2(ccx - kidX, ccz - kidZ);
+    const kid = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(kid.group);
+    game.npcs.push(new Chopper(game, kid, { x: kidX, z: kidZ, ry: kidRy,
+      colors: [0x00e5ff, 0xff6fb5, 0xffffff], cryIcon: '🕹️',
+      cries: ['Rigged, I tell you. Rigged.', "Mind your tail, puss — that claw doesn't care what's underneath it.", 'Same claw, same six prizes, every single day. Never seen it miss the chute yet.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
