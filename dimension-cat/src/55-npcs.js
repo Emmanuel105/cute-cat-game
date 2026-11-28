@@ -2072,9 +2072,14 @@ class Archer {
 }
 
 // ---------------------------------------------------------------- sack race: two racers hop down a short straight track, both legs bound together in a sack (`makeHuman`'s own `o.sack`) so there's no scissor-stride — the legs kick in step, not in a walk's alternating phase. Each hops back and forth between the two ends of the track independently, like `Patroller` but hopping instead of walking, at its own pace drawn once at construction, so the lead keeps changing hands but nobody ever actually crosses a line to win.
+// `gait: 'walk'` (round 1439) swaps the hop for a careful walk — a shorter cycle, almost no vertical
+// bounce and a gentle side-to-side sway instead, for a race where nothing should actually bounce (the
+// egg-and-spoon race). `holdArm` (0 or 1) freezes that arm in a fixed outstretched carrying pose instead
+// of swinging it, for whatever's balanced in that hand. Both default to the exact old hop behaviour, so
+// every existing `SackRace` call site (four sack races) is untouched.
 class SackRace {
-  constructor(game, rigA, rigB, { x, z, ry = 0, length = 5, gap = 1.1, cries = null, cryIcon = '🛍️' }) {
-    this.game = game; this.x = x; this.z = z; this.length = length; this.t = rnd() * 10;
+  constructor(game, rigA, rigB, { x, z, ry = 0, length = 5, gap = 1.1, cries = null, cryIcon = '🛍️', gait = 'hop', holdArm = null }) {
+    this.game = game; this.x = x; this.z = z; this.length = length; this.t = rnd() * 10; this.gait = gait; this.holdArm = holdArm;
     this.fx = sin(ry); this.fz = cos(ry); this.ry = ry;
     const sx = cos(ry), sz = -sin(ry);
     this.cries = cries; this.cryIcon = cryIcon; this.cryT = cries ? rnd.range(5, 10) : 0;
@@ -2087,22 +2092,27 @@ class SackRace {
   }
   update(dt) {
     this.t += dt;
+    const walking = this.gait === 'walk';
     for (const rc of this.racers) {
-      const rig = rc.rig, cyc = 0.58 / rc.speed, prev = rc.hop;
+      const rig = rc.rig, cyc = (walking ? 0.46 : 0.58) / rc.speed, prev = rc.hop;
       rc.hop = (rc.hop + dt) % cyc; const ph = rc.hop / cyc;
-      if (rc.hop < prev) {   // a hop landed: step along the track, turning round at either end
-        rc.prog += rc.dir * 0.4 * rc.speed;
+      if (rc.hop < prev) {   // a hop (or stride) landed: step along the track, turning round at either end
+        rc.prog += rc.dir * (walking ? 0.3 : 0.4) * rc.speed;
         if (rc.prog > this.length) { rc.prog = this.length; rc.dir = -1; } else if (rc.prog < 0) { rc.prog = 0; rc.dir = 1; }
       }
       const k = sin(ph * PI);   // 0 at landing and launch, 1 at the top of the hop
       const px = rc.bx + this.fx * rc.prog, pz = rc.bz + this.fz * rc.prog;
-      rig.group.position.set(px, this.game.physics.ground0(px, pz) + k * 0.2, pz);
+      rig.group.position.set(px, this.game.physics.ground0(px, pz) + k * (walking ? 0.015 : 0.2), pz);
       rig.group.rotation.y = this.ry + (rc.dir < 0 ? PI : 0);
       rc.circle.x = px; rc.circle.z = pz; rc.x = px; rc.z = pz;
       rig.animate(0, false, dt, this.t);
-      for (const L of rig.legs) { L.hip.rotation.x = -0.1 - k * 0.35; L.knee.rotation.x = 0.1 + k * 0.6; L.ankle.rotation.x = 0.05; }
-      if (!rig.gesture) for (const A of rig.arms) { A.sh.rotation.x = damp(A.sh.rotation.x, -0.3 - k * 0.25, 10, dt); A.el.rotation.x = damp(A.el.rotation.x, -1.3, 10, dt); }
-      rig.spine.rotation.x = damp(rig.spine.rotation.x, -k * 0.1, 7, dt);
+      for (const L of rig.legs) { L.hip.rotation.x = -0.1 - k * (walking ? 0.22 : 0.35); L.knee.rotation.x = 0.1 + k * (walking ? 0.3 : 0.6); L.ankle.rotation.x = 0.05; }
+      if (!rig.gesture) rig.arms.forEach((A, ai) => {
+        if (this.holdArm === ai) { A.sh.rotation.x = damp(A.sh.rotation.x, -1.15, 10, dt); A.sh.rotation.z = damp(A.sh.rotation.z, (ai ? -1 : 1) * 0.12, 10, dt); A.el.rotation.x = damp(A.el.rotation.x, -0.35, 10, dt); }
+        else { A.sh.rotation.x = damp(A.sh.rotation.x, -0.3 - k * 0.25, 10, dt); A.el.rotation.x = damp(A.el.rotation.x, -1.3, 10, dt); }
+      });
+      rig.spine.rotation.x = damp(rig.spine.rotation.x, -k * (walking ? 0.04 : 0.1), 7, dt);
+      if (walking) rig.spine.rotation.z = damp(rig.spine.rotation.z, sin(this.t * 2.3 + rc.bx) * 0.05, 6, dt);   // a careful balancing sway, egg-and-spoon only
       Wanderer.prototype.lookAtCat.call(rc, dt);
     }
     if (this.cries) { this.cryT -= dt; if (this.cryT <= 0) { this.cryT = rnd.range(9, 16); const c = this.game.cat.group.position; if (dist2(this.x, this.z, c.x, c.z) < 400) { this.game.toast(this.cryIcon + ' "' + rnd.pick(this.cries) + '"', 2400); SFX.talk(); } } }

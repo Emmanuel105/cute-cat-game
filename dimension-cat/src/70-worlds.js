@@ -20448,6 +20448,64 @@ function buildVictorian(game, entry) {
     game.npcs.push(new Chopper(game, player, { x: px, z: pz, ry: 0,
       colors: [0xd9302a, 0xc8c8c8], cryIcon: '🔴', cries: croquetLines })); }
 
+  // Round 1437 gave Victorian croquet, the one lawn game actually invented by real Victorians. This
+  // town's own shelf of playground games (tetherball, badminton, tug-of-war, archery, sack races, a
+  // pogo stick) runs deep, but the one school sports-day race every one of them is missing — egg and
+  // spoon — had never turned up anywhere in the game. **Two schoolchildren now pace a short lane on the
+  // quiet green north of the town, each one holding a wooden spoon out at arm's length with a painted
+  // egg balanced on it, walking it back and forth rather than racing flat out.** No new class: `SackRace`
+  // (`55-npcs.js`) already knows how to run two racers independently back and forth along a straight
+  // track, turning round at either end — this round gives it two new optional knobs, `gait: 'walk'`
+  // (a shorter stride, almost no vertical bounce, and a gentle side-to-side sway standing in for
+  // careful balance, in place of the hop a sack race needs) and `holdArm` (the arm holding the spoon
+  // freezes in a fixed outstretched pose instead of swinging with the stride). Both default to the
+  // exact old hop behaviour, so the four existing sack races (Neighborhood, Candy Land, Robot City and
+  // Frosty Peak) are untouched. *"Steady does it — nobody wants to be scraping egg off the grass
+  // again."* *"Mind your tail, puss — one wrong step and it's an omelette."* *"Wobbliest I've managed
+  // all week. Might actually win this one."* Saying hello to either of them makes them the usual kind
+  // of friend too, Victorian's own count rising by two.
+  //
+  // Checked first that this was genuinely new: no "egg and spoon", "egg-and-spoon" or "spoon race"
+  // anywhere in the source, and — unlike the sack race, which four worlds already run — no world had
+  // this one. The spoon itself is a plain hand-built group (a wooden handle and a shallow metal bowl)
+  // with a small painted egg resting in it, parented straight onto `hands[1]`, the same "tool parented
+  // to a hand" idiom the tongs, the chalk, the comb and a dozen other one-off props in this file already
+  // use; it needs no `userData.update` of its own since it only ever moves as a child of the hand that
+  // `SackRace` itself already repositions every frame.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(3, 'from-prev')`, then 3600 simulated frames so every urchin, every
+  // watcher, the maypole dancers, the stilt walker and every other soul in this town had settled, then
+  // 600 more sampling every NPC's own position every 10th frame) swept a 1 m grid of the open green
+  // (radius 15-84, short of the radius (88) where `victorianRegion()`'s own fill takes over) against all
+  // 589 of this town's own physics boxes (knee-to-head band only), all 230 `game.zones` rectangles and
+  // every sampled NPC position: (-4, 52) came back clearest — 13.4 m clear of the nearest box, 16 m
+  // clear of the nearest zone rectangle and 12.6 m clear of the nearest wandering soul, well east of
+  // the croquet lawn (centred (-21, 53)) on the same quiet stretch of green. Ground is flat (y=0) the
+  // whole length of the lane, so no terrain grading was needed.
+  //
+  // Built dead last of everything this town adds, right after the croquet lawn above and right before
+  // `spawnBySquirrel()`'s own squirrel, for the usual reason: `makeHuman()`/`randomPerson()` both draw
+  // off this town's own shared `r()` sequence unconditionally, and a fresh pair of rigs built any
+  // earlier would have shifted every random pick already placed above them.
+  { const ex = -4, ez = 52, ery = PI / 2;
+    const eggWard = makeWardrobe(r, { shirts: [0xffd54a, 0x7fd7ff, 0xff9fb0, 0x8bc34a] });
+    const eggA = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, elder: false, wardrobe: eggWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: false });
+    const eggB = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, elder: false, wardrobe: eggWard }),
+      hat: null, jacket: null, scarf: null, bag: null, backpack: null, glasses: false });
+    W.add(eggA.group); W.add(eggB.group);
+    const handleM = mat(0x8a6a44, { roughness: 0.75 }), bowlM = mat(0xcfc9bd, { roughness: 0.35, metalness: 0.4 }), eggM = mat(0xf5ecd9, { roughness: 0.55 });
+    for (const kid of [eggA, eggB]) {
+      const spoon = group(0, 0.02, 0.1, kid.hands[1]); spoon.rotation.x = -0.3;
+      mesh(G.cyl(0.01, 0.012, 0.16, 6), handleM, { y: -0.08, rx: PI / 2, parent: spoon });
+      mesh(G.sphere(0.045, 10, 8), bowlM, { y: 0.01, sy: 0.35, parent: spoon });
+      mesh(G.sphere(0.026, 10, 8), eggM, { y: 0.035, sy: 1.3, parent: spoon });
+    }
+    const eggLines = ['Steady does it — nobody wants to be scraping egg off the grass again.', "Mind your tail, puss — one wrong step and it's an omelette.", 'Wobbliest I\'ve managed all week. Might actually win this one.'];
+    game.npcs.push(new SackRace(game, eggA, eggB, { x: ex, z: ez, ry: ery, length: 3.2, gap: 1.3, gait: 'walk', holdArm: 1,
+      cries: eggLines, cryIcon: '🥚' })); }
+
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
