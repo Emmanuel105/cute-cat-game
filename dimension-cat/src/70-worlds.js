@@ -10350,6 +10350,49 @@ function buildCandyLand(game, entry) {
     W.add(trampWatcher.group);
     game.npcs.push(new Wanderer(game, trampWatcher, { x: twx, z: twz, angle: atan2(trX - twx, trZ - twz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 1e9 })); }
 
+  // Round 1418 opened a "table-game watcher" series right after the chess table on the Neighborhood
+  // finally got one of its own, leaving every other world's own table game — Victorian's draughts,
+  // Robot City's checkers, Frosty Peak's cards, Whisper Woods' draughts, Sunny Shore's mancala and
+  // Candy Land's own dominoes chain (round 1417, two seated residents and a mid-game run of seven
+  // tiles) — still owing one. This round gives the dominoes table its turn. **A gingerbread-village
+  // neighbour now stands south and a touch west of it, watching the chain grow, with a line or two
+  // of her own**, called out now and then whenever the cat's close enough to hear: *"Been watching
+  // that chain grow the better part of an hour now."* *"Mind your tail, puss — don't go walking
+  // through their game."* *"My bet's on the double six turning up before teatime."* Saying hello to
+  // her still makes her the usual kind of friend on top of that, Candy Land's own count rising by one.
+  //
+  // No new class: the same `Wanderer` (`55-npcs.js`) every watcher in every earlier series already
+  // uses, which calls `greetable()` itself, so no extra wiring was needed. Like the chess table, the
+  // dominoes table has no motion worth reading in profile — a mid-game chain and two seated players
+  // don't move — so any clear spot facing the table works equally well. Candy Land has no dupe-shirt
+  // check of its own (the Neighborhood's test is the only one of the seven that enforces one), so the
+  // shirt below was picked to read against the sweet-lands' own palette, not to dodge a collision.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(1, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so every gingerbread man, both watchers above and every other soul in this land
+  // had settled, then 600 more sampling every NPC's own position every 10th frame) swept a 0.25 m
+  // grid in a 2.5-7 m ring around the dominoes table (82, 4) against every one of this land's own
+  // physics boxes (knee-to-head band only), every `game.zones` rectangle (which already carries a
+  // keep-out circle for every gumdrop patch `fillRing` scatters out here, even the ones with no
+  // physics box of their own) and every sampled NPC position: (80.25, -2.75) came back clearest —
+  // south and a touch west of the table, about 7.0 m out and 80.3 m from the world's own origin, past
+  // the candy-cane ring's own outer edge (76 m) and short of the radius (92) where `candyRegion`'s own
+  // procedural fill takes over — 6.21 m from the nearest box, 11.25 m from the nearest zone rectangle
+  // and 6.15 m from the nearest other soul.
+  //
+  // Built dead last of everything this land adds, right after both watchers above, for the usual
+  // reason: `makeHuman()`/`randomPerson()` both draw off this land's own shared `r()` sequence
+  // unconditionally, and dropping a fresh rig in any earlier would have shifted every random pick
+  // made above it.
+  { const dtX = 82, dtZ = 4, dwx = 80.25, dwz = -2.75;
+    const dominoWatcher = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: r.chance(0.3) }),
+      shirt: 0xb388ff, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(dominoWatcher.group);
+    game.npcs.push(new Wanderer(game, dominoWatcher, { x: dwx, z: dwz, angle: atan2(dtX - dwx, dtZ - dwz), speed: 0.3, leash: 0.5, idle: [3, 6],
+      cries: ['Been watching that chain grow the better part of an hour now.', "Mind your tail, puss — don't go walking through their game.", 'My bet\'s on the double six turning up before teatime.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
