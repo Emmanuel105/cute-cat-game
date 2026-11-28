@@ -42526,6 +42526,49 @@ function buildForest(game, entry) {
       angle: atan2(dwTx - dwWatchX, dwTz - dwWatchZ), speed: 0.3, leash: 0.5, idle: [3, 6],
       cries: ['Same two foresters, same board, every afternoon out here.', "Mind your tail, puss — don't go scattering their acorns.", 'Chestnuts are two down. Acorns are winning, same as always.'] })); }
 
+  // Rounds 1425-1430 carried the "crossing-guard watcher" series through the Neighborhood, Candy
+  // Land, Robot City, Victorian, Sunny Shore and Frosty Peak's own crossing guard, leaving this
+  // wood's own forest ranger (above, raising a stop sign at (-38, -11) for the deer that never
+  // actually need it) as the last of the seven still owing one. This round closes the series out.
+  // **A forest-dweller now stands north-east of the ranger, watching the sign go up and down, with a
+  // line or two of her own**, called out now and then whenever the cat's close enough to hear:
+  // *"Not one soul or cart's ever crossed that spot, and she still raises the sign every time."*
+  // *"Mind your tail, puss — she swings that stop sign without looking twice."* *"Same spot, same
+  // watch, every day she's out here among the trees."* Saying hello to her makes her the usual kind
+  // of friend too.
+  //
+  // No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses,
+  // which calls `greetable()` itself, so no extra wiring was needed. The ranger just raises and
+  // lowers a sign on the spot — nothing to read in profile — so any clear spot facing her works
+  // equally well. Whisper Woods carries no dupe-shirt rule of its own (the Neighborhood's test is the
+  // only one of the seven that enforces one), so the shirt colour just went with this wood's own
+  // earthy palette, the same shape every other plain watcher in this file already wears.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(6, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 10,800
+  // simulated frames so every deer, fox, hare and wandering forester had settled, then 2700 more
+  // sampling every NPC's own position every 4th frame) swept a 0.25 m grid in a 2.5-9 m ring around
+  // the ranger (-38, -11) against all 703 of this wood's own physics boxes (knee-to-head band only),
+  // all 216 `game.zones` rectangles and every sampled NPC position, staying short of the radius (58)
+  // where `forestRegion()`'s own fill takes over: (-35.5, -5.5) came back clearest — north-east of
+  // the ranger at about 6.04 m out, 35.9 m from the world's own origin — 6.04 m from the nearest box,
+  // 17.33 m from the nearest zone rectangle and 6.04 m from the nearest other soul, ground flat to
+  // within 1.2 cm across a 0.6 m square.
+  //
+  // Built dead last of everything this wood adds, right after the draughts-table watcher above, for
+  // the usual reason: `makeHuman()`/`randomPerson()` both draw off this wood's own local `r()`
+  // sequence unconditionally, and a fresh rig built any earlier would have shifted every random pick
+  // already placed above it. All seven worlds now have a watcher on their own crossing guard, closing
+  // out the series rounds 1425-1430 carried.
+  { const cwWatchX = -35.5, cwWatchZ = -5.5, cwGx = -38, cwGz = -11;
+    const cwWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x5a6a3a, pants: 0x3a3327, shoes: 0x3a2a1e, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(cwWatcher.group);
+    game.npcs.push(new Wanderer(game, cwWatcher, { x: cwWatchX, z: cwWatchZ,
+      angle: atan2(cwGx - cwWatchX, cwGz - cwWatchZ), speed: 0.3, leash: 0.5, idle: [3, 6],
+      cries: ["Not one soul or cart's ever crossed that spot, and she still raises the sign every time.", 'Mind your tail, puss — she swings that stop sign without looking twice.', "Same spot, same watch, every day she's out here among the trees."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
