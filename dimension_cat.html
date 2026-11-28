@@ -19798,6 +19798,77 @@ function buildCandyLand(game, entry) {
     game.npcs.push(new Wanderer(game, guardWatcher, { x: gwx, z: gwz, angle: atan2(gcX - gwx, gcZ - gwz), speed: 0.3, leash: 0.5, idle: [3, 6],
       cries: ['Thirty peppermint crossings a day and never once missed a step.', "Mind the kerb, puss — she'll have that sign up before you've looked both ways.", 'Rain or icing sugar, that sign goes up on the dot.'] })); }
 
+  // Every "watcher" and "listener" series this land's own sack race, tug-of-war, ring toss and table
+  // games already picked up has been about someone standing beside an existing game — nothing in
+  // seven worlds has ever let the cat find a brand-new carnival stall. **A fairground whack-a-mole
+  // machine now sits on the open sweet-lands, far south-east of the castle** — a candy-cane striped
+  // cabinet with a plush toy mole popping up through a dark hole in its lid on its own steady cycle,
+  // and a gingerbread-village kid taking an idle swing at it with a wooden mallet every few seconds,
+  // same `Chopper` (`55-npcs.js`) swing timing the woodcutter and the blacksmith already use. The
+  // mole's own pop cycle runs off the world clock `t` and isn't tied to the kid's swing timer at all —
+  // like the vegetable-patch mole back in the Neighborhood (round 577), it is cosmetic background
+  // motion, not a hit-detection game, so whether a given swing actually lands on a risen mole is pure
+  // chance, not something the cat can affect. *"Quickest reflexes on this block — not that the mole
+  // stands a chance."* *"Mind your tail, puss — this mallet doesn't miss, even when the mole does."*
+  // *"Same mole, same hole, every single day. I don't think it's learned a thing."* Saying hello to the
+  // kid makes them the usual kind of friend too.
+  //
+  // Checked first that this was actually new: no "whack-a-mole", "mallet" or "carnival" anywhere in
+  // this file or `56-npcs-wild.js`, and the only other mole in the game is the Neighborhood's own wild
+  // one (round 577) — a live critter in a vegetable patch, not a fairground toy, so this isn't a
+  // duplicate of it. `hammer: true` (`55-npcs.js`) already builds a short wooden-handled, blocky-headed
+  // tool into a `makeHuman()` rig's right hand for the blacksmith; reused as-is for the mallet rather
+  // than adding a new rig option, since the shape reads as either tool at this game's scale. `Chopper`
+  // itself needed no changes: it already drives the blacksmith's hammer and the woodcutter's axe with
+  // the same swing-and-strike timing, and its constructor calls `greetable()` on its own, so no extra
+  // wiring was needed to make the kid a friend.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(1, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so every gingerbread man and every other soul in this land had settled, then 600
+  // more sampling every NPC's own position every 10th frame) swept a 2 m grid of the open sweet-lands
+  // (radius 25-88, short of the radius (92) where `candyRegion`'s own fill takes over) against all
+  // 1803 of this land's own physics boxes (knee-to-head band only), every `game.zones` rectangle and
+  // every sampled NPC position: (66, -58) came back clearest — 10.84 m clear of the nearest box and
+  // 10.93 m clear of the nearest wandering soul, 87.9 m from the world's own origin, well clear of the
+  // chocolate river band (z -22..-14) and every hand-placed cane, lollipop and the dominoes table and
+  // crossing guard built earlier in this file.
+  //
+  // Built dead last of everything this land adds, right after the crossing-guard watcher above, for
+  // the usual reason: `makeHuman()`/`randomPerson()` both draw off this land's own shared `r()`
+  // sequence unconditionally, and dropping a fresh rig in any earlier would have shifted every random
+  // pick made above it.
+  { const mx = 66, mz = -58, mcx = 66, mcz = mz + 1.0, mry = atan2(mx - mcx, mz - mcz);
+    const root = group(mx, 0, mz, W);
+    const caneRed = mat(0xe0453f, { roughness: 0.6 }), caneWhite = mat(0xfff8ef, { roughness: 0.5 }),
+      woodM = mat(0x6a4a2e, { roughness: 0.85 }), holeM = mat(0x1a140f, { roughness: 0.9 }),
+      moleFur = mat(0x6b5a44, { roughness: 0.9 }), moleBelly = mat(0xd9c49a, { roughness: 0.85 }), moleNose = mat(0xe48aa0, { roughness: 0.6 });
+    mesh(G.box(0.62, 0.62, 0.42), woodM, { y: 0.31, shadow: 'both', parent: root });   // the stall cabinet
+    for (let i = 0; i < 4; i++) mesh(G.box(0.62, 0.08, 0.02), i % 2 ? caneRed : caneWhite, { y: 0.1 + i * 0.14, z: 0.215, shadow: 'none', parent: root });   // candy-cane striped front
+    mesh(G.box(0.7, 0.04, 0.48), caneWhite, { y: 0.63, shadow: 'both', parent: root });   // the lid
+    mesh(G.cyl(0.15, 0.15, 0.03, 16), holeM, { y: 0.656, shadow: 'none', parent: root });   // the dark hole punched through it
+    const mole = group(0, 0.63, 0, root);
+    mesh(G.bodySphere(12, 9), moleFur, { sy: 1.25, parent: mole });
+    mesh(G.sphere(0.07, 10, 8), moleBelly, { y: -0.02, z: 0.06, sy: 0.9, sz: 0.7, shadow: 'none', parent: mole });
+    for (const side of [1, -1]) mesh(G.sphere(0.035, 8, 6), moleFur, { x: side * 0.09, y: 0.09, parent: mole });   // ears
+    mesh(G.sphere(0.025, 8, 6), moleNose, { y: 0.02, z: 0.1, shadow: 'none', parent: mole });
+    for (const side of [1, -1]) mesh(G.sphere(0.012, 6, 5), mat(0x1a1410), { x: side * 0.045, y: 0.06, z: 0.09, shadow: 'none', parent: mole });   // eyes
+    const molePeriod = 2.6;
+    U.push((dt, t) => {
+      const ph = (t % molePeriod) / molePeriod;
+      let pop; if (ph < 0.15) pop = ph / 0.15; else if (ph < 0.55) pop = 1; else if (ph < 0.7) pop = 1 - (ph - 0.55) / 0.15; else pop = 0;
+      mole.position.y = pop * 0.17; mole.rotation.y = pop > 0.3 ? sin(t * 2.4) * 0.3 * pop : 0;
+    });
+    P.addBox(mx, 0.35, mz, 0.4, 0.7, 0.3, { cam: false });
+    const kidWard = makeWardrobe(r, { shirts: [0xffdf6b, 0x80dfff, 0xb388ff], shorts: [0xfff8ef, 0x6a4a2e] });
+    const kid = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: true, wardrobe: kidWard }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false, hammer: true });
+    W.add(kid.group);
+    game.npcs.push(new Chopper(game, kid, { x: mcx, z: mcz, ry: mry,
+      colors: [0xffdf6b, 0xff6fb5, 0xfff8ef], cryIcon: '🔨',
+      cries: ['Quickest reflexes on this block — not that the mole stands a chance.', "Mind your tail, puss — this mallet doesn't miss, even when the mole does.", "Same mole, same hole, every single day. I don't think it's learned a thing."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
