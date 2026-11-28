@@ -19749,6 +19749,48 @@ function buildCandyLand(game, entry) {
     game.npcs.push(new Wanderer(game, dominoWatcher, { x: dwx, z: dwz, angle: atan2(dtX - dwx, dtZ - dwz), speed: 0.3, leash: 0.5, idle: [3, 6],
       cries: ['Been watching that chain grow the better part of an hour now.', "Mind your tail, puss — don't go walking through their game.", 'My bet\'s on the double six turning up before teatime.'] })); }
 
+  // Round 1425 opened a "crossing-guard watcher" series after noticing `CrossingGuard` (round 446,
+  // spread to all seven worlds by round 1047) had never picked up the "watcher" treatment every other
+  // long-standing play structure in this project already has, starting in the Neighborhood. This land's
+  // own guard (round 863-ish, candy-cane red and white, on the open field between the wafer bridges and
+  // the castle gate) is next. **A gingerbread-village resident now stands south of her, watching the
+  // lollipop sign rise and fall, with a line or two of her own**, called out now and then whenever the
+  // cat's close enough to hear: *"Thirty peppermint crossings a day and never once missed a step."*
+  // *"Mind the kerb, puss — she'll have that sign up before you've looked both ways."* *"Rain or icing
+  // sugar, that sign goes up on the dot."* Saying hello to her makes her the usual kind of friend too.
+  //
+  // No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this project already uses, which
+  // calls `greetable()` itself, so no extra wiring was needed. The guard just raises and lowers a sign
+  // on the spot — nothing to read in profile — so any clear spot facing her works equally well. Candy
+  // Land carries no dupe-shirt rule of its own (only the Neighborhood's test enforces one), so the
+  // shirt below was picked fresh against this land's own palette rather than to dodge a collision, and
+  // no frozen idle shape was needed either — unlike the Neighborhood's own guard watcher, nothing in
+  // this land's own test samples a fixed frame against another soul's idle timing.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(1, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so every gingerbread man, both table-game watchers above and every other soul in
+  // this land had settled, then 600 more sampling every NPC's own position every 10th frame) swept a
+  // 0.25 m grid in a 2.5-16 m ring around the crossing guard (-2, 16) against every one of this land's
+  // own physics boxes (knee-to-head band only), every `game.zones` rectangle and every sampled NPC
+  // position, staying short of the radius (92) where `candyRegion`'s own fill takes over: (-0.8, 9.9)
+  // came back clearest within easy reach — south of the guard at about 6.2 m, 9.9 m from the world's
+  // own origin — 6.15 m clear of the nearest box, 23.9 m clear of the nearest zone rectangle and 6.2 m
+  // from the guard herself, the nearest other soul (further out, past 9 m, a clearer spot opens up
+  // east of her too, but this one keeps her a comfortable few steps rather than a trek away).
+  //
+  // Built dead last of everything this land adds, right after both table-game watchers above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this land's own shared `r()` sequence
+  // unconditionally, and dropping a fresh rig in any earlier would have shifted every random pick made
+  // above it.
+  { const gcX = -2, gcZ = 16, gwx = -0.8, gwz = 9.9;
+    const guardWatcher = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: r.chance(0.3) }),
+      shirt: 0xffdf6b, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(guardWatcher.group);
+    game.npcs.push(new Wanderer(game, guardWatcher, { x: gwx, z: gwz, angle: atan2(gcX - gwx, gcZ - gwz), speed: 0.3, leash: 0.5, idle: [3, 6],
+      cries: ['Thirty peppermint crossings a day and never once missed a step.', "Mind the kerb, puss — she'll have that sign up before you've looked both ways.", 'Rain or icing sugar, that sign goes up on the dot.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
