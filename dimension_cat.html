@@ -42180,6 +42180,53 @@ function buildForest(game, entry) {
     game.npcs.push(new Wanderer(game, seWatcher, { x: seWatchX, z: seWatchZ,
       angle: atan2(seLaneX - seWatchX, seLaneZ - seWatchZ), speed: 0.3, leash: 0.5, idle: [3, 6] })); }
 
+  // Rounds 1418-1422 carried a "table-game watcher" series through the Neighborhood's chess table,
+  // Candy Land's dominoes chain, Robot City's checkers drum, Victorian's draughts table and Frosty
+  // Peak's own card table, leaving this wood's own draughts table (above, two foresters on sawn log
+  // rounds, acorns and chestnuts standing in for counters since round 407) and Sunny Shore's mancala
+  // still owing one. This round takes the draughts table. **A third forester now stands due north of
+  // it, watching the game, with a line or two of her own**, called out now and then whenever the
+  // cat's close enough to hear: *"Same two foresters, same board, every afternoon out here."*
+  // *"Mind your tail, puss — don't go scattering their acorns."* *"Chestnuts are two down. Acorns
+  // are winning, same as always."* Saying hello to her makes her the usual kind of friend too.
+  //
+  // No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses,
+  // which calls `greetable()` itself, so no extra wiring was needed. Like the chess, dominoes,
+  // checkers and card tables before it, the draughts table has no motion worth reading in profile
+  // beyond the acorn-click burst it already throws every several seconds — a scattered mid-game
+  // board and two seated foresters don't move — and its own two seats sit side by side along world X
+  // (`seatAx = tx - 0.72`, `seatBx = tx + 0.72`, both at the same z), the same shape every table in
+  // this series has worked out, so standing square on to it, offset along world Z, shows both
+  // foresters equally well. Whisper Woods carries no dupe-shirt rule of its own (the Neighborhood's
+  // test is the only one of the seven that enforces one), so the shirt colour just went with this
+  // wood's own earthy palette.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(6, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so every deer, fox, hare, frog and wandering forester had settled, then 600 more
+  // sampling every NPC's own position every 10th frame) swept a grid north and south of the draughts
+  // table (42, -27), 2.5-12 m out, against all 457 of this wood's own body-height physics boxes and
+  // all 216 `game.zones` rectangles, staying short of the radius (58) where `forestRegion()`'s own
+  // fill takes over: north came back clearest, (42, -21) at radius 6 — 5.47 m from the nearest box,
+  // 12.23 m from the nearest zone rectangle and 5.61 m from the nearest other soul, about 47 m from
+  // the world's own origin.
+  //
+  // Built dead last of everything this wood adds, right after the seesaw watcher above, for the usual
+  // reason: `makeHuman()`/`randomPerson()` both draw off this wood's own local `r()` sequence
+  // unconditionally, and a fresh rig built any earlier would have shifted every random pick already
+  // placed above it. `node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console
+  // warnings, physics box count unchanged (a `Wanderer` adds a dynamic circle, not a static box), and
+  // Whisper Woods' own friend total confirmed up by exactly one. Sunny Shore's mancala table still
+  // owes a watcher.
+  { const dwWatchX = 42, dwWatchZ = -21, dwTx = 42, dwTz = -27;
+    const dwWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      shirt: 0x8a5a3a, pants: 0x3a3327, shoes: 0x3a2a1e, hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(dwWatcher.group);
+    game.npcs.push(new Wanderer(game, dwWatcher, { x: dwWatchX, z: dwWatchZ,
+      angle: atan2(dwTx - dwWatchX, dwTz - dwWatchZ), speed: 0.3, leash: 0.5, idle: [3, 6],
+      cries: ['Same two foresters, same board, every afternoon out here.', "Mind your tail, puss — don't go scattering their acorns.", 'Chestnuts are two down. Acorns are winning, same as always.'] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
