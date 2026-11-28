@@ -29365,6 +29365,49 @@ function buildVictorian(game, entry) {
     const draughtsWatcherCries = ["Same two gents, same table, every afternoon without fail.", "Mind your tail, puss — knock that board and there'll be words.", "Red's two pieces up. Don't tell him I said so."];
     game.npcs.push(new Wanderer(game, draughtsWatcher, { x: wx3, z: wz3, angle: atan2(dgX - wx3, dgZ - wz3), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cries: draughtsWatcherCries, cryT: r.range(4, 9) })); }
 
+  // Rounds 1425-1427 carried the "crossing-guard watcher" series through the Neighborhood, Candy
+  // Land and Robot City, leaving Victorian's own crossing sweeper (built earlier in this function at
+  // (-4, -5.6), period flat-cap-and-coat palette, holding up traffic for the carriage, the telegram
+  // boy's bicycle and the bobby's own patrol) still owing hers, along with Sunny Shore, Frosty Peak
+  // and Whisper Woods. This round takes Victorian's turn. **A passer-by now stands east and a touch
+  // south of the crossing sweeper, watching the sign go up and down, with a line or two of her own**,
+  // called out now and then whenever the cat's close enough to hear: *"Not a soul's been run down on
+  // her watch — not once, not ever."* *"Mind your tail, puss — she swings that sign without looking
+  // twice."* *"Same crossing, same hour, every single day of the week."* Saying hello to her makes
+  // her the usual kind of friend too.
+  //
+  // No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses,
+  // which calls `greetable()` itself, so no extra wiring was needed. The sweeper just raises and
+  // lowers a sign on the spot — nothing to read in profile — so any clear spot facing her works
+  // equally well. Victorian carries no dupe-shirt rule of its own (the Neighborhood's test is the
+  // only one of the seven that enforces one), so no wardrobe bag was needed, but the frozen
+  // `idle: [1e9, 1e9]` shape this town's own trampoline and draughts watchers above already use went
+  // on anyway, the usual cheap insurance against the shared `r()` sequence.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(3, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so every urchin, both ball games, the trampoline watcher, the draughts watcher
+  // and every other soul had settled, then 600 more sampling every NPC's own position every 10th
+  // frame) swept a 0.25 m grid in a 2.5-11 m ring around the crossing sweeper (-4, -5.6) against all
+  // of this town's own physics boxes (knee-to-head band only) and every sampled NPC position, scoring
+  // against the lane-to-market-square's own two `game.zones` rectangles rather than the whole town's
+  // world-spanning main-street band (every soul in town already stands inside that one, the guard
+  // included, so it isn't a meaningful exclusion here): (5.75, -8.35) came back clearest — east and a
+  // touch south of her, about 10.13 m out — 2.75 m from the nearest box, 3.75 m from the nearest real
+  // zone rectangle (the lane itself) and 2.64 m from the nearest other soul.
+  //
+  // Built dead last of everything this town adds, right after the draughts watcher above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this town's own shared `r()` sequence
+  // unconditionally, and dropping a fresh rig in any earlier would have shifted every random pick
+  // made above it.
+  { const cgX = -4, cgZ = -5.6, wx4 = 5.75, wz4 = -8.35;
+    const guardWatcherV = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: r.chance(0.4) }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(guardWatcherV.group);
+    const guardWatcherVCries = ["Not a soul's been run down on her watch — not once, not ever.", "Mind your tail, puss — she swings that sign without looking twice.", "Same crossing, same hour, every single day of the week."];
+    game.npcs.push(new Wanderer(game, guardWatcherV, { x: wx4, z: wz4, angle: atan2(cgX - wx4, cgZ - wz4), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cries: guardWatcherVCries, cryT: r.range(4, 9) })); }
+
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
