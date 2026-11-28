@@ -37726,6 +37726,48 @@ function buildSnowVillage(game, entry) {
     game.npcs.push(new Wanderer(game, cdWatcher, { x: cdWatchX, z: cdWatchZ, angle: atan2(cdTx - cdWatchX, cdTz - cdWatchZ), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6],
       cries: ['Same two hands, same travellers, every afternoon down here.', "Mind your tail, puss — knock that deck and there'll be words.", "Neither one's folded since breakfast. Must be a fine hand."] })); }
 
+  // Rounds 1425-1429 carried the "crossing-guard watcher" series through the Neighborhood, Candy
+  // Land, Robot City, Victorian and Sunny Shore, leaving this mountain's own ski-patrol marshal
+  // (built above at (4, 27), lifting a stop sign over a patch of snowfield no road ever crosses)
+  // still owing hers, along with Whisper Woods. This round takes Frosty Peak's turn. **A bundled-up
+  // passer-by now stands south-east of the marshal, watching the sign go up and down, with a line or
+  // two of her own**, called out now and then whenever the cat's close enough to hear: *"Not a sled
+  // nor a soul's crossed that spot all winter, and she still raises it every time."* *"Mind your
+  // tail, puss — she swings that sign without looking twice."* *"Same patch, same watch, every day
+  // the mountain's open."* Saying hello to her makes her the usual kind of friend too.
+  //
+  // No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses,
+  // which calls `greetable()` itself, so no extra wiring was needed. The marshal just raises and
+  // lowers a sign on the spot — nothing to read in profile — so any clear spot facing her works
+  // equally well. Frosty Peak carries no dupe-shirt rule of its own (the Neighborhood's test is the
+  // only one of the seven that enforces one), so the wardrobe just went with this mountain's own
+  // winter palette, same beanie-coat-scarf shape every other bundled-up passer-by here wears.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(5, 'from-hub')` directly rather than `game.travel()` — the
+  // travel fade sits behind a real `setTimeout` that never fires under simulated frames alone —
+  // then 3600 simulated frames so every reindeer, hare, arctic fox, penguin, yeti and wandering
+  // villager had settled, then 600 more sampling every NPC's own position every 10th frame) swept a
+  // 0.25 m grid in a 2.5-9 m ring around the marshal (4, 27) against all 370 of this mountain's own
+  // physics boxes (knee-to-head band only), all 152 `game.zones` rectangles and every sampled NPC
+  // position, short of the radius (58) where `snowRegion`'s own fill takes over: (10, 33.5) came
+  // back clearest — south-east of her, about 8.85 m out — 10.24 m from the nearest box, 7.5 m from
+  // the nearest zone rectangle and 7.26 m from the nearest other soul, ground flat to within 4 cm
+  // across a 0.5 m square.
+  //
+  // Built dead last of everything this mountain adds, right after the card-table watcher above and
+  // right before `spawnBySquirrel()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw
+  // off this mountain's own local `r()` sequence unconditionally, and a fresh rig built any earlier
+  // would have shifted every random pick already placed above it. Whisper Woods still owes its own
+  // crossing guard a watcher.
+  { const cgWatchX = 10, cgWatchZ = 33.5, cgX = 4, cgZ = 27;
+    const cgWard = makeWardrobe(r, { shirts: [0x4a5a6a, 0x6a4a5a, 0x5a6a4a], pants: [0x2a2a2a, 0x332a24], shoes: [0x2a2018, 0x1e1a16] });
+    const cgWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: cgWard }),
+      hat: 'beanie', hatColor: 0x6a4a5a, coat: true, scarf: 0xf7f3ec, cuffs: 0x3a3a3a, bag: null, backpack: null, glasses: r.chance(0.3) });
+    W.add(cgWatcher.group);
+    game.npcs.push(new Wanderer(game, cgWatcher, { x: cgWatchX, z: cgWatchZ, angle: atan2(cgX - cgWatchX, cgZ - cgWatchZ), speed: 0.3, leash: 0.5, idle: [1e9, 1e9],
+      cries: ["Not a sled nor a soul's crossed that spot all winter, and she still raises it every time.", "Mind your tail, puss — she swings that sign without looking twice.", "Same patch, same watch, every day the mountain's open."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
