@@ -29577,6 +29577,99 @@ function buildVictorian(game, entry) {
     const guardWatcherVCries = ["Not a soul's been run down on her watch — not once, not ever.", "Mind your tail, puss — she swings that sign without looking twice.", "Same crossing, same hour, every single day of the week."];
     game.npcs.push(new Wanderer(game, guardWatcherV, { x: wx4, z: wz4, angle: atan2(cgX - wx4, cgZ - wz4), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cries: guardWatcherVCries, cryT: r.range(4, 9) })); }
 
+  // Victorian already has brass quoits at the hob, a game of darts, a badminton net and a dozen more
+  // lawn games by now — quoits and horseshoes alone turn up in every one of the seven worlds — but the
+  // one lawn game the Victorians actually invented, croquet, has never once turned up anywhere in this
+  // game. A small croquet lawn now sits on the quiet open green far north-west of the town, well past
+  // the draughts table and the crossing-guard watcher above: two wire wickets and a painted peg in a
+  // line, with a lady swinging a mallet every few seconds and sending the ball rolling the length of
+  // the lawn, through both wickets, to clack against the peg. Like every fairground attraction built
+  // across this game, the ball's own roll runs off the world clock `t` on a steady loop, entirely
+  // decoupled from her own swing timer — the same `Chopper` (`55-npcs.js`) swing-and-strike timing the
+  // blacksmith and every mallet- or axe-swinging character already uses — so whether a given swing's
+  // roll genuinely threads both wickets is cosmetic background motion, not something the cat can
+  // affect; the ball always rolls the same straight line through them before resetting to her feet for
+  // the next swing. *"Through both wickets and dead on the peg — every single time, if you believe her
+  // telling of it."* *"Mind your tail, puss — that ball doesn't slow down for anyone in its way."*
+  // *"Same two wickets, same peg, every afternoon out here. The grass never gets a chance to grow
+  // back."* Saying hello to her makes her the usual kind of friend too, Victorian's own count rising
+  // from 207 to 208.
+  //
+  // Checked first that this was genuinely new: no "croquet", "wicket" or "mallet" anywhere in this file
+  // or any other world's own, and — unlike quoits and horseshoes, which every one of the seven worlds
+  // already carries its own version of — no world in the game has ever had this particular lawn game.
+  // No new rig option: `hammer: true` (`55-npcs.js`) — the same short-handled, blocky-headed tool the
+  // blacksmith, the whack-a-mole kid, the claw-machine kid and the high-striker strongman all already
+  // wear — was reused as-is for the croquet mallet, the same reasoning every one of those rounds
+  // already leaned on: the shape reads as whichever tool the scene calls for at this game's scale.
+  // `Chopper` needed no changes: it already drives the axe, the hammer and three bare-handed swings
+  // with the same timing, and its own constructor calls `greetable()`, so no extra wiring was needed.
+  // The lawn itself is a plain hand-built group (two wire wickets — a half-`G.torus()` arch standing on
+  // its own two ends at ground level, the same `arc` parameter the gas lamps' finial rings never needed
+  // but this shape does — a painted wooden peg, and one free ball mesh) animated by a single `U.push`
+  // closure keyed off `t`: the ball's own roll is a flat `from`/`to`/`lerp` along the ground with no
+  // arc at all (a croquet ball never leaves the grass, unlike the coconut shy's lobbed ball or the axe
+  // target's thrown axe), spinning forward with the same `rotation.x += dt * k` every rolling or
+  // tumbling object in this game already uses, and the peg gives a small decaying-sine shiver on
+  // arrival, the same one-shot-per-cycle `cycleNo` guard the coconut shy's post and the axe target's
+  // own target already use.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(3, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so every urchin, every watcher and every other soul in this town had settled, then
+  // 600 more sampling every NPC's own position every 10th frame) swept a 2 m grid of the open green
+  // (radius 18-85, short of the radius (88) where `victorianRegion()`'s own fill takes over) against
+  // all 602 of this town's own physics boxes (knee-to-head band only), all 230 `game.zones` rectangles
+  // and every sampled NPC position: (-21, 53) came back clearest of the lot — 16.2 m clear of the
+  // nearest box, 17 m clear of the nearest zone rectangle and 15.4 m clear of the nearest wandering
+  // soul, 57 m from the world's own origin — the quietest open ground this whole probe found anywhere
+  // in range. Ground is flat (y=0) the whole length of the lawn, so no terrain grading was needed.
+  //
+  // Built dead last of everything this town adds, right after the crossing-guard watcher above, for
+  // the usual reason: `makeHuman()`/`randomPerson()` both draw off this town's own shared `r()`
+  // sequence unconditionally, and dropping a fresh rig in any earlier would have shifted every random
+  // pick made above it.
+  { const cx = -21, cz = 53, px = -21, pz = 48.4;
+    const gy0 = P.ground0(cx, cz);
+    const lawn = group(cx, gy0, cz, W);
+    const wireM = mat(0xc8c8c8, { metalness: 0.6, roughness: 0.4 }), pegM = mat(0x8a5a32, { roughness: 0.75 }), pegCapM = mat(0xd9302a, { roughness: 0.6 }), ballM = mat(0xd9302a, { roughness: 0.55 });
+    // the wicket arch: a half torus (`arc = PI`) already lies flat in the local XY plane with its two
+    // ends at y=0 and its crown at y=radius, so it stands as an upside-down U right out of the box —
+    // no rotation needed, and the ball rolls through it along local z, the tube's own thickness axis
+    for (const lz of [-2.8, -1.4]) noInk(mesh(G.torus(0.2, 0.012, 6, 12, PI), wireM, { z: lz, y: 0, shadow: 'none', parent: lawn }));
+    const peg = group(0, 0, 0, lawn);
+    mesh(G.cyl(0.03, 0.035, 0.42, 8), pegM, { y: 0.21, parent: peg });
+    mesh(G.sphere(0.045, 8, 6), pegCapM, { y: 0.44, parent: peg });
+    const ball = mesh(G.sphere(0.055, 10, 8), ballM, { parent: lawn });
+    ball.visible = false;
+    const hand = V3(0, 0.08, -4.6), target = V3(0, 0.08, 0), lawnCyc = 3.2, rollDur = 0.9, rollStart = 0.5;
+    let hitCycle = -1, lastHit = -10;
+    U.push((dt, t) => {
+      const k = (t % lawnCyc) / lawnCyc;
+      if (k >= rollStart && k < rollStart + rollDur / lawnCyc) {
+        const u = (k - rollStart) / (rollDur / lawnCyc);
+        ball.position.set(lerp(hand.x, target.x, u), hand.y, lerp(hand.z, target.z, u));
+        ball.rotation.x -= dt * 10;
+        ball.visible = true;
+        const cycleNo = floor(t / lawnCyc);
+        if (u >= 0.97 && cycleNo !== hitCycle) {
+          hitCycle = cycleNo; lastHit = t; SFX.bounce();
+          const c = game.cat.group.position;
+          if (dist2(cx, cz, c.x, c.z) < 400) game.fx.emit(cx, gy0 + 0.3, cz, { count: 6, colors: [0xd9302a, 0xc8c8c8], speed: 0.9, up: 0.8, life: 0.5, gravity: 3.5 });
+        }
+      } else ball.visible = false;
+      const since = t - lastHit, wobble = since >= 0 && since < 1.1 ? sin(since * 13) * Math.exp(-since * 3.5) * 0.12 : 0;
+      peg.rotation.z = wobble;
+    });
+    P.addBox(cx, gy0 + 0.3, cz - 1.4, 0.6, 0.6, 3.2, { cam: false });
+    const player = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: r.chance(0.2) }),
+      hammer: true, hat: null, glasses: r.chance(0.3) });
+    W.add(player.group);
+    const croquetLines = ['Through both wickets and dead on the peg — every single time, if you believe her telling of it.', "Mind your tail, puss — that ball doesn't slow down for anyone in its way.", 'Same two wickets, same peg, every afternoon out here. The grass never gets a chance to grow back.'];
+    game.npcs.push(new Chopper(game, player, { x: px, z: pz, ry: 0,
+      colors: [0xd9302a, 0xc8c8c8], cryIcon: '🔴', cries: croquetLines })); }
+
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
