@@ -19876,6 +19876,46 @@ function buildVictorian(game, entry) {
     const trampWatcherVCries = ["Never seen the like of it in this town before.", "Mind she doesn't bounce clean over the wall.", "Her mother will have words about those cobbles."];
     game.npcs.push(new Wanderer(game, trampWatcherV, { x: wx2, z: wz2, angle: atan2(trX - wx2, trZ - wz2), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cries: trampWatcherVCries, cryT: r.range(4, 9) })); }
 
+  // Rounds 1418-1420 carried a "table-game watcher" series through the Neighborhood's chess table,
+  // Candy Land's dominoes chain and Robot City's checkers drum, leaving Victorian's own draughts
+  // table (built earlier in this function at (-34, -38), two retired gents mid-game since round 354)
+  // and Sunny Shore, Frosty Peak and Whisper Woods still owing theirs one. This round takes
+  // Victorian's turn. **An onlooker now stands east and a touch north of the draughts table, taking
+  // in the game — with a line or two of her own**, called out now and then whenever the cat is close
+  // enough to hear: *"Same two gents, same table, every afternoon without fail."* *"Mind your tail,
+  // puss — knock that board and there'll be words."* *"Red's two pieces up. Don't tell him I said
+  // so."* Saying hello to her still makes her the usual kind of friend on top of that.
+  //
+  // No new class: the same `Wanderer` (`55-npcs.js`) every watcher in every earlier series already
+  // uses, which calls `greetable()` itself, so no extra wiring was needed. Like the chess, dominoes
+  // and checkers tables before it, the draughts table has no motion worth reading in profile — a
+  // mid-game board and two seated players don't move — so any clear spot facing it works equally
+  // well. Victorian carries no dupe-shirt rule of its own (the Neighborhood's test is the only one of
+  // the seven that enforces one), so no wardrobe bag was needed.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(3, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so every urchin, both ball games, the trampoline kid and every other soul in
+  // this town had settled, then 600 more sampling every NPC's own position every 10th frame) swept a
+  // 0.25 m grid in a 2.5-9 m ring around the draughts table (-34, -38) against all 588 of this town's
+  // own physics boxes (knee-to-head band only), all 230 `game.zones` rectangles and every sampled NPC
+  // position: (-25.25, -38.75) came back clearest — east and a touch north of the table, about 8.8 m
+  // out and 46.3 m from the world's own origin, well short of the radius (88) where
+  // `victorianRegion`'s own procedural fill takes over — 8.36 m from the nearest box, 8.25 m from the
+  // nearest zone rectangle and 8.01 m from the nearest other soul.
+  //
+  // Built dead last of everything this town adds, right after the trampoline watcher above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this town's own shared `r()` sequence
+  // unconditionally, and dropping a fresh rig in any earlier would have shifted every random pick
+  // made above it.
+  { const dgX = -34, dgZ = -38, wx3 = -25.25, wz3 = -38.75;
+    const draughtsWatcher = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: r.chance(0.4) }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(draughtsWatcher.group);
+    const draughtsWatcherCries = ["Same two gents, same table, every afternoon without fail.", "Mind your tail, puss — knock that board and there'll be words.", "Red's two pieces up. Don't tell him I said so."];
+    game.npcs.push(new Wanderer(game, draughtsWatcher, { x: wx3, z: wz3, angle: atan2(dgX - wx3, dgZ - wz3), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cries: draughtsWatcherCries, cryT: r.range(4, 9) })); }
+
   const sq = new Squirrel(game, -10, -4.5, 'sq-victorian'); game.squirrels.push(sq);
   const C = game.collectibles;
   C.add('fish', 8, 4); C.add('mouse', -16, 5); C.add('yarn', 28, -6); C.add('star', 37, 6); C.add('star', -24, -6); C.add('mouse', -3, 20); C.add('yarn', 2, 19); C.add('fish', -30, 4); C.add('star', 0, -40); C.add('mouse', 56, 4); C.add('yarn', -1.2, 36);
