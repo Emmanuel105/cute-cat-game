@@ -24030,6 +24030,48 @@ function buildRobotCity(game, entry) {
     const trampWatcherCries = ["Beats watching the conveyor all shift.", "Go on then, one more bounce.", "My knees ache just looking at that."];
     game.npcs.push(new Wanderer(game, trampWatcher7, { x: wx7, z: wz7, angle: atan2(trX7 - wx7, trZ7 - wz7), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cries: trampWatcherCries, cryT: r.range(4, 9) })); }
 
+  // Round 1418 opened a "table-game watcher" series on the Neighborhood's own chess table and round
+  // 1419 carried it to Candy Land's dominoes chain, leaving Victorian's draughts, Robot City's
+  // checkers, Frosty Peak's cards, Whisper Woods' draughts and Sunny Shore's mancala still owing one.
+  // This round takes Robot City's own checkers drum (built earlier in this function at (0, 54), two
+  // off-shift workers mid-game on an upturned steel drum since round 384). **An off-duty worker now
+  // stands a few steps north-east of it, watching the game — with a line or two of her own**, called
+  // out now and then whenever the cat is close enough to hear: *"Thirty-second break and they're still
+  // at it."* *"Mind the drum, puss — don't go knocking those washers off."* *"Neither one's won since
+  // Tuesday. Neither one's quit either."* Saying hello to her still makes her the usual kind of friend
+  // on top of that.
+  //
+  // No new class: the same `Wanderer` (`55-npcs.js`) every watcher in every earlier series already
+  // uses, which calls `greetable()` itself, so no extra wiring was needed. Like the chess and dominoes
+  // tables, the checkers drum has no motion worth reading in profile beyond the spark burst it already
+  // throws every several seconds (built earlier in this function) — a mid-game board and two seated
+  // workers don't move — so any clear spot facing it works equally well. Robot City carries no
+  // dupe-shirt rule of its own (the Neighborhood's test is the only one of the seven that enforces
+  // one), so no wardrobe bag was needed.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(2, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so every patrolling sentry, dancer and every other soul in this city had settled,
+  // then 600 more sampling every NPC's own position every 10th frame) swept a 0.5 m grid in a 3-10 m
+  // ring around the checkers drum (0, 54) against all 1211 of the city's own physics boxes (knee-to-
+  // head band only), all 296 `game.zones` rectangles and every sampled NPC position: (3.75, 60.5) came
+  // back clearest — north and a touch east of the drum, about 7.5 m out and 60.6 m from the world's
+  // own origin, well short of the radius (98) where `robotRegion`'s own procedural fill takes over —
+  // 6.93 m from the nearest box, 35.25 m from the nearest zone rectangle and 7.06 m from the nearest
+  // other soul.
+  //
+  // Built dead last of everything this city adds, right after the trampoline watcher above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this city's own local `r()` sequence
+  // unconditionally, and dropping a fresh rig in any earlier would have shifted every random pick made
+  // above it.
+  { const ckX = 0, ckZ = 54, wx8 = 3.75, wz8 = 60.5;
+    const checkersWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3) }),
+      hat: null, scarf: null, jacket: null, bag: null, backpack: null, glasses: false });
+    W.add(checkersWatcher.group);
+    const checkersWatcherCries = ["Thirty-second break and they're still at it.", "Mind the drum, puss — don't go knocking those washers off.", "Neither one's won since Tuesday. Neither one's quit either."];
+    game.npcs.push(new Wanderer(game, checkersWatcher, { x: wx8, z: wz8, angle: atan2(ckX - wx8, ckZ - wz8), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cries: checkersWatcherCries, cryT: r.range(4, 9) })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }
