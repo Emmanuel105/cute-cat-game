@@ -15038,6 +15038,58 @@ function buildNeighborhood(game, entry) {
     game.npcs.push(new Wanderer(game, chessWatcher, { x: cwx, z: cwz, angle: atan2(ctx - cwx, ctz - cwz), speed: 0.3, leash: 0.5, idle: [3, 6],
       cries: ['Been at that same game since March, those two.', "Mind the board, puss — she'll have your tail if you knock that king over.", "My money's on the ivory set, same as every year."] })); }
 
+  // The crossing guard (round 446, `CrossingGuard` in 55-npcs.js) has been raising and lowering that
+  // lollipop sign at the side road since this world's earliest rounds, and every other world picked up
+  // its own guard too (rounds 863-1047) — but unlike the seesaw, swing, trampoline, toss games,
+  // tug-of-war, sack race and table games, nobody has ever actually stood and watched the guard work.
+  // This round opens that series here. **A passer-by now stands a few steps south-east of the crossing
+  // guard, watching the sign rise and fall**, called out now and then whenever the cat is close enough
+  // to hear: *"Thirty years and she's never missed a lollipop raise."* *"Mind the kerb, puss — she'll
+  // blow that whistle at you too."* *"Rain or shine, that sign goes up on the dot."*
+  //
+  // No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this project already uses, which
+  // calls `greetable()` itself, so no extra wiring was needed. The guard just raises and lowers a sign
+  // on the spot — no arc or lane to read in profile — so any clear spot facing her works equally well.
+  // A single-shirt wardrobe bag (0x7a6a3a, an olive brown checked against every shirt colour this
+  // street's own build already hands out, explicit or from the shared bag — none of them claim it)
+  // keeps the "no two neighbours wear the same shirt" check happy, same reason the chess watcher above
+  // needed one of its own.
+  //
+  // This is the second watcher added to this street after the chess table's own above, and the first
+  // attempt gave it the exact same shape — `idle: [3, 6]` and nothing else — which built clean but
+  // failed the two-neighbours-chat timing test a few thousand lines up (the chat test samples a fixed
+  // frame and checks an arm angle against a threshold; `makeHuman()`/`randomPerson()` and a live
+  // `idle` range both draw off the *shared* `rnd()` sequence unconditionally, and a second watcher's
+  // worth of extra draws was enough to tip that one sample over the line). Giving her the same frozen
+  // shape every other Neighborhood watcher already uses instead — `blinkT0`/`idleT0`/`sway0` fixed on
+  // the rig, `idle: [1e9, 1e9]`, `phase: 0, timer: 1e9, t: 0` and a fixed (not drawn) `cryT` on the
+  // controller — draws nothing extra from the sequence beyond the one `r()` pick for her own clothes
+  // and face, same trick `tugWatcher` and `subject` (the photographer's own subject) already use a
+  // few hundred lines up, and the chat test passed clean again once it was in place.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(0, 'from-hub')` directly rather than `game.travel()` — the travel
+  // fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600
+  // simulated frames so every wanderer, the postie and every other soul on this street had settled,
+  // then 600 more sampling every NPC's own position every 10th frame) swept a 0.25 m grid in a 2.5-11 m
+  // ring around the crossing guard (44, 10.4) against all 314 of this street's own physics boxes
+  // (knee-to-head band only), all 69 `game.zones` rectangles and every sampled NPC position: (49, 5.75)
+  // came back clearest — south-east at a radius of 6.8 m, 2.35 m from the nearest box (a low garden
+  // wall corner), 2.5 m from the nearest zone rectangle (the side road itself, exactly as expected for
+  // a spot facing it) and 6.83 m from the nearest other soul.
+  //
+  // Built dead last of everything this street adds, right after the chess watcher above and right
+  // before `makeDayNight()`, for the usual reason: `makeHuman()`/`randomPerson()` both draw off this
+  // street's own shared `r()` sequence unconditionally, and anything built earlier would have had its
+  // own timing-sensitive pick shifted by it.
+  { const gwx = 49, gwz = 5.75, gx = 44, gz = 10.4;
+    const guardWatcherWard = makeWardrobe(r, { shirts: [0x7a6a3a] });
+    const guardWatcher = makeHuman({ ...randomPerson(r, { female: true, child: false, elder: r.chance(0.3), wardrobe: guardWatcherWard }),
+      blinkT0: 1e6, idleT0: 1e6, sway0: 0 });
+    W.add(guardWatcher.group);
+    game.npcs.push(new Wanderer(game, guardWatcher, { x: gwx, z: gwz, angle: atan2(gx - gwx, gz - gwz), speed: 0.2, leash: 0.5, idle: [1e9, 1e9], phase: 0, timer: 1e9, t: 0, cryT: 6,
+      cries: ["Thirty years and she's never missed a lollipop raise.", 'Mind the kerb, puss — she\'ll blow that whistle at you too.', 'Rain or shine, that sign goes up on the dot.'] })); }
+
   makeDayNight(game, U, W, true);
   game.fx.setAmbient(null);
   const spawns = { 'from-next': { x: 0, y: 0, z: 46.5, yaw: PI }, 'from-beach': { x: 73, y: 0, z: 22, yaw: -PI / 2 }, 'from-snow': { x: -67, y: 0, z: -40, yaw: PI / 2 }, 'from-forest': { x: 40, y: 0, z: 72, yaw: PI } };
