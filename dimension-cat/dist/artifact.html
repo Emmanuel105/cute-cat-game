@@ -37417,6 +37417,51 @@ function buildSnowVillage(game, entry) {
     W.add(swWatcher.group);
     game.npcs.push(new Wanderer(game, swWatcher, { x: swWatchX, z: swWatchZ, angle: atan2(swCx - swWatchX, swCz - swWatchZ), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6] })); }
 
+  // Rounds 1418-1421 carried a "table-game watcher" series through the Neighborhood's chess table,
+  // Candy Land's dominoes chain, Robot City's checkers drum and Victorian's draughts table, leaving
+  // this mountain's own card table (above, two travellers mid-game since round 397), Whisper Woods'
+  // draughts and Sunny Shore's mancala still owing one. This round takes the card table. **A bundled-
+  // up villager now stands due north of it, taking in the game, with a line or two of her own**,
+  // called out now and then whenever the cat's close enough to hear: *"Same two hands, same
+  // travellers, every afternoon down here."* *"Mind your tail, puss — knock that deck and there'll
+  // be words."* *"Neither one's folded since breakfast. Must be a fine hand."* Saying hello to her
+  // makes her the usual kind of friend too.
+  //
+  // No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses,
+  // which calls `greetable()` itself, so no extra wiring was needed. Like the chess, dominoes and
+  // checkers tables before it, the card table has no motion worth reading in profile — a dealt hand
+  // and two seated travellers don't move — and its own two seats sit side by side along world X
+  // (`seatAx = tx - 0.68`, `seatBx = tx + 0.68`, both at the same z), the same shape as the chess
+  // table round 1418 already worked out, so standing square on to it, offset along world Z, shows
+  // both of them equally well. Frosty Peak carries no dupe-shirt rule of its own (the Neighborhood's
+  // test is the only one of the seven that enforces one), so the shirt colours just went with this
+  // village's own winter palette.
+  //
+  // A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+  // `game.start('new')`, `game.load(5, 'from-hub')`, then 3600 simulated frames so every reindeer,
+  // hare, arctic fox, penguin, yeti and wandering villager had settled, then 600 more sampling every
+  // NPC's own position every 10th frame) swept a 0.25-0.5 m grid north and south of the card table
+  // (-16, -51), 2.5-10 m out, against all 370 of this mountain's own body-height physics boxes and
+  // all 152 `game.zones` rectangles: south ran out of room almost immediately — every south
+  // candidate past about 2.5 m out lands beyond the radius (56-58) where `snowRegion`'s own
+  // procedural fill takes over, since the table itself already sits well south on that side — so
+  // north is the only side with real room. There, (-16, -46.5) came back clearest: due north at
+  // radius 4.5, about 49.2 m from the world's own origin, well short of that fill boundary — 4.0 m
+  // from the nearest box, 4.0 m from the nearest zone rectangle and 4.55 m from the nearest other
+  // soul.
+  //
+  // Built dead last of everything this mountain adds, right after the swing watcher above, for the
+  // usual reason: `makeHuman()`/`randomPerson()` both draw off this mountain's own local `r()`
+  // sequence unconditionally, and a fresh rig built any earlier would have shifted every random pick
+  // already placed above it. Whisper Woods and Sunny Shore still owe their own table game a watcher.
+  { const cdWatchX = -16, cdWatchZ = -46.5, cdTx = -16, cdTz = -51;
+    const cdWard = makeWardrobe(r, { shirts: [0x6a3a5a, 0x3a5a4a, 0x5a4a3a], pants: [0x2a2a2a, 0x332a24], shoes: [0x2a2018, 0x1e1a16] });
+    const cdWatcher = makeHuman({ ...randomPerson(r, { female: r.chance(0.5), child: false, elder: r.chance(0.3), wardrobe: cdWard }),
+      hat: 'beanie', hatColor: 0x3a5a4a, coat: true, scarf: 0xd9c9a8, cuffs: 0x3a3a3a, bag: null, backpack: null, glasses: r.chance(0.3) });
+    W.add(cdWatcher.group);
+    game.npcs.push(new Wanderer(game, cdWatcher, { x: cdWatchX, z: cdWatchZ, angle: atan2(cdTx - cdWatchX, cdTz - cdWatchZ), speed: 0.3, leash: 0.5, idle: [3, 6], walk: [1, 1.6],
+      cries: ['Same two hands, same travellers, every afternoon down here.', "Mind your tail, puss — knock that deck and there'll be words.", "Neither one's folded since breakfast. Must be a fine hand."] })); }
+
   const spawn = spawnBySquirrel(game, sq);
   return { update: (dt, t) => { for (const f of U) f(dt, t); }, spawn };
 }

@@ -40471,3 +40471,53 @@ No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series al
 A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses: `game.start('new')`, `game.load(3, 'from-hub')` directly rather than `game.travel()` — the travel fade sits behind a real `setTimeout` that never fires under simulated frames alone — then 3600 simulated frames so every urchin, both ball games, the trampoline kid and every other soul in this town had settled, then 600 more sampling every NPC's own position every 10th frame) swept a 0.25 m grid in a 2.5-9 m ring around the draughts table (-34, -38) against all 588 of this town's own physics boxes (knee-to-head band only), all 230 `game.zones` rectangles and every sampled NPC position: (-25.25, -38.75) came back clearest — east and a touch north of the table, about 8.8 m out and 46.3 m from the world's own origin, well short of the radius (88) where `victorianRegion`'s own procedural fill takes over — 8.36 m from the nearest box, 8.25 m from the nearest zone rectangle and 8.01 m from the nearest other soul.
 
 `node dimension-cat/test/run.mjs` ran clean three times in a row: exit 0, every check `ok`, 0 console warnings, physics box count unchanged at 338 (a `Wanderer` adds a dynamic circle, not a static box), Victorian's own friend total confirmed up by exactly one ("world 3: 206 to meet", read 205 before this round's change), "every NPC is in the scene graph" held and the walkability check held at its usual 94%. No visual check was possible in this environment (no browser, no Playwright), so whether she reads as watching rather than just standing nearby is unverified, the usual caveat every round like this carries — though her lines, at least, don't depend on camera angle to land. Rebuilt `dist/dimension_cat.html`, `dist/artifact.html` and the root copy. Frosty Peak, Whisper Woods and Sunny Shore still owe their own table game a watcher.
+
+## Round 1422 — Frosty Peak's own card table gets its own watcher
+
+Rounds 1418-1421 carried a "table-game watcher" series through the Neighborhood's chess table,
+Candy Land's dominoes chain, Robot City's checkers drum and Victorian's draughts table, leaving
+this mountain's own card table (two travellers mid-game since round 397), Whisper Woods' draughts
+and Sunny Shore's mancala still owing one. This round takes the card table. **A bundled-up
+villager now stands due north of it, taking in the game, with a line or two of her own**, called
+out now and then whenever the cat's close enough to hear: *"Same two hands, same travellers,
+every afternoon down here."* *"Mind your tail, puss — knock that deck and there'll be words."*
+*"Neither one's folded since breakfast. Must be a fine hand."* Saying hello to her makes her the
+usual kind of friend too, Frosty Peak's own count rising from 171 to 172.
+
+No new class: the same `Wanderer` (`55-npcs.js`) every watcher in this series already uses, which
+calls `greetable()` itself, so no extra wiring was needed. Like the chess, dominoes and checkers
+tables before it, the card table has no motion worth reading in profile — a dealt hand and two
+seated travellers don't move — and its own two seats sit side by side along world X, the same
+shape the chess table already worked out, so standing square on to it, offset along world Z,
+shows both players equally well. Frosty Peak carries no dupe-shirt rule of its own, so the shirt
+colours just went with this village's own winter palette.
+
+A headless probe (a scratch script on the same stub-three harness `test/run.mjs` itself uses:
+`game.start('new')`, `game.load(5, 'from-hub')`, then 3600 simulated frames so every reindeer,
+hare, arctic fox, penguin, yeti and wandering villager had settled, then 600 more sampling every
+NPC's own position every 10th frame) swept a grid north and south of the card table (-16, -51),
+2.5-10 m out, against all 370 of this mountain's own body-height physics boxes and all 152
+`game.zones` rectangles: south ran out of room almost immediately, every candidate past about
+2.5 m out landing beyond the radius where `snowRegion`'s own procedural fill takes over, since the
+table already sits well south on that side — so north was the only side with real room. There,
+(-16, -46.5) came back clearest: due north at radius 4.5, about 49.2 m from the world's own
+origin — 4.0 m from the nearest box, 4.0 m from the nearest zone rectangle and 4.55 m from the
+nearest other soul.
+
+`node dimension-cat/test/run.mjs` ran clean: exit 0, every check `ok`, 0 console warnings, physics
+box count unchanged at 338 (a `Wanderer` adds a dynamic circle, not a static box), Frosty Peak's
+own friend total confirmed up by exactly one ("world 5: 172 to meet", read 171 before this round's
+change, diffed against the unmodified tree via `git stash`), "every NPC is in the scene graph"
+held and the walkability check held at its usual 98%. No visual check was possible in this
+environment (no browser, no Playwright), so whether she reads as watching rather than just
+standing nearby is unverified, the usual caveat every round like this carries — though her lines,
+at least, don't depend on camera angle to land. Rebuilt `dist/dimension_cat.html`,
+`dist/artifact.html` and the root copy. Whisper Woods and Sunny Shore still owe their own table
+game a watcher.
+
+One housekeeping note: this sandbox's local `main` came up detached at `904e7d2` again, matching
+`origin/main` exactly but 51 commits ahead of the stale local branch pointer — the same harmless
+quirk rounds 1406 and 1420 already saw and explained (a prior sandbox's own push had already
+reached the remote; only this sandbox's cached ref hadn't caught up). Checked out and
+fast-forwarded local `main` onto it before starting work; a fetch confirmed `origin/main` already
+matched, so nothing was at risk and no extra push was needed for that part.
